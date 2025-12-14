@@ -10,21 +10,21 @@ from .prompt_providers import K12PromptProvider
 
 class K12StrategyRoadmapAgent(BaseExecutiveAgent):
     """K.12: 30-60-90 Day Strategy Architect Agent.
-    
+
     Synthesizes identified gaps and technical reality into a tactical
     executive roadmap using People-Process-Technology framework.
     """
-    
+
     def __init__(self, prompt_provider: Optional[K12PromptProvider] = None):
         """Initialize K.12 agent.
-        
+
         Args:
             prompt_provider: Optional prompt provider for dynamic prompts
         """
         super().__init__()
         self.prompt_provider = prompt_provider or K12PromptProvider()
         self.stats = {"k12_executions": 0}
-    
+
     @resilient_execution(fallback_model="gpt-4o")
     async def execute(
         self,
@@ -33,12 +33,12 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
         config: Dict[str, Any]
     ) -> StrategyRoadmap:
         """Execute K.12 Strategy Roadmap generation.
-        
+
         Args:
             job_description: Job description text
             technical_swot: Results from K.11 analysis
             config: Node configuration
-            
+
         Returns:
             StrategyRoadmap with 30-60-90 day plan
         """
@@ -115,18 +115,18 @@ class K12StrategyRoadmapAgent(BaseExecutiveAgent):
                 ],
                 temperature=temperature
             )
-            
+
             self.logger.info("K.12 completed successfully")
             return result
-            
+
         except Exception as e:
             self.logger.error(f"K.12 execution failed: {e}")
             raise
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get execution statistics."""
         return self.stats.copy()
-    
+
     def reset_statistics(self) -> None:
         """Reset execution statistics."""
         self.stats["k12_executions"] = 0

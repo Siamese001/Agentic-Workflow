@@ -38,20 +38,20 @@ class TavilyResearcher:
         ]
 
         aggregated_results = []
-        
+
         logger.info(f"🕵️  Autonomous Agent: Searching deeply for {company_name}...")
-        
+
         for query in queries:
             try:
                 # 'advanced' depth gives better crawl data but costs more credits
                 response = self.client.search(
-                    query=query, 
-                    search_depth="advanced", 
+                    query=query,
+                    search_depth="advanced",
                     max_results=3,
                     include_domains=[], # Optional: Restrict to legitimate tech sites if needed
                     exclude_domains=["glassdoor.com", "comparably.com"] # Exclude generic salary sites
                 )
-                
+
                 for res in response.get("results", []):
                     aggregated_results.append(
                         ResearchResult(
@@ -69,19 +69,19 @@ class TavilyResearcher:
         """Deduplicates and formats results into a dense context block."""
         seen_urls = set()
         unique_results = []
-        
+
         for r in results:
             if r.source_url not in seen_urls:
                 seen_urls.add(r.source_url)
                 unique_results.append(r)
-        
+
         # Sort by relevance
         unique_results.sort(key=lambda x: x.relevance_score, reverse=True)
-        
+
         # Format string
         context_str = "SEARCH CONTEXT (AUTO-RETRIEVED):\n"
         for i, r in enumerate(unique_results[:8]): # Cap at top 8 to save tokens
             context_str += f"[{i+1}] Source: {r.source_url}\n"
             context_str += f"Content: {r.content_snippet[:800]}...\n\n" # Truncate individual snippets
-            
+
         return context_str

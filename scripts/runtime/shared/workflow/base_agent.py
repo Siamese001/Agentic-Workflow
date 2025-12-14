@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 class BaseExecutiveAgent:
     """Base class for executive agents with common LLM client functionality."""
-    
+
     def __init__(self):
         """Initialize base agent with LLM clients."""
         self.logger = logging.getLogger(self.__class__.__name__)
-        
+
         # Initialize LLM clients with Instructor if available
         if INSTRUCTOR_AVAILABLE:
             self._initialize_clients()
@@ -30,7 +30,7 @@ class BaseExecutiveAgent:
             self.openai_client = None
             self.anthropic_client = None
             self.logger.warning("Running in mock mode - install instructor for full functionality")
-    
+
     def _initialize_clients(self):
         """Initialize LLM clients with Instructor patching."""
         try:
@@ -51,13 +51,13 @@ class BaseExecutiveAgent:
             self.logger.error(f"Failed to initialize LLM clients: {e}")
             self.openai_client = None
             self.anthropic_client = None
-    
+
     def _get_client_and_model(self, config: Dict[str, Any]) -> Tuple[Optional[Union['OpenAI', 'Anthropic']], str]:
         """Get appropriate LLM client and model based on configuration.
-        
+
         Args:
             config: Node configuration with infrastructure settings
-            
+
         Returns:
             Tuple of (client, model_name)
         """

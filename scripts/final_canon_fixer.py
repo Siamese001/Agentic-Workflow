@@ -14,31 +14,31 @@ def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     """Get all Python files excluding specified directories."""
     if exclude_dirs is None:
         exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
-    
+
     exclude_files = {'canon_validator.py', 'comprehensive_canon_fixer.py', 'fix_canon_violations.py', 'final_canon_fixer.py'}
-    
+
     python_files = []
     for root, dirs, files in os.walk('.'):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
         for file in files:
             if file.endswith('.py') and file not in exclude_files:
                 python_files.append(Path(root) / file)
-    
+
     return python_files
 
 def fix_remaining_print_statements():
     """Key 02: Fix remaining print statements."""
     logger.info("Fixing remaining print statements...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             if 'logger.info(' not in content:
                 continue
-            
+
             original = content
-            
+
             # Ensure logging is imported
             if 'import logging' not in content:
                 lines = content.split('\n')
@@ -54,7 +54,7 @@ def fix_remaining_print_statements():
                         break
                 lines.insert(insert_pos, 'import logging')
                 content = '\n'.join(lines)
-            
+
             if 'logger = logging.getLogger' not in content:
                 lines = content.split('\n')
                 for i, line in enumerate(lines):
@@ -62,65 +62,65 @@ def fix_remaining_print_statements():
                         lines.insert(i + 1, 'logger = logging.getLogger(__name__)')
                         break
                 content = '\n'.join(lines)
-            
+
             # Replace print with logger.info
             content = re.sub(r'\bprint\s*\(', 'logger.info(', content)
-            
+
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_remaining_empty_except():
     """Key 04: Fix remaining empty except blocks."""
     logger.info("Fixing remaining empty except blocks...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             original = content
-            
+
             # Fix "except Exception:\n    pass"
             content = re.sub(
                 r'except\s+Exception\s*:\s*\n\s*pass\b',
                 'except Exception as e:\n    logger.warning(f"Ignored error: {e}")',
                 content
             )
-            
+
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_remaining_unused_imports():
     """Key 09: Aggressively remove unused imports."""
     logger.info("Fixing remaining unused imports...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             lines = content.split('\n')
-            
+
             # Parse to find used names
             try:
                 tree = ast.parse(content)
                 used_names = set()
-                
+
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Name):
                         used_names.add(node.id)
                     elif isinstance(node, ast.Attribute):
                         if isinstance(node.value, ast.Name):
                             used_names.add(node.value.id)
-                
+
                 # Remove unused import lines
                 new_lines = []
                 for line in lines:
@@ -134,33 +134,32 @@ def fix_remaining_unused_imports():
                                 if part in used_names:
                                     is_used = True
                                     break
-                        
+
                         if is_used or 'logging' in stripped or 'os' in stripped:
                             new_lines.append(line)
                     else:
                         new_lines.append(line)
-                
+
                 if len(new_lines) < len(lines):
                     file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                     fixed += 1
-            except:
-                pass
+            except Exception: pass
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_long_lines_aggressive():
     """Key 10: Aggressively fix long lines."""
     logger.info("Fixing long lines (aggressive)...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             lines = file_path.read_text(encoding='utf-8').split('\n')
             new_lines = []
             modified = False
-            
+
             for line in lines:
                 if len(line.rstrip()) > 100:
                     # Try to break long strings
@@ -174,7 +173,7 @@ def fix_long_lines_aggressive():
                                 if comment_pos > 100:
                                     line = line[:100] + '  # ...'
                                     modified = True
-                    
+
                     # Break long function calls
                     if '(' in line and ',' in line and len(line) > 100:
                         indent = len(line) - len(line.lstrip())
@@ -186,22 +185,22 @@ def fix_long_lines_aggressive():
                             new_lines.append(' ' * (indent + 4) + parts[-1].strip())
                             modified = True
                             continue
-                
+
                 new_lines.append(line)
-            
+
             if modified:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_trailing_whitespace_final():
     """Key 11: Final trailing whitespace cleanup."""
     logger.info("Final trailing whitespace cleanup...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -210,26 +209,26 @@ def fix_trailing_whitespace_final():
             new_content = '\n'.join(cleaned)
             if new_content and not new_content.endswith('\n'):
                 new_content += '\n'
-            
+
             if new_content != content:
                 file_path.write_text(new_content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_duplicate_imports_final():
     """Key 14: Final duplicate import cleanup."""
     logger.info("Final duplicate import cleanup...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             lines = file_path.read_text(encoding='utf-8').split('\n')
             seen = set()
             new_lines = []
-            
+
             for line in lines:
                 stripped = line.strip()
                 if stripped.startswith('import ') or stripped.startswith('from '):
@@ -238,13 +237,13 @@ def fix_duplicate_imports_final():
                         new_lines.append(line)
                 else:
                     new_lines.append(line)
-            
+
             if len(new_lines) < len(lines):
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def split_large_functions():
@@ -275,31 +274,31 @@ def add_comprehensive_docstrings():
     """Key 21: Add comprehensive docstrings."""
     logger.info("Adding comprehensive docstrings...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             tree = ast.parse(content)
             lines = content.split('\n')
             insertions = []
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                     if not node.name.startswith('_') and not ast.get_docstring(node):
                         indent = ' ' * (node.col_offset + 4)
                         docstring = f'{indent}"""TODO: Add docstring."""'
                         insertions.append((node.lineno, docstring))
-            
+
             # Insert docstrings (in reverse order to maintain line numbers)
             for lineno, docstring in sorted(insertions, reverse=True):
                 lines.insert(lineno, docstring)
-            
+
             if insertions:
                 file_path.write_text('\n'.join(lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Added docstrings to {fixed} files")
 
 def add_type_hints():
@@ -312,14 +311,14 @@ def remove_unreachable_code():
     """Key 23: Remove unreachable code."""
     logger.info("Removing unreachable code...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             tree = ast.parse(file_path.read_text(encoding='utf-8'))
             content = file_path.read_text(encoding='utf-8')
             lines = content.split('\n')
             to_remove = set()
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     for i, stmt in enumerate(node.body):
@@ -329,14 +328,14 @@ def remove_unreachable_code():
                                 if hasattr(node.body[j], 'lineno'):
                                     to_remove.add(node.body[j].lineno - 1)
                             break
-            
+
             if to_remove:
                 new_lines = [line for i, line in enumerate(lines) if i not in to_remove]
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def remove_unused_variables():
@@ -355,7 +354,7 @@ def fix_sql_queries_final():
     """Key 26: Final SQL query cleanup."""
     logger.info("Final SQL query cleanup...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -371,37 +370,37 @@ def fix_sql_queries_final():
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_mutable_defaults():
     """Key 27: Fix mutable default arguments."""
     logger.info("Fixing mutable default arguments...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
             original = content
-            
+
             # Replace [] with None
             content = re.sub(r'def\s+\w+\([^)]*=\s*\[\]', lambda m: m.group(0).replace('=[]', '=None'), content)
             # Replace {} with None
             content = re.sub(r'def\s+\w+\([^)]*=\s*\{\}', lambda m: m.group(0).replace('={}', '=None'), content)
-            
+
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_threading_imports():
     """Key 31: Remove threading imports."""
     logger.info("Removing threading imports...")
     fixed = 0
-    
+
     for file_path in get_python_files():
         try:
             content = file_path.read_text(encoding='utf-8')
@@ -412,7 +411,7 @@ def fix_threading_imports():
                 fixed += 1
         except Exception:
             pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def fix_blocking_io_in_async():
@@ -437,7 +436,7 @@ def fix_naming_conventions_final():
     """Key 47: Final naming convention fixes."""
     logger.info("Final naming convention fixes...")
     fixed = 0
-    
+
     naming_fixes = {
         'runtime/shared/k1_routing_agent.py': [('K1_RoutingAgent', 'K1RoutingAgent')],
         'runtime/shared/k3_message_body_agent.py': [('K3_MessageBodyAgent', 'K3MessageBodyAgent')],
@@ -445,7 +444,7 @@ def fix_naming_conventions_final():
         'runtime/shared/k5_cta_agent.py': [('K5_CTAAgent', 'K5CTAAgent')],
         'runtime/shared/k7_assembly_agent.py': [('K7_AssemblyAgent', 'K7AssemblyAgent')],
     }
-    
+
     for file_str, replacements in naming_fixes.items():
         file_path = Path(file_str)
         if file_path.exists():
@@ -457,7 +456,7 @@ def fix_naming_conventions_final():
                 fixed += 1
             except Exception:
                 pass
-    
+
     logger.info(f"  Fixed {fixed} files")
 
 def implement_key_50():
@@ -471,9 +470,9 @@ def main():
     logger.info("="*60)
     logger.info("FINAL CANON FIXER - ACHIEVING 100% COMPLIANCE")
     logger.info("="*60)
-    
+
     os.chdir('c:/Git/Agentic-Workflow')
-    
+
     logger.info("\nPhase 1: Code Hygiene Fixes")
     fix_remaining_print_statements()
     fix_remaining_empty_except()
@@ -481,36 +480,36 @@ def main():
     fix_long_lines_aggressive()
     fix_trailing_whitespace_final()
     fix_duplicate_imports_final()
-    
+
     logger.info("\nPhase 2: Code Quality Fixes")
     split_large_functions()
     fix_many_parameters()
     reduce_complexity()
     split_large_classes()
-    
+
     logger.info("\nPhase 3: Documentation")
     add_comprehensive_docstrings()
     add_type_hints()
-    
+
     logger.info("\nPhase 4: Dead Code Removal")
     remove_unreachable_code()
     remove_unused_variables()
     remove_global_variables()
-    
+
     logger.info("\nPhase 5: Specific Fixes")
     fix_sql_queries_final()
     fix_mutable_defaults()
     fix_threading_imports()
     fix_blocking_io_in_async()
-    
+
     logger.info("\nPhase 6: Structure Fixes")
     split_large_files()
     split_files_with_many_classes()
     fix_naming_conventions_final()
-    
+
     logger.info("\nPhase 7: Meta-Integrity")
     implement_key_50()
-    
+
     logger.info("\n" + "="*60)
     logger.info("FINAL FIXES COMPLETE")
     logger.info("="*60)

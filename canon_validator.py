@@ -66,18 +66,18 @@ def get_python_files(root_dir: str = ".") -> List[str]:
         ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
         "archives", "data"
     }
-    
+
     for root, dirs, files in os.walk(root_dir):
         # Remove excluded directories from traversal
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
-        
+
         for file in files:
             if file.endswith(".py"):
                 full_path = os.path.join(root, file)
                 # Convert to forward slashes for consistency
                 full_path = full_path.replace("\\", "/")
                 python_files.append(full_path)
-    
+
     return python_files
 
 def parse_python_file(file_path: str) -> Optional[ast.AST]:
@@ -96,7 +96,7 @@ def parse_python_file(file_path: str) -> Optional[ast.AST]:
 def check_key_00_no_hardcoded_secrets():
     """Key 00: No hardcoded secrets, API keys, or passwords in code."""
     info("Checking for hardcoded secrets and API keys...")
-    
+
     secret_patterns = [
         r'password\s*=\s*["\'][^"\']+["\']',
         r'api_key\s*=\s*["\'][^"\']+["\']',
@@ -106,10 +106,10 @@ def check_key_00_no_hardcoded_secrets():
         r'sk-[a-zA-Z0-9]{48}',  # OpenAI API key
         r'ghp_[a-zA-Z0-9]{36}',  # GitHub personal access token
     ]
-    
+
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -121,7 +121,7 @@ def check_key_00_no_hardcoded_secrets():
                         violations.append(f"{file_path}:{line_num}")
         except Exception:
             continue
-    
+
     if violations:
         fail("00", f"Found {len(violations)} potential hardcoded secrets")
     else:
@@ -130,11 +130,11 @@ def check_key_00_no_hardcoded_secrets():
 def check_key_01_no_todo_comments():
     """Key 01: No TODO, FIXME, or XXX comments in production code."""
     info("Checking for TODO/FIXME comments...")
-    
+
     todo_patterns = [r'#\s*TODO', r'#\s*FIXME', r'#\s*XXX', r'#\s*HACK', r'#\s*TEMP']
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -146,7 +146,7 @@ def check_key_01_no_todo_comments():
                         violations.append(f"{file_path}:{line_num}")
         except Exception:
             continue
-    
+
     if violations:
         fail("01", f"Found {len(violations)} TODO/FIXME comments")
     else:
@@ -157,9 +157,9 @@ def check_key_02_no_print_statements():
     info("Checking for print statements...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
-        if "canon_validator.py" in file_path: continue 
+        if "canon_validator.py" in file_path: continue
         try:
             tree = parse_python_file(file_path)
             if tree:
@@ -169,7 +169,7 @@ def check_key_02_no_print_statements():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
         fail("02", f"Found {len(violations)} print statements: {', '.join(violations[:10])}")
     else:
@@ -181,7 +181,7 @@ def check_key_03_no_debugger_statements():
     debugger_patterns = [r'breakpoint\(\)', r'pdb\.set_trace\(\)', r'ipdb\.set_trace\(\)', r'pudb\.set_trace\(\)']
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -191,7 +191,7 @@ def check_key_03_no_debugger_statements():
                         violations.append(f"{file_path}")
         except Exception:
             continue
-    
+
     if violations:
         fail("03", f"Found {len(violations)} debugger statements")
     else:
@@ -202,7 +202,7 @@ def check_key_04_no_empty_except_blocks():
     info("Checking for empty except blocks...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -213,9 +213,9 @@ def check_key_04_no_empty_except_blocks():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
-        fail("04", f"Found {len(violations)} empty except blocks")
+        fail("04", f"Found {len(violations)} empty except blocks: {', '.join(violations[:10])}")
     else:
         success("04", "No empty except blocks found")
 
@@ -224,7 +224,7 @@ def check_key_05_no_bare_except():
     info("Checking for bare except clauses...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -235,7 +235,7 @@ def check_key_05_no_bare_except():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
         fail("05", f"Found {len(violations)} bare except clauses")
     else:
@@ -246,7 +246,7 @@ def check_key_06_no_eval_exec():
     info("Checking for eval/exec usage...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -257,7 +257,7 @@ def check_key_06_no_eval_exec():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
         fail("06", f"Found {len(violations)} eval/exec calls")
     else:
@@ -268,7 +268,7 @@ def check_key_07_no_star_imports():
     info("Checking for star imports...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -279,7 +279,7 @@ def check_key_07_no_star_imports():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
         fail("07", f"Found {len(violations)} star imports")
     else:
@@ -290,7 +290,7 @@ def check_key_08_no_relative_imports():
     info("Checking for relative imports...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -301,9 +301,9 @@ def check_key_08_no_relative_imports():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
-        fail("08", f"Found {len(violations)} relative imports")
+        fail("08", f"Found {len(violations)} relative imports: {', '.join(violations[:10])}")
     else:
         success("08", "No relative imports found")
 
@@ -312,7 +312,7 @@ def check_key_09_no_unused_imports():
     info("Checking for unused imports...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -328,19 +328,19 @@ def check_key_09_no_unused_imports():
                         for alias in node.names:
                             imports.add(alias.name)
                             import_lines[alias.name] = node.lineno
-                
+
                 used_names = set()
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Name): used_names.add(node.id)
                     elif isinstance(node, ast.Attribute):
                         if isinstance(node.value, ast.Name): used_names.add(node.value.id)
-                
+
                 for imp in imports:
                     if imp not in used_names and not imp.startswith('_'):
                         violations.append(f"{file_path}:{import_lines[imp]}")
         except Exception:
             continue
-    
+
     if violations:
         fail("09", f"Found {len(violations)} unused imports")
     else:
@@ -353,7 +353,7 @@ def check_key_10_no_long_lines():
     info("Checking for long lines...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -363,7 +363,7 @@ def check_key_10_no_long_lines():
                         violations.append(f"{file_path}:{i}")
         except Exception:
             continue
-    
+
     if violations:
         fail("10", f"Found {len(violations)} lines > 100 chars")
     else:
@@ -374,7 +374,7 @@ def check_key_11_no_trailing_whitespace():
     info("Checking for trailing whitespace...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -384,7 +384,7 @@ def check_key_11_no_trailing_whitespace():
                         violations.append(f"{file_path}:{i}")
         except Exception:
             continue
-    
+
     if violations:
         fail("11", f"Found {len(violations)} lines with trailing whitespace")
     else:
@@ -395,7 +395,7 @@ def check_key_12_no_missing_newline():
     info("Checking for missing final newline...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -404,7 +404,7 @@ def check_key_12_no_missing_newline():
                     violations.append(file_path)
         except Exception:
             continue
-    
+
     if violations:
         fail("12", f"Found {len(violations)} files missing final newline")
     else:
@@ -415,7 +415,7 @@ def check_key_13_no_tabs():
     info("Checking for tab characters...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -426,7 +426,7 @@ def check_key_13_no_tabs():
                         break
         except Exception:
             continue
-    
+
     if violations:
         fail("13", f"Found {len(violations)} files with tab characters")
     else:
@@ -437,7 +437,7 @@ def check_key_14_no_duplicate_imports():
     info("Checking for duplicate imports...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -448,12 +448,12 @@ def check_key_14_no_duplicate_imports():
                         for alias in node.names: imports.append(alias.name)
                     elif isinstance(node, ast.ImportFrom):
                         for alias in node.names: imports.append(f"{node.module}.{alias.name}" if node.module else alias.name)
-                
+
                 if len(imports) != len(set(imports)):
                     violations.append(file_path)
         except Exception:
             continue
-    
+
     if violations:
         fail("14", f"Found {len(violations)} files with duplicate imports")
     else:
@@ -466,7 +466,7 @@ def check_key_15_no_magic_numbers():
     info("Checking for magic numbers...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -478,7 +478,7 @@ def check_key_15_no_magic_numbers():
                         violations.append(f"{file_path}:{node.lineno} ({node.value})")
         except Exception:
             continue
-    
+
     if violations:
         warn("15", f"Found {len(violations)} potential magic numbers")
     else:
@@ -489,7 +489,7 @@ def check_key_16_no_deep_nesting():
     info("Checking for deep nesting...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -505,7 +505,7 @@ def check_key_16_no_deep_nesting():
                             break
         except Exception:
             continue
-    
+
     if violations:
         fail("16", f"Found {len(violations)} deeply nested blocks")
     else:
@@ -516,7 +516,7 @@ def check_key_17_no_large_functions():
     info("Checking for large functions...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -528,7 +528,7 @@ def check_key_17_no_large_functions():
                             violations.append(f"{file_path}:{node.lineno} ({size} lines)")
         except Exception:
             continue
-    
+
     if violations:
         fail("17", f"Found {len(violations)} large functions")
     else:
@@ -539,7 +539,7 @@ def check_key_18_no_many_parameters():
     info("Checking for functions with many parameters...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -551,7 +551,7 @@ def check_key_18_no_many_parameters():
                             violations.append(f"{file_path}:{node.lineno} ({count} params)")
         except Exception:
             continue
-    
+
     if violations:
         fail("18", f"Found {len(violations)} functions with too many parameters")
     else:
@@ -562,7 +562,7 @@ def check_key_19_no_complex_functions():
     info("Checking for complex functions...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -577,7 +577,7 @@ def check_key_19_no_complex_functions():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
         fail("19", f"Found {len(violations)} complex functions")
     else:
@@ -588,7 +588,7 @@ def check_key_20_no_large_classes():
     info("Checking for large classes...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -600,7 +600,7 @@ def check_key_20_no_large_classes():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-    
+
     if violations:
         fail("20", f"Found {len(violations)} large classes")
     else:
@@ -613,7 +613,7 @@ def check_key_21_no_missing_docstrings():
     info("Checking for missing docstrings...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -625,7 +625,7 @@ def check_key_21_no_missing_docstrings():
                             violations.append(f"{file_path}:{node.lineno} {node.name}")
         except Exception:
             continue
-    
+
     if violations:
         fail("21", f"Found {len(violations)} missing docstrings")
     else:
@@ -636,7 +636,7 @@ def check_key_22_no_type_hints():
     info("Checking for missing type hints...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -648,7 +648,7 @@ def check_key_22_no_type_hints():
                             violations.append(f"{file_path}:{node.lineno} {node.name}")
         except Exception:
             continue
-    
+
     if violations:
         fail("22", f"Found {len(violations)} missing type hints")
     else:
@@ -659,7 +659,7 @@ def check_key_23_no_unreachable_code():
     info("Checking for unreachable code...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -673,7 +673,7 @@ def check_key_23_no_unreachable_code():
                                     break
         except Exception:
             continue
-    
+
     if violations:
         fail("23", f"Found {len(violations)} instances of unreachable code")
     else:
@@ -684,7 +684,7 @@ def check_key_24_no_unused_variables():
     info("Checking for unused variables...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -694,13 +694,13 @@ def check_key_24_no_unused_variables():
                     if isinstance(node, ast.Name):
                         if isinstance(node.ctx, ast.Store): assigned.add(node.id)
                         elif isinstance(node.ctx, ast.Load): used.add(node.id)
-                
+
                 for var in assigned:
                     if var not in used and not var.startswith('_'):
                         violations.append(f"{file_path} - {var}")
         except Exception:
             continue
-    
+
     if violations:
         fail("24", f"Found {len(violations)} unused variables")
     else:
@@ -711,7 +711,7 @@ def check_key_25_no_global_variables():
     info("Checking for global variables...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -724,7 +724,7 @@ def check_key_25_no_global_variables():
                                     violations.append(f"{file_path}:{node.lineno} {target.id}")
         except Exception:
             continue
-    
+
     if violations:
         fail("25", f"Found {len(violations)} global variables")
     else:
@@ -738,7 +738,7 @@ def check_key_26_no_direct_sql():
     sql_patterns = [r'\.execute\s*\(\s*["\'].*?(SELECT|INSERT|UPDATE|DELETE)', r'cursor\.execute', r'db\.execute']
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -748,7 +748,7 @@ def check_key_26_no_direct_sql():
                         violations.append(file_path)
         except Exception:
             continue
-    
+
     if violations:
         fail("26", f"Found {len(violations)} direct SQL queries")
     else:
@@ -759,15 +759,15 @@ def check_key_27_no_empty_sov_files() -> None:
     Key 27 – STRICT CLEANER: Zero tolerance for empty files.
     """
     info("Executing Key 27: Aggressive Cleanup of Empty Files...")
-    
+
     violations: List[str] = []
     cleaned_count = 0
-    python_files = get_python_files() 
-    
+    python_files = get_python_files()
+
     for file_path in python_files:
         try:
             if not os.path.exists(file_path): continue
-            
+
             is_empty = False
             if os.path.getsize(file_path) == 0:
                 is_empty = True
@@ -801,7 +801,7 @@ def check_key_28_no_hardcoded_urls():
     url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -811,7 +811,7 @@ def check_key_28_no_hardcoded_urls():
                     violations.append(f"{file_path}")
         except Exception:
             continue
-            
+
     if violations:
         warn("28", f"Found {len(violations)} hardcoded URLs")
     else:
@@ -823,7 +823,7 @@ def check_key_29_no_hardcoded_ports():
     port_pattern = r':\d{4,5}'
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -832,7 +832,7 @@ def check_key_29_no_hardcoded_ports():
                     violations.append(file_path)
         except Exception:
             continue
-            
+
     if violations:
         warn("29", f"Found {len(violations)} potential hardcoded ports")
     else:
@@ -843,7 +843,7 @@ def check_key_30_no_time_sleep():
     info("Checking for time.sleep...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -854,7 +854,7 @@ def check_key_30_no_time_sleep():
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-            
+
     if violations:
         fail("30", f"Found {len(violations)} time.sleep calls")
     else:
@@ -867,7 +867,7 @@ def check_key_31_no_threading():
     info("Checking for threading usage...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -875,7 +875,7 @@ def check_key_31_no_threading():
                     violations.append(file_path)
         except Exception:
             continue
-            
+
     if violations:
         fail("31", f"Found {len(violations)} files using threading")
     else:
@@ -886,7 +886,7 @@ def check_key_32_no_blocking_io():
     info("Checking for blocking I/O in async functions...")
     violations = []
     python_files = get_python_files()
-    
+
     for file_path in python_files:
         try:
             tree = parse_python_file(file_path)
@@ -899,7 +899,7 @@ def check_key_32_no_blocking_io():
                                     violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
-            
+
     if violations:
         fail("32", f"Found {len(violations)} blocking calls in async code")
     else:
@@ -1027,27 +1027,27 @@ def check_key_41_no_deep_directories():
     Key 41 – SOVEREIGN DOMAIN ENFORCEMENT: Root Whitelist.
     """
     info("Executing Key 41: Sovereign Domain & Root Whitelist Enforcement...")
-    
+
     violations = []
     # ONLY THESE FOLDERS ALLOWED AT ROOT
     STRICT_ROOT_DOMAINS = {
         'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
-        'tests', 'config', 'data', 'archives', 'schemas', 
+        'tests', 'config', 'data', 'archives', 'schemas',
         'observability', 'scripts', 'docs'
     }
     STRICT_ROOT_FILES = {
-        'main.py', 'canon_validator.py', 'setup.py', 'README.md', 
+        'main.py', 'canon_validator.py', 'setup.py', 'README.md',
         'requirements.txt', '.gitignore', '.env.example', 'pytest.ini',
         'docker-compose.yml', 'Dockerfile', 'pyproject.toml'
     }
-    SYS_EXCLUDES = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', 'env', 
-                    '.venv', '.env', 'node_modules', '.idea', '.vscode', 'dist', 
+    SYS_EXCLUDES = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', 'env',
+                    '.venv', '.env', 'node_modules', '.idea', '.vscode', 'dist',
                     'build', '.ds_store'}
 
     # 1. SCAN ROOT
     for item in os.listdir('.'):
         if item in SYS_EXCLUDES or item.lower() in SYS_EXCLUDES: continue
-        
+
         if os.path.isdir(item):
             if item not in STRICT_ROOT_DOMAINS:
                 violations.append(f"ILLEGAL ROOT FOLDER: '{item}' (Not in Sovereign Whitelist)")
@@ -1065,7 +1065,7 @@ def check_key_41_no_deep_directories():
 
         depth = len(parts)
         if depth > max_depth: max_depth = depth
-        
+
         # Enforce max depth 3 (except core/apps which get 4)
         root_folder = parts[0]
         if root_folder in STRICT_ROOT_DOMAINS:
@@ -1129,24 +1129,24 @@ def check_key_47_no_violate_naming():
     Key 47 – NAMING & PLACEMENT: Anti-Versioning & Test Isolation.
     """
     info("Executing Key 47: Validating Naming & File Placement...")
-    
+
     violations = []
     python_files = get_python_files()
-    
+
     bad_patterns = [
         (r'_v\d+', "Version tag"), (r'_old', "Deprecation tag"),
         (r'_backup', "Backup file"), (r'^copy_of', "Copy artifact"),
         (r'_tmp', "Temp file")
     ]
-    
+
     for file_path in python_files:
         filename = os.path.basename(file_path)
-        
+
         # 1. Version/Junk
         for pattern, reason in bad_patterns:
             if re.search(pattern, filename, re.IGNORECASE):
                 violations.append(f"GARBAGE FILE: {file_path} [{reason}]")
-        
+
         # 2. Misplaced Tests
         if 'test' in filename.lower():
             if filename.startswith('test_') or filename.endswith('_test.py'):
@@ -1184,8 +1184,15 @@ def check_key_49_universal_depth():
     """Key 49: Universal max 5 levels from root."""
     info("Checking universal folder depth...")
     violations = []
+    exclude_dirs = {
+        ".git", "__pycache__", ".pytest_cache", ".tox", "venv", "env",
+        ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
+        "archives", "data"
+    }
     for root, dirs, files in os.walk('.'):
-        if '.git' in root: continue
+        # Skip excluded directories
+        if any(excluded in root for excluded in exclude_dirs):
+            continue
         depth = len(Path(root).parts)
         if depth > 5:
             violations.append(root)
@@ -1195,7 +1202,7 @@ def check_key_49_universal_depth():
 def check_key_50_canon_meta_integrity():
     """Key 50: Final Integrity Gate."""
     info("Executing Key 50: Final Canon Integrity Check...")
-    
+
     critical_failures = []
     if "27" in failed_checks: critical_failures.append("Cleanup (Key 27) Failed")
     if "41" in failed_checks: critical_failures.append("Architecture (Key 41) Failed")
@@ -1288,25 +1295,25 @@ def run_all_checks():
     """Run all 50 canon validation checks in strict logical sequence."""
     logger.info(f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}")
     logger.info(f"{Colors.CYAN}Validating 50 strict enforcement rules...{Colors.END}\n")
-    
+
     # --- CRITICAL PRE-FLIGHT ---
     # Run Key 27 FIRST to clean ghost files before they cause linting errors
     logger.info(f"{Colors.PURPLE}PRE-FLIGHT: Sanitizing Environment (Key 27){Colors.END}")
     check_key_27_no_empty_sov_files()
-    
+
     # Run Phases 1-9
     for phase in range(1, 10):
         logger.info(f"\n{Colors.YELLOW}Phase {phase}{Colors.END}")
         for check in get_phase_checks(phase):
             if check == check_key_27_no_empty_sov_files: continue # Already ran
             check()
-    
+
     # Summary
     logger.info(f"\n{Colors.BOLD}{'='*60}{Colors.END}")
     passed = len([r for r in validation_results.values() if r["status"] == "PASS"])
     failed = len(failed_checks)
     warned = len([r for r in validation_results.values() if r["status"] == "WARN"])
-    
+
     if failed == 0:
         logger.info(f"{Colors.GREEN}{Colors.BOLD}✓ SUBATOMIC PERFECTION ACHIEVED{Colors.END}")
         logger.info(f"{Colors.GREEN}All {passed} checks passed{Colors.END}")
@@ -1314,7 +1321,7 @@ def run_all_checks():
         logger.info(f"{Colors.RED}{Colors.BOLD}✗ CANON VIOLATIONS DETECTED{Colors.END}")
         logger.error(f"{Colors.RED}{failed} failed, {warned} warnings, {passed} passed{Colors.END}")
         logger.error(f"\n{Colors.YELLOW}Failed keys: {', '.join(sorted(failed_checks))}{Colors.END}")
-    
+
     return failed == 0
 
 def get_check_description(key: str) -> str:
@@ -1381,16 +1388,16 @@ def main():
     parser.add_argument("--key", type=str, help="Run specific key (e.g., '01' or 'all')")
     parser.add_argument("--phase", type=int, choices=range(1, 10), help="Run specific phase (1-9)")
     parser.add_argument("--list", action="store_true", help="List all available checks")
-    
+
     args = parser.parse_args()
-    
+
     if args.list:
         logger.info("Available Canon Keys:")
         for i in range(51):
             key = f"{i:02d}"
             logger.info(f"  Key {key}: {get_check_description(key)}")
         return
-    
+
     if args.key:
         if args.key == "all":
             success = run_all_checks()
@@ -1402,7 +1409,7 @@ def main():
                     if name.startswith(f"check_key_{args.key}"):
                         check_func = globals()[name]
                         break
-            
+
             if check_func:
                 check_func()
                 success = args.key not in failed_checks
@@ -1416,7 +1423,7 @@ def main():
         success = len(failed_checks) == 0
     else:
         success = run_all_checks()
-    
+
     sys.exit(0 if success else 1)
 
 if __name__ == "__main__":

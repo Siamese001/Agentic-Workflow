@@ -15,7 +15,7 @@ def add_logging_import(content: str) -> str:
         last_import = None
         for match in imports:
             last_import = match
-        
+
         if last_import:
             # Add logging import after the last import
             insert_pos = last_import.end()
@@ -27,19 +27,19 @@ def add_logging_import(content: str) -> str:
                 content = content[:docstring_end] + '\nimport logging' + content[docstring_end:]
             else:
                 content = 'import logging\n' + content
-    
+
     return content
 
 def add_logger_init(content: str, file_path: str) -> str:
     """Add logger initialization if not present."""
     module_name = Path(file_path).stem
     logger_pattern = r'logger\s*=\s*logging\.getLogger'
-    
+
     if not re.search(logger_pattern, content):
         # Find a good place to add logger (after imports, before first class/function)
         lines = content.split('\n')
         insert_idx = 0
-        
+
         # Skip past imports and docstring
         for i, line in enumerate(lines):
             if line.startswith(('import ', 'from ')) or line.strip() == '':
@@ -52,22 +52,22 @@ def add_logger_init(content: str, file_path: str) -> str:
                 continue
             insert_idx = i
             break
-        
+
         # Insert logger
         lines.insert(insert_idx, '')
         lines.insert(insert_idx + 1, f'logger = logging.getLogger(__name__)')
         content = '\n'.join(lines)
-    
+
     return content
 
 def convert_prints_to_logging(content: str) -> str:
     """Convert print statements to logging statements."""
     # Pattern to match print statements
     print_pattern = r'print\s*\(([^)]+)\)'
-    
+
     def replace_logger.info(match):
         args = match.group(1).strip()
-        
+
         # Determine log level based on content
         if any(keyword in args.lower() for keyword in ['error', 'fail', 'exception', '❌']):
             return f'logger.error({args})'
@@ -80,10 +80,10 @@ def convert_prints_to_logging(content: str) -> str:
         else:
             # Default to info for general output
             return f'logger.info({args})'
-    
+
     # Replace all print statements
     content = re.sub(print_pattern, replace_print, content)
-    
+
     return content
 
 def fix_file(file_path: str) -> bool:
@@ -91,30 +91,30 @@ def fix_file(file_path: str) -> bool:
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         # Skip if already has logging and no print statements
         if 'import logging' in content and 'logger.info(' not in content:
             return False
-        
+
         original_content = content
-        
+
         # Add logging import
         content = add_logging_import(content)
-        
+
         # Add logger initialization
         content = add_logger_init(content, file_path)
-        
+
         # Convert print statements
         content = convert_prints_to_logging(content)
-        
+
         # Write back if changed
         if content != original_content:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
             return True
-        
+
         return False
-        
+
     except Exception as e:
         logger.error(f"Error fixing {file_path}: {e}")
         return False
@@ -127,20 +127,20 @@ def main():
         ".venv", ".env", "node_modules", ".idea", ".vscode", "dist", "build",
         "archives", "data"
     }
-    
+
     fixed_count = 0
-    
+
     for root, dirs, files in os.walk(root_dir):
         # Remove excluded directories
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
-        
+
         for file in files:
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
                 if fix_file(file_path):
                     fixed_count += 1
                     logger.info(f"Fixed: {file_path}")
-    
+
     logger.info(f"\nFixed {fixed_count} files")
 
 if __name__ == "__main__":
