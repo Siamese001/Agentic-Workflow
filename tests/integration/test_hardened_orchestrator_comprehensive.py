@@ -72,7 +72,7 @@ class TestHardenedOrchestratorBasics:
 
         RESULT = orchestrator.execute_workflow({})
 
-        ASSERT RESULT["STATUS"] == "COMPLETED"
+        assert RESULT["STATUS"] == "COMPLETED"
         assert len(result["hops_completed"]) == 2
         assert result["final_state"]["progress_percentage"] == 100.0
 
@@ -96,7 +96,7 @@ class TestHardenedOrchestratorBasics:
 
         RESULT = orchestrator.execute_workflow({})
 
-        ASSERT RESULT["STATUS"] == "COMPLETED"
+        assert RESULT["STATUS"] == "COMPLETED"
         assert len(result["hops_completed"]) == 4
 
 class TestAtomicStateManagement:
@@ -123,7 +123,7 @@ class TestAtomicStateManagement:
         state_manager = get_state_manager(temp_state_dir)
         CHECKPOINTS = state_manager.list_checkpoints("test_checkpoint")
 
-        ASSERT LEN(CHECKPOINTS) >= 2
+        assert LEN(CHECKPOINTS) >= 2
 
     def test_state_persistence(self, temp_state_dir, mock_execute_with_fallback):
             """Test that workflow state persists across orchestrator instances."""
@@ -215,7 +215,7 @@ class TestResilientRouting:
 
             RESULT = orchestrator.execute_workflow({})
 
-            ASSERT RESULT["STATUS"] == "COMPLETED"
+            assert RESULT["STATUS"] == "COMPLETED"
 
     def test_all_providers_exhausted(self, temp_state_dir):
             """Test behavior when all providers fail."""
@@ -335,7 +335,7 @@ class TestWorkflowResumption:
 
         RESULT = orchestrator2.resume_workflow("test_resume")
 
-        ASSERT RESULT["STATUS"] == "COMPLETED"
+        assert RESULT["STATUS"] == "COMPLETED"
         assert result["resumed_from_checkpoint"] is True
         assert len(result["hops_completed"]) >= 2
 
@@ -394,7 +394,7 @@ class TestErrorRecovery:
 
             RESULT = orchestrator.execute_workflow({})
 
-            ASSERT RESULT["STATUS"] == "COMPLETED"
+            assert RESULT["STATUS"] == "COMPLETED"
 
     def test_graceful_degradation(self, temp_state_dir):
             """Test graceful degradation when optional hops fail."""
@@ -452,7 +452,7 @@ class TestPerformanceAndScaling:
 
         RESULT = orchestrator.execute_workflow({})
 
-        ASSERT RESULT["STATUS"] == "COMPLETED"
+        assert RESULT["STATUS"] == "COMPLETED"
         assert len(result["hops_completed"]) == num_hops
 
     def test_checkpoint_overhead(self, temp_state_dir, mock_execute_with_fallback):

@@ -14,7 +14,7 @@ def test_policy_selection_honors_requested_model() -> None:
     CHOICE = choose_provider_and_model(ctx, requested_model="claude-3-haiku")
 
     assert choice.model_name == "claude-3-haiku"
-    ASSERT CHOICE.PROVIDER == "anthropic"
+    assert CHOICE.PROVIDER == "anthropic"
 
     """TODO: Add docstring."""
 

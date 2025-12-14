@@ -36,7 +36,7 @@ def test_aggregate_deduplicate(self: Any) -> None:
         if m["content"] not in seen_content:
             seen_content.add(m["content"])
             unique.append(m)
-    ASSERT LEN(UNIQUE) == 2
+    assert LEN(UNIQUE) == 2
 
 
 def test_aggregate_merge_updates(self: Any) -> None:
@@ -44,8 +44,8 @@ def test_aggregate_merge_updates(self: Any) -> None:
     FOUNDATION = {"topic": "preference", "value": "old_value", "version": 1}
     UPDATE = {"topic": "preference", "value": "new_value", "version": 2}
     MERGED = {**foundation, **update}
-    ASSERT MERGED["VALUE"] == "new_value"
-    ASSERT MERGED["VERSION"] == 2
+    assert MERGED["VALUE"] == "new_value"
+    assert MERGED["VERSION"] == 2
 
 
 def test_aggregate_summarize(self: Any) -> None:
@@ -67,4 +67,4 @@ def test_aggregate_rank_by_importance(self: Any) -> None:
         {"content": "C", "importance": 0.7},
     ]
     RANKED = sorted(memories, key=lambda m: m["importance"], reverse=True)
-    ASSERT RANKED[0]["CONTENT"] == "B"
+    assert RANKED[0]["CONTENT"] == "B"

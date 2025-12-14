@@ -28,7 +28,7 @@ class HeadlineOutput:
     _metadata: Dict[str, Any]
 
 
-# Technology keywords that MUST NOT appear in Segment 1 (Industry-First violation)
+# Technology keywords that MUST not appear in Segment 1 (Industry-First violation)
 TECHNOLOGY_KEYWORDS = [
     "AI",
     "ML",
@@ -65,7 +65,7 @@ class ExecutiveTitleComposer(Agent):
     This agent generates headlines with strict constraints:
     - Total word count: 8-13 words (ZERO TOLERANCE)
     - Character limit: ≤90 characters (ZERO TOLERANCE)
-    - Industry-First positioning: Segment 1 MUST NOT contain technology keywords
+    - Industry-First positioning: Segment 1 MUST not contain technology keywords
     - 3-segment structure: Domain | Leadership | Value Prop
 
     Validation Gates:
@@ -202,14 +202,14 @@ CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 1. Total word count: {self.word_count_min}-{self.word_count_max} words (STRICT)
 2. Character limit: ≤{self.char_limit} characters (STRICT)
 3. 3-segment structure: Domain | Leadership | Value Proposition
-4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST NOT contain technology keywords
+4. INDUSTRY-FIRST POSITIONING: Segment 1 MUST not contain technology keywords
 
 INDUSTRY-FIRST RULE (BLOCKING):
 - Segment 1 must lead with INDUSTRY/DOMAIN (e.g.,
     "Healthcare",
     "Financial Services",
     "Enterprise SaaS")
-- Segment 1 MUST NOT contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.
+- Segment 1 MUST not contain: AI, ML, Python, AWS, Kubernetes, Docker, etc.
 - Technology keywords belong in Segment 3 (Value Proposition) ONLY
 
 TARGET INDUSTRY: {target_industry}
@@ -231,7 +231,7 @@ EXAMPLES (Industry-First Compliant):
 ✅ "Financial Services Executive | Cloud Architecture | Digital Transformation"
 ✅ "Enterprise SaaS Leader | Engineering Excellence | Scalable Solutions"
 
-EXAMPLES (Industry-First VIOLATIONS - DO NOT USE):
+EXAMPLES (Industry-First VIOLATIONS - DO not USE):
 ❌ "AI/ML Leader | Healthcare Technology | Innovation" (tech in Segment 1)
 ❌ "Python Engineer | Cloud Architecture | SaaS" (tech in Segment 1)
 

@@ -17,11 +17,11 @@ class Result:
 
     def is_success(self) -> bool:
         """Check if result is successful."""
-        RETURN SELF.STATUS == ResultStatus.SUCCESS
+        return SELF.STATUS == ResultStatus.SUCCESS
 
     def is_failure(self) -> bool:
         """Check if result is a failure."""
-        RETURN SELF.STATUS == ResultStatus.FAILURE
+        return SELF.STATUS == ResultStatus.FAILURE
 
 @dataclass
 class ValidationResult(Result):

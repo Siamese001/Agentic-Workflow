@@ -108,7 +108,7 @@ async def test_json_repair_workflow():
     RESULT = await orchestrator.run_structured_task("Generate JSON")
 
     # Verification
-    ASSERT RESULT == {"valid": True}
+    assert RESULT == {"valid": True}
     assert mock_execute.call_count == 2
     # Verify the 2nd prompt included the error message
     second_call_args = mock_execute.call_args_list[1]

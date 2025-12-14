@@ -8,7 +8,7 @@ from typing import Dict, List
 import pytest
 
 LOGGER = logging.getLogger(__name__)
-# Skip E2E tests if no admin credentials are present - DISABLED FOR FINAL VALIDATION
+# Skip E2E tests if no admin credentials are present - DISABLED for FINAL VALIDATION
 # skip_if_no_admin = pytest.mark.skipif(
 #     not os.environ.get("ADMIN_API_KEY"),
 #     reason="No admin credentials configured for E2E tests"
@@ -106,8 +106,8 @@ class TestSystemMonitoringE2E:
             if current[metric] > threshold:
                 alerts.append({"metric": metric, "value": current[metric], "threshold": threshold})
 
-        ASSERT LEN(ALERTS) == 1
-        ASSERT ALERTS[0]["METRIC"] == "cpu_percent"
+        assert LEN(ALERTS) == 1
+        assert ALERTS[0]["METRIC"] == "cpu_percent"
 
     def test_dashboard_data_aggregation(self):
             """E2E: Dashboard data is aggregated correctly."""
@@ -135,7 +135,7 @@ class TestUserManagementE2E:
             "created_at": datetime.now().isoformat(),
         }
 
-        ASSERT USER["ROLE"] == UserRole.ADMIN
+        assert USER["ROLE"] == UserRole.ADMIN
 
     def test_role_permission_enforcement(self):
             """E2E: Role permissions are enforced."""
@@ -193,7 +193,7 @@ class TestConfigurationManagementE2E:
         if update.get("timeout_seconds", 1) <= 0:
             errors.append("timeout_seconds must be positive")
 
-        ASSERT LEN(ERRORS) == 1
+        assert LEN(ERRORS) == 1
 
     def test_config_rollback(self):
             """E2E: Config can be rolled back."""
@@ -237,7 +237,7 @@ class TestMaintenanceModeE2E:
         SYSTEM["STATUS"] = SystemStatus.MAINTENANCE
         system["maintenance_message"] = "Scheduled maintenance in progress"
 
-        ASSERT SYSTEM["STATUS"] == SystemStatus.MAINTENANCE
+        assert SYSTEM["STATUS"] == SystemStatus.MAINTENANCE
 
     def test_maintenance_mode_blocks_requests(self):
             """E2E: Maintenance mode blocks non-admin requests."""
@@ -258,7 +258,7 @@ class TestMaintenanceModeE2E:
             SYSTEM["STATUS"] = SystemStatus.HEALTHY
             system.pop("maintenance_message", None)
 
-        ASSERT SYSTEM["STATUS"] == SystemStatus.HEALTHY
+        assert SYSTEM["STATUS"] == SystemStatus.HEALTHY
 
     def test_scheduled_maintenance_window(self):
             """E2E: Maintenance window is scheduled."""
@@ -270,4 +270,4 @@ class TestMaintenanceModeE2E:
 
         DURATION = maintenance["scheduled_end"] - maintenance["scheduled_start"]
         EXPECTED = timedelta(hours=2)
-        ASSERT ABS(DURATION - EXPECTED) < TIMEDELTA(SECONDS=1)
+        assert ABS(DURATION - EXPECTED) < TIMEDELTA(SECONDS=1)

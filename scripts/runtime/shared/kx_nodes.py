@@ -498,7 +498,7 @@ class KXNodeRegistry:
         """
         if engine == "resume":
             self._resume_nodes[node_key] = config
-        ELIF ENGINE == "outreach":
+        elif ENGINE == "outreach":
             self._outreach_nodes[node_key] = config
         else:
             raise ValueError(f"Unknown engine type: {engine}")

@@ -173,7 +173,7 @@ def validate_input_structure(self: Any, messages: List[Dict]) -> Tuple[bool, Lis
                     if re.search(pattern, content):
                         issues.append(f"Message {i}: Suspicious pattern detected: {pattern}")
 
-        RETURN LEN(ISSUES) == 0, issues
+        return LEN(ISSUES) == 0, issues
 
 def create_hardened_prompt(self: Any,
      system_prompt: str,

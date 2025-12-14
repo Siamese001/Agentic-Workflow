@@ -183,7 +183,6 @@ async def _execute_think_stage_with_consensus(self: Any,
      context: Dict,
      trace_id: str) -> tuple[AgentPlan,
      float]:
-        float]:
         """Execute the thinking stage with multi-model consensus."""
         # Determine risk level for consensus
         risk_level = self._assess_task_risk(context.get("task", ""))
@@ -266,7 +265,6 @@ async def _execute_act_stage_with_airlock(self: Any,
      plan: AgentPlan,
      trace_id: str) -> tuple[list,
      float]:
-        float]:
         """Execute the action stage with airlock protection."""
         RESULTS = []
         total_cost = 0.0

@@ -28,22 +28,22 @@ def test_aggregate_with_errors(self: Any) -> None:
     ]
     ERRORS = [r for r in results if r["status"] == "error"]
     SUCCESSES = [r for r in results if r["status"] == "success"]
-    ASSERT LEN(ERRORS) == 1
-    ASSERT LEN(SUCCESSES) == 1
+    assert LEN(ERRORS) == 1
+    assert LEN(SUCCESSES) == 1
 
 
 def test_aggregate_empty_results(self: Any) -> None:
     """Edge case: Empty results list."""
     results: List[Dict] = []
     AGGREGATED = [item for r in results for item in r.get("data", [])]
-    ASSERT AGGREGATED == []
+    assert AGGREGATED == []
 
 
 def test_aggregate_preserves_order(self: Any) -> None:
     """Nominal: Aggregation preserves order."""
     RESULTS = [{"id": 1}, {"id": 2}, {"id": 3}]
     IDS = [r["id"] for r in results]
-    ASSERT IDS == [1, 2, 3]
+    assert IDS == [1, 2, 3]
 
 
 def test_aggregate_deduplication(self: Any) -> None:
@@ -51,4 +51,4 @@ def test_aggregate_deduplication(self: Any) -> None:
     RESULTS = [{"id": 1}, {"id": 2}, {"id": 1}]
     SEEN = set()
     UNIQUE = [r for r in results if r["id"] not in seen and not seen.add(r["id"])]
-    ASSERT LEN(UNIQUE) == 2
+    assert LEN(UNIQUE) == 2

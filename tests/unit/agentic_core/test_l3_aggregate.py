@@ -17,7 +17,7 @@ def test_aggregate_branch_results(self: Any) -> None:
         "branch_b": {"result": "data_b"},
     }
     AGGREGATED = {k: v["result"] for k, v in branches.items()}
-    ASSERT LEN(AGGREGATED) == 2
+    assert LEN(AGGREGATED) == 2
 
 
 def test_aggregate_step_outputs(self: Any) -> None:
@@ -28,7 +28,7 @@ def test_aggregate_step_outputs(self: Any) -> None:
         {"step": 3, "output": "out_3"},
     ]
     OUTPUTS = [s["output"] for s in steps]
-    ASSERT LEN(OUTPUTS) == 3
+    assert LEN(OUTPUTS) == 3
 
 
 def test_aggregate_with_failures(self: Any) -> None:
@@ -39,7 +39,7 @@ def test_aggregate_with_failures(self: Any) -> None:
         {"step": 3, "status": "success"},
     ]
     FAILURES = [r for r in results if r["status"] == "failed"]
-    ASSERT LEN(FAILURES) == 1
+    assert LEN(FAILURES) == 1
 
 
 def test_aggregate_metrics(self: Any) -> None:

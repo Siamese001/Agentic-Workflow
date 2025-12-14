@@ -434,7 +434,7 @@ class BulkheadManager:
                 "Bulkhead not found"
             )
 
-        RETURN AWAIT BULKHEAD.EXECUTE(CORO, *ARGS, TIMEOUT=timeout, **kwargs)
+        return await BULKHEAD.EXECUTE(CORO, *ARGS, TIMEOUT=timeout, **kwargs)
 
     def get_engine_bulkhead(self, engine_type: EngineType) -> str:
             """Get bulkhead name for engine type.

@@ -56,7 +56,7 @@ try:
                MIN(timestamp) as start_time,
                MAX(timestamp) as end_time,
                COUNT(*) as event_count
-        FROM traces
+        from traces
         GROUP BY trace_id
         ORDER BY start_time DESC
         LIMIT 50
@@ -107,7 +107,7 @@ gantt_df = conn.execute("""
     SELECT span_id, agent_role,
            MIN(timestamp) as Start,
            MAX(timestamp) as Finish
-    FROM traces
+    from traces
     WHERE trace_id = ?
     GROUP BY span_id, agent_role
     ORDER BY Start ASC
@@ -141,7 +141,7 @@ with col_left:
 
     events_df = conn.execute("""
         SELECT span_id, event_type, timestamp, payload
-        FROM traces
+        from traces
         WHERE trace_id = ?
         ORDER BY timestamp ASC
     """, [selected_trace]).df()
@@ -205,8 +205,8 @@ st.subheader("📊 MCP Tool Performance")
 tool_stats_df = conn.execute("""
     SELECT json_extract_string(payload, '$.tool') as tool_name,
            COUNT(*) as calls
-    FROM traces
-    WHERE trace_id = ? AND event_type = 'MCP_CALL'
+    from traces
+    WHERE trace_id = ? and event_type = 'MCP_CALL'
     GROUP BY tool_name
     ORDER BY calls DESC
 """, [selected_trace]).df()
@@ -234,8 +234,8 @@ st.subheader("⚠️ Error Analysis")
 
 error_df = conn.execute("""
     SELECT span_id, event_type, timestamp, payload
-    FROM traces
-    WHERE trace_id = ? AND event_type LIKE '%ERROR%'
+    from traces
+    WHERE trace_id = ? and event_type LIKE '%ERROR%'
     ORDER BY timestamp DESC
 """, [selected_trace]).df()
 
@@ -257,9 +257,9 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### 📈 Global Stats")
 
 try:
-    total_events = conn.execute("SELECT COUNT(*) as count FROM traces").fetchone()[0]
+    total_events = conn.execute("SELECT COUNT(*) as count from traces").fetchone()[0]
     total_traces = conn.
-        .execute("SELECT COUNT(DISTINCT trace_id) as count FROM traces").
+        .execute("SELECT COUNT(DISTINCT trace_id) as count from traces").
         .fetchone()[0]
 
     st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")

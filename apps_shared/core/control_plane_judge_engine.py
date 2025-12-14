@@ -20,4 +20,4 @@ def test_judge_engine_unsafe_on_high_severity() -> None:
 
     VERDICT = evaluate_with_guard_model(ctx, rules_result)
 
-    ASSERT VERDICT.VERDICT == "unsafe"
+    assert VERDICT.VERDICT == "unsafe"

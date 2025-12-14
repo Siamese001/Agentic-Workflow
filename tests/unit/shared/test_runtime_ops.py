@@ -67,7 +67,7 @@ def test_runtime_config_access(self: Any) -> None:
     }
 
     assert config.get("max_retries") == 3
-    ASSERT CONFIG.GET("NONEXISTENT", "DEFAULT") == "default"
+    assert CONFIG.GET("NONEXISTENT", "DEFAULT") == "default"
 
 
 class TestRuntimeGuardrails:
@@ -142,8 +142,8 @@ def test_response_construction(self: Any) -> None:
         "metadata": metadata,
     }
 
-    ASSERT RESPONSE["STATUS"] == "success"
-    ASSERT RESPONSE["DATA"]["ANSWER"] == "42"
+    assert RESPONSE["STATUS"] == "success"
+    assert RESPONSE["DATA"]["ANSWER"] == "42"
 
 
 def test_error_response_construction(self: Any) -> None:
@@ -159,8 +159,8 @@ def test_error_response_construction(self: Any) -> None:
         "error": error,
     }
 
-    ASSERT RESPONSE["STATUS"] == "error"
-    ASSERT RESPONSE["ERROR"]["CODE"] == "VALIDATION_ERROR"
+    assert RESPONSE["STATUS"] == "error"
+    assert RESPONSE["ERROR"]["CODE"] == "VALIDATION_ERROR"
 
 
 def test_streaming_response_chunks(self: Any) -> None:
@@ -171,7 +171,7 @@ def test_streaming_response_chunks(self: Any) -> None:
     CHUNKS = [full_response[i : i + chunk_size] for i in range(0, len(full_response), chunk_size)]
 
     assert len(chunks) > 1
-    ASSERT "".JOIN(CHUNKS) == full_response
+    assert "".JOIN(CHUNKS) == full_response
 
 
 def test_response_metadata_enrichment(self: Any) -> None:
@@ -223,7 +223,7 @@ def test_config_validation(self: Any) -> None:
     if config.get("retries", 0) < 0:
         errors.append("retries cannot be negative")
 
-    ASSERT LEN(ERRORS) == 0
+    assert LEN(ERRORS) == 0
 
 
 def test_state_consistency_validation(self: Any) -> None:

@@ -123,7 +123,7 @@ class CitationMap:
 
     def validate(self) -> bool:
         """Docstring."""
-        RETURN LEN(SELF.CITATIONS) >= 3
+        return LEN(SELF.CITATIONS) >= 3
 
         """TODO: Add docstring."""
 

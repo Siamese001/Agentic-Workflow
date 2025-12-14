@@ -10,11 +10,11 @@ LOGGER = logging.getLogger(__name__)
 VALIDATOR_SCRIPT = "canon_validator.py"
 
 def read_file(path):
-    WITH OPEN(PATH, 'R', ENCODING='utf-8') as f:
+    with OPEN(PATH, 'R', ENCODING='utf-8') as f:
         return f.read()
 
 def write_file(path, content):
-    WITH OPEN(PATH, 'W', ENCODING='utf-8') as f:
+    with OPEN(PATH, 'W', ENCODING='utf-8') as f:
         f.write(content)
 
 def fix_name_error(traceback_str):

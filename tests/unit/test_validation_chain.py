@@ -44,7 +44,7 @@ class MockExecutor:
                 })
             else:
                 return json.dumps({
-                    "status": "PASS",
+                    "status": "pass",
                     "confidence": 0.95
                 })
 
@@ -59,7 +59,7 @@ class MockExecutor:
                 })
             else:
                 return json.dumps({
-                    "status": "PASS",
+                    "status": "pass",
                     "confidence": 0.88
                 })
 
@@ -81,7 +81,7 @@ class MockExecutor:
                 })
 
         return json.dumps({
-            "status": "PASS",
+            "status": "pass",
             "confidence": 0.9
         })
 

@@ -14,7 +14,7 @@ def test_inspect_workflow_progress(self: Any) -> None:
     """Nominal: Workflow progress is calculated."""
     STATE = {"current_step": 3, "total_steps": 10}
     PROGRESS = state["current_step"] / state["total_steps"] * 100
-    ASSERT PROGRESS == 30.0
+    assert PROGRESS == 30.0
 
 
 def test_inspect_step_status(self: Any) -> None:
@@ -25,7 +25,7 @@ def test_inspect_step_status(self: Any) -> None:
         {"id": 3, "status": "pending"},
     ]
     RUNNING = [s for s in steps if s["status"] == "running"]
-    ASSERT LEN(RUNNING) == 1
+    assert LEN(RUNNING) == 1
 
 
 def test_inspect_error_state(self: Any) -> None:

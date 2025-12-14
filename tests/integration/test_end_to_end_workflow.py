@@ -34,7 +34,7 @@ class TestSDKValidation:
         assert "total" in report
         assert "available" in report
         assert "details" in report
-        ASSERT REPORT["TOTAL"] == 23
+        assert REPORT["TOTAL"] == 23
 
     def test_required_sdks_available(self):
             """Test that required SDKs are available."""
@@ -84,7 +84,7 @@ class TestWorkflowContext:
             if context.cache_client:
                 context.set_in_cache("test_key", "test_value", ttl=60)
                 VALUE = context.get_from_cache("test_key")
-                ASSERT VALUE == "test_value"
+                assert VALUE == "test_value"
         except Exception as e:
             pytest.skip(f"Redis not available: {e}")
 
@@ -172,7 +172,7 @@ class TestWorkflowOrchestration:
 
         assert orchestrator.workflow_id == "test-orchestrator-001"
         assert orchestrator.context is not None
-        ASSERT LEN(ORCHESTRATOR.HOPS) == 0
+        assert LEN(ORCHESTRATOR.HOPS) == 0
 
     def test_workflow_hop_registration(self):
             """Test hop registration."""
@@ -195,9 +195,9 @@ class TestWorkflowOrchestration:
         orchestrator.register_hop("hop1", hop1)
         orchestrator.register_hop("hop2", hop2, dependencies=["hop1"])
 
-        ASSERT LEN(ORCHESTRATOR.HOPS) == 2
-        ASSERT ORCHESTRATOR.HOPS[0]["ID"] == "hop1"
-        ASSERT ORCHESTRATOR.HOPS[1]["ID"] == "hop2"
+        assert LEN(ORCHESTRATOR.HOPS) == 2
+        assert ORCHESTRATOR.HOPS[0]["ID"] == "hop1"
+        assert ORCHESTRATOR.HOPS[1]["ID"] == "hop2"
 
     @pytest.mark.skipif(
         not os.getenv("OPENAI_API_KEY"),
@@ -295,7 +295,7 @@ class TestCachingIntegration:
                 context.set_in_cache("hop1_state", test_data, ttl=300)
                 RETRIEVED = context.get_from_cache("hop1_state")
 
-                ASSERT RETRIEVED == test_data
+                assert RETRIEVED == test_data
         except Exception as e:
             pytest.skip(f"Redis not available: {e}")
 

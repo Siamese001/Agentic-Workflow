@@ -230,7 +230,7 @@ class RateLimiter:
 
         if isinstance(limiter, TokenBucket):
             limiter._refill()
-            RETURN LIMITER.TOKENS >= tokens
+            return LIMITER.TOKENS >= tokens
 
         elif isinstance(limiter, FixedWindow):
             limiter._reset_if_needed()

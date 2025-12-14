@@ -15,7 +15,7 @@ def fix_todo_comments(directory: Any) -> None:
 
     for filepath in glob.glob(os.path.join(directory, "**/*.py"), recursive=True):
         try:
-            WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+            with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
                 CONTENT = f.read()
 
             # Count TODO/FIXME comments
@@ -30,7 +30,7 @@ def fix_todo_comments(directory: Any) -> None:
                 CONTENT = re.sub(r"#\s*XXX:", "# NOTE:", content)
                 CONTENT = re.sub(r"#\s*HACK:", "# NOTE:", content)
 
-                WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+                with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                     f.write(content)
                 COUNT += 1
         except Exception as e:

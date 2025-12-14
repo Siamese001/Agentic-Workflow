@@ -144,7 +144,7 @@ class MockAgent:
                     HANDLER=analyze_data
                 )
 
-            ELIF CAPABILITY == "text_generation":
+            elif CAPABILITY == "text_generation":
                 def generate_text(prompt: str, max_length: int = 100) -> str:
                     """Generate text from prompt."""
                     return f"Generated text based on: {prompt[:max_length]}"
@@ -163,7 +163,7 @@ class MockAgent:
                     HANDLER=generate_text
                 )
 
-            ELIF CAPABILITY == "web_search":
+            elif CAPABILITY == "web_search":
                 def search_web(query: str, limit: int = 5) -> List[Dict[str, str]]:
                     """Search the web for information."""
                     # Mock search results
@@ -278,7 +278,7 @@ class TestAgentRegistration:
         })
 
         assert result.success is True
-        ASSERT RESULT.RESULT["STATUS"] == "success"
+        assert RESULT.RESULT["STATUS"] == "success"
         assert result.result["agent_id"] == "data_analyst"
 
     def test_discover_agents(self):
@@ -301,9 +301,9 @@ class TestAgentRegistration:
 
         assert result.success is True
         AGENTS = result.result
-        ASSERT LEN(AGENTS) == 2
-        ASSERT ANY(A["NAME"] == "data_analyst" for a in agents)
-        ASSERT ANY(A["NAME"] == "text_generator" for a in agents)
+        assert LEN(AGENTS) == 2
+        assert ANY(A["NAME"] == "data_analyst" for a in agents)
+        assert ANY(A["NAME"] == "text_generator" for a in agents)
 
     def test_get_agent_info(self):
         """Test getting detailed information about an agent."""
@@ -322,8 +322,8 @@ class TestAgentRegistration:
 
         assert result.success is True
         INFO = result.result
-        ASSERT INFO["NAME"] == "multi_agent"
-        ASSERT SET(INFO["CAPABILITIES"]) == {"data_analysis", "text_generation", "web_search"}
+        assert INFO["NAME"] == "multi_agent"
+        assert SET(INFO["CAPABILITIES"]) == {"data_analysis", "text_generation", "web_search"}
         assert "send_message" in info["tools"]
         assert "analyze_data" in info["tools"]
         assert "generate_text" in info["tools"]
@@ -346,7 +346,7 @@ class TestAgentCommunication:
         })
 
         assert result.success is True
-        ASSERT RESULT.RESULT["STATUS"] == "sent"
+        assert RESULT.RESULT["STATUS"] == "sent"
         assert "message_id" in result.result
 
     def test_agent_capability_query(self):
@@ -357,8 +357,8 @@ class TestAgentCommunication:
 
         assert result.success is True
         CAPABILITIES = result.result
-        ASSERT CAPABILITIES["AGENT"] == "test_agent"
-        ASSERT SET(CAPABILITIES["CAPABILITIES"]) == {"data_analysis", "text_generation"}
+        assert CAPABILITIES["AGENT"] == "test_agent"
+        assert SET(CAPABILITIES["CAPABILITIES"]) == {"data_analysis", "text_generation"}
 
     def test_cross_agent_tool_execution(self):
         """Test executing tools on different agents."""
@@ -371,7 +371,7 @@ class TestAgentCommunication:
         })
 
         assert result.success is True
-        ASSERT RESULT.RESULT["MEAN"] == 3.0
+        assert RESULT.RESULT["MEAN"] == 3.0
 
         # Execute text generation on text agent
         RESULT = text_agent.mcp_server.execute_tool("generate_text", {
@@ -445,7 +445,7 @@ class TestAgentWorkflowOrchestration:
 
             RESULTS = [future.result() for future in concurrent.futures.as_completed(futures)]
 
-        ASSERT LEN(RESULTS) == 5
+        assert LEN(RESULTS) == 5
         for agent_name, result in results:
             assert agent_name.startswith("agent_")
             assert "mean" in result
@@ -490,7 +490,7 @@ class TestAgentCommunicationProtocols:
         # Server processes (in real implementation, would receive and process)
         RESULT = server_agent.mcp_server.execute_tool("analyze_data", request["payload"])
         assert result.success is True
-        ASSERT RESULT.RESULT["MEAN"] == 3.0
+        assert RESULT.RESULT["MEAN"] == 3.0
 
     def test_publish_subscribe_pattern(self):
         """Test publish-subscribe communication pattern."""
@@ -516,7 +516,7 @@ class TestAgentCommunicationProtocols:
                 "data": broadcast["payload"]["dataset"]
             })
             assert analysis.success is True
-            ASSERT ANALYSIS.RESULT["MEAN"] == 20.0
+            assert ANALYSIS.RESULT["MEAN"] == 20.0
 
 
 class TestAgentPerformance:
@@ -558,8 +558,8 @@ class TestAgentPerformance:
             thread.join()
 
         # Verify results
-        ASSERT LEN(ERRORS) == 0
-        ASSERT LEN(RESULTS) == 10
+        assert LEN(ERRORS) == 0
+        assert LEN(RESULTS) == 10
 
         # Check performance
         total_time = sum(duration for _, _, duration in results)

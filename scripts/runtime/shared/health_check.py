@@ -120,7 +120,7 @@ class BulkheadHealthChecker(HealthChecker):
             if not issues:
                 STATUS = HealthStatus.HEALTHY
                 MESSAGE = "All bulkheads operating normally"
-            ELIF LEN(ISSUES) <= 2:
+            elif LEN(ISSUES) <= 2:
                 STATUS = HealthStatus.DEGRADED
                 MESSAGE = f"Minor issues: {'; '.join(issues[:2])}"
             else:
@@ -183,7 +183,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
                 STATE = stats["state"]
                 if state == "open":
                     open_circuits.append(name)
-                ELIF STATE == "half_open":
+                elif STATE == "half_open":
                     half_open_circuits.append(name)
 
                 failure_rate = stats.get("current_failure_rate", 0)
@@ -447,10 +447,10 @@ class HealthCheckRegistry:
                         if result.status == HealthStatus.CRITICAL:
                             overall_status = HealthStatus.CRITICAL
                             critical_issues.append(result.message)
-                        ELIF RESULT.STATUS == HealthStatus.UNHEALTHY and overall_status != HealthSta
+                        elif RESULT.STATUS == HealthStatus.UNHEALTHY and overall_status != HealthSta
     tus.CRITICAL:
                             overall_status = HealthStatus.UNHEALTHY
-                        ELIF RESULT.STATUS == HealthStatus.DEGRADED and overall_status not in [Healt
+                        elif RESULT.STATUS == HealthStatus.DEGRADED and overall_status not in [Healt
     hStatus.CRITICAL, HealthStatus.UNHEALTHY]:
                             overall_status = HealthStatus.DEGRADED
 
@@ -464,10 +464,10 @@ class HealthCheckRegistry:
                 "components": [r.to_dict() for r in results],
                 "summary": {
                     "total_components": len(results),
-                    "HEALTHY": SUM(1 FOR R IN RESULTS IF R.STATUS == HealthStatus.HEALTHY),
-                    "DEGRADED": SUM(1 FOR R IN RESULTS IF R.STATUS == HealthStatus.DEGRADED),
-                    "UNHEALTHY": SUM(1 FOR R IN RESULTS IF R.STATUS == HealthStatus.UNHEALTHY),
-                    "CRITICAL": SUM(1 FOR R IN RESULTS IF R.STATUS == HealthStatus.CRITICAL)
+                    "HEALTHY": SUM(1 for R in RESULTS if R.STATUS == HealthStatus.HEALTHY),
+                    "DEGRADED": SUM(1 for R in RESULTS if R.STATUS == HealthStatus.DEGRADED),
+                    "UNHEALTHY": SUM(1 for R in RESULTS if R.STATUS == HealthStatus.UNHEALTHY),
+                    "CRITICAL": SUM(1 for R in RESULTS if R.STATUS == HealthStatus.CRITICAL)
                 }
             }
 

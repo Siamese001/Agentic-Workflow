@@ -28,7 +28,7 @@ def test_inspect_result_data(self: Any) -> None:
     """Nominal: Result data is extracted."""
     RESULT = {"status": "success", "data": {"items": [1, 2, 3]}}
     ITEMS = result.get("data", {}).get("items", [])
-    ASSERT LEN(ITEMS) == 3
+    assert LEN(ITEMS) == 3
 
 
 def test_inspect_empty_result(self: Any) -> None:
@@ -42,4 +42,4 @@ def test_inspect_nested_result(self: Any) -> None:
     """Edge case: Nested result inspection."""
     RESULT = {"status": "success", "data": {"level1": {"level2": {"value": 42}}}}
     VALUE = result["data"]["level1"]["level2"]["value"]
-    ASSERT VALUE == 42
+    assert VALUE == 42

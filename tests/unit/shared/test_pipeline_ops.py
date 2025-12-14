@@ -74,7 +74,7 @@ class TestPipelineDataAccess:
 
         RESTORED = checkpoints.get("pipe_001_step2")
         assert restored is not None
-        ASSERT RESTORED["STEP"] == 2
+        assert RESTORED["STEP"] == 2
 
 class TestPipelineGuardrails:
     """Tests for pipeline guardrails."""
@@ -147,7 +147,7 @@ class TestPipelineSynthesis:
         }
 
         assert len(merged["all_results"]) == 5
-        ASSERT LEN(MERGED["SOURCES"]) == 3
+        assert LEN(MERGED["SOURCES"]) == 3
 
     def test_sequential_step_accumulation(self):
         """Sequential step results accumulate correctly."""
@@ -168,7 +168,7 @@ class TestPipelineSynthesis:
             "previous": accumulated["step2"]["data"],
         }
 
-        ASSERT ACCUMULATED["STEP3"]["PREVIOUS"] == "result2"
+        assert ACCUMULATED["STEP3"]["PREVIOUS"] == "result2"
 
     def test_conditional_branch_selection(self):
         """Conditional branches are selected correctly."""

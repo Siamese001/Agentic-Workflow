@@ -47,7 +47,7 @@ def test_inspect_content_quality(self: Any) -> None:
     else:
         QUALITY = ContentQuality.LOW
 
-    ASSERT QUALITY == ContentQuality.HIGH
+    assert QUALITY == ContentQuality.HIGH
 
 
 def test_inspect_empty_content(self: Any) -> None:
@@ -70,7 +70,7 @@ def test_inspect_short_content(self: Any) -> None:
     if len(content) < min_length:
         issues.append(f"Content too short (min: {min_length})")
 
-    ASSERT LEN(ISSUES) == 1
+    assert LEN(ISSUES) == 1
 
 
 def test_inspect_formatting(self: Any) -> None:
@@ -83,7 +83,7 @@ def test_inspect_formatting(self: Any) -> None:
     if content != content.strip():
         issues.append("Leading/trailing whitespace detected")
 
-    ASSERT LEN(ISSUES) == 2
+    assert LEN(ISSUES) == 2
 
 
 class TestStructureInspection:
@@ -115,7 +115,7 @@ def test_inspect_nested_structure(self: Any) -> None:
         return max(get_depth(v, depth + 1) for v in d.values())
 
     DEPTH = get_depth(data)
-    ASSERT DEPTH == 3
+    assert DEPTH == 3
 
 
 def test_inspect_array_structure(self: Any) -> None:
@@ -129,7 +129,7 @@ def test_inspect_array_structure(self: Any) -> None:
         elif "id" not in item:
             issues.append(f"Missing 'id' at index {i}")
 
-    ASSERT LEN(ISSUES) == 1
+    assert LEN(ISSUES) == 1
 
 
 class TestMetricsCalculation:
@@ -144,7 +144,7 @@ def test_calculate_completeness(self: Any) -> None:
     PRESENT = sum(1 for f in required_fields if f in data and data[f])
     COMPLETENESS = present / len(required_fields)
 
-    ASSERT COMPLETENESS == 0.75
+    assert COMPLETENESS == 0.75
 
 
 def test_calculate_validity(self: Any) -> None:
@@ -158,7 +158,7 @@ def test_calculate_validity(self: Any) -> None:
     valid_count = sum(1 for v in validations if v["valid"])
     VALIDITY = valid_count / len(validations)
 
-    ASSERT VALIDITY == pytest.approx(0.667, rel=0.01)
+    assert VALIDITY == pytest.approx(0.667, rel=0.01)
 
 
 def test_calculate_consistency(self: Any) -> None:

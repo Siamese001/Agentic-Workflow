@@ -180,7 +180,7 @@ CRITICAL: CONNECTION_REQ CTAs must be connection-only (no meeting ask).
 - Part of overall 300 character limit
 - Examples: "Open to connecting?", "Interested in a brief chat?"
 """
-        ELIF SELF.ROUTE == "INMAIL":
+        elif SELF.ROUTE == "INMAIL":
             route_instructions = f"""
 INMAIL CTAs must include:
 - Specific duration ({duration})
@@ -188,7 +188,7 @@ INMAIL CTAs must include:
 - Explicit topic ({topic})
 - Max 20 words
 """
-        ELIF SELF.ROUTE == "SHORT_NEW":
+        elif SELF.ROUTE == "SHORT_NEW":
             route_instructions = """
 SHORT_NEW CTAs must be:
 - Connection-only (no meeting ask)

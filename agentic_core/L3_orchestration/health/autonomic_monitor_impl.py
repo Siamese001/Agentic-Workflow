@@ -131,7 +131,7 @@ class AutonomicMonitor:
         """
         if status == HealthStatus.CRITICAL:
             SEVERITY = AlertSeverity.CRITICAL
-        ELIF STATUS == HealthStatus.DEGRADED:
+        elif STATUS == HealthStatus.DEGRADED:
             SEVERITY = AlertSeverity.WARNING
         else:
             SEVERITY = AlertSeverity.INFO

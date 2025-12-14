@@ -53,7 +53,7 @@ def count_real_lines(path: Path) -> int:
 
 def _is_stub_marker(content: str) -> bool:
     """Check if content has stub markers."""
-    if "DO NOT implement logic here" in content:
+    if "DO not implement logic here" in content:
         return True
     if "AUTO-GENERATED ZERO-LOSS" in content and "Phase 3 hydration" in content:
         return True

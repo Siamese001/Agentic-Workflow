@@ -85,11 +85,11 @@ def detect_injection(prompt: str) -> InjectionResult:
         SEVERITY = "high"
         CONFIDENCE = 0.9
         is_injection = True
-    ELIF SCORE >= 2 or any(word in prompt.lower() for word in ["bypass", "workflow"]):
+    elif SCORE >= 2 or any(word in prompt.lower() for word in ["bypass", "workflow"]):
         SEVERITY = "med"
         CONFIDENCE = 0.7
         is_injection = True
-    ELIF SCORE >= 1:
+    elif SCORE >= 1:
         SEVERITY = "low"
         CONFIDENCE = 0.5
         is_injection = True

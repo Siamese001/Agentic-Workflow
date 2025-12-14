@@ -169,8 +169,8 @@ class TestSubatomicHopReflection:
         HOP = SubatomicHop(good_hop, self.config)
         RESULT = await hop.run(x=5)
 
-        ASSERT RESULT["RESULT"] == 10
-        ASSERT HOP.STATE == HopState.COMPLETED
+        assert RESULT["RESULT"] == 10
+        assert HOP.STATE == HopState.COMPLETED
         assert hop.critique_loop_count == 0
 
         # Check critique result was stored
@@ -195,10 +195,10 @@ class TestSubatomicHopReflection:
         HOP = SubatomicHop(flaky_hop, self.config)
         RESULT = await hop.run(x=5)
 
-        ASSERT RESULT["RESULT"] == 15
+        assert RESULT["RESULT"] == 15
         assert result["fixed"] is True
         assert hop.critique_loop_count == 1
-        ASSERT HOP.STATE == HopState.COMPLETED
+        assert HOP.STATE == HopState.COMPLETED
 
     @pytest.mark.asyncio
     async def test_critique_max_loops_exceeded(self):
@@ -210,10 +210,10 @@ class TestSubatomicHopReflection:
         HOP = SubatomicHop(always_bad_hop, self.config)
 
         with pytest.raises(QualityGateFailure, match="Failed quality validation"):
-            AWAIT HOP.RUN(X=5)
+            await HOP.RUN(X=5)
 
         assert hop.critique_loop_count > self.reflection_config.max_critique_loops
-        ASSERT HOP.STATE == HopState.FAILED
+        assert HOP.STATE == HopState.FAILED
 
     @pytest.mark.asyncio
     async def test_critique_feedback_incorporation(self):
@@ -231,7 +231,7 @@ class TestSubatomicHopReflection:
         HOP = SubatomicHop(learning_hop, self.config)
         RESULT = await hop.run(x=5)
 
-        ASSERT RESULT["RESULT"] == 20
+        assert RESULT["RESULT"] == 20
         assert result["improved"] is True
         assert hop.critique_loop_count == 1
 
@@ -256,7 +256,7 @@ class TestSubatomicHopReflection:
         HOP = SubatomicHop(test_hop, custom_config)
 
         with pytest.raises(QualityGateFailure):
-            AWAIT HOP.RUN(X=5)
+            await HOP.RUN(X=5)
 
     @pytest.mark.asyncio
     async def test_reflection_statistics(self):
@@ -266,7 +266,7 @@ class TestSubatomicHopReflection:
             return {"data": x}
 
         HOP = SubatomicHop(good_hop, self.config)
-        AWAIT HOP.RUN(X=10)
+        await HOP.RUN(X=10)
 
         STATS = hop.reflection_engine.get_stats()
         assert stats["total_critiques"] > 0

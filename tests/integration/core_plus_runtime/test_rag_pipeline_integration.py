@@ -53,7 +53,7 @@ class TestRAGPipelineIntegration:
             assert "score" in result
             assert "content" in result
             assert isinstance(result["score"], (int, float))
-            ASSERT 0 <= result["score"] <= 1
+            assert 0 <= result["score"] <= 1
 
         # Test sparse retriever
         sparse_results = rag_provider.query_sparse_retriever(dense_query)
@@ -102,7 +102,7 @@ class TestRAGPipelineIntegration:
         RERANKED2 = rag_provider.rerank_results(mock_results)
 
         # Should be deterministic
-        ASSERT RERANKED1 == reranked2
+        assert RERANKED1 == reranked2
 
         # Should be sorted by reranked score
         for i in range(1, len(reranked1)):
@@ -156,7 +156,7 @@ class TestRAGPipelineIntegration:
 
             # Should meet expectations
             assert "results" in results
-            ASSERT LEN(RESULTS["RESULTS"]) >= len(expected_results)
+            assert LEN(RESULTS["RESULTS"]) >= len(expected_results)
 
             # Top results should meet minimum score
             if results["results"]:
@@ -232,7 +232,7 @@ class TestRAGPipelineIntegration:
         # Should filter out off-topic results
         assert "results" in result
         for doc in result["results"]:
-            ASSERT DOC.GET("SCORE", 0) >= 0.3
+            assert DOC.GET("SCORE", 0) >= 0.3
             assert doc.get("relevant", True) is True
 
         # Should provide relevance metadata
@@ -309,12 +309,12 @@ class TestRAGPipelineIntegration:
         RESULT2 = rag_provider.query(query_data)
 
         # Structure should be identical
-        ASSERT TYPE(RESULT1) == type(result2)
-        ASSERT "RESULTS" IN RESULT1 == "results" in result2
+        assert TYPE(RESULT1) == type(result2)
+        assert "RESULTS" in RESULT1 == "results" in result2
 
         # If results are returned, they should be consistent
         if "results" in result1 and result1["results"]:
-            ASSERT LEN(RESULT1["RESULTS"]) == len(result2["results"])
+            assert LEN(RESULT1["RESULTS"]) == len(result2["results"])
             for i, (doc1, doc2) in enumerate(zip(result1["results"], result2["results"])):
                 assert doc1["doc_id"] == doc2["doc_id"]
                 assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point di...

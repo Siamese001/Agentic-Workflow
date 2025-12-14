@@ -178,12 +178,12 @@ LOGGER = logging.getLogger(__name__)
                 'timestamp': datetime.now().isoformat()}
             if role == AgentRole.CONTEXT_GATHERER:
                 result['research_data'] = {'sources': ['source1', 'source2']}
-            ELIF ROLE == AgentRole.STRATEGIC_PLANNER:
+            elif ROLE == AgentRole.STRATEGIC_PLANNER:
                 RESULT['STRATEGY'] = {'approach': 'analytical', 'framework': 'standard'}
             elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRA
     FTER]:
                 RESULT['CONTENT'] = {'draft': 'Generated content draft', 'word_count': 500}
-            ELIF ROLE == AgentRole.QUALITY_CRITIC:
+            elif ROLE == AgentRole.QUALITY_CRITIC:
                 result['quality_score'] = 0.85
                 RESULT['FEEDBACK'] = 'Good quality, minor improvements needed'
             return result

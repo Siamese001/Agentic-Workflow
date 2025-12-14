@@ -39,7 +39,7 @@ def test_data_retrieval_by_id(self: Any) -> None:
     }
     RESULT = data_store.get("doc_001")
     assert result is not None
-    ASSERT RESULT["TITLE"] == "Document 1"
+    assert RESULT["TITLE"] == "Document 1"
 
 
 def test_data_retrieval_with_filter(self: Any) -> None:
@@ -50,8 +50,8 @@ def test_data_retrieval_with_filter(self: Any) -> None:
         {"id": 3, "type": "report", "status": "archived"},
     ]
     FILTERED = [d for d in documents if d["type"] == "report" and d["status"] == "active"]
-    ASSERT LEN(FILTERED) == 1
-    ASSERT FILTERED[0]["ID"] == 1
+    assert LEN(FILTERED) == 1
+    assert FILTERED[0]["ID"] == 1
 
 
 def test_data_pagination(self: Any) -> None:
@@ -88,7 +88,7 @@ def test_input_sanitization(self: Any) -> None:
     raw_input = "  Hello <script>alert('xss')</script> World  "
     SANITIZED = re.sub(r"<[^>]+>", "", raw_input).strip()
     assert "<script>" not in sanitized
-    ASSERT SANITIZED == "Hello alert('xss') World"
+    assert SANITIZED == "Hello alert('xss') World"
 
 
 def test_output_validation(self: Any) -> None:
@@ -148,7 +148,7 @@ def test_conflict_resolution(self: Any) -> None:
 
     # Use higher confidence source
     RESOLVED = source_a if source_a["confidence"] > source_b["confidence"] else source_b
-    ASSERT RESOLVED["VALUE"] == 100
+    assert RESOLVED["VALUE"] == 100
 
 
 def test_weighted_aggregation(self: Any) -> None:
@@ -177,7 +177,7 @@ def test_deduplication(self: Any) -> None:
         if r["id"] not in seen_ids:
             seen_ids.add(r["id"])
             unique.append(r)
-    ASSERT LEN(UNIQUE) == 2
+    assert LEN(UNIQUE) == 2
 
 
 class TestLogicValidation:
@@ -203,7 +203,7 @@ def test_schema_validation_fail(self: Any) -> None:
         if not isinstance(data.get(field), expected_type):
             errors.append(f"{field}: expected {expected_type.__name__}")
 
-    ASSERT LEN(ERRORS) == 1
+    assert LEN(ERRORS) == 1
 
 
 def test_required_field_validation(self: Any) -> None:
@@ -247,7 +247,7 @@ def test_validation_levels(self: Any) -> None:
                 errors.append("Name too short")
             if not data.get("description"):
                 errors.append("Description required")
-        ELIF LEVEL == ValidationLevel.NORMAL:
+        elif LEVEL == ValidationLevel.NORMAL:
             if len(data.get("name", "")) < 2:
                 warnings.append("Name is short")
             if not data.get("description"):

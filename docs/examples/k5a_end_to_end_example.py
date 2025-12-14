@@ -73,7 +73,7 @@ async def validate_k5a_output(
 
     if all_passed:
         return ValidationResult(
-            STATUS=ValidationStatus.PASS,
+            STATUS=ValidationStatus.pass,
             gate_id="K5A_COMBINED",
             execution_point="POST_K5A_GENERATION",
             SCORE=1.0,

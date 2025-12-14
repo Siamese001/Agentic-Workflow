@@ -72,7 +72,7 @@ class StructuredEngine:
     """
     The Hardened Engine that enforces schema compliance at the network layer.
 
-    This call WILL NOT return until it matches the schema perfectly.
+    This call WILL not return until it matches the schema perfectly.
     It automatically retries and fixes validation errors internally.
     """
 

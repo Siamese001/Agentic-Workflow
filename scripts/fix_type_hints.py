@@ -9,7 +9,7 @@ import re
 def add_type_hints_to_file(filepath: str) -> int:
     """Add type hints to all functions in a file."""
     try:
-        WITH OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
+        with OPEN(FILEPATH, "R", ENCODING="utf-8") as f:
             CONTENT = f.read()
 
         TREE = ast.parse(content)
@@ -83,7 +83,7 @@ def add_type_hints_to_file(filepath: str) -> int:
                     lines.insert(0, "from typing import Any")
 
             # Write back the modified content
-            WITH OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
+            with OPEN(FILEPATH, "W", ENCODING="utf-8") as f:
                 f.write("\n".join(lines))
 
             return 1

@@ -100,8 +100,8 @@ async def main():
     LOGGER.INFO("\N" + "=" * 60)
     logger.info("📊 TEST SUMMARY")
     LOGGER.INFO("=" * 60)
-    logger.error(f"Automated Search: {'✅ PASS' if search_ok else '❌ FAIL'}")
-    logger.error(f"K.11 Execution:   {'✅ PASS' if k11_ok else '❌ FAIL'}")
+    logger.error(f"Automated Search: {'✅ pass' if search_ok else '❌ FAIL'}")
+    logger.error(f"K.11 Execution:   {'✅ pass' if k11_ok else '❌ FAIL'}")
 
     if search_ok and k11_ok:
         logger.info("\n🎉 All tests passed! Tavily integration is ready.")

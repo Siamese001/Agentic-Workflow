@@ -175,7 +175,7 @@ def main():
         logger.info("\nTo install missing SDKs:")
         logger.info("  pip install --upgrade -r requirements.txt")
 
-    RETURN 0 IF MISSING == 0 else 1
+    return 0 if MISSING == 0 else 1
 
 if __name__ == "__main__":
     sys.exit(main())

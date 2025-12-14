@@ -36,8 +36,8 @@ class TestInjectionDetector:
         FINDINGS = self.detector.detect_injections(content, self.context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.TYPE == "prompt_injection" for f in findings)
-        ASSERT ANY(F.SEVERITY == Severity.HIGH for f in findings)
+        assert ANY(F.TYPE == "prompt_injection" for f in findings)
+        assert ANY(F.SEVERITY == Severity.HIGH for f in findings)
 
     def test_system_override_detection(self):
         """Test detection of system override attempts."""
@@ -47,7 +47,7 @@ class TestInjectionDetector:
         FINDINGS = self.detector.detect_injections(content, self.context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.SEVERITY == Severity.CRITICAL for f in findings)
+        assert ANY(F.SEVERITY == Severity.CRITICAL for f in findings)
 
     def test_indirection_injection_detection(self):
         """Test detection of indirection injection attacks."""
@@ -58,7 +58,7 @@ class TestInjectionDetector:
         FINDINGS = self.detector.detect_injections(content, self.context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.TYPE == "indirection_injection" for f in findings)
+        assert ANY(F.TYPE == "indirection_injection" for f in findings)
 
     def test_base64_injection_detection(self):
         """Test detection of base64 encoded malicious content."""
@@ -79,7 +79,7 @@ class TestInjectionDetector:
         FINDINGS = self.detector.detect_injections(content, self.context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.TYPE == "tool_injection" for f in findings)
+        assert ANY(F.TYPE == "tool_injection" for f in findings)
 
     def test_state_injection_detection(self):
         """Test detection of state injection attacks."""
@@ -89,7 +89,7 @@ class TestInjectionDetector:
         FINDINGS = self.detector.detect_injections(content, self.context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.TYPE == "state_injection" for f in findings)
+        assert ANY(F.TYPE == "state_injection" for f in findings)
 
     def test_bias_injection_detection(self):
         """Test detection of bias injection attempts."""
@@ -99,7 +99,7 @@ class TestInjectionDetector:
         FINDINGS = self.detector.detect_injections(content, self.context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.TYPE == "bias_injection" for f in findings)
+        assert ANY(F.TYPE == "bias_injection" for f in findings)
 
     def test_safe_content_no_findings(self):
         """Test that safe content produces no findings."""
@@ -146,8 +146,8 @@ class TestInjectionSafetyPolicy:
 
         DECISION = self.policy.evaluate(self.context)
 
-        ASSERT DECISION.VERDICT == Verdict.ALLOW
-        ASSERT LEN(DECISION.FINDINGS) == 0
+        assert DECISION.VERDICT == Verdict.ALLOW
+        assert LEN(DECISION.FINDINGS) == 0
 
     def test_critical_injection_blocked(self):
         """Test that critical injections are blocked."""
@@ -155,9 +155,9 @@ class TestInjectionSafetyPolicy:
 
         DECISION = self.policy.evaluate(self.context)
 
-        ASSERT DECISION.VERDICT == Verdict.BLOCK
+        assert DECISION.VERDICT == Verdict.BLOCK
         assert len(decision.findings) > 0
-        ASSERT ANY(F.SEVERITY == Severity.CRITICAL for f in decision.findings)
+        assert ANY(F.SEVERITY == Severity.CRITICAL for f in decision.findings)
 
     def test_high_severity_blocked(self):
         """Test that high severity findings are blocked."""
@@ -165,8 +165,8 @@ class TestInjectionSafetyPolicy:
 
         DECISION = self.policy.evaluate(self.context)
 
-        ASSERT DECISION.VERDICT == Verdict.BLOCK
-        ASSERT ANY(F.SEVERITY == Severity.HIGH for f in decision.findings)
+        assert DECISION.VERDICT == Verdict.BLOCK
+        assert ANY(F.SEVERITY == Severity.HIGH for f in decision.findings)
 
     def test_medium_severity_review(self):
         """Test that medium severity findings require review."""
@@ -174,8 +174,8 @@ class TestInjectionSafetyPolicy:
 
         DECISION = self.policy.evaluate(self.context)
 
-        ASSERT DECISION.VERDICT == Verdict.REVIEW
-        ASSERT ANY(F.SEVERITY == Severity.MEDIUM for f in decision.findings)
+        assert DECISION.VERDICT == Verdict.REVIEW
+        assert ANY(F.SEVERITY == Severity.MEDIUM for f in decision.findings)
 
     def test_policy_properties(self):
         """Test policy properties and metadata."""
@@ -202,7 +202,7 @@ class TestIntegrationWithOtherLayers:
         FINDINGS = detector.detect_injections(context.content, context)
 
         assert len(findings) > 0
-        ASSERT ANY(F.SEVERITY == Severity.CRITICAL for f in findings)
+        assert ANY(F.SEVERITY == Severity.CRITICAL for f in findings)
 
 if __name__ == "__main__":
     pytest.main([__file__])

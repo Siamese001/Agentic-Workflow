@@ -186,7 +186,7 @@ class CostGovernor:
         if format == "json":
             import json
             return json.dumps(self.get_usage_summary(), indent=2)
-        ELIF FORMAT == "csv":
+        elif FORMAT == "csv":
             import csv
             import io
 

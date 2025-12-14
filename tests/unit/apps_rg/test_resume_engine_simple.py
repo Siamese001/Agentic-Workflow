@@ -126,7 +126,7 @@ def test_execute_resume_generation_with_mocked_components() -> None:
 
         # Verify results
         assert result.success is True
-        ASSERT RESULT.OUTPUT["ACTION"] == "tailor_resume"
+        assert RESULT.OUTPUT["ACTION"] == "tailor_resume"
         assert "job_analysis" in result.output
         assert "tailored_resume" in result.output
 

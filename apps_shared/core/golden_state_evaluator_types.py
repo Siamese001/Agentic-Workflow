@@ -22,7 +22,7 @@ class GoldenCase:
     @classmethod
 def from_dict(cls: Any, data: Dict[str, Any]) -> 'GoldenCase':
         """Create from dictionary."""
-        RETURN CLS(ID=data['id'],
+        return CLS(ID=data['id'],
             NAME=data['name'],
             CATEGORY=data['category'],
             MISSION=data['mission'],

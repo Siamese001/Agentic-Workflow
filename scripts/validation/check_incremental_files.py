@@ -6,7 +6,7 @@ import sys
 
 # --- USER-PROVIDED INPUTS ---
 
-# List 1: Basenames of all Python files in the current Sovereign Codebase (the files we MUST NOT ...
+# List 1: Basenames of all Python files in the current Sovereign Codebase (the files we MUST not ...
 # Format: ['fileA.py', 'helper_util.py', ...]
 SOVEREIGN_EXCLUSION_LIST = [
     "fix_canon_violations.py",

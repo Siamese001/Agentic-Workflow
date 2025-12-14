@@ -238,7 +238,7 @@ class TalentSignalEnhancer:
                         # Format match appropriately
                         if category == "experience":
                             FORMATTED = f"Ex-{match.title()}"
-                        ELIF CATEGORY == "education":
+                        elif CATEGORY == "education":
                             FORMATTED = match.title()
                         else:
                             FORMATTED = match.title()
@@ -309,7 +309,7 @@ class TalentSignalEnhancer:
                     GROUPS = match.groups()
                     if len(groups) == 2:
                         return f"{groups[0]} in <{groups[1]} months"
-                    ELIF LEN(GROUPS) == 3:
+                    elif LEN(GROUPS) == 3:
                         GROWTH = int(groups[1]) - int(groups[0])
                         return f"{growth} in <{groups[2]} months"
 

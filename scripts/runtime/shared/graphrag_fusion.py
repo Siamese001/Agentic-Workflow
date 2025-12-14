@@ -77,7 +77,7 @@ class CypherQueryGenerator:
                 MATCH (e:Entity)-[:HAS_SKILL]->(s:Skill)
                 WHERE s.name =~ $skill_pattern
                 OPTIONAL MATCH (e)-[:WORKED_ON]->(p:Project)
-                RETURN e.name as entity,
+                return e.name as entity,
                        collect(DISTINCT s.name) as skills,
                        collect(DISTINCT p.name) as projects
                 LIMIT 10
@@ -87,7 +87,7 @@ class CypherQueryGenerator:
                 MATCH (e:Entity)-[:WORKED_WITH]->(t:Technology)
                 WHERE t.name =~ $tech_pattern
                 OPTIONAL MATCH (e)-[:WORKED_ON]->(p:Project)
-                RETURN e.name as entity,
+                return e.name as entity,
                        t.name as technology,
                        collect(DISTINCT p.name) as projects
                 LIMIT 10
@@ -97,7 +97,7 @@ class CypherQueryGenerator:
                 MATCH (p:Project)-[:USES_TECH]->(t:Technology)
                 WHERE t.name =~ $tech_pattern
                 OPTIONAL MATCH (e:Entity)-[:WORKED_ON]->(p)
-                RETURN p.name as project,
+                return p.name as project,
                        collect(DISTINCT t.name) as technologies,
                        collect(DISTINCT e.name) as contributors
                 LIMIT 10
@@ -107,7 +107,7 @@ class CypherQueryGenerator:
                 MATCH (e:Entity)-[:WORKED_AT]->(c:Company)
                 WHERE c.name =~ $company_pattern
                 OPTIONAL MATCH (e)-[:HAD_ROLE]->(r:Role)
-                RETURN e.name as entity,
+                return e.name as entity,
                        c.name as company,
                        collect(DISTINCT r.name) as roles
                 LIMIT 10
@@ -116,16 +116,16 @@ class CypherQueryGenerator:
             "company_tech_stack": """
                 MATCH (c:Company)-[:USES_TECH]->(t:Technology)
                 WHERE c.name =~ $company_pattern
-                RETURN c.name as company,
+                return c.name as company,
                        collect(DISTINCT t.name) as tech_stack
                 LIMIT 10
             """,
 
             "team_collaboration": """
                 MATCH (e1:Entity)-[:COLLABORATED_WITH]->(e2:Entity)
-                WHERE e1.name =~ $entity_pattern OR e2.name =~ $entity_pattern
+                WHERE e1.name =~ $entity_pattern or e2.name =~ $entity_pattern
                 OPTIONAL MATCH (e1)-[:WORKED_ON]->(p:Project)<-[:WORKED_ON]-(e2)
-                RETURN e1.name as collaborator1,
+                return e1.name as collaborator1,
                        e2.name as collaborator2,
                        collect(DISTINCT p.name) as shared_projects
                 LIMIT 10
@@ -134,14 +134,14 @@ class CypherQueryGenerator:
             "career_path": """
                 MATCH path = (e:Entity)-[:NEXT_ROLE*]->(r:Role)
                 WHERE e.name =~ $entity_pattern
-                RETURN [node in nodes(path) | node.name] as career_progression
+                return [node in nodes(path) | node.name] as career_progression
                 LIMIT 5
             """,
 
             "skill_to_role": """
                 MATCH (s:Skill)-[:REQUIRED_FOR]->(r:Role)
-                WHERE s.name =~ $skill_pattern AND r.name =~ $role_pattern
-                RETURN s.name as skill,
+                WHERE s.name =~ $skill_pattern and r.name =~ $role_pattern
+                return s.name as skill,
                        r.name as role,
                        collect(DISTINCT r.level) as levels
                 LIMIT 10
@@ -150,7 +150,7 @@ class CypherQueryGenerator:
             "project_outcomes": """
                 MATCH (p:Project)-[:RESULTED_IN]->(o:Outcome)
                 WHERE p.name =~ $project_pattern
-                RETURN p.name as project,
+                return p.name as project,
                        collect(DISTINCT o.name) as outcomes,
                        collect(DISTINCT o.metric) as metrics
                 LIMIT 10
@@ -159,7 +159,7 @@ class CypherQueryGenerator:
             "technologies_for": """
                 MATCH (d:Domain)-[:REQUIRES_TECH]->(t:Technology)
                 WHERE d.name =~ $domain_pattern
-                RETURN d.name as domain,
+                return d.name as domain,
                        collect(DISTINCT t.name) as technologies
                 LIMIT 10
             """
@@ -217,7 +217,7 @@ class CypherQueryGenerator:
             MATCH (e:Entity)
             WHERE e.name =~ $entity_pattern
             OPTIONAL MATCH (e)-[r]-(related)
-            RETURN e.name as entity,
+            return e.name as entity,
                    labels(e) as types,
                    collect(DISTINCT related.name)[0..5] as related_entities
             LIMIT 10

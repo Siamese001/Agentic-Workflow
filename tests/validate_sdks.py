@@ -86,7 +86,7 @@ def main() -> None:
     all_good = report["missing"] == 0 and report["missing_keys"] == 0 and len(missing_sdks) == 0
 
     if all_good:
-        logger.info("✅ ALL SDKs AND MCPs FULLY OPERATIONAL")
+        logger.info("✅ ALL SDKs and MCPs FULLY OPERATIONAL")
     else:
         logger.info("⚠️  SOME COMPONENTS MISSING CONFIGURATION")
         logger.info("\nTo fix missing SDKs:")

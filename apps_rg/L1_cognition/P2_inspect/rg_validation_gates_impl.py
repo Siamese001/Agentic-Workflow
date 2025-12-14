@@ -189,7 +189,7 @@ class RGValidationGates:
         for marker in unsupported_markers:
             if marker.lower() in text.lower():
                 violations.append(f'Unsupported claim marker: {marker}')
-        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.pass if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_SUMMARY_GROUNDING_CHECK,
             DECISION=decision,
             SEVERITY=GateSeverity.CRITICAL,
@@ -215,7 +215,7 @@ class RGValidationGates:
             for metric in metrics:
                 if metric not in source_material:
                     violations.append(f"Bullet {i + 1}: Metric '{metric}' not found in source")
-        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.pass if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_BULLET_HALLUCINATION_CHECK,
             DECISION=decision,
             SEVERITY=GateSeverity.CRITICAL,
@@ -242,7 +242,7 @@ class RGValidationGates:
                 if overlap > 0.6:
                     violations.append(f'Bullets {i + 1} and {j + 1} have high similarity ({overlap:.
     0%})')
-        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.pass if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_THEMATIC_UNIQUENESS,
             DECISION=decision,
             SEVERITY=GateSeverity.HIGH,
@@ -273,7 +273,7 @@ class RGValidationGates:
                 if word_count < min_words or word_count > max_words:
                     violations.append(f'Summary word count {word_count} outside range [{min_words},
                         {max_words}]')
-        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.pass if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_CREATIVE_BRIEF_ADHERENCE,
             DECISION=decision,
             SEVERITY=GateSeverity.HIGH,
@@ -292,7 +292,7 @@ class RGValidationGates:
             for section in required_sections:
                 if section not in content or not content[section]:
                     violations.append(f'Missing required section: {section}')
-        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.pass if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_HEADER_INTEGRITY_CHECK,
             DECISION=decision,
             SEVERITY=GateSeverity.MEDIUM,
@@ -314,7 +314,7 @@ class RGValidationGates:
             if isinstance(bullet, dict):
                 if 'source' not in bullet and 'provenance' not in bullet:
                     violations.append(f'Bullet {i + 1}: Missing provenance information')
-        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.pass if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_BULLET_PROVENANCE_CHECK,
             DECISION=decision,
             SEVERITY=GateSeverity.HIGH,
@@ -324,7 +324,7 @@ class RGValidationGates:
     def _validate_redundancy(self, content: object, context: Dict[str, object]) -> GateResult:
         """Validate for redundancy."""
         return GateResult(gate_id=self.VG_REDUNDANCY_CHECK,
-            DECISION=GateDecision.PASS,
+            DECISION=GateDecision.pass,
             SEVERITY=GateSeverity.MEDIUM,
             MESSAGE='Redundancy check completed')
 
@@ -334,7 +334,7 @@ class RGValidationGates:
         object]) -> GateResult:
         """Validate hyphen preservation."""
         return GateResult(gate_id=self.VG_NATURAL_HYPHEN_PRESERVATION,
-            DECISION=GateDecision.PASS,
+            DECISION=GateDecision.pass,
             SEVERITY=GateSeverity.LOW,
             MESSAGE='Hyphen preservation check completed')
 
@@ -357,7 +357,7 @@ class RGValidationGates:
                     if abs(wc - avg) > avg * 0.5:
                         violations.append(f'Competency {i + 1}: Word count {wc} significantly differ
     s from average {avg:.0f}')
-        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.pass if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
             DECISION=decision,
             SEVERITY=GateSeverity.MEDIUM,
@@ -378,7 +378,7 @@ class RGValidationGates:
         for i, bullet in enumerate(bullets):
             if bullet and (not bullet.rstrip().endswith(('.', '!', '?'))):
                 violations.append(f'Bullet {i + 1}: Missing ending punctuation')
-        DECISION = GateDecision.PASS if not violations else GateDecision.WARN
+        DECISION = GateDecision.pass if not violations else GateDecision.WARN
         return GateResult(gate_id=self.VG_BULLET_PUNCTUATION,
             DECISION=decision,
             SEVERITY=GateSeverity.LOW,
@@ -400,7 +400,7 @@ class RGValidationGates:
         for marker in first_person_markers:
             if marker.lower() in f' {text.lower()} ':
                 violations.append(f'First person marker found: {marker.strip()}')
-        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.pass if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_SUMMARY_VOICE_TENSE,
             DECISION=decision,
             SEVERITY=GateSeverity.MEDIUM,
@@ -415,7 +415,7 @@ class RGValidationGates:
             for field_name in required_fields:
                 if field_name not in content:
                     violations.append(f'Missing required field: {field_name}')
-        DECISION = GateDecision.PASS if not violations else GateDecision.FAIL
+        DECISION = GateDecision.pass if not violations else GateDecision.FAIL
         return GateResult(gate_id=self.VG_AGENTIC_OUTPUT_VALIDATION,
             DECISION=decision,
             SEVERITY=GateSeverity.HIGH,

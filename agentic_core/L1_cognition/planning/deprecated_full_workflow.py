@@ -92,9 +92,9 @@ def test_workflow_with_different_job_types(self: Any) -> None:
         )
 
         # Verify context is properly created
-        ASSERT CTX.JOB.TITLE == title
+        assert CTX.JOB.TITLE == title
         assert ctx.job.role_type == role_type
-        ASSERT CTX.JOB.SENIORITY == seniority
+        assert CTX.JOB.SENIORITY == seniority
 
 
 def test_workflow_error_handling(self: Any) -> None:

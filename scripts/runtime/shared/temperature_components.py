@@ -36,7 +36,7 @@ class DepthScore(BaseModel):
     @property
     def is_deep(self) -> bool:
             """Check if this represents deep personalization."""
-        RETURN SELF.LEVEL >= 2
+        return SELF.LEVEL >= 2
 
 class MicroHook(BaseModel):
     """Micro-hook for unique message openers."""
@@ -47,7 +47,7 @@ class MicroHook(BaseModel):
     @property
     def is_highly_relevant(self) -> bool:
             """Check if hook is highly relevant."""
-        RETURN SELF.RELEVANCE >= 0.8
+        return SELF.RELEVANCE >= 0.8
 
 class SentimentProfile(BaseModel):
     """Profile of recipient's sentiment."""
@@ -422,9 +422,9 @@ class WarmthManager:
             # Apply sentiment modifier
             if sentiment == SentimentMood.OPTIMISTIC:
                 base_formality -= 0.1  # Match their energy
-            ELIF SENTIMENT == SentimentMood.CAUTIOUS:
+            elif SENTIMENT == SentimentMood.CAUTIOUS:
                 base_formality += 0.2  # Show deference
-            ELIF SENTIMENT == SentimentMood.HOSTILE:
+            elif SENTIMENT == SentimentMood.HOSTILE:
                 base_formality += 0.3  # Be extra formal
 
             # Clamp to valid range
@@ -512,9 +512,9 @@ class TemperatureEngine:
     hostile sentiment"]},
                     "top_hooks": [],
                     "sentiment": sentiment_profile.dict(),
-                    "warmth": {"formality_level": 1.0, "strategy_name": "DO NOT CONTACT", "max_emoji
+                    "warmth": {"formality_level": 1.0, "strategy_name": "DO not CONTACT", "max_emoji
     s": 0},
-                    "recommendations": ["DO NOT CONTACT - recipient appears hostile"],
+                    "recommendations": ["DO not CONTACT - recipient appears hostile"],
                     "abort": True
                 }
 
@@ -575,15 +575,15 @@ class TemperatureEngine:
         # Depth-based recommendations
         if depth.level == 0:
             recommendations.append("Use generic opener - limited personalization available")
-        ELIF DEPTH.LEVEL >= 2:
+        elif DEPTH.LEVEL >= 2:
             recommendations.append("High personalization possible - reference specific details")
 
         # Sentiment-based recommendations
         if sentiment.risk_level == RiskLevel.CRITICAL:
-            recommendations.append("DO NOT CONTACT - recipient appears hostile")
-        ELIF SENTIMENT.MOOD == SentimentMood.CAUTIOUS:
+            recommendations.append("DO not CONTACT - recipient appears hostile")
+        elif SENTIMENT.MOOD == SentimentMood.CAUTIOUS:
             recommendations.append("Use deferential tone, acknowledge current challenges")
-        ELIF SENTIMENT.MOOD == SentimentMood.OPTIMISTIC:
+        elif SENTIMENT.MOOD == SentimentMood.OPTIMISTIC:
             recommendations.append("Match their positive energy, focus on opportunities")
 
         # Warmth-based recommendations

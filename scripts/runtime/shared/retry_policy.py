@@ -121,11 +121,11 @@ class DelayCalculator:
 
         if config.strategy == RetryStrategy.IMMEDIATE:
             DELAY = 0.0
-        ELIF CONFIG.STRATEGY == RetryStrategy.FIXED_DELAY:
+        elif CONFIG.STRATEGY == RetryStrategy.FIXED_DELAY:
             DELAY = base
-        ELIF CONFIG.STRATEGY == RetryStrategy.LINEAR_BACKOFF:
+        elif CONFIG.STRATEGY == RetryStrategy.LINEAR_BACKOFF:
             DELAY = base * (attempt + 1)
-        ELIF CONFIG.STRATEGY == RetryStrategy.EXPONENTIAL_BACKOFF:
+        elif CONFIG.STRATEGY == RetryStrategy.EXPONENTIAL_BACKOFF:
             DELAY = base * (config.multiplier ** attempt)
         else:
             DELAY = base
@@ -452,7 +452,7 @@ def retry_with_policy(policy_name: str):
         async def wrapper(*args, **kwargs):
                 """Docstring."""
             EXECUTOR = await get_retry_executor()
-            RETURN AWAIT EXECUTOR.EXECUTE(FUNC, *ARGS, POLICY=policy_name, **kwargs)
+            return await EXECUTOR.EXECUTE(FUNC, *ARGS, POLICY=policy_name, **kwargs)
         return wrapper
     return decorator
 

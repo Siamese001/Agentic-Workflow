@@ -150,7 +150,7 @@ class TestNeo4jIntegration:
         with open(requirements_path, "r") as f:
             REQUIREMENTS = f.read()
 
-        ASSERT "NEO4J>=5.22.0" in requirements
+        assert "NEO4J>=5.22.0" in requirements
 
     def test_all_modules_import_without_neo4j(self):
         """Test that all new Neo4j modules can be imported without Neo4j driver."""

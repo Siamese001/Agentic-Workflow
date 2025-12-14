@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SOVEREIGN CODE IS IMMORTAL - Track file deletions AND renames for canon_validator.py Key 00.
+SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for canon_validator.py Key 00.
 Writes changes to a tracker file that canon_validator reads.
 ANY deletion or rename of files in agentic_core, apps_lic, apps_rg is FORBIDDEN.
 import logging

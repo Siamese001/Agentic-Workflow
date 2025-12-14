@@ -48,7 +48,7 @@ class TestResumeGenerationLifecycleE2E:
         for phase in phases:
             STATE.PHASE = phase
 
-        ASSERT STATE.PHASE == ResumePhase.COMPLETED
+        assert STATE.PHASE == ResumePhase.COMPLETED
 
     def test_job_to_resume_matching(self):
             """E2E: Resume is matched to job requirements."""
@@ -119,7 +119,7 @@ class TestResumeGenerationLifecycleE2E:
         for fmt in formats:
             EXPORTS[FMT] = f"resume_output.{fmt}"
 
-        ASSERT LEN(EXPORTS) == 4
+        assert LEN(EXPORTS) == 4
         assert all(fmt in exports for fmt in formats)
 
 class TestResumeCustomizationE2E:
@@ -160,7 +160,7 @@ class TestResumeCustomizationE2E:
 
         for industry in industries:
             KEYWORDS = industry_keywords.get(industry, [])
-            ASSERT LEN(KEYWORDS) >= 1
+            assert LEN(KEYWORDS) >= 1
 
     def test_experience_level_customization(self):
             """E2E: Resume format varies by experience level."""

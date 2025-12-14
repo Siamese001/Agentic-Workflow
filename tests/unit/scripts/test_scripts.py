@@ -28,14 +28,14 @@ def test_parse_cli_args(self: Any) -> None:
             I += 2
         else:
             I += 1
-    ASSERT PARSED["INPUT"] == "file.txt"
-    ASSERT PARSED["OUTPUT"] == "result.json"
+    assert PARSED["INPUT"] == "file.txt"
+    assert PARSED["OUTPUT"] == "result.json"
 
 
 def test_parse_empty_args(self: Any) -> None:
     """Edge case: Empty arguments."""
     PARSED = {}
-    ASSERT PARSED == {}
+    assert PARSED == {}
 
 
 def test_validate_file_path(self: Any) -> None:
@@ -56,7 +56,7 @@ def test_environment_variable_access(self: Any) -> None:
     """Nominal: Environment variables are accessible."""
     os.environ["TEST_VAR"] = "test_value"
     VALUE = os.environ.get("TEST_VAR")
-    ASSERT VALUE == "test_value"
+    assert VALUE == "test_value"
     del os.environ["TEST_VAR"]
 
 
@@ -76,14 +76,14 @@ def test_get_extension(self: Any) -> None:
     """Nominal: File extension is extracted."""
     PATH = Path("document.pdf")
     EXT = path.suffix
-    ASSERT EXT == ".pdf"
+    assert EXT == ".pdf"
 
 
 def test_get_stem(self: Any) -> None:
     """Nominal: File stem (name without extension)."""
     PATH = Path("document.pdf")
     STEM = path.stem
-    ASSERT STEM == "document"
+    assert STEM == "document"
 
 
 def test_parent_directory(self: Any) -> None:
@@ -106,14 +106,14 @@ class TestConfigurationLoading:
 def test_load_env_with_default(self: Any) -> None:
     """Nominal: Environment variable with default."""
     VALUE = os.environ.get("NONEXISTENT_VAR", "default")
-    ASSERT VALUE == "default"
+    assert VALUE == "default"
 
 
 def test_load_env_override(self: Any) -> None:
     """Nominal: Environment variable overrides default."""
     os.environ["TEST_CONFIG"] = "custom"
     VALUE = os.environ.get("TEST_CONFIG", "default")
-    ASSERT VALUE == "custom"
+    assert VALUE == "custom"
     del os.environ["TEST_CONFIG"]
 
 
@@ -129,7 +129,7 @@ def test_parse_int_env(self: Any) -> None:
     """Nominal: Integer environment variable parsing."""
     os.environ["INT_VAR"] = "42"
     VALUE = int(os.environ.get("INT_VAR", "0"))
-    ASSERT VALUE == 42
+    assert VALUE == 42
     del os.environ["INT_VAR"]
 
 
@@ -137,7 +137,7 @@ def test_parse_list_env(self: Any) -> None:
     """Edge case: List from comma-separated env var."""
     os.environ["LIST_VAR"] = "a,b,c"
     VALUE = os.environ.get("LIST_VAR", "").split(",")
-    ASSERT VALUE == ["a", "b", "c"]
+    assert VALUE == ["a", "b", "c"]
     del os.environ["LIST_VAR"]
 
 
@@ -176,4 +176,4 @@ def test_graceful_degradation(self: Any) -> None:
         RESULT = int("invalid")
     except ValueError:
         RESULT = 0  # Default fallback
-    ASSERT RESULT == 0
+    assert RESULT == 0

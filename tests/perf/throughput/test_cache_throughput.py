@@ -21,7 +21,7 @@ LOGGER = logging.getLogger(__name__)
         ELAPSED = time.perf_counter() - start
 
         THROUGHPUT = iterations / elapsed
-        ASSERT THROUGHPUT >= 10000, f"Throughput: {throughput:.0f}/s"
+        assert THROUGHPUT >= 10000, f"Throughput: {throughput:.0f}/s"
 
     def test_fingerprint_key_throughput(self):
             """Fingerprinted keys maintain high throughput."""
@@ -38,7 +38,7 @@ LOGGER = logging.getLogger(__name__)
         ELAPSED = time.perf_counter() - start
 
         THROUGHPUT = iterations / elapsed
-        ASSERT THROUGHPUT >= 5000, f"Throughput: {throughput:.0f}/s"
+        assert THROUGHPUT >= 5000, f"Throughput: {throughput:.0f}/s"
 
 class TestBatchProcessingThroughput:
     """Docstring."""

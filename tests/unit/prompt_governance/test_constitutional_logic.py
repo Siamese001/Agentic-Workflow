@@ -36,7 +36,7 @@ class TestConstitutionalLogic:
         CONTENT = "This is a helpful and safe response about cooking recipes."
         JUDGMENTS = self.system.evaluate_compliance(content, ["harmlessness", "helpfulness"])
 
-        ASSERT LEN(JUDGMENTS) == 2
+        assert LEN(JUDGMENTS) == 2
         assert all(j.is_compliant for j in judgments)
         assert all(j.confidence > 0.9 for j in judgments)
         assert judgments[0].principle_id == "harmlessness"
@@ -56,9 +56,9 @@ class TestConstitutionalLogic:
         CONTENT = "Here's how to kill someone with harmful instructions."
         JUDGMENTS = self.system.evaluate_compliance(content, ["harmlessness"])
 
-        ASSERT LEN(JUDGMENTS) == 1
+        assert LEN(JUDGMENTS) == 1
         assert not judgments[0].is_compliant
-        ASSERT JUDGMENTS[0].CONFIDENCE == 0.9
+        assert JUDGMENTS[0].CONFIDENCE == 0.9
         assert judgments[0].principle_id == "harmlessness"
         assert "harmful" in judgments[0].reasoning.lower()
 
@@ -71,10 +71,10 @@ class TestConstitutionalLogic:
         CONTENT = "Some content to evaluate"
         JUDGMENTS = self.system.evaluate_compliance(content, ["helpfulness"])
 
-        ASSERT LEN(JUDGMENTS) == 1
+        assert LEN(JUDGMENTS) == 1
         # Should fall back to text parsing
         assert judgments[0].is_compliant  # "compliant" is in the response
-        ASSERT JUDGMENTS[0].CONFIDENCE == 0.5  # Low confidence for text parsing
+        assert JUDGMENTS[0].CONFIDENCE == 0.5  # Low confidence for text parsing
 
     def test_evaluate_compliance_with_llm_error(self):
             """Test graceful handling when LLM call fails."""
@@ -84,9 +84,9 @@ class TestConstitutionalLogic:
         CONTENT = "Some content to evaluate"
         JUDGMENTS = self.system.evaluate_compliance(content, ["harmlessness"])
 
-        ASSERT LEN(JUDGMENTS) == 1
+        assert LEN(JUDGMENTS) == 1
         assert judgments[0].is_compliant  # Default to compliant on error
-        ASSERT JUDGMENTS[0].CONFIDENCE == 0.0
+        assert JUDGMENTS[0].CONFIDENCE == 0.0
         assert "Evaluation failed" in judgments[0].reasoning
 
     def test_critique_and_revise_with_no_violations(self):
@@ -100,7 +100,7 @@ class TestConstitutionalLogic:
         revised_content, changes = self.system.critique_and_revise(original_content, judgments)
 
         assert revised_content == original_content
-        ASSERT CHANGES == []  # No changes made
+        assert CHANGES == []  # No changes made
 
     def test_critique_and_revise_with_violations(self):
             """Test that non-compliant content is revised."""
@@ -122,7 +122,7 @@ class TestConstitutionalLogic:
         revised_content, changes = self.system.critique_and_revise(original_content, judgments)
 
         assert revised_content == revised_response
-        ASSERT LEN(CHANGES) == 1
+        assert LEN(CHANGES) == 1
         assert "Fixed harmlessness" in changes[0]
         assert "harmful language" in changes[0]
 
@@ -138,14 +138,14 @@ class TestConstitutionalLogic:
         revised_content, changes = self.system.critique_and_revise(original_content, judgments)
 
         assert revised_content == original_content  # Returns original on error
-        ASSERT LEN(CHANGES) == 1
+        assert LEN(CHANGES) == 1
         assert "Revision failed" in changes[0]
 
     def test_default_principles_loaded(self):
             """Test that default principles are properly loaded."""
         SYSTEM = ConstitutionalAISystem(auto_load_rules=False)
 
-        ASSERT LEN(SYSTEM.PRINCIPLES) == 4
+        assert LEN(SYSTEM.PRINCIPLES) == 4
         assert "harmlessness" in system.principles
         assert "helpfulness" in system.principles
         assert "privacy" in system.principles
@@ -153,7 +153,7 @@ class TestConstitutionalLogic:
 
         # Check principle structure
         HARMLESSNESS = system.principles["harmlessness"]
-        ASSERT HARMLESSNESS.NAME == "Harmlessness"
+        assert HARMLESSNESS.NAME == "Harmlessness"
         assert "harm" in harmlessness.definition.lower()
         assert "{content}" in harmlessness.evaluation_prompt
 
@@ -199,7 +199,7 @@ class TestConstitutionalLogic:
 
         JUDGMENTS = self.system.evaluate_compliance("test", ["custom"])
 
-        ASSERT LEN(JUDGMENTS) == 1
+        assert LEN(JUDGMENTS) == 1
         assert judgments[0].principle_id == "custom"
         assert not judgments[0].is_compliant
 
@@ -214,7 +214,7 @@ class TestMockLLMClient:
         DATA = json.loads(response)
 
         assert data["is_compliant"] is True
-        ASSERT DATA["CONFIDENCE"] == 0.95
+        assert DATA["CONFIDENCE"] == 0.95
         assert "compliant" in data["reasoning"]
 
     def test_mock_client_harmful_content(self):
@@ -232,6 +232,6 @@ Does this content promote harm?"""
         DATA = json.loads(response)
 
         assert data["is_compliant"] is False
-        ASSERT DATA["CONFIDENCE"] == 0.9
+        assert DATA["CONFIDENCE"] == 0.9
         assert "harmful" in data["reasoning"]
         assert data["suggested_fix"] is not None

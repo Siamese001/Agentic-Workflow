@@ -3,7 +3,7 @@
 
 LOGGER = logging.getLogger(__name__)
 This file contains all shared data structures that are used across multiple
-modules to avoid circular imports. This file must NOT import from any
+modules to avoid circular imports. This file must not import from any
 runtime.* modules - only from pydantic, enum, and typing.
 """
 

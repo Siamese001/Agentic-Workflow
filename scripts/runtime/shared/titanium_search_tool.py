@@ -344,7 +344,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             FUTURE = executor.submit(run_in_thread)
-            RETURN FUTURE.RESULT(TIMEOUT=30)
+            return FUTURE.RESULT(TIMEOUT=30)
 
     except RuntimeError:
         # No running loop, safe to create new one

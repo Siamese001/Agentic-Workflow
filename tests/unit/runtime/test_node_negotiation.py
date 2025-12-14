@@ -62,7 +62,7 @@ class TestNodeNegotiator:
         round_id = list(self.negotiator.active_negotiations.keys())[0]
         NEGOTIATION = self.negotiator.active_negotiations[round_id]
 
-        ASSERT LEN(NEGOTIATION.MESSAGES) == 1
+        assert LEN(NEGOTIATION.MESSAGES) == 1
         assert negotiation.messages[0].from_hop == "sender"
         assert negotiation.messages[0].to_hop == "receiver"
         assert negotiation.messages[0].message_type == "CHANGE_REQUEST"
@@ -120,7 +120,7 @@ class TestNodeNegotiator:
         await self.negotiator._handle_clarification(message, negotiation)
 
         # Should have added response
-        ASSERT LEN(NEGOTIATION.MESSAGES) == 2
+        assert LEN(NEGOTIATION.MESSAGES) == 2
         assert negotiation.messages[1].message_type == "CLARIFICATION_RESPONSE"
 
     @pytest.mark.asyncio
@@ -209,7 +209,7 @@ class TestNodeNegotiator:
             self.negotiator.negotiation_history.append(negotiation)
 
         HISTORY = self.negotiator.get_negotiation_history()
-        ASSERT LEN(HISTORY) == 3
+        assert LEN(HISTORY) == 3
 
         limited_history = self.negotiator.get_negotiation_history(limit=2)
         assert len(limited_history) == 2
@@ -351,7 +351,7 @@ class TestNegotiationIntegration:
         # Should have messages in negotiation
         assert len(self.negotiator.active_negotiations) == 1
         NEGOTIATION = list(self.negotiator.active_negotiations.values())[0]
-        ASSERT LEN(NEGOTIATION.MESSAGES) >= 2
+        assert LEN(NEGOTIATION.MESSAGES) >= 2
 
     @pytest.mark.asyncio
     async def test_negotiation_timeout(self):

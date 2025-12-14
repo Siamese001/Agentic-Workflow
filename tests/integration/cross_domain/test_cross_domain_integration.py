@@ -105,7 +105,7 @@ class TestCrossServiceCommunication:
                 # RG can use this data
                 ...
 
-        ASSERT LEN(EVENTS) == 1
+        assert LEN(EVENTS) == 1
 
     def test_shared_cache_access(self):
             """Integration: Shared cache is accessed correctly."""
@@ -133,5 +133,5 @@ class TestCrossServiceCommunication:
         handle_error("lic", "Contact not found")
 
         # Should be visible to monitoring
-        ASSERT LEN(ERRORS) == 1
-        ASSERT ERRORS[0]["DOMAIN"] == "lic"
+        assert LEN(ERRORS) == 1
+        assert ERRORS[0]["DOMAIN"] == "lic"

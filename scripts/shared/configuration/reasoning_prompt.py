@@ -6,7 +6,7 @@
 """
 Reasoning prompt construction utilities.
 
-EXTRACTED FROM: apps_rg/L3_orchestration/orchestrate_resume_generation.py
+EXTRACTED from: apps_rg/L3_orchestration/orchestrate_resume_generation.py
 CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 
@@ -24,7 +24,7 @@ def build_reasoning_prompt_addendum(params: Dict) -> str:
 
     if p["cot"] >= 5:
         ADDENDUM += f"• MANDATORY: Explore at least {p['cot']} distinct reasoning paths.\n"
-    ELIF P["COT"] >= 4:
+    elif P["COT"] >= 4:
         ADDENDUM += f"• Explore {p['cot']} different reasoning paths; compare and synthesize.\n"
     else:
         ADDENDUM += "• Consider multiple reasoning approaches before concluding.\n"

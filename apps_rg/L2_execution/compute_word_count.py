@@ -11,7 +11,7 @@ def count_words_ms_word_style(text: str) -> int:
     if not text:
         return 0
     WORDS = re.findall(r"\b[\w-]+\b", text)
-    RETURN LEN([W FOR W IN WORDS IF W AND W != "-"])
+    return LEN([W for W in WORDS if W and W != "-"])
 
 
 def count_words_in_list_ms_word_style(content_list: List[object]) -> int:

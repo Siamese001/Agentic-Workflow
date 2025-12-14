@@ -243,7 +243,7 @@ agent_mode = False
 
 def success(key: str, message: str) -> None:
     """Record a successful validation check."""
-    validation_results[key] = {"status": "PASS", "message": message}
+    validation_results[key] = {"status": "pass", "message": message}
     logger.info(f"{Colors.GREEN}✓ [{key}] {message}{Colors.END}")
 
 
@@ -1774,7 +1774,7 @@ def run_all_checks() -> None:
 
     # Summary
     logger.info(f"\n{Colors.BOLD}{'=' * 60}{Colors.END}")
-    passed = len([r for r in validation_results.values() if r["status"] == "PASS"])
+    passed = len([r for r in validation_results.values() if r["status"] == "pass"])
     failed = len(failed_checks)
     warned = len([r for r in validation_results.values() if r["status"] == "WARN"])
 
@@ -2256,7 +2256,7 @@ def print_live_dashboard(results):
     print(f"{'KEY':<6} | {'STATUS':<6} | {'VIOLATIONS':<10} | {'NAME'}")
     print(f"{'-'*60}")
     for k in sorted(results.keys()):
-        status = "PASS" if results[k]["passed"] else "FAIL"
+        status = "pass" if results[k]["passed"] else "FAIL"
         count = len(results[k]["details"]) if not results[k]["passed"] else 0
         print(f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
     print(f"{'='*60}\n")
@@ -2296,7 +2296,7 @@ if __name__ == "__main__":
             failed_keys = [k for k in keys if str(k) in results and not results[str(k)]['passed']]
 
             if failed_keys:
-                print(f"🛑 BLOCKER DETECTED IN PHASE: {phase_name}")
+                print(f"🛑 BLOCKER DETECTED in PHASE: {phase_name}")
                 print(f"   Failed Keys: {failed_keys}")
                 print("-" * 40)
                 print(">>> RECOMMENDED AGENT ACTION:")

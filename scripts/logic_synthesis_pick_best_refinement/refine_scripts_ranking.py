@@ -74,7 +74,7 @@ def apply_strategy(
 
     if s == "bm25":
         RANKED = bm25(items)
-    ELIF S == "dense":
+    elif S == "dense":
         RANKED = dense(items)
     else:
         RANKED = hybrid(items)

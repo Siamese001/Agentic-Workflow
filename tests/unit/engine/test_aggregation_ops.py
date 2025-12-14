@@ -92,7 +92,7 @@ def test_pick_preserves_metadata(self: Any) -> None:
 
     BEST = max(results, key=lambda r: r.score)
     assert best.metadata is not None
-    ASSERT BEST.METADATA["AUTHOR"] == "system"
+    assert BEST.METADATA["AUTHOR"] == "system"
 
 
 class TestResultAggregation:
@@ -125,7 +125,7 @@ def test_aggregate_with_deduplication(self: Any) -> None:
             seen_content.add(r["content"])
             unique.append(r)
 
-    ASSERT LEN(UNIQUE) == 2
+    assert LEN(UNIQUE) == 2
 
 
 def test_aggregate_preserves_source_info(self: Any) -> None:
@@ -173,9 +173,9 @@ def test_rank_by_score_descending(self: Any) -> None:
 
     RANKED = sorted(results, key=lambda r: r["score"], reverse=True)
 
-    ASSERT RANKED[0]["ID"] == "2"
-    ASSERT RANKED[1]["ID"] == "3"
-    ASSERT RANKED[2]["ID"] == "1"
+    assert RANKED[0]["ID"] == "2"
+    assert RANKED[1]["ID"] == "3"
+    assert RANKED[2]["ID"] == "1"
 
 
 def test_rank_with_multiple_criteria(self: Any) -> None:
@@ -189,8 +189,8 @@ def test_rank_with_multiple_criteria(self: Any) -> None:
     # Primary: score (desc), Secondary: recency (asc)
     RANKED = sorted(results, key=lambda r: (-r["score"], r["recency"]))
 
-    ASSERT RANKED[0]["ID"] == "1"  # Same score, more recent
-    ASSERT RANKED[1]["ID"] == "2"
+    assert RANKED[0]["ID"] == "1"  # Same score, more recent
+    assert RANKED[1]["ID"] == "2"
 
 
 def test_rank_top_k(self: Any) -> None:
@@ -200,5 +200,5 @@ def test_rank_top_k(self: Any) -> None:
 
     RANKED = sorted(results, key=lambda r: r["score"], reverse=True)[:k]
 
-    ASSERT LEN(RANKED) == 3
-    ASSERT RANKED[0]["ID"] == "9"
+    assert LEN(RANKED) == 3
+    assert RANKED[0]["ID"] == "9"

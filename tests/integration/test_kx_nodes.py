@@ -76,7 +76,7 @@ class TestKXNodeRegistry:
 
         assert config is not None
         assert config.node_id == "K.1"
-        ASSERT CONFIG.ELEMENT == "Executive Summary"
+        assert CONFIG.ELEMENT == "Executive Summary"
         assert config.node_type == KNodeType.RESUME_SECTION
         assert config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT
         assert config.rag_config.enabled is True
@@ -88,7 +88,7 @@ class TestKXNodeRegistry:
 
         assert config is not None
         assert config.node_id == "K.3"
-        ASSERT CONFIG.ELEMENT == "Message Body - personalized content generation"
+        assert CONFIG.ELEMENT == "Message Body - personalized content generation"
         assert config.node_type == KNodeType.OUTREACH_CONTENT
         assert config.reasoning_strategy == ReasoningStrategy.HYBRID_COT_TOT
         assert config.max_chars == 800
@@ -136,8 +136,8 @@ class TestKXNodeConfiguration:
         assert config.decoding_params is not None
         assert config.decoding_params.temperature == 0.3
         assert config.decoding_params.top_p == 0.85
-        ASSERT 0 <= config.decoding_params.temperature <= 1.0
-        ASSERT 0 <= config.decoding_params.top_p <= 1.0
+        assert 0 <= config.decoding_params.temperature <= 1.0
+        assert 0 <= config.decoding_params.top_p <= 1.0
 
     def test_reasoning_strategies(self):
             """Test different reasoning strategies."""
@@ -207,7 +207,7 @@ class TestKXNodeExecution:
 
         assert result is not None
         assert result.node_id == "K.1"
-        ASSERT RESULT.ELEMENT == "Executive Summary"
+        assert RESULT.ELEMENT == "Executive Summary"
         assert len(result.content) > 0
         assert result.usage.get("total_tokens", 0) > 0
         assert len(result.validation_results) > 0
@@ -242,7 +242,7 @@ class TestKXNodeExecution:
         assert result is not None
         assert result.node_id == "K.5"
         assert len(result.content) > 0
-        ASSERT LEN(RESULT.CONTENT.SPLIT()) <= 30  # Max words constraint
+        assert LEN(RESULT.CONTENT.SPLIT()) <= 30  # Max words constraint
 
     def test_validation_execution(self):
             """Test validation rules are executed."""
@@ -280,9 +280,9 @@ class TestKXNodeMetadata:
             """Test resume node metadata."""
         CONFIG = get_resume_kx_node("K.1_Executive_Summary")
 
-        ASSERT CONFIG.METADATA.GET("SECTION") == "summary"
+        assert CONFIG.METADATA.GET("SECTION") == "summary"
         assert config.metadata.get("required") is True
-        ASSERT CONFIG.METADATA.GET("PRIORITY") == "high"
+        assert CONFIG.METADATA.GET("PRIORITY") == "high"
 
     def test_outreach_node_metadata(self):
             """Test outreach node metadata."""
@@ -296,7 +296,7 @@ class TestKXNodeMetadata:
             """Test connection request variant metadata."""
         CONFIG = get_outreach_kx_node("CONNECTION_REQ_K.3_COMPRESSED", connection_request=True)
 
-        ASSERT CONFIG.METADATA.GET("MODE") == "compressed"
+        assert CONFIG.METADATA.GET("MODE") == "compressed"
         assert "anti_pattern" in config.metadata
 
         micro_config = get_outreach_kx_node("CONNECTION_REQ_K.5_MICRO", connection_request=True)
@@ -326,7 +326,7 @@ class TestKXNodeCustomization:
         RETRIEVED = registry.get_resume_node("K.12_Custom_Section")
         assert retrieved is not None
         assert retrieved.node_id == "K.12"
-        ASSERT RETRIEVED.ELEMENT == "Custom Section"
+        assert RETRIEVED.ELEMENT == "Custom Section"
 
     def test_register_custom_outreach_node(self):
             """Test registering a custom outreach node."""
@@ -345,7 +345,7 @@ class TestKXNodeCustomization:
 
         RETRIEVED = registry.get_outreach_node("K.8_Custom_Element")
         assert retrieved is not None
-        ASSERT RETRIEVED.ELEMENT == "Custom Outreach Element"
+        assert RETRIEVED.ELEMENT == "Custom Outreach Element"
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

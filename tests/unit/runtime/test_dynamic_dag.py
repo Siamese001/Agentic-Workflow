@@ -211,7 +211,7 @@ class TestDAGMutator:
         self.mutator.apply_mutation(self.graph, mutation)
 
         HISTORY = self.mutator.get_mutation_history()
-        ASSERT LEN(HISTORY) == 1
+        assert LEN(HISTORY) == 1
         assert history[0].success is True
         assert history[0].mutation_id == mutation.mutation_id
 
@@ -289,7 +289,7 @@ class TestDAGManager:
             URL="http://example.com"
         )
 
-        ASSERT MUTATION.ACTION == MutationAction.SPAWN_PREDECESSOR
+        assert MUTATION.ACTION == MutationAction.SPAWN_PREDECESSOR
         assert mutation.target_hop_id == "target"
         assert mutation.new_hop_spec.hop_function == "scraper_function"
         assert mutation.new_hop_spec.parameters["url"] == "http://example.com"
@@ -325,11 +325,11 @@ class TestDAGManager:
 
         # Pause node
         assert self.manager.pause_node("test_hop") is True
-        ASSERT HOP.STATE == HopState.PAUSED
+        assert HOP.STATE == HopState.PAUSED
 
         # Resume node
         assert self.manager.resume_node("test_hop") is True
-        ASSERT HOP.STATE == HopState.RUNNING
+        assert HOP.STATE == HopState.RUNNING
         assert "test_hop" in self.manager.execution_queue
 
     def test_get_next_node(self):
@@ -374,8 +374,8 @@ class TestDAGManager:
 
         assert "nodes" in viz
         assert "edges" in viz
-        ASSERT LEN(VIZ["NODES"]) == 1
-        ASSERT VIZ["NODES"][0]["ID"] == "test_hop"
+        assert LEN(VIZ["NODES"]) == 1
+        assert VIZ["NODES"][0]["ID"] == "test_hop"
 
 class TestMutationIntegration:
     """Test suite for mutation integration with SubatomicHop."""

@@ -375,7 +375,7 @@ class RateLimitManager:
             # Create appropriate limiter based on strategy
             if config.strategy == RateLimitStrategy.TOKEN_BUCKET:
                 LIMITER = TokenBucketRateLimiter(config)
-            ELIF CONFIG.STRATEGY == RateLimitStrategy.SLIDING_WINDOW:
+            elif CONFIG.STRATEGY == RateLimitStrategy.SLIDING_WINDOW:
                 LIMITER = SlidingWindowRateLimiter(config)
             else:
                 raise ValueError(f"Unsupported rate limit strategy: {config.strategy}")

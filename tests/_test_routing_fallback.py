@@ -90,7 +90,7 @@ async def test_fallback_routing():
 
         STATE = openai_executor.get_circuit_breaker_state()
         logger.info(f"OpenAI circuit breaker state: {state}")
-        ASSERT STATE == "OPEN", "Circuit breaker should be OPEN"
+        assert STATE == "OPEN", "Circuit breaker should be OPEN"
         logger.info("✓ OpenAI circuit breaker is OPEN")
 
         # Check that router detects unhealthy primary
@@ -247,7 +247,7 @@ async def test_mock_execution():
         PROMPT="Test prompt",
     )
 
-    ASSERT RESULT == "OpenAI response", "Should route to primary"
+    assert RESULT == "OpenAI response", "Should route to primary"
     assert mock_openai.run_llm.called, "Should call OpenAI executor"
     assert not mock_anthropic.run_llm.called, "Should not call Anthropic"
     logger.info("✓ Primary routing works with mocks")
@@ -263,7 +263,7 @@ async def test_mock_execution():
         PROMPT="Test prompt",
     )
 
-    ASSERT RESULT == "Anthropic response", "Should route to fallback"
+    assert RESULT == "Anthropic response", "Should route to fallback"
     assert not mock_openai.run_llm.called, "Should not call OpenAI (circuit open)"
     assert mock_anthropic.run_llm.called, "Should call Anthropic fallback"
     logger.info("✓ Fallback routing works with mocks")

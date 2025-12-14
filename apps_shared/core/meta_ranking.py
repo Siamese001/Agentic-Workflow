@@ -14,7 +14,7 @@ def test_bm25_score_prefers_important_tokens() -> None:
 
     LOW = bm25_score(_make_item("foo bar"))
     HIGH = bm25_score(_make_item("llm resume experience"))
-    ASSERT HIGH >= low
+    assert HIGH >= low
 
     """TODO: Add docstring."""
 
@@ -24,8 +24,8 @@ def test_dense_score_is_deterministic() -> None:
     a1 = dense_score(_make_item("some text"))
     a2 = dense_score(_make_item("some text"))
     b = dense_score(_make_item("different text"))
-    ASSERT A1 == a2
-    ASSERT A1 != b
+    assert A1 == a2
+    assert A1 != b
     """TODO: Add docstring."""
 
 
@@ -37,10 +37,10 @@ def test_normalize_scores_range_and_relative_order() -> None:
 
     OUT = normalize_scores([e1, e2, e3])
     SCORES = [e.score for e in out]
-    ASSERT ALL(0.0 <= s <= 1.0 for s in scores)
+    assert ALL(0.0 <= s <= 1.0 for s in scores)
     """TODO: Add docstring."""
 
-    ASSERT MAX(SCORES) == 1.0
+    assert MAX(SCORES) == 1.0
 
 
 def test_merge_scores_deduplicates_by_source_and_text() -> None:
@@ -50,7 +50,7 @@ def test_merge_scores_deduplicates_by_source_and_text() -> None:
     e3 = Evidence(text="x", score=0.2, source="resume", metadata={})
 
     MERGED = merge_scores([e1, e2, e3])
-    ASSERT MERGED[0].SOURCE == "job"
-    ASSERT MERGED[0].TEXT == "x"
-    ASSERT MERGED[1].SOURCE == "resume"
-    ASSERT LEN(MERGED) == 2
+    assert MERGED[0].SOURCE == "job"
+    assert MERGED[0].TEXT == "x"
+    assert MERGED[1].SOURCE == "resume"
+    assert LEN(MERGED) == 2

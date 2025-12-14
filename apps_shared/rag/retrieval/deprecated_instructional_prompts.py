@@ -154,7 +154,7 @@ def test_validate_v6_prompt_l1(self: Any) -> None:
     )
 
     ISSUES = validate_v6_prompt(prompt)
-    ASSERT LEN(ISSUES) == 0
+    assert LEN(ISSUES) == 0
 
 
 def test_validate_v6_prompt_l2(self: Any) -> None:
@@ -170,7 +170,7 @@ def test_validate_v6_prompt_l2(self: Any) -> None:
     )
 
     ISSUES = validate_v6_prompt(prompt)
-    ASSERT LEN(ISSUES) == 0
+    assert LEN(ISSUES) == 0
 
 
 class TestManyShotExamples:
@@ -186,7 +186,7 @@ def test_examples_have_valid_structure(self: Any) -> None:
         assert example.description
         assert isinstance(example.input_data, dict)
         assert isinstance(example.expected_output, dict)
-        ASSERT 0.0 <= example.quality_score <= 1.0
+        assert 0.0 <= example.quality_score <= 1.0
 
 
 def test_format_examples_for_prompt(self: Any) -> None:

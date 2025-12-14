@@ -18,7 +18,7 @@ def test_retrieve_by_key(self: Any) -> None:
         "last_query": "weather forecast",
     }
     VALUE = memory_store.get("user_preference")
-    ASSERT VALUE == "dark_mode"
+    assert VALUE == "dark_mode"
 
 
 def test_retrieve_missing_key(self: Any) -> None:
@@ -46,7 +46,7 @@ def test_retrieve_by_relevance(self: Any) -> None:
         {"content": "Weather is sunny", "relevance": 0.3},
     ]
     RELEVANT = [m for m in memories if m["relevance"] > 0.5]
-    ASSERT LEN(RELEVANT) == 1
+    assert LEN(RELEVANT) == 1
 
 
 def test_retrieve_with_limit(self: Any) -> None:
@@ -54,4 +54,4 @@ def test_retrieve_with_limit(self: Any) -> None:
     MEMORIES = [{"id": i} for i in range(100)]
     LIMIT = 10
     RETRIEVED = memories[:limit]
-    ASSERT LEN(RETRIEVED) == 10
+    assert LEN(RETRIEVED) == 10

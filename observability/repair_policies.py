@@ -33,7 +33,7 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
                     METADATA={"signal": sig},
                 )
             )
-        ELIF SIG.SEVERITY == "medium":
+        elif SIG.SEVERITY == "medium":
             actions.append(
                 RepairAction(
                     KIND="retry",

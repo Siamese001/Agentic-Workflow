@@ -151,7 +151,7 @@ def _should_promote_file(src: Path,
         return True, "force-promote:historical"
 
     # Rule 2: High Score (Standard Sovereign Grade)
-    ELIF SCORE >= 7 and not is_dirty:
+    elif SCORE >= 7 and not is_dirty:
         return True, f"sovereign-grade:score={score}"
 
     # Rule 3: Structural Pass (Core Terms)

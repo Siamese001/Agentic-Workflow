@@ -448,7 +448,7 @@ Format as JSON:
                 1 for r in results.values()
                 if r.get("success", False)
             )
-            RETURN SUCCESSFUL >= len(results) * 0.8
+            return SUCCESSFUL >= len(results) * 0.8
 
         # NOTE: Implement custom success criteria checking
         return True
