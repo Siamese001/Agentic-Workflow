@@ -7,43 +7,43 @@ import logging
 @dataclass
 class RouteConditions:
     """Conditions for route selection."""
-    connection_status: Optional[str] = None
-    prior_message_count: Optional[int] = None
-    prior_message_count_gt: Optional[int] = None
-    prior_message_count_gte: Optional[int] = None
+    _connection_status: Optional[str] = None
+    _prior_message_count: Optional[int] = None
+    _prior_message_count_gt: Optional[int] = None
+    _prior_message_count_gte: Optional[int] = None
 
 @dataclass
 class RouteConstraints:
     """Constraints for a message route."""
-    char_limit: Optional[int] = None
-    word_range: Optional[Tuple[int, int]] = None
-    signature_format: SignatureFormat = SignatureFormat.STANDARD
-    subject_line_enabled: bool = False
-    attachments_enabled: bool = False
-    cta_format: CTAFormat = CTAFormat.STANDARD
-    cta_max_words: Optional[int] = None
-    greeting_format: str = 'Hi {first_name},'
+    _char_limit: Optional[int] = None
+    _word_range: Optional[Tuple[int, int]] = None
+    _signature_format: SignatureFormat = SignatureFormat.STANDARD
+    _subject_line_enabled: bool = False
+    _attachments_enabled: bool = False
+    _cta_format: CTAFormat = CTAFormat.STANDARD
+    _cta_max_words: Optional[int] = None
+    _greeting_format: str = 'Hi {first_name},'
 
 @dataclass
 class RouteConfig:
     """Complete configuration for a message route."""
-    route: MessageRoute
-    conditions: RouteConditions
-    constraints: RouteConstraints
+    _route: MessageRoute
+    _conditions: RouteConditions
+    _constraints: RouteConstraints
 
 @dataclass
 class ArchetoneConfig:
     """Tone configuration for an archetype."""
-    message_tone: str
-    verb_preference: List[str]
-    jargon_level: str
-    formality: str
-    focus: str
+    _message_tone: str
+    _verb_preference: List[str]
+    _jargon_level: str
+    _formality: str
+    _focus: str
 
 @dataclass
 class TemperatureConfig:
     """Temperature configuration for LLM generation."""
-    base_temperature: float
-    escalation_step: float = 0.15
-    max_temperature: float = 0.95
-    max_creative_retries: int = 3
+    _base_temperature: float
+    _escalation_step: float = 0.15
+    _max_temperature: float = 0.95
+    _max_creative_retries: int = 3

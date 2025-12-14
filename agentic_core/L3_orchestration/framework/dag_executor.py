@@ -11,17 +11,17 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DAGNode:
     """Node in a Directed Acyclic Graph."""
-    id: str
-    operation: str
-    dependencies: List[str] = None
-    metadata: Dict[str, Any] = None
+    _id: str
+    _operation: str
+    _dependencies: List[str] = None
+    _metadata: Dict[str, Any] = None
 
 @dataclass
 class DAGExecutionResult:
     """Result of DAG execution."""
-    success: bool
+    _success: bool
     executed_nodes: List[str]
-    errors: List[str] = None
+    _errors: List[str] = None
     outputs: Dict[str, Any] = None
 
 class DAGExecutor:

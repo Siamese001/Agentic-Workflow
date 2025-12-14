@@ -14,17 +14,17 @@ class ToolStatus(Enum):
 @dataclass
 class ToolDefinition:
     """Docstring."""
-    name: str
-    description: str
-    parameters: Dict[str, object]
-    required_params: List[str]
+    _name: str
+    _description: str
+    _parameters: Dict[str, object]
+    _required_params: List[str]
 
 @dataclass
 class ToolExecutionResult:
     """Docstring."""
     success: bool
-    data: Optional[Any]
-    error: Optional[str]
+    _data: Optional[Any]
+    _error: Optional[str]
     execution_time_ms: float
 
 class TestToolRegistration:

@@ -15,14 +15,14 @@ logger = logging.getLogger(__name__)
 class HeadlineOutput:
     """Executive title composer output."""
     headline: str
-    segment_1: str  # Industry/Domain
-    segment_2: str  # Leadership/Role
-    segment_3: str  # Value Proposition
+    _segment_1: str  # Industry/Domain
+    _segment_2: str  # Leadership/Role
+    _segment_3: str  # Value Proposition
     word_count: int
     char_count: int
     industry_first_compliant: bool
-    technology_keywords_in_segment_1: List[str]
-    metadata: Dict[str, Any]
+    _technology_keywords_in_segment_1: List[str]
+    _metadata: Dict[str, Any]
 
 # Technology keywords that MUST NOT appear in Segment 1 (Industry-First violation)
 TECHNOLOGY_KEYWORDS = [

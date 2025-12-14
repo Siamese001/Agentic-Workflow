@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ScoreResult:
     """Result of scoring operation."""
-    score: float
+    _score: float
     confidence: float
     factors: Dict[str, float] = field(default_factory=dict)
-    metadata: Dict[str, object] = field(default_factory=dict)
+    _metadata: Dict[str, object] = field(default_factory=dict)
 
 class ComputeScriptsScore:
     """Scoring engine for utilities domain."""

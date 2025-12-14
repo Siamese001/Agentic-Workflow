@@ -7,8 +7,8 @@ import logging
 @dataclass
 class CharLimitConstraint:
     """Character limit constraint for a route."""
-    min: Optional[int] = None
-    max: Optional[int] = None
+    _min: Optional[int] = None
+    _max: Optional[int] = None
 
     def validate(self, count: int) -> bool:
         """Validate character count against constraints."""
@@ -35,39 +35,39 @@ class WordLimitConstraint:
 @dataclass
 class RouteConfig:
     """Configuration for a message route."""
-    route: Route
-    char_limit: Optional[CharLimitConstraint] = None
-    word_limit: Optional[WordLimitConstraint] = None
-    k_nodes_enabled: Dict[str, bool] = field(default_factory=dict)
-    k_nodes_format: Dict[str, str] = field(default_factory=dict)
-    constraints: List[str] = field(default_factory=list)
-    cta_word_limit: Optional[int] = None
-    signature_format: str = 'standard'
-    subject_line: bool = True
-    attachments_allowed: bool = True
+    _route: Route
+    _char_limit: Optional[CharLimitConstraint] = None
+    _word_limit: Optional[WordLimitConstraint] = None
+    _k_nodes_enabled: Dict[str, bool] = field(default_factory=dict)
+    _k_nodes_format: Dict[str, str] = field(default_factory=dict)
+    _constraints: List[str] = field(default_factory=list)
+    _cta_word_limit: Optional[int] = None
+    _signature_format: str = 'standard'
+    _subject_line: bool = True
+    _attachments_allowed: bool = True
 
 @dataclass
 class ArchetypeConfig:
     """Configuration for recipient archetype."""
-    archetype: Archetype
-    temperature: float = 0.7
-    rag_enabled: bool = True
-    rag_hops: int = 2
-    rag_total_calls: int = 5
-    self_consistency_runs: int = 3
-    tot_branches: int = 3
-    message_format_template: str = 'standard'
-    tone: str = 'professional'
-    formality_level: str = 'moderate'
+    _archetype: Archetype
+    _temperature: float = 0.7
+    _rag_enabled: bool = True
+    _rag_hops: int = 2
+    _rag_total_calls: int = 5
+    _self_consistency_runs: int = 3
+    _tot_branches: int = 3
+    _message_format_template: str = 'standard'
+    _tone: str = 'professional'
+    _formality_level: str = 'moderate'
 
 @dataclass
 class ValidationRule:
     """Validation rule configuration."""
-    rule_id: str
-    name: str
-    phase: str
-    severity: ValidationSeverity
-    description: str
-    enforcement: str
-    validation_method: str
-    threshold: Optional[float] = None
+    _rule_id: str
+    _name: str
+    _phase: str
+    _severity: ValidationSeverity
+    _description: str
+    _enforcement: str
+    _validation_method: str
+    _threshold: Optional[float] = None

@@ -16,56 +16,56 @@ class APICallStatus(Enum):
 @dataclass
 class ValidationResult:
     """Result of a validation rule execution."""
-    rule_id: str
-    passed: bool
-    severity: ValidationSeverity
-    message: str
-    details: Dict[str, object] = field(default_factory=dict)
+    _rule_id: str
+    _passed: bool
+    _severity: ValidationSeverity
+    _message: str
+    _details: Dict[str, object] = field(default_factory=dict)
 
 @dataclass
 class ThematicAnalysis:
     """Thematic analysis results from content inspection."""
-    primary_theme: Dict[str, object] = field(default_factory=dict)
-    secondary_themes: List[Dict[str, object]] = field(default_factory=list)
-    role_classification: Dict[str, object] = field(default_factory=dict)
-    positioning_directives: Dict[str, object] = field(default_factory=dict)
-    authenticity_patterns: Dict[str, object] = field(default_factory=dict)
-    competitive_intelligence: object = None
-    problem_solution_narratives: Optional[Dict[str, object]] = None
-    signal_quality_score: float = 0.0
-    retrieval_method: str = 'UNKNOWN'
-    retrieval_sources: List[Any] = field(default_factory=list)
-    weighting_formula: Optional[Dict[str, object]] = None
+    _primary_theme: Dict[str, object] = field(default_factory=dict)
+    _secondary_themes: List[Dict[str, object]] = field(default_factory=list)
+    _role_classification: Dict[str, object] = field(default_factory=dict)
+    _positioning_directives: Dict[str, object] = field(default_factory=dict)
+    _authenticity_patterns: Dict[str, object] = field(default_factory=dict)
+    _competitive_intelligence: object = None
+    _problem_solution_narratives: Optional[Dict[str, object]] = None
+    _signal_quality_score: float = 0.0
+    _retrieval_method: str = 'UNKNOWN'
+    _retrieval_sources: List[Any] = field(default_factory=list)
+    _weighting_formula: Optional[Dict[str, object]] = None
 
 @dataclass
 class APICallMetrics:
     """Metrics for API call tracking"""
-    call_count: int = 0
-    success_count: int = 0
-    error_count: int = 0
-    total_tokens_used: int = 0
-    total_latency_ms: float = 0
-    safety_blocks: int = 0
-    rate_limits: int = 0
+    _call_count: int = 0
+    _success_count: int = 0
+    _error_count: int = 0
+    _total_tokens_used: int = 0
+    _total_latency_ms: float = 0
+    _safety_blocks: int = 0
+    _rate_limits: int = 0
 
 @dataclass
 class RAGState:
     """State of RAG (Retrieval-Augmented Generation) process."""
-    query: str = ''
-    retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
-    context: str = ''
-    response: str = ''
-    retrieval_score: float = 0.0
-    generation_confidence: float = 0.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    _query: str = ''
+    _retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
+    _context: str = ''
+    _response: str = ''
+    _retrieval_score: float = 0.0
+    _generation_confidence: float = 0.0
+    _metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
-    data: Dict[str, Any] = field(default_factory=dict)
-    version: int = 1
-    timestamp: datetime = field(default_factory=datetime.utcnow)
-    checksum: Optional[str] = None
+    _data: Dict[str, Any] = field(default_factory=dict)
+    _version: int = 1
+    _timestamp: datetime = field(default_factory=datetime.utcnow)
+    _checksum: Optional[str] = None
 
     def with_data(self, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
         """Return a new buffer with updated data."""

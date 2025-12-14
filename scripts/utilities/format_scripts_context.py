@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 class FormattedOutput:
     """Result of formatting."""
     data: object
-    format_type: str
-    metadata: Dict[str, object] = field(default_factory=dict)
+    _format_type: str
+    _metadata: Dict[str, object] = field(default_factory=dict)
 
 class FormatScriptsContext:
     """Formatter for utilities domain."""

@@ -1,3 +1,4 @@
+from typing import Any
 """Performance tests for cost estimation consistency."""
 import logging
 

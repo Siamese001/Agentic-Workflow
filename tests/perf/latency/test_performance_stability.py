@@ -1,3 +1,4 @@
+from typing import Any
 """Performance stability tests - legacy workflow runner."""
 
 import pytest

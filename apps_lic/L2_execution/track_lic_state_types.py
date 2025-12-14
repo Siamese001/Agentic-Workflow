@@ -6,15 +6,15 @@ import logging
 @dataclass
 class StateCheckpoint:
     """Checkpoint for a HOP state."""
-    hop_id: str
-    mission_id: str
-    timestamp: str
-    checksum: str
-    filepath: str
+    _hop_id: str
+    _mission_id: str
+    _timestamp: str
+    _checksum: str
+    _filepath: str
 
 @dataclass
 class StateValidationResult:
     """Result of state validation."""
-    is_valid: bool
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    _is_valid: bool
+    _errors: List[str] = field(default_factory=list)
+    _warnings: List[str] = field(default_factory=list)

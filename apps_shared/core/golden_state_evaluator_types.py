@@ -1,3 +1,4 @@
+from typing import Any
 """Types and models for golden_state_evaluator."""
 import logging
 
@@ -6,14 +7,14 @@ import logging
 @dataclass
 class GoldenCase:
     """Golden test case."""
-    id: str
-    name: str
-    category: str
-    mission: str
-    scene: Dict[str, Any]
-    expected_output: Dict[str, Any]
-    expected_actions: List[Dict[str, Any]]
-    quality_criteria: Dict[str, float]
+    _id: str
+    _name: str
+    _category: str
+    _mission: str
+    _scene: Dict[str, Any]
+    _expected_output: Dict[str, Any]
+    _expected_actions: List[Dict[str, Any]]
+    _quality_criteria: Dict[str, float]
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'GoldenCase':
@@ -30,21 +31,21 @@ class GoldenCase:
 @dataclass
 class GoldenOutput:
     """Output from agent execution."""
-    case_id: str
-    actual_output: str
-    actions_taken: List[Dict[str, Any]] = field(default_factory=list)
-    execution_trace: List[Dict[str, Any]] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    _case_id: str
+    _actual_output: str
+    _actions_taken: List[Dict[str, Any]] = field(default_factory=list)
+    _execution_trace: List[Dict[str, Any]] = field(default_factory=list)
+    _metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class EvaluationReport:
     """Evaluation report for a golden case."""
     case_id: str
-    case_name: str
-    passed: bool
-    judge_result: JudgeEvaluationResult
-    action_match_score: float
-    errors: List[str] = field(default_factory=list)
+    _case_name: str
+    _passed: bool
+    _judge_result: JudgeEvaluationResult
+    _action_match_score: float
+    _errors: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""

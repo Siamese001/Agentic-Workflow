@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DiagnosticReport:
     """Diagnostic report."""
-    timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+    _timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     healthy: bool = True
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)

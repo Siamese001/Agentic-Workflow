@@ -6,29 +6,29 @@ import logging
 @dataclass
 class ScoredCandidate:
     """A scored candidate message."""
-    candidate_index: int
-    candidate_text: str
-    scores: Dict[str, float]
-    total_score: float
+    _candidate_index: int
+    _candidate_text: str
+    _scores: Dict[str, float]
+    _total_score: float
 
 @dataclass
 class ScoringCriteria:
     """Criteria for scoring candidates."""
-    strategic_alignment: float = 0.5
-    keyword_density: float = 0.3
-    readability: float = 0.2
+    _strategic_alignment: float = 0.5
+    _keyword_density: float = 0.3
+    _readability: float = 0.2
 
 @dataclass
 class SimilarityResult:
     """Result of a similarity check."""
-    score: float
-    method: str
-    text1_length: int
-    text2_length: int
+    _score: float
+    _method: str
+    _text1_length: int
+    _text2_length: int
 
 @dataclass
 class KeywordExtractionResult:
     """Result of keyword extraction."""
-    keywords: List[str]
-    source_text_length: int
-    top_n: int
+    _keywords: List[str]
+    _source_text_length: int
+    _top_n: int

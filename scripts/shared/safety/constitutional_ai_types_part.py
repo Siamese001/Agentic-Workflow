@@ -15,22 +15,22 @@ class ViolationType(Enum):
 @dataclass
 class ConstitutionalRule:
     """Individual constitutional rule."""
-    rule_id: str
-    rule_type: RuleType
-    title: str
-    description: str
-    pattern: str
-    severity: RuleSeverity
-    action: str
-    replacement: Optional[str] = None
+    _rule_id: str
+    _rule_type: RuleType
+    _title: str
+    _description: str
+    _pattern: str
+    _severity: RuleSeverity
+    _action: str
+    _replacement: Optional[str] = None
 
 @dataclass
 class ViolationReport:
     """Report of constitutional violation."""
     rule_id: str
-    violation_type: ViolationType
+    _violation_type: ViolationType
     severity: RuleSeverity
-    location: str
-    content: str
-    suggestion: str
-    confidence: float
+    _location: str
+    _content: str
+    _suggestion: str
+    _confidence: float

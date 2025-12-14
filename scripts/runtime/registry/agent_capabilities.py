@@ -28,17 +28,17 @@ class AgentCapability:
     """Defines the capability of an agent role."""
 
     role: AgentRole
-    display_name: str
-    description: str
-    primary_function: str
-    inputs: List[str]
-    outputs: List[str]
-    tools: List[str] = field(default_factory=list)
-    constraints: List[str] = field(default_factory=list)
-    system_prompt_template: str = ""
+    _display_name: str
+    _description: str
+    _primary_function: str
+    _inputs: List[str]
+    _outputs: List[str]
+    _tools: List[str] = field(default_factory=list)
+    _constraints: List[str] = field(default_factory=list)
+    _system_prompt_template: str = ""
 
     # Legacy mapping for transition
-    legacy_k_nodes: List[str] = field(default_factory=list)
+    _legacy_k_nodes: List[str] = field(default_factory=list)
 
 class AgentSpec:
     """Specification for creating an agent instance."""

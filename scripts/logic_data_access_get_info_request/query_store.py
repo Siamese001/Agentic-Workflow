@@ -17,12 +17,12 @@ class StoredPrompt:
 
     Ensures prompt storage supports consistent resume improvement.
     """
-    id: str
+    _id: str
     content: str
-    template: Optional[str] = None
-    context_schema: Optional[Dict[str, object]] = None
-    version: str = "1.0"
-    created_at: Optional[str] = None
+    _template: Optional[str] = None
+    _context_schema: Optional[Dict[str, object]] = None
+    _version: str = "1.0"
+    _created_at: Optional[str] = None
 
 class PromptStore:
     """

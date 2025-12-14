@@ -35,11 +35,11 @@ DEFAULT_TIMEOUT = 60.0
 @dataclass
 class ProviderConfig:
     """Configuration for LLM provider."""
-    max_retries: int = DEFAULT_MAX_RETRIES
-    timeout: float = DEFAULT_TIMEOUT
-    base_url: Optional[str] = None
-    organization: Optional[str] = None
-    default_model: Optional[str] = None
+    _max_retries: int = DEFAULT_MAX_RETRIES
+    _timeout: float = DEFAULT_TIMEOUT
+    _base_url: Optional[str] = None
+    _organization: Optional[str] = None
+    _default_model: Optional[str] = None
 
 # Singleton client cache
 _CLIENTS: Dict[Provider, Any] = {}

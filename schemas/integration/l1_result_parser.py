@@ -6,26 +6,26 @@ import logging
 @dataclass
 class StrategyResult:
     """Pure strategy result data - no business logic."""
-    strategy: str
-    confidence: float
+    _strategy: str
+    _confidence: float
 
 @dataclass
 class DraftResult:
     """Pure draft result data - no business logic."""
-    sections: list
-    content: str
+    _sections: list
+    _content: str
 
 @dataclass
 class QAResult:
     """Pure QA result data - no business logic."""
-    findings: str
+    _findings: str
     confidence: float
 
 @dataclass
 class SafetyResult:
     """Pure safety result data - no business logic."""
-    violations: list
-    approved: bool
+    _violations: list
+    _approved: bool
 
 class ResultParser:
     """Pure result parsing - no execution, no orchestration logic."""
