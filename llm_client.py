@@ -2,182 +2,146 @@ import os
 import json
 import logging
 import time
+import concurrent.futures
 from typing import Dict, Any, Optional
 
-# Import all three major providers
-# pip install openai anthropic google-generativeai
 from openai import OpenAI
 from anthropic import Anthropic
 import google.generativeai as genai
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("LLMClient")
 
 class LLMClient:
     """
-    Universal Interface to Frontier Intelligence (Dec 2025).
-    Supports:
-      - Anthropic: claude-sonnet-4-5-20250929
-      - OpenAI:    gpt-5.1
-      - Google:    gemini-3-pro
+    Universal Intelligence Engine (Dec 2025 Architecture).
+    Enforces Tiered Thinking:
+      - HIGH TIER (Consensus): Claude 4.5 + GPT-5.1 + Gemini 3 Pro
+      - LOW TIER (Mini): GPT-5 Mini / Haiku 4.5 / Gemini 2.5 Flash
     """
     
-    def __init__(self, provider: str = "anthropic"):
-        self.provider = provider.lower()
-        self.client = None
-        self.model = None
-        self.api_key_set = False
+    def __init__(self):
+        # Initialize Providers
+        self.anthropic = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+        self.openai = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
         
-        # 1. ANTHROPIC CONFIGURATION
-        if self.provider == "anthropic":
-            api_key = os.getenv("ANTHROPIC_API_KEY")
-            if api_key:
-                self.client = Anthropic(api_key=api_key)
-                self.model = "claude-sonnet-4-5-20250929"
-                self.api_key_set = True
-            else:
-                logger.warning("⚠️ ANTHROPIC_API_KEY missing. Set it with: export ANTHROPIC_API_KEY=your_key")
-
-        # 2. OPENAI CONFIGURATION
-        elif self.provider == "openai":
-            api_key = os.getenv("OPENAI_API_KEY")
-            if api_key:
-                self.client = OpenAI(api_key=api_key)
-                self.model = "gpt-5.1"
-                self.api_key_set = True
-            else:
-                logger.warning("⚠️ OPENAI_API_KEY missing. Set it with: export OPENAI_API_KEY=your_key")
-
-        # 3. GOOGLE CONFIGURATION
-        elif self.provider == "google":
-            api_key = os.getenv("GOOGLE_API_KEY")
-            if api_key:
-                genai.configure(api_key=api_key)
-                self.model = "gemini-3-pro"
-                self.api_key_set = True
-            else:
-                logger.warning("⚠️ GOOGLE_API_KEY missing. Set it with: export GOOGLE_API_KEY=your_key")
-        
-        else:
-            raise ValueError(f"Unknown provider: {self.provider}")
-
-    def generate_plan(self, system_context: str, user_goal: str) -> Dict[str, Any]:
-        """
-        Generates a JSON execution plan using the selected provider.
-        Falls back to mock mode if no API key is configured.
-        """
-        start_time = time.time()
-        
-        # Check if we have API keys
-        if not self.api_key_set:
-            logger.warning("⚠️ No API key configured. Using MOCK MODE.")
-            return self._mock_response(user_goal)
-        
-        logger.info(f"⚡ Sending request to {self.provider.upper()} ({self.model})...")
-
-        # JSON Schema Injection (Critical for Agentic Control)
-        json_instruction = """
-IMPORTANT: You must respond with raw JSON only. Do not wrap in markdown ```json blocks.
-Schema:
-{
-    "goal": "Refined user goal",
-    "reasoning": "Explanation of your plan based on the Context",
-    "plan": {
-        "steps": [
-            { "step": 1, "action": "tool_name", "params": { "key": "value" } }
-        ]
-    }
-}
-"""
-        full_system_prompt = f"{system_context}\n\n{json_instruction}"
-
-        try:
-            if self.provider == "anthropic":
-                return self._call_anthropic(full_system_prompt, user_goal)
-            elif self.provider == "openai":
-                return self._call_openai(full_system_prompt, user_goal)
-            elif self.provider == "google":
-                return self._call_google(full_system_prompt, user_goal)
-                
-        except Exception as e:
-            logger.error(f"LLM Call Failed: {e}")
-            return self._error_response(str(e))
-        finally:
-            logger.info(f"✅ Response received in {time.time() - start_time:.2f}s")
-
-    def _mock_response(self, user_goal: str) -> Dict[str, Any]:
-        """Fallback response when no API key is configured."""
-        return {
-            "goal": user_goal,
-            "reasoning": "MOCK MODE: No API key configured. This is a simulated response.",
-            "plan": {
-                "steps": [
-                    {
-                        "step": 1,
-                        "action": "write_file",
-                        "params": {
-                            "filename": "mock_output.py",
-                            "content": f"# Mock response for: {user_goal}\nprint('Hello from mock mode!')"
-                        }
-                    }
-                ]
+        # --- MODEL REGISTRY (DEC 2025) ---
+        self.models = {
+            "high": {
+                "anthropic": "claude-sonnet-4-5-20250929",
+                "openai":    "gpt-5.1",
+                "google":    "gemini-3-pro"
+            },
+            "mini": {
+                "anthropic": "claude-haiku-4-5",
+                "openai":    "gpt-5-mini", 
+                "google":    "gemini-2.5-flash"
             }
         }
 
-    # --- PROVIDER IMPLEMENTATIONS ---
+    def generate_plan(self, system_context: str, user_goal: str, complexity: str = "high") -> Dict[str, Any]:
+        """
+        Main Entry Point. Routes based on complexity.
+        """
+        if complexity == "high":
+            return self._execute_consensus_flow(system_context, user_goal)
+        else:
+            return self._execute_mini_flow(system_context, user_goal)
 
-    def _call_anthropic(self, system: str, user: str) -> Dict:
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=4096,
-            system=system,
-            messages=[{"role": "user", "content": user}],
-            temperature=0.2
-        )
-        return self._clean_json(response.content[0].text)
-
-    def _call_openai(self, system: str, user: str) -> Dict:
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user}
-            ],
-            response_format={"type": "json_object"}, # GPT-5.1 native JSON mode
-            temperature=0.2
-        )
-        return json.loads(response.choices[0].message.content)
-
-    def _call_google(self, system: str, user: str) -> Dict:
-        # Gemini 3 Pro uses the 'generation_config' for JSON enforcement
-        model = genai.GenerativeModel(self.model)
-        chat = model.start_chat(history=[])
+    def _execute_consensus_flow(self, system: str, user: str) -> Dict[str, Any]:
+        """HIGH TIER: Parallel Execution + Synthesis."""
+        logger.info("⚖️  STARTING CONSENSUS PROTOCOL (Claude + GPT + Gemini)")
+        start_time = time.time()
         
-        combined_prompt = f"SYSTEM: {system}\n\nUSER: {user}"
+        models = self.models["high"]
         
-        response = chat.send_message(
-            combined_prompt,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.2,
-                response_mime_type="application/json"
-            )
-        )
-        return json.loads(response.text)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Parallel calls to the Big Three
+            f_claude = executor.submit(self._call_anthropic, system, user, models["anthropic"])
+            f_gpt    = executor.submit(self._call_openai,    system, user, models["openai"])
+            f_gemini = executor.submit(self._call_google,    system, user, models["google"])
+            
+            results = [f_claude.result(), f_gpt.result(), f_gemini.result()]
 
-    def _clean_json(self, text: str) -> Dict:
-        """Helper to strip markdown fences if the model adds them."""
-        text = text.strip()
-        if text.startswith("```json"):
-            text = text[7:]
-        if text.endswith("```"):
-            text = text[:-3]
-        return json.loads(text)
+        # The Judge (Claude 4.5) synthesizes the Master Plan
+        logger.info("👨‍⚖️  The JUDGE (Claude 4.5) is synthesizing the Master Plan...")
+        
+        judge_prompt = f"""
+ACT AS THE CHIEF ARCHITECT. 
+Review these three proposals from your sub-agents.
+Synthesize a single MASTER PLAN that combines their strengths and eliminates hallucinations.
+Return ONLY valid JSON.
 
-    def _error_response(self, msg: str) -> Dict:
-        return {
-            "goal": "Error",
-            "reasoning": f"LLM Failure: {msg}",
-            "plan": {"steps": []},
-            "status": "error"
+PROPOSAL A (Claude): {json.dumps(results[0])}
+PROPOSAL B (GPT): {json.dumps(results[1])}
+PROPOSAL C (Gemini): {json.dumps(results[2])}
+"""
+        final_plan = self._call_anthropic(system, judge_prompt, models["anthropic"])
+        final_plan['consensus_metadata'] = {
+            "models_used": list(models.values()),
+            "latency": f"{time.time() - start_time:.2f}s",
+            "mode": "CONSENSUS_HIGH_TIER"
         }
+        
+        logger.info(f"✅ Consensus Reached in {time.time() - start_time:.2f}s")
+        return final_plan
+
+    def _execute_mini_flow(self, system: str, user: str) -> Dict[str, Any]:
+        """LOW TIER: Fast Execution via Mini Model."""
+        # Default to GPT-5 Mini for balance
+        model_id = self.models["mini"]["openai"]
+        logger.info(f"⚡ MINI MODE: Routing to {model_id}...")
+        
+        start_time = time.time()
+        result = self._call_openai(system, user, model_id)
+        result['consensus_metadata'] = {
+            "models_used": [model_id],
+            "latency": f"{time.time() - start_time:.2f}s",
+            "mode": "MINI_LOW_TIER"
+        }
+        return result
+
+    # --- WRAPPERS ---
+    
+    def _call_anthropic(self, system, user, model_id):
+        try:
+            resp = self.anthropic.messages.create(
+                model=model_id, max_tokens=4096, system=system,
+                messages=[{"role": "user", "content": user}], temperature=0.2
+            )
+            return self._clean_json(resp.content[0].text)
+        except Exception as e:
+            logger.error(f"Anthropic Error: {e}")
+            return {"error": str(e)}
+
+    def _call_openai(self, system, user, model_id):
+        try:
+            resp = self.openai.chat.completions.create(
+                model=model_id, 
+                messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+                response_format={"type": "json_object"},
+                temperature=0.2
+            )
+            return json.loads(resp.choices[0].message.content)
+        except Exception as e:
+            logger.error(f"OpenAI Error: {e}")
+            return {"error": str(e)}
+
+    def _call_google(self, system, user, model_id):
+        try:
+            model = genai.GenerativeModel(model_id)
+            resp = model.generate_content(
+                f"SYSTEM: {system}\nUSER: {user}",
+                generation_config={"response_mime_type": "application/json"}
+            )
+            return json.loads(resp.text)
+        except Exception as e:
+            logger.error(f"Google Error: {e}")
+            return {"error": str(e)}
+
+    def _clean_json(self, text):
+        text = text.strip()
+        if text.startswith("```json"): text = text[7:]
+        if text.endswith("```"): text = text[:-3]
+        return json.loads(text)

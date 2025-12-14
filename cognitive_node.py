@@ -15,23 +15,22 @@ logger = logging.getLogger("CognitiveNode")
 class CognitiveNode:
     """
     The 'Brain' of the Agent.
-    Selects the best model for the job (Claude 4.5, GPT-5.1, or Gemini 3).
+    Uses Tiered Thinking Protocol to route to appropriate LLM tier.
     """
     
-    def __init__(self, provider: str = "anthropic"):
+    def __init__(self):
         # 1. Connect to Memory
         self.cm = ConnectionManager()
         self.redis_index = self.cm.get_redis_index()
         self.pinecone_index = self.cm.get_pinecone_index()
         self.embedding_fn = self.cm.get_embedding
         
-        # 2. Connect to Intelligence
-        # Options: "anthropic" (Claude 4.5), "openai" (GPT-5.1), "google" (Gemini 3)
-        self.llm = LLMClient(provider=provider)
+        # 2. Connect to Intelligence (Universal LLM Client)
+        self.llm = LLMClient()
         
         # 3. Define Canon-Compliant Persona
         self.system_prompt_template = """
-You are a Subatomic Architect Agent (Model: {model_name}).
+You are a Subatomic Architect Agent.
 You do not guess. You follow the Canon explicitly.
 
 CONTEXT FROM MEMORY (Canon):
@@ -78,32 +77,38 @@ If the Context contains a function or rule, you MUST use it exactly as it appear
             
         return list(set(context_matches))
 
-    def generate_plan(self, user_goal: str) -> Dict[str, Any]:
-        """The Core Loop: Retrieve -> Prompt -> Plan."""
+    def think(self, user_goal: str, complexity: str = "high") -> Dict[str, Any]:
+        """
+        The Thinking Loop with Tiered Architecture.
+        Args:
+            complexity: 'high' (Consensus) or 'low' (Mini)
+        """
         # 1. Retrieve
         relevant_context = self.retrieve_context(user_goal)
         context_block = "\n---\n".join(relevant_context) if relevant_context else "NO RELEVANT PRECEDENTS FOUND."
         
         # 2. Construct System Context
         system_prompt = self.system_prompt_template.format(
-            model_name=self.llm.model,
             context_block=context_block
         )
         
-        # 3. Call LLM
-        result = self.llm.generate_plan(system_context=system_prompt, user_goal=user_goal)
+        # 3. Execute via Tiered LLM Client
+        result = self.llm.generate_plan(system_context=system_prompt, user_goal=user_goal, complexity=complexity)
         result["retrieved_items"] = len(relevant_context)
         
         return result
 
+    def generate_plan(self, user_goal: str) -> Dict[str, Any]:
+        """Legacy method - defaults to high complexity."""
+        return self.think(user_goal, complexity="high")
+
 if __name__ == "__main__":
-    # Test switching brains
-    print("🧠 Testing GPT-5.1 Brain:")
-    brain_gpt = CognitiveNode(provider="openai")
-    res_gpt = brain_gpt.generate_plan("Write a hello world python file")
-    print(f"GPT Plan Steps: {len(res_gpt.get('plan', {}).get('steps', []))}")
+    # Test Tiered Thinking
+    print("🧠 Testing High Complexity (Consensus):")
+    brain = CognitiveNode()
+    res_high = brain.think("Write a complex enterprise system with microservices", complexity="high")
+    print(f"High Complexity Plan Steps: {len(res_high.get('plan', {}).get('steps', []))}")
     
-    print("\n🧠 Testing Claude 4.5 Brain:")
-    brain_claude = CognitiveNode(provider="anthropic")
-    res_claude = brain_claude.generate_plan("Write a hello world python file")
-    print(f"Claude Plan Steps: {len(res_claude.get('plan', {}).get('steps', []))}")
+    print("\n⚡ Testing Low Complexity (Mini):")
+    res_low = brain.think("Write a hello world python file", complexity="low")
+    print(f"Low Complexity Plan Steps: {len(res_low.get('plan', {}).get('steps', []))}")
