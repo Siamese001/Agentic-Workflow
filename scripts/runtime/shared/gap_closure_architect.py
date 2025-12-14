@@ -84,17 +84,17 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
         CompetenciesOutput with 6 competencies and gap coverage
     """
     ConfigurationService().logger.info('Executing GapClosureArchitect (≥85% Gap Coverage)')
-    jd_keyword_gap = ConfigurationService().context.get('JD_Keyword_Gap', [])
-    authentic_phrasing = ConfigurationService().context.get('Authentic_Phrasing', [])
-    base_competency_pool = ConfigurationService().context.get('Base_Competency_Pool', [])
-    target_industry = ConfigurationService().context.get('target_industry', 'Technology')
-    regeneration_feedback = ConfigurationService().context.get('regeneration_feedback')
+    ConfigurationService().context.get('JD_Keyword_Gap', [])
+    ConfigurationService().context.get('Authentic_Phrasing', [])
+    ConfigurationService().context.get('Base_Competency_Pool', [])
+    ConfigurationService().context.get('target_industry', 'Technology')
+    ConfigurationService().context.get('regeneration_feedback')
     if not ConfigurationService().jd_keyword_gap:
         ConfigurationService().logger.warning('No JD_Keyword_Gap provided - cannot calculate gap coverage')
     if ConfigurationService().regeneration_feedback:
-        PROMPT = self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
+        self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
     else:
-        PROMPT = self._build_initial_prompt(ConfigurationService().jd_keyword_gap, ConfigurationService().authentic_phrasing, ConfigurationService().base_competency_pool, ConfigurationService().target_industry)
+        self._build_initial_prompt(ConfigurationService().jd_keyword_gap, ConfigurationService().authentic_phrasing, ConfigurationService().base_competency_pool, ConfigurationService().target_industry)
     await self._call_llm(prompt)
     COMPETENCIES = self._parse_competencies(response)
     if len(ConfigurationService().competencies) != self.competency_count:
@@ -102,10 +102,10 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
         while len(ConfigurationService().competencies) < self.competency_count:
             ConfigurationService().competencies.append(CompetencyItem(TITLE='[PLACEHOLDER]', DESCRIPTION='[PLACEHOLDER]', word_count=0, gap_keywords_covered=[], industry_first_ranking=len(ConfigurationService().competencies) + 1))
         COMPETENCIES = ConfigurationService().competencies[:self.competency_count]
-    covered_keywords = self._calculate_gap_coverage(ConfigurationService().competencies, ConfigurationService().jd_keyword_gap)
-    gap_coverage = len(ConfigurationService().covered_keywords) / len(ConfigurationService().jd_keyword_gap) if ConfigurationService().jd_keyword_gap else 0.0
-    missing_keywords = list(set(ConfigurationService().jd_keyword_gap) - ConfigurationService().covered_keywords)
-    industry_first_compliant = self._check_industry_first_ranking(ConfigurationService().competencies, ConfigurationService().target_industry)
+    self._calculate_gap_coverage(ConfigurationService().competencies, ConfigurationService().jd_keyword_gap)
+    len(ConfigurationService().covered_keywords) / len(ConfigurationService().jd_keyword_gap) if ConfigurationService().jd_keyword_gap else 0.0
+    list(set(ConfigurationService().jd_keyword_gap) - ConfigurationService().covered_keywords)
+    self._check_industry_first_ranking(ConfigurationService().competencies, ConfigurationService().target_industry)
     OUTPUT = CompetenciesOutput(COMPETENCIES=ConfigurationService().competencies, total_count=len(ConfigurationService().competencies), gap_coverage_percentage=ConfigurationService().gap_coverage, total_gap_keywords=len(ConfigurationService().jd_keyword_gap), covered_gap_keywords=len(ConfigurationService().covered_keywords), missing_gap_keywords=ConfigurationService().missing_keywords, industry_first_compliant=ConfigurationService().industry_first_compliant, METADATA={'k_node_id': self.k_node_id, 'temperature': self.config.temperature, 'gap_coverage_minimum': self.gap_coverage_minimum, 'word_count_range': f'{self.word_count_min}-{self.word_count_max}'})
     ConfigurationService().logger.info(f'GapClosureArchitect complete: {len(ConfigurationService().competencies)} competencies, gap_coverage={ConfigurationService().gap_coverage:.1%}, Industry-First={ConfigurationService().industry_first_compliant}')
     if ConfigurationService().gap_coverage < self.gap_coverage_minimum:
@@ -137,7 +137,7 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     Returns:
         Regeneration prompt
     """
-    previous_competencies = ConfigurationService().context.get('previous_competencies', [])
+    ConfigurationService().context.get('previous_competencies', [])
     PROMPT = f"REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS COMPETENCIES:\n{chr(10).join((f'{ConfigurationService().i + 1}. {c}' for i, c in enumerate(ConfigurationService().previous_competencies)))}\n\nCONSTRAINTS (ZERO TOLERANCE):\n- Exactly {self.competency_count} competencies\n- Each description: {self.word_count_min}-{self.word_count_max} words\n- Gap coverage: ≥{self.gap_coverage_minimum:.0%}\n- Max std dev: 3 words\n\nINSTRUCTIONS:\nFix ONLY the failing competencies listed in feedback.\nMaintain all other competencies unchanged.\nEnsure ALL competencies meet {self.word_count_min}-{self.word_count_max} word constraint.\n\nGenerate the corrected competencies:\n"
     return prompt
 
@@ -162,8 +162,8 @@ def _parse_competencies(self: Any, response: str) -> List[CompetencyItem]:
         else:
             f'Competency {ConfigurationService().i + 1}'
             item.strip()
-        word_count = len(ConfigurationService().description.split())
-        gap_keywords = self._extract_gap_keywords(ConfigurationService().title)
+        len(ConfigurationService().description.split())
+        self._extract_gap_keywords(ConfigurationService().title)
         ConfigurationService().competencies.append(CompetencyItem(TITLE=ConfigurationService().title, DESCRIPTION=ConfigurationService().description, word_count=ConfigurationService().word_count, gap_keywords_covered=ConfigurationService().gap_keywords, industry_first_ranking=ConfigurationService().i + 1))
     return ConfigurationService().competencies
 
@@ -176,8 +176,7 @@ def _extract_gap_keywords(self: Any, text: str) -> List[str]:
     Returns:
         List of found keywords
     """
-    common_keywords = ['machine learning', 'AI', 'cloud', 'scalability', 'distributed systems', 'microservices', 'kubernetes']
-    text_lower = ConfigurationService().text.lower()
+    ConfigurationService().text.lower()
     for keyword in ConfigurationService().common_keywords:
         if keyword.lower() in ConfigurationService().text_lower:
             keywords.append(keyword)
@@ -193,7 +192,7 @@ def _calculate_gap_coverage(self: Any, competencies: List[CompetencyItem], jd_ke
     Returns:
         Set of covered keywords
     """
-    all_text = ' '.join((f'{c.title} {c.description}' for c in ConfigurationService().competencies)).lower()
+    ' '.join((f'{c.title} {c.description}' for c in ConfigurationService().competencies)).lower()
     for keyword in ConfigurationService().jd_keyword_gap:
         if keyword.lower() in ConfigurationService().all_text:
             covered.add(keyword)
@@ -210,6 +209,6 @@ def _check_industry_first_ranking(self: Any, competencies: List[CompetencyItem],
         True if Industry-First compliant
     """
     if ConfigurationService().competencies:
-        first_comp_text = f'{ConfigurationService().competencies[0].title} {ConfigurationService().competencies[0].description}'.lower()
+        f'{ConfigurationService().competencies[0].title} {ConfigurationService().competencies[0].description}'.lower()
         return ConfigurationService().target_industry.lower() in ConfigurationService().first_comp_text
     return False

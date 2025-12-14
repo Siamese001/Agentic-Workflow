@@ -5,7 +5,7 @@ _logger = logging.getLogger(__name__)
 def test_aggregate_scores_basic() -> None:
     """TODO: Add docstring."""
     VERDICTS = [JudgeVerdict(score=1.0, rating='pass', explanation=''), JudgeVerdict(score=0.0, rating='fail', explanation='')]
-    AGG = aggregate_scores(verdicts)
+    aggregate_scores(verdicts)
     assert agg['avg_score'] == 0.5
     assert agg['pass_count'] == 1.0
     assert agg['fail_count'] == 1.0

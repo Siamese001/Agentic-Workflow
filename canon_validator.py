@@ -515,6 +515,90 @@ class StructuralLinter(SubAtomicAgent):
 
         self.ctx.signal_ast_valid()
 
+    def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
+        """Check for lines longer than 120 characters."""
+        violations = []
+        max_line_length = 120
+
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    for i, line in enumerate(lines, 1):
+                        line_length = len(line.rstrip())
+                        if line_length > max_line_length:
+                            violations.append(f"{file_path}:{i} ({line_length} chars)")
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations[:50])
+
+    def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+        """Check for deep nesting >4 levels."""
+        violations = []
+        max_nesting = 4
+
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+
+                def check_nesting(node, depth=0):
+                    if depth > max_nesting:
+                        violations.append(f"{file_path}:{node.lineno} (nesting level: {depth})")
+
+                    if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+                        depth += 1
+
+                    for child in ast.iter_child_nodes(node):
+                        check_nesting(child, depth)
+
+                check_nesting(tree)
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations[:50])
+
+class ConstantMechanic(SubAtomicAgent):
+    """
+    KEYS: 15 (Magic Numbers)
+    ROLE: L5 Subatomic Specialist - Detects magic numbers and enforces named constants.
+    """
+
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Checking for Magic Numbers...")
+
+        # Key 15: Magic numbers
+        passed, details = self.check_key_15_no_magic_numbers()
+        self.ctx.report(self.name, 15, passed, details)
+
+    def check_key_15_no_magic_numbers(self) -> Tuple[bool, List[str]]:
+        """Check for magic numbers with AST analysis."""
+        violations = []
+        allowed_numbers = {0, 1, -1, 2, 10, 100, 1000}
+
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+                        if node.value not in allowed_numbers:
+                            parent_is_constant = False
+                            for parent in ast.walk(tree):
+                                if isinstance(parent, ast.Assign):
+                                    for target in parent.targets:
+                                        if isinstance(target, ast.Name) and target.id.isupper():
+                                            parent_is_constant = True
+
+                            if not parent_is_constant:
+                                violations.append(f"{file_path}:{node.lineno} (magic number: {node.value})")
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations[:50])
+
 class DependencySentinel(SubAtomicAgent):
     """
     KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 14 (Duplicate Imports), 44 (Circular Imports)
@@ -671,53 +755,47 @@ class DependencySentinel(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
-class SafetyInspector(SubAtomicAgent):
+class SecurityEnforcer(SubAtomicAgent):
     """
-    KEYS: 0-6 (Secrets, TODO, Print, Debugger, Except, Eval/Exec)
-    ROLE: Security Compliance Gatekeeper.
+    KEYS: 0 (Secrets), 3 (Debugger), 5 (Bare Except), 6 (Eval/Exec)
+    ROLE: L5 Subatomic Specialist - Critical security enforcement. MUST signal critical failure on violations.
     """
 
     def __init__(self, context: ValidationContext):
         super().__init__(context)
         self.prompt = self.instructional_prompt.format(
-            role="Security Compliance Gatekeeper",
-            keys="0-6 (Secrets, TODO, Print, Debugger, Except, Eval/Exec)",
+            role="Critical Security Enforcer",
+            keys="0, 3, 5, 6 (Secrets, Debugger, Bare Except, Eval/Exec)",
             signals_summary=", ".join(sorted(context.signals))
-        ) + "\n\nCRITICAL DIRECTIVE: Any violation in keys 0,5,6 → immediately call self.ctx.signal_critical_failure()"
+        ) + "\n\nCRITICAL DIRECTIVE: Any violation in keys 0, 5, or 6 → IMMEDIATELY call self.ctx.signal_critical_failure()"
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Security Policies...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Critical Security Policies...")
 
-        # Key 0: No hardcoded secrets
-        passed, details = self.check_key_00_no_hardcoded_secrets()
-        self.ctx.report(self.name, 0, passed, details)
-
-        # Key 1: No TODO/FIXME
-        passed, details = self.check_key_01_no_todo_fixme()
-        self.ctx.report(self.name, 1, passed, details)
-
-        # Key 2: No print statements
-        passed, details = self.check_key_02_no_print_statements()
-        self.ctx.report(self.name, 2, passed, details)
+        # Key 0: No hardcoded secrets (CRITICAL)
+        passed_0, details_0 = self.check_key_00_no_hardcoded_secrets()
+        self.ctx.report(self.name, 0, passed_0, details_0)
+        if not passed_0:
+            self.ctx.signal_critical_failure()
 
         # Key 3: No debugger statements
-        passed, details = self.check_key_03_no_debugger_statements()
-        self.ctx.report(self.name, 3, passed, details)
+        passed_3, details_3 = self.check_key_03_no_debugger_statements()
+        self.ctx.report(self.name, 3, passed_3, details_3)
 
-        # Key 4: No empty except blocks
-        passed, details = self.check_key_04_no_empty_except_blocks()
-        self.ctx.report(self.name, 4, passed, details)
+        # Key 5: No bare except (CRITICAL)
+        passed_5, details_5 = self.check_key_05_no_bare_except()
+        self.ctx.report(self.name, 5, passed_5, details_5)
+        if not passed_5:
+            self.ctx.signal_critical_failure()
 
-        # Key 5: No bare except
-        passed, details = self.check_key_05_no_bare_except()
-        self.ctx.report(self.name, 5, passed, details)
+        # Key 6: No eval/exec (CRITICAL)
+        passed_6, details_6 = self.check_key_06_no_eval_exec()
+        self.ctx.report(self.name, 6, passed_6, details_6)
+        if not passed_6:
+            self.ctx.signal_critical_failure()
 
-        # Key 6: No eval/exec
-        passed, details = self.check_key_06_no_eval_exec()
-        self.ctx.report(self.name, 6, passed, details)
-
-        all_passed = all(self.ctx.results.get(i, {}).get("passed", False) for i in range(7))
-        if all_passed:
+        # Signal secure only if all critical checks pass
+        if passed_0 and passed_3 and passed_5 and passed_6:
             self.ctx.signal_secure()
 
     def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
@@ -848,6 +926,82 @@ class SafetyInspector(SubAtomicAgent):
                             if node.func.id in ('eval', 'exec'):
                                 violations.append(file_path)
                                 break
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations)
+
+class CodeQualityAuditor(SubAtomicAgent):
+    """
+    KEYS: 1 (TODO/FIXME), 2 (Print Statements), 4 (Empty Except Blocks)
+    ROLE: L5 Subatomic Specialist - Code quality and maintainability checks.
+    """
+
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Auditing Code Quality...")
+
+        # Key 1: No TODO/FIXME
+        passed, details = self.check_key_01_no_todo_fixme()
+        self.ctx.report(self.name, 1, passed, details)
+
+        # Key 2: No print statements
+        passed, details = self.check_key_02_no_print_statements()
+        self.ctx.report(self.name, 2, passed, details)
+
+        # Key 4: No empty except blocks
+        passed, details = self.check_key_04_no_empty_except_blocks()
+        self.ctx.report(self.name, 4, passed, details)
+
+    def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
+        """Check for TODO/FIXME comments."""
+        violations = []
+        todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
+
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    for pattern in todo_patterns:
+                        matches = re.finditer(pattern, content, re.IGNORECASE)
+                        for match in matches:
+                            line_num = content[:match.start()].count("\n") + 1
+                            violations.append(f"{file_path}:{line_num}")
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations)
+
+    def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
+        """Check for print statements."""
+        violations = []
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    for i, line in enumerate(lines, 1):
+                        stripped = line.strip()
+                        if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
+                            continue
+                        if "print(" in line:
+                            violations.append(f"{file_path}:{i}")
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations)
+
+    def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
+        """Check for empty except blocks."""
+        violations = []
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ExceptHandler):
+                        if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                            violations.append(file_path)
+                            break
             except Exception:
                 continue
 
@@ -1274,7 +1428,6 @@ class SemanticMapper(SubAtomicAgent):
     
     def _build_call_graph(self) -> dict:
         """Build a comprehensive call-graph of the entire project."""
-        from pathlib import Path
         
         graph = {
             "files": {},
@@ -1844,8 +1997,7 @@ class ArchitecturalRefactorAgent(SubAtomicAgent):
     def _execute_encapsulate_globals(self, plan: dict) -> Tuple[bool, str]:
         """L5 Execute: Encapsulate all global variables into a ConfigurationService."""
         from pathlib import Path
-        import tempfile
-        
+
         # Collect all global variables from call graph
         all_globals = set()
         files_with_globals = []
@@ -2138,31 +2290,197 @@ config = ConfigurationService()
                         "priority": "MEDIUM"
                     }
 
-class StatePersistenceAgent(SubAtomicAgent):
+class PolicyEvolutionAgent(SubAtomicAgent):
     """
-    KEYS: 41-47 (Light Canon)
-    ROLE: L5 Meta-Learning: Persists execution history and evolves prompts/rules.
+    L5 ADAPTIVE POLICY LOOP
+    ROLE: Analyzes execution outcomes, identifies patterns, and evolves validation rules/prompts.
     """
 
     def __init__(self, context: ValidationContext):
         super().__init__(context)
-        self.prompt += "\n\nLEARNING DIRECTIVE: Record all execution outcomes. Evolve prompts based on success patterns. Adapt thresholds dynamically."
+        self.prompt += "\n\nL5 EVOLUTION DIRECTIVE: Analyze all execution outcomes. Identify failure patterns. Generate recommendations. Evolve rules based on demonstrated capability."
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Persisting State & Evolving...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Outcomes & Evolving Policy...")
         
-        # Persist execution history
+        # Load execution history
+        history = self._load_execution_history()
+        
+        # Analyze outcomes and identify patterns
+        analysis = self._analyze_execution_outcomes(history)
+        
+        # Evolve validation rules based on analysis
+        evolved_rules = self._evolve_validation_rules(analysis)
+        
+        # Evolve agent prompts based on patterns
+        self._evolve_agent_prompts(analysis)
+        
+        # Store evolved data back to context for StatePersistenceAgent
+        self.ctx.evolved_rules = evolved_rules
+        self.ctx.policy_analysis = analysis
+        
+        print("   ✅ Policy evolution complete")
+    
+    def _load_execution_history(self) -> dict:
+        """Load execution history from cache."""
+        import json
+        from pathlib import Path
+        
+        cache_dir = Path("cache")
+        history_file = cache_dir / "execution_history.json"
+        
+        history = {"executions": []}
+        if history_file.exists():
+            try:
+                with open(history_file, "r", encoding="utf-8") as f:
+                    history = json.load(f)
+                if "executions" not in history:
+                    history["executions"] = []
+            except:
+                pass
+        
+        return history
+    
+    def _analyze_execution_outcomes(self, history: dict) -> dict:
+        """Analyze execution outcomes to identify patterns."""
+        analysis = {
+            "function_splits": {"success": 0, "failed": 0},
+            "globals_missions": {"success": 0, "failed": 0},
+            "reorganization_missions": {"success": 0, "failed": 0},
+            "failure_patterns": [],
+            "success_patterns": ["with_context", "iterate", "safe_execute"]
+        }
+        
+        for execution in history.get("executions", []):
+            for plan in execution.get("plans", {}).values():
+                plan_type = plan.get("type")
+                outcome = plan.get("outcome")
+                
+                if plan_type == "SPLIT_FUNCTION":
+                    if outcome == "SUCCESS":
+                        analysis["function_splits"]["success"] += 1
+                    elif outcome == "FAILED":
+                        analysis["function_splits"]["failed"] += 1
+                
+                elif plan_type == "MULTI_FILE_REFACTOR":
+                    mission = plan.get("mission")
+                    if mission == "MISSION_ENCAPSULATE_GLOBALS":
+                        if outcome == "SUCCESS":
+                            analysis["globals_missions"]["success"] += 1
+                        elif outcome == "FAILED":
+                            analysis["globals_missions"]["failed"] += 1
+                    elif mission == "MISSION_REORGANIZE":
+                        if outcome == "SUCCESS":
+                            analysis["reorganization_missions"]["success"] += 1
+                        elif outcome == "FAILED":
+                            analysis["reorganization_missions"]["failed"] += 1
+        
+        return analysis
+    
+    def _evolve_validation_rules(self, analysis: dict) -> dict:
+        """Evolve validation rules based on execution analysis."""
+        import json
+        from pathlib import Path
+        
+        cache_dir = Path("cache")
+        cache_dir.mkdir(exist_ok=True)
+        rules_file = cache_dir / "evolved_rules.json"
+        
+        # Load current rules
+        rules = {
+            "max_function_lines": 50,
+            "max_globals_per_file": 10,
+            "max_classes_per_file": 10,
+            "class_cohesion_threshold": 0.6,
+            "architectural_confidence": 0.5
+        }
+        if rules_file.exists():
+            try:
+                with open(rules_file, "r", encoding="utf-8") as f:
+                    rules = json.load(f)
+            except:
+                pass
+        
+        # Evolve function rules
+        func_success = analysis["function_splits"]["success"]
+        func_failed = analysis["function_splits"]["failed"]
+        
+        if func_failed > func_success * 2:
+            old_threshold = rules.get("max_function_lines", 50)
+            rules["max_function_lines"] = max(30, old_threshold - 5)
+            print(f"   📉 Reducing function size threshold to {rules['max_function_lines']} lines (high failure rate)")
+        elif func_success > func_failed * 3:
+            old_threshold = rules.get("max_function_lines", 50)
+            rules["max_function_lines"] = min(100, old_threshold + 5)
+            print(f"   📈 Increasing function size threshold to {rules['max_function_lines']} lines (high success rate)")
+        
+        # Evolve architectural rules
+        architectural_confidence = rules.get("architectural_confidence", 0.5)
+        
+        # Global encapsulation success
+        if analysis["globals_missions"]["success"] > 0:
+            total = analysis["globals_missions"]["success"] + analysis["globals_missions"]["failed"]
+            success_rate = analysis["globals_missions"]["success"] / total
+            if success_rate > 0.8:
+                old_limit = rules.get("max_globals_per_file", 10)
+                rules["max_globals_per_file"] = max(0, old_limit - 2)
+                print(f"   🏗️ Tightening global variable limit to {rules['max_globals_per_file']} per file (successful encapsulation)")
+                architectural_confidence = min(1.0, architectural_confidence + 0.1)
+        
+        # Class reorganization success
+        if analysis["reorganization_missions"]["success"] > 0:
+            total = analysis["reorganization_missions"]["success"] + analysis["reorganization_missions"]["failed"]
+            success_rate = analysis["reorganization_missions"]["success"] / total
+            if success_rate > 0.8:
+                old_limit = rules.get("max_classes_per_file", 10)
+                rules["max_classes_per_file"] = max(5, old_limit - 1)
+                print(f"   🏗️ Tightening class density limit to {rules['max_classes_per_file']} per file (successful reorganization)")
+                architectural_confidence = min(1.0, architectural_confidence + 0.1)
+        
+        rules["architectural_confidence"] = architectural_confidence
+        if architectural_confidence > 0.7:
+            print(f"   🧬 L5 Self-Evolution: High architectural confidence ({architectural_confidence:.1%}) - system ready for complex missions")
+        
+        # Save evolved rules
+        with open(rules_file, "w", encoding="utf-8") as f:
+            json.dump(rules, f, indent=2)
+        
+        # Store learning insights for other agents
+        self.ctx.learning_insights = {
+            "successful_patterns": analysis["success_patterns"],
+            "failed_patterns": analysis["failure_patterns"],
+            "current_threshold": rules["max_function_lines"],
+            "architectural_confidence": architectural_confidence
+        }
+        
+        return rules
+    
+    def _evolve_agent_prompts(self, analysis: dict):
+        """Evolve agent prompts based on identified patterns."""
+        # Future enhancement: Dynamically adjust agent prompts based on success patterns
+
+class StatePersistenceAgent(SubAtomicAgent):
+    """
+    KEYS: 41-47 (Light Canon)
+    ROLE: L5 Pure I/O - Atomic persistence of execution state and context.
+    """
+
+    def __init__(self, context: ValidationContext):
+        super().__init__(context)
+        self.prompt += "\n\nPERSISTENCE DIRECTIVE: Perform atomic I/O operations. Save execution history and context state."
+
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Persisting Execution State...")
+        
+        # Persist execution history (atomic I/O)
         self._persist_execution_history()
-        
-        # Evolve prompts based on outcomes
-        self._evolve_prompts()
         
         # Light Canon checks (stubs)
         for key in range(41, 48):
             if key != 48:  # Key 48 is reserved
                 self.ctx.report(self.name, key, True, [])
         
-        print("   ✅ State persisted and prompts evolved")
+        print("   ✅ State persisted")
     
     def _persist_execution_history(self):
         """Save refactor plan outcomes for future learning."""
@@ -2199,142 +2517,6 @@ class StatePersistenceAgent(SubAtomicAgent):
             
             with open(history_file, "w", encoding="utf-8") as f:
                 json.dump(history, f, indent=2)
-    
-    def _evolve_prompts(self):
-        """L5 Self-Evolution: Adapt rules based on execution outcomes and mission success."""
-        import json
-        from pathlib import Path
-        
-        cache_dir = Path("cache")
-        cache_dir.mkdir(exist_ok=True)
-        
-        # Load evolved rules
-        rules_file = cache_dir / "evolved_rules.json"
-        rules = {
-            "max_function_lines": 50,
-            "max_globals_per_file": 10,
-            "max_classes_per_file": 10,
-            "class_cohesion_threshold": 0.6
-        }
-        if rules_file.exists():
-            try:
-                with open(rules_file, "r", encoding="utf-8") as f:
-                    rules = json.load(f)
-            except:
-                pass
-        
-        # L5 Evolution: Analyze both function splits AND architectural missions
-        self._evolve_function_rules(rules)
-        self._evolve_architectural_rules(rules)
-        
-        # Save evolved rules
-        with open(rules_file, "w", encoding="utf-8") as f:
-            json.dump(rules, f, indent=2)
-        
-        # Store learning insights for other agents
-        self.ctx.learning_insights = {
-            "successful_patterns": ["with_context", "iterate", "safe_execute"],
-            "failed_patterns": ["step"],
-            "current_threshold": rules["max_function_lines"],
-            "architectural_confidence": rules.get("architectural_confidence", 0.5)
-        }
-    
-    def _evolve_function_rules(self, rules: dict):
-        """Evolve function-related rules based on extraction outcomes."""
-        import json
-        from pathlib import Path
-        
-        cache_dir = Path("cache")
-        history_file = cache_dir / "execution_history.json"
-        
-        successful_extractions = 0
-        failed_extractions = 0
-        
-        if history_file.exists():
-            try:
-                with open(history_file, "r", encoding="utf-8") as f:
-                    history = json.load(f)
-                    for execution in history.get("executions", []):
-                        for plan in execution.get("plans", {}).values():
-                            if plan.get("type") == "SPLIT_FUNCTION":
-                                if plan.get("outcome") == "SUCCESS":
-                                    successful_extractions += 1
-                                elif plan.get("outcome") == "FAILED":
-                                    failed_extractions += 1
-            except:
-                pass
-        
-        # Adaptive threshold adjustment
-        if failed_extractions > successful_extractions * 2:
-            old_threshold = rules.get("max_function_lines", 50)
-            rules["max_function_lines"] = max(30, old_threshold - 5)
-            print(f"   📉 Reducing function size threshold to {rules['max_function_lines']} lines (high failure rate)")
-        elif successful_extractions > failed_extractions * 3:
-            old_threshold = rules.get("max_function_lines", 50)
-            rules["max_function_lines"] = min(100, old_threshold + 5)
-            print(f"   📈 Increasing function size threshold to {rules['max_function_lines']} lines (high success rate)")
-    
-    def _evolve_architectural_rules(self, rules: dict):
-        """L5 Evolution: Adapt architectural rules based on mission success."""
-        import json
-        from pathlib import Path
-        
-        cache_dir = Path("cache")
-        history_file = cache_dir / "execution_history.json"
-        
-        # Track architectural mission outcomes
-        globals_missions = {"success": 0, "failed": 0}
-        reorganization_missions = {"success": 0, "failed": 0}
-        
-        if history_file.exists():
-            try:
-                with open(history_file, "r", encoding="utf-8") as f:
-                    history = json.load(f)
-                    for execution in history.get("executions", []):
-                        for plan in execution.get("plans", {}).values():
-                            if plan.get("type") == "MULTI_FILE_REFACTOR":
-                                mission = plan.get("mission")
-                                outcome = plan.get("outcome")
-                                
-                                if mission == "MISSION_ENCAPSULATE_GLOBALS":
-                                    if outcome == "SUCCESS":
-                                        globals_missions["success"] += 1
-                                    elif outcome == "FAILED":
-                                        globals_missions["failed"] += 1
-                                
-                                elif mission == "MISSION_REORGANIZE":
-                                    if outcome == "SUCCESS":
-                                        reorganization_missions["success"] += 1
-                                    elif outcome == "FAILED":
-                                        reorganization_missions["failed"] += 1
-            except:
-                pass
-        
-        # Evolve rules based on architectural mission success
-        architectural_confidence = rules.get("architectural_confidence", 0.5)
-        
-        # If global encapsulation is successful, tighten the threshold
-        if globals_missions["success"] > 0:
-            success_rate = globals_missions["success"] / (globals_missions["success"] + globals_missions["failed"])
-            if success_rate > 0.8:
-                old_limit = rules.get("max_globals_per_file", 10)
-                rules["max_globals_per_file"] = max(0, old_limit - 2)
-                print(f"   🏗️ Tightening global variable limit to {rules['max_globals_per_file']} per file (successful encapsulation)")
-                architectural_confidence = min(1.0, architectural_confidence + 0.1)
-        
-        # If class reorganization is successful, adjust density threshold
-        if reorganization_missions["success"] > 0:
-            success_rate = reorganization_missions["success"] / (reorganization_missions["success"] + reorganization_missions["failed"])
-            if success_rate > 0.8:
-                old_limit = rules.get("max_classes_per_file", 10)
-                rules["max_classes_per_file"] = max(5, old_limit - 1)
-                print(f"   🏗️ Tightening class density limit to {rules['max_classes_per_file']} per file (successful reorganization)")
-                architectural_confidence = min(1.0, architectural_confidence + 0.1)
-        
-        # Update architectural confidence
-        rules["architectural_confidence"] = architectural_confidence
-        if architectural_confidence > 0.7:
-            print(f"   🧬 L5 Self-Evolution: High architectural confidence ({architectural_confidence:.1%}) - system ready for complex missions")
 
 # ==============================================================================
 # 2. L5 MULTI-FILE REFACTORING SUPPORT
@@ -2351,7 +2533,7 @@ class RefactorTransaction:
         """Enter transaction context - backup all target files."""
         import shutil
         import tempfile
-        
+
         # Create temporary backup directory
         self.backup_dir = Path(tempfile.mkdtemp(prefix="l5_refactor_backup_"))
         
@@ -2630,7 +2812,7 @@ class FunctionExtractor:
     def _make_relative_import(self, from_file: str, to_file: str) -> str:
         """Generate a relative import statement."""
         from pathlib import Path
-        
+
         # Get relative path
         from_dir = Path(from_file).parent
         to_path = Path(to_file)
@@ -2655,33 +2837,93 @@ class FunctionExtractor:
             return f"from {dots}{module_name} import "
 
 # ==============================================================================
-# 3. MAIN EXECUTION
+# 3. L5 MISSION PLANNER AGENT
+# ==============================================================================
+class MissionPlannerAgent(SubAtomicAgent):
+    """
+    L5 ORCHESTRATION LAYER
+    ROLE: Dynamically determines the optimal agent execution order based on dependencies.
+    """
+
+    def __init__(self, context: ValidationContext):
+        super().__init__(context)
+        self.prompt += "\n\nORCHESTRATION DIRECTIVE: Determine optimal agent execution order. Consider dependencies and prerequisites."
+
+    def execute(self):
+        """Returns the ordered list of agent classes to execute."""
+        # L5 Subatomic Swarm Architecture - Ordered by dependencies
+        agent_classes = [
+            # Security first - critical failures halt execution
+            SecurityEnforcer,
+            
+            # Code quality auditing
+            CodeQualityAuditor,
+            
+            # Whitespace and formatting
+            WhitespaceMechanic,
+            
+            # Structural analysis
+            StructuralLinter,
+            ConstantMechanic,
+            
+            # Import hygiene
+            DependencySentinel,
+            
+            # Documentation
+            DocumentationAgent,
+            
+            # Naming conventions
+            NamingAgent,
+            
+            # Semantic analysis (builds call-graph)
+            SemanticMapper,
+            
+            # Budget enforcement
+            BudgetAgent,
+            
+            # Structural engineering
+            StructuralEngineer,
+            
+            # Refactoring execution
+            RefactoringExecutionAgent,
+            
+            # Architectural refactoring
+            ArchitecturalRefactorAgent,
+            
+            # Policy evolution (analyzes outcomes)
+            PolicyEvolutionAgent,
+            
+            # State persistence (atomic I/O)
+            StatePersistenceAgent,
+        ]
+        
+        return agent_classes
+
+# ==============================================================================
+# 4. MAIN EXECUTION
 # ==============================================================================
 def main():
-    """L4 Orchestrator: Run all agents in sequence with proper ordering."""
-    print("\n🚀 Canon Validator v2.0 - L4 Autonomous Governance Platform")
+    """L5 Orchestrator: Dynamic agent execution with MissionPlanner."""
+    print("\n🚀 Canon Validator v3.0 - L5 Subatomic Swarm Governance Platform")
     print("=" * 70)
     
     # Initialize shared context
     ctx = ValidationContext()
     
-    # L4 Agent Pipeline: Ordered by dependencies
-    agents = [
-        DocumentationAgent(ctx),      # Key 00-04
-        NamingAgent(ctx),            # Key 05-16
-        SemanticMapper(ctx),         # Key 26-40 + Call-Graph
-        BudgetAgent(ctx),            # Key 17, 19
-        StructuralEngineer(ctx),     # Key 18, 20, 25, 42, 43, 46
-        RefactoringExecutionAgent(ctx),  # Execute SPLIT_FUNCTION plans
-        ArchitecturalRefactorAgent(ctx),  # Multi-file missions
-        StatePersistenceAgent(ctx),  # Key 41-47 + Meta-Learning
-    ]
+    # L5 Dynamic Agent Ordering via MissionPlanner
+    planner = MissionPlannerAgent(ctx)
+    agent_classes = planner.execute()
     
-    # Execute agents with dependency checking
-    for agent in agents:
+    # Instantiate and execute agents in planned order
+    for agent_class in agent_classes:
+        agent = agent_class(ctx)
+        
+        # Check prerequisites
         if hasattr(agent, 'can_run') and not agent.can_run():
             print(f"\n⏭️  Skipping {agent.name} - prerequisites not met")
             continue
+        
+        # Execute agent
         agent.execute()
     
     # Final Summary

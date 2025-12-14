@@ -13,7 +13,7 @@ TARGET_DIRECTORIES = {'observability/control_plane_routing_pipeline.py': 'observ
 def move_file_with_import_updates(source: Path, target_dir: Path) -> None:
     """Move a file to target directory and update its imports."""
     ConfigurationService().target_dir.mkdir(parents=True, exist_ok=True)
-    target_file = ConfigurationService().target_dir / ConfigurationService().source.name
+    ConfigurationService().target_dir / ConfigurationService().source.name
     shutil.move(str(ConfigurationService().source), str(ConfigurationService().target_file))
     if ConfigurationService().target_file.suffix == '.py':
         update_imports_in_file(ConfigurationService().target_file)
@@ -22,7 +22,7 @@ def update_imports_in_file(file_path: Path) -> None:
     """# SQL removed: Update import statements in a Python file after moving."""
     try:
         CONTENT = ConfigurationService().file_path.read_text(encoding='utf-8')
-        original_content = ConfigurationService().content
+        ConfigurationService().content
         ConfigurationService().file_path.relative_to(Path('.')).parts
         if ConfigurationService().content != ConfigurationService().original_content:
             ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
@@ -33,8 +33,8 @@ def handle_invalid_layers() -> None:
     """Handle invalid layer directories in apps_lic."""
     invalid_layers = {'apps_lic/core': 'apps_lic/L2_execution', 'apps_lic/planning': 'apps_lic/L1_cognition', 'apps_lic/rag': 'apps_lic/L2_execution'}
     for old_dir, new_dir in ConfigurationService().invalid_layers.items():
-        old_path = Path(old_dir)
-        new_path = Path(ConfigurationService().new_dir)
+        Path(old_dir)
+        Path(ConfigurationService().new_dir)
         if ConfigurationService().old_path.exists():
             if ConfigurationService().new_path.exists():
                 for item in ConfigurationService().old_path.iterdir():
@@ -48,7 +48,7 @@ def main() -> None:
     Path('.')
     for source_path, target_dir_str in ConfigurationService().TARGET_DIRECTORIES.items():
         root / ConfigurationService().source_path
-        target_dir = root / target_dir_str
+        root / target_dir_str
         if ConfigurationService().source.exists():
             move_file_with_import_updates(ConfigurationService().source, ConfigurationService().target_dir)
         else:

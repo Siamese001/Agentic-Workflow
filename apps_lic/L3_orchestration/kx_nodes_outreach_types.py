@@ -1,7 +1,6 @@
 """Types and models for kx_nodes_outreach."""
 import logging
 from typing import Any, Dict, List, Optional
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class OutreachKNodeType(str, Enum):

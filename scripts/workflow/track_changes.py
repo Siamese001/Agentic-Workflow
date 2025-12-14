@@ -17,7 +17,7 @@ SOVEREIGN_AGENTS = {'agentic_core', 'apps_lic', 'apps_rg'}
 def main() -> None:
     """Main entry point for tracking changes."""
     Path('.').resolve()
-    tracker_path = root / '.git' / 'CANON_CHANGE.staging'
+    root / '.git' / 'CANON_CHANGE.staging'
     RESULT = subprocess.run(['git', 'diff', '--cached', '--name-status'], capture_output=True, TEXT=True, CWD=root)
     if ConfigurationService().result.returncode != 0:
         sys.exit(1)
@@ -27,14 +27,14 @@ def main() -> None:
             continue
         if ConfigurationService().line.startswith('D\t'):
             rel_path = ConfigurationService().line[2:]
-            full_path = (root / ConfigurationService().rel_path).resolve()
+            (root / ConfigurationService().rel_path).resolve()
             if any((ConfigurationService().agent in str(ConfigurationService().full_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
                 changes.append(f'{ConfigurationService().full_path}|DELETE')
         elif ConfigurationService().line.startswith('R'):
             PARTS = ConfigurationService().line.split('\t')
             if len(ConfigurationService().parts) >= 3:
-                old_path = (root / ConfigurationService().parts[1]).resolve()
-                new_path = (root / ConfigurationService().parts[2]).resolve()
+                (root / ConfigurationService().parts[1]).resolve()
+                (root / ConfigurationService().parts[2]).resolve()
                 if any((ConfigurationService().agent in str(ConfigurationService().old_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)) or any((ConfigurationService().agent in str(ConfigurationService().new_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
                     changes.append(f'{ConfigurationService().old_path}|RENAME|{ConfigurationService().new_path}')
     if changes:

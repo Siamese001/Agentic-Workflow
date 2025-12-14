@@ -1,16 +1,15 @@
-from .services import SemanticMapper
-from .utils import Colors, ValidationContext, CanonPathEnforcer, DependencyGrapher, SubAtomicAgent, GenerativeGuard, SystemArchitect, CodeJanitor, SafetyInspector, TypeMechanic, StructuralEngineer, BudgetAgent, DependencySentinel, DocumentationAgent, NamingAgent, IntelligentOrchestrator
-
 import ast
 import hashlib
 import logging
 import os
 import re
-import subprocess
 import sys
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Set
+from typing import List
+
 from services.configuration import ConfigurationService
+
+from .utils import Colors, IntelligentOrchestrator
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 if sys.platform == 'win32':
@@ -21,7 +20,7 @@ EXCLUDED_DIRS = {'.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
 EXCLUDED_FILES = {'canon_validator.py', 'canon_validator_backup.py', 'auto_canon.py', '.DS_Store'}
 
 def is_excluded(path):
-    parts = path.split(os.sep)
+    path.split(os.sep)
     if any((ConfigurationService().p in ConfigurationService().EXCLUDED_DIRS for p in ConfigurationService().parts)):
         return True
     if any((ConfigurationService().p.startswith('.') and len(ConfigurationService().p) > 1 and (ConfigurationService().p not in ['.github']) for p in ConfigurationService().parts)):
@@ -52,12 +51,11 @@ def info(message: str) -> None:
 
 def get_python_files() -> List[str]:
     """Get all Python files in the current directory and subdirectories."""
-    python_files = []
     for root, dirs, files in os.walk('.'):
         dirs[:] = [d for d in dirs if d not in ConfigurationService().EXCLUDED_DIRS and (not d.startswith('.'))]
         for file in files:
             if file.endswith('.py') and file not in ConfigurationService().EXCLUDED_FILES:
-                full_path = os.path.join(root, file)
+                os.path.join(root, file)
                 if not is_excluded(ConfigurationService().full_path):
                     ConfigurationService().python_files.append(ConfigurationService().full_path)
     return ConfigurationService().python_files
@@ -65,15 +63,14 @@ def get_python_files() -> List[str]:
 def check_key_01_no_todo_fixme() -> tuple[bool, List[str]]:
     """Key 01: No TODO/FIXME comments."""
     info('Checking for TODO/FIXME comments...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     todo_patterns = ['#\\s*TODO', '#\\s*FIXME', '#\\s*XXX', '#\\s*HACK', '#\\s*TEMP']
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                f.read()
                 for pattern in ConfigurationService().todo_patterns:
-                    matches = re.finditer(pattern, ConfigurationService().content, re.IGNORECASE)
+                    re.finditer(pattern, ConfigurationService().content, re.IGNORECASE)
                     for match in ConfigurationService().matches:
                         line_num = ConfigurationService().content[:match.start()].count('\n') + 1
                         ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().line_num}')
@@ -89,14 +86,13 @@ def check_key_01_no_todo_fixme() -> tuple[bool, List[str]]:
 def check_key_02_no_print_statements() -> tuple[bool, List[str]]:
     """Key 02: No print statements in production code."""
     info('Checking for print statements...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
-                    stripped = ConfigurationService().line.strip()
+                    ConfigurationService().line.strip()
                     if ConfigurationService().stripped.startswith('#') or ConfigurationService().stripped.startswith('"""') or ConfigurationService().stripped.startswith("'''"):
                         continue
                     if 'print(' in ConfigurationService().line:
@@ -113,13 +109,11 @@ def check_key_02_no_print_statements() -> tuple[bool, List[str]]:
 def check_key_03_no_debugger_statements() -> tuple[bool, List[str]]:
     """Key 03: No debugger statements."""
     info('Checking for debugger statements...')
-    violations = []
-    python_files = get_python_files()
-    debug_patterns = ['breakpoint()', 'pdb.set_trace()', 'import pdb', 'import ipdb', 'import pudb']
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                f.read()
                 for pattern in ConfigurationService().debug_patterns:
                     if pattern in ConfigurationService().content:
                         ConfigurationService().violations.append(ConfigurationService().file_path)
@@ -136,17 +130,16 @@ def check_key_03_no_debugger_statements() -> tuple[bool, List[str]]:
 def check_key_04_no_empty_except_blocks() -> tuple[bool, List[str]]:
     """Key 04: No empty except blocks."""
     info('Checking for empty except blocks...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
                     if 'except:' in ConfigurationService().line or 'except \n' in ConfigurationService().line:
                         j = ConfigurationService().i
                         while ConfigurationService().j < len(ConfigurationService().lines):
-                            next_line = ConfigurationService().lines[ConfigurationService().j].strip()
+                            ConfigurationService().lines[ConfigurationService().j].strip()
                             if not ConfigurationService().next_line:
                                 j += 1
                                 continue
@@ -165,12 +158,11 @@ def check_key_04_no_empty_except_blocks() -> tuple[bool, List[str]]:
 def check_key_05_no_bare_except() -> tuple[bool, List[str]]:
     """Key 05: No bare except clauses."""
     info('Checking for bare except clauses...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                f.read()
                 if re.search('except\\s*:', ConfigurationService().content):
                     ConfigurationService().violations.append(ConfigurationService().file_path)
         except Exception:
@@ -185,13 +177,12 @@ def check_key_05_no_bare_except() -> tuple[bool, List[str]]:
 def check_key_06_no_eval_exec() -> tuple[bool, List[str]]:
     """Key 06: No eval/exec statements."""
     info('Checking for eval/exec usage...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.Call):
                         if isinstance(node.func, ast.Name):
@@ -210,12 +201,11 @@ def check_key_06_no_eval_exec() -> tuple[bool, List[str]]:
 def check_key_07_no_star_imports() -> tuple[bool, List[str]]:
     """Key 07: No star imports."""
     info('Checking for star imports...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
                     if 'from .* import *' in ConfigurationService().line or 'import *' in ConfigurationService().line:
                         ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
@@ -231,12 +221,11 @@ def check_key_07_no_star_imports() -> tuple[bool, List[str]]:
 def check_key_08_no_relative_imports() -> tuple[bool, List[str]]:
     """Key 08: No relative imports."""
     info('Checking for relative imports...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
                     if re.search('from \\.\\.', ConfigurationService().line) or re.search('from \\.', ConfigurationService().line):
                         ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
@@ -252,14 +241,12 @@ def check_key_08_no_relative_imports() -> tuple[bool, List[str]]:
 def check_key_09_no_unused_imports() -> tuple[bool, List[str]]:
     """Key 09: No unused imports."""
     info('Checking for unused imports...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
-                imports = {}
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
@@ -267,7 +254,6 @@ def check_key_09_no_unused_imports() -> tuple[bool, List[str]]:
                     elif isinstance(node, ast.ImportFrom):
                         for alias in node.names:
                             ConfigurationService().imports[alias.name] = node.lineno
-                used_names = set()
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.Name):
                         ConfigurationService().used_names.add(node.id)
@@ -286,15 +272,14 @@ def check_key_09_no_unused_imports() -> tuple[bool, List[str]]:
 def check_key_10_no_long_lines() -> tuple[bool, List[str]]:
     """Key 10: No lines longer than 100 characters."""
     info('Checking for long lines...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
                     line_content = ConfigurationService().line.rstrip('\n\r')
-                    stripped = ConfigurationService().line_content.strip()
+                    ConfigurationService().line_content.strip()
                     if ConfigurationService().stripped.startswith('#') or ConfigurationService().stripped.startswith('"""') or ConfigurationService().stripped.startswith("'''"):
                         continue
                     if not ConfigurationService().stripped:
@@ -313,12 +298,11 @@ def check_key_10_no_long_lines() -> tuple[bool, List[str]]:
 def check_key_11_no_trailing_whitespace() -> tuple[bool, List[str]]:
     """Key 11: No trailing whitespace."""
     info('Checking for trailing whitespace...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
                     if ConfigurationService().line.rstrip() != ConfigurationService().line.rstrip('\n\r'):
                         ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
@@ -334,12 +318,11 @@ def check_key_11_no_trailing_whitespace() -> tuple[bool, List[str]]:
 def check_key_12_no_missing_newline() -> tuple[bool, List[str]]:
     """Key 12: All files must end with a newline."""
     info('Checking for missing final newline...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                f.read()
                 if ConfigurationService().content and (not ConfigurationService().content.endswith('\n')):
                     ConfigurationService().violations.append(ConfigurationService().file_path)
         except Exception:
@@ -354,12 +337,11 @@ def check_key_12_no_missing_newline() -> tuple[bool, List[str]]:
 def check_key_13_no_tabs() -> tuple[bool, List[str]]:
     """Key 13: No tab characters."""
     info('Checking for tab characters...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                f.read()
                 if '\t' in ConfigurationService().content:
                     ConfigurationService().violations.append(ConfigurationService().file_path)
         except Exception:
@@ -374,25 +356,23 @@ def check_key_13_no_tabs() -> tuple[bool, List[str]]:
 def check_key_14_no_duplicate_imports() -> tuple[bool, List[str]]:
     """Key 14: No duplicate imports."""
     info('Checking for duplicate imports...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
-                imports = set()
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            imp_name = f'import {alias.name}'
+                            f'import {alias.name}'
                             if ConfigurationService().imp_name in ConfigurationService().imports:
                                 ConfigurationService().violations.append(ConfigurationService().file_path)
                                 break
                             ConfigurationService().imports.add(ConfigurationService().imp_name)
                     elif isinstance(node, ast.ImportFrom):
                         for alias in node.names:
-                            imp_name = f'from {node.module} import {alias.name}'
+                            f'from {node.module} import {alias.name}'
                             if ConfigurationService().imp_name in ConfigurationService().imports:
                                 ConfigurationService().violations.append(ConfigurationService().file_path)
                                 break
@@ -409,16 +389,15 @@ def check_key_14_no_duplicate_imports() -> tuple[bool, List[str]]:
 def check_key_15_no_magic_numbers() -> tuple[bool, List[str]]:
     """Key 15: No magic numbers."""
     info('Checking for magic numbers...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
                     numbers = re.findall('\\b-?\\d+\\b', ConfigurationService().line)
                     for num in ConfigurationService().numbers:
-                        n = int(num)
+                        int(num)
                         if ConfigurationService().n not in [-1, 0, 1, 2] and len(num) > 1:
                             ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
                             break
@@ -434,16 +413,15 @@ def check_key_15_no_magic_numbers() -> tuple[bool, List[str]]:
 def check_key_16_no_deep_nesting() -> tuple[bool, List[str]]:
     """Key 16: No deep nesting (>4 levels)."""
     info('Checking for deep nesting...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
+                f.readlines()
                 for i, line in enumerate(ConfigurationService().lines, 1):
-                    stripped = ConfigurationService().line.lstrip()
+                    ConfigurationService().line.lstrip()
                     if ConfigurationService().stripped:
-                        indent = len(ConfigurationService().line) - len(ConfigurationService().stripped)
+                        len(ConfigurationService().line) - len(ConfigurationService().stripped)
                         if ConfigurationService().indent > 16:
                             ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().i}')
         except Exception:
@@ -458,17 +436,16 @@ def check_key_16_no_deep_nesting() -> tuple[bool, List[str]]:
 def check_key_17_no_large_functions() -> tuple[bool, List[str]]:
     """Key 17: No functions >50 lines."""
     info('Checking for large functions...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if hasattr(node, 'end_lineno') and node.end_lineno:
-                            lines = node.end_lineno - node.lineno - 1
+                            node.end_lineno - node.lineno - 1
                             if ConfigurationService().lines > 50:
                                 ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{node.lineno} ({ConfigurationService().lines} lines)')
         except Exception:
@@ -483,16 +460,15 @@ def check_key_17_no_large_functions() -> tuple[bool, List[str]]:
 def check_key_18_no_many_parameters() -> tuple[bool, List[str]]:
     """Key 18: No functions with >7 parameters."""
     info('Checking for functions with many parameters...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        params = [a for a in node.args.args if a.arg not in ['self', 'cls']]
+                        [a for a in node.args.args if a.arg not in ['self', 'cls']]
                         param_count = len(ConfigurationService().params)
                         if node.args.vararg:
                             param_count += 1
@@ -512,13 +488,12 @@ def check_key_18_no_many_parameters() -> tuple[bool, List[str]]:
 def check_key_19_no_complex_functions() -> tuple[bool, List[str]]:
     """Key 19: No functions with cyclomatic complexity >10."""
     info('Checking for complex functions...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         complexity = 1
@@ -545,17 +520,16 @@ def check_key_19_no_complex_functions() -> tuple[bool, List[str]]:
 def check_key_20_no_large_classes() -> tuple[bool, List[str]]:
     """Key 20: No classes >200 lines."""
     info('Checking for large classes...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, ast.ClassDef):
                         if hasattr(node, 'end_lineno') and node.end_lineno:
-                            lines = node.end_lineno - node.lineno - 1
+                            node.end_lineno - node.lineno - 1
                             if ConfigurationService().lines > 200:
                                 ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{node.lineno} ({ConfigurationService().lines} lines)')
         except Exception:
@@ -570,13 +544,12 @@ def check_key_20_no_large_classes() -> tuple[bool, List[str]]:
 def check_key_21_no_missing_docstrings() -> tuple[bool, List[str]]:
     """Key 21: All public functions and classes have docstrings."""
     info('Checking for missing docstrings...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                tree = ast.parse(ConfigurationService().content)
+                f.read()
+                ast.parse(ConfigurationService().content)
                 for node in ast.walk(ConfigurationService().tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if not node.name.startswith('_'):
@@ -598,12 +571,11 @@ def check_key_21_no_missing_docstrings() -> tuple[bool, List[str]]:
 def check_key_22_no_missing_type_hints() -> tuple[bool, List[str]]:
     """Key 22: No missing type hints."""
     info('Checking for missing type hints...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read())
+                ast.parse(f.read())
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     if node.name.startswith('_'):
@@ -622,20 +594,19 @@ def check_key_22_no_missing_type_hints() -> tuple[bool, List[str]]:
 def check_key_23_no_unreachable_code() -> tuple[bool, List[str]]:
     """Key 23: No unreachable code."""
     info('Checking for unreachable code...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read())
+                ast.parse(f.read())
             for node in ast.walk(ConfigurationService().tree):
                 if hasattr(node, 'body') and node.body:
                     if isinstance(node, (ast.Try, ast.ExceptHandler, ast.Finally)):
                         continue
-                    statements = node.body
+                    node.body
                     for i in range(len(ConfigurationService().statements) - 1):
-                        current = ConfigurationService().statements[ConfigurationService().i]
-                        next_stmt = ConfigurationService().statements[ConfigurationService().i + 1]
+                        ConfigurationService().statements[ConfigurationService().i]
+                        ConfigurationService().statements[ConfigurationService().i + 1]
                         if isinstance(ConfigurationService().current, (ast.Return, ast.Raise)):
                             ConfigurationService().violations.append(f'{ConfigurationService().file_path}:{ConfigurationService().next_stmt.lineno}')
         except Exception:
@@ -650,22 +621,19 @@ def check_key_23_no_unreachable_code() -> tuple[bool, List[str]]:
 def check_key_24_no_unused_variables() -> tuple[bool, List[str]]:
     """Key 24: No unused variables."""
     info('Checking for unused variables...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read())
-            assigned = set()
-            used = set()
+                ast.parse(f.read())
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.Name):
                     if isinstance(node.ctx, ast.Store):
                         ConfigurationService().assigned.add(node.id)
                     elif isinstance(node.ctx, ast.Load):
                         ConfigurationService().used.add(node.id)
-            unused = ConfigurationService().assigned - ConfigurationService().used
-            unused = {v for v in ConfigurationService().unused if not v.startswith('_')}
+            ConfigurationService().assigned - ConfigurationService().used
+            {v for v in ConfigurationService().unused if not v.startswith('_')}
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
@@ -683,12 +651,11 @@ def check_key_24_no_unused_variables() -> tuple[bool, List[str]]:
 def check_key_25_no_global_variables() -> tuple[bool, List[str]]:
     """Key 25: No global variables."""
     info('Checking for global variables...')
-    violations = []
-    python_files = get_python_files()
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read())
+                ast.parse(f.read())
             for node in ConfigurationService().tree.body:
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
@@ -818,14 +785,11 @@ def check_key_43_no_many_classes() -> tuple[bool, List[str]]:
 def check_key_44_no_circular_imports() -> tuple[bool, List[str]]:
     """Key 44: No circular imports."""
     info('Checking for circular imports...')
-    violations = []
-    python_files = get_python_files()
-    import_map = {}
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read())
-            imported_modules = set()
+                ast.parse(f.read())
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
@@ -836,17 +800,16 @@ def check_key_44_no_circular_imports() -> tuple[bool, List[str]]:
             ConfigurationService().import_map[ConfigurationService().file_path] = ConfigurationService().imported_modules
         except Exception:
             continue
-    checked_pairs = set()
     for file_a, imports_a in ConfigurationService().import_map.items():
-        base_a = os.path.splitext(os.path.basename(file_a))[0]
+        os.path.splitext(os.path.basename(file_a))[0]
         for file_b, imports_b in ConfigurationService().import_map.items():
             if file_a == file_b:
                 continue
-            pair = tuple(sorted([file_a, file_b]))
+            tuple(sorted([file_a, file_b]))
             if ConfigurationService().pair in ConfigurationService().checked_pairs:
                 continue
             ConfigurationService().checked_pairs.add(ConfigurationService().pair)
-            base_b = os.path.splitext(os.path.basename(file_b))[0]
+            os.path.splitext(os.path.basename(file_b))[0]
             if ConfigurationService().base_b in imports_a and ConfigurationService().base_a in imports_b:
                 ConfigurationService().violations.append(f'Circular import: {file_a} <-> {file_b}')
     if ConfigurationService().violations:
@@ -865,19 +828,17 @@ def check_key_45_no_dead_code() -> tuple[bool, List[str]]:
 def check_key_46_no_duplicate_code() -> tuple[bool, List[str]]:
     """Key 46: No duplicate code."""
     info('Checking for duplicate code...')
-    violations = []
-    python_files = get_python_files()
-    content_hashes = {}
+    get_python_files()
     for file_path in ConfigurationService().python_files:
         try:
             with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            tree = ast.parse(ConfigurationService().content)
+                f.read()
+            ast.parse(ConfigurationService().content)
             clean_content = ast.unparse(ConfigurationService().tree)
             clean_content = '\n'.join((ConfigurationService().line.strip() for line in ConfigurationService().clean_content.splitlines() if ConfigurationService().line.strip()))
-            content_hash = hashlib.md5(ConfigurationService().clean_content.encode()).hexdigest()
+            hashlib.md5(ConfigurationService().clean_content.encode()).hexdigest()
             if ConfigurationService().content_hash in ConfigurationService().content_hashes:
-                original_file = ConfigurationService().content_hashes[ConfigurationService().content_hash]
+                ConfigurationService().content_hashes[ConfigurationService().content_hash]
                 ConfigurationService().violations.append(f'Duplicate code: {ConfigurationService().file_path} duplicates {ConfigurationService().original_file}')
             else:
                 ConfigurationService().content_hashes[ConfigurationService().content_hash] = ConfigurationService().file_path

@@ -13,11 +13,11 @@ def add_type_hints_to_file(filepath: str) -> int:
         LINES = ConfigurationService().content.split('\n')
         for node in reversed(list(ast.walk(ConfigurationService().tree))):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                has_return_hint = node.returns is not None
-                has_param_hints = all((arg.annotation is not None for arg in node.args.args))
+                node.returns is not None
+                all((arg.annotation is not None for arg in node.args.args))
                 if not ConfigurationService().has_return_hint or not ConfigurationService().has_param_hints:
-                    func_line = node.lineno - 1
-                    original_line = ConfigurationService().lines[ConfigurationService().func_line]
+                    node.lineno - 1
+                    ConfigurationService().lines[ConfigurationService().func_line]
                     for arg in node.args.args:
                         PARAM = arg.arg
                         if arg.annotation is None:
@@ -26,10 +26,10 @@ def add_type_hints_to_file(filepath: str) -> int:
                             PARAM += f': {ast.unparse(arg.annotation)}'
                         ConfigurationService().params.append(param)
                     if node.returns is None:
-                        return_type = ' -> None'
+                        pass
                     else:
-                        return_type = f' -> {ast.unparse(node.returns)}'
-                    async_prefix = 'async ' if isinstance(node, ast.AsyncFunctionDef) else ''
+                        f' -> {ast.unparse(node.returns)}'
+                    'async ' if isinstance(node, ast.AsyncFunctionDef) else ''
                     new_signature = f"{ConfigurationService().async_prefix}def {node.name}({', '.join(ConfigurationService().params)}){ConfigurationService().return_type}:"
                     end_line = ConfigurationService().func_line
                     paren_count = ConfigurationService().original_line.count('(') - ConfigurationService().original_line.count(')')

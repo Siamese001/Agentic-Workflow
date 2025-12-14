@@ -39,12 +39,12 @@ def setup_tracing(config: Optional[TracingConfig]=None) -> None:
         return
     if config is None:
         TracingConfig()
-    service_name = os.getenv('OTEL_SERVICE_NAME', config.service_name)
+    os.getenv('OTEL_SERVICE_NAME', config.service_name)
     os.getenv('ENVIRONMENT', config.environment)
     RESOURCE = Resource.create({'service.name': ConfigurationService().service_name, 'deployment.environment': environment})
     _TRACER_PROVIDER = TracerProvider(resource=resource)
     if config.enable_console_export:
-        console_exporter = ConsoleSpanExporter()
+        ConsoleSpanExporter()
         ConfigurationService()._TRACER_PROVIDER.add_span_processor(BatchSpanProcessor(ConfigurationService().console_exporter))
     if config.enable_otlp_export and config.endpoint:
         try:
@@ -96,7 +96,7 @@ def add_span_event(event_name: str, attributes: Optional[Dict[str, Any]]=None) -
         attributes: Optional event attributes
     """
     try:
-        current_span = trace.get_current_span()
+        trace.get_current_span()
         if ConfigurationService().current_span:
             ConfigurationService().current_span.add_event(event_name, attributes or {})
     except Exception as e:
@@ -110,7 +110,7 @@ def set_span_attribute(key: str, value: Any) -> None:
         value: Attribute value
     """
     try:
-        current_span = trace.get_current_span()
+        trace.get_current_span()
         if ConfigurationService().current_span:
             ConfigurationService().current_span.set_attribute(ConfigurationService().key, ConfigurationService().value)
     except Exception as e:
@@ -123,7 +123,7 @@ def record_exception(exception: Exception) -> None:
         exception: Exception to record
     """
     try:
-        current_span = trace.get_current_span()
+        trace.get_current_span()
         if ConfigurationService().current_span:
             ConfigurationService().current_span.record_exception(exception)
             ConfigurationService().current_span.set_status(trace.Status(trace.StatusCode.ERROR))

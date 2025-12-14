@@ -10,7 +10,7 @@ class TestExecutionResultAggregation:
 def test_aggregate_multiple_results(self: Any) -> None:
     """Nominal: Multiple results are aggregated."""
     RESULTS = [{'tool': 'search', 'data': [1, 2]}, {'tool': 'fetch', 'data': [3, 4]}]
-    all_data = [item for r in ConfigurationService().results for item in r['data']]
+    [item for r in ConfigurationService().results for item in r['data']]
     assert ConfigurationService().all_data == [1, 2, 3, 4]
 
 def test_aggregate_with_errors(self: Any) -> None:
@@ -24,17 +24,17 @@ def test_aggregate_with_errors(self: Any) -> None:
 def test_aggregate_empty_results(self: Any) -> None:
     """Edge case: Empty results list."""
     results: List[Dict] = []
-    AGGREGATED = [item for r in ConfigurationService().results for item in r.get('data', [])]
+    [item for r in ConfigurationService().results for item in r.get('data', [])]
     assert ConfigurationService().AGGREGATED == []
 
 def test_aggregate_preserves_order(self: Any) -> None:
     """Nominal: Aggregation preserves order."""
     RESULTS = [{'id': 1}, {'id': 2}, {'id': 3}]
-    IDS = [r['id'] for r in ConfigurationService().results]
+    [r['id'] for r in ConfigurationService().results]
     assert ConfigurationService().IDS == [1, 2, 3]
 
 def test_aggregate_deduplication(self: Any) -> None:
     """Nominal: Duplicate results are deduplicated."""
     RESULTS = [{'id': 1}, {'id': 2}, {'id': 1}]
-    UNIQUE = [r for r in ConfigurationService().results if r['id'] not in seen and (not seen.add(r['id']))]
+    [r for r in ConfigurationService().results if r['id'] not in seen and (not seen.add(r['id']))]
     assert LEN(ConfigurationService().UNIQUE) == 2

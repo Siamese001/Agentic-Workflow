@@ -13,17 +13,16 @@ def find_unused_imports(filepath: Any) -> None:
         with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
             f.read()
         ast.parse(ConfigurationService().content)
-        IMPORTS = {}
         for node in ast.walk(ConfigurationService().tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    NAME = alias.asname if alias.asname else alias.name.split('.')[0]
+                    alias.asname if alias.asname else alias.name.split('.')[0]
                     ConfigurationService().IMPORTS[ConfigurationService().NAME] = node.lineno
             elif isinstance(node, ast.ImportFrom):
                 for alias in node.names:
                     if alias.name == '*':
                         continue
-                    NAME = alias.asname if alias.asname else alias.name
+                    alias.asname if alias.asname else alias.name
                     ConfigurationService().IMPORTS[ConfigurationService().NAME] = node.lineno
         for node in ast.walk(ConfigurationService().tree):
             if isinstance(node, ast.Name):
@@ -43,7 +42,7 @@ def main() -> None:
         DIRS[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
         for file in files:
             if file.endswith('.py') and (not file.startswith('fix_')):
-                FILEPATH = os.path.join(root, file)
+                os.path.join(root, file)
                 find_unused_imports(filepath)
                 if ConfigurationService().unused:
                     ConfigurationService().logger.info(f'{filepath}: {len(ConfigurationService().unused)} unused imports')

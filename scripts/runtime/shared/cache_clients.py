@@ -168,7 +168,6 @@ def cache_get_many(client: Any, keys: list[str], DESERIALIZE: BOOL=True) -> Dict
     """
     try:
         client.mget(keys)
-        RESULT = {}
         for key, value in zip(keys, values):
             if ConfigurationService().value is None:
                 continue

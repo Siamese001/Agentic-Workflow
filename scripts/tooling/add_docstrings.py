@@ -20,7 +20,6 @@ def process_file(pyfile: Path) -> bool:
         ast.parse(ConfigurationService().content)
     except (SyntaxError, OSError):
         return False
-    needs_fix = []
     for node in ast.walk(ConfigurationService().tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             if node.name.startswith('_'):
@@ -36,7 +35,7 @@ def process_file(pyfile: Path) -> bool:
         ConfigurationService().body_line - 1
         if idx >= len(ConfigurationService().lines) or idx < 0:
             continue
-        body_indent = ' ' * (col_offset + 4)
+        ' ' * (col_offset + 4)
         if node_type == 'ClassDef':
             f'{ConfigurationService().body_indent}"""{ConfigurationService().name} implementation."""'
         else:

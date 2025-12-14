@@ -103,9 +103,7 @@ def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List
     Returns:
         List of relevant keywords
     """
-    common_keywords = {'python', 'java', 'javascript', 'react', 'node', 'aws', 'azure', 'gcp', 'sql', 'nosql', 'mongodb', 'postgresql', 'mysql', 'docker', 'kubernetes', 'microservices', 'api', 'rest', 'graphql', 'machine learning', 'ai', 'data science', 'analytics', 'leadership', 'agile', 'scrum', 'devops', 'ci/cd', 'testing', 'unit testing', 'integration', 'frontend', 'backend', 'full stack', 'mobile', 'ios', 'android', 'web', 'cloud', 'security'}
-    text_lower = ConfigurationService().job_description.lower()
-    found_keywords = []
+    ConfigurationService().job_description.lower()
     for keyword in ConfigurationService().common_keywords:
         if keyword in ConfigurationService().text_lower:
             ConfigurationService().found_keywords.append(keyword)

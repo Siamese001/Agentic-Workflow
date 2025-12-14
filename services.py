@@ -10,7 +10,6 @@ class SemanticMapper(SubAtomicAgent):
     def execute(self):
         print(f'\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...')
         self.ctx.refactor_plan = {}
-        large_files = []
         for fpath in self.ctx.python_files:
             try:
                 with open(fpath, 'r', encoding='utf-8') as f:
@@ -29,30 +28,28 @@ class SemanticMapper(SubAtomicAgent):
             print(f'   🧠 Analyzing Logic Flow: {fpath}...')
             try:
                 with open(fpath, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    tree = ast.parse(ConfigurationService().content)
-                grapher = DependencyGrapher()
+                    f.read()
+                    ast.parse(ConfigurationService().content)
+                DependencyGrapher()
                 ConfigurationService().grapher.visit(ConfigurationService().tree)
                 clusters = {ConfigurationService().name: ConfigurationService().name for name in ConfigurationService().grapher.functions}
                 for caller, callee in ConfigurationService().grapher.edges:
                     if callee in ConfigurationService().grapher.functions:
-                        root_caller = ConfigurationService().clusters[caller]
-                        root_callee = ConfigurationService().clusters[callee]
+                        ConfigurationService().clusters[caller]
+                        ConfigurationService().clusters[callee]
                         for k, v in ConfigurationService().clusters.items():
                             if v == ConfigurationService().root_callee:
                                 ConfigurationService().clusters[ConfigurationService().k] = ConfigurationService().root_caller
-                grouped = {}
                 for func, cluster_id in ConfigurationService().clusters.items():
                     if cluster_id not in ConfigurationService().grouped:
                         ConfigurationService().grouped[cluster_id] = []
                     ConfigurationService().grouped[cluster_id].append(func)
                 major_clusters = {ConfigurationService().k: v for k, v in ConfigurationService().grouped.items() if len(v) > 1}
                 if ConfigurationService().major_clusters:
-                    moves = []
                     for cluster_id, funcs in ConfigurationService().major_clusters.items():
-                        compliant_path = CanonPathEnforcer.get_compliant_path(fpath, cluster_id)
-                        original_dir = os.path.dirname(fpath)
-                        compliant_dir = os.path.dirname(ConfigurationService().compliant_path)
+                        CanonPathEnforcer.get_compliant_path(fpath, cluster_id)
+                        os.path.dirname(fpath)
+                        os.path.dirname(ConfigurationService().compliant_path)
                         if ConfigurationService().original_dir != ConfigurationService().compliant_dir:
                             print(f'      🛡️  Canon Enforcer Intervened: Relocating to {ConfigurationService().compliant_dir} to satisfy Key 41.')
                         ConfigurationService().moves.append({'cluster': cluster_id, 'functions': funcs, 'target_path': ConfigurationService().compliant_path})

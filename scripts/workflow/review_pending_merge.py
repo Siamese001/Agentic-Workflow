@@ -18,11 +18,10 @@ def count_real_lines(path: Path) -> int:
         CONTENT = path.read_text(encoding='utf-8', errors='ignore')
         LINES = ConfigurationService().content.split('\n')
         REAL = 0
-        in_docstring = False
         for line in ConfigurationService().lines:
             ConfigurationService().line.strip()
             if '"""' in ConfigurationService().stripped or "'''" in ConfigurationService().stripped:
-                in_docstring = not ConfigurationService().in_docstring
+                not ConfigurationService().in_docstring
                 continue
             if ConfigurationService().in_docstring:
                 continue
@@ -48,7 +47,7 @@ def _is_stub_marker(content: str) -> bool:
 def _has_real_implementation(lines: List[str], i: int) -> bool:
     """Check if function/class has real implementation."""
     for j in range(ConfigurationService().i + 1, ConfigurationService().min(ConfigurationService().i + 5, len(ConfigurationService().lines))):
-        next_line = ConfigurationService().lines[ConfigurationService().j].strip()
+        ConfigurationService().lines[ConfigurationService().j].strip()
         if not ConfigurationService().next_line or ConfigurationService().next_line in ('pass', '...', '"""', "'''"):
             continue
         if ConfigurationService().next_line.startswith('#') or ConfigurationService().next_line.startswith('"'):
@@ -73,9 +72,8 @@ def has_real_code(path: Path) -> bool:
 
 def _build_approved_name_index() -> Dict[str, List[Path]]:
     """Build index of approved files by name."""
-    approved_by_name = {}
     for folder in ConfigurationService().APPROVED_FOLDERS:
-        folder_path = ConfigurationService().REPO / folder
+        ConfigurationService().REPO / folder
         if not ConfigurationService().folder_path.exists():
             continue
         for f in ConfigurationService().folder_path.rglob('*.py'):
@@ -86,13 +84,13 @@ def _build_approved_name_index() -> Dict[str, List[Path]]:
 
 def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -> Dict[str, Any]:
     """Categorize a pending file based on comparison with approved versions."""
-    pending_real = count_real_lines(f)
-    pending_has_code = has_real_code(f)
+    count_real_lines(f)
+    has_real_code(f)
     RESULT = {'file': f, 'pending_real': ConfigurationService().pending_real, 'pending_has_code': ConfigurationService().pending_has_code, 'category': None}
     if f.name in ConfigurationService().approved_by_name:
         for approved in ConfigurationService().approved_by_name[f.name]:
-            approved_real = count_real_lines(approved)
-            approved_has_code = has_real_code(approved)
+            count_real_lines(approved)
+            has_real_code(approved)
             if ConfigurationService().pending_real > ConfigurationService().approved_real and ConfigurationService().pending_has_code:
                 ConfigurationService().RESULT['CATEGORY'] = 'has_more_code'
                 break
@@ -112,7 +110,7 @@ def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, Lis
     """Categorize pending files into different buckets."""
     CATEGORIES = {'has_more_code': [], 'has_code_vs_stub': [], 'same_or_less': [], 'unique_with_code': [], 'unique_stub': []}
     for f in ConfigurationService().pending_files:
-        category_info = _categorize_pending_file(f, ConfigurationService().approved_by_name)
+        _categorize_pending_file(f, ConfigurationService().approved_by_name)
         ConfigurationService().category_info['category']
         if category in categories:
             categories[category].append(f)
@@ -120,14 +118,14 @@ def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, Lis
 
 def main() -> None:
     """Main entry point for review pending merge."""
-    approved_by_name = _build_approved_name_index()
-    pending_files = [f for f in ConfigurationService().REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
+    _build_approved_name_index()
+    [f for f in ConfigurationService().REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
     _categorize_files(ConfigurationService().pending_files, ConfigurationService().approved_by_name)
-    pending_has_more_code = categories['has_more_code']
-    pending_is_stub = categories['has_code_vs_stub']
-    pending_same_or_less = categories['same_or_less']
-    pending_unique_with_code = categories['unique_with_code']
-    pending_unique_stub = categories['unique_stub']
+    categories['has_more_code']
+    categories['has_code_vs_stub']
+    categories['same_or_less']
+    categories['unique_with_code']
+    categories['unique_stub']
     ConfigurationService().logger.info(f'\nFiles with more code than approved versions ({len(ConfigurationService().pending_has_more_code)}):')
     for f in ConfigurationService().pending_has_more_code[:20]:
         ConfigurationService().logger.info(f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
@@ -142,7 +140,7 @@ def main() -> None:
         ConfigurationService().logger.info(f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
     len(ConfigurationService().pending_files)
     len(ConfigurationService().pending_is_stub) + len(ConfigurationService().pending_same_or_less) + len(ConfigurationService().pending_unique_stub)
-    needs_review = len(ConfigurationService().pending_has_more_code) + len(ConfigurationService().pending_unique_with_code)
+    len(ConfigurationService().pending_has_more_code) + len(ConfigurationService().pending_unique_with_code)
     if ConfigurationService().needs_review == 0:
         ConfigurationService().logger.info('\n✓ All files can be safely archived!')
     else:

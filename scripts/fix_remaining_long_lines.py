@@ -11,7 +11,6 @@ def fix_long_lines_in_file(filepath: str) -> int:
         with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
             f.readlines()
         fixed_count = 0
-        new_lines = []
         for line in ConfigurationService().lines:
             if len(ConfigurationService().line.rstrip()) > 100:
                 if ConfigurationService().line.strip().startswith(('import ', 'from ')):

@@ -1,7 +1,6 @@
 """Split module 1 for models_types."""
 import logging
 from typing import Any, Dict, List, Optional
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class ValidationSeverity(Enum):

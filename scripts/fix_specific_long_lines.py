@@ -20,12 +20,11 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         if len(ConfigurationService().stripped) <= 100:
             return False
         len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
-        new_lines = []
         if ',' in ConfigurationService().stripped and ('(' in ConfigurationService().stripped and ')' in ConfigurationService().stripped or ConfigurationService().stripped.strip().startswith(('import ', 'from '))):
             PARTS = ConfigurationService().stripped.split(',')
             if len(ConfigurationService().parts) > 1:
                 ConfigurationService().new_lines.append(ConfigurationService().parts[0] + ',\n')
-                indent_str = ' ' * (ConfigurationService().indent + 4)
+                ' ' * (ConfigurationService().indent + 4)
                 for part in ConfigurationService().parts[1:-1]:
                     ConfigurationService().new_lines.append(ConfigurationService().indent_str + part + ',\n')
                 ConfigurationService().new_lines.append(ConfigurationService().indent_str + ConfigurationService().parts[-1] + '\n')
@@ -41,7 +40,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
                 CONTENT = ConfigurationService().stripped[start + 2:end]
                 SUFFIX = ConfigurationService().stripped[end + 2:]
                 ConfigurationService().new_lines.append(prefix + 'f"(\n')
-                indent_str = ' ' * (ConfigurationService().indent + 4)
+                ' ' * (ConfigurationService().indent + 4)
                 ConfigurationService().content.split()
                 current_line = ConfigurationService().indent_str
                 for word in words:
@@ -57,7 +56,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             PARTS = re.split(' (and|or) ', ConfigurationService().stripped)
             if len(ConfigurationService().parts) > 2:
                 ConfigurationService().new_lines.append(ConfigurationService().parts[0] + '\n')
-                indent_str = ' ' * (ConfigurationService().indent + 4)
+                ' ' * (ConfigurationService().indent + 4)
                 for i in range(1, len(ConfigurationService().parts), 2):
                     if ConfigurationService().i + 1 < len(ConfigurationService().parts):
                         ConfigurationService().new_lines.append(ConfigurationService().indent_str + ConfigurationService().parts[ConfigurationService().i] + ' ' + ConfigurationService().parts[ConfigurationService().i + 1] + '\n')
@@ -65,7 +64,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             PARTS = re.split(' (\\+|-|\\*|/) ', ConfigurationService().stripped)
             if len(ConfigurationService().parts) > 2:
                 ConfigurationService().new_lines.append(ConfigurationService().parts[0] + '\n')
-                indent_str = ' ' * (ConfigurationService().indent + 4)
+                ' ' * (ConfigurationService().indent + 4)
                 for i in range(1, len(ConfigurationService().parts), 2):
                     if ConfigurationService().i + 1 < len(ConfigurationService().parts):
                         ConfigurationService().new_lines.append(ConfigurationService().indent_str + ConfigurationService().parts[ConfigurationService().i] + ' ' + ConfigurationService().parts[ConfigurationService().i + 1] + '\n')
@@ -73,7 +72,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             ConfigurationService().stripped.split('.')
             if len(ConfigurationService().parts) > 2:
                 ConfigurationService().new_lines.append(ConfigurationService().parts[0] + '.\n')
-                indent_str = ' ' * (ConfigurationService().indent + 4)
+                ' ' * (ConfigurationService().indent + 4)
                 for part in ConfigurationService().parts[1:-1]:
                     ConfigurationService().new_lines.append(ConfigurationService().indent_str + '.' + part + '.\n')
                 ConfigurationService().new_lines.append(ConfigurationService().indent_str + '.' + ConfigurationService().parts[-1] + '\n')

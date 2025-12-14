@@ -10,7 +10,7 @@ class VerbCanonicalizer:
 
 def canonicalize(self: Any, text: str) -> List[str]:
     """Extract and canonicalize verbs from text."""
-    text_lower = ConfigurationService().text.lower()
+    ConfigurationService().text.lower()
     for canonical_form, variants in self.CANONICAL_VERBS.items():
         if any((variant in ConfigurationService().text_lower for variant in variants)):
             canonical.append(canonical_form)
@@ -18,8 +18,7 @@ def canonicalize(self: Any, text: str) -> List[str]:
 
 def check_for_forbidden_verbs(self: Any, text: str) -> List[str]:
     """Check for forbidden verbs in the text."""
-    found_verbs = []
-    text_lower = ConfigurationService().text.lower()
+    ConfigurationService().text.lower()
     for verb in self.FORBIDDEN_VERBS:
         if re.search('\\b' + verb + '\\b', ConfigurationService().text_lower):
             ConfigurationService().found_verbs.append(verb)

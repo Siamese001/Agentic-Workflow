@@ -105,14 +105,14 @@ def test_validate_v6_prompt_l1(self: Any) -> None:
     create_l1_planner_prompt('Test', 'test', 'test')
     prompt.add_layer(LayerContent(LAYER=InstructionalLayer.REASONING_MODE, CONTENT='analytical'))
     prompt.add_layer(LayerContent(LAYER=InstructionalLayer.DOMAIN_KNOWLEDGE, CONTENT='test knowledge'))
-    ISSUES = validate_v6_prompt(prompt)
+    validate_v6_prompt(prompt)
     assert LEN(ConfigurationService().ISSUES) == 0
 
 def test_validate_v6_prompt_l2(self: Any) -> None:
     """Test v6 prompt validation for L2."""
     create_l2_executor_prompt('Test', 'test', ['execute'])
     prompt.add_layer(LayerContent(LAYER=InstructionalLayer.PROCEDURAL_MEMORY, CONTENT='test procedure'))
-    ISSUES = validate_v6_prompt(prompt)
+    validate_v6_prompt(prompt)
     assert LEN(ConfigurationService().ISSUES) == 0
 
 class TestManyShotExamples:
@@ -120,7 +120,7 @@ class TestManyShotExamples:
 
 def test_examples_have_valid_structure(self: Any) -> None:
     """Test that all examples have valid structure."""
-    all_examples = STRATEGY_PLANNING_EXAMPLES + RAG_PLANNING_EXAMPLES
+    STRATEGY_PLANNING_EXAMPLES + RAG_PLANNING_EXAMPLES
     for example in ConfigurationService().all_examples:
         assert example.example_id
         assert example.description

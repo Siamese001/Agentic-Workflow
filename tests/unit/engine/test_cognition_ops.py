@@ -42,9 +42,8 @@ def test_extract_entities(self: Any) -> None:
 
 def test_handle_ambiguous_request(self: Any) -> None:
     """Ambiguous requests are flagged."""
-    TEXT = 'Get the data'
     INTENT = ParsedIntent(intent_type=IntentType.CLARIFICATION, CONFIDENCE=0.4, ENTITIES={}, original_text=ConfigurationService().text)
-    is_ambiguous = intent.confidence < 0.6
+    intent.confidence < 0.6
     assert ConfigurationService().is_ambiguous is True
 
 def test_preserve_original_text(self: Any) -> None:
@@ -80,7 +79,7 @@ class TestContextUnderstanding:
 def test_incorporate_conversation_history(self: Any) -> None:
     """Conversation history is incorporated."""
     CONTEXT = {'referenced_entity': 'Acme Corp'}
-    resolved_query = f"What is {ConfigurationService().context['referenced_entity']}'s revenue?"
+    f"What is {ConfigurationService().context['referenced_entity']}'s revenue?"
     assert 'Acme Corp' in ConfigurationService().resolved_query
 
 def test_resolve_pronouns(self: Any) -> None:
@@ -91,6 +90,5 @@ def test_resolve_pronouns(self: Any) -> None:
 
 def test_maintain_topic_continuity(self: Any) -> None:
     """Topic continuity is maintained."""
-    conversation_topic = 'quarterly_earnings'
     CONTEXT = {'topic': ConfigurationService().conversation_topic, 'comparison': 'year_over_year'}
     assert ConfigurationService().CONTEXT['TOPIC'] == 'quarterly_earnings'

@@ -27,15 +27,12 @@ def test_create_user_flow(self: Any) -> None:
 
 def test_create_user_duplicate_rejected(self: Any) -> None:
     """E2E: Duplicate username is rejected."""
-    existing_users = ['user1', 'user2']
-    new_username = 'user1'
-    is_duplicate = ConfigurationService().new_username in ConfigurationService().existing_users
+    ConfigurationService().new_username in ConfigurationService().existing_users
     assert ConfigurationService().is_duplicate is True
 
 def test_update_user_permissions(self: Any) -> None:
     """E2E: Admin updates user permissions."""
     USER = {'id': 'user_001', 'permissions': ['read']}
-    new_permissions = ['read', 'write']
     ConfigurationService().USER['PERMISSIONS'] = ConfigurationService().new_permissions
     assert 'write' in user['permissions']
 
@@ -70,7 +67,7 @@ def test_config_validation(self: Any) -> None:
 def test_config_rollback(self: Any) -> None:
     """E2E: Config can be rolled back."""
     config_history = [{'version': 1, 'max_tokens': 4000}, {'version': 2, 'max_tokens': 8000}]
-    rollback_to = ConfigurationService().config_history[0]
+    ConfigurationService().config_history[0]
     assert ConfigurationService().rollback_to['max_tokens'] == 4000
 
 def test_feature_flag_toggle(self: Any) -> None:

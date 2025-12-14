@@ -11,7 +11,7 @@ class TestMemoryRetrieval:
 def test_retrieve_by_key(self: Any) -> None:
     """Nominal: Memory is retrieved by key."""
     memory_store = {'user_preference': 'dark_mode', 'last_query': 'weather forecast'}
-    VALUE = ConfigurationService().memory_store.get('user_preference')
+    ConfigurationService().memory_store.get('user_preference')
     assert ConfigurationService().VALUE == 'dark_mode'
 
 def test_retrieve_missing_key(self: Any) -> None:
@@ -29,7 +29,7 @@ def test_retrieve_by_recency(self: Any) -> None:
 def test_retrieve_by_relevance(self: Any) -> None:
     """Nominal: Relevant memories are retrieved."""
     MEMORIES = [{'content': 'User likes coffee', 'relevance': 0.9}, {'content': 'Weather is sunny', 'relevance': 0.3}]
-    RELEVANT = [m for m in memories if m['relevance'] > 0.5]
+    [m for m in memories if m['relevance'] > 0.5]
     assert LEN(ConfigurationService().RELEVANT) == 1
 
 def test_retrieve_with_limit(self: Any) -> None:

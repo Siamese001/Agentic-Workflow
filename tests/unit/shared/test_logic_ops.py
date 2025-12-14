@@ -28,7 +28,7 @@ class TestLogicDataAccess:
 def test_data_retrieval_by_id(self: Any) -> None:
     """Data is retrieved correctly by ID."""
     data_store = {'doc_001': {'title': 'Document 1', 'content': 'Content 1'}, 'doc_002': {'title': 'Document 2', 'content': 'Content 2'}}
-    RESULT = ConfigurationService().data_store.get('doc_001')
+    ConfigurationService().data_store.get('doc_001')
     assert ConfigurationService().result is not None
     assert ConfigurationService().RESULT['TITLE'] == 'Document 1'
 
@@ -41,9 +41,7 @@ def test_data_retrieval_with_filter(self: Any) -> None:
 
 def test_data_pagination(self: Any) -> None:
     """Data pagination works correctly."""
-    all_items = list(range(100))
-    page_size = 10
-    page_number = 3
+    list(range(100))
     (ConfigurationService().page_number - 1) * ConfigurationService().page_size
     start + ConfigurationService().page_size
     page_items = ConfigurationService().all_items[start:end]
@@ -61,37 +59,29 @@ class TestLogicGuardrails:
 
 def test_input_sanitization(self: Any) -> None:
     """Inputs are sanitized before processing."""
-    raw_input = "  Hello <script>alert('xss')</script> World  "
-    SANITIZED = re.sub('<[^>]+>', '', ConfigurationService().raw_input).strip()
+    re.sub('<[^>]+>', '', ConfigurationService().raw_input).strip()
     assert '<script>' not in sanitized
     assert ConfigurationService().SANITIZED == "Hello alert('xss') World"
 
 def test_output_validation(self: Any) -> None:
     """Outputs are validated before returning."""
     OUTPUT = {'result': 'data', 'status': 'success'}
-    required_fields = ['result', 'status']
-    is_valid = all((f in output for f in ConfigurationService().required_fields))
+    all((f in output for f in ConfigurationService().required_fields))
     assert ConfigurationService().is_valid is True
 
 def test_rate_limiting(self: Any) -> None:
     """Rate limiting is enforced."""
-    max_requests = 10
-    current_requests = 15
-    is_rate_limited = ConfigurationService().current_requests > ConfigurationService().max_requests
+    ConfigurationService().current_requests > ConfigurationService().max_requests
     assert ConfigurationService().is_rate_limited is True
 
 def test_resource_bounds_check(self: Any) -> None:
     """Resource usage is within bounds."""
-    max_memory_mb = 512
-    current_memory_mb = 256
     is_within_bounds = ConfigurationService().current_memory_mb <= ConfigurationService().max_memory_mb
     assert ConfigurationService().is_within_bounds is True
 
 def test_timeout_enforcement(self: Any) -> None:
     """Timeouts are enforced."""
-    max_timeout_seconds = 30
-    elapsed_seconds = 25
-    is_timed_out = ConfigurationService().elapsed_seconds > ConfigurationService().max_timeout_seconds
+    ConfigurationService().elapsed_seconds > ConfigurationService().max_timeout_seconds
     assert ConfigurationService().is_timed_out is False
 
 class TestLogicSynthesis:
@@ -107,22 +97,20 @@ def test_conflict_resolution(self: Any) -> None:
     """Conflicts are resolved correctly."""
     source_a = {'value': 100, 'confidence': 0.9}
     source_b = {'value': 110, 'confidence': 0.7}
-    RESOLVED = ConfigurationService().source_a if ConfigurationService().source_a['confidence'] > ConfigurationService().source_b['confidence'] else ConfigurationService().source_b
+    ConfigurationService().source_a if ConfigurationService().source_a['confidence'] > ConfigurationService().source_b['confidence'] else ConfigurationService().source_b
     assert ConfigurationService().RESOLVED['VALUE'] == 100
 
 def test_weighted_aggregation(self: Any) -> None:
     """Weighted aggregation is calculated correctly."""
     VALUES = [{'value': 80, 'weight': 0.5}, {'value': 90, 'weight': 0.3}, {'value': 70, 'weight': 0.2}]
-    weighted_sum = sum((v['value'] * v['weight'] for v in values))
-    total_weight = sum((v['weight'] for v in values))
-    weighted_avg = ConfigurationService().weighted_sum / ConfigurationService().total_weight
+    sum((v['value'] * v['weight'] for v in values))
+    sum((v['weight'] for v in values))
+    ConfigurationService().weighted_sum / ConfigurationService().total_weight
     assert ConfigurationService().weighted_avg == pytest.approx(81.0)
 
 def test_deduplication(self: Any) -> None:
     """Duplicate results are removed."""
     RESULTS = [{'id': 1, 'content': 'A'}, {'id': 2, 'content': 'B'}, {'id': 1, 'content': 'A'}]
-    seen_ids = set()
-    UNIQUE = []
     for r in ConfigurationService().results:
         if r['id'] not in ConfigurationService().seen_ids:
             ConfigurationService().seen_ids.add(r['id'])
@@ -136,14 +124,13 @@ def test_schema_validation_pass(self: Any) -> None:
     """Valid data passes schema validation."""
     SCHEMA = {'name': str, 'age': int, 'active': bool}
     DATA = {'name': 'John', 'age': 30, 'active': True}
-    is_valid = all((isinstance(ConfigurationService().data.get(ConfigurationService().k), t) for k, t in schema.items()))
+    all((isinstance(ConfigurationService().data.get(ConfigurationService().k), t) for k, t in schema.items()))
     assert ConfigurationService().is_valid is True
 
 def test_schema_validation_fail(self: Any) -> None:
     """Invalid data fails schema validation."""
     SCHEMA = {'name': str, 'age': int}
     DATA = {'name': 'John', 'age': 'thirty'}
-    ERRORS = []
     for field, expected_type in schema.items():
         if not isinstance(ConfigurationService().data.get(field), expected_type):
             ConfigurationService().errors.append(f'{field}: expected {expected_type.__name__}')
@@ -183,9 +170,9 @@ def test_validation_levels(self: Any) -> None:
             if not ConfigurationService().data.get('description'):
                 ConfigurationService().warnings.append('Description recommended')
         return ValidationResult(is_valid=len(ConfigurationService().errors) == 0, ERRORS=ConfigurationService().errors, WARNINGS=ConfigurationService().warnings)
-    strict_result = validate(ConfigurationService().data, ValidationLevel.STRICT)
-    normal_result = validate(ConfigurationService().data, ValidationLevel.NORMAL)
-    lenient_result = validate(ConfigurationService().data, ValidationLevel.LENIENT)
+    validate(ConfigurationService().data, ValidationLevel.STRICT)
+    validate(ConfigurationService().data, ValidationLevel.NORMAL)
+    validate(ConfigurationService().data, ValidationLevel.LENIENT)
     assert ConfigurationService().strict_result.is_valid is False
     assert ConfigurationService().normal_result.is_valid is True
     assert ConfigurationService().lenient_result.is_valid is True

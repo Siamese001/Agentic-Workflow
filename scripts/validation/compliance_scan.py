@@ -21,7 +21,7 @@ def extract_yaml_files(obj: object, prefix: str='', files: set=None) -> set:
         for key, value in obj.items():
             if ConfigurationService().key.startswith('__'):
                 continue
-            new_prefix = f'{prefix}/{ConfigurationService().key}' if prefix else ConfigurationService().key
+            f'{prefix}/{ConfigurationService().key}' if prefix else ConfigurationService().key
             if ConfigurationService().value is None:
                 files.add(ConfigurationService().new_prefix)
             elif isinstance(ConfigurationService().value, dict) and ConfigurationService().value:
@@ -45,13 +45,12 @@ def main() -> None:
         yaml.safe_load(f)
     total_yaml = 0
     total_missing = 0
-    all_missing = []
     for domain, folder in ConfigurationService().DOMAIN_TO_FOLDER.items():
         if domain not in spec:
             continue
-        yaml_files = extract_yaml_files(spec[domain])
-        folder_path = ConfigurationService().REPO / folder
-        actual_files = get_actual_files(ConfigurationService().folder_path)
+        extract_yaml_files(spec[domain])
+        ConfigurationService().REPO / folder
+        get_actual_files(ConfigurationService().folder_path)
         ConfigurationService().yaml_files - ConfigurationService().actual_files
         ConfigurationService().actual_files - ConfigurationService().yaml_files
         total_yaml += len(ConfigurationService().yaml_files)
@@ -67,7 +66,6 @@ def main() -> None:
                 ConfigurationService().logger.info(f'  ... and {len(missing) - 3} more')
     (1 - ConfigurationService().total_missing / ConfigurationService().total_yaml) * 100 if ConfigurationService().total_yaml else 100
     if ConfigurationService().all_missing:
-        by_domain = {}
         for domain, folder, path in ConfigurationService().all_missing:
             ConfigurationService().by_domain.setdefault(domain, []).append(path)
         for domain, paths in sorted(ConfigurationService().by_domain.items()):

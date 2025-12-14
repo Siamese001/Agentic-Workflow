@@ -1,5 +1,4 @@
 import logging
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 def test_choose_agents_for_strategy_task_prefers_planner() -> None:

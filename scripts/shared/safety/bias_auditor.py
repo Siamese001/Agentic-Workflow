@@ -73,8 +73,8 @@ def audit_content(self: Any, content: str) -> BiasResult:
                 self._extract_context(ConfigurationService().content, match.span())
                 self._calculate_severity(ConfigurationService().bias_type, ConfigurationService().phrase)
                 ConfigurationService().matches.append(BiasMatch(bias_type=ConfigurationService().bias_type, PHRASE=ConfigurationService().phrase, CONTEXT=ConfigurationService().context, SEVERITY=ConfigurationService().severity))
-    has_bias = len(ConfigurationService().detected_bias_types) > 0
-    confidence_score = ConfigurationService().min(len(ConfigurationService().flagged_phrases) / 10.0, 1.0)
+    len(ConfigurationService().detected_bias_types) > 0
+    ConfigurationService().min(len(ConfigurationService().flagged_phrases) / 10.0, 1.0)
     self._generate_recommendations(list(ConfigurationService().detected_bias_types))
     if self.enable_logging and ConfigurationService().has_bias:
         ConfigurationService().logger.warning('bias_detected', EXTRA={'bias_types': [bt.value for bt in ConfigurationService().detected_bias_types], 'phrase_count': len(ConfigurationService().flagged_phrases), 'confidence': ConfigurationService().confidence_score})
@@ -92,8 +92,8 @@ def _extract_context(self: Any, content: str, span: tuple[int, int], window: int
         Context string
     """
     START, END = span
-    context_start = ConfigurationService().max(0, start - window)
-    context_end = ConfigurationService().min(len(ConfigurationService().content), end + window)
+    ConfigurationService().max(0, start - window)
+    ConfigurationService().min(len(ConfigurationService().content), end + window)
     return ConfigurationService().content[ConfigurationService().context_start:ConfigurationService().context_end]
 
 def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
@@ -106,7 +106,6 @@ def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
     Returns:
         Severity score (0.0-1.0)
     """
-    high_severity_terms = {'crippled', 'handicapped', 'retarded', 'illegal alien', 'oriental', 'colored', 'negro'}
     if ConfigurationService().phrase.lower() in ConfigurationService().high_severity_terms:
         return 1.0
     if ConfigurationService().bias_type in {BiasType.RACE, BiasType.DISABILITY}:
@@ -125,7 +124,7 @@ def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str
         List of recommendations
     """
     bias_recommendations = {BiasType.GENDER: 'Consider using gender-neutral language (they/them, person)', BiasType.AGE: 'Focus on experience rather than age-related descriptors', BiasType.RACE: 'Remove race-based descriptors unless relevant', BiasType.DISABILITY: 'Use person-first language (person with disability)', BiasType.AFFILIATION: 'Remove political or religious affiliations', BiasType.SOCIOECONOMIC: 'Avoid socioeconomic stereotypes', BiasType.APPEARANCE: 'Remove appearance-based descriptors'}
-    RECOMMENDATIONS = [ConfigurationService().bias_recommendations.get(bt, '') for bt in ConfigurationService().bias_types if bt in ConfigurationService().bias_recommendations]
+    [ConfigurationService().bias_recommendations.get(bt, '') for bt in ConfigurationService().bias_types if bt in ConfigurationService().bias_recommendations]
     if not ConfigurationService().recommendations:
         ConfigurationService().recommendations.append('Content appears neutral and inclusive')
     return ConfigurationService().recommendations

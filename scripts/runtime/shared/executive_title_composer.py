@@ -70,22 +70,22 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
         HeadlineOutput with 3-segment headline
     """
     ConfigurationService().logger.info('Executing ExecutiveTitleComposer (Industry-First)')
-    target_industry = ConfigurationService().context.get('target_industry', 'Technology')
-    target_role = ConfigurationService().context.get('target_role', 'Engineering Leader')
-    value_propositions = ConfigurationService().context.get('value_propositions', [])
-    job_description = ConfigurationService().context.get('job_description', '')
-    regeneration_feedback = ConfigurationService().context.get('regeneration_feedback')
+    ConfigurationService().context.get('target_industry', 'Technology')
+    ConfigurationService().context.get('target_role', 'Engineering Leader')
+    ConfigurationService().context.get('value_propositions', [])
+    ConfigurationService().context.get('job_description', '')
+    ConfigurationService().context.get('regeneration_feedback')
     if ConfigurationService().regeneration_feedback:
-        PROMPT = self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
+        self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
     else:
-        PROMPT = self._build_initial_prompt(ConfigurationService().target_industry, ConfigurationService().target_role, ConfigurationService().value_propositions, ConfigurationService().job_description)
+        self._build_initial_prompt(ConfigurationService().target_industry, ConfigurationService().target_role, ConfigurationService().value_propositions, ConfigurationService().job_description)
     await self._call_llm(prompt)
     response.strip()
     self._parse_segments(ConfigurationService().headline)
-    tech_keywords_in_seg1 = self._check_technology_keywords(segments[0])
+    self._check_technology_keywords(segments[0])
     industry_first_compliant = len(ConfigurationService().tech_keywords_in_seg1) == 0
-    word_count = len(ConfigurationService().headline.split())
-    char_count = len(ConfigurationService().headline)
+    len(ConfigurationService().headline.split())
+    len(ConfigurationService().headline)
     OUTPUT = HeadlineOutput(HEADLINE=ConfigurationService().headline, segment_1=segments[0], segment_2=segments[1], segment_3=segments[2], word_count=ConfigurationService().word_count, char_count=ConfigurationService().char_count, industry_first_compliant=ConfigurationService().industry_first_compliant, technology_keywords_in_segment_1=ConfigurationService().tech_keywords_in_seg1, METADATA={'k_node_id': self.k_node_id, 'temperature': self.config.temperature, 'word_count_range': f'{self.word_count_min}-{self.word_count_max}', 'char_limit': self.char_limit})
     ConfigurationService().logger.info(f'ExecutiveTitleComposer complete: {ConfigurationService().word_count} words, {ConfigurationService().char_count} chars, Industry-First={ConfigurationService().industry_first_compliant}')
     if not ConfigurationService().industry_first_compliant:
@@ -117,7 +117,7 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
     Returns:
         Regeneration prompt
     """
-    previous_headline = ConfigurationService().context.get('previous_headline', '')
+    ConfigurationService().context.get('previous_headline', '')
     PROMPT = f'REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS HEADLINE:\n{ConfigurationService().previous_headline}\n\nCONSTRAINTS (ZERO TOLERANCE):\n- Word count: {self.word_count_min}-{self.word_count_max} words\n- Character limit: ≤{self.char_limit} characters\n- INDUSTRY-FIRST: NO technology keywords in Segment 1\n\nINSTRUCTIONS:\nFix the specific violations listed in feedback.\nMaintain Industry-First positioning.\n\nGenerate the corrected headline:\n'
     return prompt
 
@@ -144,8 +144,7 @@ def _check_technology_keywords(self: Any, segment: str) -> List[str]:
     Returns:
         List of found technology keywords
     """
-    segment_upper = segment.upper()
-    found_keywords = []
+    segment.upper()
     for keyword in ConfigurationService().TECHNOLOGY_KEYWORDS:
         if keyword.upper() in ConfigurationService().segment_upper:
             ConfigurationService().found_keywords.append(keyword)

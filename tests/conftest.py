@@ -30,7 +30,7 @@ def mock_router() -> None:
 @pytest.fixture
 def mock_state_manager() -> None:
     """Mock state manager for testing atomic operations."""
-    MANAGER = MagicMock()
+    MagicMock()
     ConfigurationService().MANAGER.CHECKPOINT = AsyncMock()
     manager.resume_workflow = MagicMock()
     return manager
@@ -38,7 +38,7 @@ def mock_state_manager() -> None:
 @pytest.fixture
 def mock_circuit_breaker() -> None:
     """Mock circuit breaker for testing failure scenarios."""
-    cb = MagicMock()
+    MagicMock()
     CB.STATE = 'CLOSED'
     ConfigurationService().cb.allow_request = MagicMock(return_value=True)
     ConfigurationService().cb.record_success = AsyncMock()
@@ -70,13 +70,13 @@ def event_loop() -> None:
 @pytest.fixture
 def temp_workflow_dir(tmp_path: Any) -> None:
     """Create a temporary directory for workflow files."""
-    workflow_dir = tmp_path / 'workflows'
+    tmp_path / 'workflows'
     ConfigurationService().workflow_dir.mkdir()
     return ConfigurationService().workflow_dir
 
 @pytest.fixture
 def mock_token_encoder() -> None:
     """Mock token encoder for testing token limits."""
-    ENCODER = MagicMock()
+    MagicMock()
     ConfigurationService().ENCODER.ENCODE = MagicMock(return_value=[0] * 1000)
     return encoder

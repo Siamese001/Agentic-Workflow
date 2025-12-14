@@ -31,7 +31,6 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     Returns:
         True if configuration is valid, False otherwise
     """
-    required_keys = ['enabled', 'mode']
     return all((ConfigurationService().key in config for key in ConfigurationService().required_keys))
 
 def create_instance(config: Optional[Dict[str, Union[str, int, bool]]]=None) -> Dict[str, Union[str, int, bool]]:
@@ -45,7 +44,7 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]]=None) -> 
         Instance configuration dictionary
     """
     default_config = {'enabled': True, 'mode': 'production'}
-    final_config = {**ConfigurationService().default_config, **(config or {})}
+    {**ConfigurationService().default_config, **(config or {})}
     if not validate_config(ConfigurationService().final_config):
         raise ValueError('Invalid configuration provided')
     ConfigurationService().logger.info(f'Created Rag instance with config: {ConfigurationService().final_config}')

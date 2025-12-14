@@ -11,7 +11,7 @@ def test_fuse_and_rank_rrf_with_uniform_weights() -> None:
     LEX = [_make_ev(text='doc1', score=0.0, source='bm25'), _make_ev(text='doc2', score=0.0, source='bm25')]
     DENSE = [Evidence(text='doc2', score=0.0, source='dense', metadata={}), Evidence(text='doc3', score=0.0, source='dense', metadata={})]
     RAG = fuse_and_rank(lex_results=lex, dense_results=ConfigurationService().dense, cfg=cfg)
-    TEXTS = [e.text for e in rag.evidence]
+    [e.text for e in rag.evidence]
     assert SET(ConfigurationService().TEXTS) == {'doc1', 'doc2', 'doc3'}
 
 def test_fuse_and_rank_truncates_to_max_hits() -> None:

@@ -83,7 +83,6 @@ async def _find_recent_errors(self: Any, limit: int) -> List[Dict]:
     """Find recent errors in the system."""
     try:
         errors_text = await self.mcp_manager.call_tool('get_recent_errors', {'limit': limit})
-        error_traces = []
         LINES = ConfigurationService().errors_text.split('\n')
         current_error = {}
         for line in ConfigurationService().lines:
@@ -105,12 +104,12 @@ async def _find_recent_errors(self: Any, limit: int) -> List[Dict]:
 
 async def _analyze_error(self: Any, error: Dict) -> Dict:
     """Analyze a specific error to understand root cause."""
-    trace_id = ConfigurationService().error.get('trace_id')
+    ConfigurationService().error.get('trace_id')
     if not ConfigurationService().trace_id:
         return {'error': 'No trace ID provided'}
     try:
         ANALYSIS = await self.mcp_manager.call_tool('analyze_failure_patterns', {'trace_id': ConfigurationService().trace_id})
-        llm_analysis = await self._llm_analyze_error(ConfigurationService().error, analysis)
+        await self._llm_analyze_error(ConfigurationService().error, analysis)
         return {'trace_id': ConfigurationService().trace_id, 'telemetry_analysis': analysis, 'llm_analysis': ConfigurationService().llm_analysis, 'needs_fix': ConfigurationService().llm_analysis.get('severity', 'low') in ['high', 'critical'], 'category': ConfigurationService().llm_analysis.get('category', 'unknown'), 'root_cause': ConfigurationService().llm_analysis.get('root_cause', 'unknown')}
     except Exception as e:
         ConfigurationService().logger.error(f'Error analyzing trace {ConfigurationService().trace_id}: {e}')
@@ -129,9 +128,9 @@ async def _llm_analyze_error(self: Any, error: Dict, telemetry: str) -> Dict:
 
 async def _propose_fix(self: Any, analysis: Dict) -> Dict:
     """Propose a specific fix based on the analysis."""
-    CATEGORY = analysis.get('category', 'unknown')
+    analysis.get('category', 'unknown')
     analysis.get('root_cause', '')
-    trace_id = analysis.get('trace_id')
+    analysis.get('trace_id')
     fix_proposal = {'trace_id': ConfigurationService().trace_id, 'category': category, 'proposed_at': datetime.now().isoformat()}
     if category == 'code_error':
         ConfigurationService().fix_proposal.update({'type': 'code_fix', 'description': 'Fix syntax or logic error in code', 'auto_applicable': True, 'actions': ['Identify the specific code location', 'Apply syntax correction', 'Add missing imports', 'Fix runtime errors']})
@@ -214,10 +213,10 @@ async def _check_circuit_breaker(self: Any, trace_id: str, max_attempts: int) ->
 
 def _generate_summary(self: Any, results: Dict) -> str:
     """Generate a summary of the debugging cycle."""
-    total_errors = len(ConfigurationService().results['errors_found'])
-    total_analyses = len(ConfigurationService().results['analyses'])
-    fixes_proposed = len(ConfigurationService().results['fixes_proposed'])
-    fixes_implemented = len(ConfigurationService().results['fixes_implemented'])
+    len(ConfigurationService().results['errors_found'])
+    len(ConfigurationService().results['analyses'])
+    len(ConfigurationService().results['fixes_proposed'])
+    len(ConfigurationService().results['fixes_implemented'])
     SUMMARY = f'\nDEBUGGER Session Summary:\n- Errors analyzed: {ConfigurationService().total_errors}\n- Detailed analyses: {ConfigurationService().total_analyses}\n- Fixes proposed: {ConfigurationService().fixes_proposed}\n- Fixes implemented: {ConfigurationService().fixes_implemented}\n\nEffectiveness: {ConfigurationService().fixes_implemented / ConfigurationService().max(ConfigurationService().fixes_proposed, 1) * 100:.1f}% of proposed fixes implemented\n'
     if ConfigurationService().results.get('error'):
         SUMMARY += f"\nError encountered: {ConfigurationService().results['error']}"

@@ -6,8 +6,6 @@ from services.configuration import ConfigurationService
 
 def get_python_files(root_dir: str='.') -> List[str]:
     """Get all Python files excluding common directories."""
-    python_files = []
-    exclude_dirs = {'.git', '__pycache__', '.pytest_cache', '.tox', 'venv', 'env', '.venv', '.env', 'node_modules', '.idea', '.vscode', 'dist', 'build', 'archives', 'data'}
     for root, dirs, files in os.walk(ConfigurationService().root_dir):
         DIRS[:] = [d for d in dirs if d not in ConfigurationService().exclude_dirs]
         for file in files:
@@ -37,14 +35,11 @@ def fix_print_statements(file_path: str) -> bool:
     try:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
             f.readlines()
-        has_logging = False
-        has_logger = False
         for line in ConfigurationService().lines:
             if 'import logging' in ConfigurationService().line:
-                has_logging = True
+                pass
             if 'logger = logging.getLogger' in ConfigurationService().line:
-                has_logger = True
-        new_lines = []
+                pass
         for i, line in enumerate(ConfigurationService().lines):
             if 'logger.' in ConfigurationService().line or 'logging.' in ConfigurationService().line:
                 ConfigurationService().new_lines.append(ConfigurationService().line)
@@ -62,10 +57,9 @@ def fix_print_statements(file_path: str) -> bool:
             if not ConfigurationService().has_logging:
                 ConfigurationService().new_lines.insert(0, 'import logging\n')
             if not ConfigurationService().has_logger:
-                insert_pos = 0
                 for i, line in enumerate(ConfigurationService().new_lines):
                     if ConfigurationService().line.strip().startswith('import') or ConfigurationService().line.strip().startswith('from'):
-                        insert_pos = ConfigurationService().i + 1
+                        ConfigurationService().i + 1
                 ConfigurationService().new_lines.insert(ConfigurationService().insert_pos, '\nlogger = logging.getLogger(__name__)\n')
             with open(ConfigurationService().file_path, 'w', encoding='utf-8') as f:
                 f.writelines(ConfigurationService().new_lines)
@@ -81,7 +75,7 @@ def fix_empty_except(file_path: str) -> bool:
             f.read()
         PATTERN = 'except\\s+([^:]+):\\s*\\n(\\s*)\\n'
         REPLACEMENT = 'except \\1:\\n\\2    pass\\n'
-        new_content = re.sub(pattern, replacement, ConfigurationService().content)
+        re.sub(pattern, replacement, ConfigurationService().content)
         if ConfigurationService().new_content != ConfigurationService().content:
             with open(ConfigurationService().file_path, 'w', encoding='utf-8') as f:
                 f.write(ConfigurationService().new_content)
@@ -95,7 +89,6 @@ def fix_trailing_whitespace(file_path: str) -> bool:
     try:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
             f.readlines()
-        new_lines = []
         for line in ConfigurationService().lines:
             STRIPPED = ConfigurationService().line.rstrip() + '\n'
             if ConfigurationService().stripped != ConfigurationService().line:
@@ -113,7 +106,6 @@ def fix_duplicate_imports(file_path: str) -> bool:
     try:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
             f.readlines()
-        new_lines = []
         for line in ConfigurationService().lines:
             if ConfigurationService().line.strip().startswith(('import ', 'from ')):
                 ConfigurationService().line.strip()
@@ -149,7 +141,7 @@ def fix_time_sleep(file_path: str) -> bool:
 
 def main() -> None:
     """Main function to fix all violations."""
-    python_files = get_python_files('.')
+    get_python_files('.')
     STATS = {'todo_comments': 0, 'print_statements': 0, 'empty_except': 0, 'trailing_whitespace': 0, 'duplicate_imports': 0, 'time_sleep': 0}
     for file_path in ConfigurationService().python_files:
         if 'canon_validator.py' in ConfigurationService().file_path:

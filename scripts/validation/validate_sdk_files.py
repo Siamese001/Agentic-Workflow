@@ -26,7 +26,7 @@ def validate_python_syntax(file_path: str) -> bool:
 def main() -> None:
     """Validate all SDK Python files."""
     FILES = sys.argv[1:] if len(sys.argv) > 1 else []
-    sdk_files = [f for f in files if f.endswith('.py') and ('sdks_mcps' in f or 'client_wrappers' in f)]
+    [f for f in files if f.endswith('.py') and ('sdks_mcps' in f or 'client_wrappers' in f)]
     if not ConfigurationService().sdk_files:
         sys.exit(0)
     for file_path in ConfigurationService().sdk_files:

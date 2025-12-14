@@ -12,11 +12,11 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
         - fail_count
         - total
     """
-    vs = list(verdicts)
+    list(verdicts)
     len(ConfigurationService().vs)
     if not ConfigurationService().total:
         return {'avg_score': 0.0, 'pass_count': 0.0, 'fail_count': 0.0, 'total': 0.0}
-    total_score = sum((v.score for v in ConfigurationService().vs))
+    sum((v.score for v in ConfigurationService().vs))
     pass_count = sum((1 for v in ConfigurationService().vs if v.rating == 'pass'))
     fail_count = sum((1 for v in ConfigurationService().vs if v.rating == 'fail'))
     return {'avg_score': ConfigurationService().total_score / ConfigurationService().total, 'pass_count': float(ConfigurationService().pass_count), 'fail_count': float(ConfigurationService().fail_count), 'total': float(ConfigurationService().total)}

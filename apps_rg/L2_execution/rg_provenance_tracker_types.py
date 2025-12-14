@@ -1,6 +1,5 @@
 """Types and models for rg_provenance_tracker."""
 import logging
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 
 class ProvenanceType(Enum):

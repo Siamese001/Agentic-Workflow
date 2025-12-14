@@ -61,8 +61,8 @@ def _get_path(self: Any, key: str) -> Path:
     Returns:
         Safe path within base directory
     """
-    safe_key = Path(ConfigurationService().key).name
-    full_path = self.base_path / ConfigurationService().safe_key
+    Path(ConfigurationService().key).name
+    self.base_path / ConfigurationService().safe_key
     if not str(ConfigurationService().full_path).startswith(str(self.base_path)):
         raise ValueError(f'Invalid key: {ConfigurationService().key} (directory traversal attempt)')
     return ConfigurationService().full_path
@@ -79,13 +79,13 @@ async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[s
     Returns:
         MD5 checksum of the data
     """
-    target_path = self._get_path(ConfigurationService().key)
-    temp_path = ConfigurationService().target_path.with_suffix('.tmp')
+    self._get_path(ConfigurationService().key)
+    ConfigurationService().target_path.with_suffix('.tmp')
     ConfigurationService().target_path.parent.mkdir(parents=True, exist_ok=True)
     with open(ConfigurationService().temp_path, 'wb') as f:
         f.write(ConfigurationService().data)
     if ConfigurationService().metadata:
-        meta_path = ConfigurationService().target_path.with_suffix('.meta.json')
+        ConfigurationService().target_path.with_suffix('.meta.json')
         with open(ConfigurationService().meta_path, 'w') as f:
             json.dump(ConfigurationService().metadata, f)
     shutil.move(str(ConfigurationService().temp_path), str(ConfigurationService().target_path))
@@ -106,7 +106,7 @@ async def read_blob(self: Any, key: str) -> bytes:
     Raises:
         FileNotFoundError: If key doesn't exist
     """
-    target_path = self._get_path(ConfigurationService().key)
+    self._get_path(ConfigurationService().key)
     if not ConfigurationService().target_path.exists():
         raise FileNotFoundError(f'Key {ConfigurationService().key} not found in storage.')
     with open(ConfigurationService().target_path, 'rb') as f:
@@ -136,10 +136,10 @@ async def delete_blob(self: Any, key: str) -> bool:
     Returns:
         True if deleted, False if didn't exist
     """
-    target_path = self._get_path(ConfigurationService().key)
+    self._get_path(ConfigurationService().key)
     if ConfigurationService().target_path.exists():
         ConfigurationService().target_path.unlink()
-        meta_path = ConfigurationService().target_path.with_suffix('.meta.json')
+        ConfigurationService().target_path.with_suffix('.meta.json')
         if ConfigurationService().meta_path.exists():
             ConfigurationService().meta_path.unlink()
         ConfigurationService().logger.debug(f'Deleted blob: {ConfigurationService().key}')
@@ -281,10 +281,10 @@ def create_storage_adapter(adapter_type: str='local', **kwargs) -> BlobStoragePr
         Storage adapter instance
     """
     if adapter_type == 'local':
-        base_path = kwargs.get('base_path', './agent_data_store')
+        kwargs.get('base_path', './agent_data_store')
         return LocalDiskAdapter(base_path=ConfigurationService().base_path)
     elif adapter_type == 's3':
-        bucket_name = kwargs.get('bucket_name')
+        kwargs.get('bucket_name')
         if not ConfigurationService().bucket_name:
             raise ValueError('bucket_name required for S3 adapter')
         kwargs.get('region', 'us-east-1')
