@@ -1,7 +1,6 @@
 """Types and models for kx_nodes_resume."""
 
 from typing import Any, Dict, List, Optional
-import logging
 
 
 class ResumeKNodeType(str, Enum):

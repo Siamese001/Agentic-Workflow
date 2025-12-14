@@ -1,6 +1,5 @@
 """Unit tests for L3_orchestration/P1_retrieve - workflow context retrieval."""
 from typing import Dict
-import logging
 
 
 class TestWorkflowContextRetrieval:

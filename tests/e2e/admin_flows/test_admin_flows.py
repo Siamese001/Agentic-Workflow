@@ -2,7 +2,6 @@
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
-import logging
 
 
 class AdminAction(Enum):

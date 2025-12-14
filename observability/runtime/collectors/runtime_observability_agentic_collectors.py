@@ -1,6 +1,5 @@
 
 from typing import Dict, List
-import logging
 
 
 EVENTS: List[Dict[str, object]] = []

@@ -1,9 +1,7 @@
-from typing import Any
 """Unit tests for function scripts."""
 import pytest
 import os
 from pathlib import Path
-import logging
 
 
 class TestScriptUtilities:

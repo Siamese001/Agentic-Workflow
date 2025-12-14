@@ -52,7 +52,7 @@ class WorkflowContext:
 
 class TalentIntelligenceAgent:
     """Production agent for talent intelligence operations"""
-    
+
     def __init__(self):
         self.router = MultiProviderRouter(RouterConfig(
             providers=[Provider.OPENAI, Provider.ANTHROPIC, Provider.VERTEX],
@@ -61,30 +61,30 @@ class TalentIntelligenceAgent:
             circuit_breaker_enabled=True
         ))
         self.llm_client = None
-        
+
     async def initialize(self):
         """Initialize the agent and LLM connections"""
         self.llm_client = await self.router.get_primary_client()
         logger.info("TalentIntelligenceAgent initialized successfully")
-    
+
     async def plan(self, objective: str, context: WorkflowContext) -> WorkflowContext:
         """Stage 1: Planning - Define strategy and approach"""
         logger.info(f"Starting planning stage for objective: {objective}")
-        
+
         with tracer.start_as_current_span("planning_stage"):
             try:
                 # Generate strategic plan using LLM
                 planning_prompt = f"""
-                You are a strategic talent intelligence operations planner. 
+                You are a strategic talent intelligence operations planner.
                 Given the objective: "{objective}"
-                
+
                 Create a comprehensive plan that includes:
                 1. Key information needed
                 2. Data sources to query
                 3. Analysis approach
                 4. Success criteria
                 5. Potential risks and mitigations
-                
+
                 Respond in JSON format with the following structure:
                 {{
                     "strategy": "overall approach description",
@@ -95,36 +95,36 @@ class TalentIntelligenceAgent:
                     "risks": ["risk1", "risk2"]
                 }}
                 """
-                
+
                 response = await self.llm_client.generate(
                     message=planning_prompt,
                     temperature=0.3,
                     max_tokens=1000
                 )
-                
+
                 # Parse the strategic plan
                 plan = json.loads(response.content)
                 context.data["plan"] = plan
                 context.insights.append(f"Generated strategic plan with {len(plan['analysis_steps'])} steps")
                 context.stage = WorkflowStage.RETRIEVAL
-                
+
                 logger.info("Planning stage completed successfully")
                 return context
-                
+
             except Exception as e:
                 logger.error(f"Planning stage failed: {e}")
                 context.errors.append(f"Planning error: {str(e)}")
                 raise
-    
+
     async def retrieve(self, context: WorkflowContext) -> WorkflowContext:
         """Stage 2: Retrieval - Gather data from multiple sources"""
         logger.info("Starting retrieval stage")
-        
+
         with tracer.start_as_current_span("retrieval_stage"):
             try:
                 plan = context.data["plan"]
                 retrieved_data = {}
-                
+
                 # Simulate data retrieval from various sources
                 for source in plan["data_sources"]:
                     if source == "resume_database":
@@ -133,100 +133,100 @@ class TalentIntelligenceAgent:
                         retrieved_data[source] = await self._search_job_postings(plan["information_needed"])
                     elif source == "market_data":
                         retrieved_data[source] = await self._get_market_data(plan["information_needed"])
-                
+
                 context.data["retrieved"] = retrieved_data
                 context.insights.append(f"Retrieved data from {len(retrieved_data)} sources")
                 context.stage = WorkflowStage.INSPECTION
-                
+
                 logger.info("Retrieval stage completed successfully")
                 return context
-                
+
             except Exception as e:
                 logger.error(f"Retrieval stage failed: {e}")
                 context.errors.append(f"Retrieval error: {str(e)}")
                 raise
-    
+
     async def inspect(self, context: WorkflowContext) -> WorkflowContext:
         """Stage 3: Inspection - Analyze and validate data"""
         logger.info("Starting inspection stage")
-        
+
         with tracer.start_as_current_span("inspection_stage"):
             try:
                 retrieved_data = context.data["retrieved"]
                 plan = context.data["plan"]
-                
+
                 # Analyze retrieved data using LLM
                 inspection_prompt = f"""
                 You are a talent intelligence analyst. Analyze the following retrieved data:
-                
+
                 Data Sources: {json.dumps(list(retrieved_data.keys()), indent=2)}
                 Information Needed: {json.dumps(plan["information_needed"], indent=2)}
-                
+
                 Retrieved Data Summary:
                 {json.dumps({k: f"{len(v) if isinstance(v, list) else 'summary'} items" for k, v in retrieved_data.items()}, indent=2)}
-                
+
                 Provide analysis including:
                 1. Data quality assessment
                 2. Key insights found
                 3. Information gaps
                 4. Confidence levels
                 5. Recommendations for action
-                
+
                 Respond in JSON format.
                 """
-                
+
                 response = await self.llm_client.generate(
                     message=inspection_prompt,
                     temperature=0.2,
                     max_tokens=1500
                 )
-                
+
                 analysis = json.loads(response.content)
                 context.data["analysis"] = analysis
                 context.insights.extend(analysis.get("key_insights", []))
                 context.stage = WorkflowStage.ACTION
-                
+
                 logger.info("Inspection stage completed successfully")
                 return context
-                
+
             except Exception as e:
                 logger.error(f"Inspection stage failed: {e}")
                 context.errors.append(f"Inspection error: {str(e)}")
                 raise
-    
+
     async def act(self, context: WorkflowContext) -> WorkflowContext:
         """Stage 4: Action - Execute based on insights"""
         logger.info("Starting action stage")
-        
+
         with tracer.start_as_current_span("action_stage"):
             try:
                 analysis = context.data["analysis"]
                 plan = context["plan"]
-                
+
                 # Generate action plan
                 action_prompt = f"""
                 Based on the analysis: {json.dumps(analysis, indent=2)}
                 Original objective: {context.objective}
-                
+
                 Generate specific actions to take. For each action include:
                 1. Action type (email, report, update_database, etc.)
                 2. Target recipient/system
                 3. Content/payload
                 4. Priority level
                 5. Success metrics
-                
+
                 Respond in JSON format with a list of actions.
                 """
-                
+
                 response = await self.llm_client.generate(
                     message=action_prompt,
                     temperature=0.3,
                     max_tokens=1000
                 )
-                
+
                 actions = json.loads(response.content)
                 executed_actions = []
-                
+
                 # Execute actions
                 for action in actions:
                     try:
@@ -240,18 +240,18 @@ class TalentIntelligenceAgent:
                     except Exception as e:
                         logger.error(f"Action execution failed: {e}")
                         context.errors.append(f"Action error: {str(e)}")
-                
+
                 context.data["executed_actions"] = executed_actions
                 context.stage = WorkflowStage.COMPLETED
-                
+
                 logger.info("Action stage completed successfully")
                 return context
-                
+
             except Exception as e:
                 logger.error(f"Action stage failed: {e}")
                 context.errors.append(f"Action error: {str(e)}")
                 raise
-    
+
     async def _search_resumes(self, information_needed: List[str]) -> List[Dict]:
         """Search resume database for relevant candidates"""
         # Simulate resume search
@@ -265,7 +265,7 @@ class TalentIntelligenceAgent:
                 "match_score": 0.92
             },
             {
-                "id": "candidate_002", 
+                "id": "candidate_002",
                 "name": "Sarah Johnson",
                 "skills": ["React", "Node.js", "TypeScript"],
                 "experience": "3 years",
@@ -273,7 +273,7 @@ class TalentIntelligenceAgent:
                 "match_score": 0.87
             }
         ]
-    
+
     async def _search_job_postings(self, information_needed: List[str]) -> List[Dict]:
         """Search job postings for market analysis"""
         return [
@@ -287,14 +287,14 @@ class TalentIntelligenceAgent:
             },
             {
                 "id": "job_002",
-                "title": "Full Stack Developer", 
+                "title": "Full Stack Developer",
                 "company": "StartupXYZ",
                 "location": "Austin",
                 "salary_range": "$120k-$160k",
                 "requirements": ["React", "Node.js", "3+ years"]
             }
         ]
-    
+
     async def _get_market_data(self, information_needed: List[str]) -> Dict:
         """Get market intelligence data"""
         return {
@@ -306,11 +306,11 @@ class TalentIntelligenceAgent:
             "competition_level": "High",
             "time_to_fill_average": "45 days"
         }
-    
+
     async def _execute_action(self, action: Dict) -> Dict:
         """Execute a specific action based on analysis"""
         action_type = action.get("action_type")
-        
+
         if action_type == "generate_report":
             return {
                 "status": "success",
@@ -325,7 +325,7 @@ class TalentIntelligenceAgent:
             }
         elif action_type == "update_database":
             return {
-                "status": "success", 
+                "status": "success",
                 "records_updated": len(action.get("data", [])),
                 "timestamp": datetime.utcnow().isoformat()
             }
@@ -337,14 +337,14 @@ class TalentIntelligenceAgent:
 
 class WorkflowOrchestrator:
     """Orchestrates the complete agentic workflow"""
-    
+
     def __init__(self):
         self.agent = TalentIntelligenceAgent()
-        
+
     async def execute_full_cycle(self, objective: str) -> WorkflowContext:
         """Execute the complete Plan -> Retrieve -> Inspect -> Act cycle"""
         session_id = f"session_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
-        
+
         context = WorkflowContext(
             session_id=session_id,
             objective=objective,
@@ -356,24 +356,24 @@ class WorkflowOrchestrator:
             start_time=datetime.utcnow(),
             metadata={"version": "3.0", "orchestrator": "WorkflowOrchestrator"}
         )
-        
+
         try:
             # Initialize agent
             await self.agent.initialize()
-            
+
             # Execute workflow stages
             context = await self.agent.plan(objective, context)
             context = await self.agent.retrieve(context)
             context = await self.agent.inspect(context)
             context = await self.agent.act(context)
-            
+
             # Generate final summary
             context.metadata["completion_time"] = datetime.utcnow()
             context.metadata["duration"] = (context.metadata["completion_time"] - context.start_time).total_seconds()
-            
+
             logger.info(f"Workflow completed successfully in {context.metadata['duration']:.2f} seconds")
             return context
-            
+
         except Exception as e:
             logger.error(f"Workflow failed: {e}")
             context.errors.append(f"Workflow failure: {str(e)}")
@@ -383,20 +383,20 @@ class WorkflowOrchestrator:
 # Main execution function
 async def main():
     """Main function demonstrating the complete agentic workflow"""
-    
+
     # Example objectives for talent intelligence
     objectives = [
         "Find senior software engineers with Python and AWS experience in San Francisco",
         "Analyze the competitive landscape for machine learning talent",
         "Identify candidates for a product coordinator position with SaaS experience"
     ]
-    
+
     orchestrator = WorkflowOrchestrator()
-    
+
     for objective in objectives:
 
         context = await orchestrator.execute_full_cycle(objective)
-        
+
         # Print results summary
 
         if context.insights:

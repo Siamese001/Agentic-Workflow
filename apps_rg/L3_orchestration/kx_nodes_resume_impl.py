@@ -1,5 +1,4 @@
 """Implementation for kx_nodes_resume."""
-import logging
 
 
 # from .kx_nodes_resume_types import *  # Star import removed

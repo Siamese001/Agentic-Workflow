@@ -1,6 +1,4 @@
-from typing import Any
 """Integration tests for cross-domain schema compatibility."""
-import logging
 
 
 

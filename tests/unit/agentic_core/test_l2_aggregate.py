@@ -1,6 +1,5 @@
 """Unit tests for L2_execution/P3_aggregate - execution result aggregation."""
 from typing import Dict, List
-import logging
 
 
 class TestExecutionResultAggregation:

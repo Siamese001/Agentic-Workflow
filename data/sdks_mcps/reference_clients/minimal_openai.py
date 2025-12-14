@@ -8,37 +8,37 @@ from openai import OpenAI
 
 def simple_completion(prompt: str, model: str = "gpt-4o-2024-08-06") -> str:
     """Simple chat completion with OpenAI.
-    
+
     Args:
         prompt: Input prompt text
         model: OpenAI model to use
-        
+
     Returns:
         Generated response text
     """
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    
+
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
         max_tokens=1000,
         temperature=0.7
     )
-    
+
     return response.choices[0].message.content
 
 def structured_completion(prompt: str, schema: dict) -> dict:
     """Structured completion with JSON schema.
-    
+
     Args:
         prompt: Input prompt text
         schema: JSON schema for output
-        
+
     Returns:
         Structured response data
     """
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    
+
     response = client.chat.completions.create(
         model="gpt-4o-2024-08-06",
         messages=[{"role": "user", "content": prompt}],
@@ -52,7 +52,7 @@ def structured_completion(prompt: str, schema: dict) -> dict:
         max_tokens=2000,
         temperature=0.3
     )
-    
+
     return json.loads(response.choices[0].message.content)
 
 if __name__ == "__main__":
@@ -67,4 +67,4 @@ if __name__ == "__main__":
             "key_points": {"type": "array", "items": {"type": "string"}}
         }
     }
-    
+

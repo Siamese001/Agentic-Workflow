@@ -5,7 +5,6 @@ modules to avoid circular imports. This file must NOT import from any
 runtime.* modules - only from pydantic, enum, and typing.
 """
 
-import logging
 from enum import Enum
 from pathlib import Path
 

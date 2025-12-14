@@ -1,7 +1,6 @@
 """Unit tests for L4_memory/P2_inspect - memory inspection operations."""
 from typing import Dict, List
 from datetime import datetime, timedelta
-import logging
 
 
 class TestMemoryInspection:

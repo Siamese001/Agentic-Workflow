@@ -1,5 +1,4 @@
 """Types and models for track_lic_state."""
-import logging
 
 
 

@@ -1,5 +1,4 @@
 """Fallback shim to replace deprecated archive imports."""
-import logging
 
 
 # This file serves as a fallback to break import chains into the immutable archives/

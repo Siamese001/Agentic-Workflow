@@ -1,5 +1,4 @@
 """Enum types for models."""
-import logging
 
 
 

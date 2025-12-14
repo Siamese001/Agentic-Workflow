@@ -37,14 +37,14 @@ class RecursivePlan:
 class RecursivePlannerAgent:
     """
     An executive agent that designs and manages complex workflows.
-    
+
     Instead of executing tasks directly, it:
     1. Decomposes complex goals into sub-tasks
     2. Designs workflows for each sub-task
     3. Instantiates child orchestrators
     4. Monitors and coordinates execution
     """
-    
+
     def __init__(
         self,
         architect,
@@ -54,7 +54,7 @@ class RecursivePlannerAgent:
     ):
         """
         Initialize the recursive planner.
-        
+
         Args:
             architect: Workflow architect for designing sub-workflows
             orchestrator_factory: Factory to create child orchestrators
@@ -66,7 +66,7 @@ class RecursivePlannerAgent:
         self.max_depth = max_depth
         self.max_parallel = max_parallel_subtasks
         self.active_children: List[str] = []
-        
+
         logger.info(f"Recursive planner initialized (max_depth={max_depth})")
 
     async def plan_and_execute(
@@ -77,31 +77,31 @@ class RecursivePlannerAgent:
     ) -> Dict[str, Any]:
         """
         Main method: Plan and execute a complex goal.
-        
+
         Args:
             complex_goal: The high-level goal to achieve
             context: Execution context
             current_depth: Current recursion depth
-            
+
         Returns:
             Execution results
         """
         if current_depth >= self.max_depth:
             logger.warning(f"Max recursion depth ({self.max_depth}) reached")
             return await self._execute_directly(complex_goal, context)
-        
+
         logger.info(f"Planning complex goal at depth {current_depth}: {complex_goal}")
-        
+
         # Step 1: Decompose the goal
         plan = await self._decompose_goal(complex_goal, context)
-        
+
         # Step 2: Validate the plan
         if not await self._validate_plan(plan, context):
             return {"error": "Plan validation failed", "goal": complex_goal}
-        
+
         # Step 3: Execute the plan
         result = await self._execute_plan(plan, context, current_depth)
-        
+
         return result
 
     async def _decompose_goal(
@@ -110,7 +110,7 @@ class RecursivePlannerAgent:
         context: Dict[str, Any]
     ) -> RecursivePlan:
         """Decompose a complex goal into manageable sub-tasks."""
-        
+
         decomposition_prompt = f"""
 Goal: {goal}
 
@@ -147,14 +147,14 @@ Format as JSON:
     "success_criteria": ["..."]
 }}
 """
-        
+
         response = await self.architect.llm.generate(decomposition_prompt)
-        
+
         # Parse the response
         try:
             import json
             plan_data = json.loads(response)
-            
+
             subtasks = []
             for task_data in plan_data.get("subtasks", []):
                 subtask = SubTask(
@@ -166,7 +166,7 @@ Format as JSON:
                     priority=task_data.get("priority", 5)
                 )
                 subtasks.append(subtask)
-            
+
             plan = RecursivePlan(
                 main_goal=goal,
                 subtasks=subtasks,
@@ -174,9 +174,9 @@ Format as JSON:
                 resource_requirements={},
                 success_criteria=plan_data.get("success_criteria", [])
             )
-            
+
             return plan
-            
+
         except Exception as e:
             logger.error(f"Failed to parse decomposition: {e}")
             # Fallback: create a single task
@@ -201,15 +201,15 @@ Format as JSON:
         context: Dict[str, Any]
     ) -> bool:
         """Validate that the plan is executable."""
-        
+
         # Check for circular dependencies
         visited = set()
         rec_stack = set()
-        
+
         def has_cycle(task_id):
             visited.add(task_id)
             rec_stack.add(task_id)
-            
+
             for task in plan.subtasks:
                 if task.task_id == task_id:
                     for dep in task.dependencies:
@@ -218,19 +218,19 @@ Format as JSON:
                                 return True
                         elif dep in rec_stack:
                             return True
-            
+
             rec_stack.remove(task_id)
             return False
-        
+
         for task in plan.subtasks:
             if has_cycle(task.task_id):
                 logger.error("Circular dependency detected in plan")
                 return False
-        
+
         # Check resource constraints
         if len(plan.subtasks) > self.max_parallel:
             logger.warning(f"Plan has {len(plan.subtasks)} tasks, exceeding max parallel {self.max_parallel}")
-        
+
         return True
 
     async def _execute_plan(
@@ -240,20 +240,20 @@ Format as JSON:
         current_depth: int
     ) -> Dict[str, Any]:
         """Execute the recursive plan."""
-        
+
         start_time = time.time()
         results = {}
-        
+
             results = await self._execute_sequential(plan, context, current_depth)
             results = await self._execute_parallel(plan, context, current_depth)
         else:  # adaptive
             results = await self._execute_adaptive(plan, context, current_depth)
-        
+
         execution_time = time.time() - start_time
-        
+
         # Validate success criteria
         success = await self._check_success_criteria(plan, results)
-        
+
         return {
             "goal": plan.main_goal,
             "success": success,
@@ -271,26 +271,26 @@ Format as JSON:
         """Execute sub-tasks sequentially."""
         results = {}
         completed_tasks = set()
-        
+
         # Sort by priority and dependencies
         sorted_tasks = self._sort_tasks_by_dependencies(plan.subtasks)
-        
+
         for task in sorted_tasks:
             # Check dependencies
             if not all(dep in completed_tasks for dep in task.dependencies):
                 logger.warning(f"Skipping task {task.task_id} - dependencies not met")
                 continue
-            
+
             # Execute task
             task_result = await self._execute_subtask(task, context, current_depth)
             results[task.task_id] = task_result
-            
+
             if task_result.get("success", False):
                 completed_tasks.add(task.task_id)
             else:
                 logger.error(f"Task {task.task_id} failed, stopping sequential execution")
                 break
-        
+
         return results
 
     async def _execute_parallel(
@@ -301,21 +301,21 @@ Format as JSON:
     ) -> Dict[str, Any]:
         """Execute sub-tasks in parallel where possible."""
         import asyncio
-        
+
         results = {}
-        
+
         # Group tasks by dependency level
         levels = self._group_tasks_by_level(plan.subtasks)
-        
+
         for level, tasks in levels.items():
             # Execute tasks at this level in parallel
             coroutines = [
                 self._execute_subtask(task, context, current_depth)
                 for task in tasks
             ]
-            
+
             level_results = await asyncio.gather(*coroutines, return_exceptions=True)
-            
+
             for task, result in zip(tasks, level_results):
                 if isinstance(result, Exception):
                     results[task.task_id] = {
@@ -324,7 +324,7 @@ Format as JSON:
                     }
                 else:
                     results[task.task_id] = result
-        
+
         return results
 
     async def _execute_adaptive(
@@ -334,9 +334,9 @@ Format as JSON:
         current_depth: int
     ) -> Dict[str, Any]:
         """Execute with adaptive strategy based on task characteristics."""
-        
+
         # Simple heuristic: use parallel for independent tasks, sequential otherwise
-        
+
         if has_dependencies:
             return await self._execute_sequential(plan, context, current_depth)
         else:
@@ -349,15 +349,15 @@ Format as JSON:
         current_depth: int
     ) -> Dict[str, Any]:
         """Execute a single sub-task."""
-        
+
         logger.debug(f"Executing subtask {task.task_id}: {task.description}")
-        
+
         # Create child orchestrator for this sub-task
         child_orchestrator = self.orchestrator_factory.create()
-        
+
         # Build a simple workflow for this sub-task
         workflow = await self._build_subtask_workflow(task)
-        
+
         # Execute the sub-task
         try:
             result = await child_orchestrator.execute_graph(
@@ -368,14 +368,14 @@ Format as JSON:
                     "role": task.agent_role
                 }
             )
-            
+
             return {
                 "success": True,
                 "result": result,
                 "task_id": task.task_id,
                 "agent_role": task.agent_role
             }
-            
+
         except Exception as e:
             logger.error(f"Subtask {task.task_id} failed: {e}")
             return {
@@ -386,10 +386,10 @@ Format as JSON:
 
     async def _build_subtask_workflow(self, task: SubTask) -> Dict[str, Any]:
         """Build a workflow for a sub-task."""
-        
+
         # This is a simplified workflow builder
         # In practice, this would use the architect to design proper workflows
-        
+
         workflow = {
             "nodes": [
                 {
@@ -403,7 +403,7 @@ Format as JSON:
             ],
             "edges": []
         }
-        
+
         return workflow
 
     async def _execute_directly(
@@ -412,21 +412,21 @@ Format as JSON:
         context: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Execute goal directly when max depth is reached."""
-        
+
         logger.warning(f"Executing goal directly: {goal}")
-        
+
         # Create a simple hop to handle this
         hop = self.orchestrator_factory.create_hop(role="RESEARCHER")
-        
+
         try:
             result = await hop.run(goal=goal, **context)
-            
+
             return {
                 "success": True,
                 "result": result,
                 "execution_mode": "direct"
             }
-            
+
         except Exception as e:
             return {
                 "success": False,
@@ -440,7 +440,7 @@ Format as JSON:
         results: Dict[str, Any]
     ) -> bool:
         """Check if success criteria were met."""
-        
+
         if not plan.success_criteria:
             # Default: check if most tasks succeeded
             successful = sum(
@@ -448,69 +448,69 @@ Format as JSON:
                 if r.get("success", False)
             )
             return successful >= len(results) * 0.8
-        
+
         # TODO: Implement custom success criteria checking
         return True
 
     def _sort_tasks_by_dependencies(self, tasks: List[SubTask]) -> List[SubTask]:
         """Sort tasks topologically by dependencies."""
-        
+
         # Simple topological sort
         sorted_tasks = []
         remaining = tasks.copy()
-        
+
         while remaining:
             # Find tasks with no unmet dependencies
             ready = [
                 t for t in remaining
                 if all(dep not in [rt.task_id for rt in sorted_tasks] for dep in t.dependencies)
             ]
-            
+
             if not ready:
                 # Circular dependency or error
                 logger.warning("Circular dependency detected, adding remaining tasks")
                 ready = remaining
-            
+
             # Add highest priority ready task
             ready.sort(key=lambda x: x.priority)
             task = ready.pop(0)
             sorted_tasks.append(task)
             remaining.remove(task)
-        
+
         return sorted_tasks
 
     def _group_tasks_by_level(self, tasks: List[SubTask]) -> Dict[int, List[SubTask]]:
         """Group tasks by dependency level for parallel execution."""
-        
+
         levels = {}
         task_map = {t.task_id: t for t in tasks}
-        
+
         def get_task_level(task_id, visited=None):
             if visited is None:
                 visited = set()
-            
+
             if task_id in visited:
                 return 0  # Circular dependency, assign level 0
-            
+
             visited.add(task_id)
-            
+
             task = task_map.get(task_id)
             if not task or not task.dependencies:
                 return 0
-            
+
             max_dep_level = max(
                 get_task_level(dep, visited.copy())
                 for dep in task.dependencies
             )
-            
+
             return max_dep_level + 1
-        
+
         for task in tasks:
             level = get_task_level(task.task_id)
             if level not in levels:
                 levels[level] = []
             levels[level].append(task)
-        
+
         return levels
 
     def _format_context(self, context: Dict[str, Any]) -> str:
@@ -526,13 +526,13 @@ def create_recursive_planner(
 ) -> RecursivePlannerAgent:
     """
     Factory function to create a recursive planner.
-    
+
     Args:
         architect: Workflow architect instance
         orchestrator_factory: Factory for creating orchestrators
         max_depth: Maximum recursion depth
         max_parallel_subtasks: Maximum parallel sub-tasks
-        
+
     Returns:
         RecursivePlannerAgent instance
     """

@@ -1,4 +1,3 @@
-from typing import Any
 """
 Debug script to check VS Code/Windsurf test discovery configuration.
 Run this in the terminal to verify all settings are correct.

@@ -78,7 +78,7 @@
             }
         }
     },
-    
+
     "parameter_presets": {
         "circuit_breaker": {
             "failure_threshold": 3,
@@ -123,7 +123,7 @@
             }
         }
     },
-    
+
     "insight_patterns": {
         "signal_quality_scorer": {
             "source_weights": {
@@ -184,7 +184,7 @@
             }
         }
     },
-    
+
     "message_templates": {
         "cta_templates": {
             "CONNECTION_REQ": {
@@ -265,7 +265,7 @@
             }
         }
     },
-    
+
     "cta_patterns": {
         "archetype_specific": {
             "C_LEVEL": {
@@ -336,7 +336,7 @@
             }
         }
     },
-    
+
     "tone_rules": {
         "archetype_tone_mappings": {
             "C_LEVEL": {
@@ -390,7 +390,7 @@
             }
         }
     },
-    
+
     "constraints": {
         "content_cleanliness": {
             "forbidden_verbs": [
@@ -447,7 +447,7 @@
             }
         }
     },
-    
+
     "scenario_rules": {
         "rag_pipeline_v75": {
             "description": "6-stage RAG validation pipeline with HyDE, hybrid recall, cross-encoder reranking, self-RAG, episodic memory, knowledge graph, and few-shot injection",
@@ -585,12 +585,12 @@
             }
         }
     },
-    
+
     "seniority_rules": {
         "recipient_classifier_taxonomy": {
             "types": [
                 "HIRING_MANAGER",
-                "RECRUITER", 
+                "RECRUITER",
                 "SENIOR_TA",
                 "EXECUTIVE",
                 "C_LEVEL"
@@ -705,7 +705,7 @@
         "default_confidence": 0.6,
         "manual_override_threshold": 0.75
     },
-    
+
     "validator_rules": {
         "error_code_registry": {
             "LIC-E001": {
@@ -842,7 +842,7 @@
             ]
         }
     },
-    
+
     "message_families": {
         "archetype_generation_templates": {
             "C_LEVEL": {
@@ -956,7 +956,7 @@
             }
         }
     },
-    
+
     "k_node_behaviors": {
         "hop_execution_order": [
             {
@@ -966,7 +966,7 @@
                 "template": "Hi {first_name},"
             },
             {
-                "hop_id": "K.2", 
+                "hop_id": "K.2",
                 "description": "Subject Line - Context-specific subject",
                 "enabled_for": ["INMAIL", "LONG_NEW"],
                 "char_limit": 60
@@ -1000,7 +1000,7 @@
             "steps": [
                 "EXECUTE_K1_GREETING",
                 "EXECUTE_K2_SUBJECT",
-                "GENERATE_GREETING", 
+                "GENERATE_GREETING",
                 "EXECUTE_K3_BODY",
                 "EXECUTE_K4_CTA",
                 "EXECUTE_K5_SIGNATURE"
@@ -1033,12 +1033,12 @@
             ]
         }
     },
-    
+
     "mission_fields": {
         "sender_profile_structure": {
             "personal_info": {
                 "first_name": "string",
-                "last_name": "string", 
+                "last_name": "string",
                 "title": "string",
                 "linkedin_url": "url"
             },
@@ -1098,7 +1098,7 @@
                 "required": True,
                 "options": [
                     "CONNECTION_REQ",
-                    "INMAIL", 
+                    "INMAIL",
                     "SHORT_NEW",
                     "LONG_NEW",
                     "FOLLOW_UP"
