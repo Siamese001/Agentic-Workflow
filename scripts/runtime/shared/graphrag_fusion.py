@@ -52,7 +52,7 @@ class CypherQueryGenerator:
             # Skills and experience
             "skills_match": r"(?:what|which) skills do (?:i|you|candidate) have "
                 r"(?:for|in|related to) (.+)",
-                
+
 
 
             "experience_with": r"(?:experience|worked|used) (?:with|on) (.+)",

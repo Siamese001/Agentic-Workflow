@@ -896,7 +896,7 @@
                 "system_instructions": "You are crafting a technical message for a senior technical authority (architect,
                      principal engineer,
                      tech lead).",
-                    
+
                 "tone": "Technical peer, respectful but confident, focused on architectural decisions and technical excellence.",
                 "approach": "Reference specific technologies or patterns, demonstrate technical credibility, respect their authority on technical direction.",
                 "avoid": "Marketing language, oversimplification of technical concepts, challenging their technical decisions.",

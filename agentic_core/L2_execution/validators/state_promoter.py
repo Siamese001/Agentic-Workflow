@@ -206,7 +206,7 @@ class StatePromoter:
                             f"Max correction attempts ({self.max_correction_attempts}) "
                             "exceeded"
                         ),
-                            
+
 
 
                         correction_attempts=correction_attempts,

@@ -155,7 +155,7 @@ class ErrorRecoveryManager:
                 'context': context})
             raise RetryExhaustedError(
                 message=f'Retry exhausted after {attempt} attempts: {str(exc)}',
-                
+
 
                 code=exc.__class__.__name__,
                 attempts=attempt) from exc

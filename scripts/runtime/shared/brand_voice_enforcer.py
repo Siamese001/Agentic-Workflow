@@ -220,7 +220,7 @@ class ToneEnforcer:
                     severity="warning",
                     message=f"Sentence too long: {word_count} words "
                         f"(max: {settings.max_sentence_length})",
-                        
+
 
 
                     location=sentence[:50] + "..." if len(sentence) > 50 else sentence,
