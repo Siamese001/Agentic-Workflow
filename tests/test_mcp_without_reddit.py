@@ -1,9 +1,11 @@
 """Test MCP integration without Reddit credentials."""
 import asyncio
 import logging
+
 from mcp_adapter import UniversalMCPClient
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 async def test_mcp() -> None:

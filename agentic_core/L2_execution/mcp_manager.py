@@ -9,9 +9,11 @@ import os
 from contextlib import AsyncExitStack
 from pathlib import Path
 from typing import Any, Dict, List
+
 import yaml
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 try:
     from mcp import ClientSession, StdioServerParameters

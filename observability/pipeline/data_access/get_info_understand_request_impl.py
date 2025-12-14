@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-# from .get_info_understand_request_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # from .get_info_understand_request_types import *  # Star import removed
 
 class GetInfoUnderstandRequest:
     """

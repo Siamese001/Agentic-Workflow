@@ -7,9 +7,11 @@ import logging
 import re
 import time
 from typing import List, Optional, Set
+
 from pydantic import BaseModel, Field
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 class CompressionResult(BaseModel):

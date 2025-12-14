@@ -10,8 +10,9 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Dict, Optional, Protocol
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 class BlobStorageProvider(Protocol):

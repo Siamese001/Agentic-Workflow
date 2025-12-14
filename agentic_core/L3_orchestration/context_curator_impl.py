@@ -2,7 +2,7 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# from .context_curator_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # from .context_curator_types import *  # Star import removed
 
 class ContextCurator:
     """Curates and manages the context window dynamically.

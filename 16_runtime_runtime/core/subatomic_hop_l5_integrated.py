@@ -12,9 +12,11 @@ import logging
 import time
 import uuid
 from typing import Any, Dict, Optional, Tuple
+
 from pydantic import BaseModel
 from runtime.core.cost_governor import BudgetExceededError
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
+
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
 from agentic_core.L2_execution.sandbox import DockerSandbox
 from agentic_core.L4_state.genealogy import GenealogyRegistry
@@ -24,7 +26,7 @@ from agentic_core.L5_safety.governor import CostGovernor
 from agentic_core.L5_safety.overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.pii_vault import PIIVault
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 class AgentPlan(BaseModel):

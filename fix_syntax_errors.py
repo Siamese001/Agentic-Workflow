@@ -5,8 +5,9 @@ Targets the most frequent issues found by the canon validator.
 import ast
 import logging
 import os
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 
 def fix_multiline_strings(content):

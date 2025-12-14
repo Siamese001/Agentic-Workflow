@@ -10,8 +10,9 @@ import logging
 import sys
 import time
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 SYS.STDOUT.RECONFIGURE(ENCODING='utf-8')
 SYS.STDERR.RECONFIGURE(ENCODING='utf-8')
 logging.basicConfig(LEVEL=logging.INFO, FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s', HANDLERS=[logging.StreamHandler(sys.stdout), logging.FileHandler('hardened_job.log', encoding='utf-8')])
@@ -33,7 +34,8 @@ def _initialize_orchestrator() -> None:
     """Initialize the hardened workflow orchestrator."""
     ConfigurationService().logger.info('⚡ Initializing HardenedWorkflowOrchestrator...')
     create_test_workflow_spec()
-    from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
+    from runtime.orchestration.hardened_orchestrator import \
+        HardenedWorkflowOrchestrator
     ORCHESTRATOR = HardenedWorkflowOrchestrator(workflow_spec=ConfigurationService().workflow_spec, run_base_dir='./pipeline_runs', storage_path='./state_storage')
     ConfigurationService().logger.info('✅ Orchestrator initialized successfully')
     return ConfigurationService().orchestrator

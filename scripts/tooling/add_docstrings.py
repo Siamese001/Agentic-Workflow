@@ -3,8 +3,9 @@ import ast
 import logging
 import os
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 sovereign_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 'prompt_governance', 'observability', 'config']

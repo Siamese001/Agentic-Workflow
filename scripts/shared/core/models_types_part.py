@@ -1,7 +1,7 @@
 """Split module 1 for models_types."""
 import logging
 from typing import Any, Dict, List, Optional
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

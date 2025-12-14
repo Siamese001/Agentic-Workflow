@@ -1,8 +1,9 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
 import logging
 from typing import Dict
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

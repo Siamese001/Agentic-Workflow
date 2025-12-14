@@ -1,6 +1,6 @@
 import logging
 from typing import Any
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 '\n\n\nLOGGER = logging.getLogger(__name__)\nSafety module stub for apps_rg.\n\nThis module provides safety checking functionality for resume generation.\n'
 

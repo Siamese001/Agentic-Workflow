@@ -5,8 +5,9 @@ Provides core functionality and exports for the Rag module.
 """
 import logging
 from typing import Dict, List, Optional, Union
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 __version__: str = '1.0.0'
 __author__: str = 'Agentic Workflow'

@@ -4,7 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# from .judge_evaluator_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # from .judge_evaluator_types import *  # Star import removed
 
 class JudgeEvaluator:
     """LM-as-a-Judge evaluator for output quality assessment.

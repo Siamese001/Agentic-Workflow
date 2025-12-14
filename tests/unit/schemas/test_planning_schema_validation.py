@@ -1,8 +1,9 @@
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 import logging
 from typing import Iterable, Type
+
 from pydantic import BaseModel
+
 logger = logging.getLogger(__name__)
 
 def _get_schema_version(obj: object) -> str | None:
