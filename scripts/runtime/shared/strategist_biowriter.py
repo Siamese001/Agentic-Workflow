@@ -201,7 +201,9 @@ EXAMPLES (3rd-Person Compliant):
         systems, and team leadership. Drives innovation through technical excellence and strategic v
             ision.
                 .
-                    . Passionate about building high-performing teams that deliver measurable business impact.
+                    .
+                        . Passionate about building high-performing teams that deliver measurable business impact.
+                        .
                     .
                 ."
 

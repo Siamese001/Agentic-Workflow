@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/aggregation_ops/
 Tests aggregation operations including pick_best_result.
 """

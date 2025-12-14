@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L1_cognition
 # -*- coding: utf-8 -*-
 """Validate Resume Schema - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def validate_resume_schema(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate resume schema data."""

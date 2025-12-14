@@ -1,7 +1,10 @@
+import logging
 
 
 
 
+
+logger = logging.getLogger(__name__)
 class SimScenario(BaseModel):
     """TODO: Add docstring."""
 

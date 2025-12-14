@@ -60,7 +60,8 @@ class MCPConnectionManager:
 
             # Context Manager Magic
             transport = await self.exit_stack.enter_async_context(stdio_client(params))
-            session = await self.exit_stack.enter_async_context(ClientSession(transport[0], transport[1]))
+            session = await self.exit_stack.enter_async_context(ClientSession(transport[0],
+                transport[1]))
             await session.initialize()
 
             self.sessions.append(session)
@@ -105,7 +106,8 @@ def load_mcp_config(config_path: str = "config/mcp_mappings.yaml") -> Dict[str, 
     return config
 
 
-async def create_mcp_manager(role: str, config_path: str = "config/mcp_mappings.yaml") -> MCPConnectionManager:
+async def create_mcp_manager(role: str,
+    config_path: str = "config/mcp_mappings.yaml") -> MCPConnectionManager:
     """
     Factory function to create and connect an MCP manager for a specific role.
 

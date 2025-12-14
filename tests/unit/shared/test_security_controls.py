@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/security_controls/
 Tests security control operations including guardrails.
 """

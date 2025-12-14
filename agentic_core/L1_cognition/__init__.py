@@ -1,13 +1,13 @@
 """
+
+logger = logging.getLogger(__name__)
 L1 Cognition Layer
 
 Provides cognitive capabilities for agent autonomy including
 episodic memory and reasoning systems.
 """
+import logging
 
-from agentic_core.L1_cognition.episodic_memory import (
-    Episode,
-    EpisodicMemory,
     create_episodic_memory
 )
 

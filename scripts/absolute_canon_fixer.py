@@ -243,7 +243,9 @@ def absolute_fix_docstrings():
 
                 stripped = line.strip()
                 if (stripped.startswith('def ') or
-                    stripped.startswith('async def ')                    stripped.startswith('class ')) and
+                    stripped.
+                        .startswith('async def ')                    stripped.
+                        .startswith('class ')) and
                     not stripped.
                         .startswith('def _')                    not stripped.
                         .startswith('class _'):

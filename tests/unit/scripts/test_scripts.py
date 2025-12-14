@@ -2,8 +2,11 @@
 import pytest
 import os
 from pathlib import Path
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class TestScriptUtilities:
     """Tests for script function functions."""
 

@@ -104,7 +104,9 @@ class EpisodicMemory:
         else:
             self._embedding_matrix = None
 
-    def _filter_episode_candidates(self, agent_role: Optional[str], min_rating: float) -> List[tuple]:
+    def _filter_episode_candidates(self,
+        agent_role: Optional[str],
+        min_rating: float) -> List[tuple]:
         """Filter episodes by role and rating."""
         candidates = []
         for i, episode in enumerate(self._episodes):

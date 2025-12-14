@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Enforce Budget Limits - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class EnforceBudgetLimits:
     """EnforceBudgetLimits implementation."""

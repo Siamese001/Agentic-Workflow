@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Subatomic Flight Recorder Dashboard
 
 Visual UI to debug agents using Streamlit.
@@ -10,6 +12,7 @@ import pandas as pd
 import json
 import sys
 from pathlib import Path
+import logging
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -155,7 +158,9 @@ with col_left:
 
             "Select Event",
             filtered_events.index,
-            format_func=lambda i: f"{filtered_events.loc[i, 'event_type']} @ {filtered_events.loc[i, 'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
+            format_func=lambda i: f"{filtered_events.loc[i,
+                'event_type']} @ {filtered_events.loc[i,
+                'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
         )
     else:
         st.warning("No events found")
@@ -242,7 +247,7 @@ if not error_df.empty:
                 payload = json.loads(row['payload'])
                 st.error(payload.get('error_message', 'Unknown error'))
                 st.json(payload)
-            except:
+            except Exception:
                 st.text(row['payload'])
 else:
     st.success("✅ No errors recorded for this trace")
@@ -252,7 +257,9 @@ st.sidebar.markdown("### 📈 Global Stats")
 
 try:
     total_events = conn.execute("SELECT COUNT(*) as count FROM traces").fetchone()[0]
-    total_traces = conn.execute("SELECT COUNT(DISTINCT trace_id) as count FROM traces").fetchone()[0]
+    total_traces = conn.
+        .execute("SELECT COUNT(DISTINCT trace_id) as count FROM traces").
+        .fetchone()[0]
 
     st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
     st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")

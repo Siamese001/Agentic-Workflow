@@ -1,4 +1,7 @@
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import ExecutionProfile, RetrievalConfig  ...
 
 def test_budget_enforcement_downgrades_cost_tier() -> None:

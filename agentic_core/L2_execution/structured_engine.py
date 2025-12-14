@@ -27,7 +27,8 @@ class AgentThoughtProcess(BaseModel):
     """
     _reasoning_trace: List[str] = Field(
         ...,
-        description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
+        description="Step-by-step logic leading to the decision. Each step should be clear and
+            atomic."
     )
     _relevant_context_keys: List[str] = Field(
         ...,
@@ -77,7 +78,7 @@ class StructuredEngine:
     def __init__(self, client: AsyncOpenAI):
         """
         Initialize the structured engine with an OpenAI client.
-        
+
         Args:
             client: AsyncOpenAI instance
         """

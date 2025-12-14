@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 import ast
 from pathlib import Path
 from typing import Tuple
+import logging
 
 def fix_docstring_in_signature(content: str) -> str:
     """Fix docstrings incorrectly placed inside function signatures."""

@@ -1,5 +1,7 @@
 """Backward compatibility shim for unified_signal_pipeline.
 
+
+logger = logging.getLogger(__name__)
 This module has been refactored into the pipeline/ package for Key 42 compliance.
 All components are re-exported here to maintain backward compatibility.
 
@@ -14,17 +16,8 @@ Original file (1342 lines) has been split into:
 Total: ~1035 lines across 6 focused modules (vs 1342 in monolith)
 Reduction: 307 lines removed (duplicated imports, comments)
 """
+import logging
 
-from .pipeline import (
-    PipelineStageType,
-    PipelineContext,
-    PipelineStage,
-    PipelineExecutionError,
-    InputProcessingStage,
-    ContextEnrichmentStage,
-    SignalAugmentationStage,
-    QualityValidationStage,
-    OutputFormattingStage,
     UnifiedSignalPipeline,
 )
 

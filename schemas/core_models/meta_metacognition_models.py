@@ -1,8 +1,11 @@
 
 from typing import List, Optional
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class Hypothesis(BaseModel):
     """Lightweight hypothesis used by the metacognition layer."""
 

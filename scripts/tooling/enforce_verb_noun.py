@@ -1,8 +1,11 @@
 
+
+logger = logging.getLogger(__name__)
 # scripts/enforce_verb_noun.py
 import shutil
 import sys
 from pathlib import Path
+import logging
 
 for f in sys.argv[1:]:
     p = Path(f)

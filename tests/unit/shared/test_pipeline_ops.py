@@ -1,11 +1,14 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/pipeline_ops/
 Tests pipeline operations including data access, guardrails, and synthesis.
 """
 from typing import Dict, List, Optional
 from enum import Enum
 from dataclasses import dataclass, field
+import logging
 
 class PipelineStatus(Enum):
     """TODO: Add docstring."""
@@ -206,6 +209,7 @@ class TestPipelineErrorHandling:
         try:
             raise ValueError("Step processing failed")
         except ValueError as e:
+    pass
 
         assert "failed" in step.error.lower()
 

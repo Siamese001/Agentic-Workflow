@@ -288,7 +288,10 @@ class ToolVerifier:
             code = tool_args.get("code", "")
 
             # Check if code actually does something
-            if not any(keyword in code for keyword in ["def ", "print(", "return ", "import "]):
+            if not any(keyword in code for keyword in ["def ",
+                "logger.info(",
+                "return ",
+                "import "]):
                 issues.append(VerificationIssue(
                     severity="warning",
                     message="Code appears to do nothing",

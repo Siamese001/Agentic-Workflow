@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 L5 Safety Shield - Enterprise-grade security components for agentic systems.
 
 This package provides comprehensive safety mechanisms:
@@ -7,24 +9,17 @@ This package provides comprehensive safety mechanisms:
 - Canary Defense: Injection attack prevention with canary token detection
 - Cost Governor: Financial circuit breaker with real-time cost tracking
 """
+import logging
 
-from .pii_vault import PIIVault
-from .governor import CostGovernor, BudgetExceededError, UsageRecord
-from .overseer import ConstitutionalOverseer, ViolationCheck
-from .canary_defense import CanaryDefense, CanaryToken
-
-__all__ = [
-    # Core Components
-    'PIIVault',
     'ConstitutionalOverseer',
     'CanaryDefense',
     'CostGovernor',
-    
+
     # Supporting Classes
     'CanaryToken',
     'ViolationCheck',
     'UsageRecord',
-    
+
     # Exceptions
     'BudgetExceededError',
 ]

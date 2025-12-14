@@ -1,8 +1,11 @@
 """Performance stability tests - legacy workflow runner."""
 
 import pytest
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 # Legacy workflow runner (zombie file) - not implemented
 # from archives.legacy_resume_gen.Older Microservices Models.v10.7.workflow.runner import run_wor...
 

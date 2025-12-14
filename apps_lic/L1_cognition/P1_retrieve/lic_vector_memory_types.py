@@ -1,7 +1,10 @@
 """Types and models for lic_vector_memory."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class VectorDocument:
     """Document stored in vector memory."""

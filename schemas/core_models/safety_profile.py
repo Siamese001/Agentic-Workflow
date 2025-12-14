@@ -1,6 +1,9 @@
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class SafetyProfile(BaseModel):
     """Safety configuration profile used by execution profiles.
 

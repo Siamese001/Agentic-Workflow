@@ -1,7 +1,10 @@
 """Integration tests for cross-domain schema compatibility."""
+import logging
 
 
 
+
+logger = logging.getLogger(__name__)
 class TestConfigSchemaCompatibility:
     """TODO: Add docstring."""
 

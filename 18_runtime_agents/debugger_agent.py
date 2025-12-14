@@ -11,7 +11,6 @@ This represents Level 4 Autonomy - the system can observe, analyze, and correct 
 """
 
 import logging
-from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
@@ -21,11 +20,11 @@ class DebuggerAgent:
     Introspective maintenance agent that uses telemetry MCP tools
     to debug and fix issues in the system.
     """
-    
+
     def __init__(self, mcp_manager, llm_client):
         """
         Initialize the DEBUGGER agent.
-        
+
         Args:
             mcp_manager: MCPConnectionManager for accessing telemetry
             llm_client: LLM client for analysis and fix generation
@@ -33,7 +32,7 @@ class DebuggerAgent:
         self.mcp_manager = mcp_manager
         self.llm_client = llm_client
         self.role = "DEBUGGER"
-        
+
         # System prompt for the debugger
         self.system_prompt = """
 You are an introspective maintenance agent with Level 4 autonomy.
@@ -56,14 +55,14 @@ Always:
 - Be specific and actionable in your recommendations
 - Track the effectiveness of your fixes
 """
-    
+
     async def run_debugging_cycle(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """
         Execute a complete debugging cycle.
-        
+
         Args:
             context: May contain specific trace_id to debug, or will find recent errors
-            
+
         Returns:
             Dict with analysis, fixes, and outcomes
         """
@@ -75,7 +74,7 @@ Always:
             "fixes_proposed": [],
             "fixes_implemented": []
         }
-        
+
         try:
             # Step 1: Find errors to debug
             if "trace_id" in context:
@@ -84,69 +83,70 @@ Always:
             else:
                 # Find recent errors
                 errors = await self._find_recent_errors()
-            
+
             results["errors_found"] = errors
-            
+
             # Step 2: Analyze each error
             for error in errors[:3]:  # Limit to top 3 errors
                 analysis = await self._analyze_error(error)
                 results["analyses"].append(analysis)
-                
+
                 # Step 3: Propose fix
                 if analysis.get("needs_fix", False):
                     # Check circuit breaker before attempting fix
                     if await self._check_circuit_breaker(error.get("trace_id", "")):
                         results["circuit_breaker_triggered"] = True
                         continue
-                    
+
                     fix = await self._propose_fix(analysis)
                     results["fixes_proposed"].append(fix)
-                    
+
                     # Step 4: Implement fix if possible
                     if fix.get("auto_applicable", False):
                         implemented = await self._implement_fix(fix)
                         results["fixes_implemented"].append(implemented)
-            
+
             # Step 5: Generate summary
             results["summary"] = self._generate_summary(results)
-            
+
         except Exception as e:
             logger.error(f"Error in debugging cycle: {e}")
             results["error"] = str(e)
-        
+
         return results
-    
+
     async def _debug_specific_trace(self, trace_id: str) -> List[Dict]:
         """Debug a specific trace ID."""
         try:
             # Get trace summary
             summary = await self.mcp_manager.call_tool("get_trace_summary", {"trace_id": trace_id})
-            
+
             # Analyze failure patterns
-            analysis = await self.mcp_manager.call_tool("analyze_failure_patterns", {"trace_id": trace_id})
-            
+            analysis = await self.mcp_manager.call_tool("analyze_failure_patterns",
+                {"trace_id": trace_id})
+
             return [{
                 "trace_id": trace_id,
                 "summary": summary,
                 "analysis": analysis,
                 "source": "specific_trace"
             }]
-            
+
         except Exception as e:
             logger.error(f"Error debugging trace {trace_id}: {e}")
             return []
-    
+
     async def _find_recent_errors(self, limit: int = 5) -> List[Dict]:
         """Find recent errors in the system."""
         try:
             # Get recent errors from telemetry
             errors_text = await self.mcp_manager.call_tool("get_recent_errors", {"limit": limit})
-            
+
             # Parse the response to extract trace IDs
             error_traces = []
             lines = errors_text.split('\n')
             current_error = {}
-            
+
             for line in lines:
                 if line.startswith('[') and 'Trace ID:' in line:
                     if current_error:
@@ -158,29 +158,30 @@ Always:
                         current_error["trace_id"] = trace_id
                 elif line.strip().startswith('Error:'):
                     current_error["error"] = line.replace('Error:', '').strip()
-            
+
             if current_error:
                 error_traces.append(current_error)
-            
+
             return error_traces
-            
+
         except Exception as e:
             logger.error(f"Error finding recent errors: {e}")
             return []
-    
+
     async def _analyze_error(self, error: Dict) -> Dict:
         """Analyze a specific error to understand root cause."""
         trace_id = error.get("trace_id")
         if not trace_id:
             return {"error": "No trace ID provided"}
-        
+
         try:
             # Get detailed analysis from telemetry
-            analysis = await self.mcp_manager.call_tool("analyze_failure_patterns", {"trace_id": trace_id})
-            
+            analysis = await self.mcp_manager.call_tool("analyze_failure_patterns",
+                {"trace_id": trace_id})
+
             # Use LLM to interpret and categorize
             llm_analysis = await self._llm_analyze_error(error, analysis)
-            
+
             return {
                 "trace_id": trace_id,
                 "telemetry_analysis": analysis,
@@ -189,11 +190,11 @@ Always:
                 "category": llm_analysis.get("category", "unknown"),
                 "root_cause": llm_analysis.get("root_cause", "unknown")
             }
-            
+
         except Exception as e:
             logger.error(f"Error analyzing trace {trace_id}: {e}")
             return {"trace_id": trace_id, "error": str(e)}
-    
+
     async def _llm_analyze_error(self, error: Dict, telemetry: str) -> Dict:
         """Use LLM to analyze error and categorize it."""
         prompt = f"""
@@ -212,21 +213,22 @@ Provide a JSON response with:
 - fixable: (true/false)
 - suggested_approach: How to fix this issue
 """
-        
+
         try:
             response = await self.llm_client.chat.completions.create(
                 model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are an expert at debugging agentic systems."},
+                    {"role": "system",
+                        "content": "You are an expert at debugging agentic systems."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0.1
             )
-            
+
             # Parse JSON response (simplified)
             import json
             return json.loads(response.choices[0].message.content)
-            
+
         except Exception as e:
             logger.error(f"Error in LLM analysis: {e}")
             return {
@@ -235,19 +237,19 @@ Provide a JSON response with:
                 "root_cause": "Analysis failed",
                 "fixable": False
             }
-    
+
     async def _propose_fix(self, analysis: Dict) -> Dict:
         """Propose a specific fix based on the analysis."""
         category = analysis.get("category", "unknown")
         root_cause = analysis.get("root_cause", "")
         trace_id = analysis.get("trace_id")
-        
+
         fix_proposal = {
             "trace_id": trace_id,
             "category": category,
             "proposed_at": datetime.now().isoformat()
         }
-        
+
         # Category-specific fix proposals
         if category == "code_error":
             fix_proposal.update({
@@ -301,9 +303,9 @@ Provide a JSON response with:
                 "auto_applicable": False,
                 "actions": ["Review logs", "Contact developer"]
             })
-        
+
         return fix_proposal
-    
+
     async def _implement_fix(self, fix: Dict) -> Dict:
         """Implement a proposed fix if auto-applicable."""
         implementation = {
@@ -311,33 +313,33 @@ Provide a JSON response with:
             "implemented_at": datetime.now().isoformat(),
             "success": False
         }
-        
+
         try:
             if fix["type"] == "code_fix":
                 # Would implement code fix here
                 implementation["result"] = "Code fix placeholder - would edit actual files"
                 implementation["success"] = True
-                
+
             elif fix["type"] == "config_fix":
                 # Would update config files here
                 implementation["result"] = "Config fix placeholder - would update YAML files"
                 implementation["success"] = True
-                
+
             else:
                 implementation["result"] = f"Fix type {fix['type']} requires manual implementation"
-                
+
         except Exception as e:
             implementation["error"] = str(e)
             logger.error(f"Error implementing fix: {e}")
-        
+
         # Step 5: Verify the fix worked
         if implementation["success"]:
             verification = await self._verify_fix(fix["trace_id"], fix)
             implementation["verification"] = verification
             implementation["final_success"] = verification.get("error_resolved", False)
-        
+
         return implementation
-    
+
     async def _verify_fix(self, trace_id: str, fix: Dict) -> Dict:
         """
         Verify that a fix actually resolved the issue by:
@@ -351,18 +353,18 @@ Provide a JSON response with:
             "method": "re_execution",
             "error_resolved": False
         }
-        
+
         try:
             # Check if the same error still occurs in recent traces
             recent_errors = await self.mcp_manager.call_tool(
-                "search_traces", 
+                "search_traces",
                 {
                     "query": trace_id,
                     "event_type": "ERROR",
                     "limit": 5
                 }
             )
-            
+
             # If no new errors for this trace, consider it fixed
             if "No traces found" in recent_errors:
                 verification["error_resolved"] = True
@@ -371,16 +373,16 @@ Provide a JSON response with:
                 verification["error_resolved"] = False
                 verification["result"] = "Error still occurs - fix may be insufficient"
                 verification["recent_errors"] = recent_errors
-            
+
             # Record verification to telemetry
             await self._record_verification(trace_id, verification)
-            
+
         except Exception as e:
             verification["error"] = str(e)
             logger.error(f"Error verifying fix for {trace_id}: {e}")
-        
+
         return verification
-    
+
     async def _record_verification(self, trace_id: str, verification: Dict):
         """Record fix verification to telemetry for audit trail."""
         try:
@@ -389,7 +391,7 @@ Provide a JSON response with:
             logger.info(f"Fix verification for {trace_id}: {verification['result']}")
         except Exception as e:
             logger.error(f"Error recording verification: {e}")
-    
+
     async def _check_circuit_breaker(self, trace_id: str, max_attempts: int = 3) -> bool:
         """
         Check if we've exceeded max fix attempts for this trace.
@@ -404,28 +406,28 @@ Provide a JSON response with:
                     "limit": max_attempts + 1
                 }
             )
-            
+
             # Count actual fix attempts
             attempt_count = fix_history.count("fix_id:")
-            
+
             if attempt_count >= max_attempts:
                 logger.warning(f"Circuit breaker triggered for {trace_id}: {attempt_count} attempts")
                 return True
-            
+
             return False
-            
+
         except Exception as e:
             logger.error(f"Error checking circuit breaker: {e}")
             # Fail safe - allow attempt if we can't check
             return False
-    
+
     def _generate_summary(self, results: Dict) -> str:
         """Generate a summary of the debugging cycle."""
         total_errors = len(results["errors_found"])
         total_analyses = len(results["analyses"])
         fixes_proposed = len(results["fixes_proposed"])
         fixes_implemented = len(results["fixes_implemented"])
-        
+
         summary = f"""
 DEBUGGER Session Summary:
 - Errors analyzed: {total_errors}
@@ -433,12 +435,13 @@ DEBUGGER Session Summary:
 - Fixes proposed: {fixes_proposed}
 - Fixes implemented: {fixes_implemented}
 
-Effectiveness: {(fixes_implemented / max(fixes_proposed, 1)) * 100:.1f}% of proposed fixes implemented
+Effectiveness: {(fixes_implemented / max(fixes_proposed,
+    1)) * 100:.1f}% of proposed fixes implemented
 """
-        
+
         if results.get("error"):
             summary += f"\nError encountered: {results['error']}"
-        
+
         return summary
 
 # Factory function for creating debugger agents
@@ -446,5 +449,5 @@ async def create_debugger_agent(mcp_manager, llm_client) -> DebuggerAgent:
     """Create and initialize a DEBUGGER agent."""
     # Connect to required MCP servers
     await mcp_manager.connect("DEBUGGER")
-    
+
     return DebuggerAgent(mcp_manager, llm_client)

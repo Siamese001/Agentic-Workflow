@@ -1,9 +1,12 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Text counting functions for resume generation."""
 
 from typing import List
+import logging
 
 def count_words_ms_word_style(text: str) -> int:
     """Count words replicating MS Word behavior."""

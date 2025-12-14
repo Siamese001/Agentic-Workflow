@@ -1,5 +1,7 @@
 """
 
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/embedding_ops/
 Tests embedding operations including similarity calculation, vector search, etc.
 """

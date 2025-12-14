@@ -7,8 +7,6 @@ Manages concurrency, timeouts, and dead letter handling for agent execution.
 import asyncio
 import logging
 from datetime import datetime
-from typing import Optional, Callable, Any
-from contextlib import asynccontextmanager
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +14,11 @@ class SemanticGatekeeper:
     """
     Gatekeeper that controls agent execution with concurrency limits and timeouts.
     """
-    
+
     def __init__(self, max_concurrent: int = 5, timeout_seconds: int = 120):
         """
         Initialize the gatekeeper.
-        
+
         Args:
             max_concurrent: Maximum number of concurrent executions
             timeout_seconds: Default timeout for operations
@@ -28,26 +26,27 @@ class SemanticGatekeeper:
         self.semaphore = asyncio.Semaphore(max_concurrent)
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
-        
-        logger.info(f"Gatekeeper initialized: max_concurrent={max_concurrent}, timeout={timeout_seconds}s")
-    
+
+        logger.info(f"Gatekeeper initialized: max_concurrent={max_concurrent},
+            timeout={timeout_seconds}s")
+
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str):
         """
         Context manager for controlled execution.
-        
+
         Args:
             trace_id: Unique identifier for the execution
             operation: Description of the operation being performed
         """
         # Acquire semaphore
         await self.semaphore.acquire()
-        
+
         try:
             logger.debug(f"Starting execution for trace {trace_id}: {operation}")
             yield
             logger.debug(f"Completed execution for trace {trace_id}")
-                
+
         except asyncio.TimeoutError:
             logger.error(f"Timeout for trace {trace_id}: {operation}")
             # Add to dead letter queue
@@ -58,7 +57,7 @@ class SemanticGatekeeper:
                 "timestamp": datetime.now().isoformat()
             })
             raise
-            
+
         except Exception as e:
             logger.error(f"Execution failed for trace {trace_id}: {e}")
             # Add to dead letter queue
@@ -69,20 +68,20 @@ class SemanticGatekeeper:
                 "timestamp": datetime.now().isoformat()
             })
             raise
-            
+
         finally:
             # Always release semaphore
             self.semaphore.release()
-    
+
     async def run_with_gating(self, trace_id: str, operation: str, coro):
         """
         Run a coroutine with gatekeeping.
-        
+
         Args:
             trace_id: Unique identifier for the execution
             operation: Description of the operation
             coro: Coroutine to execute
-            
+
         Returns:
             Result of the coroutine
         """
@@ -92,16 +91,16 @@ class SemanticGatekeeper:
                 coro,
                 timeout=self.timeout_seconds
             )
-    
+
     def get_dead_letters(self) -> list:
         """Get all dead letter entries."""
         return self.dead_letter_queue.copy()
-    
+
     def clear_dead_letters(self):
         """Clear the dead letter queue."""
         self.dead_letter_queue.clear()
         logger.info("Dead letter queue cleared")
-    
+
     def get_stats(self) -> dict:
         """Get gatekeeper statistics."""
         return {
@@ -124,12 +123,12 @@ def get_gatekeeper() -> SemanticGatekeeper:
 async def with_gatekeeping(trace_id: str, operation: str, coro):
     """
     Convenience function to run a coroutine with gatekeeping.
-    
+
     Args:
         trace_id: Unique identifier for the execution
         operation: Description of the operation
         coro: Coroutine to execute
-        
+
     Returns:
         Result of the coroutine
     """

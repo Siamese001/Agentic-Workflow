@@ -1,4 +1,6 @@
 
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Check Canonical Project Structure - Pre-commit Hook
@@ -7,6 +9,7 @@ Ensures required canonical directories exist.
 
 import sys
 import os
+import logging
 
 def main() -> None:
     """Check if all required canonical directories exist."""

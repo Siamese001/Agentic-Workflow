@@ -1,10 +1,13 @@
 
+
+logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test L5 Enforcement - atomic implementation."""
 
 
 from typing import Dict
+import logging
 
 class TestSafetyEnforcement:
     """TestSafetyEnforcement implementation."""
