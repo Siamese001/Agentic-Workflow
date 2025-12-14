@@ -18,12 +18,11 @@ load_dotenv()
 try:
     from redisvl.index import SearchIndex
     from redisvl.query import VectorQuery
-    from redisvl.redis.connection import RedisConnection
-    from redisvl.redis.utils import make_vector_key
+    from redisvl.redis.connection import RedisClient
     REDISVL_AVAILABLE = True
 except ImportError:
     REDISVL_AVAILABLE = False
-    RedisConnection = None  # Define as None if not available
+    RedisClient = None  # Define as None if not available
     SearchIndex = None
     VectorQuery = None
     logging.warning("redisvl not installed - Redis functionality will be limited")
@@ -65,12 +64,12 @@ class ConnectionFactory:
     _instances: Dict[str, Any] = {}
     
     @classmethod
-    def get_redis_connection(cls) -> Union[RedisConnection, Any]:
+    def get_redis_connection(cls) -> Union[RedisClient, Any]:
         """
         Initialize and return RedisVL connection.
         
         Returns:
-            RedisConnection instance
+            RedisClient instance
             
         Raises:
             ConnectionError: If connection fails
@@ -80,7 +79,7 @@ class ConnectionFactory:
         return cls._instances["redis"]
     
     @classmethod
-    def _create_redis_connection(cls) -> RedisConnection:
+    def _create_redis_connection(cls) -> RedisClient:
         """Create Redis connection with retry logic."""
         if not REDISVL_AVAILABLE:
             raise ImportError("redisvl is required. Install with: pip install redisvl")
@@ -94,7 +93,7 @@ class ConnectionFactory:
                 logger.info(f"Connecting to Redis (attempt {attempt + 1}/{max_retries})")
                 
                 # Create connection
-                conn = RedisConnection.from_url(redis_url)
+                conn = RedisClient.from_url(redis_url)
                 
                 # Test connection
                 conn.client.ping()
@@ -110,7 +109,7 @@ class ConnectionFactory:
                     raise ConnectionError(f"Failed to connect to Redis after {max_retries} attempts")
     
     @classmethod
-    def get_pinecone_connection(cls) -> Union[Pinecone, Any]:
+    def get_pinecone_index(cls, index_name: str = "canon-memory-l2", dimension: int = 384) -> Union[Pinecone, Any]:
         """
         Initialize and return Pinecone connection.
         
@@ -154,7 +153,7 @@ class ConnectionFactory:
                     metric="cosine",
                     spec=ServerlessSpec(
                         cloud="aws",
-                        region=env.split("-")[-2] if "-" in env else "us-east-1"
+                        region="-".join(env.split("-")[:-1]) if "-" in env else "us-east-1"
                     )
                 )
                 
