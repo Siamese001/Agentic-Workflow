@@ -350,7 +350,6 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             """Docstring."""
             self.documents.extend(documents)
             return ids or list(range(len(documents)))
-            """TODO: Add docstring."""
 
 
         def query(self, query_texts: list, n_results: int = 10):
@@ -358,7 +357,6 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             return {"ids": [[0]], "documents": [["Mock result"]], "metadatas": [[{}]]}
 
     # Always return mock vector store for testing
-        """TODO: Add docstring."""
 
     class MockVectorStore:
         """Docstring."""

@@ -47,6 +47,7 @@ class TestMCPTool:
     def test_mcp_tool_creation(self):
         """Test creating an MCP tool."""
         def dummy_handler(x: int) -> int:
+            """TODO: Add function docstring."""
             return x * 2
 
         tool = MCPTool(
@@ -162,6 +163,7 @@ class TestMCPToolServer:
         """Test registering a function as a tool."""
         server = MCPToolServer()
 
+     """TODO: Add function docstring."""
         def add(a: int, b: int) -> int:
             return a + b
 
@@ -253,6 +255,7 @@ class TestMCPToolServer:
     def test_execute_tool_success(self):
         """Test successful tool execution."""
         server = MCPToolServer()
+            """TODO: Add function docstring."""
 
         def multiply(a: int, b: int) -> int:
             return a * b
@@ -291,6 +294,7 @@ class TestMCPToolServer:
 
     def test_execute_tool_exception(self):
         """Test tool execution with exception."""
+            """TODO: Add function docstring."""
         server = MCPToolServer()
 
         def failing_tool():
@@ -311,6 +315,7 @@ class TestMCPToolServer:
         assert result.tool_name == "failing_tool"
 
     def test_execute_tool_with_invalid_parameters(self):
+        """TODO: Add function docstring."""
         """Test tool execution with invalid parameters."""
         server = MCPToolServer()
 
@@ -467,6 +472,7 @@ class TestMCPToolServerAsync:
     """Test async aspects of MCP tool server."""
 
     @pytest.mark.asyncio
+        """TODO: Add function docstring."""
     async def test_async_tool_execution(self):
         """Test executing async tools."""
         server = MCPToolServer()
@@ -501,8 +507,10 @@ class TestMCPToolServerAsync:
 
 class TestMCPToolServerSecurity:
     """Test security aspects of MCP tool server."""
+        """TODO: Add function docstring."""
 
     def test_tool_approval_flag(self):
+        """TODO: Add function docstring."""
         """Test tool approval requirement flag."""
         server = MCPToolServer()
 
@@ -531,6 +539,7 @@ class TestMCPToolServerSecurity:
         safe = server.get_tool("safe_tool")
         sensitive = server.get_tool("sensitive_tool")
 
+     """TODO: Add function docstring."""
         assert safe.requires_approval is False
         assert sensitive.requires_approval is True
 
@@ -565,8 +574,10 @@ class TestMCPToolServerSecurity:
         assert result.success is False
         assert "Malicious input detected" in result.error
 
+     """TODO: Add function docstring."""
 
 class TestMCPToolServerPerformance:
+    """TODO: Add function docstring."""
     """Test performance aspects of MCP tool server."""
 
     def test_tool_execution_time(self):
