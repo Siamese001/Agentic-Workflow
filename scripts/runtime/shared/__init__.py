@@ -6,7 +6,7 @@ This is a minimal version to unblock testing while syntax errors are fixed.
 """
 
 # Core SDK Registry - Required for tests
-from .sdk_registry import (
+from scripts.runtime.shared.sdk_registry import (
 import logging
     SDK_REGISTRY,
     SDKEntry,

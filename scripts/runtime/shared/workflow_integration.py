@@ -9,16 +9,16 @@ Phase 1C - SDK Integration Layer
 import logging
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
-from .vector_store_clients import (
+from scripts.runtime.shared.vector_store_clients import (
     VectorStoreProvider,
     create_chroma_collection,
     get_vector_store,
     search_vectors_chroma,
 )
-from .agent_executor import AgentExecutor, AgentMessage
-from .cache_clients import cache_get, cache_set
-from .observability_clients import create_span, setup_tracing
-from .multi_provider_clients import Provider
+from scripts.runtime.shared.agent_executor import AgentExecutor, AgentMessage
+from scripts.runtime.shared.cache_clients import cache_get, cache_set
+from scripts.runtime.shared.observability_clients import create_span, setup_tracing
+from scripts.runtime.shared.multi_provider_clients import Provider
 
 logger = logging.getLogger(__name__)
 
@@ -179,7 +179,7 @@ def create_workflow_context(
     cache_client = None
     if enable_cache:
         try:
-            from .cache_clients import get_redis_client
+            from scripts.runtime.shared.cache_clients import get_redis_client
             cache_client = get_redis_client()
             logger.info("Redis cache enabled for workflow")
         except Exception as e:

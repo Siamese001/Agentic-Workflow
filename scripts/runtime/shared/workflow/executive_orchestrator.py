@@ -8,13 +8,13 @@ from typing import Optional, Dict, Any
 # Add project root to path for mcp_adapter import
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))))
 
-from .data_sources import DataSourceProvider
-from .k11_shadow_audit import K11ShadowAuditAgent
-from .k12_strategy_roadmap import K12StrategyRoadmapAgent
-from .k13_interviewer_sim import K13InterviewerSimulationAgent
-from .research_tools import TavilyResearcher
-from .schema_definitions import get_executive_schema_registry
-from .prompt_providers import PromptProviderFactory
+from scripts.runtime.shared.workflow.data_sources import DataSourceProvider
+from scripts.runtime.shared.workflow.k11_shadow_audit import K11ShadowAuditAgent
+from scripts.runtime.shared.workflow.k12_strategy_roadmap import K12StrategyRoadmapAgent
+from scripts.runtime.shared.workflow.k13_interviewer_sim import K13InterviewerSimulationAgent
+from scripts.runtime.shared.workflow.research_tools import TavilyResearcher
+from scripts.runtime.shared.workflow.schema_definitions import get_executive_schema_registry
+from scripts.runtime.shared.workflow.prompt_providers import PromptProviderFactory
 
 try:
     from mcp_adapter import UniversalMCPClient

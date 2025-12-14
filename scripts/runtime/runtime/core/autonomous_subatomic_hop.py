@@ -10,7 +10,7 @@ from typing import Dict, Any, Optional, Callable, List
 from dataclasses import dataclass, field
 
 # Import base components
-from .subatomic_hop import (
+from scripts.runtime.runtime.core.subatomic_hop import (
     SubatomicHop,
     SubatomicHopConfig,
     MicroStage
@@ -21,7 +21,7 @@ from agentic_core.L1_cognition.episodic_memory import (
     EpisodicMemory,
     create_episodic_memory
 )
-from .reasoning_kernel import (
+from scripts.runtime.runtime.core.reasoning_kernel import (
     ReasoningKernel,
     create_reasoning_kernel
 )

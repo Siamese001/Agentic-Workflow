@@ -15,7 +15,7 @@ from typing import Dict, Any, Optional, Callable, List
 from dataclasses import dataclass, field
 
 # Import base autonomous hop
-from .autonomous_subatomic_hop import (
+from scripts.runtime.runtime.core.autonomous_subatomic_hop import (
     AutonomousSubatomicHop,
     AutonomousHopConfig
 )
@@ -30,7 +30,7 @@ from agentic_core.L1_cognition.dspy_optimizer import (
     create_dspy_optimizer,
     OptimizedHopModule
 )
-from .sandbox import (
+from scripts.runtime.runtime.core.sandbox import (
     DockerSandbox,
     create_sandbox
 )
@@ -44,7 +44,7 @@ from agentic_core.L3_orchestration.tool_verification import (
     VerificationResult,
     create_tool_verifier
 )
-from .telemetry import (
+from scripts.runtime.runtime.core.telemetry import (
     TelemetryRecorder,
     TraceEvent,
     create_telemetry_recorder,

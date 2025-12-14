@@ -9,7 +9,7 @@ import json
 import hashlib
 import logging
 from typing import Dict, Any, Optional
-from .storage import BlobStorageProvider
+from agentic_core.L4_state.storage import BlobStorageProvider
 
 logger = logging.getLogger(__name__)
 
@@ -244,7 +244,7 @@ def create_checkpoint_manager(
     Returns:
         VerifiableCheckpointManager instance
     """
-    from .storage import create_storage_adapter
+    from agentic_core.L4_state.storage import create_storage_adapter
     
     storage = create_storage_adapter(storage_type, **storage_kwargs)
     return VerifiableCheckpointManager(storage)

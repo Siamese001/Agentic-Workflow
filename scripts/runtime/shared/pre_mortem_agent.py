@@ -519,7 +519,7 @@ class PreMortemAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from .multi_provider_clients import get_client, Provider
+            from scripts.runtime.shared.multi_provider_clients import get_client, Provider
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)

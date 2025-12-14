@@ -1,10 +1,10 @@
 """K.12 Strategy Roadmap Agent - 30-60-90 Day Architect."""
 
 from typing import Dict, Any, Optional
-from .base_agent import BaseExecutiveAgent
-from .schema_definitions import TechnicalSWOT, StrategyRoadmap
-from .infrastructure_resilience import resilient_execution
-from .prompt_providers import K12PromptProvider
+from scripts.runtime.shared.workflow.base_agent import BaseExecutiveAgent
+from scripts.runtime.shared.workflow.schema_definitions import TechnicalSWOT, StrategyRoadmap
+from scripts.runtime.shared.workflow.infrastructure_resilience import resilient_execution
+from scripts.runtime.shared.workflow.prompt_providers import K12PromptProvider
 
 
 class K12StrategyRoadmapAgent(BaseExecutiveAgent):

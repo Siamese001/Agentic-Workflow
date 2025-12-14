@@ -290,7 +290,7 @@ inputs = {repr(inputs)}
 try:
 {indented_code}
 except Exception as e:
-    print(f"STDERR:{{str(e)}}", file=sys.stderr)
+    # print(f"STDERR:{{str(e)}}", file=sys.stderr) # TODO: Replace with logger (Key 02)
     sys.exit(1)
 """
         return wrapper
@@ -317,9 +317,9 @@ code = '''{code}'''
 
 try:
     ast.parse(code)
-    print("VALID")
+    # print("VALID") # TODO: Replace with logger (Key 02)
 except SyntaxError as e:
-    print(f"STDERR:Syntax error: {{e}}", file=sys.stderr)
+    # print(f"STDERR:Syntax error: {{e}}", file=sys.stderr) # TODO: Replace with logger (Key 02)
     sys.exit(1)
 """
         
