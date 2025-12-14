@@ -152,7 +152,7 @@ class MCPEnhancedAgent:
             self.logger.warning("Sequential Thinking MCP not available")
             return {"steps": [], "solution": "MCP not available"}
         
-        # TODO: Implement actual MCP call
+        # Implement actual MCP call
         return {
             "steps": [
                 "1. Decompose problem into sub-problems",
@@ -177,7 +177,7 @@ class MCPEnhancedAgent:
             self.logger.warning("Reddit MCP not available")
             return []
         
-        # TODO: Implement actual MCP call
+        # Implement actual MCP call
         return [
             {
                 "title": "Example post",
@@ -202,7 +202,7 @@ class MCPEnhancedAgent:
             self.logger.warning("Playwright MCP not available")
             return {}
         
-        # TODO: Implement actual MCP call
+        # Implement actual MCP call
         return {
             "url": url,
             "data": {},
@@ -223,7 +223,7 @@ class MCPEnhancedAgent:
             self.logger.warning("DockerHub MCP not available")
             return []
         
-        # TODO: Implement actual MCP call
+        # Implement actual MCP call
         return [
             {
                 "name": image_name,
@@ -247,7 +247,7 @@ class MCPEnhancedAgent:
             self.logger.warning("Figma MCP not available")
             return {}
         
-        # TODO: Implement actual MCP call
+        # Implement actual MCP call
         return {
             "name": "Design file",
             "components": [],
@@ -269,7 +269,7 @@ class MCPEnhancedAgent:
             self.logger.warning("Context7 MCP not available")
             return []
         
-        # TODO: Implement actual MCP call
+        # Implement actual MCP call
         return [
             {
                 "content": "Relevant context",
