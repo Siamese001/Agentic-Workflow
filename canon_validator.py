@@ -343,11 +343,18 @@ class CodeJanitor(SubAtomicAgent):
 
 class SafetyInspector(SubAtomicAgent):
     """
-    KEYS: 01-06 (Secrets, Debuggers, Eval, Except blocks)
+    KEYS: 00-06 (Secrets, Debuggers, Eval, Except blocks)
     ROLE: Security Compliance. Emits SECURE signal.
     """
     def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
+        
+        # Key 00: No hardcoded secrets
+        try:
+            passed, details = self.check_key_00_no_hardcoded_secrets()
+            self.ctx.report(self.name, 0, passed, details)
+        except Exception as e:
+            self.ctx.report(self.name, 0, False, [str(e)])
         
         # Check security-related keys (7 and 8 are now handled by DependencyAgent)
         for key in range(1, 7):
@@ -359,9 +366,9 @@ class SafetyInspector(SubAtomicAgent):
                 elif key == 3:
                     passed, details = check_key_03_no_debugger_statements()
                 elif key == 4:
-                    passed, details = check_key_04_no_empty_except_blocks()
+                    passed, details = self.check_key_04_no_empty_except_blocks()
                 elif key == 5:
-                    passed, details = check_key_05_no_bare_except()
+                    passed, details = self.check_key_05_no_bare_except()
                 elif key == 6:
                     passed, details = check_key_06_no_eval_exec()
                 
@@ -370,18 +377,93 @@ class SafetyInspector(SubAtomicAgent):
                 self.ctx.report(self.name, key, False, [str(e)])
         
         # Signal that codebase is secure if all security checks pass
-        all_passed = all(self.ctx.results[k]["passed"] for k in range(1, 7) if k in self.ctx.results)
+        all_passed = all(self.ctx.results[k]["passed"] for k in range(0, 7) if k in self.ctx.results)
         if all_passed:
             self.ctx.signal_secure()
+
+    def check_key_00_no_hardcoded_secrets(self) -> tuple[bool, List[str]]:
+        """Key 00: No hardcoded secrets, API keys, or passwords in code."""
+        violations = []
+        
+        secret_patterns = [
+            r'password\s*=\s*["\'][^"\']+["\']',
+            r'api_key\s*=\s*["\'][^"\']+["\']',
+            r'secret\s*=\s*["\'][^"\']+["\']',
+            r'token\s*=\s*["\'][^"\']+["\']',
+            r"AKIA[0-9A-Z]{16}",  # AWS access key
+            r"sk-[a-zA-Z0-9]{48}",  # OpenAI API key
+            r"ghp_[a-zA-Z0-9]{36}",  # GitHub personal access token
+        ]
+        
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    for pattern in secret_patterns:
+                        matches = re.finditer(pattern, content, re.IGNORECASE)
+                        for match in matches:
+                            line_num = content[: match.start()].count("\n") + 1
+                            violations.append(f"{file_path}:{line_num}")
+            except Exception:
+                continue
+        
+        if violations:
+            return (False, violations)
+        else:
+            return (True, [])
+    
+    def check_key_04_no_empty_except_blocks(self) -> tuple[bool, List[str]]:
+        """Key 04: No empty except blocks (AST-based check)."""
+        violations = []
+        
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                    
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ExceptHandler):
+                        if not node.body or (
+                            len(node.body) == 1 and isinstance(node.body[0], ast.Pass)
+                        ):
+                            violations.append(f"{file_path}:{node.lineno}")
+            except Exception:
+                continue
+        
+        if violations:
+            return (False, violations)
+        else:
+            return (True, [])
+    
+    def check_key_05_no_bare_except(self) -> tuple[bool, List[str]]:
+        """Key 05: No bare except clauses (AST-based check)."""
+        violations = []
+        
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                    
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ExceptHandler):
+                        if node.type is None:
+                            violations.append(f"{file_path}:{node.lineno}")
+            except Exception:
+                continue
+        
+        if violations:
+            return (False, violations)
+        else:
+            return (True, [])
 
 class TypeMechanic(SubAtomicAgent):
     """
     KEYS: 22 (Missing Types), 24 (Unused Vars)
-    ROLE: Precision Engineering. Requires AST_VALID and DEPS_VALID signals.
+    ROLE: Precision Engineering. Requires AST_VALID signal.
     """
     def can_run(self):
-        # Only run if AST is valid and dependencies are resolved
-        return super().can_run() and "AST_VALID" in self.ctx.signals and "DEPS_VALID" in self.ctx.signals
+        # Only run if AST is valid (type checking doesn't need DEPS_VALID)
+        return super().can_run() and "AST_VALID" in self.ctx.signals
 
     def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
@@ -401,7 +483,7 @@ class TypeMechanic(SubAtomicAgent):
 
 class StructuralEngineer(SubAtomicAgent):
     """
-    KEYS: 17 (Large Funcs), 19 (Complexity), 25 (Globals), 42 (Large Files)
+    KEYS: 17 (Large Funcs), 19 (Complexity), 25 (Globals), 42 (Large Files), 43 (Class Density)
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
     def can_run(self):
@@ -435,6 +517,13 @@ class StructuralEngineer(SubAtomicAgent):
             self.ctx.report(self.name, 42, passed, details)
         except Exception as e:
             self.ctx.report(self.name, 42, False, [str(e)])
+        
+        # Key 43: Class density check
+        try:
+            passed, details = self.check_key_43_no_many_classes()
+            self.ctx.report(self.name, 43, passed, details)
+        except Exception as e:
+            self.ctx.report(self.name, 43, False, [str(e)])
         
         # Now use semantic plans for intelligent refactoring
         if not hasattr(self.ctx, 'refactor_plan') or not self.ctx.refactor_plan:
@@ -475,6 +564,26 @@ class StructuralEngineer(SubAtomicAgent):
             print(f"          4. Run tests to verify no breaking changes")
         
         print(f"\n   ✅ Refactoring plans ready. {len(self.ctx.refactor_plan)} file(s) identified for restructuring.")
+    
+    def check_key_43_no_many_classes(self) -> tuple[bool, List[str]]:
+        """Key 43: No more than 10 classes per file."""
+        violations = []
+        
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                    
+                count = len([n for n in tree.body if isinstance(n, ast.ClassDef)])
+                if count > 10:
+                    violations.append(f"{file_path} ({count} classes)")
+            except Exception:
+                continue
+        
+        if violations:
+            return (False, violations)
+        else:
+            return (True, [])
 
 class BudgetAgent(SubAtomicAgent):
     """
@@ -837,18 +946,29 @@ def check_key_01_no_todo_fixme() -> tuple[bool, List[str]]:
     info("Checking for TODO/FIXME comments...")
     violations = []
     python_files = get_python_files()
+    
+    todo_patterns = [
+        r"#\s*TODO", 
+        r"#\s*FIXME", 
+        r"#\s*XXX", 
+        r"#\s*HACK", 
+        r"#\s*TEMP"
+    ]
 
     for file_path in python_files:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                if "TODO" in content or "FIXME" in content:
-                    violations.append(file_path)
+                for pattern in todo_patterns:
+                    matches = re.finditer(pattern, content, re.IGNORECASE)
+                    for match in matches:
+                        line_num = content[: match.start()].count("\n") + 1
+                        violations.append(f"{file_path}:{line_num}")
         except Exception:
             continue
 
     if violations:
-        fail("01", f"Found TODO/FIXME comments in {len(violations)} files")
+        fail("01", f"Found TODO/FIXME comments in {len(violations)} locations")
         return (False, violations)
     else:
         success("01", "No TODO/FIXME comments found")
@@ -1087,6 +1207,17 @@ def check_key_10_no_long_lines() -> tuple[bool, List[str]]:
                 for i, line in enumerate(lines, 1):
                     # Strip newline for length check
                     line_content = line.rstrip("\n\r")
+                    stripped = line_content.strip()
+                    
+                    # Skip comments and docstrings
+                    if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
+                        continue
+                    
+                    # Skip empty lines
+                    if not stripped:
+                        continue
+                    
+                    # Check line length for actual code only
                     if len(line_content) > 100:
                         violations.append(f"{file_path}:{i}")
         except Exception:
@@ -1428,9 +1559,32 @@ def check_key_21_no_missing_docstrings() -> tuple[bool, List[str]]:
 def check_key_22_no_missing_type_hints() -> tuple[bool, List[str]]:
     """Key 22: No missing type hints."""
     info("Checking for missing type hints...")
-    # Stub implementation
-    success("22", "Type hints check (stub implementation)")
-    return (True, [])
+    violations = []
+    python_files = get_python_files()
+    
+    for file_path in python_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                tree = ast.parse(f.read())
+                
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    # Skip private methods (starting with _)
+                    if node.name.startswith("_"):
+                        continue
+                    
+                    # Check for missing return type annotation
+                    if node.returns is None:
+                        violations.append(f"{file_path}:{node.lineno} {node.name}()")
+        except Exception:
+            continue
+    
+    if violations:
+        fail("22", f"Found {len(violations)} functions missing type hints")
+        return (False, violations)
+    else:
+        success("22", "All public functions have type hints")
+        return (True, [])
 
 def check_key_23_no_unreachable_code() -> tuple[bool, List[str]]:
     """Key 23: No unreachable code."""
@@ -1442,9 +1596,47 @@ def check_key_23_no_unreachable_code() -> tuple[bool, List[str]]:
 def check_key_24_no_unused_variables() -> tuple[bool, List[str]]:
     """Key 24: No unused variables."""
     info("Checking for unused variables...")
-    # Stub implementation
-    success("24", "No unused variables (stub implementation)")
-    return (True, [])
+    violations = []
+    python_files = get_python_files()
+    
+    for file_path in python_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                tree = ast.parse(f.read())
+                
+            # Track assigned and used variables
+            assigned = set()
+            used = set()
+            
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Name):
+                    if isinstance(node.ctx, ast.Store):
+                        # Variable is being assigned
+                        assigned.add(node.id)
+                    elif isinstance(node.ctx, ast.Load):
+                        # Variable is being used
+                        used.add(node.id)
+            
+            # Find variables that are assigned but never used
+            # Exclude variables starting with underscore (convention for "unused")
+            unused = assigned - used
+            unused = {v for v in unused if not v.startswith("_")}
+            
+            # Report violations with line numbers
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name) and target.id in unused:
+                            violations.append(f"{file_path}:{node.lineno} {target.id}")
+        except Exception:
+            continue
+    
+    if violations:
+        fail("24", f"Found {len(violations)} unused variables")
+        return (False, violations)
+    else:
+        success("24", "No unused variables found")
+        return (True, [])
 
 def check_key_25_no_global_variables() -> tuple[bool, List[str]]:
     """Key 25: No global variables."""
