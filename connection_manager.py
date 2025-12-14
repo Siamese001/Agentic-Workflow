@@ -18,11 +18,11 @@ load_dotenv()
 try:
     from redisvl.index import SearchIndex
     from redisvl.query import VectorQuery
-    from redisvl.redis.connection import RedisClient
+    from redis import Redis
     REDISVL_AVAILABLE = True
 except ImportError:
     REDISVL_AVAILABLE = False
-    RedisClient = None  # Define as None if not available
+    Redis = None  # Define as None if not available
     SearchIndex = None
     VectorQuery = None
     logging.warning("redisvl not installed - Redis functionality will be limited")
@@ -64,12 +64,12 @@ class ConnectionFactory:
     _instances: Dict[str, Any] = {}
     
     @classmethod
-    def get_redis_connection(cls) -> Union[RedisClient, Any]:
+    def get_redis_connection(cls) -> Union[Redis, Any]:
         """
         Initialize and return RedisVL connection.
         
         Returns:
-            RedisClient instance
+            Redis instance
             
         Raises:
             ConnectionError: If connection fails
@@ -79,7 +79,7 @@ class ConnectionFactory:
         return cls._instances["redis"]
     
     @classmethod
-    def _create_redis_connection(cls) -> RedisClient:
+    def _create_redis_connection(cls) -> Redis:
         """Create Redis connection with retry logic."""
         if not REDISVL_AVAILABLE:
             raise ImportError("redisvl is required. Install with: pip install redisvl")
@@ -93,10 +93,10 @@ class ConnectionFactory:
                 logger.info(f"Connecting to Redis (attempt {attempt + 1}/{max_retries})")
                 
                 # Create connection
-                conn = RedisClient.from_url(redis_url)
+                conn = Redis.from_url(redis_url)
                 
                 # Test connection
-                conn.client.ping()
+                conn.ping()
                 
                 logger.info("✅ Redis connection successful")
                 return conn

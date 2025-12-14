@@ -90,14 +90,14 @@ def test_function():
         # WRITE
         data_dict = entry.to_redis_fields()
         key = f"canon:{test_id}"
-        redis_conn.client.hset(key, mapping=data_dict)
+        redis_conn.hset(key, mapping=data_dict)
         print_success(f"Written to Redis key: {key}")
         
         # Force a brief pause for Redis indexing
         time.sleep(0.5)
         
         # READ (Fetch by ID)
-        fetched_data = redis_conn.client.hgetall(key)
+        fetched_data = redis_conn.hgetall(key)
         
         if not fetched_data:
             print_fail("Could not retrieve key from Redis immediately after write.")
@@ -152,11 +152,11 @@ def test_function():
         print("   ⏳ Waiting 5s for Pinecone consistency...")
         time.sleep(5)
         
-        # FETCH
-        fetch_response = pc_index.fetch(ids=[test_id])
+        # FETCH - Use the actual ID from the entry
+        fetch_response = pc_index.fetch(ids=[str(entry.id)])
         
-        if test_id in fetch_response['vectors']:
-            remote_vec = fetch_response['vectors'][test_id]
+        if str(entry.id) in fetch_response['vectors']:
+            remote_vec = fetch_response['vectors'][str(entry.id)]
             
             # Check Metadata
             if remote_vec['metadata']['project_context'] == "integrity_test_suite":
@@ -188,11 +188,15 @@ def test_function():
     
     try:
         # Verify the same entry exists in both systems
-        redis_data = redis_conn.client.hgetall(key)
-        pinecone_data = pc_index.fetch(ids=[test_id])
-        
-        redis_exists = bool(redis_data)
-        pinecone_exists = test_id in pinecone_data['vectors']
+        if 'redis_conn' in locals() and 'pc_index' in locals():
+            redis_data = redis_conn.hgetall(key)
+            pinecone_data = pc_index.fetch(ids=[str(entry.id)])
+            
+            redis_exists = bool(redis_data)
+            pinecone_exists = str(entry.id) in pinecone_data['vectors']
+        else:
+            print_fail("Skipping cross-system validation - missing connections")
+            return
         
         if redis_exists and pinecone_exists:
             print_success("Entry exists in both Redis and Pinecone.")
@@ -225,12 +229,14 @@ def test_function():
     
     try:
         # Delete from Redis
-        redis_conn.client.delete(key)
-        print_success("Redis key deleted.")
+        if 'redis_conn' in locals():
+            redis_conn.delete(key)
+            print_success("Redis key deleted.")
         
         # Delete from Pinecone
-        pc_index.delete(ids=[test_id])
-        print_success("Pinecone vector deleted.")
+        if 'pc_index' in locals():
+            pc_index.delete(ids=[str(entry.id)])
+            print_success("Pinecone vector deleted.")
         
     except Exception as e:
         print_fail(f"Cleanup failed: {e}")
@@ -240,7 +246,7 @@ def test_function():
     print("\nSummary:")
     print("  - CRUD operations verified on RedisVL")
     print("  - CRUD operations verified on Pinecone")
-    print("  - Vector dimensions validated (768)")
+    print("  - Vector dimensions validated (384)")
     print("  - Data fidelity confirmed")
     print("  - Cross-system consistency checked")
 
