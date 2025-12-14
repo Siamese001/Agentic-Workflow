@@ -8,9 +8,9 @@ Legacy K-Node: K.9 (K.8 in some versions)
 """
 import logging
 from typing import Any
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass

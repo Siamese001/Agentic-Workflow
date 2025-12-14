@@ -4,9 +4,8 @@ This will fix Key 2 (print statements) violations.
 """
 import os
 import re
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
 
 def replace_prints_in_file(filepath):
     """Replace print statements with logging calls."""

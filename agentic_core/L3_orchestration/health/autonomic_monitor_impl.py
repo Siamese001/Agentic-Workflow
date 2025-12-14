@@ -2,7 +2,7 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # from .autonomic_monitor_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .autonomic_monitor_types import *  # Star import removed
 
 class AutonomicMonitor:
     """Autonomic immune system for agent health monitoring.

@@ -1,9 +1,9 @@
 """Performance stability tests - legacy workflow runner."""
 import logging
 from typing import Any
-
 import pytest
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

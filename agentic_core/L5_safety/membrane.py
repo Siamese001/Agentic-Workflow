@@ -7,11 +7,9 @@ all external content before it enters the agent's context.
 import logging
 import re
 from typing import Any
-
 from openai import AsyncOpenAI
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class InputMembrane:

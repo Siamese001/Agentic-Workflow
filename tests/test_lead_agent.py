@@ -13,9 +13,9 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger('TLA')
 ConfigurationService().logger.setLevel(logging.INFO)
 

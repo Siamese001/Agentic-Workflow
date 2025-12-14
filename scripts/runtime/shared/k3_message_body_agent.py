@@ -5,9 +5,9 @@ micro-structure enforcement, and placeholder detection blocking.
 """
 import logging
 from typing import Any, Dict, List, Optional
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass

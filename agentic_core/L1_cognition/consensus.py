@@ -7,11 +7,9 @@ preventing single-model failures or hallucinations.
 import asyncio
 import json
 import logging
-
 from openai import AsyncOpenAI
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class ConsensusVerdict(BaseModel):

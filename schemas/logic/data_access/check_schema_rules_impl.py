@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-# TODO: Replace star import: # TODO: Replace star import: # from .check_schema_rules_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .check_schema_rules_types import *  # Star import removed
 
 class CheckSchemaRules:
     """

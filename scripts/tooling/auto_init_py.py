@@ -23,9 +23,9 @@ LOGGER = logging.getLogger(__name__)
 import pathlib
 import sys
 from typing import List
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def create_init_files(paths: List[str]) -> int:
     """

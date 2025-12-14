@@ -1,7 +1,8 @@
 """Types and models for kx_nodes_outreach."""
 import logging
 from typing import Any, Dict, List, Optional
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

@@ -1,10 +1,10 @@
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Check Message Compliance - atomic execution layer.'
 import logging
 from typing import Dict
-
 logger = logging.getLogger(__name__)
 
 def check_message_compliance(data: Dict[str, object]) -> Dict[str, object]:

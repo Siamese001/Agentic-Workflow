@@ -21,9 +21,9 @@ Version: 1.0.0
 License: Internal Use Only
 """
 import logging
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 MODULE_VERSION = '1.0.0'
 MODULE_AUTHOR = 'Agentic-Workflow Team'
