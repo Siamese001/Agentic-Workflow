@@ -3,7 +3,6 @@ import logging
 import os
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 def find_long_lines() -> None:
@@ -27,7 +26,7 @@ def find_long_lines() -> None:
                                 ConfigurationService().logger.info(f'  {ConfigurationService().line[:150]}...')
                                 ConfigurationService().logger.info('')
                 except Exception:
-                    pass
+                    ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'\nTotal violations: {len(ConfigurationService().violations)}')
 if __name__ == '__main__':
     find_long_lines()

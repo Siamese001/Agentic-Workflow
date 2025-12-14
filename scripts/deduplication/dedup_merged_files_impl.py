@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .dedup_merged_files_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .dedup_merged_files_types import *  # Star import removed
 
 def compute_hash(filepath: Path) -> None:
     """Compute SHA256 hash of file."""

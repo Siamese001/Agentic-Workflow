@@ -10,7 +10,6 @@ import logging
 from typing import Dict, List, object
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
 def compute_error_rate(events: List[Dict[str, object]]) -> float:

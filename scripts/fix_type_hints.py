@@ -5,7 +5,6 @@ import os
 import re
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
 def add_type_hints_to_file(filepath: str) -> int:

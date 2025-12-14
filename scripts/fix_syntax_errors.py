@@ -1,6 +1,5 @@
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 'Automated fix for common syntax errors in Python files.'
 import ast

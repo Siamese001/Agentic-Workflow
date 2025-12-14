@@ -1,5 +1,3 @@
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'RAG configuration for resume generation.'
 import logging

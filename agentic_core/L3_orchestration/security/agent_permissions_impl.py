@@ -4,7 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .agent_permissions_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .agent_permissions_types import *  # Star import removed
 
 class AgentPermissionManager:
     """Manages agent permissions with Control Plane integration.
