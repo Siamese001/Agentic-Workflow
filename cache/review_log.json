@@ -158,5 +158,61 @@
     "details": "['Duplicate: .\\\\apps_lic\\\\L1_cognition\\\\P1_retrieve\\\\check_outreach\\\\safety_check_outreach_policy.py (same as .\\\\apps_lic\\\\L1_cognition\\\\P1_retrieve\\\\check_outreach\\\\check_outreach_policy.py)', 'Dupli",
     "reviewed": false,
     "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:26:21.535200",
+    "agent": "DocumentationAgent",
+    "key": 21,
+    "details": "['.\\\\canon_validator_legacy_backup.py:43', '.\\\\canon_validator_legacy_backup.py:68', '.\\\\canon_validator_legacy_backup.py:171', '.\\\\canon_validator_legacy_backup.py:859', '.\\\\canon_validator_legacy_ba",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:26:47.840527",
+    "agent": "DocumentationAgent",
+    "key": 21,
+    "details": "['.\\\\canon_validator_legacy_backup.py:43', '.\\\\canon_validator_legacy_backup.py:68', '.\\\\canon_validator_legacy_backup.py:171', '.\\\\canon_validator_legacy_backup.py:859', '.\\\\canon_validator_legacy_ba",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:26:49.865428",
+    "agent": "BudgetAgent",
+    "key": 17,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1861 (54 lines)', '.\\\\canon_validator_legacy_backup.py:499 (81 lines)', '.\\\\canon_validator_legacy_backup.py:650 (65 lines)', '.\\\\canon_validator_legacy_backup.py",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:26:50.667065",
+    "agent": "BudgetAgent",
+    "key": 19,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1051 check_key_04_no_empty_except_blocks() (complexity: 11)', '.\\\\canon_validator_legacy_backup.py:1182 check_key_09_no_unused_imports() (complexity: 14)', '.\\\\ca",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:27:22.859481",
+    "agent": "DocumentationAgent",
+    "key": 21,
+    "details": "['.\\\\canon_validator_legacy_backup.py:43', '.\\\\canon_validator_legacy_backup.py:68', '.\\\\canon_validator_legacy_backup.py:171', '.\\\\canon_validator_legacy_backup.py:859', '.\\\\canon_validator_legacy_ba",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:27:24.566266",
+    "agent": "BudgetAgent",
+    "key": 17,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1861 (54 lines)', '.\\\\canon_validator_legacy_backup.py:499 (81 lines)', '.\\\\canon_validator_legacy_backup.py:650 (65 lines)', '.\\\\canon_validator_legacy_backup.py",
+    "reviewed": false,
+    "is_false_positive": null
+  },
+  {
+    "timestamp": "2025-12-14T09:27:25.356220",
+    "agent": "BudgetAgent",
+    "key": 19,
+    "details": "['.\\\\canon_validator_legacy_backup.py:1051 check_key_04_no_empty_except_blocks() (complexity: 11)', '.\\\\canon_validator_legacy_backup.py:1182 check_key_09_no_unused_imports() (complexity: 14)', '.\\\\ca",
+    "reviewed": false,
+    "is_false_positive": null
   }
 ]
