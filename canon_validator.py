@@ -133,11 +133,29 @@ class SystemArchitect(SubAtomicAgent):
         # Key 40: No metaclasses (stub)
         self.ctx.report(self.name, 40, True, [])
         
-        # Key 41: No deep directories (stub)
-        self.ctx.report(self.name, 41, True, [])
+        # Key 41: No deep directories (L3 FULL IMPLEMENTATION)
+        passed, details = self.check_key_41_no_deep_directories()
+        self.ctx.report(self.name, 41, passed, details)
         
         # Key 50: Canon meta-integrity (stub)
         self.ctx.report(self.name, 50, True, [])
+    
+    def check_key_41_no_deep_directories(self) -> Tuple[bool, List[str]]:
+        """Check for directories deeper than 5 levels (L3 implementation)."""
+        violations = []
+        max_depth = 5
+        
+        for file_path in self.ctx.get_python_files():
+            # Calculate depth from repo root
+            parts = file_path.replace('\\', '/').split('/')
+            # Filter out current directory marker
+            parts = [p for p in parts if p and p != '.']
+            depth = len(parts) - 1  # Subtract 1 for the filename itself
+            
+            if depth > max_depth:
+                violations.append(f"{file_path} (depth: {depth})")
+        
+        return (len(violations) == 0, violations[:50])
 
 class GenerativeGuard(SubAtomicAgent):
     """
@@ -213,14 +231,17 @@ class CodeJanitor(SubAtomicAgent):
         passed, details = self.check_key_13_no_tabs()
         self.ctx.report(self.name, 13, passed, details)
         
-        # Key 10: Long lines (stub)
-        self.ctx.report(self.name, 10, True, [])
+        # Key 10: Long lines (L3 FULL IMPLEMENTATION)
+        passed, details = self.check_key_10_no_long_lines()
+        self.ctx.report(self.name, 10, passed, details)
         
-        # Key 15: Magic numbers (stub)
-        self.ctx.report(self.name, 15, True, [])
+        # Key 15: Magic numbers (L3 FULL IMPLEMENTATION)
+        passed, details = self.check_key_15_no_magic_numbers()
+        self.ctx.report(self.name, 15, passed, details)
         
-        # Key 16: Deep nesting (stub)
-        self.ctx.report(self.name, 16, True, [])
+        # Key 16: Deep nesting (L3 FULL IMPLEMENTATION)
+        passed, details = self.check_key_16_no_deep_nesting()
+        self.ctx.report(self.name, 16, passed, details)
         
         self.ctx.signal_ast_valid()
     
@@ -264,6 +285,80 @@ class CodeJanitor(SubAtomicAgent):
                 continue
         return (len(violations) == 0, violations)
     
+    def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
+        """Check for lines longer than 120 characters (L3 implementation)."""
+        violations = []
+        max_line_length = 120
+        
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    for i, line in enumerate(lines, 1):
+                        line_length = len(line.rstrip())
+                        if line_length > max_line_length:
+                            violations.append(f"{file_path}:{i} ({line_length} chars)")
+            except Exception:
+                continue
+        
+        return (len(violations) == 0, violations[:50])  # Limit reporting
+    
+    def check_key_15_no_magic_numbers(self) -> Tuple[bool, List[str]]:
+        """Check for magic numbers (L3 implementation with AST)."""
+        violations = []
+        allowed_numbers = {0, 1, -1, 2, 10, 100, 1000}  # Common non-magic numbers
+        
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                
+                for node in ast.walk(tree):
+                    # Check for numeric constants in non-constant assignments
+                    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+                        if node.value not in allowed_numbers:
+                            # Check if it's in a constant assignment (UPPER_CASE variable)
+                            parent_is_constant = False
+                            for parent in ast.walk(tree):
+                                if isinstance(parent, ast.Assign):
+                                    for target in parent.targets:
+                                        if isinstance(target, ast.Name) and target.id.isupper():
+                                            parent_is_constant = True
+                            
+                            if not parent_is_constant:
+                                violations.append(f"{file_path}:{node.lineno} (magic number: {node.value})")
+            except Exception:
+                continue
+        
+        return (len(violations) == 0, violations[:50])  # Limit reporting
+    
+    def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+        """Check for deep nesting >4 levels (L3 implementation with AST)."""
+        violations = []
+        max_nesting = 4
+        
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                
+                def check_nesting(node, depth=0):
+                    if depth > max_nesting:
+                        violations.append(f"{file_path}:{node.lineno} (nesting level: {depth})")
+                    
+                    # Increment depth for control flow structures
+                    if isinstance(node, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+                        depth += 1
+                    
+                    for child in ast.iter_child_nodes(node):
+                        check_nesting(child, depth)
+                
+                check_nesting(tree)
+            except Exception:
+                continue
+        
+        return (len(violations) == 0, violations[:50])  # Limit reporting
+    
     def _fix_trailing_whitespace(self):
         """Auto-fix trailing whitespace."""
         try:
@@ -298,11 +393,11 @@ class DependencySentinel(SubAtomicAgent):
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_autoflake = False
         
-        # Key 9: Unused imports (auto-fix with autoflake)
+        # Key 9: Unused imports (auto-fix with autoflake) - L3 HARDENED
         if has_autoflake:
             print("   🔧 Running autoflake (Removes Key 9 violations)...")
             try:
-                subprocess.run([
+                result = subprocess.run([
                     "autoflake",
                     "--in-place",
                     "--remove-unused-variables",
@@ -310,28 +405,38 @@ class DependencySentinel(SubAtomicAgent):
                     "--recursive",
                     "--exclude=.venv,venv,archives,data,__pycache__",
                     "."
-                ], capture_output=True, check=False)
-                self.ctx.report(self.name, 9, True, [])
-            except Exception:
-                self.ctx.report(self.name, 9, False, ["autoflake failed"])
+                ], capture_output=True, text=True, check=False)
+                
+                # L3 Hardening: Verify return code
+                if result.returncode != 0:
+                    self.ctx.report(self.name, 9, False, [f"autoflake failed: {result.stderr[:200]}"])
+                else:
+                    self.ctx.report(self.name, 9, True, [])
+            except Exception as e:
+                self.ctx.report(self.name, 9, False, [f"autoflake exception: {str(e)}"])
         else:
             self.ctx.report(self.name, 9, True, [])
         
-        # Key 14: Duplicate imports (auto-fix with isort)
+        # Key 14: Duplicate imports (auto-fix with isort) - L3 HARDENED
         if has_isort:
             print("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
             try:
-                subprocess.run([
+                result = subprocess.run([
                     "isort",
                     ".",
                     "--skip", ".venv",
                     "--skip", "venv",
                     "--skip", "archives",
                     "--skip", "data"
-                ], capture_output=True, check=False)
-                self.ctx.report(self.name, 14, True, [])
-            except Exception:
-                self.ctx.report(self.name, 14, False, ["isort failed"])
+                ], capture_output=True, text=True, check=False)
+                
+                # L3 Hardening: Verify return code
+                if result.returncode != 0:
+                    self.ctx.report(self.name, 14, False, [f"isort failed: {result.stderr[:200]}"])
+                else:
+                    self.ctx.report(self.name, 14, True, [])
+            except Exception as e:
+                self.ctx.report(self.name, 14, False, [f"isort exception: {str(e)}"])
         else:
             self.ctx.report(self.name, 14, False, ["isort not installed"])
         
@@ -794,9 +899,40 @@ class BudgetAgent(SubAtomicAgent):
         return (len(violations) == 0, violations)
     
     def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
-        """Check for complex functions (cyclomatic complexity >10)."""
-        # Stub implementation
-        return (True, [])
+        """Check for complex functions (cyclomatic complexity >10) - L3 FULL IMPLEMENTATION."""
+        violations = []
+        max_complexity = 10
+        
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        complexity = self._calculate_cyclomatic_complexity(node)
+                        if complexity > max_complexity:
+                            violations.append(f"{file_path}:{node.lineno} {node.name}() (complexity: {complexity})")
+            except Exception:
+                continue
+        
+        return (len(violations) == 0, violations[:50])
+    
+    def _calculate_cyclomatic_complexity(self, node: ast.FunctionDef) -> int:
+        """Calculate cyclomatic complexity for a function node."""
+        complexity = 1  # Base complexity
+        
+        for child in ast.walk(node):
+            # Count decision points
+            if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
+                complexity += 1
+            elif isinstance(child, ast.BoolOp):
+                # Each boolean operator adds complexity
+                complexity += len(child.values) - 1
+            elif isinstance(child, (ast.ListComp, ast.DictComp, ast.SetComp, ast.GeneratorExp)):
+                complexity += 1
+        
+        return complexity
 
 class StructuralEngineer(SubAtomicAgent):
     """
@@ -840,7 +976,7 @@ class StructuralEngineer(SubAtomicAgent):
         print("   ✅ No structural changes pending.")
     
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions (>50 lines)."""
+        """Check for large functions (>50 lines) - L4 PLANNING ENABLED."""
         violations = []
         for file_path in self.ctx.get_python_files():
             try:
@@ -852,7 +988,21 @@ class StructuralEngineer(SubAtomicAgent):
                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
                             func_lines = node.end_lineno - node.lineno + 1
                             if func_lines > 50:
-                                violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
+                                violation = f"{file_path}:{node.lineno} ({func_lines} lines)"
+                                violations.append(violation)
+                                
+                                # L4 Planning: Generate refactoring plan
+                                plan_key = f"{file_path}:{node.name}"
+                                self.ctx.refactor_plans[plan_key] = {
+                                    "type": "SPLIT_FUNCTION",
+                                    "target": node.name,
+                                    "file": file_path,
+                                    "line": node.lineno,
+                                    "current_lines": func_lines,
+                                    "reason": f"Exceeds 50 lines (current: {func_lines})",
+                                    "status": "PENDING",
+                                    "priority": "HIGH" if func_lines > 100 else "MEDIUM"
+                                }
             except Exception:
                 continue
         
@@ -909,6 +1059,59 @@ class PatternEnforcer(SubAtomicAgent):
         for key in range(26, 40):
             self.ctx.report(self.name, key, True, [])
 
+class StatePersistenceAgent(SubAtomicAgent):
+    """
+    L4 PERSISTENCE: Atomic Checkpointing for State Recovery
+    ROLE: Saves validation context and refactor plans for cross-run resilience.
+    """
+    
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Checkpointing State...")
+        
+        import json
+        import shutil
+        from pathlib import Path
+
+        # Ensure cache directory exists
+        cache_dir = Path("cache")
+        cache_dir.mkdir(exist_ok=True)
+        
+        # Prepare checkpoint data
+        checkpoint_data = {
+            "results": self.ctx.results,
+            "refactor_plans": self.ctx.refactor_plans,
+            "signals": list(self.ctx.signals),
+            "modified_files": list(self.ctx.modified_files),
+            "timestamp": __import__('datetime').datetime.now().isoformat()
+        }
+        
+        # L4 Atomic Write Pattern: Write to .tmp, then move
+        temp_path = cache_dir / "context.tmp"
+        final_path = cache_dir / "context.json"
+        
+        try:
+            # Write to temporary file
+            with open(temp_path, "w", encoding="utf-8") as f:
+                json.dump(checkpoint_data, f, indent=2)
+            
+            # Atomic move
+            shutil.move(str(temp_path), str(final_path))
+            
+            plan_count = len(self.ctx.refactor_plans)
+            print(f"   ✅ Context checkpointed: {len(self.ctx.results)} results, {plan_count} refactor plans")
+            self.ctx.report(self.name, 98, True, [f"Checkpointed {plan_count} plans"])
+            
+            # Also save refactor plans to a human-readable file
+            if self.ctx.refactor_plans:
+                plans_path = cache_dir / "refactor_plans.json"
+                with open(plans_path, "w", encoding="utf-8") as f:
+                    json.dump(self.ctx.refactor_plans, f, indent=2)
+                print(f"   📋 Refactor plans saved to: {plans_path}")
+                
+        except Exception as e:
+            print(f"   ❌ Checkpoint failed: {e}")
+            self.ctx.report(self.name, 98, False, [f"Checkpoint failed: {str(e)}"])
+
 class SemanticMapper(SubAtomicAgent):
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
@@ -932,8 +1135,6 @@ class SemanticMapper(SubAtomicAgent):
                 print(f"      ❌ Failed to analyze {file_path}: {e}")
         
         print("\n   ℹ No refactoring opportunities identified.")
-
-# ==============================================================================
 # 4. THE INTELLIGENT ORCHESTRATOR
 # ==============================================================================
 class IntelligentOrchestrator:
@@ -942,10 +1143,14 @@ class IntelligentOrchestrator:
     def __init__(self):
         self.ctx = ValidationContext()
         
+        # L4: Try to load previous context
+        self._load_checkpoint()
+        
         # Print file count using on-demand method (prevents context bloat)
         file_count = len(self.ctx.get_python_files())
         print(f"   [CTX] Blackboard initialized with {file_count} valid source files.")
         print(f"   [CTX] Subatomic Isolation: Files loaded on-demand per agent.")
+        print(f"   [CTX] L3/L4 Architecture: Full coverage + State persistence enabled.")
         
         self.swarm = [
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
@@ -959,8 +1164,27 @@ class IntelligentOrchestrator:
             BudgetAgent(self.ctx),          # 9. Complexity (Signal: COMPLEXITY_CLEAN)
             TypeMechanic(self.ctx),         # 10. Types (Requires AST_VALID + DEPS_VALID)
             SemanticMapper(self.ctx),       # 11. Semantics
-            StructuralEngineer(self.ctx)    # 12. Complexity (Final Pass)
+            StructuralEngineer(self.ctx),   # 12. Complexity (Final Pass)
+            StatePersistenceAgent(self.ctx) # 13. L4 Persistence (Last)
         ]
+    
+    def _load_checkpoint(self):
+        """L4 Persistence: Load previous validation context if available."""
+        import json
+        from pathlib import Path
+        
+        try:
+            checkpoint_path = Path("cache/context.json")
+            if checkpoint_path.exists():
+                with open(checkpoint_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                # Restore refactor plans from previous run
+                if "refactor_plans" in data:
+                    self.ctx.refactor_plans = data["refactor_plans"]
+                    print(f"   🔄 Loaded {len(self.ctx.refactor_plans)} refactor plans from previous run")
+        except Exception as e:
+            print(f"   ⚠️  Failed to load checkpoint: {e}")
     
     def run_mission(self):
         """Execute all agents in sequence."""
