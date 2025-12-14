@@ -92,8 +92,8 @@ def fix_print_statements():
                 lines = content.split('\n')
                 insert_pos = 0
                 for i, line in enumerate(lines):
-                    if (line.strip() and 
-                        not line.strip().startswith('#') and 
+                    if (line.strip() and
+                        not line.strip().startswith('#') and
                         '"""' not in line and "'''" not in line:
                         insert_pos = i
                         break

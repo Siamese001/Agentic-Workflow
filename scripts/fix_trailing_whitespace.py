@@ -34,4 +34,6 @@ def fix_trailing_whitespace(directory: Any) -> None:
 
 
 if __name__ == "__main__":
-    fix_trailing_whitespace()
+    import sys
+    directory = sys.argv[1] if len(sys.argv) > 1 else "."
+    fix_trailing_whitespace(directory)

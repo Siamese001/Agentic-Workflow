@@ -34,7 +34,7 @@ class AdaptiveRetrievalGate:
             'conversational': re.compile(
                 r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye)'
                     r'|(yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
-                    
+
                 re.IGNORECASE
             ),
 

@@ -181,7 +181,7 @@ class PeerIntelligenceAuditor:
                     f'RAG intensity satisfied: {total_searches} searches '
                     f'across {len(hops)} hops'
                 ),
-                    
+
 
                 signature=f'RAG:OK:{total_searches}',
                 details={'total_searches': total_searches,

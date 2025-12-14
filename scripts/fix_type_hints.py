@@ -4,7 +4,6 @@
 import ast
 import os
 import re
-from typing import List, Tuple
 
 
 def add_type_hints_to_file(filepath: str) -> int:

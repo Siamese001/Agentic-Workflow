@@ -59,40 +59,43 @@ violations = [
     ("./tests/test_titanium_pipeline.py", 351),
 ]
 
+
 def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        
+
         if line_num > len(lines):
             logger.warning(f"Line {line_num} not found in {filepath}")
             return False
-        
+
         line = lines[line_num - 1]
         stripped = line.rstrip()
-        
+
         # Skip if already fixed
         if len(stripped) <= 100:
             return False
-        
+
         # Get indentation
         indent = len(line) - len(line.lstrip())
-        
+
         # Fix strategies
         new_lines = []
-        
+
         # Strategy 1: Break at commas for function calls or imports
-        if ',' in stripped and (('(' in stripped and ')' in stripped) or 
-                               stripped.strip().startswith(('import ', 'from '))):
-            parts = stripped.split(',')
+        if "," in stripped and (
+            ("(" in stripped and ")" in stripped)
+            or stripped.strip().startswith(("import ", "from "))
+        ):
+            parts = stripped.split(",")
             if len(parts) > 1:
-                new_lines.append(parts[0] + ',\n')
-                indent_str = ' ' * (indent + 4)
+                new_lines.append(parts[0] + ",\n")
+                indent_str = " " * (indent + 4)
                 for part in parts[1:-1]:
-                    new_lines.append(indent_str + part + ',\n')
-                new_lines.append(indent_str + parts[-1] + '\n')
-        
+                    new_lines.append(indent_str + part + ",\n")
+                new_lines.append(indent_str + parts[-1] + "\n")
+
         # Strategy 2: Break long f-strings
         elif 'f"' in stripped or "f'" in stripped:
             # Find the f-string boundaries
@@ -102,82 +105,83 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             else:
                 start = stripped.find("f'")
                 end = stripped.rfind("'")
-            
+
             if start != -1 and end != -1 and end > start + 2:
                 prefix = stripped[:start]
-                content = stripped[start+2:end]
-                suffix = stripped[end+2:]
-                
+                content = stripped[start + 2 : end]
+                suffix = stripped[end + 2 :]
+
                 # Break the f-string content
                 new_lines.append(prefix + 'f"(\n')
-                indent_str = ' ' * (indent + 4)
+                indent_str = " " * (indent + 4)
                 # Simple split - break at spaces
                 words = content.split()
                 current_line = indent_str
                 for word in words:
                     if len(current_line) + len(word) + 1 > 100:
-                        new_lines.append(current_line + '\n')
-                        current_line = indent_str + word + ' '
+                        new_lines.append(current_line + "\n")
+                        current_line = indent_str + word + " "
                     else:
-                        current_line += word + ' '
+                        current_line += word + " "
                 if current_line.strip():
-                    new_lines.append(current_line + '\n')
-                new_lines.append(' ' * indent + ')"' + suffix + '\n')
-        
+                    new_lines.append(current_line + "\n")
+                new_lines.append(" " * indent + ')"' + suffix + "\n")
+
         # Strategy 3: Break long boolean expressions
-        elif ' and ' in stripped or ' or ' in stripped:
-            parts = re.split(r' (and|or) ', stripped)
+        elif " and " in stripped or " or " in stripped:
+            parts = re.split(r" (and|or) ", stripped)
             if len(parts) > 2:
-                new_lines.append(parts[0] + '\n')
-                indent_str = ' ' * (indent + 4)
+                new_lines.append(parts[0] + "\n")
+                indent_str = " " * (indent + 4)
                 for i in range(1, len(parts), 2):
                     if i + 1 < len(parts):
-                        new_lines.append(indent_str + parts[i] + ' ' + parts[i+1] + '\n')
-        
+                        new_lines.append(indent_str + parts[i] + " " + parts[i + 1] + "\n")
+
         # Strategy 4: Generic break at operators
-        elif ' + ' in stripped or ' - ' in stripped or ' * ' in stripped or ' / ' in stripped:
-            parts = re.split(r' (\+|-|\*|/) ', stripped)
+        elif " + " in stripped or " - " in stripped or " * " in stripped or " / " in stripped:
+            parts = re.split(r" (\+|-|\*|/) ", stripped)
             if len(parts) > 2:
-                new_lines.append(parts[0] + '\n')
-                indent_str = ' ' * (indent + 4)
+                new_lines.append(parts[0] + "\n")
+                indent_str = " " * (indent + 4)
                 for i in range(1, len(parts), 2):
                     if i + 1 < len(parts):
-                        new_lines.append(indent_str + parts[i] + ' ' + parts[i+1] + '\n')
-        
+                        new_lines.append(indent_str + parts[i] + " " + parts[i + 1] + "\n")
+
         # Strategy 5: Break long method chains
-        elif '.' in stripped and stripped.count('.') > 2:
-            parts = stripped.split('.')
+        elif "." in stripped and stripped.count(".") > 2:
+            parts = stripped.split(".")
             if len(parts) > 2:
-                new_lines.append(parts[0] + '.\n')
-                indent_str = ' ' * (indent + 4)
+                new_lines.append(parts[0] + ".\n")
+                indent_str = " " * (indent + 4)
                 for part in parts[1:-1]:
-                    new_lines.append(indent_str + '.' + part + '.\n')
-                new_lines.append(indent_str + '.' + parts[-1] + '\n')
-        
+                    new_lines.append(indent_str + "." + part + ".\n")
+                new_lines.append(indent_str + "." + parts[-1] + "\n")
+
         # Fallback: Just break at the last space before 100 chars
         else:
             break_point = 100
-            while break_point > 0 and stripped[break_point] != ' ':
+            while break_point > 0 and stripped[break_point] != " ":
                 break_point -= 1
             if break_point > 0:
-                new_lines.append(stripped[:break_point] + '\n')
-                new_lines.append(' ' * indent + stripped[break_point+1:] + '\n')
+                new_lines.append(stripped[:break_point] + "\n")
+                new_lines.append(" " * indent + stripped[break_point + 1 :] + "\n")
             else:
                 # No good break point, force break at 100
-                new_lines.append(stripped[:100] + '\n')
-                new_lines.append(' ' * indent + stripped[100:] + '\n')
-        
+                new_lines.append(stripped[:100] + "\n")
+                new_lines.append(" " * indent + stripped[100:] + "\n")
+
         # Replace the line
-        lines[line_num - 1:line_num] = new_lines
-        
+        lines[line_num - 1 : line_num] = new_lines
+
         # Write back
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             f.writelines(lines)
-        
+
         return True
     except Exception as e:
         logger.error(f"Error fixing {filepath}:{line_num}: {e}")
         return False
+
 
 def main():
     """Fix all specific long lines."""
@@ -189,8 +193,9 @@ def main():
                 fixed += 1
         else:
             logger.warning(f"File not found: {filepath}")
-    
+
     logger.info(f"Total fixed: {fixed} lines")
+
 
 if __name__ == "__main__":
     main()
