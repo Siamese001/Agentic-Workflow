@@ -2518,7 +2518,7 @@ class StatePersistenceAgent(SubAtomicAgent):
                     history = json.load(f)
                 if "executions" not in history:
                     history["executions"] = []
-            except:
+            except Exception:
                 history = {"executions": []}
         
         # Add current execution results

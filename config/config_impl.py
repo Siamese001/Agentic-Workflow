@@ -1,6 +1,7 @@
 """Implementation for config."""
 import logging
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 

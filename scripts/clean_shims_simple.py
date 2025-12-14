@@ -71,7 +71,7 @@ def clean_prompt_governance():
             LINES = content.split('\n')
             for i, line in enumerate(lines):
                 if line.startswith('from .') and 'import *' in line:
-                    LINES[I] = f"from .{import_from} import *"
+                    lines[i] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
             logger.info(f# SQL query removed)

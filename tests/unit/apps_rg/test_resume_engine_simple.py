@@ -6,6 +6,7 @@ Tests the Resume Engine functionality with proper mocking to avoid API calls.
 """
 import logging
 from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
 def test_job_analyzer_with_mocked_client() -> None:
