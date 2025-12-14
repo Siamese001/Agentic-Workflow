@@ -51,7 +51,7 @@ import logging
 __all__ = [
     # SDK Registry
     "SDK_REGISTRY",
-    "SDKEntry", 
+    "SDKEntry",
     "SDKCategory",
     "validate_sdk",
     "reset_all_clients",

@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 async def test_mcp():
     """Test MCP servers without Reddit."""
-    
+
     # Remove Reddit from config
     config = {
         "mcpServers": {
@@ -27,30 +27,30 @@ async def test_mcp():
             }
         }
     }
-    
+
     # Save temporary config
     import json
     with open("config/test_mcp_config.json", "w") as f:
         json.dump(config, f)
-    
+
     # Test with temporary config
     client = UniversalMCPClient("config/test_mcp_config.json")
-    
+
     try:
         await client.connect_all()
         tools = await client.get_tools_for_llm()
-        
+
         logger.info("✅ Connected MCP servers:")
         for tool in tools:
             logger.info(f"  - {tool['name']}: {tool['description']}")
-            
+
         # Test filesystem write
         result = await client.execute_tool("filesystem__write_file", {
             "path": "./output/test.md",
             "content": "# MCP Test\n\nThis was written autonomously!"
         })
         logger.info(f"✅ File write result: {result}")
-        
+
     except Exception as e:
         logger.error(f"❌ Error: {e}")
     finally:

@@ -126,16 +126,16 @@ class DataSourceProvider:
 
     def automated_company_research(self, company_name: str) -> str:
         """Perform automated research using Tavily API.
-        
+
         Args:
             company_name: Company to research
-            
+
         Returns:
             Aggregated research findings from multiple sources
         """
         if not self.tavily_client:
             return f"[MOCK] Automated research for {company_name}: Engineering blog mentions microservices migration, GitHub shows Python/React/Kubernetes stack..."
-        
+
         try:
             # Define search queries for different aspects
             queries = [
@@ -145,9 +145,9 @@ class DataSourceProvider:
                 f"{company_name} CTO engineering interview technical challenges",
                 f"{company_name} engineering blog scalability performance"
             ]
-            
+
             research_results = []
-            
+
             for query in queries:
                 try:
                     # Perform advanced search with context
@@ -157,18 +157,18 @@ class DataSourceProvider:
                         include_raw_content=True,
                         max_results=3
                     )
-                    
+
                     # Extract relevant content
                     for item in result.get("results", []):
                         content = f"Source: {item.get('title', 'Unknown')}\n"
                         content += f"URL: {item.get('url', 'N/A')}\n"
                         content += f"Content: {item.get('content', item.get('snippet', ''))}\n"
                         research_results.append(content)
-                        
+
                 except Exception as e:
                     self.logger.warning(f"Search failed for query '{query}': {e}")
                     continue
-            
+
             if research_results:
                 # Join and limit content size
                 combined = "\n\n".join(research_results)
@@ -177,7 +177,7 @@ class DataSourceProvider:
                 return combined
             else:
                 return f"No research results found for {company_name}"
-                
+
         except Exception as e:
             self.logger.error(f"Automated research failed: {e}")
             return f"Research error for {company_name}: {str(e)}"

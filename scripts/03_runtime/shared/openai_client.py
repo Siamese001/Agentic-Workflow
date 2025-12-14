@@ -14,28 +14,28 @@ logger = logging.getLogger(__name__)
 
 class OpenAIClientManager:
     """Manages OpenAI client instances for agents."""
-    
+
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
         """
         Initialize OpenAI client manager.
-        
+
         Args:
             api_key: OpenAI API key. If None, will try to get from environment.
             base_url: Custom base URL for OpenAI API. Useful for Azure or proxy.
         """
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
-        
+
         if not self.api_key:
             raise ValueError(
                 "OpenAI API key not provided. Set OPENAI_API_KEY environment variable "
                 "or pass api_key parameter."
             )
-        
+
         # Initialize clients
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
         self.async_client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
-    
+
     def chat_completion(
         self,
         messages: list[Dict[str, Any]],
@@ -46,14 +46,14 @@ class OpenAIClientManager:
     ) -> ChatCompletion:
         """
         Create a chat completion.
-        
+
         Args:
             messages: List of message objects with 'role' and 'content'.
             model: OpenAI model to use.
             temperature: Sampling temperature.
             max_tokens: Maximum tokens to generate.
             **kwargs: Additional parameters for OpenAI API.
-        
+
         Returns:
             ChatCompletion object.
         """
@@ -69,7 +69,7 @@ class OpenAIClientManager:
         except Exception as e:
             logger.error(f"OpenAI API error: {e}")
             raise
-    
+
     async def achat_completion(
         self,
         messages: list[Dict[str, Any]],
@@ -80,14 +80,14 @@ class OpenAIClientManager:
     ) -> ChatCompletion:
         """
         Create an async chat completion.
-        
+
         Args:
             messages: List of message objects with 'role' and 'content'.
             model: OpenAI model to use.
             temperature: Sampling temperature.
             max_tokens: Maximum tokens to generate.
             **kwargs: Additional parameters for OpenAI API.
-        
+
         Returns:
             ChatCompletion object.
         """
@@ -103,7 +103,7 @@ class OpenAIClientManager:
         except Exception as e:
             logger.error(f"OpenAI API error: {e}")
             raise
-    
+
     def create_embedding(
         self,
         input_text: str,
@@ -112,12 +112,12 @@ class OpenAIClientManager:
     ) -> list[float]:
         """
         Create embeddings for text.
-        
+
         Args:
             input_text: Text to embed.
             model: Embedding model to use.
             **kwargs: Additional parameters.
-        
+
         Returns:
             List of embedding values.
         """
@@ -131,7 +131,7 @@ class OpenAIClientManager:
         except Exception as e:
             logger.error(f"OpenAI embedding error: {e}")
             raise
-    
+
     def list_models(self) -> list[str]:
         """List available OpenAI models."""
         try:
@@ -160,11 +160,11 @@ def configure_openai(
 ) -> OpenAIClientManager:
     """
     Configure OpenAI client with custom settings.
-    
+
     Args:
         api_key: OpenAI API key.
         base_url: Custom base URL.
-    
+
     Returns:
         OpenAIClientManager instance.
     """
@@ -177,13 +177,13 @@ def configure_openai(
 EXAMPLE_PROMPTS = {
     "agent_system": """You are an AI agent designed to assist with specific tasks.
     Follow the user's instructions carefully and provide helpful, accurate responses.""",
-    
+
     "code_generation": """Generate clean, well-documented code following best practices.
     Include comments and explain your approach when necessary.""",
-    
+
     "data_analysis": """Analyze the provided data and generate insights.
     Use appropriate statistical methods and visualize results when helpful.""",
-    
+
     "creative_writing": """Create engaging, original content tailored to the user's requirements.
     Maintain a consistent tone and style throughout.""",
 }
@@ -196,23 +196,23 @@ def create_agent_prompt(
 ) -> list[Dict[str, Any]]:
     """
     Create a formatted prompt for an agent.
-    
+
     Args:
         task_type: Type of task (e.g., 'code_generation', 'data_analysis').
         context: Additional context for the task.
         instructions: Specific instructions for the agent.
-    
+
     Returns:
         Formatted messages list for OpenAI API.
     """
     messages = [{"role": "system", "content": EXAMPLE_PROMPTS.get(task_type, "")}]
-    
+
     if context:
         messages.append({"role": "system", "content": f"Context: {context}"})
-    
+
     if instructions:
         messages.append({"role": "user", "content": instructions})
-    
+
     return messages
 
 

@@ -26,7 +26,7 @@ except ImportError:
 
 class ExecutiveAgentOrchestrator:
     """Thin orchestrator for executive strategy agents.
-    
+
     Coordinates K.11, K.12, and K.13 agents without containing
     their implementation details.
     """
@@ -42,7 +42,7 @@ class ExecutiveAgentOrchestrator:
         tavily_api_key = os.getenv("TAVILY_API_KEY")
         self.data_sources = data_source_provider or DataSourceProvider(tavily_api_key=tavily_api_key)
         self.schema_registry = get_executive_schema_registry()
-        
+
         # Initialize autonomous researcher
         if tavily_api_key:
             self.researcher = TavilyResearcher(api_key=tavily_api_key)
@@ -58,7 +58,7 @@ class ExecutiveAgentOrchestrator:
 
         # Initialize prompt providers from workflow config
         prompt_providers = PromptProviderFactory.from_workflow_config(workflow_config or {})
-        
+
         # Initialize agents with their respective prompt providers
         self.k11_agent = K11ShadowAuditAgent(
             data_source_provider=self.data_sources,
@@ -85,26 +85,26 @@ class ExecutiveAgentOrchestrator:
         """Execute K.11 Shadow Audit via dedicated agent with autonomous browsing."""
         # Check if auto_research is enabled and MCP is available
         auto_research = config.get("auto_research", True) if config else True
-        
+
         if auto_research and self.mcp and self.researcher:
             self.logger.info(f"🔍 K.11: Autonomous research enabled for {company_name}")
-            
+
             # Use Tavily to find relevant URLs
             try:
                 search_results = await self.researcher.search(
                     f"{company_name} engineering blog technical stack architecture"
                 )
-                
+
                 # Browse top 3 results with MCP browser
                 browsed_content = []
                 for i, result in enumerate(search_results[:3]):
                     try:
                         url = result.get("url", "")
                         self.logger.info(f"📖 Browsing: {url}")
-                        
+
                         # Navigate to URL
                         await self.mcp.execute_tool("browser__navigate", {"url": url})
-                        
+
                         # Get page content
                         content = await self.mcp.execute_tool("browser__get_content", {})
                         browsed_content.append({
@@ -114,7 +114,7 @@ class ExecutiveAgentOrchestrator:
                         })
                     except Exception as e:
                         self.logger.warning(f"Failed to browse {url}: {e}")
-                
+
                 # Append browsed content to search context
                 if browsed_content:
                     enriched_context = search_context or ""
@@ -122,13 +122,13 @@ class ExecutiveAgentOrchestrator:
                     for item in browsed_content:
                         enriched_context += f"\nURL: {item['url']}\nTitle: {item['title']}\n"
                         enriched_context += f"Content: {item['content']}\n---\n"
-                    
+
                     search_context = enriched_context
                     self.logger.info(f"✅ Enriched context with {len(browsed_content)} browsed pages")
-                    
+
             except Exception as e:
                 self.logger.error(f"Autonomous browsing failed: {e}")
-        
+
         # Execute K.11 with enriched context
         return await self.k11_agent.execute(
             company_name=company_name,
@@ -150,7 +150,7 @@ class ExecutiveAgentOrchestrator:
             technical_swot=technical_swot,
             config=config
         )
-        
+
         # Save roadmap to filesystem using MCP
         if self.mcp and roadmap:
             try:
@@ -181,30 +181,30 @@ class ExecutiveAgentOrchestrator:
 ## Success Criteria
 {roadmap.success_criteria}
 """
-                
+
                 # Write to filesystem
                 await self.mcp.execute_tool("filesystem__write_file", {
                     "path": "./output/roadmap.md",
                     "content": roadmap_md
                 })
                 self.logger.info("💾 Roadmap saved to ./output/roadmap.md")
-                
+
                 # Try to save to Postgres memory (optional)
                 try:
                     await self.mcp.execute_tool("postgres_memory__query", {
                         "query": f"""
                         INSERT INTO strategies (timestamp, company, roadmap_summary, primary_objective)
-                        VALUES (NOW(), '{technical_swot.company_name if hasattr(technical_swot, 'company_name') else 'Unknown'}', 
+                        VALUES (NOW(), '{technical_swot.company_name if hasattr(technical_swot, 'company_name') else 'Unknown'}',
                                 '{roadmap.executive_summary[:500]}', '{roadmap.primary_objective[:500]}')
                         """
                     })
                     self.logger.info("🗄️ Roadmap saved to episodic memory")
                 except Exception as e:
                     self.logger.warning(f"Could not save to memory (DB may be offline): {e}")
-                    
+
             except Exception as e:
                 self.logger.error(f"Failed to save roadmap: {e}")
-        
+
         return roadmap
 
     # K.13 Interviewer Simulation delegation
@@ -255,5 +255,5 @@ def create_executive_orchestrator(
     """
     if data_source_provider is None:
         data_source_provider = DataSourceProvider()
-    
+
     return ExecutiveAgentOrchestrator(data_source_provider=data_source_provider)

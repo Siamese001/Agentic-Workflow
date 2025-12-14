@@ -17,17 +17,17 @@ def setup_aws_credentials():
     """Setup AWS credentials file."""
     aws_dir = Path.home() / ".aws"
     aws_dir.mkdir(exist_ok=True)
-    
+
     credentials_file = aws_dir / "credentials"
     config_file = aws_dir / "config"
-    
+
     logger.info("\n=== AWS Credentials Setup ===")
     logger.info("Please enter your AWS credentials:")
-    
+
     access_key = input("AWS Access Key ID: ").strip()
     secret_key = input("AWS Secret Access Key: ").strip()
     region = input("Default Region (us-east-1): ").strip() or "us-east-1"
-    
+
     # Write credentials
     if not credentials_file.exists():
         credentials_content = f"""[default]
@@ -56,7 +56,7 @@ region = {region}
 """
             credentials_file.write_text(credentials_content)
             logger.info("✓ Updated credentials file")
-    
+
     # Write config
     if not config_file.exists():
         config_content = f"""[default]
@@ -71,18 +71,18 @@ output = json
         logger.info(f"✓ Created config file: {config_file}")
     else:
         logger.info(f"⚠ Config file already exists: {config_file}")
-    
+
     return True
 
 
 def setup_mcp_config():
     """Setup MCP configuration for AWS."""
     logger.info("\n=== MCP Configuration Setup ===")
-    
+
     # Create MCP config in the project directory
     project_root = Path(__file__).parent
     mcp_config_file = project_root / "mcp-aws-config.json"
-    
+
     mcp_config = {
         "mcpServers": {
             "aws": {
@@ -95,17 +95,17 @@ def setup_mcp_config():
             }
         }
     }
-    
+
     mcp_config_file.write_text(json.dumps(mcp_config, indent=2))
     logger.info(f"✓ Created MCP config: {mcp_config_file}")
-    
+
     return True
 
 
 def test_aws_connection():
     """Test AWS connection."""
     logger.info("\n=== Testing AWS Connection ===")
-    
+
     import subprocess
     try:
         result = subprocess.run(
@@ -130,7 +130,7 @@ def main():
     """Main setup function."""
     logger.info("AWS MCP Server Setup")
     logger.info("=" * 50)
-    
+
     # Check if required packages are installed
     try:
         import mcp_server_aws
@@ -138,16 +138,16 @@ def main():
     except ImportError:
         logger.info("✗ mcp-server-aws not found. Installing...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", "mcp-server-aws"])
-    
+
     # Setup AWS credentials
     setup_aws_credentials()
-    
+
     # Setup MCP configuration
     setup_mcp_config()
-    
+
     # Test connection
     test_aws_connection()
-    
+
     logger.info("\n=== Setup Complete ===")
     logger.info("Next steps:")
     logger.info("1. Update your IDE's MCP settings to use the mcp-aws-config.json file")
