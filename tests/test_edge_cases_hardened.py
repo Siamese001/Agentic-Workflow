@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Test Suite: Hardened Infrastructure Edge Cases
 
 This module tests catastrophic failure scenarios and edge cases
@@ -12,6 +14,7 @@ import pytest
 import asyncio
 import json
 from typing import Dict, Any
+import logging
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure

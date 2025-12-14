@@ -3,11 +3,14 @@
 import asyncio
 import os
 from mcp_adapter import UniversalMCPClient
+import logging
 
+
+logger = logging.getLogger(__name__)
 async def test_mcp():
     """Test MCP servers without Reddit."""
     
-    # Temporarily remove Reddit from config
+    # Remove Reddit from config
     config = {
         "mcpServers": {
             "filesystem": {
@@ -37,19 +40,19 @@ async def test_mcp():
         await client.connect_all()
         tools = await client.get_tools_for_llm()
         
-        print("✅ Connected MCP servers:")
+        logger.info("✅ Connected MCP servers:")
         for tool in tools:
-            print(f"  - {tool['name']}: {tool['description']}")
+            logger.info(f"  - {tool['name']}: {tool['description']}")
             
         # Test filesystem write
         result = await client.execute_tool("filesystem__write_file", {
             "path": "./output/test.md",
             "content": "# MCP Test\n\nThis was written autonomously!"
         })
-        print(f"✅ File write result: {result}")
+        logger.info(f"✅ File write result: {result}")
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        logger.error(f"❌ Error: {e}")
     finally:
         await client.cleanup()
 

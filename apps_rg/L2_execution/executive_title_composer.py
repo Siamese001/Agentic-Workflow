@@ -1,5 +1,7 @@
 """Executive Title Composer Agent - Headline Generator (K.4)
 
+
+logger = logging.getLogger(__name__)
 This agent generates resume headlines with industry-first validation.
 Enforces GICS sector precedence and strict character limits.
 
@@ -15,6 +17,7 @@ Non-responsibilities:
 - Bullet synthesis
 - Content grounding
 """
+import logging
 
 
 

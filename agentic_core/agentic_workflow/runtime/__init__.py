@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Runtime components for Agentic Workflow.
 
 This module provides runtime logic, shared utilities, and core functionality
@@ -8,6 +10,7 @@ for the agentic workflow system.
 # Import shared components from the actual location
 import sys
 from pathlib import Path
+import logging
 
 # Add the actual runtime directories to Python path
 runtime_path = Path(__file__).parent.parent.parent / "03_runtime"
@@ -53,5 +56,5 @@ try:
         "get_redis_client"
     ]
 except ImportError as e:
-    print(f"Warning: Could not import runtime components: {e}")
+    logger.warning(f"Warning: Could not import runtime components: {e}")
     __all__ = []

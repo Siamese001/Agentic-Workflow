@@ -1,8 +1,11 @@
 """Core architectural interfaces for Agentic Workflow.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model (Architectural Refactor)
 Defines strict boundaries between Brain (cognitive) and Hands (action).
 """
+import logging
 
     ICognitivePlane,
     PlanningRequest,

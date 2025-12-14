@@ -1,8 +1,11 @@
 """Schema Planning Orchestrator - Backward compatibility shim.
 
+
+logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 """
+import logging
 
 # Re-export all types for backward compatibility
     SchemaType,

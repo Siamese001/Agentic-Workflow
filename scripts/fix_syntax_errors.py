@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Automated fix for common syntax errors in Python files."""
 
@@ -6,6 +8,7 @@ import os
 import re
 from pathlib import Path
 from typing import List, Tuple
+import logging
 
 def fix_docstring_in_signature(content: str) -> str:
     """Fix docstrings incorrectly placed inside function signatures."""
@@ -145,13 +148,13 @@ def fix_file(file_path: Path) -> bool:
         if changed:
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            print(f"Fixed: {file_path}")
+            logger.info(f"Fixed: {file_path}")
             return True
         
         return False
         
     except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+        logger.error(f"Error fixing {file_path}: {e}")
         return False
 
 def main():
@@ -162,14 +165,14 @@ def main():
     # Find all Python files
     py_files = list(base_dir.glob('runtime/**/*.py')) + list(base_dir.glob('tests/**/*.py'))
     
-    print(f"Found {len(py_files)} Python files")
+    logger.info(f"Found {len(py_files)} Python files")
     
     for file_path in py_files:
         if has_syntax_errors(file_path):
             if fix_file(file_path):
                 fixed_count += 1
     
-    print(f"\nFixed {fixed_count} files")
+    logger.info(f"\nFixed {fixed_count} files")
 
 if __name__ == '__main__':
     main()

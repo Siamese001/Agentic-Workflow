@@ -1,6 +1,7 @@
 """Implementation for check_schema_rules."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .check_schema_rules_types import *  # Star import removed
 
 class CheckSchemaRules:

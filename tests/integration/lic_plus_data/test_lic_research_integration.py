@@ -1,6 +1,9 @@
 """Integration tests for LIC research + data layer."""
 import pytest
+import logging
 
+
+logger = logging.getLogger(__name__)
 class TestLICResearchIntegration:
     """Integration tests for LIC research."""
 

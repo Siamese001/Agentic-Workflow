@@ -1,9 +1,12 @@
 """MCP provider mappings and defaults.
 
+
+logger = logging.getLogger(__name__)
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 
 from typing import Dict, Optional
+import logging
 
 class ProviderType(Enum):
     """Supported MCP provider types."""

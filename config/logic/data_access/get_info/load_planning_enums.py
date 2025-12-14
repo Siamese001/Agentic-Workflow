@@ -1,6 +1,9 @@
 """Enum types for load_planning."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ConfigType(Enum):
     """Types of configurations to load."""
     ENVIRONMENT = 'environment'

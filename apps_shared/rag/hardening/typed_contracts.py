@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 # FILE: tests/contracts/test_typed_contracts.py
 
 

@@ -1,10 +1,13 @@
 """Golden State Validation Tests.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 12: Testing (Golden State)
 Integration tests for golden state evaluation.
 """
 
 import pytest
+import logging
 
     GoldenStateEvaluator,
     GoldenCase,

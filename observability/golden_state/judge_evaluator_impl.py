@@ -1,6 +1,9 @@
 """Implementation for judge_evaluator."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .judge_evaluator_types import *  # Star import removed
 
 class JudgeEvaluator:

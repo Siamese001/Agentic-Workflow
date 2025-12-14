@@ -1,6 +1,9 @@
 """Implementation for spiffe_manager."""
 
 from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 # from .spiffe_manager_types import *  # Star import removed
 
 class SPIFFEManager:

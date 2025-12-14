@@ -1,5 +1,7 @@
 """Adaptive Recovery Loop - The Fixer
 
+
+logger = logging.getLogger(__name__)
 This module implements temperature escalation protocol for adaptive recovery.
 Handles both creative and mechanical failures with intelligent temperature adjustments.
 
@@ -21,6 +23,7 @@ import time
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
 class FailureType(Enum):
     """TODO: Add docstring."""

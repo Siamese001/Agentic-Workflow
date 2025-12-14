@@ -4,7 +4,10 @@ from pydantic import BaseModel
 import instructor
 from openai import OpenAI
 import os
+import logging
 
+
+logger = logging.getLogger(__name__)
 class ValidationResult(BaseModel):
     is_valid: bool
     errors: List[str]
@@ -43,7 +46,7 @@ class AutoRemediator:
                 return ValidationResult(is_valid=False, errors=errors, fixed_content=current_content)
 
             # 2. Attempt Remediation
-            print(f"🔧 Auto-Remediator: Fixing {errors} (Attempt {attempt+1}/{max_retries})")
+            logger.error(f"🔧 Auto-Remediator: Fixing {errors} (Attempt {attempt+1}/{max_retries})")
             current_content = self._apply_fixes(current_content, errors, fix_strategies)
 
         return ValidationResult(is_valid=False, errors=errors, fixed_content=current_content)

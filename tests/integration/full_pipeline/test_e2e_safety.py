@@ -1,5 +1,7 @@
 """E2E safety tests - legacy agent registry integration."""
 
+
+logger = logging.getLogger(__name__)
 # Legacy agent registry components (zombie files) - not implemented
 # from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry
 # from archives.legacy_root_folders.core.agent_router_policy import choose_agents_for_task
@@ -7,6 +9,7 @@
 # from archives.legacy_root_folders.core.models.models import AgentRole
 
 import pytest
+import logging
 
 @pytest.mark.skip(reason="Waiting for legacy agent registry implementation")
 def test_choose_agents_for_strategy_task_prefers_planner() -> None:

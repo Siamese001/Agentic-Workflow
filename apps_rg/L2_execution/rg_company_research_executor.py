@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Rg Company Research Executor - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def rg_company_research_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process rg company research executor data."""

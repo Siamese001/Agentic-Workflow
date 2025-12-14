@@ -1,6 +1,9 @@
 import ast
 from pathlib import Path
+import logging
 
+
+logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 def _iter_core_files() -> None:

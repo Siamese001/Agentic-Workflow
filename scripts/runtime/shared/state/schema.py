@@ -1,5 +1,7 @@
 """State schema definitions for atomic workflow persistence.
 
+
+logger = logging.getLogger(__name__)
 Defines the structure of workflow state and checkpoint metadata using Pydantic
 for validation and serialization.
 
@@ -9,6 +11,7 @@ Phase 3 - Atomic State Persistence
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 from enum import Enum
+import logging
 
 class BackendType(str, Enum):
     """Storage backend types for state persistence."""

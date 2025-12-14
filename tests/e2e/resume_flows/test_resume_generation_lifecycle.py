@@ -4,7 +4,10 @@ import pytest
 from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
+
+logger = logging.getLogger(__name__)
 class ResumePhase(Enum):
     """TODO: Add docstring."""
 

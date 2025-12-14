@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Subatomic Agentic Architecture Installation Verification
@@ -6,6 +8,7 @@ Validates all core components are working correctly
 
 import sys
 import importlib
+import logging
 
 def test_import(package_name, min_version=None):
     """Test if a package can be imported and optionally check version"""

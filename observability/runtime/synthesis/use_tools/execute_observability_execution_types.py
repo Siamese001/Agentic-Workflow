@@ -1,7 +1,10 @@
 """Types and models for execute_observability_execution."""
 
 from typing import Any, Dict, List, Optional
+import logging
 
+
+logger = logging.getLogger(__name__)
 class ObservabilityType(Enum):
     """Types of observability operations."""
     TRACE = 'trace'

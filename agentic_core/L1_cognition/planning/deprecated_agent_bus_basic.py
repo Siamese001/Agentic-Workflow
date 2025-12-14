@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.orchestration.agent_bus import AgentBus  # DEPRECATED: Archiv...
 # from archives.legacy_root_folders.core.models.models import AgentMessage  # DEPRECATED: Archive...
 

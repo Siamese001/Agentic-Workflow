@@ -37,11 +37,9 @@ def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
     return hashlib.sha256(serialized.encode()).hexdigest()
 
     """Docstring."""
-def generate_llm_cache_key_with_fingerprint(
-    model: str,
+def generate_llm_cache_key_with_fingerlogger.info(model: str,
     messages: List[Dict[str, Any]],
-    fingerprint: str
-) -> str:
+    fingerprint: str) -> str:
     """Generate a cache key with additional fingerprint.
 
     Args:

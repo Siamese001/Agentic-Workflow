@@ -1,10 +1,13 @@
 """Integration Tests for Resume Engine Logic
 
+
+logger = logging.getLogger(__name__)
 Tests the actual LLM-powered functionality with real API calls.
 """
 
 import pytest
 import os
+import logging
 
 # Import the classes we're testing
 try:

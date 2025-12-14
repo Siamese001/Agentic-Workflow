@@ -1,3 +1,6 @@
+import logging
+
+logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """
 10_tests.integration.cross_domain — Package initialization

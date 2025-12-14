@@ -1,6 +1,9 @@
+import logging
 
 """AIS repair / mitigation policies.
 
+
+logger = logging.getLogger(__name__)
 Policies consume FailureSignal-like inputs and propose coarse-grained
 repair actions (retry, downgrade, replan, escalate).
 """

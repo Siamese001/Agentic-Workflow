@@ -1,5 +1,8 @@
 """Dataclass models for achv_bullet_synthesizer_types."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .achv_bullet_synthesizer_types_enums import *  # Star import removed
 
 @dataclass

@@ -2,7 +2,10 @@ import os
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from tavily import TavilyClient
+import logging
 
+
+logger = logging.getLogger(__name__)
 # Ensure you add `tavily-python` to requirements.txt
 
 class ResearchResult(BaseModel):
@@ -36,7 +39,7 @@ class TavilyResearcher:
 
         aggregated_results = []
         
-        print(f"🕵️  Autonomous Agent: Searching deeply for {company_name}...")
+        logger.info(f"🕵️  Autonomous Agent: Searching deeply for {company_name}...")
         
         for query in queries:
             try:
@@ -58,7 +61,7 @@ class TavilyResearcher:
                         )
                     )
             except Exception as e:
-                print(f"⚠️  Search query '{query}' failed: {e}")
+                logger.error(f"⚠️  Search query '{query}' failed: {e}")
 
         return self._format_results_for_llm(aggregated_results)
 

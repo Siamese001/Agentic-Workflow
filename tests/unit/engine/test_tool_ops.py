@@ -1,10 +1,13 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
 from typing import Dict, List, Optional, Any
 from enum import Enum
 from dataclasses import dataclass
+import logging
 
 class ToolStatus(Enum):
     """TODO: Add docstring."""

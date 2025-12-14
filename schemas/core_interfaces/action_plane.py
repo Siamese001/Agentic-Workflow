@@ -1,11 +1,14 @@
 """Action Plane Interface - The Hands.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Defines the contract for all tool execution and external interactions.
 L2 Execution: Side effects allowed, but controlled and observable.
 """
 
 from typing import Any, Dict, List, Optional
+import logging
 
 class ActionCapability(Enum):
     """Capabilities provided by the action plane."""

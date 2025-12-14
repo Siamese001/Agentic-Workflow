@@ -1,10 +1,13 @@
 """Mock Action Plane for testing.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined results.
 """
 
 from typing import Any, Dict, List
+import logging
 
     IActionPlane,
     ActionRequest,

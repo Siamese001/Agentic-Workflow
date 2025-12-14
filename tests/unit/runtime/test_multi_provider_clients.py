@@ -3,6 +3,9 @@ import os
 import pytest
 from unittest.mock import patch, MagicMock
 from runtime.shared.multi_provider_clients import (
+import logging
+
+logger = logging.getLogger(__name__)
     Provider, get_api_key, get_client, reset_all_clients,
     ProviderConfig, DEFAULT_MAX_RETRIES
 )

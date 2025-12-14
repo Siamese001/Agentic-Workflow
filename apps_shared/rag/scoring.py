@@ -1,10 +1,13 @@
 """RAG scoring utilities for document relevance and ranking.
 
+
+logger = logging.getLogger(__name__)
 Provides scoring algorithms for retrieved documents in RAG systems.
 """
 
 import math
 import re
+import logging
 
 @dataclass
 class DocumentScore:

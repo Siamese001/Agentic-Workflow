@@ -1,6 +1,9 @@
 
 from typing import Dict
+import logging
 
+
+logger = logging.getLogger(__name__)
 def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, float]) -> bool:
     """Return True if the experiment meets or exceeds baseline.
 

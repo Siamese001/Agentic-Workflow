@@ -1,5 +1,7 @@
 """Specificity Prose Engine Agent - Cover Letter Generator (K.10)
 
+
+logger = logging.getLogger(__name__)
 This agent generates high-signal cover letters with company-specific details.
 Enforces 3 paragraphs @ 85-100 words each with ≥4 company-specific details.
 
@@ -18,6 +20,7 @@ Non-responsibilities:
 
 
 from typing import Any, Dict, List, Optional
+import logging
 
 
 @dataclass

@@ -1,9 +1,12 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Contract Enforcement - atomic execution layer."""
 
 
 from typing import Dict
+import logging
 
 def test_contract_enforcement(data: Dict[str, object]) -> Dict[str, object]:
     """Process test contract enforcement data."""

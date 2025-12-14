@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -9,6 +11,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 """
 
 from typing import Dict, List, Optional, Tuple
+import logging
 
 
 

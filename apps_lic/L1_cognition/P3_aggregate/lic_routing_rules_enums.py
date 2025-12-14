@@ -1,6 +1,9 @@
 """Enum types for lic_routing_rules."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class MessageRoute(Enum):
     """Message route types for LinkedIn outreach."""
     CONNECTION_REQ = 'CONNECTION_REQ'

@@ -1,6 +1,7 @@
 """Implementation for fetch_schema_history."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .fetch_schema_history_types import *  # Star import removed
 
 class SchemaHistoryFetcher:

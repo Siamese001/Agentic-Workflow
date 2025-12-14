@@ -1,6 +1,9 @@
 """Enum types for search_schema_vectors."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class SchemaSearchMode(Enum):
     """Search modes for schema vector operations."""
     SEMANTIC = 'semantic'

@@ -1,6 +1,9 @@
 """Enum types for perform_observability_operation."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class OperationCategory(Enum):
     """Categories of observability operations."""
     MONITORING = 'monitoring'

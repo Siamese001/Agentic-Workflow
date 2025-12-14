@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Enforce Outreach Boundaries - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def enforce_outreach_boundaries(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce outreach boundaries data."""

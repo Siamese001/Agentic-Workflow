@@ -1,3 +1,5 @@
+
+logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Fix all canon violations to achieve 50/50 pass rate.
@@ -8,6 +10,7 @@ import os
 import scripts.validation.check_canonical_structure
 import shutil
 from pathlib import Path
+import logging
 
 ROOT = Path(__file__).resolve().parent
 

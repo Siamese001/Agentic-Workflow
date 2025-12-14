@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Test Suite: Agentic Behaviors
 
 This module tests complex agentic behaviors including:
@@ -10,6 +12,7 @@ This module tests complex agentic behaviors including:
 
 import pytest
 import asyncio
+import logging
 
 # Import the modules we're testing
 # Note: These imports may need adjustment based on actual module structure

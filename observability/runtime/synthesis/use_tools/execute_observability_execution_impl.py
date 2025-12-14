@@ -1,6 +1,7 @@
 """Implementation for execute_observability_execution."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .execute_observability_execution_types import *  # Star import removed
 
 class ObservabilityExecutionAdapter:

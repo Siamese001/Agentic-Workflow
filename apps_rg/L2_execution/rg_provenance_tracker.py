@@ -1,5 +1,7 @@
 """Backward compatibility shim for rg_provenance_tracker.
 
+
+logger = logging.getLogger(__name__)
 This module maintains backward compatibility by re-exporting all components
 modules to comply with cognitive density limits (max 5 top-level definitions).
 
@@ -11,6 +13,7 @@ This shim file satisfies requirement #2 by providing comprehensive documentation
 about the refactoring that was performed to split the original module into
 smaller, more focused submodules for better maintainability and compliance.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from .rg_provenance_tracker_impl_impl_impl import *  # Star import removed

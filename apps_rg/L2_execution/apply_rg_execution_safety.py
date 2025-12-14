@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Apply Rg Execution Safety - atomic enforcement layer."""
 
 from typing import Dict
+import logging
 
 def apply_rg_execution_safety(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply rg execution safety data."""

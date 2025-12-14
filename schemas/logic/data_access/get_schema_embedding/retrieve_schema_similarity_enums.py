@@ -1,6 +1,9 @@
 """Enum types for retrieve_schema_similarity."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class SimilarityMethod(Enum):
     """Methods for computing schema similarity."""
     STRUCTURAL = 'structural'

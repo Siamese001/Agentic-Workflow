@@ -2,12 +2,16 @@
 Verifies immediate executability and cross-provider compatibility.
 """
 
+#!/usr/bin/env python3
+"""Test all SDK client implementations."""
+
+import logging
 import os
 import sys
-import json
-import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Any, List
+
+logger = logging.getLogger(__name__)
 
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
@@ -18,7 +22,7 @@ try:
     from data.sdks_mcps.client_wrappers.vertex_client import create_vertex_client
     from data.sdks_mcps.client_wrappers.multi_provider_router import create_multi_provider_router
 except ImportError as e:
-    print(f"Import error: {e}")
+    logger.error(f"Import error: {e}")
     # Define dummy functions if imports fail
     def create_openai_client(): return None
     def create_anthropic_client(): return None
@@ -396,10 +400,10 @@ def main():
 
             for test_name, test_result in result["tests"].items():
                 if "error" in test_result and not test_result.get("passed", True):
-                    print(f"    Failed: {test_name} - {test_result.get('error', 'Unknown error')}")
+                    logger.error(f"    Failed: {test_name} - {test_result.get('error', 'Unknown error')}")
         
         except Exception as e:
-            print(f"Error processing results: {e}")
+            logger.error(f"Error processing results: {e}")
 
     # Test router
     try:
@@ -408,7 +412,7 @@ def main():
         status = "✅" if router_result["overall"] else "❌"
 
     except Exception as e:
-            print(f"Error testing router: {e}")
+            logger.error(f"Error testing router: {e}")
 
     # Test reference clients
     try:
@@ -417,7 +421,7 @@ def main():
         status = "✅" if ref_result["overall"] else "❌"
 
     except Exception as e:
-        print(f"Error testing reference clients: {e}")
+        logger.error(f"Error testing reference clients: {e}")
 
     # Summary
 

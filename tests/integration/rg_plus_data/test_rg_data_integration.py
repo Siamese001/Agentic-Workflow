@@ -2,7 +2,10 @@
 import pytest
 from typing import Dict, List
 from dataclasses import dataclass
+import logging
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class JobPosting:
     """TODO: Add docstring."""

@@ -1,6 +1,7 @@
 """Implementation for query_schema_store."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .query_schema_store_types import *  # Star import removed
 
 class SchemaStoreQuerier:

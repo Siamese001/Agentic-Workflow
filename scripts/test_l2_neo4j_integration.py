@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Test Neo4j integration for L2 execution modules
 
 Tests that Neo4j integration works correctly and gracefully handles
@@ -9,6 +11,7 @@ import pytest
 from datetime import datetime, UTC
 import sys
 import os
+import logging
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))

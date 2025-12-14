@@ -1,5 +1,7 @@
 """Integration tests for K.X nodes (Knowledge Extraction).
 
+
+logger = logging.getLogger(__name__)
 Tests K.X node configuration, execution, and integration with
 agent executors and workflow orchestration.
 
@@ -8,6 +10,7 @@ Phase 1C - Knowledge Extraction Integration
 
 import os
 import pytest
+import logging
 
     KNodeType,
     ReasoningStrategy,

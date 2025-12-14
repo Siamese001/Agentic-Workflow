@@ -1,5 +1,8 @@
 """Dataclass models for lic_routing_rules."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .lic_routing_rules_enums import *  # Star import removed
 
 @dataclass

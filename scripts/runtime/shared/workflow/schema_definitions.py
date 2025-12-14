@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Executive Strategy Schema Definitions - Pydantic models for K.11, K.12, K.13 agents.
 
 Defines structured outputs for:
@@ -6,6 +8,7 @@ Defines structured outputs for:
 - K.12 Strategy Roadmap: 30-60-90 day executive plan
 - K.13 Interviewer Simulation: Oppositional interview preparation
 """
+import logging
 
 
 # ===== K.11 SHADOW AUDIT SCHEMAS =====

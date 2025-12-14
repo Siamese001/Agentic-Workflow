@@ -1,6 +1,9 @@
 """Enum types for understand_request_load_planning."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ConfigType(Enum):
     """Types of configurations."""
     SYSTEM_CONFIG = 'system_config'

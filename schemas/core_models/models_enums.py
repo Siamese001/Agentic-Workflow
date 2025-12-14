@@ -1,6 +1,9 @@
 """Enum types for models."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ValidationSeverity(Enum):
     """Severity levels for validation results."""
     INFO = auto()

@@ -263,7 +263,7 @@ class TitaniumRAGPipeline:
 
         # 2. Check semantic cache - Disabled as cache class doesn't exist
         cached_response = None
-        if self.enable_caching and False:  # Temporarily disabled
+        if self.enable_caching and False:  # Disabled as cache class doesn't exist
             # cached_response = self.cache.get(query)  # Commented out
             if cached_response:
                 self.stats["cache_hits"] += 1

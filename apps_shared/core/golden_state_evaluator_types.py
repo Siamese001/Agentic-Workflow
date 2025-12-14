@@ -1,6 +1,9 @@
 """Types and models for golden_state_evaluator."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 @dataclass
 class GoldenCase:
     """Golden test case."""

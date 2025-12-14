@@ -1,6 +1,9 @@
 """Unit tests for L2_execution/P3_aggregate - execution result aggregation."""
 from typing import Dict, List
+import logging
 
+
+logger = logging.getLogger(__name__)
 class TestExecutionResultAggregation:
     """Tests for aggregating execution results."""
 

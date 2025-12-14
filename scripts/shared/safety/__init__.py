@@ -1,7 +1,10 @@
 """Safety and policy enforcement components.
 
+
+logger = logging.getLogger(__name__)
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 """
+import logging
 
     PIIScrubber,
     PIIType,

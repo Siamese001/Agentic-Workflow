@@ -1,6 +1,7 @@
 """Implementation for content_embedding_compare_meaning."""
 
 from typing import Any, Dict, List, Optional
+import logging
 # from .content_embedding_compare_meaning_types import *  # Star import removed
 
 class ContentEmbeddingCompareMeaning:

@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/inspection_ops/
 Tests inspection operations for content analysis.
 """
@@ -6,6 +8,7 @@ import pytest
 from typing import Dict, List
 from enum import Enum
 from dataclasses import dataclass
+import logging
 
 class ContentQuality(Enum):
     """TODO: Add docstring."""

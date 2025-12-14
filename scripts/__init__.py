@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Agentic-Workflow Root Package
 =============================
 
@@ -18,6 +20,7 @@ architecture for agentic AI operations with the following taxonomy:
 
 Auto-hardened by WINDSURF v7 — Production-ready, type-safe, zero-loss.
 """
+import logging
 
 
 __version__ = "7.0.0"

@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Check Outreach Policy - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def check_outreach_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process check outreach policy data."""

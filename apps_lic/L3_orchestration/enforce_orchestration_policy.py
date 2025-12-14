@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L3_orchestration
 # -*- coding: utf-8 -*-
 """Enforce Orchestration Policy - atomic implementation."""
 
 from typing import Dict
+import logging
 
 class EnforceOrchestrationPolicy:
     """EnforceOrchestrationPolicy implementation."""

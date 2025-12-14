@@ -1,8 +1,11 @@
+
+logger = logging.getLogger(__name__)
 # Ownership: apps_lic / L1_cognition
 # -*- coding: utf-8 -*-
 """Enforce Message Contracts - atomic execution layer."""
 
 from typing import Dict
+import logging
 
 def enforce_message_contracts(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce message contracts data."""

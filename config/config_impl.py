@@ -1,5 +1,8 @@
 """Implementation for config."""
+import logging
 
+
+logger = logging.getLogger(__name__)
 # from .config_types import *  # Star import removed
 
 def _load_json_config(filename: str, description: str, required: bool=True) -> Dict[str, object]:

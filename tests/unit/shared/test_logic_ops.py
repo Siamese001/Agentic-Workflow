@@ -1,4 +1,6 @@
 """
+
+logger = logging.getLogger(__name__)
 Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
@@ -7,6 +9,7 @@ import pytest
 from typing import Dict, List
 from enum import Enum
 from dataclasses import dataclass
+import logging
 
 class ValidationLevel(Enum):
     """TODO: Add docstring."""

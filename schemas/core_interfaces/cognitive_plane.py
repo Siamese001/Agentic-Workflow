@@ -1,9 +1,12 @@
 """Cognitive Plane Interface - The Brain.
 
+
+logger = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Defines the contract for all planning, reasoning, and decision-making.
 L1 Cognition: Pure thought, no side effects.
 """
+import logging
 
 
 class CognitiveCapability(Enum):

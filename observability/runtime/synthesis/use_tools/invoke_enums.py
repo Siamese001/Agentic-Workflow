@@ -1,6 +1,9 @@
 """Enum types for tool_invoke_observability_tool."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ToolCategory(Enum):
     """Categories of observability tools."""
     TRACING = 'tracing'

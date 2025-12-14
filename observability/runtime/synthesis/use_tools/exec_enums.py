@@ -1,6 +1,9 @@
 """Enum types for tool_use_observability_execution."""
+import logging
 
 
+
+logger = logging.getLogger(__name__)
 class ExecutionType(Enum):
     """Types of tool execution."""
     SYNC = 'sync'
