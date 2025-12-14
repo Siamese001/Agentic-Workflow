@@ -37,12 +37,7 @@ class K7AssemblyAgent(Agent):
     - No hard-banned prefixes/headers
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        route: str,
-        archetype: str,
-    ):
+def __init__(self: Any, config: ReasoningConfig, route: str, archetype: str) -> None:
         """Initialize K.7 assembly agent.
 
         Args:
@@ -57,7 +52,7 @@ class K7AssemblyAgent(Agent):
 
         logger.info(f"K.7 Assembly Agent initialized: route={route}, archetype={archetype}")
 
-    async def execute(self, context: Dict[str, Any]) -> K7Output:
+async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
         """Execute K.7 final assembly.
 
         Args:
@@ -128,12 +123,7 @@ class K7AssemblyAgent(Agent):
 
         return output
 
-    def _assemble_header(
-        self,
-        linkedin_url: str,
-        message_type: str,
-        subject: Optional[str],
-    ) -> str:
+def _assemble_header(self: Any, linkedin_url: str, message_type: str, subject: Optional[str]) -> str:
         """Assemble header block in exact order.
 
         Order (from LinkedInCanonical v2.90):
@@ -159,7 +149,7 @@ class K7AssemblyAgent(Agent):
 
         return "\n".join(header_lines)
 
-    def _assemble_body(self, message_body: str, cta: str) -> str:
+def _assemble_body(self: Any, message_body: str, cta: str) -> str:
         """Assemble body block with CTA.
 
         Args:
@@ -177,11 +167,7 @@ class K7AssemblyAgent(Agent):
 
         return body
 
-    def _assemble_signature(
-        self,
-        first_name: str,
-        linkedin_url: str,
-    ) -> str:
+def _assemble_signature(self: Any, first_name: str, linkedin_url: str) -> str:
         """Assemble signature block with IMMUTABILITY enforcement.
 
         Signature format (EXACT 4-line block):
@@ -212,7 +198,7 @@ class K7AssemblyAgent(Agent):
 
         return signature
 
-    def _assemble_qa_blocks(self, qa_blocks: Dict[str, str]) -> Dict[str, str]:
+def _assemble_qa_blocks(self: Any, qa_blocks: Dict[str, str]) -> Dict[str, str]:
         """Assemble QA blocks in mandatory order.
 
         Mandatory order (from LinkedInCanonical v2.90):
@@ -241,13 +227,7 @@ class K7AssemblyAgent(Agent):
 
         return ordered_blocks
 
-    def _assemble_final_message(
-        self,
-        header_block: str,
-        body_block: str,
-        signature_block: str,
-        qa_blocks: Dict[str, str],
-    ) -> str:
+def _assemble_final_message(self: Any, header_block: str, body_block: str, signature_block: str, qa_blocks: Dict[str, str]) -> str:
         """Assemble final message with all components.
 
         Args:
@@ -283,7 +263,7 @@ class K7AssemblyAgent(Agent):
 
         return final_message
 
-    def _validate_no_banned_content(self, message: str) -> None:
+def _validate_no_banned_content(self: Any, message: str) -> None:
         """Validate message contains no hard-banned prefixes/headers.
 
         Hard-banned content:

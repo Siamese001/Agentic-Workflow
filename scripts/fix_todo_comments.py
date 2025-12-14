@@ -4,11 +4,12 @@ logger = logging.getLogger(__name__)
 """Fix TODO/FIXME comments in Python files."""
 
 import os
+from typing import Any
 import glob
 import re
 import logging
 
-def fix_todo_comments(directory="."):
+def fix_todo_comments(directory: Any) -> None:
     """Remove or replace TODO/FIXME comments."""
     count = 0
     todo_pattern = re.compile(r'#\s*(TODO|FIXME|XXX|HACK|NOTE).*$', re.MULTILINE)

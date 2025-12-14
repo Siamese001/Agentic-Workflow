@@ -39,7 +39,7 @@ class VerbCanonicalizer:
         "transformed",
     ]
 
-    def canonicalize(self, text: str) -> List[str]:
+def canonicalize(self: Any, text: str) -> List[str]:
         """Extract and canonicalize verbs from text."""
         canonical = []
         text_lower = text.lower()
@@ -50,7 +50,7 @@ class VerbCanonicalizer:
 
         return canonical
 
-    def check_for_forbidden_verbs(self, text: str) -> List[str]:
+def check_for_forbidden_verbs(self: Any, text: str) -> List[str]:
         """Check for forbidden verbs in the text."""
         found_verbs = []
         text_lower = text.lower()

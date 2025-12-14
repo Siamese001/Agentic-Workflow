@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import directly to bypass broken __init__.py
 
-def main():
+def main() -> None:
     """TODO: Add docstring."""
 
     logger.info("=" * 60)

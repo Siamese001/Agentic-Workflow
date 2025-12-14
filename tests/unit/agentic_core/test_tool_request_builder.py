@@ -14,6 +14,7 @@ Currently depends on legacy execution functions that need implementation.
 """
 
 import pytest
+from typing import Any
 import logging
 
 # Mock exceptions since they're zombie file dependencies
@@ -24,7 +25,7 @@ class OrchestrationError(Exception):
 class PlanObject:
     """TODO: Add docstring."""
 
-    def __init__(self, mode: str = None):
+def __init__(self: Any, mode: str) -> None:
         self.mode = mode
 
 # Legacy L2 execution functions (zombie files) - not implemented

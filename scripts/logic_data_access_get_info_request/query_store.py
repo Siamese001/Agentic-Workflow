@@ -35,23 +35,23 @@ class PromptStore:
     to ensure consistent resume improvement and job alignment.
     """
 
-    def __init__(self):
+def __init__(self: Any) -> None:
         self._prompts: Dict[str, StoredPrompt] = {}
 
-    def store(self, prompt: StoredPrompt) -> str:
+def store(self: Any, prompt: StoredPrompt) -> str:
         """Stores resume generation prompt and returns its ID."""
         self._prompts[prompt.id] = prompt
         return prompt.id
 
-    def retrieve(self, prompt_id: str) -> Optional[StoredPrompt]:
+def retrieve(self: Any, prompt_id: str) -> Optional[StoredPrompt]:
         """Retrieves stored resume generation prompt by ID."""
         return self._prompts.get(prompt_id)
 
-    def list_prompts(self) -> List[str]:
+def list_prompts(self: Any) -> List[str]:
         """Lists all stored resume generation prompt IDs."""
         return list(self._prompts.keys())
 
-    def delete(self, prompt_id: str) -> bool:
+def delete(self: Any, prompt_id: str) -> bool:
         """Deletes stored resume generation prompt."""
         if prompt_id in self._prompts:
             del self._prompts[prompt_id]

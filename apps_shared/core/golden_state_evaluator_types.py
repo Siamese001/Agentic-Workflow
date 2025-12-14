@@ -19,7 +19,7 @@ class GoldenCase:
     _quality_criteria: Dict[str, float]
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'GoldenCase':
+def from_dict(cls: Any, data: Dict[str, Any]) -> 'GoldenCase':
         """Create from dictionary."""
         return cls(id=data['id'],
             name=data['name'],
@@ -49,7 +49,7 @@ class EvaluationReport:
     _action_match_score: float
     _errors: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+def to_dict(self: Any) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'case_id': self.case_id,
             'case_name': self.case_name,

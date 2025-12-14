@@ -8,13 +8,14 @@ integrating all layers and components.
 """
 
 import pytest
+from typing import Any
 
 # from archives.legacy_root_folders.core.models.models import ExecutionContext, JobInput, ResumeI...
 
 class TestEndToEndWorkflow:
     """Test complete end-to-end workflow execution."""
 
-    def test_full_workflow_with_all_components(self) -> None:
+def test_full_workflow_with_all_components(self: Any) -> None:
         """Test complete workflow with strategy, RAG, drafting, QA, and safety."""
         ctx = ExecutionContext(
             job=JobInput(
@@ -64,7 +65,7 @@ class TestEndToEndWorkflow:
                 assert result is not None
                 assert result.final_state_patch["strategy_text"] is not None
 
-    def test_workflow_with_different_job_types(self) -> None:
+def test_workflow_with_different_job_types(self: Any) -> None:
         """Test workflow with different job types and roles."""
         job_types = [
             ("Data Scientist", "data_science", "senior"),
@@ -93,7 +94,7 @@ class TestEndToEndWorkflow:
             assert ctx.job.role_type == role_type
             assert ctx.job.seniority == seniority
 
-    def test_workflow_error_handling(self) -> None:
+def test_workflow_error_handling(self: Any) -> None:
         """Test workflow error handling and recovery."""
         ctx = ExecutionContext(
             job=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
@@ -113,7 +114,7 @@ class TestEndToEndWorkflow:
 class TestWorkflowConfiguration:
     """Test workflow configuration and customization."""
 
-    def test_workflow_config_customization(self) -> None:
+def test_workflow_config_customization(self: Any) -> None:
         """Test workflow configuration options."""
         config = WorkflowConfig(
             enable_rag=True,
@@ -127,7 +128,7 @@ class TestWorkflowConfiguration:
         assert config.enable_safety is True
         assert config.max_drafts == 3
 
-    def test_workflow_with_custom_config(self) -> None:
+def test_workflow_with_custom_config(self: Any) -> None:
         """Test workflow execution with custom configuration."""
         config = WorkflowConfig(
             enable_rag=False,  # Disable RAG for faster execution
@@ -150,7 +151,7 @@ class TestWorkflowConfiguration:
 class TestWorkflowPerformance:
     """Test workflow performance and optimization."""
 
-    def test_workflow_execution_time(self) -> None:
+def test_workflow_execution_time(self: Any) -> None:
         """Test workflow execution time is reasonable."""
         import time
 

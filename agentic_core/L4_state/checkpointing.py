@@ -102,7 +102,35 @@ class VerifiableCheckpointManager:
         if verify:
             calculated_checksum = hashlib.sha256(data_bytes).hexdigest()
             logger.
-                .debug(f"Loaded checkpoint: {session_id}/{node_id} (checksum={calculated_checksum[:8]}.
+                .
+                    .
+                        .
+                            .
+                                .
+                                    .
+                                        .
+                                            .
+                                                .
+                                                    .
+                                                        .
+                                                            .
+                                                                .
+                                                                    .
+                                                                        .debug(f"Loaded checkpoint: {session_id}/{node_id} (checksum={calculated_checksum[:8]}.
+                                                                        .
+                                                                    .
+                                                                .
+                                                            .
+                                                        .
+                                                    .
+                                                .
+                                            .
+                                        .
+                                    .
+                                .
+                            .
+                        .
+                    .
                 ..
                 ..
                 .)")

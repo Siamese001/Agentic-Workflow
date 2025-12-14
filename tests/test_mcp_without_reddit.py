@@ -6,7 +6,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-async def test_mcp():
+async def test_mcp() -> None:
     """Test MCP servers without Reddit."""
 
     # Remove Reddit from config

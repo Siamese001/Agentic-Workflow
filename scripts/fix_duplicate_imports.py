@@ -2,6 +2,7 @@
 """Fix duplicate imports in Python files."""
 
 import os
+from typing import Any
 import re
 import logging
 
@@ -9,7 +10,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def fix_duplicate_imports(filepath):
+def fix_duplicate_imports(filepath: Any) -> None:
     """Remove duplicate imports from a file."""
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -50,7 +51,7 @@ def fix_duplicate_imports(filepath):
         logger.error(f"Error processing {filepath}: {e}")
         return False
 
-def main():
+def main() -> None:
     """Fix duplicate imports in all Python files."""
     count = 0
     for root, dirs, files in os.walk('.'):

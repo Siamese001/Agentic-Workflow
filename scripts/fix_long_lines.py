@@ -163,7 +163,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
         logger.info(f"Error fixing {file_path}: {e}")
         return 0
 
-def main():
+def main() -> None:
     """Main function to fix long lines."""
     root_dir = "."
     python_files = get_python_files(root_dir)

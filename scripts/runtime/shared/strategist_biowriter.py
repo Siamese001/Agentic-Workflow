@@ -8,6 +8,7 @@ Legacy K-Node: K.1
 """
 
 import logging
+from typing import Any
 import re
 
 logger = logging.getLogger(__name__)
@@ -44,14 +45,7 @@ class StrategistBioWriter(Agent):
     - VG_SUMMARY_GROUNDING_CHECK (no hallucinations)
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        word_count_min: int = 120,
-        word_count_max: int = 140,
-        sentence_count_min: int = 3,
-        sentence_count_max: int = 5,
-    ):
+def __init__(self: Any, config: ReasoningConfig, word_count_min: int, word_count_max: int, sentence_count_min: int, sentence_count_max: int) -> None:
         """Initialize Strategist BioWriter.
 
         Args:
@@ -78,7 +72,7 @@ class StrategistBioWriter(Agent):
             f"sentences={sentence_count_min}-{sentence_count_max}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> ExecutiveSummaryOutput:
+async def execute(self: Any, context: Dict[str, Any]) -> ExecutiveSummaryOutput:
         """Execute executive summary generation with 3rd-person voice.
 
         Args:
@@ -148,13 +142,7 @@ class StrategistBioWriter(Agent):
 
         return output
 
-    def _build_initial_prompt(
-        self,
-        career_highlights: List[str],
-        expertise_areas: List[str],
-        value_propositions: List[str],
-        target_role: str,
-    ) -> str:
+def _build_initial_prompt(self: Any, career_highlights: List[str], expertise_areas: List[str], value_propositions: List[str], target_role: str) -> str:
         """Build initial generation prompt with 3rd-person enforcement.
 
         Args:
@@ -202,7 +190,35 @@ EXAMPLES (3rd-Person Compliant):
             ision.
                 .
                     .
-                        . Passionate about building high-performing teams that deliver measurable business impact.
+                        .
+                            .
+                                .
+                                    .
+                                        .
+                                            .
+                                                .
+                                                    .
+                                                        .
+                                                            .
+                                                                .
+                                                                    .
+                                                                        .
+                                                                            .
+                                                                                . Passionate about building high-performing teams that deliver measurable business impact.
+                                                                                .
+                                                                            .
+                                                                        .
+                                                                    .
+                                                                .
+                                                            .
+                                                        .
+                                                    .
+                                                .
+                                            .
+                                        .
+                                    .
+                                .
+                            .
                         .
                     .
                 ."
@@ -219,11 +235,7 @@ Generate the executive summary now ({self.word_count_min}-{self.word_count_max} 
 
         return prompt
 
-    def _build_regeneration_prompt(
-        self,
-        context: Dict[str, Any],
-        feedback: str,
-    ) -> str:
+def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -256,7 +268,7 @@ Generate the corrected executive summary:
 
         return prompt
 
-    def _check_first_person(self, text: str) -> List[str]:
+def _check_first_person(self: Any, text: str) -> List[str]:
         """Check for first-person voice violations.
 
         Args:
@@ -274,7 +286,7 @@ Generate the corrected executive summary:
 
         return violations
 
-    def _count_sentences(self, text: str) -> int:
+def _count_sentences(self: Any, text: str) -> int:
         """Count sentences in text.
 
         Args:

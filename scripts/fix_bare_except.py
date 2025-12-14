@@ -2,10 +2,16 @@
 """Fix bare except clauses in Python files."""
 
 import os
+from typing import Any
 import glob
 import re
+import logging
 
-def fix_bare_except_clauses(directory="."):
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def fix_bare_except_clauses(directory: Any) -> None:
     """Fix bare except clauses by adding Exception."""
     count = 0
 
@@ -23,7 +29,7 @@ def fix_bare_except_clauses(directory="."):
             matches = re.findall(bare_except_pattern, content)
 
             if matches:
-                print(f"{filepath}: Found {len(matches)} bare except clauses")
+                logger.info(f"{filepath}: Found {len(matches)} bare except clauses")
 
                 # Fix bare except clauses
                 content = re.sub(
@@ -37,9 +43,9 @@ def fix_bare_except_clauses(directory="."):
                 count += 1
 
         except Exception as e:
-            print(f"Error processing {filepath}: {e}")
+            logger.error(f"Error processing {filepath}: {e}")
 
-    print(f"Fixed bare except clauses in {count} files")
+    logger.info(f"Fixed bare except clauses in {count} files")
 
 if __name__ == "__main__":
     fix_bare_except_clauses()

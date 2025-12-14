@@ -8,6 +8,7 @@ Legacy K-Node: K.4
 """
 
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -47,13 +48,7 @@ class ExecutiveTitleComposer(Agent):
     - VG_INDUSTRY_FIRST_COMPLIANCE (no tech in Segment 1)
     """
 
-    def __init__(
-        self,
-        config: ReasoningConfig,
-        word_count_min: int = 8,
-        word_count_max: int = 13,
-        char_limit: int = 90,
-    ):
+def __init__(self: Any, config: ReasoningConfig, word_count_min: int, word_count_max: int, char_limit: int) -> None:
         """Initialize Executive Title Composer.
 
         Args:
@@ -77,7 +72,7 @@ class ExecutiveTitleComposer(Agent):
             f"words={word_count_min}-{word_count_max}, chars≤{char_limit}"
         )
 
-    async def execute(self, context: Dict[str, Any]) -> HeadlineOutput:
+async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
         """Execute headline generation with Industry-First positioning.
 
         Args:
@@ -154,13 +149,7 @@ class ExecutiveTitleComposer(Agent):
 
         return output
 
-    def _build_initial_prompt(
-        self,
-        target_industry: str,
-        target_role: str,
-        value_propositions: List[str],
-        job_description: str,
-    ) -> str:
+def _build_initial_prompt(self: Any, target_industry: str, target_role: str, value_propositions: List[str], job_description: str) -> str:
         """Build initial generation prompt with Industry-First enforcement.
 
         Args:
@@ -217,11 +206,7 @@ Generate the headline now ({self.word_count_min}-{self.word_count_max} words,
 
         return prompt
 
-    def _build_regeneration_prompt(
-        self,
-        context: Dict[str, Any],
-        feedback: str,
-    ) -> str:
+def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -254,7 +239,7 @@ Generate the corrected headline:
 
         return prompt
 
-    def _parse_segments(self, headline: str) -> List[str]:
+def _parse_segments(self: Any, headline: str) -> List[str]:
         """Parse headline into 3 segments.
 
         Args:
@@ -272,7 +257,7 @@ Generate the corrected headline:
 
         return segments[:3]
 
-    def _check_technology_keywords(self, segment: str) -> List[str]:
+def _check_technology_keywords(self: Any, segment: str) -> List[str]:
         """Check for technology keywords in segment.
 
         Args:

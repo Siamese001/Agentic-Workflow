@@ -14,7 +14,7 @@ import logging
 class ResumeOrchestrator:
     """Orchestrate the multi-hop resume generation workflow."""
 
-    def __init__(self, master_resume: Dict, test_mode: bool = False) -> None:
+def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
         """Initialize the orchestrator."""
         self.master_resume = master_resume
         self.test_mode = test_mode
@@ -22,7 +22,7 @@ class ResumeOrchestrator:
         self.constraints = ContentConstraintsConfig()
         self.jd_enforcer = JDEnforcementValidator()
 
-    def run(self, job_description: str) -> Dict[str, object]:
+def run(self: Any, job_description: str) -> Dict[str, object]:
         """Execute the full resume generation workflow."""
         # HOP-0: JD Analysis
         self.jd_enforcer.validate_jd_input(job_description, "HOP-0")
@@ -45,7 +45,7 @@ class ResumeOrchestrator:
             "checkpoints": [c.hop_id for c in self.hop_checkpoints],
         }
 
-    def _record_hop(self, hop_id: str, results: List[ValidationResult]) -> None:
+def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None:
         """Record a hop checkpoint."""
         status = HopStatus.COMPLETED if all(r.passed for r in results) else HopStatus.FAILED
         self.hop_checkpoints.append(HopCheckpoint(hop_id=hop_id, status=status))

@@ -22,7 +22,7 @@ import logging
 
 # Common test fixtures
 @pytest.fixture
-def mock_script_context():
+def mock_script_context() -> None:
     """Provide a mock script context for testing."""
     return {
         "runtime": "test",

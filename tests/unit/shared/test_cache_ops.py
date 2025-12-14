@@ -13,14 +13,14 @@ import json
 class TestCacheDataAccess:
     """Tests for cache data access operations."""
 
-    def test_cache_key_generation(self):
+def test_cache_key_generation(self: Any) -> None:
         """Cache keys are generated deterministically."""
         data = {"query": "test", "model": "gpt-4o"}
         key1 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
         key2 = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()[:32]
         assert key1 == key2, "Same data must produce same cache key"
 
-    def test_cache_key_uniqueness(self):
+def test_cache_key_uniqueness(self: Any) -> None:
         """Different data produces different cache keys."""
         data1 = {"query": "test1"}
         data2 = {"query": "test2"}
@@ -28,27 +28,27 @@ class TestCacheDataAccess:
         key2 = hashlib.sha256(json.dumps(data2, sort_keys=True).encode()).hexdigest()[:32]
         assert key1 != key2, "Different data must produce different keys"
 
-    def test_cache_get_hit(self):
+def test_cache_get_hit(self: Any) -> None:
         """Cache returns stored value on hit."""
         cache: Dict[str, object] = {"key_123": {"data": "cached_value"}}
         result = cache.get("key_123")
         assert result is not None
         assert result["data"] == "cached_value"
 
-    def test_cache_get_miss(self):
+def test_cache_get_miss(self: Any) -> None:
         """Cache returns None on miss."""
         cache: Dict[str, object] = {}
         result = cache.get("nonexistent_key")
         assert result is None
 
-    def test_cache_set_and_retrieve(self):
+def test_cache_set_and_retrieve(self: Any) -> None:
         """Cache stores and retrieves values correctly."""
         cache: Dict[str, object] = {}
         cache["test_key"] = {"value": 42, "timestamp": datetime.now().isoformat()}
         retrieved = cache.get("test_key")
         assert retrieved["value"] == 42
 
-    def test_cache_ttl_expiration(self):
+def test_cache_ttl_expiration(self: Any) -> None:
         """Cache entries expire after TTL."""
         cache_entry = {
             "value": "data",
@@ -57,7 +57,7 @@ class TestCacheDataAccess:
         is_expired = datetime.now() > cache_entry["expires_at"]
         assert is_expired is True
 
-    def test_cache_ttl_valid(self):
+def test_cache_ttl_valid(self: Any) -> None:
         """Cache entries within TTL are valid."""
         cache_entry = {
             "value": "data",
@@ -69,7 +69,7 @@ class TestCacheDataAccess:
 class TestCacheGuardrails:
     """Tests for cache guardrails and safety checks."""
 
-    def test_cache_size_limit_enforced(self):
+def test_cache_size_limit_enforced(self: Any) -> None:
         """Cache respects maximum size limit."""
         max_size = 100
         cache: Dict[str, str] = {}
@@ -83,7 +83,7 @@ class TestCacheGuardrails:
 
         assert len(cache) <= max_size
 
-    def test_cache_value_size_limit(self):
+def test_cache_value_size_limit(self: Any) -> None:
         """Individual cache values respect size limits."""
         max_value_size = 1024 * 1024  # 1MB
         large_value = "x" * (max_value_size + 1)
@@ -91,20 +91,20 @@ class TestCacheGuardrails:
         is_too_large = len(large_value.encode()) > max_value_size
         assert is_too_large is True
 
-    def test_cache_key_sanitization(self):
+def test_cache_key_sanitization(self: Any) -> None:
         """Cache keys are sanitized."""
         unsafe_key = "key with spaces/and:special<chars>"
         sanitized = "".join(c if c.isalnum() or c == "_" else "_" for c in unsafe_key)
         assert " " not in sanitized
         assert "/" not in sanitized
 
-    def test_cache_prevents_injection(self):
+def test_cache_prevents_injection(self: Any) -> None:
         """Cache prevents key injection attacks."""
         malicious_key = "key\x00injection"
         sanitized = malicious_key.replace("\x00", "")
         assert "\x00" not in sanitized
 
-    def test_cache_concurrent_access_safe(self):
+def test_cache_concurrent_access_safe(self: Any) -> None:
         """Cache handles concurrent access safely."""
         cache: Dict[str, int] = {"counter": 0}
 
@@ -117,14 +117,14 @@ class TestCacheGuardrails:
 class TestCacheInvalidation:
     """Tests for cache invalidation logic."""
 
-    def test_invalidate_by_key(self):
+def test_invalidate_by_key(self: Any) -> None:
         """Single key invalidation works."""
         cache = {"key1": "value1", "key2": "value2", "key3": "value3"}
         del cache["key2"]
         assert "key2" not in cache
         assert "key1" in cache
 
-    def test_invalidate_by_pattern(self):
+def test_invalidate_by_pattern(self: Any) -> None:
         """Pattern-based invalidation works."""
         cache = {
             "user_123_profile": "data",
@@ -138,13 +138,13 @@ class TestCacheInvalidation:
 
         assert len([k for k in cache if k.startswith(pattern)]) == 0
 
-    def test_invalidate_all(self):
+def test_invalidate_all(self: Any) -> None:
         """Full cache clear works."""
         cache = {"key1": "value1", "key2": "value2"}
         cache.clear()
         assert len(cache) == 0
 
-    def test_invalidation_cascades(self):
+def test_invalidation_cascades(self: Any) -> None:
         """Dependent cache entries are invalidated."""
         cache = {
             "parent": {"value": "parent_data", "children": ["child1", "child2"]},

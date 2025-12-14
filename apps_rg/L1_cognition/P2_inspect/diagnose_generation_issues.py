@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 class DiagnoseGenerationIssues:
     """Diagnostics for resume domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def diagnose(self, target: Union[str, Dict]) -> DiagnosticReport:
+def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {}

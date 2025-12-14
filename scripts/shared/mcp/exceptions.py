@@ -1,3 +1,4 @@
+from typing import Any
 """MCP-specific exceptions.
 
 
@@ -12,7 +13,8 @@ class MCPError(Exception):
 class MCPClientInitializationError(MCPError):
     """Raised when an MCP client fails to initialize."""
 
-    def __init__(self, message: str, client_name: str = "", provider: str = ""):
+def __init__(self: Any, message: str, client_name: str, provider: str) -> None:
+        """Initialize MCP client initialization error."""
         super().__init__(message)
         self.client_name = client_name
         self.provider = provider
@@ -20,13 +22,15 @@ class MCPClientInitializationError(MCPError):
 class MCPClientNotFoundError(MCPError):
     """Raised when a requested MCP client is not found in registry."""
 
-    def __init__(self, message: str, client_name: str = ""):
+def __init__(self: Any, message: str, client_name: str) -> None:
+        """Initialize MCP client not found error."""
         super().__init__(message)
         self.client_name = client_name
 
 class MCPProviderError(MCPError):
     """Raised when an MCP provider encounters an error."""
 
-    def __init__(self, message: str, provider: str = ""):
+def __init__(self: Any, message: str, provider: str) -> None:
+        """Initialize MCP provider error."""
         super().__init__(message)
         self.provider = provider

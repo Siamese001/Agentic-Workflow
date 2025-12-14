@@ -1,6 +1,7 @@
 """Performance stability tests - legacy workflow runner."""
 
 import pytest
+from typing import Any
 import logging
 
 
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.skip(reason="Waiting for legacy workflow runner implementation")
 @pytest.mark.parametrize("case", ["fast","e2e","rag-heavy","qa-heavy"])
-def test_latency_smoke(benchmark, case):
+def test_latency_smoke(benchmark: Any, case: Any) -> None:
     """Test latency smoke for different workflow cases.
 
     This test is skipped until the legacy workflow runner is implemented.

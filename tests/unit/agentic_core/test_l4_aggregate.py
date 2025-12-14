@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class TestMemoryAggregation:
     """Tests for memory aggregation operations."""
 
-    def test_aggregate_related_memories(self):
+def test_aggregate_related_memories(self: Any) -> None:
         """Nominal: Related memories are aggregated."""
         memories = [
             {"topic": "preferences", "content": "likes coffee"},
@@ -20,7 +20,7 @@ class TestMemoryAggregation:
             by_topic.setdefault(m["topic"], []).append(m)
         assert len(by_topic["preferences"]) == 2
 
-    def test_aggregate_deduplicate(self):
+def test_aggregate_deduplicate(self: Any) -> None:
         """Nominal: Duplicate memories are removed."""
         memories = [
             {"id": "1", "content": "fact A"},
@@ -35,7 +35,7 @@ class TestMemoryAggregation:
                 unique.append(m)
         assert len(unique) == 2
 
-    def test_aggregate_merge_updates(self):
+def test_aggregate_merge_updates(self: Any) -> None:
         """Nominal: Memory updates are merged."""
         foundation = {"topic": "preference", "value": "old_value", "version": 1}
         update = {"topic": "preference", "value": "new_value", "version": 2}
@@ -43,7 +43,7 @@ class TestMemoryAggregation:
         assert merged["value"] == "new_value"
         assert merged["version"] == 2
 
-    def test_aggregate_summarize(self):
+def test_aggregate_summarize(self: Any) -> None:
         """Nominal: Memories are summarized."""
         memories = [
             {"content": "User asked about weather"},
@@ -53,7 +53,7 @@ class TestMemoryAggregation:
         summary = f"User made {len(memories)} queries about various topics"
         assert "3 queries" in summary
 
-    def test_aggregate_rank_by_importance(self):
+def test_aggregate_rank_by_importance(self: Any) -> None:
         """Nominal: Memories are ranked by importance."""
         memories = [
             {"content": "A", "importance": 0.5},

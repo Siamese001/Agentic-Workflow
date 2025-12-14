@@ -1,5 +1,6 @@
 """Dataclass models for outreach_orchestration_config."""
 import logging
+from typing import Any
 
 
 
@@ -12,7 +13,7 @@ class CharLimitConstraint:
     _min: Optional[int] = None
     _max: Optional[int] = None
 
-    def validate(self, count: int) -> bool:
+def validate(self: Any, count: int) -> bool:
         """Validate character count against constraints."""
         if self.min is not None and count < self.min:
             return False
@@ -26,7 +27,7 @@ class WordLimitConstraint:
     min: Optional[int] = None
     max: Optional[int] = None
 
-    def validate(self, count: int) -> bool:
+def validate(self: Any, count: int) -> bool:
         """Validate word count against constraints."""
         if self.min is not None and count < self.min:
             return False

@@ -314,7 +314,35 @@ class CulturalDecoderAgent(SimpleAgentBase):
         1.
             .
                 .
-                    . Rewritten text that sounds like it belongs to a high-performing leader at {company_dna.
+                    .
+                        .
+                            .
+                                .
+                                    .
+                                        .
+                                            .
+                                                .
+                                                    .
+                                                        .
+                                                            .
+                                                                .
+                                                                    .
+                                                                        .
+                                                                            . Rewritten text that sounds like it belongs to a high-performing leader at {company_dna.
+                                                                            .
+                                                                        .
+                                                                    .
+                                                                .
+                                                            .
+                                                        .
+                                                    .
+                                                .
+                                            .
+                                        .
+                                    .
+                                .
+                            .
+                        .
                     .
                 .
             .company_name}

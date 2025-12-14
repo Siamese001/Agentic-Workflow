@@ -21,20 +21,15 @@ class BlobStorageProvider(Protocol):
     Standardizes 'open', 'write', 'read' across Local FS and Cloud.
     """
 
-    async def write_blob(
-        self,
-        key: str,
-        data: bytes,
-        metadata: Optional[Dict[str, str]] = None
-    ) -> str:
+async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
         """Writes data atomically. Returns a version ID or checksum."""
         ...
 
-    async def read_blob(self, key: str) -> bytes:
+async def read_blob(self: Any, key: str) -> bytes:
         """Reads data given a key."""
         ...
 
-    async def exists(self, key: str) -> bool:
+async def exists(self: Any, key: str) -> bool:
         """Checks if key exists."""
         ...
 
@@ -48,7 +43,7 @@ class LocalDiskAdapter:
     works identically whether running locally or in production on S3.
     """
 
-    def __init__(self, base_path: str):
+def __init__(self: Any, base_path: str) -> None:
         """
         Initialize local disk storage.
 
@@ -59,7 +54,7 @@ class LocalDiskAdapter:
         self.base_path.mkdir(parents=True, exist_ok=True)
         logger.info(f"Local disk adapter initialized at: {self.base_path}")
 
-    def _get_path(self, key: str) -> Path:
+def _get_path(self: Any, key: str) -> Path:
         """
         Get safe path for a key, preventing directory traversal attacks.
 
@@ -77,12 +72,7 @@ class LocalDiskAdapter:
 
         return full_path
 
-    async def write_blob(
-        self,
-        key: str,
-        data: bytes,
-        metadata: Optional[Dict[str, str]] = None
-    ) -> str:
+async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
         """
         Write data atomically using temp-file-then-move pattern.
 
@@ -115,7 +105,7 @@ class LocalDiskAdapter:
 
         return checksum
 
-    async def read_blob(self, key: str) -> bytes:
+async def read_blob(self: Any, key: str) -> bytes:
         """
         Read data from storage.
 
@@ -140,7 +130,7 @@ class LocalDiskAdapter:
 
         return data
 
-    async def exists(self, key: str) -> bool:
+async def exists(self: Any, key: str) -> bool:
         """
         Check if key exists in storage.
 
@@ -152,7 +142,7 @@ class LocalDiskAdapter:
         """
         return self._get_path(key).exists()
 
-    async def delete_blob(self, key: str) -> bool:
+async def delete_blob(self: Any, key: str) -> bool:
         """
         Delete a blob from storage.
 
@@ -176,7 +166,7 @@ class LocalDiskAdapter:
 
         return False
 
-    async def list_blobs(self, prefix: str = "") -> list:
+async def list_blobs(self: Any, prefix: str) -> list:
         """
         List all blobs with optional prefix filter.
 
@@ -206,7 +196,7 @@ class S3Adapter:
     Requires: pip install boto3
     """
 
-    def __init__(self, bucket_name: str, region: str = "us-east-1"):
+def __init__(self: Any, bucket_name: str, region: str) -> None:
         """
         Initialize S3 storage adapter.
 
@@ -222,12 +212,7 @@ class S3Adapter:
         except ImportError:
             raise ImportError("boto3 not installed. Run: pip install boto3")
 
-    async def write_blob(
-        self,
-        key: str,
-        data: bytes,
-        metadata: Optional[Dict[str, str]] = None
-    ) -> str:
+async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
         """
         Write data to S3 (atomic by default).
 
@@ -251,7 +236,7 @@ class S3Adapter:
 
         return etag
 
-    async def read_blob(self, key: str) -> bytes:
+async def read_blob(self: Any, key: str) -> bytes:
         """
         Read data from S3.
 
@@ -268,7 +253,7 @@ class S3Adapter:
 
         return data
 
-    async def exists(self, key: str) -> bool:
+async def exists(self: Any, key: str) -> bool:
         """
         Check if key exists in S3.
 
@@ -284,7 +269,7 @@ class S3Adapter:
         except Exception:
             return False
 
-    async def delete_blob(self, key: str) -> bool:
+async def delete_blob(self: Any, key: str) -> bool:
         """
         Delete a blob from S3.
 
@@ -302,7 +287,7 @@ class S3Adapter:
             logger.error(f"Failed to delete S3 blob {key}: {e}")
             return False
 
-    async def list_blobs(self, prefix: str = "") -> list:
+async def list_blobs(self: Any, prefix: str) -> list:
         """
         List all blobs in S3 with optional prefix filter.
 

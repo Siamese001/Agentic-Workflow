@@ -24,7 +24,7 @@ class ParsedIntent:
 class TestUnderstandRequest:
     """Tests for understand_request operations."""
 
-    def test_parse_query_intent(self):
+def test_parse_query_intent(self: Any) -> None:
         """Query intent is parsed correctly."""
         text = "What is the revenue for Q4 2024?"
 
@@ -38,7 +38,7 @@ class TestUnderstandRequest:
 
         assert intent.confidence > 0.9
 
-    def test_parse_command_intent(self):
+def test_parse_command_intent(self: Any) -> None:
         """Command intent is parsed correctly."""
         text = "Generate a report for the sales team"
 
@@ -51,7 +51,7 @@ class TestUnderstandRequest:
 
         assert intent.entities["action"] == "generate"
 
-    def test_extract_entities(self):
+def test_extract_entities(self: Any) -> None:
         """Named entities are extracted correctly."""
 
         entities = {
@@ -62,7 +62,7 @@ class TestUnderstandRequest:
         assert entities["person"] == "John Smith"
         assert entities["organization"] == "Acme Corp"
 
-    def test_handle_ambiguous_request(self):
+def test_handle_ambiguous_request(self: Any) -> None:
         """Ambiguous requests are flagged."""
         text = "Get the data"  # Ambiguous - which data?
 
@@ -76,7 +76,7 @@ class TestUnderstandRequest:
         is_ambiguous = intent.confidence < 0.6
         assert is_ambiguous is True
 
-    def test_preserve_original_text(self):
+def test_preserve_original_text(self: Any) -> None:
         """Original text is preserved in parsed result."""
         text = "What is the weather today?"
 
@@ -91,7 +91,7 @@ class TestUnderstandRequest:
 class TestQueryFormulation:
     """Tests for query formulation from understood requests."""
 
-    def test_formulate_search_query(self):
+def test_formulate_search_query(self: Any) -> None:
         """Search query is formulated from intent."""
         intent = ParsedIntent(
             intent_type=IntentType.QUERY,
@@ -104,7 +104,7 @@ class TestQueryFormulation:
         assert "revenue" in query
         assert "2024" in query
 
-    def test_formulate_with_filters(self):
+def test_formulate_with_filters(self: Any) -> None:
         """Query with filters is formulated correctly."""
         entities = {
             "metric": "sales",
@@ -118,7 +118,7 @@ class TestQueryFormulation:
         assert query["search"] == "sales"
         assert query["filters"]["region"] == "North America"
 
-    def test_formulate_compound_query(self):
+def test_formulate_compound_query(self: Any) -> None:
         """Compound query is formulated correctly."""
 
         queries = [
@@ -131,7 +131,7 @@ class TestQueryFormulation:
 class TestContextUnderstanding:
     """Tests for context understanding."""
 
-    def test_incorporate_conversation_history(self):
+def test_incorporate_conversation_history(self: Any) -> None:
         """Conversation history is incorporated."""
 
         # "their" refers to Acme Corp from history
@@ -140,7 +140,7 @@ class TestContextUnderstanding:
 
         assert "Acme Corp" in resolved_query
 
-    def test_resolve_pronouns(self):
+def test_resolve_pronouns(self: Any) -> None:
         """Pronouns are resolved from context."""
         context = {"last_mentioned_company": "TechCorp"}
         query = "What is their stock price?"
@@ -148,7 +148,7 @@ class TestContextUnderstanding:
         resolved = query.replace("their", context["last_mentioned_company"] + "'s")
         assert "TechCorp" in resolved
 
-    def test_maintain_topic_continuity(self):
+def test_maintain_topic_continuity(self: Any) -> None:
         """Topic continuity is maintained."""
         conversation_topic = "quarterly_earnings"
 

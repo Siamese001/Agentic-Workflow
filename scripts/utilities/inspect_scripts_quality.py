@@ -22,11 +22,12 @@ class DiagnosticReport:
 class InspectScriptsQuality:
     """Diagnostics engine for utilities domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+        """Initialize the quality inspector with optional configuration."""
         self.config = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
-    def diagnose(self, target: object, context: Optional[Dict] = None) -> DiagnosticReport:
+def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
         """Run diagnostics."""
         issues = []
         metrics = {}

@@ -7,6 +7,7 @@ Contains QualityValidationStage and OutputFormattingStage.
 """
 
 import hashlib
+from typing import Any
 import time
 
 from .types import PipelineStage
@@ -17,7 +18,7 @@ logger = __import__('logging').getLogger(__name__)
 class QualityValidationStage(PipelineStage):
     """Validates signal quality against standards."""
 
-    def __init__(self):
+def __init__(self: Any) -> None:
         """Initialize quality validation stage."""
         try:
             from ..bias_auditor import BiasAuditor
@@ -35,7 +36,7 @@ class QualityValidationStage(PipelineStage):
             self.semantic_cache = None
             logger.warning("Quality validation components not available")
 
-    async def execute(self, envelope: Any) -> Any:
+async def execute(self: Any, envelope: Any) -> Any:
         """Validate quality."""
         start_time = time.time()
         stage_name = self.stage_name
@@ -79,7 +80,7 @@ class QualityValidationStage(PipelineStage):
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
-    def _extract_content(self, payload: Any) -> str:
+def _extract_content(self: Any, payload: Any) -> str:
         """Extract content from payload."""
         if hasattr(payload, 'text'):
             return payload.text
@@ -87,7 +88,7 @@ class QualityValidationStage(PipelineStage):
             return str(payload.sections)
         return str(payload)
 
-    async def _perform_validations(self, content: str, envelope: Any) -> Dict[str, Any]:
+async def _perform_validations(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Perform all quality validations."""
         results = {"passed": True, "issues": []}
 
@@ -113,7 +114,7 @@ class QualityValidationStage(PipelineStage):
 
         return results
 
-    def _update_envelope_with_validation(self, envelope: Any, validation: Dict[str, Any]) -> None:
+def _update_envelope_with_validation(self: Any, envelope: Any, validation: Dict[str, Any]) -> None:
         """Update envelope with validation results."""
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(validation)
@@ -121,7 +122,7 @@ class QualityValidationStage(PipelineStage):
             envelope.metadata.update({f"validation_{k}": v for k, v in validation.items()})
 
     @property
-    def stage_name(self) -> str:
+def stage_name(self: Any) -> str:
         """Get stage name."""
         return "quality_validation"
 
@@ -129,7 +130,7 @@ class QualityValidationStage(PipelineStage):
 class OutputFormattingStage(PipelineStage):
     """Formats output for the specific engine."""
 
-    def __init__(self):
+def __init__(self: Any) -> None:
         """Initialize output formatting stage."""
         try:
             self.semantic_cache = SemanticCache()
@@ -137,7 +138,7 @@ class OutputFormattingStage(PipelineStage):
             self.semantic_cache = None
             logger.warning("SemanticCache not available")
 
-    async def execute(self, envelope: Any) -> Any:
+async def execute(self: Any, envelope: Any) -> Any:
         """Format output."""
         start_time = time.time()
         stage_name = self.stage_name
@@ -181,7 +182,7 @@ class OutputFormattingStage(PipelineStage):
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
-    def _extract_content(self, payload: Any) -> str:
+def _extract_content(self: Any, payload: Any) -> str:
         """Extract content from payload."""
         if hasattr(payload, 'text'):
             return payload.text
@@ -189,7 +190,7 @@ class OutputFormattingStage(PipelineStage):
             return str(payload.sections)
         return str(payload)
 
-    async def _format_output(self, content: str, envelope: Any) -> Dict[str, Any]:
+async def _format_output(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Format output based on engine type."""
         payload_type = envelope.payload.payload_type.value if hasattr(envelope.payload,
             'payload_type') else "unknown"
@@ -210,7 +211,7 @@ class OutputFormattingStage(PipelineStage):
 
         return formatted
 
-    def _format_resume_sections(self, content: str) -> Dict[str, str]:
+def _format_resume_sections(self: Any, content: str) -> Dict[str, str]:
         """Format resume sections."""
         return {
             "summary": content[:200],
@@ -218,7 +219,7 @@ class OutputFormattingStage(PipelineStage):
             "skills": content[500:]
         }
 
-    def _format_outreach_message(self, content: str) -> Dict[str, str]:
+def _format_outreach_message(self: Any, content: str) -> Dict[str, str]:
         """Format outreach message."""
         return {
             "subject": content[:50],
@@ -226,10 +227,7 @@ class OutputFormattingStage(PipelineStage):
             "signature": "Best regards"
         }
 
-    def _update_envelope_with_formatted_output(self,
-        envelope: Any,
-        formatted: Dict[str,
-        Any]) -> None:
+def _update_envelope_with_formatted_output(self: Any, envelope: Any, formatted: Dict[str, Any]) -> None:
         """Update envelope with formatted output."""
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(formatted)
@@ -237,6 +235,6 @@ class OutputFormattingStage(PipelineStage):
             envelope.metadata.update({f"formatted_{k}": v for k, v in formatted.items()})
 
     @property
-    def stage_name(self) -> str:
+def stage_name(self: Any) -> str:
         """Get stage name."""
         return "output_formatting"

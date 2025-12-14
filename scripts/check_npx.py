@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def check_npx():
+def check_npx() -> None:
     """Check npx accessibility."""
 
     # Check if npx is in PATH
