@@ -104,6 +104,51 @@ class EpisodicMemory:
         else:
             self._embedding_matrix = None
 
+    def _filter_episode_candidates(self, agent_role: Optional[str], min_rating: float) -> List[tuple]:
+        """Filter episodes by role and rating."""
+        candidates = []
+        for i, episode in enumerate(self._episodes):
+            if episode.rating >= min_rating:
+                if agent_role is None or episode.agent_role == agent_role:
+                    candidates.append((i, episode))
+        return candidates
+
+    def _calculate_similarity(self, query_vec: np.ndarray, episode_vec: np.ndarray) -> float:
+        """Calculate cosine similarity between query and episode vectors."""
+        return np.dot(query_vec, episode_vec) / (
+            np.linalg.norm(query_vec) * np.linalg.norm(episode_vec)
+        )
+
+    def _find_best_match(self, query_vec: np.ndarray, candidates: List[tuple]) -> tuple:
+        """Find the best matching episode from candidates."""
+        best_score = -1.0
+        best_episode = None
+
+        for idx, episode in candidates:
+            episode_vec = np.array(episode.goal_embedding)
+            similarity = self._calculate_similarity(query_vec, episode_vec)
+
+            if similarity > best_score and similarity >= self.threshold:
+                best_score = similarity
+                best_episode = episode
+
+        return best_episode, best_score
+
+    def _format_memory_context(self, episode: Episode, score: float) -> str:
+        """Format episode as memory context string."""
+        memory_context = (
+            f"MEMORY RECALL (similarity={score:.2f}):\n"
+            f"Previous Task: {episode.task_description}\n"
+            f"Successful Plan: {episode.successful_plan}\n"
+            f"Tools Used: {', '.join(episode.tools_used)}\n"
+            f"Outcome: {episode.outcome_summary}\n"
+        )
+
+        if episode.failure_notes:
+            memory_context += f"PITFALLS TO AVOID: {episode.failure_notes}\n"
+
+        return memory_context
+
     async def recall_relevant_experience(
         self,
         current_task: str,
@@ -124,51 +169,20 @@ class EpisodicMemory:
         if not self._episodes:
             return None
 
-        # Embed the current task
         query_vec = await self.embedder.embed_query(current_task)
         query_vec = np.array(query_vec)
 
-        # Filter episodes by role and rating
-        candidates = []
-        for i, episode in enumerate(self._episodes):
-            if episode.rating >= min_rating:
-                if agent_role is None or episode.agent_role == agent_role:
-                    candidates.append((i, episode))
+        candidates = self._filter_episode_candidates(agent_role, min_rating)
 
         if not candidates:
             logger.debug(f"No high-rated episodes found for task: {current_task[:50]}...")
             return None
 
-        # Calculate similarities
-        best_score = -1.0
-        best_episode = None
-
-        for idx, episode in candidates:
-            episode_vec = np.array(episode.goal_embedding)
-
-            # Cosine similarity
-            similarity = np.dot(query_vec, episode_vec) / (
-                np.linalg.norm(query_vec) * np.linalg.norm(episode_vec)
-            )
-
-            if similarity > best_score and similarity >= self.threshold:
-                best_score = similarity
-                best_episode = episode
+        best_episode, best_score = self._find_best_match(query_vec, candidates)
 
         if best_episode:
-            memory_context = (
-                f"MEMORY RECALL (similarity={best_score:.2f}):\n"
-                f"Previous Task: {best_episode.task_description}\n"
-                f"Successful Plan: {best_episode.successful_plan}\n"
-                f"Tools Used: {', '.join(best_episode.tools_used)}\n"
-                f"Outcome: {best_episode.outcome_summary}\n"
-            )
-
-            if best_episode.failure_notes:
-                memory_context += f"PITFALLS TO AVOID: {best_episode.failure_notes}\n"
-
             logger.info(f"Recalled relevant episode (score={best_score:.2f})")
-            return memory_context
+            return self._format_memory_context(best_episode, best_score)
 
         return None
 
