@@ -78,7 +78,7 @@ def update_imports_in_file(file_path: Path) -> None:
         original_content = content
 
         # Update relative imports based on the file's new location
-        parts = file_path.relative_to(Path('.')).parts
+        file_path.relative_to(Path('.')).parts
 
         # This is a simplified update - in practice, you'd need more sophisticated logic
         # to handle all import scenarios

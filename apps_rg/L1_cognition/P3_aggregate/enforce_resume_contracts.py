@@ -4,7 +4,6 @@
 """Enforce Resume Contracts - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def enforce_resume_contracts(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce resume contracts data."""

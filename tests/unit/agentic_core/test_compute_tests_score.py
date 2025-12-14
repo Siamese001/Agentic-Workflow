@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_compute_tests_score(data: Dict[str, object]) -> Dict[str, object]:
     """Process test compute tests score data."""

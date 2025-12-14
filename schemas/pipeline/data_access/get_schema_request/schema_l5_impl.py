@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior."""
-    pass
 
 class OrchestrateDataPlanningOrchestratorImpl:
     """L5 Implementation - L1 Cognitive Planning Layer."""

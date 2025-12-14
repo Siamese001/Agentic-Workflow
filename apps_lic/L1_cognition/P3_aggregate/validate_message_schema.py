@@ -4,7 +4,6 @@
 """Validate Message Schema - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def validate_message_schema(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate message schema data."""

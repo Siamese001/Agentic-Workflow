@@ -205,11 +205,9 @@ class FirecrackerManager:
 
     async def _terminate_firecracker_vm(self, instance: VMInstance) -> None:
         """Terminate Firecracker VM."""
-        pass
 
     async def _terminate_e2b_vm(self, instance: VMInstance) -> None:
         """Terminate E2B VM."""
-        pass
 
     async def _terminate_docker_vm(self, instance: VMInstance) -> None:
         """Terminate Docker container."""

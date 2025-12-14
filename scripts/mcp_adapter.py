@@ -8,7 +8,7 @@ import os
 import json
 import logging
 from contextlib import AsyncExitStack
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 

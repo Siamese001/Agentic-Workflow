@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_lic_message_generation_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process test lic message generation executor data."""

@@ -1,3 +1,2 @@
 
 """Package initialization."""
-import logging

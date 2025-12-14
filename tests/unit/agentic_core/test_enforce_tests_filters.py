@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_enforce_tests_filters(data: Dict[str, object]) -> Dict[str, object]:
     """Process test enforce tests filters data."""

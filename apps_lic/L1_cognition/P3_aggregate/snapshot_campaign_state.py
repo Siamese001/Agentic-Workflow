@@ -4,7 +4,6 @@
 """Snapshot Campaign State - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class SnapshotCampaignState:
     """SnapshotCampaignState implementation."""

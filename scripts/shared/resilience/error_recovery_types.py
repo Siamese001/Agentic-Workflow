@@ -22,12 +22,10 @@ class ResilienceError:
 @dataclass
 class TransientError(ResilienceError):
     """Temporary error that may succeed on retry."""
-    pass
 
 @dataclass
 class PermanentError(ResilienceError):
     """Permanent error that will not succeed on retry."""
-    pass
 
 @dataclass
 class RetryExhaustedError(ResilienceError):

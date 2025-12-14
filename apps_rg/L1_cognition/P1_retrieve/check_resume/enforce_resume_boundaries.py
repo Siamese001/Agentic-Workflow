@@ -4,7 +4,6 @@
 """Enforce Resume Boundaries - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def enforce_resume_boundaries(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce resume boundaries data."""

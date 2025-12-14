@@ -89,7 +89,7 @@ def main() -> None:
         total_missing += len(missing)
         total_extra += len(extra)
 
-        coverage = (1 - len(missing) / len(yaml_files)) * 100 if yaml_files else 100
+        (1 - len(missing) / len(yaml_files)) * 100 if yaml_files else 100
         status = 'OK' if len(missing) == 0 else 'GAP'
 
         if missing and domain not in SKIP_DOMAINS:
@@ -99,7 +99,7 @@ def main() -> None:
             if len(missing) > 3:
                 logger.info(f"  ... and {len(missing) - 3} more")
 
-    overall = (1 - total_missing / total_yaml) * 100 if total_yaml else 100
+    (1 - total_missing / total_yaml) * 100 if total_yaml else 100
 
     # Summary by priority
     if all_missing:

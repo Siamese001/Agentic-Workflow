@@ -4,7 +4,6 @@
 """Format Data - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class FormatData:
     """FormatData implementation."""

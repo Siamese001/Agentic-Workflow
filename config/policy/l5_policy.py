@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 class PolicyConfigurationError(Exception):
     """Raised when policy configuration is invalid."""
-    pass
 
 T = TypeVar('T')
 

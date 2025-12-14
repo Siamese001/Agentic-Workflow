@@ -8,9 +8,8 @@ Writes to an append-only DuckDB database for real-time analytics.
 import time
 import json
 import logging
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from typing import Dict, Any, Optional, List
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,6 @@
 """Snapshot Resume State - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class SnapshotResumeState:
     """SnapshotResumeState implementation."""

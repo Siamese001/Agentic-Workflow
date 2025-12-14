@@ -4,7 +4,6 @@
 """Validate Generated Message - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def validate_generated_message(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate generated message data."""

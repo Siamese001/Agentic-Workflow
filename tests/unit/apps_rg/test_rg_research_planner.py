@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 class TestRGResearchPlanner:
     """TestRGResearchPlanner implementation."""

@@ -117,10 +117,9 @@ async def main():
         # Extract final output from result
         if isinstance(result, dict):
             content = result.get("final_output", result)
-            metadata = result.get("metadata", {})
+            result.get("metadata", {})
         else:
             content = result
-            metadata = {}
 
         # 5. Display Results
         logger.info("=" * 60)

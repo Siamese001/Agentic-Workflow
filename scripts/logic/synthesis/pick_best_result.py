@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 class ProcessingError(Exception):
     """Custom exception for processing errors."""
-    pass
 
 def process_data(data: Dict[str,
     """Docstring."""

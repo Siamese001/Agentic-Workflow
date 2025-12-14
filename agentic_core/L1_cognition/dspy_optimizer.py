@@ -5,11 +5,10 @@ Optimizes agent prompts mathematically instead of hand-writing them.
 Treats prompts as weights that can be tuned based on performance data.
 """
 
-import json
 import logging
 import time
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Callable, Tuple
+from typing import List, Dict, Any, Optional, Callable
 from dataclasses import dataclass, field
 import pickle
 
@@ -204,7 +203,7 @@ class DSPyOptimizer:
             
             def forward(self, **kwargs):
                 # Apply the prompt template
-                formatted_prompt = self.prompt_template.format(**kwargs)
+                self.prompt_template.format(**kwargs)
                 return self.generate(**kwargs)
         
         return OptimizedModule(signature_class, base_prompt)

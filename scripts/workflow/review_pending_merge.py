@@ -189,8 +189,8 @@ def main() -> None:
 
     # Final recommendation
 
-    total_files = len(pending_files)
-    safe_to_archive = len(pending_is_stub) + len(pending_same_or_less) + len(pending_unique_stub)
+    len(pending_files)
+    len(pending_is_stub) + len(pending_same_or_less) + len(pending_unique_stub)
     needs_review = len(pending_has_more_code) + len(pending_unique_with_code)
 
     if needs_review == 0:

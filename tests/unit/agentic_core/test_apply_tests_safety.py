@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_apply_tests_safety(data: Dict[str, object]) -> Dict[str, object]:
     """Process test apply tests safety data."""

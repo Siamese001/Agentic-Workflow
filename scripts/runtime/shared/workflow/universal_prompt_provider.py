@@ -173,7 +173,6 @@ class UniversalPromptProvider(ABC):
     @abstractmethod
     def _get_domain(self) -> AgentDomain:
         """Get the agent domain."""
-        pass
 
     def get_system_prompt(self, context: Dict[str, Any]) -> str:
         """Get the rendered system prompt.

@@ -4,7 +4,6 @@
 """Rg Message Generation Executor - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def rg_message_generation_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process rg message generation executor data."""

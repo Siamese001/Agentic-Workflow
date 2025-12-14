@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_workflow_orchestration(data: Dict[str, object]) -> Dict[str, object]:
     """Process test workflow orchestration data."""

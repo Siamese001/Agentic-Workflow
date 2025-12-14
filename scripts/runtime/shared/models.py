@@ -114,20 +114,15 @@ class CircuitState(str, Enum):
 # Exception classes
 class AgenticWorkflowError(Exception):
     """Base exception for agentic workflow."""
-    pass
 
 class HopExecutionError(AgenticWorkflowError):
     """Error in hop execution."""
-    pass
 
 class ValidationError(AgenticWorkflowError):
     """Validation error."""
-    pass
 
 class APIError(AgenticWorkflowError):
     """API-related error."""
-    pass
 
 class CircuitBreakerOpenError(AgenticWorkflowError):
     """Circuit breaker is open."""
-    pass

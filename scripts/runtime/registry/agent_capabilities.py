@@ -450,7 +450,6 @@ def map_legacy_node(legacy_reference: str) -> Optional[AgentRole]:
 # Exception for legacy code detection
 class LegacyCodeError(Exception):
     """Raised when legacy K-node references are detected."""
-    pass
 
 def validate_no_legacy_code(text: str, context: str = "Unknown") -> None:
     """Validate that text contains no legacy references.

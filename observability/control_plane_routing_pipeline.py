@@ -1,4 +1,3 @@
-import logging
 
 
 def test_control_plane_allows_safe_text() -> None:

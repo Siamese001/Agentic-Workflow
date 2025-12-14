@@ -1,4 +1,3 @@
-import logging
 
 
 # from archives.legacy_root_folders.meta.retrieval.hybrid_ranker import fuse_and_rank  # DEPRECAT...

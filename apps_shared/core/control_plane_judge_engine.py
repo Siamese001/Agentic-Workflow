@@ -1,4 +1,3 @@
-import logging
 
 
 def test_judge_engine_unsafe_on_high_severity() -> None:

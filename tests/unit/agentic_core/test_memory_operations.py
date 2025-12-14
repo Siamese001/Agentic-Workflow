@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_memory_operations(data: Dict[str, object]) -> Dict[str, object]:
     """Process test memory operations data."""

@@ -4,7 +4,6 @@
 """Serialize Generation Context - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class SerializeGenerationContext:
     """SerializeGenerationContext implementation."""
