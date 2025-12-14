@@ -13,46 +13,46 @@ import time
 from typing import List, Dict, Any, Optional, Tuple
 
 # Phase 1: Precision Layer
-from .contextual_compressor import (
+from scripts.runtime.shared.contextual_compressor import (
     ContextualCompressor,
     CompressionResult,
 )
-from .signal_quality_pipeline import (
+from scripts.runtime.shared.signal_quality_pipeline import (
     SignalQualityPipeline,
     create_signal_pipeline,
 )
-from .adaptive_retrieval_gate import (
+from scripts.runtime.shared.adaptive_retrieval_gate import (
     AdaptiveRetrievalGate,
     RetrievalDecision,
 )
 
 # Phase 2: Reasoning Layer
-from .query_decomposer import (
+from scripts.runtime.shared.query_decomposer import (
     QueryDecomposer,
     DecomposedQuery,
     decompose_query,
 )
-from .hybrid_scorer import (
+from scripts.runtime.shared.hybrid_scorer import (
     HybridScorer,
     ScoringResult,
     create_hybrid_scorer,
 )
 
 # Phase 3: SOTA Layer
-from .late_interaction_reranker import (
+from scripts.runtime.shared.late_interaction_reranker import (
     LateInteractionReranker,
     PassThroughReranker,
     rerank_documents,
 )
 
 # Security Layer
-from .input_guardrails import (
+from scripts.runtime.shared.input_guardrails import (
     InputGuardrail,
     GuardAction,
     GuardResult,
     get_input_guardrail,
 )
-from .retrieval_grader import (
+from scripts.runtime.shared.retrieval_grader import (
     RetrievalGrader,
     RetrievalGrade,
     grade_retrieval,
@@ -61,7 +61,7 @@ from .retrieval_grader import (
     get_retrieval_grader,
     get_web_search_fallback,
 )
-from .graphrag_fusion import (
+from scripts.runtime.shared.graphrag_fusion import (
     GraphRAGFusion,
     FusionResult,
     QueryType,

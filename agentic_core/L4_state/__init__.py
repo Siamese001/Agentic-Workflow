@@ -5,14 +5,14 @@ Provides cloud-native storage abstraction and verifiable checkpointing
 for agent state persistence.
 """
 
-from .storage import (
+from agentic_core.L4_state.storage import (
     BlobStorageProvider,
     LocalDiskAdapter,
     S3Adapter,
     create_storage_adapter
 )
 
-from .checkpointing import (
+from agentic_core.L4_state.checkpointing import (
     VerifiableCheckpointManager,
     create_checkpoint_manager
 )

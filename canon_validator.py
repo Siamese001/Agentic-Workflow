@@ -25,6 +25,12 @@ if sys.platform == 'win32':
 
 
 class Colors:
+    """ANSI color codes for console output."""
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    CYAN = "\033[96m"
+    END = "\033[0m"
 
 
 # Global validation state

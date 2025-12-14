@@ -8,7 +8,7 @@ infrastructure, ensuring all components work together seamlessly.
 import asyncio
 import logging
 
-from .health_check import HealthCheckRegistry, initialize_system_health_checks
+from scripts.runtime.shared.health_check import HealthCheckRegistry, initialize_system_health_checks
 
 logger = logging.getLogger(__name__)
 

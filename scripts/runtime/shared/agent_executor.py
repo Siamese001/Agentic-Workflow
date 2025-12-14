@@ -9,7 +9,7 @@ Phase 1C - SDK Integration Layer
 import logging
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
-from .multi_provider_clients import (
+from scripts.runtime.shared.multi_provider_clients import (
     Provider,
     get_client,
     get_instructor_client,

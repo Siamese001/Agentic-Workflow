@@ -3,7 +3,7 @@
 Shared runtime components for Agentic Workflow.
 """
 
-from .openai_client import (
+from scripts.03_runtime.shared.openai_client import (
 import logging
     OpenAIClientManager,
     get_openai_client,
