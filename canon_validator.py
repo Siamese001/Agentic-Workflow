@@ -487,14 +487,27 @@ class WhitespaceMechanic(SubAtomicAgent):
         return (len(violations) == 0, violations[:50])  # Limit reporting
 
     def _fix_trailing_whitespace(self):
-        """Auto-fix trailing whitespace."""
-        try:
-            result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
-                                  capture_output=True, text=True)
-            if result.returncode == 0:
-                print("      ✅ Trailing whitespace fixed")
-        except Exception as e:
-            print(f"      ❌ Failed to fix trailing whitespace: {e}")
+        """Pure-Python auto-fix for trailing whitespace (Docker-friendly)."""
+        fixed_count = 0
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                
+                new_lines = [line.rstrip("\n\r") + "\n" for line in lines]
+                
+                if new_lines != lines:
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        f.writelines(new_lines)
+                    fixed_count += 1
+            except Exception as e:
+                print(f"      ⚠️  Failed to fix {file_path}: {e}")
+        
+        if fixed_count > 0:
+            print(f"      ✅ Trailing whitespace fixed in {fixed_count} files")
+            self.ctx.modified_files.update(self.ctx.get_python_files())
+        else:
+            print("      ℹ️  No trailing whitespace to fix")
 
 class StructuralLinter(SubAtomicAgent):
     """
@@ -639,13 +652,14 @@ class DependencySentinel(SubAtomicAgent):
 
                 # L3 Hardening: Verify return code
                 if result.returncode != 0:
-                    self.ctx.report(self.name, 9, False, [f"autoflake failed: {result.stderr[:200]}"])
+                    self.ctx.report(self.name, 9, False, [f"autoflake failed (returncode {result.returncode}): {result.stderr[:200]}"])
                 else:
                     self.ctx.report(self.name, 9, True, [])
             except Exception as e:
                 self.ctx.report(self.name, 9, False, [f"autoflake exception: {str(e)}"])
         else:
-            self.ctx.report(self.name, 9, True, [])
+            # In Docker, we expect autoflake - fail the key if missing
+            self.ctx.report(self.name, 9, False, ["autoflake not available - install via 'pip install autoflake'"])
 
         # Key 14: Duplicate imports (auto-fix with isort) - L3 HARDENED
         if has_isort:
@@ -662,13 +676,14 @@ class DependencySentinel(SubAtomicAgent):
 
                 # L3 Hardening: Verify return code
                 if result.returncode != 0:
-                    self.ctx.report(self.name, 14, False, [f"isort failed: {result.stderr[:200]}"])
+                    self.ctx.report(self.name, 14, False, [f"isort failed (returncode {result.returncode}): {result.stderr[:200]}"])
                 else:
                     self.ctx.report(self.name, 14, True, [])
             except Exception as e:
                 self.ctx.report(self.name, 14, False, [f"isort exception: {str(e)}"])
         else:
-            self.ctx.report(self.name, 14, False, ["isort not installed"])
+            # In Docker, we expect isort - fail the key if missing
+            self.ctx.report(self.name, 14, False, ["isort not available - install via 'pip install isort'"])
 
         # Key 7: Star imports
         passed, details = self.check_key_07_no_star_imports()
