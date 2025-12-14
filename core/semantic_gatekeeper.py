@@ -20,6 +20,7 @@ from typing import List, Optional, Tuple, Dict, Any
 import numpy as np
 import asyncio
 from datetime import datetime, timedelta
+from collections import deque
 
 from redisvl.index import SearchIndex
 from redisvl.query import VectorQuery
@@ -29,6 +30,7 @@ from sentence_transformers import SentenceTransformer
 from schemas.canon_models import CanonEntry, CanonQuery, CanonSearchResult
 from core.llm_judger import LLMJudger, get_judger
 from core.qdrant_cache import QdrantCache
+from core.etl_pipeline import ContinuousIngester
 
 logger = logging.getLogger(__name__)
 
@@ -82,9 +84,23 @@ class SemanticGatekeeper:
         self._promotion_queue = asyncio.Queue()
         self._promotion_task = None
         
+        # Continuous ingester for real-time L2 updates (initialized after qdrant)
+        self.continuous_ingester = None
+        if self.qdrant:
+            self.continuous_ingester = ContinuousIngester(
+                self,
+                self.qdrant,
+                failure_retention_days=90
+            )
+        
+        # Latency tracking for performance monitoring
+        self._latency_history = deque(maxlen=1000)  # Track last 1000 queries
+        self._latency_threshold_ms = 10  # 10ms target
+        
         logger.info("Hybrid SemanticGatekeeper initialized successfully")
         logger.info(f"  L1 Cache (Redis): {redis_url}")
         logger.info(f"  L2 Cache (Qdrant): {qdrant_host}:{qdrant_port}/{qdrant_index_name if self.qdrant else 'DISABLED'}")
+        logger.info(f"  Latency Target: <{self._latency_threshold_ms}ms for 90% of queries")
     
     def _setup_redis_index(self):
         """Create or load the Redis search index for L1 cache."""
@@ -198,7 +214,7 @@ class SemanticGatekeeper:
         
         Implements the full L5 retrieval pipeline:
         1. L1 Cache Check (Redis) - 24-hour window + Canon Keys
-        2. L2 Cache Check (Pinecone/Qdrant) - Historical patterns
+        2. L2 Cache Check (Qdrant) - Historical patterns
         3. LLM Judgement - Semantic equivalence validation
         
         Args:
@@ -210,6 +226,9 @@ class SemanticGatekeeper:
         Returns:
             Tuple of (is_safe, best_matching_pattern)
         """
+        # Track latency for performance monitoring
+        start_time = time.perf_counter()
+        
         logger.info(f"Consulting hybrid canon for action: {planned_action}")
         
         # Generate AST for new code
@@ -253,9 +272,13 @@ class SemanticGatekeeper:
                 # Check safety
                 if best_match.is_safe_to_execute():
                     logger.info("Action approved by L1 cache with LLM validation")
+                    latency_ms = int((time.perf_counter() - start_time) * 1000)
+                    self._track_latency(latency_ms)
                     return True, best_match
                 else:
                     logger.warning(f"BLOCKING action - L1 pattern {best_match.id} marked as unsafe")
+                    latency_ms = int((time.perf_counter() - start_time) * 1000)
+                    self._track_latency(latency_ms)
                     return False, best_match
             else:
                 logger.info(f"LLM judged no equivalent patterns in L1 (confidence: {judgement.confidence})")
@@ -306,15 +329,24 @@ class SemanticGatekeeper:
                         logger.info("Action approved by L2 cache with LLM validation - promoting to L1")
                         # Promote to L1
                         self._promote_to_l1(best_match, query_vector)
+                        latency_ms = int((time.perf_counter() - start_time) * 1000)
+                        self._track_latency(latency_ms)
                         return True, best_match
                     else:
                         logger.warning(f"BLOCKING action - L2 pattern {best_match.id} marked as unsafe")
+                        latency_ms = int((time.perf_counter() - start_time) * 1000)
+                        self._track_latency(latency_ms)
                         return False, best_match
                 else:
                     logger.info(f"LLM judged no equivalent patterns in L2")
         
         # No patterns found - allow with caution
         logger.info("No equivalent patterns found in L1 or L2 - allowing action with caution")
+        
+        # Track latency before returning
+        latency_ms = int((time.perf_counter() - start_time) * 1000)
+        self._track_latency(latency_ms)
+        
         return True, None
     
     def _search_l1_cache(
@@ -457,7 +489,8 @@ class SemanticGatekeeper:
         latency_ms: int = 0,
         success: bool = True,
         project_tag: str = "default",
-        meta_prompt: Optional[str] = None
+        meta_prompt: Optional[str] = None,
+        error_trace: Optional[str] = None
     ) -> str:
         """
         Record a pattern execution in the hybrid canon for meta-learning.
@@ -540,9 +573,14 @@ class SemanticGatekeeper:
             self._store_l1_entry(entry)
             logger.info(f"Created new L1 pattern: {entry.id}")
             
-            # Queue for L2 if successful
-            if success and self.qdrant:
-                self._queue_for_promotion(entry)
+            # Ingest to L2 using ContinuousIngester
+            if self.continuous_ingester and self.qdrant:
+                if success:
+                    asyncio.create_task(self.continuous_ingester.ingest_success(entry))
+                else:
+                    # Ingest failure with error trace
+                    error_msg = error_trace or meta_prompt or "Unknown error"
+                    asyncio.create_task(self.continuous_ingester.ingest_failure(entry, error_msg))
             
             return str(entry.id)
     
@@ -705,9 +743,62 @@ class SemanticGatekeeper:
             logger.error(f"Failed to get safety stats: {e}")
             return {"error": str(e)}
     
+    def _track_latency(self, latency_ms: int):
+        """Track query latency for performance monitoring."""
+        self._latency_history.append(latency_ms)
+        
+        # Log if latency exceeds threshold
+        if latency_ms > self._latency_threshold_ms:
+            logger.warning(f"Canon check latency exceeded threshold: {latency_ms}ms > {self._latency_threshold_ms}ms")
+    
+    def get_latency_stats(self) -> Dict[str, Any]:
+        """
+        Get latency statistics for performance monitoring.
+        
+        Returns:
+            Dictionary with latency metrics
+        """
+        if not self._latency_history:
+            return {
+                "total_queries": 0,
+                "avg_latency_ms": 0,
+                "p95_latency_ms": 0,
+                "p99_latency_ms": 0,
+                "under_10ms_percent": 0,
+                "threshold_met": False
+            }
+        
+        sorted_latencies = sorted(self._latency_history)
+        total_queries = len(sorted_latencies)
+        avg_latency = sum(sorted_latencies) / total_queries
+        
+        # Calculate percentiles
+        p95_idx = int(0.95 * total_queries)
+        p99_idx = int(0.99 * total_queries)
+        p95_latency = sorted_latencies[p95_idx]
+        p99_latency = sorted_latencies[p99_idx]
+        
+        # Calculate percentage under 10ms
+        under_10ms = sum(1 for latency in sorted_latencies if latency < self._latency_threshold_ms)
+        under_10ms_percent = (under_10ms / total_queries) * 100
+        
+        return {
+            "total_queries": total_queries,
+            "avg_latency_ms": round(avg_latency, 2),
+            "p95_latency_ms": p95_latency,
+            "p99_latency_ms": p99_latency,
+            "under_10ms_percent": round(under_10ms_percent, 2),
+            "threshold_met": under_10ms_percent >= 90,  # 90% under 10ms requirement
+            "latency_target_ms": self._latency_threshold_ms
+        }
+    
     def shutdown(self):
         """Gracefully shutdown the gatekeeper and cleanup resources."""
         logger.info("Shutting down Semantic Gatekeeper...")
+        
+        # Log final latency stats
+        stats = self.get_latency_stats()
+        logger.info(f"Final latency stats: {stats}")
         
         # Cancel promotion task
         if self._promotion_task:

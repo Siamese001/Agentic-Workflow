@@ -1,0 +1,82 @@
+# L5 Meta-Learning Backfill Configuration
+
+# Qdrant Configuration
+qdrant:
+  host: localhost
+  port: 6333
+  index_name: canon-l2
+
+# Data Sources Configuration
+sources:
+  # Git repositories to backfill
+  git_repos:
+    - path: /path/to/your/repo
+      branch: main
+    - path: /path/to/another/repo
+      branch: develop
+  
+  # Local paths to scan
+  local_paths:
+    - path: /path/to/source/code
+    - path: /path/to/legacy/code
+  
+  # S3 buckets (optional)
+  s3_buckets:
+    - bucket: my-code-bucket
+      prefix: python/
+    - bucket: archives-bucket
+      prefix: historical/
+
+# Backfill Settings
+backfill:
+  # Chunking configuration
+  max_chunk_size: 2000  # Maximum characters per chunk
+  
+  # Batch sizes
+  transform_batch_size: 100  # Chunks to process at once
+  load_batch_size: 500      # Vectors to upsert to Qdrant at once
+  
+  # Performance
+  max_concurrent_files: 10  # Parallel file processing
+  
+# Continuous Ingestion Settings
+continuous:
+  failure_retention_days: 90  # How long to keep failure patterns
+  
+  # Cleanup schedule
+  cleanup_interval_hours: 24
+  
+  # Batch settings
+  ingestion_batch_size: 50
+  flush_interval_seconds: 30
+
+# Logging Configuration
+logging:
+  level: INFO
+  file: backfill.log
+  max_size_mb: 100
+  backup_count: 5
+
+# Metadata Enrichment
+metadata:
+  # Default values for historical data
+  default_project_tag: historical
+  default_agent_name: BackfillPipeline
+  
+  # Environment-specific metadata
+  environment: production
+  region: us-west-2
+  
+  # Custom tags to add
+  tags:
+    - backfill
+    - historical
+    - batch_load
+
+# Performance Targets
+targets:
+  # Backfill should process at least this many chunks per second
+  min_chunks_per_second: 10
+  
+  # Continuous ingestion should have this latency
+  max_ingestion_latency_ms: 100

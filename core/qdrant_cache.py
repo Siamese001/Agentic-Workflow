@@ -6,6 +6,7 @@ with complex metadata filtering for the L5 Meta-Learning system.
 """
 
 import logging
+import time
 from typing import List, Dict, Optional, Any
 from datetime import datetime, timedelta
 from qdrant_client import QdrantClient
@@ -162,49 +163,65 @@ class QdrantCache:
         
         return Filter(must=conditions) if conditions else None
     
-    def upsert(self, entry: CanonEntry) -> str:
+    def upsert(self, entry: CanonEntry, max_retries: int = 3) -> str:
         """
-        Insert or update a pattern in L2 cache.
+        Insert or update a pattern in L2 cache with retry logic.
         
         Args:
             entry: CanonEntry to store
+            max_retries: Maximum number of retry attempts
             
         Returns:
             Point ID
         """
-        try:
-            # Prepare payload with all metadata
-            payload = {
-                "ast_json": entry.ast_json,
-                "ast_hash": entry.ast_hash,
-                "policy_key": entry.policy_key,
-                "failure_count": entry.failure_count,
-                "success_count": entry.success_count,
-                "latency_ms": entry.latency_ms,
-                "last_validated": entry.last_validated.isoformat(),
-                "project_tag": entry.project_tag,
-                **entry.metadata
-            }
-            
-            # Create point
-            point = PointStruct(
-                id=str(entry.id),
-                vector=entry.vector,
-                payload=payload
-            )
-            
-            # Upsert
-            self.client.upsert(
-                collection_name=self.index_name,
-                points=[point]
-            )
-            
-            logger.debug(f"Upserted entry {entry.id} to Qdrant L2")
-            return str(entry.id)
-            
-        except Exception as e:
-            logger.error(f"Failed to upsert to Qdrant: {e}")
-            raise
+        last_error = None
+        
+        for attempt in range(max_retries + 1):
+            try:
+                # Prepare payload with all metadata
+                payload = {
+                    "ast_json": entry.ast_json,
+                    "ast_hash": entry.ast_hash,
+                    "policy_key": entry.policy_key,
+                    "failure_count": entry.failure_count,
+                    "success_count": entry.success_count,
+                    "latency_ms": entry.latency_ms,
+                    "last_validated": entry.last_validated.isoformat(),
+                    "project_tag": entry.project_tag,
+                    **entry.metadata
+                }
+                
+                # Create point
+                point = PointStruct(
+                    id=str(entry.id),
+                    vector=entry.vector,
+                    payload=payload
+                )
+                
+                # Upsert
+                self.client.upsert(
+                    collection_name=self.index_name,
+                    points=[point]
+                )
+                
+                if attempt > 0:
+                    logger.info(f"Upserted entry {entry.id} to Qdrant L2 after {attempt} retries")
+                else:
+                    logger.debug(f"Upserted entry {entry.id} to Qdrant L2")
+                
+                return str(entry.id)
+                
+            except Exception as e:
+                last_error = e
+                if attempt < max_retries:
+                    # Exponential backoff
+                    delay = 2 ** attempt
+                    logger.warning(f"Qdrant upsert failed (attempt {attempt + 1}/{max_retries + 1}), retrying in {delay}s: {e}")
+                    time.sleep(delay)
+                else:
+                    logger.error(f"Failed to upsert to Qdrant after {max_retries + 1} attempts: {e}")
+        
+        raise last_error
     
     def get_trending_patterns(
         self,
