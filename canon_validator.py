@@ -346,14 +346,14 @@ class GenerativeGuard(SubAtomicAgent):
             self.ctx.report(self.name, 45, True, [])
             self.ctx.signals.add("GENERATIVE_CLEAN")
 
-class CodeJanitor(SubAtomicAgent):
+class WhitespaceMechanic(SubAtomicAgent):
     """
-    KEYS: 10 (Long Lines), 11 (Whitespace), 12 (Newlines), 13 (Tabs), 15 (Magic Numbers), 16 (Deep Nesting)
-    ROLE: The Cleaner. Can SELF-FIX violations. Emits AST_VALID signal.
+    KEYS: 11 (Trailing Whitespace), 12 (Missing Newline), 13 (Tabs)
+    ROLE: L5 Subatomic Specialist - Whitespace and formatting hygiene. Can SELF-FIX violations.
     """
 
     def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Sanitizing Codebase...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Whitespace Hygiene...")
 
         # Key 11: Trailing whitespace
         passed, details = self.check_key_11_no_trailing_whitespace()
@@ -371,20 +371,6 @@ class CodeJanitor(SubAtomicAgent):
         # Key 13: Tab characters
         passed, details = self.check_key_13_no_tabs()
         self.ctx.report(self.name, 13, passed, details)
-
-        # Key 10: Long lines (L3 FULL IMPLEMENTATION)
-        passed, details = self.check_key_10_no_long_lines()
-        self.ctx.report(self.name, 10, passed, details)
-
-        # Key 15: Magic numbers (L3 FULL IMPLEMENTATION)
-        passed, details = self.check_key_15_no_magic_numbers()
-        self.ctx.report(self.name, 15, passed, details)
-
-        # Key 16: Deep nesting (L3 FULL IMPLEMENTATION)
-        passed, details = self.check_key_16_no_deep_nesting()
-        self.ctx.report(self.name, 16, passed, details)
-
-        self.ctx.signal_ast_valid()
 
     def check_key_11_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
         """Check for trailing whitespace."""
@@ -509,6 +495,25 @@ class CodeJanitor(SubAtomicAgent):
                 print("      ✅ Trailing whitespace fixed")
         except Exception as e:
             print(f"      ❌ Failed to fix trailing whitespace: {e}")
+
+class StructuralLinter(SubAtomicAgent):
+    """
+    KEYS: 10 (Long Lines), 16 (Deep Nesting)
+    ROLE: L5 Subatomic Specialist - Structural code quality and complexity.
+    """
+
+    def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Code Structure...")
+
+        # Key 10: Long lines
+        passed, details = self.check_key_10_no_long_lines()
+        self.ctx.report(self.name, 10, passed, details)
+
+        # Key 16: Deep nesting
+        passed, details = self.check_key_16_no_deep_nesting()
+        self.ctx.report(self.name, 16, passed, details)
+
+        self.ctx.signal_ast_valid()
 
 class DependencySentinel(SubAtomicAgent):
     """
