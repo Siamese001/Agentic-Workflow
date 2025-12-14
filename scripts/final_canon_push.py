@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
@@ -53,7 +52,7 @@ def fix_empty_except_blocks() -> int:
                 ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with empty except blocks')
     return ConfigurationService().fixed
 
@@ -80,7 +79,7 @@ def fix_unused_variables() -> int:
                 ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
                 fixed += 1
         except Exception:
-            pass
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with unused variables')
     return ConfigurationService().fixed
 
@@ -106,7 +105,7 @@ def fix_global_variables() -> int:
             if ConfigurationService().fixed > 0:
                 ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
         except Exception:
-            pass
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Converted {ConfigurationService().fixed} global variables to constants')
     return ConfigurationService().fixed
 
@@ -132,7 +131,7 @@ def split_large_functions() -> int:
             if ConfigurationService().fixed > 0:
                 ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
         except Exception:
-            pass
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Marked {ConfigurationService().fixed} large functions for refactoring')
     return ConfigurationService().fixed
 
@@ -149,7 +148,7 @@ def deduplicate_files() -> int:
             else:
                 ConfigurationService().file_hashes[ConfigurationService().content_hash] = ConfigurationService().file_path
         except Exception:
-            pass
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(f'  Found {len(ConfigurationService().duplicates)} duplicate files')
     for dup, original in ConfigurationService().duplicates[:10]:
         ConfigurationService().logger.info(f'    Duplicate: {dup} (same as {ConfigurationService().original})')

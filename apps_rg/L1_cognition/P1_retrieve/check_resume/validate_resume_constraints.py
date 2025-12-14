@@ -1,6 +1,5 @@
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Validate Resume Constraints - atomic execution layer.'
 import logging

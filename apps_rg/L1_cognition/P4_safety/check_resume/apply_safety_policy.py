@@ -1,6 +1,5 @@
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Apply Resume Safety Policy - atomic execution layer.'
 import logging

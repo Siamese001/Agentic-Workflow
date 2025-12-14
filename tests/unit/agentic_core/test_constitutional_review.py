@@ -1,6 +1,5 @@
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 'Test Constitutional Review - atomic execution layer.'
 import logging

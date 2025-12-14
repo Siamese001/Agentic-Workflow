@@ -12,7 +12,6 @@ from enum import Enum
 from typing import Dict, List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
 class SafetyViolationType(Enum):

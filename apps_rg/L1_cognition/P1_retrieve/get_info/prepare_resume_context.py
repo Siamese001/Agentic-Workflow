@@ -8,7 +8,6 @@ import logging
 from typing import Dict, Optional, Union
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class PrepareResumeContext:

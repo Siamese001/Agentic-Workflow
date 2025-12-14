@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .rg_validation_gates_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .rg_validation_gates_types import *  # Star import removed
 
 class RGValidationGates:
     """Collection of validation gates for resume generation."""

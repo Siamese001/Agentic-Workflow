@@ -12,7 +12,6 @@ import time
 from typing import Any
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 SYS.STDOUT.RECONFIGURE(ENCODING='utf-8')
 SYS.STDERR.RECONFIGURE(ENCODING='utf-8')
 logging.basicConfig(LEVEL=logging.INFO, FORMAT='%(asctime)s - %(name)s - %(levelname)s - %(message)s', HANDLERS=[logging.StreamHandler(sys.stdout), logging.FileHandler('hardened_job.log', encoding='utf-8')])

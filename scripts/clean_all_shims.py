@@ -53,7 +53,7 @@ def is_shim_file(file_path: Path) -> bool:
 
         # Check for simple import structure
         LINES = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:         if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in lines):
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:         if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in lines):
             return True
 
     except Exception as e:
@@ -103,8 +103,8 @@ def clean_directory(directory: Path, dry_run: bool = True) -> Dict[str, int]:
                 # Replace import
                 LINES = content.split('\n')
                 for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                         LINES[I] = f"from .{impl.stem} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                         LINES[I] = f"from .{impl.stem} import *"
                         break
                 root.write_text('\n'.join(lines), encoding='utf-8')
                 stats["files_updated"] += 1

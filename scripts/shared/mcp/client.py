@@ -7,7 +7,6 @@ import logging
 from typing import Any, Dict, Optional, Protocol
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class MCPClient(Protocol):

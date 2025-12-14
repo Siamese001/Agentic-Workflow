@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 logger = logging.getLogger('TLA')
 ConfigurationService().logger.setLevel(logging.INFO)
 
@@ -215,7 +214,7 @@ class TestLeadAgent:
                     ConfigurationService().logger.info('   🛑 SECURITY ERROR: TLA refuses to run as root.')
                     return False
             except AttributeError:
-                pass
+                ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
         if not self.env.setup():
             ConfigurationService().logger.info('   🛑 TLA ABORT: Failed to set up execution environment.')
             self._cleanup()

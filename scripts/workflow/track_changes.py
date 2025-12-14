@@ -13,7 +13,6 @@ import sys
 from pathlib import Path
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 SOVEREIGN_AGENTS = {'agentic_core', 'apps_lic', 'apps_rg'}
 
 def main() -> None:

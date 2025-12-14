@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .rg_creative_brief_enums import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
 class ExperienceBulletsBrief:

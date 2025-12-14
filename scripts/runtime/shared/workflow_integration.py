@@ -15,7 +15,6 @@ from scripts.runtime.shared.observability_clients import create_span, setup_trac
 from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 @dataclass

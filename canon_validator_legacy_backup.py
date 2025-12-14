@@ -5,9 +5,11 @@ import os
 import re
 import sys
 from typing import List
+
 from services.configuration import ConfigurationService
+
 from .utils import Colors, IntelligentOrchestrator
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 if sys.platform == 'win32':

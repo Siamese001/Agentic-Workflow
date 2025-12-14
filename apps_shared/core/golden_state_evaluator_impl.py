@@ -4,7 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .golden_state_evaluator_types import *  # Star import removed
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # from .golden_state_evaluator_types import *  # Star import removed
 
 class GoldenStateEvaluator:
     """Evaluator for golden state test cases.

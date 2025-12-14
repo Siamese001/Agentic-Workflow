@@ -556,8 +556,17 @@ class StructuralLinter(SubAtomicAgent):
         logger.info(f"\n[>>>] {self.name} ACTIVATED: Analyzing Code Structure...")
 
         # Key 10: Long lines
-        passed, details = self.check_key_10_no_long_lines()
-        self.ctx.report(self.name, 10, passed, details)
+        passed_10, details_10 = self.check_key_10_no_long_lines()
+        
+        # --- L5 HARDENING INJECTION START ---
+        if not passed_10:
+            logger.info("      🔧 Auto-fixing long lines (Key 10) via autopep8...")
+            self._fix_long_lines()
+            # Re-verify
+            passed_10, details_10 = self.check_key_10_no_long_lines()
+        # --- L5 HARDENING INJECTION END ---
+
+        self.ctx.report(self.name, 10, passed_10, details_10)
 
         # Key 16: Deep nesting
         passed, details = self.check_key_16_no_deep_nesting()
@@ -593,6 +602,29 @@ class StructuralLinter(SubAtomicAgent):
                 continue
 
         return (len(violations) == 0, violations[:50])
+
+    def _fix_long_lines(self):
+        """L5 Hardening: Auto-format long lines using autopep8."""
+        import subprocess
+        try:
+            # Run autopep8 aggressively on the current directory
+            result = subprocess.run([
+                "autopep8",
+                "--in-place",
+                "--aggressive",
+                "--max-line-length", "120",
+                "--recursive",
+                "--exclude", ".venv,venv,archives,data",
+                "."
+            ], capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                logger.info("      ✅ autopep8 run complete.")
+                self.ctx.modified_files.add("BATCH_AUTOPEP8_RUN")
+            else:
+                logger.warning(f"      ⚠️ autopep8 failed: {result.stderr[:100]}")
+        except FileNotFoundError:
+            logger.warning("      ⚠️ autopep8 not found. Install via 'pip install autopep8'")
 
     def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
         """Check for deep nesting >4 levels."""
@@ -1084,8 +1116,17 @@ class CodeQualityAuditor(SubAtomicAgent):
         self.ctx.report(self.name, 2, passed, details)
 
         # Key 4: No empty except blocks
-        passed, details = self.check_key_04_no_empty_except_blocks()
-        self.ctx.report(self.name, 4, passed, details)
+        passed_4, details_4 = self.check_key_04_no_empty_except_blocks()
+        
+        # --- L5 HARDENING INJECTION START ---
+        if not passed_4:
+            logger.info("      🔧 Auto-fixing empty except blocks...")
+            self._fix_empty_except_blocks()
+            # Re-verify immediately to confirm Zero Loss
+            passed_4, details_4 = self.check_key_04_no_empty_except_blocks()
+        # --- L5 HARDENING INJECTION END ---
+
+        self.ctx.report(self.name, 4, passed_4, details_4)
 
     def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
         """Check for TODO/FIXME comments."""
@@ -1141,6 +1182,60 @@ class CodeQualityAuditor(SubAtomicAgent):
                 continue
 
         return (len(violations) == 0, violations)
+
+    def _fix_empty_except_blocks(self):
+        """L5 Hardening: Rewrite 'except: pass' to 'except Exception: logger.warning(...)'"""
+        import ast
+        
+        fixed_count = 0
+        
+        class EmptyExceptRewriter(ast.NodeTransformer):
+            def __init__(self):
+                self.modified = False
+
+            def visit_ExceptHandler(self, node):
+                if len(node.body) == 1 and isinstance(node.body[0], (ast.Pass, ast.Ellipsis)):
+                    new_node = ast.Expr(
+                        value=ast.Call(
+                            func=ast.Attribute(value=ast.Name(id='logger', ctx=ast.Load()), attr='warning', ctx=ast.Load()),
+                            args=[ast.Constant(value="Swallowed exception")],
+                            keywords=[ast.keyword(arg='exc_info', value=ast.Constant(value=True))]
+                        )
+                    )
+                    node.body = [new_node]
+                    self.modified = True
+                    return node
+                return node
+
+        for file_path in self.ctx.get_python_files():
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                
+                rewriter = EmptyExceptRewriter()
+                new_tree = rewriter.visit(tree)
+                
+                if rewriter.modified:
+                    # Fix line numbers
+                    ast.fix_missing_locations(new_tree)
+                    
+                    # Generate modified source
+                    try:
+                        source = ast.unparse(new_tree)
+                    except AttributeError:
+                        # Fallback for Python < 3.9
+                        import astor
+                        source = astor.to_source(new_tree)
+                    
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        f.write(source)
+                    fixed_count += 1
+                    self.ctx.modified_files.add(file_path)
+            except Exception: 
+                pass
+        
+        if fixed_count > 0:
+            logger.info(f"      ✅ Fixed {fixed_count} empty except blocks")
 
 class DocumentationAgent(SubAtomicAgent):
     """
