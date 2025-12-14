@@ -69,18 +69,56 @@ class CanonEntry(BaseModel):
         Returns:
             Dictionary with flattened fields for Redis storage
         """
+        import numpy as np
+        
+        # Convert embedding to numpy array then to bytes for RedisVL
+        embedding_array = np.array(self.embedding, dtype=np.float32)
+        embedding_bytes = embedding_array.tobytes()
+        
+        # Convert all fields to Redis-compatible types
         return {
             "id": str(self.id),
             "code_snippet": self.code_snippet,
             "ast_structure": json.dumps(self.ast_structure),
-            "embedding": self.embedding,
-            "failure_count": self.metadata.failure_count,
-            "success_count": self.metadata.success_count,
-            "last_validated": self.metadata.last_validated.isoformat(),
+            "embedding": embedding_bytes,  # Store as bytes
+            "failure_count": str(self.metadata.failure_count),  # Convert to string
+            "success_count": str(self.metadata.success_count),  # Convert to string
+            "last_validated": str(int(self.metadata.last_validated.timestamp())),  # Convert to string
             "project_context": self.metadata.project_context,
             "canon_rule_id": self.metadata.canon_rule_id,
-            "success_rate": self.metadata.success_rate,
-            "is_golden": self.metadata.is_golden_pattern
+            "success_rate": str(float(self.metadata.success_rate)),  # Convert to string
+            "is_golden": str(int(self.metadata.is_golden_pattern))  # Convert to string
+        }
+    
+    # Compatibility properties for new CanonValidator
+    @property
+    def content(self) -> str:
+        """Alias for code_snippet to maintain compatibility."""
+        return self.code_snippet
+    
+    @property
+    def ast_hash(self) -> str:
+        """Generate hash of AST structure for exact matching."""
+        import hashlib
+        ast_str = json.dumps(self.ast_structure, sort_keys=True)
+        return hashlib.sha256(ast_str.encode()).hexdigest()
+    
+    def to_redis_dict(self) -> Dict[str, Any]:
+        """Compatibility method - alias for to_redis_fields."""
+        return self.to_redis_fields()
+    
+    def to_pinecone_record(self) -> Dict[str, Any]:
+        """Convert to Pinecone record format."""
+        return {
+            "id": str(self.id),
+            "values": self.embedding,
+            "metadata": {
+                "content": self.code_snippet[:500],  # First 500 chars
+                "project_context": self.metadata.project_context,
+                "canon_rule_id": self.metadata.canon_rule_id,
+                "failure_count": self.metadata.failure_count,
+                "success_count": self.metadata.success_count
+            }
         }
     
     @classmethod
