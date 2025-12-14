@@ -4,9 +4,10 @@ try:
 except ImportError:
     # Neo4j driver not installed - provide fallback
     GraphDatabase = None
-import os
-from typing import Any, List, Dict
 import logging
+import os
+from typing import Any, Dict, List
+
 
 class Neo4jGraphStore:
     """

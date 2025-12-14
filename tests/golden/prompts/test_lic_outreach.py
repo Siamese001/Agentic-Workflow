@@ -6,10 +6,11 @@ logger = logging.getLogger(__name__)
 
 """Regression tests ensuring safety defenses stay active."""
 
+import logging
+
 # Prompt injection module (zombie file) - not implemented
 # from apps_lic.safety.prompt_injection import detect_injection
 import pytest
-import logging
 
 
 @pytest.mark.skip(reason="Waiting for prompt_injection module implementation")

@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Result Aggregation - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_result_aggregation(data: Dict[str, object]) -> Dict[str, object]:

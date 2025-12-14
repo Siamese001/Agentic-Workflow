@@ -1,20 +1,23 @@
 import time
-from typing import Any
 import uuid
+from typing import Any
+
 from pydantic import BaseModel
 
-
 logger = logging.getLogger(__name__)
-# Imports from above
-from agentic_core.L4_state.storage import LocalDiskAdapter
-from agentic_core.L4_state.genealogy import GenealogyRegistry
-from agentic_core.L5_safety.pii_vault import PIIVault
-from agentic_core.L5_safety.governor import CostGovernor
-from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+import logging
+
+from runtime.core.telemetry import TelemetryRecorder, TraceEvent
+
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
 from agentic_core.L2_execution.sandbox import DockerSandbox
-from runtime.core.telemetry import TelemetryRecorder, TraceEvent
-import logging
+from agentic_core.L4_state.genealogy import GenealogyRegistry
+# Imports from above
+from agentic_core.L4_state.storage import LocalDiskAdapter
+from agentic_core.L5_safety.governor import CostGovernor
+from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+from agentic_core.L5_safety.pii_vault import PIIVault
+
 
 class AgentPlan(BaseModel):
     reasoning: str

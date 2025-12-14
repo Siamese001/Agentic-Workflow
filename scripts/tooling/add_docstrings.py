@@ -1,10 +1,9 @@
 """Add docstrings to functions/classes missing them."""
 
 import ast
+import logging
 import os
 from pathlib import Path
-import logging
-
 
 logger = logging.getLogger(__name__)
 sovereign_dirs = [

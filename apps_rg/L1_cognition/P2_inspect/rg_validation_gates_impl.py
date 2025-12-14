@@ -1,7 +1,6 @@
 """Implementation for rg_validation_gates."""
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .rg_validation_gates_types import *  # Star import removed
 

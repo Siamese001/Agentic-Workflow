@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 from typing import List, Set
 
+
 def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     """Get all Python files excluding specified directories."""
     if exclude_dirs is None:

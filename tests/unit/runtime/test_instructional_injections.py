@@ -6,9 +6,10 @@ Tests all 30 instructional injection types across the 6 layers
 and their integration with SubatomicHop stages.
 """
 
-import pytest
-from pathlib import Path
 import logging
+from pathlib import Path
+
+import pytest
 
     get_instructional_injections,
     get_stage_applicable_injections,

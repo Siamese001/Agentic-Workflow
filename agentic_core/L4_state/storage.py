@@ -7,10 +7,10 @@ Supports local disk (for development) and S3 (for production).
 
 import hashlib
 import json
-import shutil
 import logging
-from typing import Protocol, Optional, Dict
+import shutil
 from pathlib import Path
+from typing import Dict, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

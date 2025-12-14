@@ -1,9 +1,8 @@
 """Integration tests for full pipeline execution."""
-from typing import Dict, List, Optional
+import logging
 from dataclasses import dataclass
 from enum import Enum
-import logging
-
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 class PipelineStage(Enum):

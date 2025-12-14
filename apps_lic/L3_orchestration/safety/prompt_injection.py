@@ -4,8 +4,8 @@ Detects and blocks prompt injection attempts in user inputs.
 Part of the safety guardrail system for agentic workflows.
 """
 
-from typing import Dict, List, Tuple
 import logging
+from typing import Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 

@@ -8,9 +8,9 @@ to any component that executes external operations.
 Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
-import time
-from typing import Any, Callable, Awaitable, Dict, Optional
 import logging
+import time
+from typing import Any, Awaitable, Callable, Dict, Optional
 
 
 class TokenLimitError(Exception):

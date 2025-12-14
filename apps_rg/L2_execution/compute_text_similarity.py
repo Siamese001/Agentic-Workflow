@@ -9,9 +9,9 @@ Text similarity computation using TF-IDF cosine similarity.
 Provides core similarity calculation with sklearn alternative path.
 """
 
+import logging
 import math
 from typing import List, Tuple
-import logging
 
 try:
     from sklearn.metrics.pairwise import cosine_similarity

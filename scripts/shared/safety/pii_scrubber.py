@@ -4,8 +4,8 @@ Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 Migrated from archives/engines/legacy_engines/safety_enhancements.py
 """
 
-import re
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 

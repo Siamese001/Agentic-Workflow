@@ -1,8 +1,6 @@
 """Types and models for firecracker_manager."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class VMStatus(Enum):
     """VM operational status."""

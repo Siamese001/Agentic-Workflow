@@ -8,8 +8,8 @@ This is a foundational L1 planning component that integrates with other L1
 planners and feeds into the hop-based K3 draft execution phase.
 """
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

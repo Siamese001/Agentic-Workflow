@@ -1,10 +1,9 @@
 """E2E tests for outreach flows - LinkedIn outreach campaign workflows."""
-from typing import List, Optional
-from datetime import datetime
-from dataclasses import dataclass
-from enum import Enum
 import logging
-
+from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 class OutreachStatus(Enum):

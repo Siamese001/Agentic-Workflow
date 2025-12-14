@@ -1,8 +1,6 @@
 """Logic/property tests for safety escalation and thresholds."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class TestSafetyThresholdProperties:
     """TODO: Add docstring."""

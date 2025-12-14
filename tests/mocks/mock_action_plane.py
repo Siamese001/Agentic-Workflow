@@ -6,8 +6,8 @@ Phase 2 - Pillar 1: Layering Model
 Simple mock implementation that returns predefined results.
 """
 
-from typing import Any, Dict, List
 import logging
+from typing import Any, Dict, List
 
     IActionPlane,
     ActionRequest,

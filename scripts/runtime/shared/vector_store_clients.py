@@ -8,9 +8,9 @@ Phase 1C - SDK Integration Layer
 
 import logging
 import os
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 

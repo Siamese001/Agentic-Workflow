@@ -8,10 +8,10 @@ objects and fixes Windows Unicode encoding issues.
 """
 
 import asyncio
-from typing import Any
 import logging
 import sys
 import time
+from typing import Any
 
 # CRITICAL: Fix Windows console crashes on Emoji/Unicode output
 sys.stdout.reconfigure(encoding="utf-8")
@@ -66,7 +66,8 @@ def _initialize_orchestrator() -> None:
     logger.info("⚡ Initializing HardenedWorkflowOrchestrator...")
     workflow_spec = create_test_workflow_spec()
 
-    from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
+    from runtime.orchestration.hardened_orchestrator import \
+        HardenedWorkflowOrchestrator
 
     orchestrator = HardenedWorkflowOrchestrator(
         workflow_spec=workflow_spec, run_base_dir="./pipeline_runs", storage_path="./state_storage"

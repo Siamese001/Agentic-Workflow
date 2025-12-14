@@ -7,10 +7,11 @@ logger = logging.getLogger(__name__)
 
 """
 
-from typing import Any, Dict, List, Optional, Tuple
 import hashlib
 import time
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
+
 
 @dataclass
 class VectorSimilarityResult:

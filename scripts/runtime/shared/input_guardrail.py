@@ -5,10 +5,10 @@ the RAG pipeline, protecting against prompt injection, jailbreaks,
 PII leakage, Unicode attacks, and encoded payloads.
 """
 
+import base64
 import logging
 import re
 import time
-import base64
 import unicodedata
 from dataclasses import dataclass
 from enum import Enum

@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 
 """
 
+import json
 from pathlib import Path
 from typing import Dict, Tuple
-import json
 
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 

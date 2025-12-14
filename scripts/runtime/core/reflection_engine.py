@@ -7,7 +7,7 @@ work before passing it downstream, preventing hallucination cascades.
 import json
 import logging
 import time
-from typing import Dict, Any, Optional, List, Union, Callable
+from typing import Any, Callable, Dict, List, Optional, Union
 
     CircuitBreakerFactory,
     CircuitOpenError,

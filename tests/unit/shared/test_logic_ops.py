@@ -7,10 +7,11 @@ Tests logic operations including data access, guardrails, synthesis, and validat
 """
 
 import re
-import pytest
-from typing import Dict, List
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+from typing import Dict, List
+
+import pytest
 
 
 class ValidationLevel(Enum):

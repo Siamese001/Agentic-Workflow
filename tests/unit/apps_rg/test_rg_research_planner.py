@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Rg Research Planner - atomic implementation."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 class TestRGResearchPlanner:

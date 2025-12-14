@@ -11,9 +11,11 @@ Test Fallback Paths
 LEVEL 5 - Unit tests for DAG fallback path and error recovery functionality
 """
 
-import pytest
-from typing import Any
 import logging
+from typing import Any
+
+import pytest
+
 
 class TestFallbackPaths:
     """Test suite for DAG fallback paths and error recovery"""

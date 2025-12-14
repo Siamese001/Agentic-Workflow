@@ -8,9 +8,9 @@ mutable LLM-owned scratchpad space.
 """
 
 
-from datetime import datetime
-import uuid
 import logging
+import uuid
+from datetime import datetime
 
 
 class ThermalProfile(str, Enum):

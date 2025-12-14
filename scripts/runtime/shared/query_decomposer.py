@@ -7,7 +7,8 @@ that can be answered by the retrieval system.
 import asyncio
 import logging
 import re
-from typing import List, Any
+from typing import Any, List
+
 from pydantic import BaseModel, Field, validator
 
 logger = logging.getLogger(__name__)

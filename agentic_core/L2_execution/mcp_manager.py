@@ -5,12 +5,13 @@ Manages connections to multiple MCP servers simultaneously.
 Aggregates tools from all servers into a single 'toolbox' for the agent.
 """
 
-import os
 import logging
-import yaml
+import os
 from contextlib import AsyncExitStack
-from typing import List, Dict, Any
 from pathlib import Path
+from typing import Any, Dict, List
+
+import yaml
 
 logger = logging.getLogger(__name__)
 

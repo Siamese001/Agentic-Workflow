@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Intent Parsing - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_intent_parsing(data: Dict[str, object]) -> Dict[str, object]:

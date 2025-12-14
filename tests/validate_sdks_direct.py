@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Direct SDK validation without imports through __init__.py."""
 
-import sys
-import os
 import importlib
+import os
+import sys
+
 
 def check_sdk_import(sdk_name, module_path):
     """Docstring."""

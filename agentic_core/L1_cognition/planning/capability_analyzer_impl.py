@@ -1,7 +1,7 @@
 """Implementation for capability_analyzer."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 # from .capability_analyzer_types import *  # Star import removed

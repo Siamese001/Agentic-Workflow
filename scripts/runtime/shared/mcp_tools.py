@@ -7,8 +7,8 @@ Phase 1C - SDK Integration Layer
 """
 
 import logging
-from typing import Any, Callable, Dict, List, Optional
 from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

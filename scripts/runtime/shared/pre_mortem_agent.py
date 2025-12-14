@@ -4,12 +4,12 @@ This agent critiques proposed plans and identifies potential failure modes
 with specific mitigations, demonstrating executive maturity and foresight.
 """
 
+import json
 import logging
 from enum import Enum
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
-import json
 
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -519,7 +519,8 @@ class PreMortemAgent(SimpleAgentBase):
         """
         try:
             # Import here to avoid circular imports
-            from scripts.runtime.shared.multi_provider_clients import get_client, Provider
+            from scripts.runtime.shared.multi_provider_clients import (
+                Provider, get_client)
 
             # Get Anthropic client
             client = get_client(Provider.ANTHROPIC)

@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Planner Scoring Properties - atomic implementation."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 class TestPlannerScoringProperties:

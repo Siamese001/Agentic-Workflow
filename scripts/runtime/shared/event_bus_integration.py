@@ -8,7 +8,6 @@ circuit breakers, and retry policies.
 import asyncio
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 class HardenedEventBus:

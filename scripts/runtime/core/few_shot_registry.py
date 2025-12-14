@@ -7,10 +7,9 @@ ambiguity and demonstrate proper adherence.
 
 import json
 import logging
-from pathlib import Path
-from enum import Enum
 from dataclasses import dataclass
-
+from enum import Enum
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 

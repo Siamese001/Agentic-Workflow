@@ -1,10 +1,9 @@
 """Soak tests for long-running stability validation."""
-import time
-from typing import Dict, List
 import gc
-from dataclasses import dataclass
 import logging
-
+import time
+from dataclasses import dataclass
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 @dataclass

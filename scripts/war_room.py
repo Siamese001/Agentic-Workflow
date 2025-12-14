@@ -1,10 +1,9 @@
+import asyncio
 import json
+import logging
 import os
 import sys
-import asyncio
-from typing import Dict, Any
-import logging
-
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 # Import your new subatomic architecture modules
@@ -12,11 +11,12 @@ try:
     # Import directly to bypass broken __init__.py
     sys.path.append(os.path.join(os.path.dirname(__file__), 'runtime', 'shared', 'workflow'))
     from executive_orchestrator import ExecutiveAgentOrchestrator
-    from schema_definitions import TechnicalSWOT, StrategyRoadmap, InterviewerProfile
     from rich.console import Console
-    from rich.panel import Panel
     from rich.markdown import Markdown
+    from rich.panel import Panel
     from rich.prompt import Prompt
+    from schema_definitions import (InterviewerProfile, StrategyRoadmap,
+                                    TechnicalSWOT)
 except ImportError as e:
     logger.info(f"CRITICAL: Missing dependencies. {e}")
     logger.info("Run: pip install rich instructor openai anthropic pydantic")

@@ -1,9 +1,9 @@
 """Test suite for Node Negotiation Protocol."""
 
-import pytest
 import asyncio
 import logging
 
+import pytest
 
 logger = logging.getLogger(__name__)
     NodeNegotiator,

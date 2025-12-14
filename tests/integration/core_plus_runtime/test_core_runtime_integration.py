@@ -1,10 +1,9 @@
 """Integration tests for agentic_core + runtime integration."""
+import logging
 import re
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
-import logging
-
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 class LayerType(Enum):

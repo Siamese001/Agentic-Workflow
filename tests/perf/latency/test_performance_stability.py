@@ -1,9 +1,9 @@
 """Performance stability tests - legacy workflow runner."""
 
-import pytest
-from typing import Any
 import logging
+from typing import Any
 
+import pytest
 
 logger = logging.getLogger(__name__)
 # Legacy workflow runner (zombie file) - not implemented

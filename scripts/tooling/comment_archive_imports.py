@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 import re
 from pathlib import Path
 
+
 def comment_archive_imports() -> None:
     """Find and comment out all imports from archives/ in canonical files."""
     root = Path(__file__).parent.parent

@@ -1,7 +1,8 @@
 """Implementation for get_schema_info."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 # from .get_schema_info_types import *  # Star import removed
 
 class GetSchemaInfo:

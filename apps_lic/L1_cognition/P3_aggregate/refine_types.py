@@ -1,8 +1,6 @@
 """Types and models for message_refinement_adjust_scores."""
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""

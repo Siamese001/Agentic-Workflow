@@ -6,11 +6,12 @@ Tests that Neo4j integration works correctly and gracefully handles
 missing Neo4j driver or connection issues.
 """
 
-import pytest
-from datetime import datetime, UTC
-import sys
-import os
 import logging
+import os
+import sys
+from datetime import UTC, datetime
+
+import pytest
 
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))

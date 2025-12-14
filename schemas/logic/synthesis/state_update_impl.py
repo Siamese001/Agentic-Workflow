@@ -1,7 +1,8 @@
 """Implementation for state_update."""
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
+
 # from .state_update_types import *  # Star import removed
 
 class StateUpdate:

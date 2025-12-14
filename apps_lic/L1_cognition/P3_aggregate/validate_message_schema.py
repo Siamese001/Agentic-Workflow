@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Validate Message Schema - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def validate_message_schema(data: Dict[str, object]) -> Dict[str, object]:

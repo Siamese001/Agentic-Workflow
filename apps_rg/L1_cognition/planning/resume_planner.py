@@ -8,8 +8,8 @@ Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification
     Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
 """
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

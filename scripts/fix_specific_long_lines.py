@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fix the specific 46 long lines identified by canon validator."""
 
+import logging
 import os
 import re
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -183,7 +183,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     """Fix all specific long lines."""
     fixed = 0
     for filepath, line_num in violations:

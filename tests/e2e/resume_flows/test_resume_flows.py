@@ -1,11 +1,11 @@
 """E2E tests for resume flows - resume generation and optimization workflows."""
+import logging
 import re
-import pytest
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
-import logging
+from typing import Dict, List, Optional
 
+import pytest
 
 logger = logging.getLogger(__name__)
 class ResumeSection(Enum):

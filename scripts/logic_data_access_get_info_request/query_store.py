@@ -9,8 +9,8 @@ Provides storage functionality for compiled prompts and templates
 to ensure consistent resume improvement and job alignment.
 """
 
-from typing import Dict, List, Optional
 import logging
+from typing import Dict, List, Optional
 
 
 class StoredPrompt:

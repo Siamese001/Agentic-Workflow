@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Rg Resume Builder - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_rg_resume_builder(data: Dict[str, object]) -> Dict[str, object]:

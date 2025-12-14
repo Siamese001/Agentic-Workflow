@@ -1,7 +1,6 @@
 """Implementation for constitutional_ai."""
 import logging
 
-
 logger = logging.getLogger(__name__)
 # from .constitutional_ai_types import *  # Star import removed
 

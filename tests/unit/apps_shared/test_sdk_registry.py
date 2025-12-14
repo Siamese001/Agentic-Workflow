@@ -1,10 +1,10 @@
 """Unit tests for runtime/shared/sdk_registry.py"""
-import pytest
-from unittest.mock import patch, MagicMock
-from runtime.shared.sdk_registry import (
-import logging
+from unittest.mock import MagicMock, patch
 
-logger = logging.getLogger(__name__)
+import pytest
+from runtime.shared.sdk_registry import (=, __name__, import, logger, logging,
+                                         logging.getLogger)
+
     SDK_REGISTRY,
     SDKEntry,
     validate_sdk,

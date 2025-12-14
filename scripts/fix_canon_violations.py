@@ -5,11 +5,12 @@ Fix all canon violations to achieve 50/50 pass rate.
 This script renames directories and files to comply with the canon.
 """
 
+import logging
 import os
-import scripts.validation.check_canonical_structure
 import shutil
 from pathlib import Path
-import logging
+
+import scripts.validation.check_canonical_structure
 
 ROOT = Path(__file__).resolve().parent
 

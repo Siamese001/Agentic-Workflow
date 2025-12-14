@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Check Message Quality - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def check_message_quality(data: Dict[str, object]) -> Dict[str, object]:

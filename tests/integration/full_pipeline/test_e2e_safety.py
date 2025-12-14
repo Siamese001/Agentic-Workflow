@@ -8,8 +8,10 @@ logger = logging.getLogger(__name__)
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.config.agent_profile import AgentCard
 # from archives.legacy_root_folders.core.models.models import AgentRole
 
-import pytest
 import logging
+
+import pytest
+
 
 @pytest.mark.skip(reason="Waiting for legacy agent registry implementation")
 def test_choose_agents_for_strategy_task_prefers_planner() -> None:

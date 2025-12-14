@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Compute Personalization Match - atomic implementation."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 class ComputePersonalizationMatch:

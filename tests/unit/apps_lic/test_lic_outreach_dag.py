@@ -5,10 +5,12 @@
 # ================================================================================
 
 """Tests for OutreachStack coordination logic."""
-import pytest
-from typing import Dict, Any
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
+from typing import Any, Dict
+
+import pytest
+
 
 # Mock implementations for testing
 @dataclass

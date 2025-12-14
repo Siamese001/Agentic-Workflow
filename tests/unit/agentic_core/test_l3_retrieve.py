@@ -1,8 +1,7 @@
 """Unit tests for L3_orchestration/P1_retrieve - workflow context retrieval."""
 
-from typing import Dict
 import logging
-
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 

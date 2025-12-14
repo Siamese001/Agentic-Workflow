@@ -4,7 +4,7 @@
 import ast
 import logging
 import os
-from typing import List, Set, Dict, Any, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

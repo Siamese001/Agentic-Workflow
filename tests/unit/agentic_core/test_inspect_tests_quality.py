@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 """Test Inspect Tests Quality - atomic execution layer."""
 
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def test_inspect_tests_quality(data: Dict[str, object]) -> Dict[str, object]:

@@ -4,11 +4,12 @@ logger = logging.getLogger(__name__)
 Comprehensive integration tests for hardened orchestrator functionality.
 Tests atomic state management, resilient routing, circuit breaker, and recovery.
 """
-import pytest
+import logging
 import tempfile
 
+import pytest
 from runtime.shared.state import get_state_manager, reset_state_manager
-import logging
+
 
 @pytest.fixture(autouse=True)
 def reset_singletons():

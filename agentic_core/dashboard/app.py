@@ -7,12 +7,13 @@ Visual UI to debug agents using Streamlit.
 Provides timeline views, thought process inspection, and tool performance analytics.
 """
 
-import streamlit as st
-import pandas as pd
 import json
+import logging
 import sys
 from pathlib import Path
-import logging
+
+import pandas as pd
+import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 

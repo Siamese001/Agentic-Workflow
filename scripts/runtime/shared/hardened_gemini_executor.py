@@ -10,8 +10,8 @@ Military-grade reliability for Google GenAI v1beta with:
 
 import logging
 import time
-from typing import Any, Dict, List, Optional, Union
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Union
 
     retry,
     retry_if_exception_type,

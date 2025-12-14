@@ -3,8 +3,8 @@ logger = logging.getLogger(__name__)
 # -*- coding: utf-8 -*-
 """Validate Resume Constraints - atomic execution layer."""
 
-from typing import Dict
 import logging
+from typing import Dict
 
 
 def validate_resume_constraints(data: Dict[str, object]) -> Dict[str, object]:

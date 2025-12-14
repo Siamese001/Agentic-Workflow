@@ -1,9 +1,8 @@
 """Unit tests for L4_memory/P2_inspect - memory inspection operations."""
 
-from typing import Dict, List
-from datetime import datetime, timedelta
 import logging
-
+from datetime import datetime, timedelta
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 

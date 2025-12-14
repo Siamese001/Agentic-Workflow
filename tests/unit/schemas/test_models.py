@@ -1,6 +1,6 @@
 """Unit tests for runtime/shared/models.py"""
-from enum import Enum
 import logging
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 # Utils classes don't exist yet, skipping import

@@ -7,8 +7,8 @@ Coordinates between Brain (cognitive) and Hands (action).
 L3 Orchestration: Manages the Think-Act-Observe cycle.
 """
 
-from typing import Any, Dict, List, Optional
 import logging
+from typing import Any, Dict, List, Optional
 
 
 class ExecutionPhase(Enum):

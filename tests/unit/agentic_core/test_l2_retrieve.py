@@ -1,8 +1,7 @@
 """Unit tests for L2_execution/P1_retrieve - execution context retrieval."""
 
-from typing import Dict
 import logging
-
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 

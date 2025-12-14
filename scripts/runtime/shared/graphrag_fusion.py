@@ -7,9 +7,8 @@ traversal to enable multi-hop reasoning and relationship-based queries.
 import asyncio
 import logging
 import re
-from enum import Enum
 from dataclasses import dataclass
-
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ queries and serve cached responses instantly.
 import json
 import logging
 import time
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 

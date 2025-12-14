@@ -6,7 +6,6 @@ Tests the Resume Engine functionality with proper mocking to avoid API calls.
 """
 import logging
 
-
 # Test the core logic without requiring API keys
 
 def test_job_analyzer_with_mocked_client() -> None:
@@ -88,7 +87,8 @@ def test_execute_resume_generation_with_mocked_components() -> None:
          patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as MockGenerator:
 
         # Import after patching
-        from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
+        from apps_rg.L2_execution.execute_resume_generation import \
+            ExecuteResumeGeneration
 
         # Setup mocks
         mock_analyzer = Mock()

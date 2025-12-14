@@ -3,11 +3,12 @@ OpenAI client configuration and utilities for agents.
 Provides a centralized way to configure and use OpenAI SDK.
 """
 
-import os
-from typing import Optional, Dict, Any
-from openai import OpenAI, AsyncOpenAI
-from openai.types.chat import ChatCompletion
 import logging
+import os
+from typing import Any, Dict, Optional
+
+from openai import AsyncOpenAI, OpenAI
+from openai.types.chat import ChatCompletion
 
 logger = logging.getLogger(__name__)
 
