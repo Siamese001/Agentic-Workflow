@@ -2,9 +2,9 @@
 import os
 import re
 from typing import List
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 
 def get_python_files(root_dir: str='.') -> List[str]:
     """Get all Python files excluding common directories."""

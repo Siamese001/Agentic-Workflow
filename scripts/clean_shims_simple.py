@@ -70,8 +70,8 @@ def clean_prompt_governance():
             # Replace the import
             LINES = content.split('\n')
             for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import:                     lines[i] = f"from .{import_from} import *"
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
+# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     lines[i] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
             logger.info(f# SQL query removed)

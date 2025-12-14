@@ -1,9 +1,9 @@
 """Unit tests for L3_orchestration/P3_aggregate - workflow result aggregation."""
 import logging
 from typing import Any
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

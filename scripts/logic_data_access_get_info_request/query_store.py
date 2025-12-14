@@ -1,10 +1,10 @@
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 _logger = logging.getLogger(__name__)
 '\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n'
 import logging
 from typing import Dict, List, Optional
-
 logger = logging.getLogger(__name__)
 
 class StoredPrompt:

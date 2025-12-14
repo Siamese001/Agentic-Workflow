@@ -6,9 +6,9 @@ Migrated from archives/engines/legacy_engines/safety_enhancements.py
 import logging
 import re
 from typing import List, Set
-
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 class BiasType(Enum):

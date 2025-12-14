@@ -1,12 +1,12 @@
 from services.configuration import ConfigurationService
-
+from services.configuration import ConfigurationService
+from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 'Automated fix for common syntax errors in Python files.'
 import ast
 import logging
 from pathlib import Path
 from typing import Tuple
-
 logger = logging.getLogger(__name__)
 
 def fix_docstring_in_signature(content: str) -> str:
