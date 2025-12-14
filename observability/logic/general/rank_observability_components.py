@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 

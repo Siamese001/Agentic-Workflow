@@ -1,7 +1,6 @@
 """MCP-specific exceptions.
 
 
-logger = logging.getLogger(__name__)
 Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 

@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """

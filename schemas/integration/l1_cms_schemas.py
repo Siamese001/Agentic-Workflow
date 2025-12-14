@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 CMS (Content Management System) schemas for prompt validation.
 
 This module provides schema definitions for prompt validation and structure.

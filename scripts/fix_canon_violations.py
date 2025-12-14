@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
 Fix all canon violations to achieve 50/50 pass rate.

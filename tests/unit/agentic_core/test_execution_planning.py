@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-
 """Test Execution Planning - atomic execution layer."""

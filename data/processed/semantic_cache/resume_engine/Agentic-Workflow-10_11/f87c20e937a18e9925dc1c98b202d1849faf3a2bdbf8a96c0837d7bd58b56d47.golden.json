@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Central engine that wires together planning, execution, agent reasoning, routing, and workflow graphs so resumes are improved in a consistent, high-quality way over time.\nNote: Layer modules (l1, l2, l3, l4, l5), cognitive_agents, and workflow_graph\nare now imported directly from the root level, not from core.\nExample:\nimport l1\nfrom l2.agents import StrategyLLMAgent\nfrom orchestration.workflow_graph import run_workflow_graph\n\"\"\"",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

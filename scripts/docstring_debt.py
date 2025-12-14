@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 DOCSTRING DEBT REGISTRY
 Generated: 2025-12-08
 These symbols lack proper docstrings and are acknowledged as technical debt.

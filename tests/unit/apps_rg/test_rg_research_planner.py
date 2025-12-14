@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 # Ownership: apps_rg / unknown
 # -*- coding: utf-8 -*-
 """Test Rg Research Planner - atomic implementation."""

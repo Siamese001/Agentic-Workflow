@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Shared runtime components for Agentic Workflow.
 """
 

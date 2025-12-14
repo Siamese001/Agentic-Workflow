@@ -1,5 +1,4 @@
 
-logger = logging.getLogger(__name__)
 try:
     from neo4j import GraphDatabase
 except ImportError:

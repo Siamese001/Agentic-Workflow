@@ -1,7 +1,6 @@
 """Observability - Runtime Layer
 
 
-logger = logging.getLogger(__name__)
 This module provides observability compatibility shim.
 
 Layer: Runtime/Infrastructure

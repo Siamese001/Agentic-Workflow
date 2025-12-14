@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nL1 planning layer for resume drafting strategy and content optimization.\nCreates structured plans to guide comprehensive resume content\nimprovement and job alignment.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, List\n@dataclass\nclass DraftPlan:\n\"\"\"\nDefines resume drafting strategy and structure.\nEnsures systematic approach to enhance resume alignment\nwith job requirements for better applications.\n\"\"\"\nsections: List[str]\ntone: str\nfocus_areas: List[str]\nreasoning: str\ndef plan_drafting(strategy_result: Any, job: Any, resume: Any) -> DraftPlan:\n\"\"\"\nCreates comprehensive resume drafting plan.\nOutlines structured approach to improve resume content\nand job alignment for better applications.\n\"\"\"\nreturn DraftPlan(\nsections=[\"summary\", \"experience\", \"skills\"],\ntone=\"professional\",\nfocus_areas=[\"technical_skills\", \"leadership\"],\nreasoning=\"Align resume with job requirements\"\n)",
-  "normalized_signature": "func:plan_drafting;class:DraftPlan",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:plan_drafting",
-  "test_coverage": []
-}

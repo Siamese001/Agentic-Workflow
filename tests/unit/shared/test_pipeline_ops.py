@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Unit tests for shared/pipeline_ops/
 Tests pipeline operations including data access, guardrails, and synthesis.
 """

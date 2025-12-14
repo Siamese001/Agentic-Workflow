@@ -1,9 +1,0 @@
-{
-  "canonical_form": "V7.0 RESUME GENERATION ENGINE - FILES INDEX\n============================================\nDOCUMENTATION\n-------------\n\ud83d\udcc4 QUICK_START.md - Quick start guide for v7.0\n\ud83d\udcc4 V7.0_REFACTOR_SUMMARY.md - Complete technical refactor summary\n\ud83d\udcc4 FILES_INDEX.txt - This file\nCORE APPLICATION FILES\n----------------------\n\ud83d\udd27 requirements.txt - Python dependencies (includes LangGraph, Redis)\n\u2699\ufe0f master_config_v7_0.json - Configuration (Redis + LangSmith settings)\n\ud83c\udfaf core_v7_0.py - Core models and utilities (+GraphState TypedDict)\n\ud83e\udd16 agent_swarm_v7_0.py - All agents + LangGraph orchestrator\n\ud83d\ude80 main_v7_0.py - Main entry point (Redis + LangSmith setup)\nBATCH & LEARNING\n----------------\n\ud83d\udce6 run_batch_v7_0.py - Parallel batch processing\n\ud83e\udde0 run_learning_v7_0.py - Meta-learning feedback loop\nKEY CHANGES FROM V6.5\n---------------------\n\u2705 Added: LangGraph StateGraph orchestration\n\u2705 Added: Redis persistence for resumable workflows\n\u2705 Added: LangSmith tracing for observability\n\u274c Deleted: Governor class (replaced by LangGraph)\n\u274c Deleted: CrewOrchestrator class (replaced by graph_app)\n\u274c Deleted: WorkflowV65 class (replaced by graph invocation)\nUSAGE\n-----\n1. Install: pip install -r requirements.txt\n2. Start Redis: docker run -d -p 6379:6379 redis:latest\n3. Run: python main_v7_0.py -j job_input.json -m master_resume.json\nSee QUICK_START.md for detailed instructions.\nSee V7.0_REFACTOR_SUMMARY.md for complete technical details.\nArchitecture Version: 7.0.0-langgraph-redis\nGenerated: November 8, 2025",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": [
-    "contains_tests"
-  ]
-}

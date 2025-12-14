@@ -1,6 +1,5 @@
 """
 
-logger = logging.getLogger(__name__)
 Unit tests for Constitutional AI System logic expansion.
 Tests the LLM-based evaluation and revision functionality.
 """

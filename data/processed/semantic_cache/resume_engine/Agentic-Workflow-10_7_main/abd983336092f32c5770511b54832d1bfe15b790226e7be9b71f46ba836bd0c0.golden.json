@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Public entry points for the vendored Pydantic shim.\"\"\"\nfrom .main import BaseModel, ConfigDict, Field, ValidationError\n__all__ = [\"BaseModel\", \"ConfigDict\", \"Field\", \"ValidationError\"]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

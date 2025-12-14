@@ -1,7 +1,0 @@
-{
-  "canonical_form": "```\nresume_gen_files/\n\u251c\u2500\u2500 workflow_RES_v2.py # Main orchestrator (180K)\n\u251c\u2500\u2500 run_workflow_RES_v2.py # Launcher (11K)\n\u251c\u2500\u2500 governor.py # V2 agents (34K)\n\u251c\u2500\u2500 config_RES.py # Config + GovernorConfig (20K)\n\u251c\u2500\u2500 models_RES.py # Data models (15K)\n\u251c\u2500\u2500 utils_RES.py # Utilities (33K)\n\u251c\u2500\u2500 rag_RES.py # RAG + LibrarianAgent (46K)\n\u251c\u2500\u2500 prompts_RES.py # Prompt templates (30K)\n\u251c\u2500\u2500 validation_RES.py # Validators (132K)\n\u251c\u2500\u2500 state_manager_RES.py # State persistence (14K)\n\u2514\u2500\u2500 *.json # Data files (8 files)\n```\n```bash\npython run_workflow_RES_v2.py --job-input job_input.json\npython run_workflow_RES_v2.py --resume-id <run_id>\npython run_workflow_RES_v2.py --list-runs\n```\n```python\nfrom workflow_RES_v2 import WorkflowOrchestrator\nfrom governor import PolicyAgent, CostRouter, ContextRelayLayer\nfrom config_RES import CONFIG\nfrom models_RES import ResumeSection, ValidationResult\nfrom utils_RES import TextUtils, CodeInterpreterTool\nfrom rag_RES import EnhancedJobDescriptionAnalyzer\nfrom validation_RES import PreFlightValidator\n```\n- All modules: v17.00\n- Architecture: V2 Agentic with Async Governor\n- Python: 3.8+\n- Status: Production Ready \u2705",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

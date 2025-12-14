@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Shared constants and helpers for core v10.7.\"\"\"\nfrom __future__ import annotations\nLEGACY_MODEL_ALIASES = {\n\"gemini-2.5-pro\": \"gemini-pro\",\n\"gemini-2.5-flash\": \"gemini-flash\",\n}\nLEGACY_MODEL_REVERSE = {alias: original for original, alias in LEGACY_MODEL_ALIASES.items()}\ndef legacy_model_alias(model_name: str) -> str:\n\"\"\"Return the canonical alias for legacy Gemini model names.\"\"\"\nreturn LEGACY_MODEL_ALIASES.get(model_name, model_name)\ndef canonical_model_name(model_name: str) -> str:\n\"\"\"Map aliased model names back to the canonical identifier.\"\"\"\nreturn LEGACY_MODEL_REVERSE.get(model_name, model_name)\n__all__ = [\n\"LEGACY_MODEL_ALIASES\",\n\"LEGACY_MODEL_REVERSE\",\n\"legacy_model_alias\",\n\"canonical_model_name\",\n]",
-  "normalized_signature": "func:legacy_model_alias;func:canonical_model_name",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:legacy_model_alias,canonical_model_name",
-  "test_coverage": []
-}
