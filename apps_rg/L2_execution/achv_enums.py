@@ -1,5 +1,4 @@
 """Enum types for achv_bullet_synthesizer_types."""
-import logging
 
 
 

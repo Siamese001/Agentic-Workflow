@@ -1,5 +1,4 @@
 """Enum types for lic_cta_patterns."""
-import logging
 
 
 

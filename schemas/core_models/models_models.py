@@ -1,7 +1,6 @@
 """Dataclass models for models."""
 
 from typing import Any, Dict, List, Optional
-import logging
 
 # from .models_enums import *  # Star import removed
 

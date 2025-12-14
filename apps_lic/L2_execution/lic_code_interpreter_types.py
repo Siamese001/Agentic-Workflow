@@ -1,5 +1,4 @@
 """Types and models for lic_code_interpreter."""
-import logging
 
 
 

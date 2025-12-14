@@ -1,5 +1,4 @@
 """Dataclass models for lic_cta_patterns."""
-import logging
 
 
 # from .lic_cta_patterns_enums import *  # Star import removed

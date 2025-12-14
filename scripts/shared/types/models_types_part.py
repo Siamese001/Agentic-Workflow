@@ -1,7 +1,6 @@
 """Split module 1 for models_types."""
 
 from typing import Any, Dict, List, Optional
-import logging
 
 
 class ValidationSeverity(Enum):

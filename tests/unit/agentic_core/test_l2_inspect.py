@@ -1,6 +1,5 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
 from typing import Dict
-import logging
 
 
 class TestExecutionResultInspection:

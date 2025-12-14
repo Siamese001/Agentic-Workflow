@@ -1,5 +1,4 @@
 """RAG scoring components."""
-import logging
 
 
 

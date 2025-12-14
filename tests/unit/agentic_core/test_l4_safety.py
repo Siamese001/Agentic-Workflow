@@ -1,7 +1,5 @@
-from typing import Any
 """Unit tests for L4_memory/P4_safety - memory safety operations."""
 import re
-import logging
 
 
 class TestMemorySafety:

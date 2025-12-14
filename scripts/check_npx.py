@@ -1,4 +1,3 @@
-from typing import Any
 """Check npx installation and package availability."""
 
 import subprocess

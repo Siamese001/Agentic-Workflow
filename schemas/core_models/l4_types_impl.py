@@ -1,5 +1,4 @@
 """Implementation for l4_types."""
-import logging
 
 
 # from .l4_types_types import *  # Star import removed

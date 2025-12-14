@@ -1,5 +1,4 @@
 """Types and models for rg_provenance_tracker."""
-import logging
 
 
 

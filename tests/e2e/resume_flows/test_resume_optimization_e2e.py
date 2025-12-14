@@ -1,6 +1,4 @@
-from typing import Any
 """E2E tests for resume optimization flows."""
-import logging
 
 
 class TestResumeOptimizationE2E:

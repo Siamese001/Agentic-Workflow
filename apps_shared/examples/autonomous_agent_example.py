@@ -59,26 +59,26 @@ async def complex_analysis_task(goal: str, context: dict) -> dict:
 async def demonstrate_episodic_memory():
     """Demonstrate episodic memory capabilities."""
     # print("\n=== Episodic Memory Demo ===") # TODO: Replace with logger (Key 02)
-    
+
     # Create config with memory enabled
     autonomy_config = AutonomyConfig(
         enable_episodic_memory=True,
         memory_similarity_threshold=0.8,
         memory_min_rating=0.6
     )
-    
+
     config = AutonomousHopConfig(
         autonomy=autonomy_config,
         storage_path="./demo_memory_store"
     )
-    
+
     # Create autonomous hop
     hop = create_autonomous_hop(
         hop_function=research_task,
         config=config,
         initial_context={"agent_role": "RESEARCHER"}
     )
-    
+
     # First execution - will be committed to memory
     # print("\nFirst execution (learning phase):") # TODO: Replace with logger (Key 02)
     result1 = await hop.run(
@@ -86,7 +86,7 @@ async def demonstrate_episodic_memory():
         context={"year": 2024}
     )
     # print(f"Result: {result1}") # TODO: Replace with logger (Key 02)
-    
+
     # Commit to memory
     await hop.commit_execution_to_memory(
         task="Analyze market trends for AI technology",
@@ -95,7 +95,7 @@ async def demonstrate_episodic_memory():
         success=True,
         tools_used=["search_tool", "analysis_tool"]
     )
-    
+
     # Second execution - will recall from memory
     # print("\nSecond execution (with memory recall):") # TODO: Replace with logger (Key 02)
     result2 = await hop.run(
@@ -103,7 +103,7 @@ async def demonstrate_episodic_memory():
         context={"year": 2024}
     )
     # print(f"Result: {result2}") # TODO: Replace with logger (Key 02)
-    
+
     if hop.memory_context:
         # print(f"\nMemory recalled: {hop.memory_context[:200]}...") # TODO: Replace with logger (Key 02)
 
@@ -111,7 +111,7 @@ async def demonstrate_episodic_memory():
 async def demonstrate_reasoning_kernel():
     """Demonstrate System 2 thinking capabilities."""
     # print("\n=== Reasoning Kernel Demo ===") # TODO: Replace with logger (Key 02)
-    
+
     # Create config with reasoning enabled
     autonomy_config = AutonomyConfig(
         enable_reasoning_kernel=True,
@@ -119,16 +119,16 @@ async def demonstrate_reasoning_kernel():
         reasoning_critique_threshold=0.7,
         enable_tree_of_thoughts=True
     )
-    
+
     config = AutonomousHopConfig(autonomy=autonomy_config)
-    
+
     # Create autonomous hop
     hop = create_autonomous_hop(
         hop_function=coding_task,
         config=config,
         initial_context={"agent_role": "CODER"}
     )
-    
+
     # Execute with reasoning
     # print("\nExecuting with System 2 thinking:") # TODO: Replace with logger (Key 02)
     result = await hop.run(
@@ -136,9 +136,9 @@ async def demonstrate_reasoning_kernel():
         constraints=["Must handle large datasets", "Should be memory efficient"],
         context={"requirements": ["pandas", "matplotlib"]}
     )
-    
+
     # print(f"Result: {result}") # TODO: Replace with logger (Key 02)
-    
+
     if hop.reasoning_trace:
         # print(f"\nReasoning confidence: {hop.reasoning_trace.confidence:.2f}") # TODO: Replace with logger (Key 02)
         # print(f"Candidates considered: {len(hop.reasoning_trace.candidates)}") # TODO: Replace with logger (Key 02)
@@ -148,32 +148,32 @@ async def demonstrate_reasoning_kernel():
 async def demonstrate_dynamic_tools():
     """Demonstrate dynamic tool discovery."""
     # print("\n=== Dynamic Tool Discovery Demo ===") # TODO: Replace with logger (Key 02)
-    
+
     # Create config with tool discovery enabled
     autonomy_config = AutonomyConfig(
         enable_dynamic_tools=True,
         tool_max_matches=3,
         tool_min_relevance=0.6
     )
-    
+
     config = AutonomousHopConfig(autonomy=autonomy_config)
-    
+
     # Create autonomous hop
     hop = create_autonomous_hop(
         hop_function=coding_task,
         config=config,
         initial_context={"agent_role": "CODER"}
     )
-    
+
     # Execute with tool discovery
     # print("\nExecuting with dynamic tool discovery:") # TODO: Replace with logger (Key 02)
     result = await hop.run(
         goal="Process CSV file and calculate statistics",
         plan="Use file reading tools and calculation utilities"
     )
-    
+
     # print(f"Result: {result}") # TODO: Replace with logger (Key 02)
-    
+
     if hop.selected_tools:
         # print(f"\nTools discovered and used:") # TODO: Replace with logger (Key 02)
         for tool in hop.selected_tools:
@@ -183,23 +183,23 @@ async def demonstrate_dynamic_tools():
 async def demonstrate_recursive_planning():
     """Demonstrate recursive planning for complex tasks."""
     # print("\n=== Recursive Planning Demo ===") # TODO: Replace with logger (Key 02)
-    
+
     # Create config with recursive planning enabled
     autonomy_config = AutonomyConfig(
         enable_recursive_planning=True,
         planner_max_depth=3,
         planner_max_parallel=5
     )
-    
+
     config = AutonomousHopConfig(autonomy=autonomy_config)
-    
+
     # Create autonomous hop
     hop = create_autonomous_hop(
         hop_function=complex_analysis_task,
         config=config,
         initial_context={"agent_role": "RESEARCHER"}
     )
-    
+
     # Execute complex task
     # print("\nExecuting complex task with recursive planning:") # TODO: Replace with logger (Key 02)
     result = await hop.run(
@@ -209,14 +209,14 @@ async def demonstrate_recursive_planning():
             "requirements": ["real-time processing", "anomaly detection"]
         }
     )
-    
+
     # print(f"Result: {result}") # TODO: Replace with logger (Key 02)
 
 
 async def demonstrate_full_autonomy():
     """Demonstrate all autonomy features working together."""
     # print("\n=== Full Autonomy Integration Demo ===") # TODO: Replace with logger (Key 02)
-    
+
     # Create config with all features enabled
     autonomy_config = AutonomyConfig(
         enable_episodic_memory=True,
@@ -226,19 +226,19 @@ async def demonstrate_full_autonomy():
         memory_similarity_threshold=0.85,
         reasoning_critique_threshold=0.7
     )
-    
+
     config = AutonomousHopConfig(
         autonomy=autonomy_config,
         storage_path="./full_autonomy_store"
     )
-    
+
     # Create autonomous hop with all features
     hop = create_autonomous_hop(
         hop_function=complex_analysis_task,
         config=config,
         initial_context={"agent_role": "DATA_ANALYST"}
     )
-    
+
     # Execute complex task
     # print("\nExecuting with full autonomy enabled:") # TODO: Replace with logger (Key 02)
     result = await hop.run(
@@ -250,21 +250,21 @@ async def demonstrate_full_autonomy():
             "team_size": 3
         }
     )
-    
+
     # print(f"\nFinal Result: {result}") # TODO: Replace with logger (Key 02)
-    
+
     # Show autonomy insights
     # print("\n=== Autonomy Insights ===") # TODO: Replace with logger (Key 02)
-    
+
     if hop.memory_context:
         # print("✓ Episodic memory: Retrieved relevant past experience") # TODO: Replace with logger (Key 02)
-    
+
     if hop.reasoning_trace:
         # print(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # TODO: Replace with logger (Key 02)
-    
+
     if hop.selected_tools:
         # print(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # TODO: Replace with logger (Key 02)
-    
+
     # Commit the full execution to memory
     await hop.commit_execution_to_memory(
         task="Build a machine learning model to predict customer churn",
@@ -273,7 +273,7 @@ async def demonstrate_full_autonomy():
         success=True,
         tools_used=[t["name"] for t in hop.selected_tools]
     )
-    
+
     # print("✓ Execution committed to episodic memory for future learning") # TODO: Replace with logger (Key 02)
 
 
@@ -281,20 +281,20 @@ async def main():
     """Run all autonomy demonstrations."""
     # print("🤖 Autonomous Agent System Demo") # TODO: Replace with logger (Key 02)
     # print("=" * 50) # TODO: Replace with logger (Key 02)
-    
+
     try:
         # Run individual demos
         await demonstrate_episodic_memory()
         await demonstrate_reasoning_kernel()
         await demonstrate_dynamic_tools()
         await demonstrate_recursive_planning()
-        
+
         # Run full integration demo
         await demonstrate_full_autonomy()
-        
+
         # print("\n" + "=" * 50) # TODO: Replace with logger (Key 02)
         # print("✅ All autonomy demonstrations completed successfully!") # TODO: Replace with logger (Key 02)
-        
+
     except Exception as e:
         logger.error(f"Demonstration failed: {e}")
         raise

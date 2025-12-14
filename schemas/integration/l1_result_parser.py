@@ -1,5 +1,4 @@
 """L1 Result Parser - Pure result parsing logic only."""
-import logging
 
 
 
