@@ -8,7 +8,7 @@ rather than being hardcoded with a fixed set of tools.
 import json
 import logging
 import inspect
-from typing import List, Dict, Any, Callable, Optional, Tuple
+from typing import List, Dict, Any, Callable, Optional
 from dataclasses import dataclass, field
 import numpy as np
 

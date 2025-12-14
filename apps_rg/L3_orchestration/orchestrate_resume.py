@@ -6,7 +6,6 @@
 from typing import Dict, List
 
 from shared.configuration.config import ContentConstraintsConfig
-import logging
 
 
 class ResumeOrchestrator:

@@ -4,7 +4,6 @@
 """Apply Outreach Safety Policy - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def apply_outreach_safety_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process apply outreach safety policy data."""

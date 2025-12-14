@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_coordinate_tests_operations(data: Dict[str, object]) -> Dict[str, object]:
     """Process test coordinate tests operations data."""

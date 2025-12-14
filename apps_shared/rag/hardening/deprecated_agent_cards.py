@@ -1,6 +1,5 @@
 
 import pytest
-import logging
 
 
 # from archives.legacy_root_folders.core.models.models import AgentCard, AgentRole  # DEPRECATED:...

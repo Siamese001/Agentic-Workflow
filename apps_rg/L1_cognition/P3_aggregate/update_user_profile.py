@@ -4,7 +4,6 @@
 """# SQL removed: Update User Profile - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class UpdateUserProfile:
     """Docstring."""

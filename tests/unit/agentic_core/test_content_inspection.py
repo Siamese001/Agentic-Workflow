@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_content_inspection(data: Dict[str, object]) -> Dict[str, object]:
     """Process test content inspection data."""

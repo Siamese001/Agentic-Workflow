@@ -4,7 +4,6 @@
 """Search Similar Messages - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class SearchSimilarMessages:
     """SearchSimilarMessages implementation."""

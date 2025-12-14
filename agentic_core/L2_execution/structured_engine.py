@@ -6,7 +6,7 @@ No more "I hope this parses" - the LLM physically cannot output invalid structur
 """
 
 import logging
-from typing import List, Optional, Literal, Dict, Any
+from typing import List, Literal, Dict, Any
 from pydantic import BaseModel, Field, field_validator
 
 logger = logging.getLogger(__name__)

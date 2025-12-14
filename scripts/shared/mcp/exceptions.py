@@ -6,7 +6,6 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 
 class MCPError(Exception):
     """Base exception for MCP-related errors."""
-    pass
 
 class MCPClientInitializationError(MCPError):
     """Raised when an MCP client fails to initialize."""

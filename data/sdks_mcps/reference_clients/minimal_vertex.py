@@ -3,8 +3,7 @@ Production-ready minimal client for quick integration with grounding.
 """
 
 import os
-import json
-from vertexai.generative_models import GenerativeModel, Content, Part
+from vertexai.generative_models import GenerativeModel
 from vertexai import init as vertex_init
 
 def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:

@@ -1,7 +1,0 @@
-    DEEP NESTING: '.\data\processed\semantic_cache\Agentic_Workflow-10_10' (Depth 4 > 3)
-    DEEP NESTING: '.\data\prompt_governance\engines\outreach_engine' (Depth 4 > 3)
-    DEEP NESTING: '.\data\prompt_governance\engines\resume_engine' (Depth 4 > 3)
-    DEEP NESTING: '.\data\prompt_governance\governance\schemas' (Depth 4 > 3)
-    DEEP NESTING: '.\data\prompt_governance\registry\prompts' (Depth 4 > 3)
-    DEEP NESTING: '.\data\prompt_governance\registry\version_map' (Depth 4 > 3)
-    DEEP NESTING: '.\data\prompt_governance\security_controls\adversarial_patterns' (Depth 4 > 3)

@@ -87,7 +87,6 @@ class IActionPlane(ABC):
         Returns:
             ActionResult with output or error
         """
-        pass
 
     @abstractmethod
     async def execute_batch(
@@ -105,7 +104,6 @@ class IActionPlane(ABC):
         Returns:
             List of action results
         """
-        pass
 
     @abstractmethod
     async def validate_action(
@@ -121,7 +119,6 @@ class IActionPlane(ABC):
         Returns:
             Validation result with any warnings
         """
-        pass
 
     @abstractmethod
     def get_available_tools(self) -> List[str]:
@@ -130,7 +127,6 @@ class IActionPlane(ABC):
         Returns:
             List of tool names
         """
-        pass
 
     @abstractmethod
     def get_tool_schema(self, tool_name: str) -> Dict[str, Any]:
@@ -142,7 +138,6 @@ class IActionPlane(ABC):
         Returns:
             Tool schema with parameters and types
         """
-        pass
 
     @abstractmethod
     def get_capabilities(self) -> List[ActionCapability]:
@@ -151,4 +146,3 @@ class IActionPlane(ABC):
         Returns:
             List of capabilities this plane supports
         """
-        pass

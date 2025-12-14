@@ -4,7 +4,6 @@
 """Enforce Execution Policy - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def enforce_execution_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process enforce execution policy data."""

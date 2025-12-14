@@ -12,12 +12,10 @@ Currently depends on legacy execution functions that need implementation.
 """
 
 import pytest
-import logging
 
 # Mock exceptions since they're zombie file dependencies
 class OrchestrationError(Exception):
     """Orchestration error for tool routing."""
-    pass
 
 # Mock PlanObject since it's a zombie file dependency
 class PlanObject:
@@ -40,7 +38,6 @@ def test_route_executor_strategy_mode() -> None:
     correctly routes to the strategy executor function.
     """
     # Test routing to strategy executor
-    pass
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_qa_mode() -> None:
@@ -51,7 +48,6 @@ def test_route_executor_qa_mode() -> None:
     correctly routes to the QA executor function.
     """
     # Test routing to QA executor
-    pass
 
 @pytest.mark.skip(reason="Waiting for legacy L2 execution functions implementation")
 def test_route_executor_invalid_mode() -> None:
@@ -65,4 +61,3 @@ def test_route_executor_invalid_mode() -> None:
     # plan = PlanObject(mode="invalid")
     # with pytest.raises(OrchestrationError):
     #     route_executor(plan)
-    pass

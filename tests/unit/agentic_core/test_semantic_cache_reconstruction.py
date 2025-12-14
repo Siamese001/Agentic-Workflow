@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_semantic_cache_reconstruction(data: Dict[str, object]) -> Dict[str, object]:
     """Process test semantic cache reconstruction data."""

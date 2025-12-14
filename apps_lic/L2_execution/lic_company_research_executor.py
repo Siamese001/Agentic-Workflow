@@ -4,7 +4,6 @@
 """Lic Company Research Executor - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def lic_company_research_executor(data: Dict[str, object]) -> Dict[str, object]:
     """Process lic company research executor data."""

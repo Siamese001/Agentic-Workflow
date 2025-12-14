@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 class SecurityIntegrityError(Exception):
     """Raised when input fails security validation."""
-    pass
 
 class InputSanitizer:
     """Stateless utility class for sanitizing all user input.

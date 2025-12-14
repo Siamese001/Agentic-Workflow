@@ -4,7 +4,6 @@
 """Validate Ethical Standards - atomic execution layer."""
 
 from typing import Dict
-import logging
 
 def validate_ethical_standards(data: Dict[str, object]) -> Dict[str, object]:
     """Process validate ethical standards data."""

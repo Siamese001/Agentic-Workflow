@@ -6,7 +6,6 @@
 
 from typing import Iterable, Type
 from pydantic import BaseModel
-import logging
 
 def _get_schema_version(obj: object) -> str | None:
     """Best-effort function to read a schema_version attribute from a model.

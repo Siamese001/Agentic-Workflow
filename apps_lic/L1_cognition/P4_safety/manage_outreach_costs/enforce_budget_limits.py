@@ -4,7 +4,6 @@
 """Enforce Budget Limits - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class EnforceBudgetLimits:
     """EnforceBudgetLimits implementation."""

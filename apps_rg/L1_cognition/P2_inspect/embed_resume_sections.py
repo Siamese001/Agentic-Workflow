@@ -4,7 +4,6 @@
 """Embed Resume Sections - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class EmbedResumeSections:
     """EmbedResumeSections implementation."""

@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_intent_parsing(data: Dict[str, object]) -> Dict[str, object]:
     """Process test intent parsing data."""

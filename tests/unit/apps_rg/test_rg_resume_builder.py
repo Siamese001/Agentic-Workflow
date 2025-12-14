@@ -5,7 +5,6 @@
 
 
 from typing import Dict
-import logging
 
 def test_rg_resume_builder(data: Dict[str, object]) -> Dict[str, object]:
     """Process test rg resume builder data."""

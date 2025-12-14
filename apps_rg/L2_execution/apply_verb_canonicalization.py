@@ -10,7 +10,6 @@ Canonicalizes action verbs to approved list and detects forbidden verbs.
 """
 
 from typing import Dict, List
-import logging
 
 class VerbCanonicalizer:
     """Canonicalize action verbs to approved list."""

@@ -110,7 +110,6 @@ class IOrchestrator(ABC):
             action_plane: The hands (tool execution)
             config: Orchestrator configuration
         """
-        pass
 
     @abstractmethod
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
@@ -122,7 +121,6 @@ class IOrchestrator(ABC):
         Returns:
             ExecutionResult with output and trace
         """
-        pass
 
     @abstractmethod
     async def execute_step(
@@ -140,7 +138,6 @@ class IOrchestrator(ABC):
         Returns:
             Phase result
         """
-        pass
 
     @abstractmethod
     async def think(self, context: ExecutionContext) -> Dict[str, Any]:
@@ -152,7 +149,6 @@ class IOrchestrator(ABC):
         Returns:
             Planning result with next actions
         """
-        pass
 
     @abstractmethod
     async def act(
@@ -170,7 +166,6 @@ class IOrchestrator(ABC):
         Returns:
             List of action results
         """
-        pass
 
     @abstractmethod
     async def observe(
@@ -188,7 +183,6 @@ class IOrchestrator(ABC):
         Returns:
             Observations and state updates
         """
-        pass
 
     @abstractmethod
     async def should_continue(self, context: ExecutionContext) -> bool:
@@ -200,7 +194,6 @@ class IOrchestrator(ABC):
         Returns:
             True if should continue, False if done
         """
-        pass
 
     @abstractmethod
     def get_state(self) -> Dict[str, Any]:
@@ -209,7 +202,6 @@ class IOrchestrator(ABC):
         Returns:
             Current state snapshot
         """
-        pass
 
     @abstractmethod
     async def save_state(self, path: str) -> None:
@@ -218,7 +210,6 @@ class IOrchestrator(ABC):
         Args:
             path: Path to save state
         """
-        pass
 
     @abstractmethod
     async def load_state(self, path: str) -> None:
@@ -227,4 +218,3 @@ class IOrchestrator(ABC):
         Args:
             path: Path to load state from
         """
-        pass

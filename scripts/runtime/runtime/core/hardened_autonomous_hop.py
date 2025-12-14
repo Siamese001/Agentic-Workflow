@@ -11,16 +11,13 @@ This creates agents that are "hard-constrained" - they physically cannot misbeha
 """
 
 import logging
-import asyncio
 from typing import Dict, Any, Optional, Callable, List
 from dataclasses import dataclass, field
-from pathlib import Path
 
 # Import base autonomous hop
 from .autonomous_subatomic_hop import (
     AutonomousSubatomicHop,
-    AutonomousHopConfig,
-    AutonomyConfig
+    AutonomousHopConfig
 )
 
 # Import hardening components
@@ -52,8 +49,7 @@ from .telemetry import (
     TraceEvent,
     create_telemetry_recorder,
     generate_trace_id,
-    generate_span_id,
-    TelemetryContext
+    generate_span_id
 )
 
 logger = logging.getLogger(__name__)

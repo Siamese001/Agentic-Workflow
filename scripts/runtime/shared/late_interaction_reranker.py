@@ -41,7 +41,6 @@ class LateInteractionReranker:
             return False
         # Try to check availability without loading
         try:
-            from sentence_transformers import CrossEncoder
             return True
         except ImportError:
             logger.warning("sentence_transformers not available, reranker will be in fallback mode")

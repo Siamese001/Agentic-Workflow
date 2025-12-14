@@ -5,10 +5,9 @@ Provides an ephemeral execution environment where agents can run dangerous code
 without destroying your laptop. Spins up containers, captures output, and nukes them.
 """
 
-import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -83,7 +83,6 @@ class ICognitivePlane(ABC):
         Returns:
             PlanningResult with step-by-step plan
         """
-        pass
 
     @abstractmethod
     async def reason(
@@ -103,7 +102,6 @@ class ICognitivePlane(ABC):
         Returns:
             Reasoning result with conclusion and trace
         """
-        pass
 
     @abstractmethod
     async def decide(
@@ -121,7 +119,6 @@ class ICognitivePlane(ABC):
         Returns:
             Selected option with justification
         """
-        pass
 
     @abstractmethod
     async def reflect(
@@ -139,7 +136,6 @@ class ICognitivePlane(ABC):
         Returns:
             Reflection with lessons learned and improvements
         """
-        pass
 
     @abstractmethod
     def get_capabilities(self) -> List[CognitiveCapability]:
@@ -148,4 +144,3 @@ class ICognitivePlane(ABC):
         Returns:
             List of capabilities this plane supports
         """
-        pass

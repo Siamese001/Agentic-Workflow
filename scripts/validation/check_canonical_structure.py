@@ -7,7 +7,6 @@ Ensures required canonical directories exist.
 
 import sys
 import os
-import logging
 
 def main() -> None:
     """Check if all required canonical directories exist."""

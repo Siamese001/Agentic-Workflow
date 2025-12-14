@@ -10,20 +10,15 @@ Demonstrates how to use the enhanced autonomy features:
 
 import asyncio
 import logging
-from datetime import datetime
 
 # Import autonomous components
 from runtime.core.autonomous_subatomic_hop import (
-    AutonomousSubatomicHop,
     AutonomousHopConfig,
     AutonomyConfig,
     create_autonomous_hop
 )
 
 # Import hardening components
-from runtime.shared.semantic_cache import SemanticCache
-from agentic_core.L2_execution.mcp_manager import create_mcp_manager
-from runtime.core.telemetry import TelemetryRecorder
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

@@ -4,7 +4,6 @@
 """Compute Skill Similarity - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class ComputeSkillSimilarity:
     """ComputeSkillSimilarity implementation."""

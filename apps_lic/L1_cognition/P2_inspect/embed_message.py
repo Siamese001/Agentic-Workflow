@@ -4,7 +4,6 @@
 """Embed Message Template - atomic implementation."""
 
 from typing import Dict
-import logging
 
 class EmbedMessageTemplate:
     """EmbedMessageTemplate implementation."""
