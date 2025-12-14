@@ -3,21 +3,11 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class ProvenanceType(Enum):
     """Type of provenance source."""
-    MASTER_RESUME = 'MASTER_RESUME'
-    JOB_DESCRIPTION = 'JOB_DESCRIPTION'
-    RAG_RESULT = 'RAG_RESULT'
-    GENERATED = 'GENERATED'
-    HYBRID = 'HYBRID'
 
 class BulletCategory(Enum):
     """Category of bullet point."""
-    VALUE = 'V'
-    TECHNICAL = 'T'
-    SOFT = 'S'
-    ACHIEVEMENT = 'A'
 
 @dataclass
 class ProvenanceSource:

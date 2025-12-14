@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestResumeOptimizationE2E:
     """E2E tests for resume optimization."""
 

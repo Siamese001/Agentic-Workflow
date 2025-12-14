@@ -78,7 +78,6 @@ trace_display = traces_df.apply(
     axis=1
 )
 
-selected_idx = st.sidebar.selectbox(
     "Select Mission Trace",
     range(len(traces_df)),
     format_func=lambda i: trace_display.iloc[i]
@@ -154,14 +153,12 @@ with col_left:
         else:
             filtered_events = events_df
         
-        selected_event_idx = st.radio(
             "Select Event",
             filtered_events.index,
             format_func=lambda i: f"{filtered_events.loc[i, 'event_type']} @ {filtered_events.loc[i, 'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
         )
     else:
         st.warning("No events found")
-        selected_event_idx = None
 
 with col_right:
     st.subheader("🔍 Black Box Data")

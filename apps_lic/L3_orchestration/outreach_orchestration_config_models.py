@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 # from .outreach_orchestration_config_enums import *  # Star import removed
 
 @dataclass

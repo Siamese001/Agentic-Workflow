@@ -11,11 +11,6 @@ from dataclasses import dataclass
 class ThreatLevel(Enum):
     """TODO: Add docstring."""
 
-    NONE = "none"
-    LOW = "low"
-    MEDIUM = "medium"
-    HIGH = "high"
-    CRITICAL = "critical"
 
 @dataclass
 class SecurityCheckResult:

@@ -11,9 +11,6 @@ from dataclasses import dataclass
 class ContentQuality(Enum):
     """TODO: Add docstring."""
 
-    HIGH = "high"
-    MEDIUM = "medium"
-    LOW = "low"
 
 @dataclass
 class InspectionResult:

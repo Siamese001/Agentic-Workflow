@@ -310,21 +310,18 @@ class PromptSignatureRegistry:
     """Registry of DSPy signatures for different agent types."""
     
     # Common signatures that can be reused
-    CODE_GENERATION = dspy.Signature(
         "Generate robust python code based on requirements.",
         requirements=dspy.InputField(),
         context=dspy.InputField(),
         verified_code=dspy.OutputField(desc="Python code that passes tests")
     )
     
-    RESEARCH_ANALYSIS = dspy.Signature(
         "Analyze research data and provide insights.",
         research_data=dspy.InputField(),
         question=dspy.InputField(),
         analysis=dspy.OutputField(desc="Detailed analysis with citations")
     )
     
-    TOOL_SELECTION = dspy.Signature(
         "Select the best tool for a given task.",
         task_description=dspy.InputField(),
         available_tools=dspy.InputField(),
@@ -332,7 +329,6 @@ class PromptSignatureRegistry:
         reasoning=dspy.OutputField(desc="Why this tool was chosen")
     )
     
-    SUBATOMIC_HOP = dspy.Signature(
         """You are an intelligent agent responsible for a single atomic task.
         Analyze the context, plan your action, and execute it using the available tools.
         """,

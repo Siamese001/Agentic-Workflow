@@ -12,9 +12,6 @@ from dataclasses import dataclass
 class ValidationLevel(Enum):
     """TODO: Add docstring."""
 
-    STRICT = "strict"
-    NORMAL = "normal"
-    LENIENT = "lenient"
 
 @dataclass
 class ValidationResult:

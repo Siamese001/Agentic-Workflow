@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 # from .retrieve_schema_similarity_enums import *  # Star import removed
 
 @dataclass

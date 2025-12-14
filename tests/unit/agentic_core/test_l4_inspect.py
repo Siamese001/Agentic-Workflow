@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestMemoryInspection:
     """Tests for memory inspection operations."""
 

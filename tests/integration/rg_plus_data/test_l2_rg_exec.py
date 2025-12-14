@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestL2ExecutionIntegration:
     """Integration tests for L2 execution layer."""
 

@@ -206,7 +206,6 @@ class HardenedAutonomousHop(AutonomousSubatomicHop):
             
             # Enable security hardening
             if self.hardening_config.sandbox_security_hardening:
-                self.enhanced_sandbox.security_hardening = True
             
             logger.info("Enhanced sandbox initialized with security features")
             

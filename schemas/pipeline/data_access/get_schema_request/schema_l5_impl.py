@@ -8,7 +8,6 @@ from typing import Dict, Optional, Any
 import logging
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
 
 class SecurityError(Exception):
     """L5 Security exception for fail-closed behavior."""
@@ -18,7 +17,6 @@ class OrchestrateDataPlanningOrchestratorImpl:
 
     def __init__(self, constraints: Optional[Dict[str, Any]] = None):
         self.constraints = constraints or {}
-        self.logger = logging.getLogger(self.__class__.__name__)
 
     def process(self, input_data: Dict[str, object]) -> Dict[str, object]:
         """Process input following L5 architecture principles."""

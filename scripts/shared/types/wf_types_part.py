@@ -3,7 +3,6 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 @dataclass
 class RetrievalSource:
     """Metadata about a data retrieval source."""

@@ -27,9 +27,6 @@ logger = logging.getLogger(__name__)
 
 class UpdateObservabilityUsageSafetyType(Enum):
     """L5 Typed enumeration for deterministic safety operations"""
-    APPLY = "apply"
-    ENFORCE = "enforce"
-    VALIDATE = "validate"
 
 class UpdateObservabilityUsageSafetyConstraints:
     """L5 Safety constraints - fail-closed behavior"""

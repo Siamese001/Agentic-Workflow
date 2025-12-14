@@ -13,7 +13,6 @@ except ImportError:
     INSTRUCTOR_AVAILABLE = False
     logging.warning("Instructor not available. Executive agents will use mock responses.")
 
-logger = logging.getLogger(__name__)
 
 
 class BaseExecutiveAgent:
@@ -21,7 +20,6 @@ class BaseExecutiveAgent:
 
     def __init__(self):
         """Initialize base agent with LLM clients."""
-        self.logger = logging.getLogger(self.__class__.__name__)
 
         # Initialize LLM clients with Instructor if available
         if INSTRUCTOR_AVAILABLE:

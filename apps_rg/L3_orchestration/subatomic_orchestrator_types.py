@@ -3,14 +3,8 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class WorkflowType(Enum):
     """Types of predefined workflows."""
-    RESUME_GENERATION = 'resume_generation'
-    MESSAGE_OUTREACH = 'message_outreach'
-    CONTENT_CREATION = 'content_creation'
-    RESEARCH_SYNTHESIS = 'research_synthesis'
-    CUSTOM = 'custom'
 
 @dataclass
 class WorkflowBlueprint:

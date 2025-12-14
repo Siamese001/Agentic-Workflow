@@ -57,7 +57,6 @@ def structured_completion(prompt: str, schema: dict) -> dict:
 
 if __name__ == "__main__":
     # Test simple completion
-    result = simple_completion("Explain AI in one sentence")
 
     # Test structured completion
     schema = {
@@ -69,4 +68,3 @@ if __name__ == "__main__":
         }
     }
     
-    structured = structured_completion("Summarize machine learning", schema)

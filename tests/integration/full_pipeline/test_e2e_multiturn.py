@@ -2,7 +2,6 @@
 import logging
 
 
-logger = logging.getLogger(__name__)
 class TestMultiAgentScenarios:
     """E2E tests for multi-agent scenarios."""
 

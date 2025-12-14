@@ -4,24 +4,11 @@ from typing import Any, Dict, List, Optional
 import logging
 
 
-logger = logging.getLogger(__name__)
 class ResumeKNodeType(str, Enum):
     """Resume K.X node type classification."""
-    HEADER = 'header'
-    SUMMARY = 'summary'
-    EXPERIENCE = 'experience'
-    EDUCATION = 'education'
-    CERTIFICATIONS = 'certifications'
-    COMPETENCIES = 'competencies'
-    SKILLS = 'skills'
-    COVER_LETTER = 'cover_letter'
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
-    COT = 'chain_of_thought'
-    TOT = 'tree_of_thought'
-    HYBRID_COT_TOT = 'hybrid_cot_tot'
-    SELF_CONSISTENCY = 'self_consistency'
 
 @dataclass
 class RAGConfig:

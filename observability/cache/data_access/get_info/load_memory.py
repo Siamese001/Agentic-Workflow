@@ -26,9 +26,6 @@ logger = logging.getLogger(__name__)
 
 class OptimizeObservabilityOrderPlanType(Enum):
     """L5 Typed enumeration for deterministic behavior"""
-    DEFAULT = "default"
-    CORE = "core"
-    SYSTEM = "system"
 
 class OptimizeObservabilityOrderPlanConstraints:
     """L5 Safety constraints - fail-closed behavior"""

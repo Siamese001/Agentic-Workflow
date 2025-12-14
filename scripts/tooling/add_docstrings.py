@@ -5,12 +5,10 @@ from pathlib import Path
 import logging
 
 
-logger = logging.getLogger(__name__)
 sovereign_dirs = [
     'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
     'schemas', 'prompt_governance', 'observability', 'config'
 ]
-fixed_count = 0
 
 def get_body_start_line(node: ast.AST) -> int:
     """Get the line number where the function/class body starts."""

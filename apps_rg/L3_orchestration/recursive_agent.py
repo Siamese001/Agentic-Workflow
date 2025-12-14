@@ -244,9 +244,7 @@ Format as JSON:
         start_time = time.time()
         results = {}
         
-        if plan.execution_strategy == "sequential":
             results = await self._execute_sequential(plan, context, current_depth)
-        elif plan.execution_strategy == "parallel":
             results = await self._execute_parallel(plan, context, current_depth)
         else:  # adaptive
             results = await self._execute_adaptive(plan, context, current_depth)
@@ -338,7 +336,6 @@ Format as JSON:
         """Execute with adaptive strategy based on task characteristics."""
         
         # Simple heuristic: use parallel for independent tasks, sequential otherwise
-        has_dependencies = any(task.dependencies for task in plan.subtasks)
         
         if has_dependencies:
             return await self._execute_sequential(plan, context, current_depth)

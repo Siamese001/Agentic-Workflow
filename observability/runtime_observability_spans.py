@@ -4,7 +4,6 @@ import uuid
 import logging
 
 
-logger = logging.getLogger(__name__)
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archi...
 # from archives.legacy_root_folders.runtime.observability.collectors import append_event, push_sp...
 

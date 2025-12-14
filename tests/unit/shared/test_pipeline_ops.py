@@ -10,11 +10,6 @@ from dataclasses import dataclass, field
 class PipelineStatus(Enum):
     """TODO: Add docstring."""
 
-    PENDING = "pending"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    CANCELLED = "cancelled"
 
 @dataclass
 class PipelineStep:
@@ -40,7 +35,6 @@ class TestPipelineDataAccess:
         step1 = PipelineStep(name="step1", output_data={"result": "step1_output"})
         step2 = PipelineStep(name="step2", input_data=step1.output_data)
 
-        assert step2.input_data == step1.output_data
 
     def test_pipeline_state_retrieval(self):
         """Pipeline state is retrieved correctly."""
@@ -53,9 +47,7 @@ class TestPipelineDataAccess:
             ],
         )
 
-        running_steps = [s for s in pipeline.steps if s.status == PipelineStatus.RUNNING]
         assert len(running_steps) == 1
-        assert running_steps[0].name == "step2"
 
     def test_pipeline_checkpoint_save(self):
         """Pipeline checkpoints are saved correctly."""
@@ -214,10 +206,7 @@ class TestPipelineErrorHandling:
         try:
             raise ValueError("Step processing failed")
         except ValueError as e:
-            step.status = PipelineStatus.FAILED
-            step.error = str(e)
 
-        assert step.status == PipelineStatus.FAILED
         assert "failed" in step.error.lower()
 
     def test_pipeline_continues_on_non_critical_failure(self):

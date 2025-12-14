@@ -4,21 +4,11 @@ from typing import Any, Dict, List, Optional
 import logging
 
 
-logger = logging.getLogger(__name__)
 class ObservabilityType(Enum):
     """Types of observability operations."""
-    TRACE = 'trace'
-    METRIC = 'metric'
-    LOG = 'log'
-    EVENT = 'event'
-    PROFILE = 'profile'
 
 class ExecutionLevel(Enum):
     """Levels of execution detail."""
-    BASIC = 'basic'
-    DETAILED = 'detailed'
-    VERBOSE = 'verbose'
-    DEBUG = 'debug'
 
 @dataclass
 class ObservabilityRequest:

@@ -3,7 +3,6 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 @dataclass
 class ScoredCandidate:
     """A scored candidate message."""

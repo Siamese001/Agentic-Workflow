@@ -50,7 +50,6 @@ def run_e2e_tests():
 
     # Print results
 
-    descriptions = {
         'E2E-01': '10 canonical roots exist',
         'E2E-02': 'SSoT YAMLs exist',
         'E2E-03': 'Semantic cache domains exist',

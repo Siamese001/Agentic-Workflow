@@ -3,29 +3,14 @@ import logging
 
 
 
-logger = logging.getLogger(__name__)
 class RuleType(Enum):
     """Types of constitutional rules."""
-    SAFETY = 'safety'
-    ETHICS = 'ethics'
-    PRIVACY = 'privacy'
-    BIAS = 'bias'
-    LEGAL = 'legal'
-    QUALITY = 'quality'
 
 class RuleSeverity(Enum):
     """Severity levels for rule violations."""
-    LOW = 'low'
-    MEDIUM = 'medium'
-    HIGH = 'high'
-    CRITICAL = 'critical'
 
 class ViolationType(Enum):
     """Types of constitutional violations."""
-    CONTENT = 'content'
-    STYLE = 'style'
-    STRUCTURE = 'structure'
-    CONTEXT = 'context'
 
 @dataclass
 class ConstitutionalRule:

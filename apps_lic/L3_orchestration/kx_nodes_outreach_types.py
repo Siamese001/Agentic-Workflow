@@ -4,21 +4,11 @@ from typing import Any, Dict, List, Optional
 import logging
 
 
-logger = logging.getLogger(__name__)
 class OutreachKNodeType(str, Enum):
     """Outreach K.X node type classification."""
-    ROUTING = 'routing'
-    ANALYSIS = 'analysis'
-    CONTENT = 'content'
-    CTA = 'cta'
-    ASSEMBLY = 'assembly'
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
-    COT = 'chain_of_thought'
-    TOT = 'tree_of_thought'
-    HYBRID_COT_TOT = 'hybrid_cot_tot'
-    SELF_CONSISTENCY = 'self_consistency'
 
 @dataclass
 class RAGConfig:
