@@ -59,17 +59,13 @@ class LLMClient:
             try:
                 result = json.loads(response.text)
             except json.JSONDecodeError as je:
-    pass
-pass
-# Fallback if model returns text wrapped in markdown
+                # Fallback if model returns text wrapped in markdown
                 try:
                     text = response.text.replace(
                         "```json", "").replace("```", "")
                     result = json.loads(text)
                 except json.JSONDecodeError:
-    pass
-pass
-# Return structured error for JSON parsing failures
+                    # Return structured error for JSON parsing failures
                     logger.error(f"JSON parsing failed: {je}")
                     return {
                         "status": "error",
@@ -85,8 +81,6 @@ pass
             return result
 
         except Exception as e:
-    pass
-pass
-logger.error(f"Gemini Call Failed: {e}")
+            logger.error(f"Gemini Call Failed: {e}")
             return {"status": "error", "reasoning": str(e)}
 

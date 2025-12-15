@@ -41,10 +41,7 @@ class CanonValidator:
             )
             logger.info("✅ Redis Semantic Cache Initialized (768-dim default)")
         except Exception as e:
-    pass
-
-
-logger.warning(
+            logger.warning(
                 f"⚠️ Redis Cache Init Failed (Running without cache): {e}")
             self.cache = None
 
@@ -89,8 +86,7 @@ logger.warning(
         try:
             vector = self.embed_fn(content)
         except Exception as e:
-    pass
-return {"status": "error", "message": f"Embedding failed: {e}"}
+            return {"status": "error", "message": f"Embedding failed: {e}"}
 
         # STAGE 2: REDIS CACHE CHECK
         if self.cache:
@@ -103,8 +99,7 @@ return {"status": "error", "message": f"Embedding failed: {e}"}
                     logger.info("⚡ L1 Cache Hit! (Redis)")
                     return {"status": "valid", "source": "l1_redis_cache", "metrics": {"latency": "0.01s"}}
             except Exception:
-    pass
-pass
+                pass
 
         # STAGE 3: PINECONE CONTEXT (Retrieving Wisdom)
         context_rules = []
@@ -121,8 +116,7 @@ pass
                     context_rules.append(
                         f"PRECEDENT (Score {m['score']:.2f}): {m['metadata'].get('content')[:200]}...")
         except Exception as e:
-    pass
-logger.warning(f"Pinecone lookup failed: {e}")
+            logger.warning(f"Pinecone lookup failed: {e}")
 
         # STAGE 4: GEMINI FLASH VALIDATION
         keys_block = get_keys_as_prompt()
@@ -218,8 +212,7 @@ Rewrite the code to be fully compliant and executable:
                 repair_prompt, f"BAD CODE:\n{bad_code}")
             return repair_result.get("code")
         except Exception as e:
-    pass
-logger.error(f"Repair failed: {e}")
+            logger.error(f"Repair failed: {e}")
             return None
 
     def _meta_learn(self, content, vector, decision):
@@ -241,8 +234,7 @@ logger.error(f"Repair failed: {e}")
 
             logger.info("✅ Learned new pattern (Updated Pinecone/Redis).")
         except Exception as e:
-    pass
-logger.error(f"Write-back failed: {e}")
+            logger.error(f"Write-back failed: {e}")
 
     def validate_design_compliance(self, file_path: str, component_id: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
         """
@@ -270,8 +262,7 @@ logger.error(f"Write-back failed: {e}")
         try:
             source_code = read_text_file(path=file_path)
         except Exception as e:
-    pass
-return {"status": "error", "message": f"Could not read file {file_path}: {e}"}
+            return {"status": "error", "message": f"Could not read file {file_path}: {e}"}
 
         # 2. Get Design Canon (Figma MCP)
         try:
@@ -279,8 +270,7 @@ return {"status": "error", "message": f"Could not read file {file_path}: {e}"}
             token_data_str = get_variable_defs(node_id=component_id)
             token_data = json.loads(token_data_str)
         except Exception as e:
-    pass
-return {"status": "warning", "message": f"Figma token retrieval failed. Cannot proceed with token check: {e}"}
+            return {"status": "warning", "message": f"Figma token retrieval failed. Cannot proceed with token check: {e}"}
 
         # --- Core Validation Logic ---
 
@@ -332,8 +322,7 @@ return {"status": "warning", "message": f"Figma token retrieval failed. Cannot p
                     f"🔎 Found canonical replacement: {canonical_replacement}")
 
         except Exception as e:
-    pass
-return {"status": "error", "message": f"Pinecone lookup failed. Cannot repair: {e}"}
+            return {"status": "error", "message": f"Pinecone lookup failed. Cannot repair: {e}"}
 
         # 4. Apply Repair (Filesystem MCP)
         # The 'edit_file' tool is used for surgical, context-aware code modification
@@ -356,6 +345,5 @@ return {"status": "error", "message": f"Pinecone lookup failed. Cannot repair: {
             }
 
         except Exception as e:
-    pass
-return {"status": "error", "message": f"Filesystem repair failed: {e}"}
+            return {"status": "error", "message": f"Filesystem repair failed: {e}"}
 
