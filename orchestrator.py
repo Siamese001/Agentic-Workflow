@@ -69,6 +69,10 @@ def run_agentic_loop(user_goal: str):
     - hash_set(key: str, field: str, value: str) : Stores field-value pairs (e.g., user profiles, complex cache objects).
     - hash_get(key: str, field: str) -> str : Retrieves a field from a hash key.
     
+    [TIME MCP - L4 Temporal Awareness]
+    - get_current_time(timezone: str) -> string: Gets the current date, time, and timezone in ISO 8601 format. Accepts IANA timezone name (e.g., 'America/New_York').
+    - convert_time(source_timezone: str, time: str, target_timezone: str) -> string: Converts a time string (HH:MM) between two specified IANA timezones.
+    
     [ACTION TOOLS]
     - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email (Mock).
     """

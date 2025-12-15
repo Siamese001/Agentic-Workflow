@@ -125,6 +125,30 @@ class ActionRegistry:
         logger.info(f"📦 Redis HGET: {key}.{field} = {value[:20]}...")
         return value
 
+    # --- TIME MCP TOOLS (L4 Temporal Awareness) ---
+    def get_current_time(self, timezone: str = "UTC") -> str:
+        """Gets the current date, time, and timezone in ISO 8601 format."""
+        try:
+            from mcp_time_client import get_current_time as mcp_get_time
+            return mcp_get_time(timezone)
+        except ImportError:
+            from datetime import datetime
+            import pytz
+            try:
+                tz = pytz.timezone(timezone)
+                now = datetime.now(tz)
+                return now.isoformat()
+            except Exception as e:
+                return f"Error getting time: {e}"
+    
+    def convert_time(self, source_timezone: str, time: str, target_timezone: str) -> str:
+        """Converts a time string between two specified IANA timezones."""
+        try:
+            from mcp_time_client import convert_time as mcp_convert_time
+            return mcp_convert_time(source_timezone, time, target_timezone)
+        except ImportError:
+            return f"Error: MCP Time client not available for conversion"
+
     def get_tool_map(self) -> Dict[str, Callable]:
         """
         Returns the dictionary of safe tools to inject into the Agent's scope.
@@ -138,5 +162,8 @@ class ActionRegistry:
             "string_set": self.string_set,
             "string_get": self.string_get,
             "hash_set": self.hash_set,
-            "hash_get": self.hash_get
+            "hash_get": self.hash_get,
+            # Time MCP Tools
+            "get_current_time": self.get_current_time,
+            "convert_time": self.convert_time
         }
