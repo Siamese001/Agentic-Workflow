@@ -4,9 +4,9 @@ import logging
 import time
 from typing import Dict, Any
 
-# Load environment variables
+# 1. LOAD ENVIRONMENT VARIABLES
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv() # This reads .env from the root
 
 import google.generativeai as genai
 
@@ -16,20 +16,20 @@ logger = logging.getLogger("LLMClient")
 class LLMClient:
     """
     Single-Model Intelligence Engine.
-    Powered EXCLUSIVELY by Gemini 1.5 Flash.
+    Powered by Gemini 1.5 Flash (Verified Model ID).
     """
     
     def __init__(self):
-        # 1. Fetch Key
+        # 2. FETCH KEY SECURELY
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
             logger.error("❌ GOOGLE_API_KEY not found in .env!")
-            raise ValueError("Missing GOOGLE_API_KEY")
+            raise ValueError("Missing GOOGLE_API_KEY. Please check your .env file.")
         
         genai.configure(api_key=api_key)
         
-        # 2. Hardcode the Flash Model (Stable Version)
-        self.model_id = "gemini-2.5-flash-lite-preview-09-2025" 
+        # 3. VERIFIED MODEL NAME
+        self.model_id = "models/gemini-2.5-flash" 
 
     def generate_plan(self, system_context: str, user_goal: str, complexity: str = "mini") -> Dict[str, Any]:
         """
@@ -39,41 +39,33 @@ class LLMClient:
         start_time = time.time()
         
         try:
-            # Initialize Model
+            # Gemini SDK allows separating System Instruction from User Prompt
             model = genai.GenerativeModel(
                 model_name=self.model_id,
                 system_instruction=system_context
             )
             
-            # Generate (Force JSON)
+            # Force JSON response
             response = model.generate_content(
                 user_goal,
                 generation_config={"response_mime_type": "application/json"}
             )
             
-            # Parse Response
-            try:
-                result = json.loads(response.text)
-            except json.JSONDecodeError as je:
-                # Fallback if model returns text wrapped in markdown
-                try:
-                    text = response.text.replace("```json", "").replace("```", "")
-                    result = json.loads(text)
-                except json.JSONDecodeError:
-                    # Return structured error for JSON parsing failures
-                    logger.error(f"JSON parsing failed: {je}")
-                    return {
-                        "status": "error", 
-                        "reasoning": f"LLM response parse error: {str(je)}",
-                        "raw_response": response.text[:200]  # First 200 chars for debugging
-                    }
-
+            # Parse result
+            result = json.loads(response.text)
+            
+            # Add observability metrics
             result["metrics"] = {
                 "latency": f"{time.time() - start_time:.4f}s", 
-                "model": self.model_id
+                "model": self.model_id,
+                "cost_tier": "mini"
             }
             return result
             
         except Exception as e:
             logger.error(f"Gemini Call Failed: {e}")
-            return {"status": "error", "reasoning": str(e)}
+            return {
+                "status": "error", 
+                "reasoning": f"API Error: {str(e)}",
+                "plan": {} 
+            }
