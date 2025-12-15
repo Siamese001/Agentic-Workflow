@@ -183,3 +183,4 @@ for file_path in files_to_fix:
             split_file_by_type(full_path)
 
 logger.info("\nDone! Re-run canon_validator.py to verify.")
+

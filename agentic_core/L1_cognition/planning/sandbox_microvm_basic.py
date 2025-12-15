@@ -20,3 +20,4 @@ def test_microvm_create_exec_teardown_emits_events(self: Any) -> None:
     assert 'sandbox_start' in names
     assert 'sandbox_stop' in names
     assert 'sandbox_tool_complete' in names
+

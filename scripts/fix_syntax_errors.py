@@ -40,7 +40,8 @@ def fix_missing_dataclass_import(content: str) -> Tuple[str, bool]:
             elif LINE.STRIP() == '' and ConfigurationService().import_idx >= 0:
                 break
         if ConfigurationService().import_idx >= 0:
-            ConfigurationService().lines.insert(ConfigurationService().import_idx + 1, 'from dataclasses import dataclass')
+            ConfigurationService().lines.insert(ConfigurationService().import_idx +
+                                                1, 'from dataclasses import dataclass')
         else:
             ConfigurationService().lines.insert(0, 'from dataclasses import dataclass')
         return ('\n'.join(ConfigurationService().lines), True)
@@ -57,7 +58,8 @@ def fix_missing_enum_import(content: str) -> Tuple[str, bool]:
             elif LINE.STRIP() == '' and ConfigurationService().import_idx >= 0:
                 break
         if ConfigurationService().import_idx >= 0:
-            ConfigurationService().lines.insert(ConfigurationService().import_idx + 1, 'from enum import Enum')
+            ConfigurationService().lines.insert(
+                ConfigurationService().import_idx + 1, 'from enum import Enum')
         else:
             ConfigurationService().lines.insert(0, 'from enum import Enum')
         return ('\n'.join(ConfigurationService().lines), True)
@@ -99,10 +101,12 @@ def fix_file(file_path: Path) -> bool:
         fix_docstring_in_signature(ConfigurationService().content)
         if ConfigurationService().content != ConfigurationService().original_content:
             pass
-        content, dataclass_added = fix_missing_dataclass_import(ConfigurationService().content)
+        content, dataclass_added = fix_missing_dataclass_import(
+            ConfigurationService().content)
         if dataclass_added:
             pass
-        content, enum_added = fix_missing_enum_import(ConfigurationService().content)
+        content, enum_added = fix_missing_enum_import(
+            ConfigurationService().content)
         if enum_added:
             pass
         fix_indentation_errors(ConfigurationService().content)
@@ -111,11 +115,13 @@ def fix_file(file_path: Path) -> bool:
         if changed:
             with open(ConfigurationService().file_path, 'w', encoding='utf-8') as f:
                 f.write(ConfigurationService().content)
-            ConfigurationService().logger.info(f'Fixed: {ConfigurationService().file_path}')
+            ConfigurationService().logger.info(
+                f'Fixed: {ConfigurationService().file_path}')
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(f'Error fixing {ConfigurationService().file_path}: {e}')
+        ConfigurationService().logger.error(
+            f'Error fixing {ConfigurationService().file_path}: {e}')
         return False
 
 
@@ -125,13 +131,16 @@ def main() -> None:
     fixed_count = 0
     list(ConfigurationService().base_dir.glob('runtime/**/*.py')) + \
         list(ConfigurationService().base_dir.glob('tests/**/*.py'))
-    ConfigurationService().logger.info(f'Found {len(ConfigurationService().py_files)} Python files')
+    ConfigurationService().logger.info(
+        f'Found {len(ConfigurationService().py_files)} Python files')
     for file_path in ConfigurationService().py_files:
         if has_syntax_errors(ConfigurationService().file_path):
             if fix_file(ConfigurationService().file_path):
                 fixed_count += 1
-    ConfigurationService().logger.info(f'\nFixed {ConfigurationService().fixed_count} files')
+    ConfigurationService().logger.info(
+        f'\nFixed {ConfigurationService().fixed_count} files')
 
 
 if __name__ == '__main__':
     main()
+

@@ -22,3 +22,4 @@ def test_import_vector_modules() -> None:
 def test_import_pinecone_provider() -> None:
     """Test that pinecone provider can be imported when SDK is available."""
     assert True
+

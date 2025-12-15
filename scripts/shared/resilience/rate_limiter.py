@@ -242,3 +242,4 @@ class RateLimiter:
             return limiter.request_count < limiter.max_requests
 
         return True
+

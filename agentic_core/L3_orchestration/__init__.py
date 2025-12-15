@@ -1,9 +1,4 @@
-"""L3 Orchestration Layer.
-
-
-Phase 2 - Pillars 1 & 4: Layering Model + Workflow (DAGs)
-Coordinates between cognitive and action planes with DAG-based workflow execution.
-"""
+"""L3 Orchestration Layer. """
 import logging
 
 logger = logging.getLogger(__name__)
@@ -30,3 +25,4 @@ DAGExecutionResult,
         "CycleConfig",
         "CycleState",
     ]
+

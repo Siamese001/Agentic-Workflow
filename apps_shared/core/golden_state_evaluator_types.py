@@ -64,3 +64,4 @@ def to_dict(self: Any) -> Dict[str, Any]:
             'judge_result': self.judge_result.to_dict(),
             'action_match_score': self.action_match_score,
             'errors': self.errors}
+

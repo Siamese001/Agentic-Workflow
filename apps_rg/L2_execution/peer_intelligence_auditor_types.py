@@ -61,3 +61,4 @@ class PeerIntelligenceResult:
     validation_results: List[ValidationResult]
     success: bool
     total_searches_executed: int
+

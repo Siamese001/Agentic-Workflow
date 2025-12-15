@@ -306,3 +306,4 @@ def _assign_provenance(self: Any, bullets: List[str], master_bullets: List[str])
             )
 
         return provenance[:len(bullets)]
+

@@ -56,7 +56,8 @@ class CheckScriptsCompliance:
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
 
-        is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
+        is_valid = not any(
+            f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
 
     def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
@@ -94,3 +95,4 @@ def validate(data: object,
              config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return CheckScriptsCompliance(config).validate(data, schema)
+

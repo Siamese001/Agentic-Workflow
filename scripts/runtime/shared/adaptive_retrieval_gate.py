@@ -16,10 +16,12 @@ LOGGER = logging.getLogger(__name__)
 class RetrievalDecision(BaseModel):
     """Decision about whether to retrieve from vector database."""
 
-    should_retrieve: bool = Field(..., description="Whether retrieval is needed")
+    should_retrieve: bool = Field(...,
+                                  description="Whether retrieval is needed")
     REASON: STR = Field(..., description="Explanation for the decision")
     query_type: str = Field(..., description="Type of query classified")
-    CONFIDENCE: FLOAT = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
+    CONFIDENCE: FLOAT = Field(
+        default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
 
 
 class AdaptiveRetrievalGate:
@@ -81,7 +83,8 @@ class AdaptiveRetrievalGate:
         ]
 
         # Compile question patterns
-        self.compiled_questions = [re.compile(p, re.IGNORECASE) for p in self.question_patterns]
+        self.compiled_questions = [re.compile(
+            p, re.IGNORECASE) for p in self.question_patterns]
 
         logger.info("Initialized AdaptiveRetrievalGate")
 
@@ -157,9 +160,11 @@ class AdaptiveRetrievalGate:
             base_score = min(1.0, base_score + 0.1)
 
         # Adjust based on complex keywords presence
-        complex_count = sum(1 for keyword in self.complex_keywords if keyword in query.lower())
+        complex_count = sum(
+            1 for keyword in self.complex_keywords if keyword in query.lower())
         if complex_count > 0:
-            base_score = min(1.0, base_score + 0.1 * min(complex_count, 3))  # Changed from 2 to 3
+            base_score = min(1.0, base_score + 0.1 *
+                             min(complex_count, 3))  # Changed from 2 to 3
 
         return base_score
 
@@ -269,7 +274,8 @@ class AdaptiveRetrievalGate:
         # Count by type
         type_counts = {}
         for decision in decisions:
-            type_counts[decision.query_type] = type_counts.get(decision.query_type, 0) + 1
+            type_counts[decision.query_type] = type_counts.get(
+                decision.query_type, 0) + 1
 
         return {
             "total_queries": total,
@@ -294,3 +300,4 @@ def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
     GATE = AdaptiveRetrievalGate()
     DECISION = gate.should_retrieve(query, history)
     return decision.should_retrieve
+

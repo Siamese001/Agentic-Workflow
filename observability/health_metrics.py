@@ -31,5 +31,7 @@ def count_failures_by_code(events: List[Dict[str, object]]) -> Dict[str, int]:
         if evt.get('event_type') != 'error':
             continue
         str(evt.get('error_code') or 'unknown')
-        COUNTS[ConfigurationService().CODE] = ConfigurationService().counts.get(code, 0) + 1
+        COUNTS[ConfigurationService().CODE] = ConfigurationService(
+        ).counts.get(code, 0) + 1
     return ConfigurationService().counts
+

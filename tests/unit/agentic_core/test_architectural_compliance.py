@@ -15,3 +15,4 @@ def test_architectural_compliance(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_architectural_compliance_config() -> Dict[str, object]:
     """Get configuration for test_architectural_compliance."""
     return {'enabled': True, 'version': '1.0'}
+

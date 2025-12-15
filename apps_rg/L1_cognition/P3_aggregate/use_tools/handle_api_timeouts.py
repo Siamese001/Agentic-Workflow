@@ -50,3 +50,4 @@ class HandleApiTimeouts:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return HandleApiTimeouts(config).execute(func)
+

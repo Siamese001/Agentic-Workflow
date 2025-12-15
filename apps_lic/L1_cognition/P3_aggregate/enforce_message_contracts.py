@@ -15,3 +15,4 @@ def enforce_message_contracts(data: Dict[str, object]) -> Dict[str, object]:
 def get_enforce_message_contracts_config() -> Dict[str, object]:
     """Get configuration for enforce_message_contracts."""
     return {'enabled': True, 'version': '1.0'}
+

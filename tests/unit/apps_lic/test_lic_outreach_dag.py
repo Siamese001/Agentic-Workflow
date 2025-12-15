@@ -87,3 +87,4 @@ def test_outreach_stack_handles_string_draft_from_architect() -> None:
 
     assert result["draft"].startswith("Subject: Hi")
     assert result["verdict"].passed
+

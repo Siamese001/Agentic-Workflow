@@ -34,7 +34,8 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
     ranking_file = PROJECT_ROOT / "meta" / "ranking.py"
     hybrid_ranker_file = PROJECT_ROOT / "meta" / "retrieval" / "hybrid_ranker.py"
 
-    assert ranking_file.exists(), f"Expected META ranking module missing: {ranking_file}"
+    assert ranking_file.exists(
+    ), f"Expected META ranking module missing: {ranking_file}"
     assert hybrid_ranker_file.exists(),
         f"Expected hybrid_ranker module missing: {hybrid_ranker_file}"
 
@@ -60,3 +61,4 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
     for expected in expected_retrievers:
         assert any(expected in line for line in retriever_imports),
             f"Expected retriever import not found: {expected}. Found: {retriever_imports}"
+

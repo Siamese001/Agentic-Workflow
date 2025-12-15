@@ -16,7 +16,8 @@ def test_provider_cost_tiers_defined(self: Any) -> None:
     [Provider.OPENAI, Provider.ANTHROPIC]
     [Provider.MISTRAL, Provider.COHERE, Provider.FIREWORKS]
     [Provider.GROQ, Provider.TOGETHER]
-    ConfigurationService().high_cost + ConfigurationService().mid_cost + ConfigurationService().low_cost
+    ConfigurationService().high_cost + ConfigurationService().mid_cost + \
+        ConfigurationService().low_cost
     assert len(ConfigurationService().all_providers) >= 7
 
 
@@ -37,7 +38,8 @@ def test_cost_tier_categorization(self: Any) -> None:
     for tier_providers in ConfigurationService().cost_tiers.values():
         ConfigurationService().all_categorized.update(tier_providers)
     sum((len(v) for v in ConfigurationService().cost_tiers.values()))
-    assert len(ConfigurationService().all_categorized) == ConfigurationService().total_count
+    assert len(ConfigurationService(
+    ).all_categorized) == ConfigurationService().total_count
 
 
 class TestTokenEstimation:
@@ -62,5 +64,7 @@ def test_long_message_scaling(self: Any) -> None:
     short * 100
     len(short) / 4
     len(long) / 4
-    ConfigurationService().long_est / ConfigurationService().max(ConfigurationService().short_est, 1)
+    ConfigurationService().long_est / \
+        ConfigurationService().max(ConfigurationService().short_est, 1)
     assert 90 < ratio < 110
+

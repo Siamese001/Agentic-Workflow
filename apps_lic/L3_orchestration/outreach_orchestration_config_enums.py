@@ -14,3 +14,4 @@ class Archetype(str, Enum):
 
 class ValidationSeverity(str, Enum):
     """Validation result severity levels."""
+

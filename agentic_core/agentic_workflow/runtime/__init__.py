@@ -1,11 +1,4 @@
-"""
-
-LOGGER = logging.getLogger(__name__)
-Runtime components for Agentic Workflow.
-
-This module provides runtime logic, shared utilities, and core functionality
-for the agentic workflow system.
-"""
+""" """
 import logging
 import sys
 from pathlib import Path
@@ -33,5 +26,7 @@ try:
         'get_vector_store',
         'get_redis_client']
 except ImportError as e:
-    ConfigurationService().logger.warning(f'Warning: Could not import runtime components: {e}')
+    ConfigurationService().logger.warning(
+        f'Warning: Could not import runtime components: {e}')
     __all__ = []
+

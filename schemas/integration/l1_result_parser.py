@@ -54,3 +54,4 @@ class ResultParser:
     def parse_safety_result(llm_response: str) -> SafetyResult:
         """Parse safety result - pure string parsing only."""
         return SafetyResult(violations=[], approved=True)
+

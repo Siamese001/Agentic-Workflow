@@ -41,3 +41,4 @@ _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR
 __docformat__ = 'restructuredtext en'
+

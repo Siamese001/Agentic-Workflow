@@ -2,56 +2,57 @@
 Phase 3: Simplified LLM-MCP Protocol Validation Tests
 Tests the core tool interface without orchestrator complexity
 """
-import os
-import sys
 import json
 import logging
-from datetime import datetime
+import sys
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("LLM_MC_Protocol_Simple_Test")
+
 
 def test_tool_interface_compliance():
     """
     Validates that MCP tools return responses compatible with Gemini Flash API
     """
     logger.info("\n=== Testing Tool Interface Compliance ===")
-    
+
     try:
         # Test core tool functions
         import core_utils
-        
+
         # Test Filesystem tools
         test_results = []
-        
+
         # Test write_file
         try:
-            result = core_utils.write_file("/tmp/test_protocol.txt", "Protocol test content")
+            result = core_utils.write_file(
+                "/tmp/test_protocol.txt", "Protocol test content")
             test_results.append(("write_file", "callable", result))
         except Exception as e:
             test_results.append(("write_file", "error", str(e)))
-        
+
         # Test read_text_file
         try:
             result = core_utils.read_text_file("/tmp/test_protocol.txt")
             test_results.append(("read_text_file", "callable", result))
         except Exception as e:
             test_results.append(("read_text_file", "error", str(e)))
-        
+
         # Test Time MCP tools
         try:
             result = core_utils.get_current_time("UTC")
             test_results.append(("get_current_time", "callable", result))
         except Exception as e:
             test_results.append(("get_current_time", "error", str(e)))
-        
+
         try:
             result = core_utils.convert_time("UTC", "10:00", "Europe/London")
             test_results.append(("convert_time", "callable", result))
         except Exception as e:
             test_results.append(("convert_time", "error", str(e)))
-        
+
         # Validate response formats
         valid_formats = 0
         for tool, status, result in test_results:
@@ -59,33 +60,37 @@ def test_tool_interface_compliance():
                 # Check if result is serializable (Gemini requirement)
                 try:
                     json.dumps(result)
-                    logger.info(f"✅ {tool}: Returns valid JSON-serializable response")
+                    logger.info(
+                        f"✅ {tool}: Returns valid JSON-serializable response")
                     valid_formats += 1
                 except (TypeError, ValueError):
-                    logger.error(f"❌ {tool}: Returns non-serializable response")
+                    logger.error(
+                        f"❌ {tool}: Returns non-serializable response")
             else:
                 logger.error(f"❌ {tool}: {result}")
-        
+
         if valid_formats == len(test_results):
             logger.info("✅ All tools return Gemini-compatible responses")
             return True
         else:
-            logger.error(f"❌ {len(test_results) - valid_formats} tools have incompatible responses")
+            logger.error(
+                f"❌ {len(test_results) - valid_formats} tools have incompatible responses")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Tool interface test failed: {e}")
         return False
+
 
 def test_tool_parameter_validation():
     """
     Tests that tools correctly validate and handle parameters
     """
     logger.info("\n=== Testing Tool Parameter Validation ===")
-    
+
     try:
         import core_utils
-        
+
         test_cases = [
             {
                 "tool": "write_file",
@@ -112,45 +117,51 @@ def test_tool_parameter_validation():
                 "description": "Invalid time format"
             }
         ]
-        
+
         passed = 0
         for case in test_cases:
             tool = getattr(core_utils, case["tool"], None)
             if tool:
                 try:
-                    result = tool(*case["args"])
+                    tool(*case["args"])
                     if case["should_fail"]:
-                        logger.warning(f"⚠️ {case['tool']}({case['description']}): Expected failure but succeeded")
+                        logger.warning(
+                            f"⚠️ {case['tool']}({case['description']}): Expected failure but succeeded")
                     else:
-                        logger.info(f"✅ {case['tool']}({case['description']}): Handled gracefully")
+                        logger.info(
+                            f"✅ {case['tool']}({case['description']}): Handled gracefully")
                         passed += 1
                 except Exception as e:
                     if case["should_fail"]:
-                        logger.info(f"✅ {case['tool']}({case['description']}): Failed as expected")
+                        logger.info(
+                            f"✅ {case['tool']}({case['description']}): Failed as expected")
                         passed += 1
                     else:
-                        logger.error(f"❌ {case['tool']}({case['description']}): Unexpected error - {e}")
-        
+                        logger.error(
+                            f"❌ {case['tool']}({case['description']}): Unexpected error - {e}")
+
         if passed == len(test_cases):
             logger.info("✅ All parameter validation tests passed")
             return True
         else:
-            logger.error(f"❌ {len(test_cases) - passed} parameter validation tests failed")
+            logger.error(
+                f"❌ {len(test_cases) - passed} parameter validation tests failed")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Parameter validation test failed: {e}")
         return False
+
 
 def test_sequential_tool_execution():
     """
     Tests that tools can be executed in sequence, simulating LLM workflow
     """
     logger.info("\n=== Testing Sequential Tool Execution ===")
-    
+
     try:
         import core_utils
-        
+
         # Simulate LLM-generated workflow
         workflow_steps = [
             {
@@ -178,7 +189,7 @@ def test_sequential_tool_execution():
                 "description": "Read back the file"
             }
         ]
-        
+
         results = []
         for step in workflow_steps:
             tool = getattr(core_utils, step["tool"], None)
@@ -191,7 +202,8 @@ def test_sequential_tool_execution():
                         "success": True,
                         "result": result
                     })
-                    logger.info(f"✅ Step {step['step']}: {step['description']} - Success")
+                    logger.info(
+                        f"✅ Step {step['step']}: {step['description']} - Success")
                 except Exception as e:
                     results.append({
                         "step": step["step"],
@@ -199,35 +211,40 @@ def test_sequential_tool_execution():
                         "success": False,
                         "error": str(e)
                     })
-                    logger.error(f"❌ Step {step['step']}: {step['description']} - Failed: {e}")
-        
+                    logger.error(
+                        f"❌ Step {step['step']}: {step['description']} - Failed: {e}")
+
         # Validate workflow
         successful_steps = sum(1 for r in results if r["success"])
         if successful_steps == len(workflow_steps):
-            logger.info("✅ Sequential execution: All steps completed successfully")
-            
+            logger.info(
+                "✅ Sequential execution: All steps completed successfully")
+
             # Verify data flow
             file_content = results[-1]["result"]
             if "Initial content" in file_content:
-                logger.info("✅ Data flow verified: Content preserved through workflow")
+                logger.info(
+                    "✅ Data flow verified: Content preserved through workflow")
                 return True
             else:
                 logger.error("❌ Data flow broken: Content not preserved")
                 return False
         else:
-            logger.error(f"❌ Sequential execution: {len(workflow_steps) - successful_steps} steps failed")
+            logger.error(
+                f"❌ Sequential execution: {len(workflow_steps) - successful_steps} steps failed")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Sequential execution test failed: {e}")
         return False
+
 
 def test_mock_llm_response_format():
     """
     Tests mock LLM responses match expected format for tool calls
     """
     logger.info("\n=== Testing Mock LLM Response Format ===")
-    
+
     try:
         # Simulate Gemini Flash API tool call responses
         mock_responses = [
@@ -251,7 +268,7 @@ def test_mock_llm_response_format():
                 }
             }
         ]
-        
+
         # Validate response format
         valid_responses = 0
         for response in mock_responses:
@@ -260,7 +277,8 @@ def test_mock_llm_response_format():
                 if "function" in response:
                     func = response["function"]
                     if "name" in func and "args" in func:
-                        logger.info(f"✅ Valid function call format for {func['name']}")
+                        logger.info(
+                            f"✅ Valid function call format for {func['name']}")
                         valid_responses += 1
                     else:
                         logger.error("❌ Missing 'name' or 'args' in function")
@@ -268,7 +286,7 @@ def test_mock_llm_response_format():
                     logger.error("❌ Missing 'function' field")
             else:
                 logger.error("❌ Invalid or missing 'type' field")
-        
+
         # Test tool result format (what tools should return)
         tool_results = [
             {"status": "success", "path": "/reports/test.txt"},
@@ -276,7 +294,7 @@ def test_mock_llm_response_format():
             "Simple string response",
             {"error": "Permission denied", "code": 403}
         ]
-        
+
         valid_results = 0
         for result in tool_results:
             try:
@@ -288,27 +306,28 @@ def test_mock_llm_response_format():
                     valid_results += 1
             except (TypeError, ValueError):
                 logger.error(f"❌ Non-serializable result: {result}")
-        
+
         if valid_responses == len(mock_responses) and valid_results == len(tool_results):
             logger.info("✅ All mock LLM responses are properly formatted")
             return True
         else:
             logger.error("❌ Some responses have invalid format")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Mock LLM response format test failed: {e}")
         return False
+
 
 def test_error_handling():
     """
     Tests that tools handle errors gracefully and return appropriate responses
     """
     logger.info("\n=== Testing Error Handling ===")
-    
+
     try:
         import core_utils
-        
+
         error_cases = [
             {
                 "tool": "read_text_file",
@@ -321,7 +340,7 @@ def test_error_handling():
                 "expected": "null or not found response"
             }
         ]
-        
+
         handled_errors = 0
         for case in error_cases:
             tool = getattr(core_utils, case["tool"], None)
@@ -330,56 +349,65 @@ def test_error_handling():
                     result = tool(*case["args"])
                     # Check if error was handled gracefully
                     if "error" in str(result).lower() or "null" in str(result).lower() or "not found" in str(result).lower():
-                        logger.info(f"✅ {case['tool']}: Error handled gracefully")
+                        logger.info(
+                            f"✅ {case['tool']}: Error handled gracefully")
                         handled_errors += 1
                     else:
-                        logger.warning(f"⚠️ {case['tool']}: Unexpected success response")
+                        logger.warning(
+                            f"⚠️ {case['tool']}: Unexpected success response")
                         handled_errors += 1  # Still counts as handled
                 except Exception as e:
                     # Exceptions should be caught and handled
-                    logger.error(f"❌ {case['tool']}: Unhandled exception - {e}")
-        
+                    logger.error(
+                        f"❌ {case['tool']}: Unhandled exception - {e}")
+
         if handled_errors == len(error_cases):
             logger.info("✅ All error cases handled appropriately")
             return True
         else:
-            logger.error(f"❌ {len(error_cases) - handled_errors} error cases not handled")
+            logger.error(
+                f"❌ {len(error_cases) - handled_errors} error cases not handled")
             return False
-            
+
     except Exception as e:
         logger.error(f"❌ Error handling test failed: {e}")
         return False
+
 
 def main():
     """Run all simplified Phase 3 LLM-MCP protocol tests."""
     logger.info("="*60)
     logger.info("PHASE 3: SIMPLIFIED LLM-MCP PROTOCOL VALIDATION")
     logger.info("="*60)
-    
+
     results = []
-    
+
     # Run all tests
-    results.append(("Tool Interface Compliance", test_tool_interface_compliance()))
-    results.append(("Tool Parameter Validation", test_tool_parameter_validation()))
-    results.append(("Sequential Tool Execution", test_sequential_tool_execution()))
-    results.append(("Mock LLM Response Format", test_mock_llm_response_format()))
+    results.append(("Tool Interface Compliance",
+                   test_tool_interface_compliance()))
+    results.append(("Tool Parameter Validation",
+                   test_tool_parameter_validation()))
+    results.append(("Sequential Tool Execution",
+                   test_sequential_tool_execution()))
+    results.append(("Mock LLM Response Format",
+                   test_mock_llm_response_format()))
     results.append(("Error Handling", test_error_handling()))
-    
+
     # Summary
     logger.info("\n" + "="*60)
     logger.info("PHASE 3 SIMPLIFIED TEST SUMMARY")
     logger.info("="*60)
-    
+
     passed = sum(1 for _, result in results if result is True)
-    
+
     for name, result in results:
         if result is True:
             logger.info(f"{name}: ✅ PASS")
         else:
             logger.info(f"{name}: ❌ FAIL")
-    
+
     logger.info(f"\nTests: {passed}/{len(results)} passed")
-    
+
     if passed == len(results):
         logger.info("\n🎉 PHASE 3 COMPLETE: LLM-MCP Protocol Validated!")
         logger.info("   ✅ Tool interface compliance verified")
@@ -387,12 +415,15 @@ def main():
         logger.info("   ✅ Sequential execution tested")
         logger.info("   ✅ Response format validated")
         logger.info("   ✅ Error handling verified")
-        logger.info("\n🚀 The hardened agentic architecture is PRODUCTION READY!")
+        logger.info(
+            "\n🚀 The hardened agentic architecture is PRODUCTION READY!")
         return True
     else:
         logger.error(f"\n💥 {len(results) - passed} test(s) failed")
         return False
 
+
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
+

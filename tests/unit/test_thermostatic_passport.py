@@ -18,11 +18,11 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 )
     InferenceEngine, InferenceRequest, InferenceMode,
     creative_inference, validation_inference
-    )
+)
     StatePromoter, PromotionResult, create_email_validator
-    )
+)
     SignalAnchor, anchor_resume_content, create_resume_anchor
-    )
+)
     from pydantic import BaseModel, EmailStr
 
 
@@ -72,7 +72,8 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
     # Create context with brainstorming profile (high temperature)
     CONTEXT = create_brainstorm_context("workflow_123", "brainstorm_node")
 
-    logger.info(f"Created context with execution_id: {context.hard_state.execution_id}")
+    logger.info(
+        f"Created context with execution_id: {context.hard_state.execution_id}")
     logger.info(f"Thermal profile: {context.thermal_config.profile}")
     logger.info(f"Temperature: {context.get_thermal_params()['temperature']}")
 
@@ -83,7 +84,8 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
         "creative_elements": ["metaphors", "storytelling", "visionary language"]
     })
 
-    context.soft_state.add_scratch_note("Try to be more creative with the opening")
+    context.soft_state.add_scratch_note(
+        "Try to be more creative with the opening")
     context.soft_state.add_draft("alternative_subjects", [
         "Transforming Your Business with AI",
         "The Future of Software is Here",
@@ -95,7 +97,8 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 
     # HardState remains immutable
     logger.info(f"\nHardState execution_id: {context.hard_state.execution_id}")
-    logger.info(f"HardState security scopes: {context.hard_state.security_scopes}")
+    logger.info(
+        f"HardState security scopes: {context.hard_state.security_scopes}")
 
     # Try to modify HardState directly (should fail in real implementation)
     logger.info("\nNote: HardState is frozen and cannot be modified directly")
@@ -108,24 +111,31 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
     LOGGER.INFO("\N=== DEMONSTRATION: Dynamic Thermal Adjustment ===\n")
 
     # Create contexts for different node types
-    brainstorm_ctx = create_brainstorm_context("workflow_123", "brainstorm_node")
+    brainstorm_ctx = create_brainstorm_context(
+        "workflow_123", "brainstorm_node")
     format_ctx = create_formatting_context("workflow_123", "format_node")
 
     logger.info("Node Type: Brainstorming (Max Creativity)")
-    logger.info(f"  Temperature: {brainstorm_ctx.get_thermal_params()['temperature']}")
+    logger.info(
+        f"  Temperature: {brainstorm_ctx.get_thermal_params()['temperature']}")
     logger.info(f"  Top P: {brainstorm_ctx.get_thermal_params()['top_p']}")
 
     logger.info("\nNode Type: Formatting (High Structure)")
-    logger.info(f"  Temperature: {format_ctx.get_thermal_params()['temperature']}")
+    logger.info(
+        f"  Temperature: {format_ctx.get_thermal_params()['temperature']}")
     logger.info(f"  Top P: {format_ctx.get_thermal_params()['top_p']}")
 
     # Show node-specific overrides
-    brainstorm_ctx.set_thermal_profile_for_node("creative_node", ThermalProfile.CREATIVITY_MAX)
-    format_ctx.set_thermal_profile_for_node("validation_node", ThermalProfile.PRECISION)
+    brainstorm_ctx.set_thermal_profile_for_node(
+        "creative_node", ThermalProfile.CREATIVITY_MAX)
+    format_ctx.set_thermal_profile_for_node(
+        "validation_node", ThermalProfile.PRECISION)
 
     logger.info("\nAfter Node-Specific Override:")
-    logger.info(f"  Creative Node Temp: {brainstorm_ctx.get_thermal_params()['temperature']}")
-    logger.info(f"  Validation Node Temp: {format_ctx.get_thermal_params()['temperature']}")
+    logger.info(
+        f"  Creative Node Temp: {brainstorm_ctx.get_thermal_params()['temperature']}")
+    logger.info(
+        f"  Validation Node Temp: {format_ctx.get_thermal_params()['temperature']}")
 
     return brainstorm_ctx, format_ctx
 
@@ -236,23 +246,28 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 
     # Create contexts with different thermal profiles
     creative_ctx = create_brainstorm_context("workflow_123", "creative_node")
-    validation_ctx = create_formatting_context("workflow_123", "validation_node")
+    validation_ctx = create_formatting_context(
+        "workflow_123", "validation_node")
 
     # Sample prompts
     creative_prompt = "Generate 3 creative subject lines for an AI startup job application"
     validation_prompt = "Validate if this email follows professional standards"
 
     logger.info("Creative Inference (High Temperature):")
-    logger.info(f"  Temperature: {creative_ctx.get_thermal_params()['temperature']}")
+    logger.info(
+        f"  Temperature: {creative_ctx.get_thermal_params()['temperature']}")
     logger.info(f"  Expected: Creative, diverse, possibly unconventional ideas")
 
     logger.info("\nValidation Inference (Low Temperature):")
-    logger.info(f"  Temperature: {validation_ctx.get_thermal_params()['temperature']}")
+    logger.info(
+        f"  Temperature: {validation_ctx.get_thermal_params()['temperature']}")
     logger.info(f"  Expected: Precise, structured, conservative responses")
 
     # Note: In a real implementation, these would make actual LLM calls
-    logger.info("\nNote: Actual LLM calls would be made here with the specified thermal parameters")
-    logger.info("The inference engine automatically adjusts temperature based on context")
+    logger.info(
+        "\nNote: Actual LLM calls would be made here with the specified thermal parameters")
+    logger.info(
+        "The inference engine automatically adjusts temperature based on context")
 
     return creative_ctx, validation_ctx
 
@@ -280,7 +295,8 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 
     # Step 3: High-temperature creative drafting
     logger.info("\nStep 3: Creative Drafting (High Temperature)")
-    context.set_thermal_profile_for_node("draft_node", ThermalProfile.CREATIVITY_MAX)
+    context.set_thermal_profile_for_node(
+        "draft_node", ThermalProfile.CREATIVITY_MAX)
     creative_draft = {
         "subject": "Transforming Data into Intelligence: My Journey",
         "opening": "Imagine a world where algorithms dance with data...",
@@ -316,13 +332,16 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 
     # Step 5: Final formatting
     logger.info("\nStep 5: Final Formatting (Low Temperature)")
-    context.set_thermal_profile_for_node("format_node", ThermalProfile.STRUCTURED)
-    logger.info(f"  Temperature: {context.get_thermal_params()['temperature']}")
+    context.set_thermal_profile_for_node(
+        "format_node", ThermalProfile.STRUCTURED)
+    logger.info(
+        f"  Temperature: {context.get_thermal_params()['temperature']}")
     logger.info("  Content is now in HardState, ready for delivery")
 
     # Summary
     logger.info("\nWorkflow Summary:")
-    logger.info(f"  Total execution traces: {len(context.hard_state.execution_trace)}")
+    logger.info(
+        f"  Total execution traces: {len(context.hard_state.execution_trace)}")
     logger.info(f"  Signed claims used: {len(context.signed_claims)}")
     logger.info(f"  SoftState drafts: {len(context.soft_state.drafts)}")
     logger.info(f"  Final state: Content promoted to HardState")
@@ -357,3 +376,4 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 
     if __name__ == "__main__":
     asyncio.run(main())
+

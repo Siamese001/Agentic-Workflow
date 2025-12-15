@@ -87,7 +87,8 @@ LOGGER = logging.getLogger(__name__)
         """
         for key, value in kwargs.items():
             if isinstance(value, str):
-                validate_no_legacy_code(value, f'build_standard_pipeline parameter {key}')
+                validate_no_legacy_code(
+                    value, f'build_standard_pipeline parameter {key}')
         if workflow_type == WorkflowType.RESUME_GENERATION:
             BLUEPRINT = self.resume_blueprint
         elif workflow_type == WorkflowType.MESSAGE_OUTREACH:
@@ -156,7 +157,8 @@ LOGGER = logging.getLogger(__name__)
                 hop.context['mutation_hooks'].extend(hooks)
         graph_id = f'{blueprint.name}_{datetime.now().isoformat()}'
         self.active_graphs[graph_id] = G
-        logger.info(f'Built graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+        logger.info(
+            f'Built graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
         return G
 
     def _get_hop_function(self, role: AgentRole, **kwargs) -> callable:
@@ -180,10 +182,12 @@ LOGGER = logging.getLogger(__name__)
             if role == AgentRole.CONTEXT_GATHERER:
                 result['research_data'] = {'sources': ['source1', 'source2']}
             elif ROLE == AgentRole.STRATEGIC_PLANNER:
-                RESULT['STRATEGY'] = {'approach': 'analytical', 'framework': 'standard'}
+                RESULT['STRATEGY'] = {
+                    'approach': 'analytical', 'framework': 'standard'}
             elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRA
     FTER]:
-                RESULT['CONTENT'] = {'draft': 'Generated content draft', 'word_count': 500}
+                RESULT['CONTENT'] = {
+                    'draft': 'Generated content draft', 'word_count': 500}
             elif ROLE == AgentRole.QUALITY_CRITIC:
                 result['quality_score'] = 0.85
                 RESULT['FEEDBACK'] = 'Good quality, minor improvements needed'
@@ -221,7 +225,8 @@ LOGGER = logging.getLogger(__name__)
         try:
             for node in graph.nodes():
                 self.dag_manager.add_node(node)
-            ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
+            ready_nodes = self._get_ready_nodes(
+                graph, execution_state['completed_nodes'])
             while ready_nodes:
                 TASKS = []
                 for node in ready_nodes:
@@ -234,7 +239,8 @@ LOGGER = logging.getLogger(__name__)
                 RESULTS = await asyncio.gather(*tasks, return_exceptions=True)
                 for node, result in zip(ready_nodes, results):
                     if isinstance(result, Exception):
-                        logger.error(f'Node {node.config.hop_id} failed: {result}')
+                        logger.error(
+                            f'Node {node.config.hop_id} failed: {result}')
                         execution_state['failed_nodes'].add(node)
                         if hasattr(node, 'context') and 'mutation_hooks' in node.context:
                             await self._handle_node_failure(node, result, graph)
@@ -243,7 +249,8 @@ LOGGER = logging.getLogger(__name__)
                         execution_state['completed_nodes'].add(node)
                         execution_state['results'][node] = result
                         self.dag_manager.execution_queue.append(node)
-                ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
+                ready_nodes = self._get_ready_nodes(
+                    graph, execution_state['completed_nodes'])
             if len(execution_state['completed_nodes']) == graph.number_of_nodes():
                 execution_state['status'] = 'completed'
             else:
@@ -425,3 +432,4 @@ async def execute_message_workflow(recipient_data: Dict[str,
     return await orchestrator.execute_graph(graph,
         initial_inputs={'recipient': recipient_data,
         'type': message_type})
+

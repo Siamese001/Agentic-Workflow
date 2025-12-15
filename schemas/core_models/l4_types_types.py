@@ -49,9 +49,11 @@ class StateTransition(Generic[T]):
     operation: StateOperation
     path: StatePath
     value: Any = None
-    condition: Optional[Callable[[T], bool]] = field(default=None, compare=False)
+    condition: Optional[Callable[[T], bool]] = field(
+        default=None, compare=False)
     metadata: Dict[str, object] = field(default_factory=dict, compare=False)
-    TIMESTAMP: DATETIME = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
+    TIMESTAMP: DATETIME = field(
+        default_factory=lambda: datetime.now(timezone.utc), compare=False)
 
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
@@ -71,7 +73,8 @@ class StateSnapshot(Generic[T]):
     data: T
     parent_id: Optional[str] = None
     transition: Optional[StateTransition[T]] = None
-    TIMESTAMP: DATETIME = field(default_factory=lambda: datetime.now(timezone.utc))
+    TIMESTAMP: DATETIME = field(
+        default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, object] = field(default_factory=dict)
 
     def get_hash(self) -> str:
@@ -85,3 +88,4 @@ class StateSnapshot(Generic[T]):
                                   'path': str(self.transition.path),
                                   'value': self.transition.value}
         return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+

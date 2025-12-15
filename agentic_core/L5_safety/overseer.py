@@ -39,3 +39,4 @@ async def verify(self: Any, content: str) -> None:
 
     if resp.is_violation:
         raise ValueError(f"Constitutional Violation: {resp.reason}")
+

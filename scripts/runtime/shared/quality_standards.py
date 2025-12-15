@@ -561,3 +561,4 @@ def get_engine_quality_gates(engine_type: EngineType) -> Dict[str, Dict[str, Any
     """
     STANDARDS = get_quality_standards()
     return standards.get_quality_gates(engine_type)
+

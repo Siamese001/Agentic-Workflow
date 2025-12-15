@@ -15,11 +15,16 @@ class HybridScoreResult(BaseModel):
     """Result of hybrid scoring with component scores."""
 
     doc_id: str = Field(..., description="Document identifier")
-    final_score: float = Field(..., ge=0.0, le=1.0, description="Final combined score")
-    dense_score: float = Field(..., ge=0.0, le=1.0, description="Dense (vector) score")
-    sparse_score: float = Field(..., ge=0.0, le=1.0, description="Sparse (BM25) score, normalized")
-    metadata_boost: float = Field(..., ge=0.0, le=1.0, description="Context/industry boost applied")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Document metadata")
+    final_score: float = Field(..., ge=0.0, le=1.0,
+                               description="Final combined score")
+    dense_score: float = Field(..., ge=0.0, le=1.0,
+                               description="Dense (vector) score")
+    sparse_score: float = Field(..., ge=0.0, le=1.0,
+                                description="Sparse (BM25) score, normalized")
+    metadata_boost: float = Field(..., ge=0.0, le=1.0,
+                                  description="Context/industry boost applied")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Document metadata")
 
     @validator('sparse_score', pre=True)
     def validate_sparse_score(cls, v):
@@ -559,3 +564,4 @@ def score_documents(
     )
 
     return scorer.score_documents(dense_results, sparse_results, target_industry)
+

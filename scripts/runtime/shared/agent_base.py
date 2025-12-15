@@ -235,3 +235,4 @@ class Agent(ABC):
         # RAG integration pending - requires vector store and retrieval infrastructure
         logger.warning(f"RAG not yet implemented for {self.k_node_id}, calling LLM directly")
         return await self._call_llm(prompt)
+

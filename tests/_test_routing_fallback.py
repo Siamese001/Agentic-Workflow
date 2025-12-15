@@ -56,7 +56,8 @@ logging.basicConfig(
         logger.info(f"Provider health: {health}")
 
         if Provider.OPENAI in router.executors:
-    openai_state = router.executors[Provider.OPENAI].get_circuit_breaker_state()
+    openai_state = router.executors[Provider.OPENAI].get_circuit_breaker_state(
+    )
         logger.info(f"OpenAI circuit breaker state: {openai_state}")
         assert openai_state == "CLOSED", "OpenAI should be healthy"
         logger.info("✓ Primary provider (OpenAI) is healthy")
@@ -314,3 +315,4 @@ logging.basicConfig(
     # Run tests
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
+

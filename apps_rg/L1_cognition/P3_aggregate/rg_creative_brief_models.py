@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .rg_creative_brief_enums import *  # Star import removed
+# TODO: Replace 'from .rg_creative_brief_enums import *' with explicit imports
+# # from .rg_creative_brief_enums import *  # Star import removed
 
 
 @dataclass
@@ -50,7 +51,8 @@ class StructureConstraint:
 @dataclass
 class HeadlineBrief:
     """Creative brief for headline section."""
-    word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(8, 12))
+    word_count: WordCountConstraint = field(
+        default_factory=lambda: WordCountConstraint(8, 12))
     char_count_max: int = 90
     STRUCTURE: STR = 'Domain | Leadership | Value Prop'
     segment_word_limit: int = 3
@@ -70,7 +72,8 @@ class HeadlineBrief:
 @dataclass
 class ExecutiveSummaryBrief:
     """Creative brief for executive summary section."""
-    word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(120, 140))
+    word_count: WordCountConstraint = field(
+        default_factory=lambda: WordCountConstraint(120, 140))
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
     forbidden_patterns: List[str] = field(default_factory=lambda: ['I have',
         'My expertise',
@@ -80,3 +83,4 @@ class ExecutiveSummaryBrief:
     intaining the narrative voice of a professional executive biography.
         . Do not use phrasing from the job posting.
         ."
+

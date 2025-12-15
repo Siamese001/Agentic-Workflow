@@ -20,3 +20,4 @@ def test_budget_enforcement_downgrades_cost_tier() -> None:
     enforce_budget(choice, profile)
     assert adjusted.cost_tier in {'low', 'medium'}
     assert adjusted.estimated_cost <= choice.estimated_cost
+

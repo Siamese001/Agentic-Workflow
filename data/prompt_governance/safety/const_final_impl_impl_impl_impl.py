@@ -8,6 +8,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .const_v5 import *  # Star import removed
+# TODO: Replace 'from .const_v5 import *' with explicit imports
+# # from .const_v5 import *  # Star import removed
 
 __all__ = ["*"]  # Re-export all imported names
+

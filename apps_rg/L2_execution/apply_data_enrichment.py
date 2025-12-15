@@ -42,9 +42,11 @@ class DataEnricher:
         for section in experience_sections:
             for bullet in section.get("bullets", []):
                 bullet_text = bullet.get("bullet_text", "")
-                bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(bullet_text)
+                bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(
+                    bullet_text)
 
-                FORBIDDEN = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
+                FORBIDDEN = self.verb_canonicalizer.check_for_forbidden_verbs(
+                    bullet_text)
                 if forbidden:
                     validation_results.append(
                         ValidationResult(
@@ -79,3 +81,4 @@ class DataEnricher:
             )
 
         return {**extracted_data, "experience_sections": experience_sections}, validation_results
+

@@ -29,7 +29,8 @@ def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     SELF.RATE = self.config.get('rate', 1.0)
     self.always_sample = self.config.get('always_sample', [])
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__} with rate={self.rate}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__} with rate={self.rate}')
 
 
 def should_sample(self: Any, context: Optional[Dict]) -> SamplingDecision:
@@ -54,3 +55,4 @@ def _matches_condition(self: Any, context: Dict, condition: Dict) -> bool:
 def should_sample(context: Optional[Dict] = None, config: Optional[Dict] = None) -> bool:
     """Check if should sample."""
     return SamplingProcessor(ConfigurationService().config).should_sample(ConfigurationService().context).sampled
+

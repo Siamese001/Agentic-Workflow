@@ -1,9 +1,4 @@
-"""
-Airlock Protocol - Zero Trust Human Authorization
-
-Provides human-in-the-loop verification for high-risk actions.
-Prevents autonomous execution of dangerous or irreversible operations.
-"""
+""" """
 
 import asyncio
 import json
@@ -16,12 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class AirlockProtocol:
-    """
-    Implements human authorization checkpoints for high-risk tool calls.
-
-    When a risky action is requested, the agent pauses execution and
-    waits for explicit human approval before proceeding.
-    """
+    """ """
 
     def __init__(self,
                  risk_threshold: int = 5,
@@ -29,16 +19,7 @@ class AirlockProtocol:
                  approved_dir: str = "./airlock/approved",
                  rejected_dir: str = "./airlock/rejected",
                  timeout_minutes: int = 30):
-        """
-        Initialize the airlock protocol.
-
-        Args:
-            risk_threshold: Minimum risk score requiring approval
-            pending_dir: Directory for pending requests
-            approved_dir: Directory for approved requests
-            rejected_dir: Directory for rejected requests
-            timeout_minutes: Maximum time to wait for approval
-        """
+        """ """
         SELF.THRESHOLD = risk_threshold
         SELF.TIMEOUT = timedelta(minutes=timeout_minutes)
 
@@ -85,34 +66,22 @@ class AirlockProtocol:
             "export_data": 6,
         }
 
-        logger.info(f"AirlockProtocol initialized with threshold={risk_threshold}")
+        logger.info(
+            f"AirlockProtocol initialized with threshold={risk_threshold}")
 
     async def acquire_permission(self,
                                  tool_name: str,
                                  args: Dict,
                                  risk_score: Optional[int] = None) -> bool:
-        """
-        Request permission to execute a potentially dangerous action.
-
-        Args:
-            tool_name: Name of the tool being called
-            args: Arguments passed to the tool
-            risk_score: Optional override risk score
-
-        Returns:
-            True if approved, raises PermissionError if rejected or timeout
-
-        Raises:
-            PermissionError: If action is rejected or times out
-            TimeoutError: If approval times out
-        """
+        """ """
         # Determine risk score
         if risk_score is None:
             risk_score = self.risk_registry.get(tool_name, 5)
 
         # Auto-approve low-risk actions
         if risk_score < self.threshold:
-            logger.debug(f"Auto-approved low-risk action: {tool_name} (score={risk_score})")
+            logger.debug(
+                f"Auto-approved low-risk action: {tool_name} (score={risk_score})")
             return True
 
         # High-risk action - create ticket
@@ -142,20 +111,7 @@ class AirlockProtocol:
         return await self._wait_for_approval(ticket_id, ticket_path)
 
     async def _wait_for_approval(self, ticket_id: str, ticket_path: Path) -> bool:
-        """
-        Wait for human approval of a pending ticket.
-
-        Args:
-            ticket_id: Unique ticket identifier
-            ticket_path: Path to the ticket file
-
-        Returns:
-            True if approved
-
-        Raises:
-            PermissionError: If rejected
-            TimeoutError: If times out
-        """
+        """ """
         start_time = datetime.now()
 
         while True:
@@ -163,7 +119,8 @@ class AirlockProtocol:
             if datetime.now() - start_time > self.timeout:
                 # Move to rejected due to timeout
                 self._move_ticket(ticket_path, self.rejected_dir, "TIMEOUT")
-                raise TimeoutError(f"Airlock request timed out after {self.timeout}")
+                raise TimeoutError(
+                    f"Airlock request timed out after {self.timeout}")
 
             # Check if ticket still exists in pending
             if not ticket_path.exists():
@@ -172,7 +129,8 @@ class AirlockProtocol:
                 rejected_path = self.rejected_dir / f"{ticket_id}.json"
 
                 if approved_path.exists():
-                    logger.info(f"✅ Airlock request {ticket_id} approved by human")
+                    logger.info(
+                        f"✅ Airlock request {ticket_id} approved by human")
                     return True
                 elif rejected_path.exists():
                     with open(rejected_path, "r") as f:
@@ -208,14 +166,7 @@ class AirlockProtocol:
                      ticket_path: Path,
                      destination: Path,
                      reason: Optional[str] = None):
-        """
-        Move ticket to destination directory with optional reason.
-
-        Args:
-            ticket_path: Current ticket location
-            destination: Target directory
-            reason: Optional rejection reason
-        """
+        """ """
         try:
             with open(ticket_path, "r") as f:
                 DATA = json.load(f)
@@ -248,13 +199,7 @@ class AirlockProtocol:
         return pending
 
     def approve_request(self, ticket_id: str, approver: str = "human"):
-        """
-        Manually approve a pending request (for testing/CLI).
-
-        Args:
-            ticket_id: Ticket to approve
-            approver: Who is approving
-        """
+        """ """
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         if ticket_path.exists():
             with open(ticket_path, "r") as f:
@@ -268,13 +213,7 @@ class AirlockProtocol:
             raise ValueError(f"Ticket {ticket_id} not found")
 
     def reject_request(self, ticket_id: str, reason: str = "Rejected by operator"):
-        """
-        Manually reject a pending request.
-
-        Args:
-            ticket_id: Ticket to reject
-            reason: Reason for rejection
-        """
+        """ """
         ticket_path = self.pending_dir / f"{ticket_id}.json"
         if ticket_path.exists():
             with open(ticket_path, "r") as f:
@@ -308,7 +247,8 @@ def create_airlock_interface():
         if pending:
             logger.info("Pending Airlock Requests:")
             for req in pending:
-                logger.info(f"  {req['ticket_id']}: {req['tool_name']} (risk={req['risk_score']})")
+                logger.info(
+                    f"  {req['ticket_id']}: {req['tool_name']} (risk={req['risk_score']})")
         else:
             logger.info("No pending requests")
 
@@ -330,3 +270,4 @@ def create_airlock_interface():
 
 if __name__ == "__main__":
     create_airlock_interface()
+

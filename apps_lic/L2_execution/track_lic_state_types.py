@@ -20,3 +20,4 @@ class StateValidationResult:
     _is_valid: bool
     _errors: List[str] = field(default_factory=list)
     _warnings: List[str] = field(default_factory=list)
+

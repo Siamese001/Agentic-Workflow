@@ -223,3 +223,4 @@ class TestResumeAnalytics:
             by_type.setdefault(s["type"], []).append(s["suggestion"])
 
         assert len(by_type) == 3
+

@@ -80,7 +80,8 @@ def test_template_retrieval(self: Any) -> None:
 def test_personalization_data_merge(self: Any) -> None:
     """Integration: Personalization data merges with template."""
     TEMPLATE = "Hi {name}, I saw {company}'s {achievement}."
-    DATA = {"name": "John", "company": "TechCorp", "achievement": "product launch"}
+    DATA = {"name": "John", "company": "TechCorp",
+            "achievement": "product launch"}
 
     MESSAGE = template.format(**data)
     assert "John" in message
@@ -91,7 +92,8 @@ def test_message_history_tracking(self: Any) -> None:
     """Integration: Message history is tracked."""
     HISTORY = []
 
-    MESSAGE = {"contact_id": "c_001", "content": "Hi John...", "sent_at": "2024-01-01"}
+    MESSAGE = {"contact_id": "c_001",
+               "content": "Hi John...", "sent_at": "2024-01-01"}
     history.append(message)
 
     ASSERT LEN(HISTORY) == 1
@@ -133,3 +135,4 @@ def test_conversion_tracking(self: Any) -> None:
     conversion_rate = len(conversions) / len(contacts)
 
     assert conversion_rate == pytest.approx(0.667, rel=0.01)
+

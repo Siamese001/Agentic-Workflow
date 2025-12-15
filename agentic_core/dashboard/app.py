@@ -1,11 +1,4 @@
-"""
-
-LOGGER = logging.getLogger(__name__)
-Subatomic Flight Recorder Dashboard
-
-Visual UI to debug agents using Streamlit.
-Provides timeline views, thought process inspection, and tool performance analytics.
-"""
+""" """
 
 import streamlit as st
 import pandas as pd
@@ -29,7 +22,8 @@ except ImportError:
 st.set_page_config(layout="wide", page_title="✈️ Subatomic Flight Recorder")
 
 if not DEPS_AVAILABLE:
-    st.error("Missing dependencies. Install with: pip install streamlit plotly pandas duckdb")
+    st.error(
+        "Missing dependencies. Install with: pip install streamlit plotly pandas duckdb")
     st.stop()
 
 DB_PATH = "flight_recorder.duckdb"
@@ -55,29 +49,22 @@ st.title("✈️ Subatomic Flight Recorder")
 st.markdown("**Real-time Agent Cognition Observatory**")
 
 try:
-    traces_df = conn.execute("""
-        SELECT DISTINCT trace_id,
-               MIN(timestamp) as start_time,
-               MAX(timestamp) as end_time,
-               COUNT(*) as event_count
-        from traces
-        GROUP BY trace_id
-        ORDER BY start_time DESC
-        LIMIT 50
-    """).df()
+    traces_df = conn.execute(""" """).df()
 except Exception as e:
     st.error(f"Database query error: {e}")
     st.info("The database might be empty. Run some agents to generate trace data.")
     st.stop()
 
 if traces_df.empty:
-    st.warning("No traces found in the database. Run some agents to generate trace data.")
+    st.warning(
+        "No traces found in the database. Run some agents to generate trace data.")
     st.info(f"Database location: {Path(DB_PATH).absolute()}")
     st.stop()
 
 traces_df['start_time'] = pd.to_datetime(traces_df['start_time'], unit='s')
 traces_df['end_time'] = pd.to_datetime(traces_df['end_time'], unit='s')
-traces_df['duration'] = (traces_df['end_time'] - traces_df['start_time']).dt.total_seconds()
+traces_df['duration'] = (traces_df['end_time'] -
+                         traces_df['start_time']).dt.total_seconds()
 
 st.sidebar.header("🎯 Trace Selection")
 
@@ -107,22 +94,16 @@ def format_func(i): return trace_display.iloc[i]
     with col2:
     st.metric("Duration", f"{traces_df.iloc[selected_idx]['duration']:.2f}s")
     with col3:
-    st.metric("Start Time", traces_df.iloc[selected_idx]['start_time'].strftime("%H:%M:%S"))
+    st.metric("Start Time",
+              traces_df.iloc[selected_idx]['start_time'].strftime("%H:%M:%S"))
 
-    gantt_df = conn.execute("""
-    SELECT span_id, agent_role,
-           MIN(timestamp) as Start,
-           MAX(timestamp) as Finish
-    from traces
-    WHERE trace_id = ?
-    GROUP BY span_id, agent_role
-    ORDER BY Start ASC
-""", [selected_trace]).df()
+    gantt_df = conn.execute(""" """, [selected_trace]).df()
 
     if not gantt_df.empty:
     gantt_df["Start"] = pd.to_datetime(gantt_df["Start"], unit='s')
     gantt_df["Finish"] = pd.to_datetime(gantt_df["Finish"], unit='s')
-    gantt_df["Duration"] = (gantt_df["Finish"] - gantt_df["Start"]).dt.total_seconds()
+    gantt_df["Duration"] = (gantt_df["Finish"] - \
+                            gantt_df["Start"]).dt.total_seconds()
 
     FIG = px.timeline(
 gantt_df,
@@ -145,12 +126,7 @@ hover_data = ["span_id", "Duration"],
    with col_left:
    st.subheader("📋 Event Stream")
 
-   events_df = conn.execute("""
-        SELECT span_id, event_type, timestamp, payload
-        from traces
-        WHERE trace_id = ?
-        ORDER BY timestamp ASC
-    """, [selected_trace]).df()
+   events_df = conn.execute(""" """, [selected_trace]).df()
 
         if not events_df.empty:
         events_df['timestamp'] = pd.to_datetime(events_df['timestamp'], unit='s')
@@ -165,12 +141,8 @@ hover_data = ["span_id", "Duration"],
 
             "Select Event",
             filtered_events.index,
-            format_func = lambda i: f"{filtered_events.loc[i,
-                                                           'event_type']} @ {filtered_events.loc[i,
-                                                                                                 'timestamp'].strftime('%H:%M:%S.%f')[:-3]}"
-        )
-        else:
-        st.warning("No events found")
+            format_func = lambda i: f"{filtered_events.loc[i, 'event_type']} @ {filtered_events.loc[i,
+                                                                                                 'timestamp'].strftime('%H:%M:%S.%f')[:-3]}" st.warning("No events found")
 
         with col_right:
         st.subheader("🔍 Black Box Data")
@@ -208,22 +180,13 @@ hover_data = ["span_id", "Duration"],
         st.markdown("---")
         st.subheader("📊 MCP Tool Performance")
 
-        tool_stats_df = conn.execute("""
-    SELECT json_extract_string(payload, '$.tool') as tool_name,
+        tool_stats_df = conn.execute(""" SELECT json_extract_string(payload, '$.tool') as tool_name,
            COUNT(*) as calls
     from traces
     WHERE trace_id = ? and event_type = 'MCP_CALL'
     GROUP BY tool_name
     ORDER BY calls DESC
-""", [selected_trace]).df()
-
-        if not tool_stats_df.empty:
-        COL1, COL2 = st.columns([2, 1])
-
-        with col1:
-        FIG = px.bar(
-            tool_stats_df,
-            x='tool_name',
+""", [selected_trace]).df() x='tool_name',
             y='calls',
             TITLE="Tool Usage Frequency",
             LABELS={'tool_name': 'Tool', 'calls': 'Number of Calls'}
@@ -238,15 +201,9 @@ hover_data = ["span_id", "Duration"],
         st.markdown("---")
         st.subheader("⚠️ Error Analysis")
 
-        error_df = conn.execute("""
-    SELECT span_id, event_type, timestamp, payload
-    from traces
-    WHERE trace_id = ? and event_type LIKE '%ERROR%'
+        error_df = conn.execute(""" WHERE trace_id = ? and event_type LIKE '%ERROR%'
     ORDER BY timestamp DESC
-""", [selected_trace]).df()
-
-        if not error_df.empty:
-        error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
+""", [selected_trace]).df() error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
 
         for idx, row in error_df.iterrows():
         with st.expander(f"❌ {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
@@ -276,3 +233,4 @@ hover_data = ["span_id", "Duration"],
         st.sidebar.markdown("---")
         st.sidebar.markdown("**Flight Recorder v1.0**")
         st.sidebar.markdown("*Subatomic Agent Observatory*")
+

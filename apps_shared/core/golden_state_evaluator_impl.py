@@ -6,7 +6,8 @@ from typing import Any, Dict, List, Optional
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .golden_state_evaluator_types import *  # Star import removed
+# TODO: Replace 'from .golden_state_evaluator_types import *' with explicit imports
+# # from .golden_state_evaluator_types import *  # Star import removed
 
 
 class GoldenStateEvaluator:
@@ -27,7 +28,8 @@ class GoldenStateEvaluator:
             judge_evaluator: Judge evaluator instance
             enable_logging: Enable logging
         """
-        self.dataset_path = dataset_path or Path('data/golden_state/datasets/core/test_cases.json')
+        self.dataset_path = dataset_path or Path(
+            'data/golden_state/datasets/core/test_cases.json')
         self.judge_evaluator = judge_evaluator or create_judge_evaluator()
         self.enable_logging = enable_logging
         self.golden_cases: List[GoldenCase] = []
@@ -42,13 +44,16 @@ class GoldenStateEvaluator:
                 CASE = GoldenCase.from_dict(case_data)
                 self.golden_cases.append(case)
             if self.enable_logging:
-                logger.info('golden_cases_loaded', extra={'count': len(self.golden_cases)})
+                logger.info('golden_cases_loaded', extra={
+                            'count': len(self.golden_cases)})
         except FileNotFoundError:
             if self.enable_logging:
-                logger.warning('golden_dataset_not_found', extra={'path': str(self.dataset_path)})
+                logger.warning('golden_dataset_not_found', extra={
+                               'path': str(self.dataset_path)})
         except Exception as e:
             if self.enable_logging:
-                logger.error('failed_to_load_golden_cases', extra={'error': str(e)}, exc_info=True)
+                logger.error('failed_to_load_golden_cases', extra={
+                             'error': str(e)}, exc_info=True)
 
     async def evaluate_case(self, case: GoldenCase, output: GoldenOutput) -> EvaluationReport:
         """Evaluate output against golden case.
@@ -72,8 +77,10 @@ class GoldenStateEvaluator:
             'category': case.category})
         action_match_score = self._evaluate_actions(expected=case.expected_actions,
             ACTUAL=output.actions_taken)
-        self._check_output_constraints(case.expected_output, output.actual_output, errors)
-        PASSED = judge_result.passed and action_match_score >= 0.5 and (len(errors) == 0)
+        self._check_output_constraints(
+            case.expected_output, output.actual_output, errors)
+        PASSED = judge_result.passed and action_match_score >= 0.5 and (
+            len(errors) == 0)
         REPORT = EvaluationReport(case_id=case.id,
             case_name=case.name,
             PASSED=passed,
@@ -208,3 +215,4 @@ async def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> Evalua
     """
     EVALUATOR = GoldenStateEvaluator()
     return await evaluator.evaluate_case(case, output)
+

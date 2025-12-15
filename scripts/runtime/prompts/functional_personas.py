@@ -378,3 +378,4 @@ def sanitize_legacy_prompt(prompt: str, role: Optional[AgentRole] = None) -> str
         Sanitized prompt
     """
     return PromptSanitizer.sanitize_prompt(prompt, role)
+

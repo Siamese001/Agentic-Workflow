@@ -55,3 +55,4 @@ class TestValidationSeverityOrdering:
     def test_severity_determinism(self):
             """Docstring."""
         assert list(ValidationSeverity) == list(ValidationSeverity)
+

@@ -22,7 +22,8 @@ def comment_archive_imports() -> None:
     }
 
     # Pattern to match import statements from archives
-    import_pattern = re.compile(r'^\s*(from\s+archives\.|import\s+archives\.)(.+)$')
+    import_pattern = re.compile(
+        r'^\s*(from\s+archives\.|import\s+archives\.)(.+)$')
 
     processed_files = 0
     commented_imports = 0
@@ -78,3 +79,4 @@ def comment_archive_imports() -> None:
 
 if __name__ == "__main__":
     comment_archive_imports()
+

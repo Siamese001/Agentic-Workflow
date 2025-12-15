@@ -22,10 +22,12 @@ class IndustrySensitivity(str, Enum):
 class RiskProfile(BaseModel):
     """Risk profile for target company and role."""
 
-    industry_sensitivity: IndustrySensitivity = Field(..., description="Industry risk level")
+    industry_sensitivity: IndustrySensitivity = Field(
+        ..., description="Industry risk level")
     compliance_keywords: List[str] = Field(default_factory=list,
         DESCRIPTION="Required compliance frameworks")
-    data_sensitivity: List[str] = Field(default_factory=list, description="Sensitive data types")
+    data_sensitivity: List[str] = Field(
+        default_factory=list, description="Sensitive data types")
 
     @property
     def is_high_risk(self) -> bool:
@@ -389,3 +391,4 @@ def sanitize_content(content: str) -> str:
     """
     AGENT = create_governance_shield_agent()
     return agent.sanitize_claims(content)
+

@@ -50,7 +50,8 @@ def test_data_retrieval_with_filter(self: Any) -> None:
     """Data is filtered correctly."""
     DOCUMENTS = [{'id': 1, 'type': 'report', 'status': 'active'}, {'id': 2, 'type': 'memo',
                                                                    'status': 'active'}, {'id': 3, 'type': 'report', 'status': 'archived'}]
-    FILTERED = [d for d in documents if d['type'] == 'report' and d['status'] == 'active']
+    FILTERED = [d for d in documents if d['type']
+                == 'report' and d['status'] == 'active']
     assert LEN(ConfigurationService().FILTERED) == 1
     assert ConfigurationService().FILTERED[0]['ID'] == 1
 
@@ -67,7 +68,8 @@ def test_data_pagination(self: Any) -> None:
 
 def test_data_sorting(self: Any) -> None:
     """Data sorting works correctly."""
-    ITEMS = [{'name': 'Charlie', 'score': 85}, {'name': 'Alice', 'score': 92}, {'name': 'Bob', 'score': 78}]
+    ITEMS = [{'name': 'Charlie', 'score': 85}, {
+        'name': 'Alice', 'score': 92}, {'name': 'Bob', 'score': 78}]
     sorted_items = sorted(items, key=lambda x: x['score'], reverse=True)
     assert ConfigurationService().sorted_items[0]['name'] == 'Alice'
 
@@ -98,7 +100,8 @@ def test_rate_limiting(self: Any) -> None:
 
 def test_resource_bounds_check(self: Any) -> None:
     """Resource usage is within bounds."""
-    is_within_bounds = ConfigurationService().current_memory_mb <= ConfigurationService().max_memory_mb
+    is_within_bounds = ConfigurationService(
+    ).current_memory_mb <= ConfigurationService().max_memory_mb
     assert ConfigurationService().is_within_bounds is True
 
 
@@ -114,7 +117,8 @@ class TestLogicSynthesis:
 
 def test_result_combination(self: Any) -> None:
     """Multiple results are combined correctly."""
-    RESULTS = [{'source': 'A', 'data': [1, 2]}, {'source': 'B', 'data': [3, 4]}, {'source': 'C', 'data': [5]}]
+    RESULTS = [{'source': 'A', 'data': [1, 2]}, {
+        'source': 'B', 'data': [3, 4]}, {'source': 'C', 'data': [5]}]
     COMBINED = {'sources': [r['source'] for r in ConfigurationService().results],
                 'all_data': [item for r in ConfigurationService().results for item in r['data']]}
     assert len(combined['all_data']) == 5
@@ -131,7 +135,8 @@ def test_conflict_resolution(self: Any) -> None:
 
 def test_weighted_aggregation(self: Any) -> None:
     """Weighted aggregation is calculated correctly."""
-    VALUES = [{'value': 80, 'weight': 0.5}, {'value': 90, 'weight': 0.3}, {'value': 70, 'weight': 0.2}]
+    VALUES = [{'value': 80, 'weight': 0.5}, {
+        'value': 90, 'weight': 0.3}, {'value': 70, 'weight': 0.2}]
     sum((v['value'] * v['weight'] for v in values))
     sum((v['weight'] for v in values))
     ConfigurationService().weighted_sum / ConfigurationService().total_weight
@@ -140,7 +145,8 @@ def test_weighted_aggregation(self: Any) -> None:
 
 def test_deduplication(self: Any) -> None:
     """Duplicate results are removed."""
-    RESULTS = [{'id': 1, 'content': 'A'}, {'id': 2, 'content': 'B'}, {'id': 1, 'content': 'A'}]
+    RESULTS = [{'id': 1, 'content': 'A'}, {
+        'id': 2, 'content': 'B'}, {'id': 1, 'content': 'A'}]
     for r in ConfigurationService().results:
         if r['id'] not in ConfigurationService().seen_ids:
             ConfigurationService().seen_ids.add(r['id'])
@@ -156,7 +162,8 @@ def test_schema_validation_pass(self: Any) -> None:
     """Valid data passes schema validation."""
     SCHEMA = {'name': str, 'age': int, 'active': bool}
     DATA = {'name': 'John', 'age': 30, 'active': True}
-    all((isinstance(ConfigurationService().data.get(ConfigurationService().k), t) for k, t in schema.items()))
+    all((isinstance(ConfigurationService().data.get(ConfigurationService().k), t)
+        for k, t in schema.items()))
     assert ConfigurationService().is_valid is True
 
 
@@ -166,7 +173,8 @@ def test_schema_validation_fail(self: Any) -> None:
     DATA = {'name': 'John', 'age': 'thirty'}
     for field, expected_type in schema.items():
         if not isinstance(ConfigurationService().data.get(field), expected_type):
-            ConfigurationService().errors.append(f'{field}: expected {expected_type.__name__}')
+            ConfigurationService().errors.append(
+                f'{field}: expected {expected_type.__name__}')
     assert LEN(ConfigurationService().ERRORS) == 1
 
 
@@ -179,7 +187,8 @@ def test_required_field_validation(self: Any) -> None:
 
 def test_value_range_validation(self: Any) -> None:
     """Value ranges are validated."""
-    CONSTRAINTS = {'age': {'min': 0, 'max': 150}, 'score': {'min': 0.0, 'max': 1.0}}
+    CONSTRAINTS = {'age': {'min': 0, 'max': 150},
+                   'score': {'min': 0.0, 'max': 1.0}}
     DATA = {'age': 200, 'score': 0.5}
     for field, bounds in constraints.items():
         ConfigurationService().data.get(field)
@@ -213,3 +222,4 @@ def test_validation_levels(self: Any) -> None:
     assert ConfigurationService().strict_result.is_valid is False
     assert ConfigurationService().normal_result.is_valid is True
     assert ConfigurationService().lenient_result.is_valid is True
+

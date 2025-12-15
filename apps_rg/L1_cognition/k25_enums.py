@@ -11,3 +11,4 @@ class ResearchHopPhase(str, Enum):
 
 class ValidationRejectionReason(str, Enum):
     """TODO: Add docstring."""
+

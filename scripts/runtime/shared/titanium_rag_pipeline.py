@@ -194,12 +194,14 @@ class TitaniumRAGPipeline:
         # Security Layer: Input validation (Phase 0 - Outermost)
         # ----------------------------------------------------
         if self.enable_security and self.input_guardrail:
-            guard_result = self.input_guardrail.scan(query, user_id=kwargs.get('user_id'))
+            guard_result = self.input_guardrail.scan(
+                query, user_id=kwargs.get('user_id'))
 
             # Handle security actions
             if guard_result.action == GuardAction.BLOCK:
                 self.stats["security_blocks"] += 1
-                logger.warning(f"Query blocked by security: {guard_result.reason}")
+                logger.warning(
+                    f"Query blocked by security: {guard_result.reason}")
                 return {
                     "query": query,
                     "response": "I cannot process that request due to safety protocols.",
@@ -213,7 +215,8 @@ class TitaniumRAGPipeline:
                 }
             elif guard_result.action == GuardAction.WARN:
                 self.stats["security_warnings"] += 1
-                logger.warning(f"Security warning for query: {guard_result.reason}")
+                logger.warning(
+                    f"Security warning for query: {guard_result.reason}")
                 # Continue but mark as suspicious
             elif guard_result.action == GuardAction.REDACT:
                 self.stats["pii_redactions"] += 1
@@ -275,7 +278,8 @@ class TitaniumRAGPipeline:
             if len(decomposed_result.sub_queries) > 1:
                 queries_to_process = decomposed_result.sub_queries
                 SELF.STATS["DECOMPOSITIONS"] += 1
-                logger.info(f"Decomposed into {len(queries_to_process)} sub-queries")
+                logger.info(
+                    f"Decomposed into {len(queries_to_process)} sub-queries")
 
         # 4. Retrieve documents for each query
         all_retrieved = []
@@ -658,3 +662,4 @@ def create_titanium_pipeline(
         )
     else:
         return TitaniumRAGPipeline(**kwargs)
+

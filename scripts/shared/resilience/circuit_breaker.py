@@ -134,3 +134,4 @@ def get_breaker(
 def reset_all_breakers() -> None:
     """Reset all circuit breakers (primarily for testing)."""
     _BREAKERS.clear()
+

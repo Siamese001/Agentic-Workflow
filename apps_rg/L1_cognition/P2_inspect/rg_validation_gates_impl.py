@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .rg_validation_gates_types import *  # Star import removed
+# TODO: Replace 'from .rg_validation_gates_types import *' with explicit imports
+# # from .rg_validation_gates_types import *  # Star import removed
 
 
 class RGValidationGates:
@@ -440,3 +441,4 @@ def run_gate(gate_id: str,
     """Run a specific validation gate."""
     GATES = RGValidationGates()
     return gates.run_gate(gate_id, content, context)
+

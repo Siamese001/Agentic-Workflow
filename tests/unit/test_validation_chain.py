@@ -192,7 +192,8 @@ async def demonstrate_validation_chain():
             logger.info(f"Final content: {final_content}")
 
             # Show checkpoints
-            logger.info(f"\nCheckpoints created: {len(state_manager.checkpoints)}")
+            logger.info(
+                f"\nCheckpoints created: {len(state_manager.checkpoints)}")
             for i, checkpoint in enumerate(state_manager.checkpoints, 1):
         logger.info(f"  {i}. {checkpoint['step']}")
 
@@ -377,3 +378,4 @@ async def demonstrate_validation_chain():
 
             if __name__ == "__main__":
     asyncio.run(main())
+

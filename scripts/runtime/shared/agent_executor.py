@@ -46,8 +46,10 @@ class AgentResponse:
     usage: Dict[str, int] = field(default_factory=dict)
     tool_calls: Optional[List[Dict[str, Any]]] = None
     raw_response: Optional[Any] = None
-    interaction_id: Optional[str] = None  # For Google GenAI stateful continuations
-    metadata: Dict[str, Any] = field(default_factory=dict)  # Additional response metadata
+    # For Google GenAI stateful continuations
+    interaction_id: Optional[str] = None
+    # Additional response metadata
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class AgentExecutor:
@@ -90,8 +92,10 @@ class AgentExecutor:
 
         if self.config.enable_tracing:
             with create_span(span_name) as span:
-                set_span_attribute("agent.provider", self.config.provider.value)
-                set_span_attribute("agent.model", self.config.model or "default")
+                set_span_attribute(
+                    "agent.provider", self.config.provider.value)
+                set_span_attribute(
+                    "agent.model", self.config.model or "default")
                 set_span_attribute("agent.message_count", len(messages))
 
                 try:
@@ -184,7 +188,8 @@ class AgentExecutor:
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens,
             },
-            tool_calls=message.tool_calls if hasattr(message, "tool_calls") else None,
+            tool_calls=message.tool_calls if hasattr(
+                message, "tool_calls") else None,
             raw_response=response,
         )
 
@@ -290,7 +295,8 @@ class AgentExecutor:
                 for msg in messages:
                     if msg["role"] == "system":
                         # System prompt becomes first user message with model acknowledgment
-                        input_messages.append({"role": "user", "content": msg["content"]})
+                        input_messages.append(
+                            {"role": "user", "content": msg["content"]})
                         input_messages.append({"role": "model",
                             "content": "Understood. I am ready."})
                     else:
@@ -367,7 +373,8 @@ class AgentExecutor:
 
         return AgentResponse(
             CONTENT=str(getattr(response, "text", "") or ""),
-            finish_reason=getattr(response, "candidates", [{}])[0].get("finish_reason", "stop"),
+            finish_reason=getattr(response, "candidates", [{}])[
+                                  0].get("finish_reason", "stop"),
             USAGE={},
             raw_response=response,
         )
@@ -405,7 +412,8 @@ class AgentExecutor:
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens,
             },
-            tool_calls=message.tool_calls if hasattr(message, "tool_calls") else None,
+            tool_calls=message.tool_calls if hasattr(
+                message, "tool_calls") else None,
             raw_response=response,
         )
 
@@ -577,3 +585,4 @@ def create_agent_executor(
     )
 
     return AgentExecutor(config)
+

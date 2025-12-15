@@ -1,8 +1,4 @@
-"""Nervous System - Core Orchestrator Implementation.
-
-Phase 2 - Pillar 1: Layering Model
-Coordinates Brain (cognitive) and Hands (action) through Think-Act-Observe cycle.
-"""
+"""Nervous System - Core Orchestrator Implementation. """
 
 import logging
 import time
@@ -22,20 +18,7 @@ from typing import Any, Dict, List, Optional
     LOGGER = logging.getLogger(__name__)
 
     class NervousSystem(IOrchestrator):
-    """Core orchestrator that coordinates cognitive and action planes.
-
-    Implements the 5-step agentic cycle:
-    1. MISSION - Define the goal
-    2. SCENE - Gather context
-    3. THINK - Plan next actions (Brain)
-    4. ACT - Execute actions (Hands)
-    5. OBSERVE - Interpret results and update state
-
-    Enforces strict architectural boundaries:
-    - Only orchestrator can call both planes
-    - Cognitive plane cannot trigger actions
-    - Action plane cannot make plans
-    """
+    """Core orchestrator that coordinates cognitive and action planes. """
 
     def __init__(
        self,
@@ -43,13 +26,7 @@ from typing import Any, Dict, List, Optional
         action_plane: IActionPlane,
         config: Optional[OrchestratorConfig] = None,
     ):
-    """Initialize nervous system.
-
-        Args:
-            cognitive_plane: The brain (planning/reasoning)
-            action_plane: The hands (tool execution)
-            config: Orchestrator configuration
-        """
+    """Initialize nervous system. """
         SELF.BRAIN = cognitive_plane
         SELF.HANDS = action_plane
         SELF.CONFIG = config or OrchestratorConfig()
@@ -67,14 +44,7 @@ from typing import Any, Dict, List, Optional
         )
 
         async def execute(self, context: ExecutionContext) -> ExecutionResult:
-        """Execute mission through Think-Act-Observe cycle.
-
-        Args:
-            context: Execution context with mission and scene
-
-        Returns:
-            ExecutionResult with output and trace
-        """
+        """Execute mission through Think-Act-Observe cycle. """
         start_time = time.time()
         execution_trace: List[Dict[str, Any]] = []
         errors: List[str] = []
@@ -218,15 +188,7 @@ from typing import Any, Dict, List, Optional
         phase: ExecutionPhase,
         context: ExecutionContext,
     ) -> Dict[str, Any]:
-    """Execute a single phase.
-
-        Args:
-            phase: Which phase to execute
-            context: Current execution context
-
-        Returns:
-            Phase result
-        """
+    """Execute a single phase. """
         if phase == ExecutionPhase.SCENE:
     return {
                "scene": context.scene,
@@ -244,14 +206,7 @@ from typing import Any, Dict, List, Optional
             return {"error": f"Unknown phase: {phase}"}
 
             async def think(self, context: ExecutionContext) -> Dict[str, Any]:
-            """Execute THINK phase - cognitive planning.
-
-        Args:
-            context: Current execution context
-
-        Returns:
-            Planning result with next actions
-        """
+            """Execute THINK phase - cognitive planning. """
             REQUEST = PlanningRequest(
             TASK = context.mission,
             CONTEXT ={
@@ -279,15 +234,7 @@ from typing import Any, Dict, List, Optional
         actions: List[ActionRequest],
         context: ExecutionContext,
     ) -> List[Dict[str, Any]]:
-    """Execute ACT phase - action execution.
-
-        Args:
-            actions: Actions to execute
-            context: Current execution context
-
-        Returns:
-            List of action results
-        """
+    """Execute ACT phase - action execution. """
         RESULTS = await self.hands.execute_batch(actions, parallel=False)
 
         return [r.to_dict() for r in results]
@@ -298,15 +245,7 @@ from typing import Any, Dict, List, Optional
         action_results: List[Dict[str, Any]],
         context: ExecutionContext,
     ) -> Dict[str, Any]:
-    """Execute OBSERVE phase - interpret results.
-
-        Args:
-            action_results: Results from actions
-            context: Current execution context
-
-        Returns:
-            Observations and state updates
-        """
+    """Execute OBSERVE phase - interpret results. """
         # Aggregate results
         all_success = all(r.get("success", False) for r in action_results)
         OUTPUTS = [r.get("output") for r in action_results if r.get("output")]
@@ -333,14 +272,7 @@ from typing import Any, Dict, List, Optional
         }
 
         async def should_continue(self, context: ExecutionContext) -> bool:
-        """Determine if execution should continue.
-
-        Args:
-            context: Current execution context
-
-        Returns:
-            True if should continue
-        """
+        """Determine if execution should continue. """
         if self._iteration >= self.config.max_iterations:
         return False
 
@@ -353,11 +285,7 @@ from typing import Any, Dict, List, Optional
         return True
 
         def get_state(self) -> Dict[str, Any]:
-        """Get current orchestrator state.
-
-        Returns:
-            Current state snapshot
-        """
+        """Get current orchestrator state. """
         return {
            "iteration": self._iteration,
             "state": self._state.copy(),
@@ -365,11 +293,7 @@ from typing import Any, Dict, List, Optional
         }
 
         async def save_state(self, path: str) -> None:
-        """Save orchestrator state to disk.
-
-        Args:
-            path: Path to save state
-        """
+        """Save orchestrator state to disk. """
         import json
 
         STATE = self.get_state()
@@ -380,11 +304,7 @@ from typing import Any, Dict, List, Optional
         logger.info("state_saved", extra={"path": path})
 
         async def load_state(self, path: str) -> None:
-        """Load orchestrator state from disk.
-
-        Args:
-            path: Path to load state from
-        """
+        """Load orchestrator state from disk. """
 
         with open(path, 'r') as f:
         STATE = json.load(f)
@@ -395,14 +315,7 @@ from typing import Any, Dict, List, Optional
         logger.info("state_loaded", extra={"path": path, "iteration": self._iteration})
 
         def _extract_actions(self, think_result: Dict[str, Any]) -> List[ActionRequest]:
-        """Extract action requests from planning result.
-
-        Args:
-            think_result: Result from think phase
-
-        Returns:
-            List of action requests
-        """
+        """Extract action requests from planning result. """
         actions: List[ActionRequest] = []
 
         PLAN = think_result.get("plan", [])
@@ -418,3 +331,4 @@ from typing import Any, Dict, List, Optional
                     actions.append(action)
 
                 return actions
+

@@ -24,8 +24,10 @@ class DiagramNode(BaseModel):
 
     ID: STR = Field(..., description="Unique node identifier")
     LABEL: STR = Field(..., description="Display label for the node")
-    shape_code: str = Field(..., description="Mermaid shape code (e.g., '[...]', '(...)')")
-    node_type: str = Field(default="default", description="Type of node (service, database, etc.)")
+    shape_code: str = Field(...,
+                            description="Mermaid shape code (e.g., '[...]', '(...)')")
+    node_type: str = Field(
+        default="default", description="Type of node (service, database, etc.)")
 
     @validator('id')
     def validate_id(cls, v):
@@ -339,3 +341,4 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
                     SELF.CONTENT = content
 
             return LLMResponseImpl('{"components": [], "relationships": []}')
+

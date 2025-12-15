@@ -51,7 +51,8 @@ async def run(self: Any, context: Dict) -> None:
         # 1. PRE-FLIGHT
         await self.mcp.connect(self.role)
         clean_context = self.pii.redact(trace_id, str(context))
-        self.genealogy.register_attempt(trace_id, "start", str(hash(clean_context)))
+        self.genealogy.register_attempt(
+            trace_id, "start", str(hash(clean_context)))
 
         # 2. THINK (L1)
         # (Assuming self.llm is an Instructor client)
@@ -59,7 +60,8 @@ async def run(self: Any, context: Dict) -> None:
             MODEL="gpt-4",
             response_model=AgentPlan,
             MESSAGES=[
-                {"role": "system", "content": f"You are {self.role}. Tools: {self.mcp.tools}"},
+                {"role": "system",
+                    "content": f"You are {self.role}. Tools: {self.mcp.tools}"},
                 {"role": "user", "content": clean_context}
             ]
         )
@@ -100,3 +102,4 @@ async def run(self: Any, context: Dict) -> None:
         raise e
     finally:
         await self.mcp.cleanup()
+

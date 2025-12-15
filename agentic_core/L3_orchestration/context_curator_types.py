@@ -40,9 +40,9 @@ class ContextChunk:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priori
-    ty': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_sco
-        re, 'pinned': self.pinned, 'metadata': self.metadata}
+        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priori ty': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_sco
+                re, 'pinned': self.pinned, 'metadata': self.metadata}
+
 
 @dataclass
 class ContextWindow:
@@ -55,7 +55,8 @@ class ContextWindow:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'chunks': [c.to_dict() for c in self.chunks],
-            'total_tokens': self.total_tokens,
-            'max_tokens': self.max_tokens,
-            'pinned_tokens': self.pinned_tokens,
-            'available_tokens': self.max_tokens - self.total_tokens}
+                'total_tokens': self.total_tokens,
+                'max_tokens': self.max_tokens,
+                'pinned_tokens': self.pinned_tokens,
+                'available_tokens': self.max_tokens - self.total_tokens}
+

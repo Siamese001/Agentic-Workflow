@@ -5,21 +5,20 @@ Unit test for isolated L2 component verification
 """
 
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import json
-import time
 from datetime import datetime, timezone
 from canon_validator import CanonValidator
 
 
 class TestCVU003:
     """Test Figma version parity check at L2 layer"""
-    
+
     @pytest.fixture
     def mock_time(self):
         """Mock current time for testing"""
         return datetime(2025, 12, 15, 12, 0, 0, tzinfo=timezone.utc)
-    
+
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
@@ -30,7 +29,7 @@ class TestCVU003:
             "reasoning": "Code is valid"
         }
         return validator
-    
+
     def test_stale_version_detection(self, validator, mock_time):
         """Test that stale Figma versions are detected"""
         # Mock Figma response with older timestamp
@@ -41,12 +40,12 @@ class TestCVU003:
                 "name": "Old version"
             },
             {
-                "id": "v1.1.0", 
+                "id": "v1.1.0",
                 "created_at": "2025-12-13T12:00:00Z",  # 2 days old
                 "name": "Older version"
             }
         ]
-        
+
         # Simulate design compliance check with stale versions
         mock_tools = {
             'read_text_file': Mock(return_value="button { color: #FF0000; }"),
@@ -55,50 +54,52 @@ class TestCVU003:
             'edit_file': Mock(return_value={"status": "success"}),
             'string_set': Mock()
         }
-        
+
         # Simulate the version check logic
         def check_versions_stale(versions, current_time):
             for version in versions:
-                version_time = datetime.fromisoformat(version["created_at"].replace("Z", "+00:00"))
+                version_time = datetime.fromisoformat(
+                    version["created_at"].replace("Z", "+00:00"))
                 time_diff = (current_time - version_time).days
-                
+
                 if time_diff > 0:  # Version is older than current time
                     return True, "stale"
             return False, "fresh"
-        
+
         # Check if versions are stale
         is_stale, status = check_versions_stale(figma_versions, mock_time)
-        
+
         # Should detect stale versions
         assert is_stale
         assert status == "stale"
-    
+
     def test_l2_design_stale_warning(self, validator, mock_time):
         """Test L2_DESIGN_STALE_WARNING generation"""
         warning_generated = []
-        
+
         def mock_l2_design_handler(versions, current_time):
             """Simulate L2 Design Compliance Handler"""
             for version in versions:
-                version_time = datetime.fromisoformat(version["created_at"].replace("Z", "+00:00"))
+                version_time = datetime.fromisoformat(
+                    version["created_at"].replace("Z", "+00:00"))
                 time_diff = (current_time - version_time).days
-                
+
                 if time_diff > 0:  # Version is older than current time
                     warning_generated.append("L2_DESIGN_STALE_WARNING")
                     return True
             return False
-        
+
         # Test with stale version
         stale_version = {
             "id": "v1.0.0",
             "created_at": "2025-12-14T12:00:00Z"
         }
-        
+
         mock_l2_design_handler([stale_version], mock_time)
-        
+
         # Verify warning was generated
         assert "L2_DESIGN_STALE_WARNING" in warning_generated
-    
+
     def test_fresh_version_acceptance(self, validator, mock_time):
         """Test that fresh versions are accepted"""
         # Mock Figma response with current timestamp
@@ -109,24 +110,25 @@ class TestCVU003:
                 "name": "Latest version"
             }
         ]
-        
+
         # Simulate the version check logic
         def check_versions_fresh(versions, current_time):
             for version in versions:
-                version_time = datetime.fromisoformat(version["created_at"].replace("Z", "+00:00"))
+                version_time = datetime.fromisoformat(
+                    version["created_at"].replace("Z", "+00:00"))
                 time_diff = abs((current_time - version_time).total_seconds())
-                
+
                 if time_diff < 3600:  # Less than 1 hour old
                     return True, "fresh"
             return False, "stale"
-        
+
         # Check if versions are fresh
         is_fresh, status = check_versions_fresh(fresh_versions, mock_time)
-        
+
         # Should accept fresh version without stale warning
         assert is_fresh
         assert status == "fresh"
-    
+
     def test_version_time_comparison_edge_cases(self, validator):
         """Test edge cases in version time comparison"""
         edge_cases = [
@@ -135,14 +137,16 @@ class TestCVU003:
             ("2025-12-15T12:00:00Z", "2025-12-15T12:00:00Z", False),  # Same time
             ("2025-12-15T12:00:01Z", "2025-12-15T12:00:00Z", False),  # Future time
         ]
-        
+
         for version_time, current_time, should_be_stale in edge_cases:
-            version_dt = datetime.fromisoformat(version_time.replace("Z", "+00:00"))
-            current_dt = datetime.fromisoformat(current_time.replace("Z", "+00:00"))
-            
+            version_dt = datetime.fromisoformat(
+                version_time.replace("Z", "+00:00"))
+            current_dt = datetime.fromisoformat(
+                current_time.replace("Z", "+00:00"))
+
             is_stale = version_dt < current_dt
             assert is_stale == should_be_stale, f"Time comparison failed for {version_time} vs {current_time}"
-    
+
     def test_missing_timestamp_handling(self, validator):
         """Test handling of versions with missing timestamps"""
         versions_without_time = [
@@ -150,7 +154,7 @@ class TestCVU003:
             {"id": "v1.1.0", "created_at": "", "name": "Empty timestamp"},
             {"id": "v1.2.0", "created_at": None, "name": "Null timestamp"}
         ]
-        
+
         def mock_l2_handler_with_missing_time(versions):
             """Test L2 handler with missing timestamps"""
             for version in versions:
@@ -159,7 +163,7 @@ class TestCVU003:
                     # Should handle gracefully - either reject or use default
                     return "HANDLE_MISSING_TIMESTAMP"
             return "OK"
-        
+
         for version in versions_without_time:
             result = mock_l2_handler_with_missing_time([version])
             assert result == "HANDLE_MISSING_TIMESTAMP"
@@ -167,3 +171,4 @@ class TestCVU003:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

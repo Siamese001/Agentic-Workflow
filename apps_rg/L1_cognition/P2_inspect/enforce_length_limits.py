@@ -15,3 +15,4 @@ def enforce_length_limits(data: Dict[str, object]) -> Dict[str, object]:
 def get_enforce_length_limits_config() -> Dict[str, object]:
     """Get configuration for enforce_length_limits."""
     return {'enabled': True, 'version': '1.0'}
+

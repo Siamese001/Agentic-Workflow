@@ -1,11 +1,4 @@
-"""
-
-LOGGER = logging.getLogger(__name__)
-L4 State Management Layer
-
-Provides cloud-native storage abstraction and verifiable checkpointing
-for agent state persistence.
-"""
+""" """
 import logging
 
 logger = logging.getLogger(__name__)
@@ -24,3 +17,4 @@ create_storage_adapter
         "VerifiableCheckpointManager",
         "create_checkpoint_manager"
     ]
+

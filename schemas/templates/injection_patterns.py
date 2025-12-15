@@ -17,7 +17,8 @@ class ExecutionResult:
     """Standardized operation result container."""
     success: bool
     data: Optional[Union[str, int, float, bool, List, Dict]] = None
-    metadata: Dict[str, Union[str, int, float, bool, List, Dict]] = field(default_factory=dict)
+    metadata: Dict[str, Union[str, int, float, bool,
+                              List, Dict]] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 
@@ -38,7 +39,8 @@ class InjectionPatterns:
                                              List,
                                              Dict]]] = None):
         SELF.CONFIG = config or {}
-        self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self._logger = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
                 """Docstring."""
@@ -91,3 +93,4 @@ def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResu
     """Module-level entry point."""
     EXECUTOR = InjectionPatterns()
     return executor.process(data)
+

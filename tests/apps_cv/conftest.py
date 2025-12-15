@@ -2,6 +2,7 @@
 Shared fixtures and utilities for the Apps CV test suite
 """
 
+from canon_validator import CanonValidator
 import pytest
 from unittest.mock import Mock
 import json
@@ -9,36 +10,35 @@ import sys
 import os
 
 # Add parent directory to path for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
-from canon_validator import CanonValidator
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..')))
 
 
 @pytest.fixture
 def mock_validator():
     """Create a validator with mocked dependencies for general testing"""
     validator = CanonValidator()
-    
+
     # Mock LLM
     validator.llm = Mock()
     validator.llm.generate_plan.return_value = {
         "status": "valid",
         "reasoning": "Code is valid"
     }
-    
+
     # Mock embedding function
     validator.embed_fn = Mock(return_value=[0.1] * 768)
-    
+
     # Mock Pinecone
     validator.pinecone = Mock()
     validator.pinecone.query = Mock(return_value={'matches': []})
     validator.pinecone.upsert = Mock()
-    
+
     # Mock Redis cache
     validator.cache = Mock()
     validator.cache.check = Mock(return_value=None)
     validator.cache.store = Mock()
-    
+
     return validator
 
 
@@ -46,29 +46,29 @@ def mock_validator():
 def mock_validator_with_all_dependencies():
     """Create a validator with all L1-L5 dependencies mocked"""
     validator = CanonValidator()
-    
+
     # L1: Filesystem and GitKraken
     validator.llm = Mock()
     validator.embed_fn = Mock(return_value=[0.1] * 768)
-    
+
     # L2: Figma
     validator.figma_client = Mock()
-    
+
     # L3: Pinecone and Brave Search
     validator.pinecone = Mock()
     validator.pinecone.query = Mock(return_value={'matches': []})
     validator.pinecone.upsert = Mock()
     validator.brave_search = Mock()
-    
+
     # L4: Redis
     validator.cache = Mock()
     validator.cache.check = Mock(return_value=None)
     validator.cache.store = Mock()
     validator.redis_client = Mock()
-    
+
     # L5: MEMemory
     validator.memory_client = Mock()
-    
+
     return validator
 
 
@@ -111,28 +111,28 @@ def mock_redis_transaction():
         def __init__(self):
             self.operations = []
             self.executed = False
-        
+
         def multi(self):
             return self
-        
+
         def set(self, key, value):
             self.operations.append(("SET", key, value))
             return self
-        
+
         def get(self, key):
             for op in self.operations:
                 if op[0] == "SET" and op[1] == key:
                     return op[2]
             return None
-        
+
         def exec(self):
             self.executed = True
             return "OK"
-        
+
         def discard(self):
             self.operations.clear()
             return self
-    
+
     return MockRedisTransaction()
 
 
@@ -188,6 +188,7 @@ def mock_rag_responses():
 # Test markers for organizing tests
 pytest_plugins = []
 
+
 def pytest_configure(config):
     """Configure custom markers"""
     config.addinivalue_line(
@@ -217,3 +218,4 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "l5: Tests targeting Layer 5 (MEMemory, Policy Layer)"
     )
+

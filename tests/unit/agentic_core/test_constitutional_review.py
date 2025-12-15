@@ -15,3 +15,4 @@ def test_constitutional_review(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_constitutional_review_config() -> Dict[str, object]:
     """Get configuration for test_constitutional_review."""
     return {'enabled': True, 'version': '1.0'}
+

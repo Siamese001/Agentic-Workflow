@@ -146,7 +146,8 @@ class MessageBodyComposer:
                     break
                 continue
 
-            transition_result = self._validate_transition_phrase(body, archetype)
+            transition_result = self._validate_transition_phrase(
+                body, archetype)
             validation_results.append(transition_result)
 
             if not transition_result.passed:
@@ -193,7 +194,8 @@ class MessageBodyComposer:
         Generate message body content using LLM.
         Placeholder for actual LLM integration.
         """
-        TRANSITION = self.ARCHETYPE_TRANSITIONS.get(archetype, "Two key points:")
+        TRANSITION = self.ARCHETYPE_TRANSITIONS.get(
+            archetype, "Two key points:")
 
         return f"""I noticed your work at {context.get('company', 'your company')}.
 
@@ -275,3 +277,4 @@ def create_message_body_composer(
 ) -> MessageBodyComposer:
     """Factory function to create MessageBodyComposer instance"""
     return MessageBodyComposer(config=config)
+

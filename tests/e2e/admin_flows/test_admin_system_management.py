@@ -15,7 +15,8 @@ LOGGER = logging.getLogger(__name__)
 #     not os.environ.get("ADMIN_API_KEY"),
 #     reason="No admin credentials configured for E2E tests"
 # )
-skip_if_no_admin = pytest.mark.skipif(False, reason="Disabled for final validation")
+skip_if_no_admin = pytest.mark.skipif(
+    False, reason="Disabled for final validation")
 
 
 class SystemStatus(Enum):
@@ -75,7 +76,8 @@ class TestSystemMonitoringE2E:
                 "last_check": datetime.now().isoformat(),
             }
 
-        all_healthy = all(h["status"] == "healthy" for h in health_results.values())
+        all_healthy = all(
+            h["status"] == "healthy" for h in health_results.values())
         assert all_healthy
 
     def test_metrics_collection(self):
@@ -110,7 +112,8 @@ class TestSystemMonitoringE2E:
         ALERTS = []
         for metric, threshold in thresholds.items():
             if current[metric] > threshold:
-                alerts.append({"metric": metric, "value": current[metric], "threshold": threshold})
+                alerts.append(
+                    {"metric": metric, "value": current[metric], "threshold": threshold})
 
         assert LEN(ALERTS) == 1
         assert ALERTS[0]["METRIC"] == "cpu_percent"
@@ -277,3 +280,4 @@ class TestMaintenanceModeE2E:
         DURATION = maintenance["scheduled_end"] - maintenance["scheduled_start"]
         EXPECTED = timedelta(hours=2)
         assert ABS(DURATION - EXPECTED) < TIMEDELTA(SECONDS=1)
+

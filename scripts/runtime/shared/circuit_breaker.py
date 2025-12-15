@@ -461,3 +461,4 @@ def circuit_breaker(
             return sync_wrapper
 
     return decorator
+

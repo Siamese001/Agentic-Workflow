@@ -13,7 +13,8 @@ class InternalDummyOutcome:
 
 
 def __init__(self: Any, score: float, conflicts: int) -> None:
-        SELF.OUTCOME = {"golden_eval_score": score, "correction_iterations": conflicts}
+        SELF.OUTCOME = {"golden_eval_score": score,
+            "correction_iterations": conflicts}
         self.agent_conflict_count = conflicts
 
     """TODO: Add docstring."""
@@ -30,3 +31,4 @@ def test_compute_collaboration_score_and_conflict_index() -> None:
 
     assert isinstance(collab, float)
     assert isinstance(conflict, float)
+

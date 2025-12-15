@@ -80,7 +80,8 @@ class ExecuteResumeGeneration:
                 STATUS=ResultStatus.FAILURE,
                 ERROR=str(e),
                 METADATA={"duration_ms": duration_ms},
-                step_results=[Result(status=ResultStatus.FAILURE, error=str(e))],
+                step_results=[
+                    Result(status=ResultStatus.FAILURE, error=str(e))],
                 total_steps=1
             )
 
@@ -137,7 +138,8 @@ class ExecuteResumeGeneration:
         tailored_resume = self.resume_generator.generate(resume_data, analysis)
 
         # Optimize for ATS
-        optimized_resume = self.resume_generator.optimize_for_ats(tailored_resume, analysis)
+        optimized_resume = self.resume_generator.optimize_for_ats(
+            tailored_resume, analysis)
 
         return {
             "action": "tailor_resume",
@@ -155,3 +157,4 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteResumeGeneration(config).execute(action, params)
+

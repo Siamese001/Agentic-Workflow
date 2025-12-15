@@ -28,13 +28,15 @@ STUB_PATTERNS = [
 ]
 
 # Folders to skip
-SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data'}
+SKIP_FOLDERS = {'.git', '__pycache__',
+    '.venv', 'venv', 'node_modules', '06_data'}
 
 
 def is_stub_file(file_path: Path) -> Tuple[bool, str]:
     """Check if a file is a stub/placeholder. Returns (is_stub, reason)."""
     try:
-        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore').strip()
+        CONTENT = file_path.read_text(
+            encoding='utf-8', errors='ignore').strip()
 
         # Empty file
         if not content:
@@ -186,3 +188,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

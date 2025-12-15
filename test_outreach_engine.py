@@ -5,7 +5,9 @@ This demonstrates the Outreach Engine's Automated Lead Vetting & Contact use cas
 """
 
 import json
+
 from outreach_engine import automated_lead_vetting
+
 
 # Mock MCP Tools for testing
 class MockMCPTools:
@@ -73,22 +75,25 @@ For media inquiries: press@techcorp.com
         return "Memory updated successfully"
 
 # Mock Logger
+
+
 class MockLogger:
     def info(self, msg): print(f"[INFO] {msg}")
     def warning(self, msg): print(f"[WARN] {msg}")
     def error(self, msg): print(f"[ERROR] {msg}")
 
+
 def test_lead_vetting():
     """Test the automated_lead_vetting function with mock data."""
-    
+
     print("=" * 60)
     print("🧪 Testing Outreach Engine - Automated Lead Vetting")
     print("=" * 60)
-    
+
     # Initialize mock tools and logger
     mock_tools = MockMCPTools()
     logger = MockLogger()
-    
+
     # Pass tools as dictionary
     tools = {
         'fetch': mock_tools.fetch,
@@ -97,7 +102,7 @@ def test_lead_vetting():
         'send_email': mock_tools.send_email,
         'add_observations': mock_tools.add_observations
     }
-    
+
     # Test Case 1: Successful lead vetting and outreach
     print("\n--- Test Case 1: Successful Lead Vetting ---")
     result = automated_lead_vetting(
@@ -107,7 +112,7 @@ def test_lead_vetting():
         logger=logger
     )
     print("\nResult:", json.dumps(result, indent=2))
-    
+
     # Test Case 2: Invalid company URL
     print("\n" + "=" * 60)
     print("\n--- Test Case 2: Invalid Company URL ---")
@@ -118,7 +123,7 @@ def test_lead_vetting():
         logger=logger
     )
     print("\nResult:", json.dumps(result, indent=2))
-    
+
     # Test Case 3: User with no contacts
     print("\n" + "=" * 60)
     print("\n--- Test Case 3: User with No Contacts ---")
@@ -129,9 +134,11 @@ def test_lead_vetting():
         logger=logger
     )
     print("\nResult:", json.dumps(result, indent=2))
-    
+
     print("\n" + "=" * 60)
     print("✅ Test completed!")
 
+
 if __name__ == "__main__":
     test_lead_vetting()
+

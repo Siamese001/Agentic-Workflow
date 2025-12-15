@@ -106,10 +106,12 @@ class K1RoutingAgent(Agent):
         contact_about = context.get("contact_about", "")
 
         if not contact_name or not contact_title:
-            raise ValueError("GATE_2_FAILED: Contact name and title are required")
+            raise ValueError(
+                "GATE_2_FAILED: Contact name and title are required")
 
         entrance_gates_passed.append("GATE_2_CONTACT_BLOCK_VALIDATED")
-        logger.info(f"Gate 2: Contact validated - {contact_name}, {contact_title}")
+        logger.info(
+            f"Gate 2: Contact validated - {contact_name}, {contact_title}")
 
         # Gate 3A: Premium InMail availability check
         premium_available = context.get("premium_available", False)
@@ -123,7 +125,8 @@ class K1RoutingAgent(Agent):
             logger.info(f"Gate 3B: Route override = {route_override}")
 
         # Gate 4: Archetype classification with CXO precedence
-        archetype_result = self._classify_archetype(contact_title, contact_about)
+        archetype_result = self._classify_archetype(
+            contact_title, contact_about)
         entrance_gates_passed.append("GATE_4_ARCHETYPE_CLASSIFIED")
         logger.info(
             f"Gate 4: Archetype = {archetype_result.archetype} "
@@ -328,3 +331,4 @@ class K1RoutingAgent(Agent):
             premium_available=premium_available,
             premium_routing_mismatch=False,
         )
+

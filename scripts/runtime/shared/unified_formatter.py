@@ -675,3 +675,4 @@ def format_outreach_message(data: Union[str, Dict], config: Optional[Dict] = Non
         Format result
     """
     return format_data(data, FormatType.OUTREACH_MESSAGE, EngineType.OUTREACH, config)
+

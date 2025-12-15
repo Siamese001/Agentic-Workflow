@@ -45,3 +45,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return ParseOutreachTarget(config).retrieve(query, **kwargs)
+

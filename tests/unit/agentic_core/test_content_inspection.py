@@ -15,3 +15,4 @@ def test_content_inspection(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_content_inspection_config() -> Dict[str, object]:
     """Get configuration for test_content_inspection."""
     return {'enabled': True, 'version': '1.0'}
+

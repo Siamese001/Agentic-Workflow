@@ -313,3 +313,4 @@ def extend_injection_loader(loader):
             JSON.DUMP(PATTERN.DICT(), F, INDENT=2)
 
     logger.info(f"Added {len(extended_patterns)} extended injection patterns")
+

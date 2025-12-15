@@ -116,7 +116,8 @@ def test_atomic_checkpoint():
         # Checkpoint State A
         metadata_a = manager.checkpoint("workflow_checkpoint_test", state_a)
         assert metadata_a.success
-        logger.info(f"✓ State A checkpointed (duration: {metadata_a.duration_ms:.2f}ms)")
+        logger.info(
+            f"✓ State A checkpointed (duration: {metadata_a.duration_ms:.2f}ms)")
 
         # Verify State A can be loaded
         loaded_state = manager.resume_workflow("workflow_checkpoint_test")
@@ -149,7 +150,8 @@ def test_atomic_checkpoint():
         # Checkpoint State B
         metadata_b = manager.checkpoint("workflow_checkpoint_test", state_b)
         assert metadata_b.success
-        logger.info(f"✓ State B checkpointed (duration: {metadata_b.duration_ms:.2f}ms)")
+        logger.info(
+            f"✓ State B checkpointed (duration: {metadata_b.duration_ms:.2f}ms)")
 
         # Verify State B replaced State A
         loaded_state = manager.resume_workflow("workflow_checkpoint_test")
@@ -481,3 +483,4 @@ if __name__ == "__main__":
     # Run tests
     exit_code = main()
     sys.exit(exit_code)
+

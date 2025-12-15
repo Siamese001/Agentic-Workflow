@@ -50,7 +50,8 @@ def fix_name_error(traceback_str):
     actual_funcs = re.findall(rf"def (check_key_{key_id}\w+)", code)
 
     if not actual_funcs:
-        logger.info(f"   >>> ❌ CRITICAL: No function found for Key {key_id} in source code.")
+        logger.info(
+            f"   >>> ❌ CRITICAL: No function found for Key {key_id} in source code.")
         return False
 
     # Pick the best match (usually the first one found for that key)
@@ -72,7 +73,8 @@ def run_fixers(output):
 
     if "[11]" in output or "Key 11" in output:  # Whitespace
         logger.info("   >>> 🧹 Auto-Running: fix_trailing_whitespace.py")
-        subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."], capture_output=True)
+        subprocess.run(
+            [sys.executable, "scripts/fix_trailing_whitespace.py", "."], capture_output=True)
         fixed_something = True
 
     if "[09]" in output or "Key 9" in output:  # Unused Imports
@@ -85,8 +87,10 @@ def run_fixers(output):
         # Quick hack to fix the validator's own empty except
         read_file(VALIDATOR_SCRIPT)
         if "except:" in code:
-            logger.info("   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
-            new_code = code.replace("except:", "except Exception as e: logger.info(e)")
+            logger.info(
+                "   >>> 🔧 SELF-REPAIR: Fixing bare 'except:' in validator")
+            new_code = code.replace(
+                "except:", "except Exception as e: logger.info(e)")
             write_file(VALIDATOR_SCRIPT, new_code)
             fixed_something = True
 
@@ -96,7 +100,8 @@ def run_fixers(output):
 def main():
     max_retries = 10
 
-    logger.info(f"🚀 STARTING AUTONOMOUS REPAIR LOOP (Max Retries: {max_retries})")
+    logger.info(
+        f"🚀 STARTING AUTONOMOUS REPAIR LOOP (Max Retries: {max_retries})")
 
     for attempt in range(max_retries):
         logger.info(f"\n--- [Attempt {attempt + 1}] Running Validator ---")
@@ -111,7 +116,8 @@ def main():
         )
 
         result.stdout + result.stderr
-        logger.info(output[-1000:] if len(output) > 1000 else output)  # Print tail of logs
+        logger.info(output[-1000:] if len(output) >
+                    1000 else output)  # Print tail of logs
 
         # CASE 1: CRASH (Python Traceback)
         if result.returncode != 0 and "Traceback" in output:
@@ -142,3 +148,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

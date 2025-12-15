@@ -31,3 +31,4 @@ class ClassificationResult:
     _validation_results: List[ValidationResult]
     _success: bool
     _details: Dict[str, Any]
+

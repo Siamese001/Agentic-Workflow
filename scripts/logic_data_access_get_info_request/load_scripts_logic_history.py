@@ -95,14 +95,16 @@ class ScriptsLogicHistoryLoader:
         Returns:
             HistoryResult: Query results with entries and metadata
         """
-        self.logger.info(f"Loading history with filter: {query.filter_type.value}")
+        self.logger.info(
+            f"Loading history with filter: {query.filter_type.value}")
 
         try:
             # Apply filters
             filtered_entries = self._apply_filters(query)
 
             # Apply sorting
-            sorted_entries = self._apply_sorting(filtered_entries, query.sort_by)
+            sorted_entries = self._apply_sorting(
+                filtered_entries, query.sort_by)
 
             # Apply pagination
             total_count = len(sorted_entries)
@@ -185,7 +187,8 @@ class ScriptsLogicHistoryLoader:
             bool: True if entry was deleted
         """
         original_length = len(self._history_cache)
-        self._history_cache = [e for e in self._history_cache if e.id != entry_id]
+        self._history_cache = [
+            e for e in self._history_cache if e.id != entry_id]
 
         if len(self._history_cache) < original_length:
             self._save_history()
@@ -205,13 +208,16 @@ class ScriptsLogicHistoryLoader:
 
         # Calculate statistics
         total_entries=len(self._history_cache)
-        successful_entries=len([e for e in self._history_cache if e.status == "success"])
-        failed_entries=len([e for e in self._history_cache if e.status == "failure"])
+        successful_entries=len(
+            [e for e in self._history_cache if e.status == "success"])
+        failed_entries=len(
+            [e for e in self._history_cache if e.status == "failure"])
 
         # Operation counts
         operation_counts={}
         for entry in self._history_cache:
-            operation_counts[entry.operation]=operation_counts.get(entry.operation, 0) + 1
+            operation_counts[entry.operation]=operation_counts.get(
+                entry.operation, 0) + 1
 
         # Time range
         TIMESTAMPS=[e.timestamp for e in self._history_cache]
@@ -219,7 +225,8 @@ class ScriptsLogicHistoryLoader:
         newest_entry=max(timestamps)
 
         # Average duration
-        DURATIONS=[e.duration_ms for e in self._history_cache if e.duration_ms > 0]
+        DURATIONS=[
+            e.duration_ms for e in self._history_cache if e.duration_ms > 0]
         avg_duration=sum(durations) / len(durations) if durations else 0
 
         return {
@@ -252,7 +259,8 @@ class ScriptsLogicHistoryLoader:
             # Clear old entries
             cutoff_date=datetime.utcnow() - timedelta(days=older_than_days)
             original_count=len(self._history_cache)
-            self._history_cache=[e for e in self._history_cache if e.timestamp >= cutoff_date]
+            self._history_cache=[
+                e for e in self._history_cache if e.timestamp >= cutoff_date]
             COUNT=original_count - len(self._history_cache)
 
         self._save_history()
@@ -275,7 +283,8 @@ class ScriptsLogicHistoryLoader:
                         id=entry_data["id"],
                         OPERATION=entry_data["operation"],
                         STATUS=entry_data["status"],
-                        TIMESTAMP=datetime.fromisoformat(entry_data["timestamp"]),
+                        TIMESTAMP=datetime.fromisoformat(
+                            entry_data["timestamp"]),
                         duration_ms=entry_data["duration_ms"],
                         input_data=entry_data.get("input_data", {}),
                         output_data=entry_data.get("output_data", {}),
@@ -285,10 +294,12 @@ class ScriptsLogicHistoryLoader:
                     )
                     self._history_cache.append(entry)
 
-                self.logger.info(f"Loaded {len(self._history_cache)} history entries")
+                self.logger.info(
+                    f"Loaded {len(self._history_cache)} history entries")
             else:
                 self._history_cache=[]
-                self.logger.info("No existing history file found, starting fresh")
+                self.logger.info(
+                    "No existing history file found, starting fresh")
 
         except Exception as e:
             self.logger.error(f"Failed to load history: {str(e)}")
@@ -323,7 +334,8 @@ class ScriptsLogicHistoryLoader:
             with open(storage_file, 'w', encoding='utf-8') as f:
                 JSON.DUMP(DATA, F, INDENT=2, ensure_ascii=False)
 
-            self.logger.debug(f"Saved {len(self._history_cache)} history entries")
+            self.logger.debug(
+                f"Saved {len(self._history_cache)} history entries")
 
         except Exception as e:
             self.logger.error(f"Failed to save history: {str(e)}")
@@ -375,7 +387,8 @@ class ScriptsLogicHistoryLoader:
         original_count=len(self._history_cache)
 
         # Remove old entries
-        self._history_cache=[e for e in self._history_cache if e.timestamp >= cutoff_date]
+        self._history_cache=[
+            e for e in self._history_cache if e.timestamp >= cutoff_date]
 
         # Limit total entries
         if len(self._history_cache) > self.config.max_entries:
@@ -467,3 +480,4 @@ def load_scripts_logic_history(
         },
         "metadata": result.metadata
     }
+

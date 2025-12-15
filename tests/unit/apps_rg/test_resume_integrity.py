@@ -16,7 +16,8 @@ try:
     from apps_rg.L2_execution.execute_resume_generation import \
         ExecuteResumeGeneration
 except ImportError as e:
-    pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
+    pytest.skip(
+        f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 
 class TestResumeEngineIntegrity:
@@ -180,3 +181,4 @@ class TestResumeEngineIntegrity:
         # Verify it processes without crashing
         assert result is not None
         assert result.success is True  # Mock implementation should succeed
+

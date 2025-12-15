@@ -55,3 +55,4 @@ def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
 def clear(self: Any) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""
     return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())
+

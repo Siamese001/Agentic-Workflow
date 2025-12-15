@@ -18,7 +18,8 @@ class Neo4jGraphStore:
 
     def __init__(self) -> None:
         if GraphDatabase is None:
-            raise ImportError("Neo4j driver not installed. Install with: pip install neo4j>=5.22.0")
+            raise ImportError(
+                "Neo4j driver not installed. Install with: pip install neo4j>=5.22.0")
 
         URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
         USER = os.environ.get("NEO4J_USERNAME", "neo4j")
@@ -181,3 +182,4 @@ class Neo4jGraphStore:
                 "end": end,
             },
         )
+

@@ -15,3 +15,4 @@ def enforce_resume_boundaries(data: Dict[str, object]) -> Dict[str, object]:
 def get_enforce_resume_boundaries_config() -> Dict[str, object]:
     """Get configuration for enforce_resume_boundaries."""
     return {'enabled': True, 'version': '1.0'}
+

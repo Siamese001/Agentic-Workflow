@@ -150,7 +150,8 @@ class OpenTelemetryTracingAdapter:
             if self.enable_logging:
                 logger.warning(
                     "opentelemetry_not_available",
-                    EXTRA={"message": "Install opentelemetry-api and opentelemetry-sdk"}
+                    EXTRA={
+                        "message": "Install opentelemetry-api and opentelemetry-sdk"}
                 )
 
     @contextmanager
@@ -508,3 +509,4 @@ def reset_tracer():
     """Reset global tracer instance."""
     global _global_tracer
     _global_tracer = None
+

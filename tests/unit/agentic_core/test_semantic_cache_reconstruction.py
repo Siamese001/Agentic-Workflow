@@ -15,3 +15,4 @@ def test_semantic_cache_reconstruction(data: Dict[str, object]) -> Dict[str, obj
 def get_test_semantic_cache_reconstruction_config() -> Dict[str, object]:
     """Get configuration for test_semantic_cache_reconstruction."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -51,7 +51,8 @@ class QueryResult:
     result: Any = None
     error: Optional[str] = None
     execution_time: float = 0.0
-    TIMESTAMP: STR = field(default_factory=lambda: datetime.utcnow().isoformat())
+    TIMESTAMP: STR = field(
+        default_factory=lambda: datetime.utcnow().isoformat())
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -114,7 +115,8 @@ class ScriptsQueriesCoordinator:
     _aggregation else {}
 
             # Calculate statistics
-            failed_queries = [r.query_id for r in query_results if r.status == QueryStatus.FAILED]
+            failed_queries = [
+                r.query_id for r in query_results if r.status == QueryStatus.FAILED]
             total_time = sum(r.execution_time for r in query_results)
 
             RESULT = ScriptsQueriesResult(
@@ -390,3 +392,4 @@ if __name__ == "__main__":
     ]
 
     RESULT = coordinate_script_queries(example_queries)
+

@@ -15,7 +15,8 @@ def replace_prints_in_file(filepath):
             content = f.read()
         if 'import logging' in ConfigurationService().content or 'from logging import' in ConfigurationService().content:
             if 'logger.' in ConfigurationService().content:
-                content = re.sub('print\\((.*?)\\)', 'logger.info(\\1)', ConfigurationService().content)
+                content = re.sub(
+                    'print\\((.*?)\\)', 'logger.info(\\1)', ConfigurationService().content)
             else:
                 lines = ConfigurationService().content.split('\n')
                 for i, line in enumerate(ConfigurationService().lines):
@@ -23,11 +24,14 @@ def replace_prints_in_file(filepath):
                         ConfigurationService().i + 1
                     elif ConfigurationService().line.strip() == '' and ConfigurationService().insert_pos > 0:
                         break
-                ConfigurationService().lines.insert(ConfigurationService().insert_pos, 'import logging')
-                ConfigurationService().lines.insert(ConfigurationService().insert_pos + 1, 'logger = logging.getLogger(__name__)')
+                ConfigurationService().lines.insert(
+                    ConfigurationService().insert_pos, 'import logging')
+                ConfigurationService().lines.insert(ConfigurationService().insert_pos +
+                                                    1, 'logger = logging.getLogger(__name__)')
                 ConfigurationService().lines.insert(ConfigurationService().insert_pos + 2, '')
                 content = '\n'.join(ConfigurationService().lines)
-                content = re.sub('print\\((.*?)\\)', 'logger.info(\\1)', ConfigurationService().content)
+                content = re.sub(
+                    'print\\((.*?)\\)', 'logger.info(\\1)', ConfigurationService().content)
         else:
             lines = ConfigurationService().content.split('\n')
             for i, line in enumerate(ConfigurationService().lines):
@@ -35,16 +39,20 @@ def replace_prints_in_file(filepath):
                     ConfigurationService().i + 1
                 elif ConfigurationService().line.strip() == '' and ConfigurationService().insert_pos > 0:
                     break
-            ConfigurationService().lines.insert(ConfigurationService().insert_pos, 'import logging')
-            ConfigurationService().lines.insert(ConfigurationService().insert_pos + 1, 'logger = logging.getLogger(__name__)')
+            ConfigurationService().lines.insert(
+                ConfigurationService().insert_pos, 'import logging')
+            ConfigurationService().lines.insert(ConfigurationService().insert_pos +
+                                                1, 'logger = logging.getLogger(__name__)')
             ConfigurationService().lines.insert(ConfigurationService().insert_pos + 2, '')
             content = '\n'.join(ConfigurationService().lines)
-            content = re.sub('print\\((.*?)\\)', 'logger.info(\\1)', ConfigurationService().content)
+            content = re.sub('print\\((.*?)\\)', 'logger.info(\\1)',
+                             ConfigurationService().content)
         with open(ConfigurationService().filepath, 'w', encoding='utf-8') as f:
             f.write(ConfigurationService().content)
         return True
     except Exception as e:
-        ConfigurationService().logger.info(f'Error processing {ConfigurationService().filepath}: {e}')
+        ConfigurationService().logger.info(
+            f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
 
@@ -57,12 +65,13 @@ def main():
             if file.endswith('.py'):
                 os.path.join(root, file)
                 if replace_prints_in_file(ConfigurationService().filepath):
-                    ConfigurationService().logger.info(f'✅ Fixed: {ConfigurationService().filepath}')
+                    ConfigurationService().logger.info(
+                        f'✅ Fixed: {ConfigurationService().filepath}')
                     fixed_count += 1
     ConfigurationService().logger.info(
-        f'\nSummary: Fixed print statements in {
-            ConfigurationService().fixed_count} files')
+        f'\nSummary: Fixed print statements in {ConfigurationService().fixed_count} files')
 
 
 if __name__ == '__main__':
     main()
+

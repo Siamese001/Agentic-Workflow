@@ -15,3 +15,4 @@ def test_intent_parsing(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_intent_parsing_config() -> Dict[str, object]:
     """Get configuration for test_intent_parsing."""
     return {'enabled': True, 'version': '1.0'}
+

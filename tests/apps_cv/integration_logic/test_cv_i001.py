@@ -5,14 +5,14 @@ Integration test for multi-layer flow verification
 """
 
 import pytest
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, patch
 import json
 from canon_validator import CanonValidator
 
 
 class TestCVI001:
     """Test cost-governed RAG with Brave Search success path"""
-    
+
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
@@ -29,13 +29,13 @@ class TestCVI001:
         validator.pinecone.query = Mock(return_value={'matches': []})
         validator.pinecone.upsert = Mock()
         return validator
-    
+
     def test_brave_search_success_without_pinecone(self, validator):
         """Test that Brave Search success prevents Pinecone call"""
         # Track call sequence
         call_sequence = []
         costs = {"brave": 0, "pinecone": 0}
-        
+
         def mock_brave_search(query, logger):
             call_sequence.append("brave_search")
             costs["brave"] += 1
@@ -45,47 +45,47 @@ class TestCVI001:
                 "confidence": "high",
                 "edits": [{"oldText": "os.system(", "newText": "subprocess.run("}]
             }])
-        
+
         def mock_pinecone_search(description, version, logger):
             call_sequence.append("pinecone_search")
             costs["pinecone"] += 10
             return {"status": "success", "fix_result": {}}
-        
+
         # Execute vulnerability check with cost governance
         with patch('canon_validator_engine.execute_vulnerability_search', side_effect=mock_brave_search), \
-             patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_search):
-            
+                patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_search):
+
             from canon_validator_engine import execute_cost_governed_vulnerability_check
-            
+
             result = execute_cost_governed_vulnerability_check(
                 violation_hash="VIO_001",
                 violation_description="os.system usage detected",
                 code_version="v1.0.0",
                 logger=Mock()
             )
-        
+
         # Verify cost governance worked
         assert "brave_search" in call_sequence
         assert call_sequence.count("brave_search") == 1
         assert "pinecone_search" not in call_sequence
         assert costs["brave"] == 1
         assert costs["pinecone"] == 0
-        
+
         # Verify Brave result was used
         assert result["status"] == "success"
         assert "subprocess.run" in str(result)
-    
+
     def test_cost_threshold_prevents_pinecone(self, validator):
         """Test that cost threshold prevents expensive Pinecone calls"""
         call_sequence = []
         quota_limit = 5
         brave_calls = 0
-        
+
         def mock_brave_with_quota(query, logger):
             nonlocal brave_calls
             brave_calls += 1
             call_sequence.append("brave_search")
-            
+
             if brave_calls <= quota_limit:
                 # Return sufficient answer to avoid Pinecone
                 return json.dumps([{
@@ -100,19 +100,19 @@ class TestCVI001:
                     "fix_text": "Not specific enough",
                     "confidence": "low"
                 }])
-        
+
         def mock_pinecone_search(description, version, logger):
             call_sequence.append("pinecone_search")
             return {"status": "success"}
-        
+
         # Execute multiple checks to test quota
         results = []
         for i in range(7):
             with patch('canon_validator_engine.execute_vulnerability_search', side_effect=mock_brave_with_quota), \
-                 patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_search):
-                
+                    patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_search):
+
                 from canon_validator_engine import execute_cost_governed_vulnerability_check
-                
+
                 result = execute_cost_governed_vulnerability_check(
                     violation_hash=f"VIO_{i}",
                     violation_description=f"Test violation {i}",
@@ -120,16 +120,16 @@ class TestCVI001:
                     logger=Mock()
                 )
                 results.append(result)
-        
+
         # Verify Pinecone was never called due to cost governance
         assert "pinecone_search" not in call_sequence
         assert call_sequence.count("brave_search") == 7
         assert brave_calls == 7
-    
+
     def test_insufficient_brave_triggers_pinecone(self, validator):
         """Test that insufficient Brave results trigger Pinecone"""
         call_sequence = []
-        
+
         def mock_brave_insufficient(query, logger):
             call_sequence.append("brave_search")
             return json.dumps([{
@@ -137,7 +137,7 @@ class TestCVI001:
                 "fix_text": "Not helpful",
                 "confidence": "low"
             }])
-        
+
         def mock_pinecone_search(description, version, logger):
             call_sequence.append("pinecone_search")
             return {
@@ -149,64 +149,65 @@ class TestCVI001:
                 },
                 "source": "Pinecone_HighCost"
             }
-        
+
         # Simulate the cost-governed vulnerability check logic
         def simulate_cost_governed_check():
             # First try Brave Search
             brave_result = mock_brave_insufficient("test query", None)
-            
+
             # Check if result is sufficient (confidence is low)
             if "confidence" in brave_result and "low" in brave_result:
                 # Fallback to Pinecone
                 pinecone_result = mock_pinecone_search("test", "v1.0.0", None)
                 return pinecone_result
-            
+
             return {"status": "brave_sufficient"}
-        
+
         # Execute the simulated check
         result = simulate_cost_governed_check()
-        
+
         # Verify fallback to Pinecone
         assert "brave_search" in call_sequence
         assert "pinecone_search" in call_sequence
-        assert call_sequence.index("brave_search") < call_sequence.index("pinecone_search")
-        
+        assert call_sequence.index(
+            "brave_search") < call_sequence.index("pinecone_search")
+
         # Verify Pinecone result was used
         assert result.get("source") == "Pinecone_HighCost"
-    
+
     def test_cost_accumulation_tracking(self, validator):
         """Test that costs are properly accumulated"""
         total_cost = 0
         cost_log = []
-        
+
         def mock_brave_with_cost_logging(query, logger):
             nonlocal total_cost
             cost = 1
             total_cost += cost
             cost_log.append(f"brave: {cost}")
             return json.dumps([{"fix_text": "Good enough", "confidence": "high"}])
-        
+
         def mock_pinecone_with_cost_logging(description, version, logger):
             nonlocal total_cost
             cost = 10
             total_cost += cost
             cost_log.append(f"pinecone: {cost}")
             return {"status": "success"}
-        
+
         # Test multiple operations
         for i in range(3):
             with patch('canon_validator_engine.execute_vulnerability_search', side_effect=mock_brave_with_cost_logging), \
-                 patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_with_cost_logging):
-                
+                    patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_with_cost_logging):
+
                 from canon_validator_engine import execute_cost_governed_vulnerability_check
-                
+
                 result = execute_cost_governed_vulnerability_check(
                     violation_hash=f"VIO_{i}",
                     violation_description="Test",
                     code_version="v1.0.0",
                     logger=Mock()
                 )
-        
+
         # Verify cost tracking
         assert total_cost == 3  # Only Brave was called, Pinecone not needed
         assert len(cost_log) == 3
@@ -215,3 +216,4 @@ class TestCVI001:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

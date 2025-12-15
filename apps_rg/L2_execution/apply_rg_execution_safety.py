@@ -15,3 +15,4 @@ def apply_rg_execution_safety(data: Dict[str, object]) -> Dict[str, object]:
 def get_apply_rg_execution_safety_config() -> Dict[str, object]:
     """Get configuration for apply_rg_execution_safety."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -13,7 +13,8 @@ from services.configuration import ConfigurationService
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
-EXCLUDE_FILES = {'canon_validator.py', 'canon_validator_backup.py', 'final_canon_push.py'}
+EXCLUDE_FILES = {'canon_validator.py',
+                 'canon_validator_backup.py', 'final_canon_push.py'}
 
 
 def get_python_files() -> List[Path]:
@@ -45,17 +46,21 @@ def fix_empty_except_blocks() -> int:
                     if ConfigurationService().stripped.startswith('except'):
                         ConfigurationService().new_lines.append(ConfigurationService().line)
                     elif ConfigurationService().in_except and ConfigurationService().stripped == 'pass':
-                        len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
-                        ConfigurationService().new_lines.append(' ' * ConfigurationService().indent + 'pass  # Exception handled')
+                        len(ConfigurationService().line) - \
+                            len(ConfigurationService().line.lstrip())
+                        ConfigurationService().new_lines.append(
+                            ' ' * ConfigurationService().indent + 'pass  # Exception handled')
                     else:
                         ConfigurationService().new_lines.append(ConfigurationService().line)
                         if ConfigurationService().stripped and (not ConfigurationService().stripped.startswith('#')):
                             pass
-                ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
+                ConfigurationService().file_path.write_text(
+                    '\n'.join(ConfigurationService().new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with empty except blocks')
+    ConfigurationService().logger.info(
+        f'  Fixed {ConfigurationService().fixed} files with empty except blocks')
     return ConfigurationService().fixed
 
 
@@ -78,12 +83,15 @@ def fix_unused_variables() -> int:
             if ConfigurationService().unused:
                 for var in ConfigurationService().unused:
                     if not var.startswith('_'):
-                        content = re.sub(f'\\b{var}\\b(?=\\s*=)', f'_{var}', ConfigurationService().content)
-                ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
+                        content = re.sub(
+                            f'\\b{var}\\b(?=\\s*=)', f'_{var}', ConfigurationService().content)
+                ConfigurationService().file_path.write_text(
+                    ConfigurationService().content, encoding='utf-8')
                 fixed += 1
         except Exception:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'  Fixed {ConfigurationService().fixed} files with unused variables')
+    ConfigurationService().logger.info(
+        f'  Fixed {ConfigurationService().fixed} files with unused variables')
     return ConfigurationService().fixed
 
 
@@ -105,14 +113,17 @@ def fix_global_variables() -> int:
                         if ConfigurationService().var_name.islower() and '_' not in ConfigurationService(
                         ).var_name and (len(ConfigurationService().var_name) > 2):
                             ConfigurationService().var_name.upper()
-                            ConfigurationService().line.replace(ConfigurationService().var_name, ConfigurationService().upper_name, 1)
+                            ConfigurationService().line.replace(ConfigurationService().var_name,
+                                                                ConfigurationService().upper_name, 1)
                             fixed += 1
                 ConfigurationService().new_lines.append(ConfigurationService().line)
             if ConfigurationService().fixed > 0:
-                ConfigurationService().file_path.write_text('\n'.join(ConfigurationService().new_lines), encoding='utf-8')
+                ConfigurationService().file_path.write_text(
+                    '\n'.join(ConfigurationService().new_lines), encoding='utf-8')
         except Exception:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'  Converted {ConfigurationService().fixed} global variables to constants')
+    ConfigurationService().logger.info(
+        f'  Converted {ConfigurationService().fixed} global variables to constants')
     return ConfigurationService().fixed
 
 
@@ -131,17 +142,21 @@ def split_large_functions() -> int:
                         lines = ConfigurationService().content.split('\n')
                         node.lineno - 1
                         len(ConfigurationService().lines[ConfigurationService().func_line]) - \
-                            len(ConfigurationService().lines[ConfigurationService().func_line].lstrip())
+                            len(ConfigurationService(
+                            ).lines[ConfigurationService().func_line].lstrip())
                         comment = ' ' * ConfigurationService().indent + \
                             f'# REFACTOR: Split this {ConfigurationService().func_lines}-line function'
-                        ConfigurationService().lines.insert(ConfigurationService().func_line, ConfigurationService().comment)
+                        ConfigurationService().lines.insert(
+                            ConfigurationService().func_line, ConfigurationService().comment)
                         content = '\n'.join(ConfigurationService().lines)
                         fixed += 1
             if ConfigurationService().fixed > 0:
-                ConfigurationService().file_path.write_text(ConfigurationService().content, encoding='utf-8')
+                ConfigurationService().file_path.write_text(
+                    ConfigurationService().content, encoding='utf-8')
         except Exception:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'  Marked {ConfigurationService().fixed} large functions for refactoring')
+    ConfigurationService().logger.info(
+        f'  Marked {ConfigurationService().fixed} large functions for refactoring')
     return ConfigurationService().fixed
 
 
@@ -161,9 +176,11 @@ def deduplicate_files() -> int:
                 ).content_hash] = ConfigurationService().file_path
         except Exception:
             ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'  Found {len(ConfigurationService().duplicates)} duplicate files')
+    ConfigurationService().logger.info(
+        f'  Found {len(ConfigurationService().duplicates)} duplicate files')
     for dup, original in ConfigurationService().duplicates[:10]:
-        ConfigurationService().logger.info(f'    Duplicate: {dup} (same as {ConfigurationService().original})')
+        ConfigurationService().logger.info(
+            f'    Duplicate: {dup} (same as {ConfigurationService().original})')
     return len(ConfigurationService().duplicates)
 
 
@@ -179,9 +196,11 @@ def main() -> None:
     split_large_functions()
     deduplicate_files()
     ConfigurationService().logger.info('\n' + '=' * 60)
-    ConfigurationService().logger.info('FIXES COMPLETE - Run canon_validator.py to verify')
+    ConfigurationService().logger.info(
+        'FIXES COMPLETE - Run canon_validator.py to verify')
     ConfigurationService().logger.info('=' * 60)
 
 
 if __name__ == '__main__':
     main()
+

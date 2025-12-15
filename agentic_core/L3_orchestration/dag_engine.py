@@ -1,8 +1,4 @@
-"""DAG Engine for Task Dependencies and Workflow Management.
-
-Phase 2 - Pillar 4: Workflow (DAGs)
-Lightweight workflow engine for modeling task dependencies and conditional branching.
-"""
+"""DAG Engine for Task Dependencies and Workflow Management. """
 
 import logging
 from typing import Any, Awaitable, Callable, Dict, List, Optional, Set
@@ -44,14 +40,7 @@ class Task:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def is_ready(self, completed_tasks: Set[str]) -> bool:
-        """Check if task is ready to execute.
-
-        Args:
-            completed_tasks: Set of completed task IDs
-
-        Returns:
-            True if all dependencies are met
-        """
+        """Check if task is ready to execute. """
         return all(dep in completed_tasks for dep in self.dependencies)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -95,32 +84,16 @@ class DAGExecutionResult:
 
 
 class DAGEngine:
-    """Lightweight DAG engine for workflow execution.
-
-    Features:
-    - Task dependency management
-    - Conditional branching
-    - Parallel execution support
-    - Topological sorting
-    - Cycle detection
-    """
+    """Lightweight DAG engine for workflow execution. """
 
     def __init__(self, enable_logging: bool = True):
-        """Initialize DAG engine.
-
-        Args:
-            enable_logging: Enable logging of execution
-        """
+        """Initialize DAG engine. """
         self.enable_logging = enable_logging
         self.tasks: Dict[str, Task] = {}
         self.execution_order: List[str] = []
 
     def add_task(self, task: Task) -> None:
-        """Add a task to the DAG.
-
-        Args:
-            task: Task to add
-        """
+        """Add a task to the DAG. """
         if task.id in self.tasks:
             raise ValueError(f"Task {task.id} already exists")
 
@@ -137,11 +110,7 @@ class DAGEngine:
             )
 
     def remove_task(self, task_id: str) -> None:
-        """Remove a task from the DAG.
-
-        Args:
-            task_id: ID of task to remove
-        """
+        """Remove a task from the DAG. """
         if task_id not in self.tasks:
             raise ValueError(f"Task {task_id} not found")
 
@@ -151,18 +120,15 @@ class DAGEngine:
             logger.debug("task_removed", extra={"task_id": task_id})
 
     def validate_dag(self) -> List[str]:
-        """Validate the DAG for cycles and missing dependencies.
-
-        Returns:
-            List of validation errors (empty if valid)
-        """
+        """Validate the DAG for cycles and missing dependencies. """
         errors: List[str] = []
 
         # Check for missing dependencies
         for task_id, task in self.tasks.items():
             for dep in task.dependencies:
                 if dep not in self.tasks:
-                    errors.append(f"Task {task_id} depends on missing task {dep}")
+                    errors.append(
+                        f"Task {task_id} depends on missing task {dep}")
 
         # Check for cycles using DFS
         visited: Set[str] = set()
@@ -193,14 +159,7 @@ class DAGEngine:
         return errors
 
     def topological_sort(self) -> List[str]:
-        """Perform topological sort to determine execution order.
-
-        Returns:
-            List of task IDs in execution order
-
-        Raises:
-            ValueError: If DAG has cycles
-        """
+        """Perform topological sort to determine execution order. """
         ERRORS = self.validate_dag()
         if errors:
             raise ValueError(f"Invalid DAG: {', '.join(errors)}")
@@ -242,15 +201,7 @@ class DAGEngine:
         executor: Callable[[Task], Awaitable[Any]],
         context: Optional[Dict[str, Any]] = None,
     ) -> DAGExecutionResult:
-        """Execute the DAG.
-
-        Args:
-            executor: Async function to execute each task
-            context: Optional execution context
-
-        Returns:
-            DAGExecutionResult with execution summary
-        """
+        """Execute the DAG. """
         CONTEXT = context or {}
         execution_order = self.topological_sort()
 
@@ -305,7 +256,8 @@ class DAGEngine:
             return False
 
         if task.condition:
-            condition_met = self._evaluate_condition(task.condition, context, task_results)
+            condition_met = self._evaluate_condition(
+                task.condition, context, task_results)
             if not condition_met:
                 TASK.STATUS = TaskStatus.SKIPPED
                 skipped_tasks.append(task_id)
@@ -381,16 +333,7 @@ class DAGEngine:
         context: Dict[str, Any],
         task_results: Dict[str, Any],
     ) -> bool:
-        """Evaluate a task condition.
-
-        Args:
-            condition: Condition expression
-            context: Execution context
-            task_results: Results from completed tasks
-
-        Returns:
-            True if condition is met
-        """
+        """Evaluate a task condition. """
         # Simple condition evaluation
         # Format: "task_id.success" or "task_id.result.field == value"
 
@@ -437,14 +380,7 @@ class DAGEngine:
         return STR(VALUE) == right
 
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
-        """Get status of a task.
-
-        Args:
-            task_id: Task ID
-
-        Returns:
-            Task status or None if not found
-        """
+        """Get status of a task. """
         TASK = self.tasks.get(task_id)
         return task.status if task else None
 
@@ -459,3 +395,4 @@ class DAGEngine:
 
         if self.enable_logging:
             logger.info("dag_reset")
+

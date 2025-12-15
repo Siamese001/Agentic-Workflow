@@ -89,3 +89,4 @@ def register_provider(
     """
     DEFAULT_PROVIDER_MODULES[provider.lower()] = module
     DEFAULT_PROVIDER_CLASSES[provider.lower()] = class_name
+

@@ -15,3 +15,4 @@ def test_rg_resume_builder(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_rg_resume_builder_config() -> Dict[str, object]:
     """Get configuration for test_rg_resume_builder."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -134,3 +134,4 @@ class TestImmutableStagingBuffer:
             """Docstring."""
         BUF = ImmutableStagingBuffer()
         assert buf is not None
+

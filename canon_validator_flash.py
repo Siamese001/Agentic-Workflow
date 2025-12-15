@@ -1,13 +1,13 @@
-import time
-import logging
 import json
-from typing import Dict, Any
+import logging
+import time
 from datetime import datetime
+from typing import Any, Dict
 
+from canon_keys import get_keys_as_prompt
 # Infrastructure
 from connection_manager import ConnectionManager
 from llm_client_flash import LLMClient
-from canon_keys import get_keys_as_prompt
 
 # Try to import redisvl SemanticCache
 try:
@@ -17,8 +17,10 @@ except ImportError:
     REDISVL_AVAILABLE = False
     logging.warning("redisvl SemanticCache not available")
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("CanonValidator")
+
 
 class CanonValidator:
     def __init__(self):
@@ -26,18 +28,19 @@ class CanonValidator:
         self.llm = LLMClient()
         self.pinecone = self.cm.get_pinecone_index()
         self.embed_fn = self.cm.get_embedding
-        
+
         # 1. L1 SPEED LAYER (Redis)
         if REDISVL_AVAILABLE:
             try:
                 self.cache = SemanticCache(
                     name="canon_validator_cache",
-                    redis_url="redis://localhost:6379", 
+                    redis_url="redis://localhost:6379",
                     distance_threshold=0.05,
                     ttl=86400,
                     vector_schema={
                         "content": {"type": "text"},
-                        "vector": {"type": "vector", "dims": 384},  # Match embedding dimensions
+                        # Match embedding dimensions
+                        "vector": {"type": "vector", "dims": 384},
                         "metadata": {"type": "text"}
                     }
                 )
@@ -51,7 +54,7 @@ class CanonValidator:
     def validate(self, content: str, source: str = "user", auto_repair: bool = False, max_repair_attempts: int = 1) -> Dict[str, Any]:
         """
         4-Stage Validation Loop (Powered by Gemini Flash)
-        
+
         Args:
             content: Code content to validate
             source: Source identifier
@@ -74,17 +77,19 @@ class CanonValidator:
         # STAGE 3: L2 CONTEXT RETRIEVAL
         context_rules = []
         try:
-            matches = self.pinecone.query(vector=vector, top_k=3, include_metadata=True)
+            matches = self.pinecone.query(
+                vector=vector, top_k=3, include_metadata=True)
             for m in matches.get('matches', []):
                 if m['score'] > 0.80:
                     context_rules.append(f"- {m['metadata'].get('content')}")
-        except Exception: 
+        except Exception:
             logger.debug("L2 retrieval failed or no matches")
 
         # STAGE 4: GEMINI FLASH VALIDATION
         keys_block = get_keys_as_prompt()
-        context_block = "\n".join(context_rules) if context_rules else "No specific precedents."
-        
+        context_block = "\n".join(
+            context_rules) if context_rules else "No specific precedents."
+
         system_prompt = f"""
 You are the Subatomic Gatekeeper.
 STRICTLY ENFORCE THESE 50 KEYS:
@@ -100,7 +105,7 @@ If it is valid, return {{ "status": "valid", "reasoning": "..." }}
 """
         # Call Gemini 1.5 Flash
         decision = self.llm.generate_plan(system_prompt, f"INPUT: {content}")
-        
+
         # WRITE-BACK (Meta-Learning)
         if "valid" in decision.get("status", "").lower():
             self._meta_learn(content, vector, decision)
@@ -109,18 +114,20 @@ If it is valid, return {{ "status": "valid", "reasoning": "..." }}
             # REJECTED: Check if auto-repair is requested
             if auto_repair:
                 logger.info("🔧 ATTEMPTING REPAIR...")
-                repair_result = self._attempt_repair(content, decision.get("reasoning", ""))
-                
+                repair_result = self._attempt_repair(
+                    content, decision.get("reasoning", ""))
+
                 if repair_result.get("success"):
                     logger.info("✅ REPAIR SUCCESSFUL")
                     return {
-                        "status": "repaired", 
+                        "status": "repaired",
                         "source": "gemini_flash",
                         "original_reasoning": decision.get("reasoning"),
                         "fixed_code": repair_result.get("fixed_code")
                     }
                 else:
-                    logger.error(f"❌ REPAIR FAILED: {repair_result.get('error')}")
+                    logger.error(
+                        f"❌ REPAIR FAILED: {repair_result.get('error')}")
                     return {
                         "status": "repair_failed",
                         "source": "gemini_flash",
@@ -133,11 +140,11 @@ If it is valid, return {{ "status": "valid", "reasoning": "..." }}
     def _attempt_repair(self, bad_code: str, violation_reason: str) -> Dict[str, Any]:
         """
         Attempts to fix code violations using LLM.
-        
+
         Args:
             bad_code: The original violating code
             violation_reason: Why the code was rejected
-            
+
         Returns:
             Dict with 'success' bool and 'fixed_code' or 'error' string
         """
@@ -164,12 +171,13 @@ Follow these guidelines:
 Return your response as JSON with this format:
 {{"code": "the fixed python code here"}}
 """
-        
+
         try:
             # Call LLM to repair the code - provide proper system_context and user_goal
             system_context = "You are an expert Python code repair assistant. Always return valid JSON."
-            repair_response = self.llm.generate_plan(system_context, repair_prompt)
-            
+            repair_response = self.llm.generate_plan(
+                system_context, repair_prompt)
+
             # Extract the code from the JSON response
             if "code" in repair_response:
                 fixed_code = repair_response["code"].strip()
@@ -183,17 +191,17 @@ Return your response as JSON with this format:
             else:
                 # Fallback: try to get any text response
                 fixed_code = str(repair_response).strip()
-            
+
             # Validate the fixed code
             if not fixed_code or fixed_code == bad_code or fixed_code == "{}":
                 return {"success": False, "error": "LLM did not provide a valid fix"}
-                
+
             # Quick validation: ensure it's not obviously broken
             if "def " not in fixed_code and "import " not in fixed_code and "class " not in fixed_code:
                 return {"success": False, "error": "Fixed code appears invalid"}
-                
+
             return {"success": True, "fixed_code": fixed_code}
-            
+
         except Exception as e:
             logger.error(f"Repair attempt failed: {e}")
             return {"success": False, "error": str(e)}
@@ -208,7 +216,9 @@ Return your response as JSON with this format:
             })])
             # Update Redis (Hot)
             if self.cache:
-                self.cache.store(prompt=content, response=json.dumps(decision), vector=vector)
+                self.cache.store(prompt=content, response=json.dumps(
+                    decision), vector=vector)
             logger.info("✅ Learned new pattern.")
         except Exception as e:
             logger.error(f"Write-back failed: {e}")
+

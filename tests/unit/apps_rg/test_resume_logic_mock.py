@@ -400,3 +400,4 @@ class TestResumeEngineIntegration:
             TAILORED = output["tailored_resume"]
             assert "_tailoring_metadata" in tailored
             assert "ats_keywords" in tailored
+

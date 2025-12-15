@@ -37,3 +37,4 @@ def run_code(self: Any, code: str, timeout: int) -> str:
 
 def _indent(self: Any, text: str) -> str:
     return "\n".join("    " + line for line in text.splitlines())
+

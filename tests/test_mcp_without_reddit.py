@@ -47,12 +47,15 @@ async def test_mcp() -> None:
         await client.get_tools_for_llm()
         ConfigurationService().logger.info('✅ Connected MCP servers:')
         for tool in ConfigurationService().tools:
-            ConfigurationService().logger.info(f"  - {tool['name']}: {tool['description']}")
+            ConfigurationService().logger.info(
+                f"  - {tool['name']}: {tool['description']}")
         RESULT = await client.execute_tool('filesystem__write_file', {'path': './output/test.md', 'content': '# MCP Test\n\nThis was written autonomously!'})
-        ConfigurationService().logger.info(f'✅ File write result: {ConfigurationService().result}')
+        ConfigurationService().logger.info(
+            f'✅ File write result: {ConfigurationService().result}')
     except Exception as e:
         ConfigurationService().logger.error(f'❌ Error: {e}')
     finally:
         await client.cleanup()
 if __name__ == '__main__':
     asyncio.run(test_mcp())
+

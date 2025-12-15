@@ -449,3 +449,4 @@ class TestRAGIntegration:
         # Verify we got a valid score
         assert 0.0 <= hybrid_score <= 1.0
         assert hybrid_score > 0.5  # Should be reasonably high for these scores
+

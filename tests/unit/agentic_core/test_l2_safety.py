@@ -44,3 +44,4 @@ def test_sanitize_tool_output(self: Any) -> None:
     OUTPUT = "Result: <script>alert('xss')</script>"
     re.sub('<[^>]+>', '', output)
     assert '<script>' not in ConfigurationService().sanitized
+

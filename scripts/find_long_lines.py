@@ -26,12 +26,15 @@ def find_long_lines() -> None:
                                     f'{ConfigurationService().filepath}:{ConfigurationService().line_num} - {len(ConfigurationService().line.rstrip())} chars')
                                 ConfigurationService().logger.info(
                                     f'{ConfigurationService().filepath}:{ConfigurationService().line_num} - {len(ConfigurationService().line.rstrip())} chars')
-                                ConfigurationService().logger.info(f'  {ConfigurationService().line[:150]}...')
+                                ConfigurationService().logger.info(
+                                    f'  {ConfigurationService().line[:150]}...')
                                 ConfigurationService().logger.info('')
                 except Exception:
                     ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
-    ConfigurationService().logger.info(f'\nTotal violations: {len(ConfigurationService().violations)}')
+    ConfigurationService().logger.info(
+        f'\nTotal violations: {len(ConfigurationService().violations)}')
 
 
 if __name__ == '__main__':
     find_long_lines()
+

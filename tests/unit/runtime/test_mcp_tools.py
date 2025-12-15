@@ -87,7 +87,8 @@ class TestMCPTool:
         assert openai_format["type"] == "function"
         assert openai_format["function"]["name"] == "test_tool"
         assert openai_format["function"]["description"] == "Test tool"
-        assert openai_format["function"]["parameters"] == {"type": "object", "properties": {}}
+        assert openai_format["function"]["parameters"] == {
+            "type": "object", "properties": {}}
 
     def test_to_anthropic_format(self):
         """Test conversion to Anthropic tool format."""
@@ -102,7 +103,8 @@ class TestMCPTool:
 
         assert anthropic_format["name"] == "test_tool"
         assert anthropic_format["description"] == "Test tool"
-        assert anthropic_format["input_schema"] == {"type": "object", "properties": {}}
+        assert anthropic_format["input_schema"] == {
+            "type": "object", "properties": {}}
 
 
 class TestMCPToolResult:
@@ -646,3 +648,4 @@ class TestMCPToolServerPerformance:
         assert LEN(ERRORS) == 0
         assert LEN(RESULTS) == 10
         assert SET(RESULTS) == set(range(10))
+

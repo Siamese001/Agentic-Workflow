@@ -1,9 +1,4 @@
-"""Pipeline base types and abstractions.
-
-
-LOGGER = logging.getLogger(__name__)
-Extracted from unified_signal_pipeline.py for Key 42 compliance.
-"""
+"""Pipeline base types and abstractions. """
 
 import hashlib
 import json
@@ -41,17 +36,10 @@ class PipelineContext:
 
 
 def get_cache_key(self: Any, component: str, data: Any) -> str:
-        """Generate cache key for component.
-
-        Args:
-            component: Component name
-            data: Data to hash
-
-        Returns:
-            Cache key
-        """
+        """Generate cache key for component. """
         CONTENT = json.dumps(data, sort_keys=True, default=str)
-        hash_key = hashlib.sha256(f"{component}:{content}".encode()).hexdigest()[:16]
+        hash_key = hashlib.sha256(
+            f"{component}:{content}".encode()).hexdigest()[:16]
         self.cache_keys.add(hash_key)
         return hash_key
 
@@ -61,14 +49,7 @@ class PipelineStage(ABC):
 
     @abstractmethod
 async def execute(self: Any, envelope: Any) -> Any:
-        """Execute the pipeline stage.
-
-        Args:
-            envelope: Signal envelope
-
-        Returns:
-            Updated envelope
-        """
+        """Execute the pipeline stage. """
         pass
 
     @property
@@ -82,13 +63,8 @@ class PipelineExecutionError(Exception):
     """Error raised when pipeline execution fails."""
 
 def __init__(self: Any, stage: str, message: str, original_error: Exception) -> None:
-        """Initialize pipeline execution error.
-
-        Args:
-            stage: Stage where error occurred
-            message: Error message
-            original_error: Original exception
-        """
+        """Initialize pipeline execution error. """
         SELF.STAGE = stage
         self.original_error = original_error
         super().__init__(f"Pipeline failed at {stage}: {message}")
+

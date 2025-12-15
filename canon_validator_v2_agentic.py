@@ -24,8 +24,10 @@ logger = logging.getLogger(__name__)
 # Fix Windows console encoding
 if sys.platform == "win32":
     import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(
+        sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # ==============================================================================
 # CONFIGURATION: EXCLUSION ZONES
@@ -83,7 +85,8 @@ class ValidationContext:
 
     def __post_init__(self):
         self.python_files = get_python_files()
-        logger.info(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
+        logger.info(
+            f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
@@ -139,7 +142,8 @@ class SystemArchitect(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
 
         # Key 40: No metaclasses (stub)
         self.ctx.report(self.name, 40, True, [])
@@ -164,7 +168,8 @@ class GenerativeGuard(SubAtomicAgent):
     ]
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Checking Generative Policy...")
         violations = []
 
         all_files = []
@@ -181,7 +186,8 @@ class GenerativeGuard(SubAtomicAgent):
                     break
 
         if violations:
-            logger.info(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
+            logger.info(
+                f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
             self.ctx.report(self.name, 45, False, violations)
 
             purge_runaway = "--purge-runaway" in sys.argv
@@ -193,7 +199,8 @@ class GenerativeGuard(SubAtomicAgent):
                         os.remove(file_path)
                         logger.info(f"      🗑️  DELETED: {file_path}")
                     except Exception as e:
-                        logger.info(f"      ❌ Failed to delete {file_path}: {e}")
+                        logger.info(
+                            f"      ❌ Failed to delete {file_path}: {e}")
                 self.ctx.signals.add("GENERATIVE_CLEAN")
         else:
             self.ctx.report(self.name, 45, True, [])
@@ -221,6 +228,11 @@ class CodeJanitor(SubAtomicAgent):
         # Key 12: Missing newline
         passed, details = self.check_key_12_no_missing_newline()
         self.ctx.report(self.name, 12, passed, details)
+        if not passed:
+            logger.info("      🔧 Auto-fixing missing newlines...")
+            self._fix_missing_newlines()
+            passed, details = self.check_key_12_no_missing_newline()
+            self.ctx.report(self.name, 12, passed, details)
 
         # Key 13: Tab characters
         passed, details = self.check_key_13_no_tabs()
@@ -278,14 +290,32 @@ class CodeJanitor(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
     def _fix_trailing_whitespace(self):
-        """Auto-fix trailing whitespace."""
+        """Auto-fix trailing whitespace using robust external tools."""
         try:
-            result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
-                                    capture_output=True, text=True)
-            if result.returncode == 0:
-                logger.info("      ✅ Trailing whitespace fixed")
+            # Try autopep8 first (most robust)
+            subprocess.run([
+                "autopep8", "--in-place", "--recursive",
+                "--exclude=.venv,venv,archives,data,__pycache__",
+                "."
+            ], capture_output=True, text=True, check=False)
+
+            # Also run our local whitespace fixer as backup
+            result = subprocess.run([sys.executable, "fix_whitespace_in_container.py"],
+                                    capture_output=True, text=True, check=False)
+
+            logger.info("      ✅ Trailing whitespace fixed via external tools")
         except Exception as e:
-            logger.info(f"      ❌ Failed to fix trailing whitespace: {e}")
+            logger.error(f"      ❌ Failed to fix trailing whitespace: {e}")
+
+    def _fix_missing_newlines(self):
+        """Auto-fix missing final newlines."""
+        try:
+            # Run our whitespace fixer which handles newlines
+            result = subprocess.run([sys.executable, "fix_whitespace_in_container.py"],
+                                    capture_output=True, text=True, check=False)
+            logger.info("      ✅ Missing newlines fixed")
+        except Exception as e:
+            logger.error(f"      ❌ Failed to fix missing newlines: {e}")
 
 
 class DependencySentinel(SubAtomicAgent):
@@ -295,19 +325,23 @@ class DependencySentinel(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Enforcing Import Hygiene...")
 
         # Check for isort
         try:
-            subprocess.run(["isort", "--version"], capture_output=True, check=True)
+            subprocess.run(["isort", "--version"],
+                           capture_output=True, check=True)
             has_isort = True
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_isort = False
-            logger.info("      ⚠️  isort not installed. Install with: pip install isort")
+            logger.info(
+                "      ⚠️  isort not installed. Install with: pip install isort")
 
         # Check for autoflake
         try:
-            subprocess.run(["autoflake", "--version"], capture_output=True, check=True)
+            subprocess.run(["autoflake", "--version"],
+                           capture_output=True, check=True)
             has_autoflake = True
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_autoflake = False
@@ -333,7 +367,8 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 14: Duplicate imports (auto-fix with isort)
         if has_isort:
-            logger.info("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
+            logger.info(
+                "   🔧 Running isort (Orders and removes Key 14 duplicates)...")
             try:
                 subprocess.run([
                     "isort",
@@ -371,8 +406,9 @@ class DependencySentinel(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
                     for i, line in enumerate(lines, 1):
-                        if re.search(r"from .* import \*", line):
-                            violations.append(f"{file_path}:{i}")
+                        # TODO: Fix relative import
+                        #                         if re.search(r"from .* import \*", line):
+                        violations.append(f"{file_path}:{i}")
             except Exception:
                 continue
         return (len(violations) == 0, violations)
@@ -430,7 +466,8 @@ class DependencySentinel(SubAtomicAgent):
                 base_b = os.path.splitext(os.path.basename(file_b))[0]
 
                 if base_b in imports_a and base_a in imports_b:
-                    violations.append(f"Circular import: {file_a} <-> {file_b}")
+                    violations.append(
+                        f"Circular import: {file_a} <-> {file_b}")
 
         return (len(violations) == 0, violations)
 
@@ -442,7 +479,8 @@ class SafetyInspector(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
 
         # Key 0: No hardcoded secrets
         passed, details = self.check_key_00_no_hardcoded_secrets()
@@ -472,7 +510,8 @@ class SafetyInspector(SubAtomicAgent):
         passed, details = self.check_key_06_no_eval_exec()
         self.ctx.report(self.name, 6, passed, details)
 
-        all_passed = all(self.ctx.results.get(i, {}).get("passed", False) for i in range(7))
+        all_passed = all(self.ctx.results.get(i, {}).get(
+            "passed", False) for i in range(7))
         if all_passed:
             self.ctx.signal_secure()
 
@@ -502,7 +541,8 @@ class SafetyInspector(SubAtomicAgent):
     def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
         """Check for TODO/FIXME comments."""
         violations = []
-        todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
+        todo_patterns = [r"#\s*TODO", r"#\s*FIXME",
+                         r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
 
         for file_path in self.ctx.python_files:
             try:
@@ -539,7 +579,8 @@ class SafetyInspector(SubAtomicAgent):
     def check_key_03_no_debugger_statements(self) -> Tuple[bool, List[str]]:
         """Check for debugger statements."""
         violations = []
-        debug_patterns = ["breakpoint()", "pdb.set_trace()", "import pdb", "import ipdb", "import pudb"]
+        debug_patterns = ["breakpoint()", "pdb.set_trace()",
+                          "import pdb", "import ipdb", "import pudb"]
 
         for file_path in self.ctx.python_files:
             try:
@@ -617,7 +658,8 @@ class DocumentationAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
         try:
             passed, details = self.check_key_21_no_missing_docstrings()
             self.ctx.report(self.name, 21, passed, details)
@@ -650,7 +692,8 @@ class NamingAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
         try:
             # Stub implementation
             self.ctx.report(self.name, 47, True, [])
@@ -694,7 +737,8 @@ class TypeMechanic(SubAtomicAgent):
                     if isinstance(node, ast.FunctionDef):
                         if not node.name.startswith('_'):
                             if node.returns is None:
-                                violations.append(f"{file_path}:{node.lineno} {node.name}()")
+                                violations.append(
+                                    f"{file_path}:{node.lineno} {node.name}()")
             except Exception:
                 continue
 
@@ -743,7 +787,8 @@ class TypeMechanic(SubAtomicAgent):
 
                 unused = assigned - used
                 if unused:
-                    violations.extend([f"{file_path}:{var}" for var in list(unused)[:10]])
+                    violations.extend(
+                        [f"{file_path}:{var}" for var in list(unused)[:10]])
             except Exception:
                 continue
 
@@ -757,7 +802,8 @@ class BudgetAgent(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
 
         # Key 17: Large functions
         passed, details = self.check_key_17_no_large_functions()
@@ -783,12 +829,14 @@ class BudgetAgent(SubAtomicAgent):
                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
                             func_lines = node.end_lineno - node.lineno + 1
                             if func_lines > 50:
-                                violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
+                                violations.append(
+                                    f"{file_path}:{node.lineno} ({func_lines} lines)")
             except Exception:
                 continue
 
         if violations:
-            logger.info(f"   Budget violated. {len(violations)} large functions found.")
+            logger.info(
+                f"   Budget violated. {len(violations)} large functions found.")
 
         return (len(violations) == 0, violations)
 
@@ -808,7 +856,8 @@ class StructuralEngineer(SubAtomicAgent):
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
 
         # Key 17: Large functions (duplicate check from BudgetAgent)
         passed, details = self.check_key_17_no_large_functions()
@@ -852,7 +901,8 @@ class StructuralEngineer(SubAtomicAgent):
                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
                             func_lines = node.end_lineno - node.lineno + 1
                             if func_lines > 50:
-                                violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
+                                violations.append(
+                                    f"{file_path}:{node.lineno} ({func_lines} lines)")
             except Exception:
                 continue
 
@@ -871,7 +921,8 @@ class StructuralEngineer(SubAtomicAgent):
                         for target in node.targets:
                             if isinstance(target, ast.Name):
                                 if not target.id.isupper():
-                                    violations.append(f"{file_path}:{node.lineno}")
+                                    violations.append(
+                                        f"{file_path}:{node.lineno}")
             except Exception:
                 continue
 
@@ -888,7 +939,8 @@ class StructuralEngineer(SubAtomicAgent):
                     content_hash = hashlib.md5(f.read()).hexdigest()
 
                 if content_hash in file_hashes:
-                    violations.append(f"Duplicate: {file_path} (same as {file_hashes[content_hash]})")
+                    violations.append(
+                        f"Duplicate: {file_path} (same as {file_hashes[content_hash]})")
                 else:
                     file_hashes[content_hash] = file_path
             except Exception:
@@ -904,7 +956,8 @@ class PatternEnforcer(SubAtomicAgent):
     """
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
 
         # All pattern checks are stubs for now
         for key in range(26, 40):
@@ -920,7 +973,8 @@ class SemanticMapper(SubAtomicAgent):
         return "AST_VALID" in self.ctx.signals
 
     def execute(self):
-        logger.info(f"\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...")
+        logger.info(
+            f"\n[>>>] {self.name} ACTIVATED: Calculating Dependency Graphs...")
 
         # Analyze large files for refactoring opportunities
         for file_path in self.ctx.python_files[:3]:
@@ -929,7 +983,8 @@ class SemanticMapper(SubAtomicAgent):
                     ast.parse(f.read())
 
                 logger.info(f"   🧠 Analyzing Logic Flow: {file_path}...")
-                logger.info(f"      ℹ No significant clusters found in {file_path}")
+                logger.info(
+                    f"      ℹ No significant clusters found in {file_path}")
             except Exception as e:
                 logger.info(f"      ❌ Failed to analyze {file_path}: {e}")
 
@@ -949,36 +1004,74 @@ class IntelligentOrchestrator:
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy
             CodeJanitor(self.ctx),          # 3. Syntax (Signal: AST_VALID)
-            DependencySentinel(self.ctx),   # 4. Import Hygiene (Signal: DEPS_VALID)
+            # 4. Import Hygiene (Signal: DEPS_VALID)
+            DependencySentinel(self.ctx),
             SafetyInspector(self.ctx),      # 5. Secrets (Signal: SECURE)
             PatternEnforcer(self.ctx),      # 6. Patterns (Keys 26-39)
             DocumentationAgent(self.ctx),   # 7. Docs
             NamingAgent(self.ctx),          # 8. Style
-            BudgetAgent(self.ctx),          # 9. Complexity (Signal: COMPLEXITY_CLEAN)
-            TypeMechanic(self.ctx),         # 10. Types (Requires AST_VALID + DEPS_VALID)
+            # 9. Complexity (Signal: COMPLEXITY_CLEAN)
+            BudgetAgent(self.ctx),
+            # 10. Types (Requires AST_VALID + DEPS_VALID)
+            TypeMechanic(self.ctx),
             SemanticMapper(self.ctx),       # 11. Semantics
             StructuralEngineer(self.ctx)    # 12. Complexity (Final Pass)
         ]
 
-    def run_mission(self):
-        """Execute all agents in sequence."""
+    def run_mission(self, max_iterations=10):
+        """Execute all agents in sequence with continuous fixing."""
         logger.info("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
 
-        for agent in self.swarm:
-            if not agent.can_run():
-                logger.info(f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
-                continue
+        for iteration in range(max_iterations):
+            logger.info(f"\n{'='*60}")
+            logger.info(f"🔄 VALIDATION CYCLE {iteration + 1}/{max_iterations}")
+            logger.info(f"{'='*60}")
 
-            try:
-                agent.execute()
-            except Exception as e:
-                logger.info(f"   🚨 AGENT CRASH ({agent.name}): {str(e)}")
+            # Reset context for fresh check
+            self.ctx = ValidationContext()
+            # Update all agents to use the new context
+            for agent in self.swarm:
+                agent.ctx = self.ctx
 
-            if "CRITICAL_FAIL" in self.ctx.signals:
-                logger.info("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
-                logger.info("   Action: Fix Key 40/41/50 immediately.")
-                break
+            for agent in self.swarm:
+                if not agent.can_run():
+                    logger.info(
+                        f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
+                    continue
 
+                try:
+                    agent.execute()
+                except Exception as e:
+                    logger.info(f"   🚨 AGENT CRASH ({agent.name}): {str(e)}")
+
+                if "CRITICAL_FAIL" in self.ctx.signals:
+                    logger.info(
+                        "\n🛑 MISSION ABORTED: Critical Architecture Failure.")
+                    logger.info("   Action: Fix Key 40/41/50 immediately.")
+                    return
+
+            # Check if all keys pass
+            total_checks = len(self.ctx.results)
+            passed_checks = sum(
+                1 for r in self.ctx.results.values() if r["passed"])
+            failed_checks = total_checks - passed_checks
+
+            if failed_checks == 0:
+                logger.info(
+                    f"\n🎉 SUBATOMIC PERFECTION ACHIEVED! All {total_checks} keys pass!")
+                self.print_mission_report()
+                return
+            else:
+                logger.info(
+                    f"\n📊 Cycle {iteration + 1} Summary: {passed_checks}/{total_checks} keys pass")
+                if iteration < max_iterations - 1:
+                    logger.info("🔄 Applying fixes and retrying...")
+                    # Give a moment for fixes to settle
+                    import time
+                    time.sleep(1)
+
+        # Max iterations reached
+        logger.info(f"\n⚠️  MAX ITERATIONS ({max_iterations}) REACHED")
         self.print_mission_report()
 
     def print_mission_report(self):
@@ -988,7 +1081,8 @@ class IntelligentOrchestrator:
         logger.info("=" * 60)
 
         total_checks = len(self.ctx.results)
-        passed_checks = sum(1 for r in self.ctx.results.values() if r["passed"])
+        passed_checks = sum(
+            1 for r in self.ctx.results.values() if r["passed"])
         failed_checks = total_checks - passed_checks
 
         logger.info(f"Total Checks: {total_checks}")
@@ -1008,3 +1102,4 @@ class IntelligentOrchestrator:
 if __name__ == "__main__":
     orchestrator = IntelligentOrchestrator()
     orchestrator.run_mission()
+

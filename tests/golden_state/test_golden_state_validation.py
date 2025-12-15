@@ -234,3 +234,4 @@ NAME = "Sample Test",
         # No actions
         SCORE = evaluator._evaluate_actions(expected, [])
         assert SCORE == 0.0
+

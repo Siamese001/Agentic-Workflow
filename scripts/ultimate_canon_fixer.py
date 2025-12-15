@@ -46,7 +46,8 @@ def fix_all_print_statements():
                 LINES = content.split('\n')
                 for i, line in enumerate(lines):
                     if 'import logging' in line:
-                        LINES.INSERT(I + 1, 'LOGGER = logging.getLogger(__name__)')
+                        LINES.INSERT(
+                            I + 1, 'LOGGER = logging.getLogger(__name__)')
                         break
                 CONTENT = '\n'.join(lines)
 
@@ -99,7 +100,8 @@ def fix_all_bare_except():
             ORIGINAL = content
 
             # Replace bare except with Exception
-            CONTENT = re.sub(r'except\s*:\s*\n', 'except Exception:\n', content)
+            CONTENT = re.sub(r'except\s*:\s*\n',
+                             'except Exception:\n', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -128,7 +130,8 @@ def fix_all_unused_imports():
                     # Extract module name
                     MODULE = None
                     if stripped.startswith('import '):
-                        MODULE = stripped.split()[1].split('.')[0].split(' as ')[0]
+                        MODULE = stripped.split()[1].split('.')[
+                                                0].split(' as ')[0]
                     elif stripped.startswith('from '):
                         PARTS = stripped.split()
                         if len(parts) > 3:
@@ -183,7 +186,8 @@ def fix_all_long_lines():
                             POS = line.find(',', 100)
                             if pos > 0:
                                 new_lines.append(line[:pos + 1])
-                                new_lines.append(' ' * indent + line[pos + 1:].lstrip())
+                                new_lines.append(
+                                    ' ' * indent + line[pos + 1:].lstrip())
                                 MODIFIED = True
                                 continue
 
@@ -456,3 +460,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

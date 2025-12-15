@@ -1,7 +1,4 @@
-"""Main unified signal pipeline orchestrator.
-
-Extracted from unified_signal_pipeline.py for Key 42 compliance.
-"""
+"""Main unified signal pipeline orchestrator. """
 
 import json
 import logging
@@ -10,10 +7,14 @@ from datetime import timedelta
 from threading import Lock
 from typing import Any, Dict, Optional
 
-from .enrichment_stages import ContextEnrichmentStage, SignalAugmentationStage
-from .input_stage import InputProcessingStage
-from .output_stages import OutputFormattingStage, QualityValidationStage
-from .types import PipelineExecutionError
+# TODO: Fix relative import
+# from .enrichment_stages import ContextEnrichmentStage, SignalAugmentationStage
+# TODO: Fix relative import
+# from .input_stage import InputProcessingStage
+# TODO: Fix relative import
+# from .output_stages import OutputFormattingStage, QualityValidationStage
+# TODO: Fix relative import
+# from .types import PipelineExecutionError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,11 +23,7 @@ class UnifiedSignalPipeline:
     """Unified pipeline for signal processing across engines."""
 
     def __init__(self, checkpoint_config: Optional[Any] = None):
-        """Initialize the unified pipeline.
-
-        Args:
-            checkpoint_config: Optional checkpoint configuration
-        """
+        """Initialize the unified pipeline. """
         SELF.STAGES = [
             InputProcessingStage(),
             ContextEnrichmentStage(),
@@ -54,7 +51,8 @@ class UnifiedSignalPipeline:
         """Get checkpoint manager instance."""
         if self._checkpoint_manager is None:
             try:
-                from ..checkpoint_manager import get_checkpoint_manager
+                # TODO: Fix relative import
+                #                 from ..checkpoint_manager import get_checkpoint_manager
                 self._checkpoint_manager = await get_checkpoint_manager(self._checkpoint_config)
             except ImportError:
                 logger.warning("Checkpoint manager not available")
@@ -68,23 +66,14 @@ class UnifiedSignalPipeline:
         domain_config: Optional[Any] = None,
         resume_trace_id: Optional[str] = None
     ) -> Any:
-        """Process input through the unified pipeline.
-
-        Args:
-            input_data: Input data to process
-            engine_type: Type of engine
-            domain_config: Domain-specific configuration
-            resume_trace_id: Optional trace ID to resume from
-
-        Returns:
-            Processed signal envelope
-        """
+        """Process input through the unified pipeline. """
         with self._lock:
             self._stats["total_processed"] += 1
 
         if not domain_config:
             try:
-                from ..shared_infrastructure import get_shared_infrastructure
+                # TODO: Fix relative import
+                #                 from ..shared_infrastructure import get_shared_infrastructure
                 domain_config = get_shared_infrastructure().create_domain_config(engine_type)
             except ImportError:
                 domain_config = None
@@ -92,13 +81,15 @@ class UnifiedSignalPipeline:
         if resume_trace_id:
             ENVELOPE = await self._resume_from_checkpoint(resume_trace_id)
             if not envelope:
-                logger.warning(f"Could not resume from trace_id: {resume_trace_id}")
+                logger.warning(
+                    f"Could not resume from trace_id: {resume_trace_id}")
         else:
             ENVELOPE = None
 
         if not envelope:
             try:
-                from ..envelope_factory import EnvelopeFactory
+                # TODO: Fix relative import
+                #                 from ..envelope_factory import EnvelopeFactory
                 ENVELOPE = EnvelopeFactory.create_envelope(
                     input_data,
                     METADATA={
@@ -110,7 +101,8 @@ class UnifiedSignalPipeline:
                     }
                 )
             except ImportError:
-                raise PipelineExecutionError("envelope_creation", "EnvelopeFactory not available")
+                raise PipelineExecutionError(
+                    "envelope_creation", "EnvelopeFactory not available")
 
         if domain_config:
             envelope.
@@ -126,7 +118,8 @@ class UnifiedSignalPipeline:
 
             try:
                 if envelope.has_completed_stage(stage_name):
-                    logger.debug(f"Skipping already completed stage: {stage_name}")
+                    logger.debug(
+                        f"Skipping already completed stage: {stage_name}")
                     continue
 
                 logger.debug(f"Executing stage: {stage_name}")
@@ -152,14 +145,7 @@ class UnifiedSignalPipeline:
         return envelope
 
     async def _resume_from_checkpoint(self, trace_id: str) -> Optional[Any]:
-        """Resume pipeline from checkpoint.
-
-        Args:
-            trace_id: Trace ID to resume from
-
-        Returns:
-            Envelope if found, None otherwise
-        """
+        """Resume pipeline from checkpoint. """
         checkpoint_manager = await self._get_checkpoint_manager()
 
         if not checkpoint_manager:
@@ -178,14 +164,7 @@ class UnifiedSignalPipeline:
         return envelope
 
     async def get_checkpoint_status(self, trace_id: str) -> Optional[Dict[str, Any]]:
-        """Get status of a checkpointed pipeline.
-
-        Args:
-            trace_id: Trace ID of pipeline
-
-        Returns:
-            Status dictionary if found
-        """
+        """Get status of a checkpointed pipeline. """
         checkpoint_manager = await self._get_checkpoint_manager()
         if not checkpoint_manager:
             return None
@@ -209,44 +188,31 @@ class UnifiedSignalPipeline:
         }
 
     async def cleanup_checkpoints(self, older_than: Optional[timedelta] = None) -> int:
-        """Clean up old checkpoints.
-
-        Args:
-            older_than: Age threshold for cleanup
-
-        Returns:
-            Number of checkpoints cleaned up
-        """
+        """Clean up old checkpoints. """
         checkpoint_manager = await self._get_checkpoint_manager()
         if not checkpoint_manager:
             return 0
         return await checkpoint_manager.cleanup_old_checkpoints(older_than)
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get pipeline statistics.
-
-        Returns:
-            Statistics dictionary
-        """
+        """Get pipeline statistics. """
         with self._lock:
             STATS = self._stats.copy()
             if stats["total_processed"] > 0:
-                stats["cache_hit_rate"] = stats["cache_hits"] / stats["total_processed"]
+                stats["cache_hit_rate"] = stats["cache_hits"] / \
+                    stats["total_processed"]
             else:
                 stats["cache_hit_rate"] = 0.0
             return stats
 
     async def health_check(self) -> Dict[str, Any]:
-        """Check health of pipeline and checkpoint system.
-
-        Returns:
-            Health status
-        """
+        """Check health of pipeline and checkpoint system. """
         checkpoint_manager = await self._get_checkpoint_manager()
 
         if checkpoint_manager:
             checkpoint_health = await checkpoint_manager.health_check()
-            STATUS = "healthy" if checkpoint_health.get("status") == "healthy" else "degraded"
+            STATUS = "healthy" if checkpoint_health.get(
+                "status") == "healthy" else "degraded"
             checkpoint_status = checkpoint_health.get("status", "unknown")
         else:
             STATUS = "degraded"
@@ -258,3 +224,4 @@ class UnifiedSignalPipeline:
             "checkpoint_storage": checkpoint_status,
             "stats": self.get_stats()
         }
+

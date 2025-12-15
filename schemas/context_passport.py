@@ -265,7 +265,8 @@ def create_brainstorm_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for brainstorming (max creativity)."""
     CONTEXT = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
-    context.thermal_config.set_node_profile(node_id, ThermalProfile.CREATIVITY_MAX)
+    context.thermal_config.set_node_profile(
+        node_id, ThermalProfile.CREATIVITY_MAX)
     return context
 
 
@@ -283,3 +284,4 @@ def create_validation_context(workflow_id: str, node_id: str) -> SignalContext:
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.PRECISION)
     return context
+

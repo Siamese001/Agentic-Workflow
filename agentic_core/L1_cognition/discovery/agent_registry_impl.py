@@ -6,25 +6,15 @@ from typing import Any, Dict, List, Optional
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .agent_registry_types import *  # Star import removed
+# TODO: Replace 'from .agent_registry_types import *' with explicit imports
+# # from .agent_registry_types import *  # Star import removed
 
 
 class AgentRegistry:
-    """Registry for agent discovery and collaboration.
-
-    Provides:
-    - Agent registration and deregistration
-    - Capability-based discovery
-    - Tool permission management
-    - Service endpoint resolution
-    """
+    """Registry for agent discovery and collaboration. """
 
     def __init__(self, enable_logging: bool = True):
-        """Initialize agent registry.
-
-        Args:
-            enable_logging: Enable logging
-        """
+        """Initialize agent registry. """
         self.enable_logging = enable_logging
         self._agents: Dict[str, AgentCard] = {}
         self._capability_index: Dict[AgentCapability,
@@ -33,14 +23,7 @@ class AgentRegistry:
             logger.info('agent_registry_initialized')
 
     def register(self, agent_card: AgentCard) -> RegistrationResult:
-        """Register an agent.
-
-        Args:
-            agent_card: Agent card to register
-
-        Returns:
-            RegistrationResult
-        """
+        """Register an agent. """
         spiffe_id = agent_card.identity.spiffe_id
         if not agent_card.identity.is_valid():
             return RegistrationResult(success=False, reason='Invalid or expired identity')
@@ -59,14 +42,7 @@ class AgentRegistry:
                                   REASON='Agent registered successfully')
 
     def deregister(self, spiffe_id: str) -> bool:
-        """Deregister an agent.
-
-        Args:
-            spiffe_id: SPIFFE ID of agent
-
-        Returns:
-            True if deregistered successfully
-        """
+        """Deregister an agent. """
         agent_card = self._agents.get(spiffe_id)
         if not agent_card:
             return False
@@ -78,73 +54,37 @@ class AgentRegistry:
         return True
 
     def get_agent(self, spiffe_id: str) -> Optional[AgentCard]:
-        """Get an agent card by SPIFFE ID.
-
-        Args:
-            spiffe_id: SPIFFE ID
-
-        Returns:
-            AgentCard or None
-        """
+        """Get an agent card by SPIFFE ID. """
         return self._agents.get(spiffe_id)
 
     def find_by_capability(self,
                            """Docstring."""
                            capability: AgentCapability,
                            status: Optional[AgentStatus] = None) -> List[AgentCard]:
-        """Find agents by capability.
-
-        Args:
-            capability: Required capability
-            status: Optional status filter
-
-        Returns:
-            List of matching agent cards
-        """
+        """Find agents by capability. """
         spiffe_ids = self._capability_index.get(capability, set())
-        AGENTS = [self._agents[sid] for sid in spiffe_ids if sid in self._agents]
+        AGENTS = [self._agents[sid]
+                  for sid in spiffe_ids if sid in self._agents]
         if status:
             AGENTS = [a for a in agents if a.status == status]
         return agents
 
     def find_by_tool(self, tool_name: str, operation: str) -> List[AgentCard]:
-        """Find agents that can use a tool.
-
-        Args:
-            tool_name: Tool name
-            operation: Required operation
-
-        Returns:
-            List of matching agent cards
-        """
+        """Find agents that can use a tool. """
         return [agent for agent in self._agents.values() if agent.can_use_tool(tool_name,
                                                                                operation)]
 
     def find_available(self,
                        capabilities: Optional[List[AgentCapability]] = None) -> List[AgentCard]:
-        """Find available agents.
-
-        Args:
-            capabilities: Optional capability requirements
-
-        Returns:
-            List of available agent cards
-        """
+        """Find available agents. """
         AGENTS = [a for a in self._agents.values() if a.is_available()]
         if capabilities:
-            AGENTS = [a for a in agents if all((a.has_capability(cap) for cap in capabilities))]
+            AGENTS = [a for a in agents if all(
+                (a.has_capability(cap) for cap in capabilities))]
         return agents
 
     def update_status(self, spiffe_id: str, status: AgentStatus) -> bool:
-        """# SQL removed: Update agent status.
-
-        Args:
-            spiffe_id: SPIFFE ID
-            status: New status
-
-        Returns:
-            True if updated successfully
-        """
+        """# SQL removed: Update agent status. """
         agent_card = self._agents.get(spiffe_id)
         if not agent_card:
             return False
@@ -158,22 +98,15 @@ class AgentRegistry:
         return True
 
     def list_all(self) -> List[AgentCard]:
-        """List all registered agents.
-
-        Returns:
-            List of all agent cards
-        """
+        """List all registered agents. """
         return list(self._agents.values())
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get registry statistics.
-
-        Returns:
-            Statistics dictionary
-        """
+        """Get registry statistics. """
         status_counts = {}
         for status in AgentStatus:
-            COUNT = sum((1 for a in self._agents.values() if a.status == status))
+            COUNT = sum(
+                (1 for a in self._agents.values() if a.status == status))
             status_counts[status.value] = count
         capability_counts = {}
         for capability in AgentCapability:
@@ -185,9 +118,6 @@ class AgentRegistry:
 
 
 def create_agent_registry() -> AgentRegistry:
-    """Factory function to create agent registry.
-
-    Returns:
-        AgentRegistry instance
-    """
+    """Factory function to create agent registry. """
     return AgentRegistry()
+

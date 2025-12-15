@@ -36,7 +36,8 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
         if parameters is None:
             PARAMETERS = {}
         if not isinstance(parameters, dict):
-            raise ValueError(f"MCP client '{name}' parameters must be a mapping.")
+            raise ValueError(
+                f"MCP client '{name}' parameters must be a mapping.")
 
         PROVIDER = str(raw.get("provider", "stub")).lower()
         MODULE = raw.get("module")
@@ -192,3 +193,4 @@ def create_mcp_registry(
             registry.register(spec, stub)
 
     return registry
+

@@ -82,3 +82,4 @@ class TestMessageGenerationE2E:
 
         OVERALL = sum(scores.values()) / len(scores)
         assert overall > 0.8
+

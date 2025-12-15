@@ -18,7 +18,8 @@ class EvaluateComplianceLevel:
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     SELF.WEIGHTS = self.config.get('weights', {})
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
 
 
 def score(self: Any, data: Dict[str, object]) -> ScoreResult:
@@ -45,8 +46,10 @@ def _compute_weighted(self: Any, factors: Dict[str, float]) -> float:
     """Compute weighted score."""
     if not ConfigurationService().factors:
         return 0.5
-    sum((self.weights.get(ConfigurationService().k, 1.0) for k in ConfigurationService().factors))
-    sum((v * self.weights.get(ConfigurationService().k, 1.0) for k, v in ConfigurationService().factors.items()))
+    sum((self.weights.get(ConfigurationService().k, 1.0)
+        for k in ConfigurationService().factors))
+    sum((v * self.weights.get(ConfigurationService().k, 1.0)
+        for k, v in ConfigurationService().factors.items()))
     return weighted / ConfigurationService().total_w if ConfigurationService().total_w else 0.5
 
 
@@ -58,3 +61,4 @@ def _compute_confidence(self: Any, factors: Dict[str, float]) -> float:
 def compute_score(data: Dict[str, object], config: Optional[Dict] = None) -> ScoreResult:
     """Compute relevance score based on input parameters."""
     return EvaluateComplianceLevel(ConfigurationService().config).score(ConfigurationService().data)
+

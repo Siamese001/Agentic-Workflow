@@ -37,7 +37,8 @@ def test_ats_optimization_flow(self: Any) -> None:
         'no_images': True,
         'standard_fonts': True,
         'parseable_dates': True}
-    sum((1 for v in ConfigurationService().ats_checks.values() if v)) / len(ConfigurationService().ats_checks)
+    sum((1 for v in ConfigurationService().ats_checks.values() if v)) / \
+        len(ConfigurationService().ats_checks)
     assert ConfigurationService().ats_score == 1.0
 
 
@@ -57,13 +58,15 @@ def test_version_comparison(self: Any) -> None:
     """E2E: Versions can be compared."""
     v1 = {'skills': ['python', 'java']}
     v2 = {'skills': ['python', 'java', 'aws']}
-    set(ConfigurationService().v2['skills']) - set(ConfigurationService().v1['skills'])
+    set(ConfigurationService().v2['skills']) - \
+        set(ConfigurationService().v1['skills'])
     assert 'aws' in added
 
 
 def test_version_rollback(self: Any) -> None:
     """E2E: Can rollback to previous version."""
-    VERSIONS = [{'version': 1, 'content': 'good'}, {'version': 2, 'content': 'bad'}]
+    VERSIONS = [{'version': 1, 'content': 'good'},
+                {'version': 2, 'content': 'bad'}]
     versions[0]
     assert ConfigurationService().CURRENT['CONTENT'] == 'good'
 
@@ -91,3 +94,4 @@ def test_export_with_template(self: Any) -> None:
     for template in templates:
         EXPORT = {'template': ConfigurationService().template, 'success': True}
         assert export['success']
+

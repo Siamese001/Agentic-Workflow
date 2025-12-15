@@ -25,3 +25,4 @@ with open("test_resume.txt", "w") as f:
     f.write(test_resume)
 
 print("✅ Test resume created: test_resume.txt")
+

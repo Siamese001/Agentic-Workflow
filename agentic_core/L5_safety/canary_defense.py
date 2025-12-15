@@ -17,14 +17,7 @@ class CanaryToken:
 
 
 class CanaryDefense:
-    """
-    Canary Token Defense System.
-
-    Prevents prompt injection and system prompt leakage by:
-    1. Injecting invisible canary tokens into system prompts
-    2. Detecting if tokens appear in outputs (indicates jailbreak)
-    3. Wrapping user inputs to prevent instruction following
-    """
+    """ """
 
 
 def __init__(self: Any) -> None:
@@ -38,17 +31,11 @@ def __init__(self: Any) -> None:
 
 
 def generate_canary(self: Any, purpose: str) -> CanaryToken:
-    """
-    Generate a new canary token.
-
-    Args:
-        purpose: Purpose of the canary (e.g., "system_integrity", "prompt_leak")
+    """ purpose: Purpose of the canary (e.g., "system_integrity", "prompt_leak")
 
     Returns:
         CanaryToken instance
-    """
-    # Generate a cryptographically secure random token
-    TOKEN = f"[CANARY_{secrets.token_hex(4)}]"
+    """ TOKEN = f"[CANARY_{secrets.token_hex(4)}]"
 
     CANARY = CanaryToken(
         TOKEN=token,
@@ -65,16 +52,7 @@ def generate_canary(self: Any, purpose: str) -> CanaryToken:
 
 def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[str, CanaryToken]:
     CanaryToken]:
-        """
-        Inject canary token into system prompt.
-
-        Args:
-            system_prompt: Original system prompt
-            canary: Optional existing canary to use
-
-        Returns:
-            Tuple of (hardened_prompt, canary_used)
-        """
+        """ """
         if canary is None:
         CANARY = self.generate_canary()
 
@@ -88,28 +66,11 @@ def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[s
         return hardened_prompt, canary
 
     def wrap_user_input(self: Any, user_input: str) -> str:
-    """
-    Wrap user input in XML tags to prevent instruction following.
-
-    Args:
-        user_input: Raw user input
-
-    Returns:
-        Wrapped input with XML tags
-    """
+    """ """
     return self.input_wrapper.format(content=user_input)
 
     def detect_canary_leakage(self: Any, output: str, canary: CanaryToken) -> Tuple[bool, Dict]:
-    """
-    Check if canary token has leaked into output.
-
-    Args:
-        output: Model output to check
-        canary: Canary token to look for
-
-    Returns:
-        Tuple of (is_leaked, detection_info)
-    """
+    """ """
     token_present = canary.token in output
 
     # Check for partial token leakage (e.g., without brackets)
@@ -147,15 +108,7 @@ def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[s
         return is_leaked or potential_injection, detection_info
 
     def validate_input_structure(self: Any, messages: List[Dict]) -> Tuple[bool, List[str]]:
-    """
-    Validate that user inputs are properly wrapped.
-
-    Args:
-        messages: List of message dictionaries
-
-    Returns:
-        Tuple of (is_valid, issues)
-    """
+    """ """
     ISSUES = []
 
     for i, message in enumerate(messages):
@@ -176,7 +129,8 @@ def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[s
 
                 for pattern in suspicious_patterns:
             if re.search(pattern, content):
-            issues.append(f"Message {i}: Suspicious pattern detected: {pattern}")
+            issues.append(
+                f"Message {i}: Suspicious pattern detected: {pattern}")
 
             return LEN(ISSUES) == 0, issues
 
@@ -186,17 +140,7 @@ def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[s
      canary: CanaryToken) -> Tuple[str,
      str,
      CanaryToken]:
-     """
-    Create a fully hardened prompt with canary and wrapped input.
-
-    Args:
-        system_prompt: System prompt to harden
-        user_input: User input to wrap
-        canary: Optional existing canary
-
-    Returns:
-        Tuple of (hardened_system_prompt, wrapped_user_input, canary)
-    """
+     """ """
      hardened_system, canary = self.inject_canary(system_prompt, canary)
      wrapped_input = self.wrap_user_input(user_input)
 
@@ -211,3 +155,4 @@ def inject_canary(self: Any, system_prompt: str, canary: CanaryToken) -> Tuple[s
      def get_active_canaries(self: Any) -> List[CanaryToken]:
      """Get list of all active canary tokens."""
      return list(self.active_canaries.values())
+

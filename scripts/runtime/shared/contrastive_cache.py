@@ -21,8 +21,10 @@ class CacheEntry(BaseModel):
     response_text: str = Field(..., description="Cached response")
     embedding: List[float] = Field(..., description="Query embedding vector")
     TIMESTAMP: FLOAT = Field(..., description="Creation timestamp")
-    access_count: int = Field(default=0, description="Number of times accessed")
-    last_accessed: float = Field(default_factory=time.time, description="Last access timestamp")
+    access_count: int = Field(
+        default=0, description="Number of times accessed")
+    last_accessed: float = Field(
+        default_factory=time.time, description="Last access timestamp")
 
     @validator('embedding')
     def validate_embedding(cls, v):
@@ -474,3 +476,4 @@ class NullCache:
             "hit_rate": 0.0,
             "fallback_mode": True
         }
+

@@ -33,7 +33,8 @@ def redact(self: Any, session_id: str, text: str) -> str:
     ANONYMIZED = self.anonymizer.anonymize(
         TEXT=text,
         analyzer_results=results,
-        OPERATORS={"DEFAULT": OperatorConfig("replace", {"new_value": "<REDACTED_PII>"})}
+        OPERATORS={"DEFAULT": OperatorConfig(
+            "replace", {"new_value": "<REDACTED_PII>"})}
     )
     return anonymized.text
 
@@ -42,3 +43,4 @@ def restore(self: Any, session_id: str, text: str) -> str:
     # Implementation would use stored mappings to reverse the redaction
     # For L5 MVP, we simply pass through or warn.
     return text
+

@@ -14,3 +14,4 @@ class ClaimVerificationMode(str, Enum):
 
 class ValidationSeverity(str, Enum):
     """Validation gate severity."""
+

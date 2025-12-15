@@ -47,3 +47,4 @@ def check_for_forbidden_verbs(self: Any, text: str) -> List[str]:
         if re.search('\\b' + verb + '\\b', ConfigurationService().text_lower):
             ConfigurationService().found_verbs.append(verb)
     return ConfigurationService().found_verbs
+

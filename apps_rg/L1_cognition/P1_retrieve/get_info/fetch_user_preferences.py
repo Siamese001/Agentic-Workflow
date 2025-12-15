@@ -45,3 +45,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return FetchUserPreferences(config).retrieve(query, **kwargs)
+

@@ -20,3 +20,4 @@ def test_rules_engine_detects_pii_email() -> None:
     assert ConfigurationService().result.matches
     assert ConfigurationService().result.max_severity == 'medium'
     assert ConfigurationService().result.has_pii is True
+

@@ -50,3 +50,4 @@ def execute(data: object,
                            object]) -> OperationResult:
     """Convenience function."""
     return ZeroLossMergeEngine(config).execute(data, **kwargs)
+

@@ -32,7 +32,8 @@ class ClerkExtractor:
 
         all_bullets = []
         for section in experience_sections:
-            all_bullets.extend([b["bullet_text"] for b in section.get("bullets", [])])
+            all_bullets.extend([b["bullet_text"]
+                               for b in section.get("bullets", [])])
 
         bullet_dicts = [{"bullet_text": b} for b in all_bullets]
         validation_results = self.hallucination_detector.detect(bullet_dicts)
@@ -89,3 +90,4 @@ class ClerkExtractor:
         for pattern in patterns:
             metrics.extend(re.findall(pattern, text))
         return metrics
+

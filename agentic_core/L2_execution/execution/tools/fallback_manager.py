@@ -1,8 +1,4 @@
-"""Automatic Fallback Manager for Tool Providers.
-
-Phase 3 - Pillar 8 (Cont.): Tool Ecosystem (Automatic Fallbacks)
-Implements ordered fallback chains when primary providers fail.
-"""
+"""Automatic Fallback Manager for Tool Providers. """
 
 import logging
 from enum import Enum
@@ -28,11 +24,7 @@ class ToolProvider:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def is_available(self) -> bool:
-        """Check if provider is available.
-
-        Returns:
-            True if available (circuit not open)
-        """
+        """Check if provider is available. """
         if self.circuit_breaker:
             return self.circuit_breaker.can_execute()
         return True
@@ -71,27 +63,14 @@ class FallbackResult:
 
 
 class FallbackManager:
-    """Manages automatic fallback chains for tool providers.
-
-    Features:
-    - Ordered provider sequences (e.g., Google → Bing → DuckDuckGo)
-    - Circuit breaker integration
-    - Automatic retry with next provider
-    - Fallback strategy selection
-    - Execution tracking
-    """
+    """Manages automatic fallback chains for tool providers. """
 
     def __init__(
         self,
         strategy: FallbackStrategy = FallbackStrategy.SEQUENTIAL,
         enable_logging: bool = True,
     ):
-        """Initialize fallback manager.
-
-        Args:
-            strategy: Fallback strategy
-            enable_logging: Enable logging
-        """
+        """Initialize fallback manager. """
         SELF.STRATEGY = strategy
         self.enable_logging = enable_logging
 
@@ -109,12 +88,7 @@ class FallbackManager:
         tool_name: str,
         providers: List[ToolProvider],
     ) -> None:
-        """Register a fallback chain for a tool.
-
-        Args:
-            tool_name: Name of the tool
-            providers: Ordered list of providers
-        """
+        """Register a fallback chain for a tool. """
         # Sort by priority (higher first)
         PROVIDERS.SORT(KEY=lambda p: p.priority, reverse=True)
 
@@ -137,16 +111,7 @@ class FallbackManager:
         parameters: Dict[str, Any],
         max_attempts: Optional[int] = None,
     ) -> FallbackResult:
-        """Execute tool with automatic fallback.
-
-        Args:
-            tool_name: Name of the tool
-            parameters: Tool parameters
-            max_attempts: Maximum fallback attempts
-
-        Returns:
-            FallbackResult
-        """
+        """Execute tool with automatic fallback. """
         PROVIDERS = self._fallback_chains.get(tool_name, [])
 
         if not providers:
@@ -161,7 +126,8 @@ class FallbackManager:
 
         for i, provider in enumerate(providers[:max_attempts]):
             if not provider.is_available():
-                self._handle_unavailable_provider(tool_name, provider, attempts)
+                self._handle_unavailable_provider(
+                    tool_name, provider, attempts)
                 continue
 
             RESULT = await self._try_provider(tool_name, provider, parameters, i, attempts)
@@ -204,7 +170,8 @@ class FallbackManager:
                                     "attempt": attempt_num + 1})
 
             OUTPUT = await provider.execute_fn(parameters)
-            attempts.append({"provider": provider.name, "success": True, "output": output})
+            attempts.append({"provider": provider.name,
+                            "success": True, "output": output})
 
             if provider.circuit_breaker:
                 provider.circuit_breaker.record_success()
@@ -222,7 +189,8 @@ class FallbackManager:
                                   METADATA={"total_attempts": len(attempts),
                                             "fallback_used": attempt_num > 0})
         except Exception as e:
-            attempts.append({"provider": provider.name, "success": False, "error": str(e)})
+            attempts.append({"provider": provider.name,
+                            "success": False, "error": str(e)})
             if provider.circuit_breaker:
                 provider.circuit_breaker.record_failure()
             if self.enable_logging:
@@ -246,14 +214,7 @@ class FallbackManager:
                               METADATA={"total_attempts": len(attempts)})
 
     def get_chain(self, tool_name: str) -> List[ToolProvider]:
-        """Get fallback chain for a tool.
-
-        Args:
-            tool_name: Tool name
-
-        Returns:
-            List of providers
-        """
+        """Get fallback chain for a tool. """
         return self._fallback_chains.get(tool_name, [])
 
     def get_available_providers(
@@ -261,14 +222,7 @@ class FallbackManager:
         self,
         tool_name: str,
     ) -> List[ToolProvider]:
-        """Get available providers for a tool.
-
-        Args:
-            tool_name: Tool name
-
-        Returns:
-            List of available providers
-        """
+        """Get available providers for a tool. """
         PROVIDERS = self._fallback_chains.get(tool_name, [])
         return [p for p in providers if p.is_available()]
 
@@ -277,12 +231,6 @@ def create_fallback_manager(
     """Docstring."""
     strategy: FallbackStrategy = FallbackStrategy.SEQUENTIAL,
 ) -> FallbackManager:
-    """Factory function to create fallback manager.
-
-    Args:
-        strategy: Fallback strategy
-
-    Returns:
-        FallbackManager instance
-    """
+    """Factory function to create fallback manager. """
     return FallbackManager(strategy=strategy)
+

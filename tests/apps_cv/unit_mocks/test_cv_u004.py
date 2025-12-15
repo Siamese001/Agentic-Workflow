@@ -5,7 +5,7 @@ Unit test for isolated L5 component verification
 """
 
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import json
 from datetime import datetime, timezone
 from canon_validator import CanonValidator
@@ -13,7 +13,7 @@ from canon_validator import CanonValidator
 
 class TestCVU004:
     """Test MEMemory payload format at L5 layer"""
-    
+
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
@@ -30,20 +30,20 @@ class TestCVU004:
         validator.pinecone.query = Mock(return_value={'matches': []})
         validator.pinecone.upsert = Mock()
         return validator
-    
+
     def test_memeory_payload_schema_compliance(self, validator):
         """Test that L5 payload adheres to JSON schema"""
         # Capture what gets sent to MEMemory
         captured_payloads = []
-        
+
         def mock_add_observations(observations):
             """Simulate MEMemory logging function"""
             captured_payloads.append(observations)
             return {"status": "success"}
-        
+
         # Simulate validation process that logs to MEMemory
         validation_result = validator.validate("test code")
-        
+
         # Simulate the logging that would happen
         mock_payload = [{
             "entityName": "validation_result",
@@ -52,21 +52,22 @@ class TestCVU004:
             "tags": ["validation", "l5"]
         }]
         mock_add_observations(mock_payload)
-        
+
         # Verify payload was captured
         assert len(captured_payloads) == 1
         payload = captured_payloads[0]
-        
+
         # Check required fields exist
-        assert isinstance(payload, list), "Payload should be a list of observations"
-        
+        assert isinstance(
+            payload, list), "Payload should be a list of observations"
+
         if payload:
             observation = payload[0]
             assert "entityName" in observation, "Missing entityName"
             assert "contents" in observation, "Missing contents"
             assert "corpusNames" in observation, "Missing corpusNames"
             assert "tags" in observation, "Missing tags"
-    
+
     def test_complex_nested_payload_handling(self, validator):
         """Test handling of complex nested violation payload"""
         complex_violation = {
@@ -99,15 +100,15 @@ class TestCVU004:
                 }
             ]
         }
-        
+
         # Simulate MEMemory logging
         captured_payloads = []
-        
+
         def mock_add_observations(observations):
             """Simulate MEMemory logging function"""
             captured_payloads.append(observations)
             return {"status": "success"}
-        
+
         # Simulate logging the complex violation
         mock_payload = [{
             "entityName": "complex_violation",
@@ -116,11 +117,11 @@ class TestCVU004:
             "tags": ["violation", "complex", "l5"]
         }]
         mock_add_observations(mock_payload)
-        
+
         # Verify complex payload was handled
         assert len(captured_payloads) == 1
         payload = captured_payloads[0]
-        
+
         # Should handle nested structure without data loss
         assert isinstance(payload, list)
         # Check that nested data is preserved in string form
@@ -128,7 +129,7 @@ class TestCVU004:
         assert "security" in payload_str
         assert "critical" in payload_str
         assert "eval(input)" in payload_str
-    
+
     def test_payload_data_integrity(self, validator):
         """Test no data loss or corruption in payload"""
         original_data = {
@@ -142,15 +143,15 @@ class TestCVU004:
                 "violations_count": 1
             }
         }
-        
+
         # Simulate MEMemory logging
         captured_payloads = []
-        
+
         def mock_add_observations(observations):
             """Simulate MEMemory logging function"""
             captured_payloads.append(observations)
             return {"status": "success"}
-        
+
         # Simulate logging the validation result
         mock_payload = [{
             "entityName": "validation_result",
@@ -159,21 +160,21 @@ class TestCVU004:
             "tags": ["validation", "integrity", "l5"]
         }]
         mock_add_observations(mock_payload)
-        
+
         # Verify data integrity
         assert len(captured_payloads) == 1
         payload = captured_payloads[0]
-        
+
         # Serialize and deserialize to check for corruption
         payload_json = json.dumps(payload, default=str)
         restored_payload = json.loads(payload_json)
-        
+
         # Check key data is preserved
         payload_str = str(restored_payload)
         assert "safe_function" in payload_str
         assert "security issue" in payload_str
         assert "1.0.0" in payload_str
-    
+
     def test_payload_size_limits(self, validator):
         """Test handling of oversized payloads"""
         # Create a large payload
@@ -182,20 +183,20 @@ class TestCVU004:
             "reasoning": "A" * 10000,  # Large string
             "violations": [{"description": "B" * 1000} for _ in range(100)]
         }
-        
+
         # Simulate MEMemory logging with size limits
         payload_sizes = []
-        
+
         def mock_add_observations(observations):
             """Simulate MEMemory logging with size check"""
             payload_size = len(json.dumps(observations, default=str))
             payload_sizes.append(payload_size)
-            
+
             # Simulate size limit check
             if payload_size > 100000:  # 100KB limit
                 return {"status": "error", "message": "Payload too large"}
             return {"status": "success"}
-        
+
         # Simulate logging the large payload
         mock_payload = [{
             "entityName": "large_violation",
@@ -204,12 +205,12 @@ class TestCVU004:
             "tags": ["violation", "large", "l5"]
         }]
         result = mock_add_observations(mock_payload)
-        
+
         # Verify size limit enforcement
         assert result["status"] == "error"
         assert "too large" in result["message"]
         assert payload_sizes[0] > 100000
-    
+
     def test_payload_encoding_special_characters(self, validator):
         """Test handling of special characters in payload"""
         special_chars_violation = {
@@ -217,15 +218,15 @@ class TestCVU004:
             "reasoning": "Special characters: ñáéíóú 中文 🚀 \n\t\\\"'",
             "code": "def test():\n    return 'ñoño'"
         }
-        
+
         # Simulate MEMemory logging
         captured_payloads = []
-        
+
         def mock_add_observations(observations):
             """Simulate MEMemory logging function"""
             captured_payloads.append(observations)
             return {"status": "success"}
-        
+
         # Simulate logging the special characters payload
         mock_payload = [{
             "entityName": "special_chars_violation",
@@ -234,11 +235,11 @@ class TestCVU004:
             "tags": ["violation", "special_chars", "l5"]
         }]
         mock_add_observations(mock_payload)
-        
+
         # Verify special characters are preserved
         assert len(captured_payloads) == 1
         payload = captured_payloads[0]
-        
+
         # Should handle UTF-8 encoding properly
         payload_json = json.dumps(payload, ensure_ascii=False)
         assert "ñáéíóú" in payload_json
@@ -248,3 +249,4 @@ class TestCVU004:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

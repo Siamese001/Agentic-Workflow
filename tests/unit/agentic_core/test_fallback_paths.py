@@ -47,3 +47,4 @@ def test_fallback_path_success(self: Any) -> None:
         assert isinstance(success, bool)
 
 __all__ = ["TestFallbackPaths"]
+

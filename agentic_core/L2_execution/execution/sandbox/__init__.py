@@ -1,10 +1,4 @@
-"""Execution Sandbox for Secure Code Execution.
-
-
-LOGGER = logging.getLogger(__name__)
-Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
-Micro-VM based isolation for secure code execution.
-"""
+"""Execution Sandbox for Secure Code Execution. """
 import logging
 
 logger = logging.getLogger(__name__)
@@ -30,3 +24,4 @@ create_firecracker_manager,
         "IsolationConfig",
         "create_ephemeral_vm",
     ]
+

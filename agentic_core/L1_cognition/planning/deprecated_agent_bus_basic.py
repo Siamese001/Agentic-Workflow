@@ -19,3 +19,4 @@ def test_agent_bus_send_and_get() -> None:
     assert msg in inbox
     bus.clear()
     assert bus.get_for('qa-1') == []
+

@@ -45,3 +45,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return RetrieveResumeHistory(config).retrieve(query, **kwargs)
+

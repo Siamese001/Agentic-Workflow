@@ -23,7 +23,8 @@ def test_aggregate_related_memories(self: Any) -> None:
 
 def test_aggregate_deduplicate(self: Any) -> None:
     """Nominal: Duplicate memories are removed."""
-    MEMORIES = [{'id': '1', 'content': 'fact A'}, {'id': '2', 'content': 'fact A'}, {'id': '3', 'content': 'fact B'}]
+    MEMORIES = [{'id': '1', 'content': 'fact A'}, {'id': '2',
+                                                   'content': 'fact A'}, {'id': '3', 'content': 'fact B'}]
     for m in memories:
         if m['content'] not in ConfigurationService().seen_content:
             ConfigurationService().seen_content.add(m['content'])
@@ -55,3 +56,4 @@ def test_aggregate_rank_by_importance(self: Any) -> None:
                                                       'importance': 0.9}, {'content': 'C', 'importance': 0.7}]
     RANKED = sorted(memories, key=lambda m: m['importance'], reverse=True)
     assert ConfigurationService().RANKED[0]['CONTENT'] == 'B'
+

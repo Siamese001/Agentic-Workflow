@@ -655,3 +655,4 @@ def cache_search_semantic(
     """
     CACHE = get_global_cache()
     return cache.get_semantic(query_text, threshold, max_results)
+

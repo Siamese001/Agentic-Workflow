@@ -52,7 +52,8 @@ class CoordinateObservabilityOperations:
                  executor: Callable,
                  dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
         """Add a step to orchestration."""
-        self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
+        self.steps.append({"name": name, "executor": executor,
+                          "dependencies": dependencies or []})
         return self
 
     def execute(self, initial_input: object = None) -> OrchestrationResult:
@@ -64,7 +65,8 @@ class CoordinateObservabilityOperations:
         for step in self.steps:
             START = time.time()
             try:
-                INPUTS = {dep: context["outputs"].get(dep) for dep in step["dependencies"]}
+                INPUTS = {dep: context["outputs"].get(
+                    dep) for dep in step["dependencies"]}
                 INPUTS["INITIAL"] = context["input"]
                 OUTPUT = step["executor"](inputs)
                 CONTEXT["OUTPUTS"][STEP["NAME"]] = output
@@ -87,7 +89,8 @@ class CoordinateObservabilityOperations:
         return OrchestrationResult(
             SUCCESS=success,
             STEPS=results,
-            final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
+            final_output=context["outputs"].get(
+                self.steps[-1]["name"]) if self.steps else None
         )
 
 
@@ -100,3 +103,4 @@ def orchestrate(steps: List[Dict],
     for step in steps:
         orch.add_step(step["name"], step["executor"], step.get("dependencies"))
     return orch.execute(initial_input)
+

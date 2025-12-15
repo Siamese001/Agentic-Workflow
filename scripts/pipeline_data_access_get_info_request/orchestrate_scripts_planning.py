@@ -73,7 +73,8 @@ class ScriptsPlanningOrchestrator:
         Returns:
             ScriptsPlanningResult: Complete planning result with execution order
         """
-        self.logger.info(f"Starting scripts planning for {len(script_tasks)} tasks")
+        self.logger.info(
+            f"Starting scripts planning for {len(script_tasks)} tasks")
 
         try:
             # Validate input tasks
@@ -100,7 +101,8 @@ class ScriptsPlanningOrchestrator:
                 }
             )
 
-            self.logger.info(f"Successfully planned {len(execution_plan)} tasks")
+            self.logger.info(
+                f"Successfully planned {len(execution_plan)} tasks")
             return result
 
         except Exception as e:
@@ -130,7 +132,8 @@ class ScriptsPlanningOrchestrator:
             # Check dependencies exist
             for dep in task.dependencies:
                 if dep not in task_ids:
-                    raise ValueError(f"Task {task.id} depends on non-existent task {dep}")
+                    raise ValueError(
+                        f"Task {task.id} depends on non-existent task {dep}")
 
     def _resolve_dependencies(self, tasks: List[ScriptTask]) -> List[ScriptTask]:
         """Resolve dependencies and create execution order."""
@@ -145,7 +148,8 @@ class ScriptsPlanningOrchestrator:
         def visit(task: ScriptTask) -> None:
             """Recursively visit tasks for dependency resolution."""
             if task.id in visiting_nodes:
-                raise ValueError(f"Circular dependency detected involving task {task.id}")
+                raise ValueError(
+                    f"Circular dependency detected involving task {task.id}")
             if task.id in visited:
                 return
 
@@ -247,7 +251,8 @@ def plan_script_execution(
             id=task_dict["id"],
             script_path=task_dict["script_path"],
             DEPENDENCIES=task_dict.get("dependencies", []),
-            PRIORITY=ScriptExecutionPriority(task_dict.get("priority", "normal")),
+            PRIORITY=ScriptExecutionPriority(
+                task_dict.get("priority", "normal")),
             PARAMETERS=task_dict.get("parameters", {}),
             estimated_duration=task_dict.get("estimated_duration"),
             retry_count=task_dict.get("retry_count", 0),
@@ -307,3 +312,4 @@ if __name__ == "__main__":
     ]
 
     RESULT = plan_script_execution(example_tasks)
+

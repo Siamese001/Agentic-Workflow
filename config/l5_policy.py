@@ -239,3 +239,4 @@ class SafetyEngine:
         """
         RESULT = self.evaluate(context, policy_ids, severity_threshold)
         return result.final_verdict != Verdict.BLOCK
+

@@ -41,3 +41,4 @@ print(f"\nResults:")
 print(f"has_imports: {has_imports}")
 print(f"uses_only_allowed: {uses_only_allowed}")
 print(f"Should skip validation: {not has_imports and uses_only_allowed}")
+

@@ -45,3 +45,4 @@ class WorkflowSpec:
     _name: str
     _version: str
     _hops: List[HopSpec]
+

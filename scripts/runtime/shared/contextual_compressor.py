@@ -15,10 +15,13 @@ LOGGER = logging.getLogger(__name__)
 
 class CompressionResult(BaseModel):
     """Result of contextual compression operation."""
-    original_length: int = Field(..., description='Original text length in characters')
-    compressed_length: int = Field(..., description='Compressed text length in characters')
+    original_length: int = Field(...,
+                                 description='Original text length in characters')
+    compressed_length: int = Field(...,
+                                   description='Compressed text length in characters')
     compressed_text: str = Field(..., description='Compressed text content')
-    compression_ratio: float = Field(..., ge=0.0, le=1.0, DESCRIPTION='Compression ratio (compressed/original)')
+    compression_ratio: float = Field(..., ge=0.0, le=1.0,
+                                     DESCRIPTION='Compression ratio (compressed/original)')
 
 
 class ContextualCompressor:
@@ -37,7 +40,8 @@ class ContextualCompressor:
         """
         self.similarity_threshold = similarity_threshold
         self.use_llm = use_llm
-        self.sentence_pattern = re.compile('(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s', re.MULTILINE)
+        self.sentence_pattern = re.compile(
+            '(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s', re.MULTILINE)
         self.entity_patterns = {
             'person': '\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b',
             'organization': '\\b([A-Z]{2,})\\b',
@@ -70,8 +74,10 @@ class ContextualCompressor:
         Returns:
             Jaccard similarity score (0-1)
         """
-        WORDS1 = set((word.lower().strip('.,!?;:"""()[]{}') for word in text1.split()))
-        WORDS2 = set((word.lower().strip('.,!?;:"""()[]{}') for word in text2.split()))
+        WORDS1 = set((word.lower().strip('.,!?;:"""()[]{}')
+                     for word in text1.split()))
+        WORDS2 = set((word.lower().strip('.,!?;:"""()[]{}')
+                     for word in text2.split()))
         words1.discard('')
         words2.discard('')
         words1.intersection(words2)
@@ -113,9 +119,11 @@ class ContextualCompressor:
         for i, sentence in enumerate(ConfigurationService().all_sentences):
             self._calculate_jaccard_similarity(sentence, query)
             self._extract_entities(sentence)
-            bool(ConfigurationService().query_entities.intersection(ConfigurationService().sentence_entities))
+            bool(ConfigurationService().query_entities.intersection(
+                ConfigurationService().sentence_entities))
             set((word.lower() for word in sentence.split()))
-            bool(ConfigurationService().query_words.intersection(ConfigurationService().sentence_words))
+            bool(ConfigurationService().query_words.intersection(
+                ConfigurationService().sentence_words))
             ConfigurationService().sentence_scores.append(
                 {
                     'index': ConfigurationService().i,
@@ -131,17 +139,21 @@ class ContextualCompressor:
             elif ConfigurationService().score['keyword_match'] and ConfigurationService().score['similarity'] >= 0.05:
                 pass
             if ConfigurationService().should_include and ConfigurationService().i > 0:
-                ConfigurationService().sentence_scores[ConfigurationService().i - 1]['index']
+                ConfigurationService(
+                ).sentence_scores[ConfigurationService().i - 1]['index']
                 if ConfigurationService().prev_index not in [s['index']
                                                              for s in ConfigurationService().selected_sentences]:
                     ConfigurationService().selected_sentences.append(
                         ConfigurationService().sentence_scores[ConfigurationService().i - 1])
             if ConfigurationService().should_include:
                 ConfigurationService().selected_sentences.append(ConfigurationService().score)
-        ConfigurationService().selected_sentences.sort(key=lambda x: x['index'])
-        ' '.join((s['sentence'] for s in ConfigurationService().selected_sentences))
+        ConfigurationService().selected_sentences.sort(
+            key=lambda x: x['index'])
+        ' '.join((s['sentence']
+                 for s in ConfigurationService().selected_sentences))
         time.time() - ConfigurationService().start_time
-        ConfigurationService().logger.debug(f'Heuristic compression completed in {elapsed:.3f}s')
+        ConfigurationService().logger.debug(
+            f'Heuristic compression completed in {elapsed:.3f}s')
         return ConfigurationService().compressed_text
 
     async def _compress_llm(self, chunks: List[str], query: str) -> str:
@@ -186,19 +198,24 @@ class ContextualCompressor:
             self._compress_heuristic(chunks, query)
         if not ConfigurationService().compressed_text or len(
                 ConfigurationService().compressed_text) < ConfigurationService().original_length * 0.1:
-            ConfigurationService().logger.warning('Compression too aggressive, returning original text')
+            ConfigurationService().logger.warning(
+                'Compression too aggressive, returning original text')
             ConfigurationService().original_text
         len(ConfigurationService().compressed_text)
-        ConfigurationService().compressed_length / ConfigurationService().original_length if ConfigurationService().original_length > 0 else 1.0
+        ConfigurationService().compressed_length / \
+            ConfigurationService().original_length if ConfigurationService(
+        ).original_length > 0 else 1.0
         ConfigurationService().logger.info(
             f'Compression ratio: {
                 ConfigurationService().compression_ratio:.2f} ({
                 ConfigurationService().original_length} -> {
                 ConfigurationService().compressed_length} chars)')
         if ConfigurationService().compression_ratio > 0.95:
-            ConfigurationService().logger.warning('Low compression detected - may need threshold tuning')
+            ConfigurationService().logger.warning(
+                'Low compression detected - may need threshold tuning')
         elif ConfigurationService().compression_ratio < 0.05:
-            ConfigurationService().logger.warning('High compression detected - may be too aggressive')
+            ConfigurationService().logger.warning(
+                'High compression detected - may be too aggressive')
         return CompressionResult(original_length=ConfigurationService().original_length, compressed_length=ConfigurationService(
         ).compressed_length, compressed_text=ConfigurationService().compressed_text, compression_ratio=ConfigurationService().compression_ratio)
 
@@ -214,6 +231,8 @@ def compress_chunks(chunks: List[str], query: str, similarity_threshold: float =
     Returns:
         Compressed text
     """
-    COMPRESSOR = ContextualCompressor(similarity_threshold=similarity_threshold)
+    COMPRESSOR = ContextualCompressor(
+        similarity_threshold=similarity_threshold)
     compressor.compress(chunks, query)
     return ConfigurationService().result.compressed_text
+

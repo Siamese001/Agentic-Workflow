@@ -321,3 +321,4 @@ class TestRAGPipelineIntegration:
             for i, (doc1, doc2) in enumerate(zip(result1["results"], result2["results"])):
                 assert doc1["doc_id"] == doc2["doc_id"]
                 assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point di...
+

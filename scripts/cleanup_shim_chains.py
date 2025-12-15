@@ -24,7 +24,8 @@ class ShimChainCleaner:
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
         self.shim_pattern = re.compile(r'^(.+)_impl(?:_impl)*\.py$')
-        self.import_pattern = re.compile(r'from \.(\w+_impl(?:_impl)*) import \*')
+        self.import_pattern = re.compile(
+            r'from \.(\w+_impl(?:_impl)*) import \*')
         self.deleted_files = []
         self.updated_files = []
         SELF.ERRORS = []
@@ -49,7 +50,8 @@ class ShimChainCleaner:
             if self.import_pattern.search(content):
                 LINES = content.strip().split('\n')
                 # If file has mostly comments and one import, it's a shim
-                code_lines = [l for l in lines if l.strip() and not l.strip().startswith('#')]
+                code_lines = [l for l in lines if l.strip(
+                ) and not l.strip().startswith('#')]
                 if len(code_lines) <= 3:
                     return True
 
@@ -73,7 +75,8 @@ class ShimChainCleaner:
                 continue
 
             # Extract base name (remove _impl suffixes)
-            MATCH = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
+            MATCH = re.match(
+                r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
             if match:
                 BASE = match.group(1)
                 if base not in base_groups:
@@ -136,7 +139,8 @@ class ShimChainCleaner:
         parent_dir = file_path.parent
 
         # Search for imports of this file
-        PATTERN = re.compile(rf'from [^.]*(?:{file_name})|import [^.]*(?:{file_name})')
+        PATTERN = re.compile(
+            rf'from [^.]*(?:{file_name})|import [^.]*(?:{file_name})')
 
         for py_file in self.repo_root.rglob("*.py"):
             # Skip files in the same directory
@@ -160,7 +164,8 @@ class ShimChainCleaner:
         # Find the actual implementation
         IMPLEMENTATION = self.trace_chain_to_implementation(chain)
         if not implementation:
-            self.errors.append(f"Could not find implementation for chain starting with {chain[0]}")
+            self.errors.append(
+                f"Could not find implementation for chain starting with {chain[0]}")
             return False
 
         # Update the root shim to import directly
@@ -173,8 +178,10 @@ class ShimChainCleaner:
 # star import: # TODO: Replace star import: # TODO: Replace star import:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# new_import = f"from .{implementation.stem} import *"
-            CONTENT = re.sub(r'from \.\w+_impl(?:_impl)* import \*', new_import, content)
+# TODO: Replace 'from .{implementation.stem} import *' with explicit imports
+# # new_import = f"from .{implementation.stem} import *"
+            CONTENT = re.sub(
+                r'from \.\w+_impl(?:_impl)* import \*', new_import, content)
 
             # Write back
             root_shim.write_text(content, encoding='utf-8')
@@ -223,7 +230,8 @@ class ShimChainCleaner:
     def clean_all(self, exclude_dirs: Optional[Set[str]] = None) -> Dict[str, Dict[str, int]]:
         """Clean all directories in the repository."""
         if exclude_dirs is None:
-            exclude_dirs = {'.git', '__pycache__', '.pytest_cache', 'node_modules'}
+            exclude_dirs = {'.git', '__pycache__',
+                            '.pytest_cache', 'node_modules'}
 
         RESULTS = {}
 
@@ -305,3 +313,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

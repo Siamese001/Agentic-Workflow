@@ -15,3 +15,4 @@ def test_lic_research_planner(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_lic_research_planner_config() -> Dict[str, object]:
     """Get configuration for test_lic_research_planner."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -305,3 +305,4 @@ class TestComplianceE2E:
 
         has_consent = contact["consent_given"]
         assert has_consent is True
+

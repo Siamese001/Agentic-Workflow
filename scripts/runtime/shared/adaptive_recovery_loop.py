@@ -288,3 +288,4 @@ class AdaptiveRecoveryLoop:
 def create_adaptive_recovery_loop(initial_temperature: float = 0.5) -> AdaptiveRecoveryLoop:
     """Factory function to create AdaptiveRecoveryLoop instance"""
     return AdaptiveRecoveryLoop(initial_temperature=initial_temperature)
+

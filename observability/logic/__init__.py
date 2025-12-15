@@ -81,3 +81,4 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created Logic instance with config: {final_config}")
     return final_config
+

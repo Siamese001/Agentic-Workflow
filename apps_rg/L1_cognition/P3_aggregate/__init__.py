@@ -20,3 +20,4 @@ __all__: list[str] = [
     'get_headline_brief',
     'get_executive_summary_brief',
     'get_experience_bullets_brief']
+

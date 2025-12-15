@@ -32,7 +32,8 @@ class ResumeGenerator:
         self.validation_rules = validation_rules or {}  # Store validation rules
 
         if self.llm_client is None:
-            raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
+            raise ValueError(
+                f"Failed to initialize LLM client for provider {self.provider}")
 
     def generate(self,
                  """Docstring."""
@@ -134,7 +135,8 @@ Return ONLY the rewritten summary, no additional text."""
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
 
-        target_skills = analysis.get("hard_skills", []) + analysis.get("soft_skills", [])
+        target_skills = analysis.get(
+            "hard_skills", []) + analysis.get("soft_skills", [])
 
         for exp in experience_list:
             tailored_exp = exp.copy()
@@ -278,17 +280,21 @@ Return ONLY the rewritten description, no additional text."""
         """Generate response using Google Gemini."""
 
         MODEL = genai.GenerativeModel('gemini-1.5-flash')
-        generation_config = genai.types.GenerationConfig(temperature=temperature)
-        RESPONSE = model.generate_content(prompt, generation_config=generation_config)
+        generation_config = genai.types.GenerationConfig(
+            temperature=temperature)
+        RESPONSE = model.generate_content(
+            prompt, generation_config=generation_config)
         return response.text
 
     def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""
         if hasattr(self.llm_client, 'generate'):
-            RESPONSE = self.llm_client.generate(prompt, temperature=temperature)
+            RESPONSE = self.llm_client.generate(
+                prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
         else:
-            RESPONSE = self.llm_client.complete(prompt, temperature=temperature)
+            RESPONSE = self.llm_client.complete(
+                prompt, temperature=temperature)
             return response.text if hasattr(response, 'text') else str(response)
 
     def optimize_for_ats(self,
@@ -339,3 +345,4 @@ Return ONLY the rewritten description, no additional text."""
                 optimized[new_key] = optimized.pop(old_key)
 
         return optimized
+

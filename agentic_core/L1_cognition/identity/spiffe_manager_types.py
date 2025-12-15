@@ -27,10 +27,7 @@ class TrustDomain(Enum):
 
 @dataclass
 class AgentIdentity:
-    """Cryptographically-verified agent identity.
-
-    Based on SPIFFE ID format: spiffe://trust-domain/path
-    """
+    """Cryptographically-verified agent identity. """
     spiffe_id: str
     agent_type: IdentityType
     trust_domain: TrustDomain
@@ -42,27 +39,15 @@ class AgentIdentity:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def is_expired(self) -> bool:
-        """Check if identity has expired.
-
-        Returns:
-            True if expired
-        """
+        """Check if identity has expired. """
         return time.time() > self.expires_at
 
     def is_valid(self) -> bool:
-        """Check if identity is valid.
-
-        Returns:
-            True if valid (not expired and has required fields)
-        """
+        """Check if identity is valid. """
         return not self.is_expired() and self.spiffe_id and self.public_key and self.private_key
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary (excludes private key).
-
-        Returns:
-            Dictionary representation
-        """
+        """Convert to dictionary (excludes private key). """
         return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'trust_domain': se
                 lf.trust_domain.value,
                 'public_key': self.public_key,
@@ -71,22 +56,14 @@ class AgentIdentity:
                 self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
 
     def get_namespace(self) -> str:
-        """Extract namespace from SPIFFE ID.
-
-        Returns:
-            Namespace portion of SPIFFE ID
-        """
+        """Extract namespace from SPIFFE ID. """
         PARTS = self.spiffe_id.split('/')
         if len(parts) >= 4:
             return parts[3]
         return 'default'
 
     def get_agent_name(self) -> str:
-        """Extract agent name from SPIFFE ID.
-
-        Returns:
-            Agent name portion of SPIFFE ID
-        """
+        """Extract agent name from SPIFFE ID. """
         PARTS = self.spiffe_id.split('/')
         if len(parts) >= 5:
             return parts[4]
@@ -102,12 +79,9 @@ class IdentityVerificationResult:
     verified_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary.
-
-        Returns:
-            Dictionary representation
-        """
+        """Convert to dictionary. """
         return {'valid': self.valid,
                 'identity': self.identity.to_dict() if self.identity else None,
                 'reason': self.reason,
                 'verified_at': self.verified_at}
+

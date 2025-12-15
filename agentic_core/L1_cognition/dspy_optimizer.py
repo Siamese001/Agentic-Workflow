@@ -1,9 +1,4 @@
-"""
-DSPy Prompt Optimization Pipeline
-
-Optimizes agent prompts mathematically instead of hand-writing them.
-Treats prompts as weights that can be tuned based on performance data.
-"""
+""" """
 
 import logging
 import pickle
@@ -41,30 +36,19 @@ class OptimizationResult:
 
 
 class DSPyOptimizer:
-    """
-    Optimizes agent prompts using DSPy's teleprompter system.
+    """ Optimizes agent prompts using DSPy's teleprompter system.
 
     Instead of hand-writing prompts, we:
     1. Define a metric for "good" performance
     2. Create training examples
     3. Run DSPy optimization to find the best prompt formulation
     4. Save the optimized prompt for runtime use
-    """
-
-    def __init__(
-        self,
-        model_name: str = "gpt-4o",
-        optimization_cache_dir: str = "./optimization_cache"
+    """ model_name: str = "gpt-4o",
+       optimization_cache_dir: str = "./optimization_cache"
     ):
-        """
-        Initialize the DSPy optimizer.
-
-        Args:
-            model_name: LLM model to use for optimization
-            optimization_cache_dir: Directory to cache optimization results
-        """
+    """ """
         if not DSPY_AVAILABLE:
-            raise ImportError("DSPy is required. Install with: pip install dspy-ai")
+    raise ImportError("DSPy is required. Install with: pip install dspy-ai")
 
         self.model_name = model_name
         self.cache_dir = Path(optimization_cache_dir)
@@ -75,24 +59,20 @@ class DSPyOptimizer:
 
         logger.info(f"DSPy optimizer initialized with model: {model_name}")
 
-    def _configure_dspy(self):
-        """Configure DSPy with the selected model."""
+        def _configure_dspy(self):
+    """Configure DSPy with the selected model."""
         # This would be configured with your actual API key
-        # For now, we'll use a mock configuration
-        try:
-            # Try to configure with OpenAI if available
-            import os
-            api_key = os.getenv("OPENAI_API_KEY")
-            if api_key:
-                DSPY.CONFIGURE(LM=dspy.OpenAI(model=self.model_name, api_key=api_key))
+        # For now, we'll use a mock configuration api_key = os.getenv("OPENAI_API_KEY")
+    if api_key:
+    DSPY.CONFIGURE(LM=dspy.OpenAI(model=self.model_name, api_key=api_key))
             else:
-                logger.warning("No OpenAI API key found. Using mock LM.")
+    logger.warning("No OpenAI API key found. Using mock LM.")
                 # You could implement a mock LM for testing here
         except Exception as e:
-            logger.error(f"Failed to configure DSPy: {e}")
+    logger.error(f"Failed to configure DSPy: {e}")
 
-    async def optimize_prompt(
-        self,
+        async def optimize_prompt(
+       self,
         base_prompt: str,
         signature_class: type,
         training_examples: List[OptimizationExample],
@@ -100,27 +80,15 @@ class DSPyOptimizer:
         metric_func: Callable,
         max_examples: int = 50
     ) -> OptimizationResult:
-        """
-        Optimize a prompt using DSPy.
-
-        Args:
-            base_prompt: Initial prompt to optimize
-            signature_class: DSPy signature class defining input/output
-            training_examples: Examples to train on
-            validation_examples: Examples to validate with
-            metric_func: Function to score outputs (0.0 to 1.0)
-            max_examples: Maximum examples to use
-
-        Returns:
-            OptimizationResult with optimized prompt and metrics
-        """
+    """ """
         start_time = time.time()
 
         # Check cache first
-        cache_key = self._get_cache_key(base_prompt, signature_class, len(training_examples))
+        cache_key = self._get_cache_key(
+            base_prompt, signature_class, len(training_examples))
         cached_result = self._load_from_cache(cache_key)
         if cached_result:
-            logger.info("Using cached optimization result")
+    logger.info("Using cached optimization result")
             return cached_result
 
         # Limit examples to prevent excessive computation
@@ -131,128 +99,128 @@ class DSPyOptimizer:
 
         try:
             # Create the student module (agent to optimize)
-            student_module = self._create_student_module(signature_class, base_prompt)
+    student_module = self._create_student_module(signature_class, base_prompt)
 
             # Create the teleprompter (optimizer)
             TELEPROMPTER = dspy.teleprompt.BootstrapFewShot(
-                METRIC=metric_func,
-                max_bootstrapped_demos=5,
-                max_labeled_demos=3
+                METRIC = metric_func,
+                max_bootstrapped_demos = 5,
+                max_labeled_demos = 3
             )
 
-            # Run optimization
-            optimized_module = teleprompter.compile(
-                STUDENT=student_module,
-                TRAINSET=self._convert_to_dspy_examples(train_examples)
+                # Run optimization
+                optimized_module = teleprompter.compile(
+                STUDENT = student_module,
+                TRAINSET = self._convert_to_dspy_examples(train_examples)
             )
 
-            # Evaluate on validation set
-            validation_score = self._evaluate_module(
-                optimized_module,
+                # Evaluate on validation set
+                validation_score = self._evaluate_module(
+               optimized_module,
                 val_examples,
                 metric_func
             )
 
-            # Extract optimized prompt
-            optimized_prompt = self._extract_prompt_from_module(optimized_module)
+                # Extract optimized prompt
+                optimized_prompt = self._extract_prompt_from_module(optimized_module)
 
-            # Calculate improvement
-            baseline_score = self._evaluate_baseline(
-                base_prompt,
+                # Calculate improvement
+                baseline_score = self._evaluate_baseline(
+               base_prompt,
                 signature_class,
                 val_examples,
                 metric_func
             )
 
-            IMPROVEMENT = ((validation_score - baseline_score) / baseline_score) * 100
+                IMPROVEMENT = ((validation_score - baseline_score) / baseline_score) * 100
 
-            # Create result
-            RESULT = OptimizationResult(
-                optimized_prompt=optimized_prompt,
-                performance_score=validation_score,
-                improvement_percentage=improvement,
-                best_examples=train_examples[:5],  # Top 5 examples
-                optimization_time_seconds=time.time() - start_time
+                # Create result
+                RESULT = OptimizationResult(
+                optimized_prompt = optimized_prompt,
+                performance_score = validation_score,
+                improvement_percentage = improvement,
+                best_examples = train_examples[:5],  # Top 5 examples
+                optimization_time_seconds = time.time() - start_time
             )
 
-            # Cache the result
-            self._save_to_cache(cache_key, result)
+                # Cache the result
+                self._save_to_cache(cache_key, result)
 
-            logger.info(f"Optimization complete: {improvement:.1f}% improvement")
-            return result
+                logger.info(f"Optimization complete: {improvement:.1f}% improvement")
+                return result
 
-        except Exception as e:
+            except Exception as e:
             logger.error(f"Optimization failed: {e}")
             # Return baseline as fallback
             return OptimizationResult(
-                optimized_prompt=base_prompt,
-                performance_score=0.0,
-                improvement_percentage=0.0,
-                best_examples=[],
-                optimization_time_seconds=time.time() - start_time
+                optimized_prompt = base_prompt,
+                performance_score = 0.0,
+                improvement_percentage = 0.0,
+                best_examples = [],
+                optimization_time_seconds = time.time() - start_time
             )
 
-    def _create_student_module(self, signature_class: type, base_prompt: str):
-        """Create a DSPy module from a signature and prompt."""
+            def _create_student_module(self, signature_class: type, base_prompt: str):
+            """Create a DSPy module from a signature and prompt."""
 
-        class OptimizedModule(dspy.Module):
+            class OptimizedModule(dspy.Module):
             def __init__(self, signature, prompt_template):
-                super().__init__()
+            super().__init__()
                 SELF.GENERATE = dspy.ChainOfThought(signature)
                 self.prompt_template = prompt_template
 
             def forward(self, **kwargs):
                 # Apply the prompt template
-                self.prompt_template.format(**kwargs)
+            self.prompt_template.format(**kwargs)
                 return self.generate(**kwargs)
 
-        return OptimizedModule(signature_class, base_prompt)
+            return OptimizedModule(signature_class, base_prompt)
 
-    def _convert_to_dspy_examples(self, examples: List[OptimizationExample]):
-        """Convert our examples to DSPy format."""
-        dspy_examples = []
+            def _convert_to_dspy_examples(self, examples: List[OptimizationExample]):
+            """Convert our examples to DSPy format."""
+            dspy_examples = []
 
-        for ex in examples:
+            for ex in examples:
             # Create a DSPy Example
             dspy_ex = dspy.Example()
 
             # Add inputs
             for key, value in ex.inputs.items():
-                dspy_ex = dspy_ex.with_inputs(**{key: value})
+            dspy_ex = dspy_ex.with_inputs(**{key: value})
 
             # Add outputs
             for key, value in ex.ideal_output.items():
-                dspy_ex = dspy_ex.with_outputs(**{key: value})
+            dspy_ex = dspy_ex.with_outputs(**{key: value})
 
             dspy_examples.append(dspy_ex)
 
-        return dspy_examples
+            return dspy_examples
 
-    def _evaluate_module(
+            def _evaluate_module(
         self,
         module: dspy.Module,
         examples: List[OptimizationExample],
         metric_func: Callable
     ) -> float:
-        """Evaluate a module on examples."""
+    """Evaluate a module on examples."""
         SCORES = []
 
         for ex in examples:
-            try:
+    try:
                 # Run the module
-                RESULT = module(**ex.inputs)
+    RESULT = module(**ex.inputs)
 
                 # Score the result
                 SCORE = metric_func(result, ex.ideal_output)
                 scores.append(score)
             except Exception as e:
-                logger.warning(f"Evaluation failed on example: {e}")
+    logger.warning(f"Evaluation failed on example: {e}")
                 scores.append(0.0)
 
         return sum(scores) / len(scores) if scores else 0.0
 
-    def _evaluate_baseline(
-        self,
+        def _evaluate_baseline(
+       self,
         prompt: str,
         signature_class: type,
         examples: List[OptimizationExample],
@@ -260,14 +228,9 @@ class DSPyOptimizer:
     ) -> float:
         """Evaluate baseline performance without optimization."""
         # For now, return a mock baseline
-        # In practice, you'd run the base prompt through the model
-        return 0.5  # Mock baseline score
-
-    def _extract_prompt_from_module(self, module: dspy.Module) -> str:
-        """Extract the optimized prompt from a DSPy module."""
+        # In practice, you'd run the base prompt through the model """Extract the optimized prompt from a DSPy module."""
         # This would extract the actual optimized prompt
-        # For now, return the module's demonstration as the prompt
-        if hasattr(module, 'generate') and hasattr(module.generate, 'demos'):
+        # For now, return the module's demonstration as the prompt if hasattr(module, 'generate') and hasattr(module.generate, 'demos'):
             DEMOS = module.generate.demos
             if demos:
                 # Convert demonstrations back to prompt format
@@ -329,9 +292,7 @@ class PromptSignatureRegistry:
         REASONING = dspy.OutputField(desc="Why this tool was chosen")
     )
 
-        """You are an intelligent agent responsible for a single atomic task.
-        Analyze the context, plan your action, and execute it using the available tools.
-        """,
+        """You are an intelligent agent responsible for a single atomic task. """,
     role_description = dspy.InputField(desc="Your specific role (e.g., Python Expert)"),
         context_summary = dspy.InputField(desc="Relevant data from previous hops"),
     task_goal = dspy.InputField(desc="What needs to be achieved in this hop"),
@@ -383,14 +344,7 @@ class PromptSignatureRegistry:
         if "```" in code:
     return 0.5
 
-        # In practice, you'd actually try to compile the code
-        return 0.8  # Mock score
-    except Exception:
-        return 0.0
-
-
-    def factual_accuracy_metric(predicted: Dict[str, Any], ground_truth: Dict[str, Any]) -> float:
-        """Metric for factual accuracy - checks key facts match."""
+        # In practice, you'd actually try to compile the code """Metric for factual accuracy - checks key facts match."""
     pred_analysis = predicted.get("analysis", "")
         truth_analysis = ground_truth.get("analysis", "")
 
@@ -417,17 +371,9 @@ class PromptSignatureRegistry:
             model_name: str="gpt-4o",
             cache_dir: str="./optimization_cache"
     ) -> DSPyOptimizer:
-    """
-    Factory function to create a DSPy optimizer.
-
-    Args:
-        model_name: LLM model to use
-        cache_dir: Cache directory for results
-
-    Returns:
-        DSPyOptimizer instance
-    """
+    """ """
         return DSPyOptimizer(
         model_name=model_name,
         optimization_cache_dir=cache_dir
         )
+

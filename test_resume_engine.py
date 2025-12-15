@@ -5,7 +5,9 @@ This demonstrates the Resume Engine's Hyper-Personalized Cover Letter use case.
 """
 
 import json
+
 from resume_engine import generate_personalized_cover_letter
+
 
 # Mock MCP Tools for testing
 class MockMCPTools:
@@ -13,7 +15,7 @@ class MockMCPTools:
         if url == "https://careers.example.com/senior-dev":
             return """# Senior Software Engineer at TechCorp
 
-We are looking for a Senior Software Engineer to join our growing team. 
+We are looking for a Senior Software Engineer to join our growing team.
 
 ## Requirements
 - 5+ years of experience in software development
@@ -86,22 +88,25 @@ Sincerely,""",
         return "Memory updated successfully"
 
 # Mock Logger
+
+
 class MockLogger:
     def info(self, msg): print(f"[INFO] {msg}")
     def warning(self, msg): print(f"[WARN] {msg}")
     def error(self, msg): print(f"[ERROR] {msg}")
 
+
 def test_cover_letter_generation():
     """Test the generate_personalized_cover_letter function with mock data."""
-    
+
     print("=" * 60)
     print("🧪 Testing Resume Engine - Personalized Cover Letter")
     print("=" * 60)
-    
+
     # Initialize mock tools and logger
     mock_tools = MockMCPTools()
     logger = MockLogger()
-    
+
     # Pass tools as dictionary
     tools = {
         'fetch': mock_tools.fetch,
@@ -110,7 +115,7 @@ def test_cover_letter_generation():
         'write_file': mock_tools.write_file,
         'add_observations': mock_tools.add_observations
     }
-    
+
     # Test Case 1: Successful cover letter generation
     print("\n--- Test Case 1: Successful Cover Letter Generation ---")
     result = generate_personalized_cover_letter(
@@ -121,7 +126,7 @@ def test_cover_letter_generation():
         logger=logger
     )
     print("\nResult:", json.dumps(result, indent=2))
-    
+
     # Test Case 2: Invalid URL
     print("\n" + "=" * 60)
     print("\n--- Test Case 2: Invalid Job URL ---")
@@ -133,7 +138,7 @@ def test_cover_letter_generation():
         logger=logger
     )
     print("\nResult:", json.dumps(result, indent=2))
-    
+
     # Test Case 3: User not found in memory
     print("\n" + "=" * 60)
     print("\n--- Test Case 3: User Not Found in Memory ---")
@@ -145,9 +150,11 @@ def test_cover_letter_generation():
         logger=logger
     )
     print("\nResult:", json.dumps(result, indent=2))
-    
+
     print("\n" + "=" * 60)
     print("✅ Test completed!")
 
+
 if __name__ == "__main__":
     test_cover_letter_generation()
+

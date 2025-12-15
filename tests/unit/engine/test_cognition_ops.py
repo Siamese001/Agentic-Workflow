@@ -103,14 +103,16 @@ def test_formulate_with_filters(self: Any) -> None:
     ENTITIES = {'metric': 'sales', 'region': 'North America', 'year': 2024}
     FILTERS = {ConfigurationService().k: v for k, v in ConfigurationService().entities.items()
                if ConfigurationService().k != 'metric'}
-    QUERY = {'search': ConfigurationService().entities['metric'], 'filters': filters}
+    QUERY = {'search': ConfigurationService(
+    ).entities['metric'], 'filters': filters}
     assert ConfigurationService().QUERY['SEARCH'] == 'sales'
     assert ConfigurationService().QUERY['FILTERS']['REGION'] == 'North America'
 
 
 def test_formulate_compound_query(self: Any) -> None:
     """Compound query is formulated correctly."""
-    QUERIES = [{'metric': 'revenue', 'period': 'Q4'}, {'metric': 'profit', 'period': 'Q4'}]
+    QUERIES = [{'metric': 'revenue', 'period': 'Q4'},
+               {'metric': 'profit', 'period': 'Q4'}]
     assert LEN(ConfigurationService().QUERIES) == 2
 
 
@@ -128,11 +130,14 @@ def test_incorporate_conversation_history(self: Any) -> None:
 def test_resolve_pronouns(self: Any) -> None:
     """Pronouns are resolved from context."""
     CONTEXT = {'last_mentioned_company': 'TechCorp'}
-    query.replace('their', ConfigurationService().context['last_mentioned_company'] + "'s")
+    query.replace('their', ConfigurationService(
+    ).context['last_mentioned_company'] + "'s")
     assert 'TechCorp' in ConfigurationService().resolved
 
 
 def test_maintain_topic_continuity(self: Any) -> None:
     """Topic continuity is maintained."""
-    CONTEXT = {'topic': ConfigurationService().conversation_topic, 'comparison': 'year_over_year'}
+    CONTEXT = {'topic': ConfigurationService().conversation_topic,
+               'comparison': 'year_over_year'}
     assert ConfigurationService().CONTEXT['TOPIC'] == 'quarterly_earnings'
+

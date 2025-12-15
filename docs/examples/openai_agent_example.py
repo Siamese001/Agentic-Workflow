@@ -98,7 +98,8 @@ class OpenAIAgent:
             LINE = line.strip()
             if line.startswith(('1.', '2.', '3.', '4.', '5.', '-', '*')):
                 # Remove the marker and clean up
-                STEP = line[2:].strip() if line[0].isdigit() else line[1:].strip()
+                STEP = line[2:].strip() if line[0].isdigit(
+                ) else line[1:].strip()
                 if step:
                     next_steps.append(step)
 
@@ -130,7 +131,8 @@ class OpenAIAgent:
 
         MESSAGES = [
             {"role": "system", "content": "You are a text analysis expert."},
-            {"role": "user", "content": f"{prompts.get(analysis_type, '')}\n\nText: {text}"}
+            {"role": "user",
+                "content": f"{prompts.get(analysis_type, '')}\n\nText: {text}"}
         ]
 
         RESPONSE = self.client.chat_completion(
@@ -204,3 +206,4 @@ if __name__ == "__main__":
         logger.info("Please set it before running this example.")
     else:
         main()
+

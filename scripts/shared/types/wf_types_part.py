@@ -1,8 +1,8 @@
 """Split module 2 for workflow_types_types."""
 import logging
-from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
+
 
 @dataclass
 class RetrievalSource:
@@ -12,3 +12,4 @@ class RetrievalSource:
     _confidence: float = 0.0
     _status: str = 'UNKNOWN'
     _specific_source: Optional[str] = None
+

@@ -24,15 +24,7 @@ class TelemetryRecorder:
 
 def __init__(self: Any, db_path: Any) -> None:
     SELF.CONN = duckdb.connect(db_path)
-    self.conn.execute("""
-            CREATE TABLE if not EXISTS traces
-            (trace_id VARCHAR,
-                span_id VARCHAR,
-                role VARCHAR,
-                event_type VARCHAR,
-                payload JSON,
-                timestamp DOUBLE)
-        """)
+    self.conn.execute(""" """)
 
 
 def record(self: Any, event: TraceEvent) -> None:
@@ -45,3 +37,4 @@ def record(self: Any, event: TraceEvent) -> None:
             json.dumps(event.payload),
             event.timestamp)
     )
+

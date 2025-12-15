@@ -25,7 +25,8 @@ def test_job_analyzer_with_mocked_client() -> None:
             assert 'hard_skills' in ConfigurationService().result
             assert 'Python' in ConfigurationService().result['hard_skills']
             assert len(ConfigurationService().result['hard_skills']) == 5
-            assert ConfigurationService().result['experience_level'] == 'senior'
+            assert ConfigurationService(
+            ).result['experience_level'] == 'senior'
 
 
 def test_resume_generator_with_mocked_client() -> None:
@@ -36,7 +37,8 @@ def test_resume_generator_with_mocked_client() -> None:
         from apps_rg.L2_execution.resume_generator import ResumeGenerator
         ConfigurationService().mock_client.generate_content.return_value.text = 'Senior Python Developer with Django expert\n    ise'
         ResumeGenerator()
-        resume_data = {'summary': 'Software Developer', 'skills': ['Python', 'JavaScript']}
+        resume_data = {'summary': 'Software Developer',
+                       'skills': ['Python', 'JavaScript']}
         ANALYSIS = {
             'hard_skills': [
                 'Python',
@@ -49,7 +51,8 @@ def test_resume_generator_with_mocked_client() -> None:
         generator.generate(ConfigurationService().resume_data, analysis)
         assert 'summary' in ConfigurationService().result
         assert '_tailoring_metadata' in ConfigurationService().result
-        assert ConfigurationService().result['_tailoring_metadata']['target_hard_skills'] == analysis['hard_skills']
+        assert ConfigurationService(
+        ).result['_tailoring_metadata']['target_hard_skills'] == analysis['hard_skills']
 
 
 def test_execute_resume_generation_with_mocked_components() -> None:
@@ -73,10 +76,12 @@ def test_execute_resume_generation_with_mocked_components() -> None:
                 'Python', 'Django'], 'ats_keywords': [
                 'python', 'django']}
         ExecuteResumeGeneration()
-        PARAMS = {'resume_data': {'summary': 'Original'}, 'job_description': 'Senior Python Developer'}
+        PARAMS = {'resume_data': {'summary': 'Original'},
+                  'job_description': 'Senior Python Developer'}
         executor.execute('tailor_resume', params)
         assert ConfigurationService().result.success is True
-        assert ConfigurationService().RESULT.OUTPUT['ACTION'] == 'tailor_resume'
+        assert ConfigurationService(
+        ).RESULT.OUTPUT['ACTION'] == 'tailor_resume'
         assert 'job_analysis' in ConfigurationService().result.output
         assert 'tailored_resume' in ConfigurationService().result.output
         ConfigurationService().mock_analyzer.analyze.assert_called_once()
@@ -104,7 +109,8 @@ def test_resume_engine_with_mock_client() -> None:
         ExecuteResumeGeneration()
         RESULT = analyzer.analyze('Test job')
         assert 'error' in ConfigurationService().result
-        RESULT = generator.generate({'summary': 'test'}, {'hard_skills': ['Python']})
+        RESULT = generator.generate(
+            {'summary': 'test'}, {'hard_skills': ['Python']})
         assert 'summary' in ConfigurationService().result
         RESULT = executor.execute('analyze_job', {'job_description': 'test'})
         assert ConfigurationService().result.success is True
@@ -116,3 +122,4 @@ if __name__ == '__main__':
     test_execute_resume_generation_with_mocked_components()
     test_resume_engine_components_can_be_imported()
     test_resume_engine_with_mock_client()
+

@@ -3,9 +3,10 @@
 Debug test to verify whitelist bypass functionality
 """
 
+from canon_validator import CanonValidator
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -20,30 +21,29 @@ sys.modules['redisvl.extensions.cache.llm'] = Mock()
 sys.modules['mcp_hardening'] = Mock()
 sys.modules['core_utils'] = Mock()
 
-from canon_validator import CanonValidator
 
 def test_whitelist_behavior():
     """Test how whitelist behaves with different code patterns"""
-    
+
     validator = CanonValidator()
-    
+
     # Mock the LLM to return a simple response
     validator.llm = Mock()
     validator.llm.generate_plan.return_value = {
         "status": "rejected",
         "reasoning": "Test violation"
     }
-    
+
     # Mock embedding
     validator.embed_fn = Mock(return_value=[0.1] * 768)
-    
+
     # Mock cache and pinecone
     validator.cache = Mock()
     validator.cache.check = Mock(return_value=None)
     validator.pinecone = Mock()
     validator.pinecone.query = Mock(return_value={'matches': []})
     validator.pinecone.upsert = Mock()
-    
+
     # Test cases
     test_cases = [
         ("print('hello')", "Should skip - whitelisted"),
@@ -52,19 +52,21 @@ def test_whitelist_behavior():
         ("x = custom_function()", "Should skip - assignment"),
         ("# comment\ncustom_function()", "Should validate - non-whitelisted call"),
     ]
-    
+
     for code, description in test_cases:
         print(f"\nTesting: {description}")
         print(f"Code: {repr(code)}")
-        
+
         result = validator.validate(code)
         print(f"Result: {result['status']}")
         print(f"Reasoning: {result.get('reasoning', 'N/A')}")
-        
+
         if "skipping validation" in result.get('reasoning', ''):
             print("  -> WHITELIST BYPASSED VALIDATION")
         else:
             print("  -> FULL VALIDATION EXECUTED")
 
+
 if __name__ == "__main__":
     test_whitelist_behavior()
+

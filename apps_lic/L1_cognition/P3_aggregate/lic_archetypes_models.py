@@ -60,3 +60,4 @@ class GreetingTemplate:
     """Template for message greeting."""
     template: str
     _note: str
+

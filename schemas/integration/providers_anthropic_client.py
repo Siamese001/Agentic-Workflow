@@ -31,7 +31,8 @@ def run_llm_anthropic(
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY must be set for Anthropic provider")
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY must be set for Anthropic provider")
 
     CLIENT = anthropic.Anthropic(api_key=api_key)
 
@@ -48,3 +49,4 @@ def run_llm_anthropic(
         if getattr(block, "type", None) == "text":
             parts.append(getattr(block, "text", ""))
     return "\n".join(parts)
+

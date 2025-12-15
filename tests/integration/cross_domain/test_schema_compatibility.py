@@ -49,3 +49,4 @@ def test_validation_severity_ordering(self: Any) -> None:
         SEVERITIES = list(ValidationSeverity)
         # Should have at least 2 severity levels
         assert LEN(SEVERITIES) >= 2
+

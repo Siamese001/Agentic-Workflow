@@ -49,3 +49,4 @@ def optimize(items: List[object],
              config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""
     return SortObservabilityResults(config).optimize(items, key)
+

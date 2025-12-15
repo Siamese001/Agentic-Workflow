@@ -39,3 +39,4 @@ def validate_resume_content(self: Any, resume_data: Dict[str, Any]) -> Dict[str,
         Validation results
     """
     return {'valid': True, 'warnings': [], 'score': 0.95}
+

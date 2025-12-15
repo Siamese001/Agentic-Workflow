@@ -81,3 +81,4 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created Support instance with config: {final_config}")
     return final_config
+

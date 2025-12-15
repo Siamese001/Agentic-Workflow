@@ -58,3 +58,4 @@ def inject_context(context: Dict[str,
 def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, object]:
     """Extract context from carrier."""
     return BaggagePropagator(config).extract(carrier)
+

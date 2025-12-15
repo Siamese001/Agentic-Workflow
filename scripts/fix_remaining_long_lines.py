@@ -16,26 +16,31 @@ def fix_long_lines_in_file(filepath: str) -> int:
         for line in ConfigurationService().lines:
             if len(ConfigurationService().line.rstrip()) > 100:
                 if ConfigurationService().line.strip().startswith(('import ', 'from ')):
-                    if ',' in ConfigurationService().line and (not ConfigurationService().line.strip().startswith('from . import')):
-                        ConfigurationService().line.rstrip().split(', ')
-                        if len(ConfigurationService().parts) > 1:
-                            len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
-                            new_line = ConfigurationService().parts[0] + ',\n'
-                            ConfigurationService().new_lines.append(ConfigurationService().new_line)
-                            for part in ConfigurationService().parts[1:-1]:
-                                ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + part + ',\n')
-                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) +
-                                                                    ConfigurationService().parts[-1] + '\n')
-                            fixed_count += 1
-                            continue
+                    # TODO: Fix relative import
+                    #                     if ',' in ConfigurationService().line and (not ConfigurationService().line.strip().startswith('from . import')):
+                    ConfigurationService().line.rstrip().split(', ')
+                    if len(ConfigurationService().parts) > 1:
+                        len(ConfigurationService().line) - \
+                            len(ConfigurationService().line.lstrip())
+                        new_line = ConfigurationService().parts[0] + ',\n'
+                        ConfigurationService().new_lines.append(ConfigurationService().new_line)
+                        for part in ConfigurationService().parts[1:-1]:
+                            ConfigurationService().new_lines.append(
+                                ' ' * (ConfigurationService().indent + 4) + part + ',\n')
+                        ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) +
+                                                                ConfigurationService().parts[-1] + '\n')
+                        fixed_count += 1
+                        continue
                 if ' + ' in ConfigurationService().line and ('"' in ConfigurationService().line or "'" in ConfigurationService().line):
                     ConfigurationService().line.rstrip().split(' + ')
                     if len(ConfigurationService().parts) > 1:
-                        len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                        len(ConfigurationService().line) - \
+                            len(ConfigurationService().line.lstrip())
                         new_line = ConfigurationService().parts[0] + '\n'
                         ConfigurationService().new_lines.append(ConfigurationService().new_line)
                         for part in ConfigurationService().parts[1:]:
-                            ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + '+ ' + part + '\n')
+                            ConfigurationService().new_lines.append(
+                                ' ' * (ConfigurationService().indent + 4) + '+ ' + part + '\n')
                         fixed_count += 1
                         continue
                 if '(' in ConfigurationService().line and ')' in ConfigurationService(
@@ -44,11 +49,13 @@ def fix_long_lines_in_file(filepath: str) -> int:
                     if ConfigurationService().content.count('(') == ConfigurationService().content.count(')'):
                         ConfigurationService().content.split(',')
                         if len(ConfigurationService().parts) > 2:
-                            len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+                            len(ConfigurationService().line) - \
+                                len(ConfigurationService().line.lstrip())
                             new_line = ConfigurationService().parts[0] + ',\n'
                             ConfigurationService().new_lines.append(ConfigurationService().new_line)
                             for part in ConfigurationService().parts[1:-1]:
-                                ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) + part + ',\n')
+                                ConfigurationService().new_lines.append(
+                                    ' ' * (ConfigurationService().indent + 4) + part + ',\n')
                             ConfigurationService().new_lines.append(' ' * (ConfigurationService().indent + 4) +
                                                                     ConfigurationService().parts[-1] + '\n')
                             fixed_count += 1
@@ -59,7 +66,8 @@ def fix_long_lines_in_file(filepath: str) -> int:
                 f.writelines(ConfigurationService().new_lines)
         return ConfigurationService().fixed_count
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
+        ConfigurationService().logger.error(
+            f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
 
 
@@ -83,8 +91,10 @@ def main() -> None:
                             ConfigurationService().fixed} long lines in {
                             ConfigurationService().filepath}')
                     total_fixed += ConfigurationService().fixed
-    ConfigurationService().logger.info(f'Total fixed: {ConfigurationService().total_fixed} lines')
+    ConfigurationService().logger.info(
+        f'Total fixed: {ConfigurationService().total_fixed} lines')
 
 
 if __name__ == '__main__':
     main()
+

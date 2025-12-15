@@ -96,3 +96,4 @@ class TrainingSession:
                 'duration_seconds': self.completed_at - self.started_at,
                 'benchmark_results': [r.to_dict() for r in self.benchmark_results],
                 'improvement_areas': self.improvement_areas}
+

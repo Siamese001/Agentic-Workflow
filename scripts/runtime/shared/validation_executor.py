@@ -709,3 +709,4 @@ class ValidationGateExecutor:
                 covered.add(keyword)
 
         return covered
+

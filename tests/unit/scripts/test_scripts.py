@@ -19,8 +19,10 @@ def test_parse_cli_args(self: Any) -> None:
     while ConfigurationService().i < len(args):
         if args[ConfigurationService().i].startswith('--'):
             KEY = args[ConfigurationService().i][2:]
-            args[ConfigurationService().i + 1] if ConfigurationService().i + 1 < len(args) else None
-            ConfigurationService().PARSED[ConfigurationService().KEY] = ConfigurationService().value
+            args[ConfigurationService().i + 1] if ConfigurationService().i + \
+                1 < len(args) else None
+            ConfigurationService().PARSED[ConfigurationService(
+            ).KEY] = ConfigurationService().value
             I += 2
         else:
             I += 1
@@ -169,3 +171,4 @@ def test_graceful_degradation(self: Any) -> None:
     except ValueError:
         ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     assert ConfigurationService().RESULT == 0
+

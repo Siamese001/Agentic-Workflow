@@ -23,7 +23,8 @@ class EnhancementConfig:
     enable_few_shot_examples: bool = True
     legacy_mode: bool = False
     max_examples_per_injection: int = 2
-    contract_enforcement_threshold: float = 0.8  # Only enforce contracts for high-stakes tasks
+    # Only enforce contracts for high-stakes tasks
+    contract_enforcement_threshold: float = 0.8
 
 class PromptEnhancer:
     """Unified prompt enhancement system orchestrating all strategies."""
@@ -401,3 +402,4 @@ def enhance_prompt_advanced(
         enforce_contract=enforce_contract,
         **kwargs
     )
+

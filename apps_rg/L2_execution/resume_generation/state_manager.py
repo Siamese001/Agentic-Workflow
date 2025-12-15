@@ -312,7 +312,8 @@ class ManifestManager:
             FileNotFoundError: If manifest doesn't exist
         """
         if not os.path.exists(self.manifest_path):
-            raise FileNotFoundError(f"Manifest not found at {self.manifest_path}")
+            raise FileNotFoundError(
+                f"Manifest not found at {self.manifest_path}")
 
         with open(self.manifest_path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -391,3 +392,4 @@ class ManifestManager:
 
         with open(self.manifest_path, 'w', encoding='utf-8') as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)
+

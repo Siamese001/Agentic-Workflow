@@ -1,13 +1,4 @@
-"""
-L5 Hardened SubatomicHop with Full Safety Shield Integration
-
-This is the production-ready implementation with all L5 safety features:
-1. Holographic PII Protection
-2. Constitutional Oversight
-3. Canary Token Defense
-4. Financial Circuit Breaker
-5. Comprehensive Observability
-"""
+""" """
 import logging
 import time
 import uuid
@@ -35,16 +26,7 @@ class AgentPlan(BaseModel):
 
 
 class L5HardenedSubatomicHop:
-    """
-    Enterprise-grade cognitive architecture with full L5 hardening.
-
-    Security Layers:
-    - Privacy: Holographic PII protection
-    - Alignment: Constitutional oversight
-    - Defense: Canary token injection
-    - Financial: Cost circuit breaker
-    - Observability: Complete audit trail
-    """
+    """ """
 
 
 def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
@@ -52,8 +34,10 @@ def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
     self.agent_type = agent_type
     SELF.ID = str(uuid.uuid4())
     self.session_id = str(uuid.uuid4())
-    SELF.STORAGE = LocalDiskAdapter(ConfigurationService().config.get('storage_path', './agent_data'))
-    SELF.GENEALOGY = GenealogyRegistry(max_depth=ConfigurationService().config.get('max_mutation_depth', 5))
+    SELF.STORAGE = LocalDiskAdapter(
+        ConfigurationService().config.get('storage_path', './agent_data'))
+    SELF.GENEALOGY = GenealogyRegistry(
+        max_depth=ConfigurationService().config.get('max_mutation_depth', 5))
     self.pii_vault = PIIVault()
     self.cost_governor = CostGovernor(
         budget_limit=ConfigurationService().config.get(
@@ -64,27 +48,20 @@ def __init__(self: Any, role: str, config: Dict, agent_type: str) -> None:
         config_path=ConfigurationService().config.get(
             'constitution_path',
             'config/constitution.yaml'))
-    self.mcp_manager = MCPConnectionManager(ConfigurationService().config.get('mcp_mappings', {}))
-    SELF.SANDBOX = DockerSandbox(ConfigurationService().config.get('docker_image', 'python:3.10-slim'))
-    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService().config.get('telemetry_db', 'flight_recorder.duckdb'))
+    self.mcp_manager = MCPConnectionManager(
+        ConfigurationService().config.get('mcp_mappings', {}))
+    SELF.SANDBOX = DockerSandbox(ConfigurationService(
+    ).config.get('docker_image', 'python:3.10-slim'))
+    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService(
+    ).config.get('telemetry_db', 'flight_recorder.duckdb'))
     self.active_canary: Optional[CanaryToken] = None
     self.pii_session_id: Optional[str] = None
     ConfigurationService().logger.info(
-        f'Initialized L5 Hardened SubatomicHop: {
-            self.id} for role: {
-            ConfigurationService().role}')
+        f'Initialized L5 Hardened SubatomicHop: {ConfigurationService().role}')
 
 
 async def run(self: Any, context: Dict) -> Dict[str, Any]:
-    """
-    Execute the hardened hop with full L5 safety protection.
-
-    Args:
-        context: Input context containing task and parameters
-
-    Returns:
-        Dict containing results and metadata
-    """
+    """ """
     ConfigurationService().context.get('trace_id', self.id)
     time.time()
     try:
@@ -119,21 +96,22 @@ async def _preflight_validation(self: Any, trace_id: str, context: Dict) -> None
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_preflight',
+            span_id=f'{self.id}_preflight',
             ROLE=self.role,
             event_type='PREFLIGHT_START',
             PAYLOAD={
                 'context_keys': list(
                     ConfigurationService().context.keys())},
             TIMESTAMP=time.time()))
-    ConfigurationService().logger.debug(f'Preflight validation passed for trace {ConfigurationService().trace_id}')
+    ConfigurationService().logger.debug(
+        f'Preflight validation passed for trace {ConfigurationService().trace_id}')
 
 
 async def _protect_privacy(self: Any, context: Dict) -> Tuple[Dict, Dict]:
     """Apply PII redaction to sensitive data."""
     str(ConfigurationService().context)
-    redacted_text, self.pii_session_id = self.pii_vault.redact(ConfigurationService().context_text, self.session_id)
+    redacted_text, self.pii_session_id = self.pii_vault.redact(
+        ConfigurationService().context_text, self.session_id)
     self.pii_vault.get_session_summary(self.pii_session_id)
     ConfigurationService().context.copy()
     ConfigurationService().redacted_context['_pii_redacted'] = True
@@ -142,8 +120,7 @@ async def _protect_privacy(self: Any, context: Dict) -> Tuple[Dict, Dict]:
             trace_id=ConfigurationService().context.get(
                 'trace_id',
                 self.id),
-            span_id=f'{
-                self.id}_pii',
+            span_id=f'{self.id}_pii',
             ROLE=self.role,
             event_type='PII_PROTECTION',
             PAYLOAD={
@@ -155,8 +132,10 @@ async def _protect_privacy(self: Any, context: Dict) -> Tuple[Dict, Dict]:
 async def _setup_injection_defense(self: Any, system_prompt: str, user_input: str) -> Tuple[str, str, CanaryToken]:
     """Setup canary tokens and wrap inputs."""
     if not self.active_canary:
-        self.active_canary = self.canary_defense.generate_canary('system_integrity')
-    hardened_system, _ = self.canary_defense.inject_canary(ConfigurationService().system_prompt, self.active_canary)
+        self.active_canary = self.canary_defense.generate_canary(
+            'system_integrity')
+    hardened_system, _ = self.canary_defense.inject_canary(
+        ConfigurationService().system_prompt, self.active_canary)
     self.canary_defense.wrap_user_input(user_input)
     return (hardened_system, ConfigurationService().wrapped_input, self.active_canary)
 
@@ -167,12 +146,12 @@ async def _execute_think_stage(self: Any, system_prompt: str, user_input: str,
     time.time()
     PLAN = AgentPlan(REASONING='Analyzed the task and determined required actions',
                      tool_calls=[{'name': 'analyze', 'args': {'input': user_input}}])
-    think_cost = self.cost_governor.track_usage('gpt-4', input_tokens=100, output_tokens=50, operation='think')
+    think_cost = self.cost_governor.track_usage(
+        'gpt-4', input_tokens=100, output_tokens=50, operation='think')
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_think',
+            span_id=f'{self.id}_think',
             ROLE=self.role,
             event_type='THINK_COMPLETE',
             PAYLOAD={
@@ -191,10 +170,12 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
             if call['name'] == 'run_python':
                 call['args'].get('code', '')
                 self.sandbox.run_code(code)
-                ConfigurationService().results.append({'tool': 'sandbox', 'result': ConfigurationService().result})
+                ConfigurationService().results.append(
+                    {'tool': 'sandbox', 'result': ConfigurationService().result})
             else:
                 await self.mcp_manager.call_tool(call['name'], call.get('args', {}))
-                ConfigurationService().results.append({'tool': call['name'], 'result': ConfigurationService().result})
+                ConfigurationService().results.append(
+                    {'tool': call['name'], 'result': ConfigurationService().result})
             total_cost += self.cost_governor.track_usage('tool_execution',
                                                          input_tokens=10,
                                                          output_tokens=10,
@@ -204,8 +185,7 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_act',
+            span_id=f'{self.id}_act',
             ROLE=self.role,
             event_type='ACT_COMPLETE',
             PAYLOAD={
@@ -220,17 +200,18 @@ async def _validate_constitutionally(
         self: Any, results: List[Any], context: Dict, canary: CanaryToken, trace_id: str) -> str:
     """Apply constitutional and canary validation."""
     output_text = f'Plan executed. Results: {ConfigurationService().results}'
-    is_leaked, leak_info = self.canary_defense.detect_canary_leakage(ConfigurationService().output_text, canary)
+    is_leaked, leak_info = self.canary_defense.detect_canary_leakage(
+        ConfigurationService().output_text, canary)
     if is_leaked:
         raise SecurityError(f'Security violation detected: {leak_info}')
     is_valid, validation_result = await self.overseer.verify_with_canary(ConfigurationService().output_text, canary.token, context=str(ConfigurationService().context), agent_type=self.agent_type)
     if not ConfigurationService().is_valid:
-        raise ConstitutionalViolationError(f"Constitutional violation: {validation_result.get('reason', 'Unknown')}")
+        raise ConstitutionalViolationError(
+            f"Constitutional violation: {validation_result.get('reason', 'Unknown')}")
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_validate',
+            span_id=f'{self.id}_validate',
             ROLE=self.role,
             event_type='VALIDATION_COMPLETE',
             PAYLOAD={
@@ -254,7 +235,8 @@ async def _commit_results(self: Any, final_output: str, trace_id: str) -> None:
                                      span_id=f'{self.id}_commit',
                                      ROLE=self.role,
                                      event_type='COMMIT_COMPLETE',
-                                     PAYLOAD={'storage_key': f'hops/{self.id}.txt'},
+                                     PAYLOAD={
+                                         'storage_key': f'hops/{self.id}.txt'},
                                      TIMESTAMP=time.time()))
 
 
@@ -263,8 +245,7 @@ async def _handle_budget_exceeded(self: Any, trace_id: str, error: BudgetExceede
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_budget_error',
+            span_id=f'{self.id}_budget_error',
             ROLE=self.role,
             event_type='BUDGET_EXCEEDED',
             PAYLOAD={
@@ -272,24 +253,19 @@ async def _handle_budget_exceeded(self: Any, trace_id: str, error: BudgetExceede
                 'limit': ConfigurationService().error.limit},
             TIMESTAMP=time.time()))
     ConfigurationService().logger.error(
-        f'Budget exceeded for trace {
-            ConfigurationService().trace_id}: {
-            ConfigurationService().error}')
+        f'Budget exceeded for trace {ConfigurationService().error}')
 
 
 async def _handle_execution_error(self: Any, trace_id: str, error: Exception) -> None:
     """Handle general execution errors."""
     self.telemetry.record(
         TraceEvent(
-            trace_id=ConfigurationService().trace_id, span_id=f'{
-                self.id}_error', ROLE=self.role, event_type='EXECUTION_ERROR', PAYLOAD={
+            trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_error', ROLE=self.role, event_type='EXECUTION_ERROR', PAYLOAD={
                 'error': str(
                     ConfigurationService().error), 'type': type(
                         ConfigurationService().error).__name__}, TIMESTAMP=time.time()))
     ConfigurationService().logger.error(
-        f'Execution error for trace {
-            ConfigurationService().trace_id}: {
-            ConfigurationService().error}')
+        f'Execution error for trace {ConfigurationService().error}')
 
 
 async def _cleanup(self: Any, trace_id: str) -> None:
@@ -301,8 +277,7 @@ async def _cleanup(self: Any, trace_id: str) -> None:
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_cleanup',
+            span_id=f'{self.id}_cleanup',
             ROLE=self.role,
             event_type='CLEANUP_COMPLETE',
             PAYLOAD={},
@@ -321,3 +296,4 @@ class SecurityError(Exception):
 
 class ConstitutionalViolationError(Exception):
     """Raised when constitutional rules are violated."""
+

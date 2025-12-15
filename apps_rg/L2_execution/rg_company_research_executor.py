@@ -15,3 +15,4 @@ def rg_company_research_executor(data: Dict[str, object]) -> Dict[str, object]:
 def get_rg_company_research_executor_config() -> Dict[str, object]:
     """Get configuration for rg_company_research_executor."""
     return {'enabled': True, 'version': '1.0'}
+

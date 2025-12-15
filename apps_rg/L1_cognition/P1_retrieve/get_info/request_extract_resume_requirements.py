@@ -45,3 +45,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return ExtractResumeRequirements(config).retrieve(query, **kwargs)
+

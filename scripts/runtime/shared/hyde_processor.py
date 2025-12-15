@@ -515,3 +515,4 @@ def expand_query_with_hyde(
     PROCESSOR = create_hyde_processor(llm_client=llm_client)
     RESULT = processor.expand_query(query, archetype, industry)
     return result.expanded_query
+

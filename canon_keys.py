@@ -55,3 +55,4 @@ def get_keys_as_prompt() -> str:
         "50. HUMAN IN THE LOOP: High-risk actions require confirmation."
     ]
     return "\n".join(KEYS)
+

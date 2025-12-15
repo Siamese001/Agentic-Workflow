@@ -20,3 +20,4 @@ def get_events() -> List[Dict[str, object]]:
 def clear_events() -> None:
     """Clear all collected agentic events."""
     ConfigurationService().EVENTS.clear()
+

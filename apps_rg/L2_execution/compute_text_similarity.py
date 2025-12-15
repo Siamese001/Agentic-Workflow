@@ -83,3 +83,4 @@ class TextSimilarityCalculator:
                 if similarity >= threshold:
                     duplicates.append((i, j, similarity))
         return duplicates
+

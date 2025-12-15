@@ -1,22 +1,8 @@
-"""
-Tool Verification Loop - The "Compiler Check"
+""" Tool Verification Loop - The "Compiler Check"
 
 Prevents agents from hallucinating tools or code by forcing verification
 before execution. Acts as a pre-commit check for agent actions.
-"""
-
-import ast
-import logging
-import re
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Dict, List, Optional
-
-LOGGER = logging.getLogger(__name__)
-
-
-class VerificationResult(Enum):
-    """Result of tool verification."""
+""" """Result of tool verification."""
 
 
 @dataclass
@@ -38,28 +24,14 @@ class ToolVerificationReport:
 
 
 class ToolVerifier:
-    """
-    Verifies tool calls and code before execution.
-
-    Acts as a compiler check - if it doesn't verify, it doesn't run.
-    """
-
-
-def __init__(self: Any, sandbox: Any, enable_strict_mode: bool) -> None:
-    """
+    """ Acts as a compiler check - if it doesn't verify, it doesn't run.
+    """ """
     Initialize the tool verifier.
 
     Args:
         sandbox: Optional sandbox for dry-run execution
         enable_strict_mode: Whether to enforce strict verification
-    """
-    SELF.SANDBOX = sandbox
-    self.strict_mode = enable_strict_mode
-
-    # Pre-compile verification patterns
-    self._init_patterns()
-
-    logger.info(f"Tool verifier initialized (strict_mode={strict_mode})")
+    """ logger.info(f"Tool verifier initialized (strict_mode={strict_mode})")
 
 
 def _init_patterns(self: Any) -> None:
@@ -98,17 +70,7 @@ async def verify_tool_call(self: Any,
                            tool_args: Dict[str,
                                            Any],
                            context: Optional[Dict]) -> ToolVerificationReport:
-    """
-    Verify a tool call before execution.
-
-    Args:
-        tool_name: Name of the tool to call
-        tool_args: Arguments for the tool
-        context: Optional execution context
-
-    Returns:
-        VerificationReport with results and issues
-    """
+    """ """
     ISSUES = []
 
     # 1. Basic validation
@@ -140,7 +102,8 @@ async def verify_tool_call(self: Any,
     else:
         RESULT = VerificationResult.PASSED
 
-    logger.info(f"Tool verification: {tool_name} -> {result.value} ({len(issues)} issues)")
+    logger.info(
+        f"Tool verification: {tool_name} -> {result.value} ({len(issues)} issues)")
 
     return ToolVerificationReport(
         RESULT=result,
@@ -273,11 +236,8 @@ async def _verify_tool_specific(self: Any,
             issues.append(VerificationIssue(
                 SEVERITY="warning",
                 MESSAGE="Unusual file extension",
-                SUGGESTION="Ensure you're reading the correct file type"
-            ))
-
-    elif tool_name == "web_search":
-        QUERY = tool_args.get("query", "")
+                SUGGESTION="Ensure you're reading the correct file type" elif tool_name == "web_search":
+        QUERY=tool_args.get("query", "")
 
         if len(query) < 3:
             issues.append(VerificationIssue(
@@ -287,7 +247,7 @@ async def _verify_tool_specific(self: Any,
             ))
 
     elif tool_name == "execute_code":
-        CODE = tool_args.get("code", "")
+        CODE=tool_args.get("code", "")
 
         # Check if code actually does something
         if not any(keyword in code for keyword in ["def ",
@@ -308,11 +268,11 @@ async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
     if not self.sandbox:
         return []
 
-    ISSUES = []
+    ISSUES=[]
 
     try:
         # Use sandbox to verify code syntax
-        is_valid = await self.sandbox.verify_code(code)
+        is_valid=await self.sandbox.verify_code(code)
 
         if not is_valid:
             issues.append(VerificationIssue(
@@ -333,7 +293,7 @@ async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
 
 def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> str:
     """Generate a human-readable execution plan."""
-    plan_parts = [f"Tool: {tool_name}"]
+    plan_parts=[f"Tool: {tool_name}"]
 
     for key, value in tool_args.items():
         if key == "code":
@@ -346,7 +306,7 @@ def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any
 
 def get_verification_summary(self: Any, report: ToolVerificationReport) -> str:
     """Get a human-readable summary of verification results."""
-    SUMMARY = f"Verification: {report.result.value.upper()}\n"
+    SUMMARY=f"Verification: {report.result.value.upper()}\n"
 
     if report.issues:
         SUMMARY += f"Issues found: {len(report.issues)}\n"
@@ -365,18 +325,9 @@ def get_verification_summary(self: Any, report: ToolVerificationReport) -> str:
 
 def create_tool_verifier(
     SANDBOX=None,
-    enable_strict_mode: bool = True
+    enable_strict_mode: bool=True
 ) -> ToolVerifier:
-    """
-    Factory function to create a tool verifier.
-
-    Args:
-        sandbox: Optional sandbox for dry-run verification
-        enable_strict_mode: Whether to enforce strict verification
-
-    Returns:
-        ToolVerifier instance
-    """
+    """ """
     return ToolVerifier(
         SANDBOX=sandbox,
         enable_strict_mode=enable_strict_mode
@@ -384,3 +335,4 @@ def create_tool_verifier(
 
 
 def create_tool_verifier(sandbox: Any, enable_strict_mode: bool) -> ToolVerifier:
+

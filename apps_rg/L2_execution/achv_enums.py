@@ -11,3 +11,4 @@ class BulletFormat(Enum):
 
 class ProvenanceType(Enum):
     """TODO: Add docstring."""
+

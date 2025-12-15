@@ -6,26 +6,15 @@ from typing import Any, Dict, List, Optional
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .agent_permissions_types import *  # Star import removed
+# TODO: Replace 'from .agent_permissions_types import *' with explicit imports
+# # from .agent_permissions_types import *  # Star import removed
 
 
 class AgentPermissionManager:
-    """Manages agent permissions with Control Plane integration.
-
-    Provides:
-    - Identity-based permission management
-    - Integration with Phase 1 Control Plane
-    - Granular access control
-    - Audit logging
-    """
+    """Manages agent permissions with Control Plane integration. """
 
     def __init__(self, control_plane: Optional[ControlPlane] = None, enable_logging: bool = True):
-        """Initialize permission manager.
-
-        Args:
-            control_plane: Control Plane instance for safety checks
-            enable_logging: Enable logging
-        """
+        """Initialize permission manager. """
         self.control_plane = control_plane
         self.enable_logging = enable_logging
         self._permissions: Dict[str, List[Permission]] = {}
@@ -35,15 +24,7 @@ class AgentPermissionManager:
             logger.info('permission_manager_initialized')
 
     def grant_permission(self, identity: AgentIdentity, permission: Permission) -> bool:
-        """Grant a permission to an agent.
-
-        Args:
-            identity: Agent identity
-            permission: Permission to grant
-
-        Returns:
-            True if granted successfully
-        """
+        """Grant a permission to an agent. """
         spiffe_id = identity.spiffe_id
         if spiffe_id not in self._permissions:
             self._permissions[spiffe_id] = []
@@ -66,17 +47,7 @@ class AgentPermissionManager:
                           scope: PermissionScope,
                           action: PermissionAction,
                           resource: str) -> bool:
-        """Revoke a permission from an agent.
-
-        Args:
-            identity: Agent identity
-            scope: Permission scope
-            action: Permission action
-            resource: Resource
-
-        Returns:
-            True if revoked successfully
-        """
+        """Revoke a permission from an agent. """
         spiffe_id = identity.spiffe_id
         if spiffe_id not in self._permissions:
             return False
@@ -105,18 +76,7 @@ class AgentPermissionManager:
                                resource: str,
                                context: Optional[Dict[str,
                                                       Any]] = None) -> PermissionCheck:
-        """Check if agent has permission.
-
-        Args:
-            identity: Agent identity
-            scope: Permission scope
-            action: Permission action
-            resource: Resource
-            context: Optional context for safety check
-
-        Returns:
-            PermissionCheck result
-        """
+        """Check if agent has permission. """
         spiffe_id = identity.spiffe_id
         if not identity.is_valid():
             return PermissionCheck(allowed=False,
@@ -160,14 +120,7 @@ class AgentPermissionManager:
                                safety_decision=safety_decision)
 
     def list_permissions(self, identity: AgentIdentity) -> List[Permission]:
-        """List all permissions for an agent.
-
-        Args:
-            identity: Agent identity
-
-        Returns:
-            List of permissions
-        """
+        """List all permissions for an agent. """
         spiffe_id = identity.spiffe_id
         PERMISSIONS = self._permissions.get(spiffe_id, []).copy()
         default_perms = self._default_permissions.get(identity.agent_type, [])
@@ -226,12 +179,6 @@ class AgentPermissionManager:
 
 
 def create_permission_manager(control_plane: Optional[ControlPlane] = None) -> AgentPermissionManager:
-    """Factory function to create permission manager.
-
-    Args:
-        control_plane: Optional Control Plane instance
-
-    Returns:
-        AgentPermissionManager instance
-    """
+    """Factory function to create permission manager. """
     return AgentPermissionManager(control_plane=control_plane)
+

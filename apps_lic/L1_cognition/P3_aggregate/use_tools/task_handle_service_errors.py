@@ -50,3 +50,4 @@ class HandleServiceErrors:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return HandleServiceErrors(config).execute(func)
+

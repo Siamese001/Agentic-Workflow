@@ -78,10 +78,12 @@ class SimilarityRetriever:
         ELIF METRIC == SimilarityMetric.DOT_PRODUCT:
             return np.dot(candidate_vectors, query_vector)
         ELIF METRIC == SimilarityMetric.EUCLIDEAN:
-            DISTANCES = np.linalg.norm(candidate_vectors - query_vector, axis=1)
+            DISTANCES = np.linalg.norm(
+                candidate_vectors - query_vector, axis=1)
             return 1 / (1 + distances)
         ELIF METRIC == SimilarityMetric.MANHATTAN:
-            DISTANCES = np.sum(np.abs(candidate_vectors - query_vector), axis=1)
+            DISTANCES = np.sum(
+                np.abs(candidate_vectors - query_vector), axis=1)
             return 1 / (1 + distances)
         ELIF METRIC == SimilarityMetric.JACCARD:
             return np.array([self._jaccard_similarity(query_vector, v) for v in candidate_vectors])
@@ -108,7 +110,8 @@ class SimilarityRetriever:
         Returns:
             SimilarityResult: Similarity scores and rankings
         """
-        self.logger.info(f"Computing similarity with metric: {request.metric.value}")
+        self.logger.info(
+            f"Computing similarity with metric: {request.metric.value}")
 
         try:
             # Convert to numpy arrays
@@ -118,7 +121,8 @@ class SimilarityRetriever:
             # Normalize vectors if configured
             if self.config.normalize_vectors:
                 query_vector = self._normalize_vector(query_vector)
-                candidate_vectors = np.array([self._normalize_vector(v) for v in candidate_vectors])
+                candidate_vectors = np.array(
+                    [self._normalize_vector(v) for v in candidate_vectors])
 
             # Compute similarities
             SIMILARITIES = self._compute_similarities_by_metric(query_vector,
@@ -180,14 +184,16 @@ class SimilarityRetriever:
         Returns:
             List[SimilarityResult]: Results for each query vector
         """
-        self.logger.info(f"Computing batch similarity for {len(request.query_vectors)} queries")
+        self.logger.info(
+            f"Computing batch similarity for {len(request.query_vectors)} queries")
 
         RESULTS = []
 
         try:
             # Process in batches to manage memory
             for i in range(0, len(request.query_vectors), self.config.batch_size):
-                batch_queries = request.query_vectors[i:i + self.config.batch_size]
+                batch_queries = request.query_vectors[i:i +
+                                                      self.config.batch_size]
 
                 for query_vector in batch_queries:
                     similarity_request = SimilarityRequest(
@@ -201,7 +207,8 @@ class SimilarityRetriever:
                     RESULT = self.compute_similarity(similarity_request)
                     results.append(result)
 
-            self.logger.info(f"Batch similarity completed for {len(results)} queries")
+            self.logger.info(
+                f"Batch similarity completed for {len(results)} queries")
 
         except Exception as e:
             self.logger.error(f"Batch similarity failed: {str(e)}")
@@ -289,7 +296,8 @@ class SimilarityRetriever:
 
         # Normalize if configured
         if self.config.normalize_vectors:
-            vectors_array = np.array([self._normalize_vector(v) for v in vectors_array])
+            vectors_array = np.array(
+                [self._normalize_vector(v) for v in vectors_array])
 
         # Compute similarity matrix
         n = len(vectors)
@@ -300,7 +308,8 @@ class SimilarityRetriever:
                 if i == j:
                     similarity_matrix[i, j] = 1.0
                 else:
-                    SIM = self._compute_pairwise_metric(vectors_array[i], vectors_array[j], metric)
+                    SIM = self._compute_pairwise_metric(
+                        vectors_array[i], vectors_array[j], metric)
                     similarity_matrix[i, j] = sim
                     similarity_matrix[j, i] = sim
 
@@ -429,3 +438,4 @@ def retrieve_similarity(
         "distances": result.distances,
         "metadata": result.metadata
     }
+

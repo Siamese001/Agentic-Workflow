@@ -38,7 +38,8 @@ def run_llm_google(
         try:
             from google import genai
 
-            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv(
+                "GEMINI_API_KEY")
             if not api_key:
                 raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider
     ")
@@ -92,3 +93,4 @@ def run_llm_google(
     # those are left to higher-level routing and not enforced here.
     resp: Any = model_client.generate_content(prompt)
     return str(getattr(resp, "text", "") or "")
+

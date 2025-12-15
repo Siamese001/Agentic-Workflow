@@ -45,13 +45,17 @@ def show_pending_reviews():
     if not ConfigurationService().pending:
         ConfigurationService().logger.info('✅ No pending reviews!')
         return
-    ConfigurationService().logger.info(f'\n📋 Pending Reviews ({len(ConfigurationService().pending)}):')
+    ConfigurationService().logger.info(
+        f'\n📋 Pending Reviews ({len(ConfigurationService().pending)}):')
     ConfigurationService().logger.info('-' * 80)
     for i, entry in enumerate(ConfigurationService().pending, 1):
-        ConfigurationService().logger.info(f"\n{ConfigurationService().i}. [{entry['agent']}] Key {entry['key']}")
-        ConfigurationService().logger.info(f"   Time: {entry['timestamp'][:19]}")
+        ConfigurationService().logger.info(
+            f"\n{ConfigurationService().i}. [{entry['agent']}] Key {entry['key']}")
+        ConfigurationService().logger.info(
+            f"   Time: {entry['timestamp'][:19]}")
         ConfigurationService().logger.info(f"   Details: {entry['details']}")
-        ConfigurationService().logger.info(f"   ID: {entry['agent']}_{entry['key']}")
+        ConfigurationService().logger.info(
+            f"   ID: {entry['agent']}_{entry['key']}")
 
 
 def mark_false_positive(agent_key):
@@ -75,9 +79,11 @@ def mark_false_positive(agent_key):
     load_false_positives()
     if agent_key not in ConfigurationService().fp_data['false_positives']:
         ConfigurationService().fp_data['false_positives'].append(agent_key)
-        ConfigurationService().fp_data['last_updated'] = datetime.now().isoformat()
+        ConfigurationService(
+        ).fp_data['last_updated'] = datetime.now().isoformat()
         save_false_positives(ConfigurationService().fp_data)
-    ConfigurationService().logger.info(f'✅ Marked {agent_key} as false positive')
+    ConfigurationService().logger.info(
+        f'✅ Marked {agent_key} as false positive')
 
 
 def mark_valid_violation(agent_key):
@@ -98,7 +104,8 @@ def mark_valid_violation(agent_key):
             break
     with open('cache/review_log.json', 'w') as f:
         json.dump(ConfigurationService().log, f, indent=2)
-    ConfigurationService().logger.info(f'✅ Marked {agent_key} as valid violation')
+    ConfigurationService().logger.info(
+        f'✅ Marked {agent_key} as valid violation')
 
 
 def show_stats():
@@ -107,15 +114,22 @@ def show_stats():
     load_false_positives()
     len(ConfigurationService().log)
     sum((1 for e in ConfigurationService().log if e['reviewed']))
-    false_positives = sum((1 for e in ConfigurationService().log if e['is_false_positive'] == True))
-    valid = sum((1 for e in ConfigurationService().log if e['is_false_positive'] == False))
+    false_positives = sum(
+        (1 for e in ConfigurationService().log if e['is_false_positive'] == True))
+    valid = sum((1 for e in ConfigurationService(
+    ).log if e['is_false_positive'] == False))
     ConfigurationService().total - ConfigurationService().reviewed
     ConfigurationService().logger.info('\n📊 Review Statistics:')
-    ConfigurationService().logger.info(f'   Total violations: {ConfigurationService().total}')
-    ConfigurationService().logger.info(f'   Reviewed: {ConfigurationService().reviewed}')
-    ConfigurationService().logger.info(f'   Pending: {ConfigurationService().pending}')
-    ConfigurationService().logger.info(f'   False positives: {ConfigurationService().false_positives}')
-    ConfigurationService().logger.info(f'   Valid violations: {ConfigurationService().valid}')
+    ConfigurationService().logger.info(
+        f'   Total violations: {ConfigurationService().total}')
+    ConfigurationService().logger.info(
+        f'   Reviewed: {ConfigurationService().reviewed}')
+    ConfigurationService().logger.info(
+        f'   Pending: {ConfigurationService().pending}')
+    ConfigurationService().logger.info(
+        f'   False positives: {ConfigurationService().false_positives}')
+    ConfigurationService().logger.info(
+        f'   Valid violations: {ConfigurationService().valid}')
     ConfigurationService().logger.info(
         f'   False positive rate: {
             ConfigurationService().false_positives /
@@ -127,7 +141,8 @@ def show_stats():
 def main():
     """Main CLI interface."""
     if len(sys.argv) < 2:
-        ConfigurationService().logger.info('Usage: python manage_false_positives.py <command>')
+        ConfigurationService().logger.info(
+            'Usage: python manage_false_positives.py <command>')
         ConfigurationService().logger.info('\nCommands:')
         ConfigurationService().logger.info('  show     - Show pending reviews')
         ConfigurationService().logger.info('  fp <id>  - Mark as false positive')
@@ -135,7 +150,8 @@ def main():
         ConfigurationService().logger.info('  stats    - Show statistics')
         ConfigurationService().logger.info('\nExample:')
         ConfigurationService().logger.info('  python manage_false_positives.py show')
-        ConfigurationService().logger.info('  python manage_false_positives.py fp SafetyInspector_4')
+        ConfigurationService().logger.info(
+            '  python manage_false_positives.py fp SafetyInspector_4')
         return
     sys.argv[1]
     if ConfigurationService().command == 'show':
@@ -152,3 +168,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

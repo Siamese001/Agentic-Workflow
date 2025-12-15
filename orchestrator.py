@@ -1,25 +1,26 @@
-import time
 import logging
-import sys
-from llm_client import LLMClient
-from canon_validator import CanonValidator
+
 from action_registry import ActionRegistry
-from cognitive_node import CognitiveNode # <--- NEW IMPORT
+from canon_validator import CanonValidator
+from cognitive_node import CognitiveNode  # <--- NEW IMPORT
+from llm_client import LLMClient
 
 # Setup
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("Orchestrator")
+
 
 def run_agentic_loop(user_goal: str):
     print(f"\n🚀 SUBATOMIC AGENT STARTING: {user_goal}")
     print("="*60)
-    
+
     # 1. INITIALIZE COMPONENTS
     validator = CanonValidator()
-    llm = LLMClient()
+    LLMClient()
     actions = ActionRegistry()
-    cognitive = CognitiveNode() # <--- NEW COMPONENT
-    
+    cognitive = CognitiveNode()  # <--- NEW COMPONENT
+
     # 2. DEFINE TOOLBOX (The fully unified and accurate toolset)
     toolbox_desc = """
     AVAILABLE TOOLS (You MUST use these for your tasks):
@@ -68,19 +69,19 @@ def run_agentic_loop(user_goal: str):
     - string_get(key: str) -> str : Retrieves simple session state or caching keys.
     - hash_set(key: str, field: str, value: str) : Stores field-value pairs (e.g., user profiles, complex cache objects).
     - hash_get(key: str, field: str) -> str : Retrieves a field from a hash key.
-    
+
     [TIME MCP - L4 Temporal Awareness]
     - get_current_time(timezone: str) -> string: Gets the current date, time, and timezone in ISO 8601 format. Accepts IANA timezone name (e.g., 'America/New_York').
     - convert_time(source_timezone: str, time: str, target_timezone: str) -> string: Converts a time string (HH:MM) between two specified IANA timezones.
-    
+
     [ACTION TOOLS]
     - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email (Mock).
     """
-    
+
     # 3. THINK SEQUENTIALLY (Generate Draft using the Cognitive Node)
     # The Cognitive Node manages the entire thought process
     try:
-        raw_code = cognitive.think(user_goal, toolbox_desc) 
+        raw_code = cognitive.think(user_goal, toolbox_desc)
     except TimeoutError as e:
         logger.error(f"❌ Sequential thinking timed out: {e}")
         return
@@ -89,8 +90,8 @@ def run_agentic_loop(user_goal: str):
         return
     except Exception as e:
         logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
-        return 
-    
+        return
+
     if not raw_code:
         logger.error("❌ Generation failed in Cognitive Node.")
         return
@@ -99,10 +100,10 @@ def run_agentic_loop(user_goal: str):
 
     # 4. AUDIT & REPAIR (The "Golden Loop")
     result = validator.validate(raw_code, auto_repair=True)
-    
+
     final_code = raw_code
     status = result.get("status")
-    
+
     if status == "repaired":
         print(f"\n🔧 AUTO-REPAIR APPLIED!")
         print(f"📝 Reason: {result.get('reasoning')}")
@@ -120,20 +121,21 @@ def run_agentic_loop(user_goal: str):
         exec_globals = actions.get_tool_map()
         exec_globals['__name__'] = '__main__'
         local_scope = {}
-        
+
         # Execute the code - this defines all functions
         exec(final_code, exec_globals, local_scope)
-        
+
         # Merge local_scope back into exec_globals so helper functions are accessible
         exec_globals.update(local_scope)
-        
+
         # Auto-run entry point (find the last defined function that's not a tool)
         tool_names = set(actions.get_tool_map().keys())
-        keys = [k for k in local_scope.keys() if k not in tool_names and "__" not in k and callable(local_scope[k])]
+        keys = [k for k in local_scope.keys(
+        ) if k not in tool_names and "__" not in k and callable(local_scope[k])]
         if keys:
             func_name = keys[-1]
             print(f"▶️ Running function: {func_name}...")
-            
+
             # Simple Injection Logic for Logger
             import inspect
             sig = inspect.signature(local_scope[func_name])
@@ -143,12 +145,13 @@ def run_agentic_loop(user_goal: str):
                     def __call__(self, msg): print(f"[LOG] {msg}")
                     def info(self, msg): print(f"[LOG] {msg}")
                 kwargs["logger"] = MockLogger()
-                
+
             res = local_scope[func_name](**kwargs)
             print(f"✅ RESULT: {res}")
-            
+
     except Exception as e:
         logger.error(f"Runtime Error: {e}")
+
 
 if __name__ == "__main__":
     # The final strategic task for the L3 Agent
@@ -181,6 +184,7 @@ if __name__ == "__main__":
     | **Playwright** | L1 Automation | Browser Automation (Snapshot, Type, Click) |
     | **Send Email** | Action Tool | External Communication (Mock) |
     """
-    
+
     # Run the agent with the strategic goal
     run_agentic_loop(user_goal)
+

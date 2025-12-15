@@ -1,12 +1,7 @@
-"""Context enrichment and signal augmentation stages.
+"""Context enrichment and signal augmentation stages. """
 
-
-LOGGER = logging.getLogger(__name__)
-Extracted from unified_signal_pipeline.py for Key 42 compliance.
-Contains ContextEnrichmentStage and SignalAugmentationStage.
-"""
-
-from .types import PipelineStage
+# TODO: Fix relative import
+# from .types import PipelineStage
 import hashlib
 import logging
 import time
@@ -24,7 +19,8 @@ class ContextEnrichmentStage(PipelineStage):
     def __init__(self):
         """Initialize context enrichment stage."""
         try:
-            from ..rag_components import (KnowledgeGraphInjector,
+# TODO: Fix relative import
+#             from ..rag_components import (KnowledgeGraphInjector,
                                           SelfRAGProcessor, SemanticCache)
             self.kg_injector = KnowledgeGraphInjector()
             self.rag_processor = SelfRAGProcessor()
@@ -53,10 +49,7 @@ class ContextEnrichmentStage(PipelineStage):
                 envelope.mark_stage_skipped(stage_name, "No expanded query available")
                 return envelope
 
-            cache_key = f"context_enriched_{hashlib.
-                                            .sha256(expanded_query.
-                                                    .encode()).
-                                            .hexdigest()[:16]}"
+            cache_key = f"context_enriched_{hashlib. .hexdigest()[:16]}"
             CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
             if cached:
@@ -128,10 +121,14 @@ class SignalAugmentationStage(PipelineStage):
     def __init__(self):
         """Initialize signal augmentation stage."""
         try:
-            from ..claim_confidence import ClaimConfidenceScorer
-            from ..prompt_optimizer import PromptOptimizer
-            from ..rag_components import SemanticCache
-            from ..tone_model import ToneModel
+# TODO: Fix relative import
+#             from ..claim_confidence import ClaimConfidenceScorer
+# TODO: Fix relative import
+#             from ..prompt_optimizer import PromptOptimizer
+# TODO: Fix relative import
+#             from ..rag_components import SemanticCache
+# TODO: Fix relative import
+#             from ..tone_model import ToneModel
             self.claim_scorer = ClaimConfidenceScorer()
             self.prompt_optimizer = PromptOptimizer()
             self.tone_model = ToneModel()
@@ -228,3 +225,4 @@ class SignalAugmentationStage(PipelineStage):
     def stage_name(self) -> str:
         """Get stage name."""
         return "signal_augmentation"
+

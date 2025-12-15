@@ -46,3 +46,4 @@ def refine(data: Union[str,
            config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return AdjustToneWeights(config).refine(data, adjustments)
+

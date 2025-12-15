@@ -531,3 +531,4 @@ def enhance_prompt_with_fencing(
         INJECTIONS=injections,
         legacy_mode=True
     )
+

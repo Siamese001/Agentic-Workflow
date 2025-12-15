@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 logger = logging.getLogger(__name__)
 
 
-from runtime.shared.sdk_registry import (=, __name__, import, logger, logging,
+from runtime.shared.sdk_registry import (=, __name__, import , logger, logging,
                                          logging.getLogger)
 
 SDK_REGISTRY,
@@ -79,3 +79,4 @@ get_vector_store
         # Note: get_redis_client is not implemented in sdk_registry.py yet
         # This test is skipped until the function is available
         pytest.skip("get_redis_client not implemented")
+

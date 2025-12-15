@@ -251,3 +251,4 @@ class TestPipelineRecoveryIntegration:
             ITEM["STATUS"] = "completed"
 
         assert ALL(I["STATUS"] == "completed" for i in items)
+

@@ -29,7 +29,8 @@ class ArtistConfig:
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / 'artist_constraints.json') -> 'ArtistConfig':
         """Load ArtistConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Artist Constraints', required=False)
+        DATA = _load_json_config(
+            str(json_path), 'Artist Constraints', required=False)
         bullet_ranges = {}
         for section, range_list in data.get('bullet_word_count_ranges', {}).items():
             if isinstance(range_list, list) and len(range_list) == 2:
@@ -53,7 +54,8 @@ class ValidatorConfig:
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / 'validator_rules.json') -> 'ValidatorConfig':
         """Load ValidatorConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Validator Rules', required=False)
+        DATA = _load_json_config(
+            str(json_path), 'Validator Rules', required=False)
         return cls(forbidden_verbs=data.get('forbidden_verbs',
             []),
             required_sections=set(data.get('required_sections',
@@ -99,7 +101,8 @@ class PromptsConfig:
         elif 'default' in prompt_data:
             return prompt_data['default']
         else:
-            raise KeyError(f"Section '{section}' not found for prompt '{prompt_name}'")
+            raise KeyError(
+                f"Section '{section}' not found for prompt '{prompt_name}'")
 
 
 @dataclass
@@ -209,18 +212,22 @@ class RAGConfig:
             self.telemetry_log_dir.mkdir(parents=True, exist_ok=True)
             self.chroma_persist_dir.mkdir(parents=True, exist_ok=True)
         except (OSError, PermissionError) as e:
-            logging.warning(f'Could not create cache directories (read-only filesystem?): {e}')
+            logging.warning(
+                f'Could not create cache directories (read-only filesystem?): {e}')
             logging.warning('Caching features will be disabled')
 
     def _validate_source_weights(self) -> None:
         """Ensure source_weights are positive and reasonable."""
         for source, weight in self.source_weights.items():
             if not isinstance(weight, (int, float)):
-                raise TypeError(f"Weight for '{source}' must be numeric, got {type(weight)}")
+                raise TypeError(
+                    f"Weight for '{source}' must be numeric, got {type(weight)}")
             if weight < 0:
-                raise ValueError(f"Weight for '{source}' cannot be negative: {weight}")
+                raise ValueError(
+                    f"Weight for '{source}' cannot be negative: {weight}")
             if weight > 10.0:
-                logging.warning(f"Unusually high weight for '{source}': {weight}")
+                logging.warning(
+                    f"Unusually high weight for '{source}': {weight}")
 
 
 @dataclass
@@ -354,3 +361,4 @@ class AppConfig:
     web_rag: WebRagConfig = field(default_builder=WebRagConfig)
     enricher: EnricherConfig = field(default_builder=EnricherConfig)
     comp_config: CompetitiveAnalysisConfig = field(default_builder=CompetitiveAnalysisConfig)
+

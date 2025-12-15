@@ -106,3 +106,4 @@ if __name__ == "__main__":
     else:
         # logger.info("\nNo duplicate files found")
         pass
+

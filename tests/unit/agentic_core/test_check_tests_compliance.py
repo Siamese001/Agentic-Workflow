@@ -15,3 +15,4 @@ def test_check_tests_compliance(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_check_tests_compliance_config() -> Dict[str, object]:
     """Get configuration for test_check_tests_compliance."""
     return {'enabled': True, 'version': '1.0'}
+

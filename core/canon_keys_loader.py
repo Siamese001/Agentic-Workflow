@@ -7,11 +7,8 @@ immediate availability during canon validation checks.
 
 import ast
 import hashlib
-import json
 import logging
-from typing import List, Dict, Any
-from datetime import datetime
-from pathlib import Path
+from typing import Dict, Any
 
 from schemas.canon_models import CanonEntry
 from core.semantic_gatekeeper import SemanticGatekeeper
@@ -22,11 +19,11 @@ logger = logging.getLogger(__name__)
 class CanonKeysLoader:
     """
     Loads and manages the 50 Canon Keys in the hybrid semantic cache.
-    
+
     Canon Keys are golden patterns that are always available in L1 cache
     and marked with `is_canon_key: true` for special treatment.
     """
-    
+
     # The 50 Canon Keys with their policy keys, descriptions, and example code
     CANON_KEYS = [
         {
@@ -373,21 +370,21 @@ class CanonKeysLoader:
             "risk_score": 100
         }
     ]
-    
+
     def __init__(self, gatekeeper: SemanticGatekeeper):
         """Initialize the Canon Keys loader."""
         self.gatekeeper = gatekeeper
         logger.info("Canon Keys loader initialized")
-    
+
     def load_all_keys(self) -> int:
         """
         Load all 50 Canon Keys into L1 cache.
-        
+
         Returns:
             Number of keys loaded
         """
         logger.info("Loading 50 Canon Keys into L1 cache...")
-        
+
         loaded_count = 0
         for key_data in self.CANON_KEYS:
             try:
@@ -396,11 +393,12 @@ class CanonKeysLoader:
                 loaded_count += 1
                 logger.debug(f"Loaded Canon Key: {key_data['policy_key']}")
             except Exception as e:
-                logger.error(f"Failed to load Canon Key {key_data['policy_key']}: {e}")
-        
+                logger.error(
+                    f"Failed to load Canon Key {key_data['policy_key']}: {e}")
+
         logger.info(f"Successfully loaded {loaded_count}/50 Canon Keys")
         return loaded_count
-    
+
     def _create_canon_entry(self, key_data: Dict[str, Any]) -> CanonEntry:
         """Create a CanonEntry from key data."""
         # Parse AST
@@ -409,10 +407,11 @@ class CanonKeysLoader:
             ast_json = ast.dump(tree, include_attributes=True)
             ast_hash = hashlib.sha256(ast_json.encode()).hexdigest()
         except SyntaxError as e:
-            logger.error(f"Syntax error in Canon Key {key_data['policy_key']}: {e}")
+            logger.error(
+                f"Syntax error in Canon Key {key_data['policy_key']}: {e}")
             ast_json = {"error": str(e)}
             ast_hash = hashlib.sha256(f"SYNTAX_ERROR:{e}".encode()).hexdigest()
-        
+
         # Create entry with Canon Key flag
         entry = CanonEntry(
             vector=self.gatekeeper.embed_action(key_data["description"]),
@@ -434,13 +433,13 @@ class CanonKeysLoader:
                 "promoted_to_l2": "true"  # Canon Keys are always in L2
             }
         )
-        
+
         return entry
-    
+
     def verify_keys_loaded(self) -> bool:
         """
         Verify all 50 Canon Keys are loaded in L1 cache.
-        
+
         Returns:
             True if all keys are loaded
         """
@@ -451,13 +450,14 @@ class CanonKeysLoader:
             max_results=100,
             include_canon_keys=True
         )
-        
-        canon_keys = [e for e in results.entries if e.metadata.get("is_canon_key")]
-        
+
+        canon_keys = [
+            e for e in results.entries if e.metadata.get("is_canon_key")]
+
         if len(canon_keys) != 50:
             logger.warning(f"Expected 50 Canon Keys, found {len(canon_keys)}")
             return False
-        
+
         logger.info("All 50 Canon Keys verified in L1 cache")
         return True
 
@@ -465,15 +465,16 @@ class CanonKeysLoader:
 def load_canon_keys(gatekeeper: SemanticGatekeeper) -> bool:
     """
     Convenience function to load all Canon Keys.
-    
+
     Args:
         gatekeeper: The SemanticGatekeeper instance
-        
+
     Returns:
         True if successful
     """
     loader = CanonKeysLoader(gatekeeper)
     loaded = loader.load_all_keys()
     verified = loader.verify_keys_loaded()
-    
+
     return loaded == 50 and verified
+

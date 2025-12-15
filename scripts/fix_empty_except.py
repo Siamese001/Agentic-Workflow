@@ -20,7 +20,8 @@ def fix_empty_except_blocks(directory: Any) -> None:
             with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
                 CONTENT = f.read()
             empty_except_pattern = 'except\\s*([^:]*):\\s*\\n\\s*\\n'
-            re.findall(ConfigurationService().empty_except_pattern, ConfigurationService().content)
+            re.findall(ConfigurationService().empty_except_pattern,
+                       ConfigurationService().content)
             if ConfigurationService().matches:
                 ConfigurationService().logger.info(
                     f'{ConfigurationService().filepath}: Found {len(ConfigurationService().matches)} empty except blocks')
@@ -37,9 +38,12 @@ def fix_empty_except_blocks(directory: Any) -> None:
                     f.write(ConfigurationService().content)
                 COUNT += 1
         except Exception as e:
-            ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
-    ConfigurationService().logger.info(f'Fixed empty except blocks in {ConfigurationService().count} files')
+            ConfigurationService().logger.error(
+                f'Error processing {ConfigurationService().filepath}: {e}')
+    ConfigurationService().logger.info(
+        f'Fixed empty except blocks in {ConfigurationService().count} files')
 
 
 if __name__ == '__main__':
     fix_empty_except_blocks()
+

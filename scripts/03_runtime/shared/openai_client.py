@@ -36,7 +36,8 @@ def __init__(self: Any, api_key: Optional[str], base_url: Optional[str]) -> None
 
     # Initialize clients
     SELF.CLIENT = OpenAI(api_key=self.api_key, base_url=self.base_url)
-    self.async_client = AsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+    self.async_client = AsyncOpenAI(
+        api_key=self.api_key, base_url=self.base_url)
 
 
 def chat_completion(self: Any,
@@ -202,7 +203,8 @@ def create_agent_prompt(
     Returns:
         Formatted messages list for OpenAI API.
     """
-    MESSAGES = [{"role": "system", "content": EXAMPLE_PROMPTS.get(task_type, "")}]
+    MESSAGES = [
+        {"role": "system", "content": EXAMPLE_PROMPTS.get(task_type, "")}]
 
     if context:
         messages.append({"role": "system", "content": f"Context: {context}"})
@@ -219,7 +221,8 @@ def test_openai_connection():
     try:
         CLIENT = get_openai_client()
         RESPONSE = client.chat_completion(
-            MESSAGES=[{"role": "user", "content": "Say 'OpenAI connection successful!'"}],
+            MESSAGES=[
+                {"role": "user", "content": "Say 'OpenAI connection successful!'"}],
             MODEL="gpt-3.5-turbo",
             max_tokens=50
         )
@@ -236,3 +239,4 @@ if __name__ == "__main__":
 
 
 def test_openai_connection() -> None:
+

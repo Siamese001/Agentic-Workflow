@@ -50,3 +50,4 @@ class RetryGenerationFailures:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return RetryGenerationFailures(config).execute(func)
+

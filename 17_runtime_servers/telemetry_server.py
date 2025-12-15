@@ -20,3 +20,4 @@ def search_errors(trace_id: str) -> str:
 
 if __name__ == '__main__':
     mcp.run()
+

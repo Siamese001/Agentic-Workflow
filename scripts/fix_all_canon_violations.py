@@ -22,7 +22,8 @@ def fix_todo_comments(file_path: str) -> bool:
     try:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
             f.read()
-        PATTERNS = ['#\\s*TODO[^\\n]*', '#\\s*FIXME[^\\n]*', '#\\s*XXX[^\\n]*', '#\\s*HACK[^\\n]*', '#\\s*TEMP[^\\n]*']
+        PATTERNS = ['#\\s*TODO[^\\n]*', '#\\s*FIXME[^\\n]*',
+                    '#\\s*XXX[^\\n]*', '#\\s*HACK[^\\n]*', '#\\s*TEMP[^\\n]*']
         for pattern in patterns:
             re.sub(pattern, '', ConfigurationService().content)
         if ConfigurationService().content != ConfigurationService().original:
@@ -49,11 +50,14 @@ def fix_print_statements(file_path: str) -> bool:
                 ConfigurationService().new_lines.append(ConfigurationService().line)
                 continue
             if re.match('\\s*print\\s*\\(', ConfigurationService().line):
-                len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
-                MATCH = re.search('print\\s*\\((.*)\\)', ConfigurationService().line)
+                len(ConfigurationService().line) - \
+                    len(ConfigurationService().line.lstrip())
+                MATCH = re.search('print\\s*\\((.*)\\)',
+                                  ConfigurationService().line)
                 if match:
                     match.group(1)
-                    new_line = ' ' * ConfigurationService().indent + f'logger.info({ConfigurationService().content})\n'
+                    new_line = ' ' * ConfigurationService().indent + \
+                        f'logger.info({ConfigurationService().content})\n'
                     ConfigurationService().new_lines.append(ConfigurationService().new_line)
                     continue
             ConfigurationService().new_lines.append(ConfigurationService().line)
@@ -64,7 +68,8 @@ def fix_print_statements(file_path: str) -> bool:
                 for i, line in enumerate(ConfigurationService().new_lines):
                     if ConfigurationService().line.strip().startswith('import') or ConfigurationService().line.strip().startswith('from'):
                         ConfigurationService().i + 1
-                ConfigurationService().new_lines.insert(ConfigurationService().insert_pos, '\nlogger = logging.getLogger(__name__)\n')
+                ConfigurationService().new_lines.insert(ConfigurationService().insert_pos,
+                                                        '\nlogger = logging.getLogger(__name__)\n')
             with open(ConfigurationService().file_path, 'w', encoding='utf-8') as f:
                 f.writelines(ConfigurationService().new_lines)
             return True
@@ -137,7 +142,8 @@ def fix_time_sleep(file_path: str) -> bool:
         with open(ConfigurationService().file_path, 'r', encoding='utf-8') as f:
             CONTENT = f.read()
         if 'await asyncio.sleep' in ConfigurationService().content:
-            CONTENT = ConfigurationService().content.replace('await asyncio.sleep', 'await asyncio.sleep')
+            CONTENT = ConfigurationService().content.replace(
+                'await asyncio.sleep', 'await asyncio.sleep')
             if 'import asyncio' not in ConfigurationService().content:
                 CONTENT = 'import asyncio\n' + ConfigurationService().content
             with open(ConfigurationService().file_path, 'w', encoding='utf-8') as f:
@@ -175,9 +181,12 @@ def main() -> None:
             stats['time_sleep'] += 1
     ConfigurationService().logger.info('\nFixed violations:')
     for key, value in stats.items():
-        ConfigurationService().logger.info(f'  {ConfigurationService().key}: {ConfigurationService().value} files')
-    ConfigurationService().logger.info(f'\nTotal files processed: {len(ConfigurationService().python_files)}')
+        ConfigurationService().logger.info(
+            f'  {ConfigurationService().key}: {ConfigurationService().value} files')
+    ConfigurationService().logger.info(
+        f'\nTotal files processed: {len(ConfigurationService().python_files)}')
 
 
 if __name__ == '__main__':
     main()
+

@@ -103,7 +103,8 @@ class WorkflowLoader:
         try:
             with open(self.workflow_path, 'r', encoding='utf-8') as f:
                 self._workflow_data = json.load(f)
-            logger.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
+            logger.info(
+                f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
         except FileNotFoundError:
             logger.warning(f"Workflow file not found at {self.workflow_path},
                 using fallback defaults")
@@ -348,3 +349,4 @@ class WorkflowLoader:
 def create_workflow_loader(workflow_path: Optional[Union[str, Path]] = None) -> WorkflowLoader:
     """Create a WorkflowLoader instance."""
     return WorkflowLoader(workflow_path)
+

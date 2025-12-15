@@ -1,11 +1,7 @@
-"""Input processing stage for unified signal pipeline.
+"""Input processing stage for unified signal pipeline. """
 
-
-LOGGER = logging.getLogger(__name__)
-Extracted from unified_signal_pipeline.py for Key 42 compliance.
-"""
-
-from .types import PipelineStage
+# TODO: Fix relative import
+# from .types import PipelineStage
 import hashlib
 import json
 import logging
@@ -25,8 +21,10 @@ class InputProcessingStage(PipelineStage):
 def __init__(self: Any) -> None:
         """Initialize input processing stage."""
         try:
-            from ..hyde_processor import HyDEProcessor
-            from ..rag_components import SemanticCache
+# TODO: Fix relative import
+#             from ..hyde_processor import HyDEProcessor
+# TODO: Fix relative import
+#             from ..rag_components import SemanticCache
             self.semantic_cache = SemanticCache()
             self.hyde_processor = HyDEProcessor()
         except ImportError:
@@ -36,30 +34,26 @@ def __init__(self: Any) -> None:
 
 
 async def execute(self: Any, envelope: Any) -> Any:
-        """Process input data.
-
-        Args:
-            envelope: Signal envelope
-
-        Returns:
-            Updated envelope
-        """
+        """Process input data. """
         start_time = time.time()
         stage_name = self.stage_name
 
         if envelope.has_completed_stage(stage_name):
-            logger.debug(f"Skipping {stage_name}, already completed for envelope {envelope.id}")
+            logger.debug(
+                f"Skipping {stage_name}, already completed for envelope {envelope.id}")
             return envelope
 
         envelope.mark_stage_start(stage_name)
 
         try:
-            logger.debug(f"Processing input for {envelope.payload.payload_type}")
+            logger.debug(
+                f"Processing input for {envelope.payload.payload_type}")
 
             CONTENT = self._extract_content_from_payload(envelope.payload)
 
             cache_key = f"input_processed_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(
+                cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_payload_with_processed_data(envelope, cached)
@@ -95,14 +89,7 @@ async def execute(self: Any, envelope: Any) -> Any:
 
 
 def _extract_content_from_payload(self: Any, payload: Any) -> str:
-        """Extract text content from payload.
-
-        Args:
-            payload: Payload object
-
-        Returns:
-            Text content
-        """
+        """Extract text content from payload. """
         if hasattr(payload, 'text'):
             return payload.text
         elif hasattr(payload, 'sections'):
@@ -119,15 +106,7 @@ def _extract_content_from_payload(self: Any, payload: Any) -> str:
 
 
 async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
-        """Process text content.
-
-        Args:
-            content: Text to process
-            envelope: Signal envelope
-
-        Returns:
-            Processed data
-        """
+        """Process text content. """
         RESULT = {
             "word_count": len(content.split()),
             "char_count": len(content),
@@ -152,18 +131,15 @@ def _update_payload_with_processed_data(self: Any,
      envelope: Any,
      processed: Dict[str,
      Any]) -> None:
-        """Update payload with processed data.
-
-        Args:
-            envelope: Signal envelope
-            processed: Processed data
-        """
+        """Update payload with processed data. """
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(processed)
         else:
-            envelope.metadata.update({f"processed_{k}": v for k, v in processed.items()})
+            envelope.metadata.update(
+                {f"processed_{k}": v for k, v in processed.items()})
 
     @property
 def stage_name(self: Any) -> str:
         """Get stage name."""
         return "input_processing"
+

@@ -7,6 +7,9 @@ Usage:
     python scripts/run_backfill.py --git-repo /path/to/repo --local-path /path/to/code
 """
 
+from core.qdrant_cache import QdrantCache
+from core.semantic_gatekeeper import get_gatekeeper
+from core.etl_pipeline import BackfillPipeline, ContinuousIngester
 import argparse
 import asyncio
 import json
@@ -18,10 +21,6 @@ from typing import Dict, Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from core.etl_pipeline import BackfillPipeline, ContinuousIngester
-from core.semantic_gatekeeper import get_gatekeeper
-from core.qdrant_cache import QdrantCache
 
 
 def setup_logging(level: str = "INFO"):
@@ -39,10 +38,10 @@ def setup_logging(level: str = "INFO"):
 def load_config(config_path: str) -> Dict[str, Any]:
     """Load configuration from YAML or JSON file."""
     path = Path(config_path)
-    
+
     if not path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
-    
+
     with open(path, 'r') as f:
         if path.suffix.lower() in ['.yaml', '.yml']:
             return yaml.safe_load(f)
@@ -55,31 +54,31 @@ def load_config(config_path: str) -> Dict[str, Any]:
 def create_sources_from_args(args) -> Dict[str, Any]:
     """Create sources configuration from CLI arguments."""
     sources = {}
-    
+
     if args.git_repo:
         sources["git_repos"] = [{
             "path": args.git_repo,
             "branch": args.git_branch or "main"
         }]
-    
+
     if args.local_path:
         sources["local_paths"] = [{
             "path": args.local_path
         }]
-    
+
     if args.s3_bucket:
         sources["s3_buckets"] = [{
             "bucket": args.s3_bucket,
             "prefix": args.s3_prefix or ""
         }]
-    
+
     return sources
 
 
 async def run_backfill(sources: Dict[str, Any], config: Dict[str, Any]):
     """Run the backfill pipeline."""
     logger = logging.getLogger(__name__)
-    
+
     # Initialize components
     logger.info("Initializing components...")
     gatekeeper = get_gatekeeper()
@@ -88,13 +87,13 @@ async def run_backfill(sources: Dict[str, Any], config: Dict[str, Any]):
         port=config.get("qdrant_port", 6333),
         index_name=config.get("qdrant_index", "canon-l2")
     )
-    
+
     # Create and run pipeline
     pipeline = BackfillPipeline(gatekeeper, qdrant_cache, sources)
-    
+
     logger.info("Starting backfill pipeline...")
     stats = await pipeline.run()
-    
+
     # Print results
     print("\n" + "="*50)
     print("BACKFILL COMPLETE")
@@ -106,14 +105,14 @@ async def run_backfill(sources: Dict[str, Any], config: Dict[str, Any]):
     print(f"Duration: {stats['duration_seconds']:.2f} seconds")
     print(f"Throughput: {stats['chunks_per_second']:.2f} chunks/second")
     print("="*50)
-    
+
     return stats
 
 
 async def run_continuous_ingestion(config: Dict[str, Any]):
     """Run the continuous ingestion service."""
     logger = logging.getLogger(__name__)
-    
+
     # Initialize components
     gatekeeper = get_gatekeeper()
     qdrant_cache = QdrantCache(
@@ -121,16 +120,16 @@ async def run_continuous_ingestion(config: Dict[str, Any]):
         port=config.get("qdrant_port", 6333),
         index_name=config.get("qdrant_index", "canon-l2")
     )
-    
+
     # Create ingester
     ingester = ContinuousIngester(
         gatekeeper,
         qdrant_cache,
         failure_retention_days=config.get("failure_retention_days", 90)
     )
-    
+
     logger.info("Starting continuous ingestion service...")
-    
+
     # Run cleanup periodically
     while True:
         try:
@@ -155,15 +154,15 @@ def main():
 Examples:
   # Run with config file
   python scripts/run_backfill.py --config config/backfill.yaml
-  
+
   # Run backfill from Git repo
   python scripts/run_backfill.py --git-repo /path/to/repo --mode backfill
-  
+
   # Run continuous ingestion
   python scripts/run_backfill.py --mode continuous
         """
     )
-    
+
     # Mode
     parser.add_argument(
         "--mode",
@@ -171,14 +170,14 @@ Examples:
         required=True,
         help="Pipeline mode to run"
     )
-    
+
     # Config
     parser.add_argument(
         "--config",
         type=str,
         help="Configuration file path (YAML or JSON)"
     )
-    
+
     # Backfill sources
     parser.add_argument(
         "--git-repo",
@@ -205,7 +204,7 @@ Examples:
         type=str,
         help="S3 prefix to filter objects"
     )
-    
+
     # Options
     parser.add_argument(
         "--log-level",
@@ -218,26 +217,26 @@ Examples:
         action="store_true",
         help="Show what would be processed without actually running"
     )
-    
+
     args = parser.parse_args()
-    
+
     # Setup logging
     setup_logging(args.log_level)
     logger = logging.getLogger(__name__)
-    
+
     # Load configuration
     if args.config:
         config = load_config(args.config)
     else:
         config = {}
-    
+
     # Override config with CLI args
     if "qdrant" not in config:
         config["qdrant"] = {}
     config["qdrant"]["host"] = config.get("qdrant_host", "localhost")
     config["qdrant"]["port"] = config.get("qdrant_port", 6333)
     config["qdrant"]["index_name"] = config.get("qdrant_index", "canon-l2")
-    
+
     # Run pipeline
     try:
         if args.mode == "backfill":
@@ -246,28 +245,30 @@ Examples:
                 sources = config["sources"]
             else:
                 sources = create_sources_from_args(args)
-            
+
             if not sources:
-                logger.error("No sources specified. Use --config or source arguments.")
+                logger.error(
+                    "No sources specified. Use --config or source arguments.")
                 sys.exit(1)
-            
+
             if args.dry_run:
                 logger.info(f"DRY RUN: Would process sources: {sources}")
             else:
                 stats = asyncio.run(run_backfill(sources, config))
-                
+
                 # Save stats
                 stats_file = Path("backfill_stats.json")
                 with open(stats_file, 'w') as f:
                     json.dump(stats, f, indent=2)
                 logger.info(f"Stats saved to {stats_file}")
-        
+
         elif args.mode == "continuous":
             if args.dry_run:
-                logger.info("DRY RUN: Would start continuous ingestion service")
+                logger.info(
+                    "DRY RUN: Would start continuous ingestion service")
             else:
                 asyncio.run(run_continuous_ingestion(config))
-    
+
     except KeyboardInterrupt:
         logger.info("Pipeline interrupted by user")
         sys.exit(0)
@@ -278,3 +279,4 @@ Examples:
 
 if __name__ == "__main__":
     main()
+

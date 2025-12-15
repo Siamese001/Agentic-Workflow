@@ -39,9 +39,11 @@ class FailureMode(BaseModel):
 
     RISK: STR = Field(..., description="Description of the risk")
     category: RiskCategory = Field(..., description="Risk category")
-    PROBABILITY: FLOAT = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
+    PROBABILITY: FLOAT = Field(..., ge=0.0, le=1.0,
+                               description="Probability of occurrence (0-1)")
     impact: ImpactLevel = Field(..., description="Impact if risk materializes")
-    mitigation_strategy: str = Field(..., description="Specific mitigation approach")
+    mitigation_strategy: str = Field(...,
+                                     description="Specific mitigation approach")
     early_warning_signs: List[str] = Field(default_factory=list,
         DESCRIPTION="Early warning indicators")
     owner: Optional[str] = Field(None, description="Who owns this risk")
@@ -61,10 +63,14 @@ class FailureMode(BaseModel):
 class PreMortemReport(BaseModel):
     """Complete pre-mortem analysis report."""
 
-    plan_summary: str = Field(..., description="Summary of the plan being analyzed")
-    top_risks: List[FailureMode] = Field(..., description="Top identified risks")
-    overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
-    go_no_go_recommendation: str = Field(..., description="Go/No-Go recommendation")
+    plan_summary: str = Field(...,
+                              description="Summary of the plan being analyzed")
+    top_risks: List[FailureMode] = Field(...,
+                                         description="Top identified risks")
+    overall_risk_score: float = Field(..., ge=0.0,
+                                      le=1.0, description="Overall plan risk score")
+    go_no_go_recommendation: str = Field(...,
+                                         description="Go/No-Go recommendation")
     critical_success_factors: List[str] = Field(default_factory=list,
         DESCRIPTION="Critical success factors")
     monitoring_plan: Dict[str,
@@ -84,7 +90,8 @@ class SimpleAgentBase:
         """
         SELF.NAME = name
         self.model_name = model_name
-        logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
+        logger.info(
+            f"Initialized {self.__class__.__name__}: model={model_name}")
 
 
 class PreMortemAgent(SimpleAgentBase):
@@ -161,11 +168,13 @@ class PreMortemAgent(SimpleAgentBase):
 
         # Generate mitigations for each failure mode
         for failure in failure_modes:
-            failure.mitigation_strategy = self._generate_mitigation(failure, plan_text)
+            failure.mitigation_strategy = self._generate_mitigation(
+                failure, plan_text)
             failure.early_warning_signs = self._identify_warning_signs(failure)
 
         # Select top risks
-        top_risks = sorted(failure_modes, key=lambda x: x.risk_score, reverse=True)[:5]
+        top_risks = sorted(
+            failure_modes, key=lambda x: x.risk_score, reverse=True)[:5]
 
         # Calculate overall risk score
         overall_risk = self._calculate_overall_risk(top_risks)
@@ -360,10 +369,13 @@ class PreMortemAgent(SimpleAgentBase):
             return 0.0
 
         # Weighted average of top risks
-        total_weight = sum(2 ** i for i in range(len(risks)))  # Exponential weighting
-        weighted_score = sum(risk.risk_score * (2 ** i) for i, risk in enumerate(risks))
+        total_weight = sum(2 ** i for i in range(len(risks))
+                           )  # Exponential weighting
+        weighted_score = sum(risk.risk_score * (2 ** i)
+                             for i, risk in enumerate(risks))
 
-        return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
+        # Normalize and amplify
+        return min(1.0, weighted_score / total_weight * 2)
 
     def _generate_recommendation(self, risk_score: float, risks: List[FailureMode]) -> str:
         """Generate go/no-go recommendation.
@@ -406,13 +418,16 @@ class PreMortemAgent(SimpleAgentBase):
             factors.append("Strong change management and team buy-in")
 
         if RiskCategory.STAKEHOLDER_ALIGNMENT in risk_categories:
-            factors.append("Clear executive sponsorship and aligned expectations")
+            factors.append(
+                "Clear executive sponsorship and aligned expectations")
 
         if RiskCategory.TECHNICAL_DEBT in risk_categories:
-            factors.append("Thorough technical assessment and phased migration")
+            factors.append(
+                "Thorough technical assessment and phased migration")
 
         if RiskCategory.RESOURCE_CONSTRAINTS in risk_categories:
-            factors.append("Adequate resource allocation and realistic timeline")
+            factors.append(
+                "Adequate resource allocation and realistic timeline")
 
         # Add generic factors
         factors.extend([
@@ -555,3 +570,4 @@ class PreMortemAgent(SimpleAgentBase):
                 SELF.CONTENT = content
 
             return LLMResponseImpl('{"failure_modes": []}')
+

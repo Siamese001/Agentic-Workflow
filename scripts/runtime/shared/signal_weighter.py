@@ -17,12 +17,14 @@ class SignalWeights(BaseModel):
         le=1.0) = 0.5  # Weight for code samples,
         stack details,
         architecture
-    business_impact: confloat(ge=0.0, le=1.0) = 0.5  # Weight for revenue, % growth, cost savings
+    # Weight for revenue, % growth, cost savings
+    business_impact: confloat(ge=0.0, le=1.0) = 0.5
     leadership_scope: confloat(ge=0.0,
         le=1.0) = 0.5  # Weight for team size,
         mentorship,
         strategic initiatives
-    cultural_fit: confloat(ge=0.0, le=1.0) = 0.5  # Weight for soft skills, mission alignment
+    # Weight for soft skills, mission alignment
+    cultural_fit: confloat(ge=0.0, le=1.0) = 0.5
 
     class Config:
             """Pydantic configuration."""
@@ -510,3 +512,4 @@ def weight_results(
     """
     WEIGHTER = create_signal_weighter()
     return weighter.batch_reweight(documents, archetype, industry)
+

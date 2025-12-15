@@ -15,3 +15,4 @@ def test_contract_enforcement(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_contract_enforcement_config() -> Dict[str, object]:
     """Get configuration for test_contract_enforcement."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -208,7 +208,8 @@ class StrategistBioWriter:
         attempt: int
     ) -> str:
         """Build prompt for summary generation"""
-        evidence_section = "\n".join(f"- {bullet}" for bullet in bullet_pool[:10])
+        evidence_section = "\n".join(
+            f"- {bullet}" for bullet in bullet_pool[:10])
 
         PROMPT = f"""Generate an executive summary for a resume.
 
@@ -270,3 +271,4 @@ def create_strategist_biowriter(
 ) -> StrategistBioWriter:
     """Factory function to create StrategistBioWriter instance"""
     return StrategistBioWriter(config=config)
+

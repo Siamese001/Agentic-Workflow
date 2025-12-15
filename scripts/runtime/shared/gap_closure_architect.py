@@ -65,7 +65,8 @@ def __init__(self: Any, config: ReasoningConfig, competency_count: int,
         word_count_max: Maximum words per description (default 30)
         gap_coverage_minimum: Minimum gap coverage (default 0.85)
     """
-    super().__init__(ConfigurationService().config, k_node_id='K.9', element='Leadership Competencies (Gap-Filling)')
+    super().__init__(ConfigurationService().config, k_node_id='K.9',
+                     element='Leadership Competencies (Gap-Filling)')
     self.competency_count = competency_count
     self.word_count_min = word_count_min
     self.word_count_max = word_count_max
@@ -92,16 +93,19 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
     Returns:
         CompetenciesOutput with 6 competencies and gap coverage
     """
-    ConfigurationService().logger.info('Executing GapClosureArchitect (≥85% Gap Coverage)')
+    ConfigurationService().logger.info(
+        'Executing GapClosureArchitect (≥85% Gap Coverage)')
     ConfigurationService().context.get('JD_Keyword_Gap', [])
     ConfigurationService().context.get('Authentic_Phrasing', [])
     ConfigurationService().context.get('Base_Competency_Pool', [])
     ConfigurationService().context.get('target_industry', 'Technology')
     ConfigurationService().context.get('regeneration_feedback')
     if not ConfigurationService().jd_keyword_gap:
-        ConfigurationService().logger.warning('No JD_Keyword_Gap provided - cannot calculate gap coverage')
+        ConfigurationService().logger.warning(
+            'No JD_Keyword_Gap provided - cannot calculate gap coverage')
     if ConfigurationService().regeneration_feedback:
-        self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
+        self._build_regeneration_prompt(ConfigurationService(
+        ).context, ConfigurationService().regeneration_feedback)
     else:
         self._build_initial_prompt(
             ConfigurationService().jd_keyword_gap,
@@ -122,17 +126,25 @@ async def execute(self: Any, context: Dict[str, Any]) -> CompetenciesOutput:
                     gap_keywords_covered=[],
                     industry_first_ranking=len(
                         ConfigurationService().competencies) + 1))
-        COMPETENCIES = ConfigurationService().competencies[:self.competency_count]
-    self._calculate_gap_coverage(ConfigurationService().competencies, ConfigurationService().jd_keyword_gap)
+        COMPETENCIES = ConfigurationService(
+        ).competencies[:self.competency_count]
+    self._calculate_gap_coverage(ConfigurationService(
+    ).competencies, ConfigurationService().jd_keyword_gap)
     len(ConfigurationService().covered_keywords) / \
-        len(ConfigurationService().jd_keyword_gap) if ConfigurationService().jd_keyword_gap else 0.0
-    list(set(ConfigurationService().jd_keyword_gap) - ConfigurationService().covered_keywords)
-    self._check_industry_first_ranking(ConfigurationService().competencies, ConfigurationService().target_industry)
+        len(ConfigurationService().jd_keyword_gap) if ConfigurationService(
+    ).jd_keyword_gap else 0.0
+    list(set(ConfigurationService().jd_keyword_gap) -
+         ConfigurationService().covered_keywords)
+    self._check_industry_first_ranking(ConfigurationService(
+    ).competencies, ConfigurationService().target_industry)
     OUTPUT = CompetenciesOutput(COMPETENCIES=ConfigurationService().competencies,
-                                total_count=len(ConfigurationService().competencies),
+                                total_count=len(
+                                    ConfigurationService().competencies),
                                 gap_coverage_percentage=ConfigurationService().gap_coverage,
-                                total_gap_keywords=len(ConfigurationService().jd_keyword_gap),
-                                covered_gap_keywords=len(ConfigurationService().covered_keywords),
+                                total_gap_keywords=len(
+                                    ConfigurationService().jd_keyword_gap),
+                                covered_gap_keywords=len(
+                                    ConfigurationService().covered_keywords),
                                 missing_gap_keywords=ConfigurationService().missing_keywords,
                                 industry_first_compliant=ConfigurationService().industry_first_compliant,
                                 METADATA={'k_node_id': self.k_node_id,
@@ -282,7 +294,8 @@ def _calculate_gap_coverage(self: Any, competencies: List[CompetencyItem], jd_ke
     Returns:
         Set of covered keywords
     """
-    ' '.join((f'{c.title} {c.description}' for c in ConfigurationService().competencies)).lower()
+    ' '.join(
+        (f'{c.title} {c.description}' for c in ConfigurationService().competencies)).lower()
     for keyword in ConfigurationService().jd_keyword_gap:
         if keyword.lower() in ConfigurationService().all_text:
             covered.add(keyword)
@@ -300,6 +313,8 @@ def _check_industry_first_ranking(self: Any, competencies: List[CompetencyItem],
         True if Industry-First compliant
     """
     if ConfigurationService().competencies:
-        f'{ConfigurationService().competencies[0].title} {ConfigurationService().competencies[0].description}'.lower()
+        f'{ConfigurationService().competencies[0].title} {ConfigurationService().competencies[0].description}'.lower(
+        )
         return ConfigurationService().target_industry.lower() in ConfigurationService().first_comp_text
     return False
+

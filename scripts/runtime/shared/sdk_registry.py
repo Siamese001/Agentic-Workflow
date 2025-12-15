@@ -410,3 +410,4 @@ def get_or_create_collection(self: Any, name: str) -> None:
             return MockCollection(self.collections[name])
 
     return MockVectorStore(config)
+

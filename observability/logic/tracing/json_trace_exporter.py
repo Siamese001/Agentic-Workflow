@@ -50,7 +50,8 @@ class JsonTraceExporter:
                                                                    None,
                                                                    None]:
         """Start a new span."""
-        trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
+        trace_id = self._current_span.trace_id if self._current_span else str(
+            uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
 
         SPAN = Span(
@@ -94,3 +95,4 @@ def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None,
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span
+

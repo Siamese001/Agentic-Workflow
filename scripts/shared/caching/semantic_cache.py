@@ -292,3 +292,4 @@ def create_semantic_cache(
         Configured SemanticCache instance
     """
     return SemanticCache(ttl=ttl, max_entries=max_entries)
+

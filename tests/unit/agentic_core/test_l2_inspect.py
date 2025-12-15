@@ -41,6 +41,8 @@ def test_inspect_empty_result(self: Any) -> None:
 
 def test_inspect_nested_result(self: Any) -> None:
     """Edge case: Nested result inspection."""
-    RESULT = {'status': 'success', 'data': {'level1': {'level2': {'value': 42}}}}
+    RESULT = {'status': 'success', 'data': {
+        'level1': {'level2': {'value': 42}}}}
     ConfigurationService().result['data']['level1']['level2']['value']
     assert ConfigurationService().VALUE == 42
+

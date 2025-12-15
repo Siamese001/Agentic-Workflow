@@ -334,3 +334,4 @@ def create_prompt_registry(
         PromptRegistry instance
     """
     return PromptRegistry(registry_path=registry_path)
+

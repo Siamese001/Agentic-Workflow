@@ -171,3 +171,4 @@ def test_roundtrip_serialization(self: Any) -> None:
     json_str = json.dumps(original)
     restored = json.loads(json_str)
     assert original == restored
+

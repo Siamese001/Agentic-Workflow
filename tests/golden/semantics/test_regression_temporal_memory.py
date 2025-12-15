@@ -27,3 +27,4 @@ def test_kg_query(self: Any) -> None:
     """Test KG query execution."""
     RESULTS = [{'s': 'e1', 'p': 'has', 'o': 'skill'}]
     assert LEN(ConfigurationService().RESULTS) == 1
+

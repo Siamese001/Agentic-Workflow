@@ -20,8 +20,10 @@ logger = logging.getLogger(__name__)
 if sys.platform == "win32":
     import io
 
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(
+        sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # --- AGENTIC ARCHITECTURE ---
 
@@ -55,27 +57,33 @@ class HygieneAgent(AtomicAgent):
 
         # Key 09: Unused imports
         try:
-            passed, details = run_check_function(check_key_09_no_unused_imports)
+            passed, details = run_check_function(
+                check_key_09_no_unused_imports)
             if not passed:
                 violations.extend([f"Key 09: {v}" for v in details])
         except Exception as e:
-            violations.append(f"Key 09: Error checking unused imports: {str(e)}")
+            violations.append(
+                f"Key 09: Error checking unused imports: {str(e)}")
 
         # Key 11: Trailing whitespace
         try:
-            passed, details = run_check_function(check_key_11_no_trailing_whitespace)
+            passed, details = run_check_function(
+                check_key_11_no_trailing_whitespace)
             if not passed:
                 violations.extend([f"Key 11: {v}" for v in details])
         except Exception as e:
-            violations.append(f"Key 11: Error checking trailing whitespace: {str(e)}")
+            violations.append(
+                f"Key 11: Error checking trailing whitespace: {str(e)}")
 
         # Key 12: Missing newlines
         try:
-            passed, details = run_check_function(check_key_12_no_missing_newline)
+            passed, details = run_check_function(
+                check_key_12_no_missing_newline)
             if not passed:
                 violations.extend([f"Key 12: {v}" for v in details])
         except Exception as e:
-            violations.append(f"Key 12: Error checking missing newlines: {str(e)}")
+            violations.append(
+                f"Key 12: Error checking missing newlines: {str(e)}")
 
         # Key 13: Tab characters
         try:
@@ -83,7 +91,8 @@ class HygieneAgent(AtomicAgent):
             if not passed:
                 violations.extend([f"Key 13: {v}" for v in details])
         except Exception as e:
-            violations.append(f"Key 13: Error checking tab characters: {str(e)}")
+            violations.append(
+                f"Key 13: Error checking tab characters: {str(e)}")
 
         return AtomicResult(
             success=len(violations) == 0,
@@ -122,9 +131,11 @@ class SecurityAgent(AtomicAgent):
                 if key in ALL_KEYS:
                     passed, details = ALL_KEYS[key]["function"]()
                     if not passed:
-                        violations.extend([f"Key {key:02d}: {v}" for v in details])
+                        violations.extend(
+                            [f"Key {key:02d}: {v}" for v in details])
             except Exception as e:
-                violations.append(f"Key {key:02d}: Error during check: {str(e)}")
+                violations.append(
+                    f"Key {key:02d}: Error during check: {str(e)}")
 
         return AtomicResult(
             success=len(violations) == 0,
@@ -146,9 +157,11 @@ class ArchitectAgent(AtomicAgent):
                 if key in ALL_KEYS:
                     passed, details = ALL_KEYS[key]["function"]()
                     if not passed:
-                        violations.extend([f"Key {key:02d}: {v}" for v in details])
+                        violations.extend(
+                            [f"Key {key:02d}: {v}" for v in details])
             except Exception as e:
-                violations.append(f"Key {key:02d}: Error during check: {str(e)}")
+                violations.append(
+                    f"Key {key:02d}: Error during check: {str(e)}")
 
         return AtomicResult(
             success=len(violations) == 0,
@@ -170,9 +183,11 @@ class RefactorAgent(AtomicAgent):
                 if key in ALL_KEYS:
                     passed, details = ALL_KEYS[key]["function"]()
                     if not passed:
-                        violations.extend([f"Key {key:02d}: {v}" for v in details])
+                        violations.extend(
+                            [f"Key {key:02d}: {v}" for v in details])
             except Exception as e:
-                violations.append(f"Key {key:02d}: Error during check: {str(e)}")
+                violations.append(
+                    f"Key {key:02d}: Error during check: {str(e)}")
 
         return AtomicResult(
             success=len(violations) == 0,
@@ -210,7 +225,8 @@ class IntelligentValidator:
                 logger.info(f"      - {v}")
 
             if result.fixable:
-                logger.info(f"   🔧 INITIATING AUTO-REPAIR for {agent.__class__.__name__}...")
+                logger.info(
+                    f"   🔧 INITIATING AUTO-REPAIR for {agent.__class__.__name__}...")
                 if agent.attempt_fix():
                     logger.info("      ✅ Repair successful. Re-checking...")
                     if agent.check().success:
@@ -220,8 +236,10 @@ class IntelligentValidator:
 
             # CRITICAL DECISION POINT
             if isinstance(agent, ArchitectAgent):
-                logger.info("   🛑 CRITICAL ARCHITECTURE FAILURE. Stopping mission.")
-                logger.info("   👉 You must fix the Folder Structure or Core Definitions first.")
+                logger.info(
+                    "   🛑 CRITICAL ARCHITECTURE FAILURE. Stopping mission.")
+                logger.info(
+                    "   👉 You must fix the Folder Structure or Core Definitions first.")
                 sys.exit(1)
 
             logger.info("   ℹ️ Continuing mission (Non-blocking failure)...")
@@ -364,7 +382,8 @@ def check_key_01_no_todo_comments() -> None:
     """Key 01: No TODO, FIXME, or XXX comments in production code."""
     info("Checking for TODO/FIXME comments...")
 
-    todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
+    todo_patterns = [r"#\s*TODO", r"#\s*FIXME",
+                     r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
     violations = []
     python_files = get_python_files()
 
@@ -406,7 +425,8 @@ def check_key_02_no_print_statements() -> None:
             continue
 
     if violations:
-        fail("02", f"Found {len(violations)} print statements: {', '.join(violations[:10])}")
+        fail(
+            "02", f"Found {len(violations)} print statements: {', '.join(violations[:10])}")
     else:
         success("02", "No print statements found")
 
@@ -452,14 +472,16 @@ def check_key_04_no_empty_except_blocks() -> None:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ExceptHandler):
                         if not node.body or (
-                            len(node.body) == 1 and isinstance(node.body[0], ast.Pass)
+                            len(node.body) == 1 and isinstance(
+                                node.body[0], ast.Pass)
                         ):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
             continue
 
     if violations:
-        fail("04", f"Found {len(violations)} empty except blocks: {', '.join(violations[:10])}")
+        fail(
+            "04", f"Found {len(violations)} empty except blocks: {', '.join(violations[:10])}")
     else:
         success("04", "No empty except blocks found")
 
@@ -511,7 +533,8 @@ def check_key_06_no_eval_exec() -> None:
 
 
 def check_key_07_no_star_imports() -> None:
-    """Key 07: No star imports (from module import *)."""
+    # TODO: Replace 'from module import *' with explicit imports
+    #     """Key 07: No star imports (from module import *)."""
     info("Checking for star imports...")
     violations = []
     python_files = get_python_files()
@@ -551,7 +574,8 @@ def check_key_08_no_relative_imports() -> None:
             continue
 
     if violations:
-        fail("08", f"Found {len(violations)} relative imports: {', '.join(violations[:10])}")
+        fail(
+            "08", f"Found {len(violations)} relative imports: {', '.join(violations[:10])}")
     else:
         success("08", "No relative imports found")
 
@@ -744,7 +768,8 @@ def check_key_15_no_magic_numbers() -> None:
                             continue
                         if hasattr(node, "parent"):
                             continue
-                        violations.append(f"{file_path}:{node.lineno} ({node.value})")
+                        violations.append(
+                            f"{file_path}:{node.lineno} ({node.value})")
         except Exception:
             continue
 
@@ -800,7 +825,8 @@ def check_key_17_no_large_functions() -> None:
                             else len(node.body)
                         )
                         if size > 50:
-                            violations.append(f"{file_path}:{node.lineno} ({size} lines)")
+                            violations.append(
+                                f"{file_path}:{node.lineno} ({size} lines)")
         except Exception:
             continue
 
@@ -822,14 +848,17 @@ def check_key_18_no_many_parameters() -> None:
             if tree:
                 for node in ast.walk(tree):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        count = len([a for a in node.args.args if a.arg not in ("self", "cls")])
+                        count = len(
+                            [a for a in node.args.args if a.arg not in ("self", "cls")])
                         if count > 7:
-                            violations.append(f"{file_path}:{node.lineno} ({count} params)")
+                            violations.append(
+                                f"{file_path}:{node.lineno} ({count} params)")
         except Exception:
             continue
 
     if violations:
-        fail("18", f"Found {len(violations)} functions with too many parameters")
+        fail(
+            "18", f"Found {len(violations)} functions with too many parameters")
     else:
         success("18", "All functions have reasonable parameter count")
 
@@ -849,7 +878,8 @@ def check_key_19_no_complex_functions() -> None:
                         complexity = 1
                         for child in ast.walk(node):
                             if isinstance(
-                                child, (ast.If, ast.While, ast.For, ast.AsyncFor, ast.ExceptHandler)
+                                child, (ast.If, ast.While, ast.For,
+                                        ast.AsyncFor, ast.ExceptHandler)
                             ):
                                 complexity += 1
                         if complexity > 10:
@@ -909,7 +939,8 @@ def check_key_21_no_missing_docstrings() -> None:
                         if node.name.startswith("_"):
                             continue
                         if not ast.get_docstring(node):
-                            violations.append(f"{file_path}:{node.lineno} {node.name}")
+                            violations.append(
+                                f"{file_path}:{node.lineno} {node.name}")
         except Exception:
             continue
 
@@ -934,7 +965,8 @@ def check_key_22_no_type_hints() -> None:
                         if node.name.startswith("_"):
                             continue
                         if node.returns is None:
-                            violations.append(f"{file_path}:{node.lineno} {node.name}")
+                            violations.append(
+                                f"{file_path}:{node.lineno} {node.name}")
         except Exception:
             continue
 
@@ -959,7 +991,8 @@ def check_key_23_no_unreachable_code() -> None:
                         for i, stmt in enumerate(node.body):
                             if isinstance(stmt, (ast.Return, ast.Raise)):
                                 if i + 1 < len(node.body):
-                                    violations.append(f"{file_path}:{stmt.lineno}")
+                                    violations.append(
+                                        f"{file_path}:{stmt.lineno}")
                                     break
         except Exception:
             continue
@@ -1015,7 +1048,8 @@ def check_key_25_no_global_variables() -> None:
                         for target in node.targets:
                             if isinstance(target, ast.Name):
                                 if not target.id.isupper():  # Constants okay
-                                    violations.append(f"{file_path}:{node.lineno} {target.id}")
+                                    violations.append(
+                                        f"{file_path}:{node.lineno} {target.id}")
         except Exception:
             continue
 
@@ -1086,7 +1120,8 @@ def check_key_27_no_empty_sov_files() -> None:
             if is_empty:
                 try:
                     os.remove(file_path)
-                    logger.info(f"{Colors.YELLOW}    ⟳ DELETED EMPTY FILE: {file_path}{Colors.END}")
+                    logger.info(
+                        f"{Colors.YELLOW}    ⟳ DELETED EMPTY FILE: {file_path}{Colors.END}")
                     cleaned_count += 1
                 except OSError as e:
                     violations.append(f"{file_path} (Failed to delete: {e})")
@@ -1216,7 +1251,8 @@ def check_key_32_no_blocking_io() -> None:
                                     "post",
                                     "request",
                                 ) and "requests" in str(child.func.value):
-                                    violations.append(f"{file_path}:{node.lineno}")
+                                    violations.append(
+                                        f"{file_path}:{node.lineno}")
         except Exception:
             continue
 
@@ -1279,7 +1315,8 @@ def check_key_35_no_try_except_everywhere() -> None:
         try:
             tree = parse_python_file(file_path)
             if tree:
-                count = len([n for n in ast.walk(tree) if isinstance(n, ast.Try)])
+                count = len([n for n in ast.walk(tree)
+                            if isinstance(n, ast.Try)])
                 if count > 5:
                     violations.append(f"{file_path} ({count} blocks)")
         except Exception:
@@ -1466,10 +1503,12 @@ def check_key_41_no_deep_directories() -> None:
 
         if os.path.isdir(item):
             if item not in STRICT_ROOT_DOMAINS:
-                violations.append(f"ILLEGAL ROOT FOLDER: '{item}' (Not in Sovereign Whitelist)")
+                violations.append(
+                    f"ILLEGAL ROOT FOLDER: '{item}' (Not in Sovereign Whitelist)")
         elif os.path.isfile(item):
             if item not in STRICT_ROOT_FILES:
-                violations.append(f"ILLEGAL ROOT FILE: '{item}' (Move to scripts/ or config/)")
+                violations.append(
+                    f"ILLEGAL ROOT FILE: '{item}' (Move to scripts/ or config/)")
 
     # 2. SCAN DEPTH
     max_depth = 0
@@ -1490,7 +1529,8 @@ def check_key_41_no_deep_directories() -> None:
         if root_folder in STRICT_ROOT_DOMAINS:
             limit = 4 if "agentic_core" in root_folder or "apps_" in root_folder else 3
             if depth > limit:
-                violations.append(f"DEEP NESTING: '{root}' (Depth {depth} > {limit})")
+                violations.append(
+                    f"DEEP NESTING: '{root}' (Depth {depth} > {limit})")
 
     if violations:
         fail("41", f"Architecture Violations ({len(violations)})")
@@ -1527,7 +1567,8 @@ def check_key_43_no_many_classes() -> None:
         try:
             tree = parse_python_file(file_path)
             if tree:
-                count = len([n for n in tree.body if isinstance(n, ast.ClassDef)])
+                count = len(
+                    [n for n in tree.body if isinstance(n, ast.ClassDef)])
                 if count > 10:
                     violations.append(file_path)
         except Exception:
@@ -1587,7 +1628,8 @@ def check_key_47_no_violate_naming() -> None:
             if filename.startswith("test_") or filename.endswith("_test.py"):
                 path_parts = file_path.split("/")
                 if "tests" not in path_parts:
-                    violations.append(f"MISPLACED TEST: {file_path} (Move to 'tests/')")
+                    violations.append(
+                        f"MISPLACED TEST: {file_path} (Move to 'tests/')")
 
         # 3. Naming Conventions (AST)
         if not violations or not any("GARBAGE" in v for v in violations):
@@ -1767,11 +1809,13 @@ def run_all_checks() -> None:
     logger.info(
         f"\n{Colors.BOLD}{Colors.UNDERLINE}Subatomic Canon Validator - Agentic Workflow{Colors.END}"
     )
-    logger.info(f"{Colors.CYAN}Validating 50 strict enforcement rules...{Colors.END}\n")
+    logger.info(
+        f"{Colors.CYAN}Validating 50 strict enforcement rules...{Colors.END}\n")
 
     # --- CRITICAL PRE-FLIGHT ---
     # Run Key 27 FIRST to clean ghost files before they cause linting errors
-    logger.info(f"{Colors.PURPLE}PRE-FLIGHT: Sanitizing Environment (Key 27){Colors.END}")
+    logger.info(
+        f"{Colors.PURPLE}PRE-FLIGHT: Sanitizing Environment (Key 27){Colors.END}")
     check_key_27_no_empty_sov_files()
 
     # Run Phases 1-9
@@ -1784,16 +1828,21 @@ def run_all_checks() -> None:
 
     # Summary
     logger.info(f"\n{Colors.BOLD}{'=' * 60}{Colors.END}")
-    passed = len([r for r in validation_results.values() if r["status"] == "pass"])
+    passed = len([r for r in validation_results.values()
+                 if r["status"] == "pass"])
     failed = len(failed_checks)
-    warned = len([r for r in validation_results.values() if r["status"] == "WARN"])
+    warned = len([r for r in validation_results.values()
+                 if r["status"] == "WARN"])
 
     if failed == 0:
-        logger.info(f"{Colors.GREEN}{Colors.BOLD}✓ SUBATOMIC PERFECTION ACHIEVED{Colors.END}")
+        logger.info(
+            f"{Colors.GREEN}{Colors.BOLD}✓ SUBATOMIC PERFECTION ACHIEVED{Colors.END}")
         logger.info(f"{Colors.GREEN}All {passed} checks passed{Colors.END}")
     else:
-        logger.info(f"{Colors.RED}{Colors.BOLD}✗ CANON VIOLATIONS DETECTED{Colors.END}")
-        logger.error(f"{Colors.RED}{failed} failed, {warned} warnings, {passed} passed{Colors.END}")
+        logger.info(
+            f"{Colors.RED}{Colors.BOLD}✗ CANON VIOLATIONS DETECTED{Colors.END}")
+        logger.error(
+            f"{Colors.RED}{failed} failed, {warned} warnings, {passed} passed{Colors.END}")
         logger.error(
             f"\n{
                 Colors.YELLOW}Failed keys: {
@@ -2268,7 +2317,8 @@ def print_live_dashboard(results):
     for k in sorted(results.keys()):
         status = "pass" if results[k]["passed"] else "FAIL"
         count = len(results[k]["details"]) if not results[k]["passed"] else 0
-        logger.info(f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
+        logger.info(
+            f"{k:<6} | {status:<6} | {count:<10} | {ALL_KEYS[k]['name']}")
     logger.info(f"{'=' * 60}\n")
 
 
@@ -2281,11 +2331,14 @@ if __name__ == "__main__":
     # DEFINING THE DEPENDENCY GRAPH
     # The agent must fix these groups in order.
     DEPENDENCY_ORDER = [
-        {"phase": "CRITICAL", "keys": [40, 41, 50], "desc": "Architecture & Hygiene"},
+        {"phase": "CRITICAL", "keys": [40, 41, 50],
+            "desc": "Architecture & Hygiene"},
         {"phase": "MECHANICAL", "keys": [2, 3, 4, 5, 6, 7, 8, 9, 10,
                                          11, 12, 13, 14, 15, 16], "desc": "Syntax & Imports"},
-        {"phase": "TYPE_SAFETY", "keys": [22, 24], "desc": "Types & Variables"},
-        {"phase": "STRUCTURAL", "keys": [17, 25, 42], "desc": "Refactoring (Large Functions/Files)"}
+        {"phase": "TYPE_SAFETY", "keys": [
+            22, 24], "desc": "Types & Variables"},
+        {"phase": "STRUCTURAL", "keys": [
+            17, 25, 42], "desc": "Refactoring (Large Functions/Files)"}
     ]
 
     def save_state(results):
@@ -2304,7 +2357,8 @@ if __name__ == "__main__":
             keys = layer['keys']
 
             # Check if this layer is blocking
-            failed_keys = [k for k in keys if str(k) in results and not results[str(k)]['passed']]
+            failed_keys = [k for k in keys if str(
+                k) in results and not results[str(k)]['passed']]
 
             if failed_keys:
                 logger.info(f"🛑 BLOCKER DETECTED in PHASE: {phase_name}")
@@ -2313,16 +2367,22 @@ if __name__ == "__main__":
                 logger.info(">>> RECOMMENDED AGENT ACTION:")
 
                 if phase_name == "CRITICAL":
-                    logger.info(f"   ! STOP EVERYTHING. Fix Key {failed_keys[0]} manually or with targeted script.")
-                    logger.info("   ! Do not attempt other keys until this passes.")
+                    logger.info(
+                        f"   ! STOP EVERYTHING. Fix Key {failed_keys[0]} manually or with targeted script.")
+                    logger.info(
+                        "   ! Do not attempt other keys until this passes.")
 
                 elif phase_name == "MECHANICAL":
-                    logger.info(f"   > Run auto-fixers for Keys {failed_keys}.")
-                    logger.info("   > Example: `python fix_whitespace.py` or `python fix_unused_imports.py`")
+                    logger.info(
+                        f"   > Run auto-fixers for Keys {failed_keys}.")
+                    logger.info(
+                        "   > Example: `python fix_whitespace.py` or `python fix_unused_imports.py`")
 
                 elif phase_name == "STRUCTURAL":
-                    logger.info(f"   > Initiate Surgical Refactoring for Key {failed_keys[0]}.")
-                    logger.info("   > This requires 'Extract Method' or 'Move to Config' refactoring.")
+                    logger.info(
+                        f"   > Initiate Surgical Refactoring for Key {failed_keys[0]}.")
+                    logger.info(
+                        "   > This requires 'Extract Method' or 'Move to Config' refactoring.")
 
                 logger.info("=" * 80 + "\n")
                 return False  # Stop analysis, focus on this layer
@@ -2334,8 +2394,10 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     parser = argparse.ArgumentParser(description="Subatomic Canon Validator")
-    parser.add_argument("--keys", nargs="+", type=int, help="Run specific keys (e.g. --keys 17 25)")
-    parser.add_argument("--range", type=str, help="Run range (e.g. --range 1-10)")
+    parser.add_argument("--keys", nargs="+", type=int,
+                        help="Run specific keys (e.g. --keys 17 25)")
+    parser.add_argument("--range", type=str,
+                        help="Run range (e.g. --range 1-10)")
     parser.add_argument("--u", action="store_true", help="Unbuffered output")
     args = parser.parse_args()
 
@@ -2361,7 +2423,8 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # Legacy mode for specific key checks
-    logger.info(f"\n[INIT] Running Intelligence Scan on Keys: {keys_to_run}...")
+    logger.info(
+        f"\n[INIT] Running Intelligence Scan on Keys: {keys_to_run}...")
 
     results = {}
     # Load previous state if exists to maintain memory
@@ -2392,3 +2455,4 @@ if __name__ == "__main__":
     # Exit with error if any failures
     if any(not r["passed"] for r in results.values()):
         sys.exit(1)
+

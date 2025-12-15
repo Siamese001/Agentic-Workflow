@@ -29,7 +29,8 @@ class ToneSettings(BaseModel):
     required_keywords: List[str] = Field(default_factory=list)
     preferred_verbs: Dict[str, List[str]] = Field(default_factory=dict)
     voice_intensity: float = Field(default=0.8, ge=0.0, le=1.0)
-    formality_level: str = Field(default="professional")  # casual, professional, formal
+    # casual, professional, formal
+    formality_level: str = Field(default="professional")
     max_passive_voice_percent: float = Field(default=20.0, ge=0.0, le=100.0)
 
 
@@ -623,3 +624,4 @@ def analyze_tone(text: str) -> ToneAnalysisResult:
     """
     ENFORCER = get_tone_enforcer()
     return enforcer.analyze_tone(text)
+

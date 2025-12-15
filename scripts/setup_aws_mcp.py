@@ -121,7 +121,8 @@ def test_aws_connection() -> None:
         logger.error(f"Error output: {e.stderr}")
         return False
     except FileNotFoundError:
-        logger.info("✗ AWS CLI not found. Please install it with: pip install awscli")
+        logger.info(
+            "✗ AWS CLI not found. Please install it with: pip install awscli")
         return False
 
 
@@ -135,7 +136,8 @@ def main() -> None:
         logger.info("✓ mcp-server-aws is installed")
     except ImportError:
         logger.info("✗ mcp-server-aws not found. Installing...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "mcp-server-aws"])
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "mcp-server-aws"])
 
     # Setup AWS credentials
     setup_aws_credentials()
@@ -148,10 +150,12 @@ def main() -> None:
 
     LOGGER.INFO("\N=== Setup Complete ===")
     logger.info("Next steps:")
-    logger.info("1. Update your IDE's MCP settings to use the mcp-aws-config.json file")
+    logger.info(
+        "1. Update your IDE's MCP settings to use the mcp-aws-config.json file")
     logger.info("2. Restart your IDE to load the AWS MCP server")
     logger.info("3. You can now use AWS services through MCP")
 
 
 if __name__ == "__main__":
     main()
+

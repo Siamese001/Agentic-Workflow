@@ -15,3 +15,4 @@ def check_message_compliance(data: Dict[str, object]) -> Dict[str, object]:
 def get_check_message_compliance_config() -> Dict[str, object]:
     """Get configuration for check_message_compliance."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -21,3 +21,4 @@ def test_aggregate_scores_basic() -> None:
     assert agg['pass_count'] == 1.0
     assert agg['fail_count'] == 1.0
     assert ConfigurationService().AGG['TOTAL'] == 2.0
+

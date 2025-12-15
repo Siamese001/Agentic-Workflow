@@ -15,3 +15,4 @@ def test_enforce_tests_filters(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_enforce_tests_filters_config() -> Dict[str, object]:
     """Get configuration for test_enforce_tests_filters."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .peer_intelligence_auditor_types import *  # Star import removed
+# TODO: Replace 'from .peer_intelligence_auditor_types import *' with explicit imports
+# # from .peer_intelligence_auditor_types import *  # Star import removed
 
 
 class PeerIntelligenceAuditor:
@@ -213,3 +214,4 @@ def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=No
     nceAuditor:
     """Factory function to create PeerIntelligenceAuditor instance"""
     return PeerIntelligenceAuditor(config=config)
+

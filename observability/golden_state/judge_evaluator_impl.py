@@ -6,7 +6,8 @@ from typing import Any, Dict, List, Optional
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .judge_evaluator_types import *  # Star import removed
+# TODO: Replace 'from .judge_evaluator_types import *' with explicit imports
+# # from .judge_evaluator_types import *  # Star import removed
 
 
 class JudgeEvaluator:
@@ -115,7 +116,8 @@ class JudgeEvaluator:
                         EXTRA={'criterion': criterion.value,
                         'error': str(e)},
                         exc_info=True)
-                VERDICT = self._heuristic_evaluation(output, expected, criterion)
+                VERDICT = self._heuristic_evaluation(
+                    output, expected, criterion)
         else:
             VERDICT = self._heuristic_evaluation(output, expected, criterion)
         return verdict
@@ -326,11 +328,14 @@ class JudgeEvaluator:
             Summary string
         """
         STATUS = 'PASSED' if passed else 'FAILED'
-        EXCELLENT = sum((1 for v in verdicts if v.score == JudgmentScore.EXCELLENT))
+        EXCELLENT = sum(
+            (1 for v in verdicts if v.score == JudgmentScore.EXCELLENT))
         GOOD = sum((1 for v in verdicts if v.score == JudgmentScore.GOOD))
-        ACCEPTABLE = sum((1 for v in verdicts if v.score == JudgmentScore.ACCEPTABLE))
+        ACCEPTABLE = sum(
+            (1 for v in verdicts if v.score == JudgmentScore.ACCEPTABLE))
         POOR = sum((1 for v in verdicts if v.score == JudgmentScore.POOR))
-        UNACCEPTABLE = sum((1 for v in verdicts if v.score == JudgmentScore.UNACCEPTABLE))
+        UNACCEPTABLE = sum(
+            (1 for v in verdicts if v.score == JudgmentScore.UNACCEPTABLE))
         summary_parts = [f'Evaluation {status} (Score: {overall_score:.2f})',
             f'Excellent: {excellent},
             Good: {good},
@@ -357,3 +362,4 @@ def create_judge_evaluator(llm_client: Optional[Callable[[str],
         JudgeEvaluator instance
     """
     return JudgeEvaluator(llm_client=llm_client, pass_threshold=pass_threshold)
+

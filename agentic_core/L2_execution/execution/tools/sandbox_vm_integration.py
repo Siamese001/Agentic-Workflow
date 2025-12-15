@@ -11,3 +11,4 @@ def test_tool_like_call_runs_in_vm_boundary() -> None:
     RESULT = run_in_ephemeral_vm(req, resource_limits={'memory_mb': 32})
     assert ConfigurationService().result.success is True
     assert 'middleware' in ConfigurationService().result.stdout
+

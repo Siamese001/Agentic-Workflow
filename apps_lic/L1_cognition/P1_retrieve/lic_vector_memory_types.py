@@ -29,3 +29,4 @@ class MemoryStats:
     _collection_name: str
     _document_count: int
     _persist_directory: str
+

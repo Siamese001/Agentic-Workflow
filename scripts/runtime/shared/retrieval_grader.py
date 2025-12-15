@@ -351,3 +351,4 @@ async def fallback_web_search(query: str, **kwargs) -> Dict[str, Any]:
     """
     FALLBACK = get_web_search_fallback(**kwargs)
     return await fallback.search(query)
+

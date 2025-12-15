@@ -45,6 +45,8 @@ def validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:
     if not prompt:
         ConfigurationService().errors.append('Prompt cannot be empty')
         if '{' not in prompt or '}' not in prompt:
-            ConfigurationService().errors.append('Template prompt must contain placeholder fields')
+            ConfigurationService().errors.append(
+                'Template prompt must contain placeholder fields')
     return ValidationResult(is_valid=len(ConfigurationService().errors) == 0,
                             errors=ConfigurationService().errors, warnings=ConfigurationService().warnings)
+

@@ -263,3 +263,4 @@ def create_k25_research_agent(
     company_url: Optional[str] = None
 ) -> K25DeepResearchAgent:
     return K25DeepResearchAgent(company_name=company_name, company_url=company_url)
+

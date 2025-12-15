@@ -111,3 +111,4 @@ class TestFingerprintRegression:
             MODEL="gpt-4o", messages=messages, fingerprint=""
         )
         assert isinstance(key, str)
+

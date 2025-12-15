@@ -81,3 +81,4 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created Templates instance with config: {final_config}")
     return final_config
+

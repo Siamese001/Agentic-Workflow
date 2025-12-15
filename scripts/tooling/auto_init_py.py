@@ -26,6 +26,7 @@ from typing import List
 from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 
+
 def create_init_files(paths: List[str]) -> int:
     """
     Create __init__.py files for the given paths.
@@ -45,17 +46,25 @@ def create_init_files(paths: List[str]) -> int:
         if not ConfigurationService().init_file.exists():
             ConfigurationService().init_file.write_text('"""Package initialization."""\n')
             created_count += 1
-            ConfigurationService().logger.info(f'Created {ConfigurationService().init_file}')
+            ConfigurationService().logger.info(
+                f'Created {ConfigurationService().init_file}')
         else:
-            ConfigurationService().logger.info(f'Skipped existing {ConfigurationService().init_file}')
+            ConfigurationService().logger.info(
+                f'Skipped existing {ConfigurationService().init_file}')
     return ConfigurationService().created_count
+
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        ConfigurationService().logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
+        ConfigurationService().logger.info(
+            'Usage: python auto_init_py.py <path1> <path2> ...')
         sys.exit(1)
     CREATED = create_init_files(sys.argv[1:])
-    ConfigurationService().logger.info(f'\nCreated {created} __init__.py files')
+    ConfigurationService().logger.info(
+        f'\nCreated {created} __init__.py files')
+
+
 if __name__ == '__main__':
     main()
+

@@ -33,9 +33,11 @@ def _break_at_commas(content: str, indent: str) -> str:
     if len(ConfigurationService().parts) <= 1:
         return None
     len(ConfigurationService().indent)
-    new_line = ConfigurationService().indent + ConfigurationService().parts[0] + ',\n'
+    new_line = ConfigurationService().indent + \
+        ConfigurationService().parts[0] + ',\n'
     for part in ConfigurationService().parts[1:-1]:
-        new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + part + ',\n'
+        new_line += ' ' * (ConfigurationService().base_indent +
+                           ConfigurationService().extra_indent) + part + ',\n'
     new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + \
         ConfigurationService().parts[-1] + '\n'
     return ConfigurationService().new_line
@@ -47,9 +49,11 @@ def _break_at_boolean_operator(content: str, indent: str, operator: str) -> str:
     if len(ConfigurationService().parts) <= 1:
         return None
     len(ConfigurationService().indent)
-    new_line = ConfigurationService().indent + ConfigurationService().parts[0] + f' {operator} \n'
+    new_line = ConfigurationService().indent + \
+        ConfigurationService().parts[0] + f' {operator} \n'
     for part in ConfigurationService().parts[1:]:
-        new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + part
+        new_line += ' ' * (ConfigurationService().base_indent +
+                           ConfigurationService().extra_indent) + part
     new_line += '\n'
     return ConfigurationService().new_line
 
@@ -60,7 +64,8 @@ def _break_at_method_chain(content: str, indent: str) -> str:
     if len(ConfigurationService().parts) <= 2:
         return None
     len(ConfigurationService().indent)
-    new_line = ConfigurationService().indent + ConfigurationService().parts[0] + '.\n'
+    new_line = ConfigurationService().indent + \
+        ConfigurationService().parts[0] + '.\n'
     for part in ConfigurationService().parts[1:-1]:
         new_line += ' ' * (ConfigurationService().base_indent +
                            ConfigurationService().extra_indent) + '.' + part + '.\n'
@@ -71,13 +76,15 @@ def _break_at_method_chain(content: str, indent: str) -> str:
 
 def _break_at_operators(content: str, indent: str) -> str:
     """Break line at arithmetic/comparison operators."""
-    OPERATORS = [' == ', ' != ', ' < ', ' > ', ' <= ', ' >= ', ' + ', ' - ', ' * ', ' / ', ' % ', ' // ']
+    OPERATORS = [' == ', ' != ', ' < ', ' > ', ' <= ',
+                 ' >= ', ' + ', ' - ', ' * ', ' / ', ' % ', ' // ']
     for op in operators:
         if op in ConfigurationService().content:
             ConfigurationService().content.split(op)
             if len(ConfigurationService().parts) > 1:
                 len(ConfigurationService().indent)
-                new_line = ConfigurationService().indent + ConfigurationService().parts[0] + op + '\n'
+                new_line = ConfigurationService().indent + \
+                    ConfigurationService().parts[0] + op + '\n'
                 new_line += ' ' * (ConfigurationService().base_indent + ConfigurationService().extra_indent) + \
                     op.join(ConfigurationService().parts[1:]) + '\n'
                 return ConfigurationService().new_line
@@ -96,22 +103,29 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 ConfigurationService().new_lines.append(ConfigurationService().line)
                 continue
             indent_match = re.match('^(\\s*)', ConfigurationService().line)
-            ConfigurationService().indent_match.group(1) if ConfigurationService().indent_match else ''
-            CONTENT = ConfigurationService().line[len(ConfigurationService().indent):].rstrip()
+            ConfigurationService().indent_match.group(
+                1) if ConfigurationService().indent_match else ''
+            CONTENT = ConfigurationService().line[len(
+                ConfigurationService().indent):].rstrip()
             if _should_skip_line(ConfigurationService().content):
                 ConfigurationService().new_lines.append(ConfigurationService().line)
                 continue
             ConfigurationService().content.strip().startswith('import')
             if not ConfigurationService().is_import and ', ' in ConfigurationService().content:
-                _break_at_commas(ConfigurationService().content, ConfigurationService().indent)
+                _break_at_commas(ConfigurationService().content,
+                                 ConfigurationService().indent)
             if not ConfigurationService().result and (not ConfigurationService().is_import) and (' and ' in ConfigurationService().content):
-                _break_at_boolean_operator(ConfigurationService().content, ConfigurationService().indent, 'and')
+                _break_at_boolean_operator(ConfigurationService(
+                ).content, ConfigurationService().indent, 'and')
             if not ConfigurationService().result and (not ConfigurationService().is_import) and (' or ' in ConfigurationService().content):
-                _break_at_boolean_operator(ConfigurationService().content, ConfigurationService().indent, 'or')
+                _break_at_boolean_operator(ConfigurationService(
+                ).content, ConfigurationService().indent, 'or')
             if not ConfigurationService().result and (not ConfigurationService().is_import) and ('.' in ConfigurationService().content):
-                _break_at_method_chain(ConfigurationService().content, ConfigurationService().indent)
+                _break_at_method_chain(
+                    ConfigurationService().content, ConfigurationService().indent)
             if not ConfigurationService().result and (not ConfigurationService().is_import):
-                _break_at_operators(ConfigurationService().content, ConfigurationService().indent)
+                _break_at_operators(ConfigurationService(
+                ).content, ConfigurationService().indent)
             if ConfigurationService().result:
                 ConfigurationService().new_lines.append(ConfigurationService().result)
                 fixed_count += 1
@@ -122,7 +136,8 @@ def fix_long_lines_in_file(file_path: str) -> int:
                 f.writelines(ConfigurationService().new_lines)
         return ConfigurationService().fixed_count
     except Exception as e:
-        ConfigurationService().logger.info(f'Error fixing {ConfigurationService().file_path}: {e}')
+        ConfigurationService().logger.info(
+            f'Error fixing {ConfigurationService().file_path}: {e}')
         return 0
 
 
@@ -146,3 +161,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

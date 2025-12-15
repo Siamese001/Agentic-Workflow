@@ -15,3 +15,4 @@ def test_validate_tests_schema(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_validate_tests_schema_config() -> Dict[str, object]:
     """Get configuration for test_validate_tests_schema."""
     return {'enabled': True, 'version': '1.0'}
+

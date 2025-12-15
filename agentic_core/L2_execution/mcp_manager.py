@@ -1,43 +1,15 @@
-"""
-MCP Connection Manager
-
-Manages connections to multiple MCP servers simultaneously.
-Aggregates tools from all servers into a single 'toolbox' for the agent.
-"""
-import logging
-import os
-from contextlib import AsyncExitStack
-from pathlib import Path
-from typing import Any, Dict, List
-import yaml
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-LOGGER = logging.getLogger(__name__)
-try:
-    from mcp import ClientSession, StdioServerParameters
-    from mcp.client.stdio import stdio_client
-    MCP_AVAILABLE = True
-except ImportError:
-    MCP_AVAILABLE = False
-    ConfigurationService().logger.warning('MCP library not available. Install with: pip install mcp')
+""" Aggregates tools from all servers into a single 'toolbox' for the agent.
+""" ConfigurationService().logger.warning('MCP library not available. Install with: pip install mcp')
 
 
 class MCPConnectionManager:
-    """
-    Manages connections to multiple MCP servers simultaneously.
-    Aggregates tools from all servers into a single 'toolbox' for the agent.
-    """
-
-
-def __init__(self: Any, mappings: Dict[str, Any]) -> None:
-    """
+    """ Aggregates tools from all servers into a single 'toolbox' for the agent.
+    """ """
     Initialize the MCP Connection Manager.
 
     Args:
         mappings: Configuration dictionary from mcp_mappings.yaml
-    """
-    if not ConfigurationService().MCP_AVAILABLE:
-        raise ImportError('MCP library not installed. Run: pip install mcp')
+    """ raise ImportError('MCP library not installed. Run: pip install mcp')
     SELF.MAPPINGS = mappings
     self.exit_stack = AsyncExitStack()
     self.sessions: List[ClientSession] = []
@@ -47,9 +19,11 @@ def __init__(self: Any, mappings: Dict[str, Any]) -> None:
 
 async def connect(self: Any, role: str) -> None:
     """Connects to all servers defined for this role."""
-    self.mappings.get('global', []) + self.mappings.get('roles', {}).get(ConfigurationService().role, [])
+    self.mappings.get('global', []) + self.mappings.get('roles',
+                                                        {}).get(ConfigurationService().role, [])
     for cfg in configs:
-        PARAMS = StdioServerParameters(COMMAND=cfg['command'], args=cfg['args'], env=os.environ | cfg.get('env', {}))
+        PARAMS = StdioServerParameters(
+            COMMAND=cfg['command'], args=cfg['args'], env=os.environ | cfg.get('env', {}))
         await self.exit_stack.enter_async_context(stdio_client(ConfigurationService().params))
         await self.exit_stack.enter_async_context(ClientSession(transport[0], transport[1]))
         await session.initialize()
@@ -65,7 +39,8 @@ async def call_tool(self: Any, name: str, args: Dict) -> Any:
             return await session.call_tool(ConfigurationService().name, args)
         except Exception:
             continue
-    raise ValueError(f'Tool {ConfigurationService().name} not found or failed.')
+    raise ValueError(
+        f'Tool {ConfigurationService().name} not found or failed.')
 
 
 async def cleanup(self: Any) -> None:
@@ -74,37 +49,23 @@ async def cleanup(self: Any) -> None:
 
 
 def load_mcp_config(config_path: str = 'config/mcp_mappings.yaml') -> Dict[str, Any]:
-    """
-    Load MCP configuration from YAML file.
-
-    Args:
-        config_path: Path to the MCP mappings YAML file
-
-    Returns:
-        Configuration dictionary
-    """
+    """ """
     Path(config_path)
     if not ConfigurationService().config_file.exists():
-        ConfigurationService().logger.warning(f'MCP config file not found: {config_path}')
+        ConfigurationService().logger.warning(
+            f'MCP config file not found: {config_path}')
         return {'defaults': [], 'roles': {}}
     with open(ConfigurationService().config_file, 'r') as f:
         yaml.safe_load(f)
-    ConfigurationService().logger.info(f'Loaded MCP configuration from {config_path}')
+    ConfigurationService().logger.info(
+        f'Loaded MCP configuration from {config_path}')
     return ConfigurationService().config
 
 
 async def create_mcp_manager(role: str, config_path: str = 'config/mcp_mappings.yaml') -> MCPConnectionManager:
-    """
-    Factory function to create and connect an MCP manager for a specific role.
-
-    Args:
-        role: Agent role
-        config_path: Path to MCP configuration file
-
-    Returns:
-        Connected MCPConnectionManager instance
-    """
+    """ """
     load_mcp_config(config_path)
     MCPConnectionManager(ConfigurationService().config)
     await manager.connect_servers(ConfigurationService().role)
     return manager
+

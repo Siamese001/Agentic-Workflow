@@ -469,3 +469,4 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return 0.0
 
         return len(intersection) / len(union)
+

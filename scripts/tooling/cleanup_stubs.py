@@ -19,7 +19,8 @@ from typing import Dict, List
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 
 # Folders to skip
-SKIP_FOLDERS = {'.git', '__pycache__', '.venv', 'venv', 'node_modules', '06_data'}
+SKIP_FOLDERS = {'.git', '__pycache__',
+    '.venv', 'venv', 'node_modules', '06_data'}
 
 # Files to always keep (even if empty)
 KEEP_FILES = {'__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml'}
@@ -28,7 +29,8 @@ KEEP_FILES = {'__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml'}
 def is_empty_or_minimal(file_path: Path) -> bool:
     """Check if file is empty or has minimal stub content."""
     try:
-        CONTENT = file_path.read_text(encoding='utf-8', errors='ignore').strip()
+        CONTENT = file_path.read_text(
+            encoding='utf-8', errors='ignore').strip()
 
         # Empty
         if not content:
@@ -90,7 +92,8 @@ def remove_empty_directories(start_path: Path) -> List[str]:
 
         # Check if directory is empty (or only has __pycache__)
         CONTENTS = list(current.iterdir())
-        real_contents = [c for c in contents if c.name not in ['__pycache__', '.DS_Store']]
+        real_contents = [c for c in contents if c.name not in [
+            '__pycache__', '.DS_Store']]
 
         if not real_contents:
             try:
@@ -175,3 +178,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

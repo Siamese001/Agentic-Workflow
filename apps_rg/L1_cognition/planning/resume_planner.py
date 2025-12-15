@@ -129,7 +129,8 @@ class RGPlanner:
         )
 
         # 4. Create analysis plan
-        analysis_plan = self._create_analysis_plan(job_analysis, processing_strategy)
+        analysis_plan = self._create_analysis_plan(
+            job_analysis, processing_strategy)
 
         # 5. Configure section processing
         section_configs = self._configure_section_processing(
@@ -143,7 +144,8 @@ class RGPlanner:
         execution_order = self._define_execution_order(processing_strategy)
 
         # 8. Configure fallback strategies
-        fallback_strategies = self._configure_fallback_strategies(processing_strategy)
+        fallback_strategies = self._configure_fallback_strategies(
+            processing_strategy)
 
         # 9. Build complete processing plan
         processing_plan = ResumeProcessingPlan(
@@ -268,13 +270,18 @@ class RGPlanner:
         for section_name in self.standard_sections:
             CONFIG = ResumeSectionConfig(
                 section_name=section_name,
-                REQUIRED=section_name in ["contact_info", "summary", "experience"],
-                max_length=self._get_section_max_length(section_name, strategy),
+                REQUIRED=section_name in [
+                    "contact_info", "summary", "experience"],
+                max_length=self._get_section_max_length(
+                    section_name, strategy),
                 PRIORITY=self._get_section_priority(section_name),
                 content_type=self._get_section_content_type(section_name),
-                extraction_rules=self._get_extraction_rules(section_name, strategy),
-                validation_rules=self._get_validation_rules(section_name, strategy),
-                formatting_rules=self._get_formatting_rules(section_name, strategy)
+                extraction_rules=self._get_extraction_rules(
+                    section_name, strategy),
+                validation_rules=self._get_validation_rules(
+                    section_name, strategy),
+                formatting_rules=self._get_formatting_rules(
+                    section_name, strategy)
             )
             section_configs.append(config)
 
@@ -366,14 +373,16 @@ class RGPlanner:
         # Simple heuristic based on structure and organization
         SECTIONS = resume_input.get("sections", {})
         structure_score = len(sections) / len(self.standard_sections) * 0.5
-        content_score = min(len(resume_input.get("content", "")) / 1000, 1.0) * 0.5
+        content_score = min(
+            len(resume_input.get("content", "")) / 1000, 1.0) * 0.5
         return structure_score + content_score
 
     def _calculate_completeness(self, resume_input: Dict[str, object]) -> float:
         """Calculate resume completeness score."""
         SECTIONS = resume_input.get("sections", {})
         required_sections = ["contact_info", "summary", "experience"]
-        present_required = sum(1 for section in required_sections if section in sections)
+        present_required = sum(
+            1 for section in required_sections if section in sections)
         return present_required / len(required_sections)
 
     def _get_section_max_length(self, section_name: str, strategy: Dict[str, object]) -> int:
@@ -454,3 +463,4 @@ class RGPlanner:
             "execution_order": processing_plan.execution_order,
             "validation_level": processing_plan.analysis_plan.validation_level
         }
+

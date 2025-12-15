@@ -11,3 +11,4 @@ def test_compile_prompt_produces_string() -> None:
     assert isinstance(rendered, str)
     assert 'OBJECTIVE' in rendered
     assert 'INSTRUCTIONS' in rendered
+

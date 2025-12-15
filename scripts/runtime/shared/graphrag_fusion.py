@@ -596,3 +596,4 @@ async def graphrag_query(
     """
     FUSION = get_graphrag_fusion(**kwargs)
     return await fusion.query(query, query_type, max_results)
+

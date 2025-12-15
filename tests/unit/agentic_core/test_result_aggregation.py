@@ -15,3 +15,4 @@ def test_result_aggregation(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_result_aggregation_config() -> Dict[str, object]:
     """Get configuration for test_result_aggregation."""
     return {'enabled': True, 'version': '1.0'}
+

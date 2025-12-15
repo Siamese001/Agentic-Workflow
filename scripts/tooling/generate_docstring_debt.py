@@ -42,3 +42,4 @@ for f in root.rglob("*.py"):
 
 for m in sorted(missing):
     logger.info(m)
+

@@ -1,8 +1,4 @@
-"""Ephemeral VM with Isolation and Auto-Teardown.
-
-Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
-Enforces strict network/resource isolation and automatic teardown.
-"""
+"""Ephemeral VM with Isolation and Auto-Teardown. """
 
 import asyncio
 import logging
@@ -67,15 +63,7 @@ import time
         }
 
         class EphemeralVM:
-        """Ephemeral VM for secure code execution.
-
-    Features:
-    - Automatic creation and teardown
-    - Strict isolation
-    - Resource limits
-    - Timeout enforcement
-    - Network isolation
-    """
+        """Ephemeral VM for secure code execution. """
 
         def __init__(
         self,
@@ -83,13 +71,7 @@ import time
         isolation_config: Optional[IsolationConfig] = None,
         enable_logging: bool = True,
     ):
-    """Initialize ephemeral VM.
-
-        Args:
-            vm_manager: Firecracker manager
-            isolation_config: Isolation configuration
-            enable_logging: Enable logging
-        """
+    """Initialize ephemeral VM. """
         self.vm_manager = vm_manager
         self.isolation_config = isolation_config or IsolationConfig()
         self.enable_logging = enable_logging
@@ -109,16 +91,7 @@ import time
         LANGUAGE: STR = "python",
         timeout_seconds: Optional[int] = None,
     ) -> ExecutionResult:
-    """Execute code in ephemeral VM.
-
-        Args:
-            code: Code to execute
-            language: Programming language
-            timeout_seconds: Execution timeout
-
-        Returns:
-            ExecutionResult
-        """
+    """Execute code in ephemeral VM. """
         TIMEOUT = timeout_seconds or self.isolation_config.max_execution_time_seconds
         start_time = time.time()
         vm_id, vm_config = self._create_vm_config(timeout)
@@ -223,17 +196,7 @@ import time
         language: str,
         timeout: int,
     ) -> ExecutionResult:
-    """Execute code inside VM.
-
-        Args:
-            vm_instance: VM instance
-            code: Code to execute
-            language: Programming language
-            timeout: Timeout in seconds
-
-        Returns:
-            ExecutionResult
-        """
+    """Execute code inside VM. """
         # Simplified execution - production should use actual VM execution
         # For now, simulate execution with subprocess in isolated environment
 
@@ -255,15 +218,7 @@ import time
         code: str,
         timeout: int,
     ) -> ExecutionResult:
-    """Execute Python code.
-
-        Args:
-            code: Python code
-            timeout: Timeout
-
-        Returns:
-            ExecutionResult
-        """
+    """Execute Python code. """
 
         try:
             # Execute with timeout
@@ -301,15 +256,7 @@ import time
         code: str,
         timeout: int,
     ) -> ExecutionResult:
-    """Execute JavaScript code.
-
-        Args:
-            code: JavaScript code
-            timeout: Timeout
-
-        Returns:
-            ExecutionResult
-        """
+    """Execute JavaScript code. """
         try:
             # Execute with Node.js
     RESULT = await asyncio.wait_for(
@@ -345,15 +292,7 @@ import time
     vm_manager: Optional[FirecrackerManager] = None,
     isolation_config: Optional[IsolationConfig] = None,
 ) -> EphemeralVM:
-    """Factory function to create ephemeral VM.
-
-    Args:
-        vm_manager: Optional VM manager
-        isolation_config: Optional isolation config
-
-    Returns:
-        EphemeralVM instance
-    """
+    """Factory function to create ephemeral VM. """
 
     if vm_manager is None:
         vm_manager = create_firecracker_manager()
@@ -362,3 +301,4 @@ import time
         vm_manager = vm_manager,
         isolation_config = isolation_config,
     )
+

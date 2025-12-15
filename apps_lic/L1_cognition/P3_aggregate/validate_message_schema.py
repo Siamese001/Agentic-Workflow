@@ -15,3 +15,4 @@ def validate_message_schema(data: Dict[str, object]) -> Dict[str, object]:
 def get_validate_message_schema_config() -> Dict[str, object]:
     """Get configuration for validate_message_schema."""
     return {'enabled': True, 'version': '1.0'}
+

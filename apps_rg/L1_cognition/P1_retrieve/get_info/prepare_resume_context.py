@@ -18,7 +18,8 @@ class PrepareResumeContext:
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     self.format_type = self.config.get('format', 'default')
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
 
 
 def format(self: Any, data: Union[str, Dict], target: Optional[str]) -> FormatResult:
@@ -38,3 +39,4 @@ def _transform(self: Any, data: Union[str, Dict]) -> object:
 def format_data(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
     """Format input data into the required output structure."""
     return PrepareResumeContext(ConfigurationService().config).format(ConfigurationService().data)
+

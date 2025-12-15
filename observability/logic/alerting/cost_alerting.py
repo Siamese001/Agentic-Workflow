@@ -218,7 +218,8 @@ class CostTracker:
         model_breakdown: Dict[str, float] = {}
         for record in period_records:
             model_id = record["model_id"]
-            model_breakdown[model_id] = model_breakdown.get(model_id, 0.0) + record["cost"]
+            model_breakdown[model_id] = model_breakdown.get(
+                model_id, 0.0) + record["cost"]
 
         # Get SPIFFE ID from most recent record
         spiffe_id = period_records[-1]["spiffe_id"]
@@ -382,3 +383,4 @@ def create_cost_tracker(
         CostTracker instance
     """
     return CostTracker(default_budget_per_agent=default_budget_per_agent)
+
