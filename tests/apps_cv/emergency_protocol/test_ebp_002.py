@@ -183,12 +183,12 @@ class TestEBP002:
     def test_rollback_transaction_integrity(self, validator):
         """Test that rollback operations are atomic"""
         rollback_operations = []
-        rollback_failed = False
         
         class MockRollbackTransaction:
             def __init__(self):
                 self.operations = []
                 self.executed = False
+                self.failed = False
             
             def add_operation(self, operation_type, target, data):
                 self.operations.append({
@@ -203,8 +203,8 @@ class TestEBP002:
                     for op in self.operations:
                         rollback_operations.append(f"EXEC: {op['type']} {op['target']}")
                         # Simulate potential failure
-                        if op["target"] == "fail_point":
-                            rollback_failed = True
+                        if op["target"] == "test":
+                            self.failed = True
                             raise Exception("Rollback operation failed")
                     
                     self.executed = True
@@ -221,12 +221,15 @@ class TestEBP002:
         tx.add_operation("quota_freeze", "brave_search", {})
         tx.add_operation("fail_point", "test", {})  # This will fail
         
+        # Debug: check operations
+        print(f"Operations: {[op['target'] for op in tx.operations]}")
+        
         # Execute transaction
         result = tx.execute()
         
         # Verify atomic behavior
         assert not result
-        assert rollback_failed
+        assert tx.failed
         assert "ROLLBACK: All operations reverted" in rollback_operations
         assert not tx.executed
     

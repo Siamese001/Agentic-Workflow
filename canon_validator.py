@@ -9,7 +9,7 @@ from datetime import datetime
 from connection_manager import ConnectionManager
 from llm_client import LLMClient
 from canon_keys import get_keys_as_prompt
-from redisvl.extensions.llmcache import SemanticCache
+from redisvl.extensions.cache.llm import SemanticCache
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("CanonValidator")
