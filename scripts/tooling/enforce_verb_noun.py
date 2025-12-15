@@ -2,8 +2,9 @@ import logging
 import shutil
 import sys
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 for f in sys.argv[1:]:

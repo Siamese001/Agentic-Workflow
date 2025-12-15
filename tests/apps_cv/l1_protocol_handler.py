@@ -5,12 +5,12 @@ Provides structured communication interface for tool execution
 """
 
 import json
+import logging
 import os
 import re
-from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from datetime import datetime
-import logging
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +91,8 @@ class L1ProtocolHandler:
             return sanitized_result
 
         except (ToolExecutionError, BlackoutProtocolError, GitConflictError) as e:
-            # Log CRITICAL error to L5 MEMory (as defined in EBP)
+    pass
+# Log CRITICAL error to L5 MEMory (as defined in EBP)
             protocol_error = f"L1_PROTOCOL_ERROR: {e.__class__.__name__}: {str(e)}"
             self._log_to_l5("L1", "Protocol Handler",
                             protocol_error, status="CRITICAL")
@@ -101,7 +102,8 @@ class L1ProtocolHandler:
                 toolExecutionError=f"{e.__class__.__name__}: {str(e)}"
             )
         except Exception as e:
-            # Log CRITICAL error to L5 MEMory
+    pass
+# Log CRITICAL error to L5 MEMory
             protocol_error = f"L1_PROTOCOL_ERROR: Unexpected error: {str(e)}"
             self._log_to_l5("L1", "Protocol Handler",
                             protocol_error, status="CRITICAL")
@@ -143,7 +145,8 @@ class L1ProtocolHandler:
             }
             logger.warning(f"L5_LOG: {log_entry}")
         except Exception:
-            # Fail silently - logging should not break the protocol
+    pass
+# Fail silently - logging should not break the protocol
             pass
 
     def _check_path_allowlist(self, path: str):
@@ -175,7 +178,8 @@ class L1ProtocolHandler:
                         raise BlackoutProtocolError(
                             "EBP blackout active - tool execution blocked")
             except Exception as e:
-                # Only swallow Redis connection errors, not BlackoutProtocolError
+    pass
+# Only swallow Redis connection errors, not BlackoutProtocolError
                 if "BlackoutProtocolError" not in str(type(e)):
                     pass  # Redis unavailable, proceed
                 else:
@@ -216,7 +220,8 @@ class L1ProtocolHandler:
                     raise ToolExecutionError(
                         "Temporal integrity violation: past timestamp")
         except json.JSONDecodeError:
-            # Not JSON, no temporal check needed
+    pass
+# Not JSON, no temporal check needed
             pass
 
         return ToolResult(
@@ -279,7 +284,8 @@ class L1ProtocolHandler:
                     summary = f"Found {len(data['results'])} search results"
                     sanitized_content = summary
             except json.JSONDecodeError:
-                pass
+    pass
+pass
 
         result.content = sanitized_content
         return result

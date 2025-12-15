@@ -6,8 +6,9 @@ Generated: 2025-12-07T13:28:54.205512
 """
 import logging
 from typing import Dict, Optional, Union
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -28,7 +29,7 @@ def process(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> Opera
                       ConfigurationService().context)
         return OperationResult(success=True, data=ConfigurationService().result)
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        ConfigurationService().logger.error(f'Processing failed: {e}')
+ConfigurationService().logger.error(f'Processing failed: {e}')
         return OperationResult(success=False, metadata={'error': str(e)})
 
 

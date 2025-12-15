@@ -4,8 +4,9 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 from typing import Dict
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 '\nExecute Zero-Loss Deduplication\n\nBased on the comprehensive analysis, this script:\n1. Reads the dedup analysis report\n2. For each cluster, keeps the canonical file\n3. Replaces non-canonical files with pointer files\n4. Archives original duplicates\n5. Generates verification report\n'
 logger = logging.getLogger(__name__)
@@ -81,7 +82,8 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                 ConfigurationService(
                 ).results['bytes_recovered'] += ConfigurationService().file_size
             except (ValueError, TypeError, KeyError) as e:
-                ConfigurationService().results['errors'].append(
+    pass
+ConfigurationService().results['errors'].append(
                     {'path': nc_path_str, 'error': str(e)})
         ConfigurationService().results['clusters_processed'] += 1
     if ConfigurationService().dry_run:

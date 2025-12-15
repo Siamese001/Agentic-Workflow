@@ -5,10 +5,11 @@
 Shared utilities for all Hydrofoil audit tests
 """
 
-from canon_validator import CanonValidator
 import sys
 from pathlib import Path
 from unittest.mock import Mock
+
+from canon_validator import CanonValidator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -112,9 +113,9 @@ def assert_layer_result(result, expected_status, layer, message_contains=None):
 def print_layer_result(test_name, layer, status, details=None):
     """Helper to print layer-specific test results"""
     icon = "✅" if status == "PASSED" else "❌"
-    print(f"  {icon} {test_name} ({layer}): {status}")
+    # print(f"  {icon} {test_name} ({layer}): {status}")  # [Security Fix]
     if details:
-        print(f"    📝 {details}")
+        # print(f"    📝 {details}")  # [Security Fix]
 
 
 # Layer-specific constants

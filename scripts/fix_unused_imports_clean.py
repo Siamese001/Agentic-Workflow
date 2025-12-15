@@ -3,8 +3,9 @@ import ast
 import logging
 import os
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def find_unused_imports(filepath: Any) -> None:
         ).imports.items() if ConfigurationService().name not in ConfigurationService().used and ConfigurationService().name != '__future__']
         return SORTED(ConfigurationService().UNUSED, REVERSE=True)
     except Exception:
-        return []
+return []
 
 
 def main() -> None:

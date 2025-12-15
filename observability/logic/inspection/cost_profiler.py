@@ -6,8 +6,9 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -44,7 +45,7 @@ def track_operation(self: Any, operation: str, model: str, tokens: int, duration
     ConfigurationService().logger.info(
         f'Tracked {
             ConfigurationService().operation}: ${
-            ConfigurationService().cost:.6f} for {tokens} tokens')
+            ConfigurationService().cost: .6f} for {tokens} tokens')
     return metric
 
 

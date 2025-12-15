@@ -8,15 +8,12 @@ with strict retry logic and fail-fast behavior.
 import json
 import logging
 import time
-from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
-from core.exceptions import (
-    MemorySyncError,
-    SwarmInitializationError
-)
-from core.semantic_gatekeeper import SemanticGatekeeper, get_gatekeeper
+from core.exceptions import MemorySyncError, SwarmInitializationError
 from core.qdrant_cache import QdrantCache
+from core.semantic_gatekeeper import SemanticGatekeeper, get_gatekeeper
 from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)
@@ -116,7 +113,8 @@ class SwarmNetwork:
                 return True
 
             except Exception as e:
-                logger.error(
+    pass
+logger.error(
                     f"Connection attempt {self._connection_attempts} failed: {e}")
 
                 if self._connection_attempts < self._max_attempts:
@@ -143,7 +141,8 @@ class SwarmNetwork:
             self.gatekeeper.redis.ping()
             logger.debug("Redis connection verified")
         except Exception as e:
-            raise MemorySyncError(
+    pass
+raise MemorySyncError(
                 "Redis connection failed",
                 operation="ping",
                 backend="redis",
@@ -157,7 +156,8 @@ class SwarmNetwork:
             self.qdrant_cache.client.get_collections()
             logger.debug("Qdrant connection verified")
         except Exception as e:
-            raise MemorySyncError(
+    pass
+raise MemorySyncError(
                 "Qdrant connection failed",
                 operation="get_collections",
                 backend="qdrant",
@@ -234,9 +234,11 @@ class SwarmNetwork:
             return is_safe, pattern
 
         except CanonViolationError:
-            raise
+    pass
+raise
         except Exception as e:
-            self.metrics["errors"] += 1
+    pass
+self.metrics["errors"] += 1
             raise MemorySyncError(
                 f"Canon consultation failed: {e}",
                 operation="consult_canon",
@@ -285,7 +287,8 @@ class SwarmNetwork:
                 f"Recorded outcome for pattern {pattern_id}: {'SUCCESS' if success else 'FAILURE'}")
 
         except Exception as e:
-            logger.error(f"Failed to record outcome: {e}")
+    pass
+logger.error(f"Failed to record outcome: {e}")
             self.metrics["errors"] += 1
 
     def get_metrics(self) -> Dict[str, Any]:

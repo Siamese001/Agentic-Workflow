@@ -10,17 +10,18 @@ import ast
 import hashlib
 import json
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
-import git
+from typing import Any, Dict, List, Optional
+
 import boto3
+import git
 from botocore.exceptions import ClientError
 
-from schemas.canon_models import CanonEntry
-from core.semantic_gatekeeper import SemanticGatekeeper
 from core.qdrant_cache import QdrantCache
+from core.semantic_gatekeeper import SemanticGatekeeper
+from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,8 @@ class ASTAwareChunker:
             return chunks
 
         except Exception as e:
-            self.logger.error(f"Failed to chunk {file_path}: {e}")
+    pass
+self.logger.error(f"Failed to chunk {file_path}: {e}")
             return []
 
     def _extract_module_chunk(self, tree: ast.AST, content: str, file_path: Path) -> Optional[CodeChunk]:
@@ -148,7 +150,8 @@ class ASTAwareChunker:
             ast_json = ast.dump(ast.parse(chunk_content),
                                 include_attributes=True)
         except SyntaxError:
-            # Might be a method with incomplete syntax
+    pass
+# Might be a method with incomplete syntax
             return None
 
         return CodeChunk(
@@ -182,7 +185,8 @@ class ASTAwareChunker:
             ast_json = ast.dump(ast.parse(chunk_content),
                                 include_attributes=True)
         except SyntaxError:
-            return None
+    pass
+return None
 
         # Extract methods and properties
         methods = []
@@ -233,8 +237,9 @@ class ASTAwareChunker:
                     module = node.module or ""
                     for alias in node.names:
                         imports.append(f"{module}.{alias.name}")
-        except:
-            pass
+except Exception:
+    pass
+pass
         return imports
 
 
@@ -349,7 +354,8 @@ class BackfillPipeline:
                     self.stats["files_processed"] += 1
 
             except Exception as e:
-                self.logger.error(
+    pass
+self.logger.error(
                     f"Failed to extract from Git repo {repo_path}: {e}")
                 self.stats["errors"] += 1
 
@@ -399,7 +405,8 @@ class BackfillPipeline:
                         temp_file.unlink()
 
             except ClientError as e:
-                self.logger.error(
+    pass
+self.logger.error(
                     f"Failed to extract from S3 bucket {bucket_name}: {e}")
                 self.stats["errors"] += 1
 
@@ -476,7 +483,8 @@ class BackfillPipeline:
                     self.stats["chunks_created"] += 1
 
                 except Exception as e:
-                    self.logger.error(
+    pass
+self.logger.error(
                         f"Failed to transform chunk {chunk.name}: {e}")
                     self.stats["errors"] += 1
 
@@ -507,7 +515,8 @@ class BackfillPipeline:
                         f"Loaded {i + len(batch)}/{len(entries)} vectors to Qdrant")
 
             except Exception as e:
-                self.logger.error(f"Failed to load batch to Qdrant: {e}")
+    pass
+self.logger.error(f"Failed to load batch to Qdrant: {e}")
                 self.stats["errors"] += 1
 
 
@@ -569,7 +578,8 @@ class ContinuousIngester:
             self.logger.info(f"Ingested success pattern: {entry.id}")
 
         except Exception as e:
-            self.logger.error(
+    pass
+self.logger.error(
                 f"Failed to ingest success pattern {entry.id}: {e}")
             self.stats["errors"] += 1
 
@@ -611,7 +621,8 @@ class ContinuousIngester:
             self.logger.info(f"Ingested failure pattern: {entry.id}")
 
         except Exception as e:
-            self.logger.error(
+    pass
+self.logger.error(
                 f"Failed to ingest failure pattern {entry.id}: {e}")
             self.stats["errors"] += 1
 
@@ -640,7 +651,8 @@ class ContinuousIngester:
                 f"Cleaned up {len(expired)} expired failure patterns")
 
         except Exception as e:
-            self.logger.error(f"Failed to cleanup expired failures: {e}")
+    pass
+self.logger.error(f"Failed to cleanup expired failures: {e}")
 
     def get_stats(self) -> Dict[str, Any]:
         """Get ingestion statistics."""

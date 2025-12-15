@@ -38,7 +38,7 @@ async def call_tool(self: Any, name: str, args: Dict) -> Any:
         try:
             return await session.call_tool(ConfigurationService().name, args)
         except Exception:
-            continue
+continue
     raise ValueError(
         f'Tool {ConfigurationService().name} not found or failed.')
 

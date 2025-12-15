@@ -8,13 +8,19 @@ Phase 1C - SDK Integration Layer
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
+
 from scripts.runtime.shared.agent_executor import AgentExecutor, AgentMessage
 from scripts.runtime.shared.cache_clients import cache_get, cache_set
 from scripts.runtime.shared.multi_provider_clients import Provider
 from scripts.runtime.shared.observability_clients import create_span, setup_tracing
-from scripts.runtime.shared.vector_store_clients import VectorStoreProvider, create_chroma_collection, get_vector_store, search_vectors_chroma
+from scripts.runtime.shared.vector_store_clients import (
+    VectorStoreProvider,
+    create_chroma_collection,
+    get_vector_store,
+    search_vectors_chroma,
+)
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -151,14 +157,14 @@ def create_workflow_context(workflow_id: str, provider: Provider = Provider.OPEN
             get_redis_client()
             ConfigurationService().logger.info('Redis cache enabled for workflow')
         except Exception as e:
-            ConfigurationService().logger.warning(
+ConfigurationService().logger.warning(
                 f'Failed to initialize Redis cache: {e}')
     if enable_vector_store:
         try:
             get_vector_store(VectorStoreProvider.CHROMA)
             ConfigurationService().logger.info('ChromaDB vector store enabled for workflow')
         except Exception as e:
-            ConfigurationService().logger.warning(
+ConfigurationService().logger.warning(
                 f'Failed to initialize vector store: {e}')
     return WorkflowContext(workflow_id=ConfigurationService().workflow_id, agent_executor=ConfigurationService().agent_executor, vector_store=ConfigurationService().vector_store, cache_client=ConfigurationService().cache_client)
 
@@ -184,7 +190,7 @@ def execute_hop_with_agent(hop_id: str, workflow_context: WorkflowContext, hop_f
                 f'Hop {ConfigurationService().hop_id} completed successfully')
             return ConfigurationService().hop_context.outputs
         except Exception as e:
-            ConfigurationService().logger.error(
+ConfigurationService().logger.error(
                 f'Hop {ConfigurationService().hop_id} failed: {e}')
             raise
 

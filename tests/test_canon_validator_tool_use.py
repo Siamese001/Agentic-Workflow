@@ -9,15 +9,18 @@ Tests for:
 - TL-004: Filesystem Isolation
 """
 
-from canon_validator_engine import execute_cost_governed_vulnerability_check
-from canon_validator import CanonValidator
-import pytest
 import json
-from unittest.mock import Mock, patch
+import os
 
 # Import the validator
 import sys
-import os
+from unittest.mock import Mock, patch
+
+import pytest
+
+from canon_validator import CanonValidator
+from canon_validator_engine import execute_cost_governed_vulnerability_check
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

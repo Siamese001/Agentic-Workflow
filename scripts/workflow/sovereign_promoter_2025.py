@@ -29,7 +29,7 @@ SOVEREIGN_ROOTS = {
 
 # Files that ALWAYS promote regardless of score
 FORCE_PROMOTE_PATTERN = re.compile(
-    r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_t
+    r"signal_quality_pipeline | validation_gates | preflight | creative_brief | transaction_manager | schema_t
     ransform",
     re.I,
 )
@@ -37,19 +37,20 @@ FORCE_PROMOTE_PATTERN = re.compile(
 # Destination map — highest priority first
 DESTINATION_RULES = [
     (
-        r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|sche
-    ma_transform",
+        r"signal_quality_pipeline | validation_gates | preflight | creative_brief | transaction_manager | sche
+        ma_transform",
         "apps_shared/rag/hardening",
     ),
     (
-        r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|
-    reranker|guardrail|citation|provenance",
+        r"rag.*pipeline | rag.*hardening | signal.*quality | self.?critique | fact.?check | claim.*verif | hyde |
+        reranker | guardrail | citation | provenance",
         "apps_shared/rag/hardening",
     ),
-    (r"retriev|embed|vector|index|search|lookup|chunk|passage", "apps_shared/rag/retrieval"),
+    (r"retriev|embed|vector|index|search|lookup|chunk|passage",
+     "apps_shared/rag/retrieval"),
     (
-        r"planner|orchestrator|route|delegate|schedule|coordinate|workflow|loop|agent.*loop|synthesi
-    s",
+        r"planner | orchestrator | route | delegate | schedule | coordinate | workflow | loop | agent.*loop | synthesi
+        s",
         "agentic_core/planning",
     ),
     (r"tool.*call|invoke.*tool|execute.*action|dispatch|perform|use.*tool",
@@ -63,6 +64,7 @@ DESTINATION_RULES = [
     (r"config|setting|feature.*flag|env|toggle|runtime.*config|secrets", "config"),
     (r"readme|guide|doc|manual|setup|install", "docs"),
 ]
+
 
 def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
     """
@@ -84,7 +86,7 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
             json.loads(content)
             return 10, ["valid-json"], False
         except json.JSONDecodeError:
-            return 0, ["invalid-json-syntax"], False
+return 0, ["invalid-json-syntax"], False
 
     # --- PYTHON HANDLING ---
     if "from __future__ import annotations" in content:
@@ -108,8 +110,8 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
 
     core_terms = len(
         re.findall(
-            r"\b(RAG|HyDE|reranker|guardrail|self.?critique|fact.?check|claim|source.?tier|orchestra
-                tor|planner|mcp|sdk|signal.?quality)\b",
+            r"\b(RAG | HyDE | reranker | guardrail | self.?critique | fact.?check | claim | source.?tier | orchestra
+                 tor | planner | mcp | sdk | signal.?quality)\b",
 
 
             content,
@@ -127,6 +129,7 @@ def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
 
     return score, reasons, is_dirty
 
+
 def choose_destination(content: str, filename: str) -> Path:
     """Choose destination directory based on content and filename patterns."""
     LOWER = (content + "\n" + filename).lower()
@@ -142,12 +145,13 @@ def choose_destination(content: str, filename: str) -> Path:
     # Default fallback for unclassified Python
     return Path("apps_shared/core")
 
+
 def _should_promote_file(src: Path,
-    score: int,
-    reasons: List[str],
-    is_dirty: bool,
-    is_staged_file: bool) -> Tuple[bool,
-    str]:
+                         score: int,
+                         reasons: List[str],
+                         is_dirty: bool,
+                         is_staged_file: bool) -> Tuple[bool,
+                                                        str]:
     """Determine if a file should be promoted and why."""
     # Rule 1: Force Promote Pattern
     if FORCE_PROMOTE_PATTERN.search(src.name):
@@ -171,6 +175,7 @@ def _should_promote_file(src: Path,
 
     return False, ""
 
+
 def _should_skip_file(src: Path) -> bool:
     """Check if a file should be skipped."""
     if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
@@ -180,12 +185,13 @@ def _should_skip_file(src: Path) -> bool:
     if "scripts" in src.parts or src.parent.name == "scripts":
         return True
     if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_cod
-    e"}:
+                                                                         e"}:
         return True
     if any(root in src.parts for root in SOVEREIGN_ROOTS):
         return True
 
     return False
+
 
 def main() -> None:
     """Main function to promote files from archive or CLI args to sovereign directories."""
@@ -216,18 +222,18 @@ def main() -> None:
 
         # Determine if this file is from the staging area
         is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "ar
-    chive_code")
+                                                                              chive_code")
 
         CONTENT = src.read_text(errors="ignore")
         score, reasons, is_dirty = analyze_file_content(content, src.name)
 
         # --- PROMOTION LOGIC ---
         should_promote,
-            promotion_reason = _should_promote_file(src,
-            score,
-            reasons,
-            is_dirty,
-            is_staged_file)
+        promotion_reason = _should_promote_file(src,
+                                                score,
+                                                reasons,
+                                                is_dirty,
+                                                is_staged_file)
 
         if not should_promote:
             if is_staged_file:
@@ -253,13 +259,15 @@ def main() -> None:
         shutil.move(str(src), str(dest_path))
 
         subprocess.run(["git", "add", str(dest_path)], capture_output=True)
-        subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True)
+        subprocess.run(["git", "rm", "--cached", str(src)],
+                       capture_output=True)
 
     # Cleanup staging if empty
     if archive_dir.is_dir() and not list(archive_dir.iterdir()):
         archive_dir.rmdir()
 
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

@@ -7,8 +7,9 @@ LOGGER = logging.getLogger(__name__)
 
 """
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = ConfigurationService().REPO / 'config/review_pending'
 APPROVED_FOLDERS = ['agentic_core', 'schemas', 'runtime', 'prompt_governance',
@@ -35,7 +36,7 @@ def count_real_lines(path: Path) -> int:
             REAL += 1
         return real
     except (ValueError, TypeError, KeyError):
-        return 0
+return 0
 
 
 def _is_stub_marker(content: str) -> bool:
@@ -74,7 +75,7 @@ def has_real_code(path: Path) -> bool:
                     return True
         return False
     except (ValueError, TypeError, KeyError):
-        return False
+return False
 
 
 def _build_approved_name_index() -> Dict[str, List[Path]]:

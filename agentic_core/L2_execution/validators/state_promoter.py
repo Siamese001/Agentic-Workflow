@@ -205,7 +205,8 @@ class StatePromoter:
                             key, context.soft_state.drafts[key], content
                         )
                     except json.JSONDecodeError:
-                        # If not JSON, use raw content
+    pass
+# If not JSON, use raw content
                         CONTENT = result.content
                         context.soft_state.drafts[key] = content
                         context.soft_state.record_revision(
@@ -222,7 +223,8 @@ class StatePromoter:
                     )
 
                 except Exception as e:
-                    logger.error(
+    pass
+logger.error(
                         "self_correction_failed",
                         EXTRA = {
                             "execution_id": context.hard_state.execution_id,
@@ -277,7 +279,8 @@ class StatePromoter:
                 )
                 return ValidationResult.REQUIRES_CORRECTION
             except Exception as e:
-                logger.error(
+    pass
+logger.error(
                     "schema_validation_error",
                     EXTRA={
                         "key": key,
@@ -302,7 +305,8 @@ class StatePromoter:
                         return ValidationResult.FAILED if rule.is_critical else ValidationResult.REQ
     UIRES_CORRECTION
                 except Exception as e:
-                    logger.error(
+    pass
+logger.error(
                         "validation_rule_error",
                         EXTRA={
                             "key": key,

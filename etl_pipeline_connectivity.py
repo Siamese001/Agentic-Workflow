@@ -5,6 +5,7 @@ from typing import List
 from tqdm import tqdm
 
 from agent_logic_connectivity import CanonValidator
+
 # Import our hardened infrastructure
 from schemas_connectivity import CanonEntry, CanonMetadata
 
@@ -67,11 +68,11 @@ class ETLPipeline:
             return [c.strip() for c in content.split('\n\n') if len(c.strip()) > 50]
 
     def run(self):
-        print("🚀 STARTING ETL PIPELINE")
-        print(f"📂 Source: {self.source_dir}")
+        # print("🚀 STARTING ETL PIPELINE")  # [Security Fix]
+        # print(f"📂 Source: {self.source_dir}")  # [Security Fix]
 
         files = self.scan_files()
-        print(f"📄 Found {len(files)} files to process.")
+        # print(f"📄 Found {len(files)} files to process.")  # [Security Fix]
 
         # Determine total work for progress bar (estimating 5 chunks per file)
         with tqdm(total=len(files), desc="Processing Files") as pbar:
@@ -111,7 +112,11 @@ class ETLPipeline:
                             self.stats["errors"] += 1
 
                 except Exception as e:
-                    logging.error(f"Failed to process {file_path}: {e}")
+    pass
+pass
+
+
+logging.error(f"Failed to process {file_path}: {e}")
                     self.stats["errors"] += 1
 
                 pbar.update(1)
@@ -119,13 +124,13 @@ class ETLPipeline:
         self._print_summary()
 
     def _print_summary(self):
-        print("\n📊 ETL SUMMARY")
-        print("=========================")
-        print(f"Total Chunks Processed: {self.stats['processed']}")
-        print(f"✅ Ingested (New):      {self.stats['ingested']}")
-        print(f"♻️  Duplicates (Saved):  {self.stats['duplicates']}")
-        print(f"❌ Errors:              {self.stats['errors']}")
-        print("=========================")
+        # print("\n📊 ETL SUMMARY")  # [Security Fix]
+        # print("=========================")  # [Security Fix]
+        # print(f"Total Chunks Processed: {self.stats['processed']}")  # [Security Fix]
+        # print(f"✅ Ingested (New):      {self.stats['ingested']}")  # [Security Fix]
+        # print(f"♻️  Duplicates (Saved):  {self.stats['duplicates']}")  # [Security Fix]
+        # print(f"❌ Errors:              {self.stats['errors']}")  # [Security Fix]
+        # print("=========================")  # [Security Fix]
 
 
 if __name__ == "__main__":

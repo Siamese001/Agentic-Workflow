@@ -9,9 +9,10 @@ This module tests complex agentic behaviors including:
 - Validation retry mechanisms
 """
 
-import pytest
 import asyncio
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,8 @@ logger = logging.getLogger(__name__)
 # Note: These imports may need adjustment based on actual module structure
 try:
 except ImportError as e:
-    # Fallback imports for testing
+    pass
+# Fallback imports for testing
     pytest.skip(
         f"Skipping agentic behaviors tests: {e}", allow_module_level=True)
 

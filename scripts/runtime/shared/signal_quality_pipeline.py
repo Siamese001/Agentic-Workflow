@@ -228,7 +228,8 @@ class SignalQualityPipeline:
             return assessment
 
         except Exception as e:
-            logger.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
+    pass
+logger.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
             # Return safe fallback
             return QualityAssessment(
                 is_pass=False,
@@ -271,7 +272,8 @@ class SignalQualityPipeline:
 
             return min(1.0, jaccard)
         except Exception as e:
-            logger.error(f"Error checking relevance: {str(e)}")
+    pass
+logger.error(f"Error checking relevance: {str(e)}")
             return 0.0
 
     def _check_authority(self, metadata: Dict[str, str]) -> float:
@@ -296,7 +298,8 @@ class SignalQualityPipeline:
             # Default to tier 4 for unknown sources
             return self.authority_tiers["tier_4"]["score"]
         except Exception as e:
-            logger.error(f"Error checking authority: {str(e)}")
+    pass
+logger.error(f"Error checking authority: {str(e)}")
             return 0.2  # Conservative default
 
     def _check_specificity(self, content: str) -> float:
@@ -332,7 +335,8 @@ class SignalQualityPipeline:
                 # Very low specificity: neither impact nor metrics
                 return 0.1
         except Exception as e:
-            logger.error(f"Error checking specificity: {str(e)}")
+    pass
+logger.error(f"Error checking specificity: {str(e)}")
             return 0.1  # Conservative default
 
     def _check_coherence(self, content: str) -> float:
@@ -378,7 +382,8 @@ class SignalQualityPipeline:
 
             return min(1.0, max(0.0, coherence))
         except Exception as e:
-            logger.error(f"Error checking coherence: {str(e)}")
+    pass
+logger.error(f"Error checking coherence: {str(e)}")
             return 0.5  # Neutral default
 
     def _normalize_text(self, text: str) -> List[str]:
@@ -402,7 +407,8 @@ class SignalQualityPipeline:
 
             return [token for token in tokens if len(token) > 2 and token not in stop_words]
         except Exception as e:
-            logger.error(f"Error normalizing text: {str(e)}")
+    pass
+logger.error(f"Error normalizing text: {str(e)}")
             return []
 
         """Docstring."""
@@ -433,7 +439,8 @@ class SignalQualityPipeline:
             logger.info(f"Batch evaluation: {len(documents)} input, {len(results)} passed")
             return results
         except Exception as e:
-            logger.error(f"Error in batch evaluation: {str(e)}")
+    pass
+logger.error(f"Error in batch evaluation: {str(e)}")
             return []
 
 # Factory function for easy instantiation

@@ -3,10 +3,11 @@
 Test the whitelist bypass functionality directly
 """
 
-from hydrofoil_test_utils import create_hydrofoil_validator_no_whitelist
 import sys
 from pathlib import Path
 from unittest.mock import Mock
+
+from hydrofoil_test_utils import create_hydrofoil_validator_no_whitelist
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -25,7 +26,7 @@ sys.modules['core_utils'] = Mock()
 def test_whitelist_bypass():
     """Test if the whitelist bypass works"""
 
-    print("Testing whitelist bypass...")
+    # print("Testing whitelist bypass...")  # [Security Fix]
 
     # Create validator with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -50,17 +51,17 @@ def test_whitelist_bypass():
     # Test with a simple string that would normally be skipped
     test_code = "simple_code_string"
 
-    print(f"Original code: {repr(test_code)}")
+    # print(f"Original code: {repr(test_code)}")  # [Security Fix]
 
     result = validator.validate(test_code)
 
-    print(f"Result status: {result['status']}")
-    print(f"Result reasoning: {result.get('reasoning', 'N/A')}")
+    # print(f"Result status: {result['status']}")  # [Security Fix]
+    # print(f"Result reasoning: {result.get('reasoning', 'N/A')}")  # [Security Fix]
 
     if "skipping validation" in result.get('reasoning', ''):
-        print("❌ FAILED: Whitelist bypass didn't work")
+        # print("❌ FAILED: Whitelist bypass didn't work")  # [Security Fix]
     else:
-        print("✅ SUCCESS: Full validation executed")
+        # print("✅ SUCCESS: Full validation executed")  # [Security Fix]
 
 
 if __name__ == "__main__":

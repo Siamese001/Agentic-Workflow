@@ -1,14 +1,20 @@
 """Unit tests for runtime/shared/multi_provider_clients.py"""
-import pytest
 import logging
 import os
 from unittest.mock import MagicMock, patch
 
+import pytest
+from runtime.shared.multi_provider_clients import (
+    =,
+    __name__,
+    import,
+    logger,
+    logging,
+    logging.getLogger,
+)
+
 logger = logging.getLogger(__name__)
 
-
-from runtime.shared.multi_provider_clients import (=, __name__, import , logger,
-                                                   logging, logging.getLogger)
 
 Provider, get_api_key, get_client, reset_all_clients,
 ProviderConfig, DEFAULT_MAX_RETRIES

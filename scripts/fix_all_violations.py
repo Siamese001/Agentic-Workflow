@@ -2,7 +2,7 @@
 import ast
 import logging
 from pathlib import Path
-from services.configuration import ConfigurationService
+
 from services.configuration import ConfigurationService
 
 
@@ -79,7 +79,7 @@ def split_large_types_files():
                     ConfigurationService().logger.info(
                         f'  Updated {ConfigurationService().full_path.name} as re-export shim')
             except Exception as e:
-                ConfigurationService().logger.info(
+ConfigurationService().logger.info(
                     f'Error processing {file_path}: {e}')
 
 

@@ -4,10 +4,12 @@ CV-A-004: API Response Evasion
 Adversarial test for L1 protocol handling
 """
 
-import pytest
-from unittest.mock import Mock
 import json
 import time
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -109,11 +111,13 @@ class TestCVA004:
                 return parsed
 
             except json.JSONDecodeError as e:
-                protocol_errors.append(
+    pass
+protocol_errors.append(
                     f"L1_PROTOCOL_ERROR: JSON decode failed - {str(e)}")
                 return None
             except Exception as e:
-                protocol_errors.append(
+    pass
+protocol_errors.append(
                     f"L1_PROTOCOL_ERROR: Validation failed - {str(e)}")
                 return None
 
@@ -144,7 +148,8 @@ class TestCVA004:
             try:
                 parsed = json.loads(response)
             except json.JSONDecodeError as e:
-                error = f"L1_PROTOCOL_ERROR: JSON malformed - {str(e)}"
+    pass
+error = f"L1_PROTOCOL_ERROR: JSON malformed - {str(e)}"
                 logged_errors.append(error)
                 return initiate_retry(error)
 
@@ -252,8 +257,9 @@ class TestCVA004:
                 try:
                     json_str = json.dumps(response)
                     size = len(json_str.encode('utf-8'))
-                except:
-                    size = 0
+except Exception:
+    pass
+size = 0
 
             if size > max_size:
                 size_violations.append(
@@ -350,8 +356,9 @@ class TestCVA004:
                 try:
                     parsed = json.loads(response)
                     version = parsed.get("protocol_version", "1.0")
-                except:
-                    # For invalid JSON, fall back to default version
+except Exception:
+    pass
+# For invalid JSON, fall back to default version
                     version = "1.0"
 
             if version not in supported_versions:

@@ -451,7 +451,7 @@ class RGPlanner:
                     "validation_level": processing_plan.analysis_plan.validation_level
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+logger.debug(f"Failed to record telemetry: {e}")
 
     def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> Dict[str, object]:
         """Get a summary of the planning execution for debugging/telemetry."""

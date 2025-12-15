@@ -25,7 +25,8 @@ def get_file_hash(path: Path) -> str:
     try:
         return hashlib.md5(path.read_bytes()).hexdigest()
     except (ValueError, TypeError, KeyError):
-        return ""
+    pass
+return ""
 
 
 def has_real_code(path: Path) -> bool:
@@ -45,7 +46,8 @@ def has_real_code(path: Path) -> bool:
             code_lines += 1
         return code_lines > 20
     except (ValueError, TypeError, KeyError):
-        return False
+    pass
+return False
 
 
 def _categorize_pending_file(f: Path,
@@ -137,12 +139,14 @@ def main() -> None:
                 try:
                     d.rmdir()
                 except OSError:
-                    pass
+    pass
+pass
 
         try:
             REVIEW_PENDING.rmdir()
         except OSError:
-            pass
+    pass
+pass
 
 
 if __name__ == '__main__':

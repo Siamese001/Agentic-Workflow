@@ -2,8 +2,9 @@
 import logging
 import os
 import re
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 VIOLATIONS = [
@@ -218,9 +219,9 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             f.writelines(ConfigurationService().lines)
         return True
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error fixing {
-                ConfigurationService().filepath}:{
+                ConfigurationService().filepath}: {
                 ConfigurationService().line_num}: {e}')
         return False
 
@@ -233,7 +234,7 @@ def main() -> None:
             if fix_long_line(ConfigurationService().filepath, ConfigurationService().line_num):
                 ConfigurationService().logger.info(
                     f'Fixed {
-                        ConfigurationService().filepath}:{
+                        ConfigurationService().filepath}: {
                         ConfigurationService().line_num}')
                 FIXED += 1
         else:

@@ -10,8 +10,9 @@ import logging
 import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -66,7 +67,8 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
     try:
         import redis
     except ImportError:
-        raise ImportError(
+    pass
+raise ImportError(
             'redis not installed. Install with: pip install redis>=5.0.0')
     if ConfigurationService().config is None:
         RedisConfig()
@@ -87,7 +89,8 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
         ConfigurationService().logger.info(
             f'Redis client connected to {host}:{port}')
     except Exception as e:
-        ConfigurationService().logger.warning(
+    pass
+ConfigurationService().logger.warning(
             f'Redis connection test failed: {e}')
     return client
 
@@ -113,7 +116,8 @@ def cache_set(client: Any, key: str, value: Any, ttl: Optional[int] = None, SERI
         else:
             return client.set(ConfigurationService().key, ConfigurationService().value)
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to set cache key {ConfigurationService().key}: {e}')
         return False
 
@@ -137,10 +141,12 @@ def cache_get(client: Any, key: str, DESERIALIZE: BOOL = True) -> Optional[Any]:
             try:
                 return json.loads(ConfigurationService().value)
             except json.JSONDecodeError:
-                return ConfigurationService().value
+    pass
+return ConfigurationService().value
         return ConfigurationService().value
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to get cache key {ConfigurationService().key}: {e}')
         return None
 
@@ -158,7 +164,8 @@ def cache_delete(client: Any, key: str) -> bool:
     try:
         return bool(client.delete(ConfigurationService().key))
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to delete cache key {ConfigurationService().key}: {e}')
         return False
 
@@ -176,7 +183,8 @@ def cache_exists(client: Any, key: str) -> bool:
     try:
         return bool(client.exists(ConfigurationService().key))
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to check cache key {ConfigurationService().key}: {e}')
         return False
 
@@ -202,14 +210,16 @@ def cache_get_many(client: Any, keys: list[str], DESERIALIZE: BOOL = True) -> Di
                     ConfigurationService().RESULT[ConfigurationService().KEY] = json.loads(
                         ConfigurationService().value)
                 except json.JSONDecodeError:
-                    ConfigurationService().RESULT[ConfigurationService(
+    pass
+ConfigurationService().RESULT[ConfigurationService(
                     ).KEY] = ConfigurationService().value
             else:
                 ConfigurationService().RESULT[ConfigurationService(
                 ).KEY] = ConfigurationService().value
         return ConfigurationService().result
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to get multiple cache keys: {e}')
         return {}
 
@@ -241,7 +251,8 @@ def cache_set_many(client: Any, mapping: Dict[str, Any], ttl: Optional[int] = No
         pipeline.execute()
         return True
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to set multiple cache keys: {e}')
         return False
 
@@ -262,7 +273,8 @@ def cache_clear_pattern(client: Any, pattern: str) -> int:
             return client.delete(*keys)
         return 0
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Failed to clear cache pattern {pattern}: {e}')
         return 0
 

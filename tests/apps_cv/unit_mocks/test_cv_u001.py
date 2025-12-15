@@ -4,8 +4,10 @@ CV-U-001: GitKraken (L1) Input Sanitization
 Unit test for isolated L1 component verification
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 

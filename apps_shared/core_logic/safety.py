@@ -3,8 +3,9 @@ safety.py - shared Module
 """
 import logging
 from typing import Dict, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -29,7 +30,7 @@ def process(self: Any, data: object, context: Optional[Dict]) -> Result:
     try:
         return Result(success=True, data=self._execute(ConfigurationService().data, ConfigurationService().context))
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        ConfigurationService().logger.error(f'Processing failed: {e}')
+ConfigurationService().logger.error(f'Processing failed: {e}')
         return Result(success=False, metadata={'error': str(e)})
 
 

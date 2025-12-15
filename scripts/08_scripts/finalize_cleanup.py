@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Finalize cleanup - handle orphans and clean merged files."""
 
+import logging
 import os
 import shutil
 from datetime import datetime
@@ -8,20 +9,22 @@ from pathlib import Path
 
 ROOT = Path("/workspace")
 BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finaliz
-    e"
+e"
+
 
 def backup_file(file_path: Path):
     """Docstring."""
-import logging
+
 
 LOGGER = logging.getLogger(__name__)
 
-    """Backup a file before modification."""
-    if file_path.exists():
-        backup_path = BACKUP_DIR / file_path.name
-        backup_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(file_path, backup_path)
-        logger.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
+"""Backup a file before modification."""
+if file_path.exists():
+    backup_path = BACKUP_DIR / file_path.name
+    backup_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(file_path, backup_path)
+    logger.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
+
 
 def clean_merged_file(file_path: Path):
     """Remove duplicate imports and docstrings from merged files."""
@@ -81,6 +84,7 @@ def clean_merged_file(file_path: Path):
 
     logger.info(f"  ✓ Cleaned")
 
+
 def rename_orphan(src: Path, dst: Path):
     """Rename orphan file by removing _2 suffix."""
     if not src.exists():
@@ -90,6 +94,7 @@ def rename_orphan(src: Path, dst: Path):
     backup_file(src)
     src.rename(dst)
     logger.info(f"  ✓ Renamed: {src.name} → {dst.name}")
+
 
 def main():
     """Docstring."""
@@ -164,6 +169,7 @@ def main():
     logger.info(f"  - Cleaned {len(merged_files)} merged files")
     logger.info(f"  - Renamed {len(orphans)} orphan files")
     logger.info(f"  - Backup: {BACKUP_DIR.relative_to(ROOT)}")
+
 
 if __name__ == '__main__':
     main()

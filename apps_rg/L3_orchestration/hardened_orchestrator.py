@@ -217,7 +217,8 @@ StatePersistenceError,
             logger.info(f"Hop {hop_id} completed successfully")
 
         except Exception as e:
-            # Handle failure
+    pass
+# Handle failure
             CHECKPOINT.STATUS = HopStatus.FAILED
             checkpoint.end_time = datetime.now()
             checkpoint.error_message = str(e)
@@ -243,7 +244,8 @@ StatePersistenceError,
                         self.workflow_state,
     )
                 except StatePersistenceError as checkpoint_error:
-                    logger.error(
+    pass
+logger.error(
                         f"Failed to checkpoint failure state: {checkpoint_error}")
 
         self.hop_checkpoints.append(checkpoint)
@@ -369,7 +371,8 @@ StatePersistenceError,
                         self.workflow_state,
     )
                 except StatePersistenceError as e:
-                    logger.error(f"Failed to save final checkpoint: {e}")
+    pass
+logger.error(f"Failed to save final checkpoint: {e}")
 
         # Add state information to results
         results["final_state"] = {

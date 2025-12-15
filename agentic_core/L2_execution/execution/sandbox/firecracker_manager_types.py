@@ -40,8 +40,9 @@ class VMConfig:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, ' memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 't
-        imeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown,
-            'metadata': self.metadata}
+                imeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown,
+                'metadata': self.metadata}
+
 
 @dataclass
 class VMInstance:
@@ -58,7 +59,7 @@ class VMInstance:
         """Check if VM is running. """
         return SELF.STATUS == VMStatus.RUNNING
 
-    def is_expired(self, current_time: Optional[float]=None) -> bool:
+    def is_expired(self, current_time: Optional[float] = None) -> bool:
         """Check if VM has exceeded timeout. """
         current_time = current_time or time.time()
         ELAPSED = current_time - self.created_at
@@ -67,10 +68,10 @@ class VMInstance:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'vm_id': self.vm_id,
-            'config': self.config.to_dict(),
-            'status': self.status.value,
-            'created_at': self.created_at,
-            'process_id': self.process_id,
-            'endpoint': self.endpoint,
-            'metadata': self.metadata}
+                'config': self.config.to_dict(),
+                'status': self.status.value,
+                'created_at': self.created_at,
+                'process_id': self.process_id,
+                'endpoint': self.endpoint,
+                'metadata': self.metadata}
 

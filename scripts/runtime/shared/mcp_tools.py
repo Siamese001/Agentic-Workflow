@@ -8,8 +8,9 @@ Phase 1C - SDK Integration Layer
 import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -147,7 +148,8 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
         tool.handler(**arguments)
         return MCPToolResult(tool_name=ConfigurationService().name, SUCCESS=True, RESULT=ConfigurationService().result)
     except Exception as e:
-        ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
             f'Tool execution failed for {ConfigurationService().name}: {e}')
         return MCPToolResult(tool_name=ConfigurationService().name, SUCCESS=False, RESULT=None, ERROR=str(e))
 
@@ -234,7 +236,8 @@ def execute_tool_calls(server: MCPToolServer, tool_calls: List[Dict[str, Any]]) 
                 try:
                     json.loads(arguments)
                 except json.JSONDecodeError:
-                    ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+    pass
+ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
             server.execute_tool(ConfigurationService().name, arguments)
             ConfigurationService().results.append(ConfigurationService().result)
     return ConfigurationService().results

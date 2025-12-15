@@ -2,14 +2,15 @@
 """
 Direct test runner for Canon Validator Engine tests without pytest conftest
 """
-from test_canon_validator_security import TestSecurityEdgeCases
-from test_canon_validator_governance import TestGovernanceResilience
-from test_canon_validator_tool_use import TestToolUseLLMLogic
-from test_canon_validator_functional import TestFunctionalCompliance
 import sys
-from pathlib import Path
 import unittest
+from pathlib import Path
 from unittest.mock import Mock
+
+from test_canon_validator_functional import TestFunctionalCompliance
+from test_canon_validator_governance import TestGovernanceResilience
+from test_canon_validator_security import TestSecurityEdgeCases
+from test_canon_validator_tool_use import TestToolUseLLMLogic
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -49,16 +50,16 @@ def run_test_suite():
 
 
 if __name__ == "__main__":
-    print("="*80)
-    print("🧪 CANON VALIDATOR ENGINE TEST SUITE")
-    print("="*80)
+    # print("="*80)  # [Security Fix]
+    # print("🧪 CANON VALIDATOR ENGINE TEST SUITE")  # [Security Fix]
+    # print("="*80)  # [Security Fix]
 
     success = run_test_suite()
 
     if success:
-        print("\n✅ ALL TESTS PASSED!")
+        # print("\n✅ ALL TESTS PASSED!")  # [Security Fix]
         sys.exit(0)
     else:
-        print("\n❌ SOME TESTS FAILED!")
+        # print("\n❌ SOME TESTS FAILED!")  # [Security Fix]
         sys.exit(1)
 

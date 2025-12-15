@@ -65,10 +65,12 @@ class Validation:
             RESULT = self._execute_logic(payload, context)
             return ExecutionResult(success=True, data=result)
         except (ValueError, TypeError, KeyError) as e:
-            self._logger.error(f"Validation error during processing: {e}")
+    pass
+self._logger.error(f"Validation error during processing: {e}")
             return ExecutionResult(success=False, error_message=str(e))
         except Exception as e:
-            self._logger.error(f"Unexpected system error: {e}", exc_info=True)
+    pass
+self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(self,

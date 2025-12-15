@@ -2,9 +2,9 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .firecracker_manager_types import *' with explicit imports
+
+
+
 # # from .firecracker_manager_types import *  # Star import removed
 
 
@@ -45,7 +45,8 @@ class FirecrackerManager:
                                    'provider': self.provider.value,
                                    'status': instance.status.value})
         except Exception as e:
-            INSTANCE.STATUS = VMStatus.FAILED
+    pass
+INSTANCE.STATUS = VMStatus.FAILED
             INSTANCE.METADATA['ERROR'] = str(e)
             if self.enable_logging:
                 logger.error('vm_creation_failed',
@@ -74,7 +75,8 @@ class FirecrackerManager:
                 logger.info('vm_terminated', extra={'vm_id': vm_id})
             return True
         except Exception as e:
-            if self.enable_logging:
+    pass
+if self.enable_logging:
                 logger.error('vm_termination_failed',
                              EXTRA={'vm_id': vm_id,
                                     'error': str(e)},
@@ -142,7 +144,8 @@ class FirecrackerManager:
             INSTANCE.ENDPOINT = f'docker://{container_id}'
             instance.metadata['container_id'] = container_id
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f'Docker container creation failed: {e.stderr}')
+    pass
+raise RuntimeError(f'Docker container creation failed: {e.stderr}')
 
     async def _terminate_firecracker_vm(self, instance: VMInstance) -> None:
         """Terminate Firecracker VM."""
@@ -162,7 +165,8 @@ class FirecrackerManager:
                                capture_output=True,
                                CHECK=True)
             except subprocess.CalledProcessError:
-                # Container may already be removed, ignore error
+    pass
+# Container may already be removed, ignore error
 
 
 def create_firecracker_manager(provider: VMProvider = VMProvider.FIRECRACKER) -> FirecrackerManager:

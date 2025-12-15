@@ -12,26 +12,34 @@ from datetime import datetime
 import redis
 
 
-def check_redis_connection():
-    """Check L4 Redis connectivity and responsiveness"""
-    try:
-        # Get Redis connection details from environment
-        redis_host = os.getenv('REDIS_HOST', 'localhost')
-        redis_port = int(os.getenv('REDIS_PORT', 6379))
-        redis_password = os.getenv('REDIS_PASSWORD')
+def _get_redis_client():
+    """Helper to get a Redis client instance with common configurations."""
+    redis_host = os.getenv('REDIS_HOST', 'localhost')
+    redis_port = int(os.getenv('REDIS_PORT', 6379))
+    redis_password = os.getenv('REDIS_PASSWORD')
 
-        # Attempt Redis connection
-        r = redis.Redis(
+    try:
+        return redis.Redis(
             host=redis_host,
             port=redis_port,
             password=redis_password,
             socket_connect_timeout=5,
             socket_timeout=5
         )
+    except Exception as e:
+        print(f"ERROR: Failed to create Redis client: {e}", file=sys.stderr)
+        return None
 
+
+def check_redis_connection():
+    """Check L4 Redis connectivity and responsiveness."""
+    r = _get_redis_client()
+    if not r:
+        return False
+
+    try:
         # Test connectivity with ping
-        result = r.ping()
-        if not result:
+        if not r.ping():
             print("ERROR: Redis ping failed", file=sys.stderr)
             return False
 
@@ -49,7 +57,7 @@ def check_redis_connection():
         return True
 
     except redis.ConnectionError as e:
-        print(f"ERROR: Redis connection failed: {e}", file=sys.stderr)
+        print(f"ERROR: Redis connection error: {e}", file=sys.stderr)
         return False
     except Exception as e:
         print(f"ERROR: Unexpected Redis error: {e}", file=sys.stderr)
@@ -57,20 +65,12 @@ def check_redis_connection():
 
 
 def check_ebp_status():
-    """Check Emergency Bailout Protocol status"""
+    """Check Emergency Bailout Protocol status."""
+    r = _get_redis_client()
+    if not r:
+        return False
+
     try:
-        redis_host = os.getenv('REDIS_HOST', 'localhost')
-        redis_port = int(os.getenv('REDIS_PORT', 6379))
-        redis_password = os.getenv('REDIS_PASSWORD')
-
-        r = redis.Redis(
-            host=redis_host,
-            port=redis_port,
-            password=redis_password,
-            socket_connect_timeout=5,
-            socket_timeout=5
-        )
-
         # Check EBP status
         ebp_status = r.get("validator:status:blackout")
         if ebp_status:
@@ -87,7 +87,7 @@ def check_ebp_status():
 
 
 def check_l5_audit_trail():
-    """Check L5 Audit Trail connectivity"""
+    """Check L5 Audit Trail connectivity."""
     try:
         # For now, just check if we can write to a test observation
         # In a full implementation, this would check MEMemory or other L5 store
@@ -118,7 +118,7 @@ def check_l5_audit_trail():
 
 
 def check_validator_process():
-    """Check if the validator process is responsive"""
+    """Check if the validator process is responsive."""
     try:
         # Check if main.py exists and is importable
         import importlib.util
@@ -137,29 +137,31 @@ def check_validator_process():
         return False
 
 
-def main():
-    """Main health check function"""
+def _run_health_checks():
+    """Runs all individual health checks and returns overall status."""
+    checks = {
+        "Redis Connectivity": check_redis_connection,
+        "EBP Status": check_ebp_status,
+        "L5 Audit Trail": check_l5_audit_trail,
+        "Validator Process": check_validator_process,
+    }
     all_checks_passed = True
 
+    for name, check_func in checks.items():
+        print(f"Running check: {name}...")
+        if not check_func():
+            all_checks_passed = False
+            print(f"Check '{name}': FAILED")
+        else:
+            print(f"Check '{name}': PASSED")
+    return all_checks_passed
+
+
+def main():
+    """Main health check function."""
     print(f"Health check started at {datetime.now().isoformat()}")
 
-    # Check 1: Redis connectivity (L4)
-    if not check_redis_connection():
-        all_checks_passed = False
-
-    # Check 2: EBP status
-    if not check_ebp_status():
-        all_checks_passed = False
-
-    # Check 3: L5 Audit Trail
-    if not check_l5_audit_trail():
-        all_checks_passed = False
-
-    # Check 4: Validator process
-    if not check_validator_process():
-        all_checks_passed = False
-
-    if all_checks_passed:
+    if _run_health_checks():
         print("Health check: PASSED")
         sys.exit(0)
     else:
@@ -169,4 +171,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

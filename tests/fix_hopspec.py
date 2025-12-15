@@ -1,7 +1,8 @@
-import re
 import logging
+import re
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 with open('tests/integration/test_hardened_orchestrator_comprehensive.py', 'r', encoding='utf-8') as f:
     CONTENT = f.read()

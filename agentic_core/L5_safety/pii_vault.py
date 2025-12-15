@@ -1,8 +1,9 @@
-from presidio_anonymizer.entities import OperatorConfig
-from presidio_anonymizer import AnonymizerEngine
-from presidio_analyzer import AnalyzerEngine
 import logging
 from typing import Dict
+
+from presidio_analyzer import AnalyzerEngine
+from presidio_anonymizer import AnonymizerEngine
+from presidio_anonymizer.entities import OperatorConfig
 
 logger = logging.getLogger(__name__)
 

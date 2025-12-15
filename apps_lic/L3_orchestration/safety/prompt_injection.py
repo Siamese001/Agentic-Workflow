@@ -105,9 +105,10 @@ def detect_injection(prompt: str) -> InjectionResult:
     detected_patterns = []
     if score > 0:
         detected_patterns = [f"DETECTED: {pattern}" for pattern in rationale.split(": ")[1].split(",
-            ")]
+                                                                                                  ")]
 
-    logger.debug(f"Injection detection result: is_injection={is_injection}, severity={severity}")
+    logger.debug(
+        f"Injection detection result: is_injection={is_injection}, severity={severity}")
 
     return InjectionResult(
         is_injection=is_injection,
@@ -122,6 +123,7 @@ def detect_injection(prompt: str) -> InjectionResult:
         }
     )
 
+
 def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -> bool:
     """Validate injection result against safety threshold.
 
@@ -133,7 +135,8 @@ def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -
         True if safe (below threshold), False if unsafe
     """
     if result.is_injection and result.confidence >= threshold:
-        logger.warning(f"Prompt injection detected above threshold: {result.confidence}")
+        logger.warning(
+            f"Prompt injection detected above threshold: {result.confidence}")
         return False
     return True
 

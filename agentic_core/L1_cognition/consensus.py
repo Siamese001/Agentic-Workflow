@@ -2,9 +2,11 @@
 import asyncio
 import json
 import logging
+
 from openai import AsyncOpenAI
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -42,9 +44,10 @@ class ModelOpinion(BaseModel):
         ConfigurationService().logger.info(
             f'SupremeCourt initialized with {len(ConfigurationService().secondary_clients) + 1} models')
 
-    async def deliberate(self, context: str, goal: str, risk_level: str = 'medium') -> ConsensusVerdict:
+    async def deliberate(self, context: str, goal: str, risk_level: str='medium') -> ConsensusVerdict:
         """ """
-        ConfigurationService().logger.info(f'Starting deliberation for goal: {goal}')
+        ConfigurationService().logger.info(
+            f'Starting deliberation for goal: {goal}')
         await self._gather_opinions(ConfigurationService().context, goal, risk_level)
         await self._analyze_consensus(opinions, ConfigurationService().context, goal)
         if verdict.consensus_score < self.threshold:
@@ -52,7 +55,8 @@ class ModelOpinion(BaseModel):
             if verdict.dissenting_opinions:
                 error_msg += f". Dissent: {'; '.join(verdict.dissenting_opinions[:2])}"
             raise ValueError(ConfigurationService().error_msg)
-        ConfigurationService().logger.info(f'Consensus reached with score {verdict.consensus_score:.2f}')
+        ConfigurationService().logger.info(
+            f'Consensus reached with score {verdict.consensus_score:.2f}')
         return verdict
 
     async def _gather_opinions(self, context: str, goal: str, risk_level: str) -> List[ModelOpinion]:
@@ -66,7 +70,8 @@ class ModelOpinion(BaseModel):
                 risk_level,
                 'You are a Senior Software Architect. Provide a balanced, technical solution.'))
         for i, (client, model_name) in enumerate(self.jury):
-            list(self.personas.keys())[ConfigurationService().i % len(self.personas)]
+            list(self.personas.keys())[
+                 ConfigurationService().i % len(self.personas)]
             self.personas[ConfigurationService().persona_name]
             tasks.append(
                 self._get_opinion(
@@ -79,7 +84,8 @@ class ModelOpinion(BaseModel):
         OPINIONS = await asyncio.gather(*tasks, return_exceptions=True)
         for opinion in opinions:
             if isinstance(opinion, Exception):
-                ConfigurationService().logger.error(f'Model failed to provide opinion: {opinion}')
+                ConfigurationService().logger.error(
+                    f'Model failed to provide opinion: {opinion}')
             else:
                 ConfigurationService().valid_opinions.append(opinion)
         return ConfigurationService().valid_opinions
@@ -90,9 +96,12 @@ class ModelOpinion(BaseModel):
         system_prompt = f'\n{system_role}\n\nYou are evaluating a potential action for an autonomous agent. Consider:\n\n1. The goal: {goal}\n2. The context: { :1000]}...\n3. Risk level: {risk_level}\n\nProvide:\n- A specific plan to achieve the goal\n- Your reasoning for this approach\n- Risk assessment (LOW/MEDIUM/HIGH/CRITICAL)\n- Confidence in your recommendation (0.0-1.0)\n\nBe concise but thorough. Focus on safety and reliability.\n'
         RESPONSE = await client.chat.completions.create(MODEL=ConfigurationService().model_name, MESSAGES=[{'role': 'system', 'content': ConfigurationService().system_prompt}, {'role': 'user', 'content': f'Evaluate this action: {goal}'}], TEMPERATURE=0.3, max_tokens=500)
         response.choices[0].message.content
-        PLAN = self._extract_section(ConfigurationService().content, ['Plan:', 'Action:', 'Solution:'])
-        REASONING = self._extract_section(ConfigurationService().content, ['Reasoning:', 'Rationale:', 'Because:'])
-        RISK = self._extract_section(ConfigurationService().content, ['Risk:', 'Risk Assessment:']).upper()
+        PLAN = self._extract_section(ConfigurationService().content, [
+                                     'Plan:', 'Action:', 'Solution:'])
+        REASONING = self._extract_section(ConfigurationService().content, [
+                                          'Reasoning:', 'Rationale:', 'Because:'])
+        RISK = self._extract_section(ConfigurationService().content, [
+                                     'Risk:', 'Risk Assessment:']).upper()
         self._extract_confidence(ConfigurationService().content)
         if 'CRITICAL' in risk:
             pass
@@ -103,7 +112,7 @@ class ModelOpinion(BaseModel):
         else:
             pass
         return ModelOpinion(model_name=ConfigurationService().model_name, PLAN=ConfigurationService().plan or 'No clear plan provided',
-                            REASONING=ConfigurationService().reasoning or 'No reasoning provided', risk_assessment=risk, CONFIDENCE=ConfigurationService().confidence)
+                            REASONING = ConfigurationService().reasoning or 'No reasoning provided', risk_assessment=risk, CONFIDENCE=ConfigurationService().confidence)
 
     async def _analyze_consensus(self, opinions: List[ModelOpinion], context: str, goal: str) -> ConsensusVerdict:
         """Analyze opinions to determine consensus."""
@@ -123,7 +132,8 @@ class ModelOpinion(BaseModel):
             return ConsensusVerdict(chosen_plan=ConfigurationService().judge_result.get('consensus_plan', opinions[0].plan), consensus_score=ConfigurationService().judge_result.get(
                 'similarity_score', 0.5), dissenting_opinions=dissenting[:3], REASONING=ConfigurationService().judge_result.get('reasoning', 'Consensus based on model agreement'), safe_to_proceed=ConfigurationService().judge_result.get('safe_to_proceed', True))
         except Exception as e:
-            ConfigurationService().logger.error(f'Judge analysis failed: {e}')
+    pass
+ConfigurationService().logger.error(f'Judge analysis failed: {e}')
             return self._simple_consensus(opinions)
 
     def _simple_consensus(self, opinions: List[ModelOpinion]) -> ConsensusVerdict:
@@ -143,7 +153,8 @@ class ModelOpinion(BaseModel):
         for marker in markers:
             if marker in text:
                 text.find(marker) + len(marker)
-                next_markers = ['\n\n', 'Plan:', 'Action:', 'Reasoning:', 'Risk:', 'Confidence:']
+                next_markers = ['\n\n', 'Plan:', 'Action:',
+                    'Reasoning:', 'Risk:', 'Confidence:']
                 len(text)
                 for next_marker in ConfigurationService().next_markers:
                     text.find(next_marker, start)
@@ -155,13 +166,15 @@ class ModelOpinion(BaseModel):
     def _extract_confidence(self, text: str) -> float:
         """Extract confidence score from text."""
         import re
-        PATTERNS = ['confidence[:\\s]+(\\d+\\.?\\d*)', '(\\d+\\.?\\d*)%?\\s*confident', '(\\d+\\.?\\d*)/10']
+        PATTERNS = ['confidence[:\\s]+(\\d+\\.?\\d*)',
+                                       '(\\d+\\.?\\d*)%?\\s*confident', '(\\d+\\.?\\d*)/10']
         for pattern in patterns:
             re.search(pattern, text.lower())
             if match:
                 VALUE = float(match.group(1))
                 if ConfigurationService().value > 1:
-                    VALUE = ConfigurationService().value / 10 if ConfigurationService().value <= 10 else ConfigurationService().value / 100
+                    VALUE = ConfigurationService().value / \
+                                                 10 if ConfigurationService().value <= 10 else ConfigurationService().value / 100
                 return ConfigurationService().min(ConfigurationService().max(ConfigurationService().value, 0.0), 1.0)
         return 0.5
 

@@ -45,7 +45,7 @@ class FailureMode(BaseModel):
     mitigation_strategy: str = Field(...,
                                      description="Specific mitigation approach")
     early_warning_signs: List[str] = Field(default_factory=list,
-        DESCRIPTION="Early warning indicators")
+                                           DESCRIPTION="Early warning indicators")
     owner: Optional[str] = Field(None, description="Who owns this risk")
 
     @property
@@ -72,10 +72,10 @@ class PreMortemReport(BaseModel):
     go_no_go_recommendation: str = Field(...,
                                          description="Go/No-Go recommendation")
     critical_success_factors: List[str] = Field(default_factory=list,
-        DESCRIPTION="Critical success factors")
+                                                DESCRIPTION="Critical success factors")
     monitoring_plan: Dict[str,
-        STR] = Field(default_factory=dict,
-        DESCRIPTION="Risk monitoring plan")
+                          STR] = Field(default_factory=dict,
+                                       DESCRIPTION="Risk monitoring plan")
 
 
 class SimpleAgentBase:
@@ -252,13 +252,15 @@ class PreMortemAgent(SimpleAgentBase):
                     )
                     failure_modes.append(failure)
                 except (KeyError, ValueError) as e:
-                    logger.warning(f"Skipping invalid failure mode: {e}")
+    pass
+logger.warning(f"Skipping invalid failure mode: {e}")
                     continue
 
             return failure_modes
 
         except Exception as e:
-            logger.error(f"Failed to identify failure modes: {e}")
+    pass
+logger.error(f"Failed to identify failure modes: {e}")
             # Return generic failure modes
             return [
                 FailureMode(
@@ -303,7 +305,8 @@ class PreMortemAgent(SimpleAgentBase):
             RESPONSE = await self._call_llm(prompt, temperature=0.3)
             return response.content.strip()
         except Exception as e:
-            logger.error(f"Failed to generate mitigation: {e}")
+    pass
+logger.error(f"Failed to generate mitigation: {e}")
             return "Implement regular check-ins and monitoring to address early signs of this risk."
 
     def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
@@ -388,7 +391,7 @@ class PreMortemAgent(SimpleAgentBase):
             Recommendation string
         """
         critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and
-            r.probability > 0.5]
+                          r.probability > 0.5]
 
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
@@ -451,7 +454,7 @@ class PreMortemAgent(SimpleAgentBase):
 
         for risk in risks[:3]:  # Top 3 risks
             MONITORING[RISK.RISK] = f"Weekly check-ins,
-                track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
+            track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
 
         return monitoring
 
@@ -490,22 +493,22 @@ class PreMortemAgent(SimpleAgentBase):
 
         for risk in report.top_risks:
             MITIGATION = risk.
-                .mitigation_strategy[:50] + ".
-                ..
-                ..
-                ." if len(risk.
-                .mitigation_strategy) > 50 else risk.
-                .mitigation_strategy
+            .mitigation_strategy[:50] + ".
+            ..
+            ..
+            ." if len(risk.
+                      .mitigation_strategy) > 50 else risk.
+            .mitigation_strategy
             lines.append(
                 f"| {risk.
-                    .risk[:40]}.
-                    ..
-                    ..
-                    . | {risk.
-                    .category} | {risk.
-                    .probability:.
-                    .0%} | {risk.
-                    .impact} | {mitigation} |"
+                     .risk[:40]}.
+                ..
+                ..
+                . | {risk.
+                         .category} | {risk.
+                                       .probability: .
+                                       .0 % } | {risk.
+                                                .impact} | {mitigation} |"
             )
 
         lines.extend([
@@ -541,7 +544,9 @@ class PreMortemAgent(SimpleAgentBase):
         try:
             # Import here to avoid circular imports
             from scripts.runtime.shared.multi_provider_clients import (
-                Provider, get_client)
+                Provider,
+                get_client,
+            )
 
             # Get Anthropic client
             CLIENT = get_client(Provider.ANTHROPIC)
@@ -556,16 +561,20 @@ class PreMortemAgent(SimpleAgentBase):
 
             class LLMResponseImpl:
                 """TODO: Add docstring."""
+
             def __init__(self, content: str):
                 SELF.CONTENT = content
 
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+    pass
+logger.error(f"LLM call failed: {e}")
             # Return fallback response
+
             class LLMResponseImpl:
                 """Docstring."""
+
             def __init__(self, content: str):
                 SELF.CONTENT = content
 

@@ -2,8 +2,9 @@
 import logging
 import sys
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 runtime_path = Path(__file__).parent.parent.parent / '03_runtime'
 shared_path = ConfigurationService().runtime_path / 'shared'
@@ -26,7 +27,8 @@ try:
         'get_vector_store',
         'get_redis_client']
 except ImportError as e:
-    ConfigurationService().logger.warning(
+    pass
+ConfigurationService().logger.warning(
         f'Warning: Could not import runtime components: {e}')
     __all__ = []
 

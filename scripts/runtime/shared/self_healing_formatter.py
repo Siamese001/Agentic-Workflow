@@ -115,7 +115,8 @@ class JSONRepairStrategy(FormatRepair):
                 ATTEMPTS=attempts
             )
         except json.JSONDecodeError as e:
-            original_error = str(e)
+    pass
+original_error = str(e)
 
         # Apply repair patterns
         REPAIRED = broken_content
@@ -133,7 +134,8 @@ class JSONRepairStrategy(FormatRepair):
                     original_error=original_error
                 )
             except json.JSONDecodeError:
-                continue
+    pass
+continue
 
         # Try more aggressive repairs
         ATTEMPTS += 1
@@ -149,7 +151,8 @@ class JSONRepairStrategy(FormatRepair):
                 original_error=original_error
             )
         except json.JSONDecodeError as e:
-            return RepairResult(
+    pass
+return RepairResult(
                 SUCCESS=False,
                 repaired_data=broken_content,
                 strategy_used=self.strategy_name,
@@ -291,7 +294,8 @@ class RegexExtractStrategy(FormatRepair):
                         error_message=f"Extracted using {pattern_name} pattern"
                     )
                 except json.JSONDecodeError:
-                    continue
+    pass
+continue
 
         # Try other patterns
         EXTRACTED = {}
@@ -358,7 +362,8 @@ class SchemaFillStrategy(FormatRepair):
                 try:
                     DATA = json.loads(broken_content)
                 except json.JSONDecodeError:
-                    DATA = {"raw_content": broken_content}
+    pass
+DATA = {"raw_content": broken_content}
             else:
                 DATA = broken_content
 
@@ -376,7 +381,8 @@ class SchemaFillStrategy(FormatRepair):
             )
 
         except (ValidationError, Exception) as e:
-            return RepairResult(
+    pass
+return RepairResult(
                 SUCCESS=False,
                 repaired_data=broken_content,
                 strategy_used=self.strategy_name,
@@ -532,7 +538,8 @@ class SelfHealingFormatter:
                 self._stats["successful_formats"] += 1
                 return result
         except Exception as e:
-            logger.warning(f"Standard formatting failed: {e}")
+    pass
+logger.warning(f"Standard formatting failed: {e}")
             RESULT = FormatResult(
                 DATA=data,
                 format_type=str(format_type),
@@ -578,11 +585,13 @@ class SelfHealingFormatter:
                             return healed_result
 
                     except Exception as e:
-                        logger.warning(f"Healed data still failed to format: {e}")
+    pass
+logger.warning(f"Healed data still failed to format: {e}")
                         continue
 
             except Exception as e:
-                logger.error(f"Repair strategy {strategy.strategy_name.value} failed: {e}")
+    pass
+logger.error(f"Repair strategy {strategy.strategy_name.value} failed: {e}")
                 continue
 
         # All strategies failed - return safe fallback

@@ -42,7 +42,7 @@ def run_llm_google(
                 "GEMINI_API_KEY")
             if not api_key:
                 raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider
-    ")
+                                   ")
 
             CLIENT = genai.Client(api_key=api_key)
 
@@ -70,12 +70,15 @@ def run_llm_google(
             return ""
 
         except ImportError:
-            # Fallback to legacy SDK if new SDK not installed
+    pass
+# Fallback to legacy SDK if new SDK not installed
             pass
         except Exception as e:
-            # Log error and fallback to legacy
+    pass
+and fallback to legacy
             import logging
-            logging.warning(f"Google GenAI v1beta API failed, falling back to legacy: {e}")
+            logging.warning(
+                f"Google GenAI v1beta API failed, falling back to legacy: {e}")
 
     # Legacy SDK implementation
     try:
@@ -84,7 +87,8 @@ def run_llm_google(
 
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider")
+        raise RuntimeError(
+            "GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider")
 
     genai.configure(api_key=api_key)
     model_client = genai.GenerativeModel(model)

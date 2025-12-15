@@ -17,7 +17,8 @@ try:
     TITANIUM_AVAILABLE = True
     logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
 except ImportError as e:
-    TITANIUM_AVAILABLE = False
+    pass
+TITANIUM_AVAILABLE = False
     logger.warning(
         f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
 
@@ -26,10 +27,11 @@ class BriefSection(BaseModel):
     """A single section of an executive brief."""
 
     HEADING: STR = Field(...,
-        DESCRIPTION="Section heading (e.g.,
+        DESCRIPTION="Section heading(e.g.,
         'Observation: High Inference Costs')")
     CONTENT: STR = Field(..., description="Section content (2-3 sentences)")
-    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0, description="Confidence in this section")
+    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0,
+                              description="Confidence in this section")
 
     @validator('content')
     def validate_content_length(cls, v):
@@ -84,7 +86,8 @@ class ExecutiveBriefAgent:
             self.tone_model = create_tone_model()
             self.target_tone = ToneType.DIRECT  # Executive briefs should be direct
         except ImportError:
-            logger.warning("Tone model not available, using default tone")
+    pass
+logger.warning("Tone model not available, using default tone")
             self.tone_model = None
             self.target_tone = None
 
@@ -192,7 +195,8 @@ class ExecutiveBriefAgent:
             return research_data
 
         except Exception as e:
-            logger.error(f"Error in Titanium research: {e}")
+    pass
+logger.error(f"Error in Titanium research: {e}")
             return {"name": company_name, "industry": industry}
 
         """Docstring."""
@@ -222,7 +226,8 @@ class ExecutiveBriefAgent:
             return self.generate_brief(company_data, job_description, recipient_name)
 
         except Exception as e:
-            logger.error(f"Error generating brief with Titanium: {e}")
+    pass
+logger.error(f"Error generating brief with Titanium: {e}")
             # Fallback to basic brief
             return self.generate_brief(
                 {"name": company_name, "industry": industry},
@@ -270,7 +275,8 @@ class ExecutiveBriefAgent:
             return brief
 
         except Exception as e:
-            logger.error(f"Error generating executive brief: {str(e)}")
+    pass
+logger.error(f"Error generating executive brief: {str(e)}")
             # Return safe fallback
             return self._generate_fallback_brief(company_data)
 
@@ -369,7 +375,8 @@ class ExecutiveBriefAgent:
             return context
 
         except Exception as e:
-            logger.error(f"Error assembling context: {str(e)}")
+    pass
+logger.error(f"Error assembling context: {str(e)}")
             return {
                 "company_name": "the company",
                 "industry": "technology",
@@ -436,7 +443,8 @@ class ExecutiveBriefAgent:
                 )
 
         except Exception as e:
-            logger.error(f"Error generating observation: {str(e)}")
+    pass
+logger.error(f"Error generating observation: {str(e)}")
             return BriefSection(
                 HEADING="Observation: Strategic AI Opportunity",
                 CONTENT="The company is positioned to leverage AI for competitive advantage.",
@@ -471,7 +479,8 @@ class ExecutiveBriefAgent:
             return adjusted
 
         except Exception as e:
-            logger.error(f"Error applying tone enforcement: {str(e)}")
+    pass
+logger.error(f"Error applying tone enforcement: {str(e)}")
             return content
 
     def _generate_insight(self, context: Dict[str, Any], observation: BriefSection) -> BriefSection:
@@ -511,7 +520,8 @@ class ExecutiveBriefAgent:
                 )
 
         except Exception as e:
-            logger.error(f"Error generating insight: {str(e)}")
+    pass
+logger.error(f"Error generating insight: {str(e)}")
             return BriefSection(
                 HEADING="Insight: Strategic Approach",
                 CONTENT="A systematic approach to AI scaling is essential for long-term success.",
@@ -551,7 +561,8 @@ class ExecutiveBriefAgent:
             )
 
         except Exception as e:
-            logger.error(f"Error generating proposition: {str(e)}")
+    pass
+logger.error(f"Error generating proposition: {str(e)}")
             return BriefSection(
                 HEADING="Proposition: Strategic Partnership",
                 CONTENT="I can help accelerate your AI initiatives with proven methodologies.",
@@ -644,7 +655,8 @@ class ExecutiveBriefAgent:
             return "\n".join(lines)
 
         except Exception as e:
-            logger.error(f"Error rendering markdown: {str(e)}")
+    pass
+logger.error(f"Error rendering markdown: {str(e)}")
             # Return basic format
             return f"""
 # Executive Brief

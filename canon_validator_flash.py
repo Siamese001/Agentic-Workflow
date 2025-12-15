@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any, Dict
 
 from canon_keys import get_keys_as_prompt
+
 # Infrastructure
 from connection_manager import ConnectionManager
 from llm_client_flash import LLMClient
@@ -14,7 +15,9 @@ try:
     from redisvl.extensions.llmcache import SemanticCache
     REDISVL_AVAILABLE = True
 except ImportError:
-    REDISVL_AVAILABLE = False
+    pass
+pass
+REDISVL_AVAILABLE = False
     logging.warning("redisvl SemanticCache not available")
 
 logging.basicConfig(level=logging.INFO,
@@ -46,7 +49,11 @@ class CanonValidator:
                 )
                 logger.info("✅ L1 Semantic Cache initialized (384 dims)")
             except Exception as e:
-                logger.warning(f"⚠️ Failed to initialize SemanticCache: {e}")
+    pass
+pass
+
+
+logger.warning(f"⚠️ Failed to initialize SemanticCache: {e}")
                 self.cache = None
         else:
             self.cache = None
@@ -67,7 +74,9 @@ class CanonValidator:
         try:
             vector = self.embed_fn(content)
         except Exception as e:
-            return {"status": "error", "message": f"Embedding failed: {e}"}
+    pass
+pass
+return {"status": "error", "message": f"Embedding failed: {e}"}
 
         # STAGE 2: L1 CACHE HIT
         if self.cache and self.cache.check(vector=vector):
@@ -83,7 +92,9 @@ class CanonValidator:
                 if m['score'] > 0.80:
                     context_rules.append(f"- {m['metadata'].get('content')}")
         except Exception:
-            logger.debug("L2 retrieval failed or no matches")
+    pass
+pass
+logger.debug("L2 retrieval failed or no matches")
 
         # STAGE 4: GEMINI FLASH VALIDATION
         keys_block = get_keys_as_prompt()
@@ -203,7 +214,9 @@ Return your response as JSON with this format:
             return {"success": True, "fixed_code": fixed_code}
 
         except Exception as e:
-            logger.error(f"Repair attempt failed: {e}")
+    pass
+pass
+logger.error(f"Repair attempt failed: {e}")
             return {"success": False, "error": str(e)}
 
     def _meta_learn(self, content, vector, decision):
@@ -220,5 +233,7 @@ Return your response as JSON with this format:
                     decision), vector=vector)
             logger.info("✅ Learned new pattern.")
         except Exception as e:
-            logger.error(f"Write-back failed: {e}")
+    pass
+pass
+logger.error(f"Write-back failed: {e}")
 

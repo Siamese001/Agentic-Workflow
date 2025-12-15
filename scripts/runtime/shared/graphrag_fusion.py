@@ -367,7 +367,8 @@ class GraphRAGFusion:
             )
 
         except Exception as e:
-            logger.error(f"Vector query failed: {e}")
+    pass
+logger.error(f"Vector query failed: {e}")
             return FusionResult(
                 QUERY=query,
                 query_type=QueryType.VECTOR_ONLY,
@@ -423,7 +424,8 @@ class GraphRAGFusion:
                 )
 
         except Exception as e:
-            logger.error(f"Graph query failed: {e}")
+    pass
+logger.error(f"Graph query failed: {e}")
             # Fallback to vector
             return await self._vector_only_query(query, max_results)
 

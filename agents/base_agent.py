@@ -12,13 +12,12 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
-
 from core.connections import SwarmNetwork
 from core.exceptions import (
+    CANON_EXCEPTIONS,
+    AgentExecutionError,
     CanonViolationError,
     MemorySyncError,
-    AgentExecutionError,
-    CANON_EXCEPTIONS
 )
 
 logger = logging.getLogger(__name__)
@@ -185,10 +184,12 @@ class BaseAgent(ABC):
             return token
 
         except CANON_EXCEPTIONS:
-            self.metrics["canon_violations"] += 1
+    pass
+self.metrics["canon_violations"] += 1
             raise
         except Exception as e:
-            raise MemorySyncError(
+    pass
+raise MemorySyncError(
                 f"Canon consultation failed: {e}",
                 operation="consult_canon",
                 backend="both",
@@ -233,7 +234,8 @@ class BaseAgent(ABC):
                 f"Recorded outcome for {self.agent_id}: {'SUCCESS' if success else 'FAILURE'}")
 
         except Exception as e:
-            logger.error(f"Failed to record outcome for {self.agent_id}: {e}")
+    pass
+logger.error(f"Failed to record outcome for {self.agent_id}: {e}")
 
     def _update_latency(self, latency_ms: int):
         """Update average latency metric."""
@@ -286,12 +288,14 @@ class BaseAgent(ABC):
             return result
 
         except CanonViolationError:
-            # Record violation
+    pass
+# Record violation
             self._record_outcome(
                 success=False, error_trace=str(CanonViolationError))
             raise
         except Exception as e:
-            # Record failure
+    pass
+# Record failure
             latency_ms = int((time.perf_counter() - start_time) * 1000)
             self._record_outcome(
                 success=False, latency_ms=latency_ms, error_trace=str(e))

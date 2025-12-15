@@ -143,7 +143,8 @@ class ScriptsCacheHistoryLoader:
             return result
 
         except Exception as e:
-            self.logger.error(f"Failed to load cache history: {str(e)}")
+    pass
+self.logger.error(f"Failed to load cache history: {str(e)}")
             return CacheHistoryResult(
                 ENTRIES=[],
                 total_count=0,
@@ -178,7 +179,8 @@ class ScriptsCacheHistoryLoader:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to add cache history entry: {str(e)}")
+    pass
+self.logger.error(f"Failed to add cache history entry: {str(e)}")
             return False
 
     def get_statistics(self) -> CacheStatistics:
@@ -277,7 +279,8 @@ class ScriptsCacheHistoryLoader:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to export cache history: {str(e)}")
+    pass
+self.logger.error(f"Failed to export cache history: {str(e)}")
             return False
 
     def _load_history(self) -> None:
@@ -327,7 +330,8 @@ class ScriptsCacheHistoryLoader:
                 self.logger.info("No existing cache history file found, starting fresh")
 
         except Exception as e:
-            self.logger.error(f"Failed to load cache history: {str(e)}")
+    pass
+self.logger.error(f"Failed to load cache history: {str(e)}")
             self._history_cache = []
             self._statistics = CacheStatistics()
 
@@ -374,7 +378,8 @@ class ScriptsCacheHistoryLoader:
             self.logger.debug(f"Saved {len(self._history_cache)} cache history entries")
 
         except Exception as e:
-            self.logger.error(f"Failed to save cache history: {str(e)}")
+    pass
+self.logger.error(f"Failed to save cache history: {str(e)}")
 
     def _apply_filters(self, query: CacheHistoryQuery) -> List[CacheHistoryEntry]:
         """Apply filters to cache history entries."""

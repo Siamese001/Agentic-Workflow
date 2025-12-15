@@ -9,9 +9,7 @@ Test IDs: SE-R01 to SE-R03
 import sys
 
 # Import shared test utilities
-from hydrofoil_test_utils import (
-    create_hydrofoil_validator_no_whitelist
-)
+from hydrofoil_test_utils import create_hydrofoil_validator_no_whitelist
 
 # Import validator
 
@@ -21,7 +19,7 @@ def test_se_r01_prompt_injection_resistance():
     SE-R01: Prompt Injection Resistance
     Layer Focus: L1/L5
     """
-    print("SE-R01: Testing Prompt Injection Resistance (L1/L5)")
+    # print("SE-R01: Testing Prompt Injection Resistance (L1/L5)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -98,9 +96,9 @@ def hidden_backdoor_exec():
     # Verify Git commit would still work for legitimate fixes
     assert len(git_calls) >= 0, "L1: Git tool not available"
 
-    print("  L1/L5: All prompt injections blocked")
-    print("  Captain's Log: Hardened Policy Layer (L5) overrode malicious instructions")
-    print(f"  Blocked {len(results)} injection attempts")
+    # print("  L1/L5: All prompt injections blocked")  # [Security Fix]
+    # print("  Captain's Log: Hardened Policy Layer (L5) overrode malicious instructions")  # [Security Fix]
+    # print(f"  Blocked {len(results)} injection attempts")  # [Security Fix]
 
 
 def test_se_r02_tool_argument_sanitization():
@@ -108,7 +106,7 @@ def test_se_r02_tool_argument_sanitization():
     SE-R02: Tool Argument Sanitization
     Layer Focus: L1
     """
-    print("SE-R02: Testing Tool Argument Sanitization (L1)")
+    # print("SE-R02: Testing Tool Argument Sanitization (L1)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -194,9 +192,9 @@ def test_se_r02_tool_argument_sanitization():
         c for c in sanitized_commits if "Normal commit" in c["original"]][0]
     assert normal_commit["sanitized"] == "Normal commit message", "L1: Normal message altered"
 
-    print("  L1: All dangerous arguments sanitized")
-    print("  Captain's Log: GitKraken tool wrapper enforcing security")
-    print(f"  Sanitized {len(sanitized_commits)} commit messages")
+    # print("  L1: All dangerous arguments sanitized")  # [Security Fix]
+    # print("  Captain's Log: GitKraken tool wrapper enforcing security")  # [Security Fix]
+    # print(f"  Sanitized {len(sanitized_commits)} commit messages")  # [Security Fix]
 
 
 def test_se_r03_state_exhaustion():
@@ -204,7 +202,7 @@ def test_se_r03_state_exhaustion():
     SE-R03: State Exhaustion
     Layer Focus: L4
     """
-    print("SE-R03: Testing State Exhaustion (L4)")
+    # print("SE-R03: Testing State Exhaustion (L4)")  # [Security Fix]
 
     # Mock Redis (L4) - The Ballast Tank
     redis_metrics = {
@@ -251,7 +249,7 @@ def test_se_r03_state_exhaustion():
     redis_pool = MockRedisPool(max_connections=100)
 
     # The Threat: Infinite loop of validation requests
-    print("  Simulating DoS attack with 150 concurrent requests...")
+    # print("  Simulating DoS attack with 150 concurrent requests...")  # [Security Fix]
 
     successful_requests = 0
     failed_requests = 0
@@ -264,9 +262,10 @@ def test_se_r03_state_exhaustion():
             conn.close()
             successful_requests += 1
         except Exception as e:
-            failed_requests += 1
+    pass
+failed_requests += 1
             if i == 100:  # Log first failure
-                print(f"    First failure at request {i}: {e}")
+                # print(f"    First failure at request {i}: {e}")  # [Security Fix]
 
     # L4 Assertion: Graceful handling of exhaustion
     assert successful_requests >= 100, "L4: Too few successful requests"
@@ -274,10 +273,10 @@ def test_se_r03_state_exhaustion():
     assert redis_pool.active_connections == 0, "L4: Connection leak detected"
     assert redis_metrics["rejected"] > 0, "L4: Pool not rejecting excess connections"
 
-    print(f"  L4: State exhaustion handled gracefully")
-    print(
+    # print(f"  L4: State exhaustion handled gracefully")  # [Security Fix]
+    # print(  # [Security Fix]
         f"  Redis Metrics: {successful_requests} successful, {failed_requests} rejected")
-    print("  Captain's Log: Connection pool stabilized - DoS attack mitigated")
+    # print("  Captain's Log: Connection pool stabilized - DoS attack mitigated")  # [Security Fix]
 
 
 def test_binary_input_handling():
@@ -285,7 +284,7 @@ def test_binary_input_handling():
     Additional Test: Binary Input Handling
     Layer Focus: L1
     """
-    print("Testing Binary Input Handling (L1)")
+    # print("Testing Binary Input Handling (L1)")  # [Security Fix]
 
     validator = create_hydrofoil_validator_no_whitelist()
 
@@ -305,11 +304,12 @@ def test_binary_input_handling():
                 binary_data.decode('utf-8', errors='ignore'))
             assert result["status"] in ["rejected",
                                         "error"], "L1: Binary input not rejected"
-        except Exception as e:
-            # Should handle gracefully
+        except Exception:
+    pass
+# Should handle gracefully
             assert True, "L1: Exception on binary input acceptable"
 
-    print("  L1: Binary inputs properly rejected")
+    # print("  L1: Binary inputs properly rejected")  # [Security Fix]
 
 
 def test_concurrent_validation_isolation():
@@ -317,7 +317,7 @@ def test_concurrent_validation_isolation():
     Additional Test: Concurrent Validation Isolation
     Layer Focus: L1-L5
     """
-    print("Testing Concurrent Validation Isolation (L1-L5)")
+    # print("Testing Concurrent Validation Isolation (L1-L5)")  # [Security Fix]
 
     import threading
 
@@ -336,7 +336,8 @@ def test_concurrent_validation_isolation():
                 f"code_from_worker_{worker_id}_validate")
             results.append((worker_id, result))
         except Exception as e:
-            errors.append((worker_id, e))
+    pass
+errors.append((worker_id, e))
 
     # Run 20 concurrent validations
     threads = []
@@ -356,16 +357,16 @@ def test_concurrent_validation_isolation():
     for worker_id, result in results:
         assert result["status"] == "valid", f"L1-L5: Worker {worker_id} validation failed"
 
-    print("  L1-L5: Concurrent validations properly isolated")
-    print("  Captain's Log: 20 concurrent workers completed successfully")
+    # print("  L1-L5: Concurrent validations properly isolated")  # [Security Fix]
+    # print("  Captain's Log: 20 concurrent workers completed successfully")  # [Security Fix]
 
 
 def run_security_audit():
     """Run all Security & Edge Case audit tests"""
-    print("="*80)
-    print("HYDROFOIL ENGINE AUDIT - Security & Edge Case Runs")
-    print("="*80)
-    print("Testing Rogue Waves (L1/L4/L5 Layers)")
+    # print("="*80)  # [Security Fix]
+    # print("HYDROFOIL ENGINE AUDIT - Security & Edge Case Runs")  # [Security Fix]
+    # print("="*80)  # [Security Fix]
+    # print("Testing Rogue Waves (L1/L4/L5 Layers)")  # [Security Fix]
 
     tests = [
         test_se_r01_prompt_injection_resistance,
@@ -383,17 +384,18 @@ def run_security_audit():
             test()
             passed += 1
         except Exception as e:
-            print(f"  FAILED: {e}")
+    pass
+# print(f"  FAILED: {e}")  # [Security Fix]
             failed += 1
 
-    print("\n" + "="*80)
-    print(f"Security Audit Results: {passed} passed, {failed} failed")
+    # print("\n" + "="*80)  # [Security Fix]
+    # print(f"Security Audit Results: {passed} passed, {failed} failed")  # [Security Fix]
 
     if failed == 0:
-        print("All rogue wave tests PASSED")
-        print("Hydrofoil battle-ready!")
+        # print("All rogue wave tests PASSED")  # [Security Fix]
+        # print("Hydrofoil battle-ready!")  # [Security Fix]
     else:
-        print("Some tests FAILED - review security measures")
+        # print("Some tests FAILED - review security measures")  # [Security Fix]
 
     return failed == 0
 

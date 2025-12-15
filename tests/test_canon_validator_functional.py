@@ -9,15 +9,17 @@ Tests for:
 - FC-004: Config Override (L1)
 """
 
-from canon_validator import CanonValidator
-import pytest
 import json
-import time
-from unittest.mock import Mock, patch
 
 # Import the validator
 import sys
+import time
 from pathlib import Path
+from unittest.mock import Mock, patch
+
+import pytest
+
+from canon_validator import CanonValidator
 
 # Mock dependencies before importing
 sys.modules['connection_manager'] = Mock()
@@ -102,7 +104,8 @@ def execute_command safely(command: str) -> Optional[str]:
         result = subprocess.run(command.split(), capture_output=True, text=True)
         return result.stdout
     except Exception as e:
-        return None
+    pass
+return None
 """
 
         # Execute validation

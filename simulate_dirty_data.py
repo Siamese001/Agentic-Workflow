@@ -19,7 +19,7 @@ logger = logging.getLogger("DirtyDataSim")
 
 def print_section(title: str) -> None:
     """Print a formatted section header."""
-    print(f"\n{'='*60}\n🔸 {title}\n{'='*60}")
+    # print(f"\n{'='*60}\n🔸 {title}\n{'='*60}")  # [Security Fix]
 
 
 def run_simulation() -> None:
@@ -45,7 +45,7 @@ def validate_cognitive_action_separation():
         return "Planes Separated"
 '''
 
-    print(f"📌 ANCHOR TRUTH: '{anchor_text}'")
+    # print(f"📌 ANCHOR TRUTH: '{anchor_text}'")  # [Security Fix]
 
     # ---------------------------------------------------------
     # SCENARIO 1: THE SEED (New Unique Knowledge)
@@ -53,16 +53,16 @@ def validate_cognitive_action_separation():
     print_section("TEST 1: INGESTING ANCHOR TRUTH (Should Succeed)")
 
     result_1 = validator.check_and_learn(anchor_text, {"type": "anchor"})
-    print(f"Result: {result_1}")
+    # print(f"Result: {result_1}")  # [Security Fix]
 
     if result_1.get('is_valid') and result_1.get('source') == 'no_match':
-        print("✅ PASS: Anchor truth ingested successfully.")
+        # print("✅ PASS: Anchor truth ingested successfully.")  # [Security Fix]
     else:
-        print(f"❌ FAIL: Anchor truth was rejected. Reason: {result_1}")
+        # print(f"❌ FAIL: Anchor truth was rejected. Reason: {result_1}")  # [Security Fix]
         return  # Stop if we can't seed
 
     # Wait for Pinecone indexing consistency (crucial for next tests)
-    print("⏳ Waiting 5s for consistency...")
+    # print("⏳ Waiting 5s for consistency...")  # [Security Fix]
     time.sleep(5)
 
     # ---------------------------------------------------------
@@ -72,17 +72,17 @@ def validate_cognitive_action_separation():
 
     # Same content, different ID
     result_2 = validator.check_and_learn(anchor_text, {"type": "clone"})
-    print(f"Result: {result_2}")
+    # print(f"Result: {result_2}")  # [Security Fix]
 
     # We expect a match in L1 or L2 for duplicates
     if result_2.get('source') in ['l1_match', 'l2_match']:
-        print("✅ PASS: Exact duplicate was correctly filtered.")
+        # print("✅ PASS: Exact duplicate was correctly filtered.")  # [Security Fix]
     else:
-        print(f"⚠️ WARNING: Duplicate was ingested. (Did L1 Cache miss?)")
+        # print(f"⚠️ WARNING: Duplicate was ingested. (Did L1 Cache miss?)")  # [Security Fix]
 
-    # ---------------------------------------------------------
-    # SCENARIO 3: THE MIMIC (Semantic Duplicate)
-    # ---------------------------------------------------------
+        # ---------------------------------------------------------
+        # SCENARIO 3: THE MIMIC (Semantic Duplicate)
+        # ---------------------------------------------------------
     print_section(
         "TEST 3: SEMANTIC VARIATION (Should be blocked by L2/Vector)")
 
@@ -102,17 +102,17 @@ def prevent_hallucination_loops():
 '''
 
     result_3 = validator.check_and_learn(mimic_text, {"type": "mimic"})
-    print(f"Result: {result_3}")
+    # print(f"Result: {result_3}")  # [Security Fix]
 
     # If cosine similarity is working, this should be flagged as similar
     if result_3.get('source') in ['l1_match', 'l2_match']:
-        print("✅ PASS: Semantic duplicate was correctly identified via Vectors.")
+        # print("✅ PASS: Semantic duplicate was correctly identified via Vectors.")  # [Security Fix]
     else:
-        print(f"⚠️ WARNING: Semantic duplicate was treated as new. (Threshold might be too high?)")
+        # print(f"⚠️ WARNING: Semantic duplicate was treated as new. (Threshold might be too high?)")  # [Security Fix]
 
-    # ---------------------------------------------------------
-    # SCENARIO 4: THE NOVELTY (Completely New)
-    # ---------------------------------------------------------
+        # ---------------------------------------------------------
+        # SCENARIO 4: THE NOVELTY (Completely New)
+        # ---------------------------------------------------------
     print_section("TEST 4: NOVEL DATA (Should be Ingested)")
 
     novel_text = '''
@@ -127,12 +127,12 @@ def get_tuesday_menu():
 '''
 
     result_4 = validator.check_and_learn(novel_text, {"type": "novelty"})
-    print(f"Result: {result_4}")
+    # print(f"Result: {result_4}")  # [Security Fix]
 
     if result_4.get('is_valid') and result_4.get('source') == 'no_match':
-        print("✅ PASS: Novel data was correctly ingested.")
+        # print("✅ PASS: Novel data was correctly ingested.")  # [Security Fix]
     else:
-        print(f"❌ FAIL: Novel data was rejected.")
+        # print(f"❌ FAIL: Novel data was rejected.")  # [Security Fix]
 
     print_section("SIMULATION COMPLETE")
 

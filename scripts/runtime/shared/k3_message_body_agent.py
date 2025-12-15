@@ -5,8 +5,9 @@ micro-structure enforcement, and placeholder detection blocking.
 """
 import logging
 from typing import Any, Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -205,10 +206,10 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
         Regeneration prompt
     """
     ConfigurationService().context.get('previous_body', '')
-    PROMPT = f"REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS OUTPUT:\n{
-        ConfigurationService().previous_body}\n\nCONSTRAINTS:\n- Must include exact transition phrase\n- Exactly 2 insights, exactly 3 bullets\n- NO placeholders (BLOCKING)\n- Character limit: {
+    PROMPT = f"REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS OUTPUT: \n{
+        ConfigurationService().previous_body}\n\nCONSTRAINTS: \n - Must include exact transition phrase\n - Exactly 2 insights, exactly 3 bullets\n - NO placeholders(BLOCKING)\n - Character limit: {
         (
-            self.char_limit if self.char_limit else 'No limit')}\n\nINSTRUCTIONS:\nFix ONLY the failing sections listed in feedback.\nMaintain all other content unchanged.\n\nGenerate the corrected message body:\n"
+            self.char_limit if self.char_limit else 'No limit')}\n\nINSTRUCTIONS: \nFix ONLY the failing sections listed in feedback.\nMaintain all other content unchanged.\n\nGenerate the corrected message body: \n"
     return prompt
 
 

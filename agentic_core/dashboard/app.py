@@ -1,11 +1,12 @@
 """ """
 
-import streamlit as st
-import pandas as pd
 import json
 import logging
 import sys
 from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,8 @@ try:
     import plotly.express as px
     DEPS_AVAILABLE = True
 except ImportError:
-    DEPS_AVAILABLE = False
+    pass
+DEPS_AVAILABLE = False
 
 st.set_page_config(layout="wide", page_title="✈️ Subatomic Flight Recorder")
 
@@ -35,7 +37,8 @@ def get_connection():
     try:
         return duckdb.connect(DB_PATH, read_only=True)
     except Exception as e:
-        st.error(f"Cannot connect to database: {e}")
+    pass
+st.error(f"Cannot connect to database: {e}")
         st.info(f"Looking for database at: {Path(DB_PATH).absolute()}")
         return None
 
@@ -51,7 +54,8 @@ st.markdown("**Real-time Agent Cognition Observatory**")
 try:
     traces_df = conn.execute(""" """).df()
 except Exception as e:
-    st.error(f"Database query error: {e}")
+    pass
+st.error(f"Database query error: {e}")
     st.info("The database might be empty. Run some agents to generate trace data.")
     st.stop()
 
@@ -129,9 +133,11 @@ hover_data = ["span_id", "Duration"],
    events_df = conn.execute(""" """, [selected_trace]).df()
 
         if not events_df.empty:
-        events_df['timestamp'] = pd.to_datetime(events_df['timestamp'], unit='s')
+        events_df['timestamp'] = pd.to_datetime(
+            events_df['timestamp'], unit = 's')
 
-        event_types = ["All"] + sorted(events_df['event_type'].unique().tolist())
+        event_types = ["All"] +
+            sorted(events_df['event_type'].unique().tolist())
         filter_type = st.selectbox("Filter by Event Type", event_types)
 
         if filter_type != "All":
@@ -173,7 +179,8 @@ hover_data = ["span_id", "Duration"],
                 st.json(payload)
 
         except json.JSONDecodeError:
-            st.text(row['payload'])
+    pass
+st.text(row['payload'])
         else:
         st.info("Select an event from the stream to view details")
 
@@ -186,10 +193,10 @@ hover_data = ["span_id", "Duration"],
     WHERE trace_id = ? and event_type = 'MCP_CALL'
     GROUP BY tool_name
     ORDER BY calls DESC
-""", [selected_trace]).df() x='tool_name',
-            y='calls',
-            TITLE="Tool Usage Frequency",
-            LABELS={'tool_name': 'Tool', 'calls': 'Number of Calls'}
+""", [selected_trace]).df() x = 'tool_name',
+            y = 'calls',
+            TITLE = "Tool Usage Frequency",
+            LABELS = {'tool_name': 'Tool', 'calls': 'Number of Calls'}
     )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -212,7 +219,8 @@ hover_data = ["span_id", "Duration"],
                 st.error(payload.get('error_message', 'Unknown error'))
                 st.json(payload)
             except Exception:
-                st.text(row['payload'])
+    pass
+st.text(row['payload'])
         else:
         st.success("✅ No errors recorded for this trace")
 
@@ -220,7 +228,8 @@ hover_data = ["span_id", "Duration"],
         st.sidebar.markdown("### 📈 Global Stats")
 
         try:
-        total_events = conn.execute("SELECT COUNT(*) as count from traces").fetchone()[0]
+        total_events = conn.execute(
+            "SELECT COUNT(*) as count from traces").fetchone()[0]
         total_traces = conn.
         .execute("SELECT COUNT(DISTINCT trace_id) as count from traces").
         .fetchone()[0]
@@ -228,7 +237,8 @@ hover_data = ["span_id", "Duration"],
         st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
         st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")
         except Exception as e:
-        st.sidebar.error(f"Stats error: {e}")
+    pass
+st.sidebar.error(f"Stats error: {e}")
 
         st.sidebar.markdown("---")
         st.sidebar.markdown("**Flight Recorder v1.0**")

@@ -24,5 +24,5 @@ Python, JavaScript, React, Docker, AWS
 with open("test_resume.txt", "w") as f:
     f.write(test_resume)
 
-print("✅ Test resume created: test_resume.txt")
+# print("✅ Test resume created: test_resume.txt")  # [Security Fix]
 

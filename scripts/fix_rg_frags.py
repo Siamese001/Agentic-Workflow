@@ -1,8 +1,9 @@
 """Fix micro-fragment shim files in apps_rg/ directory."""
 import logging
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 ROOT = Path('c:/Git/Agentic-Workflow')
 micro_fragments = [
     'apps_rg/L1_cognition/k25_research_models.py',

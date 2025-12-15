@@ -2,9 +2,9 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .autonomic_monitor_types import *' with explicit imports
+
+
+
 # # from .autonomic_monitor_types import *  # Star import removed
 
 
@@ -104,7 +104,8 @@ class AutonomicMonitor:
             try:
                 callback(alert)
             except Exception as e:
-                if self.enable_logging:
+    pass
+if self.enable_logging:
                     logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
         if self.enable_logging:
             logger.warning('health_alert_triggered',

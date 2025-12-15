@@ -15,12 +15,12 @@ logger = logging.getLogger("CanonQuerier")
 
 class CanonQuerier:
     def __init__(self):
-        print("🔌 Connecting to Canon Memory...")
+        # print("🔌 Connecting to Canon Memory...")  # [Security Fix]
         self.cm = ConnectionManager()
         self.redis_index = self.cm.get_redis_index()
         self.pinecone_index = self.cm.get_pinecone_index()
         self.embedding_fn = self.cm.get_embedding
-        print("✅ Connected.")
+        # print("✅ Connected.")  # [Security Fix]
 
     def search(self, query_text: str, top_k: int = 3) -> List[Dict[str, Any]]:
         """
@@ -36,7 +36,9 @@ class CanonQuerier:
         try:
             vector = self.embedding_fn(query_text)
         except Exception as e:
-            print(f"❌ Error generating embedding: {e}")
+    pass
+pass
+# print(f"❌ Error generating embedding: {e}")  # [Security Fix]
             return []
 
         # 2. Search L1 (Redis) - Hot Memory
@@ -65,7 +67,9 @@ class CanonQuerier:
                     "source": r.get('source', 'unknown')
                 })
         except Exception as e:
-            logger.warning(f"L1 Search failed: {e}")
+    pass
+pass
+logger.warning(f"L1 Search failed: {e}")
 
         # 3. Search L2 (Pinecone) - Cold Memory
         try:
@@ -85,7 +89,9 @@ class CanonQuerier:
                     "source": meta.get('source', 'unknown')
                 })
         except Exception as e:
-            logger.warning(f"L2 Search failed: {e}")
+    pass
+pass
+logger.warning(f"L2 Search failed: {e}")
 
         # Sort by score descending
         results.sort(key=lambda x: float(x['score']), reverse=True)
@@ -95,31 +101,31 @@ class CanonQuerier:
 
 def print_results(results: List[Dict]):
     if not results:
-        print("\n🤷 No relevant memories found.")
+        # print("\n🤷 No relevant memories found.")  # [Security Fix]
         return
 
-    print(f"\n🔍 Found {len(results)} relevant memories:")
-    print("="*60)
+    # print(f"\n🔍 Found {len(results)} relevant memories:")  # [Security Fix]
+    # print("="*60)  # [Security Fix]
 
     for i, res in enumerate(results, 1):
         content_snippet = res['content'][:200].replace('\n', ' ') + "..."
-        print(f"{i}. [{res['layer']}] Score: {res['score']}")
-        print(f"   ID: {res['id']}")
-        print(f"   Source: {res['source']}")
-        print(f"   📖 \"{content_snippet}\"")
-        print("-" * 60)
+        # print(f"{i}. [{res['layer']}] Score: {res['score']}")  # [Security Fix]
+        # print(f"   ID: {res['id']}")  # [Security Fix]
+        # print(f"   Source: {res['source']}")  # [Security Fix]
+        # print(f"   📖 \"{content_snippet}\"")  # [Security Fix]
+        # print("-" * 60)  # [Security Fix]
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("\nUsage: python query_canon.py \"Your question here\"")
-        print("Example: python query_canon.py \"What is the cognitive plane?\"")
+        # print("\nUsage: python query_canon.py \"Your question here\"")  # [Security Fix]
+        # print("Example: python query_canon.py \"What is the cognitive plane?\"")  # [Security Fix]
         sys.exit(1)
 
     query = sys.argv[1]
     querier = CanonQuerier()
 
-    print(f"\n🧠 Thinking about: '{query}'...")
+    # print(f"\n🧠 Thinking about: '{query}'...")  # [Security Fix]
     hits = querier.search(query)
     print_results(hits)
 

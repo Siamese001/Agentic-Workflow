@@ -1,9 +1,10 @@
-from pydantic import BaseModel
-from openai import AsyncOpenAI
-import yaml
-import instructor
 import logging
 from typing import Any
+
+import instructor
+import yaml
+from openai import AsyncOpenAI
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 

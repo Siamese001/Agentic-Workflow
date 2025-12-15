@@ -1,7 +1,8 @@
-from typing import Dict
 import logging
+from typing import Dict
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Enforce Resume Boundaries - atomic execution layer.'
 logger = logging.getLogger(__name__)

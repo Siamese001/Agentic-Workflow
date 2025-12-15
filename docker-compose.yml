@@ -21,13 +21,17 @@ services:
   # Validator Engine Service
   # ================================================
   validator:
+    build: .
     image: canon-validator:latest
+    # Fix for PermissionError - run as appuser
+    user: appuser
     container_name: canon-validator
     restart: unless-stopped
     
     # Security: Load secrets from environment file
     env_file:
       - .env.production
+      - .env
     
     # Environment variables
     environment:
@@ -54,8 +58,46 @@ services:
     ports:
       - "8080:8080"
     
-    # Volume mounts
+    # Volume mounts - mount only essential source directories
     volumes:
+      - ./canon_validator_v2_agentic.py:/app/canon_validator_v2_agentic.py:rw
+      - ./resume_engine.py:/app/resume_engine.py:rw
+      - ./fix_security_and_hygiene.py:/app/fix_security_and_hygiene.py:rw
+      - ./fix_structural_debt.py:/app/fix_structural_debt.py:rw
+      - ./fix_structural_debt_llm.py:/app/fix_structural_debt_llm.py:rw
+      - ./fix_print_statements.py:/app/fix_print_statements.py:rw
+      - ./check_pinecone.py:/app/check_pinecone.py:rw
+      - ./governed_outreach.py:/app/governed_outreach.py:rw
+      - ./force_fix_hygiene.py:/app/force_fix_hygiene.py:rw
+      - ./test_gemini_models.py:/app/test_gemini_models.py:rw
+      - ./fix_syntax_llm.py:/app/fix_syntax_llm.py:rw
+      - ./assess_dependencies.py:/app/assess_dependencies.py:rw
+      - ./assess_dependencies_regex.py:/app/assess_dependencies_regex.py:rw
+      - ./get_source_files.py:/app/get_source_files.py:rw
+      - ./fix_safe_minimal.py:/app/fix_safe_minimal.py:rw
+      - ./fix_whitespace_in_container.py:/app/fix_whitespace_in_container.py:rw
+      - ./01_agentic_core:/app/01_agentic_core:rw
+      - ./02_apps:/app/02_apps:rw
+      - ./03_runtime:/app/03_runtime:rw
+      - ./04_tools:/app/04_tools:rw
+      - ./05_data:/app/05_data:rw
+      - ./06_data:/app/06_data:rw
+      - ./07_config:/app/07_config:rw
+      - ./08_scripts:/app/08_scripts:rw
+      - ./09_tests:/app/09_tests:rw
+      - ./10_docs:/app/10_docs:rw
+      - ./11_examples:/app/11_examples:rw
+      - ./12_integrations:/app/12_integrations:rw
+      - ./13_monitoring:/app/13_monitoring:rw
+      - ./14_archive:/app/14_archive:rw
+      - ./15_experimental:/app/15_experimental:rw
+      - ./16_legacy:/app/16_legacy:rw
+      - ./17_runtime_servers:/app/17_runtime_servers:rw
+      - ./18_runtime_agents:/app/18_runtime_agents:rw
+      - ./19_runtime_pipeline:/app/19_runtime_pipeline:rw
+      - ./pyproject.toml:/app/pyproject.toml:rw
+      - ./requirements.txt:/app/requirements.txt:rw
+      - ./healthcheck.py:/app/healthcheck.py:rw
       - ./workspace:/app/workspace:rw
       - ./logs:/app/logs:rw
     

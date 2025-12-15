@@ -21,8 +21,7 @@ def test_canon_rag_low_cost_priority():
         "Goal: Validate that cheap Brave Search is used before expensive Pinecone")
 
     # Import the function to test
-    from canon_validator_engine import \
-        execute_cost_governed_vulnerability_check
+    from canon_validator_engine import execute_cost_governed_vulnerability_check
 
     # Mock data
     violation_hash = "VIO_001"
@@ -135,8 +134,7 @@ def test_pinecone_fallback_when_brave_fails():
 
     logger.info("\n=== Testing Pinecone Fallback Behavior ===")
 
-    from canon_validator_engine import \
-        execute_cost_governed_vulnerability_check
+    from canon_validator_engine import execute_cost_governed_vulnerability_check
 
     # Mock data
     violation_hash = "VIO_002"

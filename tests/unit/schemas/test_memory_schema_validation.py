@@ -1,6 +1,8 @@
-from pydantic import BaseModel
-from typing import Iterable, Type
 import logging
+from typing import Iterable, Type
+
+from pydantic import BaseModel
+
 _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
@@ -15,7 +17,7 @@ def _get_schema_version(obj: object) -> str | None:
     try:
         return getattr(obj, 'schema_version', None)
     except (ValueError, TypeError, KeyError):
-        return None
+return None
 
 
 def validate_schema_version(obj: object, expected_versions: Iterable[str] = (

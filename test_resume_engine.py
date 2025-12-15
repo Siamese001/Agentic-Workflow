@@ -80,28 +80,28 @@ Sincerely,""",
         }])
 
     def write_file(self, path, content):
-        print(f"[FILESYSTEM MOCK] Writing to {path} ({len(content)} chars)")
+        # print(f"[FILESYSTEM MOCK] Writing to {path} ({len(content)} chars)")  # [Security Fix]
         return f"Successfully wrote {len(content)} characters to {path}"
 
     def add_observations(self, observations):
-        print(f"[MEMORY MOCK] Adding observations: {observations}")
+        # print(f"[MEMORY MOCK] Adding observations: {observations}")  # [Security Fix]
         return "Memory updated successfully"
 
 # Mock Logger
 
 
 class MockLogger:
-    def info(self, msg): print(f"[INFO] {msg}")
-    def warning(self, msg): print(f"[WARN] {msg}")
-    def error(self, msg): print(f"[ERROR] {msg}")
+    # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
+    # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]
+    # def error(self, msg): print(f"[ERROR] {msg}")  # [Security Fix]
 
 
 def test_cover_letter_generation():
     """Test the generate_personalized_cover_letter function with mock data."""
 
-    print("=" * 60)
-    print("🧪 Testing Resume Engine - Personalized Cover Letter")
-    print("=" * 60)
+    # print("=" * 60)  # [Security Fix]
+    # print("🧪 Testing Resume Engine - Personalized Cover Letter")  # [Security Fix]
+    # print("=" * 60)  # [Security Fix]
 
     # Initialize mock tools and logger
     mock_tools = MockMCPTools()
@@ -117,7 +117,7 @@ def test_cover_letter_generation():
     }
 
     # Test Case 1: Successful cover letter generation
-    print("\n--- Test Case 1: Successful Cover Letter Generation ---")
+    # print("\n--- Test Case 1: Successful Cover Letter Generation ---")  # [Security Fix]
     result = generate_personalized_cover_letter(
         job_url="https://careers.example.com/senior-dev",
         user_name="John Doe",
@@ -125,11 +125,11 @@ def test_cover_letter_generation():
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
     # Test Case 2: Invalid URL
-    print("\n" + "=" * 60)
-    print("\n--- Test Case 2: Invalid Job URL ---")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("\n--- Test Case 2: Invalid Job URL ---")  # [Security Fix]
     result = generate_personalized_cover_letter(
         job_url="https://invalid.url",
         user_name="John Doe",
@@ -137,11 +137,11 @@ def test_cover_letter_generation():
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
     # Test Case 3: User not found in memory
-    print("\n" + "=" * 60)
-    print("\n--- Test Case 3: User Not Found in Memory ---")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("\n--- Test Case 3: User Not Found in Memory ---")  # [Security Fix]
     result = generate_personalized_cover_letter(
         job_url="https://careers.example.com/senior-dev",
         user_name="Unknown User",
@@ -149,10 +149,10 @@ def test_cover_letter_generation():
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
-    print("\n" + "=" * 60)
-    print("✅ Test completed!")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("✅ Test completed!")  # [Security Fix]
 
 
 if __name__ == "__main__":

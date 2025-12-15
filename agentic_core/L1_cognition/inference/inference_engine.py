@@ -220,7 +220,8 @@ Provider, get_client, ProviderConfig, get_api_key
                         return result
 
                     except Exception as e:
-                        logger.error(
+    pass
+logger.error(
                         "inference_failed",
                             EXTRA={
                     "execution_id": request.context.hard_state.execution_id,

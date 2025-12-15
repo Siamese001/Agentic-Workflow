@@ -62,7 +62,8 @@ class VerifiableCheckpointManager:
         try:
             data_bytes = await self.storage.read_blob(key)
         except FileNotFoundError:
-            logger.debug(f"Checkpoint not found: {session_id}/{node_id}")
+    pass
+logger.debug(f"Checkpoint not found: {session_id}/{node_id}")
             return None
 
         if verify:
@@ -122,7 +123,7 @@ class VerifiableCheckpointManager:
 
         return False
 
-    async def list_checkpoints(self, session_id: Optional[str] = None) -> list:
+    async def list_checkpoints(self, session_id: Optional[str]=None) -> list:
         """ """
         PREFIX = f"checkpoints/{session_id}/" if session_id else "checkpoints/"
 
@@ -173,12 +174,13 @@ class VerifiableCheckpointManager:
             logger.info(f"Loaded snapshot: {session_id}/{snapshot_name}")
             return state
         except FileNotFoundError:
-            logger.debug(f"Snapshot not found: {session_id}/{snapshot_name}")
+    pass
+logger.debug(f"Snapshot not found: {session_id}/{snapshot_name}")
             return None
 
 
 def create_checkpoint_manager(
-    storage_type: str = "local",
+    storage_type: str="local",
     **storage_kwargs
 ) -> VerifiableCheckpointManager:
     """ storage_type: "local" or "s3"

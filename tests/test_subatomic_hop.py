@@ -1,11 +1,12 @@
 """Test suite for Subatomic Hop Architecture."""
 
-import pytest
 import asyncio
 import json
 import logging
 import tempfile
 from pathlib import Path
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +32,9 @@ class TestSubatomicHop:
             """Setup test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         SELF.CONFIG = SubatomicHopConfig(
-            checkpoint_dir=Path(self.temp_dir),
-            enable_checkpoints=True,
-            enable_observability=True
+            checkpoint_dir = Path(self.temp_dir),
+            enable_checkpoints = True,
+            enable_observability = True
         )
 
         # Sample hop functions
@@ -368,7 +369,8 @@ class TestSubatomicHopIntegration:
         try:
             await HOP1.RUN(X=10)
         except RuntimeError:
-            pass  # Expected
+    pass
+pass  # Expected
 
         assert HOP1.STATE == HopState.FAILED
         assert MicroStage.ACT in hop1.checkpoints

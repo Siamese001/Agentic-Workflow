@@ -6,6 +6,7 @@ These symbols lack proper docstrings and are acknowledged as technical debt.
 No NEW missing docstrings will be allowed. This list can only shrink.
 """
 import logging
+
 logger = logging.getLogger(__name__)
 DOCSTRING_DEBT = {
     'agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:Validatio\n    nStep',

@@ -11,7 +11,11 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from scripts.runtime.shared.multi_provider_clients import (
-    Provider, get_client, get_instructor_client, get_litellm_completion)
+    Provider,
+    get_client,
+    get_instructor_client,
+    get_litellm_completion,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -101,7 +105,8 @@ class AgentExecutor:
                 try:
                     return self._execute_internal(messages, system_prompt, tools, **kwargs)
                 except Exception as e:
-                    record_exception(e)
+    pass
+record_exception(e)
                     raise
         else:
             return self._execute_internal(messages, system_prompt, **kwargs)
@@ -298,7 +303,7 @@ class AgentExecutor:
                         input_messages.append(
                             {"role": "user", "content": msg["content"]})
                         input_messages.append({"role": "model",
-                            "content": "Understood. I am ready."})
+                                               "content": "Understood. I am ready."})
                     else:
                         input_messages.append({
                             "role": msg["role"],
@@ -344,7 +349,8 @@ class AgentExecutor:
                 )
 
             except Exception as e:
-                logger.error(f"Google GenAI Interactions API error: {e}")
+    pass
+logger.error(f"Google GenAI Interactions API error: {e}")
                 raise
 
         return _execute_with_retry()
@@ -374,7 +380,7 @@ class AgentExecutor:
         return AgentResponse(
             CONTENT=str(getattr(response, "text", "") or ""),
             finish_reason=getattr(response, "candidates", [{}])[
-                                  0].get("finish_reason", "stop"),
+                0].get("finish_reason", "stop"),
             USAGE={},
             raw_response=response,
         )
@@ -442,9 +448,9 @@ class AgentExecutor:
         # Special handling for Google GenAI with Interactions API
         if self.config.provider == Provider.GOOGLE:
             return self._execute_google_structured(messages,
-                response_model,
-                system_prompt,
-                **kwargs)
+                                                   response_model,
+                                                   system_prompt,
+                                                   **kwargs)
 
         # Use Instructor for other providers
         instructor_client = get_instructor_client(self.config.provider)
@@ -504,7 +510,7 @@ class AgentExecutor:
             SCHEMA = getattr(response_model, 'json_schema', None)
             if not schema:
                 raise ValueError("response_model must be a Pydantic BaseModel or
-                    have json_schema method")
+                                 have json_schema method")
 
         # Prepare input for interactions.create
         input_messages = []
@@ -513,8 +519,10 @@ class AgentExecutor:
         for msg in formatted_messages:
             if msg["role"] == "system":
                 # System prompt becomes first user message with model acknowledgment
-                input_messages.append({"role": "user", "content": msg["content"]})
-                input_messages.append({"role": "model", "content": "Understood. I am ready."})
+                input_messages.append(
+                    {"role": "user", "content": msg["content"]})
+                input_messages.append(
+                    {"role": "model", "content": "Understood. I am ready."})
             else:
                 input_messages.append({
                     "role": msg["role"],
@@ -555,7 +563,8 @@ class AgentExecutor:
             else:
                 return parsed
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {e}")
+    pass
+logger.error(f"Failed to parse JSON response: {e}")
             logger.error(f"Raw content: {content}")
             raise ValueError(f"Invalid JSON response from model: {e}")
 

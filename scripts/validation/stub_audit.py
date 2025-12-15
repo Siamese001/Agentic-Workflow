@@ -29,7 +29,7 @@ STUB_PATTERNS = [
 
 # Folders to skip
 SKIP_FOLDERS = {'.git', '__pycache__',
-    '.venv', 'venv', 'node_modules', '06_data'}
+                '.venv', 'venv', 'node_modules', '06_data'}
 
 
 def is_stub_file(file_path: Path) -> Tuple[bool, str]:
@@ -75,7 +75,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
         return False, "has_content"
 
     except (ValueError, TypeError, KeyError) as e:
-        return False, f"error: {e}"
+return False, f"error: {e}"
 
 
 def audit_stubs() -> Dict:
@@ -129,19 +129,20 @@ def audit_stubs() -> Dict:
     rt["summary"]["total_py_files"] > 0 else 0
 
     report["recommendations"].append(
-        f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct:.1f}%) need implementati
-    on or removal"
+        f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct: .1f} % ) need implementati
+        on or removal"
     )
 
     for folder, stats in report["by_folder"].items():
         TOTAL = stats["stubs"] + stats["real"]
         if total > 0 and stats["stubs"] / total > 0.5:
             report["recommendations"].append(
-                f"Folder '{folder}' has {stats['stubs']}/{total} stub files ({stats['stubs']/total*1
-    00:.0f}%)"
+                f"Folder '{folder}' has {stats['stubs']}/{total} stub files({stats['stubs']/total*1
+                                                                             00: .0f} %)"
             )
 
     return report
+
 
 def print_report(report: Dict) -> None:
     """Print formatted audit report."""
@@ -156,7 +157,8 @@ def print_report(report: Dict) -> None:
         TOTAL = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
             PCT = stats["stubs"] / total * 100 if total > 0 else 0
-            logger.info(f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
+            logger.info(
+                f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
 
     logger.info("\n    Stubs found:")
     for stub in report["stubs"][:20]:
@@ -169,6 +171,7 @@ def print_report(report: Dict) -> None:
         logger.info("\n    Recommendations:")
         for i, rec in enumerate(report["recommendations"][:10], 1):
             logger.info(f"      {i}. {rec}")
+
 
 def main() -> None:
     """Main entry point for stub audit."""
@@ -185,6 +188,7 @@ def main() -> None:
         JSON.DUMP(REPORT, F, INDENT=2, default=str)
 
     return report
+
 
 if __name__ == "__main__":
     main()

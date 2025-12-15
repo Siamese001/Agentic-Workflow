@@ -98,7 +98,8 @@ class ContrastiveSemanticCache:
             from sentence_transformers import SentenceTransformer
             return True
         except ImportError:
-            logger.warning("sentence_transformers or numpy not available,
+    pass
+logger.warning("sentence_transformers or numpy not available,
                 cache will be in fallback mode")
             return False
 
@@ -128,13 +129,15 @@ class ContrastiveSemanticCache:
             return True
 
         except ImportError as e:
-            logger.error(f"Failed to import required libraries: {e}")
+    pass
+logger.error(f"Failed to import required libraries: {e}")
             logger.warning("Cache will operate in fallback mode (no caching)")
             self._fallback_mode = True
             self._model_loaded = True
             return False
         except Exception as e:
-            logger.error(f"Failed to load model {self.model_name}: {e}")
+    pass
+logger.error(f"Failed to load model {self.model_name}: {e}")
             logger.warning("Cache will operate in fallback mode (no caching)")
             self._fallback_mode = True
             self._model_loaded = True
@@ -172,7 +175,8 @@ class ContrastiveSemanticCache:
             return embedding
 
         except Exception as e:
-            logger.error(f"Failed to encode query: {e}")
+    pass
+logger.error(f"Failed to encode query: {e}")
             return None
 
     def _update_embedding_matrix(self):
@@ -185,7 +189,8 @@ class ContrastiveSemanticCache:
             EMBEDDINGS = [np.array(entry.embedding) for entry in self._cache]
             self._embedding_matrix = np.vstack(embeddings)
         except Exception as e:
-            logger.error(f"Failed to update embedding matrix: {e}")
+    pass
+logger.error(f"Failed to update embedding matrix: {e}")
             self._embedding_matrix = None
 
     def _calculate_similarity(self, query_embedding: np.ndarray) -> np.ndarray:
@@ -213,7 +218,8 @@ class ContrastiveSemanticCache:
             return similarities
 
         except Exception as e:
-            logger.error(f"Failed to calculate similarities: {e}")
+    pass
+logger.error(f"Failed to calculate similarities: {e}")
             return np.array([])
 
     def _evict_if_needed(self):
@@ -405,7 +411,8 @@ class ContrastiveSemanticCache:
             logger.info(f"Exported {len(self._cache)} cache entries to {filepath}")
 
         except Exception as e:
-            logger.error(f"Failed to export cache: {e}")
+    pass
+logger.error(f"Failed to export cache: {e}")
 
     def import_cache(self, filepath: str, clear_existing: bool = False):
             """Import cache from JSON file.
@@ -432,7 +439,8 @@ class ContrastiveSemanticCache:
             logger.info(f"Imported {len(data.get('entries', []))} cache entries from {filepath}")
 
         except Exception as e:
-            logger.error(f"Failed to import cache: {e}")
+    pass
+logger.error(f"Failed to import cache: {e}")
 
 # Convenience function for direct usage
 def get_cached_response(query: str, cache: ContrastiveSemanticCache) -> Optional[str]:

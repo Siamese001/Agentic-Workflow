@@ -155,7 +155,8 @@ class ClaimExtractor:
 
                             break
                         except ValueError:
-                            continue
+    pass
+continue
                 if value_str:
                     break
 

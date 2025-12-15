@@ -4,10 +4,12 @@ CV-U-004: MEMemory (L5) Payload Format
 Unit test for isolated L5 component verification
 """
 
-import pytest
-from unittest.mock import Mock
 import json
 from datetime import datetime, timezone
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 

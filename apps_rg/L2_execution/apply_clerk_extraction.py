@@ -81,11 +81,11 @@ class ClerkExtractor:
     def _extract_metrics(self, text: str) -> List[str]:
         """Extract quantified metrics from bullet text."""
         PATTERNS = [r"\$\d+\.?\d*[MBK]\+?",
-            r"\d+\.?\d*%",
-            r"\d+\.?\d*[MBK]\+",
-            r"\d{1,
-            3}(?:,
-            \d{3})+"]
+                    r"\d+\.?\d*%",
+                    r"\d+\.?\d*[MBK]\+",
+                    r"\d{1,
+                         3}(?:,
+                            \d{3}) +"]
         METRICS = []
         for pattern in patterns:
             metrics.extend(re.findall(pattern, text))

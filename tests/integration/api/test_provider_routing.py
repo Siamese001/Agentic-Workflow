@@ -1,7 +1,8 @@
 """Integration tests for API provider routing and fallbacks."""
-import pytest
 import logging
 import os
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

@@ -106,7 +106,8 @@ class ScriptsPlanningOrchestrator:
             return result
 
         except Exception as e:
-            self.logger.error(f"Scripts planning failed: {str(e)}")
+    pass
+self.logger.error(f"Scripts planning failed: {str(e)}")
             return ScriptsPlanningResult(
                 SUCCESS=False,
                 ERRORS=[str(e)],

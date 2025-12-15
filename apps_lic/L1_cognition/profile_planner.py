@@ -518,7 +518,8 @@ class ProfilePlanner:
                     "signal_count": len(plan.signals)
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+    pass
+logger.debug(f"Failed to record telemetry: {e}")
 
     def get_profile_summary(self, plan: ProfilePlan) -> Dict[str, object]:
         """Get a summary of the profile plan for debugging/telemetry."""

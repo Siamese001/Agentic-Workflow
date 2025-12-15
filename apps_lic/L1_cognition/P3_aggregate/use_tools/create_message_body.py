@@ -31,7 +31,7 @@ class CreateMessageBody:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
+return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000

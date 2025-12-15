@@ -73,7 +73,7 @@ async def validate_k5a_output(
 
     if all_passed:
         return ValidationResult(
-            STATUS=ValidationStatus.pass ,
+            STATUS=ValidationStatus.pass,
             gate_id="K5A_COMBINED",
             execution_point="POST_K5A_GENERATION",
             SCORE=1.0,
@@ -252,15 +252,14 @@ async def main():
     logger.info("\n[STEP 3] Preparing execution context")
 
     CONTEXT = {
-        "master_bullets": [
-            "Led cross-functional team of 8 engineers to architect and deploy cloud-native ML platfo
-    rm serving 2M+ daily predictions with 99.9% uptime",
+        "master_bullets": ["Led cross-functional team of 8 engineers to architect and deploy cloud-native ML platfo
+    rm serving 2M + daily predictions with 99.9 % uptime",
             "Designed and implemented real-time data pipeline processing 500GB daily using Apache Ka
-    fka and Spark, reducing latency by 60%",
+    fka and Spark, reducing latency by 60 %",
             "Built production recommendation system using collaborative filtering and deep learning,
-    increasing user engagement by 35%",
+    increasing user engagement by 35 %",
             "Established MLOps practices including CI/CD pipelines, automated testing, and model mon
-    itoring, reducing deployment time by 70%",
+    itoring, reducing deployment time by 70 %",
             "Mentored 5 junior engineers on ML best practices, code review standards, and system des
     ign principles",
             "Optimized model inference performance through quantization and caching strategies, redu
@@ -268,7 +267,7 @@ async def main():
             "Collaborated with product and business teams to define ML roadmap and prioritize high-i
     mpact features",
             "Implemented A/B testing framework for ML models, enabling data-driven decision making a
-    cross 20+ experiments",
+    cross 20 + experiments",
         ],
         "differentiators": [
             "machine learning",
@@ -289,7 +288,8 @@ async def main():
         """,
     }
 
-    logger.info(f"✓ Context prepared with {len(context['master_bullets'])} master bullets")
+    logger.info(
+        f"✓ Context prepared with {len(context['master_bullets'])} master bullets")
 
     # Step 4: Execute with feedback loop
     logger.info("\n[STEP 4] Executing K.5A generation with feedback loop")
@@ -338,7 +338,8 @@ async def main():
                 if line.strip()
             ]
 
-            logger.info(f"\nReverted to {len(bullets)} bullets (best attempt):")
+            logger.info(
+                f"\nReverted to {len(bullets)} bullets (best attempt):")
             for i, bullet in enumerate(bullets, 1):
                 word_count = len(bullet.split())
                 logger.info(f"\n{i}. {bullet}")
@@ -349,7 +350,8 @@ async def main():
             logger.error(f"Exhausted all {result.attempts} attempts")
 
             # Generate failure report
-            failure_report = orchestrator.generate_failure_report(result, "K.5A")
+            failure_report = orchestrator.generate_failure_report(
+                result, "K.5A")
             logger.error(f"\n{failure_report}")
 
         # Display checkpoint history
@@ -363,16 +365,20 @@ async def main():
             logger.info(f"  Score: {checkpoint.score:.2f}")
             logger.info(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type
     else 'N/A'}")
-            logger.info(f"  Status: {checkpoint.validation_result.status.value}")
+            logger.info(
+                f"  Status: {checkpoint.validation_result.status.value}")
 
             if hasattr(checkpoint.validation_result,
                 'failures') and checkpoint.validation_result.failures:
-                logger.info(f"  Failures: {len(checkpoint.validation_result.failures)}")
+                logger.info(
+                    f"  Failures: {len(checkpoint.validation_result.failures)}")
                 for failure in checkpoint.validation_result.failures[:2]:
-                    logger.info(f"    - {failure.rule_name}: {failure.message}")
+                    logger.info(
+                        f"    - {failure.rule_name}: {failure.message}")
 
     except Exception as e:
-        logger.error(f"Execution failed with error: {e}", exc_info=True)
+    pass
+logger.error(f"Execution failed with error: {e}", exc_info=True)
 
     LOGGER.INFO("\N" + "=" * 80)
     logger.info("K.5A PROOF OF CONCEPT COMPLETE")

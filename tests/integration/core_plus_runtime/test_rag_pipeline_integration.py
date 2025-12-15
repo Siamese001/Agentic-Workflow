@@ -3,8 +3,9 @@
 Integration tests for RAG Pipeline
 Tests RAG retrieval, augmentation, and generation behaviors
 """
-import pytest
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +13,8 @@ logger = logging.getLogger(__name__)
 # Import actual RAG components when available
 try:
 except ImportError:
-    RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
+    pass
+RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
 
 
 class TestRAGPipelineIntegration:
@@ -292,7 +294,8 @@ class TestRAGPipelineIntegration:
                     assert result["error"]["type"] in ["invalid_query", "empty_query", "too_long"]
 
             except (ValueError, TypeError):
-                # Expected for invalid inputs
+    pass
+# Expected for invalid inputs
                 ...
 
     def test_rag_deterministic_behavior_contract(self):

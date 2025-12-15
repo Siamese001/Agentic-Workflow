@@ -4,10 +4,11 @@ CV-P-001 to CV-P-004: Protocol Compliance Tests
 MCP Alignment testing for L1 Protocol Handler
 """
 
-import pytest
 import json
 from unittest.mock import Mock, patch
-from l1_protocol_handler import L1ProtocolHandler, ToolResult, GitConflictError
+
+import pytest
+from l1_protocol_handler import GitConflictError, L1ProtocolHandler, ToolResult
 
 
 class TestCVProtocolCompliance:

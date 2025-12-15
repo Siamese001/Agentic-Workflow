@@ -157,7 +157,8 @@ class AirlockProtocol:
                     raise PermissionError(f"Human rejected action: {reason}")
 
             except (json.JSONDecodeError, IOError):
-                # Ticket file may be corrupted or unreadable, continue waiting
+    pass
+# Ticket file may be corrupted or unreadable, continue waiting
 
                 # Wait before next check
             await asyncio.sleep(5)
@@ -184,7 +185,8 @@ class AirlockProtocol:
             ticket_path.unlink()
 
         except Exception as e:
-            logger.error(f"Error moving ticket: {e}")
+    pass
+logger.error(f"Error moving ticket: {e}")
 
     def get_pending_requests(self) -> list:
         """Get all pending airlock requests."""
@@ -195,7 +197,8 @@ class AirlockProtocol:
                     DATA = json.load(f)
                 pending.append(data)
             except Exception:
-                continue
+    pass
+continue
         return pending
 
     def approve_request(self, ticket_id: str, approver: str = "human"):

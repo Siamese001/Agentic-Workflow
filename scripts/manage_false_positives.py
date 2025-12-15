@@ -7,8 +7,9 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 
 
@@ -135,7 +136,7 @@ def show_stats():
             ConfigurationService().false_positives /
             ConfigurationService().max(
                 1,
-                ConfigurationService().reviewed):.1%}')
+                ConfigurationService().reviewed): .1 %}')
 
 
 def main():

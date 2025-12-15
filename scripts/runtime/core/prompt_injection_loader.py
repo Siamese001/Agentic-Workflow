@@ -42,7 +42,8 @@ class PromptInjectionLoader:
         # Load injections
         self._load_injections()
 
-        logger.info(f"Initialized PromptInjectionLoader with {len(self.injections)} patterns")
+        logger.info(
+            f"Initialized PromptInjectionLoader with {len(self.injections)} patterns")
 
     def _load_injections(self) -> None:
             """Load injection patterns from files."""
@@ -71,10 +72,12 @@ class PromptInjectionLoader:
                     INJECTION = InjectionPattern(**data)
                     SELF.INJECTIONS[INJECTION.ID] = injection
 
-                logger.debug(f"Loaded injection {injection.id} from {file_path}")
+                logger.debug(
+                    f"Loaded injection {injection.id} from {file_path}")
 
             except Exception as e:
-                logger.error(f"Failed to load {file_path}: {e}")
+    pass
+logger.error(f"Failed to load {file_path}: {e}")
 
         # Load instructional injections
         self._load_instructional_injections()
@@ -93,8 +96,9 @@ class PromptInjectionLoader:
                 TEMPLATE=injection.template,
                 VARIABLES=injection.variables,
                 SCOPE=InjectionScope(
-                    hop_types=injection.scope.hop_types if injection.scope.hop_types else ["*"],
-                    STAGES=[stage.value for stage in injection.scope.stages] if injection.scope.stag
+                    hop_types = injection.scope.hop_types if injection.scope.hop_types else [
+                        "*"],
+                    STAGES = [stage.value for stage in injection.scope.stages] if injection.scope.stag
     es else [],
                     CONTEXTS=injection.scope.contexts
                 ),
@@ -436,7 +440,8 @@ class PromptInjectionLoader:
             # Try to parse as JSON first
             CONTEXT = json.loads(base_prompt)
         except json.JSONDecodeError:
-            # Treat as plain text
+    pass
+# Treat as plain text
             CONTEXT = {"prompt": base_prompt}
 
         # Use prompt assembler for semantic fencing (lazy import)
@@ -453,7 +458,8 @@ class PromptInjectionLoader:
                 ]
             )
         except ImportError:
-            # Fallback to simple concatenation
+    pass
+# Fallback to simple concatenation
             ENHANCED = base_prompt
             for match in matches:
                 TEMPLATE = match.injection.template

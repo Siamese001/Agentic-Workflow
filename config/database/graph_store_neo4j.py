@@ -2,7 +2,8 @@
 try:
     from neo4j import GraphDatabase
 except ImportError:
-    # Neo4j driver not installed - provide fallback
+    pass
+# Neo4j driver not installed - provide fallback
     GraphDatabase = None
 import logging
 import os
@@ -63,7 +64,8 @@ class Neo4jGraphStore:
                 },
             )
         except Exception:
-            # Fallback without APOC if not available
+    pass
+# Fallback without APOC if not available
             fallback_cypher = """
             MERGE (e:Entity {id: $id})
             SET e.type = $type,
@@ -124,7 +126,8 @@ class Neo4jGraphStore:
                 """
                 PARAMS["ATTRS"] = attrs
             except Exception:
-                # Fallback without APOC
+    pass
+# Fallback without APOC
                 CYPHER += "\nSET r += $attrs"
                 PARAMS["ATTRS"] = attrs
 

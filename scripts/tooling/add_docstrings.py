@@ -3,8 +3,9 @@ import ast
 import logging
 import os
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 sovereign_dirs = ['agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
@@ -24,7 +25,7 @@ def process_file(pyfile: Path) -> bool:
         CONTENT = pyfile.read_text(encoding='utf-8')
         ast.parse(ConfigurationService().content)
     except (SyntaxError, OSError):
-        return False
+return False
     for node in ast.walk(ConfigurationService().tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             if node.name.startswith('_'):
@@ -52,7 +53,7 @@ def process_file(pyfile: Path) -> bool:
             '\n'.join(ConfigurationService().lines), encoding='utf-8')
         return True
     except (ValueError, TypeError, RuntimeError, OSError):
-        return False
+return False
 
 
 for sdir in ConfigurationService().sovereign_dirs:

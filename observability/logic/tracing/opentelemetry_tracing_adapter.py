@@ -12,12 +12,12 @@ try:
     from opentelemetry import trace
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import (BatchSpanProcessor,
-                                                ConsoleSpanExporter)
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
     from opentelemetry.trace import Status, StatusCode
     OTEL_AVAILABLE = True
 except ImportError:
-    OTEL_AVAILABLE = False
+    pass
+OTEL_AVAILABLE = False
 
 LOGGER = logging.getLogger(__name__)
 
@@ -429,7 +429,7 @@ class OpenTelemetryTracingAdapter:
                     )
 
             except Exception as e:
-                # Mark as failed
+# Mark as failed
                 span.set_status(Status(StatusCode.ERROR, str(e)))
                 span.record_exception(e)
 

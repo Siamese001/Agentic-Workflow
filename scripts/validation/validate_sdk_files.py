@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 import ast
 import os
 import sys
-from services.configuration import ConfigurationService
+
 from services.configuration import ConfigurationService
 
 
@@ -21,9 +21,9 @@ def validate_python_syntax(file_path: str) -> bool:
         ast.parse(ConfigurationService().content)
         return (True, None)
     except SyntaxError as e:
-        return (False, f'Syntax error: {e}')
+return (False, f'Syntax error: {e}')
     except (ValueError, TypeError, KeyError) as e:
-        return (False, f'Error reading file: {e}')
+return (False, f'Error reading file: {e}')
 
 
 def main() -> None:

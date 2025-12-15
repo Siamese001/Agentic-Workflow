@@ -153,7 +153,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return nodes, relationships
 
         except Exception as e:
-            logger.error(f"Failed to extract components: {e}")
+    pass
+logger.error(f"Failed to extract components: {e}")
             return [], []
 
     def _generate_mermaid_code(
@@ -255,7 +256,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return artifact
 
         except Exception as e:
-            logger.error(f"Failed to generate diagram: {e}")
+    pass
+logger.error(f"Failed to generate diagram: {e}")
             return None
 
     def render_artifact(self, artifact: DiagramArtifact) -> str:
@@ -333,7 +335,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+    pass
+logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
                     """Docstring."""

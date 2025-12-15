@@ -22,8 +22,7 @@ from uuid import uuid4
 # Import required modules
 from connection_manager import ConnectionFactory, ConnectionManager
 from llm_client import LLMClient
-from schemas_connectivity import (CanonEntry, CanonMetadata,
-                                  generate_ast_structure)
+from schemas_connectivity import CanonEntry, CanonMetadata, generate_ast_structure
 
 # Configure logging
 logging.basicConfig(level=logging.INFO,
@@ -35,7 +34,9 @@ try:
     from redisvl.query import VectorQuery
     REDISVL_AVAILABLE = True
 except ImportError:
-    REDISVL_AVAILABLE = False
+    pass
+pass
+REDISVL_AVAILABLE = False
     logger.warning("redisvl not installed - L1 cache will be disabled")
 
 
@@ -66,13 +67,19 @@ class CanonValidator:
             self.redis_index = self.connection_manager.get_redis_index()
             logger.info("✅ L1 Semantic Cache (Redis) ready")
         except Exception as e:
-            logger.warning(f"⚠️ L1 Cache initialization failed: {e}")
+    pass
+pass
+
+
+logger.warning(f"⚠️ L1 Cache initialization failed: {e}")
 
         try:
             self.pinecone_index = self.connection_manager.get_pinecone_index()
             logger.info("✅ L2 Canon Memory (Pinecone) ready")
         except Exception as e:
-            logger.warning(f"⚠️ L2 Memory initialization failed: {e}")
+    pass
+pass
+logger.warning(f"⚠️ L2 Memory initialization failed: {e}")
 
         # Configuration
         self.semantic_threshold = float(
@@ -179,7 +186,9 @@ class CanonValidator:
                 f"✅ Validation complete in {result['latency_ms']:.2f}ms - Valid: {result['is_valid']}")
 
         except Exception as e:
-            logger.error(f"❌ Validation failed: {e}")
+    pass
+pass
+logger.error(f"❌ Validation failed: {e}")
             result["error"] = str(e)
             result["latency_ms"] = (time.time() - start_time) * 1000
 
@@ -238,7 +247,9 @@ class CanonValidator:
                         f"🔍 L1 Cache miss (distance: {cached.distance:.4f} > {self.semantic_threshold})")
 
         except Exception as e:
-            logger.warning(f"⚠️ L1 cache query failed: {e}")
+    pass
+pass
+logger.warning(f"⚠️ L1 cache query failed: {e}")
 
         logger.debug("🔍 L1 Cache miss")
         return None, time.time() - start
@@ -273,7 +284,9 @@ class CanonValidator:
             return rules, time.time() - start
 
         except Exception as e:
-            logger.warning(f"⚠️ L2 retrieval failed: {e}")
+    pass
+pass
+logger.warning(f"⚠️ L2 retrieval failed: {e}")
             return [], time.time() - start
 
     def _stage4_consensus_validation(self, content: str, canon_rules: List[Dict[str, Any]]) -> Tuple[Dict[str, Any], float]:
@@ -312,7 +325,9 @@ Respond with a JSON object containing:
                     complexity="high"
                 )
             except Exception as llm_error:
-                logger.warning(f"⚠️ High complexity LLM failed: {llm_error}")
+    pass
+pass
+logger.warning(f"⚠️ High complexity LLM failed: {llm_error}")
                 # Fallback to mini mode
                 logger.info("🔄 Falling back to mini mode validation")
                 response = self.llm_client.generate_plan(
@@ -336,7 +351,9 @@ Respond with a JSON object containing:
             return validation_result, time.time() - start
 
         except Exception as e:
-            logger.error(f"❌ Consensus validation failed: {e}")
+    pass
+pass
+logger.error(f"❌ Consensus validation failed: {e}")
             # Fallback to basic validation
             return {
                 "is_valid": False,
@@ -408,7 +425,9 @@ Respond with a JSON object containing:
                     logger.debug("💾 Written to L1 Cache")
 
                 except Exception as e:
-                    logger.warning(f"⚠️ L1 write-back failed: {e}")
+    pass
+pass
+logger.warning(f"⚠️ L1 write-back failed: {e}")
                     success = False
 
             # Write to Pinecone (L2)
@@ -425,14 +444,18 @@ Respond with a JSON object containing:
                     logger.debug("💾 Written to L2 Memory")
 
                 except Exception as e:
-                    logger.warning(f"⚠️ L2 write-back failed: {e}")
+    pass
+pass
+logger.warning(f"⚠️ L2 write-back failed: {e}")
                     success = False
 
             logger.info(
                 f"✅ Meta-learning complete - pattern stored for future use")
 
         except Exception as e:
-            logger.error(f"❌ Write-back failed: {e}")
+    pass
+pass
+logger.error(f"❌ Write-back failed: {e}")
             success = False
 
         return success, time.time() - start
@@ -512,6 +535,6 @@ if __name__ == "__main__":
     test_content = "The cognitive plane must be separate from the data plane."
     result = validator.validate(test_content, "test")
 
-    print("\n🎯 Validation Result:")
-    print(json.dumps(result, indent=2))
+    # print("\n🎯 Validation Result:")  # [Security Fix]
+    # print(json.dumps(result, indent=2))  # [Security Fix]
 

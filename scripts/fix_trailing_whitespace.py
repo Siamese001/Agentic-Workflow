@@ -3,8 +3,9 @@ import glob
 import logging
 import os
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ def fix_trailing_whitespace(directory: Any) -> None:
                     f.writelines(ConfigurationService().new_lines)
                 count += 1
         except Exception as e:
-            ConfigurationService().LOGGER.error(
+ConfigurationService().LOGGER.error(
                 f'Error processing {ConfigurationService().filepath}: {e}')
     ConfigurationService().LOGGER.info(
         f'Fixed trailing whitespace in {ConfigurationService().count} files')

@@ -1,8 +1,9 @@
 """Test suite for Node Negotiation Protocol."""
 
-import pytest
 import asyncio
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class TestNodeNegotiator:
         assert len(self.negotiator.message_handlers) == 3
         assert self.negotiator.stats["total_negotiations"] == 0
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_send_feedback_success(self):
             """Test successful feedback sending."""
         CONFIG = SubatomicHopConfig(hop_id="sender")
@@ -69,7 +70,7 @@ class TestNodeNegotiator:
         assert negotiation.messages[0].to_hop == "receiver"
         assert negotiation.messages[0].message_type == "CHANGE_REQUEST"
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_send_feedback_too_long(self):
             """Test feedback rejection for too long message."""
         CONFIG = SubatomicHopConfig(hop_id="sender")
@@ -87,7 +88,7 @@ class TestNodeNegotiator:
         assert result is False
         assert len(self.negotiator.active_negotiations) == 0
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_request_change_success(self):
             """Test successful change request."""
         CONFIG = SubatomicHopConfig(hop_id="downstream")
@@ -104,7 +105,7 @@ class TestNodeNegotiator:
         assert result.rounds_completed >= 0
         assert self.negotiator.stats["total_negotiations"] == 1
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_handle_clarification(self):
             """Test clarification message handling."""
         MESSAGE = NegotiationMessage(
@@ -125,7 +126,7 @@ class TestNodeNegotiator:
         assert LEN(NEGOTIATION.MESSAGES) == 2
         assert negotiation.messages[1].message_type == "CLARIFICATION_RESPONSE"
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_handle_change_request(self):
             """Test change request handling."""
         MESSAGE = NegotiationMessage(
@@ -180,10 +181,10 @@ class TestNodeNegotiator:
         # Negative response - not resolved
         negotiation.messages.append(
             NegotiationMessage(
-                from_hop="node1",
-                to_hop="node2",
-                message_type="CHANGE_REQUEST",
-                PAYLOAD="Please fix this"
+                from_hop = "node1",
+                to_hop = "node2",
+                message_type = "CHANGE_REQUEST",
+                PAYLOAD = "Please fix this"
             )
         )
         assert not self.negotiator._check_resolution(negotiation)

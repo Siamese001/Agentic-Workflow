@@ -1,6 +1,6 @@
 """Input processing stage for unified signal pipeline. """
 
-# TODO: Fix relative import
+
 # from .types import PipelineStage
 import hashlib
 import json
@@ -21,14 +21,47 @@ class InputProcessingStage(PipelineStage):
 def __init__(self: Any) -> None:
         """Initialize input processing stage."""
         try:
-# TODO: Fix relative import
+
 #             from ..hyde_processor import HyDEProcessor
-# TODO: Fix relative import
+
 #             from ..rag_components import SemanticCache
             self.semantic_cache = SemanticCache()
             self.hyde_processor = HyDEProcessor()
         except ImportError:
-            self.semantic_cache = None
+    pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+self.semantic_cache = None
             self.hyde_processor = None
             logger.warning("SemanticCache or HyDEProcessor not available")
 
@@ -79,7 +112,40 @@ async def execute(self: Any, envelope: Any) -> Any:
             return envelope
 
         except Exception as e:
-            logger.error(f"Input processing failed: {e}")
+    pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+logger.error(f"Input processing failed: {e}")
             envelope.mark_stage_failed(
                 stage_name,
                 str(e),

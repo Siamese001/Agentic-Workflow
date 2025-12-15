@@ -4,9 +4,11 @@ CV-U-002: Redis (L4) Timeout Handling
 Unit test for isolated L4 component verification
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
 import redis.exceptions
+
 from canon_validator import CanonValidator
 
 
@@ -63,7 +65,8 @@ class TestCVU002:
             try:
                 raise redis.exceptions.TimeoutError("Simulated timeout")
             except redis.exceptions.TimeoutError:
-                error_codes.append("L4_STATE_UNAVAILABLE")
+    pass
+error_codes.append("L4_STATE_UNAVAILABLE")
                 return None
 
         # Execute the wrapper

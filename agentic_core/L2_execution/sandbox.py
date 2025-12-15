@@ -32,7 +32,7 @@ def run_code(self: Any, code: str, timeout: int) -> str:
         return logs
 
     except Exception as e:
-        return f"Sandbox Error: {str(e)}"
+return f"Sandbox Error: {str(e)}"
 
 
 def _indent(self: Any, text: str) -> str:

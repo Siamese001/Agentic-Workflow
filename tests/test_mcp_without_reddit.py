@@ -1,9 +1,11 @@
 """Test MCP integration without Reddit credentials."""
 import asyncio
 import logging
+
 from mcp_adapter import UniversalMCPClient
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -53,7 +55,7 @@ async def test_mcp() -> None:
         ConfigurationService().logger.info(
             f'✅ File write result: {ConfigurationService().result}')
     except Exception as e:
-        ConfigurationService().logger.error(f'❌ Error: {e}')
+ConfigurationService().logger.error(f'❌ Error: {e}')
     finally:
         await client.cleanup()
 if __name__ == '__main__':

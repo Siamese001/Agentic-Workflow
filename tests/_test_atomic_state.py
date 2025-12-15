@@ -1,9 +1,10 @@
 
-from pathlib import Path
-import tempfile
-import sys
-import os
 import logging
+import os
+import sys
+import tempfile
+from pathlib import Path
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for atomic state persistence with ACID guarantees.
@@ -229,7 +230,8 @@ def test_rollback_on_failure():
             manager.checkpoint("workflow_rollback_test", state_b)
             assert False, "Checkpoint should have failed"
         except StatePersistenceError as e:
-            logger.info(f"✓ Checkpoint failed as expected: {e}")
+    pass
+logger.info(f"✓ Checkpoint failed as expected: {e}")
 
         # Restore original method
         manager._atomic_swap = original_swap
@@ -457,7 +459,8 @@ def main():
             test()
             PASSED += 1
         except Exception as e:
-            logger.info(f"✗ {test.__name__} failed: {e}")
+    pass
+logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1

@@ -9,11 +9,12 @@ in the hardened infrastructure components including:
 - Circuit breaker flapping behavior
 """
 
-import pytest
 import asyncio
 import json
 import logging
 from typing import Any, Dict
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,8 @@ logger = logging.getLogger(__name__)
 try:
     eError
 except ImportError as e:
-    # Fallback imports for testing
+    pass
+# Fallback imports for testing
     pytest.skip(
         f"Skipping hardened infrastructure tests: {e}", allow_module_level=True)
 

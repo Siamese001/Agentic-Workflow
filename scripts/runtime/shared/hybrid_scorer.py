@@ -211,7 +211,8 @@ class HybridScorer:
             return boosted_results
 
         except Exception as e:
-            logger.error(f"Error in score_documents: {str(e)}")
+    pass
+logger.error(f"Error in score_documents: {str(e)}")
             return []
 
     def _normalize_scores(self, sparse_results: List[Dict[str, Any]]) -> Dict[str, float]:
@@ -240,7 +241,8 @@ class HybridScorer:
                         scores.append(score)
                         valid_results.append((doc_id, score))
                 except (ValueError, TypeError) as e:
-                    logger.warning(f"Invalid score in sparse results: {e}")
+    pass
+logger.warning(f"Invalid score in sparse results: {e}")
                     continue
 
             if not scores:
@@ -269,7 +271,8 @@ class HybridScorer:
             return normalized
 
         except Exception as e:
-            logger.error(f"Error normalizing scores: {str(e)}")
+    pass
+logger.error(f"Error normalizing scores: {str(e)}")
             return {}
 
         """Docstring."""
@@ -325,7 +328,8 @@ class HybridScorer:
                     hybrid_results.append(hybrid)
 
                 except (ValueError, TypeError) as e:
-                    logger.warning(f"Error processing dense result at index {idx}: {e}")
+    pass
+logger.warning(f"Error processing dense result at index {idx}: {e}")
                     continue
 
             # Also include documents that only appear in sparse results
@@ -351,7 +355,8 @@ class HybridScorer:
                     hybrid_results.append(hybrid)
 
                 except Exception as e:
-                    logger.warning(f"Error processing sparse-only doc {doc_id}: {e}")
+    pass
+logger.warning(f"Error processing sparse-only doc {doc_id}: {e}")
                     continue
 
             logger.debug(f"Combined scores: {len(hybrid_results)} total documents")
@@ -359,7 +364,8 @@ class HybridScorer:
             return hybrid_results
 
         except Exception as e:
-            logger.error(f"Error computing hybrid scores: {str(e)}")
+    pass
+logger.error(f"Error computing hybrid scores: {str(e)}")
             return []
 
     def _apply_boosts(
@@ -412,7 +418,8 @@ class HybridScorer:
             return boosted_results
 
         except Exception as e:
-            logger.error(f"Error applying boosts: {str(e)}")
+    pass
+logger.error(f"Error applying boosts: {str(e)}")
             return hybrid_results
 
     def _matches_industry(self, metadata: Dict[str, Any], target_industry: str) -> bool:
@@ -482,7 +489,8 @@ class HybridScorer:
             return False
 
         except Exception as e:
-            logger.error(f"Error checking industry match: {str(e)}")
+    pass
+logger.error(f"Error checking industry match: {str(e)}")
             return False
 
     def get_scoring_summary(self, results: List[HybridScoreResult]) -> Dict[str, Any]:
@@ -511,7 +519,8 @@ class HybridScorer:
                 "score_range": results[0].final_score - results[-1].final_score
             }
         except Exception as e:
-            logger.error(f"Error getting scoring summary: {str(e)}")
+    pass
+logger.error(f"Error getting scoring summary: {str(e)}")
             return {"error": str(e)}
 
 # Factory function for easy instantiation

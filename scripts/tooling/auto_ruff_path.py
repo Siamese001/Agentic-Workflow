@@ -2,8 +2,9 @@ import logging
 import sys
 import tomllib
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 PYPROJECT = Path('pyproject.toml')

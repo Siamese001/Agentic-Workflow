@@ -46,7 +46,8 @@ def is_available(self: Any) -> bool:
         try:
             return True
         except ImportError:
-            logger.warning("sentence_transformers not available, reranker will be in fallback mode")
+    pass
+logger.warning("sentence_transformers not available, reranker will be in fallback mode")
             return False
 
 def _load_model(self: Any) -> bool:
@@ -75,13 +76,15 @@ def _load_model(self: Any) -> bool:
             return True
 
         except ImportError as e:
-            logger.error(f"Failed to import sentence_transformers: {e}")
+    pass
+logger.error(f"Failed to import sentence_transformers: {e}")
             logger.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
             self._model_loaded = True  # Mark as loaded to avoid retrying
             return False
         except Exception as e:
-            logger.error(f"Failed to load model {self.model_name}: {e}")
+    pass
+logger.error(f"Failed to load model {self.model_name}: {e}")
             logger.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
             self._model_loaded = True
@@ -166,7 +169,8 @@ def rerank(self: Any,
             return reranked
 
         except Exception as e:
-            logger.error(f"Reranking failed: {e}")
+    pass
+logger.error(f"Reranking failed: {e}")
             # Fallback to original order
             logger.info("Falling back to original document order")
             return documents[:top_k]
@@ -226,7 +230,8 @@ def rerank_with_scores(self: Any,
             return scored_docs[:top_k]
 
         except Exception as e:
-            logger.error(f"Reranking with scores failed: {e}")
+    pass
+logger.error(f"Reranking with scores failed: {e}")
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
 def get_model_info(self: Any) -> dict:
@@ -254,7 +259,8 @@ def get_model_info(self: Any) -> dict:
                         "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
                     })
             except Exception as e:
-                logger.warning(f"Ignored error: {e}")
+    pass
+logger.warning(f"Ignored error: {e}")
 
         return info
 

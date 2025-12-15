@@ -153,7 +153,8 @@ class SafetyEngine:
                 )
 
             except Exception as e:
-                error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
+    pass
+error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
                 logger.error(error_msg, exc_info=True)
 
                 # Create a blocking decision for the failed policy

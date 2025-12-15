@@ -95,7 +95,8 @@ class TestFullPipelineIntegration:
         try:
             raise ValueError("Execution failed")
         except ValueError as e:
-            state.errors.append(str(e))
+    pass
+state.errors.append(str(e))
 
         assert len(state.errors) > 0
 

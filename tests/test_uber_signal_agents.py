@@ -105,7 +105,8 @@ class UberSignalTestSuite:
                 logger.error("❌ Bullet visualization failed")
 
         except Exception as e:
-            logger.error(f"❌ Architecture Visualizer test failed: {e}")
+    pass
+logger.error(f"❌ Architecture Visualizer test failed: {e}")
 
     async def test_cultural_decoder(self):
             """Test the Cultural Decoder Agent."""
@@ -151,7 +152,8 @@ class UberSignalTestSuite:
                 logger.info(f"     • {suggestion}")
 
         except Exception as e:
-            logger.error(f"❌ Cultural Decoder test failed: {e}")
+    pass
+logger.error(f"❌ Cultural Decoder test failed: {e}")
 
     async def test_pre_mortem_agent(self):
             """Test the Pre-Mortem Agent."""
@@ -192,7 +194,8 @@ class UberSignalTestSuite:
             logger.info(rendered_report)
 
         except Exception as e:
-            logger.error(f"❌ Pre-Mortem Agent test failed: {e}")
+    pass
+logger.error(f"❌ Pre-Mortem Agent test failed: {e}")
 
     async def test_integration_scenario(self):
             """Test all three agents working together on a complete scenario."""
@@ -271,7 +274,8 @@ class UberSignalTestSuite:
             logger.info("\n✅ Integration test successful!")
 
         except Exception as e:
-            logger.error(f"❌ Integration test failed: {e}")
+    pass
+logger.error(f"❌ Integration test failed: {e}")
 
     async def run_all_tests(self):
             """Run all tests sequentially."""

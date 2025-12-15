@@ -1,8 +1,10 @@
 """E2E safety tests - legacy agent registry integration."""
 
 
-import pytest
 import logging
+
+import pytest
+
 LOGGER = logging.getLogger(__name__)
 # Legacy agent registry components (zombie files) - not implemented
 # from archives.legacy_root_folders.orchestration.agent_registry import AgentRegistry

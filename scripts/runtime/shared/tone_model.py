@@ -28,7 +28,7 @@ class StyleProfile(BaseModel):
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: confloat(ge=0.0,
         le=1.0) = Field(default=0.7,
-        DESCRIPTION="Formality level (0=Casual,
+        DESCRIPTION="Formality level(0=Casual,
         1=Academic)")
     emoji_frequency: confloat(ge=0.0,
         le=1.0) = Field(default=0.2,
@@ -161,7 +161,8 @@ class ToneAnalyzer:
             return profile
 
         except Exception as e:
-            logger.error(f"Error analyzing style: {str(e)}")
+    pass
+logger.error(f"Error analyzing style: {str(e)}")
             return self._get_neutral_profile()
 
     def _get_neutral_profile(self) -> StyleProfile:
@@ -215,7 +216,8 @@ class ToneAnalyzer:
                 "confidence": confidence
             }
         except Exception as e:
-            logger.error(f"Error calculating metrics: {str(e)}")
+    pass
+logger.error(f"Error calculating metrics: {str(e)}")
             return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confide
     nce": 0.0}
 
@@ -257,7 +259,8 @@ class ToneAnalyzer:
             return max(tone_scores, key=tone_scores.get)
 
         except Exception as e:
-            logger.error(f"Error detecting primary tone: {str(e)}")
+    pass
+logger.error(f"Error detecting primary tone: {str(e)}")
             return ToneType.AUTHORITATIVE
 
     def _calculate_formality(self, text: str, metrics: Dict[str, float]) -> float:
@@ -294,7 +297,8 @@ class ToneAnalyzer:
             return max(0.0, min(1.0, formality))
 
         except Exception as e:
-            logger.error(f"Error calculating formality: {str(e)}")
+    pass
+logger.error(f"Error calculating formality: {str(e)}")
             return 0.7  # Default to semi-formal
 
     def _calculate_emoji_frequency(self, text: str) -> float:
@@ -330,7 +334,8 @@ class ToneAnalyzer:
             return min(1.0, frequency)
 
         except Exception as e:
-            logger.error(f"Error calculating emoji frequency: {str(e)}")
+    pass
+logger.error(f"Error calculating emoji frequency: {str(e)}")
             return 0.1
 
     def _calculate_vocabulary_complexity(self, text: str) -> float:
@@ -360,7 +365,8 @@ class ToneAnalyzer:
             return max(0.0, min(1.0, complexity))
 
         except Exception as e:
-            logger.error(f"Error calculating vocabulary complexity: {str(e)}")
+    pass
+logger.error(f"Error calculating vocabulary complexity: {str(e)}")
             return 0.5
 
 class ToneAdapter:
@@ -456,7 +462,8 @@ class ToneAdapter:
             return adapted
 
         except Exception as e:
-            logger.error(f"Error adapting message: {str(e)}")
+    pass
+logger.error(f"Error adapting message: {str(e)}")
             return draft
 
     def _shorten_sentences(self, text: str) -> str:
@@ -481,7 +488,8 @@ class ToneAdapter:
 
             return '. '.join(shortened)
         except Exception as e:
-            logger.error(f"Error shortening sentences: {str(e)}")
+    pass
+logger.error(f"Error shortening sentences: {str(e)}")
             return text
 
     def _lengthen_sentences(self, text: str) -> str:
@@ -498,7 +506,8 @@ class ToneAdapter:
 
             return '. '.join(sentences)
         except Exception as e:
-            logger.error(f"Error lengthening sentences: {str(e)}")
+    pass
+logger.error(f"Error lengthening sentences: {str(e)}")
             return text
 
 class ToneModel:
@@ -594,7 +603,8 @@ class ToneModel:
             return profile, config
 
         except Exception as e:
-            logger.error(f"Error in analyze_and_configure: {str(e)}")
+    pass
+logger.error(f"Error in analyze_and_configure: {str(e)}")
             # Return safe defaults
             return self.analyzer._get_neutral_profile(),
                 self.config_templates[ToneType.AUTHORITATIVE]
@@ -630,7 +640,8 @@ class ToneModel:
             return config
 
         except Exception as e:
-            logger.error(f"Error adjusting for archetype: {str(e)}")
+    pass
+logger.error(f"Error adjusting for archetype: {str(e)}")
             return config
 
 # Factory functions for easy instantiation

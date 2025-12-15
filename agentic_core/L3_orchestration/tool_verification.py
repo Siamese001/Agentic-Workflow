@@ -186,7 +186,8 @@ async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
                         ))
 
     except SyntaxError as e:
-        issues.append(VerificationIssue(
+    pass
+issues.append(VerificationIssue(
             SEVERITY="error",
             MESSAGE=f"Syntax error: {e.msg}",
             line_number=e.lineno,
@@ -282,7 +283,8 @@ async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
             ))
 
     except Exception as e:
-        issues.append(VerificationIssue(
+    pass
+issues.append(VerificationIssue(
             SEVERITY="error",
             MESSAGE=f"Verification error: {str(e)}",
             SUGGESTION="Check code for obvious errors"

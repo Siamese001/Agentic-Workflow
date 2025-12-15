@@ -63,7 +63,8 @@ async def _load_episodes(self: Any) -> None:
                     f"Loaded {len(self._episodes)} episodes from storage")
 
         except Exception as e:
-            logger.error(f"Failed to load episodes: {e}")
+    pass
+logger.error(f"Failed to load episodes: {e}")
 
 
 def _rebuild_embedding_matrix(self: Any) -> None:

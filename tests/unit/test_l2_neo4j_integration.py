@@ -6,11 +6,12 @@ Tests that Neo4j integration works correctly and gracefully handles
 missing Neo4j driver or connection issues.
 """
 
-import pytest
 import logging
 import os
 import sys
 from datetime import UTC, datetime
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +68,8 @@ class TestNeo4jIntegration:
             insert_entity = insert_triplet = insert_event = batch_process_invalidation = ingest_tran
     SCRIPT = lambda *args, **kwargs: None
        except ImportError:
-            # Archive imports not available
+    pass
+# Archive imports not available
             pass
         assert callable(insert_entity)
         assert callable(insert_triplet)
@@ -114,7 +116,8 @@ class TestNeo4jIntegration:
     #             from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore...
             assert Neo4jGraphStore is not None
         except ImportError:
-            # Expected if neo4j driver not installed
+    pass
+# Expected if neo4j driver not installed
             pytest.skip("Neo4j driver not installed")
 
     def test_neo4j_graph_store_without_driver(self):
@@ -131,7 +134,8 @@ class TestNeo4jIntegration:
     #             from archives.legacy_root_folders.orchestration.kg_ingestion_dag import UnifiedKGIn...
             assert True  # Placeholder since archive imports are removed
         except ImportError as e:
-            pytest.fail(f"kg_ingestion_dag should import successfully: {e}")
+    pass
+pytest.fail(f"kg_ingestion_dag should import successfully: {e}")
 
     @pytest.mark.asyncio
     async def test_ingestion_dag_mirroring_methods(self):
@@ -169,5 +173,6 @@ class TestNeo4jIntegration:
             try:
                 __import__(module_name)
             except ImportError as e:
-                pytest.fail(f"Module {module_name} should import without Neo4j driver: {e}")
+    pass
+pytest.fail(f"Module {module_name} should import without Neo4j driver: {e}")
 

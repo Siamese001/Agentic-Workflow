@@ -206,10 +206,12 @@ async def demonstrate_validation_chain():
             logger.info(f"    Oscillating: {info['is_oscillating']}")
 
         except ChainFailureError as e:
-        logger.info(f"\n❌ Chain failed: {e}")
+    pass
+logger.info(f"\n❌ Chain failed: {e}")
 
         except Exception as e:
-        logger.info(f"\n⚠️ Unexpected error: {e}")
+    pass
+logger.info(f"\n⚠️ Unexpected error: {e}")
 
         async def demonstrate_checkpoint_recovery():
         """Demonstrate recovery from checkpoint after failure."""
@@ -277,7 +279,8 @@ async def demonstrate_validation_chain():
         logger.info(f"Final content: {final_content}")
 
         except Exception as e:
-        logger.info(f"\n❌ Recovery failed: {e}")
+    pass
+logger.info(f"\n❌ Recovery failed: {e}")
 
         async def demonstrate_oscillation_detection():
         """Demonstrate oscillation detection in repair loops."""
@@ -327,7 +330,8 @@ async def demonstrate_validation_chain():
     )
 
     except ChainFailureError as e:
-        logger.info(f"\n✅ Oscillation detected and handled!")
+    pass
+logger.info(f"\n✅ Oscillation detected and handled!")
         logger.info(f"Error: {e}")
 
         # Show chain status

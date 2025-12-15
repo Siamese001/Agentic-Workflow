@@ -7,12 +7,18 @@ with complex metadata filtering for the L5 Meta-Learning system.
 
 import logging
 import time
-from typing import List, Dict, Optional, Any
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
-    Distance, VectorParams, Filter, FieldCondition, MatchValue,
-    Range, PointStruct
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    Range,
+    VectorParams,
 )
 
 from schemas.canon_models import CanonEntry
@@ -67,7 +73,8 @@ class QdrantCache:
                     f"Using existing Qdrant collection: {self.index_name}")
 
         except Exception as e:
-            logger.error(f"Failed to setup Qdrant index: {e}")
+    pass
+logger.error(f"Failed to setup Qdrant index: {e}")
             raise
 
     def search(
@@ -117,7 +124,8 @@ class QdrantCache:
             ]
 
         except Exception as e:
-            logger.error(f"Qdrant search failed: {e}")
+    pass
+logger.error(f"Qdrant search failed: {e}")
             return []
 
     def _build_filter(self, filters: Dict[str, Any]) -> Filter:
@@ -214,7 +222,8 @@ class QdrantCache:
                 return str(entry.id)
 
             except Exception as e:
-                last_error = e
+    pass
+last_error = e
                 if attempt < max_retries:
                     # Exponential backoff
                     delay = 2 ** attempt
@@ -280,7 +289,8 @@ class QdrantCache:
             return results[:20]  # Top 20 trending
 
         except Exception as e:
-            logger.error(f"Failed to get trending patterns: {e}")
+    pass
+logger.error(f"Failed to get trending patterns: {e}")
             return []
 
     def analyze_failure_patterns(
@@ -356,7 +366,8 @@ class QdrantCache:
             return analysis
 
         except Exception as e:
-            logger.error(f"Failed to analyze failure patterns: {e}")
+    pass
+logger.error(f"Failed to analyze failure patterns: {e}")
             return {"error": str(e)}
 
     def get_stats(self) -> Dict[str, Any]:
@@ -372,6 +383,7 @@ class QdrantCache:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get Qdrant stats: {e}")
+    pass
+logger.error(f"Failed to get Qdrant stats: {e}")
             return {"error": str(e)}
 

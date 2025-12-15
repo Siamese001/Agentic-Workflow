@@ -53,8 +53,8 @@ def test_temporal_vetting():
             return False
 
     except Exception as e:
-        logger.error(f"❌ Temporal vetting test failed: {e}")
-        return False
+logger.error(f"❌ Temporal vetting test failed: {e}")
+return False
 
 
 def test_governed_outreach():
@@ -127,8 +127,8 @@ def test_governed_outreach():
             return False
 
     except Exception as e:
-        logger.error(f"❌ Governed outreach test failed: {e}")
-        return False
+logger.error(f"❌ Governed outreach test failed: {e}")
+return False
 
 
 def test_time_bound_benchmarking():
@@ -137,8 +137,7 @@ def test_time_bound_benchmarking():
 
     try:
         from action_registry import ActionRegistry
-        from time_bound_benchmarking import \
-            execute_time_bound_salary_benchmarking
+        from time_bound_benchmarking import execute_time_bound_salary_benchmarking
 
         registry = ActionRegistry()
         tools = registry.get_tool_map()
@@ -164,8 +163,8 @@ def test_time_bound_benchmarking():
             return False
 
     except Exception as e:
-        logger.error(f"❌ Time-bound benchmarking test failed: {e}")
-        return False
+logger.error(f"❌ Time-bound benchmarking test failed: {e}")
+return False
 
 
 def main():

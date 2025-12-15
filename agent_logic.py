@@ -226,10 +226,13 @@ class CanonValidator:
 
             return intersection / union if union > 0 else 0.0
 
-        except:
-            return 0.0
 
-    def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
+except Exception:
+    pass
+pass
+return 0.0
+
+   def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
         """Generate recommendation based on similarity and success rate."""
         if similarity > 0.8 and success_rate > 0.8:
             return "Code matches a highly successful pattern - proceed"

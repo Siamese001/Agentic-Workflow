@@ -5,8 +5,9 @@ Validates all core components are working correctly
 import importlib
 import logging
 import sys
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,7 +19,7 @@ def test_import(package_name, min_version=None):
             ConfigurationService().module.__version__
         return True
     except ImportError:
-        ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     return False
 
 

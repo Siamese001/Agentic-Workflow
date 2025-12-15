@@ -13,7 +13,8 @@ try:
     import dspy
     DSPY_AVAILABLE = True
 except ImportError:
-    DSPY_AVAILABLE = False
+    pass
+DSPY_AVAILABLE = False
     logger.warning("DSPy not available. Install with: pip install dspy-ai")
 
 
@@ -69,7 +70,8 @@ class DSPyOptimizer:
     logger.warning("No OpenAI API key found. Using mock LM.")
                 # You could implement a mock LM for testing here
         except Exception as e:
-    logger.error(f"Failed to configure DSPy: {e}")
+    pass
+logger.error(f"Failed to configure DSPy: {e}")
 
         async def optimize_prompt(
        self,
@@ -93,9 +95,11 @@ class DSPyOptimizer:
 
         # Limit examples to prevent excessive computation
         train_examples = training_examples[:max_examples]
-        val_examples = validation_examples[:max_examples // 5]  # 20% for validation
+        # 20% for validation
+        val_examples = validation_examples[:max_examples // 5]
 
-        logger.info(f"Starting optimization with {len(train_examples)} examples")
+        logger.info(
+            f"Starting optimization with {len(train_examples)} examples")
 
         try:
             # Create the student module (agent to optimize)
@@ -122,7 +126,8 @@ class DSPyOptimizer:
             )
 
                 # Extract optimized prompt
-                optimized_prompt = self._extract_prompt_from_module(optimized_module)
+                optimized_prompt = self._extract_prompt_from_module(
+                    optimized_module)
 
                 # Calculate improvement
                 baseline_score = self._evaluate_baseline(
@@ -132,7 +137,8 @@ class DSPyOptimizer:
                 metric_func
             )
 
-                IMPROVEMENT = ((validation_score - baseline_score) / baseline_score) * 100
+                IMPROVEMENT = (
+                    (validation_score - baseline_score) / baseline_score) * 100
 
                 # Create result
                 RESULT = OptimizationResult(
@@ -146,11 +152,13 @@ class DSPyOptimizer:
                 # Cache the result
                 self._save_to_cache(cache_key, result)
 
-                logger.info(f"Optimization complete: {improvement:.1f}% improvement")
+                logger.info(
+                    f"Optimization complete: {improvement:.1f}% improvement")
                 return result
 
             except Exception as e:
-            logger.error(f"Optimization failed: {e}")
+    pass
+logger.error(f"Optimization failed: {e}")
             # Return baseline as fallback
             return OptimizationResult(
                 optimized_prompt = base_prompt,
@@ -214,7 +222,8 @@ class DSPyOptimizer:
                 SCORE = metric_func(result, ex.ideal_output)
                 scores.append(score)
             except Exception as e:
-    logger.warning(f"Evaluation failed on example: {e}")
+    pass
+logger.warning(f"Evaluation failed on example: {e}")
                 scores.append(0.0)
 
         return sum(scores) / len(scores) if scores else 0.0
@@ -255,7 +264,8 @@ class DSPyOptimizer:
             with open(cache_file, 'wb') as f:
                 pickle.dump(result, f)
         except Exception as e:
-            logger.warning(f"Failed to cache result: {e}")
+    pass
+logger.warning(f"Failed to cache result: {e}")
 
     def _load_from_cache(self, key: str) -> Optional[OptimizationResult]:
         """Load optimization result from cache."""
@@ -265,7 +275,8 @@ class DSPyOptimizer:
                 with open(cache_file, 'rb') as f:
                     return pickle.load(f)
         except Exception as e:
-            logger.warning(f"Failed to load from cache: {e}")
+    pass
+logger.warning(f"Failed to load from cache: {e}")
         return None
 
 

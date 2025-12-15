@@ -7,9 +7,11 @@ import logging
 import re
 import time
 from typing import List, Optional, Set
+
 from pydantic import BaseModel, Field
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -169,12 +171,13 @@ class ContextualCompressor:
         full_text = '\n\n'.join(chunks)
         try:
             get_client(Provider.ANTHROPIC)
-            PROMPT = f"Extract verbatim sentences from the text below that answer this question: '\n    {query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText:\n{
-                ConfigurationService().full_text}\n\nExtracted sentences:"
+            PROMPT = f"Extract verbatim sentences from the text below that answer this question: '\n    {query}'.\nDo not rewrite. Do not summarize. If irrelevant, return empty.\n\nText: \n{
+                ConfigurationService().full_text}\n\nExtracted sentences: "
             RESPONSE = await client.messages.create(MODEL='claude-3-5-sonnet-20241022', max_tokens=1000, TEMPERATURE=0.1, MESSAGES=[{'role': 'user', 'content': prompt}])
             return response.content[0].text.strip()
         except Exception as e:
-            ConfigurationService().logger.error(f'LLM compression failed: {e}')
+    pass
+ConfigurationService().logger.error(f'LLM compression failed: {e}')
             return self._compress_heuristic(chunks, query)
 
     async def compress(self, chunks: List[str], query: str, use_llm: Optional[bool] = None) -> CompressionResult:
@@ -207,9 +210,9 @@ class ContextualCompressor:
         ).original_length > 0 else 1.0
         ConfigurationService().logger.info(
             f'Compression ratio: {
-                ConfigurationService().compression_ratio:.2f} ({
-                ConfigurationService().original_length} -> {
-                ConfigurationService().compressed_length} chars)')
+                ConfigurationService().compression_ratio: .2f}({
+                    ConfigurationService().original_length} -> {
+                    ConfigurationService().compressed_length} chars)')
         if ConfigurationService().compression_ratio > 0.95:
             ConfigurationService().logger.warning(
                 'Low compression detected - may need threshold tuning')

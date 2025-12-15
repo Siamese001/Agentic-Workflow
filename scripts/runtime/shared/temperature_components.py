@@ -137,7 +137,8 @@ class DepthScorer:
                                     if days <= 90:
                                         recent_count += 1
                             except (ValueError, AttributeError):
-                                continue
+    pass
+continue
                     elif isinstance(post,
                         str) and len(post) > 20:  # Assume recent if non-empty string
                         recent_count += 1
@@ -171,7 +172,8 @@ class DepthScorer:
             return depth_score
 
         except Exception as e:
-            logger.error(f"Error calculating depth: {str(e)}")
+    pass
+logger.error(f"Error calculating depth: {str(e)}")
             return DepthScore(level=0, score=0.1, rationale=["Error in calculation"])
 
 class MicroHookGenerator:
@@ -273,7 +275,8 @@ class MicroHookGenerator:
             return hooks
 
         except Exception as e:
-            logger.error(f"Error generating hooks: {str(e)}")
+    pass
+logger.error(f"Error generating hooks: {str(e)}")
             # Return generic hook as fallback
             return [MicroHook(
                 PHRASE="I came across your profile and was impressed...",
@@ -365,7 +368,8 @@ class SentimentAnalyzer:
             return profile
 
         except Exception as e:
-            logger.error(f"Error assessing sentiment: {str(e)}")
+    pass
+logger.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
                 MOOD=SentimentMood.NEUTRAL,
                 risk_level=RiskLevel.LOW,
@@ -456,7 +460,8 @@ class WarmthManager:
             return warmth
 
         except Exception as e:
-            logger.error(f"Error determining warmth: {str(e)}")
+    pass
+logger.error(f"Error determining warmth: {str(e)}")
             return WarmthSetting(
                 formality_level=0.6,
                 strategy_name="Professional Default",
@@ -546,7 +551,8 @@ class TemperatureEngine:
             return results
 
         except Exception as e:
-            logger.error(f"Error in temperature analysis: {str(e)}")
+    pass
+logger.error(f"Error in temperature analysis: {str(e)}")
             return {
                 "error": str(e),
                 "depth_score": {"level": 0, "score": 0.1, "rationale": ["Error"]},

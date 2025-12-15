@@ -96,7 +96,8 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     try:
         MODULE = importlib.import_module(module_name)
     except Exception as exc:
-        if spec.optional:
+    pass
+if spec.optional:
             logger.warning(
                 f"Optional MCP client '{spec.name}' module '{module_name}' "
                 f"not available, using stub: {exc}"
@@ -116,7 +117,8 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
     try:
         client_cls = getattr(module, class_name)
     except AttributeError as exc:
-        if spec.optional:
+    pass
+if spec.optional:
             logger.warning(
                 f"Optional MCP client '{spec.name}' class '{class_name}' "
                 f"not found in '{module_name}', using stub"
@@ -141,7 +143,8 @@ def instantiate_mcp_client(spec: MCPClientSpec) -> object:
         )
         return instance
     except Exception as exc:
-        if spec.optional:
+    pass
+if spec.optional:
             logger.warning(
                 f"Optional MCP client '{spec.name}' failed to initialize, "
                 f"using stub: {exc}"
@@ -182,7 +185,8 @@ def create_mcp_registry(
             CLIENT = instantiate_mcp_client(spec)
             registry.register(spec, client)
         except MCPClientInitializationError as exc:
-            if fail_on_error and not spec.optional:
+    pass
+if fail_on_error and not spec.optional:
                 raise
 
             logger.warning(

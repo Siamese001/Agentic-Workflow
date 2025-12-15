@@ -34,7 +34,7 @@ class TitleComposerConfig:
 
 
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
 
 
 class TitleComposerResult:
@@ -239,7 +239,7 @@ class ExecutiveTitleComposer:
 
         if char_count > self.config.max_chars:
             violations.append(f"Character count {char_count} exceeds maximum {self.config.max_chars}
-    ")
+                              ")
 
         if violations:
             return ValidationResult(
@@ -296,6 +296,7 @@ class ExecutiveTitleComposer:
             MESSAGE=f"Not tech-first: '{first_segment}' is industry/role",
             SIGNATURE=f"NOTTECH:OK:{hash(first_segment) % 10000}"
         )
+
 
 def create_executive_title_composer(
     """Docstring."""

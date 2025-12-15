@@ -8,10 +8,10 @@ immediate availability during canon validation checks.
 import ast
 import hashlib
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
-from schemas.canon_models import CanonEntry
 from core.semantic_gatekeeper import SemanticGatekeeper
+from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)
 
@@ -393,7 +393,8 @@ class CanonKeysLoader:
                 loaded_count += 1
                 logger.debug(f"Loaded Canon Key: {key_data['policy_key']}")
             except Exception as e:
-                logger.error(
+    pass
+logger.error(
                     f"Failed to load Canon Key {key_data['policy_key']}: {e}")
 
         logger.info(f"Successfully loaded {loaded_count}/50 Canon Keys")
@@ -407,7 +408,8 @@ class CanonKeysLoader:
             ast_json = ast.dump(tree, include_attributes=True)
             ast_hash = hashlib.sha256(ast_json.encode()).hexdigest()
         except SyntaxError as e:
-            logger.error(
+    pass
+logger.error(
                 f"Syntax error in Canon Key {key_data['policy_key']}: {e}")
             ast_json = {"error": str(e)}
             ast_hash = hashlib.sha256(f"SYNTAX_ERROR:{e}".encode()).hexdigest()

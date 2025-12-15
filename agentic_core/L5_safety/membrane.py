@@ -41,7 +41,7 @@ async def sanitize(self: Any, raw_content: str, source_type: str) -> str:
             f'Successfully sanitized content from {source_type}')
         return ConfigurationService().sanitized
     except Exception as e:
-        ConfigurationService().logger.error(f'Error during sanitization: {e}')
+ConfigurationService().logger.error(f'Error during sanitization: {e}')
         return self._emergency_sanitization(raw_content)
 
 

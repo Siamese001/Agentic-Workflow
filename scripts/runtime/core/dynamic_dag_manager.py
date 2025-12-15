@@ -74,7 +74,8 @@ class GraphTransaction:
             logger.debug("DAG Transaction committed successfully")
 
         except Exception as e:
-            # Validation failed - rollback
+    pass
+# Validation failed - rollback
             SELF.MANAGER.GRAPH = self.original_graph
             logger.error(f"DAG Transaction validation failed. Rolled back. Error: {e}")
             return False  # Propagate error
@@ -233,7 +234,8 @@ class DAGMutator:
                 return result
 
         except Exception as e:
-            # Create error result
+    pass
+# Create error result
             error_result = MutationResult(
                 mutation_id=mutation.mutation_id,
                 SUCCESS=False,

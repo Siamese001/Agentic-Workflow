@@ -189,7 +189,8 @@ class FallbackManager:
                                   METADATA={"total_attempts": len(attempts),
                                             "fallback_used": attempt_num > 0})
         except Exception as e:
-            attempts.append({"provider": provider.name,
+    pass
+attempts.append({"provider": provider.name,
                             "success": False, "error": str(e)})
             if provider.circuit_breaker:
                 provider.circuit_breaker.record_failure()

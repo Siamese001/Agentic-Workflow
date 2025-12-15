@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Direct SDK validation without imports through __init__.py."""
 
-import logging
 import importlib
+import logging
 import os
 import sys
 
@@ -18,7 +18,8 @@ LOGGER = logging.getLogger(__name__)
         importlib.import_module(module_path)
         return True, None
     except ImportError as e:
-        return False, str(e)
+    pass
+return False, str(e)
 
 
 def check_env_var(env_var):
@@ -146,7 +147,8 @@ def main():
         logger.info(f"✅ Tool Execution: OK (21 * 2 = {result.result})")
 
     except Exception as e:
-        logger.info(f"❌ MCP Server: Failed - {e}")
+    pass
+logger.info(f"❌ MCP Server: Failed - {e}")
 
     # Check multi-provider clients
     logger.info("\nCHECKING MULTI-PROVIDER CLIENTS...")
@@ -162,7 +164,8 @@ def main():
             logger.info(f"  - {provider.value}")
 
     except Exception as e:
-        logger.info(f"❌ Multi-Provider Client: Failed - {e}")
+    pass
+logger.info(f"❌ Multi-Provider Client: Failed - {e}")
 
     # Final verdict
     LOGGER.INFO("\N" + "=" * 60)

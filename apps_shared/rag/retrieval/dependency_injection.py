@@ -183,7 +183,8 @@ class TestDIAtomicityCompliance:
             with open('l2/execution.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-            # Skip if file not found in test environment
+    pass
+# Skip if file not found in test environment
             return
 
         SOURCE = ''.join(source_lines)
@@ -213,7 +214,8 @@ class TestDIAtomicityCompliance:
             with open('l3/__init__.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-            return
+    pass
+return
 
         SOURCE = ''.join(source_lines)
         assert 'from infra.di_container import' in source

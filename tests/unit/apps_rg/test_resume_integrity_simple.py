@@ -5,8 +5,9 @@ LOGGER = logging.getLogger(__name__)
 Verify that the Resume Engine classes can be instantiated and run without crashing.
 """
 
-import pytest
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,8 @@ logger = logging.getLogger(__name__)
 # Test imports from apps_rg module - only test what actually exists
 try:
 except ImportError as e:
-    pytest.skip(
+    pass
+pytest.skip(
         f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 

@@ -97,7 +97,7 @@ def check_python_path() -> None:
             __import__(module)
             logger.info(f"✅ Can import {module}")
         except ImportError:
-            logger.info(f"❌ Cannot import {module}")
+logger.info(f"❌ Cannot import {module}")
 
     return True
 

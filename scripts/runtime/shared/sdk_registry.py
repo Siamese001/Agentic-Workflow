@@ -37,7 +37,8 @@ def is_available(self: Any) -> bool:
             __import__(self.module)
             return True
         except ImportError:
-            return False
+    pass
+return False
 
 
 def has_api_key(self: Any) -> bool:

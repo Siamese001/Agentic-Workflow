@@ -2,12 +2,14 @@
 Shared fixtures and utilities for the Apps CV test suite
 """
 
-from canon_validator import CanonValidator
-import pytest
-from unittest.mock import Mock
 import json
-import sys
 import os
+import sys
+from unittest.mock import Mock
+
+import pytest
+
+from canon_validator import CanonValidator
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.abspath(

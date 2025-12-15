@@ -5,15 +5,19 @@ Example of using OpenAI SDK with an agent.
 Demonstrates basic chat completion and structured outputs.
 """
 
-from pydantic import BaseModel
-from agentic_workflow.runtime.shared.openai_client import (configure_openai,
-                                                           create_agent_prompt,
-                                                           get_openai_client,
-                                                           import , logging)
 import json
 import logging
 import os
 from typing import Any, Dict, List
+
+from agentic_workflow.runtime.shared.openai_client import (
+    configure_openai,
+    create_agent_prompt,
+    get_openai_client,
+    import,
+    logging,
+)
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +85,7 @@ class OpenAIAgent:
             )
 
         except Exception as e:
-            return TaskResponse(
+return TaskResponse(
                 task_type=task_type,
                 RESPONSE=f"Error processing task: {str(e)}",
                 CONFIDENCE=0.0,
@@ -196,7 +200,7 @@ def main():
         json_result = json.loads(response.choices[0].message.content)
         logger.info(f"Structured JSON: {json.dumps(json_result, indent=2)}")
     except json.JSONDecodeError:
-        logger.error("Failed to parse JSON response")
+logger.error("Failed to parse JSON response")
 
 
 if __name__ == "__main__":

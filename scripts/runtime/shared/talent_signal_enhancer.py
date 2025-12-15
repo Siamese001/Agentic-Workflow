@@ -154,7 +154,8 @@ class TalentSignalEnhancer:
             return enhanced
 
         except Exception as e:
-            logger.error(f"Error enhancing management bullet: {str(e)}")
+    pass
+logger.error(f"Error enhancing management bullet: {str(e)}")
             return bullet_text
 
     def generate_network_hook(self, target_role: str) -> Optional[str]:
@@ -189,7 +190,8 @@ class TalentSignalEnhancer:
             return hook
 
         except Exception as e:
-            logger.error(f"Error generating network hook: {str(e)}")
+    pass
+logger.error(f"Error generating network hook: {str(e)}")
             return None
 
     def get_hyde_context(self, job_description: str) -> Optional[str]:
@@ -217,7 +219,8 @@ class TalentSignalEnhancer:
             return None
 
         except Exception as e:
-            logger.error(f"Error getting HyDE context: {str(e)}")
+    pass
+logger.error(f"Error getting HyDE context: {str(e)}")
             return None
 
     def _detect_pedigree(self, text: str) -> List[str]:
@@ -256,7 +259,8 @@ class TalentSignalEnhancer:
             return detected[:5]  # Limit to 5 most prestigious
 
         except Exception as e:
-            logger.error(f"Error detecting pedigree: {str(e)}")
+    pass
+logger.error(f"Error detecting pedigree: {str(e)}")
             return []
 
     def _extract_team_size(self, text: str) -> int:
@@ -286,7 +290,8 @@ class TalentSignalEnhancer:
             return 0
 
         except Exception as e:
-            logger.error(f"Error extracting team size: {str(e)}")
+    pass
+logger.error(f"Error extracting team size: {str(e)}")
             return 0
 
     def _extract_hiring_metric(self, text: str) -> Optional[str]:
@@ -319,7 +324,8 @@ class TalentSignalEnhancer:
             return None
 
         except Exception as e:
-            logger.error(f"Error extracting hiring metric: {str(e)}")
+    pass
+logger.error(f"Error extracting hiring metric: {str(e)}")
             return None
 
     def _extract_retention_metric(self, text: str) -> Optional[str]:
@@ -353,7 +359,8 @@ class TalentSignalEnhancer:
             return None
 
         except Exception as e:
-            logger.error(f"Error extracting retention metric: {str(e)}")
+    pass
+logger.error(f"Error extracting retention metric: {str(e)}")
             return None
 
     def _strengthen_generic_bullet(self, bullet: str, team_size: int) -> str:
@@ -393,7 +400,8 @@ class TalentSignalEnhancer:
             return bullet
 
         except Exception as e:
-            logger.error(f"Error strengthening generic bullet: {str(e)}")
+    pass
+logger.error(f"Error strengthening generic bullet: {str(e)}")
             return bullet
 
 # Factory function for easy instantiation

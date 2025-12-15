@@ -71,7 +71,7 @@ def fix_split_strings_in_file(filepath):
         return False
 
     except Exception as e:
-        print(f"Error processing {filepath}: {e}")
+# print(f"Error processing {filepath}: {e}")  # [Security Fix]
         return False
 
 
@@ -90,13 +90,13 @@ def fix_all_python_files(root_dir):
     for target_dir in target_dirs:
         dir_path = root_path / target_dir
         if dir_path.exists():
-            print(f"\nProcessing directory: {target_dir}")
+            # print(f"\nProcessing directory: {target_dir}")  # [Security Fix]
             for py_file in dir_path.rglob('*.py'):
                 if fix_split_strings_in_file(py_file):
-                    print(f"  Fixed: {py_file.relative_to(root_path)}")
+                    # print(f"  Fixed: {py_file.relative_to(root_path)}")  # [Security Fix]
                     fixed_count += 1
 
-    print(f"\nTotal files fixed: {fixed_count}")
+    # print(f"\nTotal files fixed: {fixed_count}")  # [Security Fix]
 
 
 if __name__ == '__main__':

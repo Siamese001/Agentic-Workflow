@@ -4,11 +4,11 @@ from action_registry import ActionRegistry
 actions = ActionRegistry()
 tools = actions.get_tool_map()
 
-print("Available tools:", list(tools.keys()))
+# print("Available tools:", list(tools.keys()))  # [Security Fix]
 
 # Test search_web
 if "search_web" in tools:
-    print("\nTesting search_web...")
+    # print("\nTesting search_web...")  # [Security Fix]
     result = tools["search_web"]("test query")
-    print("Result:", result[:200] + "..." if len(result) > 200 else result)
+    # print("Result:", result[:200] + "..." if len(result) > 200 else result)  # [Security Fix]
 

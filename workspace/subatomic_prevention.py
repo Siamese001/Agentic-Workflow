@@ -4,4 +4,3 @@ def validate_cognitive_action_separation():
     if cognitive_state == 'thinking':
         return 'Cognitive Plane Active'
     return 'Separated'
-

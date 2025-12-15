@@ -13,36 +13,62 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.runtime.shared.adaptive_retrieval_gate import (
-    AdaptiveRetrievalGate, RetrievalDecision)
+    AdaptiveRetrievalGate,
+    RetrievalDecision,
+)
+
 # Phase 1: Precision Layer
-from scripts.runtime.shared.contextual_compressor import (CompressionResult,
-                                                          ContextualCompressor)
-from scripts.runtime.shared.graphrag_fusion import (FusionResult,
-                                                    GraphRAGFusion, QueryType,
-                                                    get_graphrag_fusion,
-                                                    graphrag_query)
-from scripts.runtime.shared.hybrid_scorer import (HybridScorer, ScoringResult,
-                                                  create_hybrid_scorer)
+from scripts.runtime.shared.contextual_compressor import (
+    CompressionResult,
+    ContextualCompressor,
+)
+from scripts.runtime.shared.graphrag_fusion import (
+    FusionResult,
+    GraphRAGFusion,
+    QueryType,
+    get_graphrag_fusion,
+    graphrag_query,
+)
+from scripts.runtime.shared.hybrid_scorer import (
+    HybridScorer,
+    ScoringResult,
+    create_hybrid_scorer,
+)
+
 # Security Layer
-from scripts.runtime.shared.input_guardrails import (GuardAction, GuardResult,
-                                                     InputGuardrail,
-                                                     get_input_guardrail)
+from scripts.runtime.shared.input_guardrails import (
+    GuardAction,
+    GuardResult,
+    InputGuardrail,
+    get_input_guardrail,
+)
+
 # Phase 3: SOTA Layer
 from scripts.runtime.shared.late_interaction_reranker import (
-    LateInteractionReranker, PassThroughReranker, rerank_documents)
+    LateInteractionReranker,
+    PassThroughReranker,
+    rerank_documents,
+)
+
 # Phase 2: Reasoning Layer
-from scripts.runtime.shared.query_decomposer import (DecomposedQuery,
-                                                     QueryDecomposer,
-                                                     decompose_query)
-from scripts.runtime.shared.retrieval_grader import (GradeStatus,
-                                                     RetrievalGrade,
-                                                     RetrievalGrader,
-                                                     WebSearchFallback,
-                                                     get_retrieval_grader,
-                                                     get_web_search_fallback,
-                                                     grade_retrieval)
+from scripts.runtime.shared.query_decomposer import (
+    DecomposedQuery,
+    QueryDecomposer,
+    decompose_query,
+)
+from scripts.runtime.shared.retrieval_grader import (
+    GradeStatus,
+    RetrievalGrade,
+    RetrievalGrader,
+    WebSearchFallback,
+    get_retrieval_grader,
+    get_web_search_fallback,
+    grade_retrieval,
+)
 from scripts.runtime.shared.signal_quality_pipeline import (
-    SignalQualityPipeline, create_signal_pipeline)
+    SignalQualityPipeline,
+    create_signal_pipeline,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -123,19 +149,19 @@ class TitaniumRAGPipeline:
 
         # Initialize security layer
         self.input_guardrail = input_guardrail or
-            (get_input_guardrail() if enable_security else None)
+        (get_input_guardrail() if enable_security else None)
         self.enable_security = enable_security and self.input_guardrail is not None
 
         # Initialize CRAG layer
         self.retrieval_grader = retrieval_grader or
-            (get_retrieval_grader() if enable_crag else None)
+        (get_retrieval_grader() if enable_crag else None)
         self.web_search_fallback = web_search_fallback or
-            (get_web_search_fallback() if enable_crag else None)
+        (get_web_search_fallback() if enable_crag else None)
         self.enable_crag = enable_crag and self.retrieval_grader is not None
 
         # Initialize GraphRAG layer
         self.graphrag_fusion = graphrag_fusion or
-            (get_graphrag_fusion() if enable_graphrag else None)
+        (get_graphrag_fusion() if enable_graphrag else None)
         self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
 
         # Configuration
@@ -164,9 +190,9 @@ class TitaniumRAGPipeline:
         }
 
         logger.info(f"Initialized TitaniumRAGPipeline with all 3 phases + "
-                   f"Security Layer: {self.enable_security} + "
-                   f"CRAG Layer: {self.enable_crag} + "
-                   f"GraphRAG Layer: {self.enable_graphrag}")
+                    f"Security Layer: {self.enable_security} + "
+                    f"CRAG Layer: {self.enable_crag} + "
+                    f"GraphRAG Layer: {self.enable_graphrag}")
 
         """Docstring."""
 
@@ -451,13 +477,14 @@ class TitaniumRAGPipeline:
                 retrieved_docs = fused_docs
 
                 logger.
-                    .info(f"GraphRAG fusion completed - Vector: {len(fusion_result.
-                    .vector_results)},
-                    "
-                           f"Graph entities: {len(fusion_result.graph_results.entities)}")
+                .info(f"GraphRAG fusion completed - Vector: {len(fusion_result.
+                                                                 .vector_results)},
+                      "
+                      f"Graph entities: {len(fusion_result.graph_results.entities)}")
 
             except Exception as e:
-                self.stats["graphrag_fallbacks"] += 1
+    pass
+self.stats["graphrag_fallbacks"] += 1
                 logger.error(f"GraphRAG fusion failed: {e}")
                 # Continue with vector results only
 
@@ -530,10 +557,12 @@ class TitaniumRAGPipeline:
             )
             compressed_context = compression_result.compressed_text
             SELF.STATS["COMPRESSIONS"] += 1
-            logger.info(f"Compressed context: {compression_result.compression_ratio:.2f} ratio")
+            logger.info(
+                f"Compressed context: {compression_result.compression_ratio:.2f} ratio")
 
         # Generate response (mock - would use LLM in real implementation)
-        RESPONSE = self._generate_response(query, final_docs, compressed_context)
+        RESPONSE = self._generate_response(
+            query, final_docs, compressed_context)
 
         # 7. Cache the result
         if self.enable_caching and response:
@@ -639,6 +668,8 @@ class TitaniumRAGPipeline:
 
 # Convenience function for quick setup
     """Docstring."""
+
+
 def create_titanium_pipeline(
     enable_all: bool = True,
     **kwargs

@@ -140,7 +140,8 @@ class BulkheadHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            return HealthCheckResult(
+    pass
+return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
                 STATUS=HealthStatus.CRITICAL,
@@ -221,7 +222,8 @@ class CircuitBreakerHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            return HealthCheckResult(
+    pass
+return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
                 STATUS=HealthStatus.CRITICAL,
@@ -287,7 +289,8 @@ class DeadLetterQueueHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            return HealthCheckResult(
+    pass
+return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
                 STATUS=HealthStatus.CRITICAL,
@@ -362,7 +365,8 @@ class CheckpointManagerHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            return HealthCheckResult(
+    pass
+return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
                 STATUS=HealthStatus.CRITICAL,
@@ -491,7 +495,8 @@ class HealthCheckRegistry:
         try:
             return await checker.check_health()
         except Exception as e:
-            logger.error(f"Health check failed for {checker.component_name}: {e}")
+    pass
+logger.error(f"Health check failed for {checker.component_name}: {e}")
             return HealthCheckResult(
                 component_name=checker.component_name,
                 component_type=checker.component_type,

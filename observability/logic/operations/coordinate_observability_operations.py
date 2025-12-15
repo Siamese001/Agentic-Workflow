@@ -77,7 +77,8 @@ class CoordinateObservabilityOperations:
                     duration_ms=(time.time() - start) * 1000
                 ))
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-                SUCCESS = False
+    pass
+SUCCESS = False
                 results.append(StepResult(
                     step_name=step["name"],
                     STATUS=StepStatus.FAILED,

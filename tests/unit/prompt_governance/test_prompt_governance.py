@@ -1,10 +1,11 @@
 """Unit tests for prompt governance - template management and validation."""
-import pytest
 import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import List
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

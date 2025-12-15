@@ -7,6 +7,7 @@ from redisvl.query import VectorQuery
 from redisvl.query.filter import Tag
 
 from connection_manager import ConnectionManager
+
 # Import our hardened schemas and connection manager
 from schemas_connectivity import CanonEntry
 
@@ -43,7 +44,11 @@ class CanonValidator:
             try:
                 entry.embedding = self.embedding_fn(entry.content)
             except Exception as e:
-                logger.error(f"Embedding generation failed: {e}")
+    pass
+pass
+
+
+logger.error(f"Embedding generation failed: {e}")
                 return {"status": "error", "message": str(e)}
 
         # 2. Check L1: Exact AST/Hash Match (Hot Memory)
@@ -70,7 +75,9 @@ class CanonValidator:
         try:
             embedding = self.embedding_fn(code)
         except Exception as e:
-            logger.error(f"Embedding generation failed: {e}")
+    pass
+pass
+logger.error(f"Embedding generation failed: {e}")
             return {"status": "error", "message": str(e)}
 
         # Create CanonEntry from string input
@@ -136,7 +143,9 @@ class CanonValidator:
                 }
 
         except Exception as e:
-            # Log specific query error but don't crash
+    pass
+pass
+# Log specific query error but don't crash
             logger.error(f"Redis query failed: {e}")
 
         return None
@@ -175,7 +184,9 @@ class CanonValidator:
                     }
 
         except Exception as e:
-            logger.error(f"Pinecone query failed: {e}")
+    pass
+pass
+logger.error(f"Pinecone query failed: {e}")
 
         return None
 
@@ -207,7 +218,9 @@ class CanonValidator:
             }
 
         except Exception as e:
-            logger.error(f"Ingestion failed: {e}")
+    pass
+pass
+logger.error(f"Ingestion failed: {e}")
             return {
                 "status": "error",
                 "message": f"Ingestion failed: {str(e)}",

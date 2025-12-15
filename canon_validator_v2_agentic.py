@@ -1004,13 +1004,16 @@ class IntelligentOrchestrator:
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy
             CodeJanitor(self.ctx),          # 3. Syntax (Signal: AST_VALID)
-            DependencySentinel(self.ctx),   # 4. Import Hygiene (Signal: DEPS_VALID)
+            # 4. Import Hygiene (Signal: DEPS_VALID)
+            DependencySentinel(self.ctx),
             SafetyInspector(self.ctx),      # 5. Secrets (Signal: SECURE)
             PatternEnforcer(self.ctx),      # 6. Patterns (Keys 26-39)
             DocumentationAgent(self.ctx),   # 7. Docs
             NamingAgent(self.ctx),          # 8. Style
-            BudgetAgent(self.ctx),          # 9. Complexity (Signal: COMPLEXITY_CLEAN)
-            TypeMechanic(self.ctx),         # 10. Types (Requires AST_VALID + DEPS_VALID)
+            # 9. Complexity (Signal: COMPLEXITY_CLEAN)
+            BudgetAgent(self.ctx),
+            # 10. Types (Requires AST_VALID + DEPS_VALID)
+            TypeMechanic(self.ctx),
             SemanticMapper(self.ctx),       # 11. Semantics
             StructuralEngineer(self.ctx)    # 12. Complexity (Final Pass)
         ]
@@ -1023,46 +1026,53 @@ class IntelligentOrchestrator:
         no_progress_count = 0
 
         for cycle in range(MAX_REPAIR_CYCLES):
-            logger.info(f"\n====================== AUTONOMY CYCLE {cycle+1}/{MAX_REPAIR_CYCLES} ======================")
-            
+            logger.info(
+                f"\n====================== AUTONOMY CYCLE {cycle+1}/{MAX_REPAIR_CYCLES} ======================")
+
             # Reset context for fresh scan (except history)
             self.ctx.results = {}
             self.ctx.signals = set()
-            
+
             # --- PHASE 1: SENSE (Execute Agents) ---
             self._execute_swarm_pass()
-            
+
             # --- PHASE 2: PLAN (Analyze Violations) ---
             failed_keys = self._get_open_violations()
             if not failed_keys:
-                logger.info("\n🎉 SUBATOMIC PERFECTION ACHIEVED! All keys pass!")
+                logger.info(
+                    "\n🎉 SUBATOMIC PERFECTION ACHIEVED! All keys pass!")
                 break
-            
-            logger.info(f"\n🛑 {len(failed_keys)} VIOLATIONS REMAIN. Initiating Autonomous Repair...")
-            
+
+            logger.info(
+                f"\n🛑 {len(failed_keys)} VIOLATIONS REMAIN. Initiating Autonomous Repair...")
+
             # --- PROGRESS DETECTION ---
             if previous_failed_keys is not None:
                 if set(failed_keys) == set(previous_failed_keys):
                     no_progress_count += 1
-                    logger.warning(f"   ⚠️ No progress detected for {no_progress_count} consecutive cycle(s)")
+                    logger.warning(
+                        f"   ⚠️ No progress detected for {no_progress_count} consecutive cycle(s)")
                     if no_progress_count >= 3:
-                        logger.error("   ❌ Stopping due to lack of progress after 3 attempts")
+                        logger.error(
+                            "   ❌ Stopping due to lack of progress after 3 attempts")
                         break
                 else:
                     no_progress_count = 0
                     improvements = set(previous_failed_keys) - set(failed_keys)
-                    logger.info(f"   ✅ Progress: Fixed {len(improvements)} keys: {sorted(improvements)}")
-            
+                    logger.info(
+                        f"   ✅ Progress: Fixed {len(improvements)} keys: {sorted(improvements)}")
+
             previous_failed_keys = failed_keys.copy()
-            
+
             # --- PHASE 3: ACT (Trigger Fixes) ---
             if self._trigger_autonomous_fix(failed_keys):
                 logger.info("   ↻ Fix executed. Restarting cycle to verify...")
-                continue 
+                continue
             else:
-                logger.info("   ❌ No further autonomous fixes available. Stopping loop.")
+                logger.info(
+                    "   ❌ No further autonomous fixes available. Stopping loop.")
                 break
-        
+
         self.print_mission_report()
 
     def _execute_swarm_pass(self):
@@ -1080,7 +1090,7 @@ class IntelligentOrchestrator:
     def _trigger_autonomous_fix(self, failed_keys):
         """Routes failure patterns to the correct external fix script."""
         fixed = False
-        
+
         # Priority 1: Security & Hygiene (SafetyInspector / CodeJanitor)
         # Covers: Print (2), Bare Except (5), Trailing Whitespace (11), Newlines (12)
         security_keys = {1, 2, 4, 5, 6, 11, 12}
@@ -1094,8 +1104,10 @@ class IntelligentOrchestrator:
         import_keys = {7, 8, 9, 14, 44}
         if any(k in failed_keys for k in import_keys):
             logger.info("   🔧 Engaging 'isort' and 'autoflake'...")
-            self.execute_external_tool("isort .")
-            self.execute_external_tool("autoflake --in-place --remove-all-unused-imports --recursive .")
+            self.execute_external_tool(
+                "isort . --skip .venv --skip venv --skip archives --skip data")
+            self.execute_external_tool(
+                "autoflake --in-place --remove-all-unused-imports --recursive --exclude=.venv,venv,archives,data,__pycache__ .")
             fixed = True
 
         # Priority 3: Structural Debt (StructuralEngineer)
@@ -1105,16 +1117,18 @@ class IntelligentOrchestrator:
             logger.info("   🔧 Engaging 'fix_structural_debt.py'...")
             if self.execute_external_tool("python fix_structural_debt.py"):
                 fixed = True
-                
+
         return fixed
 
     def execute_external_tool(self, command):
         try:
             # Run command in shell
-            subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
+            subprocess.run(command, shell=True, check=True,
+                           text=True, capture_output=True)
             return True
         except subprocess.CalledProcessError as e:
-            logger.error(f"   ❌ Fix Tool Failed: {command}\n   Error: {e.stderr}")
+            logger.error(
+                f"   ❌ Fix Tool Failed: {command}\n   Error: {e.stderr}")
             return False
 
     def print_mission_report(self):
@@ -1138,4 +1152,3 @@ class IntelligentOrchestrator:
 if __name__ == "__main__":
     orchestrator = IntelligentOrchestrator()
     orchestrator.run_mission()
-

@@ -114,7 +114,8 @@ class TestLongRunningOperations:
                     raise ValueError("Simulated error")
                 _ = i * 2
             except ValueError:
-                ERRORS += 1
+    pass
+ERRORS += 1
 
         error_rate = errors / iterations
         assert error_rate < 0.01  # Less than 1% error rate

@@ -21,7 +21,8 @@ try:
     TITANIUM_AVAILABLE = True
     logger.info("Titanium RAG Pipeline imported successfully")
 except ImportError as e:
-    TITANIUM_AVAILABLE = False
+    pass
+TITANIUM_AVAILABLE = False
     logger.warning(f"Titanium RAG Pipeline not available: {e}")
 
 class DispatchResumeTools:
@@ -51,7 +52,8 @@ class DispatchResumeTools:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
@@ -123,7 +125,8 @@ class DispatchResumeTools:
         try:
             return get_pipeline_stats()
         except Exception as e:
-            return {"error": str(e)}
+    pass
+return {"error": str(e)}
 
 def execute(action: str,
     """Docstring."""

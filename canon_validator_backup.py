@@ -62,7 +62,10 @@ class HygieneAgent(AtomicAgent):
             if not passed:
                 violations.extend([f"Key 09: {v}" for v in details])
         except Exception as e:
-            violations.append(
+    pass
+
+
+violations.append(
                 f"Key 09: Error checking unused imports: {str(e)}")
 
         # Key 11: Trailing whitespace
@@ -72,7 +75,8 @@ class HygieneAgent(AtomicAgent):
             if not passed:
                 violations.extend([f"Key 11: {v}" for v in details])
         except Exception as e:
-            violations.append(
+    pass
+violations.append(
                 f"Key 11: Error checking trailing whitespace: {str(e)}")
 
         # Key 12: Missing newlines
@@ -82,7 +86,8 @@ class HygieneAgent(AtomicAgent):
             if not passed:
                 violations.extend([f"Key 12: {v}" for v in details])
         except Exception as e:
-            violations.append(
+    pass
+violations.append(
                 f"Key 12: Error checking missing newlines: {str(e)}")
 
         # Key 13: Tab characters
@@ -91,7 +96,8 @@ class HygieneAgent(AtomicAgent):
             if not passed:
                 violations.extend([f"Key 13: {v}" for v in details])
         except Exception as e:
-            violations.append(
+    pass
+violations.append(
                 f"Key 13: Error checking tab characters: {str(e)}")
 
         return AtomicResult(
@@ -111,7 +117,8 @@ class HygieneAgent(AtomicAgent):
             if result.returncode == 0:
                 fixed = True
         except Exception as e:
-            logger.error(f"Failed to fix trailing whitespace: {e}")
+    pass
+logger.error(f"Failed to fix trailing whitespace: {e}")
 
         # Note: Other fixes would be added here
 
@@ -134,7 +141,8 @@ class SecurityAgent(AtomicAgent):
                         violations.extend(
                             [f"Key {key:02d}: {v}" for v in details])
             except Exception as e:
-                violations.append(
+    pass
+violations.append(
                     f"Key {key:02d}: Error during check: {str(e)}")
 
         return AtomicResult(
@@ -160,7 +168,8 @@ class ArchitectAgent(AtomicAgent):
                         violations.extend(
                             [f"Key {key:02d}: {v}" for v in details])
             except Exception as e:
-                violations.append(
+    pass
+violations.append(
                     f"Key {key:02d}: Error during check: {str(e)}")
 
         return AtomicResult(
@@ -186,7 +195,8 @@ class RefactorAgent(AtomicAgent):
                         violations.extend(
                             [f"Key {key:02d}: {v}" for v in details])
             except Exception as e:
-                violations.append(
+    pass
+violations.append(
                     f"Key {key:02d}: Error during check: {str(e)}")
 
         return AtomicResult(
@@ -335,9 +345,11 @@ def parse_python_file(file_path: str) -> Optional[ast.AST]:
             content = f.read()
         return ast.parse(content, filename=file_path)
     except SyntaxError as e:
-        return None
+    pass
+return None
     except Exception as e:
-        return None
+    pass
+return None
 
 
 # --- PHASE 1: HYGIENE (Keys 00-09) ---
@@ -370,7 +382,8 @@ def check_key_00_no_hardcoded_secrets() -> None:
                         line_num = content[: match.start()].count("\n") + 1
                         violations.append(f"{file_path}:{line_num}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("00", f"Found {len(violations)} potential hardcoded secrets")
@@ -397,7 +410,8 @@ def check_key_01_no_todo_comments() -> None:
                         line_num = content[: match.start()].count("\n") + 1
                         violations.append(f"{file_path}:{line_num}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("01", f"Found {len(violations)} TODO/FIXME comments")
@@ -422,7 +436,8 @@ def check_key_02_no_print_statements() -> None:
                         if node.func.id == "print":
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail(
@@ -451,7 +466,8 @@ def check_key_03_no_debugger_statements() -> None:
                     if re.search(pattern, content):
                         violations.append(f"{file_path}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("03", f"Found {len(violations)} debugger statements")
@@ -477,7 +493,8 @@ def check_key_04_no_empty_except_blocks() -> None:
                         ):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail(
@@ -501,7 +518,8 @@ def check_key_05_no_bare_except() -> None:
                         if node.type is None:
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("05", f"Found {len(violations)} bare except clauses")
@@ -524,7 +542,8 @@ def check_key_06_no_eval_exec() -> None:
                         if node.func.id in ("eval", "exec"):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("06", f"Found {len(violations)} eval/exec calls")
@@ -533,7 +552,7 @@ def check_key_06_no_eval_exec() -> None:
 
 
 def check_key_07_no_star_imports() -> None:
-    # TODO: Replace 'from module import *' with explicit imports
+
     #     """Key 07: No star imports (from module import *)."""
     info("Checking for star imports...")
     violations = []
@@ -548,7 +567,8 @@ def check_key_07_no_star_imports() -> None:
                         if node.module and node.names[0].name == "*":
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("07", f"Found {len(violations)} star imports")
@@ -571,7 +591,8 @@ def check_key_08_no_relative_imports() -> None:
                         if node.module is None and node.level > 0:
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail(
@@ -614,7 +635,8 @@ def check_key_09_no_unused_imports() -> None:
                     if imp not in used_names and not imp.startswith("_"):
                         violations.append(f"{file_path}:{import_lines[imp]}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("09", f"Found {len(violations)} unused imports")
@@ -643,7 +665,8 @@ def check_key_10_no_long_lines() -> None:
                     if len(line.rstrip()) > 100:
                         violations.append(f"{file_path}:{i}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("10", f"Found {len(violations)} lines > 100 chars")
@@ -665,7 +688,8 @@ def check_key_11_no_trailing_whitespace() -> None:
                     if line.rstrip() != line.rstrip("\n\r"):
                         violations.append(f"{file_path}:{i}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("11", f"Found {len(violations)} lines with trailing whitespace")
@@ -686,7 +710,8 @@ def check_key_12_no_missing_newline() -> None:
                 if content and not content.endswith("\n"):
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("12", f"Found {len(violations)} files missing final newline")
@@ -709,7 +734,8 @@ def check_key_13_no_tabs() -> None:
                         violations.append(f"{file_path}:{i}")
                         break
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("13", f"Found {len(violations)} files with tab characters")
@@ -741,7 +767,8 @@ def check_key_14_no_duplicate_imports() -> None:
                 if len(imports) != len(set(imports)):
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("14", f"Found {len(violations)} files with duplicate imports")
@@ -771,7 +798,8 @@ def check_key_15_no_magic_numbers() -> None:
                         violations.append(
                             f"{file_path}:{node.lineno} ({node.value})")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         warn("15", f"Found {len(violations)} potential magic numbers")
@@ -799,7 +827,8 @@ def check_key_16_no_deep_nesting() -> None:
                             violations.append(f"{file_path}:{node.lineno}")
                             break
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("16", f"Found {len(violations)} deeply nested blocks")
@@ -828,7 +857,8 @@ def check_key_17_no_large_functions() -> None:
                             violations.append(
                                 f"{file_path}:{node.lineno} ({size} lines)")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("17", f"Found {len(violations)} large functions")
@@ -854,7 +884,8 @@ def check_key_18_no_many_parameters() -> None:
                             violations.append(
                                 f"{file_path}:{node.lineno} ({count} params)")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail(
@@ -885,7 +916,8 @@ def check_key_19_no_complex_functions() -> None:
                         if complexity > 10:
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("19", f"Found {len(violations)} complex functions")
@@ -913,7 +945,8 @@ def check_key_20_no_large_classes() -> None:
                         if len(methods) > 20:
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("20", f"Found {len(violations)} large classes")
@@ -942,7 +975,8 @@ def check_key_21_no_missing_docstrings() -> None:
                             violations.append(
                                 f"{file_path}:{node.lineno} {node.name}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("21", f"Found {len(violations)} missing docstrings")
@@ -968,7 +1002,8 @@ def check_key_22_no_type_hints() -> None:
                             violations.append(
                                 f"{file_path}:{node.lineno} {node.name}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("22", f"Found {len(violations)} missing type hints")
@@ -995,7 +1030,8 @@ def check_key_23_no_unreachable_code() -> None:
                                         f"{file_path}:{stmt.lineno}")
                                     break
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("23", f"Found {len(violations)} instances of unreachable code")
@@ -1025,7 +1061,8 @@ def check_key_24_no_unused_variables() -> None:
                     if var not in used and not var.startswith("_"):
                         violations.append(f"{file_path} - {var}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("24", f"Found {len(violations)} unused variables")
@@ -1051,7 +1088,8 @@ def check_key_25_no_global_variables() -> None:
                                     violations.append(
                                         f"{file_path}:{node.lineno} {target.id}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("25", f"Found {len(violations)} global variables")
@@ -1081,7 +1119,8 @@ def check_key_26_no_direct_sql() -> None:
                     if re.search(pattern, content, re.IGNORECASE):
                         violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("26", f"Found {len(violations)} direct SQL queries")
@@ -1114,7 +1153,8 @@ def check_key_27_no_empty_sov_files() -> None:
                     if not content:
                         is_empty = True
                 except Exception:
-                    # File may be binary or unreadable, ignore for empty check
+    pass
+# File may be binary or unreadable, ignore for empty check
                     continue
 
             if is_empty:
@@ -1124,9 +1164,11 @@ def check_key_27_no_empty_sov_files() -> None:
                         f"{Colors.YELLOW}    ⟳ DELETED EMPTY FILE: {file_path}{Colors.END}")
                     cleaned_count += 1
                 except OSError as e:
-                    violations.append(f"{file_path} (Failed to delete: {e})")
+    pass
+violations.append(f"{file_path} (Failed to delete: {e})")
         except Exception:
-            continue
+    pass
+continue
 
     if cleaned_count > 0:
         logger.info(
@@ -1154,7 +1196,8 @@ def check_key_28_no_hardcoded_urls() -> None:
                 for match in matches:
                     violations.append(f"{file_path}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         warn("28", f"Found {len(violations)} hardcoded URLs")
@@ -1176,7 +1219,8 @@ def check_key_29_no_hardcoded_ports() -> None:
                 if re.search(port_pattern, content):
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         warn("29", f"Found {len(violations)} potential hardcoded ports")
@@ -1199,7 +1243,8 @@ def check_key_30_no_time_sleep() -> None:
                         if isinstance(node.value, ast.Name) and node.value.id == "time":
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("30", f"Found {len(violations)} time.sleep calls")
@@ -1222,7 +1267,8 @@ def check_key_31_no_threading() -> None:
                 if "import threading" in f.read():
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("31", f"Found {len(violations)} files using threading")
@@ -1254,7 +1300,8 @@ def check_key_32_no_blocking_io() -> None:
                                     violations.append(
                                         f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
 
     if violations:
         fail("32", f"Found {len(violations)} blocking calls in async code")
@@ -1278,7 +1325,8 @@ def check_key_33_no_lambda_abuse() -> None:
                     if "lambda" in line and len(line) > 80:
                         violations.append(f"{file_path}:{i}")
         except Exception:
-            continue
+    pass
+continue
     if violations:
         warn("33", f"Found {len(violations)} complex lambdas")
     else:
@@ -1299,7 +1347,8 @@ def check_key_34_no_list_comprehension_abuse() -> None:
                         if len([g for g in node.generators if g.ifs]) > 1:
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
     if violations:
         warn("34", f"Found {len(violations)} complex comprehensions")
     else:
@@ -1320,7 +1369,8 @@ def check_key_35_no_try_except_everywhere() -> None:
                 if count > 5:
                     violations.append(f"{file_path} ({count} blocks)")
         except Exception:
-            continue
+    pass
+continue
     if violations:
         warn("35", f"Found {len(violations)} files with excessive try-except")
     else:
@@ -1350,7 +1400,8 @@ def check_key_36_no_class_abuse() -> None:
                         ):
                             violations.append(f"{file_path}:{node.lineno}")
         except Exception:
-            continue
+    pass
+continue
     if violations:
         warn("36", f"Found {len(violations)} static-only classes")
     else:
@@ -1375,7 +1426,8 @@ def check_key_38_no_property_abuse() -> None:
                 if f.read().count("@property") > 10:
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
     if violations:
         warn("38", f"Found {len(violations)} files with excessive properties")
     else:
@@ -1393,7 +1445,8 @@ def check_key_39_no_dunder_abuse() -> None:
                 if f.read().count("__") > 50:
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
     if violations:
         warn("39", f"Found {len(violations)} files with heavy dunder usage")
     else:
@@ -1415,7 +1468,8 @@ def check_key_40_no_metaclass_abuse() -> None:
                 if "metaclass=" in f.read():
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
     if violations:
         fail("40", f"Found {len(violations)} files using metaclasses")
     else:
@@ -1551,7 +1605,8 @@ def check_key_42_no_large_files() -> None:
                 if len(f.readlines()) > 500:
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
     if violations:
         fail("42", f"Found {len(violations)} large files")
     else:
@@ -1572,7 +1627,8 @@ def check_key_43_no_many_classes() -> None:
                 if count > 10:
                     violations.append(file_path)
         except Exception:
-            continue
+    pass
+continue
     if violations:
         fail("43", f"Found {len(violations)} files with too many classes")
     else:
@@ -1652,7 +1708,8 @@ def check_key_47_no_violate_naming() -> None:
                                         node.name}' must be snake_case"
                                 )
             except Exception:
-                # AST parsing may fail for some files, ignore them
+    pass
+# AST parsing may fail for some files, ignore them
                 continue
 
     if violations:
@@ -2301,7 +2358,8 @@ def run_check_function(check_func):
         details = failed_checks
         return (passed, details)
     except Exception as e:
-        return (False, [f"Error running check: {str(e)}"])
+    pass
+return (False, [f"Error running check: {str(e)}"])
     finally:
         # Restore global state
         failed_checks = old_failed
@@ -2433,7 +2491,8 @@ if __name__ == "__main__":
             with open('canon_state.json', 'r') as f:
                 results = json.load(f)
         except BaseException:
-            pass
+    pass
+pass
 
     # Run Checks
     for key in keys_to_run:

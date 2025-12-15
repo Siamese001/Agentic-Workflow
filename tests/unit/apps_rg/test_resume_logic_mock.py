@@ -6,11 +6,11 @@ Tests the Resume Engine functionality with mocked LLM responses to avoid API cal
 """
 
 
-from apps_rg.L2_execution.resume_generator import ResumeGenerator
-from apps_rg.L2_execution.job_analyzer import JobAnalyzer
-from apps_rg.L2_execution.execute_resume_generation import \
-    ExecuteResumeGeneration
 import logging
+
+from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
+from apps_rg.L2_execution.job_analyzer import JobAnalyzer
+from apps_rg.L2_execution.resume_generator import ResumeGenerator
 
 logger = logging.getLogger(__name__)
 

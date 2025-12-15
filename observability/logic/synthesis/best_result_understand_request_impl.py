@@ -3,9 +3,6 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .best_result_understand_request_types import *' with explicit imports
 # # from .best_result_understand_request_types import *  # Star import
 # removed
 
@@ -78,7 +75,8 @@ class BestResultUnderstandRequest:
                                     additional_info={'processed_at': time.time(),
                                                      'executor': self.__class__.__name__})
         except Exception as e:
-            exec_ctx.complete(success=False, error=e)
+    pass
+exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
     def _execute_core(self,
@@ -110,5 +108,6 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-        return False
+    pass
+return False
 

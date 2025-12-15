@@ -5,8 +5,13 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 # Import core utilities for Figma functions
-from core_utils import (add_observations, get_file_versions, get_variable_defs,
-                        search_records)
+from core_utils import (
+    add_observations,
+    get_file_versions,
+    get_variable_defs,
+    search_records,
+)
+
 # Import hardened MCP functions
 from mcp_hardening import check_design_drift, execute_vulnerability_search
 
@@ -41,7 +46,11 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
             logger.info(
                 f"✅ L1 GitKraken: Retrieved issue {issue_id}, target file: {target_file}")
     except Exception as e:
-        return {"status": "error", "message": f"GitKraken L1 failed to retrieve issue: {e}"}
+    pass
+pass
+
+
+return {"status": "error", "message": f"GitKraken L1 failed to retrieve issue: {e}"}
 
     # 2. Cost-Governed Vulnerability Check (L1/L3 Brave Search + L3 Pinecone)
     try:
@@ -64,7 +73,9 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
             # RAG failure - no fix found
             return {"status": "error", "message": "No fix found in any data source"}
     except Exception as e:
-        return {"status": "error", "message": f"Cost-governed search failed: {e}"}
+    pass
+pass
+return {"status": "error", "message": f"Cost-governed search failed: {e}"}
 
     # 3. Apply Code Edit (L1 Filesystem)
     try:
@@ -79,7 +90,9 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
             logger.info(
                 f"✅ L1 GitKraken: Committed changes with message: {commit_message}")
     except Exception as e:
-        return {"status": "error", "message": f"Filesystem/GitKraken L1 failed during repair/commit: {e}"}
+    pass
+pass
+return {"status": "error", "message": f"Filesystem/GitKraken L1 failed during repair/commit: {e}"}
 
     # 5. Cache Success (L4 Redis)
     fix_hash = f"FIX_AUDIT_{issue_id}_{hashlib.md5(commit_result.encode()).hexdigest()[:8]}"
@@ -89,7 +102,9 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
         if logger:
             logger.info(f"✅ L4 Redis: Cached fix with hash: {fix_hash}")
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(f"⚠️ L4 Redis cache failed: {e}")
         fix_hash = "CACHE_FAILED"
 
@@ -109,7 +124,9 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
         if logger:
             logger.info("✅ L5 MEMemory: Logged audit trail")
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(
                 f"⚠️ L5 MEMemory logging failed (non-critical): {e}")
 
@@ -146,8 +163,10 @@ def validate_canon_compliance(file_path: str, tools: Dict[str, Any], logger: Opt
             if logger:
                 logger.info("✅ L4 Redis: Retrieved cached validation result")
             return json.loads(cached_result)
-    except:
-        pass  # Cache miss or error, continue with validation
+except Exception:
+    pass
+pass
+pass  # Cache miss or error, continue with validation
 
     # Read file content (L1 Filesystem)
     try:
@@ -156,7 +175,9 @@ def validate_canon_compliance(file_path: str, tools: Dict[str, Any], logger: Opt
             logger.info(
                 f"✅ L1 Filesystem: Read {len(file_content)} characters")
     except Exception as e:
-        return {"status": "error", "message": f"Failed to read file: {e}"}
+    pass
+pass
+return {"status": "error", "message": f"Failed to read file: {e}"}
 
     # Query Pinecone for compliance patterns (L3)
     try:
@@ -185,13 +206,17 @@ def validate_canon_compliance(file_path: str, tools: Dict[str, Any], logger: Opt
             string_set(key=cache_key, value=json.dumps(validation_result))
             if logger:
                 logger.info("✅ L4 Redis: Cached validation result")
-        except:
-            pass
+except Exception:
+    pass
+pass
+pass
 
         return validation_result
 
     except Exception as e:
-        return {"status": "error", "message": f"Pinecone validation failed: {e}"}
+    pass
+pass
+return {"status": "error", "message": f"Pinecone validation failed: {e}"}
 
 
 def automated_design_drift_audit(figma_file_id: str, canonical_version: str, logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -275,8 +300,10 @@ def parse_time(time_str: str) -> datetime:
     try:
         # Assuming the Time MCP or Figma returns ISO 8601 format
         return datetime.fromisoformat(time_str.replace('Z', '+00:00'))
-    except:
-        return datetime.min  # Return minimum time on parsing failure
+except Exception:
+    pass
+pass
+return datetime.min  # Return minimum time on parsing failure
 
 
 def execute_version_locked_design_audit(component_id: str, logged_audit_time: str, logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -317,7 +344,9 @@ def execute_version_locked_design_audit(component_id: str, logged_audit_time: st
         version_id_to_use = latest_version['id']
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.error(
                 f"Figma L2 Version Check failed: {e}. Aborting audit.")
         return {"status": "error", "message": f"Figma L2 access failed: {e}"}
@@ -331,7 +360,9 @@ def execute_version_locked_design_audit(component_id: str, logged_audit_time: st
         )
         design_vars = json.loads(design_vars_str)
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.error(
                 f"Figma L2 Data Retrieval failed: {e}. Audit cannot proceed.")
         return {"status": "error", "message": f"Figma L2 data retrieval failed: {e}"}
@@ -343,8 +374,10 @@ def execute_version_locked_design_audit(component_id: str, logged_audit_time: st
             "entityName": "DesignAudit",
             "contents": [audit_message]
         }])
-    except:
-        if logger:
+except Exception:
+    pass
+pass
+if logger:
             logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
 
     return {
@@ -389,7 +422,9 @@ def execute_cost_governed_vulnerability_check(
                     logger.info(f"✅ Low-Cost Fix Found: Bypassing Pinecone.")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(
                 f"Brave Search call failed: {e}. Proceeding to Pinecone fallback.")
 
@@ -415,7 +450,9 @@ def execute_cost_governed_vulnerability_check(
                     logger.warning("Pinecone search yielded no success.")
 
         except Exception as e:
-            if logger:
+    pass
+pass
+if logger:
                 logger.error(f"CRITICAL: Pinecone search failed entirely: {e}")
 
     # --- 3. Result Aggregation and Audit Log (L5 MEMemory) ---
@@ -427,8 +464,10 @@ def execute_cost_governed_vulnerability_check(
                 "entityName": "RAG_Audit",
                 "contents": [f"CRITICAL RAG FAILURE: Fix not found. Methods attempted: BraveSearch, Pinecone."]
             }])
-        except:
-            pass
+except Exception:
+    pass
+pass
+pass
         return {"status": "rag_failure", "message": "No fix found in any data source."}
 
     # Success Path: Log the source of truth (Cost Governance Audit)
@@ -440,8 +479,10 @@ def execute_cost_governed_vulnerability_check(
             "entityName": "CostGovernance",
             "contents": [audit_message]
         }])
-    except:
-        pass
+except Exception:
+    pass
+pass
+pass
 
     return {
         "status": "success",
@@ -491,7 +532,9 @@ def execute_hybrid_fix_search(violation_description: str, code_version: str, log
                 f"Found {len(canon_results)} AUDITED fixes in {INDEX_CANON}.")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(
                 f"L3 Pinecone (Canon) search failed: {e}. Falling through to Fallback.")
         canon_results = []
@@ -520,7 +563,9 @@ def execute_hybrid_fix_search(violation_description: str, code_version: str, log
                 f"Found {len(fallback_results)} community fixes in {INDEX_FALLBACK}.")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(
                 f"L3 Pinecone (Fallback) search failed: {e}. RAG Failure possible.")
         fallback_results = []
@@ -539,8 +584,10 @@ def execute_hybrid_fix_search(violation_description: str, code_version: str, log
                 "entityName": "RAG_Audit",
                 "contents": [f"CRITICAL RAG FAILURE: No fix found for violation: {violation_description}"]
             }])
-        except:
-            pass  # Non-critical if logging fails
+except Exception:
+    pass
+pass
+pass  # Non-critical if logging fails
 
         return {"status": "rag_failure", "message": "No canonical or community fix found."}
 
@@ -555,8 +602,10 @@ def execute_hybrid_fix_search(violation_description: str, code_version: str, log
             "entityName": "RAG_Audit",
             "contents": [audit_message]
         }])
-    except:
-        pass  # Non-critical if logging fails
+except Exception:
+    pass
+pass
+pass  # Non-critical if logging fails
 
     return {
         "status": "success",

@@ -7,7 +7,7 @@ LOGGER = logging.getLogger(__name__)
 
 """
 import sys
-from services.configuration import ConfigurationService
+
 from services.configuration import ConfigurationService
 
 

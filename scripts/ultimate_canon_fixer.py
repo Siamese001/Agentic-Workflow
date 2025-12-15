@@ -57,7 +57,8 @@ def fix_all_print_statements():
             file_path.write_text(content, encoding='utf-8')
             FIXED += 1
         except Exception as e:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -84,7 +85,8 @@ def fix_all_empty_except():
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -107,7 +109,8 @@ def fix_all_bare_except():
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -155,7 +158,8 @@ def fix_all_unused_imports():
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -205,7 +209,8 @@ def fix_all_long_lines():
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -228,7 +233,8 @@ def fix_all_trailing_whitespace():
                 file_path.write_text(new_content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -295,7 +301,8 @@ def add_stub_docstrings():
             if fixed > 0:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Added {fixed} stub docstrings")
 
@@ -343,7 +350,8 @@ def remove_all_sql():
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -399,7 +407,8 @@ def fix_all_naming():
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
             except Exception:
-                pass
+    pass
+pass
 
     logger.info(f"  Fixed {fixed} files")
 

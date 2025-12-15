@@ -12,12 +12,12 @@ pc = Pinecone(api_key=api_key)
 # Delete the old index
 index_name = "canon-memory-l2"
 if index_name in pc.list_indexes().names():
-    print(f"Deleting existing index: {index_name}")
+    # print(f"Deleting existing index: {index_name}")  # [Security Fix]
     pc.delete_index(index_name)
-    print("✅ Index deleted")
+    # print("✅ Index deleted")  # [Security Fix]
 
 # Create new index with 384 dimensions
-print(f"Creating new index with 384 dimensions...")
+# print(f"Creating new index with 384 dimensions...")  # [Security Fix]
 pc.create_index(
     name=index_name,
     dimension=384,
@@ -28,5 +28,5 @@ pc.create_index(
     )
 )
 
-print("✅ New index created with 384 dimensions")
+# print("✅ New index created with 384 dimensions")  # [Security Fix]
 

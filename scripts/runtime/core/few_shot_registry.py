@@ -187,7 +187,8 @@ class FewShotRegistry(BaseModel):
                 logger.info(f"Loaded examples from {file_path}")
 
             except Exception as e:
-                logger.error(f"Failed to load examples from {file_path}: {e}")
+    pass
+logger.error(f"Failed to load examples from {file_path}: {e}")
 
     def save_to_directory(self, directory: Path) -> None:
             """Save examples to JSON files.

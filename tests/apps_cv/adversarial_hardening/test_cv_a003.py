@@ -4,11 +4,13 @@ CV-A-003: Failure Logging Backpressure
 Adversarial test for L5 logging resilience
 """
 
-import pytest
-from unittest.mock import Mock
-import time
 import threading
+import time
 from queue import Queue
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -159,7 +161,8 @@ class TestCVA003:
                 return {"status": "success"}
 
             except Exception as e:
-                log_stats["failed"] += len(observations)
+    pass
+log_stats["failed"] += len(observations)
                 log_stats["errors"].append(str(e))
                 # Should not crash, continue processing
                 return {"status": "failed", "error": str(e)}

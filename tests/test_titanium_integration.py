@@ -117,7 +117,8 @@ async def test_executive_brief_agent():
         logger.info("✓ ExecutiveBriefAgent integration tests passed")
 
     except ImportError as e:
-        logger.info(f"⚠ ExecutiveBriefAgent not available: {e}")
+    pass
+logger.info(f"⚠ ExecutiveBriefAgent not available: {e}")
 
 async def test_hardened_orchestrator_integration():
     """Test HardenedWorkflowOrchestrator with Titanium."""
@@ -150,7 +151,8 @@ async def test_hardened_orchestrator_integration():
         logger.info("✓ Hardened orchestrator integration tests passed")
 
     except ImportError as e:
-        logger.info(f"⚠ Hardened orchestrator integration not available: {e}")
+    pass
+logger.info(f"⚠ Hardened orchestrator integration not available: {e}")
 
 async def test_dispatch_tools():
     """Test dispatch_resume_tools with Titanium integration."""
@@ -186,7 +188,8 @@ async def test_dispatch_tools():
         logger.info("✓ Dispatch resume tools tests passed")
 
     except ImportError as e:
-        logger.info(f"⚠ Dispatch tools not available: {e}")
+    pass
+logger.info(f"⚠ Dispatch tools not available: {e}")
 
 async def run_all_integration_tests():
     """Run all integration tests."""
@@ -215,7 +218,8 @@ async def run_all_integration_tests():
         logger.info("  • Fallback mechanisms")
 
     except Exception as e:
-        logger.info(f"\n❌ Integration test failed: {e}")
+    pass
+logger.info(f"\n❌ Integration test failed: {e}")
         import traceback
         traceback.print_exc()
 

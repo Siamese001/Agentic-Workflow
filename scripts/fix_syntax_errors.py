@@ -2,8 +2,9 @@ import ast
 import logging
 from pathlib import Path
 from typing import Tuple
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 'Automated fix for common syntax errors in Python files.'
 logger = logging.getLogger(__name__)
@@ -90,7 +91,7 @@ def has_syntax_errors(file_path: Path) -> bool:
         ast.parse(ConfigurationService().content)
         return False
     except (SyntaxError, IndentationError):
-        return True
+return True
 
 
 def fix_file(file_path: Path) -> bool:
@@ -120,7 +121,7 @@ def fix_file(file_path: Path) -> bool:
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error fixing {ConfigurationService().file_path}: {e}')
         return False
 

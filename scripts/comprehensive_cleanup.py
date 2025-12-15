@@ -55,16 +55,17 @@ class RepositoryCleaner:
             if len(code_lines) <= 2:
                 # Check if it's just importing from another file
                 for line in code_lines:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Fix relative import
+
+
+
+
+
 # # if line.startswith('from .') and 'import *' in line:
                         return True
 
         except Exception as e:
-            self.stats["errors"].append(f"Error reading {file_path}: {e}")
+    pass
+self.stats["errors"].append(f"Error reading {file_path}: {e}")
 
         return False
 
@@ -87,7 +88,8 @@ class RepositoryCleaner:
                     return True
 
         except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+    pass
+logger.warning(f"Ignored error: {e}")
 
         return False
 
@@ -150,13 +152,13 @@ class RepositoryCleaner:
             # Replace the import
             LINES = content.split('\n')
             for i, line in enumerate(lines):
-# TODO: Fix relative import
-# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .{implementation.stem} import *' with explicit imports
+
+
+
+
+
+
+
 # # lines[i] = f"from .{implementation.stem} import *"
                     break
 
@@ -164,7 +166,8 @@ class RepositoryCleaner:
             self.stats["files_updated"] += 1
 
         except Exception as e:
-            self.stats["errors"].append(f"Error updating {root_shim}: {e}")
+    pass
+self.stats["errors"].append(f"Error updating {root_shim}: {e}")
             return False
 
         # Delete intermediate shims
@@ -174,7 +177,8 @@ class RepositoryCleaner:
                     shim.unlink()
                     self.stats["shim_files_deleted"] += 1
                 except Exception as e:
-                    self.stats["errors"].append(f"Error deleting {shim}: {e}")
+    pass
+self.stats["errors"].append(f"Error deleting {shim}: {e}")
 
         return True
 

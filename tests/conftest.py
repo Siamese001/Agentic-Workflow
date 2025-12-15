@@ -5,6 +5,7 @@ import asyncio
 import logging
 from pathlib import Path
 from typing import Any, Dict
+
 import pytest
 
 logger = logging.getLogger(__name__)
@@ -172,8 +173,9 @@ def execute_user_input(input_str):
     # Violation: Bare except clause
     try:
         result = process(input_str)
-    except:
-        pass
+except Exception:
+    pass
+pass
 
     return result
 """
@@ -200,10 +202,12 @@ def execute_user_input safely(input_str: str) -> Optional[str]:
         )
         return result.stdout
     except subprocess.TimeoutExpired:
-        logger.error("Command timed out")
+    pass
+logger.error("Command timed out")
         return None
     except Exception as e:
-        logger.error(f"Command failed: {e}")
+    pass
+logger.error(f"Command failed: {e}")
         return None
 """
 

@@ -159,7 +159,8 @@ class GovernanceShieldAgent:
             return sanitized
 
         except Exception as e:
-            logger.error(f"Error sanitizing claims: {str(e)}")
+    pass
+logger.error(f"Error sanitizing claims: {str(e)}")
             return content
 
     def generate_safety_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
@@ -178,7 +179,8 @@ class GovernanceShieldAgent:
                 return self._generate_standard_protocol(risk_profile)
 
         except Exception as e:
-            logger.error(f"Error generating safety protocol: {str(e)}")
+    pass
+logger.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
                 validation_strategy="Comprehensive testing before deployment",
                 data_privacy_approach="Privacy by design principles",
@@ -206,7 +208,8 @@ class GovernanceShieldAgent:
             return audited
 
         except Exception as e:
-            logger.error(f"Error auditing outreach: {str(e)}")
+    pass
+logger.error(f"Error auditing outreach: {str(e)}")
             return email_draft
 
     def scan_risk_level(self, industry: str, job_description: str) -> RiskProfile:
@@ -270,7 +273,8 @@ class GovernanceShieldAgent:
             )
 
         except Exception as e:
-            logger.error(f"Error scanning risk level: {str(e)}")
+    pass
+logger.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
                 industry_sensitivity=IndustrySensitivity.MEDIUM,
                 compliance_keywords=["GDPR"],

@@ -31,9 +31,12 @@ class ReasoningLayerTestSuite:
 
         # Sample search results for testing
         self.sample_dense_results = [
-            {"doc_id": "doc1", "score": 0.9, "content": "Our RAG pipeline achieves 50ms latency"},
-            {"doc_id": "doc2", "score": 0.8, "content": "Industry benchmarks show 100ms average"},
-            {"doc_id": "doc3", "score": 0.7, "content": "Financial apps require sub-100ms response"}
+            {"doc_id": "doc1", "score": 0.9,
+                "content": "Our RAG pipeline achieves 50ms latency"},
+            {"doc_id": "doc2", "score": 0.8,
+                "content": "Industry benchmarks show 100ms average"},
+            {"doc_id": "doc3", "score": 0.7,
+                "content": "Financial apps require sub-100ms response"}
     ,
         ]
 

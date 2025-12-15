@@ -25,7 +25,6 @@ ThermalProfile, create_brainstorm_context, create_formatting_context
 )
     from pydantic import BaseModel, EmailStr
 
-
     # Define Pydantic schemas for validation
     class EmailContent(BaseModel):
     """Schema for email content validation."""

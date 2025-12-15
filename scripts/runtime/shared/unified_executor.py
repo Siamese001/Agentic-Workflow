@@ -149,14 +149,16 @@ class LLMExecutionStrategy(ExecutionStrategy):
             )
 
         except CircuitOpenError:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 STATUS=ExecutionStatus.CIRCUIT_OPEN,
                 DATA=None,
                 CONTEXT=context,
                 ERROR="Circuit breaker is open"
             )
         except Exception as e:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 STATUS=ExecutionStatus.FAILED,
                 DATA=None,
                 CONTEXT=context,
@@ -281,14 +283,16 @@ class APIExecutionStrategy(ExecutionStrategy):
             )
 
         except CircuitOpenError:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 STATUS=ExecutionStatus.CIRCUIT_OPEN,
                 DATA=None,
                 CONTEXT=context,
                 ERROR="API circuit breaker is open"
             )
         except Exception as e:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 STATUS=ExecutionStatus.FAILED,
                 DATA=None,
                 CONTEXT=context,
@@ -373,7 +377,8 @@ class BatchExecutionStrategy(ExecutionStrategy):
             )
 
         except Exception as e:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 STATUS=ExecutionStatus.FAILED,
                 DATA=None,
                 CONTEXT=context,

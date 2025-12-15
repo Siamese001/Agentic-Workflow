@@ -92,7 +92,8 @@ You must respond with valid JSON matching the DeepResearchOutput schema."""
         return research_output
 
     except Exception as e:
-        logger.info(f"❌ Error during research: {e}")
+    pass
+logger.info(f"❌ Error during research: {e}")
         raise
 
 async def demonstrate_stateful_continuation():
@@ -120,7 +121,8 @@ async def demonstrate_stateful_continuation():
         logger.info("Initial response received")
         logger.info(f"Response length: {len(response1)} characters")
     except json.JSONDecodeError:
-        logger.info("Initial response received (plain text)")
+    pass
+logger.info("Initial response received (plain text)")
 
     # Continue with refinement
     logger.info("\nSending refinement request...")
@@ -160,7 +162,8 @@ async def demonstrate_error_handling():
         logger.info("Testing context overflow protection...")
         await executor.execute_k_node(messages=messages)
     except Exception as e:
-        logger.info(f"✅ Caught expected error: {type(e).__name__}")
+    pass
+logger.info(f"✅ Caught expected error: {type(e).__name__}")
         logger.info(f"   Message: {str(e)[:100]}...")
 
     logger.info("\nAll error handling tests passed!")

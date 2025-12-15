@@ -12,8 +12,8 @@ logger = logging.getLogger("Orchestrator")
 
 
 def run_agentic_loop(user_goal: str):
-    print(f"\n🚀 SUBATOMIC AGENT STARTING: {user_goal}")
-    print("="*60)
+    # print(f"\n🚀 SUBATOMIC AGENT STARTING: {user_goal}")  # [Security Fix]
+    # print("="*60)  # [Security Fix]
 
     # 1. INITIALIZE COMPONENTS
     validator = CanonValidator()
@@ -83,20 +83,28 @@ def run_agentic_loop(user_goal: str):
     try:
         raw_code = cognitive.think(user_goal, toolbox_desc)
     except TimeoutError as e:
-        logger.error(f"❌ Sequential thinking timed out: {e}")
+    pass
+pass
+
+
+logger.error(f"❌ Sequential thinking timed out: {e}")
         return
     except RuntimeError as e:
-        logger.error(f"❌ Sequential thinking failed: {e}")
+    pass
+pass
+logger.error(f"❌ Sequential thinking failed: {e}")
         return
     except Exception as e:
-        logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
+    pass
+pass
+logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
         return
 
     if not raw_code:
         logger.error("❌ Generation failed in Cognitive Node.")
         return
 
-    print(f"\n📄 DRAFT CODE RECEIVED:\n{'-'*20}\n{raw_code}\n{'-'*20}")
+    # print(f"\n📄 DRAFT CODE RECEIVED:\n{'-'*20}\n{raw_code}\n{'-'*20}")  # [Security Fix]
 
     # 4. AUDIT & REPAIR (The "Golden Loop")
     result = validator.validate(raw_code, auto_repair=True)
@@ -105,10 +113,10 @@ def run_agentic_loop(user_goal: str):
     status = result.get("status")
 
     if status == "repaired":
-        print(f"\n🔧 AUTO-REPAIR APPLIED!")
-        print(f"📝 Reason: {result.get('reasoning')}")
+        # print(f"\n🔧 AUTO-REPAIR APPLIED!")  # [Security Fix]
+        # print(f"📝 Reason: {result.get('reasoning')}")  # [Security Fix]
         final_code = result.get("repaired_code")
-        print(f"✨ NEW CODE:\n{'-'*20}\n{final_code}\n{'-'*20}")
+        # print(f"✨ NEW CODE:\n{'-'*20}\n{final_code}\n{'-'*20}")  # [Security Fix]
     elif status == "rejected":
         logger.error("❌ Code rejected.")
         return
@@ -134,7 +142,7 @@ def run_agentic_loop(user_goal: str):
         ) if k not in tool_names and "__" not in k and callable(local_scope[k])]
         if keys:
             func_name = keys[-1]
-            print(f"▶️ Running function: {func_name}...")
+            # print(f"▶️ Running function: {func_name}...")  # [Security Fix]
 
             # Simple Injection Logic for Logger
             import inspect
@@ -142,15 +150,17 @@ def run_agentic_loop(user_goal: str):
             kwargs = {}
             if "logger" in sig.parameters:
                 class MockLogger:
-                    def __call__(self, msg): print(f"[LOG] {msg}")
-                    def info(self, msg): print(f"[LOG] {msg}")
+                    # def __call__(self, msg): print(f"[LOG] {msg}")  # [Security Fix]
+                    # def info(self, msg): print(f"[LOG] {msg}")  # [Security Fix]
                 kwargs["logger"] = MockLogger()
 
             res = local_scope[func_name](**kwargs)
-            print(f"✅ RESULT: {res}")
+            # print(f"✅ RESULT: {res}")  # [Security Fix]
 
     except Exception as e:
-        logger.error(f"Runtime Error: {e}")
+    pass
+pass
+logger.error(f"Runtime Error: {e}")
 
 
 if __name__ == "__main__":

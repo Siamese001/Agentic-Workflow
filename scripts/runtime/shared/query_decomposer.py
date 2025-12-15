@@ -71,7 +71,8 @@ class QueryDecomposer(SimpleAgentBase):
         try:
             SELF.GATE = AdaptiveRetrievalGate()
         except ImportError:
-            logger.warning(
+    pass
+logger.warning(
                 "AdaptiveRetrievalGate not available, skipping heuristic check")
             SELF.GATE = None
 
@@ -156,7 +157,8 @@ class QueryDecomposer(SimpleAgentBase):
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+    pass
+logger.error(f"LLM call failed: {e}")
             # Return fallback response
 
             class LLMResponseImpl:
@@ -241,7 +243,7 @@ Output: {{
             # Validate and limit sub-queries
             sub_queries = result.get("sub_queries", [query])
             if len(sub_queries) > self.max_sub_queries:
-                logger.warning(f"LLM generated too many sub-queries ({len(sub_queries)}),
+                logger.warning(f"LLM generated too many sub-queries({len(sub_queries)}),
                     truncating")
                 sub_queries = sub_queries[:self.max_sub_queries]
 
@@ -249,7 +251,8 @@ Output: {{
             if not sub_queries:
                 sub_queries = [query]
 
-            REASONING = result.get("reasoning", "Decomposed using LLM analysis")
+            REASONING = result.get(
+                "reasoning", "Decomposed using LLM analysis")
 
             return DecomposedQuery(
                 original_query=query,
@@ -259,7 +262,8 @@ Output: {{
             )
 
         except Exception as e:
-            logger.error(f"Failed to decompose query: {e}")
+    pass
+logger.error(f"Failed to decompose query: {e}")
             # Fallback to original query
             return DecomposedQuery(
                 original_query=query,
@@ -269,6 +273,7 @@ Output: {{
             )
 
         """Docstring."""
+
     async def execute_plan(
         self,
         decomposed_query: DecomposedQuery,
@@ -285,7 +290,8 @@ Output: {{
         Returns:
             List of search results for all sub-queries
         """
-        logger.info(f"Executing {len(decomposed_query.sub_queries)} sub-queries in parallel")
+        logger.info(
+            f"Executing {len(decomposed_query.sub_queries)} sub-queries in parallel")
 
         # Create tasks for parallel execution
         TASKS = []
@@ -312,11 +318,12 @@ Output: {{
             return processed_results
 
         except Exception as e:
-            logger.error(f"Failed to execute sub-queries: {e}")
+    pass
+logger.error(f"Failed to execute sub-queries: {e}")
             return [[] for _ in decomposed_query.sub_queries]
 
 # Convenience function for direct usage
-async def decompose_query(query: str, model_name: str = "gpt-4") -> DecomposedQuery:
+async def decompose_query(query: str, model_name: str="gpt-4") -> DecomposedQuery:
     """Decompose a query using default settings.
 
     Args:
@@ -326,6 +333,6 @@ async def decompose_query(query: str, model_name: str = "gpt-4") -> DecomposedQu
     Returns:
         DecomposedQuery result
     """
-    DECOMPOSER = QueryDecomposer(model_name=model_name)
+    DECOMPOSER=QueryDecomposer(model_name=model_name)
     return await decomposer.decompose(query)
 

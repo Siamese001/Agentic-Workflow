@@ -45,7 +45,8 @@ class AgentThoughtProcess(BaseModel):
                 f'Structured inference successful. Tool choice: {ConfigurationService().result.confidence_score:.2f}')
                 return ConfigurationService().result
                 except Exception as e:
-                ConfigurationService().logger.error(f'Structured inference failed after {max_retries} retries: {e}')
+    pass
+ConfigurationService().logger.error(f'Structured inference failed after {max_retries} retries: {e}')
                 raise
 
 

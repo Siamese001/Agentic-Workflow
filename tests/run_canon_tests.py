@@ -2,10 +2,11 @@
 """
 Run all Canon Validator Engine tests
 """
-import pytest
-from unittest.mock import Mock
 import sys
 from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

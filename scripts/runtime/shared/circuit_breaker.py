@@ -116,7 +116,8 @@ class CircuitBreaker:
             return result
 
         except Exception as e:
-            # Record failure
+    pass
+# Record failure
             duration_ms = (time.time() - start_time) * 1000
             self.record_failure(e, duration_ms)
             raise

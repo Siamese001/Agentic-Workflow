@@ -10,12 +10,13 @@ Tests cover:
 - Performance and security aspects
 """
 
-import pytest
 import asyncio
 import json
 import logging
 import os
 import sys
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -634,7 +635,8 @@ class TestMCPToolServerPerformance:
                 RESULT = server.execute_tool("identity", {"x": i})
                 results.append(result.result)
             except Exception as e:
-                errors.append(e)
+    pass
+errors.append(e)
 
         THREADS = []
         for i in range(10):

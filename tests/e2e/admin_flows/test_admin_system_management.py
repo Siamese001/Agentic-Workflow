@@ -1,10 +1,11 @@
 """E2E tests for admin system management flows."""
-import pytest
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

@@ -54,15 +54,16 @@ def is_shim_file(file_path: Path) -> bool:
 
         # Check for simple import structure
         LINES = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Fix relative import
-# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in
+
+
+
+
 # lines):
             return True
 
     except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+    pass
+logger.warning(f"Ignored error: {e}")
 
     return False
 
@@ -108,19 +109,20 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
                 # Replace import
                 LINES = content.split('\n')
                 for i, line in enumerate(lines):
-# TODO: Fix relative import
-# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .{impl.stem} import *' with explicit imports
+
+
+
+
+
+
+
 # # LINES[I] = f"from .{impl.stem} import *"
                         break
                 root.write_text('\n'.join(lines), encoding='utf-8')
                 stats["files_updated"] += 1
             except Exception as e:
-                logger.info(f"      Error updating {root}: {e}")
+    pass
+logger.info(f"      Error updating {root}: {e}")
 
         # Always track files to be deleted
         stats["files_deleted"] += len(to_delete)
@@ -131,7 +133,8 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
                 try:
                     shim.unlink()
                 except Exception as e:
-                    logger.info(f"      Error deleting {shim}: {e}")
+    pass
+logger.info(f"      Error deleting {shim}: {e}")
 
     return stats
 

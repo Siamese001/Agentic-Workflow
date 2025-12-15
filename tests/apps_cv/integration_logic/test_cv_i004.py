@@ -4,10 +4,12 @@ CV-I-004: Atomic State Fix Application
 Integration test for multi-layer flow verification
 """
 
-import pytest
-from unittest.mock import Mock
 import json
 import time
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -160,7 +162,8 @@ class TestCVI004:
             tx.exec()
             assert False, "Should have raised exception"
         except Exception as e:
-            assert "Transaction failed" in str(e)
+    pass
+assert "Transaction failed" in str(e)
 
         # Verify rollback
         assert "MULTI" in transaction_log[0]
