@@ -39,6 +39,58 @@ def string_set(key: str, value: str) -> None:
     """Mock for Redis MCP: Set string value."""
     pass
 
+def start_transaction() -> None:
+    """Mock for Redis MCP: Start a transaction."""
+    pass
+
+def watch_key(key: str) -> None:
+    """Mock for Redis MCP: Watch a key for transaction."""
+    pass
+
+def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
+    """Mock for Redis MCP: Set value with TTL in transaction."""
+    pass
+
+def commit_transaction() -> None:
+    """Mock for Redis MCP: Commit transaction."""
+    pass
+
+def incr(key: str) -> int:
+    """Mock for Redis MCP: Atomically increment counter."""
+    current = string_get(key)
+    current_val = int(current) if current else 0
+    new_val = current_val + 1
+    string_set(key, str(new_val))
+    return new_val
+
+def brave_search(query: str, count: int = 5) -> str:
+    """Mock for Brave Search MCP: Search the web."""
+    # Return mock search results
+    results = [
+        {"title": f"Result 1 for {query}", "url": "https://example.com/1", "snippet": f"Mock snippet about {query}"},
+        {"title": f"Result 2 for {query}", "url": "https://example.com/2", "snippet": f"Another result about {query}"},
+        {"title": f"Result 3 for {query}", "url": "https://example.com/3", "snippet": f"Third result about {query}"}
+    ]
+    return json.dumps(results[:count])
+
+# LangCache Mock Functions (L4 specialized cache for LLM results)
+def get_from_langcache(key: str) -> Optional[str]:
+    """Mock: Retrieves final result from LangCache."""
+    # Simulate a cache miss for demonstration
+    return None
+
+def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
+    """Mock: Writes result to LangCache with TTL."""
+    # In a real system, this interacts with the LangCache API
+    pass
+
+# Atomic Redis Operations for Budget Control
+def get_and_set(key: str, new_value: str) -> str:
+    """Mock: Atomically get current value and set new value."""
+    current = string_get(key)
+    string_set(key, new_value)
+    return current or "0"
+
 def search_nodes(query: str) -> str:
     """Mock for MEMemory MCP: Search knowledge graph."""
     # Return mock user data
@@ -70,6 +122,11 @@ def write_file(path: str, content: str) -> None:
         write_file.drafts_created = True
     elif "reports/" in path and not hasattr(write_file, 'reports_created'):
         write_file.reports_created = True
+
+def read_text_file(path: str) -> str:
+    """Mock for Filesystem MCP: Read text file."""
+    # Return default code artifact
+    return "function defaultCodeSample() {\n  return 'Default implementation';\n}"
 
 def add_observations(observations: List[Dict[str, Any]]) -> None:
     """Mock for MEMemory MCP: Add observations."""
@@ -153,3 +210,39 @@ def sanitize_filename(filename: str) -> str:
     for char in invalid_chars:
         filename = filename.replace(char, '_')
     return filename
+
+def get_variable_defs(node_id: str, version: Optional[str] = None) -> str:
+    """Mock for Figma MCP: Get variable definitions."""
+    # Return mock design variables
+    return json.dumps({
+        "colors": {"primary": "#007ACC", "secondary": "#6C757D"},
+        "fonts": {"primary": "Arial", "secondary": "Helvetica"},
+        "spacing": {"small": "8px", "medium": "16px", "large": "24px"},
+        "version": version or "latest"
+    })
+
+def get_file_versions(component_id: str) -> str:
+    """Mock for Figma MCP: Get file version history."""
+    # Return mock version history with timestamps
+    from datetime import datetime, timedelta
+    now = datetime.utcnow()
+    
+    versions = [
+        {
+            "id": "v1.0.0",
+            "created_at": (now - timedelta(days=30)).isoformat() + "Z",
+            "label": "Stable Release"
+        },
+        {
+            "id": "v1.1.0",
+            "created_at": (now - timedelta(days=15)).isoformat() + "Z",
+            "label": "Feature Update"
+        },
+        {
+            "id": "v1.2.0-draft",
+            "created_at": (now - timedelta(hours=6)).isoformat() + "Z",
+            "label": "Draft - In Progress"
+        }
+    ]
+    
+    return json.dumps({"versions": versions})

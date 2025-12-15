@@ -2,6 +2,20 @@ import time
 import json
 import hashlib
 from typing import Dict, Any, Optional
+from datetime import datetime
+
+# Import hardened MCP functions
+from mcp_hardening import (
+    check_design_drift,
+    execute_vulnerability_search
+)
+
+# Import core utilities for Figma functions
+from core_utils import (
+    get_file_versions,
+    get_variable_defs,
+    add_observations
+)
 
 def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
     """
@@ -35,15 +49,28 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
 
     # 2. Retrieve Canonical Refactor Pattern (L3 Pinecone)
     refactor_query = f"Canonical pattern for adding dependency {new_dependency} and fixing issue {issue_id} in {target_file}"
+    
+    # First, try the hybrid fix search for maximum Pinecone utilization
     try:
-        search_result_str = search_records(query=refactor_query, index="code_canon", top_k=1)
-        search_result = json.loads(search_result_str)
-        # Assuming result contains the necessary 'edits' JSON structure
-        edits_payload = search_result[0].get('metadata', {}).get('edits', [])
-        if not edits_payload:
-            return {"status": "error", "message": "No canonical refactor pattern found in Pinecone"}
-        if logger:
-            logger.info(f"✅ L3 Pinecone: Retrieved canonical refactor pattern with {len(edits_payload)} edits")
+        hybrid_search_result = execute_hybrid_fix_search(
+            violation_description=refactor_query,
+            code_version="latest",
+            logger=logger
+        )
+        
+        if hybrid_search_result["status"] == "success":
+            # Use the top fix from hybrid search
+            top_fix = hybrid_search_result["top_fix"]
+            edits_payload = top_fix.get('metadata', {}).get('edits', [])
+            if logger:
+                logger.info(f"✅ L3 Pinecone Hybrid: Retrieved canonical fix with confidence {top_fix.get('confidence')}")
+        else:
+            # Fallback to regular search if hybrid fails
+            search_result_str = search_records(query=refactor_query, index="code_canon", top_k=1)
+            search_result = json.loads(search_result_str)
+            edits_payload = search_result[0].get('metadata', {}).get('edits', [])
+            if logger:
+                logger.info("✅ L3 Pinecone: Used fallback search method")
     except Exception as e:
         return {"status": "error", "message": f"Pinecone L3 failed: {e}"}
 
@@ -166,3 +193,262 @@ def validate_canon_compliance(file_path: str, tools: Dict[str, Any], logger: Opt
         
     except Exception as e:
         return {"status": "error", "message": f"Pinecone validation failed: {e}"}
+
+def automated_design_drift_audit(figma_file_id: str, canonical_version: str, logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Automated design drift audit for Git pre-commit hooks.
+    Integrates Figma (L2), Filesystem (L1), and Pinecone (L3) for comprehensive validation.
+    """
+    if logger:
+        logger.info(f"🔍 Starting automated design drift audit for {figma_file_id}")
+    
+    # 1. Check design drift using hardened Figma access
+    drift_result = check_design_drift(
+        file_id=figma_file_id,
+        canonical_version=canonical_version,
+        logger=logger
+    )
+    
+    if drift_result.get('drift_detected'):
+        # 2. If drift detected, trigger canonical fix retrieval
+        if logger:
+            logger.warning("Design drift detected - initiating repair workflow")
+        
+        # This would integrate with the existing execute_dependency_refactor
+        # For now, return the drift report for manual review
+        return {
+            "status": "drift_detected",
+            "message": "Design drift requires manual review or automated repair",
+            "drift_report": drift_result.get('drift_report', []),
+            "suggested_action": "Run execute_dependency_refactor with canonical patterns"
+        }
+    
+    return {
+        "status": "no_drift",
+        "message": "Design is compliant with canonical version",
+        "validated_version": drift_result.get('current_version'),
+        "canonical_version": canonical_version
+    }
+
+def vulnerability_check_before_refactor(issue_description: str, logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Cost-controlled vulnerability check before attempting Pinecone refactor.
+    Uses Brave Search with security-specific sites to find quick fixes.
+    """
+    if logger:
+        logger.info("🔒 Checking for existing vulnerability fixes...")
+    
+    # Extract key terms from issue description
+    search_terms = issue_description.split()[:5]  # First 5 words
+    security_query = " ".join(search_terms)
+    
+    # Execute hardened vulnerability search
+    search_results = execute_vulnerability_search(security_query, logger=logger)
+    
+    if search_results:
+        # Parse results for high-confidence fixes
+        results = json.loads(search_results)
+        
+        # Look for immediate solutions
+        for result in results:
+            if 'fix' in result.get('snippet', '').lower() or 'solution' in result.get('title', '').lower():
+                return {
+                    "status": "quick_fix_found",
+                    "message": "Immediate fix available - skipping Pinecone search",
+                    "solution": result,
+                    "cost_saved": "Pinecone query avoided"
+                }
+    
+    return {
+        "status": "no_quick_fix",
+        "message": "No immediate fix found - proceed with Pinecone search",
+        "proceed_to_pinecone": True
+    }
+
+def parse_time(time_str: str) -> datetime:
+    """Helper to convert ISO format time to datetime object."""
+    try:
+        # Assuming the Time MCP or Figma returns ISO 8601 format
+        return datetime.fromisoformat(time_str.replace('Z', '+00:00'))
+    except:
+        return datetime.min # Return minimum time on parsing failure
+
+def execute_version_locked_design_audit(component_id: str, logged_audit_time: str, logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Performs a version-locked design audit, enforcing integrity by detecting design drift 
+    via Figma versions and Time MCP logs.
+    """
+    if logger:
+        logger.info(f"🎨 Starting Version-Locked Audit for Component ID: {component_id}")
+
+    # Convert the agent's last known audit time into a comparable object
+    last_audit_dt = parse_time(logged_audit_time)
+    
+    # --- 1. Check Design Stability (Figma L2, Time L4, Sequential Thinking) ---
+    try:
+        # Figma returns version history for the file containing the component
+        versions_str = get_file_versions(component_id=component_id)
+        versions_data = json.loads(versions_str)
+        versions = versions_data.get('versions', [])
+        
+        if not versions:
+            return {"status": "error", "message": "Figma returned no version history."}
+
+        # The latest version is typically the first element
+        latest_version = versions[0]
+        latest_version_dt = parse_time(latest_version['created_at'])
+        
+        design_status = "STABLE"
+        
+        # Sequential Thinking: Compare latest version time to last audit time
+        if latest_version_dt > last_audit_dt:
+            design_status = "DRIFT_DETECTED"
+            if logger:
+                logger.warning(f"🚨 DESIGN DRIFT DETECTED: Latest version ({latest_version_dt}) is newer than last audit ({last_audit_dt}).")
+            
+        version_id_to_use = latest_version['id']
+            
+    except Exception as e:
+        if logger:
+            logger.error(f"Figma L2 Version Check failed: {e}. Aborting audit.")
+        return {"status": "error", "message": f"Figma L2 access failed: {e}"}
+
+    # --- 2. Version-Locked Retrieval (Figma L2) ---
+    try:
+        # Retrieve the design context, locked to the latest version ID
+        design_vars_str = get_variable_defs(
+            node_id=component_id, 
+            version=version_id_to_use # Enforces integrity (Hardening)
+        )
+        design_vars = json.loads(design_vars_str)
+    except Exception as e:
+        if logger:
+            logger.error(f"Figma L2 Data Retrieval failed: {e}. Audit cannot proceed.")
+        return {"status": "error", "message": f"Figma L2 data retrieval failed: {e}"}
+
+    # --- 3. Audit Log (L5 MEMemory) ---
+    try:
+        audit_message = f"Design Audit Complete: Status={design_status}. Version={version_id_to_use} used for context. Component={component_id}."
+        add_observations(observations=[{
+            "entityName": "DesignAudit",
+            "contents": [audit_message]
+        }])
+    except:
+        if logger:
+            logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
+
+    return {
+        "status": "success",
+        "design_status": design_status,
+        "version_id_used": version_id_to_use,
+        "design_variables": design_vars
+    }
+
+def execute_hybrid_fix_search(violation_description: str, code_version: str, logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Executes a hardened hybrid search across two Pinecone indexes, prioritizing 
+    audited (high-confidence) fixes to ensure the best repair is selected.
+    """
+    if logger:
+        logger.info(f"🔍 Starting Hybrid Fix Search for: {violation_description} (Version: {code_version})")
+
+    all_results = []
+    
+    # --- 1. Index 1 Search (High-Quality Canon: Hardening through Metadata) ---
+    INDEX_CANON = "code-canon-fixes"
+    # Metadata filter ensures only fixes that passed the Iterative Repair Audit are considered
+    canon_filter = {"$and": [
+        {"audit_status": "AUDITED"},
+        {"version": code_version}
+    ]}
+    
+    try:
+        # Search records with metadata filtering
+        canon_results_str = search_records(
+            query=violation_description, 
+            index=INDEX_CANON, 
+            top_k=2,
+            filter=canon_filter
+        )
+        canon_results = json.loads(canon_results_str)
+        
+        # Tag results for prioritization and logging
+        for res in canon_results:
+            res['source_index'] = INDEX_CANON
+            res['confidence'] = 'HIGH_AUDITED'
+        all_results.extend(canon_results)
+        
+        if logger:
+            logger.info(f"Found {len(canon_results)} AUDITED fixes in {INDEX_CANON}.")
+            
+    except Exception as e:
+        if logger:
+            logger.warning(f"L3 Pinecone (Canon) search failed: {e}. Falling through to Fallback.")
+        canon_results = []
+
+
+    # --- 2. Index 2 Search (Fallback Cache: Lower Confidence) ---
+    INDEX_FALLBACK = "stack-overflow-cache"
+    # Metadata filter for a simulated community validation status
+    fallback_filter = {"fix_type": "community_validated"}
+
+    try:
+        fallback_results_str = search_records(
+            query=violation_description, 
+            index=INDEX_FALLBACK, 
+            top_k=3,
+            filter=fallback_filter
+        )
+        fallback_results = json.loads(fallback_results_str)
+        
+        for res in fallback_results:
+            res['source_index'] = INDEX_FALLBACK
+            res['confidence'] = 'MEDIUM_COMMUNITY'
+        all_results.extend(fallback_results)
+
+        if logger:
+            logger.info(f"Found {len(fallback_results)} community fixes in {INDEX_FALLBACK}.")
+            
+    except Exception as e:
+        if logger:
+            logger.warning(f"L3 Pinecone (Fallback) search failed: {e}. RAG Failure possible.")
+        fallback_results = []
+
+
+    # --- 3. Result Aggregation and Prioritization (Sequential Thinking) ---
+    
+    if not all_results:
+        # 4. Failure Path
+        if logger:
+            logger.error("RAG Failure: No relevant fixes found across both indexes.")
+            
+        # 5. Audit Log (L5 MEMemory) - Log the failure for investigation
+        try:
+            add_observations(observations=[{
+                "entityName": "RAG_Audit",
+                "contents": [f"CRITICAL RAG FAILURE: No fix found for violation: {violation_description}"]
+            }])
+        except:
+            pass # Non-critical if logging fails
+        
+        return {"status": "rag_failure", "message": "No canonical or community fix found."}
+
+    # Sort: Audited fixes take priority over community fixes
+    all_results.sort(key=lambda x: 1 if x['confidence'] == 'HIGH_AUDITED' else 0, reverse=True)
+    
+    # 4. Audit Log (L5 MEMemory) - Log the successful context
+    try:
+        audit_message = f"Hybrid search successful. Canon: {len(canon_results)}, Fallback: {len(fallback_results)}. Top fix confidence: {all_results[0]['confidence']}."
+        add_observations(observations=[{
+            "entityName": "RAG_Audit",
+            "contents": [audit_message]
+        }])
+    except:
+        pass # Non-critical if logging fails
+
+    return {
+        "status": "success",
+        "total_results": len(all_results),
+        "top_fix": all_results[0],
+        "all_results": all_results
+    }
