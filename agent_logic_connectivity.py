@@ -270,15 +270,23 @@ class CanonValidator:
                     logger.warning(f"⚠️  Failed to check manifest: {e}")
         
         try:
-            # 1. Write to Redis (Hot)
+            # 1. Get the authoritative hash for this file version
+            current_hash = self._get_file_hash(entry.file_path) if hasattr(entry, 'file_path') and entry.file_path else "unknown"
+            
+            # 2. Write to Redis (Hot)
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
             logger.info(f"✅ Stored new pattern in Redis: {entry.id}")
 
-            # 2. Write to Pinecone (Cold)
+            # 3. Write to Pinecone (Cold) with Version Tags
             pinecone_record = entry.to_pinecone_record()
+            # [CRITICAL] Add content hash to metadata for filtering
+            if 'metadata' not in pinecone_record:
+                pinecone_record['metadata'] = {}
+            pinecone_record['metadata']['content_hash'] = current_hash
+            
             self.pinecone_index.upsert(vectors=[pinecone_record])
-            logger.info(f"✅ Stored new pattern in Pinecone: {entry.id}")
+            logger.info(f"✅ Indexed {entry.file_path or 'unknown'} (Hash: {current_hash[:8]})")
 
             return {
                 "status": "ingested",
@@ -299,6 +307,36 @@ class CanonValidator:
                 "message": f"Ingestion failed: {str(e)}",
                 "query_time_ms": (time.time() - start_time) * 1000
             }
+
+    def query_semantic_memory(self, query: str, context_file: str = None, top_k=5):
+        """
+        [HARDENED] Retrieval that ignores 'Ghost' vectors.
+        """
+        query_vector = self.embedding_fn(query)
+        
+        # Default Filter: None
+        metadata_filter = {}
+        
+        # If we are asking about a specific file, ONLY show me memories 
+        # that match the CURRENT version of that file.
+        if context_file:
+            active_hash = self._get_file_hash(context_file)
+            metadata_filter = {
+                "file_path": context_file,
+                "content_hash": active_hash  # <--- The Shield
+            }
+            
+        try:
+            results = self.pinecone_index.query(
+                vector=query_vector,
+                top_k=top_k,
+                include_metadata=True,
+                filter=metadata_filter  # Apply the shield
+            )
+            return results
+        except Exception as e:
+            self.logger.error(f"Semantic query failed: {e}")
+            return []
 
     def _format_result(self, match: Dict, source: str, start_time: float) -> Dict[str, Any]:
         """
