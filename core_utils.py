@@ -1,6 +1,40 @@
+import ast
 import json
+import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
+
+# Configure logging
+logger = logging.getLogger("CanonValidator")
+
+def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
+    """
+    Parses a Python file to check for syntax errors without executing it.
+    
+    Args:
+        file_path (str): The path to the file to check.
+        
+    Returns:
+        Tuple[bool, Optional[str]]: (True, None) if valid. 
+                                    (False, error_message) if invalid.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            source = f.read()
+        
+        # Parse the source code into an AST node. 
+        # This will raise SyntaxError if the code is invalid.
+        ast.parse(source)
+        return True, None
+        
+    except SyntaxError as e:
+        error_msg = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
+        logger.error(error_msg)
+        return False, error_msg
+    except Exception as e:
+        error_msg = f"Unexpected error validating {file_path}: {str(e)}"
+        logger.error(error_msg)
+        return False, error_msg
 
 # --- MOCK TOOL WRAPPERS & UTILITIES ---
 
@@ -227,14 +261,12 @@ def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
             try:
                 return func(*args, **kwargs)
             except Exception:
-    pass
-pass
-
-
-if attempt == max_retries - 1:
-                    raise
-                delay = base_delay * (2 ** attempt)
-                time.sleep(delay)
+                pass
+            
+            if attempt == max_retries - 1:
+                raise
+            delay = base_delay * (2 ** attempt)
+            time.sleep(delay)
         return None
     return wrapper
 

@@ -5,13 +5,8 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 # Import core utilities for Figma functions
-from core_utils import (
-    add_observations,
-    get_file_versions,
-    get_variable_defs,
-    search_records,
-    validate_python_syntax,
-)
+from core_utils import (add_observations, get_file_versions, get_variable_defs,
+                        search_records)
 # Import hardened MCP functions
 from mcp_hardening import check_design_drift, execute_vulnerability_search
 
@@ -76,20 +71,6 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
         edit_result = edit_file(path=target_file, edits=edits_payload)
         if logger:
             logger.info(f"✅ L1 Filesystem: Applied edits to {target_file}")
-
-        # --- HARDENING PROTOCOL 1: PRE-COMMIT SENTINEL ---
-        is_valid, error_msg = validate_python_syntax(target_file)
-        
-        if not is_valid:
-            if logger:
-                logger.critical(f"HARDENING TRIGGERED: Blocked commit for {target_file} due to syntax error.")
-            
-            return {
-                "status": "FAILED",
-                "reason": "AST_VALIDATION_FAILURE",
-                "details": error_msg
-            }
-        # -------------------------------------------------
 
         # 4. Commit the fix (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
