@@ -50,6 +50,9 @@ class TestCVAdvancedAdversarial:
         # Set EBP flag to TRUE in Redis
         handler.redis_client.get.return_value = b"TRUE"
         
+        # Verify the mock is set correctly
+        assert handler.redis_client.get("validator:status:blackout") == b"TRUE"
+        
         # Attempt to execute write tool during blackout
         result = handler.execute_tool('write_file', {
             'path': 'src/test.py',
@@ -57,10 +60,10 @@ class TestCVAdvancedAdversarial:
         })
         
         # L4/EBP Assertion: Must immediately return BlackoutProtocolError
-        assert result.isError, "Should fail during EBP blackout"
+        assert result.isError, f"Should fail during EBP blackout. Got: {result}"
         assert result.toolExecutionError is not None, "Should have execution error"
-        assert "BlackoutProtocolError" in result.toolExecutionError, "Error should be BlackoutProtocolError"
-        assert "EBP blackout active" in result.toolExecutionError, "Error should mention blackout"
+        assert "BlackoutProtocolError" in result.toolExecutionError, f"Error should be BlackoutProtocolError. Got: {result.toolExecutionError}"
+        assert "EBP blackout active" in result.toolExecutionError, f"Error should mention blackout. Got: {result.toolExecutionError}"
         
         # Verify write operation was blocked
         assert result.content == "", "No content should be written"
