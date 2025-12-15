@@ -17,7 +17,36 @@ from typing import Dict, List, Set, Tuple
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from shared.config.exclusions import get_python_files, is_excluded_path
+
+# Simple exclusion functions to avoid import issues
+def is_excluded_path(path: Path) -> bool:
+    """Check if a path should be excluded from indexing."""
+    excluded_dirs = {
+        '.git', '__pycache__', '.pytest_cache', '.venv', 'venv', 
+        'env', '.idea', '.vscode', 'node_modules', '.DS_Store',
+        'archives', 'output', 'chroma_db', '.workflow_state'
+    }
+    
+    # Check if any part of the path is in excluded directories
+    for part in path.parts:
+        if part in excluded_dirs:
+            return True
+    
+    # Check for hidden files (starting with .)
+    if path.name.startswith('.') and path.name not in {'.gitignore', '.env'}:
+        return True
+    
+    return False
+
+def get_python_files(root_dir: Path) -> List[Path]:
+    """Get all Python files that are not excluded."""
+    python_files = []
+    
+    for file_path in root_dir.rglob('*.py'):
+        if not is_excluded_path(file_path):
+            python_files.append(file_path)
+    
+    return python_files
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +82,7 @@ class FileLibrarian:
         logger.info(f"🔍 Starting scan in: {self.root_dir}")
         
         # Get all Python files that are not excluded
-        python_files = get_python_files(str(self.root_dir))
+        python_files = get_python_files(Path(self.root_dir))
         self.stats["total_scanned"] = len(python_files)
         
         logger.info(f"   Found {len(python_files)} Python files to analyze")
@@ -137,7 +166,7 @@ class FileLibrarian:
             "stats": self.stats,
             "files": self.active_files,
             "duplicates_removed": [
-                {"original": orig, "duplicate": dup} 
+                {"original": str(orig), "duplicate": str(dup)} 
                 for orig, dup in self.duplicates
             ]
         }
