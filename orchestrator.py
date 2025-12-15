@@ -147,11 +147,36 @@ def run_agentic_loop(user_goal: str):
         logger.error(f"Runtime Error: {e}")
 
 if __name__ == "__main__":
-    # Example task now integrating the final Web Automation tool
-    task = (
-        "Use the fetch tool to get the content from the job URL 'https://careers.example.com/job/456'. "
-        "Find a 60-minute time slot for an interview next week. "
-        "Navigate the browser to the application page, fill in the 'name' field with 'John Smith' and click the 'Apply' button."
-    )
-    print(f"\nExample Agent Task Defined:\n{task}")
-    # run_agentic_loop(task)
+    # The final strategic task for the L3 Agent
+    user_goal = """
+    I have integrated 9 core MCP Servers (MEMemory, Pinecone, Redis, GitKraken, Figma, Filesystem, Fetch, Playwright, Send Email) into my L3 Agent architecture.
+
+    Perform an **Architectural Strategy Review** of this unified platform to maximize the utility across the three functional engines: **Canon Validator**, **Resume Engine**, and **Outreach Engine**.
+
+    ### INSTRUCTIONS (Sequential Thinking):
+
+    1.  **Analyze the Toolset:** Review the final, comprehensive list of MCP servers and their core capabilities.
+    2.  **Define Core Strategy per Engine:** For each of the three engines, synthesize a single, defining strategic goal that is only possible now that all MCPs are integrated.
+    3.  **Propose Synergistic Use Cases (Required Table):** For each engine, create a table listing three **novel, multi-step use cases** that require the combined use of **at least three distinct MCP Servers**.
+
+    ### Output Format Requirements:
+
+    1.  **Strategic Goal Summary:** A short, bolded sentence defining the new, maximum capability of each engine.
+    2.  **Use Case Table:** A markdown table summarizing the proposals.
+
+    ### The Unified MCP Toolset for Reference:
+    | MCP Server | Category | Core Capability |
+    | :--- | :--- | :--- |
+    | **MEMemory** | L3 Memory | Knowledge Graph (Relationships, User Profile) |
+    | **Pinecone** | L2 RAG/Wisdom | Vector Search (Semantic Templates, Code Patterns) |
+    | **Redis** | L1 Cache/State | High-Speed Cache (Prompt Responses, Session State) |
+    | **GitKraken** | L0 Code Ops | Git & Issue Management (Commit, Checkout, PR, Issues) |
+    | **Figma** | L0 Design Context | Design System Context (Variables, Components, Layout) |
+    | **Filesystem** | L0 Secure I/O | Secure File Read/Write/Edit (Resumes, Reports) |
+    | **Fetch** | L1 Web Content | URL Fetching and Markdown Conversion |
+    | **Playwright** | L1 Automation | Browser Automation (Snapshot, Type, Click) |
+    | **Send Email** | Action Tool | External Communication (Mock) |
+    """
+    
+    # Run the agent with the strategic goal
+    run_agentic_loop(user_goal)

@@ -1,6 +1,7 @@
 import time
 import logging
 import json
+import re
 from typing import Dict, Any, Optional
 from datetime import datetime
 
@@ -124,6 +125,10 @@ If it is valid, return {{ "status": "valid", "reasoning": "Compliant." }}
 """
         decision = self.llm.generate_plan(system_prompt, f"INPUT CODE:\n{content}")
         
+        # Defensive check for None response
+        if not decision:
+            decision = {"status": "rejected", "reasoning": "LLM returned no response"}
+        
         status = decision.get("status", "rejected").lower()
 
         # STAGE 5: AUTO-REPAIR (The Mechanic)
@@ -210,3 +215,107 @@ Rewrite the code to be fully compliant and executable:
             logger.info("✅ Learned new pattern (Updated Pinecone/Redis).")
         except Exception as e:
             logger.error(f"Write-back failed: {e}")
+
+    def validate_design_compliance(self, file_path: str, component_id: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+        """
+        Implements the 'Automated Design System Compliance Check' use case.
+        
+        Checks a file for hardcoded values against Figma tokens, retrieves a canonical fix 
+        from Pinecone, and applies the repair using the Filesystem MCP.
+        """
+        if logger:
+            logger.info(f"🛡️ Starting Design Compliance check for {file_path} (Component: {component_id})...")
+
+        # Extract tools from the tools dictionary
+        read_text_file = tools.get('read_text_file')
+        get_variable_defs = tools.get('get_variable_defs')
+        search_records = tools.get('search_records')
+        edit_file = tools.get('edit_file')
+        string_set = tools.get('string_set')
+
+        # Validate required tools
+        if not all([read_text_file, get_variable_defs, search_records, edit_file, string_set]):
+            return {"status": "error", "message": "Required MCP tools not available"}
+
+        # 1. Read the Code (Filesystem MCP)
+        try:
+            source_code = read_text_file(path=file_path)
+        except Exception as e:
+            return {"status": "error", "message": f"Could not read file {file_path}: {e}"}
+
+        # 2. Get Design Canon (Figma MCP)
+        try:
+            # Retrieves an exhaustive JSON list of approved tokens, including their hex values and variable names
+            token_data_str = get_variable_defs(node_id=component_id)
+            token_data = json.loads(token_data_str)
+        except Exception as e:
+            return {"status": "warning", "message": f"Figma token retrieval failed. Cannot proceed with token check: {e}"}
+
+        # --- Core Validation Logic ---
+        
+        # Use regex to find hardcoded hex color values
+        hex_pattern = r'#[0-9A-Fa-f]{6}\b'
+        hardcoded_hexes = re.findall(hex_pattern, source_code)
+        
+        if not hardcoded_hexes:
+            if logger:
+                logger.info("✅ No hardcoded hex values found. Compliance passed.")
+            # Cache the passing result to skip re-running this expensive check soon
+            string_set(key=f"design_check_hash:{file_path}", value="PASSED_CLEAN")
+            return {"status": "success", "message": "File is design-compliant."}
+
+        # Process first hardcoded hex found
+        hardcoded_hex = hardcoded_hexes[0]
+        
+        # Find matching token
+        token_replacement = None
+        for token in token_data:
+            if token.get('value') == hardcoded_hex:
+                token_replacement = token.get('replacement', token.get('name'))
+                break
+
+        if not token_replacement:
+            return {"status": "warning", "message": f"Hardcoded hex {hardcoded_hex} found but no matching token defined"}
+
+        # 3. Retrieve Fix Pattern (Pinecone MCP)
+        # We ask Pinecone for the canonical code snippet that performs the token replacement
+        fix_query = f"Canonical pattern to replace hardcoded hex {hardcoded_hex} with token '{token_replacement}'"
+        
+        try:
+            # Search the 'code_canon' index for the best match (top_k=1)
+            search_result_str = search_records(query=fix_query, index="code_canon", top_k=1, namespace="code_canon")
+            search_result = json.loads(search_result_str)
+            
+            # Extract the canonical replacement from Pinecone result
+            if search_result and len(search_result) > 0:
+                canonical_replacement = search_result[0].get('metadata', {}).get('replacement_snippet', token_replacement)
+            else:
+                canonical_replacement = token_replacement
+            
+            if logger:
+                logger.info(f"🔎 Found canonical replacement: {canonical_replacement}")
+                
+        except Exception as e:
+            return {"status": "error", "message": f"Pinecone lookup failed. Cannot repair: {e}"}
+            
+        # 4. Apply Repair (Filesystem MCP)
+        # The 'edit_file' tool is used for surgical, context-aware code modification
+        edit_payload = [{
+            "oldText": hardcoded_hex,
+            "newText": canonical_replacement
+        }]
+        
+        try:
+            repair_result = edit_file(path=file_path, edits=edit_payload)
+            
+            # 5. Cache Success (Redis MCP)
+            string_set(key=f"design_check_hash:{file_path}", value="REPAIRED_TOKEN")
+            
+            return {
+                "status": "repaired", 
+                "message": f"Hardcoded value {hardcoded_hex} replaced with token: {canonical_replacement}",
+                "details": repair_result
+            }
+            
+        except Exception as e:
+            return {"status": "error", "message": f"Filesystem repair failed: {e}"}
