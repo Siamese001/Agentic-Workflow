@@ -3,14 +3,21 @@ Connection Manager - Connectivity-Hardened Canon Validator
 
 Robust connectivity handling for RedisVL (L1) and Pinecone (L2)
 with proper error handling and authentication.
+HARDENED: Replaced MockPinecone fallback with Circuit Breaker pattern.
 """
 
 import logging
 import os
 import time
 from typing import Any, Callable, Dict, List, Union
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from dotenv import load_dotenv
+
+# Define a custom exception for the Orchestrator to catch
+class InfrastructureError(Exception):
+    """Raised when a critical infrastructure component is unreachable."""
+    pass
 
 # Load environment variables
 load_dotenv()
@@ -23,9 +30,7 @@ try:
     from redis import Redis
     REDISVL_AVAILABLE = True
 except ImportError:
-    pass
-pass
-REDISVL_AVAILABLE = False
+    REDISVL_AVAILABLE = False
     Redis = None  # Define as None if not available
     SearchIndex = None
     VectorQuery = None
@@ -36,9 +41,7 @@ try:
     from pinecone import Pinecone, ServerlessSpec
     PINECONE_AVAILABLE = True
 except ImportError:
-    pass
-pass
-PINECONE_AVAILABLE = False
+    PINECONE_AVAILABLE = False
     Pinecone = None  # Define as None if not available
     ServerlessSpec = None
     logging.warning(
@@ -51,8 +54,8 @@ except ImportError:
     pass
 pass
 SENTENCE_TRANSFORMERS_AVAILABLE = False
-    logging.warning(
-        "sentence-transformers not installed - using mock embeddings")
+logging.warning(
+    "sentence-transformers not installed - using mock embeddings")
 
 try:
     import openai
@@ -61,7 +64,7 @@ except ImportError:
     pass
 pass
 OPENAI_AVAILABLE = False
-    logging.warning("openai not installed - OpenAI embeddings unavailable")
+logging.warning("openai not installed - OpenAI embeddings unavailable")
 
 logger = logging.getLogger(__name__)
 
@@ -145,41 +148,36 @@ class ConnectionFactory:
         return cls._instances["redis"]
 
     @classmethod
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type(Exception),
+        reraise=True
+    )
     def _create_redis_connection(cls) -> Redis:
         """Create Redis connection with retry logic."""
         if not REDISVL_AVAILABLE:
-            raise ImportError(
+            raise InfrastructureError(
                 "redisvl is required. Install with: pip install redisvl")
 
         # Get configuration
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-        max_retries = int(os.getenv("MAX_RETRIES", "3"))
-
-        for attempt in range(max_retries):
-            try:
-                logger.info(
-                    f"Connecting to Redis (attempt {attempt + 1}/{max_retries})")
-
-                # Create connection
-                conn = Redis.from_url(redis_url)
-
-                # Test connection
-                conn.ping()
-
-                logger.info("✅ Redis connection successful")
-                return conn
-
-            except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Redis connection failed: {e}")
-                if attempt < max_retries - 1:
-                    time.sleep(2 ** attempt)  # Exponential backoff
-                else:
-                    raise ConnectionError(
-                        f"Failed to connect to Redis after {max_retries} attempts")
+        
+        try:
+            logger.info(f"🔌 Connecting to Redis at {redis_url}...")
+            
+            # Create connection
+            conn = Redis.from_url(redis_url, decode_responses=True)
+            
+            # Immediate health check
+            conn.ping()
+            
+            logger.info("✅ Redis connection successful")
+            return conn
+            
+        except Exception as e:
+            logger.error(f"❌ Redis Connection Failed: {e}")
+            raise InfrastructureError(f"Redis Unreachable: {e}")
 
     @classmethod
     def get_pinecone_index(cls, index_name: str = "canon-memory-l2", dimension: int = 384) -> Union[Pinecone, Any]:
@@ -197,16 +195,23 @@ logger.error(f"❌ Redis connection failed: {e}")
         return cls._instances["pinecone"]
 
     @classmethod
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=4, max=10),
+        reraise=True
+    )
     def _create_pinecone_connection(cls) -> Pinecone:
         """Create Pinecone connection with index management."""
-        # Check if Pinecone is available and API key is set
-        if not PINECONE_AVAILABLE or not os.getenv("PINECONE_API_KEY"):
-            logger.warning(
-                "⚠️ Pinecone not available - using mock implementation")
-            return MockPinecone()
+        # [HARDENED 8d] Check if Pinecone is available and API key is set
+        if not PINECONE_AVAILABLE:
+            raise InfrastructureError("Pinecone library not installed. Run `pip install pinecone-client`.")
+        
+        api_key = os.getenv("PINECONE_API_KEY")
+        if not api_key:
+            # Fatal error - Configuration issue, not transient
+            raise InfrastructureError("Critical: PINECONE_API_KEY not found in environment.")
 
         # Get configuration
-        api_key = os.getenv("PINECONE_API_KEY")
         env = os.getenv("PINECONE_ENV", "us-east-1-aws")
         index_name = os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
         dimension = int(os.getenv("PINECONE_DIMENSION", "768"))
@@ -239,19 +244,15 @@ logger.error(f"❌ Redis connection failed: {e}")
             return pc
 
         except Exception as e:
-    pass
-pass
-logger.error(f"❌ Pinecone connection failed: {e}")
-            logger.warning("⚠️ Falling back to mock implementation")
-            return MockPinecone()
+            logger.error(f"❌ Pinecone connection failed: {e}")
+            # [HARDENED 8e] Replaced Mock return with explicit Exception
+            raise InfrastructureError(f"Pinecone Service Unavailable: {e}")
 
     @classmethod
     def get_embedding_function(cls) -> Callable[[str], List[float]]:
         """
         Get embedding function based on configuration.
-
-        Returns:
-            Function that converts text to embedding vector
+        Failures here are usually memory/dependency issues, not network.
         """
         provider = os.getenv("EMBEDDING_PROVIDER", "sentence-transformers")
 
@@ -260,8 +261,8 @@ logger.error(f"❌ Pinecone connection failed: {e}")
         elif provider == "sentence-transformers" and SENTENCE_TRANSFORMERS_AVAILABLE:
             return cls._create_sentence_transformer_function()
         else:
-            logger.warning(f"Using mock embeddings - {provider} not available")
-            return cls._create_mock_embedding_function()
+            # [HARDENED] Fail fast instead of using mock
+            raise InfrastructureError(f"Embedding provider '{provider}' not available or dependencies missing")
 
     @classmethod
     def _create_openai_embedding_function(cls) -> Callable[[str], List[float]]:
@@ -364,9 +365,7 @@ logger.error(f"❌ Pinecone connection failed: {e}")
             logger.info(f"✅ Created Redis index: {schema['index']['name']}")
             return index
         except Exception as e:
-    pass
-pass
-logger.error(f"❌ Failed to create Redis index: {e}")
+            logger.error(f"❌ Failed to create Redis index: {e}")
             raise
 
     @classmethod
@@ -386,9 +385,7 @@ logger.error(f"❌ Failed to create Redis index: {e}")
             results["redis"] = True
             logger.info("✅ Redis connection test passed")
         except Exception as e:
-    pass
-pass
-results["redis"] = False
+            results["redis"] = False
             logger.error(f"❌ Redis connection test failed: {e}")
 
         # Test Pinecone
@@ -398,9 +395,7 @@ results["redis"] = False
             results["pinecone"] = True
             logger.info("✅ Pinecone connection test passed")
         except Exception as e:
-    pass
-pass
-results["pinecone"] = False
+            results["pinecone"] = False
             logger.error(f"❌ Pinecone connection test failed: {e}")
 
         # Test embedding function
@@ -415,9 +410,7 @@ results["pinecone"] = False
                 logger.error(
                     f"❌ Embedding dimension mismatch: {len(test_embedding)}")
         except Exception as e:
-    pass
-pass
-results["embeddings"] = False
+            results["embeddings"] = False
             logger.error(f"❌ Embedding function test failed: {e}")
 
         return results

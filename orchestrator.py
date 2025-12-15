@@ -1,4 +1,7 @@
 import logging
+import os
+import subprocess
+import sys
 
 from action_registry import ActionRegistry
 from canon_validator import CanonValidator
@@ -11,9 +14,73 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger("Orchestrator")
 
 
+def get_latest_code_mtime(root_dir: str, exclude_dirs: list = None) -> float:
+    """
+    Recursively finds the latest modification timestamp among all Python files.
+    Skips virtual environments and cache directories to prevent false positives.
+    """
+    if exclude_dirs is None:
+        exclude_dirs = {'.git', '__pycache__', 'venv', 'env', '.idea', '.vscode'}
+        
+    latest_mtime = 0.0
+    
+    for root, dirs, files in os.walk(root_dir):
+        # Modify dirs in-place to skip excluded directories during traversal
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        
+        for file in files:
+            if file.endswith('.py'):
+                file_path = os.path.join(root, file)
+                try:
+                    mtime = os.path.getmtime(file_path)
+                    if mtime > latest_mtime:
+                        latest_mtime = mtime
+                except OSError:
+                    continue
+                    
+    return latest_mtime
+
+def ensure_manifest_freshness(manifest_path: str, root_dir: str = ".") -> bool:
+    """
+    Hardened Pre-Flight Check [4a]: 
+    Ensures manifest exists AND is newer than the latest code change.
+    Returns True if fresh, False if stale (triggering Phase A).
+    """
+    # 1. Existence Check
+    if not os.path.exists(manifest_path):
+        logger.warning(f"🚫 Manifest missing at {manifest_path}. Triggering Librarian...")
+        return False
+        
+    # 2. Freshness Check (Time-Based Drift Detection)
+    manifest_mtime = os.path.getmtime(manifest_path)
+    latest_code_mtime = get_latest_code_mtime(root_dir)
+    
+    # Add a small buffer (e.g., 1 second) to handle file system resolution differences
+    if latest_code_mtime > (manifest_mtime + 1.0):
+        time_diff = latest_code_mtime - manifest_mtime
+        logger.warning(f"⚠️  Code drift detected ({time_diff:.2f}s outdated). Triggering Librarian...")
+        return False
+        
+    logger.info("✅ Manifest is fresh. Proceeding to Phase B runtime.")
+    return True
+
+
 def run_agentic_loop(user_goal: str):
     # print(f"\n🚀 SUBATOMIC AGENT STARTING: {user_goal}")  # [Security Fix]
     # print("="*60)  # [Security Fix]
+
+    manifest_path = "active_manifest.json"
+    
+    # [HARDENED 4a & 4b] Check freshness instead of just existence
+    if not ensure_manifest_freshness(manifest_path):
+        # Trigger Phase A: Librarian Boot Sequence
+        try:
+            print("🔄 Re-indexing filesystem (Phase A)...")
+            subprocess.run(["python", "apps_rg/L0_maintenance/deduplicate_and_index.py"], check=True)
+            print("✅ Sanitization complete.")
+        except subprocess.CalledProcessError as e:
+            logger.error(f"❌ Librarian failed to run: {e}")
+            return # Stop execution if sanitization fails
 
     # 1. INITIALIZE COMPONENTS
     validator = CanonValidator()
@@ -83,21 +150,13 @@ def run_agentic_loop(user_goal: str):
     try:
         raw_code = cognitive.think(user_goal, toolbox_desc)
     except TimeoutError as e:
-    pass
-pass
-
-
-logger.error(f"❌ Sequential thinking timed out: {e}")
+        logger.error(f"❌ Sequential thinking timed out: {e}")
         return
     except RuntimeError as e:
-    pass
-pass
-logger.error(f"❌ Sequential thinking failed: {e}")
+        logger.error(f"❌ Sequential thinking failed: {e}")
         return
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
+        logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
         return
 
     if not raw_code:
@@ -152,15 +211,14 @@ logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
                 class MockLogger:
                     # def __call__(self, msg): print(f"[LOG] {msg}")  # [Security Fix]
                     # def info(self, msg): print(f"[LOG] {msg}")  # [Security Fix]
+                    pass
                 kwargs["logger"] = MockLogger()
 
             res = local_scope[func_name](**kwargs)
             # print(f"✅ RESULT: {res}")  # [Security Fix]
 
     except Exception as e:
-    pass
-pass
-logger.error(f"Runtime Error: {e}")
+        logger.error(f"Runtime Error: {e}")
 
 
 if __name__ == "__main__":
