@@ -57,8 +57,7 @@ class TestEBP003:
         }]
         
         # Log critical event
-        with patch('canon_validator.add_observations', side_effect=mock_add_observations):
-            result = mock_add_observations(critical_obs)
+        result = mock_add_observations(critical_obs)
         
         # Verify logging
         assert result["status"] == "success"

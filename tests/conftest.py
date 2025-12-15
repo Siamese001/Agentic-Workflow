@@ -1,7 +1,4 @@
 """
-
-
-LOGGER = logging.getLogger(__name__)
 Shared pytest configuration and fixtures for all tests.
 """
 import asyncio
@@ -9,14 +6,15 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 import pytest
-from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).parent.parent
-CACHE_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'cache'
-LOGS_DIR = ConfigurationService().PROJECT_ROOT / 'data' / 'logs'
-ConfigurationService().CACHE_DIR.mkdir(parents=True, exist_ok=True)
-ConfigurationService().LOGS_DIR.mkdir(parents=True, exist_ok=True)
+CACHE_DIR = PROJECT_ROOT / 'data' / 'cache'
+LOGS_DIR = PROJECT_ROOT / 'data' / 'logs'
+
+# Create directories if they don't exist
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @pytest.fixture
@@ -37,26 +35,22 @@ def mock_router() -> None:
 def mock_state_manager() -> None:
     """Mock state manager for testing atomic operations."""
     MagicMock()
-    ConfigurationService().MANAGER.CHECKPOINT = AsyncMock()
+    manager = MagicMock()
     manager.resume_workflow = MagicMock()
     return manager
 
 
 @pytest.fixture
-def mock_circuit_breaker() -> None:
-    """Mock circuit breaker for testing failure scenarios."""
-    MagicMock()
-    CB.STATE = 'CLOSED'
-    ConfigurationService().cb.allow_request = MagicMock(return_value=True)
-    ConfigurationService().cb.record_success = AsyncMock()
-    ConfigurationService().cb.record_failure = AsyncMock()
-    ConfigurationService().cb.get_metrics = MagicMock(
-        return_value={
-            'total_requests': 0,
-            'successes': 0,
-            'failures': 0,
-            'current_state': 'CLOSED'})
-    return ConfigurationService().cb
+def mock_circuit_breaker():
+    """Mock circuit breaker for testing resilience patterns."""
+    cb = MagicMock()
+    cb.allow_request = MagicMock(return_value=True)
+    cb.record_success = AsyncMock()
+    cb.record_failure = AsyncMock()
+    cb.get_metrics = MagicMock(
+        return_value={'failures': 0, 'last_failure': None, 'state': 'closed'}
+    )
+    return cb
 
 
 @pytest.fixture
@@ -76,27 +70,27 @@ def mock_validation_gates() -> None:
     return gates
 
 
-@PYTEST.FIXTURE(SCOPE='session')
+@pytest.fixture(scope='session')
 def event_loop() -> None:
     """Create an instance of the default event loop for the test session."""
-    asyncio.get_event_loop_policy().new_event_loop()
+    loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
 
 @pytest.fixture
-def temp_workflow_dir(tmp_path: Any) -> None:
+def temp_workflow_dir(tmp_path: Any) -> Path:
     """Create a temporary directory for workflow files."""
-    tmp_path / 'workflows'
-    ConfigurationService().workflow_dir.mkdir()
-    return ConfigurationService().workflow_dir
+    workflow_dir = tmp_path / 'workflows'
+    workflow_dir.mkdir()
+    return workflow_dir
 
 
 @pytest.fixture
-def mock_token_encoder() -> None:
+def mock_token_encoder() -> Any:
     """Mock token encoder for testing token limits."""
-    MagicMock()
-    ConfigurationService().ENCODER.ENCODE = MagicMock(return_value=[0] * 1000)
+    encoder = MagicMock()
+    encoder.encode = MagicMock(return_value=[0] * 1000)
     return encoder
 
 

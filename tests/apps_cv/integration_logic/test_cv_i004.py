@@ -89,6 +89,7 @@ class TestCVI004:
         
         # Simulate atomic transaction completion
         def mock_atomic_commit(tx_id, operations):
+            """Mock atomic commit with logging"""
             # Log single atomic commit entry
             commit_entry = {
                 "entityName": f"redis_transaction:{tx_id}",
@@ -99,12 +100,11 @@ class TestCVI004:
             mock_add_observations([commit_entry])
             return {"status": "success", "tx_id": tx_id}
         
-        with patch('canon_validator.add_observations', side_effect=mock_add_observations):
-            # Execute atomic transaction
-            result = mock_atomic_commit("tx_12345", [
-                ("SET", "key1", "value1"),
-                ("SET", "key2", "value2")
-            ])
+        # Execute atomic transaction
+        result = mock_atomic_commit("tx_12345", [
+            ("SET", "key1", "value1"),
+            ("SET", "key2", "value2")
+        ])
         
         # Verify single log entry
         assert len(logged_entries) == 1

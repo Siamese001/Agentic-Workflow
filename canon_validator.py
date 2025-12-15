@@ -63,14 +63,9 @@ class CanonValidator:
                         uses_only_allowed = False
                         break
         
-        # If code only uses allowed tools for execution, mark as valid
+        # If code only uses allowed tools for execution, proceed to cache check
         if uses_only_allowed:
-            logger.info("✅ Code only uses whitelisted tools - skipping validation")
-            return {
-                "status": "valid",
-                "reasoning": "Code only uses whitelisted Action Registry tools",
-                "content": content
-            }
+            logger.info("ℹ️ Code uses whitelisted tools. Proceeding to L1 cache check.")
 
         # STAGE 1: EMBEDDING
         try:
