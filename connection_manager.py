@@ -261,7 +261,8 @@ class ConnectionFactory:
     @classmethod
     def _create_sentence_transformer_function(cls) -> Callable[[str], List[float]]:
         """Create sentence transformer embedding function."""
-        model_name = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+        # Use the same model as Redis SemanticCache (768-dim)
+        model_name = os.getenv("EMBEDDING_MODEL", "redis/langcache-embed-v1")
         
         logger.info(f"Loading sentence transformer model: {model_name}")
         model = SentenceTransformer(model_name)
