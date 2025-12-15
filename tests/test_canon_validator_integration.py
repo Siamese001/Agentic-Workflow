@@ -6,17 +6,20 @@ Tests the complete workflow across all layers (L1-L5) with real interactions
 between components.
 """
 
-from canon_validator_engine import execute_cost_governed_vulnerability_check
-from canon_validator import CanonValidator
-import pytest
 import json
-import time
-import tempfile
 import os
-from unittest.mock import Mock, patch
 
 # Import the validator
 import sys
+import tempfile
+import time
+from unittest.mock import Mock, patch
+
+import pytest
+
+from canon_validator import CanonValidator
+from canon_validator_engine import execute_cost_governed_vulnerability_check
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
@@ -178,7 +181,8 @@ def vulnerable_function():
                     )
                     results.append(result)
             except Exception as e:
-                results.append({"status": "error", "message": str(e)})
+    pass
+results.append({"status": "error", "message": str(e)})
 
         # Verify cost governance worked
         assert brave_calls == quota_limit + 1  # One call over limit
@@ -223,8 +227,9 @@ def vulnerable_function():
             mock_redis.set("audit:123", "COMPLETED")
             mock_redis.exec()
             assert "ROLLBACK" not in transaction_state
-        except:
-            assert False, "Transaction should have succeeded"
+except Exception:
+    pass
+assert False, "Transaction should have succeeded"
 
         # Reset and test failed transaction
         transaction_state.clear()
@@ -235,7 +240,8 @@ def vulnerable_function():
             mock_redis.exec()
             assert False, "Should have raised exception"
         except Exception:
-            assert "ROLLBACK" in transaction_state
+    pass
+assert "ROLLBACK" in transaction_state
 
     def test_cross_layer_error_propagation(self, mock_validator_with_all_dependencies):
         """Test error handling across all layers"""
@@ -290,7 +296,8 @@ def vulnerable_function():
                 result = validator.validate(f"code_{workflow_id}")
                 results.append((workflow_id, result))
             except Exception as e:
-                errors.append((workflow_id, e))
+    pass
+errors.append((workflow_id, e))
 
         # Run 20 concurrent workflows
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -369,7 +376,8 @@ def load_user_data safely(data: str) -> Optional[Dict[str, Any]]:
     try:
         return json.loads(data)
     except json.JSONDecodeError:
-        return None
+    pass
+return None
 
 def execute_command safely(cmd: str) -> Optional[str]:
     \"\"\"Execute command safely using subprocess.\"\"\"
@@ -377,7 +385,8 @@ def execute_command safely(cmd: str) -> Optional[str]:
         result = subprocess.run(cmd.split(), capture_output=True, text=True)
         return result.stdout
     except Exception:
-        return None
+    pass
+return None
 """
             }
         ]

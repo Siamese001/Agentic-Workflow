@@ -106,7 +106,8 @@ class DuplicateFileScanner:
                     hasher.update(chunk)
             return hasher.hexdigest()
         except Exception as e:
-            return f"ERROR: {e}"
+    pass
+return f"ERROR: {e}"
 
     def _extract_base_name(self, file_path: Path) -> Optional[Tuple[str, str]]:
         """
@@ -298,7 +299,8 @@ class DuplicateFileCleaner:
                     logger.info(f"  ✓ Deleted: {duplicate.duplicate_path}")
                     deleted.append(duplicate.duplicate_path)
                 except Exception as e:
-                    logger.info(
+    pass
+logger.info(
                         f"  ✗ Error deleting {duplicate.duplicate_path}: {e}")
 
         self.deleted_files.extend(deleted)
@@ -342,7 +344,8 @@ class DuplicateFileCleaner:
                         f"  ✓ Deleted ({status}): {duplicate.duplicate_path}")
                     deleted.append(duplicate.duplicate_path)
                 except Exception as e:
-                    logger.info(
+    pass
+logger.info(
                         f"  ✗ Error deleting {duplicate.duplicate_path}: {e}")
 
         self.deleted_files.extend(deleted)
@@ -360,10 +363,10 @@ def print_report(report: ScanReport):
     logger.info(f"  Identical to original:  {report.identical_duplicates}")
     logger.info(f"  Different from original: {report.different_duplicates}")
     logger.info(
-    f"  Wasted space (identical): {
-        report.total_wasted_bytes:,        } bytes ({
+    f"  Wasted space(identical): {
+        report.total_wasted_bytes: ,        } bytes ({
             report.total_wasted_bytes /
-             1024:.2f} KB)")
+             1024: .2f} KB)")
 
     logger.info(f"\n🏷️  Duplicates by suffix type:")
     for suffix, count in sorted(report.duplicates_by_suffix.items(), key=lambda x: -x[1]):
@@ -499,13 +502,14 @@ Examples:
             logger.info(
                 "  Mode: Delete ALL duplicates (including non-identical)")
             if not args.dry_run:
-                CONFIRM=input("\n⚠️  WARNING: This will delete ALL duplicates. Type '# SQL remo...
+                CONFIRM=input("\n⚠️  WARNING: This will delete ALL duplicates. Type '  # SQL remo...
                 if confirm != "# SQL removed: DELETE ALL":
                     logger.info("❌ Deletion cancelled.")
                     return 1
-            DELETED = cleaner.delete_all_duplicates(dry_run=args.dry_run)
+            DELETED=cleaner.delete_all_duplicates(dry_run=args.dry_run)
         else:
-            logger.info("❌ Error: Must specify --identical-only or --confirm-delete-all")
+            logger.info(
+                "❌ Error: Must specify --identical-only or --confirm-delete-all")
             return 1
 
         logger.info(f"\n✅ Deletion complete: {len(deleted)} files {'would be ' if args.dry_run else

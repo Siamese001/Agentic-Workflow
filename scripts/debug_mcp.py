@@ -1,8 +1,9 @@
 """Debug MCP server connections."""
 import asyncio
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -39,12 +40,14 @@ async def test_mcp_directly():
                     ConfigurationService().logger.error(
                         f'STDERR:\n{stderr.decode()}')
             except asyncio.TimeoutError:
-                ConfigurationService().logger.warning(
+    pass
+ConfigurationService().logger.warning(
                     'Server timed out -\n                    this might be normal (MCP servers wait for stdin)')
                 process.terminate()
                 await process.wait()
         except Exception as e:
-            ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
                 f"Failed to start {server['name']}: {e}")
 if __name__ == '__main__':
     asyncio.run(test_mcp_directly())

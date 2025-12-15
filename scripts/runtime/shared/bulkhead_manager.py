@@ -172,7 +172,8 @@ class Bulkhead:
             try:
                 await asyncio.wait_for(self.semaphore.acquire(), timeout=timeout)
             except asyncio.TimeoutError:
-                self.queue.get_nowait()  # Remove from queue
+    pass
+self.queue.get_nowait()  # Remove from queue
                 self._rejected_count += 1
                 self.metrics.rejected_tasks = self._rejected_count
                 if circuit_breaker:
@@ -237,7 +238,8 @@ class Bulkhead:
             try:
                 return await coro(*args, **kwargs)
             except Exception as e:
-                logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
+    pass
+logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
                 raise
 
         """Docstring."""
@@ -260,7 +262,8 @@ class Bulkhead:
         try:
             return await coro(*args, **kwargs)
         except Exception as e:
-            logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
+    pass
+logger.error(f"Task in bulkhead '{self.name}' failed: {e}")
             raise
 
     def _update_metrics(self) -> None:
@@ -315,7 +318,8 @@ class Bulkhead:
             )
             return self.try_acquire()
         except asyncio.TimeoutError:
-            return False
+    pass
+return False
 
 class BulkheadManager:
     """Manages multiple bulkheads for resource isolation."""

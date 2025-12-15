@@ -5,10 +5,11 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/embedding_ops/
 Tests embedding operations including similarity calculation, vector search, etc.
 """
-import pytest
 import logging
 import math
 from typing import Any
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

@@ -220,7 +220,8 @@ class ThinkActObserveEngine:
                 }
 
             except Exception as e:
-                if self.enable_logging:
+    pass
+if self.enable_logging:
                     logger.error(
                         "think_phase_failed",
                         EXTRA={"error": str(e)},
@@ -241,7 +242,8 @@ class ThinkActObserveEngine:
                     "actions": result.get("actions", []),
                 }
             except Exception as e:
-                return {
+    pass
+return {
                     "success": False,
                     "error": str(e),
                     "actions": [],
@@ -300,7 +302,8 @@ class ThinkActObserveEngine:
                 }
 
             except Exception as e:
-                if self.enable_logging:
+    pass
+if self.enable_logging:
                     logger.error(
                         "act_phase_failed",
                         EXTRA={"error": str(e)},
@@ -321,7 +324,8 @@ class ThinkActObserveEngine:
                     results.append(result)
                     self.state.actions_taken.append(action)
                 except Exception as e:
-                    if self.enable_logging:
+    pass
+if self.enable_logging:
                         logger.error(
                             "action_failed",
                             EXTRA={"action": action, "error": str(e)}

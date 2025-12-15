@@ -262,20 +262,21 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 PASSED=False,
                 SEVERITY='BLOCK',
                 MESSAGE=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs,
-                    got {len(paragraphs)}",
+                got {len(paragraphs)}",
 
-                DETAILS={'expected': self.config.paragraph_count, 'actual': len(paragraphs)}
+                DETAILS={'expected': self.config.paragraph_count,
+                         'actual': len(paragraphs)}
             )
 
         VIOLATIONS = []
         for i, para in enumerate(paragraphs, 1):
             word_count = len(para.split())
             if word_count < self.config.min_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words (min {self.config.min_words_pe
-    r_paragraph})")
+                violations.append(f"Paragraph {i}: {word_count} words(min {self.config.min_words_pe
+                                                                           r_paragraph})")
             elif word_count > self.config.max_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words (max {self.config.max_words_pe
-    r_paragraph})")
+                violations.append(f"Paragraph {i}: {word_count} words(max {self.config.max_words_pe
+                                                                           r_paragraph})")
 
         if violations:
             return ValidationResult(
@@ -343,8 +344,8 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 gate_id='VG_COMPANY_SPECIFICS',
                 PASSED=True,
                 SEVERITY='INFO',
-                MESSAGE=f"Company specifics satisfied: {len(company_specifics)} details (min {self.c
-                    onfig.min_company_specifics})",
+                MESSAGE=f"Company specifics satisfied: {len(company_specifics)} details(min {self.c
+                                                                                             onfig.min_company_specifics})",
 
 
                 SIGNATURE=f"SPECIFICS:OK:{len(company_specifics)}",
@@ -358,12 +359,12 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             gate_id='VG_COMPANY_SPECIFICS',
             PASSED=False,
             SEVERITY='BLOCK',
-            MESSAGE=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (mi
-                n {self.config.min_company_specifics})",
+            MESSAGE=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details(mi
+                                                                                                 n {self.config.min_company_specifics})",
 
 
             DETAILS={'count': len(company_specifics),
-                'min_required': self.config.min_company_specifics}
+                     'min_required': self.config.min_company_specifics}
         )
 
     def _execute_find_replace_test(
@@ -382,9 +383,11 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         for specific in company_specifics:
             test_letter = test_letter.replace(specific.detail, '[COMPANY]')
 
-        generic_ratio = test_letter.count('[COMPANY]') / max(len(cover_letter.split()), 1)
+        generic_ratio = test_letter.count(
+            '[COMPANY]') / max(len(cover_letter.split()), 1)
 
         return generic_ratio > 0.02
+
 
 def create_specificity_prose_engine(
     """Docstring."""

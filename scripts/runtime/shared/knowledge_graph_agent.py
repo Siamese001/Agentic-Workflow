@@ -55,7 +55,8 @@ class KnowledgeGraphAgent:
             # Use community-weighted context for better results
             return self.query_community_context(entity, limit)
         except Exception as e:
-            logger.error(f"Error querying context: {str(e)}")
+    pass
+logger.error(f"Error querying context: {str(e)}")
             return GraphContext()
 
     def query_community_context(self, entity: str, limit: int = 10) -> GraphContext:
@@ -122,7 +123,8 @@ class KnowledgeGraphAgent:
                 )
 
         except Exception as e:
-            logger.error(f"Error querying community context: {str(e)}")
+    pass
+logger.error(f"Error querying community context: {str(e)}")
             # Fallback to simple hop query if GDS not available
             return self._query_context_fallback(entity, limit)
 
@@ -170,7 +172,8 @@ class KnowledgeGraphAgent:
                 )
 
         except Exception as e:
-            logger.error(f"Error in fallback context query: {str(e)}")
+    pass
+logger.error(f"Error in fallback context query: {str(e)}")
             return GraphContext()
 
         """Docstring."""
@@ -198,7 +201,8 @@ class KnowledgeGraphAgent:
             # Use safe version with entity disambiguation
             return self.store_relationship_safe(subject, relation, object, confidence, source)
         except Exception as e:
-            logger.error(f"Error storing relationship: {str(e)}")
+    pass
+logger.error(f"Error storing relationship: {str(e)}")
             return False
 
         """Docstring."""
@@ -264,7 +268,8 @@ class KnowledgeGraphAgent:
                 return True
 
         except Exception as e:
-            logger.error(f"Error storing safe relationship: {str(e)}")
+    pass
+logger.error(f"Error storing safe relationship: {str(e)}")
             return False
 
     def get_neighborhood(self, node_id: str, hops: int = 2) -> GraphContext:
@@ -327,7 +332,8 @@ class KnowledgeGraphAgent:
                 return GraphContext()
 
         except Exception as e:
-            logger.error(f"Error getting neighborhood: {str(e)}")
+    pass
+logger.error(f"Error getting neighborhood: {str(e)}")
             return GraphContext()
 
         """Docstring."""
@@ -391,7 +397,8 @@ class KnowledgeGraphAgent:
                 return True
 
         except Exception as e:
-            logger.error(f"Error creating reasoning step: {str(e)}")
+    pass
+logger.error(f"Error creating reasoning step: {str(e)}")
             return False
 
         """Docstring."""
@@ -446,7 +453,8 @@ class KnowledgeGraphAgent:
                 return decisions
 
         except Exception as e:
-            logger.error(f"Error finding similar decisions: {str(e)}")
+    pass
+logger.error(f"Error finding similar decisions: {str(e)}")
             return []
 
         """Docstring."""
@@ -507,7 +515,8 @@ class KnowledgeGraphAgent:
                 )
 
         except Exception as e:
-            logger.error(f"Error in semantic search: {str(e)}")
+    pass
+logger.error(f"Error in semantic search: {str(e)}")
             return GraphContext()
 
     def _setup_indexes(self):
@@ -559,7 +568,8 @@ class KnowledgeGraphAgent:
                 logger.info("Indexes and constraints setup complete")
 
         except Exception as e:
-            logger.warning(f"Error setting up indexes: {str(e)}")
+    pass
+logger.warning(f"Error setting up indexes: {str(e)}")
 
     def _ensure_graph_projection(self):
             """Ensure GDS graph projection exists for community detection."""
@@ -592,7 +602,8 @@ class KnowledgeGraphAgent:
                     logger.info("Created GDS graph projection 'agentGraph'")
 
         except Exception as e:
-            logger.warning(f"Error ensuring graph projection: {str(e)}")
+    pass
+logger.warning(f"Error ensuring graph projection: {str(e)}")
 
         """Docstring."""
     def find_semantic_match(
@@ -634,7 +645,8 @@ class KnowledgeGraphAgent:
                 return record["name"] if record else None
 
         except Exception as e:
-            logger.error(f"Error finding semantic match: {str(e)}")
+    pass
+logger.error(f"Error finding semantic match: {str(e)}")
             return None
 
     def _get_embedding(self, text: str) -> List[float]:
@@ -712,7 +724,8 @@ class KnowledgeGraphAgent:
                 return stats
 
         except Exception as e:
-            logger.error(f"Error pruning graph: {str(e)}")
+    pass
+logger.error(f"Error pruning graph: {str(e)}")
             return {"relationships_deleted": 0, "entities_deleted": 0}
 
     def close(self):

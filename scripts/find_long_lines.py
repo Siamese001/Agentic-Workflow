@@ -1,8 +1,9 @@
 """Find all lines longer than 100 characters."""
 import logging
 import os
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -30,7 +31,7 @@ def find_long_lines() -> None:
                                     f'  {ConfigurationService().line[:150]}...')
                                 ConfigurationService().logger.info('')
                 except Exception:
-                    ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
         f'\nTotal violations: {len(ConfigurationService().violations)}')
 

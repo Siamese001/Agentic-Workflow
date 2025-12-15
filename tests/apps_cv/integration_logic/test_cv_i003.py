@@ -4,9 +4,11 @@ CV-I-003: Filesystem Dependency Check
 Integration test for multi-layer flow verification
 """
 
-import pytest
-from unittest.mock import Mock
 import os
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -114,7 +116,8 @@ class TestCVI003:
             mock_failing_preflight()
             assert False, "Should have failed on pre-flight"
         except Exception as e:
-            assert "L1_FS_MISSING" in str(e)
+    pass
+assert "L1_FS_MISSING" in str(e)
 
         # Verify LLM was never called
         assert len(llm_calls) == 0

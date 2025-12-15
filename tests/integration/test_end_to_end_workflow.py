@@ -12,9 +12,10 @@ Tests complete workflow execution with:
 Phase 1C - SDK Integration Layer
 """
 
-import pytest
 import logging
 import os
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,8 @@ class TestWorkflowContext:
                 VALUE = context.get_from_cache("test_key")
                 assert VALUE == "test_value"
         except Exception as e:
-            pytest.skip(f"Redis not available: {e}")
+    pass
+pytest.skip(f"Redis not available: {e}")
 
     def test_workflow_context_with_vector_store(self):
             """Test workflow context with vector store."""
@@ -101,7 +103,8 @@ class TestWorkflowContext:
 
             assert context.vector_store is not None
         except Exception as e:
-            pytest.skip(f"Vector store not available: {e}")
+    pass
+pytest.skip(f"Vector store not available: {e}")
 
 class TestAgentExecution:
     """Test agent execution with LLM providers."""
@@ -298,7 +301,8 @@ class TestCachingIntegration:
 
                 assert RETRIEVED == test_data
         except Exception as e:
-            pytest.skip(f"Redis not available: {e}")
+    pass
+pytest.skip(f"Redis not available: {e}")
 
 class TestVectorStoreIntegration:
     """Test vector store integration in workflows."""
@@ -335,7 +339,8 @@ class TestVectorStoreIntegration:
 
                 assert results is not None
         except Exception as e:
-            pytest.skip(f"Vector store not available: {e}")
+    pass
+pytest.skip(f"Vector store not available: {e}")
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

@@ -13,9 +13,12 @@ from typing import Any, Dict, List, Optional
 from redisvl.query import VectorQuery
 
 from connection_manager import ConnectionFactory
-from schemas_connectivity import (CanonEntry, CanonQuery,
-                                  generate_ast_structure,
-                                  validate_ast_integrity)
+from schemas_connectivity import (
+    CanonEntry,
+    CanonQuery,
+    generate_ast_structure,
+    validate_ast_integrity,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -195,7 +198,11 @@ class CanonValidator:
             logger.info(f"✅ Stored new pattern in Redis: {pattern_id}")
 
         except Exception as e:
-            logger.error(f"Failed to store in Redis: {e}")
+    pass
+pass
+
+
+logger.error(f"Failed to store in Redis: {e}")
 
         # Store in Pinecone (L2)
         try:
@@ -214,7 +221,9 @@ class CanonValidator:
             index.upsert(pinecone_data)
             logger.info(f"✅ Stored new pattern in Pinecone: {pattern_id}")
         except Exception as e:
-            logger.error(f"Failed to store in Pinecone: {e}")
+    pass
+pass
+logger.error(f"Failed to store in Pinecone: {e}")
 
         result = {
             "is_valid": True,  # New code is assumed valid
@@ -282,7 +291,9 @@ class CanonValidator:
             return entries
 
         except Exception as e:
-            logger.error(f"Redis query failed: {e}")
+    pass
+pass
+logger.error(f"Redis query failed: {e}")
             return []
 
     def _query_pinecone(self, embedding: List[float], query: CanonQuery) -> List[Dict[str, Any]]:
@@ -329,7 +340,9 @@ class CanonValidator:
             return entries
 
         except Exception as e:
-            logger.error(f"Pinecone query failed: {e}")
+    pass
+pass
+logger.error(f"Pinecone query failed: {e}")
             return []
 
     def _validate_ast_match(
@@ -378,9 +391,10 @@ class CanonValidator:
             union = len(types1.union(types2))
 
             return intersection / union if union > 0 else 0.0
-
-        except:
-            return 0.0
+except Exception:
+    pass
+pass
+return 0.0
 
     def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
         """Generate recommendation based on similarity and success rate."""
@@ -417,7 +431,9 @@ class CanonValidator:
             logger.info(f"Promoted pattern {entry.id} to L1")
 
         except Exception as e:
-            logger.error(f"Failed to promote pattern to L1: {e}")
+    pass
+pass
+logger.error(f"Failed to promote pattern to L1: {e}")
 
     def update_learning(self, entry_id: str, outcome: bool, error_trace: Optional[str] = None):
         """
@@ -459,7 +475,9 @@ class CanonValidator:
                 f"Updated learning for {entry_id}: {'SUCCESS' if outcome else 'FAILURE'}")
 
         except Exception as e:
-            logger.error(f"Failed to update learning: {e}")
+    pass
+pass
+logger.error(f"Failed to update learning: {e}")
 
     def _update_pinecone_learning(self, entry_id: str, outcome: bool, error_trace: Optional[str]):
         """Update learning in Pinecone when not in Redis."""
@@ -491,7 +509,9 @@ class CanonValidator:
                 logger.info(f"Updated Pinecone learning for {entry_id}")
 
         except Exception as e:
-            logger.error(f"Failed to update Pinecone learning: {e}")
+    pass
+pass
+logger.error(f"Failed to update Pinecone learning: {e}")
 
     def _promote_to_l2(self, entry_id: str, fields: Dict[str, Any]):
         """Promote a successful pattern to L2."""
@@ -509,7 +529,9 @@ class CanonValidator:
             logger.info(f"Promoted pattern {entry_id} to L2")
 
         except Exception as e:
-            logger.error(f"Failed to promote to L2: {e}")
+    pass
+pass
+logger.error(f"Failed to promote to L2: {e}")
 
     def get_stats(self) -> Dict[str, Any]:
         """Get Canon validator statistics."""
@@ -532,7 +554,9 @@ class CanonValidator:
                 "keyspace_misses": redis_info.get("keyspace_misses", 0)
             }
         except Exception as e:
-            logger.error(f"Failed to get Redis stats: {e}")
+    pass
+pass
+logger.error(f"Failed to get Redis stats: {e}")
 
         # Pinecone stats
         try:
@@ -544,7 +568,9 @@ class CanonValidator:
                 "index_fullness": index_stats.get("index_fullness", 0)
             }
         except Exception as e:
-            logger.error(f"Failed to get Pinecone stats: {e}")
+    pass
+pass
+logger.error(f"Failed to get Pinecone stats: {e}")
 
         return stats
 

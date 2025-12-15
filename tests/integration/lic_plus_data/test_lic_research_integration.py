@@ -1,8 +1,9 @@
 """Integration tests for LIC research + data layer."""
 
-import pytest
 import logging
 from typing import Any
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

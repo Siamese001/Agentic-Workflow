@@ -1,8 +1,9 @@
 """Unit tests for L4_memory/P3_aggregate - memory aggregation operations."""
 import logging
 from typing import Dict, List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

@@ -218,8 +218,7 @@ class TestPipelineErrorHandling:
         try:
             raise ValueError("Step processing failed")
         except ValueError as e:
-
-        assert "failed" in step.error.lower()
+assert "failed" in step.error.lower()
 
     def test_pipeline_continues_on_non_critical_failure(self):
         """Pipeline continues on non-critical step failure."""

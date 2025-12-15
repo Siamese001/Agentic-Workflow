@@ -1,5 +1,6 @@
 """Types and models for rg_provenance_tracker."""
 import logging
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

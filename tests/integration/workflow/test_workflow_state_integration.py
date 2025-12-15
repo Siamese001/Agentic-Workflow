@@ -157,7 +157,8 @@ class TestWorkflowOrchestrationIntegration:
         try:
             raise ValueError("Step failed")
         except ValueError as e:
-            WORKFLOW.STATE = WorkflowState.FAILED
+    pass
+WORKFLOW.STATE = WorkflowState.FAILED
             WORKFLOW.DATA["ERROR"] = str(e)
 
         assert WORKFLOW.STATE == WorkflowState.FAILED

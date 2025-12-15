@@ -226,8 +226,12 @@ def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
         for attempt in range(max_retries):
             try:
                 return func(*args, **kwargs)
-            except Exception as e:
-                if attempt == max_retries - 1:
+            except Exception:
+    pass
+pass
+
+
+if attempt == max_retries - 1:
                     raise
                 delay = base_delay * (2 ** attempt)
                 time.sleep(delay)

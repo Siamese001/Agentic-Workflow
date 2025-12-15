@@ -504,7 +504,8 @@ class MessagePlanner:
                     "confidence_score": plan.confidence_score
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+    pass
+logger.debug(f"Failed to record telemetry: {e}")
 
     def get_message_summary(self, plan: MessagePlan) -> Dict[str, object]:
         """Get a summary of the message plan for debugging/telemetry."""

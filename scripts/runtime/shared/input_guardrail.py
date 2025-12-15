@@ -267,7 +267,8 @@ class InputGuardrail:
             return result
 
         except Exception as e:
-            logger.error(f"Error during input scan: {e}")
+    pass
+logger.error(f"Error during input scan: {e}")
             # Fail safe - allow but warn
             return GuardResult(
                 ACTION=GuardAction.WARN,
@@ -449,7 +450,8 @@ class InputGuardrail:
                         return (True, f"Base64 payload with injection pattern: {match[:20]}...")
 
             except Exception:
-                # Not valid base64, continue
+    pass
+# Not valid base64, continue
                 pass
 
         # Check for hex encoding
@@ -463,7 +465,8 @@ class InputGuardrail:
                 if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, f"Hex encoded payload with malicious content")
             except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+    pass
+logger.warning(f"Ignored error: {e}")
 
         return (False, "")
 

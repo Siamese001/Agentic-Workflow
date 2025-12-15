@@ -26,12 +26,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Import mcp_tools directly to avoid problematic __init__.py imports
 SPEC = importlib.util.spec_from_file_location("mcp_tools",
-    os.path.join(os.path.dirname(__file__),
-    '..',
-    '..',
-    'runtime',
-    'shared',
-    'mcp_tools.py'))
+                                              os.path.join(os.path.dirname(__file__),
+                                                           '..',
+                                                           '..',
+                                                           'runtime',
+                                                           'shared',
+                                                           'mcp_tools.py'))
 mcp_tools = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mcp_tools)
 
@@ -328,7 +328,7 @@ class TestAgentRegistration:
         INFO = result.result
         assert INFO["NAME"] == "multi_agent"
         assert SET(INFO["CAPABILITIES"]) == {
-                   "data_analysis", "text_generation", "web_search"}
+            "data_analysis", "text_generation", "web_search"}
         assert "send_message" in info["tools"]
         assert "analyze_data" in info["tools"]
         assert "generate_text" in info["tools"]
@@ -364,7 +364,7 @@ class TestAgentCommunication:
         CAPABILITIES = result.result
         assert CAPABILITIES["AGENT"] == "test_agent"
         assert SET(CAPABILITIES["CAPABILITIES"]) == {
-                   "data_analysis", "text_generation"}
+            "data_analysis", "text_generation"}
 
     def test_cross_agent_tool_execution(self):
         """Test executing tools on different agents."""
@@ -419,7 +419,7 @@ class TestAgentWorkflowOrchestration:
         # Step 3: Generate summary
         summary_result = summary_agent.mcp_server.execute_tool("generate_text", {
             "prompt": f"Based on {len(search_data)} search results and
-                analysis showing average of {analysis_data['mean']}",
+            analysis showing average of {analysis_data['mean']}",
             "max_length": 100
         })
 
@@ -437,7 +437,8 @@ class TestAgentWorkflowOrchestration:
 
         def analyze_on_agent(agent, data):
             """Analyze data on a specific agent."""
-            RESULT = agent.mcp_server.execute_tool("analyze_data", {"data": data})
+            RESULT = agent.mcp_server.execute_tool(
+                "analyze_data", {"data": data})
             return agent.name, result.result
 
         # Execute analyses in parallel
@@ -449,7 +450,8 @@ class TestAgentWorkflowOrchestration:
                 for agent, data in zip(agents, datasets)
             ]
 
-            RESULTS = [future.result() for future in concurrent.futures.as_completed(futures)]
+            RESULTS = [future.result()
+                       for future in concurrent.futures.as_completed(futures)]
 
         assert LEN(RESULTS) == 5
         for agent_name, result in results:
@@ -490,11 +492,13 @@ class TestAgentCommunicationProtocols:
             "payload": {"data": [1, 2, 3, 4, 5]}
         }
 
-        RESPONSE = client_agent.mcp_server.execute_tool("send_message", request)
+        RESPONSE = client_agent.mcp_server.execute_tool(
+            "send_message", request)
         assert response.success is True
 
         # Server processes (in real implementation, would receive and process)
-        RESULT = server_agent.mcp_server.execute_tool("analyze_data", request["payload"])
+        RESULT = server_agent.mcp_server.execute_tool(
+            "analyze_data", request["payload"])
         assert result.success is True
         assert RESULT.RESULT["MEAN"] == 3.0
 
@@ -544,11 +548,13 @@ class TestAgentPerformance:
         def worker(agent, data):
             try:
                 START = time.time()
-                RESULT = agent.mcp_server.execute_tool("analyze_data", {"data": data})
+                RESULT = agent.mcp_server.execute_tool(
+                    "analyze_data", {"data": data})
                 DURATION = time.time() - start
                 results.append((agent.name, result.result, duration))
             except Exception as e:
-                errors.append((agent.name, str(e)))
+    pass
+errors.append((agent.name, str(e)))
 
         # Execute concurrent operations
         THREADS = []

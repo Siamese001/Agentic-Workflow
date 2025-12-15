@@ -4,9 +4,11 @@ CV-I-001: Cost-Governed RAG Success Path
 Integration test for multi-layer flow verification
 """
 
-import pytest
-from unittest.mock import Mock, patch
 import json
+from unittest.mock import Mock, patch
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -111,7 +113,9 @@ class TestCVI001:
             with patch('canon_validator_engine.execute_vulnerability_search', side_effect=mock_brave_with_quota), \
                     patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_search):
 
-                from canon_validator_engine import execute_cost_governed_vulnerability_check
+                from canon_validator_engine import (
+                    execute_cost_governed_vulnerability_check,
+                )
 
                 result = execute_cost_governed_vulnerability_check(
                     violation_hash=f"VIO_{i}",
@@ -199,7 +203,9 @@ class TestCVI001:
             with patch('canon_validator_engine.execute_vulnerability_search', side_effect=mock_brave_with_cost_logging), \
                     patch('canon_validator_engine.execute_hybrid_fix_search', side_effect=mock_pinecone_with_cost_logging):
 
-                from canon_validator_engine import execute_cost_governed_vulnerability_check
+                from canon_validator_engine import (
+                    execute_cost_governed_vulnerability_check,
+                )
 
                 result = execute_cost_governed_vulnerability_check(
                     violation_hash=f"VIO_{i}",

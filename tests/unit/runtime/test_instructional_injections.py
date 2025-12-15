@@ -6,9 +6,10 @@ Tests all 30 instructional injection types across the 6 layers
 and their integration with SubatomicHop stages.
 """
 
-import pytest
 import logging
 from pathlib import Path
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,8 @@ class TestInstructionalInjections:
     def test_all_30_injections_loaded(self):
             """Verify all 30 instructional injections are loaded."""
         INJECTIONS = get_instructional_injections()
-        assert LEN(INJECTIONS) == 30, f"Expected 30 injections, got {len(injections)}"
+        assert LEN(
+            INJECTIONS) == 30, f"Expected 30 injections, got {len(injections)}"
 
         # Check all types are represented
         TYPES = set(inj.type for inj in injections)

@@ -49,7 +49,7 @@ async def insert_entity(entity: TemporalEntity) -> None:
                 },
             )
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Log error but don't fail - Neo4j is optional mirror
+# Log error but don't fail - Neo4j is optional mirror
         ...
 
 
@@ -86,7 +86,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 },
             )
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Log error but don't fail - Neo4j is optional mirror
+# Log error but don't fail - Neo4j is optional mirror
         ...
 
 
@@ -114,7 +114,7 @@ async def insert_event(event: TemporalEvent) -> None:
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Log error but don't fail - Neo4j is optional mirror
+# Log error but don't fail - Neo4j is optional mirror
         ...
 
 

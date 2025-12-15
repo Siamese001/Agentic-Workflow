@@ -31,16 +31,16 @@ class ConsoleLogger:
     """A simple console logger."""
 
     def info(self, message: str) -> None:
-        print(f"INFO: {message}")
+        # print(f"INFO: {message}")  # [Security Fix]
 
     def warning(self, message: str) -> None:
-        print(f"WARNING: {message}")
+        # print(f"WARNING: {message}")  # [Security Fix]
 
     def error(self, message: str) -> None:
-        print(f"ERROR: {message}", file=sys.stderr)
+        # print(f"ERROR: {message}", file=sys.stderr)  # [Security Fix]
 
     def critical(self, message: str) -> None:
-        print(f"CRITICAL: {message}", file=sys.stderr)
+        # print(f"CRITICAL: {message}", file=sys.stderr)  # [Security Fix]
 
 
 class SafeSystemCommandExecutor:
@@ -238,7 +238,7 @@ def run(
                 f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
             return f"SUCCESS (Simulated/Blocked) running destructive action: {stdout}"
     except Exception as e:
-        logger.critical(
-            f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
-        return f"CRITICAL EXCEPTION running destructive action: {e}"
+logger.critical(
+    f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
+return f"CRITICAL EXCEPTION running destructive action: {e}"
 

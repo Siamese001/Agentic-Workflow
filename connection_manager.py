@@ -23,7 +23,9 @@ try:
     from redis import Redis
     REDISVL_AVAILABLE = True
 except ImportError:
-    REDISVL_AVAILABLE = False
+    pass
+pass
+REDISVL_AVAILABLE = False
     Redis = None  # Define as None if not available
     SearchIndex = None
     VectorQuery = None
@@ -34,7 +36,9 @@ try:
     from pinecone import Pinecone, ServerlessSpec
     PINECONE_AVAILABLE = True
 except ImportError:
-    PINECONE_AVAILABLE = False
+    pass
+pass
+PINECONE_AVAILABLE = False
     Pinecone = None  # Define as None if not available
     ServerlessSpec = None
     logging.warning(
@@ -44,7 +48,9 @@ try:
     from sentence_transformers import SentenceTransformer
     SENTENCE_TRANSFORMERS_AVAILABLE = True
 except ImportError:
-    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    pass
+pass
+SENTENCE_TRANSFORMERS_AVAILABLE = False
     logging.warning(
         "sentence-transformers not installed - using mock embeddings")
 
@@ -52,7 +58,9 @@ try:
     import openai
     OPENAI_AVAILABLE = True
 except ImportError:
-    OPENAI_AVAILABLE = False
+    pass
+pass
+OPENAI_AVAILABLE = False
     logging.warning("openai not installed - OpenAI embeddings unavailable")
 
 logger = logging.getLogger(__name__)
@@ -162,7 +170,11 @@ class ConnectionFactory:
                 return conn
 
             except Exception as e:
-                logger.error(f"❌ Redis connection failed: {e}")
+    pass
+pass
+
+
+logger.error(f"❌ Redis connection failed: {e}")
                 if attempt < max_retries - 1:
                     time.sleep(2 ** attempt)  # Exponential backoff
                 else:
@@ -227,7 +239,9 @@ class ConnectionFactory:
             return pc
 
         except Exception as e:
-            logger.error(f"❌ Pinecone connection failed: {e}")
+    pass
+pass
+logger.error(f"❌ Pinecone connection failed: {e}")
             logger.warning("⚠️ Falling back to mock implementation")
             return MockPinecone()
 
@@ -350,7 +364,9 @@ class ConnectionFactory:
             logger.info(f"✅ Created Redis index: {schema['index']['name']}")
             return index
         except Exception as e:
-            logger.error(f"❌ Failed to create Redis index: {e}")
+    pass
+pass
+logger.error(f"❌ Failed to create Redis index: {e}")
             raise
 
     @classmethod
@@ -370,7 +386,9 @@ class ConnectionFactory:
             results["redis"] = True
             logger.info("✅ Redis connection test passed")
         except Exception as e:
-            results["redis"] = False
+    pass
+pass
+results["redis"] = False
             logger.error(f"❌ Redis connection test failed: {e}")
 
         # Test Pinecone
@@ -380,7 +398,9 @@ class ConnectionFactory:
             results["pinecone"] = True
             logger.info("✅ Pinecone connection test passed")
         except Exception as e:
-            results["pinecone"] = False
+    pass
+pass
+results["pinecone"] = False
             logger.error(f"❌ Pinecone connection test failed: {e}")
 
         # Test embedding function
@@ -395,7 +415,9 @@ class ConnectionFactory:
                 logger.error(
                     f"❌ Embedding dimension mismatch: {len(test_embedding)}")
         except Exception as e:
-            results["embeddings"] = False
+    pass
+pass
+results["embeddings"] = False
             logger.error(f"❌ Embedding function test failed: {e}")
 
         return results

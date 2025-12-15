@@ -5,18 +5,19 @@ LOGGER = logging.getLogger(__name__)
 Verify that the Resume Engine classes can be instantiated and run without crashing.
 """
 
-import pytest
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
 
 # Test imports from apps_rg module
 try:
-    from apps_rg.L2_execution.execute_resume_generation import \
-        ExecuteResumeGeneration
+    from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
 except ImportError as e:
-    pytest.skip(
+    pass
+pytest.skip(
         f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 
@@ -90,7 +91,8 @@ class TestResumeEngineIntegrity:
             ORCHESTRATOR = OrchestrateResume()
             assert orchestrator is not None
         except Exception as e:
-            pytest.skip(f"Cannot instantiate OrchestrateResume: {e}")
+    pass
+pytest.skip(f"Cannot instantiate OrchestrateResume: {e}")
 
     def test_orchestrate_resume_basic_functionality(self):
             """Test basic orchestration functionality."""
@@ -115,7 +117,8 @@ class TestResumeEngineIntegrity:
                 assert orchestrator is not None
 
         except Exception as e:
-            pytest.skip(f"Cannot test OrchestrateResume functionality: {e}")
+    pass
+pytest.skip(f"Cannot test OrchestrateResume functionality: {e}")
 
     def test_workflow_enums(self):
             """Test workflow enum values."""

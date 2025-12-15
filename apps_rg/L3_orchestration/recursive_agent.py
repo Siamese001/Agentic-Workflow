@@ -180,7 +180,8 @@ Format as JSON:
             return plan
 
         except Exception as e:
-            logger.error(f"Failed to parse decomposition: {e}")
+    pass
+logger.error(f"Failed to parse decomposition: {e}")
             # Fallback: create a single task
             return RecursivePlan(
                 main_goal=goal,
@@ -232,7 +233,7 @@ Format as JSON:
         # Check resource constraints
         if len(plan.subtasks) > self.max_parallel:
             logger.warning(f"Plan has {len(plan.subtasks)} tasks,
-                exceeding max parallel {self.max_parallel}")
+                           exceeding max parallel {self.max_parallel}")
 
         return True
 
@@ -247,8 +248,8 @@ Format as JSON:
         start_time = time.time()
         RESULTS = {}
 
-            RESULTS = await self._execute_sequential(plan, context, current_depth)
-            RESULTS = await self._execute_parallel(plan, context, current_depth)
+        RESULTS = await self._execute_sequential(plan, context, current_depth)
+        RESULTS = await self._execute_parallel(plan, context, current_depth)
         else:  # adaptive
             RESULTS = await self._execute_adaptive(plan, context, current_depth)
 
@@ -281,7 +282,8 @@ Format as JSON:
         for task in sorted_tasks:
             # Check dependencies
             if not all(dep in completed_tasks for dep in task.dependencies):
-                logger.warning(f"Skipping task {task.task_id} - dependencies not met")
+                logger.warning(
+                    f"Skipping task {task.task_id} - dependencies not met")
                 continue
 
             # Execute task
@@ -291,7 +293,8 @@ Format as JSON:
             if task_result.get("success", False):
                 completed_tasks.add(task.task_id)
             else:
-                logger.error(f"Task {task.task_id} failed, stopping sequential execution")
+                logger.error(
+                    f"Task {task.task_id} failed, stopping sequential execution")
                 break
 
         return results
@@ -380,7 +383,8 @@ Format as JSON:
             }
 
         except Exception as e:
-            logger.error(f"Subtask {task.task_id} failed: {e}")
+    pass
+logger.error(f"Subtask {task.task_id} failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -431,7 +435,8 @@ Format as JSON:
             }
 
         except Exception as e:
-            return {
+    pass
+return {
                 "success": False,
                 "error": str(e),
                 "execution_mode": "direct"
@@ -471,7 +476,8 @@ Format as JSON:
 
             if not ready:
                 # Circular dependency or error
-                logger.warning("Circular dependency detected, adding remaining tasks")
+                logger.warning(
+                    "Circular dependency detected, adding remaining tasks")
                 READY = remaining
 
             # Add highest priority ready task

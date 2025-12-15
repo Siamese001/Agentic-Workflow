@@ -120,10 +120,14 @@ def backfill_qdrant(
             entries.append(entry)
 
         except Exception as e:
-            logger.error(f"Failed to process {file_path}: {e}")
+    pass
+pass
 
-    # Upsert to Qdrant in batches
-    if entries:
+
+logger.error(f"Failed to process {file_path}: {e}")
+
+   # Upsert to Qdrant in batches
+   if entries:
         success = db_manager.qdrant.upsert(entries)
         if success:
             logger.info(f"Backfilled {len(entries)} entries to Qdrant")
@@ -181,9 +185,12 @@ def hydrate_redis(
             loaded_count += 1
 
         except Exception as e:
-            logger.error(f"Failed to load pattern {entry.id} into Redis: {e}")
+    pass
+pass
 
-    logger.info(f"Hydrated Redis with {loaded_count} golden patterns")
+logger.error(f"Failed to load pattern {entry.id} into Redis: {e}")
+
+   logger.info(f"Hydrated Redis with {loaded_count} golden patterns")
     return loaded_count
 
 

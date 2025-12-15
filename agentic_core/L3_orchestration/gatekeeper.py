@@ -2,8 +2,9 @@
 import asyncio
 import logging
 from datetime import datetime
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -29,7 +30,8 @@ class SemanticGatekeeper:
             ConfigurationService().logger.debug(
                 f'Completed execution for trace {ConfigurationService().trace_id}')
         except asyncio.TimeoutError:
-            ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
                 f'Timeout for trace {ConfigurationService().operation}')
             self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id,
                                            'operation': ConfigurationService().operation,
@@ -37,7 +39,8 @@ class SemanticGatekeeper:
                                            'timestamp': datetime.now().isoformat()})
             raise
         except Exception as e:
-            ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
                 f'Execution failed for trace {ConfigurationService().trace_id}: {e}')
             self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id,
                                            'operation': ConfigurationService().operation,

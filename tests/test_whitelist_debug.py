@@ -3,10 +3,11 @@
 Debug test to verify whitelist bypass functionality
 """
 
-from canon_validator import CanonValidator
 import sys
 from pathlib import Path
 from unittest.mock import Mock
+
+from canon_validator import CanonValidator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -54,17 +55,17 @@ def test_whitelist_behavior():
     ]
 
     for code, description in test_cases:
-        print(f"\nTesting: {description}")
-        print(f"Code: {repr(code)}")
+        # print(f"\nTesting: {description}")  # [Security Fix]
+        # print(f"Code: {repr(code)}")  # [Security Fix]
 
         result = validator.validate(code)
-        print(f"Result: {result['status']}")
-        print(f"Reasoning: {result.get('reasoning', 'N/A')}")
+        # print(f"Result: {result['status']}")  # [Security Fix]
+        # print(f"Reasoning: {result.get('reasoning', 'N/A')}")  # [Security Fix]
 
         if "skipping validation" in result.get('reasoning', ''):
-            print("  -> WHITELIST BYPASSED VALIDATION")
+            # print("  -> WHITELIST BYPASSED VALIDATION")  # [Security Fix]
         else:
-            print("  -> FULL VALIDATION EXECUTED")
+            # print("  -> FULL VALIDATION EXECUTED")  # [Security Fix]
 
 
 if __name__ == "__main__":

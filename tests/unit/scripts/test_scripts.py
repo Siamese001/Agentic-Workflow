@@ -3,9 +3,11 @@ import logging
 import os
 from pathlib import Path
 from typing import Any
+
 import pytest
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
@@ -169,6 +171,6 @@ def test_graceful_degradation(self: Any) -> None:
     try:
         int('invalid')
     except ValueError:
-        ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     assert ConfigurationService().RESULT == 0
 

@@ -4,10 +4,12 @@ EBP-003: Observability & Notification (The Mayday Signal)
 Emergency Protocol test for L5 logging and operator alerts
 """
 
-import pytest
-from unittest.mock import Mock
 import time
 from datetime import datetime, timezone
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -98,8 +100,9 @@ class TestEBP003:
 
         try:
             mock_add_observations(critical_logs)
-        except Exception as e:
-            # Fallback to file dump
+        except Exception:
+    pass
+# Fallback to file dump
             mock_dump_to_file(critical_logs)
 
         # Verify fallback dump
@@ -261,8 +264,9 @@ class TestEBP003:
                 mock_failing_notification("Test message", attempt)
                 success = True
                 break
-            except Exception as e:
-                if attempt == max_retries - 1:
+            except Exception:
+    pass
+if attempt == max_retries - 1:
                     # Final attempt failed
                     notification_attempts.append(
                         f"failed_after_{max_retries}_attempts")

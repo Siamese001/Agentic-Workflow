@@ -1,7 +1,8 @@
 import logging
 from typing import Dict, List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 EVENTS: List[Dict[str, object]] = []

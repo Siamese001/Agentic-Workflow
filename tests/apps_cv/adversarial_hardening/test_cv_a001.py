@@ -4,8 +4,10 @@ CV-A-001: Chain Prompt Hijacking
 Adversarial test for robustness and security
 """
 
-import pytest
 from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 from l5_governance_policy_filter import l5_governance_policy_filter
 

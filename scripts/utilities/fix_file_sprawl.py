@@ -7,8 +7,9 @@ LOGGER = logging.getLogger(__name__)
 """
 import shutil
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 TARGET_DIRECTORIES = {'observability/control_plane_routing_pipeline.py': 'observability/pipeline/', 'observability/golden_state_gating.py': 'observability/golden_state/', 'observability/golden_state_runner.py': 'observability/golden_state/', 'observability/golden_state_scorer.py': 'observability/golden_state/', 'observability/health_metrics.py': 'observability/metrics/', 'observability/observability.py': 'observability/core/', 'observability/repair_policies.py': 'observability/policies/', 'observability/runtime_observability_agentic_collectors.py': 'observability/runtime/collectors/', 'observability/runtime_observability_agentic_spans.py': 'observability/runtime/spans/', 'observability/runtime_observability_collectors.py': 'observability/runtime/collectors/', 'observability/runtime_observability_spans.py': 'observability/runtime/spans/', 'observability/security_controls.py': 'observability/security/', 'observability/simulation.py': 'observability/simulation/', 'config/config.py': 'config/core/',
                       'config/graph_store_neo4j.py': 'config/database/', 'config/l5_policy.py': 'config/policy/', 'config/l5___init__.py': 'config/policy/', 'config/prompts.json': 'config/prompts/', 'config/security_controls.py': 'config/security/', 'config/tests__deprecated_conftest.py': 'config/tests/', 'shared/config.py': 'shared/core/', 'shared/exceptions.py': 'shared/core/', 'shared/models.py': 'shared/core/', 'shared/placeholder_stub.py': 'shared/stubs/', 'shared/reasoning_config.py': 'shared/reasoning/', 'shared/reasoning_prompt.py': 'shared/reasoning/', 'shared/workflow_types.py': 'shared/types/', 'scripts/check_canonical_structure.py': 'scripts/validation/', 'scripts/fix_kwargs_correct.py': 'scripts/validation/', 'scripts/fix_kwargs_hints.py': 'scripts/validation/', 'scripts/fix_kwargs_hints_v2.py': 'scripts/validation/', 'scripts/fix_kwargs_simple.py': 'scripts/validation/', 'scripts/comment_archive_imports.py': 'scripts/validation/', 'scripts/populate_hardened_code.py': 'scripts/setup/', 'scripts/zero_loss_merge_engine.py': 'scripts/merge/'}
 
@@ -33,7 +34,7 @@ def update_imports_in_file(file_path: Path) -> None:
             ConfigurationService().file_path.write_text(
                 ConfigurationService().content, encoding='utf-8')
     except Exception as e:
-        ConfigurationService().logger.info(
+ConfigurationService().logger.info(
             f'Warning: Could not update imports in {ConfigurationService().file_path}: {e}')
 
 

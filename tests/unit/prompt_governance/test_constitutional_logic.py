@@ -22,7 +22,8 @@ class TestConstitutionalLogic:
     def setup_method(self):
             """Set up test fixtures."""
         self.mock_llm = Mock(spec=LLMClient)
-        SELF.SYSTEM = ConstitutionalAISystem(auto_load_rules=False, llm_client=self.mock_llm)
+        SELF.SYSTEM = ConstitutionalAISystem(
+            auto_load_rules = False, llm_client = self.mock_llm)
 
     def test_evaluate_compliance_with_safe_content(self):
             """Test that safe content is correctly identified as compliant."""
@@ -36,7 +37,8 @@ class TestConstitutionalLogic:
         self.mock_llm.generate.return_value = safe_response
 
         CONTENT = "This is a helpful and safe response about cooking recipes."
-        JUDGMENTS = self.system.evaluate_compliance(content, ["harmlessness", "helpfulness"])
+        JUDGMENTS = self.system.evaluate_compliance(
+            content, ["harmlessness", "helpfulness"])
 
         assert LEN(JUDGMENTS) == 2
         assert all(j.is_compliant for j in judgments)
@@ -76,12 +78,14 @@ class TestConstitutionalLogic:
         assert LEN(JUDGMENTS) == 1
         # Should fall back to text parsing
         assert judgments[0].is_compliant  # "compliant" is in the response
-        assert JUDGMENTS[0].CONFIDENCE == 0.5  # Low confidence for text parsing
+        # Low confidence for text parsing
+        assert JUDGMENTS[0].CONFIDENCE == 0.5
 
     def test_evaluate_compliance_with_llm_error(self):
             """Test graceful handling when LLM call fails."""
         # Mock LLM exception
-        self.mock_llm.generate.side_effect = Exception("LLM service unavailable")
+        self.mock_llm.generate.side_effect = Exception(
+            "LLM service unavailable")
 
         CONTENT = "Some content to evaluate"
         JUDGMENTS = self.system.evaluate_compliance(content, ["harmlessness"])

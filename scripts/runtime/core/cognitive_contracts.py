@@ -144,7 +144,8 @@ class CognitiveContractValidator:
             try:
                 plan.pre_computation = json.loads(precomp_match.group(1).strip())
             except json.JSONDecodeError:
-                # Treat as plain text
+    pass
+# Treat as plain text
                 plan.pre_computation = {"text": precomp_match.group(1).strip()}
 
         return plan
@@ -407,7 +408,8 @@ CONSTRAINTS TO ACKNOWLEDGE:
             return content, result
 
         except (PlanQualityError, ConsistencyError) as e:
-            logger.error(f"Contract {contract_id} failed: {e}")
+    pass
+logger.error(f"Contract {contract_id} failed: {e}")
             RESULT["ERROR"] = str(e)
             raise
 

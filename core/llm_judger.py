@@ -9,10 +9,11 @@ in the vector search results.
 import ast
 import json
 import logging
-from typing import List, Dict, Optional, Tuple
-from pydantic import BaseModel, Field
+from typing import Dict, List, Optional, Tuple
+
 import instructor
 from openai import OpenAI
+from pydantic import BaseModel, Field
 
 from schemas.canon_models import CanonEntry
 
@@ -99,7 +100,8 @@ class LLMJudger:
                 tree = ast.parse(new_code)
                 new_ast = ast.dump(tree, include_attributes=True)
             except SyntaxError as e:
-                logger.error(f"Failed to parse new code: {e}")
+    pass
+logger.error(f"Failed to parse new code: {e}")
                 return None, SemanticJudgement(
                     is_equivalent=False,
                     confidence=0.0,
@@ -186,7 +188,8 @@ class LLMJudger:
             return judgement
 
         except Exception as e:
-            logger.error(f"Failed to get LLM judgement: {e}")
+    pass
+logger.error(f"Failed to get LLM judgement: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -311,7 +314,8 @@ Consider if the validation logic would be appropriate.
             return judgement
 
         except Exception as e:
-            logger.error(f"Failed to validate policy key: {e}")
+    pass
+logger.error(f"Failed to validate policy key: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,

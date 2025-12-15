@@ -12,15 +12,16 @@ def count_top_level_defs(filepath: Path) -> int:
 
 LOGGER = logging.getLogger(__name__)
 
-    """Count top-level definitions in a Python file."""
-    try:
+  """Count top-level definitions in a Python file."""
+   try:
         TREE = ast.parse(filepath.read_text(encoding='utf-8'))
         return sum(1 for n in tree.body if isinstance(n,
-            (ast.FunctionDef,
-            ast.ClassDef,
-            ast.AsyncFunctionDef)))
+                                                      (ast.FunctionDef,
+                                                       ast.ClassDef,
+                                                       ast.AsyncFunctionDef)))
     except Exception:
-        return 0
+    pass
+return 0
 
 
 def split_file_by_type(filepath: Path) -> None:
@@ -43,8 +44,8 @@ def split_file_by_type(filepath: Path) -> None:
             elif any(
                 (isinstance(d, ast.Name) and d.id == 'dataclass') or
                 (isinstance(d,
-                    ast.Call) and isinstance(d.func,
-                    ast.Name) and d.func.id == 'dataclass')
+                            ast.Call) and isinstance(d.func,
+                                                     ast.Name) and d.func.id == 'dataclass')
                 for d in node.decorator_list
             ):
                 dataclasses.append(node)
@@ -58,9 +59,9 @@ def split_file_by_type(filepath: Path) -> None:
     if total_defs <= 5:
         return  # No need to split
 
-    logger.info(f"Splitting {filepath.name}: {total_defs} defs ({len(enums)} enums,
-        {len(dataclasses)} dataclasses,
-        {len(classes)} classes,
+    logger.info(f"Splitting {filepath.name}: {total_defs} defs({len(enums)} enums,
+                                                               {len(dataclasses)} dataclasses,
+                                                               {len(classes)} classes,
         {len(functions)} functions)")
 
     # Create submodules
@@ -158,6 +159,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 
     filepath.write_text(shim_content, encoding='utf-8')
     logger.info(f"  Updated {filepath.name} as compatibility shim")
+
 
 # Files to fix - continuing agentic_core + prompt_governance + config cognitive density violations
 files_to_fix = [

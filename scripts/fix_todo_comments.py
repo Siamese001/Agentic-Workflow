@@ -3,8 +3,9 @@ import logging
 import os
 import re
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 'Fix TODO/FIXME comments in Python files.'
 logger = logging.getLogger(__name__)
@@ -35,7 +36,7 @@ def fix_todo_comments(directory: Any) -> None:
                     f.write(ConfigurationService().content)
                 COUNT += 1
         except Exception as e:
-            ConfigurationService().logger.error(
+ConfigurationService().logger.error(
                 f'Error processing {ConfigurationService().filepath}: {e}')
     ConfigurationService().logger.info(
         f'Fixed TODO/FIXME comments in {ConfigurationService().count} files')

@@ -69,7 +69,11 @@ def vet_lead_optimal_time(lead_timezone: str, current_send_time_utc: str, tools:
                 f"Lead Local Time: {lead_local_time}. Decision: {decision}.")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+
+
+if logger:
             logger.error(
                 f"Time conversion/vetting failed: {e}. Defaulting to DELAY for safety.")
         decision = "ERROR_DELAY"
@@ -87,8 +91,10 @@ def vet_lead_optimal_time(lead_timezone: str, current_send_time_utc: str, tools:
         if logger:
             logger.info(
                 f"Audit: Temporal Vetting - TZ={lead_timezone}, LocalTime={lead_local_time}, Decision={decision}")
-    except:
-        if logger:
+except Exception:
+    pass
+pass
+if logger:
             logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
 
     return {
@@ -108,11 +114,11 @@ if __name__ == "__main__":
         ("Australia/Sydney", "14:00"),   # Should be 1:00 AM next day (DELAY)
     ]
 
-    print("=== Temporal Vetting Test Results ===")
+    # print("=== Temporal Vetting Test Results ===")  # [Security Fix]
     for tz, utc_time in test_cases:
         result = vet_lead_optimal_time(tz, utc_time)
-        print(f"\nTimezone: {tz}")
-        print(f"UTC Time: {utc_time}")
-        print(f"Local Time: {result['lead_local_time']}")
-        print(f"Decision: {result['decision']}")
+        # print(f"\nTimezone: {tz}")  # [Security Fix]
+        # print(f"UTC Time: {utc_time}")  # [Security Fix]
+        # print(f"Local Time: {result['lead_local_time']}")  # [Security Fix]
+        # print(f"Decision: {result['decision']}")  # [Security Fix]
 

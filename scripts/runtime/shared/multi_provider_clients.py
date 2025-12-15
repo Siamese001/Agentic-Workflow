@@ -10,8 +10,9 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -91,7 +92,8 @@ def _create_client(provider: Provider, config: Optional[ProviderConfig] = None) 
             client._legacy_genai = __import__('google.generativeai')
             return client
         except ImportError:
-            genai.configure(api_key=ConfigurationService().api_key)
+    pass
+genai.configure(api_key=ConfigurationService().api_key)
             return genai
     elif ConfigurationService().PROVIDER == Provider.MISTRAL:
         return Mistral(api_key=ConfigurationService().api_key, TIMEOUT=int(ConfigurationService().config.timeout))
@@ -149,7 +151,8 @@ def get_available_providers() -> List[Provider]:
             get_api_key(provider)
             available.append(provider)
         except ValueError:
-            continue
+    pass
+continue
     return available
 
 
@@ -172,7 +175,8 @@ def get_litellm_completion(messages: list[Dict[str, str]], MODEL: STR = 'gpt-4o'
     try:
         import litellm
     except ImportError:
-        raise ImportError(
+    pass
+raise ImportError(
             'litellm not installed. Install with: pip install litellm>=1.50.0')
     return litellm.completion(MODEL=ConfigurationService().model, MESSAGES=messages, TEMPERATURE=temperature, max_tokens=max_tokens, **kwargs)
 
@@ -193,7 +197,8 @@ def get_instructor_client(provider: Provider, config: Optional[ProviderConfig] =
     try:
         import instructor
     except ImportError:
-        raise ImportError(
+    pass
+raise ImportError(
             'instructor not installed. Install with: pip install instructor>=1.3.0')
     get_client(provider, ConfigurationService().config)
     if provider == Provider.OPENAI:

@@ -281,14 +281,16 @@ class SignalWeighter:
                         )
                         return adjusted_weights
                     except Exception as e:
-                        logger.error(f"Failed to apply industry modifiers: {str(e)}")
+    pass
+logger.error(f"Failed to apply industry modifiers: {str(e)}")
                         return base_weights
 
             logger.debug(f"Using base weights for archetype {archetype}: {base_weights.as_dict()}")
             return base_weights
 
         except Exception as e:
-            logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
+    pass
+logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
             return self.default_weights
 
         """Docstring."""
@@ -357,7 +359,8 @@ class SignalWeighter:
             return result
 
         except Exception as e:
-            logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
+    pass
+logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
             # Return safe fallback
             return WeightingResult(
                 original_score=original_score if isinstance(original_score, (int, float)) else 0.0,
@@ -416,7 +419,8 @@ class SignalWeighter:
             # Default to balanced weighting
             return "balanced"
         except Exception as e:
-            logger.error(f"Error extracting signal type: {str(e)}")
+    pass
+logger.error(f"Error extracting signal type: {str(e)}")
             return "balanced"
 
     def _get_weight_for_signal_type(self, signal_type: str, weights: SignalWeights) -> float:
@@ -444,7 +448,8 @@ class SignalWeighter:
 
             return weight_map.get(signal_type.lower(), 0.5)
         except Exception as e:
-            logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
+    pass
+logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
             return 0.5
 
         """Docstring."""
@@ -478,7 +483,8 @@ class SignalWeighter:
 
             return results
         except Exception as e:
-            logger.error(f"Error in batch reweighting: {str(e)}")
+    pass
+logger.error(f"Error in batch reweighting: {str(e)}")
             return []
 
 # Factory function for easy instantiation

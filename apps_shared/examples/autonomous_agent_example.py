@@ -12,9 +12,11 @@ import asyncio
 import logging
 
 # Import autonomous components
-from runtime.core.autonomous_subatomic_hop import (AutonomousHopConfig,
-                                                   AutonomyConfig,
-                                                   create_autonomous_hop)
+from runtime.core.autonomous_subatomic_hop import (
+    AutonomousHopConfig,
+    AutonomyConfig,
+    create_autonomous_hop,
+)
 
 # Import hardening components
 
@@ -298,7 +300,8 @@ async def main():
         # logger.info("✅ All autonomy demonstrations completed successfully!") # NOTE: Replace with logger (Key 02)
 
     except Exception as e:
-        logger.error(f"Demonstration failed: {e}")
+    pass
+logger.error(f"Demonstration failed: {e}")
         raise
 
 

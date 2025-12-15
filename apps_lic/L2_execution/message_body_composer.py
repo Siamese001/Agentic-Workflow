@@ -36,7 +36,7 @@ class MessageBodyConfig:
 
 
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
 
 
 class MessageBodyResult:
@@ -208,8 +208,8 @@ Would you be open to a brief conversation?"""
 
     def _extract_metrics(self, content: str) -> List[str]:
         """Extract all metrics from content"""
-        metric_pattern = r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?(?:\.\d+)?[KMB]?\b|\b\d+\+?\b(?=\s+(?:team|p
-    eople|projects|clients))'
+        metric_pattern = r'\b\d+% |\b\d+x\b |\b\$\d+[KMB]?(?: \.\d+)?[KMB]?\b |\b\d +\+?\b(?=\s+(?: team | p
+                                                                                                 eople | projects | clients))'
         return re.findall(metric_pattern, content)
 
     def _bind_metrics_to_evidence(
@@ -270,6 +270,7 @@ Would you be open to a brief conversation?"""
                 'content_preview': content[:200]
             }
         )
+
 
 def create_message_body_composer(
     """Docstring."""

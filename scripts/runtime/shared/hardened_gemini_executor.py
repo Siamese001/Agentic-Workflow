@@ -212,7 +212,8 @@ class HardenedGeminiExecutor:
             if not hasattr(self._client, 'interactions'):
                 raise ImportError("google-genai v1beta not available")
         except Exception as e:
-            logger.error(f"Failed to initialize hardened Gemini client: {e}")
+    pass
+logger.error(f"Failed to initialize hardened Gemini client: {e}")
             raise
 
     def build_safety_config(self) -> List[Dict[str, str]]:
@@ -243,7 +244,8 @@ class HardenedGeminiExecutor:
                 ),
             ]
         except ImportError:
-            # Fallback for legacy or different API
+    pass
+# Fallback for legacy or different API
             return [
                 {
                     "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
@@ -292,7 +294,8 @@ class HardenedGeminiExecutor:
                 token_count = self._estimate_tokens(input_payload)
 
         except Exception as e:
-            logger.warning(f"Token counting failed, estimating: {e}")
+    pass
+logger.warning(f"Token counting failed, estimating: {e}")
             token_count = self._estimate_tokens(input_payload)
 
         # Check against safety threshold
@@ -373,7 +376,8 @@ class HardenedGeminiExecutor:
         try:
             retry_exception = errors.ClientError
         except ImportError:
-            # Fallback to generic exception
+    pass
+# Fallback to generic exception
             retry_exception = Exception
 
         @retry(
@@ -414,7 +418,8 @@ class HardenedGeminiExecutor:
             self._circuit_breaker.record_success()
             return result
         except Exception as e:
-            self._circuit_breaker.record_failure()
+    pass
+self._circuit_breaker.record_failure()
             raise
 
         """Docstring."""
@@ -524,7 +529,8 @@ class HardenedGeminiExecutor:
             return content
 
         except Exception as e:
-            # Log error telemetry
+    pass
+# Log error telemetry
             latency_ms = (time.time() - start_time) * 1000
             TELEMETRY = InteractionTelemetry(
                 interaction_id=None,

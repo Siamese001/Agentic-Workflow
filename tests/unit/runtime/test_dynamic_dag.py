@@ -1,7 +1,8 @@
 """Test suite for Dynamic DAG Manager and mutation capabilities."""
 
-import pytest
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -407,7 +408,7 @@ class TestMutationIntegration:
         self.manager.register_function("resume_writer", resume_writer)
         self.manager.register_function("jd_scraper", jd_scraper)
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_mutation_during_execution(self):
             """Test mutation triggered during hop execution."""
         # Add initial node
@@ -426,7 +427,8 @@ class TestMutationIntegration:
             await writer_hop.run(data={"skills": ["Python"]})
             assert False, "Should have raised MutationRequired"
         except MutationRequired as e:
-            # Apply mutation
+    pass
+# Apply mutation
             MUTATION = self.manager.create_mutation_request(
                 ACTION=MutationAction.SPAWN_PREDECESSOR,
                 target_hop_id="writer",
@@ -491,10 +493,11 @@ class TestMutationScenarios:
 
         self.manager.register_function("resume_generator", resume_generator)
         self.manager.register_function("job_scraper", job_scraper)
-        self.manager.register_function("cover_letter_writer", cover_letter_writer)
+        self.manager.register_function(
+            "cover_letter_writer", cover_letter_writer)
         self.manager.register_function("job_enricher", job_enricher)
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_resume_generation_pipeline(self):
             """Test resume generation with missing job description."""
         # Create initial pipeline
@@ -511,7 +514,8 @@ class TestMutationScenarios:
             await resume_hop.run(profile={"company": "Acme"})
             assert False, "Should have raised MutationRequired"
         except MutationRequired:
-            pass
+    pass
+pass
 
         # Apply mutation
         MUTATION = self.manager.create_mutation_request(
@@ -530,7 +534,7 @@ class TestMutationScenarios:
         assert "job_scraper" in self.manager.graph.nodes
         assert ("job_scraper", "resume") in self.manager.graph.edges
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_nested_mutations(self):
             """Test multiple mutations in sequence."""
         # Create pipeline: cover_letter -> resume
@@ -553,7 +557,8 @@ class TestMutationScenarios:
         try:
             await resume_hop.run(profile={"company": "Acme"})
         except MutationRequired:
-            pass
+    pass
+pass
 
         MUTATION1 = self.manager.create_mutation_request(
             ACTION=MutationAction.SPAWN_PREDECESSOR,
@@ -575,7 +580,8 @@ class TestMutationScenarios:
                 job_description="Brief"
             )
         except MutationRequired:
-            pass
+    pass
+pass
 
         MUTATION2 = self.manager.create_mutation_request(
             ACTION=MutationAction.SPAWN_PREDECESSOR,

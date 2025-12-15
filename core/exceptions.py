@@ -5,7 +5,7 @@ Defines specific exception types for the L5 Multi-Agent System
 to handle Canon violations and memory synchronization errors.
 """
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class CanonError(Exception):

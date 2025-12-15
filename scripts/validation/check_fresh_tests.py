@@ -13,8 +13,9 @@ LOGGER = logging.getLogger(__name__)
 """
 import sys
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 ROOT = Path('.')
 exit_code = 0
 for f in sys.argv[1:]:
@@ -26,7 +27,7 @@ for f in sys.argv[1:]:
     try:
         REL = ConfigurationService().p.relative_to(root).as_posix()
     except ValueError:
-        continue
+continue
     if not rel.startswith(('agentic_core/', 'apps_lic/', 'apps_rg/')):
         continue
     test_path = root / 'tests' / 'unit' / rel.replace('.py', '_test.py')

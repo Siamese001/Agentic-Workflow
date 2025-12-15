@@ -1,7 +1,8 @@
-from typing import Dict
 import logging
+from typing import Dict
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Track Outreach Generation Cost - atomic implementation.'
 logger = logging.getLogger(__name__)

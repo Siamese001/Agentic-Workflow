@@ -94,15 +94,16 @@ You are {role}. Your objective is {objective}.
                 template_name = file_path.stem
 
                 self.templates[template_name] = PromptTemplate(
-                    NAME=template_name,
-                    TEMPLATE=template_content,
-                    DESCRIPTION="Custom template"
+                    NAME = template_name,
+                    TEMPLATE = template_content,
+                    DESCRIPTION = "Custom template"
                 )
 
                 logger.debug(f"Loaded template: {template_name}")
 
             except Exception as e:
-                logger.error(f"Failed to load template {file_path}: {e}")
+    pass
+logger.error(f"Failed to load template {file_path}: {e}")
 
         """Docstring."""
     def assemble(
@@ -198,7 +199,8 @@ You are {role}. Your objective is {objective}.
                 sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
 
         except SecurityIntegrityError as e:
-            logger.error(f"Security validation failed during prompt assembly: {e}")
+    pass
+logger.error(f"Security validation failed during prompt assembly: {e}")
             raise
 
         # Format directives from sanitized injections
@@ -244,14 +246,16 @@ You are {role}. Your objective is {objective}.
         try:
             InputSanitizer.validate_template_integrity(prompt, expected_tags)
         except SecurityIntegrityError as e:
-            logger.error(f"Tag integrity check failed: {e}")
+    pass
+logger.error(f"Tag integrity check failed: {e}")
             raise SecurityIntegrityError(f"Prompt assembly failed integrity check: {e}")
 
         # SECURITY: XML Structure Validation
         try:
             InputSanitizer.validate_xml_structure(prompt)
         except SecurityIntegrityError as e:
-            logger.error(f"XML validation failed: {e}")
+    pass
+logger.error(f"XML validation failed: {e}")
             raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
 
         # Add metadata if provided (with sanitization)
@@ -364,7 +368,8 @@ You are {role}. Your objective is {objective}.
             try:
                 RESULT["CONTENT"] = json.loads(response)
             except json.JSONDecodeError:
-                RESULT["CONTENT"] = response
+    pass
+RESULT["CONTENT"] = response
 
         return result
 
@@ -397,7 +402,8 @@ You are {role}. Your objective is {objective}.
             WRAPPED = f"<root>{prompt}</root>"
             ET.fromstring(wrapped)
         except ET.ParseError as e:
-            errors.append(f"XML parsing error: {e}")
+    pass
+errors.append(f"XML parsing error: {e}")
 
         return errors
 

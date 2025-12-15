@@ -136,7 +136,8 @@ class ScriptsLogicVectorSearcher:
             return search_results
 
         except Exception as e:
-            self.logger.error(f"Vector search failed: {str(e)}")
+    pass
+self.logger.error(f"Vector search failed: {str(e)}")
             return SearchResults(
                 QUERY=query,
                 RESULTS=[],
@@ -185,7 +186,8 @@ class ScriptsLogicVectorSearcher:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
+    pass
+self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
             return False
 
     def delete_vector(self, vector_id: str) -> bool:

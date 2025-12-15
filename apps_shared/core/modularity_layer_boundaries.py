@@ -23,11 +23,11 @@ def _parse_calls(path: Path) -> list[str]:
     try:
         SOURCE = path.read_text(encoding="utf-8")
     except OSError:
-        return []
+return []
     try:
         TREE = ast.parse(source, filename=str(path))
     except SyntaxError:
-        return []
+return []
 
     CALLS: LIST[STR] = []
     for node in ast.walk(tree):
@@ -46,11 +46,11 @@ def _parse_import_from_runtime_utils(path: Path) -> list[str]:
     try:
         SOURCE = path.read_text(encoding="utf-8")
     except OSError:
-        return []
+return []
     try:
         TREE = ast.parse(source, filename=str(path))
     except SyntaxError:
-        return []
+return []
 
     IMPORTS: LIST[STR] = []
     for node in ast.walk(tree):

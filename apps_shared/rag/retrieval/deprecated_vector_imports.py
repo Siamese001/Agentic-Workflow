@@ -1,6 +1,8 @@
 """Test that all vector search modules can be imported."""
 import logging
+
 import pytest
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
@@ -10,7 +12,7 @@ def _can_import_pinecone() -> bool:
     try:
         return True
     except ImportError:
-        return False
+return False
 
 
 def test_import_vector_modules() -> None:

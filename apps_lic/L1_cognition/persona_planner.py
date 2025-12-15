@@ -357,7 +357,8 @@ class PersonaPlanner:
                     "confidence_score": plan.confidence_score
                 })
         except Exception as e:
-            logger.debug(f"Failed to record telemetry: {e}")
+    pass
+logger.debug(f"Failed to record telemetry: {e}")
 
     def get_persona_summary(self, plan: PersonaPlan) -> Dict[str, object]:
         """Get a summary of the persona plan for debugging/telemetry."""

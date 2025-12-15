@@ -36,12 +36,13 @@ class ExecutionContext:
         SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
             self.error_details = {'type': type(error).__name__,
-                'message': str(error),
-                'traceback': traceback.format_exc()}
+                                  'message': str(error),
+                                  'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ')
+            logger.info(f'Execution completed successfully in {self.end_time - self.start_time: .2f}s
+                        ')
+
 
 @dataclass
 class ProcessingResult:

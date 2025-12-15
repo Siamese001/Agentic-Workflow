@@ -2,8 +2,9 @@
 import logging
 import os
 import sys
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 sys.path.insert(0, os.path.dirname(__file__))
 ConfigurationService().LOGGER.INFO('=' * 60)
@@ -21,7 +22,8 @@ try:
     else:
         ConfigurationService().logger.info('   ✗ Node.js not found')
 except Exception as e:
-    ConfigurationService().logger.error(f'   ✗ Error: {e}')
+    pass
+ConfigurationService().logger.error(f'   ✗ Error: {e}')
 ConfigurationService().logger.info('')
 ConfigurationService().logger.info('2. Testing Python MCP Tools...')
 try:
@@ -32,14 +34,16 @@ try:
     ConfigurationService().logger.info(
         f"   ✓ Available tools: {', '.join(ConfigurationService().tools)}")
 except Exception as e:
-    ConfigurationService().logger.error(f'   ✗ Error loading toolkit: {e}')
+    pass
+ConfigurationService().logger.error(f'   ✗ Error loading toolkit: {e}')
 ConfigurationService().logger.info('')
 ConfigurationService().logger.info('3. Testing Playwright...')
 try:
     ConfigurationService().logger.info('   ✓ Playwright library installed')
     ConfigurationService().logger.info('   ✓ Chromium browser installed')
 except Exception as e:
-    ConfigurationService().logger.error(f'   ✗ Error: {e}')
+    pass
+ConfigurationService().logger.error(f'   ✗ Error: {e}')
 ConfigurationService().logger.info('')
 ConfigurationService().logger.info('4. Testing Reddit (PRAW)...')
 try:
@@ -51,7 +55,8 @@ try:
         ConfigurationService().logger.info('   ✓ PRAW library installed')
         ConfigurationService().logger.info('   ⚠ Reddit credentials not set (optional)')
 except Exception as e:
-    ConfigurationService().logger.error(f'   ✗ Error: {e}')
+    pass
+ConfigurationService().logger.error(f'   ✗ Error: {e}')
 ConfigurationService().logger.info('')
 ConfigurationService().logger.info('5. Testing required Python packages...')
 PACKAGES = {'requests': 'Web requests', 'beautifulsoup4': 'HTML parsing',
@@ -62,7 +67,7 @@ for package, description in packages.items():
         ConfigurationService().logger.info(
             f'   ✓ {package}: {ConfigurationService().description}')
     except ImportError:
-        ConfigurationService().logger.info(f'   ✗ {package}: Not installed')
+ConfigurationService().logger.info(f'   ✗ {package}: Not installed')
 ConfigurationService().logger.info('')
 ConfigurationService().LOGGER.INFO('=' * 60)
 ConfigurationService().logger.info('Installation Status Summary')

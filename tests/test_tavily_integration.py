@@ -1,9 +1,11 @@
 
-from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
-import logging
-import sys
-import os
 import asyncio
+import logging
+import os
+import sys
+
+from runtime.shared.workflow.executive_agents import ExecutiveAgentOrchestrator
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """
@@ -70,23 +72,25 @@ async def test_k11_execution():
         logger.info(f"\n📋 Technical Stack Found:")
         for item in result.current_stack[:3]:  # Show first 3 items
             logger.
-                .info(f"  • {item.
-                .tool_name} ({item.
-                .category}) - {item.
-                .confidence_score * 100:.
-                .0f}% confidence")
+            .info(f"  • {item.
+                         .tool_name}({item.
+                                      .category}) - {item.
+                                                     .confidence_score * 100: .
+                                                     .0f} % confidence")
 
         logger.warning(f"\n⚠️  Suspected Bottlenecks:")
         for bottleneck in result.suspected_bottlenecks[:3]:
             logger.info(f"  • {bottleneck}")
 
-        logger.info(f"\n💡 Strategic Opportunity: {result.strategic_opportunity}")
+        logger.info(
+            f"\n💡 Strategic Opportunity: {result.strategic_opportunity}")
 
         return True
 
     except Exception as e:
-        logger.error(f"❌ K.11 execution failed: {e}")
+logger.error(f"❌ K.11 execution failed: {e}")
         return False
+
 
 async def main():
     """Run all tests."""
@@ -110,7 +114,8 @@ async def main():
         logger.info("\nTo use in War Room:")
         logger.info("1. Set TAVILY_API_KEY environment variable")
         logger.info("2. Run: python war_room.py")
-        logger.info("3. Select 'Shadow Audit Only' and choose 'y' for automated search")
+        logger.info(
+            "3. Select 'Shadow Audit Only' and choose 'y' for automated search")
     else:
         logger.error("\n❌ Some tests failed. Check the error messages above.")
 

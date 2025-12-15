@@ -22,3 +22,13 @@ python_classes = [
 python_functions = [
     "test_*"
 ]
+
+[tool.isort]
+profile = "black"
+skip = ["venv", "env", ".git", "__pycache__"]
+
+[tool.autoflake]
+exclude = ["venv", "env", ".git", "__pycache__"]
+
+[tool.autopep8]
+exclude = ["venv", "env", ".git", "__pycache__"]

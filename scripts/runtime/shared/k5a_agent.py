@@ -297,7 +297,8 @@ def _assign_provenance(self: Any, bullets: List[str], master_bullets: List[str])
                     provenance.append("S")  # Synthetic
 
         except Exception as e:
-            logger.error(f"Error assigning provenance: {e}")
+    pass
+logger.error(f"Error assigning provenance: {e}")
             # Fallback: assign based on provenance rule
             PROVENANCE = (
                 ["V"] * self.provenance_rule.verbatim +

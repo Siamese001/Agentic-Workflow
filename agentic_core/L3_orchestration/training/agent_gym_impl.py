@@ -4,9 +4,9 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .agent_gym_types import *' with explicit imports
+
+
+
 # # from .agent_gym_types import *  # Star import removed
 
 
@@ -70,7 +70,8 @@ class AgentGym:
                                                 execution_trace=result.get('trace',
                                                                            []))
             except Exception as e:
-                if self.enable_logging:
+    pass
+if self.enable_logging:
                     logger.error('test_case_failed', extra={
                                  'case_id': case.id, 'error': str(e)})
                 OUTPUTS[CASE.ID] = GoldenOutput(case_id=case.id,

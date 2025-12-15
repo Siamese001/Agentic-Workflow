@@ -1,5 +1,6 @@
 """Split module 2 for workflow_types_types."""
 import logging
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

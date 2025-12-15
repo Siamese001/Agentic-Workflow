@@ -35,7 +35,8 @@ class ZeroLossMergeEngine:
                                    DATA=result,
                                    METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, KeyError) as e:
-            logger.error("Operation failed: %s", e)
+    pass
+logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:

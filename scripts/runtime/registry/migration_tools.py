@@ -80,7 +80,8 @@ class KNodeScanner:
             with open(file_path, 'r', encoding='utf-8') as f:
                 CONTENT = f.read()
         except Exception as e:
-            logger.error(f"Failed to read {file_path}: {e}")
+    pass
+logger.error(f"Failed to read {file_path}: {e}")
             return {"path": str(file_path), "references": [], "error": str(e)}
 
         REFERENCES = []
@@ -211,7 +212,8 @@ class KNodeMigrator:
                 return False
 
         except Exception as e:
-            logger.error(f"Failed to migrate {file_path}: {e}")
+    pass
+logger.error(f"Failed to migrate {file_path}: {e}")
             return False
 
     def migrate_configuration(self, config_path: Path) -> bool:
@@ -268,7 +270,8 @@ class KNodeMigrator:
             return False
 
         except Exception as e:
-            logger.error(f"Failed to migrate configuration {config_path}: {e}")
+    pass
+logger.error(f"Failed to migrate configuration {config_path}: {e}")
             return False
 
 class MigrationValidator:

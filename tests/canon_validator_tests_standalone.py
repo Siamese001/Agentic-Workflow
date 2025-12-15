@@ -4,12 +4,13 @@ Canon Validator Engine - Standalone Test Suite
 Tests all layers without pytest dependencies
 """
 
-from canon_validator import CanonValidator
-import sys
-from pathlib import Path
 import json
+import sys
 import time
+from pathlib import Path
 from unittest.mock import Mock, patch
+
+from canon_validator import CanonValidator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -61,7 +62,7 @@ def create_mock_validator():
 
 def test_fc001_standard_violation_detection():
     """FC-001: Positive: Standard Violation"""
-    print("  Testing FC-001: Standard Violation Detection...")
+    # print("  Testing FC-001: Standard Violation Detection...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -90,12 +91,12 @@ def execute_command():
 
     # Verify LLM was called
     assert validator.llm.generate_plan.called
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_fc002_compliant_code_validation():
     """FC-002: Negative: Compliant Code"""
-    print("  Testing FC-002: Compliant Code Validation...")
+    # print("  Testing FC-002: Compliant Code Validation...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -116,7 +117,8 @@ def execute_command_safely(command: str) -> Optional[str]:
         result = subprocess.run(command.split(), capture_output=True, text=True)
         return result.stdout
     except Exception as e:
-        return None
+    pass
+return None
 """
 
     # Execute validation
@@ -128,12 +130,12 @@ def execute_command_safely(command: str) -> Optional[str]:
 
     # Verify meta-learning was triggered
     assert validator.pinecone.upsert.called
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_tl002_tool_selection_execution():
     """TL-002: Tool Selection & Execution"""
-    print("  Testing TL-002: Tool Selection & Execution...")
+    # print("  Testing TL-002: Tool Selection & Execution...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -156,12 +158,12 @@ def test_tl002_tool_selection_execution():
     # Verify repair
     assert result["status"] == "repaired"
     assert "safe code" in result["repaired_code"]
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_gr003_temporal_awareness_l4():
     """GR-003: Temporal Awareness (L4)"""
-    print("  Testing GR-003: Temporal Awareness (L4)...")
+    # print("  Testing GR-003: Temporal Awareness (L4)...")  # [Security Fix]
 
     # Mock time responses for different timezones
     mock_responses = {
@@ -186,12 +188,12 @@ def test_gr003_temporal_awareness_l4():
             assert "T" in time_data["time"]  # ISO format
             assert "+" in time_data["time"]  # Timezone offset
 
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_se001_self_correction_denial():
     """SE-001: Self-Correction Denial"""
-    print("  Testing SE-001: Self-Correction Denial...")
+    # print("  Testing SE-001: Self-Correction Denial...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -215,12 +217,12 @@ def test_se001_self_correction_denial():
     assert result["status"] == "repaired"
     assert "subprocess" in result["repaired_code"]
     assert validator.llm.generate_plan.call_count >= 2  # Governance forced retry
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_se004_no_change_execution_caching():
     """SE-004: No-Change Execution"""
-    print("  Testing SE-004: No-Change Execution...")
+    # print("  Testing SE-004: No-Change Execution...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -260,12 +262,12 @@ def test_se004_no_change_execution_caching():
 
     # LLM should not be called on cache hit
     assert validator.llm.generate_plan.call_count == 1
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_design_compliance():
     """Test design compliance check"""
-    print("  Testing Design Compliance Check...")
+    # print("  Testing Design Compliance Check...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -299,12 +301,12 @@ def test_design_compliance():
     mock_tools['get_variable_defs'].assert_called_once_with(
         node_id="component123")
     mock_tools['edit_file'].assert_called_once()
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_cost_governance():
     """Test cost governance and RAG fallback"""
-    print("  Testing Cost Governance...")
+    # print("  Testing Cost Governance...")  # [Security Fix]
 
     # Track call order
     call_order = []
@@ -345,12 +347,12 @@ def test_cost_governance():
     # Verify fallback sequence - check that calls were made
     assert len(call_order) > 0, "No search functions were called"
     assert result["status"] == "success"
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_atomic_transaction():
     """Test atomic transaction with rollback"""
-    print("  Testing Atomic Transaction...")
+    # print("  Testing Atomic Transaction...")  # [Security Fix]
 
     # Mock Redis with transaction support
     transaction_state = []
@@ -388,9 +390,10 @@ def test_atomic_transaction():
         mock_redis.set("audit:123", "COMPLETED")
         mock_redis.exec()
         assert "ROLLBACK" not in transaction_state
-        print("    Successful transaction: ✅")
-    except:
-        assert False, "Transaction should have succeeded"
+        # print("    Successful transaction: ✅")  # [Security Fix]
+except Exception:
+    pass
+assert False, "Transaction should have succeeded"
 
     # Reset and test failed transaction
     transaction_state.clear()
@@ -400,18 +403,19 @@ def test_atomic_transaction():
         mock_redis.set("audit:456", "PENDING")
         mock_redis.set("audit:456", "FAIL")
         mock_redis.exec()
-    except Exception as e:
-        exception_raised = True
+    except Exception:
+    pass
+exception_raised = True
         assert "ROLLBACK" in transaction_state
 
     assert exception_raised, "Exception should have been raised"
-    print("    Failed transaction with rollback: ✅")
-    print("    ✅ PASSED")
+    # print("    Failed transaction with rollback: ✅")  # [Security Fix]
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def test_prompt_injection_resistance():
     """Test prompt injection resistance"""
-    print("  Testing Prompt Injection Resistance...")
+    # print("  Testing Prompt Injection Resistance...")  # [Security Fix]
 
     validator = create_mock_validator()
 
@@ -436,14 +440,14 @@ def test_prompt_injection_resistance():
         assert result["status"] == "rejected"
         assert "injection" in result["reasoning"].lower()
 
-    print("    ✅ PASSED")
+    # print("    ✅ PASSED")  # [Security Fix]
 
 
 def main():
     """Run all tests"""
-    print("="*80)
-    print("🧪 CANON VALIDATOR ENGINE TEST SUITE")
-    print("="*80)
+    # print("="*80)  # [Security Fix]
+    # print("🧪 CANON VALIDATOR ENGINE TEST SUITE")  # [Security Fix]
+    # print("="*80)  # [Security Fix]
 
     tests = [
         ("Functional & Compliance (L1/L2)", [
@@ -469,41 +473,42 @@ def main():
     all_passed = True
 
     for category_name, test_list in tests:
-        print(f"\n🔬 {category_name}")
-        print("-" * 50)
+        # print(f"\n🔬 {category_name}")  # [Security Fix]
+        # print("-" * 50)  # [Security Fix]
 
         for test_func in test_list:
             try:
                 test_func()
             except Exception as e:
-                print(f"    ❌ FAILED: {e}")
+    pass
+FAILED: {e}")  # [Security Fix]
                 import traceback
                 traceback.print_exc()
                 all_passed = False
 
     # Summary
-    print("\n" + "="*80)
+    # print("\n" + "="*80)  # [Security Fix]
     if all_passed:
-        print("✅ ALL TESTS PASSED!")
-        print("\n📊 Test Summary:")
-        print("  - Functional & Compliance (L1/L2): ✅ PASSED")
-        print("  - Tool-Use & LLM Logic (L1/L5): ✅ PASSED")
-        print("  - Governance & Resilience (L3/L4/L5): ✅ PASSED")
-        print("  - Security & Edge Cases (L1-L5): ✅ PASSED")
-        print("\n🎯 Canon Validator Engine is ready for deployment!")
-        print("\n🔑 All 50 Keys validated:")
-        print("  - Keys 00-40: Subatomic Canon ✅")
-        print("  - Keys 41-47: Light Canon ✅")
-        print("  - Key 49: Universal Depth Law ✅")
-        print("\n📈 Performance Metrics:")
-        print("  - Average validation time: < 100ms")
-        print("  - Cache hit ratio: > 90%")
-        print("  - Cost governance: Enforced")
-        print("  - Atomic transactions: Guaranteed")
+        # print("✅ ALL TESTS PASSED!")  # [Security Fix]
+        # print("\n📊 Test Summary:")  # [Security Fix]
+        # print("  - Functional & Compliance (L1/L2): ✅ PASSED")  # [Security Fix]
+        # print("  - Tool-Use & LLM Logic (L1/L5): ✅ PASSED")  # [Security Fix]
+        # print("  - Governance & Resilience (L3/L4/L5): ✅ PASSED")  # [Security Fix]
+        # print("  - Security & Edge Cases (L1-L5): ✅ PASSED")  # [Security Fix]
+        # print("\n🎯 Canon Validator Engine is ready for deployment!")  # [Security Fix]
+        # print("\n🔑 All 50 Keys validated:")  # [Security Fix]
+        # print("  - Keys 00-40: Subatomic Canon ✅")  # [Security Fix]
+        # print("  - Keys 41-47: Light Canon ✅")  # [Security Fix]
+        # print("  - Key 49: Universal Depth Law ✅")  # [Security Fix]
+        # print("\n📈 Performance Metrics:")  # [Security Fix]
+        # print("  - Average validation time: < 100ms")  # [Security Fix]
+        # print("  - Cache hit ratio: > 90%")  # [Security Fix]
+        # print("  - Cost governance: Enforced")  # [Security Fix]
+        # print("  - Atomic transactions: Guaranteed")  # [Security Fix]
         return 0
     else:
-        print("❌ SOME TESTS FAILED!")
-        print("\nPlease review the test failures above.")
+        # print("❌ SOME TESTS FAILED!")  # [Security Fix]
+        # print("\nPlease review the test failures above.")  # [Security Fix]
         return 1
 
 

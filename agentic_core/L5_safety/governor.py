@@ -19,7 +19,7 @@ class CostGovernor:
         SELF.SPEND = 0.0
         # Estimated cost per 1k tokens
         SELF.RATES = {"gpt-4": 0.03,
-            "gpt-3.5-turbo": 0.002, "claude-3-opus": 0.015}
+                      "gpt-3.5-turbo": 0.002, "claude-3-opus": 0.015}
 
     def track(self, model: str, input_tok: int, output_tok: int) -> float:
         RATE = self.rates.get(model, 0.01)

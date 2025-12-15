@@ -19,21 +19,21 @@ logger = logging.getLogger(__name__)
 
 
 def print_step(step_name):
-    print(f"\n🔹 TESTING: {step_name}")
-    print("-" * 50)
+    # print(f"\n🔹 TESTING: {step_name}")  # [Security Fix]
+    # print("-" * 50)  # [Security Fix]
 
 
 def print_success(message):
-    print(f"   ✅ PASS: {message}")
+    # print(f"   ✅ PASS: {message}")  # [Security Fix]
 
 
 def print_fail(message):
-    print(f"   ❌ FAIL: {message}")
+    # print(f"   ❌ FAIL: {message}")  # [Security Fix]
 
 
 def run_integrity_test():
-    print("\n🧪 STARTING DATA INTEGRITY SUITE")
-    print("============================================================")
+    # print("\n🧪 STARTING DATA INTEGRITY SUITE")  # [Security Fix]
+    # print("============================================================")  # [Security Fix]
 
     # Load environment
     load_dotenv()
@@ -55,7 +55,11 @@ def run_integrity_test():
         embedding = embed_func(test_content)
         print_success(f"Generated embedding vector (Dim: {len(embedding)})")
     except Exception as e:
-        print_fail(f"Embedding generation failed: {e}")
+    pass
+pass
+
+
+print_fail(f"Embedding generation failed: {e}")
         return
 
     # Create CanonEntry with proper structure
@@ -141,7 +145,9 @@ def test_function():
             print_fail(f"Vector Search failed. Results: {results}")
 
     except Exception as e:
-        print_fail(f"RedisVL Operations failed: {e}")
+    pass
+pass
+print_fail(f"RedisVL Operations failed: {e}")
 
     # ---------------------------------------------------------
     # 3. PINECONE INTEGRITY (COLD MEMORY)
@@ -159,7 +165,7 @@ def test_function():
         print_success(f"Upserted to Pinecone index: {index_name}")
 
         # Wait for eventual consistency
-        print("   ⏳ Waiting 5s for Pinecone consistency...")
+        # print("   ⏳ Waiting 5s for Pinecone consistency...")  # [Security Fix]
         time.sleep(5)
 
         # FETCH - Use the actual ID from the entry
@@ -191,7 +197,9 @@ def test_function():
             print_fail("Fetch failed - ID not found in Pinecone.")
 
     except Exception as e:
-        print_fail(f"Pinecone Operations failed: {e}")
+    pass
+pass
+print_fail(f"Pinecone Operations failed: {e}")
 
     # ---------------------------------------------------------
     # 4. CROSS-SYSTEM VALIDATION
@@ -234,7 +242,9 @@ def test_function():
                 f"Entry missing - Redis: {redis_exists}, Pinecone: {pinecone_exists}")
 
     except Exception as e:
-        print_fail(f"Cross-system validation failed: {e}")
+    pass
+pass
+print_fail(f"Cross-system validation failed: {e}")
 
     # ---------------------------------------------------------
     # 5. CLEANUP
@@ -253,16 +263,18 @@ def test_function():
             print_success("Pinecone vector deleted.")
 
     except Exception as e:
-        print_fail(f"Cleanup failed: {e}")
+    pass
+pass
+print_fail(f"Cleanup failed: {e}")
 
-    print("\n✅ INTEGRITY SUITE COMPLETE")
-    print("============================================================")
-    print("\nSummary:")
-    print("  - CRUD operations verified on RedisVL")
-    print("  - CRUD operations verified on Pinecone")
-    print("  - Vector dimensions validated (384)")
-    print("  - Data fidelity confirmed")
-    print("  - Cross-system consistency checked")
+    # print("\n✅ INTEGRITY SUITE COMPLETE")  # [Security Fix]
+    # print("============================================================")  # [Security Fix]
+    # print("\nSummary:")  # [Security Fix]
+    # print("  - CRUD operations verified on RedisVL")  # [Security Fix]
+    # print("  - CRUD operations verified on Pinecone")  # [Security Fix]
+    # print("  - Vector dimensions validated (384)")  # [Security Fix]
+    # print("  - Data fidelity confirmed")  # [Security Fix]
+    # print("  - Cross-system consistency checked")  # [Security Fix]
 
 
 if __name__ == "__main__":

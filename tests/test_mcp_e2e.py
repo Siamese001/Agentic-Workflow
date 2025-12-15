@@ -10,13 +10,14 @@ Tests all MCP servers with the executive orchestrator:
 - Terminal: Safe command execution
 """
 
-from mcp_adapter import UniversalMCPClient
 import asyncio
 import logging
 import os
 import sys
 from datetime import datetime
 from typing import Any
+
+from mcp_adapter import UniversalMCPClient
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +106,8 @@ async def test_github_mcp(client: Any) -> None:
 
         return True
     except Exception as e:
-        logger.error(f"  ❌ GitHub test failed: {e}")
+    pass
+logger.error(f"  ❌ GitHub test failed: {e}")
         return False
 
 
@@ -154,7 +156,8 @@ async def test_postgres_mcp(client: Any) -> None:
 
         return True
     except Exception as e:
-        logger.error(f"  ❌ Postgres test failed: {e}")
+    pass
+logger.error(f"  ❌ Postgres test failed: {e}")
         return False
 
 
@@ -203,7 +206,8 @@ async def test_pinecone_mcp(client: Any) -> None:
 
         return True
     except Exception as e:
-        logger.error(f"  ❌ Pinecone test failed: {e}")
+    pass
+logger.error(f"  ❌ Pinecone test failed: {e}")
         return False
 
 
@@ -226,7 +230,8 @@ async def test_terminal_mcp(client: Any) -> None:
 
         return True
     except Exception as e:
-        logger.error(f"  ❌ Terminal test failed: {e}")
+    pass
+logger.error(f"  ❌ Terminal test failed: {e}")
         return False
 
 
@@ -254,7 +259,8 @@ async def test_sequential_thinking_mcp(client: Any) -> None:
 
         return True
     except Exception as e:
-        logger.error(f"  ❌ Sequential thinking test failed: {e}")
+    pass
+logger.error(f"  ❌ Sequential thinking test failed: {e}")
         return False
 
 
@@ -264,8 +270,9 @@ async def test_executive_orchestrator_integration() -> None:
 
     try:
         # Import with MCP
-        from runtime.shared.workflow.executive_orchestrator import \
-            ExecutiveAgentOrchestrator
+        from runtime.shared.workflow.executive_orchestrator import (
+            ExecutiveAgentOrchestrator,
+        )
 
         # Create orchestrator
         ORCHESTRATOR = ExecutiveAgentOrchestrator()
@@ -294,7 +301,8 @@ async def test_executive_orchestrator_integration() -> None:
             return False
 
     except Exception as e:
-        logger.error(f"  ❌ Orchestrator test failed: {e}")
+    pass
+logger.error(f"  ❌ Orchestrator test failed: {e}")
         return False
 
 
@@ -343,7 +351,8 @@ async def main() -> None:
             logger.warning(f"\n⚠️ {total - passed} test(s) failed or skipped")
 
     except Exception as e:
-        logger.error(f"\n❌ Test suite failed: {e}")
+    pass
+logger.error(f"\n❌ Test suite failed: {e}")
         import traceback
 
         traceback.print_exc()

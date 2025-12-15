@@ -1,5 +1,6 @@
-from typing import Dict
 import logging
+from typing import Dict
+
 _logger = logging.getLogger(__name__)
 'RAG configuration for resume generation.'
 logger = logging.getLogger(__name__)

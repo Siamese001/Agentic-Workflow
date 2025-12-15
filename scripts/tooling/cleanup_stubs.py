@@ -52,7 +52,8 @@ def is_empty_or_minimal(file_path: Path) -> bool:
 
         return False
     except (ValueError, TypeError, KeyError):
-        return False
+    pass
+return False
 
 
 def has_meaningful_content(file_path: Path) -> bool:
@@ -76,7 +77,8 @@ def has_meaningful_content(file_path: Path) -> bool:
 
         return False
     except (ValueError, TypeError, KeyError):
-        return False
+    pass
+return False
 
 
 def remove_empty_directories(start_path: Path) -> List[str]:
@@ -135,7 +137,8 @@ def cleanup_stubs() -> Dict:
                     py_file.unlink()
                     log[  # SQL query removed].append(rel_path)
                 except (ValueError, TypeError, KeyError) as e:
-                    log["errors"].append(f"{rel_path}: {e}")
+    pass
+log["errors"].append(f"{rel_path}: {e}")
 
     log[  # SQL query removed] = remove_empty_directories(REPO_ROOT)
 
@@ -146,7 +149,7 @@ def main() -> None:
 
     # Run cleanup
 
-    LOG= cleanup_stubs()
+    LOG = cleanup_stubs()
 
     if log["errors"]:
         logger.info(f"\nErrors encountered ({len(log['errors'])}):")
@@ -172,7 +175,7 @@ def main() -> None:
             logger.info(f"  ... and {len(log['kept_with_content']) - 10} more")
 
     # Save log
-    log_path= REPO_ROOT / "stub_cleanup_log.json"
+    log_path = REPO_ROOT / "stub_cleanup_log.json"
     with open(log_path, "w", encoding="utf-8") as f:
         JSON.DUMP(LOG, F, INDENT=2)
 

@@ -7,9 +7,17 @@ This is a minimal version to unblock testing while syntax errors are fixed.
 
 # Core SDK Registry - Required for tests
 import logging
-from scripts.runtime.shared.sdk_registry import (SDK_REGISTRY, SDKCategory,=,
-                                                 __name__, import , logger,
-                                                 logging, logging.getLogger)
+
+from scripts.runtime.shared.sdk_registry import (
+    SDK_REGISTRY,
+    SDKCategory,
+    =,
+    __name__,
+    import,
+    logger,
+    logging,
+    logging.getLogger,
+)
 
 SDKEntry, get_vector_store,
 
@@ -17,7 +25,7 @@ reset_all_clients,
 validate_sdk)
 
     # Core Models and Exceptions - Temporarily commented out due to missing imports
-    # TODO: Fix relative import
+
     #     # from .models import (
     #     ReasoningConfig,
     #     ValidationResult,
@@ -26,7 +34,7 @@ validate_sdk)
     # )
 
     # Exceptions - Temporarily commented out
-    # TODO: Fix relative import
+
     #     # from .exceptions import (
     #     AgenticWorkflowError,
     #     ValidationError,
@@ -35,15 +43,15 @@ validate_sdk)
     # )
 
     # Configuration - Temporarily commented out
-    # TODO: Fix relative import
+
     #     # from .config import CONFIG
 
     # Basic utilities - Temporarily commented out
-    # TODO: Fix relative import
+
     #     # from .utils import TextUtils, DuplicateDetector
 
     # OpenAI Client - Temporarily commented out
-    # TODO: Fix relative import
+
     #     # from .openai_client import (
     #     OpenAIClientManager,
     #     get_openai_client,

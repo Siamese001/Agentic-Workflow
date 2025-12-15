@@ -123,7 +123,8 @@ class Agent(ABC):
             return response.content[0].text
 
         except Exception as e:
-            logger.error(f"LLM call failed for {self.k_node_id}: {e}")
+    pass
+logger.error(f"LLM call failed for {self.k_node_id}: {e}")
             raise
 
         """Docstring."""

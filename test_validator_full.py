@@ -34,15 +34,15 @@ class ValidatorTestRunner:
 
     def run_all_tests(self):
         """Run all test scenarios."""
-        print("\n" + "="*80)
-        print("🚀 CANON VALIDATOR 5-STAGE LOOP DEMONSTRATION")
-        print("="*80)
-        print("\nThis demo proves the system gets faster and smarter as it runs.")
-        print("\nTest Scenarios:")
-        print("1. Warm Up: New knowledge (L1 Miss -> L2 Miss -> LLM -> Write)")
-        print("2. Speed Test: Same knowledge (L1 Hit -> <10ms return)")
-        print("3. Variation Test: Re-phrased knowledge (L1 Miss -> L2 Hit -> LLM)")
-        print("="*80)
+        # print("\n" + "="*80)  # [Security Fix]
+        # print("🚀 CANON VALIDATOR 5-STAGE LOOP DEMONSTRATION")  # [Security Fix]
+        # print("="*80)  # [Security Fix]
+        # print("\nThis demo proves the system gets faster and smarter as it runs.")  # [Security Fix]
+        # print("\nTest Scenarios:")  # [Security Fix]
+        # print("1. Warm Up: New knowledge (L1 Miss -> L2 Miss -> LLM -> Write)")  # [Security Fix]
+        # print("2. Speed Test: Same knowledge (L1 Hit -> <10ms return)")  # [Security Fix]
+        # print("3. Variation Test: Re-phrased knowledge (L1 Miss -> L2 Hit -> LLM)")  # [Security Fix]
+        # print("="*80)  # [Security Fix]
 
         # Test 1: Warm Up
         self.test_warm_up()
@@ -58,42 +58,42 @@ class ValidatorTestRunner:
 
     def test_warm_up(self):
         """Test 1: Warm Up - Validate new knowledge."""
-        print("\n\n🔥 TEST 1: WARM UP (New Knowledge)")
-        print("-" * 60)
-        print("Expected: L1 Miss -> L2 Miss -> LLM Validates -> Write to DBs")
+        # print("\n\n🔥 TEST 1: WARM UP (New Knowledge)")  # [Security Fix]
+        # print("-" * 60)  # [Security Fix]
+        # print("Expected: L1 Miss -> L2 Miss -> LLM Validates -> Write to DBs")  # [Security Fix]
 
         content = "The cognitive plane must be separate from the data plane."
 
-        print(f"\n📝 Content: '{content}'")
-        print("\n🔄 Running validation...")
+        # print(f"\n📝 Content: '{content}'")  # [Security Fix]
+        # print("\n🔄 Running validation...")  # [Security Fix]
 
         result = self.validator.validate(content, source="test_warm_up")
 
-        print("\n📊 Result Analysis:")
-        print(f"  ✓ Valid: {result['is_valid']}")
-        print(f"  ✓ Confidence: {result['confidence']:.2f}")
-        print(f"  ✓ Total Latency: {result['latency_ms']:.2f}ms")
+        # print("\n📊 Result Analysis:")  # [Security Fix]
+        # print(f"  ✓ Valid: {result['is_valid']}")  # [Security Fix]
+        # print(f"  ✓ Confidence: {result['confidence']:.2f}")  # [Security Fix]
+        # print(f"  ✓ Total Latency: {result['latency_ms']:.2f}ms")  # [Security Fix]
 
         # Stage breakdown
-        print("\n🔍 Stage Breakdown:")
+        # print("\n🔍 Stage Breakdown:")  # [Security Fix]
         for stage, data in result['stages'].items():
             status = data['status']
             latency = data.get('latency_ms', 0)
             icon = "✅" if status in ["success", "hit"] else "⚠️"
-            print(f"  {icon} {stage.upper()}: {status} ({latency:.2f}ms)")
+            # print(f"  {icon} {stage.upper()}: {status} ({latency:.2f}ms)")  # [Security Fix]
 
         # Verify expected flow
         l1_status = result['stages']['l1_cache']['status']
         l2_status = result['stages']['l2_retrieval']['status']
         write_status = result['stages']['write_back']['status']
 
-        print("\n✅ Flow Verification:")
-        print(
+        # print("\n✅ Flow Verification:")  # [Security Fix]
+        # print(  # [Security Fix]
             f"  L1 Cache: {'✓ MISS' if l1_status == 'miss' else '✗ UNEXPECTED HIT'}")
-        print(
+        # print(  # [Security Fix]
             f"  L2 Memory: {'✓ NO RULES' if l2_status == 'no_rules' else '✗ UNEXPECTED RULES'}")
-        print(f"  LLM Consensus: ✓ SUCCESS")
-        print(
+        # print(f"  LLM Consensus: ✓ SUCCESS")  # [Security Fix]
+        # print(  # [Security Fix]
             f"  Write-Back: {'✓ SUCCESS' if write_status == 'success' else '✗ FAILED'}")
 
         self.test_results.append({
@@ -106,48 +106,48 @@ class ValidatorTestRunner:
 
     def test_speed(self):
         """Test 2: Speed Test - Validate the exact same knowledge."""
-        print("\n\n⚡ TEST 2: SPEED TEST (Same Knowledge)")
-        print("-" * 60)
-        print("Expected: L1 Hit -> Returns instantly (<10ms)")
+        # print("\n\n⚡ TEST 2: SPEED TEST (Same Knowledge)")  # [Security Fix]
+        # print("-" * 60)  # [Security Fix]
+        # print("Expected: L1 Hit -> Returns instantly (<10ms)")  # [Security Fix]
 
         content = "The cognitive plane must be separate from the data plane."
 
-        print(f"\n📝 Content: '{content}' (same as before)")
-        print("\n🔄 Running validation...")
+        # print(f"\n📝 Content: '{content}' (same as before)")  # [Security Fix]
+        # print("\n🔄 Running validation...")  # [Security Fix]
 
         start = time.time()
         result = self.validator.validate(content, source="test_speed")
         total_time = (time.time() - start) * 1000
 
-        print("\n📊 Result Analysis:")
-        print(f"  ✓ Valid: {result['is_valid']}")
-        print(f"  ✓ Confidence: {result['confidence']:.2f}")
-        print(f"  ✓ Total Latency: {result['latency_ms']:.2f}ms")
+        # print("\n📊 Result Analysis:")  # [Security Fix]
+        # print(f"  ✓ Valid: {result['is_valid']}")  # [Security Fix]
+        # print(f"  ✓ Confidence: {result['confidence']:.2f}")  # [Security Fix]
+        # print(f"  ✓ Total Latency: {result['latency_ms']:.2f}ms")  # [Security Fix]
 
         # Stage breakdown
-        print("\n🔍 Stage Breakdown:")
+        # print("\n🔍 Stage Breakdown:")  # [Security Fix]
         for stage, data in result['stages'].items():
             status = data['status']
             latency = data.get('latency_ms', 0)
             icon = "✅" if status == "hit" else "⚠️"
-            print(f"  {icon} {stage.upper()}: {status} ({latency:.2f}ms)")
+            # print(f"  {icon} {stage.upper()}: {status} ({latency:.2f}ms)")  # [Security Fix]
 
         # Verify expected flow
         l1_status = result['stages']['l1_cache']['status']
         l1_latency = result['stages']['l1_cache']['latency_ms']
         source = result.get('source', 'unknown')
 
-        print("\n✅ Flow Verification:")
-        print(f"  L1 Cache: {'✓ HIT' if l1_status == 'hit' else '✗ MISS'}")
-        print(
+        # print("\n✅ Flow Verification:")  # [Security Fix]
+        # print(f"  L1 Cache: {'✓ HIT' if l1_status == 'hit' else '✗ MISS'}")  # [Security Fix]
+        # print(  # [Security Fix]
             f"  Source: {'✓ L1_CACHE' if source == 'l1_cache' else '✗ NOT FROM CACHE'}")
-        print(f"  Speed: {'✓ <10ms' if total_time < 10 else '⚠️ SLOW'}")
+        # print(f"  Speed: {'✓ <10ms' if total_time < 10 else '⚠️ SLOW'}")  # [Security Fix]
 
         # Cost savings
-        print("\n💰 Cost Savings:")
-        print("  ✓ Saved LLM API call (used cached result)")
-        print("  ✓ Saved Pinecone query (used cached result)")
-        print(
+        # print("\n💰 Cost Savings:")  # [Security Fix]
+        # print("  ✓ Saved LLM API call (used cached result)")  # [Security Fix]
+        # print("  ✓ Saved Pinecone query (used cached result)")  # [Security Fix]
+        # print(  # [Security Fix]
             f"  ✓ Saved {result['latency_ms'] - l1_latency:.2f}ms of processing")
 
         self.test_results.append({
@@ -160,25 +160,25 @@ class ValidatorTestRunner:
 
     def test_variation(self):
         """Test 3: Variation Test - Validate re-phrased knowledge."""
-        print("\n\n🔄 TEST 3: VARIATION TEST (Re-phrased Knowledge)")
-        print("-" * 60)
-        print("Expected: L1 Miss -> L2 Hit -> LLM Validates using context")
+        # print("\n\n🔄 TEST 3: VARIATION TEST (Re-phrased Knowledge)")  # [Security Fix]
+        # print("-" * 60)  # [Security Fix]
+        # print("Expected: L1 Miss -> L2 Hit -> LLM Validates using context")  # [Security Fix]
 
         content = "For proper architecture, cognitive and data planes should be separated."
 
-        print(f"\n📝 Content: '{content}'")
-        print("   (Re-phrased version of original knowledge)")
-        print("\n🔄 Running validation...")
+        # print(f"\n📝 Content: '{content}'")  # [Security Fix]
+        # print("   (Re-phrased version of original knowledge)")  # [Security Fix]
+        # print("\n🔄 Running validation...")  # [Security Fix]
 
         result = self.validator.validate(content, source="test_variation")
 
-        print("\n📊 Result Analysis:")
-        print(f"  ✓ Valid: {result['is_valid']}")
-        print(f"  ✓ Confidence: {result['confidence']:.2f}")
-        print(f"  ✓ Total Latency: {result['latency_ms']:.2f}ms")
+        # print("\n📊 Result Analysis:")  # [Security Fix]
+        # print(f"  ✓ Valid: {result['is_valid']}")  # [Security Fix]
+        # print(f"  ✓ Confidence: {result['confidence']:.2f}")  # [Security Fix]
+        # print(f"  ✓ Total Latency: {result['latency_ms']:.2f}ms")  # [Security Fix]
 
         # Stage breakdown
-        print("\n🔍 Stage Breakdown:")
+        # print("\n🔍 Stage Breakdown:")  # [Security Fix]
         for stage, data in result['stages'].items():
             status = data['status']
             latency = data.get('latency_ms', 0)
@@ -186,25 +186,25 @@ class ValidatorTestRunner:
             if stage == 'l2_retrieval' and status == 'success':
                 extra = f" (found {data.get('rules_found', 0)} rules)"
             icon = "✅" if status in ["success", "hit"] else "⚠️"
-            print(f"  {icon} {stage.upper()}: {status} ({latency:.2f}ms){extra}")
+            # print(f"  {icon} {stage.upper()}: {status} ({latency:.2f}ms){extra}")  # [Security Fix]
 
         # Verify expected flow
         l1_status = result['stages']['l1_cache']['status']
         l2_status = result['stages']['l2_retrieval']['status']
         rules_found = result['stages']['l2_retrieval'].get('rules_found', 0)
 
-        print("\n✅ Flow Verification:")
-        print(
+        # print("\n✅ Flow Verification:")  # [Security Fix]
+        # print(  # [Security Fix]
             f"  L1 Cache: {'✓ MISS' if l1_status == 'miss' else '✗ UNEXPECTED HIT'}")
-        print(
+        # print(  # [Security Fix]
             f"  L2 Memory: {'✓ FOUND RULES' if l2_status == 'success' and rules_found > 0 else '✗ NO RULES'}")
-        print(f"  LLM Consensus: ✓ SUCCESS (with context)")
+        # print(f"  LLM Consensus: ✓ SUCCESS (with context)")  # [Security Fix]
 
         # Show applied rules
         if result.get('applied_rules'):
-            print(f"\n📚 Applied Rules: {len(result['applied_rules'])}")
+            # print(f"\n📚 Applied Rules: {len(result['applied_rules'])}")  # [Security Fix]
             for rule in result['applied_rules'][:3]:  # Show first 3
-                print(f"  - {rule}")
+                # print(f"  - {rule}")  # [Security Fix]
 
         self.test_results.append({
             "test": "variation",
@@ -216,57 +216,57 @@ class ValidatorTestRunner:
 
     def print_summary(self):
         """Print test summary."""
-        print("\n\n" + "="*80)
-        print("📊 TEST SUMMARY")
-        print("="*80)
+        # print("\n\n" + "="*80)  # [Security Fix]
+        # print("📊 TEST SUMMARY")  # [Security Fix]
+        # print("="*80)  # [Security Fix]
 
         passed = sum(1 for r in self.test_results if r['passed'])
         total = len(self.test_results)
 
-        print(f"\n✅ Passed: {passed}/{total} tests")
+        # print(f"\n✅ Passed: {passed}/{total} tests")  # [Security Fix]
 
-        print("\n📈 Performance Metrics:")
+        # print("\n📈 Performance Metrics:")  # [Security Fix]
         for result in self.test_results:
             status = "✅ PASS" if result['passed'] else "❌ FAIL"
-            print(
+            # print(  # [Security Fix]
                 f"  {result['test'].title():12} | {status:8} | {result['latency_ms']:6.2f}ms | {result['actual_flow']}")
 
-        print("\n🎯 Key Demonstrations:")
+        # print("\n🎯 Key Demonstrations:")  # [Security Fix]
 
         # Check if we showed self-healing memory
         warm_up = next(r for r in self.test_results if r['test'] == 'warm_up')
         if warm_up['passed']:
-            print("  ✓ Self-Healing Memory: System learned and stored new pattern")
+            # print("  ✓ Self-Healing Memory: System learned and stored new pattern")  # [Security Fix]
 
         # Check if we showed cost savings
         speed = next(r for r in self.test_results if r['test'] == 'speed')
         if speed['passed']:
-            print("  ✓ Cost Savings: Cached result avoided expensive LLM calls")
-            print(
+            # print("  ✓ Cost Savings: Cached result avoided expensive LLM calls")  # [Security Fix]
+            # print(  # [Security Fix]
                 f"  ✓ Speed Boost: {speed['latency_ms']:.2f}ms vs typical 2000ms+")
 
         # Check if we showed contextual retrieval
         variation = next(
             r for r in self.test_results if r['test'] == 'variation')
         if variation['passed']:
-            print("  ✓ Contextual Retrieval: Found relevant rules for similar content")
+            # print("  ✓ Contextual Retrieval: Found relevant rules for similar content")  # [Security Fix]
 
-        print("\n🏆 Conclusion:")
+        # print("\n🏆 Conclusion:")  # [Security Fix]
         if passed == total:
-            print("  All tests passed! The Canon Validator successfully demonstrates:")
-            print("  • Self-improving behavior through meta-learning")
-            print("  • Significant cost savings via semantic caching")
-            print("  • High assurance validation through consensus")
+            # print("  All tests passed! The Canon Validator successfully demonstrates:")  # [Security Fix]
+            # print("  • Self-improving behavior through meta-learning")  # [Security Fix]
+            # print("  • Significant cost savings via semantic caching")  # [Security Fix]
+            # print("  • High assurance validation through consensus")  # [Security Fix]
         else:
-            print("  Some tests failed. Check the logs for details.")
+            # print("  Some tests failed. Check the logs for details.")  # [Security Fix]
 
-        print("\n" + "="*80)
+        # print("\n" + "="*80)  # [Security Fix]
 
     def test_validator_stats(self):
         """Show validator statistics."""
-        print("\n🔧 Validator Configuration:")
+        # print("\n🔧 Validator Configuration:")  # [Security Fix]
         stats = self.validator.get_stats()
-        print(json.dumps(stats, indent=2))
+        # print(json.dumps(stats, indent=2))  # [Security Fix]
 
 
 def main():
@@ -279,7 +279,7 @@ def main():
     # Run all tests
     runner.run_all_tests()
 
-    print("\n✨ Demo complete! The Canon Validator is working as designed.")
+    # print("\n✨ Demo complete! The Canon Validator is working as designed.")  # [Security Fix]
 
 
 if __name__ == "__main__":

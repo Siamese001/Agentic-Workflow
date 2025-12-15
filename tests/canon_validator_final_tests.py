@@ -4,11 +4,12 @@ Canon Validator Engine - Final Simplified Test Suite
 Tests core functionality without complex mocking
 """
 
-from canon_validator import CanonValidator
+import json
 import sys
 from pathlib import Path
-import json
 from unittest.mock import Mock
+
+from canon_validator import CanonValidator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -31,7 +32,7 @@ sys.modules['redis_client'] = Mock()
 
 def test_basic_validation_flow():
     """Test basic validation flow works"""
-    print("  Testing Basic Validation Flow...")
+    # print("  Testing Basic Validation Flow...")  # [Security Fix]
 
     validator = CanonValidator()
 
@@ -56,12 +57,12 @@ def test_basic_validation_flow():
 
     assert result["status"] == "valid"
     assert validator.llm.generate_plan.called
-    print("    ✅ Basic validation works")
+    # print("    ✅ Basic validation works")  # [Security Fix]
 
 
 def test_violation_detection():
     """Test violation detection"""
-    print("  Testing Violation Detection...")
+    # print("  Testing Violation Detection...")  # [Security Fix]
 
     validator = CanonValidator()
 
@@ -85,12 +86,12 @@ def test_violation_detection():
 
     assert result["status"] == "rejected"
     assert "security" in result["reasoning"].lower()
-    print("    ✅ Violation detection works")
+    # print("    ✅ Violation detection works")  # [Security Fix]
 
 
 def test_auto_repair():
     """Test auto-repair functionality"""
-    print("  Testing Auto-Repair...")
+    # print("  Testing Auto-Repair...")  # [Security Fix]
 
     validator = CanonValidator()
 
@@ -117,12 +118,12 @@ def test_auto_repair():
     assert result["status"] == "repaired"
     assert "safe_code" in result["repaired_code"]
     assert validator.llm.generate_plan.call_count == 2
-    print("    ✅ Auto-repair works")
+    # print("    ✅ Auto-repair works")  # [Security Fix]
 
 
 def test_caching():
     """Test caching functionality"""
-    print("  Testing Caching...")
+    # print("  Testing Caching...")  # [Security Fix]
 
     validator = CanonValidator()
 
@@ -155,12 +156,12 @@ def test_caching():
     assert result1["status"] == "valid"
     assert result2["status"] == "valid"
     assert result2.get("source") == "l1_redis_cache"
-    print("    ✅ Caching works")
+    # print("    ✅ Caching works")  # [Security Fix]
 
 
 def test_design_compliance():
     """Test design compliance check"""
-    print("  Testing Design Compliance...")
+    # print("  Testing Design Compliance...")  # [Security Fix]
 
     validator = CanonValidator()
 
@@ -187,12 +188,12 @@ def test_design_compliance():
 
     assert result["status"] == "repaired"
     assert "tokens.color-primary" in result["message"]
-    print("    ✅ Design compliance works")
+    # print("    ✅ Design compliance works")  # [Security Fix]
 
 
 def test_error_handling():
     """Test error handling"""
-    print("  Testing Error Handling...")
+    # print("  Testing Error Handling...")  # [Security Fix]
 
     validator = CanonValidator()
 
@@ -204,12 +205,12 @@ def test_error_handling():
 
     assert result["status"] == "error"
     assert "embedding" in result["message"].lower()
-    print("    ✅ Error handling works")
+    # print("    ✅ Error handling works")  # [Security Fix]
 
 
 def test_time_functions():
     """Test time conversion functions"""
-    print("  Testing Time Functions...")
+    # print("  Testing Time Functions...")  # [Security Fix]
 
     # Test time conversion logic without actual MCP calls
     def mock_convert_time(source_time, source_timezone, target_timezone):
@@ -225,12 +226,12 @@ def test_time_functions():
 
     assert result1 == "02:00+1"
     assert result2 == "06:00+0"
-    print("    ✅ Time conversion logic works")
+    # print("    ✅ Time conversion logic works")  # [Security Fix]
 
 
 def test_cost_tracking():
     """Test cost tracking logic"""
-    print("  Testing Cost Tracking...")
+    # print("  Testing Cost Tracking...")  # [Security Fix]
 
     # Simulate cost tracking
     costs = {
@@ -258,12 +259,12 @@ def test_cost_tracking():
     # Test limit exceeded
     assert track_cost("brave_search", 800) == False
     assert costs["total"] == 1050
-    print("    ✅ Cost tracking works")
+    # print("    ✅ Cost tracking works")  # [Security Fix]
 
 
 def test_transaction_rollback():
     """Test transaction rollback logic"""
-    print("  Testing Transaction Rollback...")
+    # print("  Testing Transaction Rollback...")  # [Security Fix]
 
     class SimpleTransaction:
         def __init__(self):
@@ -300,16 +301,16 @@ def test_transaction_rollback():
         tx2.commit()
         assert False, "Should have raised exception"
     except Exception:
-        result = tx2.rollback()
+result = tx2.rollback()
         assert result == "ROLLED_BACK"
         assert len(tx2.operations) == 0
 
-    print("    ✅ Transaction rollback works")
+    # print("    ✅ Transaction rollback works")  # [Security Fix]
 
 
 def test_security_sanitization():
     """Test security sanitization"""
-    print("  Testing Security Sanitization...")
+    # print("  Testing Security Sanitization...")  # [Security Fix]
 
     # Test argument sanitization
     def sanitize_args(args):
@@ -327,14 +328,14 @@ def test_security_sanitization():
     assert result1 == "commit"
     assert result2 == ""
     assert result3 == "normal file"
-    print("    ✅ Security sanitization works")
+    # print("    ✅ Security sanitization works")  # [Security Fix]
 
 
 def main():
     """Run all tests"""
-    print("="*80)
-    print("🧪 CANON VALIDATOR ENGINE - FINAL TEST SUITE")
-    print("="*80)
+    # print("="*80)  # [Security Fix]
+    # print("🧪 CANON VALIDATOR ENGINE - FINAL TEST SUITE")  # [Security Fix]
+    # print("="*80)  # [Security Fix]
 
     tests = [
         ("Basic Functionality", [
@@ -358,42 +359,42 @@ def main():
     all_passed = True
 
     for category_name, test_list in tests:
-        print(f"\n🔬 {category_name}")
-        print("-" * 50)
+        # print(f"\n🔬 {category_name}")  # [Security Fix]
+        # print("-" * 50)  # [Security Fix]
 
         for test_func in test_list:
             try:
                 test_func()
             except Exception as e:
-                print(f"    ❌ FAILED: {e}")
+# print(f"    ❌ FAILED: {e}")  # [Security Fix]
                 all_passed = False
 
     # Summary
-    print("\n" + "="*80)
+    # print("\n" + "="*80)  # [Security Fix]
     if all_passed:
-        print("✅ ALL TESTS PASSED!")
-        print("\n📊 Test Coverage:")
-        print("  - Basic Validation Flow: ✅")
-        print("  - Violation Detection: ✅")
-        print("  - Auto-Repair: ✅")
-        print("  - Caching: ✅")
-        print("  - Design Compliance: ✅")
-        print("  - Error Handling: ✅")
-        print("  - Time Functions: ✅")
-        print("  - Cost Tracking: ✅")
-        print("  - Transaction Rollback: ✅")
-        print("  - Security Sanitization: ✅")
-        print("\n🎯 Canon Validator Engine is ready!")
-        print("\n🔑 Validation Summary:")
-        print("  - All 50 Keys implemented and tested")
-        print("  - L1-L5 layers functioning correctly")
-        print("  - Security measures in place")
-        print("  - Performance optimized with caching")
-        print("  - Cost governance enforced")
-        print("  - Atomic transactions guaranteed")
+        # print("✅ ALL TESTS PASSED!")  # [Security Fix]
+        # print("\n📊 Test Coverage:")  # [Security Fix]
+        # print("  - Basic Validation Flow: ✅")  # [Security Fix]
+        # print("  - Violation Detection: ✅")  # [Security Fix]
+        # print("  - Auto-Repair: ✅")  # [Security Fix]
+        # print("  - Caching: ✅")  # [Security Fix]
+        # print("  - Design Compliance: ✅")  # [Security Fix]
+        # print("  - Error Handling: ✅")  # [Security Fix]
+        # print("  - Time Functions: ✅")  # [Security Fix]
+        # print("  - Cost Tracking: ✅")  # [Security Fix]
+        # print("  - Transaction Rollback: ✅")  # [Security Fix]
+        # print("  - Security Sanitization: ✅")  # [Security Fix]
+        # print("\n🎯 Canon Validator Engine is ready!")  # [Security Fix]
+        # print("\n🔑 Validation Summary:")  # [Security Fix]
+        # print("  - All 50 Keys implemented and tested")  # [Security Fix]
+        # print("  - L1-L5 layers functioning correctly")  # [Security Fix]
+        # print("  - Security measures in place")  # [Security Fix]
+        # print("  - Performance optimized with caching")  # [Security Fix]
+        # print("  - Cost governance enforced")  # [Security Fix]
+        # print("  - Atomic transactions guaranteed")  # [Security Fix]
         return 0
     else:
-        print("❌ SOME TESTS FAILED!")
+        # print("❌ SOME TESTS FAILED!")  # [Security Fix]
         return 1
 
 

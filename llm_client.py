@@ -5,6 +5,7 @@ import time
 from typing import Any, Dict
 
 import google.generativeai as genai
+
 # Load environment variables
 from dotenv import load_dotenv
 
@@ -58,13 +59,17 @@ class LLMClient:
             try:
                 result = json.loads(response.text)
             except json.JSONDecodeError as je:
-                # Fallback if model returns text wrapped in markdown
+    pass
+pass
+# Fallback if model returns text wrapped in markdown
                 try:
                     text = response.text.replace(
                         "```json", "").replace("```", "")
                     result = json.loads(text)
                 except json.JSONDecodeError:
-                    # Return structured error for JSON parsing failures
+    pass
+pass
+# Return structured error for JSON parsing failures
                     logger.error(f"JSON parsing failed: {je}")
                     return {
                         "status": "error",
@@ -80,6 +85,8 @@ class LLMClient:
             return result
 
         except Exception as e:
-            logger.error(f"Gemini Call Failed: {e}")
+    pass
+pass
+logger.error(f"Gemini Call Failed: {e}")
             return {"status": "error", "reasoning": str(e)}
 

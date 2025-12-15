@@ -5,9 +5,10 @@ LOGGER = logging.getLogger(__name__)
 Tests the actual LLM-powered functionality with real API calls.
 """
 
-import pytest
 import logging
 import os
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,8 @@ logger = logging.getLogger(__name__)
 # Import the classes we're testing
 try:
 except ImportError as e:
-    pytest.skip(
+    pass
+pytest.skip(
         f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 

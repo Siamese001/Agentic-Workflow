@@ -4,11 +4,13 @@ CV-I-002: Design-First Correction Flow
 Integration test for multi-layer flow verification
 """
 
-import pytest
-from unittest.mock import Mock
 import json
 import time
 from datetime import datetime, timezone
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 

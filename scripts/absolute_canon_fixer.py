@@ -65,7 +65,7 @@ def absolute_fix_logger_usage() -> None:
             file_path.write_text(content, encoding='utf-8')
             FIXED += 1
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Eliminated print in {fixed} files")
 
@@ -96,7 +96,7 @@ def absolute_fix_empty_except() -> None:
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -121,7 +121,7 @@ def absolute_fix_bare_except() -> None:
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -174,7 +174,7 @@ def absolute_fix_unused_imports() -> None:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -213,7 +213,7 @@ def absolute_fix_long_lines() -> None:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -236,7 +236,7 @@ def absolute_fix_trailing_whitespace() -> None:
                 file_path.write_text(new_content, encoding='utf-8')
                 FIXED += 1
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Fixed {fixed} files")
 
@@ -277,7 +277,7 @@ def absolute_fix_docstrings() -> None:
             if fixed > 0:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info(f"  Added {fixed} docstrings")
 
@@ -302,7 +302,7 @@ def absolute_fix_naming() -> None:
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
         except Exception:
-            pass  # Exception handled
+pass  # Exception handled
 
     logger.info("  Fixed naming conventions")
 

@@ -159,11 +159,12 @@ class ScriptsLoadPlanner:
             )
 
             self.logger.info(f"Successfully planned load: {len(sources)} sources,
-                {estimated_duration}s estimated")
+                             {estimated_duration}s estimated")
             return result
 
         except Exception as e:
-            self.logger.error(f"Load planning failed: {str(e)}")
+    pass
+self.logger.error(f"Load planning failed: {str(e)}")
             return LoadPlanningResult(
                 SUCCESS=False,
                 ERRORS=[str(e)],
@@ -242,9 +243,11 @@ class ScriptsLoadPlanner:
         for raw_transform in raw_transformations:
             if isinstance(raw_transform, dict):
                 TRANSFORMATION = LoadTransformation(
-                    id=raw_transform.get("id", f"transform_{len(transformations)}"),
+                    id=raw_transform.get(
+                        "id", f"transform_{len(transformations)}"),
                     NAME=raw_transform.get("name", "unnamed"),
-                    transformation_type=raw_transform.get("transformation_type", "filter"),
+                    transformation_type=raw_transform.get(
+                        "transformation_type", "filter"),
                     PARAMETERS=raw_transform.get("parameters", {}),
                     CONDITIONS=raw_transform.get("conditions", [])
                 )
@@ -273,13 +276,15 @@ class ScriptsLoadPlanner:
         )
 
         return LoadPlan(
-            id=request.get("plan_id", f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
+            id=request.get(
+                "plan_id", f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
             NAME=request.get("plan_name", "unnamed_plan"),
             load_strategy=load_strategy,
             SOURCES=sources,
             TRANSFORMATIONS=transformations,
             DESTINATION=request.get("destination", ""),
-            batch_size=request.get("batch_size", self.config.default_batch_size),
+            batch_size=request.get(
+                "batch_size", self.config.default_batch_size),
             parallel_workers=request.get("parallel_workers", 1),
             retry_attempts=request.get("retry_attempts", 3),
             timeout_seconds=request.get("timeout_seconds", 300),
@@ -302,10 +307,11 @@ class ScriptsLoadPlanner:
         # Add time based on parallel workers (inverse relationship)
         parallel_factor = max(0.5, 1 / plan.parallel_workers)
 
-        total_duration = (base_duration + source_duration + transform_duration) * batch_factor * par
+        total_duration = (base_duration + source_duration +
+                          transform_duration) * batch_factor * par
     allel_factor
 
-        return int(total_duration)
+    return int(total_duration)
 
     def _estimate_data_volume(self, plan: LoadPlan) -> int:
         """Estimate data volume in bytes."""
@@ -348,19 +354,22 @@ class ScriptsLoadPlanner:
         remote_sources = [
             s for s in plan.sources
             if s.source_type in [DataSourceType.API, DataSourceType.CLOUD_STORAGE, DataSourceType.DA
-    TABASE]
+                                 TABASE]
         ]
         if remote_sources:
-            requirements["network_bandwidth"] = len(remote_sources) * 10  # 10 Mbps per remote so...
+            # 10 Mbps per remote so...
+            requirements["network_bandwidth"] = len(remote_sources) * 10
 
         return requirements
 
 # Factory function for easy instantiation
+
+
 def create_scripts_load_planner(
     """Docstring."""
     enable_parallel_loading: bool = True,
     enable_validation: bool = True,
-    **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
+        **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
     """Create a configured scripts load planner."""
     CONFIG = LoadPlanningConfig(
         enable_parallel_loading=enable_parallel_loading,
@@ -370,6 +379,8 @@ def create_scripts_load_planner(
     return ScriptsLoadPlanner(config)
 
 # Convenience function for direct usage
+
+
 def plan_scripts_load(
     """Docstring."""
     plan_name: str,

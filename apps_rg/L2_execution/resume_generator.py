@@ -86,7 +86,8 @@ class ResumeGenerator:
             return tailored_resume
 
         except Exception as e:
-            logger.error(f"Error generating tailored resume: {e}")
+    pass
+logger.error(f"Error generating tailored resume: {e}")
             # Return original with error note
             resume_data["_tailoring_error"] = str(e)
             return resume_data
@@ -123,7 +124,8 @@ Return ONLY the rewritten summary, no additional text."""
             RESPONSE = self._generate_response(prompt)
             return response.strip()
         except Exception as e:
-            logger.error(f"Error tailoring summary: {e}")
+    pass
+logger.error(f"Error tailoring summary: {e}")
             return original_summary
 
     def _tailor_experience(self,
@@ -240,7 +242,8 @@ Return ONLY the rewritten bullet, no additional text."""
                 RESPONSE = self._generate_response(prompt)
                 tailored_bullets.append(response.strip())
             except Exception as e:
-                logger.error(f"Error tailoring bullet: {e}")
+    pass
+logger.error(f"Error tailoring bullet: {e}")
                 tailored_bullets.append(bullet)
 
         return tailored_bullets
@@ -266,7 +269,8 @@ Return ONLY the rewritten description, no additional text."""
             RESPONSE = self._generate_response(prompt)
             return response.strip()
         except Exception as e:
-            logger.error(f"Error tailoring description: {e}")
+    pass
+logger.error(f"Error tailoring description: {e}")
             return description
 
     def _generate_response(self, prompt: str) -> str:

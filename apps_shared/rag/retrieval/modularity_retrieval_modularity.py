@@ -37,7 +37,7 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
     assert ranking_file.exists(
     ), f"Expected META ranking module missing: {ranking_file}"
     assert hybrid_ranker_file.exists(),
-        f"Expected hybrid_ranker module missing: {hybrid_ranker_file}"
+    f"Expected hybrid_ranker module missing: {hybrid_ranker_file}"
 
     retrieval_file = PROJECT_ROOT / "meta" / "retrieval" / "retrieval.py"
     TEXT = retrieval_file.read_text(encoding="utf-8")
@@ -45,20 +45,21 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
     # Check for actual import statements (at beginning of line), not in docstrings
     LINES = text.split('\n')
     import_lines = [line.strip() for line in lines if line.strip().startswith('from ') or line.strip
-    ().startswith('import ')]
+                    ().startswith('import ')]
 
     # Should import from meta.retrieval.hybrid_ranker
     assert any("from meta.
-        .retrieval.
-        .hybrid_ranker import fuse_and_rank" in line for line in import_lines),
+               .retrieval.
+               .hybrid_ranker import fuse_and_rank" in line for line in import_lines),
 
-        f"Expected import from meta.retrieval.hybrid_ranker not found. Imports: {import_lines}"
+    f"Expected import from meta.retrieval.hybrid_ranker not found. Imports: {import_lines}"
 
     # Should import from retrievers (bm25 and dense) for actual functionality
-    retriever_imports = [line for line in import_lines if 'from retrievers.' in line]
+    retriever_imports = [
+        line for line in import_lines if 'from retrievers.' in line]
     expected_retrievers = ['from retrievers.bm25 import bm25_search', 'from retrievers.dense import
-    dense_search']
+                           dense_search']
     for expected in expected_retrievers:
         assert any(expected in line for line in retriever_imports),
-            f"Expected retriever import not found: {expected}. Found: {retriever_imports}"
+        f"Expected retriever import not found: {expected}. Found: {retriever_imports}"
 

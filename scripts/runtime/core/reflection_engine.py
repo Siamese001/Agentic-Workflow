@@ -66,7 +66,7 @@ class MutationRequest(BaseModel):
 class ReflectionEngine:
     """Engine for self-reflection and quality assessment."""
 
-    def __init__(self, config: Optional[ReflectionConfig] = None):
+    def __init__(self, config: Optional[ReflectionConfig]=None):
             """Initialize the Reflection Engine.
 
         Args:
@@ -181,7 +181,8 @@ class ReflectionEngine:
                 self.stats["llm_critiques"] += 1
 
         except CircuitOpenError:
-            # Circuit is open - return conservative result
+    pass
+# Circuit is open - return conservative result
             logger.warning("Reflection Engine Circuit OPEN. Skipping critique.")
             RESULT = CritiqueResult(
                 is_valid=True,  # Fail-open strategy
@@ -191,7 +192,8 @@ class ReflectionEngine:
             )
 
         except Exception as e:
-            # Unexpected error - return conservative result
+    pass
+# Unexpected error - return conservative result
             logger.error(f"Reflection evaluation failed: {e}")
             RESULT = CritiqueResult(
                 is_valid=True,  # Fail-open to avoid blocking workflow
@@ -260,7 +262,8 @@ class ReflectionEngine:
                 total_weight += criterion.weight
 
             except Exception as e:
-                logger.error(f"Validation error for {criterion.name}: {e}")
+    pass
+logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
 
         # Calculate overall result
@@ -332,7 +335,8 @@ Respond in JSON format:
             )
 
         except Exception as e:
-            logger.error(f"LLM evaluation failed: {e}")
+    pass
+logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result
             return CritiqueResult(
                 is_valid=False,
@@ -392,13 +396,15 @@ Respond in JSON format:
                 json.dumps(content)
                 return True
             except (TypeError, ValueError):
-                return False
+    pass
+return False
         elif isinstance(content, str):
             try:
                 json.loads(content)
                 return True
             except json.JSONDecodeError:
-                return False
+    pass
+return False
         return False
 
     def _validate_no_empty_fields(self, content: Any) -> bool:

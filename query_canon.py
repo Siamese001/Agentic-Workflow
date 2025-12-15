@@ -11,6 +11,7 @@ import sys
 from typing import Any, Dict, List
 
 from agent_logic_connectivity import CanonValidator
+
 # Import our hardened infrastructure
 from connection_manager import ConnectionManager
 
@@ -36,25 +37,27 @@ class CanonQuery:
         Returns:
             List of relevant matches with metadata
         """
-        print(f"\n🔍 Querying Canon: '{question}'")
-        print("=" * 60)
+        # print(f"\n🔍 Querying Canon: '{question}'")  # [Security Fix]
+        # print("=" * 60)  # [Security Fix]
 
         # Generate embedding for the query
         try:
             query_embedding = self.embedding_fn(question)
-            print(
+            # print(  # [Security Fix]
                 f"✅ Generated query embedding ({len(query_embedding)} dimensions)")
         except Exception as e:
-            print(f"❌ Failed to generate embedding: {e}")
+    pass
+pass
+# print(f"❌ Failed to generate embedding: {e}")  # [Security Fix]
             return []
 
         # Query Pinecone (L2) for semantic matches
         results = []
         try:
             pinecone_results = self.pinecone_index.query(
-                vector=query_embedding,
-                top_k=top_k,
-                include_metadata=True
+                vector = query_embedding,
+                top_k = top_k,
+                include_metadata = True
             )
 
             if pinecone_results and pinecone_results.get('matches'):
@@ -72,7 +75,9 @@ class CanonQuery:
                     })
 
         except Exception as e:
-            print(f"❌ Pinecone query failed: {e}")
+    pass
+pass
+# print(f"❌ Pinecone query failed: {e}")  # [Security Fix]
 
         # Sort by similarity score
         results.sort(key=lambda x: x['score'], reverse=True)
@@ -82,35 +87,35 @@ class CanonQuery:
     def format_results(self, results: List[Dict[str, Any]], query: str) -> None:
         """Display query results in a readable format."""
         if not results:
-            print("\n❌ No matches found in Canon.")
+            # print("\n❌ No matches found in Canon.")  # [Security Fix]
             return
 
-        print(f"\n📊 Found {len(results)} relevant results:")
-        print("=" * 60)
+        # print(f"\n📊 Found {len(results)} relevant results:")  # [Security Fix]
+        # print("=" * 60)  # [Security Fix]
 
         for i, result in enumerate(results[:5], 1):  # Show top 5
-            print(f"\n{i}. Match Score: {result['score']:.4f}")
-            print(f"   📁 Context: {result['project_context']}")
-            print(f"   🏷️  Rule ID: {result['canon_rule_id']}")
-            print(
+            # print(f"\n{i}. Match Score: {result['score']:.4f}")  # [Security Fix]
+            # print(f"   📁 Context: {result['project_context']}")  # [Security Fix]
+            # print(f"   🏷️  Rule ID: {result['canon_rule_id']}")  # [Security Fix]
+            # print(  # [Security Fix]
                 f"   📈 Stats: {result['success_count']} success, {result['failure_count']} failures")
-            print(f"\n   📄 Content:")
+            # print(f"\n   📄 Content:")  # [Security Fix]
             # Truncate very long content for display
             content = result['content']
             if len(content) > 500:
                 content = content[:500] + "...\n[truncated]"
-            print("   " + "\n   ".join(content.split('\n')))
-            print("-" * 60)
+            # print("   " + "\n   ".join(content.split('\n')))  # [Security Fix]
+            # print("-" * 60)  # [Security Fix]
 
         # Suggest follow-up actions
         best_match = results[0]
         if best_match['score'] > 0.9:
-            print(
+            # print(  # [Security Fix]
                 f"\n✅ Excellent match found! (Score: {best_match['score']:.4f})")
         elif best_match['score'] > 0.75:
-            print(f"\n✅ Good match found. (Score: {best_match['score']:.4f})")
+            # print(f"\n✅ Good match found. (Score: {best_match['score']:.4f})")  # [Security Fix]
         else:
-            print(
+            # print(  # [Security Fix]
                 f"\n⚠️  Matches are below optimal threshold. Consider rephrasing your query.")
 
 
@@ -156,23 +161,27 @@ Examples:
     # Initialize query interface
     try:
         query_engine = CanonQuery(similarity_threshold=args.threshold)
-        print("✅ Canon query interface initialized")
+        # print("✅ Canon query interface initialized")  # [Security Fix]
     except Exception as e:
-        print(f"❌ Failed to initialize Canon: {e}")
+    pass
+pass
+# print(f"❌ Failed to initialize Canon: {e}")  # [Security Fix]
         sys.exit(1)
 
     # Show statistics if requested
     if args.stats:
         try:
             index_stats = query_engine.pinecone_index.describe_index_stats()
-            print(f"\n📊 Canon Statistics:")
-            print(
+            # print(f"\n📊 Canon Statistics:")  # [Security Fix]
+            # print(  # [Security Fix]
                 f"   Total vectors: {index_stats.get('total_vector_count', 0)}")
-            print(f"   Dimension: {index_stats.get('dimension', 0)}")
-            print(
+            # print(f"   Dimension: {index_stats.get('dimension', 0)}")  # [Security Fix]
+            # print(  # [Security Fix]
                 f"   Index fullness: {index_stats.get('index_fullness', 0):.2%}")
         except Exception as e:
-            print(f"⚠️  Could not fetch statistics: {e}")
+    pass
+pass
+# print(f"⚠️  Could not fetch statistics: {e}")  # [Security Fix]
 
     # Execute query
     results = query_engine.query(args.query, args.top)

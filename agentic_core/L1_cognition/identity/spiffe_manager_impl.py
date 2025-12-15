@@ -4,9 +4,9 @@ import logging
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# TODO: Replace 'from .spiffe_manager_types import *' with explicit imports
+
+
+
 # # from .spiffe_manager_types import *  # Star import removed
 
 

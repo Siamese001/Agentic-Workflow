@@ -11,6 +11,7 @@ risk metrics and failure history for each pattern.
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 from uuid import UUID, uuid4
+
 from pydantic import BaseModel, Field, validator
 
 

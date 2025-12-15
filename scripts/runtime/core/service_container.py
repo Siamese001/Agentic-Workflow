@@ -121,7 +121,8 @@ class ServiceContainer:
                 try:
                     return type(implementation)()
                 except Exception:
-                    # If we can't create a new instance, return the original
+    pass
+# If we can't create a new instance, return the original
                     logger.warning(f"Could not create transient instance of {interface.__name__},
                         returning singleton")
                     return implementation

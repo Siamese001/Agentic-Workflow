@@ -50,7 +50,8 @@ HardeningConfig,
           try:
           circuit.raise_if_open()
           except Exception as e:
-          logger.info(f"\n✗ Circuit is OPEN: {e}")
+    pass
+logger.info(f"\n✗ Circuit is OPEN: {e}")
 
           # Wait for reset timeout
            logger.info(
@@ -226,7 +227,8 @@ HardeningConfig,
         try:
         RESULT = await component.execute(should_fail=True)
         except Exception as e:
-        logger.info(f"  Failed after retries: {type(e).__name__}")
+    pass
+logger.info(f"  Failed after retries: {type(e).__name__}")
 
         # Show health status
         HEALTH = component.get_health_status()

@@ -1,7 +1,8 @@
-from typing import List
 import logging
+from typing import List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Text counting functions for resume generation.'
 logger = logging.getLogger(__name__)

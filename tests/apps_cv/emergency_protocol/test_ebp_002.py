@@ -4,9 +4,11 @@ EBP-002: State Rollback (The Anchor Drop)
 Emergency Protocol test for L4 state reversion
 """
 
-import pytest
-from unittest.mock import Mock
 from datetime import datetime, timezone
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -180,7 +182,8 @@ class TestEBP002:
             mock_attempt_search()
             assert False, "Should have failed due to frozen quota"
         except Exception as e:
-            assert "QUOTA_FROZEN" in str(e)
+    pass
+assert "QUOTA_FROZEN" in str(e)
 
     def test_rollback_transaction_integrity(self, validator):
         """Test that rollback operations are atomic"""
@@ -212,8 +215,9 @@ class TestEBP002:
 
                     self.executed = True
                     return True
-                except Exception as e:
-                    # Rollback all operations
+                except Exception:
+    pass
+# Rollback all operations
                     rollback_operations.append(
                         "ROLLBACK: All operations reverted")
                     return False
@@ -226,7 +230,7 @@ class TestEBP002:
         tx.add_operation("fail_point", "test", {})  # This will fail
 
         # Debug: check operations
-        print(f"Operations: {[op['target'] for op in tx.operations]}")
+        # print(f"Operations: {[op['target'] for op in tx.operations]}")  # [Security Fix]
 
         # Execute transaction
         result = tx.execute()

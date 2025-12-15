@@ -8,8 +8,9 @@ Legacy K-Node: K.4
 """
 import logging
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -180,11 +181,11 @@ def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str
         Regeneration prompt
     """
     ConfigurationService().context.get('previous_headline', '')
-    PROMPT = f'REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS HEADLINE:\n{
-        ConfigurationService().previous_headline}\n\nCONSTRAINTS (ZERO TOLERANCE):\n- Word count: {
+    PROMPT = f'REGENERATION REQUIRED\n\n{feedback}\n\nPREVIOUS HEADLINE: \n{
+        ConfigurationService().previous_headline}\n\nCONSTRAINTS(ZERO TOLERANCE): \n - Word count: {
         self.word_count_min}-{
-            self.word_count_max} words\n- Character limit: ≤{
-                self.char_limit} characters\n- INDUSTRY-FIRST: NO technology keywords in Segment 1\n\nINSTRUCTIONS:\nFix the specific violations listed in feedback.\nMaintain Industry-First positioning.\n\nGenerate the corrected headline:\n'
+            self.word_count_max} words\n - Character limit: ≤{
+                self.char_limit} characters\n - INDUSTRY-FIRST: NO technology keywords in Segment 1\n\nINSTRUCTIONS: \nFix the specific violations listed in feedback.\nMaintain Industry-First positioning.\n\nGenerate the corrected headline: \n'
     return prompt
 
 

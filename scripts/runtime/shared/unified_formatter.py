@@ -93,7 +93,8 @@ class DefaultFormatter(FormatterStrategy):
                 METADATA={"original_type": type(data).__name__}
             )
         except Exception as e:
-            return FormatResult(
+    pass
+return FormatResult(
                 DATA=data,
                 format_type=self.format_name,
                 SUCCESS=False,
@@ -136,7 +137,8 @@ class ResumeBulletFormatter(FormatterStrategy):
                 METADATA={"bullet_count": len(bullets)}
             )
         except Exception as e:
-            return FormatResult(
+    pass
+return FormatResult(
                 DATA=data,
                 format_type=self.format_name,
                 SUCCESS=False,
@@ -255,7 +257,8 @@ class ResumeSectionFormatter(FormatterStrategy):
                 METADATA={"section_type": config.get("section_type", "general")}
             )
         except Exception as e:
-            return FormatResult(
+    pass
+return FormatResult(
                 DATA=data,
                 format_type=self.format_name,
                 SUCCESS=False,
@@ -374,7 +377,8 @@ class OutreachMessageFormatter(FormatterStrategy):
                 METADATA={"message_length": len(str(formatted))}
             )
         except Exception as e:
-            return FormatResult(
+    pass
+return FormatResult(
                 DATA=data,
                 format_type=self.format_name,
                 SUCCESS=False,
@@ -458,7 +462,8 @@ class OutreachSubjectFormatter(FormatterStrategy):
                 METADATA={"subject_length": len(formatted)}
             )
         except Exception as e:
-            return FormatResult(
+    pass
+return FormatResult(
                 DATA=data,
                 format_type=self.format_name,
                 SUCCESS=False,
@@ -512,7 +517,8 @@ class JSONFormatter(FormatterStrategy):
                 try:
                     PARSED = json.loads(data)
                 except Exception:
-                    PARSED = {"text": data}
+    pass
+PARSED = {"text": data}
             else:
                 PARSED = data
 
@@ -526,7 +532,8 @@ class JSONFormatter(FormatterStrategy):
                 METADATA={"json_keys": len(parsed) if isinstance(parsed, dict) else 0}
             )
         except Exception as e:
-            return FormatResult(
+    pass
+return FormatResult(
                 DATA=data,
                 format_type=self.format_name,
                 SUCCESS=False,
@@ -578,7 +585,8 @@ class UnifiedFormatter:
             try:
                 format_type = FormatType(format_type.lower())
             except ValueError:
-                format_type = FormatType.DEFAULT
+    pass
+format_type = FormatType.DEFAULT
 
         # Get strategy
         STRATEGY = self.strategies.get(format_type, self.strategies[FormatType.DEFAULT])

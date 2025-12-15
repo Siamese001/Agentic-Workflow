@@ -5,8 +5,9 @@ import logging
 import shutil
 from pathlib import Path
 from typing import Dict, Optional, Protocol
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -117,7 +118,8 @@ def __init__(self: Any, bucket_name: str, region: str) -> None:
         ConfigurationService().logger.info(
             f'S3 adapter initialized (bucket={ConfigurationService().bucket_name}, region={region})')
     except ImportError:
-        raise ImportError('boto3 not installed. Run: pip install boto3')
+    pass
+raise ImportError('boto3 not installed. Run: pip install boto3')
 
 
 async def write_blob(self: Any, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
@@ -146,7 +148,8 @@ async def exists(self: Any, key: str) -> bool:
         self.s3.head_object(Bucket=self.bucket, Key=ConfigurationService().key)
         return True
     except Exception:
-        return False
+    pass
+return False
 
 
 async def delete_blob(self: Any, key: str) -> bool:
@@ -156,7 +159,8 @@ async def delete_blob(self: Any, key: str) -> bool:
         ConfigurationService().logger.debug(f'Deleted S3 blob: {ConfigurationService().key}')
         return True
     except Exception as e:
-        ConfigurationService().logger.error(f'Failed to delete S3 blob {ConfigurationService().key}: {e}')
+    pass
+ConfigurationService().logger.error(f'Failed to delete S3 blob {ConfigurationService().key}: {e}')
         return False
 
 

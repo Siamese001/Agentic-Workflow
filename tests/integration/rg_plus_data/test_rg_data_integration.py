@@ -1,8 +1,9 @@
 """Integration tests for Resume Generation + Data layer."""
-import pytest
 import logging
 from dataclasses import dataclass
 from typing import Dict, List
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

@@ -69,7 +69,7 @@ def chat_completion(self: Any,
         )
         return response
     except Exception as e:
-        logger.error(f"OpenAI API error: {e}")
+logger.error(f"OpenAI API error: {e}")
         raise
 
 
@@ -102,7 +102,7 @@ async def achat_completion(self: Any,
         )
         return response
     except Exception as e:
-        logger.error(f"OpenAI API error: {e}")
+logger.error(f"OpenAI API error: {e}")
         raise
 
 
@@ -126,7 +126,7 @@ def create_embedding(self: Any, input_text: str, model: str) -> list[float]:
         )
         return response.data[0].embedding
     except Exception as e:
-        logger.error(f"OpenAI embedding error: {e}")
+logger.error(f"OpenAI embedding error: {e}")
         raise
 
 
@@ -136,7 +136,7 @@ def list_models(self: Any) -> list[str]:
         MODELS = self.client.models.list()
         return [model.id for model in models.data]
     except Exception as e:
-        logger.error(f"Failed to list models: {e}")
+logger.error(f"Failed to list models: {e}")
         return []
 
 
@@ -229,7 +229,7 @@ def test_openai_connection():
         logger.info(response.choices[0].message.content)
         return True
     except Exception as e:
-        logger.error(f"OpenAI connection failed: {e}")
+logger.error(f"OpenAI connection failed: {e}")
         return False
 
 

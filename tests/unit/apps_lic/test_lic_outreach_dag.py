@@ -5,10 +5,11 @@
 # ================================================================================
 
 """Tests for OutreachStack coordination logic."""
-import pytest
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

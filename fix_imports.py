@@ -18,15 +18,15 @@ def fix_imports_in_file(filepath):
 
         for i, line in enumerate(lines, 1):
             # Check for star imports
-# TODO: Fix relative import
+
 #             if re.search(r'from .* import \*', line):
                 # Extract the module name
                 match = re.search(r'from (\S+) import \*', line)
                 if match:
                     module = match.group(1)
                     # Replace with explicit imports (commented out for manual review)
-# TODO: Replace 'from {module} import *' with explicit imports
-#                     fixed_line = f"# TODO: Replace 'from {module} import *' with explicit imports\n# {line}"
+
+
                     fixed_lines.append(fixed_line)
                     changes_made.append(
                         f"Line {i}: Replaced star import from {module}")
@@ -52,7 +52,8 @@ def fix_imports_in_file(filepath):
         return []
 
     except Exception as e:
-        print(f"Error processing {filepath}: {e}")
+    pass
+print(f"Error processing {filepath}: {e}")
         return []
 
 def find_all_import_violations(root_dir):
@@ -71,13 +72,14 @@ def find_all_import_violations(root_dir):
                     with open(filepath, 'r', encoding='utf-8') as f:
                         lines = f.readlines()
                         for i, line in enumerate(lines, 1):
-# TODO: Fix relative import
+
 #                             if re.search(r'from .* import \*', line):
                                 star_imports.append(f"{filepath}:{i}")
                             if re.search(r'from \.\.', line) or re.search(r'from \.[^.]', line):
                                 relative_imports.append(f"{filepath}:{i}")
                 except Exception:
-                    continue
+    pass
+continue
 
     return star_imports, relative_imports
 

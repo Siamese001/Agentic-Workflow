@@ -40,24 +40,24 @@ class MockMCPTools:
         return f"File {path} edited successfully. Applied {len(edits)} edit(s): {edits}"
 
     def string_set(self, key, value):
-        print(f"[REDIS MOCK] Cached key: {key} -> {value}")
+        # print(f"[REDIS MOCK] Cached key: {key} -> {value}")  # [Security Fix]
         return "OK"
 
 # Mock Logger
 
 
 class MockLogger:
-    def info(self, msg): print(f"[INFO] {msg}")
-    def warning(self, msg): print(f"[WARN] {msg}")
-    def error(self, msg): print(f"[ERROR] {msg}")
+    # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
+    # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]
+    # def error(self, msg): print(f"[ERROR] {msg}")  # [Security Fix]
 
 
 def test_design_compliance():
     """Test the validate_design_compliance function with mock data."""
 
-    print("=" * 60)
-    print("🧪 Testing Canon Validator - Design Compliance Check")
-    print("=" * 60)
+    # print("=" * 60)  # [Security Fix]
+    # print("🧪 Testing Canon Validator - Design Compliance Check")  # [Security Fix]
+    # print("=" * 60)  # [Security Fix]
 
     # Initialize validator and mock tools
     validator = CanonValidator()
@@ -74,39 +74,39 @@ def test_design_compliance():
     }
 
     # Test Case 1: File with hardcoded hex values
-    print("\n--- Test Case 1: File with Hardcoded Values ---")
+    # print("\n--- Test Case 1: File with Hardcoded Values ---")  # [Security Fix]
     result = validator.validate_design_compliance(
         file_path="src/Button.tsx",
         component_id="FigmaNode-12345",
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
     # Test Case 2: Clean file without hardcoded values
-    print("\n" + "=" * 60)
-    print("\n--- Test Case 2: Clean File (No Hardcoded Values) ---")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("\n--- Test Case 2: Clean File (No Hardcoded Values) ---")  # [Security Fix]
     result = validator.validate_design_compliance(
         file_path="src/CleanButton.tsx",
         component_id="FigmaNode-12345",
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
     # Test Case 3: Non-existent file
-    print("\n" + "=" * 60)
-    print("\n--- Test Case 3: File Not Found ---")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("\n--- Test Case 3: File Not Found ---")  # [Security Fix]
     result = validator.validate_design_compliance(
         file_path="src/NonExistent.tsx",
         component_id="FigmaNode-12345",
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
-    print("\n" + "=" * 60)
-    print("✅ Test completed!")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("✅ Test completed!")  # [Security Fix]
 
 
 if __name__ == "__main__":

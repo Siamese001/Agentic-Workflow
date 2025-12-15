@@ -10,9 +10,7 @@ import sys
 from unittest.mock import Mock, patch
 
 # Import shared test utilities
-from hydrofoil_test_utils import (
-    create_hydrofoil_validator_no_whitelist
-)
+from hydrofoil_test_utils import create_hydrofoil_validator_no_whitelist
 
 # Import validator and engine
 from canon_validator_engine import execute_cost_governed_vulnerability_check
@@ -23,7 +21,7 @@ def test_tl_r01_rag_fallback_integration():
     TL-R01: RAG Fallback & Integration
     Layer Focus: L3
     """
-    print("\n⛵ TL-R01: Testing RAG Fallback & Integration (L3)")
+    # print("\n⛵ TL-R01: Testing RAG Fallback & Integration (L3)")  # [Security Fix]
 
     # Track the search sequence
     search_sequence = []
@@ -68,8 +66,8 @@ def test_tl_r01_rag_fallback_integration():
 
     # L3 Assertion: RAG fallback triggered (simplified)
     assert len(search_sequence) > 0, "L3: No search methods used"
-    print("  ✅ L3: RAG fallback sequence verified")
-    print(f"  📍 Search Sequence: {' → '.join(search_sequence)}")
+    # print("  ✅ L3: RAG fallback sequence verified")  # [Security Fix]
+    # print(f"  📍 Search Sequence: {' → '.join(search_sequence)}")  # [Security Fix]
 
 
 def test_tl_r02_complex_multi_tool_sequence():
@@ -77,7 +75,7 @@ def test_tl_r02_complex_multi_tool_sequence():
     TL-R02: Complex Multi-Tool Sequence
     Layer Focus: L1/L5
     """
-    print("\n⛵ TL-R02: Testing Complex Multi-Tool Sequence (L1/L5)")
+    # print("\n⛵ TL-R02: Testing Complex Multi-Tool Sequence (L1/L5)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -97,8 +95,8 @@ def test_tl_r02_complex_multi_tool_sequence():
     assert result["status"] == "repaired", "L1: Multi-tool sequence failed"
     assert "Multi-step" in result["reasoning"], "L1: Wrong reasoning message"
 
-    print("  ✅ L1/L5: Multi-tool repair sequence completed")
-    print("  📝 Captain's Log: Complex repair handled successfully")
+    # print("  ✅ L1/L5: Multi-tool repair sequence completed")  # [Security Fix]
+    # print("  📝 Captain's Log: Complex repair handled successfully")  # [Security Fix]
 
 
 def test_tl_r03_access_isolation():
@@ -106,7 +104,7 @@ def test_tl_r03_access_isolation():
     TL-R03: Access Isolation
     Layer Focus: L1
     """
-    print("\n⛵ TL-R03: Testing Access Isolation (L1)")
+    # print("\n⛵ TL-R03: Testing Access Isolation (L1)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -133,8 +131,8 @@ with open("../../../etc/passwd", "r") as f:
     assert "traversal" in result["reasoning"].lower(
     ), "L1: Wrong rejection reason"
 
-    print("  ✅ L1: Filesystem access properly isolated")
-    print("  📝 Captain's Log: Path traversal blocked - hull integrity maintained")
+    # print("  ✅ L1: Filesystem access properly isolated")  # [Security Fix]
+    # print("  📝 Captain's Log: Path traversal blocked - hull integrity maintained")  # [Security Fix]
 
 
 def test_llm_response_validation():
@@ -142,7 +140,7 @@ def test_llm_response_validation():
     Additional Test: LLM Response Validation
     Layer Focus: L5
     """
-    print("\n⛵ Testing LLM Response Validation (L5)")
+    # print("\n⛵ Testing LLM Response Validation (L5)")  # [Security Fix]
 
     validator = create_hydrofoil_validator_no_whitelist()
 
@@ -160,16 +158,16 @@ def test_llm_response_validation():
         assert result["status"] in ["rejected",
                                     "valid"], f"L5: Unexpected status: {result['status']}"
 
-    print("  ✅ L5: LLM responses handled correctly")
-    print("  📝 Captain's Log: Navigation AI responses processed")
+    # print("  ✅ L5: LLM responses handled correctly")  # [Security Fix]
+    # print("  📝 Captain's Log: Navigation AI responses processed")  # [Security Fix]
 
 
 def run_tool_use_audit():
     """Run all Tool-Use & LLM Logic audit tests"""
-    print("="*80)
-    print("🧭 HYDROFOIL ENGINE AUDIT - Tool-Use & LLM Logic Runs")
-    print("="*80)
-    print("⚙️ Testing Sail Adjustments (L1/L3 Layers)")
+    # print("="*80)  # [Security Fix]
+    # print("🧭 HYDROFOIL ENGINE AUDIT - Tool-Use & LLM Logic Runs")  # [Security Fix]
+    # print("="*80)  # [Security Fix]
+    # print("⚙️ Testing Sail Adjustments (L1/L3 Layers)")  # [Security Fix]
 
     tests = [
         test_tl_r01_rag_fallback_integration,
@@ -186,17 +184,17 @@ def run_tool_use_audit():
             test()
             passed += 1
         except Exception as e:
-            print(f"  ❌ FAILED: {e}")
+# print(f"  ❌ FAILED: {e}")  # [Security Fix]
             failed += 1
 
-    print("\n" + "="*80)
-    print(f"📊 Tool-Use Audit Results: {passed} passed, {failed} failed")
+    # print("\n" + "="*80)  # [Security Fix]
+    # print(f"📊 Tool-Use Audit Results: {passed} passed, {failed} failed")  # [Security Fix]
 
     if failed == 0:
-        print("✅ All sail adjustment tests PASSED")
-        print("🎯 Navigation systems operational!")
+        # print("✅ All sail adjustment tests PASSED")  # [Security Fix]
+        # print("🎯 Navigation systems operational!")  # [Security Fix]
     else:
-        print("⚠️  Some tests FAILED - review navigation systems")
+        # print("⚠️  Some tests FAILED - review navigation systems")  # [Security Fix]
 
     return failed == 0
 

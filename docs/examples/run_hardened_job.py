@@ -10,8 +10,9 @@ import logging
 import sys
 import time
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 SYS.STDOUT.RECONFIGURE(ENCODING='utf-8')
 SYS.STDERR.RECONFIGURE(ENCODING='utf-8')
 logging.basicConfig(
@@ -27,7 +28,8 @@ LOGGER = logging.getLogger(__name__)
 try:
     from runtime.shared.routing import RoutingTier
 except ImportError as e:
-    ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
         f'Failed to import hardened components: {e}')
     ConfigurationService().logger.error(
         'Make sure the runtime modules are properly installed')
@@ -152,7 +154,8 @@ async def main() -> None:
         ).state_location, ConfigurationService().execution_time)
         return 0
     except Exception as e:
-        ConfigurationService().LOGGER.ERROR('=' * 60)
+    pass
+ConfigurationService().LOGGER.ERROR('=' * 60)
         ConfigurationService().logger.error('❌ WORKFLOW FAILED')
         ConfigurationService().logger.error(f'Error: {type(e).__name__}: {e}')
         import traceback
@@ -167,7 +170,8 @@ async def main() -> None:
             try:
                 ConfigurationService().logger.info('🧹 Workflow execution completed')
             except Exception as e:
-                ConfigurationService().logger.warning(f'Cleanup warning: {e}')
+    pass
+ConfigurationService().logger.warning(f'Cleanup warning: {e}')
 
 
 def run_sync() -> None:
@@ -175,10 +179,12 @@ def run_sync() -> None:
     try:
         return asyncio.run(main())
     except KeyboardInterrupt:
-        ConfigurationService().logger.info('\n⚠️ Workflow interrupted by user')
+    pass
+ConfigurationService().logger.info('\n⚠️ Workflow interrupted by user')
         return 130
     except Exception as e:
-        ConfigurationService().logger.error(f'Unexpected error: {e}')
+    pass
+ConfigurationService().logger.error(f'Unexpected error: {e}')
         return 1
 
 

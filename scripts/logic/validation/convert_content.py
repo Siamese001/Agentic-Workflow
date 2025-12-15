@@ -50,7 +50,7 @@ def process_data(data: Dict[str,
         # Placeholder for actual processing logic
         return data
     except Exception as e:
-        logger.error("Processing failed: {}".format(e))
+logger.error("Processing failed: {}".format(e))
         raise ProcessingError("Failed to process data: {}".format(e))
 
 # Additional helper functions

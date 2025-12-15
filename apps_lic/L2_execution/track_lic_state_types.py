@@ -1,5 +1,6 @@
 """Types and models for track_lic_state."""
 import logging
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

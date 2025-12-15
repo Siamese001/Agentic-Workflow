@@ -4,10 +4,12 @@ CV-U-003: Figma (L2) Version Parity Check
 Unit test for isolated L2 component verification
 """
 
-import pytest
-from unittest.mock import Mock
 import json
 from datetime import datetime, timezone
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 

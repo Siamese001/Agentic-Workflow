@@ -1,8 +1,9 @@
 
 
-from pathlib import Path
-import logging
 import json
+import logging
+from pathlib import Path
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """E2E Validation Script for Subatomic Pipeline"""

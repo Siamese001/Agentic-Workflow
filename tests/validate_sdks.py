@@ -1,6 +1,6 @@
-import sys
-import os
 import logging
+import os
+import sys
 
 LOGGER = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ def main() -> None:
         logger.info(f"Tool Execution Test: OK (1 + 2 = {result.result})")
 
     except Exception as e:
-        logger.info(f"MCP Server: FAILED - {e}")
+logger.info(f"MCP Server: FAILED - {e}")
 
     # 3. Check Multi-Provider Clients
     logger.info("\n3. MULTI-PROVIDER CLIENT VALIDATION")
@@ -79,7 +79,7 @@ def main() -> None:
             logger.info("No providers have API keys configured")
 
     except Exception as e:
-        logger.info(f"Multi-Provider Client: FAILED - {e}")
+logger.info(f"Multi-Provider Client: FAILED - {e}")
 
     # 4. Summary
     logger.info("\n4. VALIDATION SUMMARY")

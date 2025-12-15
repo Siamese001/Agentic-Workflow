@@ -242,9 +242,11 @@ class TokenBucketRateLimiter(RateLimiter):
                     await asyncio.sleep(self.config.cleanup_interval)
                     await self.cleanup()
                 except asyncio.CancelledError:
-                    break
+    pass
+break
                 except Exception as e:
-                    logger.error(f"Rate limiter cleanup error: {e}")
+    pass
+logger.error(f"Rate limiter cleanup error: {e}")
 
         self._cleanup_task = asyncio.create_task(cleanup_loop())
 
@@ -255,7 +257,8 @@ class TokenBucketRateLimiter(RateLimiter):
             try:
                 await self._cleanup_task
             except asyncio.CancelledError:
-                pass
+    pass
+pass
 
 class SlidingWindowRateLimiter(RateLimiter):
     """Sliding window rate limiter."""

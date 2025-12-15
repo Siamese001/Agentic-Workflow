@@ -151,7 +151,8 @@ class FeedbackLoopOrchestrator:
             try:
                 CONTENT = await generator(context, temperature)
             except Exception as e:
-                logger.error(f"Generation failed on attempt {attempt}: {e}")
+    pass
+logger.error(f"Generation failed on attempt {attempt}: {e}")
                 continue
 
             # Validate content

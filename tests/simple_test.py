@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Simple test to check the first test case."""
 
-import logging
 import asyncio
+import logging
 import tempfile
 
 
@@ -44,8 +44,8 @@ LOGGER = logging.getLogger(__name__)
         mock_responses = {
             "K.1": "Executive summary with strategic positioning and quantified achievements.",
             "K.4": "Senior Software Engineer | Cloud Architecture | Team Leadership",
-            "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n
-    • Developed microservices architecture serving 1M+ requests daily",
+            "K.5": "• Led migration of 50 + services to cloud infrastructure, reducing costs by 30 %\n
+    • Developed microservices architecture serving 1M + requests daily",
         }
 
         call_count = {"count": 0}

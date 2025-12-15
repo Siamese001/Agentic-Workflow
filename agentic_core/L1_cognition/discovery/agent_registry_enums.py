@@ -1,5 +1,6 @@
 """Enum types for agent_registry."""
 import logging
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 

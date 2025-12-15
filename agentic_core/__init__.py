@@ -1,4 +1,5 @@
 import logging
+
 logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 'Stack-specific agent implementations for v10.7.'

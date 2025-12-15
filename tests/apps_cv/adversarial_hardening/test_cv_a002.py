@@ -4,9 +4,11 @@ CV-A-002: Temporal Rollback Attack
 Adversarial test for L4 temporal integrity
 """
 
-import pytest
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock
-from datetime import datetime, timezone, timedelta
+
+import pytest
+
 from canon_validator import CanonValidator
 
 

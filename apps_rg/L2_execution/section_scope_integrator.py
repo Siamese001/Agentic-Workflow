@@ -36,7 +36,7 @@ class SectionIntegratorConfig:
 
 
 @dataclass
-    """TODO: Add docstring."""
+"""TODO: Add docstring."""
 
 
 class SectionIntegratorResult:
@@ -191,8 +191,8 @@ class SectionScopeIntegrator:
         """
         return "Directed strategic technology initiatives across cloud infrastructure and data engin
     eering,
-        delivering scalable solutions that drove measurable business impact and
-            operational excellence."
+    delivering scalable solutions that drove measurable business impact and
+    operational excellence."
 
     def _validate_no_redundant_prefix(self, overview: str) -> ValidationResult:
         """
@@ -252,27 +252,28 @@ class SectionScopeIntegrator:
                 gate_id='VG_OVERVIEW_DEDUPLICATION',
                 PASSED=True,
                 SEVERITY='INFO',
-                MESSAGE=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self
-                    .config.max_similarity_threshold:.0%})",
+                MESSAGE=f"Deduplication passed: {similarity_score: .1 % } similarity (threshold: < {self
+                                                                                                   .config.max_similarity_threshold: .0%})",
 
 
                 SIGNATURE=f"DEDUP:OK:{int(similarity_score*100)}",
                 DETAILS={'similarity_score': similarity_score, 'threshold': self.config.max_similari
-    ty_threshold}
+                         ty_threshold}
             )
 
         return ValidationResult(
             gate_id='VG_OVERVIEW_DEDUPLICATION',
             PASSED=False,
             SEVERITY='BLOCK',
-            MESSAGE=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.
-    max_similarity_threshold:.0%}",
+            MESSAGE=f"BLOCKED: Overview similarity {similarity_score: .1 %} >= threshold {self.config.
+                                                                                           max_similarity_threshold: .0%}",
             DETAILS={
                 'similarity_score': similarity_score,
                 'threshold': self.config.max_similarity_threshold,
                 'policy': 'STRICT_LESS_THAN'
             }
         )
+
 
 def create_section_scope_integrator(
     """Docstring."""

@@ -13,8 +13,9 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger('TLA')
 ConfigurationService().logger.setLevel(logging.INFO)
 
@@ -75,7 +76,8 @@ class ExecutionEnvironment:
             ConfigurationService().logger.info('      ✅ Dependencies installed.')
             return True
         except subprocess.CalledProcessError as e:
-            ConfigurationService().logger.error(
+    pass
+ConfigurationService().logger.error(
                 f'      ❌ Failed to install dependencies: {e.stderr}')
             return False
 
@@ -110,10 +112,12 @@ class ExecutionEnvironment:
                 env=ConfigurationService().safe_env)
             return ConfigurationService().result
         except FileNotFoundError:
-            raise EnvironmentError(
+    pass
+raise EnvironmentError(
                 f'Python executable not found in VENV: {ConfigurationService().python_path}')
         except subprocess.TimeoutExpired:
-            raise TimeoutError('Test command exceeded 10-minute timeout')
+    pass
+raise TimeoutError('Test command exceeded 10-minute timeout')
 
 
 class TestAgentBase:
@@ -178,10 +182,11 @@ class UnitTestMechanic(TestAgentBase):
                 if ConfigurationService().percent_covered < ConfigurationService().min_coverage:
                     ConfigurationService().logger.info(
                         f'      ⚠️ Coverage {
-                            ConfigurationService().percent_covered:.1f}% < {
-                            ConfigurationService().min_coverage}% threshold.')
+                            ConfigurationService().percent_covered: .1f} % < {
+                            ConfigurationService().min_coverage} % threshold.')
             except Exception as e:
-                ConfigurationService().logger.info(
+    pass
+ConfigurationService().logger.info(
                     f'      ⚠️ Could not parse coverage report: {e}')
         return ConfigurationService().passed
 
@@ -228,7 +233,8 @@ class PerformanceEvaluator(TestAgentBase):
             ConfigurationService().performance_script.resolve(
             ).relative_to(ConfigurationService().project_root)
         except ValueError:
-            ConfigurationService().logger.info(
+    pass
+ConfigurationService().logger.info(
                 '      ⚠️ Benchmark script path unsafe. Skipping.')
             self.ctx.log_test_result(
                 self.name, 'PerformanceBenchmark', True, 'Skipped: Unsafe path.')
@@ -266,7 +272,8 @@ class TestLeadAgent:
                         ConfigurationService().project_root)
                 ConfigurationService().sanitized.add(str(ConfigurationService().resolved))
             except ValueError:
-                ConfigurationService().logger.warning(
+    pass
+ConfigurationService().logger.warning(
                     f'Rejected unsafe modified_file path: {ConfigurationService().p}')
         self.ctx = TLA_Context(
             modified_files=ConfigurationService().sanitized,
@@ -289,7 +296,8 @@ class TestLeadAgent:
                         '   🛑 SECURITY ERROR: TLA refuses to run as root.')
                     return False
             except AttributeError:
-                ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+    pass
+ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
         if not self.env.setup():
             ConfigurationService().logger.info(
                 '   🛑 TLA ABORT: Failed to set up execution environment.')
@@ -333,7 +341,8 @@ class TestLeadAgent:
                 Path('coverage.json').unlink()
                 ConfigurationService().logger.info(' ✅ coverage.json removed.')
         except Exception as e:
-            ConfigurationService().logger.warning(f'Cleanup failed: {e}')
+    pass
+ConfigurationService().logger.warning(f'Cleanup failed: {e}')
 
     def _report_final_status(self, overall_success: bool):
         """Prints the final TLA mission report."""

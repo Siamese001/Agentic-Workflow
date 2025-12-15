@@ -10,12 +10,16 @@ from typing import Any, Dict, Optional
 
 # Import Clarity & Brevity Filter for L1 content refinement
 from clarity_brevity_filter import filter_content
+
 # Import Intent Scoring Model for L4 cost governance
 from intent_scoring_model import score_lead_intent
+
 # Import News RAG for dynamic personalization
 from news_rag_pipeline import execute_news_rag
+
 # Import LangCache functions
 from redis_langcache_pipeline import execute_temporal_rate_limiting
+
 # Import temporal vetting
 from temporal_vetting import vet_lead_optimal_time
 
@@ -97,7 +101,11 @@ def execute_hardened_outreach_sequence(
                 "reset_time": rate_limit_result.get("reset_time")
             }
     except Exception as e:
-        if logger:
+    pass
+pass
+
+
+if logger:
             logger.warning(f"Rate limiting failed: {e}")
 
     # --- 2. Intent Scoring (L4 - NEW: Lead priority and reply likelihood) ---
@@ -149,7 +157,9 @@ def execute_hardened_outreach_sequence(
             f"Intent scoring: Prioritized {intent_priority} leads")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(f"⚠️ Intent scoring failed (non-critical): {e}")
 
     # --- 3. Personalized Content Retrieval (L3 Pinecone + L4 LangCache) ---
@@ -166,7 +176,9 @@ def execute_hardened_outreach_sequence(
             if logger:
                 logger.info("✅ Template retrieved from LangCache (cost saved)")
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(f"LangCache check failed: {e}")
 
     # If not in cache, query Pinecone for personalized template
@@ -198,7 +210,9 @@ def execute_hardened_outreach_sequence(
                         logger.info(
                             f"✅ Retrieved template from Pinecone: {best_template.get('score', 'N/A')}")
         except Exception as e:
-            if logger:
+    pass
+pass
+if logger:
                 logger.error(f"Pinecone search failed: {e}")
 
     # Fallback to default pitch if no personalized template found
@@ -273,7 +287,9 @@ def execute_hardened_outreach_sequence(
                     "ℹ️ No company/industry info provided, skipping News RAG")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(f"⚠️ News RAG failed (non-critical): {e}")
             # Continue without news context
 
@@ -286,7 +302,9 @@ def execute_hardened_outreach_sequence(
         if logger:
             logger.info(f"Current UTC time: {current_utc_time_hm}")
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.error(f"Failed to get current time: {e}")
         return {
             "status": "ERROR_TIME_FETCH",
@@ -333,7 +351,9 @@ def execute_hardened_outreach_sequence(
         cost_savings.append("Clarity filter: Improved message readability")
 
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(f"⚠️ Clarity filter failed (non-critical): {e}")
             # Continue with original content
 
@@ -365,7 +385,9 @@ def execute_hardened_outreach_sequence(
                         logger.info(
                             f"✅ Template success cached: {current_success + 1} uses")
                 except Exception as e:
-                    if logger:
+    pass
+pass
+if logger:
                         logger.warning(f"Success caching failed: {e}")
 
             if logger:
@@ -373,7 +395,9 @@ def execute_hardened_outreach_sequence(
                     f"✅ Personalized email sent. Source: {personalization_source}")
 
         except Exception as e:
-            final_status = "SENT_FAILED"
+    pass
+pass
+final_status = "SENT_FAILED"
             if logger:
                 logger.error(f"❌ Email dispatch failed: {e}")
     else:
@@ -419,7 +443,9 @@ def execute_hardened_outreach_sequence(
                 "contents": [audit_message]
             }])
     except Exception as e:
-        if logger:
+    pass
+pass
+if logger:
             logger.warning(f"⚠️ Audit logging failed: {e}")
 
     # Build comprehensive result
@@ -472,15 +498,17 @@ def calculate_next_business_time(current_local_time: str, timezone: str) -> str:
             return f"09:00 {timezone} (next business day)"
         else:
             return f"{current_local_time} {timezone}"
-    except:
-        return f"09:00 {timezone} (next business day)"
+except Exception:
+    pass
+pass
+return f"09:00 {timezone} (next business day)"
 
 # Test function
 
 
 def test_hardened_outreach():
     """Test the hardened outreach engine."""
-    print("=== Hardened Outreach Engine Test ===\n")
+    # print("=== Hardened Outreach Engine Test ===\n")  # [Security Fix]
 
     # Mock tools
     def mock_get_current_time(tz):
@@ -532,11 +560,11 @@ def test_hardened_outreach():
     )
 
     # Display results
-    print(f"Status: {result['status']}")
-    print(f"Personalization Source: {result['personalization_source']}")
-    print(f"Lead ID: {result['lead_id']}")
-    print(f"Decision: {result['decision']}")
-    print(f"Cost Savings: {result['cost_savings']}")
+    # print(f"Status: {result['status']}")  # [Security Fix]
+    # print(f"Personalization Source: {result['personalization_source']}")  # [Security Fix]
+    # print(f"Lead ID: {result['lead_id']}")  # [Security Fix]
+    # print(f"Decision: {result['decision']}")  # [Security Fix]
+    # print(f"Cost Savings: {result['cost_savings']}")  # [Security Fix]
 
     return result
 

@@ -1,8 +1,9 @@
 """Performance tests for SDK latency budgets."""
-from runtime.shared.sdk_registry import validate_sdk
-from runtime.shared.cache import generate_llm_cache_key
 import logging
 import time
+
+from runtime.shared.cache import generate_llm_cache_key
+from runtime.shared.sdk_registry import validate_sdk
 
 logger = logging.getLogger(__name__)
 

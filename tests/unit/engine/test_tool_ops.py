@@ -9,8 +9,9 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 
 
@@ -111,7 +112,7 @@ def test_execute_tool_failure(self: Any) -> None:
         tool_result = ToolExecutionResult(
             success=True, data={}, error=None, execution_time_ms=0)
     except ValueError as e:
-        tool_result = ToolExecutionResult(
+tool_result = ToolExecutionResult(
             SUCCESS=False, DATA=None, ERROR=str(e), execution_time_ms=10.0)
     assert ConfigurationService().tool_result.success is False
     assert ConfigurationService().tool_result.error is not None

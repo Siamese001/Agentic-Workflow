@@ -1,7 +1,8 @@
 """Implementation for config."""
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +23,8 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
                     f"Successfully loaded {ConfigurationService().description} from '{ConfigurationService().path_to_check}'.")
                 return ConfigurationService().data
         except json.JSONDecodeError as e:
-            logging.error(
+    pass
+logging.error(
                 f"CRITICAL: Invalid JSON in {ConfigurationService().description} file '{ConfigurationService().path_to_check}': {e}. Hal\n    ting.")
             raise
     if required:

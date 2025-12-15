@@ -51,7 +51,11 @@ def test_redis_connectivity():
             return False
 
     except Exception as e:
-        logger.error(f"❌ Redis test failed: {e}")
+    pass
+pass
+
+
+logger.error(f"❌ Redis test failed: {e}")
         return False
 
 
@@ -86,7 +90,11 @@ def test_filesystem_connectivity():
             logger.info(
                 f"save_file(content, path) result: {save_result[:50]}...")
         except Exception as e:
-            logger.error(f"❌ save_file failed: {e}")
+    pass
+pass
+
+
+logger.error(f"❌ save_file failed: {e}")
             return False
 
         # Test read_file
@@ -102,18 +110,24 @@ def test_filesystem_connectivity():
             else:
                 logger.error("❌ File content mismatch")
         except Exception as e:
-            logger.error(f"❌ read_file failed: {e}")
+    pass
+pass
+logger.error(f"❌ read_file failed: {e}")
 
         # Cleanup
         try:
             os.remove(test_file)
-        except:
-            pass
+except Exception:
+    pass
+pass
+pass
 
         return False
 
     except Exception as e:
-        logger.error(f"❌ Filesystem test failed: {e}")
+    pass
+pass
+logger.error(f"❌ Filesystem test failed: {e}")
         return False
 
 
@@ -147,16 +161,22 @@ def test_gitkraken_connectivity():
             logger.info("✅ GitKraken commit works")
             return True
         except Exception as e:
-            logger.error(f"❌ Commit failed: {e}")
+    pass
+pass
+logger.error(f"❌ Commit failed: {e}")
             return False
         finally:
             try:
                 os.remove(test_file)
-            except:
-                pass
+except Exception:
+    pass
+pass
+pass
 
     except Exception as e:
-        logger.error(f"❌ GitKraken test failed: {e}")
+    pass
+pass
+logger.error(f"❌ GitKraken test failed: {e}")
         return False
 
 
@@ -191,7 +211,9 @@ def test_time_mcp_connectivity():
         return True
 
     except Exception as e:
-        logger.error(f"❌ Time MCP test failed: {e}")
+    pass
+pass
+logger.error(f"❌ Time MCP test failed: {e}")
         return False
 
 

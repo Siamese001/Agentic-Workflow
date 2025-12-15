@@ -176,7 +176,8 @@ class MetricAugmenter:
             )
 
         except Exception as e:
-            logger.error(f"Error augmenting bullet: {str(e)}")
+    pass
+logger.error(f"Error augmenting bullet: {str(e)}")
             return AugmentedBullet(
                 original_text=bullet_text,
                 technical_metric=None,
@@ -243,7 +244,8 @@ class MetricAugmenter:
             return augmented
 
         except Exception as e:
-            logger.error(f"Error augmenting batch: {str(e)}")
+    pass
+logger.error(f"Error augmenting batch: {str(e)}")
             return [AugmentedBullet(
                 original_text=b,
                 technical_metric=None,
@@ -339,7 +341,8 @@ class MetricAugmenter:
             return detected_metrics
 
         except Exception as e:
-            logger.error(f"Error detecting metrics: {str(e)}")
+    pass
+logger.error(f"Error detecting metrics: {str(e)}")
             return []
 
     def _estimate_impact(
@@ -437,7 +440,8 @@ class MetricAugmenter:
             )
 
         except Exception as e:
-            logger.error(f"Error estimating impact: {str(e)}")
+    pass
+logger.error(f"Error estimating impact: {str(e)}")
             return None
 
     def _extract_number(self, value_str: str) -> Optional[float]:
@@ -460,7 +464,8 @@ class MetricAugmenter:
             else:
                 return float(value_str)
         except (ValueError, AttributeError):
-            return None
+    pass
+return None
 
     def _create_augmented_text(self, original: str, impact: BusinessImpact) -> str:
             """Create final augmented text with business impact.
@@ -485,7 +490,8 @@ class MetricAugmenter:
             return augmented
 
         except Exception as e:
-            logger.error(f"Error creating augmented text: {str(e)}")
+    pass
+logger.error(f"Error creating augmented text: {str(e)}")
             return original
 
 # Factory function for easy instantiation

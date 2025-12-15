@@ -9,7 +9,9 @@ import asyncio
 import logging
 
 from scripts.runtime.shared.health_check import (
-    HealthCheckRegistry, initialize_system_health_checks)
+    HealthCheckRegistry,
+    initialize_system_health_checks,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -255,7 +257,8 @@ class InfrastructureOrchestrator:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to handle artifact generated event: {e}")
+    pass
+logger.error(f"Failed to handle artifact generated event: {e}")
 
     async def _handle_error_occurred(self, event: SystemEvent) -> None:
             """Handle error events.
@@ -274,7 +277,8 @@ class InfrastructureOrchestrator:
             )
 
         except Exception as e:
-            logger.error(f"Failed to handle error event: {e}")
+    pass
+logger.error(f"Failed to handle error event: {e}")
 
     async def _handle_agent_completed(self, event: SystemEvent) -> None:
             """Handle agent completion events for router optimization.
@@ -298,7 +302,8 @@ class InfrastructureOrchestrator:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to handle agent completed event: {e}")
+    pass
+logger.error(f"Failed to handle agent completed event: {e}")
 
         """Docstring."""
     async def execute_with_infrastructure(
@@ -419,7 +424,8 @@ class InfrastructureOrchestrator:
             }
 
         except Exception as e:
-            # Publish error event
+    pass
+# Publish error event
             await self.event_bus.publish(
                 "events.error_occurred",
                 SystemEvent(

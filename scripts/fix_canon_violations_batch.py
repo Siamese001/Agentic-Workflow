@@ -62,8 +62,9 @@ def fix_empty_except_blocks(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        logger.info(f"Error fixing {file_path}: {e}")
+logger.info(f"Error fixing {file_path}: {e}")
         return False
+
 
 def fix_bare_except(file_path: str) -> bool:
     """Fix Key 05: Replace bare except with except Exception."""
@@ -84,8 +85,9 @@ def fix_bare_except(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        logger.info(f"Error fixing {file_path}: {e}")
+logger.info(f"Error fixing {file_path}: {e}")
         return False
+
 
 def fix_trailing_whitespace(file_path: str) -> bool:
     """Fix Key 11: Remove trailing whitespace."""
@@ -110,8 +112,9 @@ def fix_trailing_whitespace(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        logger.info(f"Error fixing {file_path}: {e}")
+logger.info(f"Error fixing {file_path}: {e}")
         return False
+
 
 def fix_missing_newline(file_path: str) -> bool:
     """Fix Key 12: Ensure files end with newline."""
@@ -127,8 +130,9 @@ def fix_missing_newline(file_path: str) -> bool:
         return False
 
     except Exception as e:
-        logger.info(f"Error fixing {file_path}: {e}")
+logger.info(f"Error fixing {file_path}: {e}")
         return False
+
 
 def main():
     """Main function to fix all violations."""
@@ -154,6 +158,7 @@ def main():
         total_fixed += fixed_count
 
     logger.info(f"\nTotal fixes applied: {total_fixed}")
+
 
 if __name__ == "__main__":
     main()

@@ -6,14 +6,14 @@ Tests verify core function: adherence to code standards and design specification
 Test IDs: FC-R01 to FC-R04
 """
 
-import sys
 import json
+import sys
 from unittest.mock import Mock
 
 # Import shared test utilities
 from hydrofoil_test_utils import (
     create_hydrofoil_validator,
-    create_hydrofoil_validator_no_whitelist
+    create_hydrofoil_validator_no_whitelist,
 )
 
 
@@ -22,7 +22,7 @@ def test_fc_r01_positive_compliance_check():
     FC-R01: Positive Compliance Check
     Layer Focus: L1/L5
     """
-    print("\n🌊 FC-R01: Testing Positive Compliance Check (L1/L5)")
+    # print("\n🌊 FC-R01: Testing Positive Compliance Check (L1/L5)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -52,8 +52,8 @@ def authenticate_user():
     assert result["status"] == "rejected", "L1/L5: Failed to detect critical violation"
     assert "CRITICAL" in result["reasoning"], "L5: Severity not properly classified"
     # Note: pinecone.upsert is mocked but not called in the actual flow
-    print("  ✅ L1/L5: Critical violation detected and logged to MEMemory")
-    print("  📝 Captain's Log: Security violation recorded with CRITICAL severity")
+    # print("  ✅ L1/L5: Critical violation detected and logged to MEMemory")  # [Security Fix]
+    # print("  📝 Captain's Log: Security violation recorded with CRITICAL severity")  # [Security Fix]
 
 
 def test_fc_r02_negative_compliance_check():
@@ -61,7 +61,7 @@ def test_fc_r02_negative_compliance_check():
     FC-R02: Negative Compliance Check
     Layer Focus: L5
     """
-    print("\n🌊 FC-R02: Testing Negative Compliance Check (L5)")
+    # print("\n🌊 FC-R02: Testing Negative Compliance Check (L5)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -87,8 +87,8 @@ def secure_operation():
     # L5 Assertion: System relies on Audit Cache
     assert result["status"] == "valid", "L5: Cache hit failed"
     # Note: The cache behavior is different than expected - adjust assertion
-    print("  ✅ L5: Validation completed successfully")
-    print("  📝 Captain's Log: Code validated")
+    # print("  ✅ L5: Validation completed successfully")  # [Security Fix]
+    # print("  📝 Captain's Log: Code validated")  # [Security Fix]
 
 
 def test_fc_r03_design_compliance_enforced():
@@ -96,7 +96,7 @@ def test_fc_r03_design_compliance_enforced():
     FC-R03: Design Compliance Enforced
     Layer Focus: L2
     """
-    print("\n🌊 FC-R03: Testing Design Compliance (L2)")
+    # print("\n🌊 FC-R03: Testing Design Compliance (L2)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig (whitelist not needed for design compliance check)
     validator = create_hydrofoil_validator()
@@ -128,8 +128,8 @@ def test_fc_r03_design_compliance_enforced():
     # L2 Assertion: Figma layer integration
     assert result["status"] == "repaired", "L2: Design compliance failed"
     # Note: The actual implementation may differ - adjust assertion
-    print("  ✅ L2: Design compliance check completed")
-    print("  📝 Captain's Log: Design tokens processed")
+    # print("  ✅ L2: Design compliance check completed")  # [Security Fix]
+    # print("  📝 Captain's Log: Design tokens processed")  # [Security Fix]
 
 
 def test_fc_r04_l1_override_validation():
@@ -137,7 +137,7 @@ def test_fc_r04_l1_override_validation():
     FC-R04: L1 Override Validation
     Layer Focus: L1
     """
-    print("\n🌊 FC-R04: Testing L1 Override Validation (L1)")
+    # print("\n🌊 FC-R04: Testing L1 Override Validation (L1)")  # [Security Fix]
 
     # Initialize Hydrofoil Rig with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
@@ -165,16 +165,16 @@ def config():
     # L1 Assertion: Rule correctly ignored
     assert result["status"] == "rejected", "L1: Expected rejection with override"
     # Note: The override behavior may be different than expected
-    print("  ✅ L1: Validation completed with override handling")
-    print("  📝 Captain's Log: Override status processed")
+    # print("  ✅ L1: Validation completed with override handling")  # [Security Fix]
+    # print("  📝 Captain's Log: Override status processed")  # [Security Fix]
 
 
 def run_functional_audit():
     """Run all Functional & Compliance audit tests"""
-    print("="*80)
-    print("🧭 HYDROFOIL ENGINE AUDIT - Functional & Compliance Runs")
-    print("="*80)
-    print("📡 Testing Rigging Integrity (L1/L2 Layers)")
+    # print("="*80)  # [Security Fix]
+    # print("🧭 HYDROFOIL ENGINE AUDIT - Functional & Compliance Runs")  # [Security Fix]
+    # print("="*80)  # [Security Fix]
+    # print("📡 Testing Rigging Integrity (L1/L2 Layers)")  # [Security Fix]
 
     tests = [
         test_fc_r01_positive_compliance_check,
@@ -191,17 +191,17 @@ def run_functional_audit():
             test()
             passed += 1
         except Exception as e:
-            print(f"  ❌ FAILED: {e}")
+# print(f"  ❌ FAILED: {e}")  # [Security Fix]
             failed += 1
 
-    print("\n" + "="*80)
-    print(f"📊 Functional Audit Results: {passed} passed, {failed} failed")
+    # print("\n" + "="*80)  # [Security Fix]
+    # print(f"📊 Functional Audit Results: {passed} passed, {failed} failed")  # [Security Fix]
 
     if failed == 0:
-        print("✅ All rigging integrity tests PASSED")
-        print("🎯 Hydrofoil ready for deployment!")
+        # print("✅ All rigging integrity tests PASSED")  # [Security Fix]
+        # print("🎯 Hydrofoil ready for deployment!")  # [Security Fix]
     else:
-        print("⚠️  Some tests FAILED - review before deployment")
+        # print("⚠️  Some tests FAILED - review before deployment")  # [Security Fix]
 
     return failed == 0
 

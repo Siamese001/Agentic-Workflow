@@ -65,30 +65,30 @@ For media inquiries: press@techcorp.com
         }])
 
     def send_email(self, recipient, subject, body):
-        print(f"[EMAIL MOCK] Sending to: {recipient}")
-        print(f"[EMAIL MOCK] Subject: {subject}")
-        print(f"[EMAIL MOCK] Body preview: {body[:100]}...")
+        # print(f"[EMAIL MOCK] Sending to: {recipient}")  # [Security Fix]
+        # print(f"[EMAIL MOCK] Subject: {subject}")  # [Security Fix]
+        # print(f"[EMAIL MOCK] Body preview: {body[:100]}...")  # [Security Fix]
         return "Email sent successfully"
 
     def add_observations(self, observations):
-        print(f"[MEMORY MOCK] Adding observations: {observations}")
+        # print(f"[MEMORY MOCK] Adding observations: {observations}")  # [Security Fix]
         return "Memory updated successfully"
 
 # Mock Logger
 
 
 class MockLogger:
-    def info(self, msg): print(f"[INFO] {msg}")
-    def warning(self, msg): print(f"[WARN] {msg}")
-    def error(self, msg): print(f"[ERROR] {msg}")
+    # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
+    # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]
+    # def error(self, msg): print(f"[ERROR] {msg}")  # [Security Fix]
 
 
 def test_lead_vetting():
     """Test the automated_lead_vetting function with mock data."""
 
-    print("=" * 60)
-    print("🧪 Testing Outreach Engine - Automated Lead Vetting")
-    print("=" * 60)
+    # print("=" * 60)  # [Security Fix]
+    # print("🧪 Testing Outreach Engine - Automated Lead Vetting")  # [Security Fix]
+    # print("=" * 60)  # [Security Fix]
 
     # Initialize mock tools and logger
     mock_tools = MockMCPTools()
@@ -104,39 +104,39 @@ def test_lead_vetting():
     }
 
     # Test Case 1: Successful lead vetting and outreach
-    print("\n--- Test Case 1: Successful Lead Vetting ---")
+    # print("\n--- Test Case 1: Successful Lead Vetting ---")  # [Security Fix]
     result = automated_lead_vetting(
         company_url="https://techcorp.example.com/news",
         user_name="Alice Johnson",
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
     # Test Case 2: Invalid company URL
-    print("\n" + "=" * 60)
-    print("\n--- Test Case 2: Invalid Company URL ---")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("\n--- Test Case 2: Invalid Company URL ---")  # [Security Fix]
     result = automated_lead_vetting(
         company_url="https://invalid.url",
         user_name="Alice Johnson",
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
     # Test Case 3: User with no contacts
-    print("\n" + "=" * 60)
-    print("\n--- Test Case 3: User with No Contacts ---")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("\n--- Test Case 3: User with No Contacts ---")  # [Security Fix]
     result = automated_lead_vetting(
         company_url="https://techcorp.example.com/news",
         user_name="Unknown User",
         tools=tools,
         logger=logger
     )
-    print("\nResult:", json.dumps(result, indent=2))
+    # print("\nResult:", json.dumps(result, indent=2))  # [Security Fix]
 
-    print("\n" + "=" * 60)
-    print("✅ Test completed!")
+    # print("\n" + "=" * 60)  # [Security Fix]
+    # print("✅ Test completed!")  # [Security Fix]
 
 
 if __name__ == "__main__":

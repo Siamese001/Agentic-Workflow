@@ -3,8 +3,9 @@ import threading
 import time
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -70,8 +71,8 @@ class CostGovernor:
 
     def _check_budget_status(self):
         """Check if we've hit warning threshold or exceeded budget.""" f'Budget warning: ${
-            self.current_spend:.2f} of ${
-            self.limit:.2f} spent') ConfigurationService().logger.error(f'Budget exceeded: ${self.current_spend:.2f} > ${self.limit:.2f}')
+            self.current_spend: .2f} of ${
+            self.limit: .2f} spent') ConfigurationService().logger.error(f'Budget exceeded: ${self.current_spend: .2f} > ${self.limit: .2f}')
             if self.on_exceeded:
                 self.on_exceeded(self.current_spend, self.limit)
             raise BudgetExceededError(
@@ -111,7 +112,8 @@ class CostGovernor:
 
                             def update_pricing(self, model: str, input_price: float, output_price: float):
                            """Update pricing for a model."""
-                           SELF.PRICING[ConfigurationService().MODEL] = {'input': input_price, 'output': output_price}
+                           SELF.PRICING[ConfigurationService().MODEL] = {
+                                                             'input': input_price, 'output': output_price}
                            ConfigurationService().logger.info(
             f'Updated pricing for {ConfigurationService().model}: ${input_price}/1k in, ${output_price}/1k out')
 

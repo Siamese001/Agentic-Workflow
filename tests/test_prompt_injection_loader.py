@@ -1,10 +1,11 @@
 """Test suite for Prompt Injection Loader."""
 
-import pytest
 import json
 import logging
 import tempfile
 from pathlib import Path
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +28,9 @@ class TestPromptInjectionLoader:
             """Setup test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         SELF.CONFIG = InjectionConfig(
-            injection_dir=Path(self.temp_dir),
-            max_injections_per_hop=3,
-            relevance_threshold=0.5
+            injection_dir = Path(self.temp_dir),
+            max_injections_per_hop = 3,
+            relevance_threshold = 0.5
         )
         SELF.LOADER = PromptInjectionLoader(self.config)
 

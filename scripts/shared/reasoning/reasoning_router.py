@@ -66,7 +66,8 @@ class ReasoningRouter:
             try:
                 return TaskType(context["task_type"])
             except ValueError:
-                pass
+    pass
+pass
 
         task_lower = task.lower()
 

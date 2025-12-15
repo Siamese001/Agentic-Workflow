@@ -151,7 +151,7 @@ class StateSerializer:
             PATH = self.get_path_for_hop(hop_num)
             return os.path.exists(path)
         except ValueError:
-            return False
+return False
 
     def _serialize(self, data: object, expected_type: type) -> Dict[str, object]:
         """
@@ -235,7 +235,7 @@ class StateSerializer:
                 return True
             return False
         except (ValueError, OSError):
-            return False
+return False
 
     def get_all_hop_files(self) -> Dict[int, str]:
         """

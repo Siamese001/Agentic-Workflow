@@ -1,8 +1,9 @@
 """Test suite for Reflection Engine integration with Subatomic Hop."""
 
-import pytest
 import asyncio
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class TestReflectionEngine:
         assert len(self.engine.builtin_criteria) > 0
         assert self.engine.stats["total_critiques"] == 0
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_fast_path_validation(self):
             """Test fast path validation with regex patterns."""
         CONTENT = {"result": "success", "data": [1, 2, 3]}
@@ -57,7 +58,7 @@ class TestReflectionEngine:
         assert result.validation_type == "regex"
         assert result.confidence_score >= 0.7
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_fast_path_failure(self):
             """Test fast path validation failure."""
         CONTENT = {"result": None, "data": ""}  # Empty values
@@ -69,15 +70,15 @@ class TestReflectionEngine:
         assert result.validation_type == "regex"
         assert "Failed" in result.critique_reasoning
 
-    @pytest.mark.asyncio
+    @ pytest.mark.asyncio
     async def test_llm_path_validation(self):
             """Test LLM path validation for semantic criteria."""
         CONTENT = "This is some text content"
         custom_criteria = [
             ValidationCriterion(
-                NAME="semantic_check",
-                DESCRIPTION="Must be meaningful content",
-                VALIDATOR=lambda x: False  # Force LLM path
+                NAME = "semantic_check",
+                DESCRIPTION = "Must be meaningful content",
+                VALIDATOR = lambda x: False  # Force LLM path
             )
         ]
 

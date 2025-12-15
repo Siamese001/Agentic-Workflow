@@ -38,7 +38,8 @@ class PromptEnhancer:
         SELF.CONFIG = config or EnhancementConfig()
 
         # Get component instances
-        self.prompt_assembler = get_prompt_assembler(legacy_mode=self.config.legacy_mode)
+        self.prompt_assembler = get_prompt_assembler(
+            legacy_mode = self.config.legacy_mode)
         self.injection_loader = get_injection_loader()
         self.contract_manager = get_contract_manager()
         self.few_shot_registry = get_few_shot_registry()
@@ -236,7 +237,8 @@ class PromptEnhancer:
                 return content, result
 
             except Exception as e:
-                logger.error(f"Contract validation failed: {e}")
+    pass
+logger.error(f"Contract validation failed: {e}")
                 result["validation_errors"].append(str(e))
 
         # Parse response using prompt assembler

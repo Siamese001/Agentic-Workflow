@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Debug test for resume functionality."""
 
-import logging
 import asyncio
+import logging
 import tempfile
 
 

@@ -9,15 +9,18 @@ Tests for:
 - GR-004: MEMemory Failure (L5)
 """
 
-from canon_validator_engine import execute_cost_governed_vulnerability_check
-from canon_validator import CanonValidator
-import pytest
 import json
-from unittest.mock import Mock, patch
+import os
 
 # Import the validator
 import sys
-import os
+from unittest.mock import Mock, patch
+
+import pytest
+
+from canon_validator import CanonValidator
+from canon_validator_engine import execute_cost_governed_vulnerability_check
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
@@ -92,7 +95,8 @@ class TestGovernanceResilience:
                 )
                 results.append(result)
             except Exception as e:
-                results.append({"status": "error", "message": str(e)})
+    pass
+results.append({"status": "error", "message": str(e)})
 
         # Verify cost governance
         assert quota_used == quota_limit  # Used up quota
@@ -125,7 +129,8 @@ class TestGovernanceResilience:
 
                 assert False, "Should have raised Atomic State Integrity Error"
             except Exception as e:
-                assert "Atomic State Integrity Error" in str(
+    pass
+assert "Atomic State Integrity Error" in str(
                     e) or "connection lost" in str(e).lower()
 
             # Verify rollback was attempted
@@ -226,7 +231,8 @@ class TestGovernanceResilience:
                         )
                         operations += 1
                     except Exception as e:
-                        assert "cost limit exceeded" in str(e).lower()
+    pass
+assert "cost limit exceeded" in str(e).lower()
                         break
 
                 # Verify cost was tracked
@@ -290,7 +296,8 @@ class TestGovernanceResilience:
             try:
                 mock_validator.validate("test code")
             except Exception as e:
-                if "circuit breaker" in str(e).lower():
+    pass
+if "circuit breaker" in str(e).lower():
                     assert circuit_open
                     assert failure_count >= 3
                     break

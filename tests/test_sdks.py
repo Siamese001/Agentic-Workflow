@@ -23,7 +23,8 @@ LOGGER = logging.getLogger(__name__)
         logger.info(f"✅ {provider_name}: Operational")
         return True, None
     except Exception as e:
-        logger.info(f"❌ {provider_name}: Failed - {str(e)[:100]}")
+    pass
+logger.info(f"❌ {provider_name}: Failed - {str(e)[:100]}")
         return False, str(e)
 
 

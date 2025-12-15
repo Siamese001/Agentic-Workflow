@@ -90,12 +90,12 @@ def fix_repeated_concept_filenames():
 
     PATTERN = re.compile(
         r"(update.
-            .*update|check.
-            .*check|state.
-            .*state|cost.
-            .*cost|policy.
-            .*policy|rule.
-            .*rule|safety.
+            .*update | check.
+            .*check | state.
+            .*state | cost.
+            .*cost | policy.
+            .*policy | rule.
+            .*rule | safety.
             .*safety)",
 
         re.IGNORECASE,
@@ -118,9 +118,11 @@ def fix_repeated_concept_filenames():
             new_stem = stem
             for word in ["update", "check", "state", "cost", "policy", "rule", "safety"]:
                 # Replace word_word with just word
-                new_stem = re.sub(rf"({word})_\1", r"\1", new_stem, flags=re.IGNORECASE)
+                new_stem = re.sub(rf"({word})_\1", r"\1",
+                                  new_stem, flags=re.IGNORECASE)
                 # Replace word_X_word with word_X
-                new_stem = re.sub(rf"({word})_(\w+)_\1", r"\1_\2", new_stem, flags=re.IGNORECASE)
+                new_stem = re.sub(rf"({word})_(\w+)_\1",
+                                  r"\1_\2", new_stem, flags=re.IGNORECASE)
 
             if new_stem != stem:
                 new_path = f.parent / f"{new_stem}.py"
@@ -130,6 +132,7 @@ def fix_repeated_concept_filenames():
 
                     Exception as e: pass
                 else:
+
 
 def create_init_files():
     """Ensure all directories with .py files have __init__.py"""
@@ -141,11 +144,13 @@ def create_init_files():
             if d.name == "__pycache__":
                 continue
 
-            has_py = any(child.suffix == ".py" for child in d.iterdir() if child.is_file())
+            has_py = any(child.suffix ==
+                         ".py" for child in d.iterdir() if child.is_file())
             init_file = d / "__init__.py"
 
             if has_py and not init_file.exists():
                 init_file.write_text('"""Package initialization."""\n')
+
 
 if __name__ == "__main__":
 

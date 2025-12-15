@@ -279,7 +279,8 @@ class WebSearchFallback:
             }
 
         except Exception as e:
-            logger.error(f"Web search failed: {e}")
+    pass
+logger.error(f"Web search failed: {e}")
             return {
                 "query": query,
                 "results": [],

@@ -297,7 +297,8 @@ class TestCircuitBreaker:
             try:
                 orchestrator.execute_workflow({})
             except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+    pass
+logger.warning(f"Ignored error: {e}")
 
 class TestWorkflowResumption:
     """Test workflow resumption from checkpoints."""
@@ -430,7 +431,8 @@ class TestErrorRecovery:
                 RESULT = orchestrator.execute_workflow({})
                 assert result["status"] in ["COMPLETED", "PARTIAL"]
             except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+    pass
+logger.warning(f"Ignored error: {e}")
 
 class TestPerformanceAndScaling:
     """Test performance and scaling characteristics."""

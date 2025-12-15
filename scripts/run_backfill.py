@@ -7,17 +7,19 @@ Usage:
     python scripts/run_backfill.py --git-repo /path/to/repo --local-path /path/to/code
 """
 
-from core.qdrant_cache import QdrantCache
-from core.semantic_gatekeeper import get_gatekeeper
-from core.etl_pipeline import BackfillPipeline, ContinuousIngester
 import argparse
 import asyncio
 import json
 import logging
 import sys
-import yaml
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import yaml
+
+from core.etl_pipeline import BackfillPipeline, ContinuousIngester
+from core.qdrant_cache import QdrantCache
+from core.semantic_gatekeeper import get_gatekeeper
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -95,16 +97,16 @@ async def run_backfill(sources: Dict[str, Any], config: Dict[str, Any]):
     stats = await pipeline.run()
 
     # Print results
-    print("\n" + "="*50)
-    print("BACKFILL COMPLETE")
-    print("="*50)
-    print(f"Files processed: {stats['files_processed']}")
-    print(f"Chunks created: {stats['chunks_created']}")
-    print(f"Vectors loaded: {stats['vectors_loaded']}")
-    print(f"Errors: {stats['errors']}")
-    print(f"Duration: {stats['duration_seconds']:.2f} seconds")
-    print(f"Throughput: {stats['chunks_per_second']:.2f} chunks/second")
-    print("="*50)
+    # print("\n" + "="*50)  # [Security Fix]
+    # print("BACKFILL COMPLETE")  # [Security Fix]
+    # print("="*50)  # [Security Fix]
+    # print(f"Files processed: {stats['files_processed']}")  # [Security Fix]
+    # print(f"Chunks created: {stats['chunks_created']}")  # [Security Fix]
+    # print(f"Vectors loaded: {stats['vectors_loaded']}")  # [Security Fix]
+    # print(f"Errors: {stats['errors']}")  # [Security Fix]
+    # print(f"Duration: {stats['duration_seconds']:.2f} seconds")  # [Security Fix]
+    # print(f"Throughput: {stats['chunks_per_second']:.2f} chunks/second")  # [Security Fix]
+    # print("="*50)  # [Security Fix]
 
     return stats
 
@@ -138,10 +140,12 @@ async def run_continuous_ingestion(config: Dict[str, Any]):
             stats = ingester.get_stats()
             logger.info(f"Ingestion stats: {stats}")
         except KeyboardInterrupt:
-            logger.info("Stopping continuous ingestion...")
+    pass
+logger.info("Stopping continuous ingestion...")
             break
         except Exception as e:
-            logger.error(f"Error in continuous ingestion: {e}")
+    pass
+logger.error(f"Error in continuous ingestion: {e}")
             await asyncio.sleep(300)  # Wait 5 minutes on error
 
 
@@ -270,10 +274,12 @@ Examples:
                 asyncio.run(run_continuous_ingestion(config))
 
     except KeyboardInterrupt:
-        logger.info("Pipeline interrupted by user")
+    pass
+logger.info("Pipeline interrupted by user")
         sys.exit(0)
     except Exception as e:
-        logger.error(f"Pipeline failed: {e}")
+    pass
+logger.error(f"Pipeline failed: {e}")
         sys.exit(1)
 
 

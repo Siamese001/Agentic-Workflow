@@ -1,7 +1,8 @@
 """Integration Tests for Security and Injection Detection """
 
-import pytest
 import logging
+
+import pytest
 
 logger = logging.getLogger(__name__)
 

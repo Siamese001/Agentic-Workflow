@@ -1,7 +1,8 @@
-import duckdb
 import json
 import logging
 from typing import Any
+
+import duckdb
 
 logger = logging.getLogger(__name__)
 

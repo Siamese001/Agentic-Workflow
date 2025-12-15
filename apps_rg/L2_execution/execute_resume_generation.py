@@ -75,7 +75,8 @@ class ExecuteResumeGeneration:
                 total_steps=1
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            duration_ms = (time.time() - start) * 1000
+    pass
+duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
                 STATUS=ResultStatus.FAILURE,
                 ERROR=str(e),

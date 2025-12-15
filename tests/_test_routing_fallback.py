@@ -1,8 +1,9 @@
 
-import sys
-import os
-import logging
 import asyncio
+import logging
+import os
+import sys
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for resilient routing fallback behavior.
@@ -295,7 +296,8 @@ logging.basicConfig(
     await test()
             PASSED += 1
         except Exception as e:
-    logger.info(f"✗ {test.__name__} failed: {e}")
+    pass
+logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1

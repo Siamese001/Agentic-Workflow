@@ -35,7 +35,7 @@ def get_file_hash(path: Path) -> str:
         CONTENT = path.read_bytes()
         return hashlib.md5(content).hexdigest()
     except (ValueError, TypeError, KeyError):
-        return ""
+return ""
 
 
 def get_file_signature(path: Path) -> tuple:
@@ -50,7 +50,7 @@ def get_file_signature(path: Path) -> tuple:
                 break
         return (get_file_hash(path), path.stat().st_size, first_meaningful)
     except (ValueError, TypeError, KeyError):
-        return ("", 0, "")
+return ("", 0, "")
 
 
 def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Path]]]:
@@ -142,7 +142,7 @@ def _print_file_preview(f: Path) -> None:
                 logger.info("    ...")
                 break
     except (ValueError, TypeError, KeyError) as e:
-        logger.info(f"    Error reading file: {e}")
+logger.info(f"    Error reading file: {e}")
 
 
 def _print_unique_file_analysis(unique_files: List[Path]) -> None:
@@ -179,10 +179,10 @@ def main() -> None:
     for pending, approved_list in name_matches[:10]:
         size_pending = pending.stat().st_size
         size_approved = approved_list[0].stat().st_size
-        STATUS = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_a
-                                                                                              pproved})"
+        STATUS = "SAME SIZE" if size_pending == size_approved else f"DIFF({size_pending} vs {size_a
+                                                                                             pproved})"
         logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_
-                                                                                               ROOT)} ({status})")
+                                                                                               ROOT)}({status})")
 
     if len(name_matches) > 10:
         logger.info(f"  ... and {len(name_matches) - 10} more")

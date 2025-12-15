@@ -117,7 +117,8 @@ class HardeningMixin:
             return result
 
         except CircuitBreakerOpenError as e:
-            # Circuit breaker is open
+    pass
+# Circuit breaker is open
             latency_ms = (time.time() - start_time) * 1000
 
             self.telemetry.log_circuit_breaker(
@@ -130,7 +131,8 @@ class HardeningMixin:
             raise
 
         except Exception as e:
-            # All other errors
+    pass
+# All other errors
             latency_ms = (time.time() - start_time) * 1000
 
             self.telemetry.log_failure(
@@ -164,7 +166,8 @@ class HardeningMixin:
         try:
             import tiktoken
         except ImportError as exc:
-            # tiktoken not available - skip validation
+    pass
+# tiktoken not available - skip validation
             return
 
         # Get encoding for model
@@ -177,7 +180,8 @@ class HardeningMixin:
                 # Default to cl100k_base (most models)
                 ENCODING = tiktoken.get_encoding("cl100k_base")
         except KeyError:
-            # Unknown model - use default
+    pass
+# Unknown model - use default
             ENCODING = tiktoken.get_encoding("cl100k_base")
 
         # Count tokens

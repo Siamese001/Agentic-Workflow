@@ -4,10 +4,12 @@ EBP-001: Immediate Cessation (The Sail Drop)
 Emergency Protocol test for L1 tool chain disabling
 """
 
-import pytest
-from unittest.mock import Mock
-import time
 import threading
+import time
+from unittest.mock import Mock
+
+import pytest
+
 from canon_validator import CanonValidator
 
 
@@ -150,7 +152,8 @@ class TestEBP001:
                 mock_tool_call(tool)
                 assert False, f"Tool {tool} should have been blocked"
             except Exception as e:
-                assert "EBP_ACTIVE" in str(e)
+    pass
+assert "EBP_ACTIVE" in str(e)
 
         # Verify all calls were blocked
         assert len(blocked_calls) == 4

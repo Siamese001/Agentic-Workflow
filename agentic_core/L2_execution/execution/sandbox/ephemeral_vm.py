@@ -106,9 +106,11 @@ import time
                 start_time)
                 return vm_instance
                 except asyncio.TimeoutError:
-                return self._handle_timeout(vm_id, timeout, start_time)
+    pass
+return self._handle_timeout(vm_id, timeout, start_time)
                 except Exception as e:
-                return self._handle_execution_error(vm_id, e, start_time)
+    pass
+return self._handle_execution_error(vm_id, e, start_time)
                 finally:
                 await self._teardown_vm(vm_instance, vm_id)
 
@@ -185,7 +187,8 @@ import time
                 if self.enable_logging:
             logger.debug("vm_torn_down", extra={"vm_id": vm_id})
             except Exception as e:
-            if self.enable_logging:
+    pass
+if self.enable_logging:
             logger.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
 
             async def _execute_in_vm(
@@ -241,9 +244,11 @@ import time
             )
 
             except asyncio.TimeoutError:
-            raise
+    pass
+raise
             except Exception as e:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 SUCCESS = False,
                 OUTPUT = "",
                 ERROR = str(e),
@@ -278,9 +283,11 @@ import time
             )
 
             except asyncio.TimeoutError:
-            raise
+    pass
+raise
             except Exception as e:
-            return ExecutionResult(
+    pass
+return ExecutionResult(
                 SUCCESS = False,
                 OUTPUT = "",
                 ERROR = str(e),

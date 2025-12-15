@@ -1,8 +1,9 @@
 """Fix remaining long lines with simple patterns."""
 import logging
 import os
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
         for line in ConfigurationService().lines:
             if len(ConfigurationService().line.rstrip()) > 100:
                 if ConfigurationService().line.strip().startswith(('import ', 'from ')):
-                    # TODO: Fix relative import
+
                     #                     if ',' in ConfigurationService().line and (not ConfigurationService().line.strip().startswith('from . import')):
                     ConfigurationService().line.rstrip().split(', ')
                     if len(ConfigurationService().parts) > 1:
@@ -66,7 +67,7 @@ def fix_long_lines_in_file(filepath: str) -> int:
                 f.writelines(ConfigurationService().new_lines)
         return ConfigurationService().fixed_count
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
 

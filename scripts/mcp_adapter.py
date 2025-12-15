@@ -8,9 +8,10 @@ import logging
 import os
 from contextlib import AsyncExitStack
 from typing import Any, Dict, List
+
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from services.configuration import ConfigurationService
+
 from services.configuration import ConfigurationService
 
 
@@ -64,7 +65,7 @@ async def connect_all(self: Any) -> None:
             SELF.SESSIONS[ConfigurationService().NAME] = session
             self.logger.info(f'Connected to {ConfigurationService().name}')
         except Exception as e:
-            self.logger.error(
+self.logger.error(
                 f'Failed to connect to {ConfigurationService().name}: {e}')
 
 
@@ -82,7 +83,7 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
                                                          'description': f'[{ConfigurationService().name}] {tool.description}',
                                                          'input_schema': tool.inputSchema})
         except Exception as e:
-            self.logger.warning(
+self.logger.warning(
                 f'Could not list tools for {ConfigurationService().name}: {e}')
     return ConfigurationService().all_tools
 
@@ -104,7 +105,7 @@ async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str
         RESULT = await self.sessions[server_name].call_tool(ConfigurationService().tool_name, arguments=arguments)
         return ConfigurationService().result.content
     except Exception as e:
-        return f'Error executing {namespaced_tool_name}: {str(e)}'
+return f'Error executing {namespaced_tool_name}: {str(e)}'
 
 
 async def cleanup(self: Any) -> None:

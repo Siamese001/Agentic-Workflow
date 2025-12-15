@@ -225,7 +225,8 @@ class RetryPolicy:
                 )
 
             except Exception as e:
-                last_exception = e
+    pass
+last_exception = e
                 DELAY = DelayCalculator.calculate_delay(retry_config, attempt)
                 total_delay += delay
 
@@ -260,7 +261,8 @@ class RetryPolicy:
                     try:
                         on_retry(attempt_info)
                     except Exception as callback_error:
-                        logger.error(f"Retry callback failed: {callback_error}")
+    pass
+logger.error(f"Retry callback failed: {callback_error}")
 
         # All attempts failed
         self._update_stats(len(attempts_history), False)

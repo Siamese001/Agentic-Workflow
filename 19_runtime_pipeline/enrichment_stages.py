@@ -1,6 +1,6 @@
 """Context enrichment and signal augmentation stages. """
 
-# TODO: Fix relative import
+
 # from .types import PipelineStage
 import hashlib
 import logging
@@ -19,14 +19,47 @@ class ContextEnrichmentStage(PipelineStage):
     def __init__(self):
         """Initialize context enrichment stage."""
         try:
-# TODO: Fix relative import
+
 #             from ..rag_components import (KnowledgeGraphInjector,
                                           SelfRAGProcessor, SemanticCache)
             self.kg_injector = KnowledgeGraphInjector()
             self.rag_processor = SelfRAGProcessor()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            self.kg_injector = None
+    pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+self.kg_injector = None
             self.rag_processor = None
             self.semantic_cache = None
             logger.warning("RAG components not available")
@@ -46,17 +79,19 @@ class ContextEnrichmentStage(PipelineStage):
             expanded_query = self._get_expanded_query(envelope)
 
             if not expanded_query:
-                envelope.mark_stage_skipped(stage_name, "No expanded query available")
+                envelope.mark_stage_skipped(
+                    stage_name, "No expanded query available")
                 return envelope
 
             cache_key = f"context_enriched_{hashlib. .hexdigest()[:16]}"
-            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(
+                cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_context(envelope, cached)
                 envelope.mark_stage_complete(stage_name,
                                              (time.time() - start_time) * 1000,
-                                             METADATA={"cache_hit": True})
+                                             METADATA ={"cache_hit": True})
                 return envelope
 
             rag_results = self.rag_processor.retrieve_and_rerank(
@@ -84,7 +119,40 @@ class ContextEnrichmentStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            logger.error(f"Context enrichment failed: {e}")
+    pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+logger.error(f"Context enrichment failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
@@ -121,20 +189,53 @@ class SignalAugmentationStage(PipelineStage):
     def __init__(self):
         """Initialize signal augmentation stage."""
         try:
-# TODO: Fix relative import
+
 #             from ..claim_confidence import ClaimConfidenceScorer
-# TODO: Fix relative import
+
 #             from ..prompt_optimizer import PromptOptimizer
-# TODO: Fix relative import
+
 #             from ..rag_components import SemanticCache
-# TODO: Fix relative import
+
 #             from ..tone_model import ToneModel
             self.claim_scorer = ClaimConfidenceScorer()
             self.prompt_optimizer = PromptOptimizer()
             self.tone_model = ToneModel()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            self.claim_scorer = None
+    pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+self.claim_scorer = None
             self.prompt_optimizer = None
             self.tone_model = None
             self.semantic_cache = None
@@ -180,7 +281,40 @@ class SignalAugmentationStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            logger.error(f"Signal augmentation failed: {e}")
+    pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+logger.error(f"Signal augmentation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
