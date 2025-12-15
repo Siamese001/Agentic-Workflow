@@ -2,6 +2,7 @@ import time
 import logging
 import json
 import re
+import os
 from typing import Dict, Any, Optional
 from datetime import datetime
 
@@ -48,24 +49,32 @@ class CanonValidator:
         t_start = time.time()
         
         # Check if code only uses whitelisted tools for execution (skip validation for simple tool usage)
-        allowed_tools = {"search_web", "print", "read_file", "save_file", "send_email"}
-        uses_only_allowed = True
+        # L1 WHITELIST CHECK FIX: Disable in test mode to ensure full validation flow
+        is_in_test_mode = os.getenv("CANON_TEST_MODE") == "TRUE"
         
-        # Simple parsing to detect function calls
-        for line in content.split('\n'):
-            line = line.strip()
-            if '(' in line and ')' in line and not line.startswith('#'):
-                # Extract function name before first parenthesis
-                # Skip variable assignments (contains '=' before function name)
-                if '=' not in line.split('(')[0]:
-                    func_name = line.split('(')[0].strip().split()[-1]
-                    if func_name and func_name.isidentifier() and func_name not in allowed_tools:
-                        uses_only_allowed = False
-                        break
-        
-        # If code only uses allowed tools for execution, proceed to cache check
-        if uses_only_allowed:
-            logger.info("ℹ️ Code uses whitelisted tools. Proceeding to L1 cache check.")
+        if not is_in_test_mode:
+            allowed_tools = {"search_web", "print", "read_file", "save_file", "send_email"}
+            uses_only_allowed = True
+            
+            # Simple parsing to detect function calls
+            for line in content.split('\n'):
+                line = line.strip()
+                if '(' in line and ')' in line and not line.startswith('#'):
+                    # Extract function name before first parenthesis
+                    # Skip variable assignments (contains '=' before function name)
+                    if '=' not in line.split('(')[0]:
+                        func_name = line.split('(')[0].strip().split()[-1]
+                        if func_name and func_name.isidentifier() and func_name not in allowed_tools:
+                            uses_only_allowed = False
+                            break
+            
+            # If code only uses allowed tools for execution, proceed to cache check
+            if uses_only_allowed:
+                logger.info("ℹ️ Code uses whitelisted tools. Proceeding to L1 cache check.")
+        else:
+            # Test Mode: Force full validation run to hit all mocks
+            uses_only_allowed = False
+            logger.info("🧪 Test Mode ACTIVE: Forcing full validation run.")
 
         # STAGE 1: EMBEDDING
         try:
