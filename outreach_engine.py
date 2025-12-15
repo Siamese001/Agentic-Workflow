@@ -142,3 +142,113 @@ Context: Automated lead vetting based on recent company activity
         "context": news_keywords,
         "email_result": email_result
     }
+
+def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Leverages the Time MCP (L4) and MEMemory (L5) to determine the best time to contact a lead, 
+    and then sends the initial email using the Send Email MCP.
+    """
+    if logger:
+        logger.info(f"⏰ Starting optimal contact time vetting for {lead_email} in {lead_timezone}.")
+
+    # Extract Time MCP tools
+    get_current_time = tools.get('get_current_time')
+    convert_time = tools.get('convert_time')
+    send_email = tools.get('send_email')
+    search_nodes = tools.get('search_nodes')
+
+    # Validate required tools
+    if not all([get_current_time, convert_time, send_email, search_nodes]):
+        return {"status": "error", "message": "Required Time MCP tools not available"}
+
+    # --- Step 1: Get System Time (L4 Time MCP) ---
+    try:
+        # Get the current time in the agent's system timezone (local time)
+        system_time_str = get_current_time(timezone=None)
+        system_time_data = json.loads(system_time_str)
+        # We need to extract the current time in HH:MM format for the next step
+        current_time_hhmm = system_time_data['datetime'][11:16] 
+
+        if logger:
+            logger.info(f"✅ Retrieved agent's current time: {current_time_hhmm}")
+    except Exception as e:
+        return {"status": "error", "message": f"Time MCP (get_current_time) failed: {e}"}
+
+    # --- Step 2: Convert Time to Lead's Local Time (L4 Time MCP) ---
+    # We use the current system time to estimate what time it is RIGHT NOW for the lead.
+    try:
+        # Assuming agent's system timezone is 'America/New_York' for this example
+        converted_time_str = convert_time(
+            source_timezone="America/New_York",
+            time=current_time_hhmm, 
+            target_timezone=lead_timezone
+        )
+        converted_data = json.loads(converted_time_str)
+        lead_local_time = converted_data['target']['datetime'][11:16] 
+
+        if logger:
+            logger.info(f"✅ Lead's current local time: {lead_local_time}")
+            
+    except Exception as e:
+        return {"status": "error", "message": f"Time MCP (convert_time) failed: {e}"}
+
+    # --- Step 3: Strategic Decision (LLM/Cognitive Node) ---
+    # Decide if the current time is appropriate (e.g., between 9:00 and 17:00 local time)
+    lead_hour = int(lead_local_time.split(':')[0])
+    
+    if 9 <= lead_hour < 17:
+        decision = "Optimal: Proceed with outreach now."
+        send_now = True
+    else:
+        decision = "Off-Hours: Defer outreach until next business day (Requires Calendar MCP)."
+        send_now = False
+
+    if logger:
+        logger.info(f"🧠 Decision: {decision}")
+    
+    # --- Step 4: Execute Action (Send Email MCP) ---
+    if send_now:
+        try:
+            subject = f"Contextual Pitch: {pitch_body[:20]}..."
+            send_result = send_email(recipient=lead_email, subject=subject, body=pitch_body)
+            
+            # L5: Log successful outreach (MEMemory)
+            try:
+                memory_update = [{
+                    "entityName": "outreach_engine",
+                    "contents": [
+                        f"Sent pitch to {lead_email} at {lead_local_time} local time.",
+                        f"Timezone: {lead_timezone}, Decision: {decision}"
+                    ]
+                }]
+                add_observations = tools.get('add_observations')
+                if add_observations:
+                    add_observations(observations=memory_update)
+            except Exception as mem_e:
+                if logger:
+                    logger.warning(f"⚠️ MEMemory logging failed (non-critical): {mem_e}")
+            
+            return {"status": "contacted", "message": f"Email dispatched at optimal time. {send_result}"}
+            
+        except Exception as e:
+            return {"status": "error", "message": f"Send Email MCP failed: {e}"}
+            
+    else:
+        # L5: Log deferred outreach
+        try:
+            memory_update = [{
+                "entityName": "outreach_engine",
+                "contents": [
+                    f"Outreach to {lead_email} deferred.",
+                    f"Local time was {lead_local_time} in {lead_timezone}.",
+                    f"Reason: Outside business hours (9:00-17:00). Requires Calendar MCP for auto-scheduling."
+                ]
+            }]
+            add_observations = tools.get('add_observations')
+            if add_observations:
+                add_observations(observations=memory_update)
+        except Exception as mem_e:
+            if logger:
+                logger.warning(f"⚠️ MEMemory logging failed (non-critical): {mem_e}")
+
+        return {"status": "deferred", "message": f"Outreach deferred. Local time {lead_local_time} is outside business hours. Requires Calendar MCP for auto-scheduling."}
