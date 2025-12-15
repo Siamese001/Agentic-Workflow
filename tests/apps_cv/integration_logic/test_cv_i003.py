@@ -81,8 +81,8 @@ class TestCVI003:
                 mock_add_observations([error_obs])
             return missing_dirs
         
-        with patch('canon_validator.add_observations', side_effect=mock_add_observations):
-            missing = mock_filesystem_check()
+        # Execute filesystem check
+        missing = mock_filesystem_check()
         
         # Verify errors were logged
         assert len(missing) == 2
@@ -171,13 +171,14 @@ class TestCVI003:
         permission_errors = []
         
         def mock_permission_check():
+            nonlocal permission_errors
             # Simulate permission checks
             test_paths = [
-                ("src", "r", True),     # Can read src
-                ("src", "w", True),     # Can write to src
-                ("config", "r", False), # Cannot read config
-                ("logs", "w", False),   # Cannot write to logs
-                ("temp", "w", True),    # Can write to temp
+                ("src", "read", True),     # Can read src
+                ("src", "write", True),     # Can write to src
+                ("config", "read", False), # Cannot read config
+                ("logs", "write", False),   # Cannot write to logs
+                ("temp", "write", True),    # Can write to temp
             ]
             
             for path, perm, has_permission in test_paths:

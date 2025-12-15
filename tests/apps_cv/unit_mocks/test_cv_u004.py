@@ -229,7 +229,7 @@ class TestCVU004:
         # Simulate logging the special characters payload
         mock_payload = [{
             "entityName": "special_chars_violation",
-            "contents": [json.dumps(special_chars_violation)],
+            "contents": [json.dumps(special_chars_violation, ensure_ascii=False)],
             "corpusNames": ["canon_validator"],
             "tags": ["violation", "special_chars", "l5"]
         }]

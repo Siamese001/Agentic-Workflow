@@ -352,7 +352,6 @@ class TestCVA004:
         
         for response, should_succeed in test_cases:
             result = mock_version_checker(response)
-            print(f"Response: {response}, Should succeed: {should_succeed}, Result: {result}")
             if should_succeed:
                 assert result is not None, f"Failed for response: {response}"
             else:

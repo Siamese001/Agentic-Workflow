@@ -81,7 +81,11 @@ class TestCVU002:
         validator.pinecone.query = Mock(return_value={'matches': []})
         validator.pinecone.upsert = Mock()
         
-        result = validator.validate("test code")
+        # Mock LLM to ensure validation runs
+        validator.llm = Mock()
+        validator.llm.generate_plan = Mock(return_value={"status": "valid"})
+        
+        result = validator.validate("import os\nos.system('test')")
         
         # Validation should continue despite cache timeout
         assert result["status"] == "valid"
