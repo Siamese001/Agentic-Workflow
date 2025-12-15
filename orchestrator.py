@@ -20,9 +20,39 @@ def run_agentic_loop(user_goal: str):
     actions = ActionRegistry()
     cognitive = CognitiveNode() # <--- NEW COMPONENT
     
-    # 2. DEFINE TOOLBOX (This is the critical step for unification)
+    # 2. DEFINE TOOLBOX (The fully unified and accurate toolset)
     toolbox_desc = """
     AVAILABLE TOOLS (You MUST use these for your tasks):
+
+    [FILESYSTEM MCP - L0 Secure I/O]
+    - read_text_file(path: str) -> string : Reads complete contents of a file as text (e.g., resumes, source code).
+    - write_file(path: str, content: str) -> string : Creates a new file or overwrites existing content (exercise caution).
+    - edit_file(path: str, edits: array) -> string : Makes selective edits using advanced pattern matching and formatting (Ideal for Canon Validator repair).
+    - list_directory(path: str) -> string : Lists contents of a directory (used for project introspection).
+
+    [MEMORY MCP - L3 Knowledge Graph/User Profile]
+    - create_entities(entities: array) -> string : Creates new nodes (people, organizations, concepts) in the graph.
+    - add_observations(observations: array) -> string : Adds specific facts (strings) to existing entities.
+    - create_relations(relations: array) -> string : Links two entities with a directed relation (e.g., 'John_Smith', 'works_at', 'Anthropic').
+    - search_nodes(query: str) -> string : Searches across entity names, types, and observations for relevant context.
+
+    [PINECONE MCP - L2 RAG/Wisdom (The Canonical Memory)]
+    - search_records(query: str, index: str, top_k: integer, namespace: str) -> string : Searches the Pinecone index for records similar to the query text (L2 Wisdom). Use for retrieving code patterns, successful resume templates, or outreach knowledge.
+    - upsert_records(records: string) -> string : Inserts or updates a JSON list of records into the index (How you save new knowledge/validated code/successful templates).
+    - describe_index_stats() -> string : Provides statistics on index content (useful for planning).
+
+    [GITKRAKEN MCP - Code Operations, Issues, and PRs (Source of Truth)]
+    - git_add_or_commit(files: string, message: string, action: string) -> string : Adds file contents to the index OR records changes to the repository.
+    - git_checkout(branch_or_file: string) : Switches branches or restores working tree files.
+    - git_status() -> string : Shows the working tree status.
+    - pull_request_create(repo: str, title: str, body: str, head: str, base: str) -> string : Creates a new pull request.
+    - issues_get_detail(id: string) -> string : Retrieves detailed information about a specific issue by its unique ID.
+    - repository_get_file_content(path: string) -> string : Gets file content from the repository (replaces GitHub's read_file).
+
+    [FIGMA MCP - L0 Design Context & Code Generation]
+    - get_design_context(node_id: string) -> string : Gets structural design data for a selected Figma node/frame.
+    - get_variable_defs(node_id: string) -> string : Retrieves the design tokens (variables, styles) used in the selection.
+    - get_code_connect_map(node_id: string) -> string : Retrieves the codebase path for a linked component.
 
     [REDIS MCP - L1 Cache & Session State]
     - string_set(key: str, value: str) : Stores simple session state or caching keys.
@@ -33,10 +63,6 @@ def run_agentic_loop(user_goal: str):
     [WEB SEARCH & CONTENT]
     - search_web(query: str) -> str : Returns real-time search results.
     - print(msg) : Standard output.
-    
-    [FILESYSTEM]
-    - read_file(file_path: str) -> str : Reads contents of a file.
-    - save_file(content: str, file_path: str) -> str : Saves content to a file.
     
     [EMAIL]
     - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email (Mock).
@@ -116,6 +142,11 @@ def run_agentic_loop(user_goal: str):
         logger.error(f"Runtime Error: {e}")
 
 if __name__ == "__main__":
-    # Example task now leveraging caching and state management
-    task = "Find the latest stock price for NVIDIA. Cache the result for 5 minutes using the Redis string_set tool with key 'NVDA_STOCK'. If the price is over $1000, save a file named 'NVIDIA_ALERT.txt' using the save_file tool."
-    run_agentic_loop(task)
+    # Example task now integrating Filesystem for file management
+    task = (
+        "Read the contents of 'my_resume.txt' using read_text_file. "
+        "Find the best matching job pitch template from Pinecone. "
+        "Generate a cover letter using the retrieved text and write the output to 'cover_letter_draft.txt' using write_file."
+    )
+    print(f"\nExample Agent Task Defined:\n{task}")
+    # run_agentic_loop(task)

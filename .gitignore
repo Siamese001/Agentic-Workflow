@@ -9,6 +9,9 @@ data/**/*.parquet
 *.lfs
 *.DS_Store
 
+# Agent memory (L3 Knowledge Graph)
+.memory/
+
 # Python artifacts
 __pycache__/
 *.pyc
