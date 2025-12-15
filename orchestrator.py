@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import subprocess
@@ -64,6 +65,36 @@ def ensure_manifest_freshness(manifest_path: str, root_dir: str = ".") -> bool:
     logger.info("✅ Manifest is fresh. Proceeding to Phase B runtime.")
     return True
 
+def validate_manifest_integrity(manifest_path: str) -> bool:
+    """
+    [HARDENED] Quality Gate: Ensures the manifest is valid JSON 
+    and contains the expected structure before loading it.
+    """
+    try:
+        if not os.path.exists(manifest_path):
+            return False
+            
+        with open(manifest_path, 'r') as f:
+            data = json.load(f)
+            
+        # Basic Schema Validation
+        if not isinstance(data, dict):
+            logging.error("❌ Manifest corruption: Root element is not a dictionary.")
+            return False
+            
+        # Check for non-empty content (an empty manifest is effectively useless)
+        if not data:
+            logging.warning("⚠️ Manifest is empty. Librarian may have failed to find files.")
+            
+        return True
+        
+    except json.JSONDecodeError as e:
+        logging.error(f"❌ Manifest corruption: Invalid JSON syntax. {e}")
+        return False
+    except Exception as e:
+        logging.error(f"❌ Manifest validation error: {e}")
+        return False
+
 
 def run_agentic_loop(user_goal: str):
     # print(f"\n🚀 SUBATOMIC AGENT STARTING: {user_goal}")  # [Security Fix]
@@ -77,10 +108,22 @@ def run_agentic_loop(user_goal: str):
         try:
             print("🔄 Re-indexing filesystem (Phase A)...")
             subprocess.run(["python", "apps_rg/L0_maintenance/deduplicate_and_index.py"], check=True)
-            print("✅ Sanitization complete.")
+            
+            # [CRITICAL ADDITION] 2. Verify Integrity immediately after generation
+            if not validate_manifest_integrity(manifest_path):
+                raise RuntimeError("Phase A completed, but generated a corrupt manifest.")
+                
+            print("✅ Sanitization complete & verified.")
+            
         except subprocess.CalledProcessError as e:
-            logger.error(f"❌ Librarian failed to run: {e}")
-            return # Stop execution if sanitization fails
+            logging.critical(f"🛑 Librarian crashed (Exit Code {e.returncode}). Check logs.")
+            sys.exit(1) # Hard Stop
+        except RuntimeError as e:
+            logging.critical(f"🛑 {e}")
+            # Optional: Delete corrupt file to force clean regeneration next time
+            if os.path.exists(manifest_path):
+                os.remove(manifest_path)
+            sys.exit(1) # Hard Stop
 
     # 1. INITIALIZE COMPONENTS
     validator = CanonValidator()
