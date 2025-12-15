@@ -11,6 +11,9 @@ import subprocess
 # Add current directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Set test mode environment variable to force full validation flow
+os.environ["CANON_TEST_MODE"] = "TRUE"
+
 # Run pytest with specific configuration
 cmd = [
     sys.executable, "-m", "pytest",
@@ -21,6 +24,7 @@ cmd = [
 ]
 
 print("Running apps_cv test suite...")
+print("Test Mode: CANON_TEST_MODE=TRUE")
 print("Command:", " ".join(cmd))
 print("-" * 60)
 

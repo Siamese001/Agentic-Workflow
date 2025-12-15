@@ -88,6 +88,12 @@ class TestCVI002:
         call_sequence.append("live_figma_check")
         call_sequence.append("cache_store")
         
+        # Simulate cache update
+        cache_updates.append({
+            "figma_version": "v1.2.0",
+            "figma_timestamp": "2025-12-15T12:00:00Z"
+        })
+        
         result = {
             "status": "repaired",
             "message": "Updated color tokens to match v1.2.0: tokens.color-primary"
