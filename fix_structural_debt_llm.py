@@ -42,48 +42,6 @@ EXCLUDED_FILES = [
 EXCLUDED_DIRS = ['reports', 'drafts', 'tests', '.git', '__pycache__', 'venv', 'archives']
 MANIFEST_FILE = 'active_manifest.json'
 
-def get_target_files(root_dir):
-    """
-    Returns files from the manifest if it exists, otherwise falls back to os.walk
-    Uses a hybrid approach: smart manifest + safety net for critical directories
-    """
-    active_files = set()
-    
-    # 1. Load the smart manifest (The 72 files)
-    manifest_path = os.path.join(root_dir, MANIFEST_FILE)
-    if os.path.exists(manifest_path):
-        print(f"📂 Loading dependency graph from {MANIFEST_FILE}...")
-        with open(manifest_path, 'r') as f:
-            manifest_files = json.load(f)
-            # Normalize paths
-            active_files.update([os.path.normpath(os.path.join(root_dir, f)) for f in manifest_files])
-    
-    # 2. SAFETY NET: Force-include critical directories (The "Lost Islands")
-    #    This ensures anything in critical folders is fixed, even if the graph missed it.
-    CRITICAL_DIRS = ['apps_rg', 'apps_shared', '01_agentic_core', '02_apps', '03_runtime', '04_tools', '08_scripts']
-    
-    print(f"🛡️  Scanning safety net directories: {CRITICAL_DIRS}...")
-    for safety_dir in CRITICAL_DIRS:
-        full_safety_path = os.path.join(root_dir, safety_dir)
-        if os.path.exists(full_safety_path):
-            for r, d, f in os.walk(full_safety_path):
-                # Skip hidden directories and common excludes
-                d[:] = [dir_name for dir_name in d if not dir_name.startswith('.') and dir_name not in ['__pycache__', 'venv', 'node_modules']]
-                for file in f:
-                    if file.endswith('.py') and not any(x in file for x in ['backup', '_old', '.pyc', '.pyo']):
-                        active_files.add(os.path.join(r, file))
-    
-    # 3. Also include root-level Python files
-    for file in os.listdir(root_dir):
-        if (file.endswith('.py') and 
-            not file.startswith('.') and 
-            not any(x in file for x in ['backup', '_old', '.pyc', '.pyo']) and
-            file not in EXCLUDED_FILES):
-            active_files.add(os.path.join(root_dir, file))
-    
-    final_list = sorted(list(active_files))
-    print(f"📊 Final processing list: {len(final_list)} files (Graph + Safety Net)")
-    return final_list
 
 def is_excluded(file_path: str) -> bool:
     """Checks if a file is in the exclusion list."""

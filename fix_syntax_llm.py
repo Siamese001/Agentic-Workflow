@@ -3,6 +3,12 @@ import argparse
 import google.generativeai as genai
 import time
 import json
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from shared.config.exclusions import EXCLUDED_FILES, EXCLUDED_DIRS
 
 # --- CONFIGURATION ---
 API_KEY = os.environ.get("GOOGLE_API_KEY")
@@ -27,48 +33,48 @@ EXCLUDED_DIRS = {'reports', 'drafts', 'tests', '.git', '__pycache__', 'venv', 'a
 EXCLUDED_FILES = {'canon_validator_backup.py', 'resume_engine_backup.py', 'fix_structural_debt_backup.py', '*.pyc', '*.pyo', '*.pyd', '.DS_Store', 'Thumbs.db'}
 MANIFEST_FILE = 'active_manifest.json'
 
-def get_target_files(root_dir):
+def get_target_files(root_dir: str) -> list[str]:
     """
-    Returns files from the manifest if it exists, otherwise falls back to os.walk
-    Uses a hybrid approach: smart manifest + safety net for critical directories
-    """
-    active_files = set()
+    Returns files ONLY from the active_manifest.json.
+    This ensures we only process files that have been deduplicated and validated.
     
-    # 1. Load the smart manifest (The 72 files)
+    Args:
+        root_dir: Root directory to search
+        
+    Returns:
+        List of absolute file paths to process
+    """
     manifest_path = os.path.join(root_dir, MANIFEST_FILE)
-    if os.path.exists(manifest_path):
-        print(f"📂 Loading dependency graph from {MANIFEST_FILE}...")
+    
+    if not os.path.exists(manifest_path):
+        print(f"❌ CRITICAL ERROR: {MANIFEST_FILE} not found!")
+        print(f"   Please run the Librarian first: python apps_rg/L0_maintenance/deduplicate_and_index.py")
+        sys.exit(1)
+    
+    try:
+        print(f"📂 Loading active file list from {MANIFEST_FILE}...")
         with open(manifest_path, 'r') as f:
-            manifest_files = json.load(f)
-            # Normalize paths
-            active_files.update([os.path.normpath(os.path.join(root_dir, f)) for f in manifest_files])
-    
-    # 2. SAFETY NET: Force-include critical directories (The "Lost Islands")
-    #    This ensures anything in critical folders is fixed, even if the graph missed it.
-    CRITICAL_DIRS = ['apps_rg', 'apps_shared', '01_agentic_core', '02_apps', '03_runtime', '04_tools', '08_scripts']
-    
-    print(f"🛡️  Scanning safety net directories: {CRITICAL_DIRS}...")
-    for safety_dir in CRITICAL_DIRS:
-        full_safety_path = os.path.join(root_dir, safety_dir)
-        if os.path.exists(full_safety_path):
-            for r, d, f in os.walk(full_safety_path):
-                # Skip hidden directories and common excludes
-                d[:] = [dir_name for dir_name in d if not dir_name.startswith('.') and dir_name not in ['__pycache__', 'venv', 'node_modules']]
-                for file in f:
-                    if file.endswith('.py') and not any(x in file for x in ['backup', '_old', '.pyc', '.pyo']):
-                        active_files.add(os.path.join(r, file))
-    
-    # 3. Also include root-level Python files
-    for file in os.listdir(root_dir):
-        if (file.endswith('.py') and 
-            not file.startswith('.') and 
-            not any(x in file for x in ['backup', '_old', '.pyc', '.pyo']) and
-            file not in EXCLUDED_FILES):
-            active_files.add(os.path.join(root_dir, file))
-    
-    final_list = sorted(list(active_files))
-    print(f"📊 Final processing list: {len(final_list)} files (Graph + Safety Net)")
-    return final_list
+            manifest = json.load(f)
+        
+        # Extract file paths from manifest
+        files = []
+        for file_info in manifest.get("files", []):
+            # Use absolute_path if available, otherwise construct from relative path
+            if "absolute_path" in file_info:
+                files.append(file_info["absolute_path"])
+            else:
+                files.append(os.path.join(root_dir, file_info["path"]))
+        
+        print(f"✅ Loaded {len(files)} validated files from manifest")
+        print(f"   - Duplicates removed: {manifest.get('stats', {}).get('duplicates_removed', 0)}")
+        print(f"   - Created: {manifest.get('created_at', 'Unknown')}")
+        
+        return files
+        
+    except Exception as e:
+        print(f"❌ Failed to load manifest: {e}")
+        print(f"   Please ensure the manifest is valid JSON")
+        sys.exit(1)
 
 def get_llm_syntax_fix(code_content: str, file_path: str, error_msg: str, model_name: str) -> str:
     """

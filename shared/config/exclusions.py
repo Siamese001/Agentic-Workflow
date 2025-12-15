@@ -18,7 +18,7 @@ EXCLUDED_FILE_PATTERNS = [
     '*_backup.py', '*_old.py', 'result_*.py', 'temp_*.py',
     'canon_validator_backup.py', '*_copy.py', '*_duplicate.py',
     '*_v2.py', '*_v3.py', '*_test_backup.py'
-}
+]
 
 # Specific files to exclude by name
 EXCLUDED_FILES = {

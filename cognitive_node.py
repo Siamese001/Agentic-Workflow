@@ -30,16 +30,12 @@ class CognitiveNode:
             with open(config_path, 'r') as f:
                 self.config = yaml.safe_load(f)
         except FileNotFoundError:
-    pass
-pass
-
-
-logger.warning(
+            logger.warning(
                 f"Config file not found at {config_path}, using defaults")
             self.config = self._get_default_config()
 
         # Apply configuration
-        self.max_steps = self.config.get('max_steps', 5)
+        self.max_steps = self.config.get('max_steps', 10)
         self.step_timeout = self.config.get('step_timeout', 30)
         self.overall_timeout = self.config.get('overall_timeout', 300)
         self.circuit_breaker_trips = self.config.get(
@@ -47,12 +43,44 @@ logger.warning(
         self.slow_step_threshold = self.config.get('slow_step_threshold', 30)
         self.persist_history = self.config.get('persist_history', True)
         self.max_syntax_attempts = self.config.get('max_syntax_attempts', 2)
+        
+        # [HARDENED 5c] Temperature decay configuration
+        self.base_temp = self.config.get('base_temperature', 0.7)
+        self.min_temp = self.config.get('min_temperature', 0.0)
+        self.logger = logging.getLogger("CognitiveNode")
 
         # Initialize history directory
         self.history_dir = Path(self.config.get(
             'history_dir', 'logs/thought_history'))
         if self.persist_history:
             self.history_dir.mkdir(parents=True, exist_ok=True)
+
+    def _calculate_dynamic_temperature(self, current_step: int) -> float:
+        """
+        [HARDENED 5c] Calculates temperature based on progress.
+        Decays linearly from base_temp to min_temp as we approach max_steps.
+        """
+        if self.max_steps <= 1:
+            return self.min_temp
+            
+        progress = current_step / (self.max_steps - 1)
+        # Linear decay formula
+        current_temp = self.base_temp * (1.0 - progress)
+        
+        # Clamp to ensure we don't go below absolute zero logic
+        return max(self.min_temp, current_temp)
+
+    def _get_system_directive(self, current_step: int) -> str:
+        """
+        Returns the appropriate psychological stance for the agent
+        based on how much 'time' it has left to think.
+        """
+        if current_step < (self.max_steps * 0.4):
+            return "Phase: EXPLORATION. Generate diverse hypotheses. Be creative."
+        elif current_step < (self.max_steps * 0.8):
+            return "Phase: CONVERGENCE. Critique hypotheses. Discard weak paths. Focus."
+        else:
+            return "Phase: EXECUTION. FINAL WARNING. You must conclude immediately. Do not ask for more information."
 
     def _get_default_config(self) -> Dict[str, Any]:
         """Return default configuration if config file is missing."""
@@ -94,14 +122,22 @@ logger.warning(
                 raise TimeoutError(
                     "Sequential thinking exceeded maximum duration")
 
+            # [HARDENED 5c] 1. Dynamic Hardening parameters
+            current_temp = self._calculate_dynamic_temperature(i)
+            phase_directive = self._get_system_directive(i)
+            
+            self.logger.debug(f"Step {i+1}/{self.max_steps} | Temp: {current_temp:.2f} | {phase_directive}")
+
             # Dynamic Prompt that evolves based on past thoughts
             history_block = "\n".join(
                 [f"Step {h['step']}: {h['thought']}" for h in history])
 
             system_prompt = f"""
-            You are a Deep Reasoning Engine tasked with solving: "{user_goal}".
-
-            {toolbox_desc}
+            You are a Sequential Thinking Engine. {phase_directive}
+            
+            Goal: {user_goal}
+            Tools: {toolbox_desc}
+            Current Step: {i+1}/{self.max_steps}
 
             PAST THOUGHTS:
             {history_block}
@@ -120,7 +156,8 @@ logger.warning(
             try:
                 # Add timeout for each thinking step
                 step_start = time.time()
-                response = self.llm.generate_plan(system_prompt, raw_prompt)
+                # [HARDENED 5c] Call LLM with dynamic temperature
+                response = self.llm.generate_plan(system_prompt, raw_prompt, temperature=current_temp)
                 step_duration = time.time() - step_start
 
                 if step_duration > self.slow_step_threshold:
@@ -134,14 +171,10 @@ logger.warning(
                         raise TimeoutError(
                             "Sequential thinking circuit breaker activated")
             except TimeoutError:
-    pass
-pass
-# Re-raise timeout errors
+                # Re-raise timeout errors
                 raise
             except Exception as e:
-    pass
-pass
-logger.error(f"❌ Cognitive Step Failed: {e}")
+                logger.error(f"❌ Cognitive Step Failed: {e}")
                 # Instead of breaking, raise a structured error
                 raise RuntimeError(f"Cognitive step {i+1} failed: {str(e)}")
 
@@ -193,6 +226,9 @@ logger.error(f"❌ Cognitive Step Failed: {e}")
 
         max_attempts = self.max_syntax_attempts
         last_error = None
+        
+        # [HARDENED 5c] Ensure synthesis uses low temp (0.0) for precision
+        synthesis_temp = 0.0
 
         for attempt in range(max_attempts):
             final_prompt = f"""
@@ -218,7 +254,8 @@ logger.error(f"❌ Cognitive Step Failed: {e}")
 
             final_response = self.llm.generate_plan(
                 "You are a master coder. Use the context provided to write perfect code.",
-                final_prompt
+                final_prompt,
+                temperature=synthesis_temp
             )
 
             code = final_response.get("code", "")
@@ -231,9 +268,7 @@ logger.error(f"❌ Cognitive Step Failed: {e}")
                 logger.info("✅ Code syntax validation passed!")
                 return code
             except (SyntaxError, ValueError) as e:
-    pass
-pass
-last_error = f"Validation error: {str(e)}"
+                last_error = f"Validation error: {str(e)}"
                 logger.warning(
                     f"⚠️ Code validation failed (attempt {attempt + 1}): {last_error}")
                 if attempt == max_attempts - 1:
@@ -256,9 +291,7 @@ last_error = f"Validation error: {str(e)}"
                     "history": history
                 }, f, indent=2)
         except Exception as e:
-    pass
-pass
-logger.warning(f"Failed to save thought history: {e}")
+            logger.warning(f"Failed to save thought history: {e}")
 
     def _save_final_result(self, session_id: str, code: str) -> None:
         """Save the final generated code."""
@@ -269,7 +302,5 @@ logger.warning(f"Failed to save thought history: {e}")
                 f.write(f"# Session ID: {session_id}\n\n")
                 f.write(code)
         except Exception as e:
-    pass
-pass
-logger.warning(f"Failed to save final result: {e}")
+            logger.warning(f"Failed to save final result: {e}")
 
