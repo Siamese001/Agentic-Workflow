@@ -13,6 +13,7 @@ Phase 4: Titanium RAG Integration - Brain transplant complete
 
 import logging
 import os
+from pathlib import Path
 import sys
 from datetime import datetime
 from typing import Any, Dict, Optional
