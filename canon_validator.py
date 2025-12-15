@@ -172,14 +172,16 @@ PRECEDENTS (How we write good code):
 ACTION REGISTRY TOOLS (These are pre-injected and do NOT need dependency injection):
 - search_web(query: str) -> str : Performs web search using Brave API
 - print(msg) : Standard python print
+- string_set(key: str, value: str) : Redis cache operation
+- save_file(content: str, file_path: str) : File write operation
 
 TASK:
-Rewrite the code to be fully compliant.
-- Use Protocol for Dependency Injection ONLY for custom dependencies.
-- Action Registry tools (search_web, print) are already available - DO NOT wrap them in protocols.
-- Add type hints.
-- Remove side effects (except for Action Registry tools).
-- For logging, use a 'logger' parameter (not 'log_func').
+Rewrite the code to be fully compliant and executable:
+- ALWAYS start with: `from typing import Callable, Dict, Any, Optional`
+- DO NOT use Protocol classes or dependency injection
+- Call the tools directly - they are already available in the execution scope
+- Add type hints
+- Define a single 'run' function with optional logger parameter
 - RETURN ONLY THE JSON: {{ "code": "..." }}
 """
         try:
