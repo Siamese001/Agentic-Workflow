@@ -66,7 +66,8 @@ class L1ProtocolHandler:
     
     def execute_tool(self, tool_name: str, args: Dict[str, Any]) -> ToolResult:
         """
-        Execute tool with full MCP compliance checks
+        Handles LLM response, enforces L1 protocol integrity, and executes tool.
+        Returns a ToolResult object or None if protocol validation fails critically.
         """
         try:
             # Step 1: Schema Validation
@@ -88,12 +89,18 @@ class L1ProtocolHandler:
             return sanitized_result
             
         except (ToolExecutionError, BlackoutProtocolError, GitConflictError) as e:
+            # Log CRITICAL error to L5 MEMory (as defined in EBP)
+            protocol_error = f"L1_PROTOCOL_ERROR: {e.__class__.__name__}: {str(e)}"
+            self._log_to_l5("L1", "Protocol Handler", protocol_error, status="CRITICAL")
             return ToolResult(
                 content="",
                 isError=True,
                 toolExecutionError=f"{e.__class__.__name__}: {str(e)}"
             )
         except Exception as e:
+            # Log CRITICAL error to L5 MEMory
+            protocol_error = f"L1_PROTOCOL_ERROR: Unexpected error: {str(e)}"
+            self._log_to_l5("L1", "Protocol Handler", protocol_error, status="CRITICAL")
             return ToolResult(
                 content="",
                 isError=True,
@@ -116,6 +123,23 @@ class L1ProtocolHandler:
                     raise ToolExecutionError(
                         f"Parameter {param} must be string, got {type(args[param]).__name__}"
                     )
+    
+    def _log_to_l5(self, layer: str, component: str, message: str, status: str = "INFO"):
+        """Log to L5 MEMory (mock implementation for testing)"""
+        try:
+            # In production, this would integrate with the actual L5 store
+            # For testing, we just log the message
+            log_entry = {
+                "timestamp": datetime.now().isoformat(),
+                "layer": layer,
+                "component": component,
+                "message": message,
+                "status": status
+            }
+            logger.warning(f"L5_LOG: {log_entry}")
+        except Exception:
+            # Fail silently - logging should not break the protocol
+            pass
     
     def _check_path_allowlist(self, path: str):
         """Check if path is within allowed directories"""
@@ -144,8 +168,12 @@ class L1ProtocolHandler:
                     status_str = ebp_status.decode() if isinstance(ebp_status, bytes) else ebp_status
                     if status_str == "TRUE":
                         raise BlackoutProtocolError("EBP blackout active - tool execution blocked")
-            except Exception:
-                pass  # Redis unavailable, proceed
+            except Exception as e:
+                # Only swallow Redis connection errors, not BlackoutProtocolError
+                if "BlackoutProtocolError" not in str(type(e)):
+                    pass  # Redis unavailable, proceed
+                else:
+                    raise
     
     def _execute_tool_impl(self, tool_name: str, args: Dict[str, Any]) -> ToolResult:
         """Actual tool implementation"""
