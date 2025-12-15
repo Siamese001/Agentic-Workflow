@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Autonomous security and hygiene fixer for Canon Validator.
 Targets Keys 1, 2, 4, 5, 6, 11, 12 - Security violations that can be automatically addressed.
@@ -17,7 +18,7 @@ def fix_file(file_path):
     backup_path = f"{file_path}.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     
     try:
-        # Read original content
+        # Read original content with UTF-8 encoding
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
@@ -49,7 +50,7 @@ def fix_file(file_path):
         
         except SyntaxError:
             # If we can't parse the AST, skip print fixes for this file
-            print(f"   ⚠️ Skipping print fixes for {file_path} (syntax error)")
+            print(f"   WARNING: Skipping print fixes for {file_path} (syntax error)")
         
         # Key 5: Fix bare except (using regex is safe here)
         content = '\n'.join(lines)
@@ -86,7 +87,7 @@ def fix_file(file_path):
         return False
         
     except Exception as e:
-        print(f"   ❌ Error processing {file_path}: {e}")
+        print(f"   ERROR: Failed to process {file_path}: {e}")
         # Restore from backup if it exists
         if os.path.exists(backup_path):
             shutil.copy2(backup_path, file_path)
@@ -94,7 +95,7 @@ def fix_file(file_path):
         return False
 
 def main():
-    print("🛡️ Running Security & Hygiene Fixer...")
+    print("Running Security & Hygiene Fixer...")
     count = 0
     for root, dirs, files in os.walk("."):
         if ".git" in dirs: dirs.remove(".git")
@@ -104,8 +105,7 @@ def main():
             if file.endswith(".py"):
                 if fix_file(os.path.join(root, file)):
                     count += 1
-    print(f"✅ Cleaned {count} files.")
+    print(f"Fixed {count} files.")
 
 if __name__ == "__main__":
     main()
-
