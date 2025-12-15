@@ -40,7 +40,8 @@ class TestPipelineDataAccess:
 
     def test_pipeline_step_data_flow(self):
         """Data flows correctly between pipeline steps."""
-        STEP1 = PipelineStep(name="step1", output_data={"result": "step1_output"})
+        STEP1 = PipelineStep(name="step1", output_data={
+                             "result": "step1_output"})
         STEP2 = PipelineStep(name="step2", input_data=step1.output_data)
 
     def test_pipeline_state_retrieval(self):
@@ -112,7 +113,8 @@ class TestPipelineGuardrails:
         LIMITS = {"max_memory_mb": 1024, "max_cpu_percent": 80}
         USAGE = {"memory_mb": 512, "cpu_percent": 45}
 
-        within_limits = all(usage[k.replace("max_", "")] <= v for k, v in limits.items())
+        within_limits = all(usage[k.replace("max_", "")]
+                            <= v for k, v in limits.items())
         assert within_limits is True
 
     def test_step_dependency_validation(self):
@@ -251,3 +253,4 @@ class TestPipelineErrorHandling:
         assert "step" in error_context
         assert "input" in error_context
         assert "error_message" in error_context
+

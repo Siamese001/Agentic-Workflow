@@ -36,3 +36,4 @@ if result.returncode == 0:
 else:
     print("❌ Some tests failed. Check output above.")
     sys.exit(result.returncode)
+

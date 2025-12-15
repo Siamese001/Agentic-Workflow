@@ -3,9 +3,10 @@
 Test the whitelist bypass functionality directly
 """
 
+from hydrofoil_test_utils import create_hydrofoil_validator_no_whitelist
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -20,48 +21,48 @@ sys.modules['redisvl.extensions.cache.llm'] = Mock()
 sys.modules['mcp_hardening'] = Mock()
 sys.modules['core_utils'] = Mock()
 
-from canon_validator import CanonValidator
-from hydrofoil_test_utils import create_hydrofoil_validator_no_whitelist
 
 def test_whitelist_bypass():
     """Test if the whitelist bypass works"""
-    
+
     print("Testing whitelist bypass...")
-    
+
     # Create validator with whitelist bypass
     validator = create_hydrofoil_validator_no_whitelist()
-    
+
     # Mock the LLM to return a simple response
     validator.llm = Mock()
     validator.llm.generate_plan.return_value = {
         "status": "rejected",
         "reasoning": "Test violation"
     }
-    
+
     # Mock embedding
     validator.embed_fn = Mock(return_value=[0.1] * 768)
-    
+
     # Mock cache and pinecone
     validator.cache = Mock()
     validator.cache.check = Mock(return_value=None)
     validator.pinecone = Mock()
     validator.pinecone.query = Mock(return_value={'matches': []})
     validator.pinecone.upsert = Mock()
-    
+
     # Test with a simple string that would normally be skipped
     test_code = "simple_code_string"
-    
+
     print(f"Original code: {repr(test_code)}")
-    
+
     result = validator.validate(test_code)
-    
+
     print(f"Result status: {result['status']}")
     print(f"Result reasoning: {result.get('reasoning', 'N/A')}")
-    
+
     if "skipping validation" in result.get('reasoning', ''):
         print("❌ FAILED: Whitelist bypass didn't work")
     else:
         print("✅ SUCCESS: Full validation executed")
 
+
 if __name__ == "__main__":
     test_whitelist_bypass()
+

@@ -6,3 +6,4 @@ Emergency shutdown and rollback tests:
 - EBP-002: State Rollback (The Anchor Drop)
 - EBP-003: Observability & Notification (The Mayday Signal)
 """
+

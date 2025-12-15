@@ -24,7 +24,8 @@ class ConstitutionalAISystem:
         """
         self.enable_logging = enable_logging
         self.rules: Dict[str, ConstitutionalRule] = {}
-        self.rule_patterns: Dict[RuleType, List[ConstitutionalRule]] = {rt: [] for rt in RuleType}
+        self.rule_patterns: Dict[RuleType, List[ConstitutionalRule]] = {
+            rt: [] for rt in RuleType}
         self._load_default_rules()
 
     def add_rule(self, rule: ConstitutionalRule) -> None:
@@ -138,7 +139,8 @@ class ConstitutionalAISystem:
                 violations.append(violation)
         except re.error as e:
             if self.enable_logging:
-                logger.error(f'Invalid regex pattern in rule {rule.rule_id}: {e}')
+                logger.error(
+                    f'Invalid regex pattern in rule {rule.rule_id}: {e}')
         return violations
 
     def _calculate_compliance_score(self, violations: List[ViolationReport]) -> float:
@@ -154,7 +156,8 @@ class ConstitutionalAISystem:
             return 1.0
         severity_weights = {RuleSeverity.CRITICAL: 1.0, RuleSeverity.HIGH: 0.7, RuleSeverity.MEDIUM:
     0.4, RuleSeverity.LOW: 0.2}
-        total_penalty = sum((severity_weights.get(v.severity, 0.5) for v in violations))
+        total_penalty = sum((severity_weights.get(v.severity, 0.5)
+                            for v in violations))
         SCORE = max(0.0, 1.0 - total_penalty / 10.0)
         return round(score, 2)
 
@@ -228,3 +231,4 @@ def review_content(content: str,
     """
     SYSTEM = ConstitutionalAISystem()
     return system.review_content(content, context)
+

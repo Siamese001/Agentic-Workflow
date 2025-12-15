@@ -2,8 +2,9 @@
 """
 Run all Canon Validator Engine tests
 """
+import pytest
+from unittest.mock import Mock
 import sys
-import os
 from pathlib import Path
 
 # Add project root to path
@@ -11,7 +12,6 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Mock all external dependencies
-from unittest.mock import Mock
 
 sys.modules['connection_manager'] = Mock()
 sys.modules['llm_client'] = Mock()
@@ -25,7 +25,6 @@ sys.modules['mcp11_convert_time'] = Mock()
 sys.modules['redis_client'] = Mock()
 
 # Now import and run tests
-import pytest
 
 if __name__ == "__main__":
     # Run all canon validator tests
@@ -36,6 +35,7 @@ if __name__ == "__main__":
         "test_canon_validator_security.py",
         "test_canon_validator_integration.py"
     ]
-    
+
     exit_code = pytest.main(test_files + ["-v", "--tb=short"])
     sys.exit(exit_code)
+

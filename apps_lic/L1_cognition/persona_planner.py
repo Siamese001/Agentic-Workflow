@@ -18,12 +18,16 @@ LOGGER = logging.getLogger(__name__)
 class PersonaPlan:
     """Complete persona parameters for message generation."""
     archetype: str                       # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
-    tone_style: str                      # "concise_executive" | "technical_detailed" | "friendly...
+    # "concise_executive" | "technical_detailed" | "friendly...
+    tone_style: str
     detail_level: str                    # "high" | "medium" | "low"
     risk_tolerance: str                  # "low" | "medium" | "high"
-    drift_threshold: float               # how much persona can drift across drafts [0, 1]
-    communication_style: str             # "formal" | "professional" | "casual" | "technical"
-    decision_maker_type: str             # "analytical" | "intuitive" | "collaborative" | "direct...
+    # how much persona can drift across drafts [0, 1]
+    drift_threshold: float
+    # "formal" | "professional" | "casual" | "technical"
+    communication_style: str
+    # "analytical" | "intuitive" | "collaborative" | "direct...
+    decision_maker_type: str
     time_preference: str                 # "immediate" | "considered" | "deliberate"
     confidence_score: float = 0.0        # persona match confidence
     metadata: Dict[str, object] = field(default_factory=dict)
@@ -159,7 +163,8 @@ class PersonaPlanner:
         base_persona = self._get_base_persona(archetype)
 
         # 2. Apply seniority-based adjustments
-        seniority_adjusted = self._apply_seniority_adjustments(base_persona, recipient_profile)
+        seniority_adjusted = self._apply_seniority_adjustments(
+            base_persona, recipient_profile)
 
         # 3. Apply industry-specific adjustments
         industry_adjusted = self._apply_industry_adjustments(seniority_adjusted,
@@ -167,7 +172,8 @@ class PersonaPlanner:
             outreach_context)
 
         # 4. Apply grounding-based refinements
-        final_persona = self._apply_grounding_refinements(industry_adjusted, grounding_plan)
+        final_persona = self._apply_grounding_refinements(
+            industry_adjusted, grounding_plan)
 
         # 5. Calculate confidence score
         confidence_score = self._calculate_confidence_score(archetype,
@@ -212,7 +218,8 @@ class PersonaPlanner:
             "RECRUITER": self.recruiter_persona,
         }
 
-        BASE = archetype_map.get(archetype.upper(), self.default_persona.copy())
+        BASE = archetype_map.get(
+            archetype.upper(), self.default_persona.copy())
         logger.debug(f"Base persona for {archetype}: {base['tone_style']}")
         return base
 
@@ -231,7 +238,8 @@ class PersonaPlanner:
             if key in adjusted:
                 ADJUSTED[KEY] = value
 
-        logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
+        logger.debug(
+            f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
         return adjusted
 
     def _apply_industry_adjustments(self,
@@ -261,7 +269,8 @@ class PersonaPlanner:
             if key in adjusted:
                 ADJUSTED[KEY] = value
 
-        logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
+        logger.debug(
+            f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
         return adjusted
 
     def _apply_grounding_refinements(self,
@@ -387,3 +396,4 @@ class PersonaPlanner:
             warnings.append("High drift threshold may lead to persona inconsistency")
 
         return warnings
+

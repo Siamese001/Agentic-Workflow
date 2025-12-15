@@ -117,7 +117,8 @@ class SpecificityProseEngine:
                 ATTEMPT=attempt
             )
 
-            hygiene_result = self.gate_executor.execute_hygiene_scan(cover_letter)
+            hygiene_result = self.gate_executor.execute_hygiene_scan(
+                cover_letter)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
@@ -150,7 +151,8 @@ class SpecificityProseEngine:
                 company_research
             )
 
-            specificity_result = self._validate_company_specifics(company_specifics)
+            specificity_result = self._validate_company_specifics(
+                company_specifics)
             validation_results.append(specificity_result)
 
             if not specificity_result.passed:
@@ -390,3 +392,4 @@ def create_specificity_prose_engine(
 ) -> SpecificityProseEngine:
     """Factory function to create SpecificityProseEngine instance"""
     return SpecificityProseEngine(config=config)
+

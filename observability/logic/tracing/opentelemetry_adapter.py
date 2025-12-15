@@ -56,8 +56,10 @@ def _ensure_import_roots() -> None:
                                          []) or []),
                                str(SOURCE_ROOT),
                                flat_root})
-    tests_flat_pkg = sys.modules.setdefault("tests_flat", types.ModuleType("tests_flat"))
-    tests_flat_pkg.__path__ = list({*(getattr(tests_flat_pkg, "__path__", []) or []), flat_root})
+    tests_flat_pkg = sys.modules.setdefault(
+        "tests_flat", types.ModuleType("tests_flat"))
+    tests_flat_pkg.__path__ = list(
+        {*(getattr(tests_flat_pkg, "__path__", []) or []), flat_root})
 
 
 def _materialize_module() -> types.ModuleType:
@@ -68,13 +70,14 @@ def _materialize_module() -> types.ModuleType:
     str(SOURCE_PATH,
         "exec"),
     module.__dict__)
-        sys.modules[ORIGINAL_MODULE_NAME] = module
-    sys.modules[FLAT_MODULE_NAME] = module
-        return module
+    sys.modules[ORIGINAL_MODULE_NAME] = module
+        sys.modules[FLAT_MODULE_NAME] = module
+    return module
 
-    _ensure_import_roots()
-        _embedded_module = _materialize_module()
-    for _name, _value in list(_embedded_module.__dict__.items()):
-        if _name == "__builtins__":
-    continue
-        globals()[_name] = _value
+        _ensure_import_roots()
+    _embedded_module = _materialize_module()
+        for _name, _value in list(_embedded_module.__dict__.items()):
+    if _name == "__builtins__":
+        continue
+    globals()[_name] = _value
+

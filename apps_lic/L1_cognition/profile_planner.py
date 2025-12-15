@@ -27,11 +27,14 @@ class ProfileSignal:
 class ProfilePlan:
     """Complete profile analysis plan for LIC targeting."""
     inferred_archetype: str              # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
-    seniority_level: str                 # "C_LEVEL" | "VP" | "DIRECTOR" | "SR_MANAGER" | "IC"
+    # "C_LEVEL" | "VP" | "DIRECTOR" | "SR_MANAGER" | "IC"
+    seniority_level: str
     confidence_score: float              # overall confidence [0, 1]
-    overrides: Dict[str, object]            # explicit overrides from outreach_context
+    # explicit overrides from outreach_context
+    overrides: Dict[str, object]
     signals: List[ProfileSignal]         # individual profile signals
-    company_size: str                    # "startup", "small", "medium", "large", "enterprise"
+    # "startup", "small", "medium", "large", "enterprise"
+    company_size: str
     industry_focus: str                  # primary industry classification
     decision_authority: str              # "high", "medium", "low"
     metadata: Dict[str, object] = field(default_factory=dict)
@@ -64,11 +67,13 @@ class ProfilePlanner:
         }
 
         # Seniority level mappings
-        self.c_level_keywords = {"ceo", "cto", "cfo", "ciso", "chief", "president"}
+        self.c_level_keywords = {"ceo", "cto",
+            "cfo", "ciso", "chief", "president"}
         self.vp_keywords = {"vp", "vice president"}
         self.director_keywords = {"director", "head"}
         self.sr_manager_keywords = {"senior manager", "sr manager", "manager"}
-        self.ic_keywords = {"engineer", "developer", "analyst", "specialist", "coordinator"}
+        self.ic_keywords = {"engineer", "developer",
+            "analyst", "specialist", "coordinator"}
 
         # Company size indicators
         self.company_size_patterns = {
@@ -188,7 +193,8 @@ class ProfilePlanner:
         # Industry signal
         INDUSTRY = profile.get("industry", "").lower()
         if industry:
-            industry_classification = self._classify_industry_from_text(industry)
+            industry_classification = self._classify_industry_from_text(
+                industry)
             if industry_classification:
                 signals.append(ProfileSignal(
                     signal_type="industry",
@@ -335,7 +341,8 @@ class ProfilePlanner:
             signal_type="skills_orientation",
             VALUE=orientation,
             CONFIDENCE=confidence,
-            METADATA={"technical_count": technical_count, "business_count": business_count}
+            METADATA={"technical_count": technical_count,
+                "business_count": business_count}
         )
 
     def _analyze_education_level(self, education: str) -> ProfileSignal:
@@ -527,3 +534,4 @@ class ProfilePlanner:
             "has_overrides": len(plan.overrides) > 0,
             "profile_completeness": plan.metadata.get("profile_completeness", 0.0)
         }
+

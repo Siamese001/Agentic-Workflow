@@ -50,3 +50,4 @@ def get_validation_gates(execution_point: str) -> List[ValidationGate]:
         List of validation gates
     """
     return [gate for gate in VALIDATION_GATES if gate.execution_point == execution_point]
+

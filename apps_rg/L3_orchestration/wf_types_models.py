@@ -32,3 +32,4 @@ class ValidationResult:
     _decision: GateDecision
     _message: str
     _details: Dict[str, object] = field(default_factory=dict)
+

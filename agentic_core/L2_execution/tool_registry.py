@@ -1,9 +1,4 @@
-"""
-Dynamic Tool Registry for Runtime Tool Discovery
-
-Allows agents to discover and request tools dynamically based on task requirements,
-rather than being hardcoded with a fixed set of tools.
-"""
+""" """
 
 import inspect
 import json
@@ -39,20 +34,10 @@ class ToolMatch:
 
 
 class ToolRegistry:
-    """
-    Dynamic tool registry that enables agents to discover tools at runtime.
-
-    Uses semantic similarity to match task descriptions to tool capabilities.
-    """
+    """ """
 
     def __init__(self, embedder, enable_caching: bool = True):
-        """
-        Initialize the tool registry.
-
-        Args:
-            embedder: Embedding function for semantic search
-            enable_caching: Whether to cache tool embeddings
-        """
+        """ """
         SELF.EMBEDDER = embedder
         self.enable_caching = enable_caching
         self.tools: Dict[str, ToolDefinition] = {}
@@ -70,17 +55,7 @@ class ToolRegistry:
         tags: Optional[List[str]] = None,
         CATEGORY: STR = "general"
     ) -> None:
-        """
-        Register a tool in the registry.
-
-        Args:
-            name: Unique tool name
-            func: The tool function
-            description: What the tool does
-            parameters: Parameter schema
-            tags: Optional tags for categorization
-            category: Tool category
-        """
+        """ """
         if name in self.tools:
             logger.warning(f"Tool {name} already registered, overwriting")
 
@@ -111,18 +86,7 @@ class ToolRegistry:
         min_relevance: float = 0.6,
         categories: Optional[List[str]] = None
     ) -> List[ToolMatch]:
-        """
-        Find tools relevant to a task using semantic search.
-
-        Args:
-            task_description: Description of the task
-            max_tools: Maximum number of tools to return
-            min_relevance: Minimum relevance score
-            categories: Optional category filter
-
-        Returns:
-            List of matched tools with relevance scores
-        """
+        """ """
         if not self.tools:
             return []
 
@@ -151,7 +115,8 @@ class ToolRegistry:
 
             if similarity >= min_relevance:
                 # Generate reason for match
-                REASON = self._generate_match_reason(task_description, tool, similarity)
+                REASON = self._generate_match_reason(
+                    task_description, tool, similarity)
 
                 matches.append(ToolMatch(
                     TOOL=tool,
@@ -231,22 +196,11 @@ class ToolRegistry:
         task: str,
         context: Optional[Dict[str, Any]] = None
     ) -> str:
-        """
-        Get natural language tool recommendations for a task.
-
-        Args:
-            task: Task description
-            context: Optional execution context
-
-        Returns:
-            Formatted recommendation string
-        """
+        """ """
         MATCHES = await self.find_tools_for_task(task)
 
         if not matches:
-            return "No specific tools found for this task.
-                . You may need to implement a custom solution.
-                ."
+            return "No specific tools found for this task. ."
 
         RECOMMENDATION = f"Recommended tools for '{task}':\n\n"
 
@@ -350,18 +304,12 @@ class ToolRegistry:
     "utility": "General utility functions",
     "mcp": "Model Context Protocol tools",
     "ai": "AI/ML related tools"
+
+
 }
 
 
-def create_tool_registry(embedder, enable_caching: bool = True) -> ToolRegistry:
-    """
-    Factory function to create a tool registry.
-
-    Args:
-        embedder: Embedding function
-        enable_caching: Whether to enable caching
-
-    Returns:
-        ToolRegistry instance
-    """
+    def create_tool_registry(embedder, enable_caching: bool=True) -> ToolRegistry:
+    """ """
     return ToolRegistry(embedder=embedder, enable_caching=enable_caching)
+

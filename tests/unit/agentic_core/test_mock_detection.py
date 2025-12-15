@@ -15,3 +15,4 @@ def test_mock_detection(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_mock_detection_config() -> Dict[str, object]:
     """Get configuration for test_mock_detection."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -11,3 +11,4 @@ def get_all_events() -> list:
 def clear_events() -> None:
     """Backward-compatible alias for collectors.clear_events()."""
     _clear_events_impl()
+

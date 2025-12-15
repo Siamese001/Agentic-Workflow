@@ -24,7 +24,8 @@ try:
     eError
 except ImportError as e:
     # Fallback imports for testing
-    pytest.skip(f"Skipping hardened infrastructure tests: {e}", allow_module_level=True)
+    pytest.skip(
+        f"Skipping hardened infrastructure tests: {e}", allow_module_level=True)
 
 
 @pytest.mark.asyncio
@@ -80,7 +81,8 @@ async def test_router_total_provider_failure():
     with pytest.raises(AllProvidersDownError) as exc_info:
         await router.execute_with_fallback(RoutingTier.REASONING, "Test Prompt")
 
-    assert "All available providers for tier REASONING failed" in str(exc_info.value)
+    assert "All available providers for tier REASONING failed" in str(
+        exc_info.value)
 
 
 @pytest.mark.asyncio
@@ -260,3 +262,4 @@ class ContextOverflowError(Exception):
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

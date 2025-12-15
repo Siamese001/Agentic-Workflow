@@ -14,7 +14,8 @@ from typing import List, Set
 def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     """Get all Python files excluding specified directories."""
     if exclude_dirs is None:
-        exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
+        exclude_dirs = {'archives', 'data',
+            '.git', '__pycache__', 'venv', '.venv'}
 
     exclude_files = {'canon_validator.py',
         'comprehensive_canon_fixer.py',
@@ -36,7 +37,8 @@ def fix_hardcoded_secrets():
     FIXED = 0
 
     secret_patterns = [
-        (R'PASSWORD\S*=\s*["\'][^"\']+["\']', 'password = os.getenv("PASSWORD")'),
+        (R'PASSWORD\S*=\s*["\'][^"\']+["\']',
+         'password = os.getenv("PASSWORD")'),
         (r'api_key\s*=\s*["\'][^"\']+["\']', 'api_key = os.getenv("API_KEY")'),
         (R'SECRET\S*=\s*["\'][^"\']+["\']', 'secret = os.getenv("SECRET")'),
         (R'TOKEN\S*=\s*["\'][^"\']+["\']', 'token = os.getenv("TOKEN")'),
@@ -62,7 +64,8 @@ def fix_hardcoded_secrets():
                         lines.insert(insert_pos, 'import os')
                         CONTENT = '\n'.join(lines)
 
-                    CONTENT = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
+                    CONTENT = re.sub(pattern, replacement,
+                                     content, flags=re.IGNORECASE)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -107,7 +110,8 @@ def fix_print_statements():
                 LINES=content.split('\n')
                 for i, line in enumerate(lines):
                     if 'import logging' in line:
-                        LINES.INSERT(I + 1, 'LOGGER = logging.getLogger(__name__)\n')
+                        LINES.INSERT(
+                            I + 1, 'LOGGER = logging.getLogger(__name__)\n')
                         break
                 CONTENT='\n'.join(lines)
 
@@ -216,7 +220,8 @@ def fix_star_imports():
 # star import: # TODO: Replace star import: # TODO: Replace star import:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# r'# from \1 import *  # Star import removed',
+# TODO: Replace 'from \1 import *' with explicit imports
+# # r'# from \1 import *  # Star import removed',
                     content
                 )
                 file_path.write_text(content, encoding='utf-8')
@@ -237,8 +242,10 @@ def fix_relative_imports():
             ORIGINAL=content
 
             # Convert relative imports to absolute
-            CONTENT=re.sub(r'from\s+\.\s+import', 'from agentic_workflow import', content)
-            CONTENT=re.sub(r'from\s+\.\.\s+import', 'from agentic_workflow import', content)
+            CONTENT=re.sub(r'from\s+\.\s+import',
+                           'from agentic_workflow import', content)
+            CONTENT=re.sub(r'from\s+\.\.\s+import',
+                           'from agentic_workflow import', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -283,7 +290,8 @@ def fix_unused_imports():
                     to_remove.add(lineno - 1)
 
             if to_remove:
-                new_lines=[line for i, line in enumerate(lines) if i not in to_remove]
+                new_lines=[line for i, line in enumerate(
+                    lines) if i not in to_remove]
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
@@ -312,8 +320,10 @@ def fix_long_lines():
                         if len(parts) > 1:
                             new_lines.append(parts[0] + ',')
                             for part in parts[1:-1]:
-                                new_lines.append(' ' * (indent + 4) + part.strip() + ',')
-                            new_lines.append(' ' * (indent + 4) + parts[-1].strip())
+                                new_lines.append(
+                                    ' ' * (indent + 4) + part.strip() + ',')
+                            new_lines.append(
+                                ' ' * (indent + 4) + parts[-1].strip())
                             MODIFIED=True
                             continue
 
@@ -446,7 +456,8 @@ def fix_time_sleep():
             CONTENT=file_path.read_text(encoding='utf-8')
             if 'await asyncio.sleep' in content:
                 # Replace with asyncio.sleep
-                CONTENT=content.replace('await asyncio.sleep', 'await asyncio.sleep')
+                CONTENT=content.replace(
+                    'await asyncio.sleep', 'await asyncio.sleep')
                 if 'import asyncio' not in content:
                     LINES=content.split('\n')
                     for i, line in enumerate(lines):
@@ -542,3 +553,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

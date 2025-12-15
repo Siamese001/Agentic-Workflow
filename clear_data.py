@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Clear all data from Redis and Pinecone for clean simulation."""
 
-import redis
-from connection_manager import ConnectionFactory
 import os
+
+from connection_manager import ConnectionFactory
 
 # Clear Redis
 try:
@@ -27,3 +27,4 @@ except Exception as e:
     print(f"❌ Failed to clear Pinecone: {e}")
 
 print("\n🧹 Data cleared. Ready for clean simulation.")
+

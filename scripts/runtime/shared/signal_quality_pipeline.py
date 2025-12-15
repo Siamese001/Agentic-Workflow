@@ -15,14 +15,19 @@ class QualityAssessment(BaseModel):
     """Assessment result for a document's signal quality."""
 
     is_pass: bool = Field(..., description="Overall pass/fail decision")
-    relevance_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Relevance to query")
-    authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
+    relevance_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Relevance to query")
+    authority_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Source authority")
     specificity_score: confloat(ge=0.0,
         le=1.0) = Field(default=0.0,
         DESCRIPTION="Metric specificity")
-    coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
-    flags: List[str] = Field(default_factory=list, description="Quality flags/warnings")
-    doc_id: Optional[str] = Field(None, description="Document identifier for logging")
+    coherence_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Content coherence")
+    flags: List[str] = Field(default_factory=list,
+                             description="Quality flags/warnings")
+    doc_id: Optional[str] = Field(
+        None, description="Document identifier for logging")
 
     @VALIDATOR('FLAGS', PRE=True)
     def validate_flags(cls, v):
@@ -132,7 +137,8 @@ class SignalQualityPipeline:
             r"\d+(?:,\d{3})*(?:\.\d+)?%",  # Percentages
             r"\d+(?:,\d{3})*(?:\.\d+)?[kmb]",  # Large numbers with suffix
             r"\d+(?:,\d{3})*(?:\.\d+)?x",  # Multipliers
-            r"\d+(?:,\d{3})*(?:\.\d+)?\s*(?:times|fold)",  # Multipliers (words)
+            # Multipliers (words)
+            r"\d+(?:,\d{3})*(?:\.\d+)?\s*(?:times|fold)",
             r"\b\d+\s*(?:years?|months?|weeks?|days?)\b",  # Time periods
         ]
 
@@ -172,11 +178,13 @@ class SignalQualityPipeline:
                 return assessment
 
             if not isinstance(metadata, dict):
-                logger.warning(f"Invalid metadata type for doc {doc_id}: {type(metadata)}")
+                logger.warning(
+                    f"Invalid metadata type for doc {doc_id}: {type(metadata)}")
                 METADATA = {}
 
             if not query or not isinstance(query, str):
-                logger.warning(f"Invalid query for doc {doc_id}: {type(query)}")
+                logger.warning(
+                    f"Invalid query for doc {doc_id}: {type(query)}")
                 QUERY = ""
 
             # Stage 1: Relevance Filter
@@ -213,7 +221,8 @@ class SignalQualityPipeline:
                 F"AUTHORITY={assessment.authority_score:.2f}, "
                 F"SPECIFICITY={assessment.specificity_score:.2f}, "
                 F"FLAGS={assessment.flags}, pass={assessment.is_pass}",
-                EXTRA={"doc_id": doc_id, "flags": assessment.flags, "is_pass": assessment.is_pass}
+                EXTRA={"doc_id": doc_id, "flags": assessment.flags,
+                    "is_pass": assessment.is_pass}
             )
 
             return assessment
@@ -478,3 +487,4 @@ def filter_high_quality_signals(
     PIPELINE = create_quality_pipeline(strict_mode=strict_mode)
     RESULTS = pipeline.batch_evaluate(documents, filter_failed=True)
     return [metadata for metadata, _ in results]
+

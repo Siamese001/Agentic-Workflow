@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 # Import the classes we're testing
 try:
 except ImportError as e:
-    pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
+    pytest.skip(
+        f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 
 @pytest.mark.integration
@@ -341,3 +342,4 @@ class TestEndToEndResumeWorkflow:
         # Verify ATS optimization
         assert len(tailored_resume["ats_keywords"]) > 10
         assert "python" in [k.lower() for k in tailored_resume["ats_keywords"]]
+

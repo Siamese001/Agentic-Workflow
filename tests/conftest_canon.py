@@ -5,9 +5,7 @@ Simplified conftest for Canon Validator Engine tests
 
 import pytest
 import json
-import time
-from unittest.mock import Mock, MagicMock
-from typing import Dict, Any
+from unittest.mock import Mock
 from pathlib import Path
 
 
@@ -46,40 +44,40 @@ def mock_validator_with_all_dependencies():
     """Create a fully mocked validator for testing"""
     import sys
     sys.path.append(str(Path(__file__).parent.parent))
-    
+
     # Mock the dependencies first
     sys.modules['connection_manager'] = Mock()
     sys.modules['llm_client'] = Mock()
     sys.modules['canon_keys'] = Mock()
     sys.modules['redisvl.extensions.llmcache'] = Mock()
     sys.modules['redisvl.extensions.cache.llm'] = Mock()
-    
+
     from canon_validator import CanonValidator
-    
+
     validator = CanonValidator()
-    
+
     # Mock LLM
     validator.llm = Mock()
     validator.llm.generate_plan = Mock()
-    
+
     # Mock embedding function
     validator.embed_fn = Mock(return_value=[0.1] * 768)
-    
+
     # Mock Pinecone
     validator.pinecone = Mock()
     validator.pinecone.query = Mock(return_value={'matches': []})
     validator.pinecone.upsert = Mock()
-    
+
     # Mock Redis cache
     validator.cache = Mock()
     validator.cache.check = Mock(return_value=None)
     validator.cache.store = Mock()
-    
+
     # Mock connection manager
     validator.cm = Mock()
     validator.cm.get_pinecone_index = Mock(return_value=validator.pinecone)
     validator.cm.get_embedding = Mock(return_value=[0.1] * 768)
-    
+
     return validator
 
 
@@ -92,13 +90,13 @@ import os
 def execute_user_input(input_str):
     # Violation: Uses os.system with user input
     os.system(input_str)
-    
+
     # Violation: Bare except clause
     try:
         result = process(input_str)
     except:
         pass
-    
+
     return result
 """
 
@@ -138,8 +136,10 @@ def mock_mcp_tools():
     return {
         'read_text_file': Mock(return_value="sample file content"),
         'get_variable_defs': Mock(return_value=json.dumps([
-            {"name": "primary-color", "value": "#FF0000", "replacement": "tokens.primary-red"},
-            {"name": "secondary-color", "value": "#00FF00", "replacement": "tokens.primary-green"}
+            {"name": "primary-color", "value": "#FF0000",
+                "replacement": "tokens.primary-red"},
+            {"name": "secondary-color", "value": "#00FF00",
+                "replacement": "tokens.primary-green"}
         ])),
         'search_records': Mock(return_value=json.dumps([{
             "metadata": {"replacement_snippet": "tokens.primary-red"}
@@ -155,3 +155,4 @@ def mock_mcp_tools():
             "description": "Security vulnerability"
         }))
     }
+

@@ -69,3 +69,4 @@ class JudgeEvaluationResult:
         """Get criteria that failed."""
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.
                                                                   UNACCEPTABLE}]
+

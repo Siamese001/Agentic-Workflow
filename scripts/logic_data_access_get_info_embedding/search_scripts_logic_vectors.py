@@ -76,7 +76,8 @@ class ScriptsLogicVectorSearcher:
     """Main class for scripts logic vector search operations."""
 
     def __init__(self, config: Optional[VectorIndexConfig] = None):
-        SELF.CONFIG = config or VectorIndexConfig(index_name="scripts_logic", dimension=1536)
+        SELF.CONFIG = config or VectorIndexConfig(
+            index_name="scripts_logic", dimension=1536)
         SELF.LOGGER = logging.getLogger(self.__class__.__name__)
         self._index = {}
         self._vectors = {}
@@ -91,14 +92,16 @@ class ScriptsLogicVectorSearcher:
         Returns:
             SearchResults: Search results with scores and metadata
         """
-        self.logger.info(f"Searching vectors with mode: {query.search_mode.value}")
+        self.logger.info(
+            f"Searching vectors with mode: {query.search_mode.value}")
 
         start_time = datetime.utcnow()
 
         try:
             # Generate query vector if not provided
             if query.query_vector is None:
-                query.query_vector = self._generate_query_vector(query.query_text)
+                query.query_vector = self._generate_query_vector(
+                    query.query_text)
 
             # Perform search based on mode
             if query.search_mode == SearchMode.SEMANTIC:
@@ -111,7 +114,8 @@ class ScriptsLogicVectorSearcher:
                 RESULTS = self._exact_search(query)
 
             # Calculate search time
-            search_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+            search_time = (datetime.utcnow() -
+                           start_time).total_seconds() * 1000
 
             search_results = SearchResults(
                 QUERY=query,
@@ -137,7 +141,8 @@ class ScriptsLogicVectorSearcher:
                 QUERY=query,
                 RESULTS=[],
                 total_found=0,
-                search_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
+                search_time_ms=(datetime.utcnow() -
+                                start_time).total_seconds() * 1000,
                 METADATA={"error": str(e)}
             )
 
@@ -246,9 +251,11 @@ class ScriptsLogicVectorSearcher:
                     id=vector_id,
                     CONTENT=self._metadata[vector_id]["content"],
                     SCORE=float(similarity),
-                    METADATA=self._metadata[vector_id] if query.include_metadata else {},
+                    METADATA=self._metadata[vector_id] if query.include_metadata else {
+                        },
                     VECTOR=vector.tolist() if query.include_metadata else None,
-                    TIMESTAMP=datetime.fromisoformat(self._metadata[vector_id]["timestamp"])
+                    TIMESTAMP=datetime.fromisoformat(
+                        self._metadata[vector_id]["timestamp"])
                 )
                 results.append(result)
 
@@ -344,7 +351,8 @@ class ScriptsLogicVectorSearcher:
                     CONTENT=metadata["content"],
                     SCORE=1.0,
                     METADATA=metadata if query.include_metadata else {},
-                    VECTOR=self._vectors[vector_id].tolist() if query.include_metadata else None,
+                    VECTOR=self._vectors[vector_id].tolist(
+                    ) if query.include_metadata else None,
                     TIMESTAMP=datetime.fromisoformat(metadata["timestamp"])
                 )
                 results.append(result)
@@ -459,3 +467,4 @@ def search_scripts_logic_vectors(
         "search_time_ms": results.search_time_ms,
         "metadata": results.metadata
     }
+

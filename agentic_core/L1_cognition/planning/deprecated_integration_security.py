@@ -1,10 +1,4 @@
-"""Integration Tests for Security and Injection Detection
-
-
-LOGGER = logging.getLogger(__name__)
-Tests integration between injection detection, dependency injection,
-and V6 prompt systems to ensure end-to-end security flows work correctly.
-"""
+"""Integration Tests for Security and Injection Detection """
 
 import pytest
 import logging
@@ -124,8 +118,7 @@ class TestEndToEndSecurityFlow:
 
             # Policy should block
             DECISION = policy.evaluate(context)
-            assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {atta
-                                                                                                ck}"
+            assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {atta ck}"
 
     def test_safe_content_allowed(self) -> None:
         """Test that safe content is allowed through security checks."""
@@ -152,7 +145,8 @@ class TestEndToEndSecurityFlow:
             FINDINGS = detector.detect_injections(content, context)
             critical_findings = [f for f in findings if f.severity in [Severity.HIGH, Severity.CRITI
                                                                        CAL]]
-            assert len(critical_findings) == 0, f"Should not flag safe content: {content}"
+            assert len(
+                critical_findings) == 0, f"Should not flag safe content: {content}"
 
             # Policy should allow
             DECISION = policy.evaluate(context)
@@ -161,3 +155,4 @@ class TestEndToEndSecurityFlow:
 
 if __name__ == "__main__":
     pytest.main([__file__])
+

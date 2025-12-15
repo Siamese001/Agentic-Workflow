@@ -74,7 +74,8 @@ class SubatomicHopConfig:
     enable_observability: bool = True
     max_execution_time: float = 300.0  # 5 minutes default
     reflection_config: Optional[ReflectionConfig] = None
-    critique_criteria: List[str] = field(default_factory=lambda: STANDARD_CRITERIA)
+    critique_criteria: List[str] = field(
+        default_factory=lambda: STANDARD_CRITERIA)
 
 class SubatomicHop:
     """A hop broken into 5 atomic micro-stages with state management."""
@@ -938,3 +939,4 @@ def subatomic_hop(config: Optional[SubatomicHopConfig] = None):
             )
         return wrapper
     return decorator
+

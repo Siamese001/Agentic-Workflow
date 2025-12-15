@@ -5,7 +5,7 @@ Integration test for multi-layer flow verification
 """
 
 import pytest
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock
 import json
 import time
 from canon_validator import CanonValidator
@@ -13,7 +13,7 @@ from canon_validator import CanonValidator
 
 class TestCVI004:
     """Test atomic state fix application at L4 layer"""
-    
+
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
@@ -31,62 +31,63 @@ class TestCVI004:
         validator.pinecone.query = Mock(return_value={'matches': []})
         validator.pinecone.upsert = Mock()
         return validator
-    
+
     def test_atomic_transaction_with_two_operations(self, validator):
         """Test that two redis_set operations are treated as atomic"""
         transaction_log = []
-        
+
         class MockRedisTransaction:
             def __init__(self):
                 self.operations = []
                 self.transaction_id = f"tx_{int(time.time())}"
-            
+
             def multi(self):
                 transaction_log.append(f"{self.transaction_id}: MULTI")
                 return self
-            
+
             def set(self, key, value):
                 self.operations.append(("SET", key, value))
                 transaction_log.append(f"{self.transaction_id}: SET {key}")
                 return self
-            
+
             def exec(self):
                 transaction_log.append(f"{self.transaction_id}: EXEC")
                 # Simulate successful execution
                 for op in self.operations:
-                    transaction_log.append(f"{self.transaction_id}: APPLIED {op[1]}={op[2]}")
+                    transaction_log.append(
+                        f"{self.transaction_id}: APPLIED {op[1]}={op[2]}")
                 return "OK"
-            
+
             def discard(self):
                 transaction_log.append(f"{self.transaction_id}: DISCARD")
                 return self
-        
+
         # Create and execute transaction
         tx = MockRedisTransaction()
         tx.multi()
         tx.set("audit:state", "COMPLETED")
         tx.set("audit:result", json.dumps({"status": "success", "fixes": 2}))
         tx.exec()
-        
+
         # Verify atomic behavior
         assert "MULTI" in transaction_log[0]
         assert "EXEC" in transaction_log[3]
         assert "APPLIED audit:state=COMPLETED" in transaction_log[4]
         assert "APPLIED audit:result=" in transaction_log[5]
-        
+
         # All operations within same transaction
         tx_id = transaction_log[0].split(":")[0]
         for log in transaction_log[:6]:
             assert log.startswith(tx_id)
-    
+
     def test_single_l4_atomic_commit_log(self, validator):
         """Test single L4_ATOMIC_COMMIT log entry"""
         logged_entries = []
-        
+
         def mock_add_observations(observations):
             logged_entries.extend(observations)
             return {"status": "success"}
-        
+
         # Simulate atomic transaction completion
         def mock_atomic_commit(tx_id, operations):
             """Mock atomic commit with logging"""
@@ -99,37 +100,38 @@ class TestCVI004:
             }
             mock_add_observations([commit_entry])
             return {"status": "success", "tx_id": tx_id}
-        
+
         # Execute atomic transaction
         result = mock_atomic_commit("tx_12345", [
             ("SET", "key1", "value1"),
             ("SET", "key2", "value2")
         ])
-        
+
         # Verify single log entry
         assert len(logged_entries) == 1
         log_entry = logged_entries[0]
         assert log_entry["entityName"] == "redis_transaction:tx_12345"
         assert "L4_ATOMIC_COMMIT" in str(log_entry["contents"])
-        assert "2 operations applied successfully" in str(log_entry["contents"])
+        assert "2 operations applied successfully" in str(
+            log_entry["contents"])
         assert "l4" in log_entry["tags"]
         assert "atomic" in log_entry["tags"]
         assert "commit" in log_entry["tags"]
-    
+
     def test_transaction_rollback_on_failure(self, validator):
         """Test transaction rollback on failure"""
         transaction_log = []
-        
+
         class MockRedisTransactionWithRollback:
             def __init__(self):
                 self.operations = []
                 self.transaction_id = f"tx_fail_{int(time.time())}"
                 self.should_fail = False
-            
+
             def multi(self):
                 transaction_log.append(f"{self.transaction_id}: MULTI")
                 return self
-            
+
             def set(self, key, value):
                 self.operations.append(("SET", key, value))
                 transaction_log.append(f"{self.transaction_id}: SET {key}")
@@ -137,18 +139,18 @@ class TestCVI004:
                 if "FAIL" in value:
                     self.should_fail = True
                 return self
-            
+
             def exec(self):
                 transaction_log.append(f"{self.transaction_id}: EXEC")
                 if self.should_fail:
                     transaction_log.append(f"{self.transaction_id}: ROLLBACK")
                     raise Exception("Transaction failed")
                 return "OK"
-            
+
             def discard(self):
                 transaction_log.append(f"{self.transaction_id}: DISCARD")
                 return self
-        
+
         # Test failed transaction
         tx = MockRedisTransactionWithRollback()
         try:
@@ -159,16 +161,16 @@ class TestCVI004:
             assert False, "Should have raised exception"
         except Exception as e:
             assert "Transaction failed" in str(e)
-        
+
         # Verify rollback
         assert "MULTI" in transaction_log[0]
         assert "ROLLBACK" in transaction_log[-1]
         assert "EXEC" in transaction_log[-2]
-    
+
     def test_concurrent_atomic_transactions(self, validator):
         """Test handling of concurrent atomic transactions"""
         transaction_results = {}
-        
+
         def mock_concurrent_transaction(tx_id, operations):
             # Simulate concurrent transaction execution
             time.sleep(0.01)  # Simulate processing time
@@ -178,77 +180,78 @@ class TestCVI004:
                 "timestamp": time.time()
             }
             return transaction_results[tx_id]
-        
+
         # Execute multiple transactions concurrently
         import threading
-        
+
         def execute_transaction(tx_id):
             operations = [
                 (f"key_{tx_id}_1", f"value_{tx_id}_1"),
                 (f"key_{tx_id}_2", f"value_{tx_id}_2")
             ]
             mock_concurrent_transaction(tx_id, operations)
-        
+
         threads = []
         for i in range(5):
-            thread = threading.Thread(target=execute_transaction, args=(f"tx_{i}",))
+            thread = threading.Thread(
+                target=execute_transaction, args=(f"tx_{i}",))
             threads.append(thread)
             thread.start()
-        
+
         for thread in threads:
             thread.join()
-        
+
         # Verify all transactions completed
         assert len(transaction_results) == 5
         for tx_id, result in transaction_results.items():
             assert result["status"] == "success"
             assert result["operations"] == 2
-    
+
     def test_transaction_isolation(self, validator):
         """Test that transactions are properly isolated"""
         global_state = {}
-        
+
         class MockIsolatedTransaction:
             def __init__(self, tx_id):
                 self.tx_id = tx_id
                 self.local_state = {}
                 self.committed = False
-            
+
             def set(self, key, value):
                 # Only update local state until committed
                 self.local_state[key] = value
                 return self
-            
+
             def commit(self):
                 # Atomically apply to global state
                 for key, value in self.local_state.items():
                     global_state[f"{self.tx_id}:{key}"] = value
                 self.committed = True
                 return True
-            
+
             def rollback(self):
                 # Discard local changes
                 self.local_state.clear()
                 self.committed = False
                 return True
-        
+
         # Test isolation
         tx1 = MockIsolatedTransaction("tx1")
         tx2 = MockIsolatedTransaction("tx2")
-        
+
         # Both transactions modify same keys
         tx1.set("counter", "100")
         tx2.set("counter", "200")
-        
+
         # Verify isolation before commit
         assert tx1.local_state["counter"] == "100"
         assert tx2.local_state["counter"] == "200"
         assert len(global_state) == 0
-        
+
         # Commit both
         tx1.commit()
         tx2.commit()
-        
+
         # Verify both committed with isolation
         assert len(global_state) == 2
         assert global_state["tx1:counter"] == "100"
@@ -257,3 +260,4 @@ class TestCVI004:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

@@ -137,3 +137,4 @@ class ReasoningTraceModel(BaseModel):
         SELF.SUCCESS = success
         SELF.ERROR = error
         self.completed_at = datetime.now()
+

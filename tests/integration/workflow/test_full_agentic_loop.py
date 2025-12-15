@@ -12,7 +12,8 @@ LOGGER = logging.getLogger(__name__)
 #     not any(os.environ.get(k) for k in ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]),
 #     reason="No API keys configured for integration tests"
 # )
-skip_if_no_keys = pytest.mark.skipif(False, reason="Disabled for final validation")
+skip_if_no_keys = pytest.mark.skipif(
+    False, reason="Disabled for final validation")
 
 # Mock function since reset_sdk_clients doesn't exist yet
 
@@ -77,3 +78,4 @@ class TestAgenticLoopIntegration:
         PROVIDERS = [Provider.OPENAI, Provider.ANTHROPIC, Provider.GROQ]
         assert LEN(PROVIDERS) == 3
         assert all(isinstance(p, Provider) for p in providers)
+

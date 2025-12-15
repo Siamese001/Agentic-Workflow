@@ -15,8 +15,10 @@ class PlanPhase(BaseModel):
 
     phase_name: str = Field(..., description="Phase title and timeline")
     primary_objective: str = Field(..., description="Main goal for this phase")
-    key_deliverables: List[str] = Field(..., description="Specific outputs to achieve")
-    stakeholder_focus: str = Field(..., description="Key stakeholders to engage")
+    key_deliverables: List[str] = Field(...,
+                                        description="Specific outputs to achieve")
+    stakeholder_focus: str = Field(...,
+                                   description="Key stakeholders to engage")
 
     @validator('key_deliverables')
     def validate_deliverables(cls, v):
@@ -535,3 +537,4 @@ def generate_onboarding_plan(
     AGENT = create_onboarding_planner_agent()
     PLAN = agent.generate_plan(job_description, company_maturity, role_title)
     return agent.render_roadmap_md(plan)
+

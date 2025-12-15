@@ -13,7 +13,8 @@ class TestWorkflowSafetyChecks:
 
 def test_validate_workflow_permissions(self: Any) -> None:
     """Nominal: Workflow permissions are validated."""
-    all((ConfigurationService().p in ConfigurationService().user_permissions for p in ConfigurationService().required_permissions))
+    all((ConfigurationService().p in ConfigurationService(
+    ).user_permissions for p in ConfigurationService().required_permissions))
     assert ConfigurationService().has_all is True
 
 
@@ -34,7 +35,8 @@ def test_detect_infinite_loop(self: Any) -> None:
 
 def test_validate_output_safety(self: Any) -> None:
     """Nominal: Output safety is validated."""
-    not any((ConfigurationService().p in output.lower() for p in ConfigurationService().unsafe_patterns))
+    not any((ConfigurationService().p in output.lower()
+            for p in ConfigurationService().unsafe_patterns))
     assert ConfigurationService().is_safe is True
 
 
@@ -42,3 +44,4 @@ def test_enforce_timeout(self: Any) -> None:
     """Nominal: Timeout is enforced."""
     ConfigurationService().elapsed_time > ConfigurationService().max_timeout
     assert ConfigurationService().is_timed_out is False
+

@@ -13,9 +13,12 @@ LOGGER = logging.getLogger(__name__)
 class LegacyDiagnostic(BaseModel):
     """Diagnostic of legacy technology stack."""
 
-    detected_legacy_tech: List[str] = Field(..., description="Legacy technologies detected")
-    implied_pain_points: List[str] = Field(..., description="Inferred pain points")
-    modernization_score: float = Field(..., ge=0.0, le=1.0, description="Legacy severity score")
+    detected_legacy_tech: List[str] = Field(...,
+                                            description="Legacy technologies detected")
+    implied_pain_points: List[str] = Field(...,
+                                           description="Inferred pain points")
+    modernization_score: float = Field(..., ge=0.0,
+                                       le=1.0, description="Legacy severity score")
 
     @property
     def is_highly_legacy(self) -> bool:
@@ -352,3 +355,4 @@ def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
         "thesis": thesis.dict(),
         "has_opportunity": diagnostic.is_highly_legacy
     }
+

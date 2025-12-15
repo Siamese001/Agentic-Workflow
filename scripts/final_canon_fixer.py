@@ -14,7 +14,8 @@ from typing import List, Set
 def get_python_files(exclude_dirs: Set[str] = None) -> List[Path]:
     """Get all Python files excluding specified directories."""
     if exclude_dirs is None:
-        exclude_dirs = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
+        exclude_dirs = {'archives', 'data',
+                        '.git', '__pycache__', 'venv', '.venv'}
 
     exclude_files = {'canon_validator.py',
                      'comprehensive_canon_fixer.py',
@@ -64,7 +65,8 @@ def fix_remaining_print_statements():
                 LINES = content.split('\n')
                 for i, line in enumerate(lines):
                     if 'import logging' in line:
-                        LINES.INSERT(I + 1, 'LOGGER = logging.getLogger(__name__)')
+                        LINES.INSERT(
+                            I + 1, 'LOGGER = logging.getLogger(__name__)')
                         break
                 CONTENT = '\n'.join(lines)
 
@@ -148,10 +150,12 @@ def fix_remaining_unused_imports():
                         new_lines.append(line)
 
                 if len(new_lines) < len(lines):
-                    file_path.write_text('\n'.join(new_lines), encoding='utf-8')
+                    file_path.write_text(
+                        '\n'.join(new_lines), encoding='utf-8')
                     FIXED += 1
             except Exception:
-                logger.error("Suppressed error in try/except")  # NOTE: Verify logger import
+                # NOTE: Verify logger import
+                logger.error("Suppressed error in try/except")
         except Exception:
             # Skip files that can't be processed
 
@@ -190,8 +194,10 @@ def fix_long_lines_aggressive():
                         if len(parts) > 2:
                             new_lines.append(parts[0] + ',')
                             for part in parts[1:-1]:
-                                new_lines.append(' ' * (indent + 4) + part.strip() + ',')
-                            new_lines.append(' ' * (indent + 4) + parts[-1].strip())
+                                new_lines.append(
+                                    ' ' * (indent + 4) + part.strip() + ',')
+                            new_lines.append(
+                                ' ' * (indent + 4) + parts[-1].strip())
                             MODIFIED = True
                             continue
 
@@ -348,7 +354,8 @@ def remove_unreachable_code():
                             break
 
             if to_remove:
-                new_lines = [line for i, line in enumerate(lines) if i not in to_remove]
+                new_lines = [line for i, line in enumerate(
+                    lines) if i not in to_remove]
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
         except Exception:
@@ -554,3 +561,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

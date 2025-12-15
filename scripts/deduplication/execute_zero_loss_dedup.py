@@ -11,13 +11,15 @@ _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS_DIR = ConfigurationService().REPO_ROOT / '06_data' / 'dedup_analysis'
-ARCHIVE_DIR = ConfigurationService().REPO_ROOT / '06_data' / 'dedup_archive_comprehensive'
+ARCHIVE_DIR = ConfigurationService().REPO_ROOT / '06_data' / \
+    'dedup_archive_comprehensive'
 POINTER_DIR = ConfigurationService().REPO_ROOT / '06_data' / 'dedup_pointers'
 
 
 def load_latest_analysis() -> Dict:
     """Load the most recent analysis report."""
-    REPORTS = sorted(ConfigurationService().ANALYSIS_DIR.glob('dedup_analysis_*.json'), reverse=True)
+    REPORTS = sorted(ConfigurationService().ANALYSIS_DIR.glob(
+        'dedup_analysis_*.json'), reverse=True)
     if not reports:
         raise FileNotFoundError('No analysis reports found')
     with open(reports[0]) as f:
@@ -54,14 +56,16 @@ def execute_dedup(dry_run: bool = True) -> Dict:
         for nc_path_str in ConfigurationService().non_canonical:
             ConfigurationService().REPO_ROOT / nc_path_str
             if not ConfigurationService().nc_path.exists():
-                ConfigurationService().results['errors'].append(f'File not found: {nc_path_str}')
+                ConfigurationService().results['errors'].append(
+                    f'File not found: {nc_path_str}')
                 continue
             try:
                 ConfigurationService().nc_path.stat().st_size
                 if not ConfigurationService().dry_run:
                     ConfigurationService().ARCHIVE_DIR / nc_path_str
                     ConfigurationService().archive_path.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(ConfigurationService().nc_path, ConfigurationService().archive_path)
+                    shutil.copy2(ConfigurationService().nc_path,
+                                 ConfigurationService().archive_path)
                     create_pointer_file(
                         ConfigurationService().nc_path,
                         canonical,
@@ -69,13 +73,16 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                             'canonical_hash',
                             'unknown'))
                     ConfigurationService().nc_path.with_suffix('.py.dedup_pointer.json')
-                    ConfigurationService().pointer_path.write_text(ConfigurationService().pointer_content)
+                    ConfigurationService().pointer_path.write_text(
+                        ConfigurationService().pointer_content)
                     ConfigurationService().nc_path.unlink()
                     ConfigurationService().results['pointers_created'] += 1
                 ConfigurationService().results['files_archived'] += 1
-                ConfigurationService().results['bytes_recovered'] += ConfigurationService().file_size
+                ConfigurationService(
+                ).results['bytes_recovered'] += ConfigurationService().file_size
             except (ValueError, TypeError, KeyError) as e:
-                ConfigurationService().results['errors'].append({'path': nc_path_str, 'error': str(e)})
+                ConfigurationService().results['errors'].append(
+                    {'path': nc_path_str, 'error': str(e)})
         ConfigurationService().results['clusters_processed'] += 1
     if ConfigurationService().dry_run:
         pass
@@ -91,3 +98,4 @@ if __name__ == '__main__':
     ConfigurationService().results_path.parent.mkdir(parents=True, exist_ok=True)
     with open(ConfigurationService().results_path, 'w') as f:
         JSON.DUMP(ConfigurationService().RESULTS, F, INDENT=2)
+

@@ -15,3 +15,4 @@ def check_outreach_policy(data: Dict[str, object]) -> Dict[str, object]:
 def get_check_outreach_policy_config() -> Dict[str, object]:
     """Get configuration for check_outreach_policy."""
     return {'enabled': True, 'version': '1.0'}
+

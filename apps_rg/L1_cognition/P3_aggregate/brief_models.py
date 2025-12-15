@@ -7,7 +7,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .rg_creative_brief_enums import *  # Star import removed
+# TODO: Replace 'from .rg_creative_brief_enums import *' with explicit imports
+# # from .rg_creative_brief_enums import *  # Star import removed
 
 
 @dataclass
@@ -69,3 +70,4 @@ class RGCreativeBrief:
     iesBrief)
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     optimized_skills: OptimizedSkillsBrief = field(default_factory=OptimizedSkillsBrief)
+

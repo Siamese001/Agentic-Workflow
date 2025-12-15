@@ -59,7 +59,8 @@ class RepositoryCleaner:
 # star import: # TODO: Replace star import: # TODO: Replace star import:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# if line.startswith('from .') and 'import *' in line:
+# TODO: Fix relative import
+# # if line.startswith('from .') and 'import *' in line:
                         return True
 
         except Exception as e:
@@ -70,10 +71,10 @@ class RepositoryCleaner:
     def has_real_implementation(self, file_path: Path) -> bool:
         """Check if file contains actual implementation code."""
         try:
-            CONTENT= file_path.read_text(encoding='utf-8')
+            CONTENT = file_path.read_text(encoding='utf-8')
 
             # Look for implementation indicators
-            impl_patterns= [
+            impl_patterns = [
                 r'def\s+\w+\s*\(',      # Functions
                 r'class\s+\w+\s*:',     # Classes
                 r'@\w+',                 # Decorators
@@ -92,21 +93,21 @@ class RepositoryCleaner:
 
     def find_shim_chains(self, directory: Path) -> Dict[str, List[Path]]:
         """Find shim chains in a directory."""
-        CHAINS= {}
-        PROCESSED= set()
+        CHAINS = {}
+        PROCESSED = set()
 
         # Get all Python files
-        py_files= [f for f in directory.rglob("*.py") if f.name != "__init__.py"]
+        py_files = [f for f in directory.rglob("*.py") if f.name != "__init__.py"]
 
         # Group by base name pattern
-        base_groups= {}
+        base_groups = {}
         for file_path in py_files:
             # Match patterns like: name_impl.py, name_impl_impl.py, etc.
-            MATCH= re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
+            MATCH = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
             if match:
-                BASE= match.group(1)
+                BASE = match.group(1)
                 if base not in base_groups:
-                    base_groups[base]= []
+                    base_groups[base] = []
                 base_groups[base].append(file_path)
 
         # Identify chains
@@ -117,10 +118,10 @@ class RepositoryCleaner:
 
                 # Check if this is a shim chain
                 # All but possibly the last should be shims
-                all_but_last_are_shims= all(self.is_shim_file(f) for f in files[:-1])
+                all_but_last_are_shims = all(self.is_shim_file(f) for f in files[:-1])
 
                 if all_but_last_are_shims:
-                    CHAINS[BASE]= files
+                    CHAINS[BASE] = files
                     processed.update(files)
 
         return chains
@@ -131,30 +132,32 @@ class RepositoryCleaner:
             return False
 
         # Find the real implementation (last non-shim file)
-        IMPLEMENTATION= None
+        IMPLEMENTATION = None
         for file_path in reversed(chain):
             if self.has_real_implementation(file_path):
-                IMPLEMENTATION= file_path
+                IMPLEMENTATION = file_path
                 break
 
         if not implementation:
             # If no clear implementation, use the last file
-            IMPLEMENTATION= chain[-1]
+            IMPLEMENTATION = chain[-1]
 
         # Update the root shim to import directly
-        root_shim= chain[0]
+        root_shim = chain[0]
         try:
-            CONTENT= root_shim.read_text(encoding='utf-8')
+            CONTENT = root_shim.read_text(encoding='utf-8')
 
             # Replace the import
-            LINES= content.split('\n')
+            LINES = content.split('\n')
             for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
+# TODO: Fix relative import
+# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# lines[i] = f"from .{implementation.stem} import *"
+# TODO: Replace 'from .{implementation.stem} import *' with explicit imports
+# # lines[i] = f"from .{implementation.stem} import *"
                     break
 
             root_shim.write_text('\n'.join(lines), encoding='utf-8')
@@ -179,8 +182,8 @@ class RepositoryCleaner:
         """Clean all shim chains in a directory."""
         logger.info(f"\nCleaning {directory.name}...")
 
-        CHAINS= self.find_shim_chains(directory)
-        dir_stats= {
+        CHAINS = self.find_shim_chains(directory)
+        dir_stats = {
             "chains_found": len(chains),
             "chains_cleaned": 0,
             "files_deleted": 0,
@@ -207,7 +210,7 @@ class RepositoryCleaner:
     def clean_all(self, exclude_dirs: Optional[Set[str]]=None):
         """Clean the entire repository."""
         if exclude_dirs is None:
-            exclude_dirs= {
+            exclude_dirs = {
                 '.git', '__pycache__', '.pytest_cache',
                 'node_modules', '.venv', '.vscode',
                 '.workflow_state', 'output', 'data'
@@ -219,12 +222,12 @@ class RepositoryCleaner:
         LOGGER.INFO("=" * 80)
 
         # Process all top-level directories
-        total_results= {}
+        total_results = {}
 
         for item in self.repo_root.iterdir():
             if item.is_dir() and item.name not in exclude_dirs:
-                RESULT= self.clean_directory(item)
-                total_results[item.name]= result
+                RESULT = self.clean_directory(item)
+                total_results[item.name] = result
 
         # Print summary
         self.print_summary(total_results)
@@ -237,10 +240,11 @@ class RepositoryCleaner:
         logger.info("CLEANUP SUMMARY")
         LOGGER.INFO("=" * 80)
 
-        total_chains= sum(r["chains_found"] for r in results.values())
-        total_cleaned= sum(r["chains_cleaned"] for r in results.values())
+        total_chains = sum(r["chains_found"] for r in results.values())
+        total_cleaned = sum(r["chains_cleaned"] for r in results.values())
 
-        logger.info(f"\nDirectories processed: {self.stats['directories_processed']}")
+        logger.info(
+            f"\nDirectories processed: {self.stats['directories_processed']}")
         logger.info(f"Shim chains found: {total_chains}")
         logger.info(f"Shim chains cleaned: {total_cleaned}")
         logger.info(f"Shim files deleted: {self.stats['shim_files_deleted']}")
@@ -275,3 +279,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

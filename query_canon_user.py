@@ -1,15 +1,17 @@
-import sys
 import logging
+import sys
 import time
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+from redisvl.query import VectorQuery
 
 # Import hardened connectivity modules
 from connection_manager import ConnectionManager
-from redisvl.query import VectorQuery
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR)  # Keep it quiet, show only errors
 logger = logging.getLogger("CanonQuerier")
+
 
 class CanonQuerier:
     def __init__(self):
@@ -27,9 +29,9 @@ class CanonQuerier:
         2. Checks L1 (Redis) for hot/recent matches.
         3. Checks L2 (Pinecone) for deep/cold semantic history.
         """
-        start_time = time.time()
+        time.time()
         results = []
-        
+
         # 1. Generate Embedding
         try:
             vector = self.embedding_fn(query_text)
@@ -47,14 +49,14 @@ class CanonQuerier:
                 num_results=top_k
             )
             redis_results = self.redis_index.query(v_query)
-            
+
             for r in redis_results:
                 # RedisVL returns distance, not similarity. Lower is better.
                 # We normalize strictly for display.
                 # Note: RedisVL might return 'vector_distance' field.
                 dist = float(r.get('vector_distance', 1.0))
                 sim = 1 - dist  # Approximate similarity conversion
-                
+
                 results.append({
                     "layer": "L1 (Hot/Redis)",
                     "id": r.get('id'),
@@ -72,7 +74,7 @@ class CanonQuerier:
                 top_k=top_k,
                 include_metadata=True
             )
-            
+
             for match in pc_results['matches']:
                 meta = match.get('metadata', {})
                 results.append({
@@ -87,8 +89,9 @@ class CanonQuerier:
 
         # Sort by score descending
         results.sort(key=lambda x: float(x['score']), reverse=True)
-        
+
         return results[:top_k]
+
 
 def print_results(results: List[Dict]):
     if not results:
@@ -97,7 +100,7 @@ def print_results(results: List[Dict]):
 
     print(f"\n🔍 Found {len(results)} relevant memories:")
     print("="*60)
-    
+
     for i, res in enumerate(results, 1):
         content_snippet = res['content'][:200].replace('\n', ' ') + "..."
         print(f"{i}. [{res['layer']}] Score: {res['score']}")
@@ -105,6 +108,7 @@ def print_results(results: List[Dict]):
         print(f"   Source: {res['source']}")
         print(f"   📖 \"{content_snippet}\"")
         print("-" * 60)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -114,7 +118,8 @@ if __name__ == "__main__":
 
     query = sys.argv[1]
     querier = CanonQuerier()
-    
+
     print(f"\n🧠 Thinking about: '{query}'...")
     hits = querier.search(query)
     print_results(hits)
+

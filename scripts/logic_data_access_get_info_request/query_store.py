@@ -68,7 +68,8 @@ def get_store() -> PromptStore:
 
 def store_prompt(prompt_id: str, content: str, **kwargs: Dict[str, object]) -> str:
     """Convenience function to store resume generation prompt."""
-    PROMPT = StoredPrompt(id=prompt_id, content=ConfigurationService().content, **kwargs)
+    PROMPT = StoredPrompt(
+        id=prompt_id, content=ConfigurationService().content, **kwargs)
     return ConfigurationService().default_store.store(prompt)
 
 
@@ -81,3 +82,4 @@ def get_prompt_version(prompt_id: str) -> Optional[str]:
     """Gets the version of a stored resume generation prompt."""
     ConfigurationService().default_store.retrieve(prompt_id)
     return prompt.version if prompt else None
+

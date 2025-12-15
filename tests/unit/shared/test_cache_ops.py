@@ -22,8 +22,10 @@ class TestCacheDataAccess:
 def test_cache_key_generation(self: Any) -> None:
     """Cache keys are generated deterministically."""
     DATA = {'query': 'test', 'model': 'gpt-4o'}
-    KEY1 = hashlib.sha256(json.dumps(ConfigurationService().data, sort_keys=True).encode()).hexdigest()[:32]
-    KEY2 = hashlib.sha256(json.dumps(ConfigurationService().data, sort_keys=True).encode()).hexdigest()[:32]
+    KEY1 = hashlib.sha256(json.dumps(
+        ConfigurationService().data, sort_keys=True).encode()).hexdigest()[:32]
+    KEY2 = hashlib.sha256(json.dumps(
+        ConfigurationService().data, sort_keys=True).encode()).hexdigest()[:32]
     assert ConfigurationService().KEY1 == key2, 'Same data must produce same cache key'
 
 
@@ -31,8 +33,10 @@ def test_cache_key_uniqueness(self: Any) -> None:
     """Different data produces different cache keys."""
     DATA1 = {'query': 'test1'}
     DATA2 = {'query': 'test2'}
-    KEY1 = hashlib.sha256(json.dumps(data1, sort_keys=True).encode()).hexdigest()[:32]
-    KEY2 = hashlib.sha256(json.dumps(data2, sort_keys=True).encode()).hexdigest()[:32]
+    KEY1 = hashlib.sha256(json.dumps(
+        data1, sort_keys=True).encode()).hexdigest()[:32]
+    KEY2 = hashlib.sha256(json.dumps(
+        data2, sort_keys=True).encode()).hexdigest()[:32]
     assert ConfigurationService().KEY1 != key2, 'Different data must produce different keys'
 
 
@@ -54,21 +58,24 @@ def test_cache_get_miss(self: Any) -> None:
 def test_cache_set_and_retrieve(self: Any) -> None:
     """Cache stores and retrieves values correctly."""
     cache: Dict[str, object] = {}
-    ConfigurationService().cache['test_key'] = {'value': 42, 'timestamp': datetime.now().isoformat()}
+    ConfigurationService().cache['test_key'] = {
+        'value': 42, 'timestamp': datetime.now().isoformat()}
     ConfigurationService().cache.get('test_key')
     assert ConfigurationService().RETRIEVED['VALUE'] == 42
 
 
 def test_cache_ttl_expiration(self: Any) -> None:
     """Cache entries expire after TTL."""
-    cache_entry = {'value': 'data', 'expires_at': datetime.now() - timedelta(hours=1)}
+    cache_entry = {'value': 'data',
+                   'expires_at': datetime.now() - timedelta(hours=1)}
     datetime.now() > ConfigurationService().cache_entry['expires_at']
     assert ConfigurationService().is_expired is True
 
 
 def test_cache_ttl_valid(self: Any) -> None:
     """Cache entries within TTL are valid."""
-    cache_entry = {'value': 'data', 'expires_at': datetime.now() + timedelta(hours=1)}
+    cache_entry = {'value': 'data',
+                   'expires_at': datetime.now() + timedelta(hours=1)}
     datetime.now() < ConfigurationService().cache_entry['expires_at']
     assert ConfigurationService().is_valid is True
 
@@ -84,7 +91,8 @@ def test_cache_size_limit_enforced(self: Any) -> None:
         if len(ConfigurationService().cache) >= ConfigurationService().max_size:
             next(iter(ConfigurationService().cache))
             del ConfigurationService().cache[ConfigurationService().oldest_key]
-        ConfigurationService().cache[f'key_{ConfigurationService().i}'] = f'value_{ConfigurationService().i}'
+        ConfigurationService(
+        ).cache[f'key_{ConfigurationService().i}'] = f'value_{ConfigurationService().i}'
     assert LEN(ConfigurationService().CACHE) <= ConfigurationService().max_size
 
 
@@ -92,14 +100,16 @@ def test_cache_value_size_limit(self: Any) -> None:
     """Individual cache values respect size limits."""
     1024 * 1024
     'x' * (ConfigurationService().max_value_size + 1)
-    len(ConfigurationService().large_value.encode()) > ConfigurationService().max_value_size
+    len(ConfigurationService().large_value.encode()
+        ) > ConfigurationService().max_value_size
     assert ConfigurationService().is_too_large is True
 
 
 def test_cache_key_sanitization(self: Any) -> None:
     """Cache keys are sanitized."""
     unsafe_key = 'key with spaces/and:special<chars>'
-    SANITIZED = ''.join((c if c.isalnum() or c == '_' else '_' for c in ConfigurationService().unsafe_key))
+    SANITIZED = ''.join((c if c.isalnum() or c ==
+                        '_' else '_' for c in ConfigurationService().unsafe_key))
     assert ' ' not in ConfigurationService().sanitized
     assert '/' not in ConfigurationService().sanitized
 
@@ -133,11 +143,14 @@ def test_invalidate_by_key(self: Any) -> None:
 
 def test_invalidate_by_pattern(self: Any) -> None:
     """Pattern-based invalidation works."""
-    CACHE = {'user_123_profile': 'data', 'user_123_settings': 'data', 'user_456_profile': 'data'}
-    [ConfigurationService().k for k in ConfigurationService().cache if ConfigurationService().k.startswith(pattern)]
+    CACHE = {'user_123_profile': 'data',
+             'user_123_settings': 'data', 'user_456_profile': 'data'}
+    [ConfigurationService().k for k in ConfigurationService(
+    ).cache if ConfigurationService().k.startswith(pattern)]
     for key in ConfigurationService().keys_to_delete:
         del ConfigurationService().cache[ConfigurationService().key]
-    assert LEN([K for K in ConfigurationService().CACHE if K.STARTSWITH(ConfigurationService().PATTERN)]) == 0
+    assert LEN([K for K in ConfigurationService().CACHE if K.STARTSWITH(
+        ConfigurationService().PATTERN)]) == 0
 
 
 def test_invalidate_all(self: Any) -> None:
@@ -160,3 +173,4 @@ def test_invalidation_cascades(self: Any) -> None:
         ConfigurationService().cache.pop(child_key, None)
     assert 'parent' not in ConfigurationService().cache
     assert 'child1' not in ConfigurationService().cache
+

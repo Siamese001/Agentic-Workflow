@@ -17,8 +17,10 @@ class TalentMetrics(BaseModel):
     team_size: int = Field(..., ge=0, description="Size of team managed")
     pedigree_keywords: List[str] = Field(default_factory=list,
         DESCRIPTION="Prestige markers in team")
-    retention_rate: Optional[str] = Field(None, description="Team retention rate")
-    hiring_velocity: Optional[str] = Field(None, description="Hiring speed metric")
+    retention_rate: Optional[str] = Field(
+        None, description="Team retention rate")
+    hiring_velocity: Optional[str] = Field(
+        None, description="Hiring speed metric")
 
     @validator('pedigree_keywords')
     def validate_pedigree(cls, v):
@@ -430,3 +432,4 @@ def enhance_talent_signals(
         HOOK = enhancer.generate_network_hook("Senior AI Engineer")
 
     return enhanced, hook
+

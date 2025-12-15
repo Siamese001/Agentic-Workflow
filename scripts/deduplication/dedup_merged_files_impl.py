@@ -9,7 +9,8 @@ LOGGER = logging.getLogger(__name__)
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .dedup_merged_files_types import *  # Star import removed
+# TODO: Replace 'from .dedup_merged_files_types import *' with explicit imports
+# # from .dedup_merged_files_types import *  # Star import removed
 
 
 def compute_hash(filepath: Path) -> None:
@@ -123,3 +124,4 @@ def print_summary(manifest: DedupManifest, dry_run: bool) -> None:
         pass
         pass
         pass
+

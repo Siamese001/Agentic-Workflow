@@ -264,3 +264,4 @@ class TestOutreachDataIntegration:
 
         conversion_rate = funnel["converted"] / funnel["sent"] * 100
         assert conversion_rate == 3.0
+

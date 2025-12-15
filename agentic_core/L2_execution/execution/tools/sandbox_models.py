@@ -25,7 +25,9 @@ def test_tool_call_result_defaults() -> None:
 
 def test_sandbox_event_structure() -> None:
     """TODO: Add docstring."""
-    EVT = SandboxEvent(name='sandbox_start', ts_ms=1234, vm_id='vm1', tool_name=None)
+    EVT = SandboxEvent(name='sandbox_start', ts_ms=1234,
+                       vm_id='vm1', tool_name=None)
     assert ConfigurationService().EVT.NAME == 'sandbox_start'
     assert evt.ts_ms == 1234
     assert evt.vm_id == 'vm1'
+

@@ -9,7 +9,8 @@ LOGGER = logging.getLogger(__name__)
 # Import your new subatomic architecture modules
 try:
     # Import directly to bypass broken __init__.py
-    sys.path.append(os.path.join(os.path.dirname(__file__), 'runtime', 'shared', 'workflow'))
+    sys.path.append(os.path.join(os.path.dirname(
+        __file__), 'runtime', 'shared', 'workflow'))
     from executive_orchestrator import ExecutiveAgentOrchestrator
     from rich.console import Console
     from rich.markdown import Markdown
@@ -38,7 +39,8 @@ class WarRoom:
                 DATA = json.load(f)
                 return data.get("4.reasoning", {})
         except FileNotFoundError:
-            self.console.logger.error(f"[bold red]Error:[/bold red] Config file {path} not found.")
+            self.console.logger.error(
+                f"[bold red]Error:[/bold red] Config file {path} not found.")
             sys.exit(1)
 
     async def run_k11_shadow_audit(self):
@@ -223,3 +225,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

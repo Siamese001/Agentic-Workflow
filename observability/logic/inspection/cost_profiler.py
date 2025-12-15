@@ -27,7 +27,8 @@ class CostProfiler:
 
 def __init__(self: Any) -> None:
     self.metrics: List[CostMetrics] = []
-    self.cost_per_token = {'gpt-4': 3e-05, 'gpt-3.5-turbo': 2e-06, 'claude-3': 1.5e-05}
+    self.cost_per_token = {'gpt-4': 3e-05,
+                           'gpt-3.5-turbo': 2e-06, 'claude-3': 1.5e-05}
 
 
 def track_operation(self: Any, operation: str, model: str, tokens: int, duration: float) -> CostMetrics:
@@ -72,3 +73,4 @@ def get_summary(self: Any) -> Dict[str, Any]:
         return {}
     return {'total_cost': self.get_total_cost(), 'total_tokens': sum((m.tokens_used for m in self.metrics)), 'operation_costs': self.get_cost_by_operation(),
             'operation_count': len(self.metrics), 'average_cost_per_operation': self.get_total_cost() / len(self.metrics)}
+

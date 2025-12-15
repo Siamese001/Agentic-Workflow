@@ -15,3 +15,4 @@ def test_latency_smoke(benchmark: Any, case: Any) -> None:
     When implemented, it should benchmark the workflow execution time
     for different case types and ensure they complete within acceptable limits.
     """
+

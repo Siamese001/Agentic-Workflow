@@ -25,12 +25,14 @@ def add_logging_import(content: str) -> str:
         if last_import:
             # Add logging import after the last import
             insert_pos = last_import.end()
-            CONTENT = content[:insert_pos] + '\nimport logging' + content[insert_pos:]
+            CONTENT = content[:insert_pos] + \
+                '\nimport logging' + content[insert_pos:]
         else:
             # Add at the beginning after any docstring
             if content.startswith('"""'):
                 docstring_end = content.find('"""', 3) + 3
-                CONTENT = content[:docstring_end] + '\nimport logging' + content[docstring_end:]
+                CONTENT = content[:docstring_end] + \
+                    '\nimport logging' + content[docstring_end:]
             else:
                 CONTENT = 'import logging\n' + content
 
@@ -156,3 +158,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

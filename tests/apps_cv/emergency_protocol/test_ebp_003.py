@@ -5,17 +5,15 @@ Emergency Protocol test for L5 logging and operator alerts
 """
 
 import pytest
-from unittest.mock import Mock, patch, call
-import json
+from unittest.mock import Mock
 import time
-import smtplib
 from datetime import datetime, timezone
 from canon_validator import CanonValidator
 
 
 class TestEBP003:
     """Test Emergency Bailout Protocol Phase 3 - Observability & Notification"""
-    
+
     @pytest.fixture
     def validator(self):
         """Create validator with mocked dependencies"""
@@ -32,17 +30,17 @@ class TestEBP003:
         validator.pinecone.query = Mock(return_value={'matches': []})
         validator.pinecone.upsert = Mock()
         return validator
-    
+
     def test_critical_log_emission(self, validator):
         """Test EBP-3.1: Emit CRITICAL log to MEMemory"""
         logged_observations = []
-        
+
         def mock_add_observations(observations):
             """Mock MEMemory logging"""
             for obs in observations:
                 logged_observations.append(obs)
             return {"status": "success", "count": len(observations)}
-        
+
         # Create critical log entry
         critical_obs = [{
             "entityName": "emergency_bailout_protocol",
@@ -55,31 +53,31 @@ class TestEBP003:
             "corpusNames": ["canon_validator"],
             "tags": ["critical", "ebp", "emergency", "l5"]
         }]
-        
+
         # Log critical event
         result = mock_add_observations(critical_obs)
-        
+
         # Verify logging
         assert result["status"] == "success"
         assert len(logged_observations) == 1
-        
+
         log = logged_observations[0]
         assert "CRITICAL BAILOUT ACTIVATED" in str(log["contents"])
         assert "Redis atomicity failure" in str(log["contents"])
         assert "critical" in log["tags"]
         assert "ebp" in log["tags"]
-    
+
     def test_secondary_log_dump_on_memeory_failure(self, validator):
         """Test EBP-3.2: Secondary log dump when MEMemory fails"""
         memeory_failed = True
         dump_file_content = []
-        
+
         def mock_add_observations(observations):
             """Simulate MEMemory failure"""
             if memeory_failed:
                 raise Exception("MEMemory service unavailable")
             return {"status": "success"}
-        
+
         def mock_dump_to_file(content):
             """Mock dump to local filesystem"""
             dump_entry = {
@@ -89,7 +87,7 @@ class TestEBP003:
             }
             dump_file_content.append(dump_entry)
             return True
-        
+
         # Attempt to log to MEMemory
         critical_logs = [{
             "entityName": "ebp_failure",
@@ -97,29 +95,29 @@ class TestEBP003:
             "corpusNames": ["canon_validator"],
             "tags": ["ebp", "dump", "fallback"]
         }]
-        
+
         try:
             mock_add_observations(critical_logs)
         except Exception as e:
             # Fallback to file dump
             mock_dump_to_file(critical_logs)
-        
+
         # Verify fallback dump
         assert len(dump_file_content) == 1
         dump = dump_file_content[0]
         assert dump["file"] == "/logs/ebp_dump.json"
         assert "Emergency dump" in str(dump["content"])
-    
+
     def test_operator_notification(self, validator):
         """Test EBP-3.3: Operator notification via external services"""
         notifications_sent = []
-        
+
         class MockNotificationService:
             def __init__(self):
                 self.pagerduty_triggered = False
                 self.emails_sent = []
                 self.slack_messages = []
-            
+
             def trigger_pagerduty(self, severity, message):
                 self.pagerduty_triggered = True
                 notifications_sent.append({
@@ -129,7 +127,7 @@ class TestEBP003:
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 })
                 return {"status": "triggered", "incident_id": "INC12345"}
-            
+
             def send_email(self, to, subject, body):
                 email = {
                     "to": to,
@@ -140,7 +138,7 @@ class TestEBP003:
                 self.emails_sent.append(email)
                 notifications_sent.append(email)
                 return {"status": "sent"}
-            
+
             def send_slack(self, channel, message):
                 slack_msg = {
                     "channel": channel,
@@ -150,39 +148,39 @@ class TestEBP003:
                 self.slack_messages.append(slack_msg)
                 notifications_sent.append(slack_msg)
                 return {"status": "posted"}
-        
+
         # Mock notification service
         notifier = MockNotificationService()
-        
+
         # Trigger notifications
         notifier.trigger_pagerduty(
             "CRITICAL",
             "Canon Validator Engine in BLACKOUT STATUS - Immediate action required"
         )
-        
+
         notifier.send_email(
             "ops-team@company.com",
             "🚨 Canon Validator Emergency",
             "The Canon Validator Engine has entered blackout status. See logs for details."
         )
-        
+
         notifier.send_slack(
             "#alerts",
             "ALERT: Canon Validator Engine blackout activated"
         )
-        
+
         # Verify notifications
         assert notifier.pagerduty_triggered
         assert len(notifier.emails_sent) == 1
         assert len(notifier.slack_messages) == 1
         assert len(notifications_sent) == 3
-        
+
         # Check PagerDuty notification
         pd_notif = notifications_sent[0]
         assert pd_notif["service"] == "pagerduty"
         assert pd_notif["severity"] == "CRITICAL"
         assert "BLACKOUT STATUS" in pd_notif["message"]
-    
+
     def test_notification_content_formatting(self, validator):
         """Test that notification content is properly formatted"""
         notification_formats = {
@@ -202,28 +200,28 @@ class TestEBP003:
                 "format": "markdown"
             }
         }
-        
+
         def mock_format_notification(service, data):
             """Format notification according to service requirements"""
             format_spec = notification_formats.get(service, {})
-            
+
             # Check required fields
             for field in format_spec.get("required_fields", []):
                 if field not in data:
                     raise ValueError(f"Missing required field: {field}")
-            
+
             # Check length
             content = str(data)
             if len(content) > format_spec.get("max_length", float('inf')):
                 # Truncate with ellipsis
                 content = content[:format_spec["max_length"]-3] + "..."
-            
+
             return {
                 "service": service,
                 "formatted_content": content,
                 "format": format_spec.get("format", "text")
             }
-        
+
         # Test formatting for each service
         test_data = {
             "severity": "CRITICAL",
@@ -234,98 +232,103 @@ class TestEBP003:
             "body": "Engine is down",
             "channel": "#test"
         }
-        
+
         for service in notification_formats:
             result = mock_format_notification(service, test_data)
             assert result["service"] == service
             assert "formatted_content" in result
-            assert len(result["formatted_content"]) <= notification_formats[service]["max_length"]
-    
+            assert len(result["formatted_content"]
+                       ) <= notification_formats[service]["max_length"]
+
     def test_notification_retry_logic(self, validator):
         """Test notification retry on failure"""
         notification_attempts = []
         max_retries = 3
-        
+
         def mock_failing_notification(message, attempt=0):
             """Simulate notification service that fails initially"""
             notification_attempts.append(attempt)
-            
+
             if attempt < 2:
                 raise Exception(f"Service unavailable (attempt {attempt + 1})")
-            
+
             return {"status": "sent", "attempt": attempt + 1}
-        
+
         # Test retry logic
         success = False
         for attempt in range(max_retries):
             try:
-                result = mock_failing_notification("Test message", attempt)
+                mock_failing_notification("Test message", attempt)
                 success = True
                 break
             except Exception as e:
                 if attempt == max_retries - 1:
                     # Final attempt failed
-                    notification_attempts.append(f"failed_after_{max_retries}_attempts")
+                    notification_attempts.append(
+                        f"failed_after_{max_retries}_attempts")
                     break
                 time.sleep(0.01)  # Brief delay before retry
-        
+
         # Verify retry behavior
         assert success
         assert len(notification_attempts) == 3
         assert notification_attempts == [0, 1, 2]
-    
+
     def test_observability_metrics_collection(self, validator):
         """Test collection of observability metrics during bailout"""
         metrics = {}
-        
+
         def mock_collect_metric(name, value, tags=None):
             """Collect a metric"""
             if name not in metrics:
                 metrics[name] = []
-            
+
             metrics[name].append({
                 "value": value,
                 "tags": tags or {},
                 "timestamp": datetime.now(timezone.utc).isoformat()
             })
-        
+
         # Collect various metrics during bailout
         mock_collect_metric("ebp.activated", 1, {"phase": "3"})
-        mock_collect_metric("ebp.duration_ms", 150, {"operation": "notification"})
-        mock_collect_metric("ebp.notifications_sent", 3, {"services": "pagerduty,email,slack"})
-        mock_collect_metric("ebp.memory_dump_size_kb", 256, {"fallback": "filesystem"})
-        
+        mock_collect_metric("ebp.duration_ms", 150, {
+                            "operation": "notification"})
+        mock_collect_metric("ebp.notifications_sent", 3, {
+                            "services": "pagerduty,email,slack"})
+        mock_collect_metric("ebp.memory_dump_size_kb", 256,
+                            {"fallback": "filesystem"})
+
         # Verify metrics
         assert len(metrics) == 4
         assert "ebp.activated" in metrics
         assert "ebp.duration_ms" in metrics
         assert "ebp.notifications_sent" in metrics
         assert "ebp.memory_dump_size_kb" in metrics
-        
+
         # Check metric values
         assert metrics["ebp.activated"][0]["value"] == 1
         assert metrics["ebp.duration_ms"][0]["value"] == 150
         assert metrics["ebp.notifications_sent"][0]["value"] == 3
         assert metrics["ebp.memory_dump_size_kb"][0]["value"] == 256
-    
+
     def test_complete_observability_sequence(self, validator):
         """Test complete EBP-3 observability sequence"""
         ebp_log = []
-        
+
         class MockEBPObservability:
             def __init__(self):
                 self.memeory_available = True
-            
+
             def ebp_3_1_emit_critical_log(self):
                 ebp_log.append("EBP-3.1: Critical log emitted")
                 return {"status": "success"}
-            
+
             def ebp_3_2_secondary_dump(self):
                 if not self.memeory_available:
                     ebp_log.append("EBP-3.2: Secondary dump executed")
                     return {"status": "dumped"}
                 return {"status": "skipped"}
-            
+
             def ebp_3_3_notify_operators(self):
                 ebp_log.append("EBP-3.3: Operators notified")
                 return {
@@ -333,29 +336,29 @@ class TestEBP003:
                     "email": "sent",
                     "slack": "posted"
                 }
-            
+
             def execute_observability(self):
                 """Execute complete Phase 3 sequence"""
                 results = {}
                 results["critical_log"] = self.ebp_3_1_emit_critical_log()
-                
+
                 # Simulate MEMemory failure
                 self.memeory_available = False
                 results["secondary_dump"] = self.ebp_3_2_secondary_dump()
-                
+
                 results["notifications"] = self.ebp_3_3_notify_operators()
-                
+
                 return results
-        
+
         # Execute observability sequence
         obs = MockEBPObservability()
         results = obs.execute_observability()
-        
+
         # Verify sequence
         assert "EBP-3.1" in ebp_log[0]
         assert "EBP-3.2" in ebp_log[1]
         assert "EBP-3.3" in ebp_log[2]
-        
+
         # Verify results
         assert results["critical_log"]["status"] == "success"
         assert results["secondary_dump"]["status"] == "dumped"
@@ -364,3 +367,4 @@ class TestEBP003:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

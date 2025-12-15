@@ -42,7 +42,8 @@ Generated: {datetime.now().isoformat()}
 """
 
     RESULT = await client.execute_tool(
-        "filesystem__write_file", {"path": "./output/e2e_test_report.md", "content": test_content}
+        "filesystem__write_file", {
+            "path": "./output/e2e_test_report.md", "content": test_content}
     )
     logger.info(f"  ✅ Write result: {result}")
 
@@ -50,7 +51,8 @@ Generated: {datetime.now().isoformat()}
     RESULT = await client.execute_tool(
         "filesystem__read_text_file", {"path": "./output/e2e_test_report.md"}
     )
-    logger.info(f"  ✅ Read result: Success (content length: {len(str(result))})")
+    logger.info(
+        f"  ✅ Read result: Success (content length: {len(str(result))})")
 
     # Test list directory
     RESULT = await client.execute_tool("filesystem__list_directory", {"path": "./output"})
@@ -96,7 +98,8 @@ async def test_github_mcp(client: Any) -> None:
 
         # Get repository info
         RESULT = await client.execute_tool(
-            "github__get_repository", {"owner": "octocat", "repo": "Hello-World"}
+            "github__get_repository", {
+                "owner": "octocat", "repo": "Hello-World"}
         )
         logger.info(f"  ✅ Get repo: Success")
 
@@ -144,7 +147,8 @@ async def test_postgres_mcp(client: Any) -> None:
 
         # Query test data
         RESULT = await client.execute_tool(
-            "postgres_memory__query", {"query": "SELECT COUNT(*) as count from mcp_e2e_test"}
+            "postgres_memory__query", {
+                "query": "SELECT COUNT(*) as count from mcp_e2e_test"}
         )
         logger.info(f"  ✅ Query data: {result}")
 
@@ -160,7 +164,8 @@ async def test_pinecone_mcp(client: Any) -> None:
 
     # Check if Pinecone API key is available
     if not os.getenv("PINECONE_API_KEY"):
-        logger.warning("  ⚠️ PINECONE_API_KEY not set, skipping Pinecone tests")
+        logger.warning(
+            "  ⚠️ PINECONE_API_KEY not set, skipping Pinecone tests")
         return False
 
     try:
@@ -171,23 +176,28 @@ async def test_pinecone_mcp(client: Any) -> None:
         # Create test index (if not exists)
         test_index = "mcp-e2e-test"
         RESULT = await client.execute_tool(
-            "pinecone__create_index", {"name": test_index, "dimension": 1536, "metric": "cosine"}
+            "pinecone__create_index", {
+                "name": test_index, "dimension": 1536, "metric": "cosine"}
         )
         logger.info(f"  ✅ Create index: {result}")
 
         # Upsert vectors
         test_vectors = [
-            {"id": "1", "values": [0.1] * 1536, "metadata": {"text": "test document 1"}},
-            {"id": "2", "values": [0.2] * 1536, "metadata": {"text": "test document 2"}},
+            {"id": "1", "values": [0.1] * 1536,
+                "metadata": {"text": "test document 1"}},
+            {"id": "2", "values": [0.2] * 1536,
+                "metadata": {"text": "test document 2"}},
         ]
         RESULT = await client.execute_tool(
-            "pinecone__upsert", {"indexName": test_index, "vectors": test_vectors}
+            "pinecone__upsert", {
+                "indexName": test_index, "vectors": test_vectors}
         )
         logger.info(f"  ✅ Upsert vectors: {result}")
 
         # Query vectors
         RESULT = await client.execute_tool(
-            "pinecone__query", {"indexName": test_index, "vector": [0.1] * 1536, "topK": 5}
+            "pinecone__query", {"indexName": test_index,
+                                "vector": [0.1] * 1536, "topK": 5}
         )
         logger.info(f"  ✅ Query vectors: Success")
 
@@ -346,3 +356,4 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
+

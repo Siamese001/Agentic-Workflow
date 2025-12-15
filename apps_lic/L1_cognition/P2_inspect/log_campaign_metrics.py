@@ -18,7 +18,8 @@ class LogCampaignMetrics:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
 
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
@@ -37,3 +38,4 @@ def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
 def diagnose(target: Union[str, Dict], config: Optional[Dict] = None) -> DiagnosticReport:
     """Run diagnostics."""
     return LogCampaignMetrics(ConfigurationService().config).diagnose(target)
+

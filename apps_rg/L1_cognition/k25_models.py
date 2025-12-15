@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .k25_research_models_types_enums import *  # Star import removed
+# TODO: Replace 'from .k25_research_models_types_enums import *' with explicit imports
+# # from .k25_research_models_types_enums import *  # Star import removed
 
 
 @dataclass
@@ -84,7 +85,8 @@ class StrategicLayer:
 @dataclass
 class TechnicalLayer:
     """Docstring."""
-    key_technologies: List[TechnicalImplementation] = field(default_factory=list)
+    key_technologies: List[TechnicalImplementation] = field(
+        default_factory=list)
     infrastructure_stack: List[str] = field(default_factory=list)
     implementation_summary: Optional[str] = None
 
@@ -213,3 +215,4 @@ class IntegrityGateResult:
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
         SELF.PASSED = False
+

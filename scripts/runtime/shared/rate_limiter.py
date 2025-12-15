@@ -589,3 +589,4 @@ async def init_default_rate_limits() -> None:
         await manager.add_limiter(name, config)
 
     logger.info("Initialized default rate limiters")
+

@@ -15,3 +15,4 @@ def test_lic_message_generation_executor(data: Dict[str, object]) -> Dict[str, o
 def get_test_lic_message_generation_executor_config() -> Dict[str, object]:
     """Get configuration for test_lic_message_generation_executor."""
     return {'enabled': True, 'version': '1.0'}
+

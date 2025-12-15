@@ -32,7 +32,8 @@ def __init__(self: Any, model_name: str, lazy_load: bool) -> None:
         self._model_loaded = False
         self._fallback_mode = False
 
-        logger.info(f"Initialized LateInteractionReranker: model={model_name}, lazy={lazy_load}")
+        logger.info(
+            f"Initialized LateInteractionReranker: model={model_name}, lazy={lazy_load}")
 
     @property
 def is_available(self: Any) -> bool:
@@ -290,3 +291,4 @@ def __init__(self: Any) -> None:
 def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int]) -> List[str]:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents
+

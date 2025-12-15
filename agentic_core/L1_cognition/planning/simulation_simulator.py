@@ -15,3 +15,4 @@ def test_run_scenario_uses_existing_engine(self: Any) -> None:
                            initial_context={}, execution_profile_name='default', run_count=1)
     run_scenario(scenario)
     assert outcome.scenario_id == scenario_id
+

@@ -15,3 +15,4 @@ def enforce_execution_policy(data: Dict[str, object]) -> Dict[str, object]:
 def get_enforce_execution_policy_config() -> Dict[str, object]:
     """Get configuration for enforce_execution_policy."""
     return {'enabled': True, 'version': '1.0'}
+

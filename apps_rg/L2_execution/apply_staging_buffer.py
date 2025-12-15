@@ -51,3 +51,4 @@ def is_locked(self: Any) -> bool:
 def data(self: Any) -> Dict[str, object]:
         """Read-only access to data."""
         return copy.deepcopy(self._data)
+

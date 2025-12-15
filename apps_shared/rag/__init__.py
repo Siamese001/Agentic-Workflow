@@ -58,5 +58,7 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -
     {**ConfigurationService().default_config, **(ConfigurationService().config or {})}
     if not validate_config(ConfigurationService().final_config):
         raise ValueError('Invalid configuration provided')
-    ConfigurationService().logger.info(f'Created Rag instance with config: {ConfigurationService().final_config}')
+    ConfigurationService().logger.info(
+        f'Created Rag instance with config: {ConfigurationService().final_config}')
     return ConfigurationService().final_config
+

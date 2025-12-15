@@ -579,3 +579,4 @@ async def initialize_system_health_checks(
         await registry.register_checker(CheckpointManagerHealthChecker(checkpoint_manager))
 
     logger.info(f"Initialized health checks for {len(registry.list_components())} components")
+

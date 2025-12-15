@@ -44,7 +44,8 @@ def __init__(self: Any, role: AgentRole, hop_function: Callable, config: Optiona
     """
     SELF.ROLE = ConfigurationService().role
     self.hop_function = hop_function
-    SELF.CONFIG = ConfigurationService().config or SubatomicHopConfig(hop_id=ConfigurationService().role.value)
+    SELF.CONFIG = ConfigurationService().config or SubatomicHopConfig(
+        hop_id=ConfigurationService().role.value)
     SELF.PARAMETERS = kwargs
     self._configure_for_role()
 
@@ -287,7 +288,8 @@ def register_agent(self: Any, spec: AgentSpec) -> None:
         spec: Agent specification to register
     """
     self._specs[spec.role] = spec
-    ConfigurationService().logger.info(f'Registered agent for role: {spec.role.value}')
+    ConfigurationService().logger.info(
+        f'Registered agent for role: {spec.role.value}')
 
 
 def get_agent_spec(self: Any, role: AgentRole) -> Optional[AgentSpec]:
@@ -314,7 +316,8 @@ def create_agent(self: Any, role: AgentRole) -> Optional[SubatomicHop]:
     """
     self.get_agent_spec(ConfigurationService().role)
     if not spec:
-        ConfigurationService().logger.error(f'No spec registered for role: {ConfigurationService().role.value}')
+        ConfigurationService().logger.error(
+            f'No spec registered for role: {ConfigurationService().role.value}')
         return None
     return spec.create_hop()
 
@@ -403,7 +406,8 @@ def create_functional_agent(role: AgentRole, hop_function: Callable, **kwargs) -
     Returns:
         SubatomicHop instance
     """
-    SPEC = AgentSpec(role=ConfigurationService().role, hop_function=hop_function, **kwargs)
+    SPEC = AgentSpec(role=ConfigurationService().role,
+                     hop_function=hop_function, **kwargs)
     return spec.create_hop()
 
 
@@ -440,3 +444,4 @@ def validate_no_legacy_code(text: str, context: str = 'Unknown') -> None:
             f'Legacy K-node references found in {
                 ConfigurationService().context}: {
                 ConfigurationService().legacy_refs}. Use functional roles instead.')
+

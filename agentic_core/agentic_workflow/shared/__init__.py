@@ -1,11 +1,4 @@
-"""
-
-LOGGER = logging.getLogger(__name__)
-Shared components for Agentic Workflow.
-
-This module provides shared utilities, models, and configurations
-used across the agentic workflow system.
-"""
+""" """
 import logging
 import sys
 from pathlib import Path
@@ -25,5 +18,7 @@ try:
         'get_vector_store',
         'get_redis_client']
 except ImportError as e:
-    ConfigurationService().logger.warning(f'Warning: Could not import SDK registry: {e}')
+    ConfigurationService().logger.warning(
+        f'Warning: Could not import SDK registry: {e}')
     __all__ = []
+

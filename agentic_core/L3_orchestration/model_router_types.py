@@ -37,9 +37,9 @@ class ModelConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'model_id': self.model_id, 'provider': self.provider, 'tier': self.tier.value, 'cost
-    _per_1k_tokens': self.cost_per_1k_tokens, 'max_tokens': self.max_tokens, 'avg_latency_ms': self.
-        avg_latency_ms, 'capabilities': self.capabilities}
+        return {'model_id': self.model_id, 'provider': self.provider, 'tier': self.tier.value, 'cost _per_1k_tokens': self.cost_per_1k_tokens, 'max_tokens': self.max_tokens, 'avg_latency_ms': self.
+                avg_latency_ms, 'capabilities': self.capabilities}
+
 
 @dataclass
 class RoutingDecision:
@@ -53,7 +53,8 @@ class RoutingDecision:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'selected_model': self.selected_model.to_dict(),
-            'task_complexity': self.task_complexity.value,
-            'estimated_cost': self.estimated_cost,
-            'reasoning': self.reasoning,
-            'alternatives': [a.to_dict() for a in self.alternatives]}
+                'task_complexity': self.task_complexity.value,
+                'estimated_cost': self.estimated_cost,
+                'reasoning': self.reasoning,
+                'alternatives': [a.to_dict() for a in self.alternatives]}
+

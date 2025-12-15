@@ -10,3 +10,4 @@ class RecipientArchetype(Enum):
 
 class CTAStyle(Enum):
     """CTA style types."""
+

@@ -34,7 +34,8 @@ class DepthScore(BaseModel):
     """Score indicating personalization depth."""
     LEVEL: INT = Field(..., ge=0, le=3, description="0=Generic, 3=Deep")
     SCORE: FLOAT = Field(..., ge=0.0, le=1.0, description="Depth score")
-    rationale: List[str] = Field(default_factory=list, description="Reasoning for score")
+    rationale: List[str] = Field(
+        default_factory=list, description="Reasoning for score")
 
     @property
     def is_deep(self) -> bool:
@@ -614,3 +615,4 @@ def analyze_temperature(
     """Quickly analyze temperature for a profile."""
     ENGINE = create_temperature_engine()
     return engine.analyze_temperature(profile, context)
+

@@ -10,3 +10,4 @@ class ToolCallBudget:
     _minimum: int = 0
     _maximum: int = 20
     _guidance: Dict[str, str] = field(default_factory=dict)
+

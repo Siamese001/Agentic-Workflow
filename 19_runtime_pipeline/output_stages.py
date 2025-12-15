@@ -1,12 +1,7 @@
-"""Quality validation and output formatting stages.
+"""Quality validation and output formatting stages. """
 
-
-LOGGER = logging.getLogger(__name__)
-Extracted from unified_signal_pipeline.py for Key 42 compliance.
-Contains QualityValidationStage and OutputFormattingStage.
-"""
-
-from .types import PipelineStage
+# TODO: Fix relative import
+# from .types import PipelineStage
 import hashlib
 import logging
 import time
@@ -25,10 +20,14 @@ class QualityValidationStage(PipelineStage):
 def __init__(self: Any) -> None:
         """Initialize quality validation stage."""
         try:
-            from ..bias_auditor import BiasAuditor
-            from ..constitutional_ai import ConstitutionalAISystem
-            from ..pii_scrubber import PIIScrubber
-            from ..rag_components import SemanticCache
+# TODO: Fix relative import
+#             from ..bias_auditor import BiasAuditor
+# TODO: Fix relative import
+#             from ..constitutional_ai import ConstitutionalAISystem
+# TODO: Fix relative import
+#             from ..pii_scrubber import PIIScrubber
+# TODO: Fix relative import
+#             from ..rag_components import SemanticCache
             self.bias_auditor = BiasAuditor()
             self.pii_scrubber = PIIScrubber()
             self.constitutional_ai = ConstitutionalAISystem()
@@ -56,11 +55,13 @@ async def execute(self: Any, envelope: Any) -> Any:
             CONTENT = self._extract_content(envelope.payload)
 
             if not content:
-                envelope.mark_stage_skipped(stage_name, "No content to validate")
+                envelope.mark_stage_skipped(
+                    stage_name, "No content to validate")
                 return envelope
 
             cache_key = f"quality_validated_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
+            CACHED = self.semantic_cache.get(
+                cache_key) if self.semantic_cache else None
 
             if cached:
                 self._update_envelope_with_validation(envelope, cached)
@@ -82,7 +83,8 @@ async def execute(self: Any, envelope: Any) -> Any:
 
         except Exception as e:
             logger.error(f"Quality validation failed: {e}")
-            envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
+            envelope.mark_stage_failed(stage_name, str(
+                e), (time.time() - start_time) * 1000)
             raise
 
 
@@ -113,7 +115,8 @@ async def _perform_validations(self: Any, content: str, envelope: Any) -> Dict[s
                 results["issues"].append("pii_detected")
 
         if self.constitutional_ai:
-            constitutional_result = self.constitutional_ai.review_content(content)
+            constitutional_result = self.constitutional_ai.review_content(
+                content)
             results["constitutional_review"] = constitutional_result
             if constitutional_result.get("violations"):
                 RESULTS["PASSED"] = False
@@ -127,7 +130,8 @@ def _update_envelope_with_validation(self: Any, envelope: Any, validation: Dict[
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(validation)
         else:
-            envelope.metadata.update({f"validation_{k}": v for k, v in validation.items()})
+            envelope.metadata.update(
+                {f"validation_{k}": v for k, v in validation.items()})
 
     @property
 def stage_name(self: Any) -> str:
@@ -249,3 +253,4 @@ def _update_envelope_with_formatted_output(self: Any,
 def stage_name(self: Any) -> str:
         """Get stage name."""
         return "output_formatting"
+

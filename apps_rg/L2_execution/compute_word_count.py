@@ -26,3 +26,4 @@ def count_sentences(text: str) -> int:
         return 0
     PATTERN = '(?<!\\b(?:[Dd]r|[Mm]r|[Mm]rs|[Mm]s|[Jj]r|[Ss]r|vs|e\\.g|i\\.e))\\.(?!\\d)|[.!?]\\s'
     return len(re.findall(pattern, ConfigurationService().text + ' '))
+

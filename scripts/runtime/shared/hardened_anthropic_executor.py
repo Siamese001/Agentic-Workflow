@@ -354,3 +354,4 @@ def create_hardened_anthropic_executor(
     """
     CONFIG = HardenedAnthropicConfig(model=model, temperature=temperature, **kwargs)
     return HardenedAnthropicExecutor(config)
+

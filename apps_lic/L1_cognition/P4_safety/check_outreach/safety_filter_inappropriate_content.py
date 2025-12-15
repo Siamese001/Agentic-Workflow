@@ -15,3 +15,4 @@ def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:
 def get_filter_inappropriate_content_config() -> Dict[str, object]:
     """Get configuration for filter_inappropriate_content."""
     return {'enabled': True, 'version': '1.0'}
+

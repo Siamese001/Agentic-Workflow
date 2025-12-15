@@ -15,3 +15,4 @@ def test_data_transformation(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_data_transformation_config() -> Dict[str, object]:
     """Get configuration for test_data_transformation."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -15,3 +15,4 @@ def validate_ethical_standards(data: Dict[str, object]) -> Dict[str, object]:
 def get_validate_ethical_standards_config() -> Dict[str, object]:
     """Get configuration for validate_ethical_standards."""
     return {'enabled': True, 'version': '1.0'}
+

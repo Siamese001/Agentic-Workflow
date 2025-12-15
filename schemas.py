@@ -10,7 +10,7 @@ import hashlib
 import json
 import uuid
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
 from schemas.canon_models import CanonEntry
 
@@ -18,11 +18,11 @@ from schemas.canon_models import CanonEntry
 class UnifiedSemanticElement:
     """
     The Unified Semantic Element containing Embedding, AST, and Meta-Learning Metadata.
-    
+
     This facade class wraps CanonEntry to provide the exact interface specified
     in the master prompt while leveraging existing implementations.
     """
-    
+
     def __init__(
         self,
         code_snippet: str,
@@ -37,17 +37,17 @@ class UnifiedSemanticElement:
         self.ast_structure = ast_structure
         self.embedding = embedding
         self.metadata = metadata
-        
+
         # Convert to CanonEntry for internal storage
         self._canon_entry = self._to_canon_entry()
-    
+
     def _to_canon_entry(self) -> CanonEntry:
         """Convert to CanonEntry for storage in Redis/Qdrant."""
         # Generate AST hash
         ast_hash = hashlib.sha256(
             json.dumps(self.ast_structure, sort_keys=True).encode()
         ).hexdigest()
-        
+
         return CanonEntry(
             id=self.id,
             vector=self.embedding,
@@ -64,7 +64,7 @@ class UnifiedSemanticElement:
                 "last_validated": self.metadata.get("last_validated", datetime.utcnow().isoformat())
             }
         )
-    
+
     @classmethod
     def from_canon_entry(cls, entry: CanonEntry) -> "UnifiedSemanticElement":
         """Create UnifiedSemanticElement from CanonEntry."""
@@ -83,22 +83,25 @@ class UnifiedSemanticElement:
             },
             id=str(entry.id)
         )
-    
+
     def update_failure(self):
         """Increment failure count for meta-learning."""
-        self.metadata["failure_count"] = self.metadata.get("failure_count", 0) + 1
+        self.metadata["failure_count"] = self.metadata.get(
+            "failure_count", 0) + 1
         self._canon_entry.update_failure()
-    
+
     def update_success(self, latency_ms: Optional[int] = None):
         """Increment success count for meta-learning."""
-        self.metadata["success_count"] = self.metadata.get("success_count", 0) + 1
+        self.metadata["success_count"] = self.metadata.get(
+            "success_count", 0) + 1
         if latency_ms:
             self.metadata["latency_ms"] = latency_ms
         self._canon_entry.update_success(0, latency_ms or 0)
-    
+
     def get_success_rate(self) -> float:
         """Calculate success rate for this pattern."""
-        total = self.metadata.get("failure_count", 0) + self.metadata.get("success_count", 0)
+        total = self.metadata.get("failure_count", 0) + \
+            self.metadata.get("success_count", 0)
         if total == 0:
             return 0.0
         return self.metadata.get("success_count", 0) / total
@@ -111,13 +114,13 @@ CanonEntry = UnifiedSemanticElement
 def generate_ast_structure(code_str: str) -> Dict[str, Any]:
     """
     Generate AST structure from Python code string.
-    
+
     Args:
         code_str: Python code to parse
-        
+
     Returns:
         AST structure as dictionary
-        
+
     Raises:
         SyntaxError: If code is invalid Python
     """
@@ -137,16 +140,16 @@ def generate_ast_structure(code_str: str) -> Dict[str, Any]:
 def validate_ast_integrity(ast_structure: Dict[str, Any]) -> bool:
     """
     Validate that AST structure is intact and parseable.
-    
+
     Args:
         ast_structure: AST dictionary to validate
-        
+
     Returns:
         True if AST is valid, False otherwise
     """
     if isinstance(ast_structure, dict) and "error" in ast_structure:
         return False
-    
+
     try:
         # Try to reconstruct and parse
         if isinstance(ast_structure, str):
@@ -154,3 +157,4 @@ def validate_ast_integrity(ast_structure: Dict[str, Any]) -> bool:
         return True
     except:
         return False
+

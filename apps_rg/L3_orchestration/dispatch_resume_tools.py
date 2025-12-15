@@ -132,3 +132,4 @@ def execute(action: str,
     config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeTools(config).execute(action, params)
+

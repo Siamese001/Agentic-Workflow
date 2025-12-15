@@ -234,3 +234,4 @@ class TestDegradationDetection:
             COUNTER["VALUE"] += 1
 
         assert COUNTER["VALUE"] == 1000
+

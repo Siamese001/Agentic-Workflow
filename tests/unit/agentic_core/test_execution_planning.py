@@ -15,3 +15,4 @@ def test_execution_planning(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_execution_planning_config() -> Dict[str, object]:
     """Get configuration for test_execution_planning."""
     return {'enabled': True, 'version': '1.0'}
+

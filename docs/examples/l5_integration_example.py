@@ -84,7 +84,8 @@ def run_resume_generation_example():
         orchestrator.record_validation_failure(biowriter.gate_executor)
 
     orchestrator.record_temperature_adjustment(biowriter.recovery_loop)
-    orchestrator.record_decision("BIO_GENERATION_COMPLETE", {'success': bio_result.success})
+    orchestrator.record_decision("BIO_GENERATION_COMPLETE", {
+                                 'success': bio_result.success})
 
     logger.info("\n2. Generating Headline (Executive_Title_Composer)...")
     title_config = TitleComposerConfig(temperature=0.5)
@@ -104,13 +105,15 @@ def run_resume_generation_example():
             }
         )
         logger.info(f"   ✓ Generated in {title_result.attempts} attempt(s)")
-        logger.info(f"   ✓ Industry-first validated: {title_result.segments[0]}")
+        logger.info(
+            f"   ✓ Industry-first validated: {title_result.segments[0]}")
     else:
         logger.info(f"   ✗ Failed after {title_result.attempts} attempts")
         orchestrator.record_validation_failure(title_composer.gate_executor)
 
     orchestrator.record_temperature_adjustment(title_composer.recovery_loop)
-    orchestrator.record_decision("TITLE_GENERATION_COMPLETE", {'success': title_result.success})
+    orchestrator.record_decision("TITLE_GENERATION_COMPLETE", {
+                                 'success': title_result.success})
 
     TRACE = orchestrator.complete_execution(
         SUCCESS=bio_result.success and title_result.success
@@ -219,7 +222,8 @@ def run_outreach_generation_example():
         orchestrator.record_validation_failure(composer.gate_executor)
 
     orchestrator.record_temperature_adjustment(composer.recovery_loop)
-    orchestrator.record_decision("MESSAGE_GENERATION_COMPLETE", {'success': message_result.success})
+    orchestrator.record_decision("MESSAGE_GENERATION_COMPLETE", {
+                                 'success': message_result.success})
 
     TRACE = orchestrator.complete_execution(success=message_result.success)
 
@@ -263,3 +267,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

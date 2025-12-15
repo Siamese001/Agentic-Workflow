@@ -391,3 +391,4 @@ class IntegrityGateExecutor:
 def create_integrity_gate_executor() -> IntegrityGateExecutor:
     """Factory function to create IntegrityGateExecutor instance"""
     return IntegrityGateExecutor()
+

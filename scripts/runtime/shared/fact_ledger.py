@@ -637,3 +637,4 @@ def load_profile_facts(profile_data: Dict[str, Any]) -> None:
     """
     LEDGER = get_fact_ledger()
     ledger.load_facts(profile_data)
+

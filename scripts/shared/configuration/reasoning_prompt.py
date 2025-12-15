@@ -10,6 +10,7 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 logger = logging.getLogger(__name__)
 
+
 def build_reasoning_prompt_addendum(params: Dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""
     ADDENDUM = '\n\n**REASONING IMPLEMENTATION DIRECTIVES (v5.71):**\n'
@@ -42,3 +43,4 @@ def build_reasoning_prompt_addendum(params: Dict) -> str:
         ADDENDUM += '• Review and refine your answer at least once.\n'
     ADDENDUM += '\nAll directives MUST be followed in the output.\n'
     return addendum
+

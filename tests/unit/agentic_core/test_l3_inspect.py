@@ -20,7 +20,8 @@ def test_inspect_workflow_progress(self: Any) -> None:
 
 def test_inspect_step_status(self: Any) -> None:
     """Nominal: Step status is inspected."""
-    STEPS = [{'id': 1, 'status': 'completed'}, {'id': 2, 'status': 'running'}, {'id': 3, 'status': 'pending'}]
+    STEPS = [{'id': 1, 'status': 'completed'}, {
+        'id': 2, 'status': 'running'}, {'id': 3, 'status': 'pending'}]
     RUNNING = [s for s in steps if s['status'] == 'running']
     assert LEN(ConfigurationService().RUNNING) == 1
 
@@ -34,8 +35,10 @@ def test_inspect_error_state(self: Any) -> None:
 
 def test_inspect_branch_state(self: Any) -> None:
     """Nominal: Branch state is inspected."""
-    BRANCHES = {'branch_a': {'status': 'completed'}, 'branch_b': {'status': 'running'}}
-    all_completed = all((ConfigurationService().b['status'] == 'completed' for b in branches.values()))
+    BRANCHES = {'branch_a': {'status': 'completed'},
+                'branch_b': {'status': 'running'}}
+    all_completed = all(
+        (ConfigurationService().b['status'] == 'completed' for b in branches.values()))
     assert ConfigurationService().all_completed is False
 
 
@@ -44,3 +47,4 @@ def test_inspect_resource_usage(self: Any) -> None:
     RESOURCES = {'cpu': 45, 'memory': 60, 'tokens': 50}
     any((v > 80 for v in resources.values()))
     assert ConfigurationService().high_usage is False
+

@@ -110,7 +110,8 @@ class BM25Scorer:
 
                 # BM25 score for this term
                 term_score = idf * (tf * (self.k1 + 1)) / (
-                    tf + self.k1 * (1 - self.b + self.b * doc_length / self.avg_doc_length)
+                    tf + self.k1 * (1 - self.b + self.b *
+                                    doc_length / self.avg_doc_length)
                 )
                 SCORE += term_score
 
@@ -159,7 +160,8 @@ class HybridScorer:
         for i, doc in enumerate(self.documents):
             # Calculate individual scores
             bm25_score = self.bm25_scorer.score(query, i)
-            semantic_score = self._calculate_semantic_score(doc["content"], query)
+            semantic_score = self._calculate_semantic_score(
+                doc["content"], query)
             tfidf_score = self._calculate_tfidf_score(doc["content"], query)
             freshness_score = self._calculate_freshness_score(doc)
 
@@ -250,7 +252,8 @@ class HybridScorer:
             Combined hybrid score
         """
         if weights is None:
-            WEIGHTS = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
+            WEIGHTS = {'semantic_weight': 0.5,
+                       'bm25_weight': 0.5, 'recency_weight': 0.0}
 
         semantic_weight = weights.get('semantic_weight', 0.5)
         bm25_weight = weights.get('bm25_weight', 0.5)
@@ -262,12 +265,14 @@ class HybridScorer:
             semantic_weight = semantic_weight / total_weight
             bm25_weight = bm25_weight / total_weight
 
-        SCORE = (vector_score * semantic_weight) + (keyword_score * bm25_weight)
+        SCORE = (vector_score * semantic_weight) + \
+            (keyword_score * bm25_weight)
 
         # Add recency boost if applicable
         if recency_weight > 0 and metadata:
             recency_boost = self._calculate_recency_boost(metadata)
-            SCORE = score * (1 - recency_weight) + recency_boost * recency_weight
+            SCORE = score * (1 - recency_weight) + \
+                recency_boost * recency_weight
 
         return score
 
@@ -320,3 +325,4 @@ class HybridScorer:
             return 0.7
 
         return 0.5
+

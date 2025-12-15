@@ -19,3 +19,4 @@ def test_planner_executor_coordination(self: Any) -> None:
 def test_parallel_agent_execution(self: Any) -> None:
     """Test parallel agent execution scenario."""
     assert all(ConfigurationService().results)
+

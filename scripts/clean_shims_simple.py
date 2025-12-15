@@ -70,12 +70,14 @@ def clean_prompt_governance():
             # Replace the import
             LINES = content.split('\n')
             for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
+# TODO: Fix relative import
+# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# lines[i] = f"from .{import_from} import *"
+# TODO: Replace 'from .{import_from} import *' with explicit imports
+# # lines[i] = f"from .{import_from} import *"
                     break
             filepath.write_text('\n'.join(lines), encoding='utf-8')
             logger.info(f  # SQL query removed)
@@ -87,7 +89,8 @@ def clean_prompt_governance():
             filepath.unlink()
             logger.info(f  # SQL query removed)
 
-    logger.info(f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
+    logger.info(
+        f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
 
 def clean_other_directories():
     """Check and clean other directories for similar patterns."""
@@ -105,7 +108,8 @@ def clean_other_directories():
             impl_files=list(item.rglob("*_impl*.py"))
 
             if impl_files:
-                logger.info(f"\nFound {len(impl_files)} _impl files in {item.name}:")
+                logger.info(
+                    f"\nFound {len(impl_files)} _impl files in {item.name}:")
                 for f in impl_files[:10]:  # Show first 10
                     logger.info(f"  - {f.relative_to(base)}")
                 if len(impl_files) > 10:
@@ -119,3 +123,4 @@ if __name__ == "__main__":
     clean_other_directories()
 
     logger.info("\nDone!")
+

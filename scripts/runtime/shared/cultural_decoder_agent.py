@@ -16,3 +16,4 @@ class CulturalDecoderAgent:
     def decode(self: Any, text: str, culture: str) -> str:
         """Decode cultural context."""
         return f'Decoded: {text} for {culture}'
+

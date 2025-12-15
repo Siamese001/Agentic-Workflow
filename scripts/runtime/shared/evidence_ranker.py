@@ -16,14 +16,22 @@ class RankedEvidence(BaseModel):
     """Ranked evidence with freshness and corroboration metrics."""
 
     CONTENT: STR = Field(..., description="Document content")
-    final_score: confloat(ge=0.0, le=1.0) = Field(..., description="Final ranking score")
-    freshness_score: confloat(ge=0.0, le=1.0) = Field(..., description="Freshness score")
-    corroboration_count: int = Field(..., ge=0, description="Number of corroborating sources")
-    year_detected: Optional[int] = Field(None, description="Year extracted from content")
-    semantic_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original semantic score")
-    metadata: Dict[str, Any] = Field(default_factory=dict, description="Document metadata")
-    key_entities: List[str] = Field(default_factory=list, description="Corroborated entities")
-    doc_id: Optional[str] = Field(None, description="Document identifier for logging")
+    final_score: confloat(ge=0.0, le=1.0) = Field(...,
+                          description="Final ranking score")
+    freshness_score: confloat(
+        ge=0.0, le=1.0) = Field(..., description="Freshness score")
+    corroboration_count: int = Field(..., ge=0,
+                                     description="Number of corroborating sources")
+    year_detected: Optional[int] = Field(
+        None, description="Year extracted from content")
+    semantic_score: confloat(ge=0.0, le=1.0) = Field(...,
+                             description="Original semantic score")
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict, description="Document metadata")
+    key_entities: List[str] = Field(
+        default_factory=list, description="Corroborated entities")
+    doc_id: Optional[str] = Field(
+        None, description="Document identifier for logging")
 
     @validator('year_detected')
     def validate_year(cls, v):
@@ -498,3 +506,4 @@ def rank_evidence(
     )
 
     return ranker.rank_evidence(signals)
+

@@ -67,7 +67,8 @@ class ReActTrace:
         )
 
         for step in self.steps:
-            trace.add_think(step.thought, metadata={"step_number": step.step_number})
+            trace.add_think(step.thought, metadata={
+                            "step_number": step.step_number})
             trace.add_action(
                 step.action,
                 PARAMETERS=step.action_input,
@@ -136,7 +137,8 @@ class ReActEngine:
             ReActTrace containing all steps and final result
         """
         trace_id = str(uuid.uuid4())
-        TRACE = ReActTrace(trace_id=trace_id, task=task, metadata=context or {})
+        TRACE = ReActTrace(trace_id=trace_id, task=task,
+                           metadata=context or {})
 
         logger.info("react_start",
             EXTRA={"trace_id": trace_id,
@@ -335,3 +337,4 @@ def create_react_engine(
         max_steps=max_steps,
         enable_self_reflection=enable_self_reflection,
     )
+

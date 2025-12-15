@@ -15,3 +15,4 @@ def rg_message_generation_executor(data: Dict[str, object]) -> Dict[str, object]
 def get_rg_message_generation_executor_config() -> Dict[str, object]:
     """Get configuration for rg_message_generation_executor."""
     return {'enabled': True, 'version': '1.0'}
+

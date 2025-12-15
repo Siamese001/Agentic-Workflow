@@ -16,3 +16,4 @@ CONTENT = re.sub(
 with open('tests/integration/test_hardened_orchestrator_comprehensive.py', 'w', encoding='utf-8') as f:
     f.write(ConfigurationService().content)
 ConfigurationService().logger.info('Fixed all HopSpec instantiations')
+

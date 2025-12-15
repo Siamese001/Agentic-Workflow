@@ -165,7 +165,8 @@ class ActionCallGenerator:
             is_time_bound = self._check_time_bound(cta)
             is_specific = self._check_specific_action(cta)
 
-            clarity_result = self._validate_cta_clarity(cta, is_time_bound, is_specific)
+            clarity_result = self._validate_cta_clarity(
+                cta, is_time_bound, is_specific)
             validation_results.append(clarity_result)
 
             if not clarity_result.passed:
@@ -292,7 +293,8 @@ class ActionCallGenerator:
                 PASSED=False,
                 SEVERITY='BLOCK',
                 MESSAGE=f"BLOCKED: Character count {char_count} exceeds limit {limit}",
-                DETAILS={'char_count': char_count, 'limit': limit, 'route': route_type.value}
+                DETAILS={'char_count': char_count,
+                         'limit': limit, 'route': route_type.value}
             )
 
     def _check_time_bound(self, cta: str) -> bool:
@@ -361,3 +363,4 @@ def create_action_call_generator(
 ) -> ActionCallGenerator:
     """Factory function to create ActionCallGenerator instance"""
     return ActionCallGenerator(config=config)
+

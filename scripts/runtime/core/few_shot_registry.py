@@ -391,3 +391,4 @@ def create_custom_example(
 
     registry.add_example(example)
     logger.info(f"Added custom example for {instruction_id}")
+

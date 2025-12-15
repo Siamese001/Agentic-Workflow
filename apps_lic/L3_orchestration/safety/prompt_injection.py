@@ -136,3 +136,4 @@ def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -
         logger.warning(f"Prompt injection detected above threshold: {result.confidence}")
         return False
     return True
+

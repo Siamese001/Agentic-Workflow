@@ -14,8 +14,10 @@ class CompetitorMove(BaseModel):
     """Represents a recent competitive move or feature launch."""
 
     competitor_name: str = Field(..., description="Name of competitor")
-    recent_launch: str = Field(..., description="Recent feature or product launch")
-    source_url: Optional[str] = Field(None, description="Source URL for verification")
+    recent_launch: str = Field(...,
+                               description="Recent feature or product launch")
+    source_url: Optional[str] = Field(
+        None, description="Source URL for verification")
     DATE: STR = Field(..., description="Date of the move")
 
     @validator('date')
@@ -463,3 +465,4 @@ def generate_competitive_hook(
     AGENT = create_competitor_recon_agent()
     HOOK = agent.generate_fomo_hook(target_company, industry, candidate_skills)
     return hook.hook_text if hook else None
+

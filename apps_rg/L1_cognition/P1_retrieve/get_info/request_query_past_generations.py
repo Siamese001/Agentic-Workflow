@@ -45,3 +45,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return QueryPastGenerations(config).retrieve(query, **kwargs)
+

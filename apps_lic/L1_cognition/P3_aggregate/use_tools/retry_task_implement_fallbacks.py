@@ -50,3 +50,4 @@ class ImplementFallbackTemplates:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return ImplementFallbackTemplates(config).execute(func)
+

@@ -170,7 +170,8 @@ def main() -> None:
     # Report
     logger.info(f"\nFound {len(duplicates)} exact duplicates:")
     for pending, approved in duplicates[:10]:
-        logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved.relative_to(REPO_ROOT)}")
+        logger.info(
+            f"  {pending.relative_to(REVIEW_PENDING)} -> {approved.relative_to(REPO_ROOT)}")
     if len(duplicates) > 10:
         logger.info(f"  ... and {len(duplicates) - 10} more")
 
@@ -203,3 +204,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

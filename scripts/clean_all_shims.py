@@ -56,7 +56,8 @@ def is_shim_file(file_path: Path) -> bool:
         LINES = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in
+# TODO: Fix relative import
+# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in
 # lines):
             return True
 
@@ -74,9 +75,9 @@ def find_real_implementation(chain: List[Path]) -> Path:
 
 def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
     """Clean all shim chains in a directory."""
-    CHAINS= find_shim_chains(directory)
+    CHAINS = find_shim_chains(directory)
 
-    STATS= {
+    STATS = {
         "chains_found": len(chains),
         "files_deleted": 0,
         "files_updated": 0
@@ -90,29 +91,31 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
             continue
 
         # Find real implementation
-        IMPL= find_real_implementation(chain)
+        IMPL = find_real_implementation(chain)
 
         # Root shim (first in chain)
-        ROOT= chain[0]
+        ROOT = chain[0]
 
         # Intermediate shims to delete
-        to_delete= chain[1:-1] if impl != chain[-1] else chain[1:]
+        to_delete = chain[1:-1] if impl != chain[-1] else chain[1:]
 
         logger.info(f"    {base}: {len(chain)} files -> {impl.name}")
 
         if not dry_run:
             # Update root shim
             try:
-                CONTENT= root.read_text(encoding='utf-8')
+                CONTENT = root.read_text(encoding='utf-8')
                 # Replace import
-                LINES= content.split('\n')
+                LINES = content.split('\n')
                 for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
+# TODO: Fix relative import
+# # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import:
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# LINES[I] = f"from .{impl.stem} import *"
+# TODO: Replace 'from .{impl.stem} import *' with explicit imports
+# # LINES[I] = f"from .{impl.stem} import *"
                         break
                 root.write_text('\n'.join(lines), encoding='utf-8')
                 stats["files_updated"] += 1
@@ -134,19 +137,19 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
 
 def main():
     """Main entry point."""
-    repo_root= Path("c:/Git/Agentic-Workflow")
+    repo_root = Path("c:/Git/Agentic-Workflow")
 
     logger.info("Scanning for shim chains...")
     LOGGER.INFO("=" * 60)
 
     # Directories to clean
-    dirs_to_clean= [
+    dirs_to_clean = [
         "apps_lic", "apps_rg", "apps_shared",
         "config", "observability", "prompt_governance",
         "schemas", "scripts", "shared"
     ]
 
-    total_stats= {
+    total_stats = {
         "chains_found": 0,
         "files_to_delete": 0,
         "files_to_update": 0
@@ -157,9 +160,9 @@ def main():
     logger.info("-" * 60)
 
     for dir_name in dirs_to_clean:
-        dir_path= repo_root / dir_name
+        dir_path = repo_root / dir_name
         if dir_path.exists():
-            STATS= clean_directory(dir_path, dry_run=True)
+            STATS = clean_directory(dir_path, dry_run=True)
             for key in total_stats:
                 total_stats[key] += stats[key]
 
@@ -170,7 +173,7 @@ def main():
     logger.info(f"  Files to update: {total_stats['files_updated']}")
 
     # Ask for confirmation
-    RESPONSE= input("\nProceed with cleanup? (y/N): ")
+    RESPONSE = input("\nProceed with cleanup? (y/N): ")
     if response.lower() != 'y':
         logger.info("Aborted.")
         return
@@ -180,16 +183,16 @@ def main():
     logger.info("-" * 60)
 
     # Reset stats for actual run
-    total_stats= {
+    total_stats = {
         "chains_found": 0,
         "files_deleted": 0,
         "files_updated": 0
     }
 
     for dir_name in dirs_to_clean:
-        dir_path= repo_root / dir_name
+        dir_path = repo_root / dir_name
         if dir_path.exists():
-            STATS= clean_directory(dir_path, dry_run=False)
+            STATS = clean_directory(dir_path, dry_run=False)
             # The clean_directory function returns files_to_delete for dry run
             # but files_deleted for actual run
             if "files_deleted" in stats:
@@ -209,3 +212,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

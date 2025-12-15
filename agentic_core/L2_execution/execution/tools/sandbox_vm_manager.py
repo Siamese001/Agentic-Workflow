@@ -12,3 +12,4 @@ def test_run_in_ephemeral_vm_basic() -> None:
     assert ConfigurationService().result.success is True
     assert ConfigurationService().result.exit_code == 0
     assert 'TOOL echo' in ConfigurationService().result.stdout
+

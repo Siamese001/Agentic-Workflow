@@ -73,3 +73,4 @@ def adjust(values: Sequence[float],
            config: Optional[Dict] = None) -> List[AdjustmentResult]:
     """Convenience function for adjustment."""
     return AdjustScriptsWeights(config).adjust(values, method)
+

@@ -24,9 +24,12 @@ LOGGER = logging.getLogger(__name__)
             NAME="Test Resume Generation",
             VERSION="1.0",
             HOPS=[
-                HopSpec(id="K.1", script="test_k1.py", description="Executive Summary"),
-                HopSpec(id="K.4", script="test_k4.py", description="Professional Headline"),
-                HopSpec(id="K.5", script="test_k5.py", description="Experience Bullets"),
+                HopSpec(id="K.1", script="test_k1.py",
+                        description="Executive Summary"),
+                HopSpec(id="K.4", script="test_k4.py",
+                        description="Professional Headline"),
+                HopSpec(id="K.5", script="test_k5.py",
+                        description="Experience Bullets"),
             ],
         )
 
@@ -88,3 +91,4 @@ LOGGER = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     asyncio.run(test_first_case())
+

@@ -434,3 +434,4 @@ def hardened_event_publisher(
 
         return async_wrapper
     return decorator
+

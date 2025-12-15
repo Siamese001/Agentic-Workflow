@@ -15,3 +15,4 @@ def apply_outreach_safety_policy(data: Dict[str, object]) -> Dict[str, object]:
 def get_apply_outreach_safety_policy_config() -> Dict[str, object]:
     """Get configuration for apply_outreach_safety_policy."""
     return {'enabled': True, 'version': '1.0'}
+

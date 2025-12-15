@@ -5,7 +5,8 @@ from typing import Any, Dict, List, Optional
 
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .get_info_utility_prepare_information_types import *  # Star import
+# TODO: Replace 'from .get_info_utility_prepare_information_types import *' with explicit imports
+# # from .get_info_utility_prepare_information_types import *  # Star import
 # removed
 
 
@@ -25,10 +26,12 @@ class GetInfoUtilityPrepareInformation:
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        SELF.LOGGER = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
+        SELF.LOGGER = logging.getLogger(
+            f'{__name__}.{self.__class__.__name__}')
         if not self.logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
-            FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            FORMATTER = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
             self.logger.addHandler(executor)
             self.logger.setLevel(logging.INFO)
@@ -108,3 +111,4 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         return True
     except Exception:
         return False
+

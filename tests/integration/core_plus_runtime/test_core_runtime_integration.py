@@ -222,3 +222,4 @@ class TestSecurityIntegration:
 
         can_proceed = current_count < rate_limit["max_requests"]
         assert can_proceed
+

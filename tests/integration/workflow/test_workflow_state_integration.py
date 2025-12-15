@@ -162,3 +162,4 @@ class TestWorkflowOrchestrationIntegration:
 
         assert WORKFLOW.STATE == WorkflowState.FAILED
         assert "error" in workflow.data
+

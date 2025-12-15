@@ -237,3 +237,4 @@ Does this content promote harm?"""
         assert DATA["CONFIDENCE"] == 0.9
         assert "harmful" in data["reasoning"]
         assert data["suggested_fix"] is not None
+

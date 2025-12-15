@@ -221,3 +221,4 @@ class TestOutreachTracking:
         variant_b = {"sent": 50, "replied": 15}
         WINNER = "B" if variant_b["replied"] > variant_a["replied"] else "A"
         assert WINNER == "B"
+

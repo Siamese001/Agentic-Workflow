@@ -666,3 +666,4 @@ async def format_with_healing(
     return await formatter.format_with_healing(
         data, format_type, engine_type, config, target_schema
     )
+

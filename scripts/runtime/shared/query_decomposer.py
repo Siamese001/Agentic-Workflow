@@ -18,9 +18,11 @@ class DecomposedQuery(BaseModel):
     """Result of query decomposition."""
 
     original_query: str = Field(..., description="Original complex query")
-    sub_queries: List[str] = Field(..., description="Decomposed atomic sub-queries")
+    sub_queries: List[str] = Field(...,
+                                   description="Decomposed atomic sub-queries")
     REASONING: STR = Field(..., description="Reasoning for decomposition")
-    complexity_score: int = Field(..., ge=1, le=10, description="Complexity score (1-10)")
+    complexity_score: int = Field(..., ge=1, le=10,
+                                  description="Complexity score (1-10)")
 
     @validator('sub_queries')
     def validate_sub_queries(cls, v):
@@ -44,7 +46,8 @@ class SimpleAgentBase:
         """
         SELF.NAME = name
         self.model_name = model_name
-        logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
+        logger.info(
+            f"Initialized {self.__class__.__name__}: model={model_name}")
 
 
 class QueryDecomposer(SimpleAgentBase):
@@ -68,7 +71,8 @@ class QueryDecomposer(SimpleAgentBase):
         try:
             SELF.GATE = AdaptiveRetrievalGate()
         except ImportError:
-            logger.warning("AdaptiveRetrievalGate not available, skipping heuristic check")
+            logger.warning(
+                "AdaptiveRetrievalGate not available, skipping heuristic check")
             SELF.GATE = None
 
         # Simple patterns to detect complex queries
@@ -110,8 +114,10 @@ class QueryDecomposer(SimpleAgentBase):
             SCORE += 1
 
         # Question words increase complexity
-        question_words = ['what', 'how', 'why', 'where', 'when', 'which', 'who']
-        question_count = sum(1 for word in question_words if word in query.lower())
+        question_words = ['what', 'how', 'why',
+            'where', 'when', 'which', 'who']
+        question_count = sum(
+            1 for word in question_words if word in query.lower())
         SCORE += min(question_count, 2)
 
         # Cap at 10
@@ -175,7 +181,8 @@ class QueryDecomposer(SimpleAgentBase):
             DECISION = self.gate.should_retrieve(query)
             if decision.query_type in ["CONVERSATIONAL",
                 "FACTUAL"] and not decision.should_retrieve:
-                logger.info(f"Simple query detected, skipping decomposition: {query}")
+                logger.info(
+                    f"Simple query detected, skipping decomposition: {query}")
                 return DecomposedQuery(
                     original_query=query,
                     sub_queries=[query],
@@ -188,7 +195,8 @@ class QueryDecomposer(SimpleAgentBase):
 
         # If complexity is low, return as-is
         if complexity <= 3:
-            logger.info(f"Low complexity ({complexity}), returning original query")
+            logger.info(
+                f"Low complexity ({complexity}), returning original query")
             return DecomposedQuery(
                 original_query=query,
                 sub_queries=[query],
@@ -320,3 +328,4 @@ async def decompose_query(query: str, model_name: str = "gpt-4") -> DecomposedQu
     """
     DECOMPOSER = QueryDecomposer(model_name=model_name)
     return await decomposer.decompose(query)
+

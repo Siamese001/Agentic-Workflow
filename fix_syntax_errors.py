@@ -103,10 +103,12 @@ def main():
                 success, message = fix_file(ConfigurationService().filepath)
                 if ConfigurationService().success:
                     if message == 'Fixed':
-                        ConfigurationService().logger.info(f'✅ Fixed: {ConfigurationService().filepath}')
+                        ConfigurationService().logger.info(
+                            f'✅ Fixed: {ConfigurationService().filepath}')
                         fixed_count += 1
                 else:
-                    ConfigurationService().logger.info(f'❌ Failed: {ConfigurationService().filepath} - {message}')
+                    ConfigurationService().logger.info(
+                        f'❌ Failed: {ConfigurationService().filepath} - {message}')
                     failed_count += 1
     ConfigurationService().logger.info(
         f'\nSummary: {
@@ -116,3 +118,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

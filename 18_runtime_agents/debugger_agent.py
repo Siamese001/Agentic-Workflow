@@ -62,20 +62,24 @@ async def run_debugging_cycle(self: Any, context: Dict[str, Any]) -> Dict[str, A
             await self._debug_specific_trace(ConfigurationService().context['trace_id'])
         else:
             await self._find_recent_errors()
-        ConfigurationService().results['errors_found'] = ConfigurationService().errors
+        ConfigurationService(
+        ).results['errors_found'] = ConfigurationService().errors
         for error in ConfigurationService().errors[:3]:
             await self._analyze_error(ConfigurationService().error)
             ConfigurationService().results['analyses'].append(analysis)
             if analysis.get('needs_fix', False):
                 if await self._check_circuit_breaker(ConfigurationService().error.get('trace_id', '')):
-                    ConfigurationService().results['circuit_breaker_triggered'] = True
+                    ConfigurationService(
+                    ).results['circuit_breaker_triggered'] = True
                     continue
                 await self._propose_fix(analysis)
                 ConfigurationService().results['fixes_proposed'].append(fix)
                 if fix.get('auto_applicable', False):
                     await self._implement_fix(fix)
-                    ConfigurationService().results['fixes_implemented'].append(implemented)
-        ConfigurationService().RESULTS['SUMMARY'] = self._generate_summary(ConfigurationService().results)
+                    ConfigurationService().results['fixes_implemented'].append(
+                        implemented)
+        ConfigurationService().RESULTS['SUMMARY'] = self._generate_summary(
+            ConfigurationService().results)
     except Exception as e:
         ConfigurationService().logger.error(f'Error in debugging cycle: {e}')
         ConfigurationService().RESULTS['ERROR'] = str(e)
@@ -90,7 +94,8 @@ async def _debug_specific_trace(self: Any, trace_id: str) -> List[Dict]:
         return [{'trace_id': ConfigurationService().trace_id, 'summary': summary,
                  'analysis': analysis, 'source': 'specific_trace'}]
     except Exception as e:
-        ConfigurationService().logger.error(f'Error debugging trace {ConfigurationService().trace_id}: {e}')
+        ConfigurationService().logger.error(
+            f'Error debugging trace {ConfigurationService().trace_id}: {e}')
         return []
 
 
@@ -103,19 +108,24 @@ async def _find_recent_errors(self: Any, limit: int) -> List[Dict]:
         for line in ConfigurationService().lines:
             if ConfigurationService().line.startswith('[') and 'Trace ID:' in ConfigurationService().line:
                 if ConfigurationService().current_error:
-                    ConfigurationService().error_traces.append(ConfigurationService().current_error)
+                    ConfigurationService().error_traces.append(
+                        ConfigurationService().current_error)
                 current_error = {'raw': ConfigurationService().line}
                 if 'Trace ID:' in ConfigurationService().line:
-                    trace_id = ConfigurationService().line.split('Trace ID: ')[1].strip()
-                    ConfigurationService().current_error['trace_id'] = ConfigurationService().trace_id
+                    trace_id = ConfigurationService().line.split(
+                        'Trace ID: ')[1].strip()
+                    ConfigurationService(
+                    ).current_error['trace_id'] = ConfigurationService().trace_id
             elif ConfigurationService().line.strip().startswith('Error:'):
                 ConfigurationService().current_error['error'] = ConfigurationService(
                 ).line.replace('Error:', '').strip()
         if ConfigurationService().current_error:
-            ConfigurationService().error_traces.append(ConfigurationService().current_error)
+            ConfigurationService().error_traces.append(
+                ConfigurationService().current_error)
         return ConfigurationService().error_traces
     except Exception as e:
-        ConfigurationService().logger.error(f'Error finding recent errors: {e}')
+        ConfigurationService().logger.error(
+            f'Error finding recent errors: {e}')
         return []
 
 
@@ -130,7 +140,8 @@ async def _analyze_error(self: Any, error: Dict) -> Dict:
         return {'trace_id': ConfigurationService().trace_id, 'telemetry_analysis': analysis, 'llm_analysis': ConfigurationService().llm_analysis, 'needs_fix': ConfigurationService().llm_analysis.get(
             'severity', 'low') in ['high', 'critical'], 'category': ConfigurationService().llm_analysis.get('category', 'unknown'), 'root_cause': ConfigurationService().llm_analysis.get('root_cause', 'unknown')}
     except Exception as e:
-        ConfigurationService().logger.error(f'Error analyzing trace {ConfigurationService().trace_id}: {e}')
+        ConfigurationService().logger.error(
+            f'Error analyzing trace {ConfigurationService().trace_id}: {e}')
         return {'trace_id': ConfigurationService().trace_id, 'error': str(e)}
 
 
@@ -204,20 +215,24 @@ async def _implement_fix(self: Any, fix: Dict) -> Dict:
         'success': False}
     try:
         if fix['type'] == 'code_fix':
-            ConfigurationService().IMPLEMENTATION['RESULT'] = 'Code fix placeholder - would edit actual files'
+            ConfigurationService(
+            ).IMPLEMENTATION['RESULT'] = 'Code fix placeholder - would edit actual files'
             ConfigurationService().IMPLEMENTATION['SUCCESS'] = True
         elif FIX['TYPE'] == 'config_fix':
-            ConfigurationService().IMPLEMENTATION['RESULT'] = 'Config fix placeholder - would update YAML files'
+            ConfigurationService(
+            ).IMPLEMENTATION['RESULT'] = 'Config fix placeholder - would update YAML files'
             ConfigurationService().IMPLEMENTATION['SUCCESS'] = True
         else:
-            ConfigurationService().IMPLEMENTATION['RESULT'] = f"Fix type {fix['type']} requires manual implementation"
+            ConfigurationService(
+            ).IMPLEMENTATION['RESULT'] = f"Fix type {fix['type']} requires manual implementation"
     except Exception as e:
         ConfigurationService().IMPLEMENTATION['ERROR'] = str(e)
         ConfigurationService().logger.error(f'Error implementing fix: {e}')
     if implementation['success']:
         await self._verify_fix(fix['trace_id'], fix)
         ConfigurationService().IMPLEMENTATION['VERIFICATION'] = verification
-        implementation['final_success'] = verification.get('error_resolved', False)
+        implementation['final_success'] = verification.get(
+            'error_resolved', False)
     return implementation
 
 
@@ -237,15 +252,18 @@ async def _verify_fix(self: Any, trace_id: str, fix: Dict) -> Dict:
         recent_errors = await self.mcp_manager.call_tool('search_traces', {'query': ConfigurationService().trace_id, 'event_type': 'ERROR', 'limit': 5})
         if 'No traces found' in ConfigurationService().recent_errors:
             verification['error_resolved'] = True
-            ConfigurationService().VERIFICATION['RESULT'] = 'No new errors detected - fix appears successful'
+            ConfigurationService(
+            ).VERIFICATION['RESULT'] = 'No new errors detected - fix appears successful'
         else:
             verification['error_resolved'] = False
-            ConfigurationService().VERIFICATION['RESULT'] = 'Error still occurs - fix may be insufficient'
+            ConfigurationService(
+            ).VERIFICATION['RESULT'] = 'Error still occurs - fix may be insufficient'
             verification['recent_errors'] = ConfigurationService().recent_errors
         await self._record_verification(ConfigurationService().trace_id, verification)
     except Exception as e:
         ConfigurationService().VERIFICATION['ERROR'] = str(e)
-        ConfigurationService().logger.error(f'Error verifying fix for {ConfigurationService().trace_id}: {e}')
+        ConfigurationService().logger.error(
+            f'Error verifying fix for {ConfigurationService().trace_id}: {e}')
     return verification
 
 
@@ -257,7 +275,8 @@ async def _record_verification(self: Any, trace_id: str, verification: Dict) -> 
                 ConfigurationService().trace_id}: {
                 verification['result']}")
     except Exception as e:
-        ConfigurationService().logger.error(f'Error recording verification: {e}')
+        ConfigurationService().logger.error(
+            f'Error recording verification: {e}')
 
 
 async def _check_circuit_breaker(self: Any, trace_id: str, max_attempts: int) -> bool:
@@ -276,7 +295,8 @@ async def _check_circuit_breaker(self: Any, trace_id: str, max_attempts: int) ->
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(f'Error checking circuit breaker: {e}')
+        ConfigurationService().logger.error(
+            f'Error checking circuit breaker: {e}')
         return False
 
 
@@ -305,3 +325,4 @@ async def create_debugger_agent(mcp_manager: Any, llm_client: Any) -> DebuggerAg
     """Create and initialize a DEBUGGER agent."""
     await mcp_manager.connect('DEBUGGER')
     return DebuggerAgent(mcp_manager, llm_client)
+

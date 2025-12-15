@@ -110,14 +110,16 @@ def main() -> None:
             logger.info(f"\nCopying largest file to {dest.relative_to(REPO)}")
             shutil.copy2(largest[0], dest)
         else:
-            logger.info(f"\nDestination already exists: {dest.relative_to(REPO)}")
+            logger.info(
+                f"\nDestination already exists: {dest.relative_to(REPO)}")
 
     # Create archive directory
     archive_path = ARCHIVE_DIR / TIMESTAMP
     archive_path.mkdir(parents=True, exist_ok=True)
 
     # Move entire review_pending to archive
-    logger.info(f"\nMoving {len(list(REVIEW_PENDING.rglob('*')))} items to archive...")
+    logger.info(
+        f"\nMoving {len(list(REVIEW_PENDING.rglob('*')))} items to archive...")
     shutil.move(str(REVIEW_PENDING), str(archive_path / 'review_pending'))
 
     # Count files to move
@@ -145,3 +147,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

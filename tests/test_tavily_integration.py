@@ -23,7 +23,8 @@ async def test_automated_search():
     # Check for API key
     if not os.getenv("TAVILY_API_KEY"):
         logger.error("❌ TAVILY_API_KEY not found in environment")
-        logger.info("Please set: export TAVILY_API_KEY=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")
+        logger.info(
+            "Please set: export TAVILY_API_KEY=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")
         return False
 
     # Initialize orchestrator
@@ -31,13 +32,15 @@ async def test_automated_search():
 
     # Test automated research
     logger.info("\n📊 Testing automated research for 'Snowflake'...")
-    search_results = orchestrator.data_sources.automated_company_research("Snowflake")
+    search_results = orchestrator.data_sources.automated_company_research(
+        "Snowflake")
 
     if search_results and "[MOCK]" not in search_results:
         logger.info("✅ Automated search successful!")
         logger.info(f"\nSample results (first 500 chars):")
         logger.info("-" * 40)
-        logger.info(search_results[:500] + "..." if len(search_results) > 500 else search_results)
+        logger.info(
+            search_results[:500] + "..." if len(search_results) > 500 else search_results)
         logger.info("-" * 40)
         return True
     else:
@@ -116,3 +119,4 @@ async def main():
 if __name__ == "__main__":
     SUCCESS = asyncio.run(main())
     sys.exit(0 if success else 1)
+

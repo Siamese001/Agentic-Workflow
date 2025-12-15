@@ -31,3 +31,4 @@ class ValidationGate:
     _description: str
     severity: GateSeverity
     _validator: Callable[[object, Dict[str, object]], GateResult]
+

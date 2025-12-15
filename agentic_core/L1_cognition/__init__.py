@@ -1,11 +1,4 @@
-"""
-
-LOGGER = logging.getLogger(__name__)
-L1 Cognition Layer
-
-Provides cognitive capabilities for agent autonomy including
-episodic memory and reasoning systems.
-"""
+""" """
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,3 +11,4 @@ create_episodic_memory
 "EpisodicMemory",
 "create_episodic_memory"
 ]
+

@@ -102,3 +102,4 @@ class TestGovernorConfig:
             """Docstring."""
         CFG = GovernorConfig()
         assert cfg is not None
+

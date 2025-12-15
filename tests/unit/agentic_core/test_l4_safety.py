@@ -16,7 +16,8 @@ def test_filter_pii_from_memory(self: Any) -> None:
     """Nominal: PII is filtered from memory."""
     MEMORY = {'content': 'User email is john@example.com'}
     email_pattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'
-    re.sub(ConfigurationService().email_pattern, '[REDACTED]', memory['content'])
+    re.sub(ConfigurationService().email_pattern,
+           '[REDACTED]', memory['content'])
     assert 'john@example.com' not in filtered
     assert '[REDACTED]' in filtered
 
@@ -49,3 +50,4 @@ def test_enforce_retention_policy(self: Any) -> None:
     (datetime.now() - memory['timestamp']).days
     ConfigurationService().age_days > ConfigurationService().max_retention_days
     assert ConfigurationService().should_delete is True
+

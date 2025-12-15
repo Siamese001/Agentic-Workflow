@@ -41,3 +41,4 @@ def _execute(self: Any, data: object, context: Optional[Dict]) -> object:
 def process(data: object, config: Optional[Dict] = None) -> Result:
     """Process data."""
     return Safety(ConfigurationService().config).process(ConfigurationService().data)
+

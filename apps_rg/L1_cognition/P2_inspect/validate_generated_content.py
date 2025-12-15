@@ -15,3 +15,4 @@ def validate_generated_content(data: Dict[str, object]) -> Dict[str, object]:
 def get_validate_generated_content_config() -> Dict[str, object]:
     """Get configuration for validate_generated_content."""
     return {'enabled': True, 'version': '1.0'}
+

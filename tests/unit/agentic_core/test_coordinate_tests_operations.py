@@ -15,3 +15,4 @@ def test_coordinate_tests_operations(data: Dict[str, object]) -> Dict[str, objec
 def get_test_coordinate_tests_operations_config() -> Dict[str, object]:
     """Get configuration for test_coordinate_tests_operations."""
     return {'enabled': True, 'version': '1.0'}
+

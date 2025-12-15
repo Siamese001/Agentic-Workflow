@@ -34,7 +34,8 @@ def main():
         len(ConfigurationService().ml_packages) + len(ConfigurationService().safety_packages) + \
         len(ConfigurationService().util_packages)
     ConfigurationService().core_success + ConfigurationService().vector_success + ConfigurationService().cache_success + \
-        ConfigurationService().ml_success + ConfigurationService().safety_success + ConfigurationService().util_success
+        ConfigurationService().ml_success + ConfigurationService().safety_success + \
+        ConfigurationService().util_success
     if ConfigurationService().total_success == ConfigurationService().total_packages:
         sys.exit(0)
     else:
@@ -43,3 +44,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

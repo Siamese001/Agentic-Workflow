@@ -12,3 +12,4 @@ def test_known_malicious_prompt_remains_blocked() -> None:
     When implemented, it should verify that malicious prompts are properly
     detected and blocked with appropriate severity levels.
     """
+

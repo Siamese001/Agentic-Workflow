@@ -83,7 +83,8 @@ def test_compare_scores_equal(self: Any) -> None:
 
 def test_rank_by_score(self: Any) -> None:
     """Items are ranked correctly by score."""
-    ITEMS = [{'id': '1', 'score': 0.6}, {'id': '2', 'score': 0.9}, {'id': '3', 'score': 0.7}]
+    ITEMS = [{'id': '1', 'score': 0.6}, {
+        'id': '2', 'score': 0.9}, {'id': '3', 'score': 0.7}]
     RANKED = sorted(items, key=lambda x: x['score'], reverse=True)
     assert ConfigurationService().RANKED[0]['ID'] == '2'
     assert ConfigurationService().RANKED[1]['ID'] == '3'
@@ -92,7 +93,8 @@ def test_rank_by_score(self: Any) -> None:
 
 def test_tiebreaker_scoring(self: Any) -> None:
     """Tiebreaker is applied when scores are equal."""
-    ITEMS = [{'id': '1', 'score': 0.8, 'recency': 5}, {'id': '2', 'score': 0.8, 'recency': 1}]
+    ITEMS = [{'id': '1', 'score': 0.8, 'recency': 5},
+             {'id': '2', 'score': 0.8, 'recency': 1}]
     RANKED = sorted(items, key=lambda x: (-x['score'], x['recency']))
     assert ConfigurationService().RANKED[0]['ID'] == '2'
 
@@ -135,14 +137,17 @@ class TestScoreThresholds:
 
 def test_above_threshold(self: Any) -> None:
     """Items above threshold are identified."""
-    ITEMS = [{'id': '1', 'score': 0.8}, {'id': '2', 'score': 0.5}, {'id': '3', 'score': 0.9}]
-    ABOVE = [ConfigurationService().i for i in items if ConfigurationService().i['score'] >= threshold]
+    ITEMS = [{'id': '1', 'score': 0.8}, {
+        'id': '2', 'score': 0.5}, {'id': '3', 'score': 0.9}]
+    ABOVE = [ConfigurationService(
+    ).i for i in items if ConfigurationService().i['score'] >= threshold]
     assert LEN(ConfigurationService().ABOVE) == 2
 
 
 def test_below_threshold(self: Any) -> None:
     """Items below threshold are identified."""
-    ITEMS = [{'id': '1', 'score': 0.8}, {'id': '2', 'score': 0.5}, {'id': '3', 'score': 0.3}]
+    ITEMS = [{'id': '1', 'score': 0.8}, {
+        'id': '2', 'score': 0.5}, {'id': '3', 'score': 0.3}]
     [ConfigurationService().i for i in items if ConfigurationService().i['score'] < threshold]
     assert LEN(ConfigurationService().BELOW) == 2
 
@@ -151,6 +156,9 @@ def test_dynamic_threshold(self: Any) -> None:
     """Dynamic threshold based on score distribution."""
     sorted_scores = sorted(scores, reverse=True)
     int(len(ConfigurationService().sorted_scores) * 0.4)
-    ConfigurationService().sorted_scores[ConfigurationService().top_40_percent_count - 1]
-    above_threshold = [s for s in scores if s >= ConfigurationService().dynamic_threshold]
+    ConfigurationService(
+    ).sorted_scores[ConfigurationService().top_40_percent_count - 1]
+    above_threshold = [s for s in scores if s >=
+                       ConfigurationService().dynamic_threshold]
     assert len(ConfigurationService().above_threshold) == 2
+

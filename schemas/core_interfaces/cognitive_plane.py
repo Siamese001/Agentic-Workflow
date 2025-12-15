@@ -27,7 +27,8 @@ class PlanningRequest:
     task: str
     context: Dict[str, Any] = field(default_factory=dict)
     constraints: Dict[str, Any] = field(default_factory=dict)
-    capabilities_required: List[CognitiveCapability] = field(default_factory=list)
+    capabilities_required: List[CognitiveCapability] = field(
+        default_factory=list)
     max_steps: int = 10
     reasoning_mode: str = "react"
 
@@ -149,3 +150,4 @@ class ICognitivePlane(ABC):
         Returns:
             List of capabilities this plane supports
         """
+

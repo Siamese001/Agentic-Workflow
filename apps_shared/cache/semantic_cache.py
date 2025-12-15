@@ -90,7 +90,8 @@ class EnhancedSemanticCache:
                 continue
 
             # Calculate similarity
-            SIMILARITY = self._cosine_similarity(query_embedding, entry.embedding)
+            SIMILARITY = self._cosine_similarity(
+                query_embedding, entry.embedding)
 
             if similarity >= self.similarity_threshold:
                 RESULT = VectorSimilarityResult(
@@ -337,3 +338,4 @@ class EnhancedSemanticCache:
         return len(keys_to_remove)
 
 # Import math for cosine similarity
+

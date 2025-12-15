@@ -90,7 +90,8 @@ class RecursivePlannerAgent:
             logger.warning(f"Max recursion depth ({self.max_depth}) reached")
             return await self._execute_directly(complex_goal, context)
 
-        logger.info(f"Planning complex goal at depth {current_depth}: {complex_goal}")
+        logger.info(
+            f"Planning complex goal at depth {current_depth}: {complex_goal}")
 
         # Step 1: Decompose the goal
         PLAN = await self._decompose_goal(complex_goal, context)
@@ -170,7 +171,8 @@ Format as JSON:
             PLAN = RecursivePlan(
                 main_goal=goal,
                 SUBTASKS=subtasks,
-                execution_strategy=plan_data.get("execution_strategy", "sequential"),
+                execution_strategy=plan_data.get(
+                    "execution_strategy", "sequential"),
                 resource_requirements={},
                 success_criteria=plan_data.get("success_criteria", [])
             )
@@ -543,3 +545,4 @@ def create_recursive_planner(
         max_depth=max_depth,
         max_parallel_subtasks=max_parallel_subtasks
     )
+

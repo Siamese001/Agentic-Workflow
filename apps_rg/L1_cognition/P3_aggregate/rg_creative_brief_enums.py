@@ -10,3 +10,4 @@ class VoiceType(Enum):
 
 class ProvenanceStrategy(Enum):
     """Strategy for bullet provenance."""
+

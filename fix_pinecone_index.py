@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 
@@ -28,3 +29,4 @@ pc.create_index(
 )
 
 print("✅ New index created with 384 dimensions")
+

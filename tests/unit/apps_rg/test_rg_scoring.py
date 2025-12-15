@@ -15,3 +15,4 @@ def test_rg_scoring(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_rg_scoring_config() -> Dict[str, object]:
     """Get configuration for test_rg_scoring."""
     return {'enabled': True, 'version': '1.0'}
+

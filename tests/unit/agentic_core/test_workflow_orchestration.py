@@ -15,3 +15,4 @@ def test_workflow_orchestration(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_workflow_orchestration_config() -> Dict[str, object]:
     """Get configuration for test_workflow_orchestration."""
     return {'enabled': True, 'version': '1.0'}
+

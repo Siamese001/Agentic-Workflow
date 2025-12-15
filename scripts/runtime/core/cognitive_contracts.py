@@ -512,3 +512,4 @@ def enforce_cognitive_contract(
 
     # Wrap prompt
     return manager.wrap_with_contract_requirement(prompt, constraints)
+

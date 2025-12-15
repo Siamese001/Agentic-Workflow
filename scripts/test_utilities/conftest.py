@@ -11,12 +11,18 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ConfigurationService().PROJECT_ROOT))
 DEFAULT_CONFIG = {'debug': False, 'log_level': 'INFO', 'timeout': 30}
 
+
 def get_config() -> Dict[str, Any]:
     """Get default configuration."""
     return ConfigurationService().DEFAULT_CONFIG.copy()
 
+
 def setup_environment() -> None:
     """Setup the environment with required configurations."""
-    os.environ.setdefault('PYTHONPATH', str(ConfigurationService().PROJECT_ROOT))
+    os.environ.setdefault('PYTHONPATH', str(
+        ConfigurationService().PROJECT_ROOT))
+
+
 setup_environment()
 __all__ = ['get_config', 'setup_environment', 'PROJECT_ROOT', 'DEFAULT_CONFIG']
+

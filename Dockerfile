@@ -62,13 +62,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Security: Copy only runtime code from builder stage
-COPY --from=builder /app/canon_validator.py /app/
-COPY --from=builder /app/l5_governance_policy_filter.py /app/
-COPY --from=builder /app/connection_manager.py /app/
-COPY --from=builder /app/llm_client.py /app/
-COPY --from=builder /app/canon_keys.py /app/
-COPY --from=builder /app/main.py /app/
+# Security: Copy all runtime code from builder stage
+COPY --from=builder /app/ /app/
 
 # Copy health check script
 COPY healthcheck.py /app/

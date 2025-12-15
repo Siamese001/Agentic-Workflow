@@ -6,3 +6,4 @@ _logger = logging.getLogger(__name__)
 
 class RecipientArchetype(Enum):
     """Recipient archetype classifications."""
+

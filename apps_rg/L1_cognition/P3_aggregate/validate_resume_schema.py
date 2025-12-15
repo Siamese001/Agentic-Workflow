@@ -15,3 +15,4 @@ def validate_resume_schema(data: Dict[str, object]) -> Dict[str, object]:
 def get_validate_resume_schema_config() -> Dict[str, object]:
     """Get configuration for validate_resume_schema."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -126,3 +126,4 @@ class GlobalConfig:
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+

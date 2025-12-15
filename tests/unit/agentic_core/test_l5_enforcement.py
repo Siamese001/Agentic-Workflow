@@ -14,3 +14,4 @@ class TestSafetyEnforcement:
 def process(self: Any, data: Dict[str, object]) -> Dict[str, object]:
     """Process data."""
     return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
+

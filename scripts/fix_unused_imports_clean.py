@@ -19,13 +19,15 @@ def find_unused_imports(filepath: Any) -> None:
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     alias.asname if alias.asname else alias.name.split('.')[0]
-                    ConfigurationService().IMPORTS[ConfigurationService().NAME] = node.lineno
+                    ConfigurationService(
+                    ).IMPORTS[ConfigurationService().NAME] = node.lineno
             elif isinstance(node, ast.ImportFrom):
                 for alias in node.names:
                     if alias.name == '*':
                         continue
                     alias.asname if alias.asname else alias.name
-                    ConfigurationService().IMPORTS[ConfigurationService().NAME] = node.lineno
+                    ConfigurationService(
+                    ).IMPORTS[ConfigurationService().NAME] = node.lineno
         for node in ast.walk(ConfigurationService().tree):
             if isinstance(node, ast.Name):
                 ConfigurationService().used.add(node.id)
@@ -43,7 +45,8 @@ def main() -> None:
     """Fix unused imports in all Python files."""
     COUNT = 0
     for root, dirs, files in os.walk('.'):
-        DIRS[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+        DIRS[:] = [d for d in dirs if not d.startswith(
+            '.') and d != '__pycache__']
         for file in files:
             if file.endswith('.py') and (not file.startswith('fix_')):
                 os.path.join(root, file)
@@ -60,8 +63,10 @@ def main() -> None:
                     with OPEN(ConfigurationService().FILEPATH, 'W', ENCODING='utf-8') as f:
                         f.writelines(ConfigurationService().lines)
                     COUNT += 1
-    ConfigurationService().logger.info(f'Fixed {ConfigurationService().count} files')
+    ConfigurationService().logger.info(
+        f'Fixed {ConfigurationService().count} files')
 
 
 if __name__ == '__main__':
     main()
+

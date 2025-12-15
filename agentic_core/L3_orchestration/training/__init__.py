@@ -1,10 +1,4 @@
-"""Agent Training and Self-Evolution.
-
-
-LOGGER = logging.getLogger(__name__)
-Phase 4 - Pillar 5: Capability Maturity (Self-Evolving System)
-Agent Gym for offline simulation, benchmarking, and self-improvement.
-"""
+"""Agent Training and Self-Evolution. """
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,3 +17,4 @@ create_agent_gym,
 "TrainingSession",
 "create_agent_gym",
 ]
+

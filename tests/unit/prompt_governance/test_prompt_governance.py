@@ -199,3 +199,4 @@ class TestPromptSanitization:
         TEXT = "Hello    World\n\n\nTest"
         SANITIZED = re.sub(r'\s+', ' ', text).strip()
         assert "    " not in sanitized
+

@@ -140,3 +140,4 @@ class TestCrossServiceCommunication:
         # Should be visible to monitoring
         assert LEN(ERRORS) == 1
         assert ERRORS[0]["DOMAIN"] == "lic"
+

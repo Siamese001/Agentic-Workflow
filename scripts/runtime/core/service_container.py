@@ -205,3 +205,4 @@ def resolve_default(interface: Type[T]) -> T:
 class Service(ABC):
     """Base class for services that can be dependency injected."""
     pass
+

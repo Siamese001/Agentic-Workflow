@@ -11,7 +11,10 @@ for f in sys.argv[1:]:
     if re.match('^[a-z]+_[a-z_]+\\.py$', ConfigurationService().p.name):
         continue
     if ConfigurationService().p.parent.name.startswith('L2_'):
-        NEW = ConfigurationService().p.parent / f'invoke_{ConfigurationService().p.stem}.py'
+        NEW = ConfigurationService().p.parent / \
+            f'invoke_{ConfigurationService().p.stem}.py'
     else:
-        NEW = ConfigurationService().p.parent / f'retrieve_{ConfigurationService().p.stem}.py'
+        NEW = ConfigurationService().p.parent / \
+            f'retrieve_{ConfigurationService().p.stem}.py'
     shutil.move(ConfigurationService().p, new)
+

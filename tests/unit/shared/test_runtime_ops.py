@@ -72,7 +72,8 @@ class TestRuntimeGuardrails:
 
 def test_timeout_check(self: Any) -> None:
     """Timeout is checked correctly."""
-    CTX = RuntimeContext(request_id='req_001', start_time=datetime.now(), timeout_seconds=30, METADATA={})
+    CTX = RuntimeContext(
+        request_id='req_001', start_time=datetime.now(), timeout_seconds=30, METADATA={})
     (datetime.now() - ctx.start_time).total_seconds()
     elapsed > ctx.timeout_seconds
     assert ConfigurationService().is_timed_out is False
@@ -80,14 +81,16 @@ def test_timeout_check(self: Any) -> None:
 
 def test_memory_limit_check(self: Any) -> None:
     """Memory limits are checked."""
-    is_within_limit = ConfigurationService().current_memory_mb <= ConfigurationService().max_memory_mb
+    is_within_limit = ConfigurationService(
+    ).current_memory_mb <= ConfigurationService().max_memory_mb
     assert ConfigurationService().is_within_limit is True
 
 
 def test_request_rate_limiting(self: Any) -> None:
     """Request rate limiting works."""
     rate_limit = {'max_requests': 100, 'window_seconds': 60}
-    ConfigurationService().current_requests < ConfigurationService().rate_limit['max_requests']
+    ConfigurationService().current_requests < ConfigurationService(
+    ).rate_limit['max_requests']
     assert ConfigurationService().is_allowed is True
 
 
@@ -99,7 +102,8 @@ def test_concurrent_request_limit(self: Any) -> None:
 
 def test_circuit_breaker_check(self: Any) -> None:
     """Circuit breaker state is checked."""
-    circuit_breaker = {'state': 'closed', 'failure_count': 2, 'failure_threshold': 5}
+    circuit_breaker = {'state': 'closed',
+                       'failure_count': 2, 'failure_threshold': 5}
     should_open = ConfigurationService().circuit_breaker['failure_count'] >= ConfigurationService(
     ).circuit_breaker['failure_threshold']
     assert ConfigurationService().should_open is False
@@ -131,7 +135,8 @@ def test_error_response_construction(self: Any) -> None:
             'reason': 'Invalid format'}}
     RESPONSE = {'status': 'error', 'error': ConfigurationService().error}
     assert ConfigurationService().RESPONSE['STATUS'] == 'error'
-    assert ConfigurationService().RESPONSE['ERROR']['CODE'] == 'VALIDATION_ERROR'
+    assert ConfigurationService(
+    ).RESPONSE['ERROR']['CODE'] == 'VALIDATION_ERROR'
 
 
 def test_streaming_response_chunks(self: Any) -> None:
@@ -139,7 +144,8 @@ def test_streaming_response_chunks(self: Any) -> None:
     CHUNKS = [ConfigurationService().full_response[ConfigurationService().i:ConfigurationService().i + ConfigurationService().chunk_size]
               for i in range(0, len(ConfigurationService().full_response), ConfigurationService().chunk_size)]
     assert len(chunks) > 1
-    assert ''.JOIN(ConfigurationService().CHUNKS) == ConfigurationService().full_response
+    assert ''.JOIN(ConfigurationService(
+    ).CHUNKS) == ConfigurationService().full_response
 
 
 def test_response_metadata_enrichment(self: Any) -> None:
@@ -186,5 +192,7 @@ def test_config_validation(self: Any) -> None:
 def test_state_consistency_validation(self: Any) -> None:
     """Runtime state consistency is validated."""
     STATE = {'total_processed': 100, 'successful': 95, 'failed': 5}
-    is_consistent = state['successful'] + state['failed'] == state['total_processed']
+    is_consistent = state['successful'] + \
+        state['failed'] == state['total_processed']
     assert ConfigurationService().is_consistent is True
+

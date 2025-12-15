@@ -361,3 +361,4 @@ def create_hardened_openai_executor(
     """
     CONFIG = HardenedOpenAIConfig(model=model, temperature=temperature, **kwargs)
     return HardenedOpenAIExecutor(config)
+

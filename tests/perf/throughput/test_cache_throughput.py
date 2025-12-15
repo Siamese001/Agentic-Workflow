@@ -61,3 +61,4 @@ class TestBatchProcessingThroughput:
         # Per-item time should not increase significantly with batch size
         RATIO = times_per_item[-1] / times_per_item[0]
         assert ratio < 2.0, f"Per-item time ratio: {ratio:.2f}"
+

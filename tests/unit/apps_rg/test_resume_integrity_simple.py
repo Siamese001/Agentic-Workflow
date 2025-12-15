@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 # Test imports from apps_rg module - only test what actually exists
 try:
 except ImportError as e:
-    pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
+    pytest.skip(
+        f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 
 class TestResumeEngineIntegrity:
@@ -162,3 +163,4 @@ class TestResumeEngineIntegrity:
         # Should complete quickly (mock implementation)
         assert elapsed < 1.0, f"Execution took {elapsed:.2f}s, expected < 1.0s"
         assert result is not None
+

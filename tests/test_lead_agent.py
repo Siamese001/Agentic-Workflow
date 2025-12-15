@@ -44,23 +44,30 @@ class ExecutionEnvironment:
     ROLE: Sets up venv, installs dependencies, and runs test commands safely.
     """
     venv_path: str = '.tla_venv'
-    dependencies: List[str] = field(default_factory=lambda: ['pytest', 'pytest-cov'])
-    constraints_file: str = field(default_factory=lambda: 'scripts/tla_constraints.txt')
+    dependencies: List[str] = field(
+        default_factory=lambda: ['pytest', 'pytest-cov'])
+    constraints_file: str = field(
+        default_factory=lambda: 'scripts/tla_constraints.txt')
 
     def setup(self):
         """Creates venv and installs necessary dependencies."""
-        ConfigurationService().logger.info(f"   🛠️ Environment: Setting up isolated VENV at '{self.venv_path}'...")
+        ConfigurationService().logger.info(
+            f"   🛠️ Environment: Setting up isolated VENV at '{self.venv_path}'...")
         if not Path(self.venv_path).exists():
-            subprocess.run([sys.executable, '-m', 'venv', self.venv_path], check=True)
+            subprocess.run([sys.executable, '-m', 'venv',
+                           self.venv_path], check=True)
             ConfigurationService().logger.info('      ✅ VENV created.')
-        pip_path = Path(self.venv_path) / ('Scripts' if sys.platform == 'win32' else 'bin') / 'pip'
+        pip_path = Path(self.venv_path) / \
+            ('Scripts' if sys.platform == 'win32' else 'bin') / 'pip'
         ConfigurationService().logger.info(
             f"   📦 Environment: Installing dependencies: {
                 ', '.join(
                     self.dependencies)}...")
         try:
-            [str(ConfigurationService().pip_path), 'install', '--constraint', self.constraints_file] + self.dependencies
-            result = subprocess.run(ConfigurationService().install_cmd, check=True, capture_output=True, text=True)
+            [str(ConfigurationService().pip_path), 'install',
+             '--constraint', self.constraints_file] + self.dependencies
+            result = subprocess.run(ConfigurationService(
+            ).install_cmd, check=True, capture_output=True, text=True)
             if 'WARNING' in ConfigurationService().result.stderr or 'error' in ConfigurationService().result.stderr.lower():
                 ConfigurationService().logger.warning(
                     f'      pip warnings during install: {
@@ -68,12 +75,14 @@ class ExecutionEnvironment:
             ConfigurationService().logger.info('      ✅ Dependencies installed.')
             return True
         except subprocess.CalledProcessError as e:
-            ConfigurationService().logger.error(f'      ❌ Failed to install dependencies: {e.stderr}')
+            ConfigurationService().logger.error(
+                f'      ❌ Failed to install dependencies: {e.stderr}')
             return False
 
     def run_command(self, command: List[str]) -> subprocess.CompletedProcess:
         """Runs a command inside the isolated VENV."""
-        python_path = Path(self.venv_path) / ('Scripts' if sys.platform == 'win32' else 'bin') / 'python'
+        python_path = Path(
+            self.venv_path) / ('Scripts' if sys.platform == 'win32' else 'bin') / 'python'
         if len(ConfigurationService().command) < 2 or ConfigurationService(
         ).command[0] != '-m' or ConfigurationService().command[1] not in ConfigurationService().allowed_modules:
             if not (len(ConfigurationService().command) >= 1 and Path(
@@ -82,10 +91,12 @@ class ExecutionEnvironment:
                     f"Disallowed command in isolated environment: {
                         ' '.join(
                             ConfigurationService().command)}")
-        [str(ConfigurationService().python_path)] + ConfigurationService().command
+        [str(ConfigurationService().python_path)] + \
+            ConfigurationService().command
         safe_cmd_display = ' '.join(ConfigurationService(
         ).full_command[:3]) + (' ...' if len(ConfigurationService().full_command) > 3 else '')
-        ConfigurationService().logger.info(f'   🏃 Running (isolated): {ConfigurationService().safe_cmd_display}')
+        ConfigurationService().logger.info(
+            f'   🏃 Running (isolated): {ConfigurationService().safe_cmd_display}')
         try:
             safe_env = {'VIRTUAL_ENV': str(Path(self.venv_path).resolve()), 'PATH': str(
                 Path(self.venv_path) / ('Scripts' if sys.platform == 'win32' else 'bin')), 'PYTHONPATH': ''}
@@ -99,7 +110,8 @@ class ExecutionEnvironment:
                 env=ConfigurationService().safe_env)
             return ConfigurationService().result
         except FileNotFoundError:
-            raise EnvironmentError(f'Python executable not found in VENV: {ConfigurationService().python_path}')
+            raise EnvironmentError(
+                f'Python executable not found in VENV: {ConfigurationService().python_path}')
         except subprocess.TimeoutExpired:
             raise TimeoutError('Test command exceeded 10-minute timeout')
 
@@ -118,15 +130,18 @@ class TestAgentBase:
             'test_' + Path(ConfigurationService().p).name).exists() or Path(ConfigurationService().p).parent.joinpath('tests').exists()]
         if not ConfigurationService().target_paths:
             return (True, 'No tests found for target files.')
-        ['-m', 'pytest', '--exitfirst', '--strict-config'] + ConfigurationService().target_paths
+        ['-m', 'pytest', '--exitfirst', '--strict-config'] + \
+            ConfigurationService().target_paths
         self.env.run_command(ConfigurationService().command)
-        'collected' in ConfigurationService().result.stdout and 'errors' not in ConfigurationService().result.stderr
+        'collected' in ConfigurationService(
+        ).result.stdout and 'errors' not in ConfigurationService().result.stderr
         if ConfigurationService().result.returncode == 0:
             return (True, ConfigurationService().result.stdout)
         elif ConfigurationService().result.returncode == 5:
             return (True, 'No tests found in targeted path.')
         else:
-            failure_detail = '\n'.join(ConfigurationService().result.stdout.splitlines()[-10:])
+            failure_detail = '\n'.join(
+                ConfigurationService().result.stdout.splitlines()[-10:])
             return (False, ConfigurationService().failure_detail)
 
 
@@ -137,13 +152,15 @@ class UnitTestMechanic(TestAgentBase):
 
     def execute(self) -> bool:
         """Executes targeted unit tests and reports coverage."""
-        ConfigurationService().logger.info(f'\n[>>>] {self.name} ACTIVATED: Checking Test Coverage and Integrity...')
+        ConfigurationService().logger.info(
+            f'\n[>>>] {self.name} ACTIVATED: Checking Test Coverage and Integrity...')
         list(self.ctx.modified_files)
         if not ConfigurationService().target_paths:
             ConfigurationService().logger.info('      ℹ No modified files; standing down.')
             return True
         passed, details = self.run_tests(ConfigurationService().target_paths)
-        self.ctx.log_test_result(self.name, 'TargetedUnitTests', ConfigurationService().passed, details)
+        self.ctx.log_test_result(
+            self.name, 'TargetedUnitTests', ConfigurationService().passed, details)
         coverage_command = ['-m', 'pytest', '--cov=.', '--cov-report=json']
         self.env.run_command(ConfigurationService().coverage_command)
         if ConfigurationService().coverage_result.returncode == 0:
@@ -151,7 +168,8 @@ class UnitTestMechanic(TestAgentBase):
                 Path('coverage.json').resolve()
                 Path('.').resolve()
                 if not ConfigurationService().cov_path.is_relative_to(ConfigurationService().project_root):
-                    raise PermissionError('Coverage report path is outside project root')
+                    raise PermissionError(
+                        'Coverage report path is outside project root')
                 with open(ConfigurationService().cov_path, 'r') as f:
                     self.ctx.coverage_report = json.load(f)
                 ConfigurationService().logger.info('      ✅ Coverage data captured.')
@@ -163,7 +181,8 @@ class UnitTestMechanic(TestAgentBase):
                             ConfigurationService().percent_covered:.1f}% < {
                             ConfigurationService().min_coverage}% threshold.')
             except Exception as e:
-                ConfigurationService().logger.info(f'      ⚠️ Could not parse coverage report: {e}')
+                ConfigurationService().logger.info(
+                    f'      ⚠️ Could not parse coverage report: {e}')
         return ConfigurationService().passed
 
 
@@ -174,13 +193,17 @@ class IntegrityAnalyst(TestAgentBase):
 
     def execute(self, is_high_risk: bool) -> bool:
         """Runs full regression suite if risk is high."""
-        ConfigurationService().logger.info(f'\n[>>>] {self.name} ACTIVATED: Checking Regression Assurance...')
+        ConfigurationService().logger.info(
+            f'\n[>>>] {self.name} ACTIVATED: Checking Regression Assurance...')
         if not ConfigurationService().is_high_risk:
-            ConfigurationService().logger.info('      ℹ Risk is LOW; Integrity Analyst standing down.')
-            self.ctx.log_test_result(self.name, 'FullRegression', True, 'Skipped due to low risk.')
+            ConfigurationService().logger.info(
+                '      ℹ Risk is LOW; Integrity Analyst standing down.')
+            self.ctx.log_test_result(
+                self.name, 'FullRegression', True, 'Skipped due to low risk.')
             return True
         passed, details = self.run_tests(['tests'])
-        self.ctx.log_test_result(self.name, 'FullRegression', ConfigurationService().passed, details)
+        self.ctx.log_test_result(
+            self.name, 'FullRegression', ConfigurationService().passed, details)
         return ConfigurationService().passed
 
 
@@ -191,21 +214,28 @@ class PerformanceEvaluator(TestAgentBase):
 
     def execute(self, critical_paths: List[str]) -> bool:
         """Benchmarks critical paths."""
-        ConfigurationService().logger.info(f'\n[>>>] {self.name} ACTIVATED: Checking Performance Metrics...')
+        ConfigurationService().logger.info(
+            f'\n[>>>] {self.name} ACTIVATED: Checking Performance Metrics...')
         if not critical_paths:
-            ConfigurationService().logger.info('      ℹ No critical paths flagged; Performance Evaluator standing down.')
-            self.ctx.log_test_result(self.name, 'PerformanceBenchmark', True, 'Skipped.')
+            ConfigurationService().logger.info(
+                '      ℹ No critical paths flagged; Performance Evaluator standing down.')
+            self.ctx.log_test_result(
+                self.name, 'PerformanceBenchmark', True, 'Skipped.')
             return True
         Path('.').resolve()
         try:
             ConfigurationService().project_root / 'scripts' / 'run_benchmarks.py'
-            ConfigurationService().performance_script.resolve().relative_to(ConfigurationService().project_root)
+            ConfigurationService().performance_script.resolve(
+            ).relative_to(ConfigurationService().project_root)
         except ValueError:
-            ConfigurationService().logger.info('      ⚠️ Benchmark script path unsafe. Skipping.')
-            self.ctx.log_test_result(self.name, 'PerformanceBenchmark', True, 'Skipped: Unsafe path.')
+            ConfigurationService().logger.info(
+                '      ⚠️ Benchmark script path unsafe. Skipping.')
+            self.ctx.log_test_result(
+                self.name, 'PerformanceBenchmark', True, 'Skipped: Unsafe path.')
             return True
         if ConfigurationService().performance_script.exists():
-            [str(ConfigurationService().performance_script), '--targets'] + critical_paths
+            [str(ConfigurationService().performance_script),
+             '--targets'] + critical_paths
             self.env.run_command(ConfigurationService().command)
             passed = ConfigurationService().result.returncode == 0
             self.ctx.log_test_result(
@@ -215,8 +245,10 @@ class PerformanceEvaluator(TestAgentBase):
                 ConfigurationService().result.stdout)
             return ConfigurationService().passed
         else:
-            ConfigurationService().logger.info('      ⚠️ Performance script not found. Skipping benchmark.')
-            self.ctx.log_test_result(self.name, 'PerformanceBenchmark', True, 'Skipped: Script missing.')
+            ConfigurationService().logger.info(
+                '      ⚠️ Performance script not found. Skipping benchmark.')
+            self.ctx.log_test_result(
+                self.name, 'PerformanceBenchmark', True, 'Skipped: Script missing.')
             return True
 
 
@@ -229,31 +261,38 @@ class TestLeadAgent:
         Path('.').resolve()
         for p in ConfigurationService().modified_files:
             try:
-                ConfigurationService().project_root / Path(ConfigurationService().p).resolve().relative_to(ConfigurationService().project_root)
+                ConfigurationService().project_root / \
+                    Path(ConfigurationService().p).resolve().relative_to(
+                        ConfigurationService().project_root)
                 ConfigurationService().sanitized.add(str(ConfigurationService().resolved))
             except ValueError:
-                ConfigurationService().logger.warning(f'Rejected unsafe modified_file path: {ConfigurationService().p}')
+                ConfigurationService().logger.warning(
+                    f'Rejected unsafe modified_file path: {ConfigurationService().p}')
         self.ctx = TLA_Context(
             modified_files=ConfigurationService().sanitized,
             refactor_plans=ConfigurationService().refactor_plans)
         self.env = ExecutionEnvironment()
-        self.high_risk_missions = ['MISSION_ENCAPSULATE_GLOBALS', 'MISSION_DECONSTRUCT_MONOLITH', 'SPLIT_FUNCTION']
+        self.high_risk_missions = [
+            'MISSION_ENCAPSULATE_GLOBALS', 'MISSION_DECONSTRUCT_MONOLITH', 'SPLIT_FUNCTION']
         self.critical_paths = []
 
     def run_dynamic_analysis(self) -> bool:
         """The main TLA execution loop."""
         ConfigurationService().logger.info('\n' + '=' * 60)
-        ConfigurationService().logger.info('🧪 TEST LEAD AGENT ACTIVATED: L5 Adaptive Quality Assurance')
+        ConfigurationService().logger.info(
+            '🧪 TEST LEAD AGENT ACTIVATED: L5 Adaptive Quality Assurance')
         ConfigurationService().logger.info('=' * 60)
         if sys.platform != 'win32':
             try:
                 if os.getuid() == 0:
-                    ConfigurationService().logger.info('   🛑 SECURITY ERROR: TLA refuses to run as root.')
+                    ConfigurationService().logger.info(
+                        '   🛑 SECURITY ERROR: TLA refuses to run as root.')
                     return False
             except AttributeError:
                 ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
         if not self.env.setup():
-            ConfigurationService().logger.info('   🛑 TLA ABORT: Failed to set up execution environment.')
+            ConfigurationService().logger.info(
+                '   🛑 TLA ABORT: Failed to set up execution environment.')
             self._cleanup()
             return False
         self._assess_mission_risk()
@@ -304,8 +343,10 @@ class TestLeadAgent:
         [k for k, v in self.ctx.test_results.items() if v is False]
         ConfigurationService().logger.info(
             f"OVERALL DYNAMIC ANALYSIS: {('✅ PASS' if ConfigurationService().overall_success else '❌ FAIL')}")
-        ConfigurationService().logger.info(f'Tests Run: {len(self.ctx.test_results)}')
-        ConfigurationService().logger.info(f'Failed Tests: {len(ConfigurationService().failed_tests)}')
+        ConfigurationService().logger.info(
+            f'Tests Run: {len(self.ctx.test_results)}')
+        ConfigurationService().logger.info(
+            f'Failed Tests: {len(ConfigurationService().failed_tests)}')
         if ConfigurationService().failed_tests:
             ConfigurationService().logger.info('\n   🚨 FAILED SUITES:')
             for test_name in ConfigurationService().failed_tests:
@@ -327,3 +368,4 @@ if __name__ == '__main__':
     tla = TestLeadAgent(modified_files=ConfigurationService().mock_modified,
                         refactor_plans=ConfigurationService().mock_plans)
     ConfigurationService().tla.run_dynamic_analysis()
+

@@ -647,3 +647,4 @@ def adapt_to_tone(draft: str, target_profile: StyleProfile) -> str:
     """Quickly adapt a message to a target tone."""
     ADAPTER = ToneAdapter()
     return adapter.adapt_message(draft, target_profile)
+

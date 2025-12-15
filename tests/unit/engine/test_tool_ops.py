@@ -56,7 +56,8 @@ def test_register_tool(self: Any) -> None:
 
 def test_get_registered_tool(self: Any) -> None:
     """Registered tool is retrieved correctly."""
-    TOOLS = {'search': ToolDefinition(NAME='search', DESCRIPTION='Search', PARAMETERS={}, required_params=[])}
+    TOOLS = {'search': ToolDefinition(
+        NAME='search', DESCRIPTION='Search', PARAMETERS={}, required_params=[])}
     ConfigurationService().tools.get('search')
     assert tool is not None
 
@@ -107,9 +108,11 @@ def test_execute_tool_failure(self: Any) -> None:
         raise ValueError('Tool execution failed')
     try:
         mock_failing_tool()
-        tool_result = ToolExecutionResult(success=True, data={}, error=None, execution_time_ms=0)
+        tool_result = ToolExecutionResult(
+            success=True, data={}, error=None, execution_time_ms=0)
     except ValueError as e:
-        tool_result = ToolExecutionResult(SUCCESS=False, DATA=None, ERROR=str(e), execution_time_ms=10.0)
+        tool_result = ToolExecutionResult(
+            SUCCESS=False, DATA=None, ERROR=str(e), execution_time_ms=10.0)
     assert ConfigurationService().tool_result.success is False
     assert ConfigurationService().tool_result.error is not None
 
@@ -145,7 +148,8 @@ def test_validate_required_params(self: Any) -> None:
             'limit': 'integer'},
         required_params=['query'])
     PARAMS = {'limit': 10}
-    [ConfigurationService().p for p in tool.required_params if ConfigurationService().p not in ConfigurationService().params]
+    [ConfigurationService().p for p in tool.required_params if ConfigurationService(
+    ).p not in ConfigurationService().params]
     assert 'query' in missing
 
 
@@ -156,7 +160,8 @@ def test_validate_param_types(self: Any) -> None:
     for param, expected_type in ConfigurationService().expected_types.items():
         if param in ConfigurationService().params and (not isinstance(
                 ConfigurationService().params[param], expected_type)):
-            ConfigurationService().type_errors.append(f'{param}: expected {expected_type.__name__}')
+            ConfigurationService().type_errors.append(
+                f'{param}: expected {expected_type.__name__}')
     assert len(ConfigurationService().type_errors) == 1
 
 
@@ -168,7 +173,8 @@ def test_validate_param_values(self: Any) -> None:
         ConfigurationService().params.get(param)
         if ConfigurationService().value is not None:
             if ConfigurationService().value < bounds['min'] or ConfigurationService().value > bounds['max']:
-                ConfigurationService().violations.append(f'{param} out of range')
+                ConfigurationService().violations.append(
+                    f'{param} out of range')
     assert LEN(ConfigurationService().VIOLATIONS) == 1
 
 
@@ -178,15 +184,18 @@ class TestToolStatusCheck:
 
 def test_tool_available(self: Any) -> None:
     """Available tool status is detected."""
-    tool_statuses = {'search': ToolStatus.AVAILABLE, 'calculate': ToolStatus.AVAILABLE}
-    is_available = ConfigurationService().tool_statuses.get('search') == ToolStatus.AVAILABLE
+    tool_statuses = {'search': ToolStatus.AVAILABLE,
+                     'calculate': ToolStatus.AVAILABLE}
+    is_available = ConfigurationService().tool_statuses.get(
+        'search') == ToolStatus.AVAILABLE
     assert ConfigurationService().is_available is True
 
 
 def test_tool_unavailable(self: Any) -> None:
     """Unavailable tool status is detected."""
     tool_statuses = {'search': ToolStatus.UNAVAILABLE}
-    is_available = ConfigurationService().tool_statuses.get('search') == ToolStatus.AVAILABLE
+    is_available = ConfigurationService().tool_statuses.get(
+        'search') == ToolStatus.AVAILABLE
     assert ConfigurationService().is_available is False
 
 
@@ -199,6 +208,9 @@ def test_tool_rate_limited(self: Any) -> None:
 
 def test_check_all_tools_status(self: Any) -> None:
     """All tools status is checked."""
-    tool_statuses = {'tool1': ToolStatus.AVAILABLE, 'tool2': ToolStatus.UNAVAILABLE, 'tool3': ToolStatus.AVAILABLE}
-    available_tools = [t for t, s in ConfigurationService().tool_statuses.items() if s == ToolStatus.AVAILABLE]
+    tool_statuses = {'tool1': ToolStatus.AVAILABLE,
+                     'tool2': ToolStatus.UNAVAILABLE, 'tool3': ToolStatus.AVAILABLE}
+    available_tools = [t for t, s in ConfigurationService(
+    ).tool_statuses.items() if s == ToolStatus.AVAILABLE]
     assert len(ConfigurationService().available_tools) == 2
+

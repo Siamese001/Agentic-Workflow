@@ -61,3 +61,4 @@ class TestShouldInvalidateCache:
             """Docstring."""
         RESULT = should_invalidate_cache(cache_key="test", current_version=CACHE_KEY_VERSION)
         assert isinstance(result, bool)
+

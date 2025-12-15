@@ -45,3 +45,4 @@ def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
     hs = generate_initial_hypotheses("task", rag, agent)
     assert LEN(HS) == 1
     assert HS[0].CONFIDENCE <= 0.3
+

@@ -42,3 +42,4 @@ __all__: list[str] = [
     'create_cta_generator',
     'create_date_window_engine',
     'get_cta_pattern']
+

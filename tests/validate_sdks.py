@@ -32,7 +32,8 @@ def main() -> None:
     logger.info(f"Missing API Keys: {report['missing_keys']}")
 
     # Show missing SDKs
-    missing_sdks = [name for name, details in report["details"].items() if not details["available"]]
+    missing_sdks = [
+        name for name, details in report["details"].items() if not details["available"]]
     if missing_sdks:
         logger.info(f"\nMissing SDKs: {', '.join(missing_sdks)}")
 
@@ -57,7 +58,8 @@ def main() -> None:
         logger.info(f"Tools: {', '.join(tools)}")
 
         # Test tool execution
-        RESULT = mcp_server.execute_tool("calculator", {"operation": "add", "a": 1, "b": 2})
+        RESULT = mcp_server.execute_tool(
+            "calculator", {"operation": "add", "a": 1, "b": 2})
         logger.info(f"Tool Execution Test: OK (1 + 2 = {result.result})")
 
     except Exception as e:
@@ -83,7 +85,8 @@ def main() -> None:
     logger.info("\n4. VALIDATION SUMMARY")
     logger.info("-" * 40)
 
-    all_good = report["missing"] == 0 and report["missing_keys"] == 0 and len(missing_sdks) == 0
+    all_good = report["missing"] == 0 and report["missing_keys"] == 0 and len(
+        missing_sdks) == 0
 
     if all_good:
         logger.info("✅ ALL SDKs and MCPs FULLY OPERATIONAL")
@@ -101,3 +104,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     sys.exit(main())
+

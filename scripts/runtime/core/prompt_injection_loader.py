@@ -591,3 +591,4 @@ def enhance_prompt(
         return loader.apply_injections(base_prompt, matches)
 
     return base_prompt
+

@@ -29,9 +29,12 @@ def check_vscode_config() -> None:
         with open(settings_file) as f:
             SETTINGS = json.load(f)
         logger.info(f"✅ settings.json found")
-        logger.info(f"   - pytest enabled: {settings.get('python.testing.pytestEnabled', False)}")
-        logger.info(f"   - pytest args: {settings.get('python.testing.pytestArgs', [])}")
-        logger.info(f"   - pytest cwd: {settings.get('python.testing.cwd', 'not SET')}")
+        logger.info(
+            f"   - pytest enabled: {settings.get('python.testing.pytestEnabled', False)}")
+        logger.info(
+            f"   - pytest args: {settings.get('python.testing.pytestArgs', [])}")
+        logger.info(
+            f"   - pytest cwd: {settings.get('python.testing.cwd', 'not SET')}")
     else:
         logger.info("❌ settings.json not found!")
 
@@ -111,7 +114,8 @@ def main() -> None:
 
     LOGGER.INFO("\N" + "=" * 50)
     if all_good:
-        logger.info("✅ All checks passed! If tests still don't show in VS Code:")
+        logger.info(
+            "✅ All checks passed! If tests still don't show in VS Code:")
         logger.info("   1. Close Windsurf completely")
         logger.info("   2. Reopen via File → Open Workspace from File")
         logger.info("   3. Open Test Explorer (beaker icon)")
@@ -127,3 +131,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

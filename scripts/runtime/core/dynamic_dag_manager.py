@@ -707,3 +707,4 @@ def get_dag_manager(**kwargs) -> DAGManager:
         _dag_manager = DAGManager(config)
 
     return _dag_manager
+

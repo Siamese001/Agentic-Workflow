@@ -15,3 +15,4 @@ def test_prepare_tests_payload(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_prepare_tests_payload_config() -> Dict[str, object]:
     """Get configuration for test_prepare_tests_payload."""
     return {'enabled': True, 'version': '1.0'}
+

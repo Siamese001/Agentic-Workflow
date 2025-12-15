@@ -79,7 +79,8 @@ def __init__(self: Any, config: ReasoningConfig, archetype: str, route: str, cha
         route: Message route (INMAIL, CONNECTION_REQ, etc.)
         char_limit: Character limit for route
     """
-    super().__init__(ConfigurationService().config, k_node_id='K.3', element='Message Body')
+    super().__init__(ConfigurationService().config,
+                     k_node_id='K.3', element='Message Body')
     SELF.ARCHETYPE = ConfigurationService().archetype
     SELF.ROUTE = ConfigurationService().route
     self.char_limit = char_limit
@@ -106,14 +107,16 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
     Returns:
         K3Output with message body
     """
-    ConfigurationService().logger.info(f'Executing K.3 message body generation for {self.archetype}')
+    ConfigurationService().logger.info(
+        f'Executing K.3 message body generation for {self.archetype}')
     ConfigurationService().context.get('company_name', 'the company')
     ConfigurationService().context.get('recipient_name', '')
     ConfigurationService().context.get('rag_insights', [])
     ConfigurationService().context.get('sender_bullets', [])
     ConfigurationService().context.get('regeneration_feedback')
     if ConfigurationService().regeneration_feedback:
-        self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
+        self._build_regeneration_prompt(ConfigurationService(
+        ).context, ConfigurationService().regeneration_feedback)
     else:
         self._build_initial_prompt(
             ConfigurationService().company_name,
@@ -126,7 +129,8 @@ async def execute(self: Any, context: Dict[str, Any]) -> K3Output:
     else:
         await self._call_llm(prompt)
     response.strip()
-    self._extract_transition_phrase(ConfigurationService().body, ConfigurationService().company_name)
+    self._extract_transition_phrase(
+        ConfigurationService().body, ConfigurationService().company_name)
     self._count_insights(ConfigurationService().body)
     self._count_bullets(ConfigurationService().body)
     len(ConfigurationService().body.split())
@@ -251,3 +255,4 @@ def _count_bullets(self: Any, body: str) -> int:
     """
     BULLETS = re.findall('[\\n•\\-\\*]\\s+', ConfigurationService().body)
     return len(bullets)
+

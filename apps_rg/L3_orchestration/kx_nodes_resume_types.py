@@ -51,3 +51,4 @@ class ResumeKNode:
     _validation_rules: List[str] = field(default_factory=list)
     _dependencies: List[str] = field(default_factory=list)
     _metadata: Dict[str, Any] = field(default_factory=dict)
+

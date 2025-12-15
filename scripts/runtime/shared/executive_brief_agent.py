@@ -18,7 +18,8 @@ try:
     logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
 except ImportError as e:
     TITANIUM_AVAILABLE = False
-    logger.warning(f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
+    logger.warning(
+        f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
 
 
 class BriefSection(BaseModel):
@@ -701,3 +702,4 @@ def generate_executive_brief(
     AGENT = create_executive_brief_agent(candidate_name, candidate_background)
     BRIEF = agent.generate_brief(company_data, job_description)
     return agent.render_markdown(brief)
+

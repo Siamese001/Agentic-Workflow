@@ -308,3 +308,4 @@ class TestResumeQualityE2E:
         quantification_rate = len(quantified) / len(achievements)
 
         assert quantification_rate == 0.5
+

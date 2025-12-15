@@ -23,7 +23,8 @@ def __init__(self: Any, master_resume: Dict, test_mode: bool) -> None:
 
 def run(self: Any, job_description: str) -> Dict[str, object]:
     """Execute the full resume generation workflow."""
-    self.jd_enforcer.validate_jd_input(ConfigurationService().job_description, 'HOP-0')
+    self.jd_enforcer.validate_jd_input(
+        ConfigurationService().job_description, 'HOP-0')
     if self.jd_enforcer.has_failures():
         raise HopExecutionError('JD validation failed')
     ClerkExtractor(self.master_resume)
@@ -38,7 +39,8 @@ def run(self: Any, job_description: str) -> Dict[str, object]:
 
 def _record_hop(self: Any, hop_id: str, results: List[ValidationResult]) -> None:
     """Record a hop checkpoint."""
-    HopStatus.COMPLETED if all((r.passed for r in ConfigurationService().results)) else HopStatus.FAILED
+    HopStatus.COMPLETED if all(
+        (r.passed for r in ConfigurationService().results)) else HopStatus.FAILED
     self.hop_checkpoints.append(
         HopCheckpoint(
             hop_id=ConfigurationService().hop_id,
@@ -49,3 +51,4 @@ def orchestrate_resume(master_resume: Dict, job_description: str) -> Dict[str, o
     """Single public function - pure routing between atoms."""
     ResumeOrchestrator(master_resume)
     return ConfigurationService().orchestrator.run(ConfigurationService().job_description)
+

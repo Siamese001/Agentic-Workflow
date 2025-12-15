@@ -131,31 +131,31 @@ def mock_validator_with_all_dependencies():
     import sys
     sys.path.append(str(Path(__file__).parent.parent))
     from canon_validator import CanonValidator
-    
+
     validator = CanonValidator()
-    
+
     # Mock LLM
     validator.llm = Mock()
     validator.llm.generate_plan = Mock()
-    
+
     # Mock embedding function
     validator.embed_fn = Mock(return_value=[0.1] * 768)
-    
+
     # Mock Pinecone
     validator.pinecone = Mock()
     validator.pinecone.query = Mock(return_value={'matches': []})
     validator.pinecone.upsert = Mock()
-    
+
     # Mock Redis cache
     validator.cache = Mock()
     validator.cache.check = Mock(return_value=None)
     validator.cache.store = Mock()
-    
+
     # Mock connection manager
     validator.cm = Mock()
     validator.cm.get_pinecone_index = Mock(return_value=validator.pinecone)
     validator.cm.get_embedding = Mock(return_value=[0.1] * 768)
-    
+
     return validator
 
 
@@ -168,13 +168,13 @@ import os
 def execute_user_input(input_str):
     # Violation: Uses os.system with user input
     os.system(input_str)
-    
+
     # Violation: Bare except clause
     try:
         result = process(input_str)
     except:
         pass
-    
+
     return result
 """
 
@@ -206,3 +206,4 @@ def execute_user_input safely(input_str: str) -> Optional[str]:
         logger.error(f"Command failed: {e}")
         return None
 """
+

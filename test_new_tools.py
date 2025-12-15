@@ -21,3 +21,4 @@ print("Content:", result)
 print("\nTesting mock_send_email...")
 result = tools["send_email"]("test@example.com", "Test Subject", "Test Body")
 print(result)
+

@@ -50,3 +50,4 @@ def execute(data: object,
                            object]) -> OperationResult:
     """Convenience function."""
     return Phase4108ScriptsPurge(config).execute(data, **kwargs)
+

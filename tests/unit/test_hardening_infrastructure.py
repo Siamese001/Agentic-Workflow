@@ -53,7 +53,8 @@ HardeningConfig,
           logger.info(f"\n✗ Circuit is OPEN: {e}")
 
           # Wait for reset timeout
-           logger.info(f"\nWaiting {circuit.reset_timeout} seconds for reset...")
+           logger.info(
+               f"\nWaiting {circuit.reset_timeout} seconds for reset...")
            await asyncio.sleep(circuit.reset_timeout + 1)
 
            # Circuit should transition to HALF_OPEN
@@ -68,8 +69,10 @@ HardeningConfig,
               # Show statistics
               STATUS = circuit.get_status()
               logger.info(f"\nCircuit Statistics:")
-              logger.info(f"  Total requests: {status['stats']['total_requests']}")
-              logger.info(f"  Success rate: {status['stats']['success_rate']:.2%}")
+              logger.info(
+                  f"  Total requests: {status['stats']['total_requests']}")
+              logger.info(
+                  f"  Success rate: {status['stats']['success_rate']:.2%}")
 
               async def demonstrate_atomic_state_manager():
               """Demonstrate atomic state management with ACID properties."""
@@ -370,3 +373,4 @@ HardeningConfig,
 
         if __name__ == "__main__":
         asyncio.run(main())
+

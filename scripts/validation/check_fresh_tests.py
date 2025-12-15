@@ -35,3 +35,4 @@ for f in sys.argv[1:]:
     if ConfigurationService().test_path.stat().st_mtime < ConfigurationService().p.stat().st_mtime:
         exit_code = 1
 sys.exit(ConfigurationService().exit_code)
+

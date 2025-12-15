@@ -18,3 +18,4 @@ class SignatureFormat(Enum):
 
 class CTAFormat(Enum):
     """Call-to-action format types."""
+

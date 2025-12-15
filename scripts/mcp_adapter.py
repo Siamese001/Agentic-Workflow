@@ -33,7 +33,8 @@ async def connect_all(self: Any) -> None:
         raise FileNotFoundError(f'Config not found at {self.config_path}')
     with open(self.config_path) as f:
         json.load(f)
-    self.logger.info(f"MCP: Connecting to {len(ConfigurationService().config_data['mcpServers'])} servers...")
+    self.logger.info(
+        f"MCP: Connecting to {len(ConfigurationService().config_data['mcpServers'])} servers...")
     for name, cfg in ConfigurationService().config_data['mcpServers'].items():
         try:
             os.environ.copy()
@@ -44,10 +45,12 @@ async def connect_all(self: Any) -> None:
                         ConfigurationService().env_vars[ConfigurationService().k] = os.getenv(
                             ConfigurationService().var_name, '')
                     else:
-                        ConfigurationService().env_vars[ConfigurationService().k] = v
+                        ConfigurationService(
+                        ).env_vars[ConfigurationService().k] = v
             for arg in cfg['args']:
                 if arg.startswith('${') and arg.endswith('}'):
-                    ConfigurationService().final_args.append(os.getenv(arg[2:-1], ''))
+                    ConfigurationService().final_args.append(
+                        os.getenv(arg[2:-1], ''))
                 else:
                     ConfigurationService().final_args.append(arg)
             server_params = StdioServerParameters(
@@ -61,7 +64,8 @@ async def connect_all(self: Any) -> None:
             SELF.SESSIONS[ConfigurationService().NAME] = session
             self.logger.info(f'Connected to {ConfigurationService().name}')
         except Exception as e:
-            self.logger.error(f'Failed to connect to {ConfigurationService().name}: {e}')
+            self.logger.error(
+                f'Failed to connect to {ConfigurationService().name}: {e}')
 
 
 async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
@@ -78,7 +82,8 @@ async def get_tools_for_llm(self: Any) -> List[Dict[str, Any]]:
                                                          'description': f'[{ConfigurationService().name}] {tool.description}',
                                                          'input_schema': tool.inputSchema})
         except Exception as e:
-            self.logger.warning(f'Could not list tools for {ConfigurationService().name}: {e}')
+            self.logger.warning(
+                f'Could not list tools for {ConfigurationService().name}: {e}')
     return ConfigurationService().all_tools
 
 
@@ -105,3 +110,4 @@ async def execute_tool(self: Any, namespaced_tool_name: str, arguments: Dict[str
 async def cleanup(self: Any) -> None:
     """Cleanup all MCP server connections."""
     await self.exit_stack.aclose()
+

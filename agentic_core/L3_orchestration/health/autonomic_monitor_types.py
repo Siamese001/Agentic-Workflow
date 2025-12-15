@@ -60,3 +60,4 @@ class HealthAlert:
                 'metrics': self.metrics.to_dict(),
                 'recommended_actions': self.recommended_actions,
                 'timestamp': self.timestamp}
+

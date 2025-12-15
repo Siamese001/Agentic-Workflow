@@ -50,3 +50,4 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return GenerateSummarySection(config).execute(action, params)
+

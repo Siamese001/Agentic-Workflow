@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .achv_bullet_synthesizer_types import *  # Star import removed
+# TODO: Replace 'from .achv_bullet_synthesizer_types import *' with explicit imports
+# # from .achv_bullet_synthesizer_types import *  # Star import removed
 
 
 class AchvBulletSynthesizer:
@@ -262,3 +263,4 @@ def create_achv_bullet_synthesizer(config: Optional[BulletSynthesizerConfig]=Non
     hesizer:
     """Factory function to create AchvBulletSynthesizer instance"""
     return AchvBulletSynthesizer(config=config)
+

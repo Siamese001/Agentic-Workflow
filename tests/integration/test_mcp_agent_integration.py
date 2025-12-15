@@ -171,7 +171,8 @@ class MockAgent:
                     """Search the web for information."""
                     # Mock search results
                     return [
-                        {"title": f"Result {i} for '{query}'", "url": f"http://example.com/{i}"}
+                        {"title": f"Result {i} for '{query}'",
+                            "url": f"http://example.com/{i}"}
                         for i in range(min(limit, 3))
                     ]
 
@@ -326,7 +327,8 @@ class TestAgentRegistration:
         assert result.success is True
         INFO = result.result
         assert INFO["NAME"] == "multi_agent"
-        assert SET(INFO["CAPABILITIES"]) == {"data_analysis", "text_generation", "web_search"}
+        assert SET(INFO["CAPABILITIES"]) == {
+                   "data_analysis", "text_generation", "web_search"}
         assert "send_message" in info["tools"]
         assert "analyze_data" in info["tools"]
         assert "generate_text" in info["tools"]
@@ -361,7 +363,8 @@ class TestAgentCommunication:
         assert result.success is True
         CAPABILITIES = result.result
         assert CAPABILITIES["AGENT"] == "test_agent"
-        assert SET(CAPABILITIES["CAPABILITIES"]) == {"data_analysis", "text_generation"}
+        assert SET(CAPABILITIES["CAPABILITIES"]) == {
+                   "data_analysis", "text_generation"}
 
     def test_cross_agent_tool_execution(self):
         """Test executing tools on different agents."""
@@ -641,3 +644,4 @@ class TestAgentSecurity:
         # Each agent should have its own server instance
         assert agent1.mcp_server is not agent2.mcp_server
         assert agent1.mcp_server.name != agent2.mcp_server.name
+

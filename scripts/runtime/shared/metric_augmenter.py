@@ -24,9 +24,11 @@ class ImpactCategory(str, Enum):
 class BusinessImpact(BaseModel):
     """Business impact estimation for a technical metric."""
 
-    category: ImpactCategory = Field(..., description="Type of business impact")
+    category: ImpactCategory = Field(...,
+                                     description="Type of business impact")
     value_statement: str = Field(..., description="Business impact statement")
-    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0, description="Confidence in estimation")
+    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0,
+                              description="Confidence in estimation")
 
     @validator('value_statement')
     def validate_conservative_language(cls, v):
@@ -519,3 +521,4 @@ def augment_metrics(
     AUGMENTER = create_metric_augmenter(industry=industry)
     augmented_bullets = augmenter.augment_batch(bullets)
     return [b.final_text for b in augmented_bullets]
+

@@ -740,3 +740,4 @@ def create_knowledge_graph_agent(
         Configured KnowledgeGraphAgent
     """
     return KnowledgeGraphAgent(uri, user, password, similarity_threshold)
+

@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 try:
 except ImportError as e:
     # Fallback imports for testing
-    pytest.skip(f"Skipping agentic behaviors tests: {e}", allow_module_level=True)
+    pytest.skip(
+        f"Skipping agentic behaviors tests: {e}", allow_module_level=True)
 
 # Helper classes for testing
 
@@ -84,7 +85,8 @@ async def test_token_budget_preflight_check():
     Prevents wasted API calls on oversized prompts.
     """
     EXECUTOR = HardenedOpenAIExecutor()
-    huge_prompt = "word " * 150_000  # Approx 150k tokens (exceeds standard 128k limit)
+    # Approx 150k tokens (exceeds standard 128k limit)
+    huge_prompt = "word " * 150_000
 
     # Mock tiktoken encoding to avoid massive CPU usage, just return high count
     mock_encoder = MagicMock()
@@ -349,3 +351,4 @@ class ContextOptimizer:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

@@ -20,3 +20,4 @@ class MetacognitionReport(BaseModel):
     _global_confidence: float = 0.0
     _uncertainty_score: float = 0.0
     _issues_detected: List[str] = Field(default_factory=list)
+

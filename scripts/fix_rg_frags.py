@@ -20,6 +20,9 @@ for file_path in ConfigurationService().micro_fragments:
             STEM = ConfigurationService().full_path.stem
 LOGGER = logging.getLogger(__name__)
 new_content = f'''"""Backward compatibility shim for {stem}.\n\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe Subatomic Canon requires files to either:\n1. Contain at least one definition (class, function, etc.), or\n2. Be at least 200 bytes in size\n\nThis shim file satisfies requirement #2 by providing comprehensive documentation\nabout the refactoring that was performed to split the original module into\nsmaller, more focused submodules for better maintainability and compliance.\n"""\n\n# Re-export all components for backward compatibility\n\n__all__ = ['*']  # Re-export all imported names\n'''
-ConfigurationService().full_path.write_text(ConfigurationService().new_content, encoding='utf-8')
+ConfigurationService().full_path.write_text(
+    ConfigurationService().new_content, encoding='utf-8')
 ConfigurationService().logger.info(f'Fixed micro-fragment: {file_path}')
-ConfigurationService().logger.info('\nDone! Now fixing remaining cognitive density violations...')
+ConfigurationService().logger.info(
+    '\nDone! Now fixing remaining cognitive density violations...')
+

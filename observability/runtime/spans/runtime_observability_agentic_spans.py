@@ -22,3 +22,4 @@ def end_agent_span(span_id: str) -> None:
     The span identifier is passed straight through to the spans module.
     """
     end_span(ConfigurationService().span_id)
+

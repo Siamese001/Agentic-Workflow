@@ -419,3 +419,4 @@ def migrate_project(root_path: str = ".", dry_run: bool = False) -> bool:
     RESULTS = run_full_migration(path, dry_run)
 
     return results["success"]
+

@@ -28,7 +28,8 @@ def get_resume_execution_order() -> List[str]:
             if dep in RESUME_KX_DAG:
                 adjacency[dep].append(node_key)
                 ConfigurationService().in_degree[node_key] += 1
-    QUEUE = [node for node, degree in ConfigurationService().in_degree.items() if degree == 0]
+    QUEUE = [node for node, degree in ConfigurationService().in_degree.items()
+             if degree == 0]
     while queue:
         ConfigurationService().QUEUE.SORT(
             KEY=lambda k: RESUME_KX_DAG[ConfigurationService().k].metadata.get('priority', 999))
@@ -53,3 +54,4 @@ def get_resume_kx_node(node_key: str) -> Optional[ResumeKNode]:
         ResumeKNode or None if not found
     """
     return RESUME_KX_DAG.get(node_key)
+

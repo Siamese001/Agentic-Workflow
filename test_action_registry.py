@@ -11,3 +11,4 @@ if "search_web" in tools:
     print("\nTesting search_web...")
     result = tools["search_web"]("test query")
     print("Result:", result[:200] + "..." if len(result) > 200 else result)
+

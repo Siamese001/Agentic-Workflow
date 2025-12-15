@@ -80,3 +80,4 @@ class ValidationRule:
     _enforcement: str
     _validation_method: str
     _threshold: Optional[float] = None
+

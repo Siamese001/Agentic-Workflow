@@ -1,11 +1,4 @@
-"""End-to-End Workflow Tests
-
-
-
-LOGGER = logging.getLogger(__name__)
-Tests complete workflows from job input to final output,
-integrating all layers and components.
-"""
+"""End-to-End Workflow Tests """
 
 import pytest
 import logging
@@ -30,7 +23,8 @@ def test_full_workflow_with_all_components(self: Any) -> None:
             SENIORITY="senior",
             posting_text="Looking for a senior software engineer with Python experience",
         ),
-        RESUME=ResumeInput(name="Jane Doe", email="jane@example.com", sections={}),
+        RESUME=ResumeInput(
+            name="Jane Doe", email="jane@example.com", sections={}),
         user_id="test_user",
     )
 
@@ -55,7 +49,8 @@ def test_full_workflow_with_all_components(self: Any) -> None:
             ..
             .
             mock_strategy = Mock()
-            mock_strategy.branches = [Mock(description="Senior engineer strategy")]
+            mock_strategy.branches = [
+                Mock(description="Senior engineer strategy")]
 
             mock_execute.return_value = L2ResultBundle(
                 STRATEGY=mock_strategy,
@@ -90,7 +85,8 @@ def test_workflow_with_different_job_types(self: Any) -> None:
                 SENIORITY=seniority,
                 posting_text=f"Looking for a {title}",
             ),
-            RESUME=ResumeInput(name="Test User", email="test@example.com", sections={}),
+            RESUME=ResumeInput(
+                name="Test User", email="test@example.com", sections={}),
             user_id="test_user",
         )
 
@@ -103,7 +99,8 @@ def test_workflow_with_different_job_types(self: Any) -> None:
 def test_workflow_error_handling(self: Any) -> None:
     """Test workflow error handling and recovery."""
     CTX = ExecutionContext(
-        JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
+        JOB=JobInput(title="Test", role_type="test",
+                     seniority="mid", posting_text="test"),
         RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
         user_id="test_user",
     )
@@ -123,7 +120,8 @@ class TestWorkflowConfiguration:
 
 def test_workflow_config_customization(self: Any) -> None:
     """Test workflow configuration options."""
-    CONFIG = WorkflowConfig(enable_rag=True, enable_qa=True, enable_safety=True, max_drafts=3)
+    CONFIG = WorkflowConfig(enable_rag=True, enable_qa=True,
+                            enable_safety=True, max_drafts=3)
 
     assert config.enable_rag is True
     assert config.enable_qa is True
@@ -141,7 +139,8 @@ def test_workflow_with_custom_config(self: Any) -> None:
     )
 
     CTX = ExecutionContext(
-        JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
+        JOB=JobInput(title="Test", role_type="test",
+                     seniority="mid", posting_text="test"),
         RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
         user_id="test_user",
         CONFIG=config,
@@ -161,7 +160,8 @@ def test_workflow_execution_time(self: Any) -> None:
     import time
 
     CTX = ExecutionContext(
-        JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),
+        JOB=JobInput(title="Test", role_type="test",
+                     seniority="mid", posting_text="test"),
         RESUME=ResumeInput(name="Test", email="test@example.com", sections={}),
         user_id="test_user",
     )
@@ -193,3 +193,4 @@ def test_workflow_execution_time(self: Any) -> None:
 
 if __name__ == "__main__":
     pytest.main([__file__])
+

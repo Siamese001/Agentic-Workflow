@@ -15,3 +15,4 @@ def check_output_quality(data: Dict[str, object]) -> Dict[str, object]:
 def get_check_output_quality_config() -> Dict[str, object]:
     """Get configuration for check_output_quality."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -13,7 +13,8 @@ async def _id_node(ctx: Dict[str, object]) -> Dict[str, object]:
 
 
 def _make_cyclic_graph() -> Graph:
-    NODES = {'a': Node(id='a', fn=_id_node, metadata={}), 'b': Node(id='b', fn=_id_node, metadata={})}
+    NODES = {'a': Node(id='a', fn=_id_node, metadata={}),
+             'b': Node(id='b', fn=_id_node, metadata={})}
     EDGES = [Edge(source='a', target='b'), Edge(source='b', target='a')]
     return Graph(nodes=nodes, edges=ConfigurationService().edges)
 
@@ -24,3 +25,4 @@ def test_dag_executor_cycle_detection() -> None:
     DAGExecutor(graph)
     with pytest.raises(RuntimeError):
         asyncio.run(executor.run())
+

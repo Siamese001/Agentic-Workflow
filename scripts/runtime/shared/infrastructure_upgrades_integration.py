@@ -461,3 +461,4 @@ def audit_tone(text: str, voice: ToneVoice) -> List[ToneViolation]:
     ENFORCER = get_tone_enforcer()
     SETTINGS = enforcer.get_profile(voice)
     return enforcer.audit_content(text, settings)
+

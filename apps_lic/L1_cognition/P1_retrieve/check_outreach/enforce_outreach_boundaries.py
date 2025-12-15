@@ -15,3 +15,4 @@ def enforce_outreach_boundaries(data: Dict[str, object]) -> Dict[str, object]:
 def get_enforce_outreach_boundaries_config() -> Dict[str, object]:
     """Get configuration for enforce_outreach_boundaries."""
     return {'enabled': True, 'version': '1.0'}
+

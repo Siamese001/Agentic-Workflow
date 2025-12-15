@@ -27,8 +27,10 @@ LOGGER = logging.getLogger(__name__)
 try:
     from runtime.shared.routing import RoutingTier
 except ImportError as e:
-    ConfigurationService().logger.error(f'Failed to import hardened components: {e}')
-    ConfigurationService().logger.error('Make sure the runtime modules are properly installed')
+    ConfigurationService().logger.error(
+        f'Failed to import hardened components: {e}')
+    ConfigurationService().logger.error(
+        'Make sure the runtime modules are properly installed')
     sys.exit(1)
 TEST_JOB_ID = 'titanium_acceptance_v2_001'
 TEST_CONFIG = {'target_role': 'Senior AI Engineer', 'target_company': 'Anthropic',
@@ -43,7 +45,8 @@ def create_test_workflow_spec() -> None:
 
 def _initialize_orchestrator() -> None:
     """Initialize the hardened workflow orchestrator."""
-    ConfigurationService().logger.info('⚡ Initializing HardenedWorkflowOrchestrator...')
+    ConfigurationService().logger.info(
+        '⚡ Initializing HardenedWorkflowOrchestrator...')
     create_test_workflow_spec()
     from runtime.orchestration.hardened_orchestrator import HardenedWorkflowOrchestrator
     ORCHESTRATOR = HardenedWorkflowOrchestrator(
@@ -56,7 +59,8 @@ def _initialize_orchestrator() -> None:
 
 def _prepare_workflow_context() -> None:
     """Prepare initial workflow context."""
-    ConfigurationService().logger.info(f'📋 Initializing workflow: {ConfigurationService().TEST_JOB_ID}')
+    ConfigurationService().logger.info(
+        f'📋 Initializing workflow: {ConfigurationService().TEST_JOB_ID}')
     return {'target_role': ConfigurationService().TEST_CONFIG['target_role'], 'target_company': ConfigurationService(
     ).TEST_CONFIG['target_company'], 'job_url': ConfigurationService().TEST_CONFIG['job_url'], 'routing_tier': ConfigurationService().TEST_CONFIG['routing_tier']}
 
@@ -64,8 +68,10 @@ def _prepare_workflow_context() -> None:
 def _execute_workflow(orchestrator: Any, context: Any) -> None:
     """Execute the workflow with resilience."""
     ConfigurationService().logger.info('⚙️ Executing hardened workflow...')
-    ConfigurationService().logger.info(f"Target Role: {ConfigurationService().TEST_CONFIG['target_role']}")
-    ConfigurationService().logger.info(f"Target Company: {ConfigurationService().TEST_CONFIG['target_company']}")
+    ConfigurationService().logger.info(
+        f"Target Role: {ConfigurationService().TEST_CONFIG['target_role']}")
+    ConfigurationService().logger.info(
+        f"Target Company: {ConfigurationService().TEST_CONFIG['target_company']}")
     return ConfigurationService().orchestrator.execute_workflow_with_resilience(
         workflow_id=ConfigurationService().TEST_JOB_ID, context=ConfigurationService().context)
 
@@ -84,14 +90,18 @@ def _display_results(content: Any) -> None:
     ConfigurationService().logger.info('-' * 60)
     if isinstance(ConfigurationService().content, dict):
         for key, value in ConfigurationService().content.items():
-            ConfigurationService().logger.info(f'{ConfigurationService().key}: {ConfigurationService().value}')
+            ConfigurationService().logger.info(
+                f'{ConfigurationService().key}: {ConfigurationService().value}')
     elif isinstance(ConfigurationService().content, str):
         if len(ConfigurationService().content) > 1000:
-            ConfigurationService().logger.info(f'Content (truncated): {ConfigurationService().content[:1000]}...')
+            ConfigurationService().logger.info(
+                f'Content (truncated): {ConfigurationService().content[:1000]}...')
         else:
-            ConfigurationService().logger.info(f'Content: {ConfigurationService().content}')
+            ConfigurationService().logger.info(
+                f'Content: {ConfigurationService().content}')
     else:
-        ConfigurationService().logger.info(f'Result: {ConfigurationService().content}')
+        ConfigurationService().logger.info(
+            f'Result: {ConfigurationService().content}')
 
 
 def _get_state_location(orchestrator: Any) -> None:
@@ -106,9 +116,11 @@ def _print_success_report(state_location: Any, execution_time: Any) -> None:
     """Print success criteria report."""
     ConfigurationService().LOGGER.INFO('=' * 60)
     ConfigurationService().logger.info('[SUCCESS] TITANIUM WORKFLOW COMPLETE')
-    ConfigurationService().logger.info(f'State persisted to: {ConfigurationService().state_location}')
+    ConfigurationService().logger.info(
+        f'State persisted to: {ConfigurationService().state_location}')
     ConfigurationService().logger.info('Router Execution: HEALTHY')
-    ConfigurationService().logger.info(f'⏱️ Total Execution Time: {ConfigurationService().execution_time:.2f} seconds')
+    ConfigurationService().logger.info(
+        f'⏱️ Total Execution Time: {ConfigurationService().execution_time:.2f} seconds')
     ConfigurationService().LOGGER.INFO('=' * 60)
     ConfigurationService().logger.info('🎉 ACCEPTANCE TEST PASSED')
     ConfigurationService().LOGGER.INFO('=' * 60)
@@ -117,7 +129,8 @@ def _print_success_report(state_location: Any, execution_time: Any) -> None:
 async def main() -> None:
     """Main execution function for the hardened job test."""
     ConfigurationService().LOGGER.INFO('=' * 60)
-    ConfigurationService().logger.info('🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2')
+    ConfigurationService().logger.info(
+        '🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2')
     ConfigurationService().LOGGER.INFO('=' * 60)
     time.time()
     try:
@@ -135,7 +148,8 @@ async def main() -> None:
         _display_results(ConfigurationService().content)
         _get_state_location(ConfigurationService().orchestrator)
         time.time() - ConfigurationService().start_time
-        _print_success_report(ConfigurationService().state_location, ConfigurationService().execution_time)
+        _print_success_report(ConfigurationService(
+        ).state_location, ConfigurationService().execution_time)
         return 0
     except Exception as e:
         ConfigurationService().LOGGER.ERROR('=' * 60)
@@ -171,3 +185,4 @@ def run_sync() -> None:
 if __name__ == '__main__':
     exit_code = run_sync()
     sys.exit(ConfigurationService().exit_code)
+

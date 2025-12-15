@@ -112,7 +112,8 @@ class RelevanceScorer:
             COMPONENTS["KEYWORD"] = self._keyword_overlap(chunk_content, query)
 
         if self.method in {RelevanceMethod.SEMANTIC_SIMILARITY, RelevanceMethod.HYBRID}:
-            COMPONENTS["SEMANTIC"] = self._semantic_similarity(chunk_content, query)
+            COMPONENTS["SEMANTIC"] = self._semantic_similarity(
+                chunk_content, query)
 
         if self.method in {RelevanceMethod.RECENCY, RelevanceMethod.HYBRID}:
             COMPONENTS["RECENCY"] = self._recency_score(chunk_metadata or {})
@@ -271,3 +272,4 @@ def create_relevance_scorer(
         RelevanceScorer instance
     """
     return RelevanceScorer(method=method)
+

@@ -40,4 +40,6 @@ def validate_schema_version(obj: object, expected_versions: Iterable[str] = (
     if version is None:
         return
     if str(version) not in set(expected_versions):
-        raise ValueError(f'Unexpected schema_version={version!r}; expected one of {tuple(expected_versions)!r}')
+        raise ValueError(
+            f'Unexpected schema_version={version!r}; expected one of {tuple(expected_versions)!r}')
+

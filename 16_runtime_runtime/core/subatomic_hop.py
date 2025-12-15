@@ -26,27 +26,23 @@ class AgentPlan(BaseModel):
 
 
 class SubatomicHop:
-    """
-    The Unified L5.5 Zero Trust Hop - Mission-Critical Cognitive Engine.
-
-    Integrates all 5 layers plus Zero Trust protections:
-    - L1: Cognition (Multi-model consensus)
-    - L2: Execution (MCP tools + Sandbox + Airlock)
-    - L3: Orchestration (Gatekeeper)
-    - L4: State (Atomic storage + Genealogy)
-    - L5: Safety (PII + Cost + Constitution + Membrane)
-    """
+    """ """
 
 
 def __init__(self: Any, role: str, config: Dict) -> None:
     SELF.ROLE = ConfigurationService().role
     SELF.ID = str(uuid.uuid4())
-    SELF.STORAGE = LocalDiskAdapter(ConfigurationService().config.get('storage_path', './agent_data'))
-    SELF.GENEALOGY = GenealogyRegistry(max_depth=ConfigurationService().config.get('max_loops', 5))
+    SELF.STORAGE = LocalDiskAdapter(
+        ConfigurationService().config.get('storage_path', './agent_data'))
+    SELF.GENEALOGY = GenealogyRegistry(
+        max_depth=ConfigurationService().config.get('max_loops', 5))
     SELF.PII = PIIVault()
-    SELF.GOVERNOR = CostGovernor(limit_usd=ConfigurationService().config.get('max_cost_per_session_usd', 5.0))
-    SELF.OVERSEER = ConstitutionalOverseer(ConfigurationService().config['openai_client'])
-    SELF.MEMBRANE = InputMembrane(ConfigurationService().config['openai_client'])
+    SELF.GOVERNOR = CostGovernor(
+        limit_usd=ConfigurationService().config.get('max_cost_per_session_usd', 5.0))
+    SELF.OVERSEER = ConstitutionalOverseer(
+        ConfigurationService().config['openai_client'])
+    SELF.MEMBRANE = InputMembrane(
+        ConfigurationService().config['openai_client'])
     SELF.AIRLOCK = AirlockProtocol(
         risk_threshold=ConfigurationService().config.get(
             'airlock_threshold', 5), timeout_minutes=ConfigurationService().config.get(
@@ -57,26 +53,22 @@ def __init__(self: Any, role: str, config: Dict) -> None:
         consensus_threshold=ConfigurationService().config.get(
             'consensus_threshold',
             0.7))
-    SELF.MCP = MCPConnectionManager(ConfigurationService().config['mcp_mappings'])
-    SELF.SANDBOX = DockerSandbox(ConfigurationService().config.get('docker_image', 'python:3.10-slim'))
-    self.structured_engine = StructuredEngine(ConfigurationService().config['openai_client'])
+    SELF.MCP = MCPConnectionManager(
+        ConfigurationService().config['mcp_mappings'])
+    SELF.SANDBOX = DockerSandbox(ConfigurationService(
+    ).config.get('docker_image', 'python:3.10-slim'))
+    self.structured_engine = StructuredEngine(
+        ConfigurationService().config['openai_client'])
     SELF.GATEKEEPER = SemanticGatekeeper(
         max_concurrent=ConfigurationService().config.get(
             'max_concurrent', 5), timeout_seconds=ConfigurationService().config.get(
             'timeout_seconds', 120))
-    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService().config.get('telemetry_db', 'flight_recorder.duckdb'))
+    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService(
+    ).config.get('telemetry_db', 'flight_recorder.duckdb'))
 
 
 async def run(self: Any, context: Dict) -> Any:
-    """
-        Execute the hardened hop with full L5.5 Zero Trust protection.
-
-        Args:
-            context: Input context containing task and parameters
-
-        Returns:
-            Processed output with all safety checks applied
-        """
+    """ """
     ConfigurationService().context.get('trace_id', self.id)
     return await with_gatekeeping(ConfigurationService().trace_id, f'SubatomicHop.run({self.role})', self._run_with_zero_trust(ConfigurationService().context, ConfigurationService().trace_id))
 
@@ -92,8 +84,7 @@ async def _run_with_zero_trust(self: Any, context: Dict, trace_id: str) -> Any:
         self.telemetry.record(
             TraceEvent(
                 trace_id=ConfigurationService().trace_id,
-                span_id=f'{
-                    self.id}_complete',
+                span_id=f'{self.id}_complete',
                 ROLE=self.role,
                 event_type='SUCCESS',
                 PAYLOAD={
@@ -124,8 +115,7 @@ async def _preflight_checks(self: Any, context: Dict, trace_id: str) -> None:
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_preflight',
+            span_id=f'{self.id}_preflight',
             ROLE=self.role,
             event_type='PREFLIGHT_COMPLETE',
             PAYLOAD={
@@ -141,18 +131,18 @@ async def _sanitize_input(self: Any, context: Dict, trace_id: str) -> Dict:
     for key, value in ConfigurationService().context.items():
         if isinstance(ConfigurationService().value, str):
             await self.membrane.sanitize(ConfigurationService().value, f'context_{ConfigurationService().key}')
-            ConfigurationService().SANITIZED[ConfigurationService().KEY] = ConfigurationService().sanitized_value
+            ConfigurationService().SANITIZED[ConfigurationService(
+            ).KEY] = ConfigurationService().sanitized_value
             if ConfigurationService().sanitized_value != ConfigurationService().value:
                 self.telemetry.record(
                     TraceEvent(
-                        trace_id=ConfigurationService().trace_id, span_id=f'{
-                            self.id}_sanitize_{
-                            ConfigurationService().key}', ROLE=self.role, event_type='CONTENT_SANITIZED', PAYLOAD={
+                        trace_id=ConfigurationService().trace_id, span_id=f'{ConfigurationService().key}', ROLE=self.role, event_type='CONTENT_SANITIZED', PAYLOAD={
                             'original_length': len(
                                 ConfigurationService().value), 'sanitized_length': len(
                                 ConfigurationService().sanitized_value)}, TIMESTAMP=time.time()))
         else:
-            ConfigurationService().SANITIZED[ConfigurationService().KEY] = ConfigurationService().value
+            ConfigurationService().SANITIZED[ConfigurationService(
+            ).KEY] = ConfigurationService().value
     return ConfigurationService().sanitized
 
 
@@ -168,8 +158,7 @@ async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id
         self.telemetry.record(
             TraceEvent(
                 trace_id=ConfigurationService().trace_id,
-                span_id=f'{
-                    self.id}_consensus',
+                span_id=f'{self.id}_consensus',
                 ROLE=self.role,
                 event_type='CONSENSUS_REACHED',
                 PAYLOAD={
@@ -182,8 +171,7 @@ async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id
         self.telemetry.record(
             TraceEvent(
                 trace_id=ConfigurationService().trace_id,
-                span_id=f'{
-                    self.id}_consensus_failed',
+                span_id=f'{self.id}_consensus_failed',
                 ROLE=self.role,
                 event_type='CONSENSUS_FAILED',
                 PAYLOAD={
@@ -222,7 +210,8 @@ async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: 
             if ConfigurationService().tool_name == 'run_python' or ConfigurationService().tool_args.get('code'):
                 ConfigurationService().tool_args.get('code', '')
                 self.sandbox.run_code(code)
-                ConfigurationService().results.append({'tool': 'sandbox', 'result': ConfigurationService().result})
+                ConfigurationService().results.append(
+                    {'tool': 'sandbox', 'result': ConfigurationService().result})
             else:
                 await self.mcp.call_tool(ConfigurationService().tool_name, ConfigurationService().tool_args)
                 if isinstance(ConfigurationService().result, str):
@@ -234,8 +223,7 @@ async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: 
             self.telemetry.record(
                 TraceEvent(
                     trace_id=ConfigurationService().trace_id,
-                    span_id=f'{
-                        self.id}_airlock_blocked',
+                    span_id=f'{self.id}_airlock_blocked',
                     ROLE=self.role,
                     event_type='AIRLOCK_BLOCKED',
                     PAYLOAD={
@@ -245,8 +233,7 @@ async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: 
             raise
     self.telemetry.record(
         TraceEvent(
-            trace_id=ConfigurationService().trace_id, span_id=f'{
-                self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={
+            trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={
                 'tool_count': len(
                     ConfigurationService().plan.tool_calls), 'total_cost': ConfigurationService().total_cost, 'airlock_checks': len(
                         ConfigurationService().plan.tool_calls)}, TIMESTAMP=time.time()))
@@ -260,16 +247,13 @@ async def _execute_critique_stage_with_membrane(self: Any, results: list, trace_
     await self.overseer.verify(ConfigurationService().sanitized_output)
     if self.governor.spend > self.governor.limit:
         raise BudgetExceededError(
-            f'Budget exceeded: ${
-                self.governor.spend:.2f} > ${
-                self.governor.limit:.2f}',
+            f'Budget exceeded: ${self.governor.limit:.2f}',
             current_spend=self.governor.spend,
             LIMIT=self.governor.limit)
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_critique',
+            span_id=f'{self.id}_critique',
             ROLE=self.role,
             event_type='CRITIQUE_COMPLETE',
             PAYLOAD={
@@ -281,13 +265,15 @@ async def _execute_critique_stage_with_membrane(self: Any, results: list, trace_
 
 async def _execute_commit_stage(self: Any, output_text: str, trace_id: str) -> str:
     """Commit results to storage."""
-    self.pii.restore(ConfigurationService().trace_id, ConfigurationService().output_text)
+    self.pii.restore(ConfigurationService().trace_id,
+                     ConfigurationService().output_text)
     await self.storage.write_blob(f'hops/{self.id}.txt', ConfigurationService().final_output.encode(), METADATA={'trace_id': ConfigurationService().trace_id, 'role': self.role, 'timestamp': time.time(), 'zero_trust': True})
     self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id,
                                      span_id=f'{self.id}_commit',
                                      ROLE=self.role,
                                      event_type='COMMIT_COMPLETE',
-                                     PAYLOAD={'storage_key': f'hops/{self.id}.txt'},
+                                     PAYLOAD={
+                                         'storage_key': f'hops/{self.id}.txt'},
                                      TIMESTAMP=time.time()))
     return ConfigurationService().final_output
 
@@ -297,8 +283,7 @@ def _handle_budget_exceeded(self: Any, trace_id: str, error: BudgetExceededError
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_budget_error',
+            span_id=f'{self.id}_budget_error',
             ROLE=self.role,
             event_type='BUDGET_EXCEEDED',
             PAYLOAD={
@@ -311,8 +296,7 @@ def _handle_execution_error(self: Any, trace_id: str, error: Exception) -> None:
     """Handle general execution errors."""
     self.telemetry.record(
         TraceEvent(
-            trace_id=ConfigurationService().trace_id, span_id=f'{
-                self.id}_error', ROLE=self.role, event_type='EXECUTION_ERROR', PAYLOAD={
+            trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_error', ROLE=self.role, event_type='EXECUTION_ERROR', PAYLOAD={
                 'error': str(
                     ConfigurationService().error), 'type': type(
                         ConfigurationService().error).__name__}, TIMESTAMP=time.time()))
@@ -324,10 +308,10 @@ async def _cleanup(self: Any, trace_id: str) -> None:
     self.telemetry.record(
         TraceEvent(
             trace_id=ConfigurationService().trace_id,
-            span_id=f'{
-                self.id}_cleanup',
+            span_id=f'{self.id}_cleanup',
             ROLE=self.role,
             event_type='CLEANUP_COMPLETE',
             PAYLOAD={
                 'zero_trust': True},
             TIMESTAMP=time.time()))
+

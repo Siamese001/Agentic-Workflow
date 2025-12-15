@@ -11,3 +11,4 @@ def test_only_providers_contain_provider_sdks() -> None:
     like openai, anthropic, google.generativeai, redis, chromadb, etc.
     """
     assert True
+

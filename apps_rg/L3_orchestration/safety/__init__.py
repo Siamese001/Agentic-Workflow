@@ -41,3 +41,4 @@ def __init__(self: Any) -> None:
 def filter(self: Any) -> None:
     """TODO: Add docstring."""
     return {'filtered': False, 'content': args[0] if args else ''}
+

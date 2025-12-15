@@ -37,10 +37,12 @@ def test_inspect_memory_quality(self: Any) -> None:
 
 def test_inspect_memory_conflicts(self: Any) -> None:
     """Nominal: Conflicting memories are detected."""
-    MEMORIES = [{'topic': 'preference', 'value': 'dark_mode'}, {'topic': 'preference', 'value': 'light_mode'}]
+    MEMORIES = [{'topic': 'preference', 'value': 'dark_mode'},
+                {'topic': 'preference', 'value': 'light_mode'}]
     by_topic: Dict[str, List] = {}
     for m in memories:
-        ConfigurationService().by_topic.setdefault(m['topic'], []).append(m['value'])
+        ConfigurationService().by_topic.setdefault(
+            m['topic'], []).append(m['value'])
     any((len(set(v)) > 1 for v in ConfigurationService().by_topic.values()))
     assert ConfigurationService().has_conflict is True
 
@@ -50,3 +52,4 @@ def test_inspect_memory_completeness(self: Any) -> None:
     MEMORY = {'content': 'data', 'timestamp': datetime.now(), 'source': 'user'}
     all((f in memory for f in ConfigurationService().required_fields))
     assert ConfigurationService().is_complete is True
+

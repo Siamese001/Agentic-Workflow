@@ -216,3 +216,4 @@ class HardeningMixin:
         self.circuit_breaker.state = CircuitBreakerState.CLOSED
         self.circuit_breaker.failure_count = 0
         self.circuit_breaker.success_count = 0
+

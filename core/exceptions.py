@@ -10,12 +10,12 @@ from typing import Optional, Dict, Any
 
 class CanonError(Exception):
     """Base class for all Canon-related errors."""
-    
+
     def __init__(self, message: str, context: Optional[Dict[str, Any]] = None):
         super().__init__(message)
         self.message = message
         self.context = context or {}
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary for logging."""
         return {
@@ -28,11 +28,11 @@ class CanonError(Exception):
 class CanonViolationError(CanonError):
     """
     Raised when an agent attempts to violate Canon rules.
-    
+
     This is a critical error that halts agent execution
     and requires immediate attention.
     """
-    
+
     def __init__(
         self,
         message: str,
@@ -45,7 +45,7 @@ class CanonViolationError(CanonError):
         self.violation_type = violation_type
         self.agent_id = agent_id
         self.pattern_id = pattern_id
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result = super().to_dict()
         result.update({
@@ -59,11 +59,11 @@ class CanonViolationError(CanonError):
 class MemorySyncError(CanonError):
     """
     Raised when there's an error synchronizing with the shared memory.
-    
+
     This indicates a connectivity or consistency issue with
     Redis or Qdrant that prevents proper operation.
     """
-    
+
     def __init__(
         self,
         message: str,
@@ -76,7 +76,7 @@ class MemorySyncError(CanonError):
         self.operation = operation
         self.backend = backend
         self.retry_count = retry_count
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result = super().to_dict()
         result.update({
@@ -90,11 +90,11 @@ class MemorySyncError(CanonError):
 class SwarmInitializationError(CanonError):
     """
     Raised when the swarm fails to initialize properly.
-    
+
     This is a startup error that prevents the swarm
     from becoming operational.
     """
-    
+
     def __init__(
         self,
         message: str,
@@ -103,7 +103,7 @@ class SwarmInitializationError(CanonError):
     ):
         super().__init__(message, context)
         self.failed_component = failed_component
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result = super().to_dict()
         result.update({
@@ -115,10 +115,10 @@ class SwarmInitializationError(CanonError):
 class AgentExecutionError(CanonError):
     """
     Raised when an agent fails to execute its task.
-    
+
     This is a runtime error that may trigger retry logic.
     """
-    
+
     def __init__(
         self,
         message: str,
@@ -131,7 +131,7 @@ class AgentExecutionError(CanonError):
         self.agent_id = agent_id
         self.task = task
         self.retry_count = retry_count
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result = super().to_dict()
         result.update({
@@ -145,11 +145,11 @@ class AgentExecutionError(CanonError):
 class CanonTokenError(CanonError):
     """
     Raised when Canon token validation fails.
-    
+
     This indicates a security or integrity issue with
     the Canon verification process.
     """
-    
+
     def __init__(
         self,
         message: str,
@@ -160,7 +160,7 @@ class CanonTokenError(CanonError):
         super().__init__(message, context)
         self.token = token
         self.issuer = issuer
-    
+
     def to_dict(self) -> Dict[str, Any]:
         result = super().to_dict()
         result.update({
@@ -179,3 +179,4 @@ CANON_EXCEPTIONS = (
     AgentExecutionError,
     CanonTokenError
 )
+

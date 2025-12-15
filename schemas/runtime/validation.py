@@ -16,7 +16,8 @@ class ExecutionResult:
     """Standardized operation result container."""
     success: bool
     data: Optional[Union[str, int, float, bool, List, Dict]] = None
-    metadata: Dict[str, Union[str, int, float, bool, List, Dict]] = field(default_factory=dict)
+    metadata: Dict[str, Union[str, int, float, bool,
+                              List, Dict]] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 
@@ -37,7 +38,8 @@ class Validation:
                                              List,
                                              Dict]]] = None):
         SELF.CONFIG = config or {}
-        self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self._logger = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
                 """Docstring."""
@@ -142,11 +144,13 @@ class Validation:
 
         # Check length constraints
         if len(data) > max_length:
-            result["errors"].append(f"List exceeds maximum length of {max_length}")
+            result["errors"].append(
+                f"List exceeds maximum length of {max_length}")
             result["is_valid"] = False
 
         if len(data) < min_length:
-            result["errors"].append(f"List below minimum length of {min_length}")
+            result["errors"].append(
+                f"List below minimum length of {min_length}")
             result["is_valid"] = False
 
         # Check item types if homogeneous
@@ -169,11 +173,13 @@ class Validation:
 
         # Check length constraints
         if len(data) > max_length:
-            result["errors"].append(f"String exceeds maximum length of {max_length}")
+            result["errors"].append(
+                f"String exceeds maximum length of {max_length}")
             result["is_valid"] = False
 
         if len(data) < min_length:
-            result["errors"].append(f"String below minimum length of {min_length}")
+            result["errors"].append(
+                f"String below minimum length of {min_length}")
             result["is_valid"] = False
 
         # Check pattern if specified
@@ -181,7 +187,8 @@ class Validation:
         if pattern:
             import re
             if not re.match(pattern, data):
-                result["errors"].append(f"String does not match required pattern: {pattern}")
+                result["errors"].append(
+                    f"String does not match required pattern: {pattern}")
                 result["is_valid"] = False
 
         return result
@@ -193,11 +200,13 @@ class Validation:
 
         # Check value constraints
         if min_value is not None and data < min_value:
-            result["errors"].append(f"Value {data} is below minimum {min_value}")
+            result["errors"].append(
+                f"Value {data} is below minimum {min_value}")
             result["is_valid"] = False
 
         if max_value is not None and data > max_value:
-            result["errors"].append(f"Value {data} is above maximum {max_value}")
+            result["errors"].append(
+                f"Value {data} is above maximum {max_value}")
             result["is_valid"] = False
 
         return result
@@ -218,3 +227,4 @@ def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResu
     """Module-level entry point."""
     EXECUTOR = Validation()
     return executor.process(data)
+

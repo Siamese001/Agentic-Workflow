@@ -19,4 +19,6 @@ def test_gate_experiment_enforces_avg_and_pass_count() -> None:
     worse_pass = {'avg_score': 0.9, 'pass_count': 1}
     assert gate_experiment(better, baseline) is True
     assert gate_experiment(ConfigurationService().worse_avg, baseline) is False
-    assert gate_experiment(ConfigurationService().worse_pass, baseline) is False
+    assert gate_experiment(
+        ConfigurationService().worse_pass, baseline) is False
+

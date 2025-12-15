@@ -117,7 +117,8 @@ class ScriptsLoadPlanner:
         Returns:
             LoadPlanningResult: Complete planning result with load plan
         """
-        self.logger.info(f"Starting load planning for: {load_request.get('plan_name', 'unknown')}")
+        self.logger.info(
+            f"Starting load planning for: {load_request.get('plan_name', 'unknown')}")
 
         try:
             # Validate input request
@@ -130,7 +131,8 @@ class ScriptsLoadPlanner:
             TRANSFORMATIONS = self._parse_transformations(load_request)
 
             # Create load plan
-            load_plan = self._create_load_plan(load_request, sources, transformations)
+            load_plan = self._create_load_plan(
+                load_request, sources, transformations)
 
             # Estimate duration
             estimated_duration = self._estimate_load_duration(load_plan)
@@ -139,7 +141,8 @@ class ScriptsLoadPlanner:
             data_volume = self._estimate_data_volume(load_plan)
 
             # Calculate resource requirements
-            resource_requirements = self._calculate_resource_requirements(load_plan)
+            resource_requirements = self._calculate_resource_requirements(
+                load_plan)
 
             RESULT = LoadPlanningResult(
                 SUCCESS=True,
@@ -443,3 +446,4 @@ def plan_scripts_load(
         "errors": result.errors,
         "metadata": result.metadata
     }
+

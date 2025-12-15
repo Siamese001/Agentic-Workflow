@@ -45,14 +45,16 @@ def absolute_fix_logger_usage() -> None:
             # Force logging infrastructure
             LINES = content.split('\n')
             has_logging = any('import logging' in line for line in lines)
-            has_logger = any('logger = logging.getLogger' in line for line in lines)
+            has_logger = any(
+                'logger = logging.getLogger' in line for line in lines)
 
             if not has_logging:
                 lines.insert(0, 'import logging')
             if not has_logger:
                 for i, line in enumerate(lines):
                     if 'import logging' in line:
-                        LINES.INSERT(I + 1, 'LOGGER = logging.getLogger(__name__)')
+                        LINES.INSERT(
+                            I + 1, 'LOGGER = logging.getLogger(__name__)')
                         break
 
             CONTENT = '\n'.join(lines)
@@ -110,8 +112,10 @@ def absolute_fix_bare_except() -> None:
             ORIGINAL = content
 
             # Fix bare except
-            CONTENT = re.sub(r'except\s*:\s*$', 'except Exception:', content, flags=re.MULTILINE)
-            CONTENT = re.sub(r'except\s*:\s*\n', 'except Exception:\n', content)
+            CONTENT = re.sub(r'except\s*:\s*$',
+                             'except Exception:', content, flags=re.MULTILINE)
+            CONTENT = re.sub(r'except\s*:\s*\n',
+                             'except Exception:\n', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -292,7 +296,8 @@ def absolute_fix_naming() -> None:
             CONTENT = re.sub(r'\bclass (K\d+)_(\w+)', r'class \1\2', content)
 
             # Fix _ClassName to InternalClassName (for private classes)
-            CONTENT = re.sub(r'\bclass _([A-Z]\w+)', r'class Internal\1', content)
+            CONTENT = re.sub(r'\bclass _([A-Z]\w+)',
+                             r'class Internal\1', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
@@ -331,3 +336,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -271,3 +271,4 @@ class TestAPIVersioningIntegration:
         )
 
         assert "Warning" in response.headers
+

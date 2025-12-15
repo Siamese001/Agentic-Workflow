@@ -1,35 +1,47 @@
 import sys
-from typing import Protocol, Tuple, Optional
+from typing import Protocol, Tuple
 
 # --- Dependency Interfaces ---
 
+
 class Logger(Protocol):
     """Protocol for a logging mechanism."""
+
     def info(self, message: str) -> None: ...
     def warning(self, message: str) -> None: ...
     def error(self, message: str) -> None: ...
     def critical(self, message: str) -> None: ...
+
 
 class SystemCommandExecutor(Protocol):
     """
     Protocol for safely executing system commands.
     This executor enforces security policies and does NOT execute dangerous commands.
     """
-    def execute_safe_command(self, command: str, *, timeout: int = 60) -> Tuple[int, str, str]: ...
-    def attempt_destructive_command(self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]: ...
+
+    def execute_safe_command(self, command: str, *,
+                             timeout: int = 60) -> Tuple[int, str, str]: ...
+    def attempt_destructive_command(
+        self, command: str, *, timeout: int = 60, confirmed: bool = False) -> Tuple[int, str, str]: ...
 
 # --- Concrete Implementations of Dependencies ---
 
+
 class ConsoleLogger:
     """A simple console logger."""
+
     def info(self, message: str) -> None:
         print(f"INFO: {message}")
+
     def warning(self, message: str) -> None:
         print(f"WARNING: {message}")
+
     def error(self, message: str) -> None:
         print(f"ERROR: {message}", file=sys.stderr)
+
     def critical(self, message: str) -> None:
         print(f"CRITICAL: {message}", file=sys.stderr)
+
 
 class SafeSystemCommandExecutor:
     """
@@ -51,7 +63,7 @@ class SafeSystemCommandExecutor:
         # This is a simplified check for illustration. A real system would require
         # sophisticated command parsing, argument sanitization, and a robust whitelist.
         for dangerous_cmd in self.DANGEROUS_COMMANDS:
-            if dangerous_cmd in command: # Simple substring check
+            if dangerous_cmd in command:  # Simple substring check
                 return True
         return False
 
@@ -62,10 +74,12 @@ class SafeSystemCommandExecutor:
         requires a strict whitelist and context-specific Canon IDs.
         """
         if self._is_dangerous(command):
-            self._logger.critical(f"SECURITY VIOLATION: Attempted to execute dangerous command through 'execute_safe_command': '{command}'")
+            self._logger.critical(
+                f"SECURITY VIOLATION: Attempted to execute dangerous command through 'execute_safe_command': '{command}'")
             return 1, "", f"SECURITY VIOLATION: Dangerous command '{command}' blocked."
 
-        self._logger.info(f"SIMULATING SAFE COMMAND EXECUTION: '{command}' with timeout {timeout}s")
+        self._logger.info(
+            f"SIMULATING SAFE COMMAND EXECUTION: '{command}' with timeout {timeout}s")
         # In a real ActionNode system, this would involve subprocess.run with strict parameter
         # validation against approved Canon IDs, secure environment, and resource limits.
         # For now, we simulate success for non-dangerous commands.
@@ -97,6 +111,7 @@ class SafeSystemCommandExecutor:
 
 # --- Repaired Functions ---
 
+
 def delete_system(
     *,
     logger: Logger,
@@ -116,7 +131,8 @@ def delete_system(
     Returns:
         A string summarizing the outcome of the attempted operations.
     """
-    logger.info("Initiating request for system deletion actions. These are always blocked by policy.")
+    logger.info(
+        "Initiating request for system deletion actions. These are always blocked by policy.")
 
     # Define dangerous commands as constants for clarity and potential reuse.
     # This addresses 'DON'T REPEAT YOURSELF' for the command definitions themselves,
@@ -135,14 +151,19 @@ def delete_system(
             timeout=5
         )
         if exit_code != 0:
-            logger.error(f"Failed to execute '{DELETE_ROOT_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
-            results.append(f"Attempt to delete root: FAILED - {stderr if stderr else 'Security Blocked'}")
+            logger.error(
+                f"Failed to execute '{DELETE_ROOT_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
+            results.append(
+                f"Attempt to delete root: FAILED - {stderr if stderr else 'Security Blocked'}")
         else:
             # This branch implies a simulated success of *blocking* the action.
-            logger.info(f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
-            results.append(f"Attempt to delete root: SUCCESS (Simulated/Blocked) - {stdout}")
-    except Exception as e: # Violation 8, 17: Failure Atomicity, Error Propagation
-        logger.critical(f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
+            logger.info(
+                f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
+            results.append(
+                f"Attempt to delete root: SUCCESS (Simulated/Blocked) - {stdout}")
+    except Exception as e:  # Violation 8, 17: Failure Atomicity, Error Propagation
+        logger.critical(
+            f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
         results.append(f"Attempt to delete root: CRITICAL EXCEPTION - {e}")
 
     # Attempt to format C: drive
@@ -154,13 +175,18 @@ def delete_system(
             timeout=10
         )
         if exit_code != 0:
-            logger.error(f"Failed to execute '{FORMAT_C_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
-            results.append(f"Attempt to format C: FAILED - {stderr if stderr else 'Security Blocked'}")
+            logger.error(
+                f"Failed to execute '{FORMAT_C_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
+            results.append(
+                f"Attempt to format C: FAILED - {stderr if stderr else 'Security Blocked'}")
         else:
-            logger.info(f"Successfully simulated (blocked) '{FORMAT_C_COMMAND}'. Stdout: {stdout}")
-            results.append(f"Attempt to format C: SUCCESS (Simulated/Blocked) - {stdout}")
-    except Exception as e: # Violation 8, 17: Failure Atomicity, Error Propagation
-        logger.critical(f"CRITICAL EXCEPTION during '{FORMAT_C_COMMAND}' attempt: {e}", exc_info=True)
+            logger.info(
+                f"Successfully simulated (blocked) '{FORMAT_C_COMMAND}'. Stdout: {stdout}")
+            results.append(
+                f"Attempt to format C: SUCCESS (Simulated/Blocked) - {stdout}")
+    except Exception as e:  # Violation 8, 17: Failure Atomicity, Error Propagation
+        logger.critical(
+            f"CRITICAL EXCEPTION during '{FORMAT_C_COMMAND}' attempt: {e}", exc_info=True)
         results.append(f"Attempt to format C: CRITICAL EXCEPTION - {e}")
 
     # Violation 7, 34: Observability, Audit Trail - summarized outcome
@@ -168,6 +194,7 @@ def delete_system(
     logger.info(f"Final status of delete_system operations: {final_status}")
     logger.info(f"Detailed results: {'; '.join(results)}")
     return final_status
+
 
 def run(
     *,
@@ -188,7 +215,8 @@ def run(
     Returns:
         A string summarizing the outcome of the attempted operation.
     """
-    logger.info("Initiating request for a single destructive action. This is always blocked by policy.")
+    logger.info(
+        "Initiating request for a single destructive action. This is always blocked by policy.")
 
     # Define dangerous command as a constant.
     DELETE_ROOT_COMMAND: str = 'rm -rf /'
@@ -201,12 +229,16 @@ def run(
             timeout=5
         )
         if exit_code != 0:
-            logger.error(f"Failed to execute '{DELETE_ROOT_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
+            logger.error(
+                f"Failed to execute '{DELETE_ROOT_COMMAND}'. Stderr: {stderr}. Stdout: {stdout}")
             return f"FAILED to run destructive action: {stderr if stderr else 'Security Blocked'}"
         else:
             # This branch implies a simulated success of *blocking* the action.
-            logger.info(f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
+            logger.info(
+                f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
             return f"SUCCESS (Simulated/Blocked) running destructive action: {stdout}"
     except Exception as e:
-        logger.critical(f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
+        logger.critical(
+            f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
         return f"CRITICAL EXCEPTION running destructive action: {e}"
+

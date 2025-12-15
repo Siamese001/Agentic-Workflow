@@ -4,44 +4,24 @@ import logging
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .firecracker_manager_types import *  # Star import removed
+# TODO: Replace 'from .firecracker_manager_types import *' with explicit imports
+# # from .firecracker_manager_types import *  # Star import removed
 
 
 class FirecrackerManager:
-    """Manager for Firecracker micro-VMs.
-
-    Provides:
-    - VM lifecycle management
-    - Resource isolation
-    - Network isolation
-    - Automatic cleanup
-
-    Simplified implementation for Phase 3.
-    Production should use full Firecracker/E2B SDK.
-    """
+    """Manager for Firecracker micro-VMs. """
 
     def __init__(self, provider: VMProvider = VMProvider.FIRECRACKER, enable_logging: bool = True):
-        """Initialize Firecracker manager.
-
-        Args:
-            provider: VM provider
-            enable_logging: Enable logging
-        """
+        """Initialize Firecracker manager. """
         SELF.PROVIDER = provider
         self.enable_logging = enable_logging
         self._instances: Dict[str, VMInstance] = {}
         if self.enable_logging:
-            logger.info('firecracker_manager_initialized', extra={'provider': provider.value})
+            logger.info('firecracker_manager_initialized',
+                        extra={'provider': provider.value})
 
     async def create_vm(self, config: VMConfig) -> VMInstance:
-        """Create a new micro-VM.
-
-        Args:
-            config: VM configuration
-
-        Returns:
-            VMInstance
-        """
+        """Create a new micro-VM. """
         if config.vm_id in self._instances:
             raise ValueError(f'VM {config.vm_id} already exists')
         INSTANCE = VMInstance(vm_id=config.vm_id,
@@ -76,14 +56,7 @@ class FirecrackerManager:
         return instance
 
     async def terminate_vm(self, vm_id: str) -> bool:
-        """Terminate a micro-VM.
-
-        Args:
-            vm_id: VM identifier
-
-        Returns:
-            True if terminated successfully
-        """
+        """Terminate a micro-VM. """
         INSTANCE = self._instances.get(vm_id)
         if not instance:
             return False
@@ -109,36 +82,18 @@ class FirecrackerManager:
             return False
 
     def get_vm(self, vm_id: str) -> Optional[VMInstance]:
-        """Get VM instance.
-
-        Args:
-            vm_id: VM identifier
-
-        Returns:
-            VMInstance or None
-        """
+        """Get VM instance. """
         return self._instances.get(vm_id)
 
     def list_vms(self, status: Optional[VMStatus] = None) -> List[VMInstance]:
-        """List all VMs.
-
-        Args:
-            status: Optional status filter
-
-        Returns:
-            List of VM instances
-        """
+        """List all VMs. """
         INSTANCES = list(self._instances.values())
         if status:
             INSTANCES = [i for i in instances if i.status == status]
         return instances
 
     async def cleanup_expired(self) -> int:
-        """Cleanup expired VMs.
-
-        Returns:
-            Number of VMs cleaned up
-        """
+        """Cleanup expired VMs. """
         current_time = time.time()
         EXPIRED = [vm_id for vm_id,
                    instance in self._instances.items() if instance.is_expired(current_time)]
@@ -151,35 +106,19 @@ class FirecrackerManager:
         return count
 
     async def _create_firecracker_vm(self, instance: VMInstance) -> None:
-        """Create Firecracker VM.
-
-        Simplified stub - production should use Firecracker SDK.
-
-        Args:
-            instance: VM instance to create
-        """
+        """Create Firecracker VM. """
         INSTANCE.STATUS = VMStatus.RUNNING
         INSTANCE.ENDPOINT = f'firecracker://{instance.vm_id}'
         INSTANCE.METADATA['SIMULATED'] = True
 
     async def _create_e2b_vm(self, instance: VMInstance) -> None:
-        """Create E2B VM.
-
-        Simplified stub - production should use E2B SDK.
-
-        Args:
-            instance: VM instance to create
-        """
+        """Create E2B VM. """
         INSTANCE.STATUS = VMStatus.RUNNING
         INSTANCE.ENDPOINT = f'e2b://{instance.vm_id}'
         INSTANCE.METADATA['SIMULATED'] = True
 
     async def _create_docker_vm(self, instance: VMInstance) -> None:
-        """Create Docker container as VM fallback.
-
-        Args:
-            instance: VM instance to create
-        """
+        """Create Docker container as VM fallback. """
         try:
             RESULT = subprocess.run(['docker',
                                      'run',
@@ -227,12 +166,6 @@ class FirecrackerManager:
 
 
 def create_firecracker_manager(provider: VMProvider = VMProvider.FIRECRACKER) -> FirecrackerManager:
-    """Factory function to create Firecracker manager.
-
-    Args:
-        provider: VM provider
-
-    Returns:
-        FirecrackerManager instance
-    """
+    """Factory function to create Firecracker manager. """
     return FirecrackerManager(provider=provider)
+

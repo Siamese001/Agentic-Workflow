@@ -141,7 +141,8 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
                                     # Replace the block with the filtered version
                                     LINES[I:J + 1] = [new_block[0] +
                                                       '\n'] +
-                                    [l + '\n' for l in new_block[1:-1]] + [new_block[-1]]
+                                    [l + '\n' for l in new_block[1:-1]] + \
+                                        [new_block[-1]]
                                     MODIFIED = True
                                     break
 
@@ -182,8 +183,10 @@ def main():
                 files_modified += 1
                 total_removed += len(unused_imports)
 
-    logger.info(f"\nRemoved {total_removed} unused imports from {files_modified} files")
+    logger.info(
+        f"\nRemoved {total_removed} unused imports from {files_modified} files")
 
 
 if __name__ == "__main__":
     main()
+

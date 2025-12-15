@@ -10,3 +10,4 @@ class HopStatus(Enum):
 
 class GateDecision(Enum):
     """Decision from a validation gate."""
+

@@ -127,7 +127,8 @@ class MessagePlanner:
         self.section_templates = self._build_section_templates()
 
         # Section priority order
-        self.default_priority = ["subject", "hook", "value", "cta", "signature"]
+        self.default_priority = ["subject",
+            "hook", "value", "cta", "signature"]
 
     def _build_section_templates(self) -> Dict[str, Dict[str, object]]:
         """Build section templates for message planning."""
@@ -206,16 +207,20 @@ class MessagePlanner:
         temperature_schedule = self._calculate_temperature_schedule(archetype)
 
         # 3. Determine archetype-specific constraints
-        CONSTRAINTS = self._determine_constraints(content, archetype, grounding_plan)
+        CONSTRAINTS = self._determine_constraints(
+            content, archetype, grounding_plan)
 
         # 4. Set section priority order
-        priority_order = self._determine_priority_order(archetype, outreach_context)
+        priority_order = self._determine_priority_order(
+            archetype, outreach_context)
 
         # 5. Calculate total target length
-        total_target_length = sum(section.max_length for section in sections.values())
+        total_target_length = sum(
+            section.max_length for section in sections.values())
 
         # 6. Calculate confidence score
-        confidence_score = self._calculate_confidence_score(sections, content, archetype)
+        confidence_score = self._calculate_confidence_score(
+            sections, content, archetype)
 
         # 7. Build metadata
         METADATA = {
@@ -272,18 +277,22 @@ class MessagePlanner:
 
             # Apply persona-based refinements
             if persona_plan:
-                SECTION = self._apply_persona_refinements(section, persona_plan, archetype)
+                SECTION = self._apply_persona_refinements(
+                    section, persona_plan, archetype)
 
             # Apply grounding-based constraints
             if grounding_plan:
-                SECTION = self._apply_grounding_constraints(section, grounding_plan)
+                SECTION = self._apply_grounding_constraints(
+                    section, grounding_plan)
 
             # Apply fusion-based content strategy
             if fusion_plan:
-                SECTION = self._apply_fusion_strategy(section, fusion_plan, section_name)
+                SECTION = self._apply_fusion_strategy(
+                    section, fusion_plan, section_name)
 
             # Apply archetype-specific content strategy
-            section.content_strategy = self._determine_content_strategy(section_name, archetype)
+            section.content_strategy = self._determine_content_strategy(
+                section_name, archetype)
 
             sections[section_name] = section
 
@@ -297,11 +306,15 @@ class MessagePlanner:
         # Adjust based on persona parameters
         if hasattr(persona_plan, 'detail_level'):
             if persona_plan.detail_level == "high" and section.section_type == "value":
-                section.max_length = int(section.max_length * 1.2)  # Allow more detail
-                section.word_count_target = int(section.word_count_target * 1.2)
+                section.max_length = int(
+                    section.max_length * 1.2)  # Allow more detail
+                section.word_count_target = int(
+                    section.word_count_target * 1.2)
             elif persona_plan.detail_level == "low" and section.section_type in ["hook", "value"]:
-                section.max_length = int(section.max_length * 0.8)  # Be more concise
-                section.word_count_target = int(section.word_count_target * 0.8)
+                section.max_length = int(
+                    section.max_length * 0.8)  # Be more concise
+                section.word_count_target = int(
+                    section.word_count_target * 0.8)
 
         if hasattr(persona_plan, 'communication_style'):
             if persona_plan.communication_style == "formal" and section.section_type == "subject":
@@ -532,3 +545,4 @@ class MessagePlanner:
             warnings.append("Brevity constraint conflicts with large target length")
 
         return warnings
+

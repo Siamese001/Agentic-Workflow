@@ -229,3 +229,4 @@ class TestResumeExport:
             "cover_letter": "cover_letter.pdf",
         }
         assert "cover_letter" in package
+

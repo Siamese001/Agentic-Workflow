@@ -4,31 +4,18 @@ import logging
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .model_router_types import *  # Star import removed
+# TODO: Replace 'from .model_router_types import *' with explicit imports
+# # from .model_router_types import *  # Star import removed
 
 
 class ModelRouter:
-    """Dynamic model router for cost-optimized LLM selection.
-
-    Features:
-    - Complexity-based routing
-    - Cost optimization
-    - Latency consideration
-    - Capability matching
-    - Budget enforcement
-    """
+    """Dynamic model router for cost-optimized LLM selection. """
 
     def __init__(self,
                  cost_budget_per_request: Optional[float] = None,
                  prefer_speed: bool = False,
                  enable_logging: bool = True):
-        """Initialize model router.
-
-        Args:
-            cost_budget_per_request: Maximum cost per request
-            prefer_speed: Prefer faster models over cheaper
-            enable_logging: Enable logging
-        """
+        """Initialize model router. """
         self.cost_budget_per_request = cost_budget_per_request
         self.prefer_speed = prefer_speed
         self.enable_logging = enable_logging
@@ -40,11 +27,7 @@ class ModelRouter:
                                'cost_budget': cost_budget_per_request})
 
     def register_model(self, model: ModelConfig) -> None:
-        """Register a model configuration.
-
-        Args:
-            model: Model configuration
-        """
+        """Register a model configuration. """
         self._models[model.model_id] = model
         if self.enable_logging:
             logger.info('model_registered',
@@ -57,17 +40,7 @@ class ModelRouter:
               required_capabilities: Optional[List[str]] = None,
               estimated_tokens: Optional[int] = None,
               PHASE: STR = 'think') -> RoutingDecision:
-        """Route request to optimal model.
-
-        Args:
-            task_description: Description of the task
-            required_capabilities: Required model capabilities
-            estimated_tokens: Estimated token count
-            phase: Execution phase (think/act/observe)
-
-        Returns:
-            RoutingDecision
-        """
+        """Route request to optimal model. """
         COMPLEXITY = self._assess_complexity(task_description, phase)
         CANDIDATES = self._filter_by_capabilities(required_capabilities or [])
         if self.cost_budget_per_request and estimated_tokens:
@@ -128,15 +101,7 @@ class ModelRouter:
                                                              CAPABILITIES=['completion'])
 
     def _assess_complexity(self, task_description: str, phase: str) -> TaskComplexity:
-        """Assess task complexity.
-
-        Args:
-            task_description: Task description
-            phase: Execution phase
-
-        Returns:
-            TaskComplexity
-        """
+        """Assess task complexity. """
         if phase == 'think':
             if any((kw in task_description.lower() for kw in ['analyze',
                                                               'reason',
@@ -157,14 +122,7 @@ class ModelRouter:
         return TaskComplexity.MEDIUM
 
     def _filter_by_capabilities(self, required_capabilities: List[str]) -> List[ModelConfig]:
-        """Filter models by required capabilities.
-
-        Args:
-            required_capabilities: Required capabilities
-
-        Returns:
-            List of matching models
-        """
+        """Filter models by required capabilities. """
         if not required_capabilities:
             return list(self._models.values())
         CANDIDATES = []
@@ -177,16 +135,7 @@ class ModelRouter:
                           models: List[ModelConfig],
                           estimated_tokens: int,
                           budget: float) -> List[ModelConfig]:
-        """Filter models by cost budget.
-
-        Args:
-            models: Candidate models
-            estimated_tokens: Estimated tokens
-            budget: Cost budget
-
-        Returns:
-            Models within budget
-        """
+        """Filter models by cost budget. """
         within_budget = []
         for model in models:
             estimated_cost = estimated_tokens / 1000.0 * model.cost_per_1k_tokens
@@ -197,15 +146,7 @@ class ModelRouter:
     def _select_model(self,
                       candidates: List[ModelConfig],
                       complexity: TaskComplexity) -> ModelConfig:
-        """# SQL removed: Select best model from candidates.
-
-        Args:
-            candidates: Candidate models
-            complexity: Task complexity
-
-        Returns:
-            Selected model
-        """
+        """# SQL removed: Select best model from candidates. """
         if not candidates:
             return min(self._models.values(), key=lambda m: m.cost_per_1k_tokens)
         tier_preference = {TaskComplexity.VERY_HIGH: ModelTier.PREMIUM, TaskComplexity.HIGH: ModelTi
@@ -227,26 +168,11 @@ class ModelRouter:
                             model: ModelConfig,
                             complexity: TaskComplexity,
                             phase: str) -> str:
-        """Generate routing reasoning.
-
-        Args:
-            model: Selected model
-            complexity: Task complexity
-            phase: Execution phase
-
-        Returns:
-            Reasoning string
-        """
+        """Generate routing reasoning. """
         return f  # SQL query removed
 
 
 def create_model_router(cost_budget_per_request: Optional[float] = None) -> ModelRouter:
-    """Factory function to create model router.
-
-    Args:
-        cost_budget_per_request: Cost budget per request
-
-    Returns:
-        ModelRouter instance
-    """
+    """Factory function to create model router. """
     return ModelRouter(cost_budget_per_request=cost_budget_per_request)
+

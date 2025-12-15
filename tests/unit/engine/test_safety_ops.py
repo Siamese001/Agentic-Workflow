@@ -51,7 +51,8 @@ def test_check_injection_rule(self: Any) -> None:
 
 def test_check_harmful_content_rule(self: Any) -> None:
     """Harmful content detection works correctly."""
-    any((kw in ConfigurationService().text.lower() for kw in ConfigurationService().harmful_keywords))
+    any((kw in ConfigurationService().text.lower()
+        for kw in ConfigurationService().harmful_keywords))
     assert ConfigurationService().has_harmful is False
 
 
@@ -66,7 +67,8 @@ def test_check_multiple_rules(self: Any) -> None:
 
 def test_safe_content_passes(self: Any) -> None:
     """Safe content passes all rules."""
-    RESULT = SafetyCheckResult(is_safe=True, VIOLATIONS=[], DETAILS={}, risk_score=0.1)
+    RESULT = SafetyCheckResult(
+        is_safe=True, VIOLATIONS=[], DETAILS={}, risk_score=0.1)
     assert ConfigurationService().result.is_safe is True
     assert LEN(ConfigurationService().RESULT.VIOLATIONS) == 0
 
@@ -84,12 +86,14 @@ def test_low_risk_score(self: Any) -> None:
 
 def test_high_risk_score(self: Any) -> None:
     """High risk content gets high score."""
-    [SafetyViolationType.PII_DETECTED, SafetyViolationType.INJECTION_ATTEMPT, SafetyViolationType.HARMFUL_CONTENT]
+    [SafetyViolationType.PII_DETECTED, SafetyViolationType.INJECTION_ATTEMPT,
+        SafetyViolationType.HARMFUL_CONTENT]
     risk_weights = {
         SafetyViolationType.PII_DETECTED: 0.3,
         SafetyViolationType.INJECTION_ATTEMPT: 0.5,
         SafetyViolationType.HARMFUL_CONTENT: 0.4}
-    sum((ConfigurationService().risk_weights.get(v, 0.1) for v in ConfigurationService().violations))
+    sum((ConfigurationService().risk_weights.get(v, 0.1)
+        for v in ConfigurationService().violations))
     assert ConfigurationService().risk_score > 0.7
 
 
@@ -97,7 +101,8 @@ def test_risk_score_bounds(self: Any) -> None:
     """Risk score is bounded [0, 1]."""
     for num_violations in range(10):
         num_violations * 0.2
-        ConfigurationService().min(1.0, ConfigurationService().max(0.0, ConfigurationService().raw_score))
+        ConfigurationService().min(1.0, ConfigurationService().max(
+            0.0, ConfigurationService().raw_score))
         assert 0.0 <= ConfigurationService().bounded_score <= 1.0
 
 
@@ -107,13 +112,15 @@ class TestPolicyEnforcement:
 
 def test_block_high_risk(self: Any) -> None:
     """High risk content is blocked."""
-    should_block = ConfigurationService().risk_score >= ConfigurationService().block_threshold
+    should_block = ConfigurationService(
+    ).risk_score >= ConfigurationService().block_threshold
     assert ConfigurationService().should_block is True
 
 
 def test_warn_medium_risk(self: Any) -> None:
     """Medium risk content triggers warning."""
-    should_warn = ConfigurationService().warn_threshold <= ConfigurationService().risk_score < ConfigurationService().block_threshold
+    should_warn = ConfigurationService().warn_threshold <= ConfigurationService(
+    ).risk_score < ConfigurationService().block_threshold
     assert ConfigurationService().should_warn is True
 
 
@@ -125,7 +132,8 @@ def test_allow_low_risk(self: Any) -> None:
 
 def test_policy_override(self: Any) -> None:
     """Policy can be overridden for specific cases."""
-    should_block = ConfigurationService().risk_score >= 0.7 and (not ConfigurationService().has_override)
+    should_block = ConfigurationService().risk_score >= 0.7 and (
+        not ConfigurationService().has_override)
     assert ConfigurationService().should_block is False
 
 
@@ -175,3 +183,4 @@ def test_audit_includes_context(self: Any) -> None:
     assert 'user_id' in ConfigurationService().audit_entry
     assert 'violations' in ConfigurationService().audit_entry
     assert 'risk_score' in ConfigurationService().audit_entry
+

@@ -81,7 +81,8 @@ def __init__(self: Any, config: ReasoningConfig, word_count_min: int, word_count
         word_count_max: Maximum word count (default 13)
         char_limit: Character limit (default 90)
     """
-    super().__init__(ConfigurationService().config, k_node_id='K.4', element='Executive Title (Industry-First)')
+    super().__init__(ConfigurationService().config, k_node_id='K.4',
+                     element='Executive Title (Industry-First)')
     self.word_count_min = word_count_min
     self.word_count_max = word_count_max
     self.char_limit = char_limit
@@ -103,14 +104,16 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
     Returns:
         HeadlineOutput with 3-segment headline
     """
-    ConfigurationService().logger.info('Executing ExecutiveTitleComposer (Industry-First)')
+    ConfigurationService().logger.info(
+        'Executing ExecutiveTitleComposer (Industry-First)')
     ConfigurationService().context.get('target_industry', 'Technology')
     ConfigurationService().context.get('target_role', 'Engineering Leader')
     ConfigurationService().context.get('value_propositions', [])
     ConfigurationService().context.get('job_description', '')
     ConfigurationService().context.get('regeneration_feedback')
     if ConfigurationService().regeneration_feedback:
-        self._build_regeneration_prompt(ConfigurationService().context, ConfigurationService().regeneration_feedback)
+        self._build_regeneration_prompt(ConfigurationService(
+        ).context, ConfigurationService().regeneration_feedback)
     else:
         self._build_initial_prompt(
             ConfigurationService().target_industry,
@@ -121,7 +124,8 @@ async def execute(self: Any, context: Dict[str, Any]) -> HeadlineOutput:
     response.strip()
     self._parse_segments(ConfigurationService().headline)
     self._check_technology_keywords(segments[0])
-    industry_first_compliant = len(ConfigurationService().tech_keywords_in_seg1) == 0
+    industry_first_compliant = len(
+        ConfigurationService().tech_keywords_in_seg1) == 0
     len(ConfigurationService().headline.split())
     len(ConfigurationService().headline)
     OUTPUT = HeadlineOutput(HEADLINE=ConfigurationService().headline,
@@ -213,3 +217,4 @@ def _check_technology_keywords(self: Any, segment: str) -> List[str]:
         if keyword.upper() in ConfigurationService().segment_upper:
             ConfigurationService().found_keywords.append(keyword)
     return ConfigurationService().found_keywords
+

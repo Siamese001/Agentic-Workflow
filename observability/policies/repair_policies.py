@@ -27,3 +27,4 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
             ConfigurationService().actions.append(RepairAction(
                 KIND='observe', REASON=f'Low-severity failure: {sig.code}', METADATA={'signal': sig}))
     return ConfigurationService().actions
+

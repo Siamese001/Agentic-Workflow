@@ -1,8 +1,4 @@
-"""Think-Act-Observe Cycle Implementation.
-
-Phase 2 - Pillar 4: Workflow (DAGs)
-Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integration.
-"""
+"""Think-Act-Observe Cycle Implementation. """
 
 import logging
 from typing import Any, Dict, List, Optional
@@ -57,32 +53,14 @@ class CycleState:
 
 
 class ThinkActObserveEngine:
-    """Engine for executing the Think-Act-Observe cycle.
-
-    Integrates:
-    - ReAct engine for structured reasoning (Pillar 6)
-    - DAG engine for task dependencies (Pillar 4)
-    - State persistence for pause/resume
-
-    5-Step Cycle:
-    1. MISSION - Define the goal
-    2. SCENE - Gather context
-    3. THINK - Plan next actions (uses ReAct)
-    4. ACT - Execute actions (uses DAG)
-    5. OBSERVE - Interpret results and update state
-    """
+    """Engine for executing the Think-Act-Observe cycle. """
 
     def __init__(
         self,
         config: Optional[CycleConfig] = None,
         enable_logging: bool = True,
     ):
-        """Initialize Think-Act-Observe engine.
-
-        Args:
-            config: Cycle configuration
-            enable_logging: Enable logging
-        """
+        """Initialize Think-Act-Observe engine. """
         SELF.CONFIG = config or CycleConfig()
         self.enable_logging = enable_logging
 
@@ -115,17 +93,7 @@ class ThinkActObserveEngine:
         think_fn: Any,
         act_fn: Any,
     ) -> Dict[str, Any]:
-        """Execute the full Think-Act-Observe cycle.
-
-        Args:
-            mission: The mission/goal to accomplish
-            scene: Initial scene/context
-            think_fn: Function for thinking/planning
-            act_fn: Function for executing actions
-
-        Returns:
-            Final result with observations and state
-        """
+        """Execute the full Think-Act-Observe cycle. """
         # Initialize state
         SELF.STATE = CycleState(
             MISSION=mission,
@@ -206,14 +174,7 @@ class ThinkActObserveEngine:
         return final_result
 
     async def _think_phase(self, think_fn: Any) -> Dict[str, Any]:
-        """Execute THINK phase using ReAct engine.
-
-        Args:
-            think_fn: Function for LLM thinking
-
-        Returns:
-            Thinking result with planned actions
-        """
+        """Execute THINK phase using ReAct engine. """
         self.state.current_phase = "think"
 
         if self.enable_logging:
@@ -292,15 +253,7 @@ class ThinkActObserveEngine:
         actions: List[Dict[str, Any]],
         act_fn: Any,
     ) -> Dict[str, Any]:
-        """Execute ACT phase using DAG engine.
-
-        Args:
-            actions: Actions to execute
-            act_fn: Function for executing actions
-
-        Returns:
-            Action results
-        """
+        """Execute ACT phase using DAG engine. """
         self.state.current_phase = "act"
 
         if self.enable_logging:
@@ -386,15 +339,7 @@ class ThinkActObserveEngine:
         think_result: Dict[str, Any],
         act_result: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute OBSERVE phase.
-
-        Args:
-            think_result: Result from think phase
-            act_result: Result from act phase
-
-        Returns:
-            Observations and state updates
-        """
+        """Execute OBSERVE phase. """
         self.state.current_phase = "observe"
 
         if self.enable_logging:
@@ -426,19 +371,11 @@ class ThinkActObserveEngine:
         }
 
     def get_state(self) -> Optional[Dict[str, Any]]:
-        """Get current cycle state.
-
-        Returns:
-            Current state or None
-        """
+        """Get current cycle state. """
         return self.state.to_dict() if self.state else None
 
     async def save_state(self, path: str) -> None:
-        """Save cycle state to disk.
-
-        Args:
-            path: Path to save state
-        """
+        """Save cycle state to disk. """
         if not self.state:
             raise ValueError("No state to save")
 
@@ -451,11 +388,7 @@ class ThinkActObserveEngine:
             logger.info("state_saved", extra={"path": path})
 
     async def load_state(self, path: str) -> None:
-        """Load cycle state from disk.
-
-        Args:
-            path: Path to load state from
-        """
+        """Load cycle state from disk. """
 
         with open(path, 'r') as f:
             state_dict = json.load(f)
@@ -479,3 +412,4 @@ class ThinkActObserveEngine:
                     "iteration": self.state.iteration,
                 }
             )
+

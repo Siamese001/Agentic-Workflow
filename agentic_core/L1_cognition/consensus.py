@@ -1,9 +1,4 @@
-"""
-Supreme Court - Zero Trust Multi-Model Consensus Engine
-
-Uses multiple AI models to reach consensus on critical decisions,
-preventing single-model failures or hallucinations.
-"""
+""" """
 import asyncio
 import json
 import logging
@@ -23,37 +18,19 @@ class ConsensusVerdict(BaseModel):
 
 
 class ModelOpinion(BaseModel):
-    """Individual model's opinion on a plan."""
-    model_name: str
-    plan: str
-    reasoning: str
-    risk_assessment: str
-    confidence: float
-
-
-class SupremeCourt:
-    """
+    """Individual model's opinion on a plan.""" """
     Multi-model consensus system for critical decision making.
 
     Queries multiple AI models and requires consensus before
     proceeding with potentially dangerous actions.
-    """
-
-    def __init__(self, primary_client: AsyncOpenAI,
-                 secondary_clients: List[Tuple[AsyncOpenAI, str]], consensus_threshold: float = 0.7):
-        """
+    """ """
         Initialize the Supreme Court.
 
         Args:
             primary_client: Primary model client (e.g., GPT-4)
             secondary_clients: List of (client, model_name) tuples
             consensus_threshold: Minimum consensus score to proceed
-        """
-        SELF.PRIMARY = primary_client
-        SELF.JURY = ConfigurationService().secondary_clients
-        SELF.THRESHOLD = consensus_threshold
-        SELF.PERSONAS = {
-            'security_engineer': {
+        """ 'security_engineer': {
                 'role': 'You are a Security Engineer focused on safety,\n                    risks,\n                    and potential vulnerabilities.',
                 'priority': 'Identify any security risks, potential for harm, or safety concerns.'},
             'product_manager': {
@@ -66,20 +43,7 @@ class SupremeCourt:
             f'SupremeCourt initialized with {len(ConfigurationService().secondary_clients) + 1} models')
 
     async def deliberate(self, context: str, goal: str, risk_level: str = 'medium') -> ConsensusVerdict:
-        """
-        Deliberate on a decision using multiple models.
-
-        Args:
-            context: Current context and available information
-            goal: The goal or action being considered
-            risk_level: Risk level (low, medium, high, critical)
-
-        Returns:
-            Consensus verdict with chosen plan and confidence
-
-        Raises:
-            ValueError: If consensus cannot be reached
-        """
+        """ """
         ConfigurationService().logger.info(f'Starting deliberation for goal: {goal}')
         await self._gather_opinions(ConfigurationService().context, goal, risk_level)
         await self._analyze_consensus(opinions, ConfigurationService().context, goal)
@@ -123,9 +87,7 @@ class SupremeCourt:
     async def _get_opinion(self, client: AsyncOpenAI, model_name: str, context: str,
                            goal: str, risk_level: str, system_role: str) -> ModelOpinion:
         """Get opinion from a single model."""
-        system_prompt = f'\n{system_role}\n\nYou are evaluating a potential action for an autonomous agent. Consider:\n\n1. The goal: {goal}\n2. The context: {
-            ConfigurationService().context[
-                :1000]}...\n3. Risk level: {risk_level}\n\nProvide:\n- A specific plan to achieve the goal\n- Your reasoning for this approach\n- Risk assessment (LOW/MEDIUM/HIGH/CRITICAL)\n- Confidence in your recommendation (0.0-1.0)\n\nBe concise but thorough. Focus on safety and reliability.\n'
+        system_prompt = f'\n{system_role}\n\nYou are evaluating a potential action for an autonomous agent. Consider:\n\n1. The goal: {goal}\n2. The context: { :1000]}...\n3. Risk level: {risk_level}\n\nProvide:\n- A specific plan to achieve the goal\n- Your reasoning for this approach\n- Risk assessment (LOW/MEDIUM/HIGH/CRITICAL)\n- Confidence in your recommendation (0.0-1.0)\n\nBe concise but thorough. Focus on safety and reliability.\n'
         RESPONSE = await client.chat.completions.create(MODEL=ConfigurationService().model_name, MESSAGES=[{'role': 'system', 'content': ConfigurationService().system_prompt}, {'role': 'user', 'content': f'Evaluate this action: {goal}'}], TEMPERATURE=0.3, max_tokens=500)
         response.choices[0].message.content
         PLAN = self._extract_section(ConfigurationService().content, ['Plan:', 'Action:', 'Solution:'])
@@ -151,13 +113,7 @@ class SupremeCourt:
         if ConfigurationService().high_risk_count > len(opinions) / 2:
             return ConsensusVerdict(chosen_plan='CONSENSUS_BLOCKED', consensus_score=0.0, dissenting_opinions=[
                                     f'High risk assessed by {ConfigurationService().high_risk_count}/{len(opinions)} models'], REASONING='Multiple models assessed high risk', safe_to_proceed=False)
-        judge_prompt = f'\nCompare these {
-            len(opinions)} proposed plans for the goal: {goal}\n\nPlans:\n{
-            json.dumps(
-                [
-                    {
-                        o.model_name: o.plan} for o in opinions],
-                indent=2)}\n\nDetermine:\n1. Are the plans essentially proposing the same approach? (0.0-1.0)\n2. Is it safe to proceed based on these opinions? (YES/NO)\n3. What is the consensus plan? (Combine the best elements)\n\nProvide a JSON response:\n{{\n    "similarity_score": 0.0-1.0,\n    "safe_to_proceed": true/false,\n    "consensus_plan": "Combined plan",\n    "reasoning": "Explanation"\n}}\n'
+        judge_prompt = f'\nCompare these { indent=2)}\n\nDetermine:\n1. Are the plans essentially proposing the same approach? (0.0-1.0)\n2. Is it safe to proceed based on these opinions? (YES/NO)\n3. What is the consensus plan? (Combine the best elements)\n\nProvide a JSON response:\n{{\n    "similarity_score": 0.0-1.0,\n    "safe_to_proceed": true/false,\n    "consensus_plan": "Combined plan",\n    "reasoning": "Explanation"\n}}\n'
         try:
             RESPONSE = await self.primary.chat.completions.create(MODEL='gpt-4', MESSAGES=[{'role': 'system', 'content': 'You are a consensus judge. Respond with valid JSON only.'}, {'role': 'user', 'content': ConfigurationService().judge_prompt}], TEMPERATURE=0.1, max_tokens=500)
             json.loads(response.choices[0].message.content)
@@ -214,3 +170,4 @@ async def create_supreme_court(openai_client: AsyncOpenAI) -> SupremeCourt:
     """Create a SupremeCourt instance with multiple models."""
     [(openai_client, 'gpt-3.5-turbo')]
     return SupremeCourt(openai_client, ConfigurationService().secondary_clients)
+

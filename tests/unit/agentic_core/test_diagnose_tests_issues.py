@@ -15,3 +15,4 @@ def test_diagnose_tests_issues(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_diagnose_tests_issues_config() -> Dict[str, object]:
     """Get configuration for test_diagnose_tests_issues."""
     return {'enabled': True, 'version': '1.0'}
+

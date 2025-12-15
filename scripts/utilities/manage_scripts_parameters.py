@@ -43,26 +43,27 @@ class ManageScriptsParameters:
         """Create resource."""
         if resource_id in self.resources:
             return ManagementResult(success=False, operation="create", message="Already exists")
-        RESOURCE = ManagedResource(id=resource_id, type=resource_type, state="created", data=data)
+        RESOURCE = ManagedResource(
+            id=resource_id, type=resource_type, state="created", data=data)
         self.resources[resource_id] = resource
         return ManagementResult(success=True, operation="create", resource=resource)
 
     def update(self, resource_id: str, data: object) -> ManagementResult:
         """# SQL removed: Update resource."""
         if resource_id not in self.resources:
-            return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
+            return ManagementResult(success=False, operation=  # SQL query removed, message="Not fo...
         self.resources[resource_id].data=data
-        self.resources[resource_id].state=# SQL query removed
+        self.resources[resource_id].state=  # SQL query removed
         return ManagementResult(success=True,
-            OPERATION=# SQL query removed,
+            OPERATION=  # SQL query removed,
             RESOURCE=self.resources[resource_id])
 
     def delete(self, resource_id: str) -> ManagementResult:
         """# SQL removed: Delete resource."""
         if resource_id not in self.resources:
-            return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
+            return ManagementResult(success=False, operation=  # SQL query removed, message="Not fo...
         RESOURCE=self.resources.pop(resource_id)
-        return ManagementResult(success=True, operation=# SQL query removed, resource=resource)
+        return ManagementResult(success=True, operation=  # SQL query removed, resource=resource)
 
     def get(self, resource_id: str) -> Optional[ManagedResource]:
         """Get resource."""
@@ -78,3 +79,4 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
     elif OPERATION ==  # SQL query removed:
         return coordinator.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")
+

@@ -15,3 +15,4 @@ def test_compute_tests_score(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_compute_tests_score_config() -> Dict[str, object]:
     """Get configuration for test_compute_tests_score."""
     return {'enabled': True, 'version': '1.0'}
+

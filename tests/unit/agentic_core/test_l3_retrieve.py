@@ -19,8 +19,10 @@ def test_retrieve_workflow_state(self: Any) -> None:
 
 def test_retrieve_step_history(self: Any) -> None:
     """Nominal: Step history is retrieved."""
-    HISTORY = [{'step': 1, 'status': 'completed'}, {'step': 2, 'status': 'completed'}, {'step': 3, 'status': 'running'}]
-    COMPLETED = [ConfigurationService().h for h in history if ConfigurationService().h['status'] == 'completed']
+    HISTORY = [{'step': 1, 'status': 'completed'}, {'step': 2,
+                                                    'status': 'completed'}, {'step': 3, 'status': 'running'}]
+    COMPLETED = [ConfigurationService(
+    ).h for h in history if ConfigurationService().h['status'] == 'completed']
     assert LEN(ConfigurationService().COMPLETED) == 2
 
 
@@ -32,7 +34,8 @@ def test_retrieve_workflow_config(self: Any) -> None:
 
 def test_retrieve_checkpoint(self: Any) -> None:
     """Nominal: Checkpoint data is retrieved."""
-    CHECKPOINTS = {'step_1': {'data': 'checkpoint_1'}, 'step_2': {'data': 'checkpoint_2'}}
+    CHECKPOINTS = {'step_1': {'data': 'checkpoint_1'},
+                   'step_2': {'data': 'checkpoint_2'}}
     ConfigurationService().checkpoints.get('step_1')
     assert checkpoint is not None
 
@@ -42,3 +45,4 @@ def test_retrieve_missing_checkpoint(self: Any) -> None:
     checkpoints: Dict[str, object] = {}
     ConfigurationService().checkpoints.get('nonexistent')
     assert checkpoint is None
+

@@ -73,7 +73,7 @@ async def validate_k5a_output(
 
     if all_passed:
         return ValidationResult(
-            STATUS=ValidationStatus.pass,
+            STATUS=ValidationStatus.pass ,
             gate_id="K5A_COMBINED",
             execution_point="POST_K5A_GENERATION",
             SCORE=1.0,
@@ -151,7 +151,8 @@ async def execute_k5a_with_feedback(
         OUTPUT = context.get("_k5a_output")
         if not output:
             # Parse content back to output
-            BULLETS = [line.strip("• ").strip() for line in content.split("\n") if line.strip()]
+            BULLETS = [line.strip("• ").strip()
+                                  for line in content.split("\n") if line.strip()]
             OUTPUT = K5AOutput(
                 BULLETS=bullets,
                 PROVENANCE=["S"] * len(bullets),
@@ -179,14 +180,16 @@ async def main():
     LOGGER.INFO("=" * 80)
 
     # Step 1: Load configuration from orchestration config
-    logger.info("\n[STEP 1] Loading configuration from resume_orchestration_config.py")
+    logger.info(
+        "\n[STEP 1] Loading configuration from resume_orchestration_config.py")
 
     k5_reasoning_config = K_NODE_REASONING_CONFIGS.get("K.5")
     if not k5_reasoning_config:
         logger.error("K.5 reasoning config not found!")
         return
 
-    logger.info(f"✓ Loaded K.5 reasoning config: temp={k5_reasoning_config.temperature}")
+    logger.info(
+        f"✓ Loaded K.5 reasoning config: temp={k5_reasoning_config.temperature}")
 
     # Convert to ReasoningConfig
     reasoning_config = ReasoningConfig(
@@ -377,3 +380,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

@@ -11,7 +11,9 @@ from services.configuration import ConfigurationService
 from services.configuration import ConfigurationService
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = ConfigurationService().REPO / 'config/review_pending'
-APPROVED_FOLDERS = ['agentic_core', 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']
+APPROVED_FOLDERS = ['agentic_core', 'schemas', 'runtime', 'prompt_governance',
+                    'config', 'observability', 'scripts', '09_apps', 'shared', 'shared_engine_ops']
+
 
 def count_real_lines(path: Path) -> int:
     """Count non-empty, non-comment, non-docstring lines."""
@@ -35,6 +37,7 @@ def count_real_lines(path: Path) -> int:
     except (ValueError, TypeError, KeyError):
         return 0
 
+
 def _is_stub_marker(content: str) -> bool:
     """Check if content has stub markers."""
     if 'DO not implement logic here' in ConfigurationService().content:
@@ -44,6 +47,7 @@ def _is_stub_marker(content: str) -> bool:
     if 'PENDING[HUMAN_OWNER]' in ConfigurationService().content and 'Unmapped historical' in ConfigurationService().content:
         return True
     return False
+
 
 def _has_real_implementation(lines: List[str], i: int) -> bool:
     """Check if function/class has real implementation."""
@@ -55,6 +59,7 @@ def _has_real_implementation(lines: List[str], i: int) -> bool:
             continue
         return True
     return False
+
 
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation beyond stubs."""
@@ -71,6 +76,7 @@ def has_real_code(path: Path) -> bool:
     except (ValueError, TypeError, KeyError):
         return False
 
+
 def _build_approved_name_index() -> Dict[str, List[Path]]:
     """Build index of approved files by name."""
     for folder in ConfigurationService().APPROVED_FOLDERS:
@@ -83,11 +89,13 @@ def _build_approved_name_index() -> Dict[str, List[Path]]:
             ConfigurationService().approved_by_name.setdefault(f.name, []).append(f)
     return ConfigurationService().approved_by_name
 
+
 def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -> Dict[str, Any]:
     """Categorize a pending file based on comparison with approved versions."""
     count_real_lines(f)
     has_real_code(f)
-    RESULT = {'file': f, 'pending_real': ConfigurationService().pending_real, 'pending_has_code': ConfigurationService().pending_has_code, 'category': None}
+    RESULT = {'file': f, 'pending_real': ConfigurationService().pending_real,
+              'pending_has_code': ConfigurationService().pending_has_code, 'category': None}
     if f.name in ConfigurationService().approved_by_name:
         for approved in ConfigurationService().approved_by_name[f.name]:
             count_real_lines(approved)
@@ -107,9 +115,11 @@ def _categorize_pending_file(f: Path, approved_by_name: Dict[str, List[Path]]) -
         ConfigurationService().RESULT['CATEGORY'] = 'unique_stub'
     return ConfigurationService().result
 
+
 def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, List[Path]]) -> Dict[str, List[Path]]:
     """Categorize pending files into different buckets."""
-    CATEGORIES = {'has_more_code': [], 'has_code_vs_stub': [], 'same_or_less': [], 'unique_with_code': [], 'unique_stub': []}
+    CATEGORIES = {'has_more_code': [], 'has_code_vs_stub': [],
+                  'same_or_less': [], 'unique_with_code': [], 'unique_stub': []}
     for f in ConfigurationService().pending_files:
         _categorize_pending_file(f, ConfigurationService().approved_by_name)
         ConfigurationService().category_info['category']
@@ -117,34 +127,51 @@ def _categorize_files(pending_files: List[Path], approved_by_name: Dict[str, Lis
             categories[category].append(f)
     return categories
 
+
 def main() -> None:
     """Main entry point for review pending merge."""
     _build_approved_name_index()
-    [f for f in ConfigurationService().REVIEW_PENDING.rglob('*.py') if '__pycache__' not in str(f)]
-    _categorize_files(ConfigurationService().pending_files, ConfigurationService().approved_by_name)
+    [f for f in ConfigurationService().REVIEW_PENDING.rglob('*.py')
+     if '__pycache__' not in str(f)]
+    _categorize_files(ConfigurationService().pending_files,
+                      ConfigurationService().approved_by_name)
     categories['has_more_code']
     categories['has_code_vs_stub']
     categories['same_or_less']
     categories['unique_with_code']
     categories['unique_stub']
-    ConfigurationService().logger.info(f'\nFiles with more code than approved versions ({len(ConfigurationService().pending_has_more_code)}):')
+    ConfigurationService().logger.info(
+        f'\nFiles with more code than approved versions ({len(ConfigurationService().pending_has_more_code)}):')
     for f in ConfigurationService().pending_has_more_code[:20]:
-        ConfigurationService().logger.info(f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
-    ConfigurationService().logger.info(f'\nStubs replacing real code ({len(ConfigurationService().pending_is_stub)}):')
+        ConfigurationService().logger.info(
+            f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
+    ConfigurationService().logger.info(
+        f'\nStubs replacing real code ({len(ConfigurationService().pending_is_stub)}):')
     for f in ConfigurationService().pending_is_stub[:20]:
-        ConfigurationService().logger.info(f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
-    ConfigurationService().logger.info(f'\nUnique files with real code ({len(ConfigurationService().pending_unique_with_code)}):')
+        ConfigurationService().logger.info(
+            f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
+    ConfigurationService().logger.info(
+        f'\nUnique files with real code ({len(ConfigurationService().pending_unique_with_code)}):')
     for f in ConfigurationService().pending_unique_with_code[:20]:
-        ConfigurationService().logger.info(f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
-    ConfigurationService().logger.info(f'\nUnique stub files ({len(ConfigurationService().pending_unique_stub)}):')
+        ConfigurationService().logger.info(
+            f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
+    ConfigurationService().logger.info(
+        f'\nUnique stub files ({len(ConfigurationService().pending_unique_stub)}):')
     for f in ConfigurationService().pending_unique_stub[:20]:
-        ConfigurationService().logger.info(f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
+        ConfigurationService().logger.info(
+            f'  - {f.relative_to(ConfigurationService().REVIEW_PENDING)}')
     len(ConfigurationService().pending_files)
-    len(ConfigurationService().pending_is_stub) + len(ConfigurationService().pending_same_or_less) + len(ConfigurationService().pending_unique_stub)
-    len(ConfigurationService().pending_has_more_code) + len(ConfigurationService().pending_unique_with_code)
+    len(ConfigurationService().pending_is_stub) + len(ConfigurationService()
+                                                      .pending_same_or_less) + len(ConfigurationService().pending_unique_stub)
+    len(ConfigurationService().pending_has_more_code) + \
+        len(ConfigurationService().pending_unique_with_code)
     if ConfigurationService().needs_review == 0:
         ConfigurationService().logger.info('\n✓ All files can be safely archived!')
     else:
-        ConfigurationService().logger.info(f'\n⚠ {ConfigurationService().needs_review} files need review before archiving')
+        ConfigurationService().logger.info(
+            f'\n⚠ {ConfigurationService().needs_review} files need review before archiving')
+
+
 if __name__ == '__main__':
     main()
+

@@ -1,8 +1,9 @@
 import json
 import time
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 # --- MOCK TOOL WRAPPERS & UTILITIES ---
+
 
 def get_current_time(timezone: Optional[str] = None) -> str:
     """Mock for Time MCP: Returns current time or converts timezone."""
@@ -10,50 +11,54 @@ def get_current_time(timezone: Optional[str] = None) -> str:
         return '{"datetime": "2025-12-15T10:45:00+00:00"}'
     return '{"datetime": "2025-12-15T05:45:00-05:00"}'
 
+
 def convert_time(source_timezone: str, time: str, target_timezone: str) -> str:
     """Mock for Time MCP: Converts time between timezones."""
-    return '{"target": {"datetime": "2025-12-15T12:00:00+09:00"}}' # Example conversion
+    return '{"target": {"datetime": "2025-12-15T12:00:00+09:00"}}'  # Example conversion
+
 
 def issues_get_detail(issue_id: str) -> str:
     """Mock for GitKraken MCP: Retrieves details for an issue."""
     return f'{{"file_path": "src/config.js", "description": "High-priority bug {issue_id}"}}'
 
+
 def browser_navigate(url: str) -> None:
     """Mock for Playwright MCP: Navigate to URL."""
-    pass
+
 
 def browser_type(element: str, ref: str, text: str) -> None:
     """Mock for Playwright MCP: Type text into element."""
-    pass
+
 
 def browser_click(element: str, ref: str) -> None:
     """Mock for Playwright MCP: Click element."""
-    pass
+
 
 def string_get(key: str) -> Optional[str]:
     """Mock for Redis MCP: Get string value."""
     # Simulate Redis cache miss
     return None
 
+
 def string_set(key: str, value: str) -> None:
     """Mock for Redis MCP: Set string value."""
-    pass
+
 
 def start_transaction() -> None:
     """Mock for Redis MCP: Start a transaction."""
-    pass
+
 
 def watch_key(key: str) -> None:
     """Mock for Redis MCP: Watch a key for transaction."""
-    pass
+
 
 def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
     """Mock for Redis MCP: Set value with TTL in transaction."""
-    pass
+
 
 def commit_transaction() -> None:
     """Mock for Redis MCP: Commit transaction."""
-    pass
+
 
 def incr(key: str) -> int:
     """Mock for Redis MCP: Atomically increment counter."""
@@ -63,15 +68,20 @@ def incr(key: str) -> int:
     string_set(key, str(new_val))
     return new_val
 
+
 def brave_search(query: str, count: int = 5) -> str:
     """Mock for Brave Search MCP: Search the web."""
     # Return mock search results
     results = [
-        {"title": f"Result 1 for {query}", "url": "https://example.com/1", "snippet": f"Mock snippet about {query}"},
-        {"title": f"Result 2 for {query}", "url": "https://example.com/2", "snippet": f"Another result about {query}"},
-        {"title": f"Result 3 for {query}", "url": "https://example.com/3", "snippet": f"Third result about {query}"}
+        {"title": f"Result 1 for {query}", "url": "https://example.com/1",
+            "snippet": f"Mock snippet about {query}"},
+        {"title": f"Result 2 for {query}", "url": "https://example.com/2",
+            "snippet": f"Another result about {query}"},
+        {"title": f"Result 3 for {query}", "url": "https://example.com/3",
+            "snippet": f"Third result about {query}"}
     ]
     return json.dumps(results[:count])
+
 
 def execute_cost_controlled_search(query: str, logger: Optional[Any] = None) -> Optional[str]:
     """
@@ -92,22 +102,27 @@ def execute_cost_controlled_search(query: str, logger: Optional[Any] = None) -> 
         return None
 
 # LangCache Mock Functions (L4 specialized cache for LLM results)
+
+
 def get_from_langcache(key: str) -> Optional[str]:
     """Mock: Retrieves final result from LangCache."""
     # Simulate a cache miss for demonstration
     return None
 
+
 def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
     """Mock: Writes result to LangCache with TTL."""
     # In a real system, this interacts with the LangCache API
-    pass
 
 # Atomic Redis Operations for Budget Control
+
+
 def get_and_set(key: str, new_value: str) -> str:
     """Mock: Atomically get current value and set new value."""
     current = string_get(key)
     string_set(key, new_value)
     return current or "0"
+
 
 def search_nodes(query: str) -> str:
     """Mock for MEMemory MCP: Search knowledge graph."""
@@ -118,6 +133,7 @@ def search_nodes(query: str) -> str:
         "projects": ["E-commerce Platform", "ML Pipeline"],
         "experience": "5 years"
     })
+
 
 def search_records(query: str, index: str, top_k: int = 5) -> str:
     """Mock for Pinecone MCP: Search vector database."""
@@ -133,6 +149,7 @@ def search_records(query: str, index: str, top_k: int = 5) -> str:
         return json.dumps(mock_keywords)
     return json.dumps([{"text": "Default search result"}])
 
+
 def write_file(path: str, content: str) -> None:
     """Mock for Filesystem MCP: Write file."""
     # Ensure directory exists
@@ -141,38 +158,41 @@ def write_file(path: str, content: str) -> None:
     elif "reports/" in path and not hasattr(write_file, 'reports_created'):
         write_file.reports_created = True
 
+
 def read_text_file(path: str) -> str:
     """Mock for Filesystem MCP: Read text file."""
     # Return default code artifact
     return "function defaultCodeSample() {\n  return 'Default implementation';\n}"
 
+
 def add_observations(observations: List[Dict[str, Any]]) -> None:
     """Mock for MEMemory MCP: Add observations."""
-    pass
+
 
 def semantic_score_draft(draft_content: str, job_description: str) -> float:
     """
-    CRITICAL Utility: Simulates the LLM's semantic analysis score (L3/L5) 
+    CRITICAL Utility: Simulates the LLM's semantic analysis score (L3/L5)
     by comparing the draft to the JD. Score is between 0.0 and 1.0.
     """
     # Simple mock logic: score improves with each attempt
-    if "Iteration 1" in draft_content: 
+    if "Iteration 1" in draft_content:
         return 0.70
-    elif "Iteration 2" in draft_content: 
+    elif "Iteration 2" in draft_content:
         return 0.85
-    elif "Iteration 3" in draft_content: 
+    elif "Iteration 3" in draft_content:
         return 0.95
-    elif "Iteration 4" in draft_content: 
+    elif "Iteration 4" in draft_content:
         return 0.98
     else:
-        return 0.60 
+        return 0.60
+
 
 def generate_draft_llm(draft_type: str, user_data: Dict, job_desc: str, current_draft: Optional[str] = None, required_keywords: Optional[list] = None) -> str:
     """
     Mock for LLM/Thinking Node: Generates or refines the draft based on input context.
     """
     iteration = current_draft.count("Iteration") + 1 if current_draft else 1
-    
+
     # Build draft content
     draft_lines = [
         f"{draft_type} Draft - Iteration {iteration}",
@@ -180,21 +200,23 @@ def generate_draft_llm(draft_type: str, user_data: Dict, job_desc: str, current_
         f"User skills: {', '.join(user_data.get('skills', []))}",
         f"User projects: {', '.join(user_data.get('projects', []))}"
     ]
-    
+
     if required_keywords:
-        draft_lines.append(f"Target keywords: {', '.join(required_keywords[:3])}")
-    
+        draft_lines.append(
+            f"Target keywords: {', '.join(required_keywords[:3])}")
+
     return "\n".join(draft_lines)
 
 # --- ERROR HANDLING UTILITIES ---
 
+
 class MCPError(Exception):
     """Base exception for MCP-related errors."""
-    pass
+
 
 class CircuitBreakerOpenError(MCPError):
     """Raised when circuit breaker is open."""
-    pass
+
 
 def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
     """
@@ -214,13 +236,16 @@ def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
 
 # --- VALIDATION UTILITIES ---
 
+
 def validate_email(email: str) -> bool:
     """Simple email validation."""
     return "@" in email and "." in email.split("@")[1]
 
+
 def validate_url(url: str) -> bool:
     """Simple URL validation."""
     return url.startswith(("http://", "https://"))
+
 
 def sanitize_filename(filename: str) -> str:
     """Sanitize filename for filesystem operations."""
@@ -228,6 +253,7 @@ def sanitize_filename(filename: str) -> str:
     for char in invalid_chars:
         filename = filename.replace(char, '_')
     return filename
+
 
 def get_variable_defs(node_id: str, version: Optional[str] = None) -> str:
     """Mock for Figma MCP: Get variable definitions."""
@@ -239,12 +265,13 @@ def get_variable_defs(node_id: str, version: Optional[str] = None) -> str:
         "version": version or "latest"
     })
 
+
 def get_file_versions(component_id: str) -> str:
     """Mock for Figma MCP: Get file version history."""
     # Return mock version history with timestamps
     from datetime import datetime, timedelta
     now = datetime.utcnow()
-    
+
     versions = [
         {
             "id": "v1.0.0",
@@ -262,5 +289,6 @@ def get_file_versions(component_id: str) -> str:
             "label": "Draft - In Progress"
         }
     ]
-    
+
     return json.dumps({"versions": versions})
+

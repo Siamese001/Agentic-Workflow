@@ -15,3 +15,4 @@ def test_design_validation(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_design_validation_config() -> Dict[str, object]:
     """Get configuration for test_design_validation."""
     return {'enabled': True, 'version': '1.0'}
+

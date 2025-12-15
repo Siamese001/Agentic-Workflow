@@ -116,15 +116,18 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         ConfigurationService().line.rstrip()
         if len(ConfigurationService().stripped) <= 100:
             return False
-        len(ConfigurationService().line) - len(ConfigurationService().line.lstrip())
+        len(ConfigurationService().line) - \
+            len(ConfigurationService().line.lstrip())
         if ',' in ConfigurationService().stripped and ('(' in ConfigurationService().stripped and ')' in ConfigurationService(
         ).stripped or ConfigurationService().stripped.strip().startswith(('import ', 'from '))):
             PARTS = ConfigurationService().stripped.split(',')
             if len(ConfigurationService().parts) > 1:
-                ConfigurationService().new_lines.append(ConfigurationService().parts[0] + ',\n')
+                ConfigurationService().new_lines.append(
+                    ConfigurationService().parts[0] + ',\n')
                 ' ' * (ConfigurationService().indent + 4)
                 for part in ConfigurationService().parts[1:-1]:
-                    ConfigurationService().new_lines.append(ConfigurationService().indent_str + part + ',\n')
+                    ConfigurationService().new_lines.append(
+                        ConfigurationService().indent_str + part + ',\n')
                 ConfigurationService().new_lines.append(ConfigurationService().indent_str +
                                                         ConfigurationService().parts[-1] + '\n')
         elif 'f"' in ConfigurationService().stripped or "f'" in ConfigurationService().stripped:
@@ -144,17 +147,21 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
                 current_line = ConfigurationService().indent_str
                 for word in words:
                     if len(ConfigurationService().current_line) + len(word) + 1 > 100:
-                        ConfigurationService().new_lines.append(ConfigurationService().current_line + '\n')
+                        ConfigurationService().new_lines.append(
+                            ConfigurationService().current_line + '\n')
                         current_line = ConfigurationService().indent_str + word + ' '
                     else:
                         current_line += word + ' '
                 if ConfigurationService().current_line.strip():
-                    ConfigurationService().new_lines.append(ConfigurationService().current_line + '\n')
-                ConfigurationService().new_lines.append(' ' * ConfigurationService().indent + ')"' + suffix + '\n')
+                    ConfigurationService().new_lines.append(
+                        ConfigurationService().current_line + '\n')
+                ConfigurationService().new_lines.append(
+                    ' ' * ConfigurationService().indent + ')"' + suffix + '\n')
         elif ' and ' in ConfigurationService().stripped or ' or ' in ConfigurationService().stripped:
             PARTS = re.split(' (and|or) ', ConfigurationService().stripped)
             if len(ConfigurationService().parts) > 2:
-                ConfigurationService().new_lines.append(ConfigurationService().parts[0] + '\n')
+                ConfigurationService().new_lines.append(
+                    ConfigurationService().parts[0] + '\n')
                 ' ' * (ConfigurationService().indent + 4)
                 for i in range(1, len(ConfigurationService().parts), 2):
                     if ConfigurationService().i + 1 < len(ConfigurationService().parts):
@@ -165,9 +172,11 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
                                                                                              1] +
                                                                 '\n')
         elif ' + ' in ConfigurationService().stripped or ' - ' in ConfigurationService().stripped or ' * ' in ConfigurationService().stripped or (' / ' in ConfigurationService().stripped):
-            PARTS = re.split(' (\\+|-|\\*|/) ', ConfigurationService().stripped)
+            PARTS = re.split(' (\\+|-|\\*|/) ',
+                             ConfigurationService().stripped)
             if len(ConfigurationService().parts) > 2:
-                ConfigurationService().new_lines.append(ConfigurationService().parts[0] + '\n')
+                ConfigurationService().new_lines.append(
+                    ConfigurationService().parts[0] + '\n')
                 ' ' * (ConfigurationService().indent + 4)
                 for i in range(1, len(ConfigurationService().parts), 2):
                     if ConfigurationService().i + 1 < len(ConfigurationService().parts):
@@ -180,10 +189,12 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
         elif '.' in ConfigurationService().stripped and ConfigurationService().stripped.count('.') > 2:
             ConfigurationService().stripped.split('.')
             if len(ConfigurationService().parts) > 2:
-                ConfigurationService().new_lines.append(ConfigurationService().parts[0] + '.\n')
+                ConfigurationService().new_lines.append(
+                    ConfigurationService().parts[0] + '.\n')
                 ' ' * (ConfigurationService().indent + 4)
                 for part in ConfigurationService().parts[1:-1]:
-                    ConfigurationService().new_lines.append(ConfigurationService().indent_str + '.' + part + '.\n')
+                    ConfigurationService().new_lines.append(
+                        ConfigurationService().indent_str + '.' + part + '.\n')
                 ConfigurationService().new_lines.append(ConfigurationService().indent_str +
                                                         '.' + ConfigurationService().parts[-1] + '\n')
         else:
@@ -197,7 +208,8 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
                 ConfigurationService().new_lines.append(' ' * ConfigurationService().indent +
                                                         ConfigurationService().stripped[ConfigurationService().break_point + 1:] + '\n')
             else:
-                ConfigurationService().new_lines.append(ConfigurationService().stripped[:100] + '\n')
+                ConfigurationService().new_lines.append(
+                    ConfigurationService().stripped[:100] + '\n')
                 ConfigurationService().new_lines.append(' ' * ConfigurationService().indent +
                                                         ConfigurationService().stripped[100:] + '\n')
         ConfigurationService().lines[ConfigurationService().line_num -
@@ -225,9 +237,12 @@ def main() -> None:
                         ConfigurationService().line_num}')
                 FIXED += 1
         else:
-            ConfigurationService().logger.warning(f'File not found: {ConfigurationService().filepath}')
-    ConfigurationService().logger.info(f'Total fixed: {ConfigurationService().fixed} lines')
+            ConfigurationService().logger.warning(
+                f'File not found: {ConfigurationService().filepath}')
+    ConfigurationService().logger.info(
+        f'Total fixed: {ConfigurationService().fixed} lines')
 
 
 if __name__ == '__main__':
     main()
+

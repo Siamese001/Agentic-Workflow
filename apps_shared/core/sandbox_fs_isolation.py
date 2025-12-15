@@ -11,3 +11,4 @@ def test_build_ephemeral_rootfs_shape() -> None:
     assert ConfigurationService().fs.get('tmpfs') is True
     assert '/' in ConfigurationService().fs.get('restricted_paths', [])
     assert '/tmp' in ConfigurationService().fs.get('writable_paths', [])
+

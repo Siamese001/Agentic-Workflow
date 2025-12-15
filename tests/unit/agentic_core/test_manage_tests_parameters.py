@@ -15,3 +15,4 @@ def test_manage_tests_parameters(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_manage_tests_parameters_config() -> Dict[str, object]:
     """Get configuration for test_manage_tests_parameters."""
     return {'enabled': True, 'version': '1.0'}
+

@@ -20,25 +20,25 @@ StatePersistenceError,
 )
     get_resilient_router,
     RoutingTier,
-)
+    )
     AgentMessage,
     AgentResponse,
-)
+    )
     RGWorkflowOrchestrator,
     WorkflowSpec,
     HopSpec,
     HopCheckpoint,
     HopStatus,
     HopExecutionError,
-)
+    )
     ReasoningConfig,
     get_reasoning_config,
-)
+    )
     inject_titanium_tools,
     prepare_titanium_context,
     log_titanium_usage,
     enhance_system_prompt,
-)
+    )
 
     LOGGER = logging.getLogger(__name__)
 
@@ -76,7 +76,8 @@ StatePersistenceError,
         self.workflow_state: Optional[WorkflowState] = None
         self.resumed_from_checkpoint = False
 
-        logger.info("Hardened orchestrator initialized with atomic state management")
+        logger.info(
+            "Hardened orchestrator initialized with atomic state management")
 
     def initialize_or_resume_workflow(
         """Docstring."""
@@ -242,7 +243,8 @@ StatePersistenceError,
                         self.workflow_state,
     )
                 except StatePersistenceError as checkpoint_error:
-                    logger.error(f"Failed to checkpoint failure state: {checkpoint_error}")
+                    logger.error(
+                        f"Failed to checkpoint failure state: {checkpoint_error}")
 
         self.hop_checkpoints.append(checkpoint)
         return checkpoint
@@ -293,7 +295,8 @@ StatePersistenceError,
 
         # Initialize or resume workflow
         total_hops = len(self.spec.hops) if self.spec else 0
-        CONTEXT = self.initialize_or_resume_workflow(workflow_id, total_hops, context)
+        CONTEXT = self.initialize_or_resume_workflow(
+            workflow_id, total_hops, context)
 
         # Get execution order
         execution_order = self.get_execution_order()
@@ -319,10 +322,12 @@ StatePersistenceError,
     }
 
         for i, hop_id in enumerate(execution_order):
-            logger.info(f"Executing hop {hop_id} ({i + 1}/{len(execution_order)})")
+            logger.info(
+                f"Executing hop {hop_id} ({i + 1}/{len(execution_order)})")
 
             # Get hop specification
-            hop_spec = next((h for h in self.spec.hops if h.id == hop_id), None)
+            hop_spec = next(
+                (h for h in self.spec.hops if h.id == hop_id), None)
             if not hop_spec:
                 raise HopExecutionError(f"Hop spec not found: {hop_id}")
 
@@ -412,3 +417,4 @@ StatePersistenceError,
         run_base_dir=run_base_dir,
         storage_path=storage_path,
     )
+

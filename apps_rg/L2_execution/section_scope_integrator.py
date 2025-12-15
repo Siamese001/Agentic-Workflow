@@ -141,9 +141,11 @@ class SectionScopeIntegrator:
                     break
                 continue
 
-            similarity_score = self._calculate_similarity(overview, master_baseline)
+            similarity_score = self._calculate_similarity(
+                overview, master_baseline)
 
-            dedup_result = self._validate_deduplication(overview, similarity_score)
+            dedup_result = self._validate_deduplication(
+                overview, similarity_score)
             validation_results.append(dedup_result)
 
             if not dedup_result.passed:
@@ -278,3 +280,4 @@ def create_section_scope_integrator(
 ) -> SectionScopeIntegrator:
     """Factory function to create SectionScopeIntegrator instance"""
     return SectionScopeIntegrator(config=config)
+

@@ -96,7 +96,8 @@ class IntegrityGateExecutor:
 
             for i, word in enumerate(words):
                 if word in self.FLUFF_WORDS:
-                    next_words = words[i + 1:i + 3] if i + 1 < len(words) else []
+                    next_words = words[i + 1:i + 3] if i +
+                        1 < len(words) else []
 
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
@@ -200,3 +201,4 @@ def validate_research_output(
 ) -> IntegrityGateResult:
     EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
     return executor.execute(research_output)
+

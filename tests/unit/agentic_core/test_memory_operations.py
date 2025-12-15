@@ -15,3 +15,4 @@ def test_memory_operations(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_memory_operations_config() -> Dict[str, object]:
     """Get configuration for test_memory_operations."""
     return {'enabled': True, 'version': '1.0'}
+

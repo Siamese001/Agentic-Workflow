@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 LOGGER = logging.getLogger(__name__)
 # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
 # star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .resume_orchestration_config_types_enums import *  # Star import
+# TODO: Replace 'from .resume_orchestration_config_types_enums import *' with explicit imports
+# # from .resume_orchestration_config_types_enums import *  # Star import
 # removed
 
 
@@ -90,3 +91,4 @@ class ValidationGate:
     _checks: List[str] = field(default_factory=list)
     _on_fail: str = 'HALT'
     _halt_message: Optional[str] = None
+

@@ -15,3 +15,4 @@ def test_safety_rules(data: Dict[str, object]) -> Dict[str, object]:
 def get_test_safety_rules_config() -> Dict[str, object]:
     """Get configuration for test_safety_rules."""
     return {'enabled': True, 'version': '1.0'}
+

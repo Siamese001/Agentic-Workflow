@@ -10,3 +10,4 @@ class AgentCapability(Enum):
 
 class AgentStatus(Enum):
     """Agent operational status."""
+
