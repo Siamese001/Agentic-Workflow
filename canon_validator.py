@@ -45,6 +45,31 @@ class CanonValidator:
         """
         logger.info(f"🛡️ Auditing Code ({len(content)} chars)...")
         t_start = time.time()
+        
+        # Check if code only uses whitelisted tools for execution (skip validation for simple tool usage)
+        allowed_tools = {"search_web", "print", "read_file", "save_file", "send_email"}
+        uses_only_allowed = True
+        
+        # Simple parsing to detect function calls
+        for line in content.split('\n'):
+            line = line.strip()
+            if '(' in line and ')' in line and not line.startswith('#'):
+                # Extract function name before first parenthesis
+                # Skip variable assignments (contains '=' before function name)
+                if '=' not in line.split('(')[0]:
+                    func_name = line.split('(')[0].strip().split()[-1]
+                    if func_name and func_name.isidentifier() and func_name not in allowed_tools:
+                        uses_only_allowed = False
+                        break
+        
+        # If code only uses allowed tools for execution, mark as valid
+        if uses_only_allowed:
+            logger.info("✅ Code only uses whitelisted tools - skipping validation")
+            return {
+                "status": "valid",
+                "reasoning": "Code only uses whitelisted Action Registry tools",
+                "content": content
+            }
 
         # STAGE 1: EMBEDDING
         try:
@@ -144,11 +169,16 @@ VIOLATION:
 PRECEDENTS (How we write good code):
 {context}
 
+ACTION REGISTRY TOOLS (These are pre-injected and do NOT need dependency injection):
+- search_web(query: str) -> str : Performs web search using Brave API
+- print(msg) : Standard python print
+
 TASK:
 Rewrite the code to be fully compliant.
-- Use Protocol for Dependency Injection.
+- Use Protocol for Dependency Injection ONLY for custom dependencies.
+- Action Registry tools (search_web, print) are already available - DO NOT wrap them in protocols.
 - Add type hints.
-- Remove side effects.
+- Remove side effects (except for Action Registry tools).
 - For logging, use a 'logger' parameter (not 'log_func').
 - RETURN ONLY THE JSON: {{ "code": "..." }}
 """

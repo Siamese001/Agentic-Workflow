@@ -89,6 +89,7 @@ fastmcp>=0.1.0                  # FastAPI-style MCP server framework
 # pip-tools>=7.4.0              # Deterministic lockfiles (install separately: pip install pip-tools)
 pydantic>=2.5.0                 # Data validation (required by instructor, litellm)
 httpx>=0.27.0                   # Async HTTP client (required by most SDKs)
+requests>=2.31.0                # HTTP client for Action Registry tool calls
 autopep8>=2.0.0                 # Auto-format Python code (PEP 8)
 autoflake>=2.0.0                # Remove unused imports and variables
 isort>=5.12.0                   # Sort and organize imports
@@ -104,6 +105,7 @@ gitpython>=3.1.0                # Git repository access for backfill
 boto3>=1.34.0                   # AWS S3 client for cloud extraction
 numpy>=1.24.0                   # Numerical computing for embeddings
 tqdm>=4.66.0                    # Progress bars for batch operations
+PyPDF2>=3.0.0                   # PDF text extraction for Resume Engine
 
 # =============================================================================
 # COVERAGE MATRIX (21 SDKs)
