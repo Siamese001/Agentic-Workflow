@@ -73,6 +73,24 @@ def brave_search(query: str, count: int = 5) -> str:
     ]
     return json.dumps(results[:count])
 
+def execute_cost_controlled_search(query: str, logger: Optional[Any] = None) -> Optional[str]:
+    """
+    Mock for Brave Search wrapper with rate limiting (L1/L3).
+    Returns search results 70% of the time to simulate rate limiting.
+    """
+    import random
+    if random.random() < 0.7:
+        # Simulate successful search with rate-limited results
+        results = brave_search(query, count=3)
+        if logger:
+            logger.info("Brave Search (Rate-Limited) returned results")
+        return results
+    else:
+        # Simulate rate limit hit
+        if logger:
+            logger.info("Brave Search rate limit reached - returning None")
+        return None
+
 # LangCache Mock Functions (L4 specialized cache for LLM results)
 def get_from_langcache(key: str) -> Optional[str]:
     """Mock: Retrieves final result from LangCache."""
