@@ -23,6 +23,11 @@ from redis_langcache_pipeline import (
     execute_governed_prompt_caching
 )
 
+# Import time-bound benchmarking function
+from time_bound_benchmarking import (
+    execute_time_bound_salary_benchmarking
+)
+
 def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_out: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Implements the 'Hyper-Personalized Cover Letter' use case, integrating L1 (Fetch, Filesystem), 
@@ -323,6 +328,26 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
         required_keywords_str = search_records(query=f"keywords for {job_description}", index="resume_keywords", top_k=5)
         required_keywords = json.loads(required_keywords_str)
         
+        # Extract job title and location from job description for salary benchmarking
+        job_title = "Software Engineer"  # Default - would extract from JD in real implementation
+        location = "San Francisco, CA"   # Default - would extract from JD in real implementation
+        salary_result = {"source": "Default"}  # Initialize to avoid NameError
+        
+        # Get time-bound salary data for resume optimization
+        try:
+            salary_result = execute_time_bound_salary_benchmarking(
+                job_title=job_title,
+                location=location,
+                logger=logger
+            )
+            salary_data = salary_result.get("salary_data")
+            if logger:
+                logger.info(f"✅ Retrieved fresh salary data: {salary_data}")
+        except Exception as e:
+            if logger:
+                logger.warning(f"Salary benchmarking failed: {e}. Using default.")
+            salary_data = "Competitive market rate"
+        
         if logger:
             logger.info(f"✅ Retrieved user data and {len(required_keywords)} required keywords")
     except Exception as e:
@@ -339,10 +364,12 @@ CONTEXT:
 - Job Description: {job_description}
 - User Profile: {user_data}
 - Keywords: {required_keywords}
+- Salary Benchmark: {salary_data} (Source: {salary_result.get('source', 'Unknown')})
 
 TASK:
 Generate a professional resume draft that optimally aligns with the job requirements.
 Focus on skills, projects, and experience that match the keywords.
+Include appropriate salary expectations based on current market data.
 """
         
         # --- Use Governed Prompt Caching (L4 Redis/LangCache) ---

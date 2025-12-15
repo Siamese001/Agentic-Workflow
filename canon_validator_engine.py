@@ -14,7 +14,8 @@ from mcp_hardening import (
 from core_utils import (
     get_file_versions,
     get_variable_defs,
-    add_observations
+    add_observations,
+    search_records
 )
 
 def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -47,32 +48,27 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
     except Exception as e:
         return {"status": "error", "message": f"GitKraken L1 failed to retrieve issue: {e}"}
 
-    # 2. Retrieve Canonical Refactor Pattern (L3 Pinecone)
-    refactor_query = f"Canonical pattern for adding dependency {new_dependency} and fixing issue {issue_id} in {target_file}"
-    
-    # First, try the hybrid fix search for maximum Pinecone utilization
+    # 2. Cost-Governed Vulnerability Check (L1/L3 Brave Search + L3 Pinecone)
     try:
-        hybrid_search_result = execute_hybrid_fix_search(
-            violation_description=refactor_query,
+        # First, try the cost-governed approach
+        cost_check_result = execute_cost_governed_vulnerability_check(
+            violation_hash=issue_id,
+            violation_description=f"Issue {issue_id}: {new_dependency} dependency",
             code_version="latest",
             logger=logger
         )
         
-        if hybrid_search_result["status"] == "success":
-            # Use the top fix from hybrid search
-            top_fix = hybrid_search_result["top_fix"]
-            edits_payload = top_fix.get('metadata', {}).get('edits', [])
+        if cost_check_result["status"] == "success":
+            # Use the fix from cost-governed search
+            fix_result = cost_check_result["fix_result"]
+            edits_payload = fix_result.get('metadata', {}).get('edits', [])
             if logger:
-                logger.info(f"✅ L3 Pinecone Hybrid: Retrieved canonical fix with confidence {top_fix.get('confidence')}")
+                logger.info(f"✅ Cost-Governed Search: Found fix via {cost_check_result['source']}")
         else:
-            # Fallback to regular search if hybrid fails
-            search_result_str = search_records(query=refactor_query, index="code_canon", top_k=1)
-            search_result = json.loads(search_result_str)
-            edits_payload = search_result[0].get('metadata', {}).get('edits', [])
-            if logger:
-                logger.info("✅ L3 Pinecone: Used fallback search method")
+            # RAG failure - no fix found
+            return {"status": "error", "message": "No fix found in any data source"}
     except Exception as e:
-        return {"status": "error", "message": f"Pinecone L3 failed: {e}"}
+        return {"status": "error", "message": f"Cost-governed search failed: {e}"}
 
     # 3. Apply Code Edit (L1 Filesystem)
     try:
@@ -342,6 +338,96 @@ def execute_version_locked_design_audit(component_id: str, logged_audit_time: st
         "design_status": design_status,
         "version_id_used": version_id_to_use,
         "design_variables": design_vars
+    }
+
+def execute_cost_governed_vulnerability_check(
+    violation_hash: str, 
+    violation_description: str, 
+    code_version: str, 
+    logger: Optional[Any] = None
+) -> Dict[str, Any]:
+    """
+    Implements a Cost-Governed RAG pipeline: prioritizes a cheap Brave Search check 
+    before falling back to the expensive Pinecone search. (Cost Governance Hardening)
+    """
+    if logger:
+        logger.info(f"💰 Starting Cost-Governed RAG for Violation: {violation_hash}")
+
+    final_fix_result = None
+    source_method = "FAILED"
+
+    # --- 1. Low-Cost Search (L1/L3 Brave Search) ---
+    # Hardening: Use restricted query to target high-confidence, cheap public sources.
+    low_cost_query = f"{violation_description} fix site:security.stackexchange.com"
+    
+    try:
+        brave_result_str = execute_vulnerability_search(low_cost_query, logger)
+        
+        if brave_result_str:
+            # Parse the Brave Search result
+            brave_results = json.loads(brave_result_str)
+            if brave_results:
+                final_fix_result = brave_results[0]  # Take first result
+                source_method = "BraveSearch_LowCost"
+                if logger:
+                    logger.info(f"✅ Low-Cost Fix Found: Bypassing Pinecone.")
+        
+    except Exception as e:
+        if logger:
+            logger.warning(f"Brave Search call failed: {e}. Proceeding to Pinecone fallback.")
+            
+    # --- 2. High-Cost Fallback (L3 Pinecone) ---
+    # Sequential Thinking: Only execute this expensive step if the low-cost step failed.
+    if not final_fix_result:
+        if logger:
+            logger.warning("Low-cost search missed. Executing high-cost Pinecone fallback...")
+        
+        try:
+            # Use the hybrid fix search for expensive Pinecone lookup
+            pinecone_result = execute_hybrid_fix_search(violation_description, code_version, logger)
+            
+            if pinecone_result.get("status") == "success":
+                final_fix_result = pinecone_result.get("top_fix")
+                source_method = f"Pinecone_Hybrid_Confidence_{final_fix_result.get('confidence', 'N/A')}"
+                if logger:
+                    logger.info(f"✅ High-Cost Fix Found via Pinecone.")
+            else:
+                if logger:
+                    logger.warning("Pinecone search yielded no success.")
+                
+        except Exception as e:
+            if logger:
+                logger.error(f"CRITICAL: Pinecone search failed entirely: {e}")
+
+    # --- 3. Result Aggregation and Audit Log (L5 MEMemory) ---
+    
+    if not final_fix_result:
+        # RAG Failure Path
+        try:
+            add_observations(observations=[{
+                "entityName": "RAG_Audit",
+                "contents": [f"CRITICAL RAG FAILURE: Fix not found. Methods attempted: BraveSearch, Pinecone."]
+            }])
+        except: 
+            pass
+        return {"status": "rag_failure", "message": "No fix found in any data source."}
+
+    # Success Path: Log the source of truth (Cost Governance Audit)
+    try:
+        fix_snippet = final_fix_result.get('fix_text', final_fix_result.get('content', '...'))[:50]
+        audit_message = f"Fix Found: Source={source_method}. Hash={violation_hash}. Fix Snippet: {fix_snippet}"
+        add_observations(observations=[{
+            "entityName": "CostGovernance",
+            "contents": [audit_message]
+        }])
+    except: 
+        pass
+
+    return {
+        "status": "success",
+        "source": source_method,
+        "fix_result": final_fix_result,
+        "message": f"Fix found via {source_method}. Proceed to iterative repair."
     }
 
 def execute_hybrid_fix_search(violation_description: str, code_version: str, logger: Optional[Any] = None) -> Dict[str, Any]:
