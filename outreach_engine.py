@@ -187,11 +187,12 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
 
     # --- Step 1: Get System Time (L4 Time MCP) ---
     try:
-        # Get the current time in the agent's system timezone (local time)
-        system_time_str = get_current_time(timezone=None)
-        system_time_data = json.loads(system_time_str)
-        # We need to extract the current time in HH:MM format for the next step
-        current_time_hhmm = system_time_data['datetime'][11:16] 
+        # Get the current time in the agent's system timezone (UTC)
+        system_time_str = get_current_time(timezone="UTC")
+        # Parse ISO format to extract time
+        from datetime import datetime
+        system_time = datetime.fromisoformat(system_time_str.replace('Z', '+00:00'))
+        current_time_hhmm = system_time.strftime('%H:%M')
 
         if logger:
             logger.info(f"✅ Retrieved agent's current time: {current_time_hhmm}")
@@ -201,14 +202,15 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
     # --- Step 2: Convert Time to Lead's Local Time (L4 Time MCP) ---
     # We use the current system time to estimate what time it is RIGHT NOW for the lead.
     try:
-        # Assuming agent's system timezone is 'America/New_York' for this example
+        # Convert from UTC to the lead's timezone
         converted_time_str = convert_time(
-            source_timezone="America/New_York",
+            source_timezone="UTC",
             time=current_time_hhmm, 
             target_timezone=lead_timezone
         )
-        converted_data = json.loads(converted_time_str)
-        lead_local_time = converted_data['target']['datetime'][11:16] 
+        # Parse the returned ISO format to extract local time
+        lead_local_time_obj = datetime.fromisoformat(converted_time_str.replace('Z', '+00:00'))
+        lead_local_time = lead_local_time_obj.strftime('%H:%M')
 
         if logger:
             logger.info(f"✅ Lead's current local time: {lead_local_time}")

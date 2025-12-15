@@ -155,7 +155,20 @@ services:
       - subatomic-net
 
   # ---------------------------------------------------------------------------
-  # 12. MCP SERVERS - Action Tools
+  # 12. MCP SERVERS - L4 Temporal Awareness
+  # ---------------------------------------------------------------------------
+  mcp-time:
+    image: python:3.11-slim
+    container_name: mcp_time
+    command: pip install mcp-server-time && python -m mcp_server_time --host 0.0.0.0
+    networks:
+      - subatomic-net
+    # Note: If local timezone detection is critical, you may need a volume mount or an ENV variable.
+    # environment:
+    #   - TZ=America/New_York
+
+  # ---------------------------------------------------------------------------
+  # 13. MCP SERVERS - Action Tools
   # ---------------------------------------------------------------------------
   mcp-sendemail:
     image: node:18-alpine
