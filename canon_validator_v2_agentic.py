@@ -996,7 +996,7 @@ class SemanticMapper(SubAtomicAgent):
 
 
 class IntelligentOrchestrator:
-    """Orchestrates all validation agents in dependency order."""
+    """Orchestrates all validation agents in a Continuous Autonomous Loop."""
 
     def __init__(self):
         self.ctx = ValidationContext()
@@ -1004,96 +1004,132 @@ class IntelligentOrchestrator:
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy
             CodeJanitor(self.ctx),          # 3. Syntax (Signal: AST_VALID)
-            # 4. Import Hygiene (Signal: DEPS_VALID)
-            DependencySentinel(self.ctx),
+            DependencySentinel(self.ctx),   # 4. Import Hygiene (Signal: DEPS_VALID)
             SafetyInspector(self.ctx),      # 5. Secrets (Signal: SECURE)
             PatternEnforcer(self.ctx),      # 6. Patterns (Keys 26-39)
             DocumentationAgent(self.ctx),   # 7. Docs
             NamingAgent(self.ctx),          # 8. Style
-            # 9. Complexity (Signal: COMPLEXITY_CLEAN)
-            BudgetAgent(self.ctx),
-            # 10. Types (Requires AST_VALID + DEPS_VALID)
-            TypeMechanic(self.ctx),
+            BudgetAgent(self.ctx),          # 9. Complexity (Signal: COMPLEXITY_CLEAN)
+            TypeMechanic(self.ctx),         # 10. Types (Requires AST_VALID + DEPS_VALID)
             SemanticMapper(self.ctx),       # 11. Semantics
             StructuralEngineer(self.ctx)    # 12. Complexity (Final Pass)
         ]
 
-    def run_mission(self, max_iterations=10):
-        """Execute all agents in sequence with continuous fixing."""
+    def run_mission(self):
+        """Execute the Autonomous Repair Loop."""
         logger.info("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
+        MAX_REPAIR_CYCLES = 10
+        previous_failed_keys = None
+        no_progress_count = 0
 
-        for iteration in range(max_iterations):
-            logger.info(f"\n{'='*60}")
-            logger.info(f"🔄 VALIDATION CYCLE {iteration + 1}/{max_iterations}")
-            logger.info(f"{'='*60}")
-
-            # Reset context for fresh check
-            self.ctx = ValidationContext()
-            # Update all agents to use the new context
-            for agent in self.swarm:
-                agent.ctx = self.ctx
-
-            for agent in self.swarm:
-                if not agent.can_run():
-                    logger.info(
-                        f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
-                    continue
-
-                try:
-                    agent.execute()
-                except Exception as e:
-                    logger.info(f"   🚨 AGENT CRASH ({agent.name}): {str(e)}")
-
-                if "CRITICAL_FAIL" in self.ctx.signals:
-                    logger.info(
-                        "\n🛑 MISSION ABORTED: Critical Architecture Failure.")
-                    logger.info("   Action: Fix Key 40/41/50 immediately.")
-                    return
-
-            # Check if all keys pass
-            total_checks = len(self.ctx.results)
-            passed_checks = sum(
-                1 for r in self.ctx.results.values() if r["passed"])
-            failed_checks = total_checks - passed_checks
-
-            if failed_checks == 0:
-                logger.info(
-                    f"\n🎉 SUBATOMIC PERFECTION ACHIEVED! All {total_checks} keys pass!")
-                self.print_mission_report()
-                return
+        for cycle in range(MAX_REPAIR_CYCLES):
+            logger.info(f"\n====================== AUTONOMY CYCLE {cycle+1}/{MAX_REPAIR_CYCLES} ======================")
+            
+            # Reset context for fresh scan (except history)
+            self.ctx.results = {}
+            self.ctx.signals = set()
+            
+            # --- PHASE 1: SENSE (Execute Agents) ---
+            self._execute_swarm_pass()
+            
+            # --- PHASE 2: PLAN (Analyze Violations) ---
+            failed_keys = self._get_open_violations()
+            if not failed_keys:
+                logger.info("\n🎉 SUBATOMIC PERFECTION ACHIEVED! All keys pass!")
+                break
+            
+            logger.info(f"\n🛑 {len(failed_keys)} VIOLATIONS REMAIN. Initiating Autonomous Repair...")
+            
+            # --- PROGRESS DETECTION ---
+            if previous_failed_keys is not None:
+                if set(failed_keys) == set(previous_failed_keys):
+                    no_progress_count += 1
+                    logger.warning(f"   ⚠️ No progress detected for {no_progress_count} consecutive cycle(s)")
+                    if no_progress_count >= 3:
+                        logger.error("   ❌ Stopping due to lack of progress after 3 attempts")
+                        break
+                else:
+                    no_progress_count = 0
+                    improvements = set(previous_failed_keys) - set(failed_keys)
+                    logger.info(f"   ✅ Progress: Fixed {len(improvements)} keys: {sorted(improvements)}")
+            
+            previous_failed_keys = failed_keys.copy()
+            
+            # --- PHASE 3: ACT (Trigger Fixes) ---
+            if self._trigger_autonomous_fix(failed_keys):
+                logger.info("   ↻ Fix executed. Restarting cycle to verify...")
+                continue 
             else:
-                logger.info(
-                    f"\n📊 Cycle {iteration + 1} Summary: {passed_checks}/{total_checks} keys pass")
-                if iteration < max_iterations - 1:
-                    logger.info("🔄 Applying fixes and retrying...")
-                    # Give a moment for fixes to settle
-                    import time
-                    time.sleep(1)
-
-        # Max iterations reached
-        logger.info(f"\n⚠️  MAX ITERATIONS ({max_iterations}) REACHED")
+                logger.info("   ❌ No further autonomous fixes available. Stopping loop.")
+                break
+        
         self.print_mission_report()
 
+    def _execute_swarm_pass(self):
+        for agent in self.swarm:
+            if not agent.can_run():
+                continue
+            try:
+                agent.execute()
+            except Exception as e:
+                logger.error(f"   🚨 AGENT CRASH ({agent.name}): {e}")
+
+    def _get_open_violations(self):
+        return sorted([key for key, result in self.ctx.results.items() if not result.get("passed")])
+
+    def _trigger_autonomous_fix(self, failed_keys):
+        """Routes failure patterns to the correct external fix script."""
+        fixed = False
+        
+        # Priority 1: Security & Hygiene (SafetyInspector / CodeJanitor)
+        # Covers: Print (2), Bare Except (5), Trailing Whitespace (11), Newlines (12)
+        security_keys = {1, 2, 4, 5, 6, 11, 12}
+        if any(k in failed_keys for k in security_keys):
+            logger.info("   🔧 Engaging 'fix_security_and_hygiene.py'...")
+            if self.execute_external_tool("python fix_security_and_hygiene.py"):
+                fixed = True
+
+        # Priority 2: Imports (DependencySentinel)
+        # Covers: Star Imports (7), Relative Imports (8)
+        import_keys = {7, 8, 9, 14, 44}
+        if any(k in failed_keys for k in import_keys):
+            logger.info("   🔧 Engaging 'isort' and 'autoflake'...")
+            self.execute_external_tool("isort .")
+            self.execute_external_tool("autoflake --in-place --remove-all-unused-imports --recursive .")
+            fixed = True
+
+        # Priority 3: Structural Debt (StructuralEngineer)
+        # Covers: Large Functions (17), Globals (25), Duplication (46)
+        struct_keys = {17, 25, 42, 43, 46}
+        if any(k in failed_keys for k in struct_keys):
+            logger.info("   🔧 Engaging 'fix_structural_debt.py'...")
+            if self.execute_external_tool("python fix_structural_debt.py"):
+                fixed = True
+                
+        return fixed
+
+    def execute_external_tool(self, command):
+        try:
+            # Run command in shell
+            subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
+            return True
+        except subprocess.CalledProcessError as e:
+            logger.error(f"   ❌ Fix Tool Failed: {command}\n   Error: {e.stderr}")
+            return False
+
     def print_mission_report(self):
-        """Print final validation report."""
         logger.info("\n" + "=" * 60)
         logger.info("🏁 MISSION REPORT")
         logger.info("=" * 60)
-
-        total_checks = len(self.ctx.results)
-        passed_checks = sum(
-            1 for r in self.ctx.results.values() if r["passed"])
-        failed_checks = total_checks - passed_checks
-
-        logger.info(f"Total Checks: {total_checks}")
-        logger.info(f"Passed:       {passed_checks}")
-        logger.info(f"Failed:       {failed_checks}")
-
-        if failed_checks > 0:
+        passed = sum(1 for r in self.ctx.results.values() if r["passed"])
+        failed = len(self._get_open_violations())
+        logger.info(f"Total Checks: {len(self.ctx.results)}")
+        logger.info(f"Passed:       {passed}")
+        logger.info(f"Failed:       {failed}")
+        if failed > 0:
             logger.info(f"\n❌ OPEN VIOLATIONS:")
-            for key, result in sorted(self.ctx.results.items()):
-                if not result["passed"]:
-                    logger.info(f"   Key {key}")
+            for key in self._get_open_violations():
+                logger.info(f"   Key {key}")
 
 
 # ==============================================================================
