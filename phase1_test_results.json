@@ -1,0 +1,32 @@
+[
+  {
+    "test": "Redis MCP",
+    "status": "PASS",
+    "details": "All Redis operations successful",
+    "timestamp": "2025-12-15T06:05:54.809665"
+  },
+  {
+    "test": "Filesystem Write",
+    "status": "FAIL",
+    "details": "Write failed: Save Error: [Errno 22] Invalid argument: 'Core MCP Test - 2025-12-15T06:05:54.810181'",
+    "timestamp": "2025-12-15T06:05:54.810373"
+  },
+  {
+    "test": "GitKraken MCP Tools",
+    "status": "FAIL",
+    "details": "GitKraken tools not available",
+    "timestamp": "2025-12-15T06:05:54.810871"
+  },
+  {
+    "test": "Gemini API Key",
+    "status": "FAIL",
+    "details": "GEMINI_API_KEY not found in environment",
+    "timestamp": "2025-12-15T06:05:54.811227"
+  },
+  {
+    "test": "MCP Integration",
+    "status": "FAIL",
+    "details": "'NoneType' object has no attribute 'get'",
+    "timestamp": "2025-12-15T06:06:24.394709"
+  }
+]
