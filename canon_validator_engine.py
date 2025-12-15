@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import time
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -14,6 +15,9 @@ from core_utils import (
 )
 # Import hardened MCP functions
 from mcp_hardening import check_design_drift, execute_vulnerability_search
+
+# Import sandbox utilities for execution isolation
+from sandbox_utils import execute_in_sandbox
 
 
 def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -90,6 +94,33 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
                 "details": error_msg
             }
         # -------------------------------------------------
+
+        # --- HARDENING PROTOCOL 2: DOCKER SANDBOX ---
+        # Attempt to run tests associated with this file
+        # This assumes you have a standard test naming convention (e.g., test_filename.py)
+        test_file = f"tests/test_{os.path.basename(target_file)}"
+        
+        if logger:
+            logger.info(f"Initiating Sandbox Verification for {target_file}...")
+        
+        # Install dependencies and run pytest inside the container
+        # Note: In production, use a pre-built image with dependencies installed to save time
+        cmd = f"pip install -r requirements.txt && pytest {test_file}"
+        
+        # Use the current working directory as repo_path
+        repo_path = os.getcwd()
+        
+        sandbox_success = execute_in_sandbox(repo_path, cmd)
+        
+        if not sandbox_success:
+            if logger:
+                logger.critical(f"HARDENING TRIGGERED: Sandbox tests failed for {target_file}. Commit blocked.")
+            return {
+                "status": "FAILED", 
+                "reason": "SANDBOX_TEST_FAILURE",
+                "details": "Tests failed in isolated container."
+            }
+        # --------------------------------------------
 
         # 4. Commit the fix (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
