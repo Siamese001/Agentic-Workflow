@@ -1,18 +1,10 @@
 import time
 import logging
 import sys
-import inspect
-from typing import Protocol, Any, Callable
 from llm_client import LLMClient
 from canon_validator import CanonValidator
 from action_registry import ActionRegistry
-
-# Define Logger protocol at module level for execution
-class Logger(Protocol):
-    """Protocol for logging operations."""
-    def log(self, message: str) -> None:
-        """Log a message."""
-        ...
+from cognitive_node import CognitiveNode # <--- NEW IMPORT
 
 # Setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -26,43 +18,51 @@ def run_agentic_loop(user_goal: str):
     validator = CanonValidator()
     llm = LLMClient()
     actions = ActionRegistry()
+    cognitive = CognitiveNode() # <--- NEW COMPONENT
     
-    # 2. DEFINE THE TOOLBOX (Key #3 Whitelist)
-    # We explicitly list available tools in the prompt
+    # 2. DEFINE TOOLBOX (This is the critical step for unification)
     toolbox_desc = """
-    AVAILABLE TOOLS (You can call these python functions directly):
-    - search_web(query: str) -> str : Returns search results for a query.
-    - read_file(file_path: str) -> str : Reads text from .txt, .md, or .pdf files.
+    AVAILABLE TOOLS (You MUST use these for your tasks):
+
+    [REDIS MCP - L1 Cache & Session State]
+    - string_set(key: str, value: str) : Stores simple session state or caching keys.
+    - string_get(key: str) -> str : Retrieves simple session state or caching keys.
+    - hash_set(key: str, field: str, value: str) : Stores field-value pairs (e.g., user profiles, complex cache objects).
+    - hash_get(key: str, field: str) -> str : Retrieves a field from a hash key.
+    
+    [WEB SEARCH & CONTENT]
+    - search_web(query: str) -> str : Returns real-time search results.
+    - print(msg) : Standard output.
+    
+    [FILESYSTEM]
+    - read_file(file_path: str) -> str : Reads contents of a file.
     - save_file(content: str, file_path: str) -> str : Saves content to a file.
-    - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email.
-    - print(msg) : Standard python print.
+    
+    [EMAIL]
+    - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email (Mock).
     """
     
-    # 3. THINK (Generate Draft with Tool Awareness)
-    logger.info("🧠 Cognitive Plane: Generating plan...")
-    system_prompt = f"""
-    You are an Autonomous Agent.
-    Write a Python script to solve the user's request.
-    {toolbox_desc}
-    
-    RULES:
-    - Output JSON with a 'code' field.
-    - Use 'search_web' if you need outside information.
-    - Do NOT import requests or use other tools. Use the provided functions.
-    """
-    
-    draft = llm.generate_plan(system_context=system_prompt, user_goal=user_goal)
-    raw_code = draft.get("code")
+    # 3. THINK SEQUENTIALLY (Generate Draft using the Cognitive Node)
+    # The Cognitive Node manages the entire thought process
+    try:
+        raw_code = cognitive.think(user_goal, toolbox_desc) 
+    except TimeoutError as e:
+        logger.error(f"❌ Sequential thinking timed out: {e}")
+        return
+    except RuntimeError as e:
+        logger.error(f"❌ Sequential thinking failed: {e}")
+        return
+    except Exception as e:
+        logger.error(f"❌ Unexpected error in Cognitive Node: {e}")
+        return 
     
     if not raw_code:
-        logger.error("❌ Generation failed.")
+        logger.error("❌ Generation failed in Cognitive Node.")
         return
 
     print(f"\n📄 DRAFT CODE RECEIVED:\n{'-'*20}\n{raw_code}\n{'-'*20}")
 
     # 4. AUDIT & REPAIR (The "Golden Loop")
-    # Note: We relax strict dependency injection for the 'search_web' tool 
-    # because it is a globally injected 'magic' function in this context.
     result = validator.validate(raw_code, auto_repair=True)
     
     final_code = raw_code
@@ -73,48 +73,49 @@ def run_agentic_loop(user_goal: str):
         print(f"📝 Reason: {result.get('reasoning')}")
         final_code = result.get("repaired_code")
         print(f"✨ NEW CODE:\n{'-'*20}\n{final_code}\n{'-'*20}")
-        
     elif status == "rejected":
         logger.error("❌ Code rejected.")
         return
-        
-    elif status == "valid":
-        logger.info("✅ Draft code was perfect.")
 
     # 5. EXECUTE (Action Plane)
     logger.info("⚡ Executing Final Code...")
     try:
-        # INJECT THE HANDS INTO THE BRAIN
-        # We pass the tool map into the global scope so they're available everywhere
+        # INJECT ALL TOOLS (Web, File I/O, Mock Email)
+        # Tools must be in global scope to be accessible inside function definitions
         exec_globals = actions.get_tool_map()
         exec_globals['__name__'] = '__main__'
         local_scope = {}
         
+        # Execute the code - this defines all functions
         exec(final_code, exec_globals, local_scope)
         
-        # Run the entry point if it exists
-        keys = [k for k in local_scope.keys() if k not in actions.get_tool_map() and "__" not in k and callable(local_scope[k])]
+        # Merge local_scope back into exec_globals so helper functions are accessible
+        exec_globals.update(local_scope)
+        
+        # Auto-run entry point (find the last defined function that's not a tool)
+        tool_names = set(actions.get_tool_map().keys())
+        keys = [k for k in local_scope.keys() if k not in tool_names and "__" not in k and callable(local_scope[k])]
         if keys:
             func_name = keys[-1]
             print(f"▶️ Running function: {func_name}...")
             
-            # Inspect function to see if it needs a logger injected
+            # Simple Injection Logic for Logger
+            import inspect
             sig = inspect.signature(local_scope[func_name])
             kwargs = {}
             if "logger" in sig.parameters:
                 class MockLogger:
+                    def __call__(self, msg): print(f"[LOG] {msg}")
                     def info(self, msg): print(f"[LOG] {msg}")
                 kwargs["logger"] = MockLogger()
                 
             res = local_scope[func_name](**kwargs)
             print(f"✅ RESULT: {res}")
-        else:
-            # Script-based execution - output already printed during exec
-            print("✅ Script executed successfully")
             
     except Exception as e:
         logger.error(f"Runtime Error: {e}")
 
 if __name__ == "__main__":
-    # Test the new capability
-    run_agentic_loop("Find the current price of Bitcoin and log it.")
+    # Example task now leveraging caching and state management
+    task = "Find the latest stock price for NVIDIA. Cache the result for 5 minutes using the Redis string_set tool with key 'NVDA_STOCK'. If the price is over $1000, save a file named 'NVIDIA_ALERT.txt' using the save_file tool."
+    run_agentic_loop(task)

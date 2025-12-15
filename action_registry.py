@@ -22,6 +22,10 @@ class ActionRegistry:
         self.brave_key = os.getenv("BRAVE_SEARCH_API_KEY")
         if not self.brave_key:
             logger.warning("⚠️ BRAVE_SEARCH_API_KEY not found. Web search will fail.")
+        
+        # Mock Redis storage for L1 caching
+        self._redis_store: Dict[str, str] = {}
+        self._redis_hash: Dict[str, Dict[str, str]] = {}
 
     # --- CORE TOOLS (Canon Validator) ---
     def search_web(self, query: str) -> str:
@@ -89,6 +93,37 @@ class ActionRegistry:
         # In Phase 4 we will connect real SMTP
         logger.info(f"📧 EMAIL SENT to {recipient} | Subj: {subject}")
         return f"Email simulated sent to {recipient}"
+    
+    # --- REDIS MCP TOOLS (L1 Caching) ---
+    def string_set(self, key: str, value: str) -> str:
+        """Stores a simple string key-value pair in Redis."""
+        self._redis_store[key] = value
+        logger.info(f"📦 Redis SET: {key} = {value[:20]}...")
+        return f"OK: Stored {key}"
+    
+    def string_get(self, key: str) -> str:
+        """Retrieves a string value from Redis."""
+        value = self._redis_store.get(key)
+        if value is None:
+            return f"NULL: Key '{key}' not found"
+        logger.info(f"📦 Redis GET: {key} = {value[:20]}...")
+        return value
+    
+    def hash_set(self, key: str, field: str, value: str) -> str:
+        """Stores a field-value pair in a Redis hash."""
+        if key not in self._redis_hash:
+            self._redis_hash[key] = {}
+        self._redis_hash[key][field] = value
+        logger.info(f"📦 Redis HSET: {key}.{field} = {value[:20]}...")
+        return f"OK: Stored {key}.{field}"
+    
+    def hash_get(self, key: str, field: str) -> str:
+        """Retrieves a field value from a Redis hash."""
+        if key not in self._redis_hash or field not in self._redis_hash[key]:
+            return f"NULL: {key}.{field} not found"
+        value = self._redis_hash[key][field]
+        logger.info(f"📦 Redis HGET: {key}.{field} = {value[:20]}...")
+        return value
 
     def get_tool_map(self) -> Dict[str, Callable]:
         """
@@ -98,5 +133,10 @@ class ActionRegistry:
             "search_web": self.search_web,
             "read_file": self.read_file,
             "save_file": self.save_file,
-            "send_email": self.mock_send_email
+            "send_email": self.mock_send_email,
+            # Redis MCP Tools
+            "string_set": self.string_set,
+            "string_get": self.string_get,
+            "hash_set": self.hash_set,
+            "hash_get": self.hash_get
         }

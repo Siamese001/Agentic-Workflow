@@ -61,6 +61,14 @@ roles:
       command: "npx"
       args: ["-y", "@modelcontextprotocol/server-git"]
       description: "Local git operations"
+    
+    # New GitInsight (for thinking about work)
+    - server: "git-insight"
+      command: "python"
+      args: ["servers/git_insight_server.py"]
+      description: "Git analytics for understanding code evolution and coupling"
+      env:
+        PYTHONPATH: "."
 
   # REVIEWER needs telemetry to check quality metrics
   REVIEWER:

@@ -1,114 +1,240 @@
-import time
 import json
 import logging
-from typing import List, Dict, Any
-
-# Import infrastructure
-from connection_manager import ConnectionManager
-from redisvl.query import VectorQuery
+import ast
+import time
+import yaml
+from datetime import datetime
+from pathlib import Path
 from llm_client import LLMClient
+from typing import Dict, Any, List, Optional
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("CognitiveNode")
 
 class CognitiveNode:
     """
-    The 'Brain' of the Agent.
-    Uses Tiered Thinking Protocol to route to appropriate LLM tier.
+    Implements Sequential Thinking for the runtime agent.
+    Forces the LLM to 'Show its work' before generating the final code.
     """
-    
-    def __init__(self):
-        # 1. Connect to Memory
-        self.cm = ConnectionManager()
-        self.redis_index = self.cm.get_redis_index()
-        self.pinecone_index = self.cm.get_pinecone_index()
-        self.embedding_fn = self.cm.get_embedding
-        
-        # 2. Connect to Intelligence (Universal LLM Client)
+    def __init__(self, config_path: Optional[str] = None):
         self.llm = LLMClient()
         
-        # 3. Define Canon-Compliant Persona
-        self.system_prompt_template = """
-You are a Subatomic Architect Agent.
-You do not guess. You follow the Canon explicitly.
-
-CONTEXT FROM MEMORY (Canon):
-{context_block}
-
-AVAILABLE TOOLS:
-- write_file(filename, content): Create or overwrite code files.
-- read_file(filename): Read contents.
-- list_files(subdir): Check workspace.
-
-TASK:
-Create a step-by-step execution plan to achieve the User Goal.
-If the Context contains a function or rule, you MUST use it exactly as it appears.
-"""
-
-    def retrieve_context(self, query: str, top_k: int = 3) -> List[str]:
-        """Queries the Canon (Hot + Cold) for relevant patterns."""
-        logger.info(f"🤔 Thinking... Searching Canon for: '{query}'")
-        context_matches = []
+        # Load configuration
+        if config_path is None:
+            config_path = Path("config/sequential_thinking.yaml")
         
         try:
-            vector = self.embedding_fn(query)
-            
-            # Check Cold Memory (Pinecone)
-            pc_results = self.pinecone_index.query(vector=vector, top_k=top_k, include_metadata=True)
-            for match in pc_results.get('matches', []):
-                if match['score'] > 0.70:
-                    meta = match.get('metadata', {})
-                    context_matches.append(f"[SOURCE: {meta.get('source', 'unknown')}] {meta.get('content', '')}")
-                    
-            # Check Hot Memory (Redis)
-            v_query = VectorQuery(
-                vector=vector,
-                vector_field_name="embedding", 
-                return_fields=["code_snippet", "project_context"],
-                num_results=top_k
-            )
-            redis_results = self.redis_index.query(v_query)
-            for match in redis_results:
-                context_matches.append(f"[SOURCE: {match.get('project_context', 'hot_cache')}] {match.get('code_snippet')}")
-                
-        except Exception as e:
-            logger.error(f"Retrieval failed: {e}")
-            
-        return list(set(context_matches))
-
-    def think(self, user_goal: str, complexity: str = "high") -> Dict[str, Any]:
-        """
-        The Thinking Loop with Tiered Architecture.
-        Args:
-            complexity: 'high' (Consensus) or 'low' (Mini)
-        """
-        # 1. Retrieve
-        relevant_context = self.retrieve_context(user_goal)
-        context_block = "\n---\n".join(relevant_context) if relevant_context else "NO RELEVANT PRECEDENTS FOUND."
+            with open(config_path, 'r') as f:
+                self.config = yaml.safe_load(f)
+        except FileNotFoundError:
+            logger.warning(f"Config file not found at {config_path}, using defaults")
+            self.config = self._get_default_config()
         
-        # 2. Construct System Context
-        system_prompt = self.system_prompt_template.format(
-            context_block=context_block
-        )
+        # Apply configuration
+        self.max_steps = self.config.get('max_steps', 5)
+        self.step_timeout = self.config.get('step_timeout', 30)
+        self.overall_timeout = self.config.get('overall_timeout', 300)
+        self.circuit_breaker_trips = self.config.get('circuit_breaker_trips', 2)
+        self.slow_step_threshold = self.config.get('slow_step_threshold', 30)
+        self.persist_history = self.config.get('persist_history', True)
+        self.max_syntax_attempts = self.config.get('max_syntax_attempts', 2)
         
-        # 3. Execute via Tiered LLM Client
-        result = self.llm.generate_plan(system_context=system_prompt, user_goal=user_goal, complexity=complexity)
-        result["retrieved_items"] = len(relevant_context)
-        
-        return result
-
-    def generate_plan(self, user_goal: str) -> Dict[str, Any]:
-        """Legacy method - defaults to high complexity."""
-        return self.think(user_goal, complexity="high")
-
-if __name__ == "__main__":
-    # Test Tiered Thinking
-    print("🧠 Testing High Complexity (Consensus):")
-    brain = CognitiveNode()
-    res_high = brain.think("Write a complex enterprise system with microservices", complexity="high")
-    print(f"High Complexity Plan Steps: {len(res_high.get('plan', {}).get('steps', []))}")
+        # Initialize history directory
+        self.history_dir = Path(self.config.get('history_dir', 'logs/thought_history'))
+        if self.persist_history:
+            self.history_dir.mkdir(parents=True, exist_ok=True)
     
-    print("\n⚡ Testing Low Complexity (Mini):")
-    res_low = brain.think("Write a hello world python file", complexity="low")
-    print(f"Low Complexity Plan Steps: {len(res_low.get('plan', {}).get('steps', []))}")
+    def _get_default_config(self) -> Dict[str, Any]:
+        """Return default configuration if config file is missing."""
+        return {
+            'max_steps': 5,
+            'step_timeout': 30,
+            'overall_timeout': 300,
+            'circuit_breaker_trips': 2,
+            'slow_step_threshold': 30,
+            'persist_history': True,
+            'history_dir': 'logs/thought_history',
+            'max_syntax_attempts': 2,
+            'log_thoughts': True,
+            'log_timing': True
+        }
+
+    def think(self, user_goal: str, toolbox_desc: str) -> str:
+        """
+        Loops until the agent is satisfied with its plan.
+        Returns the final generated Python code string.
+        """
+        start_time = time.time()
+        session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        logger.info(f"🧠 STARTING SEQUENTIAL THINKING LOOP (Max {self.max_steps} Steps, {self.step_timeout}s timeout each)...")
+        
+        history: List[Dict[str, Any]] = []
+        circuit_breaker_count = 0
+        
+        # Initial call is always the raw user goal
+        raw_prompt = user_goal 
+        
+        for i in range(self.max_steps):
+            # Check overall timeout
+            if time.time() - start_time > self.overall_timeout:
+                logger.error(f"❌ Overall thinking timeout exceeded ({self.overall_timeout}s)")
+                raise TimeoutError("Sequential thinking exceeded maximum duration")
+            
+            # Dynamic Prompt that evolves based on past thoughts
+            history_block = "\n".join([f"Step {h['step']}: {h['thought']}" for h in history])
+            
+            system_prompt = f"""
+            You are a Deep Reasoning Engine tasked with solving: "{user_goal}".
+            
+            {toolbox_desc}
+            
+            PAST THOUGHTS:
+            {history_block}
+            
+            INSTRUCTIONS:
+            1. Analyze the goal and the past thoughts.
+            2. Decide if you have enough information and clarity to write the final Python code.
+            3. Output JSON ONLY:
+            {{
+                "thought": "Your analysis of the current situation and next step in the sequence.",
+                "needs_more_thought": true/false (Set to false ONLY when the thought is sufficient to write the final code),
+                "step": {i+1}
+            }}
+            """
+            
+            try:
+                # Add timeout for each thinking step
+                step_start = time.time()
+                response = self.llm.generate_plan(system_prompt, raw_prompt)
+                step_duration = time.time() - step_start
+                
+                if step_duration > self.slow_step_threshold:
+                    circuit_breaker_count += 1
+                    logger.warning(f"⚠️ Step {i+1} took {step_duration:.2f}s (threshold: {self.slow_step_threshold}s)")
+                    
+                    if circuit_breaker_count >= self.circuit_breaker_trips:
+                        logger.error("❌ Circuit breaker tripped - too many slow steps")
+                        raise TimeoutError("Sequential thinking circuit breaker activated")
+            except TimeoutError:
+                # Re-raise timeout errors
+                raise
+            except Exception as e:
+                logger.error(f"❌ Cognitive Step Failed: {e}")
+                # Instead of breaking, raise a structured error
+                raise RuntimeError(f"Cognitive step {i+1} failed: {str(e)}")
+
+            thought = response.get("thought", "Analysis failed, proceeding to synthesis.")
+            needs_more = response.get("needs_more_thought", True)
+            
+            logger.info(f"🤔 Step {i+1}: {thought[:120]}...")
+            
+            history.append({
+                "step": i+1,
+                "thought": thought,
+                "timestamp": datetime.now().isoformat(),
+                "duration": step_duration if 'step_duration' in locals() else 0
+            })
+            
+            # Persist thought history if enabled
+            if self.persist_history:
+                self._save_thought_history(session_id, user_goal, history)
+            
+            if not needs_more:
+                logger.info("💡 EPIPHANY REACHED. Constructing Final Plan.")
+                final_code = self._synthesize_code(user_goal, history, toolbox_desc)
+                
+                # Save final result
+                if self.persist_history:
+                    self._save_final_result(session_id, final_code)
+                
+                return final_code
+                
+            # Update the raw prompt for the next loop iteration
+            raw_prompt = f"Previous thought: {thought}. Now, what is the next logical step?"
+                
+        logger.warning(f"⚠️ Max thinking steps ({self.max_steps}) reached. Synthesizing plan with current context.")
+        final_code = self._synthesize_code(user_goal, history, toolbox_desc)
+        
+        if self.persist_history:
+            self._save_final_result(session_id, final_code)
+        
+        return final_code
+
+
+    def _synthesize_code(self, goal: str, history: List[Dict[str, Any]], toolbox_desc: str) -> str:
+        """Ask the LLM to convert the sequential thought history into Final Python Code."""
+        logger.info("✍️ Synthesizing final code from thought sequence...")
+        thoughts = "\n".join([f"Thought {h['step']}: {h['thought']}" for h in history])
+        
+        max_attempts = self.max_syntax_attempts
+        last_error = None
+        
+        for attempt in range(max_attempts):
+            final_prompt = f"""
+        Based on the following Goal and Thought Sequence, write the final, complete Python code.
+        
+        GOAL: {goal}
+        
+        CONTEXT (Thought Sequence):
+        {thoughts}
+
+        {toolbox_desc}
+        
+        RULES:
+        - Write only ONE entry point function (e.g., 'run' or 'main').
+        - Avoid triple-quoted f-strings. Use string concatenation or .format() instead.
+        - Ensure all quotes are properly escaped.
+        - Output valid Python code that will compile without syntax errors.
+        - Output JSON ONLY: {{ "code": "..." }}
+        """
+            
+            if attempt > 0 and last_error:
+                final_prompt += f"\n\nPREVIOUS ATTEMPT FAILED WITH SYNTAX ERROR:\n{last_error}\n\nPlease fix the syntax error and try again."
+            
+            final_response = self.llm.generate_plan(
+                "You are a master coder. Use the context provided to write perfect code.", 
+                final_prompt
+            )
+            
+            code = final_response.get("code", "")
+            
+            # Validate syntax
+            try:
+                ast.parse(code)
+                if not code.strip():
+                    raise ValueError("Generated code is empty")
+                logger.info("✅ Code syntax validation passed!")
+                return code
+            except (SyntaxError, ValueError) as e:
+                last_error = f"Validation error: {str(e)}"
+                logger.warning(f"⚠️ Code validation failed (attempt {attempt + 1}): {last_error}")
+                if attempt == max_attempts - 1:
+                    logger.error("❌ Max validation attempts reached. Raising exception.")
+                    raise RuntimeError(f"Failed to generate valid code after {max_attempts} attempts. Last error: {last_error}")
+        
+        return code
+    
+    def _save_thought_history(self, session_id: str, goal: str, history: List[Dict[str, Any]]) -> None:
+        """Save thought history to disk for debugging."""
+        try:
+            history_file = self.history_dir / f"thoughts_{session_id}.json"
+            with open(history_file, 'w') as f:
+                json.dump({
+                    "session_id": session_id,
+                    "goal": goal,
+                    "timestamp": datetime.now().isoformat(),
+                    "history": history
+                }, f, indent=2)
+        except Exception as e:
+            logger.warning(f"Failed to save thought history: {e}")
+    
+    def _save_final_result(self, session_id: str, code: str) -> None:
+        """Save the final generated code."""
+        try:
+            result_file = self.history_dir / f"result_{session_id}.py"
+            with open(result_file, 'w') as f:
+                f.write(f"# Generated on {datetime.now().isoformat()}\n")
+                f.write(f"# Session ID: {session_id}\n\n")
+                f.write(code)
+        except Exception as e:
+            logger.warning(f"Failed to save final result: {e}")
