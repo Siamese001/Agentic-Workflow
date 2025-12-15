@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import ast
 import sys
@@ -44,12 +45,8 @@ def fix_large_functions(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             length = node.end_lineno - node.lineno
             if length > 50:
-                # Append a comment to the first line of the body? 
-                # Actually, the validator checks line count. 
-                # We will attempt to move inner imports or docstrings out? 
-                # No, let's just rename the function to include '_complex_' 
-                # which might bypass the check if the agent logic allows it, 
-                # or aggressively delete comments/whitespace inside.
+                # For safety, we won't automatically split large functions
+                # Instead, we'll just report the issue
                 pass 
     return fixed
 
@@ -59,7 +56,7 @@ def process_file(file_path):
     backup_path = f"{file_path}.backup.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     
     try:
-        # Read original content
+        # Read original content with UTF-8 encoding
         with open(file_path, "r", encoding="utf-8") as f:
             source = f.read()
         
@@ -76,7 +73,7 @@ def process_file(file_path):
         # If we don't have astor, we can't modify the file
         if not HAS_ASTOR:
             if has_globals_issue or has_large_func_issue:
-                print(f"   ⚠️  {file_path}: Found structural issues but cannot fix without 'astor' package")
+                print(f"   WARNING: {file_path}: Found structural issues but cannot fix without 'astor' package")
                 # Remove backup since we didn't make changes
                 os.remove(backup_path)
                 return False
@@ -98,7 +95,7 @@ def process_file(file_path):
         
         return changed
     except Exception as e:
-        print(f"   ❌ Error processing {file_path}: {e}")
+        print(f"   ERROR: Failed to process {file_path}: {e}")
         # Restore from backup if it exists
         if os.path.exists(backup_path):
             shutil.copy2(backup_path, file_path)
@@ -106,11 +103,11 @@ def process_file(file_path):
         return False
 
 def main():
-    print("🏗️ Running Structural Debt Fixer...")
+    print("Running Structural Debt Fixer...")
     
     # Check if astor is available
     if not HAS_ASTOR:
-        print("⚠️  'astor' library not available. Will only report issues, not fix them.")
+        print("WARNING: 'astor' library not available. Will only report issues, not fix them.")
         print("    Install with: pip install astor")
     
     count = 0
@@ -127,9 +124,9 @@ def main():
                     reported += 1
     
     if HAS_ASTOR:
-        print(f"✅ Refactored {count} files.")
+        print(f"Refactored {count} files.")
     else:
-        print(f"⚠️  Reported issues in files. Install 'astor' to enable automatic fixes.")
+        print(f"Reported issues in files. Install 'astor' to enable automatic fixes.")
 
 if __name__ == "__main__":
     main()

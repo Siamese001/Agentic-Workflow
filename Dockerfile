@@ -48,6 +48,7 @@ ENV PYTHONUNBUFFERED=1 \
 # Install only runtime system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Security: Create non-root user with minimal privileges
@@ -58,9 +59,10 @@ RUN adduser --disabled-password --gecos "" appuser && \
 # Set working directory
 WORKDIR /app
 
+# Install Python dependencies to user directory
 # Copy only production dependencies
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Security: Copy all runtime code from builder stage
 COPY --from=builder /app/ /app/
