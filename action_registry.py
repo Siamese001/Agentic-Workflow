@@ -149,21 +149,85 @@ class ActionRegistry:
         except ImportError:
             return f"Error: MCP Time client not available for conversion"
 
+    def commit(self, file_path: str, message: str) -> str:
+        """Commits a file to git."""
+        try:
+            from mcp0_git_add_or_commit import mcp0_git_add_or_commit
+            mcp0_git_add_or_commit(directory=".", action="add", files=[file_path])
+            result = mcp0_git_add_or_commit(directory=".", action="commit", files=[file_path], message=message)
+            return f"✅ Committed: {message}"
+        except Exception as e: return f"Commit Error: {e}"
+    
+    def status(self) -> str:
+        """Gets git status."""
+        try:
+            from mcp0_git_status import mcp0_git_status
+            result = mcp0_git_status(directory=".")
+            return result
+        except Exception as e: return f"Status Error: {e}"
+    
+    # --- FIGMA MCP TOOLS (L2 Design) - Stubs for Phase 1 ---
+    def get_variable_defs(self, node_id: str, file_key: str = None) -> str:
+        """Gets Figma variable definitions."""
+        return "Figma MCP not implemented in Phase 1"
+    
+    def get_design_context(self, node_id: str, file_key: str = None) -> str:
+        """Gets Figma design context."""
+        return "Figma MCP not implemented in Phase 1"
+    
+    def get_screenshot(self, node_id: str, file_key: str = None) -> str:
+        """Gets Figma screenshot."""
+        return "Figma MCP not implemented in Phase 1"
+    
+    # --- PINECONE MCP TOOLS (L3 RAG) - Stubs for Phase 1 ---
+    def search_records(self, query: str, index: str, top_k: int, namespace: str) -> str:
+        """Searches Pinecone records."""
+        return "Pinecone MCP not implemented in Phase 1"
+    
+    # --- MEMORY MCP TOOLS (L5 MEMemory) - Stubs for Phase 1 ---
+    def add_observations(self, observations: list) -> str:
+        """Adds observations to MEMemory."""
+        return "MEMemory MCP not implemented in Phase 1"
+    
+    def create_entities(self, entities: list) -> str:
+        """Creates entities in MEMemory."""
+        return "MEMemory MCP not implemented in Phase 1"
+    
+    def open_nodes(self, names: list) -> str:
+        """Opens nodes in MEMemory."""
+        return "MEMemory MCP not implemented in Phase 1"
+
     def get_tool_map(self) -> Dict[str, Callable]:
-        """
-        Returns the dictionary of safe tools to inject into the Agent's scope.
-        """
+        """Returns the master tool map for the LLM."""
         return {
-            "search_web": self.search_web,
+            # --- LAYER 1: FILESYSTEM & I/O ---
             "read_file": self.read_file,
             "save_file": self.save_file,
             "send_email": self.mock_send_email,
-            # Redis MCP Tools
+            
+            # --- LAYER 2: DESIGN & CONTEXT ---
+            "get_variable_defs": self.get_variable_defs,
+            "get_design_context": self.get_design_context,
+            "get_screenshot": self.get_screenshot,
+            
+            # --- LAYER 3: RAG & WISDOM ---
+            "search_records": self.search_records,
+            "search_web": self.search_web,
+            
+            # --- LAYER 4: STATE & TEMPORAL ---
             "string_set": self.string_set,
             "string_get": self.string_get,
             "hash_set": self.hash_set,
             "hash_get": self.hash_get,
-            # Time MCP Tools
             "get_current_time": self.get_current_time,
-            "convert_time": self.convert_time
+            "convert_time": self.convert_time,
+            
+            # --- LAYER 5: MEMORY & AUDIT ---
+            "add_observations": self.add_observations,
+            "create_entities": self.create_entities,
+            "open_nodes": self.open_nodes,
+            
+            # --- GIT OPERATIONS ---
+            "commit": self.commit,
+            "status": self.status,
         }
