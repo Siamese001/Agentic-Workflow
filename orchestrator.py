@@ -54,17 +54,22 @@ def run_agentic_loop(user_goal: str):
     - get_variable_defs(node_id: string) -> string : Retrieves the design tokens (variables, styles) used in the selection.
     - get_code_connect_map(node_id: string) -> string : Retrieves the codebase path for a linked component.
 
+    [PLAYWRIGHT MCP - L1 Browser Automation]
+    - browser_navigate(url: string) : Navigates the browser to a URL.
+    - browser_snapshot() -> string : Captures the accessibility snapshot of the current page (MUST be called before interaction).
+    - browser_type(element: string, ref: string, text: string) : Types text into an editable element.
+    - browser_click(element: string, ref: string) : Performs a click on a web page element.
+
+    [FETCH MCP - L1 Live External Content]
+    - fetch(url: str, max_length: integer) -> string : Fetches a URL and extracts its contents as clean Markdown (e.g., job descriptions, documentation).
+
     [REDIS MCP - L1 Cache & Session State]
     - string_set(key: str, value: str) : Stores simple session state or caching keys.
     - string_get(key: str) -> str : Retrieves simple session state or caching keys.
     - hash_set(key: str, field: str, value: str) : Stores field-value pairs (e.g., user profiles, complex cache objects).
     - hash_get(key: str, field: str) -> str : Retrieves a field from a hash key.
     
-    [WEB SEARCH & CONTENT]
-    - search_web(query: str) -> str : Returns real-time search results.
-    - print(msg) : Standard output.
-    
-    [EMAIL]
+    [ACTION TOOLS]
     - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email (Mock).
     """
     
@@ -142,11 +147,11 @@ def run_agentic_loop(user_goal: str):
         logger.error(f"Runtime Error: {e}")
 
 if __name__ == "__main__":
-    # Example task now integrating Filesystem for file management
+    # Example task now integrating the final Web Automation tool
     task = (
-        "Read the contents of 'my_resume.txt' using read_text_file. "
-        "Find the best matching job pitch template from Pinecone. "
-        "Generate a cover letter using the retrieved text and write the output to 'cover_letter_draft.txt' using write_file."
+        "Use the fetch tool to get the content from the job URL 'https://careers.example.com/job/456'. "
+        "Find a 60-minute time slot for an interview next week. "
+        "Navigate the browser to the application page, fill in the 'name' field with 'John Smith' and click the 'Apply' button."
     )
     print(f"\nExample Agent Task Defined:\n{task}")
     # run_agentic_loop(task)
