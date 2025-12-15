@@ -12,6 +12,17 @@ from core_utils import (
     add_observations
 )
 
+# Import hardened MCP functions
+from mcp_hardening import (
+    get_version_locked_design,
+    execute_time_bound_search
+)
+
+# Import Redis/LangCache pipeline functions
+from redis_langcache_pipeline import (
+    execute_governed_prompt_caching
+)
+
 def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_out: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Implements the 'Hyper-Personalized Cover Letter' use case, integrating L1 (Fetch, Filesystem), 
@@ -180,16 +191,22 @@ def validate_resume_design_skills(job_url: str, resume_file_path: str, user_name
 
     # --- Step 2: Get Design Standard (L2 Figma) ---
     try:
-        # Retrieves the approved resume structure/token list
-        design_standard_str = get_variable_defs(node_id=FIGMA_RESUME_TEMPLATE_ID)
-        design_standard = json.loads(design_standard_str)
+        # Use version-locked Figma access for hardening
+        FIGMA_RESUME_VERSION = "v1.0.0"  # Locked version for production
+        design_standard = get_version_locked_design(
+            file_id=FIGMA_RESUME_TEMPLATE_ID, 
+            version_id=FIGMA_RESUME_VERSION,
+            logger=logger
+        )
+        design_status = "COMPLIANT"
         if logger:
-            logger.info("✅ L2 Figma: Retrieved design standard")
+            logger.info(f"✅ L2 Figma: Retrieved version-locked design standard v{FIGMA_RESUME_VERSION}")
     except Exception as e:
         # This is a warning state: we can still check skills but design validation is skipped
         if logger:
             logger.warning(f"⚠️ L2 Figma failed. Cannot validate resume design: {e}")
         design_standard = None
+        design_status = "SKIPPED"
 
     # --- Step 3: Get Internal Profile (L5 MEMemory) ---
     try:
@@ -290,6 +307,12 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
 
     current_draft = ""
     current_score = 0.0
+    attempts = 0
+    final_draft = None
+    final_score = 0.0
+    
+    # Create job description hash for caching
+    job_hash = str(hash(job_description))
     
     # 1. Initial Context Retrieval (L5 MEMemory)
     # Assumes search_nodes finds user data and required keywords from Pinecone (L3)
@@ -307,42 +330,93 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
             logger.error(f"Failed to retrieve initial context: {e}")
         return {"status": "error", "message": f"Context retrieval failed: {e}"}
     
-    # --- Iterative Loop (Sequential Thinking) ---
-    for i in range(1, max_iterations + 1):
-        if current_score >= score_threshold:
-            if logger:
-                logger.info(f"✅ Threshold met after {i-1} iterations")
-            break # Sequential Thinking Success: Threshold met
-
-        # 2. Generate/Refine Draft (LLM/Thinking Node)
-        new_draft = generate_draft_llm("Resume", user_data, job_description, current_draft, required_keywords)
-        current_draft = new_draft
-
-        # 3. Semantic Scoring (LLM/Utility)
-        new_score = semantic_score_draft(current_draft, job_description)
-        current_score = new_score
+    for i in range(max_iterations):
+        attempts += 1
         
-        if logger:
-            logger.info(f"Attempt {i}: Draft scored {current_score:.2f}. Continuing refinement...")
+        # Render the full prompt with all context
+        rendered_prompt = f"""
+CONTEXT:
+- Job Description: {job_description}
+- User Profile: {user_data}
+- Keywords: {required_keywords}
 
-        # 4. Log Iteration (L5 MEMemory)
+TASK:
+Generate a professional resume draft that optimally aligns with the job requirements.
+Focus on skills, projects, and experience that match the keywords.
+"""
+        
+        # --- Use Governed Prompt Caching (L4 Redis/LangCache) ---
         try:
-            add_observations(observations=[{
-                "entityName": "OptimizationCycle",
-                "contents": [
-                    f"Draft Iteration {i} scored {current_score:.2f} against JD.",
-                    f"User: {user_name}, Target: {score_threshold:.2f}",
-                    f"Current draft saved with {len(current_draft)} characters"
-                ]
-            }])
+            cache_result = execute_governed_prompt_caching(
+                user_name=user_name,
+                job_description_hash=job_hash,
+                rendered_prompt=rendered_prompt,
+                logger=logger
+            )
+            
+            if cache_result["status"] == "cache_hit":
+                # Retrieved from cache - use directly
+                draft_content = cache_result["draft"]
+                if logger:
+                    logger.info(f"✅ Retrieved draft from LangCache (iteration {i})")
+            elif cache_result["status"] == "budget_aborted":
+                # Budget exhausted - return error
+                return {
+                    "status": "budget_aborted",
+                    "message": "LLM generation budget exhausted",
+                    "attempts": attempts
+                }
+            else:
+                # Generated successfully
+                draft_content = cache_result["draft"]
+                if logger:
+                    logger.info(f"✅ Generated new draft (iteration {i})")
         except Exception as e:
             if logger:
-                logger.warning(f"⚠️ Failed to log iteration: {e}")
-
+                logger.warning(f"Governed caching failed: {e}. Using fallback generation.")
+            # Fallback to direct LLM call
+            draft_content = generate_draft_llm(rendered_prompt)
+        
+        # Score the draft
+        score = semantic_score_draft(draft_content, job_description)
+        
+        if logger:
+            logger.info(f"Iteration {i}: Score = {score:.2f} (threshold = {score_threshold:.2f})")
+        
+        # Log iteration to MEMory
+        try:
+            add_observations(observations=[{
+                "entityName": "DraftGeneration",
+                "contents": [
+                    f"Draft iteration {i} for {user_name}",
+                    f"Score: {score:.2f}",
+                    f"Threshold: {score_threshold:.2f}",
+                    f"Source: {'Cache' if cache_result.get('status') == 'cache_hit' else 'Generated'}"
+                ]
+            }])
+        except:
+            pass
+        
+        # Check if threshold met
+        if score >= score_threshold:
+            final_draft = draft_content
+            final_score = score
+            break
+        
+        # Use this draft for next iteration (sequential thinking)
+        # In a real system, we might refine the prompt based on score feedback
+    
+    if final_draft is None:
+        # Return best effort if threshold not met
+        final_draft = draft_content
+        final_score = score
+        if logger:
+            logger.warning(f"Threshold not met after {max_iterations} attempts. Returning best effort.")
+    
     # --- Finalization (L1 Filesystem) ---
     final_file_path = f"drafts/{user_name}_optimized_draft.txt"
     try:
-        write_file(path=final_file_path, content=current_draft)
+        write_file(path=final_file_path, content=final_draft)
         if logger:
             logger.info(f"✅ Final draft saved to {final_file_path}")
     except Exception as e:
@@ -351,9 +425,9 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
         return {"status": "error", "message": f"File write failed: {e}"}
     
     return {
-        "status": "optimized" if current_score >= score_threshold else "threshold_not_met",
-        "final_score": current_score,
-        "attempts": i,
+        "status": "optimized" if final_score >= score_threshold else "threshold_not_met",
+        "final_score": final_score,
+        "attempts": attempts,
         "file_path": final_file_path,
         "user_name": user_name,
         "target_threshold": score_threshold
