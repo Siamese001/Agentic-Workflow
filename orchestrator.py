@@ -3,11 +3,13 @@ import logging
 import os
 import subprocess
 import sys
+import glob
 
 from action_registry import ActionRegistry
 from canon_validator import CanonValidator
 from cognitive_node import CognitiveNode  # <--- NEW IMPORT
 from llm_client import LLMClient
+from apps_rg.L3_orchestration.toolbox import SAFE_TOOLS, TOOLBOX_DESC  # <--- NEW IMPORT
 
 # Setup
 logging.basicConfig(level=logging.INFO,
@@ -96,6 +98,8 @@ def validate_manifest_integrity(manifest_path: str) -> bool:
         return False
 
 
+
+
 def run_agentic_loop(user_goal: str):
     # print(f"\n🚀 SUBATOMIC AGENT STARTING: {user_goal}")  # [Security Fix]
     # print("="*60)  # [Security Fix]
@@ -131,63 +135,10 @@ def run_agentic_loop(user_goal: str):
     actions = ActionRegistry()
     cognitive = CognitiveNode()  # <--- NEW COMPONENT
 
-    # 2. DEFINE TOOLBOX (The fully unified and accurate toolset)
-    toolbox_desc = """
-    AVAILABLE TOOLS (You MUST use these for your tasks):
+    # 2. Use imported toolbox description
+    toolbox_desc = TOOLBOX_DESC
 
-    [FILESYSTEM MCP - L0 Secure I/O]
-    - read_text_file(path: str) -> string : Reads complete contents of a file as text (e.g., resumes, source code).
-    - write_file(path: str, content: str) -> string : Creates a new file or overwrites existing content (exercise caution).
-    - edit_file(path: str, edits: array) -> string : Makes selective edits using advanced pattern matching and formatting (Ideal for Canon Validator repair).
-    - list_directory(path: str) -> string : Lists contents of a directory (used for project introspection).
-
-    [MEMORY MCP - L3 Knowledge Graph/User Profile]
-    - create_entities(entities: array) -> string : Creates new nodes (people, organizations, concepts) in the graph.
-    - add_observations(observations: array) -> string : Adds specific facts (strings) to existing entities.
-    - create_relations(relations: array) -> string : Links two entities with a directed relation (e.g., 'John_Smith', 'works_at', 'Anthropic').
-    - search_nodes(query: str) -> string : Searches across entity names, types, and observations for relevant context.
-
-    [PINECONE MCP - L2 RAG/Wisdom (The Canonical Memory)]
-    - search_records(query: str, index: str, top_k: integer, namespace: str) -> string : Searches the Pinecone index for records similar to the query text (L2 Wisdom). Use for retrieving code patterns, successful resume templates, or outreach knowledge.
-    - upsert_records(records: string) -> string : Inserts or updates a JSON list of records into the index (How you save new knowledge/validated code/successful templates).
-    - describe_index_stats() -> string : Provides statistics on index content (useful for planning).
-
-    [GITKRAKEN MCP - Code Operations, Issues, and PRs (Source of Truth)]
-    - git_add_or_commit(files: string, message: string, action: string) -> string : Adds file contents to the index OR records changes to the repository.
-    - git_checkout(branch_or_file: string) : Switches branches or restores working tree files.
-    - git_status() -> string : Shows the working tree status.
-    - pull_request_create(repo: str, title: str, body: str, head: str, base: str) -> string : Creates a new pull request.
-    - issues_get_detail(id: string) -> string : Retrieves detailed information about a specific issue by its unique ID.
-    - repository_get_file_content(path: string) -> string : Gets file content from the repository (replaces GitHub's read_file).
-
-    [FIGMA MCP - L0 Design Context & Code Generation]
-    - get_design_context(node_id: string) -> string : Gets structural design data for a selected Figma node/frame.
-    - get_variable_defs(node_id: string) -> string : Retrieves the design tokens (variables, styles) used in the selection.
-    - get_code_connect_map(node_id: string) -> string : Retrieves the codebase path for a linked component.
-
-    [PLAYWRIGHT MCP - L1 Browser Automation]
-    - browser_navigate(url: string) : Navigates the browser to a URL.
-    - browser_snapshot() -> string : Captures the accessibility snapshot of the current page (MUST be called before interaction).
-    - browser_type(element: string, ref: string, text: string) : Types text into an editable element.
-    - browser_click(element: string, ref: string) : Performs a click on a web page element.
-
-    [FETCH MCP - L1 Live External Content]
-    - fetch(url: str, max_length: integer) -> string : Fetches a URL and extracts its contents as clean Markdown (e.g., job descriptions, documentation).
-
-    [REDIS MCP - L1 Cache & Session State]
-    - string_set(key: str, value: str) : Stores simple session state or caching keys.
-    - string_get(key: str) -> str : Retrieves simple session state or caching keys.
-    - hash_set(key: str, field: str, value: str) : Stores field-value pairs (e.g., user profiles, complex cache objects).
-    - hash_get(key: str, field: str) -> str : Retrieves a field from a hash key.
-
-    [TIME MCP - L4 Temporal Awareness]
-    - get_current_time(timezone: str) -> string: Gets the current date, time, and timezone in ISO 8601 format. Accepts IANA timezone name (e.g., 'America/New_York').
-    - convert_time(source_timezone: str, time: str, target_timezone: str) -> string: Converts a time string (HH:MM) between two specified IANA timezones.
-
-    [ACTION TOOLS]
-    - send_email(recipient: str, subject: str, body: str) -> str : Simulates sending an email (Mock).
-    """
-
+    
     # 3. THINK SEQUENTIALLY (Generate Draft using the Cognitive Node)
     # The Cognitive Node manages the entire thought process
     try:
@@ -226,9 +177,11 @@ def run_agentic_loop(user_goal: str):
     # 5. EXECUTE (Action Plane)
     logger.info("⚡ Executing Final Code...")
     try:
-        # INJECT ALL TOOLS (Web, File I/O, Mock Email)
+        # INJECT ALL TOOLS (Web, File I/O, Mock Email) + SafeToolbox
         # Tools must be in global scope to be accessible inside function definitions
         exec_globals = actions.get_tool_map()
+        # Merge SafeToolbox functions into execution context
+        exec_globals.update(SAFE_TOOLS)
         exec_globals['__name__'] = '__main__'
         local_scope = {}
 

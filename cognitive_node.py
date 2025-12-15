@@ -157,7 +157,8 @@ class CognitiveNode:
                 # Add timeout for each thinking step
                 step_start = time.time()
                 # [HARDENED 5c] Call LLM with dynamic temperature
-                response = self.llm.generate_plan(system_prompt, raw_prompt, temperature=current_temp)
+                # Note: LLMClient doesn't support temperature parameter yet
+                response = self.llm.generate_plan(system_prompt, raw_prompt)
                 step_duration = time.time() - step_start
 
                 if step_duration > self.slow_step_threshold:
@@ -254,8 +255,8 @@ class CognitiveNode:
 
             final_response = self.llm.generate_plan(
                 "You are a master coder. Use the context provided to write perfect code.",
-                final_prompt,
-                temperature=synthesis_temp
+                final_prompt
+                # Note: LLMClient doesn't support temperature parameter yet
             )
 
             code = final_response.get("code", "")
