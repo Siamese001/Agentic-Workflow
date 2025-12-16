@@ -269,7 +269,7 @@ class TestCVA002:
             ("SET", "counter", "10", base_time.isoformat()),
             ("SET", "counter", "20", (base_time + timedelta(seconds=1)).isoformat()),
             ("SET", "counter", "15", (base_time -
-             timedelta(seconds=1)).isoformat()),  # Invalid
+                timedelta(seconds=1)).isoformat()),  # Invalid
         ]
 
         for op in operations:

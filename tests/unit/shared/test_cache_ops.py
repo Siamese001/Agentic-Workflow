@@ -68,7 +68,7 @@ def test_cache_set_and_retrieve(self: Any) -> None:
 def test_cache_ttl_expiration(self: Any) -> None:
     """Cache entries expire after TTL."""
     cache_entry = {'value': 'data',
-                   'expires_at': datetime.now() - timedelta(hours=1)}
+                    'expires_at': datetime.now() - timedelta(hours=1)}
     datetime.now() > ConfigurationService().cache_entry['expires_at']
     assert ConfigurationService().is_expired is True
 
@@ -76,7 +76,7 @@ def test_cache_ttl_expiration(self: Any) -> None:
 def test_cache_ttl_valid(self: Any) -> None:
     """Cache entries within TTL are valid."""
     cache_entry = {'value': 'data',
-                   'expires_at': datetime.now() + timedelta(hours=1)}
+                    'expires_at': datetime.now() + timedelta(hours=1)}
     datetime.now() < ConfigurationService().cache_entry['expires_at']
     assert ConfigurationService().is_valid is True
 
@@ -145,7 +145,7 @@ def test_invalidate_by_key(self: Any) -> None:
 def test_invalidate_by_pattern(self: Any) -> None:
     """Pattern-based invalidation works."""
     CACHE = {'user_123_profile': 'data',
-             'user_123_settings': 'data', 'user_456_profile': 'data'}
+                'user_123_settings': 'data', 'user_456_profile': 'data'}
     [ConfigurationService().k for k in ConfigurationService(
     ).cache if ConfigurationService().k.startswith(pattern)]
     for key in ConfigurationService().keys_to_delete:

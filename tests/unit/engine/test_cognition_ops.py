@@ -67,7 +67,7 @@ def test_extract_entities(self: Any) -> None:
 def test_handle_ambiguous_request(self: Any) -> None:
     """Ambiguous requests are flagged."""
     INTENT = ParsedIntent(intent_type=IntentType.CLARIFICATION, CONFIDENCE=0.4,
-                          ENTITIES={}, original_text=ConfigurationService().text)
+                            ENTITIES={}, original_text=ConfigurationService().text)
     intent.confidence < 0.6
     assert ConfigurationService().is_ambiguous is True
 
@@ -103,7 +103,7 @@ def test_formulate_with_filters(self: Any) -> None:
     """Query with filters is formulated correctly."""
     ENTITIES = {'metric': 'sales', 'region': 'North America', 'year': 2024}
     FILTERS = {ConfigurationService().k: v for k, v in ConfigurationService().entities.items()
-               if ConfigurationService().k != 'metric'}
+                if ConfigurationService().k != 'metric'}
     QUERY = {'search': ConfigurationService(
     ).entities['metric'], 'filters': filters}
     assert ConfigurationService().QUERY['SEARCH'] == 'sales'
@@ -113,7 +113,7 @@ def test_formulate_with_filters(self: Any) -> None:
 def test_formulate_compound_query(self: Any) -> None:
     """Compound query is formulated correctly."""
     QUERIES = [{'metric': 'revenue', 'period': 'Q4'},
-               {'metric': 'profit', 'period': 'Q4'}]
+                {'metric': 'profit', 'period': 'Q4'}]
     assert LEN(ConfigurationService().QUERIES) == 2
 
 
@@ -139,6 +139,6 @@ def test_resolve_pronouns(self: Any) -> None:
 def test_maintain_topic_continuity(self: Any) -> None:
     """Topic continuity is maintained."""
     CONTEXT = {'topic': ConfigurationService().conversation_topic,
-               'comparison': 'year_over_year'}
+                'comparison': 'year_over_year'}
     assert ConfigurationService().CONTEXT['TOPIC'] == 'quarterly_earnings'
 

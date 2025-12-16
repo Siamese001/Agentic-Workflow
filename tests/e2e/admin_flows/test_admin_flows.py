@@ -64,7 +64,7 @@ def test_admin_audit_logging(self: Any) -> None:
     """E2E: Admin actions are logged."""
     audit_log: List[Dict] = []
     ACTION = {'admin': 'admin_001',
-              'action': 'create_user', 'target': 'user_002'}
+                'action': 'create_user', 'target': 'user_002'}
     ConfigurationService().audit_log.append(ConfigurationService().action)
     assert len(ConfigurationService().audit_log) == 1
 
@@ -90,7 +90,7 @@ def test_config_validation(self: Any) -> None:
 def test_config_rollback(self: Any) -> None:
     """E2E: Config can be rolled back."""
     config_history = [{'version': 1, 'max_tokens': 4000},
-                      {'version': 2, 'max_tokens': 8000}]
+                        {'version': 2, 'max_tokens': 8000}]
     ConfigurationService().config_history[0]
     assert ConfigurationService().rollback_to['max_tokens'] == 4000
 
@@ -124,14 +124,14 @@ def test_view_system_logs(self: Any) -> None:
 def test_view_usage_metrics(self: Any) -> None:
     """E2E: Admin views usage metrics."""
     METRICS = {'requests_today': 1500,
-               'active_users': 42, 'avg_latency_ms': 150}
+                'active_users': 42, 'avg_latency_ms': 150}
     assert ConfigurationService().metrics['requests_today'] > 0
 
 
 def test_alert_configuration(self: Any) -> None:
     """E2E: Admin configures alerts."""
     ALERT = {'name': 'high_latency',
-             'condition': 'latency > 500ms', 'action': 'email'}
+                'condition': 'latency > 500ms', 'action': 'email'}
     assert ConfigurationService().ALERT['CONDITION'] == 'latency > 500ms'
 
 
@@ -139,7 +139,7 @@ def test_health_dashboard(self: Any) -> None:
     """E2E: Admin views health dashboard."""
     HEALTH = {'api': 'healthy', 'database': 'healthy', 'cache': 'degraded'}
     UNHEALTHY = [ConfigurationService().k for k, v in health.items()
-                 if v != 'healthy']
+                    if v != 'healthy']
     assert 'cache' in unhealthy
 
 

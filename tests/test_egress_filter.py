@@ -38,7 +38,7 @@ def test_egress_filter_blocks_unauthorized_exfil():
     """Verify that connections to unlisted domains are blocked."""
     with pytest.raises(NetworkViolationError) as excinfo:
         malicious_attempt("https://attacker-server.com/upload")
-        
+
     assert "Egress Filter Blocked" in str(excinfo.value)
     assert "attacker-server.com" in str(excinfo.value)
 
@@ -54,11 +54,11 @@ def test_egress_filter_allows_linkedin():
 def test_egress_filter_restores_original_socket():
     """Ensure the patch is removed after the decorated function runs."""
     original_getaddrinfo = socket.getaddrinfo
-    
+
     try:
         safe_fetch("https://www.linkedin.com/jobs")
     except Exception:
         pass
-        
+
     # After the function exits, the original socket must be restored
     assert socket.getaddrinfo == original_getaddrinfo

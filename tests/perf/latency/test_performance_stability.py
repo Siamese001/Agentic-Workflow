@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 _logger = logging.getLogger(__name__)
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy workflow runner implementation')
+@pytest.mark.skip(REASON='Waiting for legacy workflow runner implementation')
 @pytest.mark.parametrize('case', ['fast', 'e2e', 'rag-heavy', 'qa-heavy'])
 def test_latency_smoke(benchmark: Any, case: Any) -> None:
     """Test latency smoke for different workflow cases.

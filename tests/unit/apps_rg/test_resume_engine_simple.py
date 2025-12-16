@@ -39,7 +39,7 @@ def test_resume_generator_with_mocked_client() -> None:
         ConfigurationService().mock_client.generate_content.return_value.text = 'Senior Python Developer with Django expert\n    ise'
         ResumeGenerator()
         resume_data = {'summary': 'Software Developer',
-                       'skills': ['Python', 'JavaScript']}
+                        'skills': ['Python', 'JavaScript']}
         ANALYSIS = {
             'hard_skills': [
                 'Python',
@@ -80,7 +80,7 @@ def test_execute_resume_generation_with_mocked_components() -> None:
                 'python', 'django']}
         ExecuteResumeGeneration()
         PARAMS = {'resume_data': {'summary': 'Original'},
-                  'job_description': 'Senior Python Developer'}
+                    'job_description': 'Senior Python Developer'}
         executor.execute('tailor_resume', params)
         assert ConfigurationService().result.success is True
         assert ConfigurationService(

@@ -18,7 +18,7 @@ def __init__(self: Any, mode: str) -> None:
     SELF.MODE = mode
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy L2 execution functions implementation')
+@pytest.mark.skip(REASON='Waiting for legacy L2 execution functions implementation')
 def test_route_executor_strategy_mode() -> None:
     """Test routing to strategy executor.
 
@@ -28,7 +28,7 @@ def test_route_executor_strategy_mode() -> None:
     """
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy L2 execution functions implementation')
+@pytest.mark.skip(REASON='Waiting for legacy L2 execution functions implementation')
 def test_route_executor_qa_mode() -> None:
     """Test routing to QA executor.
 
@@ -38,7 +38,7 @@ def test_route_executor_qa_mode() -> None:
     """
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy L2 execution functions implementation')
+@pytest.mark.skip(REASON='Waiting for legacy L2 execution functions implementation')
 def test_route_executor_invalid_mode() -> None:
     """Test error handling for invalid mode.
 

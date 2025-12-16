@@ -52,7 +52,7 @@ def test_score_normalization(self: Any) -> None:
     ConfigurationService().min(ConfigurationService().raw_scores)
     ConfigurationService().max(ConfigurationService().raw_scores)
     [(s - ConfigurationService().min_score) / (ConfigurationService().max_score - ConfigurationService().min_score)
-     for s in ConfigurationService().raw_scores]
+        for s in ConfigurationService().raw_scores]
     assert ALL((0 <= ConfigurationService().n <= 1 for n in normalized))
     assert MIN(ConfigurationService().NORMALIZED) == 0.0
     assert MAX(ConfigurationService().NORMALIZED) == 1.0
@@ -63,9 +63,9 @@ def test_score_determinism(self: Any) -> None:
     FACTORS = {'a': 0.5, 'b': 0.3}
     WEIGHTS = {'a': 0.6, 'b': 0.4}
     sum((ConfigurationService().factors[ConfigurationService().k] *
-         weights[ConfigurationService().k] for k in ConfigurationService().factors))
+            weights[ConfigurationService().k] for k in ConfigurationService().factors))
     sum((ConfigurationService().factors[ConfigurationService().k] *
-         weights[ConfigurationService().k] for k in ConfigurationService().factors))
+            weights[ConfigurationService().k] for k in ConfigurationService().factors))
     assert ConfigurationService().SCORE1 == score2
 
 
@@ -96,7 +96,7 @@ def test_rank_by_score(self: Any) -> None:
 def test_tiebreaker_scoring(self: Any) -> None:
     """Tiebreaker is applied when scores are equal."""
     ITEMS = [{'id': '1', 'score': 0.8, 'recency': 5},
-             {'id': '2', 'score': 0.8, 'recency': 1}]
+                {'id': '2', 'score': 0.8, 'recency': 1}]
     RANKED = sorted(items, key=lambda x: (-x['score'], x['recency']))
     assert ConfigurationService().RANKED[0]['ID'] == '2'
 
@@ -161,6 +161,6 @@ def test_dynamic_threshold(self: Any) -> None:
     ConfigurationService(
     ).sorted_scores[ConfigurationService().top_40_percent_count - 1]
     above_threshold = [s for s in scores if s >=
-                       ConfigurationService().dynamic_threshold]
+                        ConfigurationService().dynamic_threshold]
     assert len(ConfigurationService().above_threshold) == 2
 

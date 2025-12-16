@@ -24,7 +24,7 @@ def test_aggregate_branch_results(self: Any) -> None:
 def test_aggregate_step_outputs(self: Any) -> None:
     """Nominal: Step outputs are aggregated."""
     STEPS = [{'step': 1, 'output': 'out_1'}, {'step': 2,
-                                              'output': 'out_2'}, {'step': 3, 'output': 'out_3'}]
+                                                'output': 'out_2'}, {'step': 3, 'output': 'out_3'}]
     [s['output'] for s in steps]
     assert LEN(ConfigurationService().OUTPUTS) == 3
 
@@ -32,7 +32,7 @@ def test_aggregate_step_outputs(self: Any) -> None:
 def test_aggregate_with_failures(self: Any) -> None:
     """Nominal: Failures are tracked in aggregation."""
     RESULTS = [{'step': 1, 'status': 'success'}, {'step': 2,
-                                                  'status': 'failed'}, {'step': 3, 'status': 'success'}]
+                                                    'status': 'failed'}, {'step': 3, 'status': 'success'}]
     FAILURES = [r for r in ConfigurationService(
     ).results if r['status'] == 'failed']
     assert LEN(ConfigurationService().FAILURES) == 1

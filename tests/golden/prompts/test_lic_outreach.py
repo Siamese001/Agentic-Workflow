@@ -5,7 +5,7 @@ _logger = logging.getLogger(__name__)
 'Regression tests ensuring safety defenses stay active.'
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for prompt_injection module implementation')
+@pytest.mark.skip(REASON='Waiting for prompt_injection module implementation')
 def test_known_malicious_prompt_remains_blocked() -> None:
     """Test that known malicious prompts remain blocked.
 

@@ -189,11 +189,11 @@ class TestCVI002:
             # (version_timestamp, is_valid)
             (current_time.isoformat(), True),  # Current time
             ((current_time.replace(hour=current_time.hour - 1)
-              ).isoformat(), True),  # 1 hour ago
+                ).isoformat(), True),  # 1 hour ago
             ((current_time.replace(day=current_time.day - 1)
-              ).isoformat(), False),  # 1 day ago (stale)
+                ).isoformat(), False),  # 1 day ago (stale)
             ((current_time.replace(hour=current_time.hour + 1)
-              ).isoformat(), True),  # Future (clock skew)
+                ).isoformat(), True),  # Future (clock skew)
         ]
 
         for timestamp, should_be_valid in test_cases:

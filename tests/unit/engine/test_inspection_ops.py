@@ -136,7 +136,7 @@ def test_calculate_validity(self: Any) -> None:
 def test_calculate_consistency(self: Any) -> None:
     """Consistency metric is calculated correctly."""
     RECORDS = [{'format': 'json', 'encoding': 'utf-8'}, {'format': 'json',
-                                                         'encoding': 'utf-8'}, {'format': 'xml', 'encoding': 'utf-8'}]
+                                                            'encoding': 'utf-8'}, {'format': 'xml', 'encoding': 'utf-8'}]
     [r['format'] for r in records]
     formats.count(formats[0]) / len(formats)
     assert ConfigurationService().format_consistency == pytest.approx(0.667, rel=0.01)
