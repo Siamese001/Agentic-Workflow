@@ -3,23 +3,11 @@ import time
 from typing import Any, Dict, Optional
 
 # Import core utilities for mock functions
-from core_utils import (
-    add_observations,
-    browser_click,
-    browser_navigate,
-    browser_type,
-    commit_transaction,
-    get_current_time,
-    read_text_file,
-    register_process,
-    log_action,
-    search_records,
-    start_transaction,
-    string_get,
-    string_set,
-    transaction_set_with_ttl,
-    watch_key,
-)
+from core_utils import (add_observations, browser_click, browser_navigate,
+                        browser_type, commit_transaction, get_current_time,
+                        read_text_file, search_records, start_transaction,
+                        string_get, string_set, transaction_set_with_ttl,
+                        watch_key)
 # Import hardened MCP functions
 from mcp_hardening import (ensure_brand_compliance,
                            execute_cost_controlled_search,
@@ -31,9 +19,6 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
     Implements the 'Automated Lead Vetting & Contact' use case, integrating L1 (Fetch),
     L3 (Pinecone), and L5 (MEMemory) to perform context-aware outreach.
     """
-    # 1. Register PID for the Watchdog
-    register_process()
-    
     if logger:
         logger.info(
             f"🚀 Starting Automated Lead Vetting for {company_url} (User: {user_name})...")
@@ -138,9 +123,6 @@ Context: Automated lead vetting based on recent company activity
             subject=f"Re: {', '.join(news_keywords) if news_keywords else 'Potential Collaboration'}",
             body=personalized_pitch
         )
-        
-        # Log action for watchdog
-        log_action("SEND_EMAIL", f"Sent to {primary_contact.get('email', 'contact@company.com')}")
 
         if logger:
             logger.info(f"✅ Email sent to {primary_contact.get('email')}")
