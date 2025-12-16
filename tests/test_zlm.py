@@ -26,11 +26,15 @@ class TestZLMTC101:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
-    def test_zlm_success_first_attempt(self, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    @patch('canon_validator_engine.execute_regression_suite')
+    def test_zlm_success_first_attempt(self, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test ZLM succeeds on first attempt"""
         # Mock the underlying function to return success
         def mock_refactor(*args, **kwargs):
             return {"status": "SUCCESS", "reason": "PASSED"}
+        
+        # Mock regression to pass
+        mock_regression.return_value = {"status": "SUCCESS"}
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         
@@ -52,8 +56,9 @@ class TestZLMTC201:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
+    @patch('canon_validator_engine.execute_regression_suite')
     @patch('builtins.open', new_callable=mock_open, read_data="# Original code")
-    def test_zlm_success_after_single_retry(self, mock_file, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    def test_zlm_success_after_single_retry(self, mock_file, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test ZLM succeeds after P6 self-correction on first retry"""
         call_count = 0
         
@@ -66,6 +71,9 @@ class TestZLMTC201:
         
         def mock_propose_fix(*args, **kwargs):
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
+        
+        # Mock regression to pass
+        mock_regression.return_value = {"status": "SUCCESS"}
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         monkeypatch.setattr("canon_validator_engine.jury.propose_fix", mock_propose_fix)
@@ -88,8 +96,9 @@ class TestZLMTC202:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
+    @patch('canon_validator_engine.execute_regression_suite')
     @patch('builtins.open', new_callable=mock_open, read_data="# Original code")
-    def test_zlm_success_after_multiple_retries(self, mock_file, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    def test_zlm_success_after_multiple_retries(self, mock_file, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test ZLM succeeds after multiple P6 attempts"""
         call_count = 0
         fix_count = 0
@@ -109,6 +118,9 @@ class TestZLMTC202:
             elif fix_count == 2:
                 return {"status": "SUCCESS", "fixed_code": "# Partially fixed code"}
             return {"status": "SUCCESS", "fixed_code": "# Fully fixed code"}
+        
+        # Mock regression to pass
+        mock_regression.return_value = {"status": "SUCCESS"}
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         monkeypatch.setattr("canon_validator_engine.jury.propose_fix", mock_propose_fix)
@@ -130,14 +142,18 @@ class TestZLMTC203:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
+    @patch('canon_validator_engine.execute_regression_suite')
     @patch('builtins.open', new_callable=mock_open, read_data="# Original code")
-    def test_zlm_max_attempts_reached(self, mock_file, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    def test_zlm_max_attempts_reached(self, mock_file, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test ZLM fails after max P6 attempts"""
         def mock_refactor(*args, **kwargs):
             return {"status": "FAILED", "reason": "SANDBOX_VERIFICATION_FAILURE", "details": "Test failed"}
         
         def mock_propose_fix(*args, **kwargs):
             return {"status": "FAILED"}  # P6 cannot fix
+        
+        # Mock regression to pass (but will never reach it due to P2 failures)
+        mock_regression.return_value = {"status": "SUCCESS"}
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         monkeypatch.setattr("canon_validator_engine.jury.propose_fix", mock_propose_fix)
@@ -159,8 +175,9 @@ class TestZLMTC301:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
+    @patch('canon_validator_engine.execute_regression_suite')
     @patch('builtins.open', new_callable=mock_open, read_data="# Original code")
-    def test_p5_logging_integrity(self, mock_file, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    def test_p5_logging_integrity(self, mock_file, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test P5 logs all major events"""
         call_count = 0
         
@@ -173,6 +190,9 @@ class TestZLMTC301:
         
         def mock_propose_fix(*args, **kwargs):
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
+        
+        # Mock regression to pass
+        mock_regression.return_value = {"status": "SUCCESS"}
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         monkeypatch.setattr("canon_validator_engine.jury.propose_fix", mock_propose_fix)
@@ -197,8 +217,9 @@ class TestZLMTC302:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
+    @patch('canon_validator_engine.execute_regression_suite')
     @patch('builtins.open', new_callable=mock_open, read_data="# Original code")
-    def test_p7_file_integrity(self, mock_file, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    def test_p7_file_integrity(self, mock_file, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test P6 fix only modifies target file, not canonical files"""
         call_count = 0
         
@@ -211,6 +232,9 @@ class TestZLMTC302:
         
         def mock_propose_fix(*args, **kwargs):
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
+        
+        # Mock regression to pass
+        mock_regression.return_value = {"status": "SUCCESS"}
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         monkeypatch.setattr("canon_validator_engine.jury.propose_fix", mock_propose_fix)
@@ -235,8 +259,9 @@ class TestZLMTC303:
     
     @patch('canon_validator_engine.register_process')
     @patch('canon_validator_engine.log_action')
+    @patch('canon_validator_engine.execute_regression_suite')
     @patch('builtins.open', new_callable=mock_open, read_data="# Original code")
-    def test_l5_audit_trail(self, mock_file, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
+    def test_l5_audit_trail(self, mock_file, mock_regression, mock_log_action, mock_register_process, mock_tools, mock_logger, monkeypatch):
         """Test L5 maintains complete audit trail"""
         call_count = 0
         
@@ -249,6 +274,12 @@ class TestZLMTC303:
         
         def mock_propose_fix(*args, **kwargs):
             return {"status": "SUCCESS", "fixed_code": "# Fixed code"}
+        
+        # Mock regression: fail first, then pass
+        mock_regression.side_effect = [
+            {"status": "FAILED", "reason": "REGRESSION_TEST_FAILURE", "stderr": "Test failed"},
+            {"status": "SUCCESS"}
+        ]
         
         monkeypatch.setattr("canon_validator_engine.execute_dependency_refactor", mock_refactor)
         monkeypatch.setattr("canon_validator_engine.jury.propose_fix", mock_propose_fix)
@@ -276,11 +307,23 @@ class TestZLMTC303:
         assert second_call_list[0]["entityName"] == "ZLM_TEST-007"
         assert "P6_FIX_APPLIED" in second_call_list[0]["observations"][0]
         
-        # Third call should log the success
+        # Third call should log the regression failure (on attempt 2)
         if len(observation_calls) > 2:
             third_call_list = observation_calls[2][0][0]
             assert third_call_list[0]["entityName"] == "ZLM_TEST-007"
-            assert "ZLM_SUCCESS" in third_call_list[0]["observations"][0]
+            assert "REGRESSION_FAIL_ATTEMPT_2" in third_call_list[0]["observations"][0]
+        
+        # Fourth call should log the final fix application
+        if len(observation_calls) > 3:
+            fourth_call_list = observation_calls[3][0][0]
+            assert fourth_call_list[0]["entityName"] == "ZLM_TEST-007"
+            assert "P6_FIX_APPLIED" in fourth_call_list[0]["observations"][0]
+        
+        # Fifth call should log the success
+        if len(observation_calls) > 4:
+            fifth_call_list = observation_calls[4][0][0]
+            assert fifth_call_list[0]["entityName"] == "ZLM_TEST-007"
+            assert "ZLM_SUCCESS" in fifth_call_list[0]["observations"][0]
 
 class TestZLMNonRecoverable:
     """Test non-recoverable failures"""
@@ -371,10 +414,9 @@ class TestZLMTC205:
         def mock_propose_fix(*args, **kwargs):
             return {"status": "SUCCESS", "fixed_code": "# Fixed code with regression"}
         
-        # Regression sequence: fails (initial), fails (after P6 fix), passes (after second P6 fix)
+        # Regression sequence: fails (after P6 fix), passes (after second P6 fix)
         mock_regression.side_effect = [
             {"status": "FAILED", "reason": "REGRESSION_TEST_FAILURE", "stderr": "Regression introduced"},
-            {"status": "FAILED", "reason": "REGRESSION_TEST_FAILURE", "stderr": "Still failing"},
             {"status": "SUCCESS"}
         ]
         
@@ -390,8 +432,8 @@ class TestZLMTC205:
         
         assert result["status"] == "SUCCESS"
         assert call_count == 3  # Initial fail + 2 retries
-        assert mock_regression.call_count == 3  # 3 regression checks
-        assert mock_logger.warning.call_count >= 2  # 2 regression failures
+        assert mock_regression.call_count == 2  # 2 regression checks (on attempts 2 and 3)
+        assert mock_logger.warning.call_count >= 2  # 2 warnings (P2 fail + regression fail)
 
 class TestZLMTC206:
     """TC-ZLM-206: P6 Max Attempts Failure"""

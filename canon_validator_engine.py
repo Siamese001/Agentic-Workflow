@@ -1,11 +1,13 @@
-import hashlib
-import json
 import os
-import time
+import sys
+import json
+import logging
+import subprocess
+from typing import Dict, Any, Optional, Tuple
 from datetime import datetime
-from typing import Any, Dict, Optional
+from pathlib import Path
 
-# Import core utilities for Figma functions
+# Import core utilities for validation and signing
 from core_utils import (
     validate_python_syntax,
     sign_and_commit,
@@ -16,7 +18,8 @@ from core_utils import (
     register_process,
     log_action,
 )
-# Import hardened MCP functions
+
+# Import MCP hardening utilities
 from mcp_hardening import check_design_drift, execute_vulnerability_search
 
 # Import sandbox utilities for execution isolation
@@ -37,18 +40,28 @@ def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
     Returns:
         Dict with status and details
     """
-    import subprocess
     
     if logger:
         logger.info(f"🧪 TEST_5: Running regression suite from {REGRESSION_SUITE_PATH}")
     
+    # Check if regression suite path exists
+    if not os.path.exists(REGRESSION_SUITE_PATH):
+        error_msg = f"Regression suite path does not exist: {REGRESSION_SUITE_PATH}"
+        if logger:
+            logger.error(f"❌ TEST_5: {error_msg}")
+        return {
+            "status": "FAILED",
+            "reason": error_msg
+        }
+    
     try:
-        # Run pytest on the regression suite
+        # Run pytest on the regression suite with timeout
         result = subprocess.run(
             ["python", "-m", "pytest", REGRESSION_SUITE_PATH, "-v", "--tb=short"],
             capture_output=True,
             text=True,
-            cwd=os.getcwd()
+            cwd=os.getcwd(),
+            timeout=300  # 5 minute timeout
         )
         
         if result.returncode == 0:
@@ -69,6 +82,14 @@ def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
                 "reason": "REGRESSION_TEST_FAILURE"
             }
             
+    except subprocess.TimeoutExpired:
+        error_msg = f"Regression suite timed out after 5 minutes"
+        if logger:
+            logger.error(f"❌ TEST_5: {error_msg}")
+        return {
+            "status": "FAILED",
+            "reason": error_msg
+        }
     except Exception as e:
         error_msg = f"Error running regression suite: {str(e)}"
         if logger:
@@ -111,6 +132,7 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
         result = execute_dependency_refactor(issue_id, target_file, tools, logger)
         
         # Check for success conditions - P2 passed, now run Test 5 (Regression Suite)
+        regression_failed = False
         if result.get("status") in ["SUCCESS", "success"]:
             if logger:
                 logger.info(f"✅ P2_PASS: Unit tests passed on attempt {attempts}")
@@ -131,7 +153,8 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
                 
                 return result
             else:
-                # Regression failed - treat as P2 failure to trigger P6
+                # Regression failed - set flag to trigger P6
+                regression_failed = True
                 if logger:
                     logger.warning(f"⚠️ TEST_5_FAIL: Regression suite failed. Triggering P6 fix.")
                 
@@ -145,18 +168,17 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
                             f"Reason: {regression_result.get('reason', 'REGRESSION_TEST_FAILURE')}"
                         ]
                     }])
-                
-                # Continue to P6 self-correction below
-                pass
         
         # P6 Self-Correction Trigger (triggered by P2 failure or Regression failure)
-        if result.get("reason") in ["SANDBOX_VERIFICATION_FAILURE", "CONSENSUS_VALIDATION_FAILURE"] or \
-           (result.get("status") in ["SUCCESS", "success"] and regression_result.get("status") == "FAILED"):
+        if result.get("reason") in ["SANDBOX_VERIFICATION_FAILURE", "CONSENSUS_VALIDATION_FAILURE"] or regression_failed:
             if logger:
-                logger.warning(f"⚠️ ZLM: P2/P6 failure detected. Attempt {attempts}/{MAX_P6_ATTEMPTS}")
+                if regression_failed:
+                    logger.warning(f"⚠️ ZLM: Regression failure detected. Attempt {attempts}/{MAX_P6_ATTEMPTS}")
+                else:
+                    logger.warning(f"⚠️ ZLM: P2/P6 failure detected. Attempt {attempts}/{MAX_P6_ATTEMPTS}")
             
-            # Log failure to L5
-            if tools.get('add_observations'):
+            # Skip logging here for regression failures since they're already logged above
+            if not regression_failed and tools.get('add_observations'):
                 tools['add_observations']([{
                     "entityName": f"ZLM_{issue_id}",
                     "observations": [
