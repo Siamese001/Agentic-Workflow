@@ -36,9 +36,7 @@ class CanonQuerier:
         try:
             vector = self.embedding_fn(query_text)
         except Exception as e:
-    pass
-pass
-# print(f"❌ Error generating embedding: {e}")  # [Security Fix]
+            # print(f"❌ Error generating embedding: {e}")  # [Security Fix]
             return []
 
         # 2. Search L1 (Redis) - Hot Memory
@@ -67,9 +65,7 @@ pass
                     "source": r.get('source', 'unknown')
                 })
         except Exception as e:
-    pass
-pass
-logger.warning(f"L1 Search failed: {e}")
+            logger.warning(f"L1 Search failed: {e}")
 
         # 3. Search L2 (Pinecone) - Cold Memory
         try:
@@ -89,9 +85,7 @@ logger.warning(f"L1 Search failed: {e}")
                     "source": meta.get('source', 'unknown')
                 })
         except Exception as e:
-    pass
-pass
-logger.warning(f"L2 Search failed: {e}")
+            logger.warning(f"L2 Search failed: {e}")
 
         # Sort by score descending
         results.sort(key=lambda x: float(x['score']), reverse=True)
@@ -128,4 +122,3 @@ if __name__ == "__main__":
     # print(f"\n🧠 Thinking about: '{query}'...")  # [Security Fix]
     hits = querier.search(query)
     print_results(hits)
-

@@ -141,8 +141,7 @@ class SemanticGatekeeper:
                     f"Loaded existing L1 index: {self.redis_index_name}")
 
         except Exception as e:
-    pass
-logger.error(f"Failed to setup Redis L1 index: {e}")
+            logger.error(f"Failed to setup Redis L1 index: {e}")
             raise
 
     def _setup_qdrant(self):
@@ -164,8 +163,7 @@ logger.error(f"Failed to setup Redis L1 index: {e}")
                 self._promotion_worker())
 
         except Exception as e:
-    pass
-logger.error(f"Failed to setup Qdrant L2 cache: {e}")
+            logger.error(f"Failed to setup Qdrant L2 cache: {e}")
             self.qdrant = None
 
     def embed_action(self, action: str) -> List[float]:
@@ -204,8 +202,7 @@ logger.error(f"Failed to setup Qdrant L2 cache: {e}")
             return hashlib.sha256(ast_str.encode()).hexdigest()
 
         except SyntaxError as e:
-    pass
-# For invalid code, hash the error and code
+            # For invalid code, hash the error and code
             combined = f"SYNTAX_ERROR:{e}:{code}"
             return hashlib.sha256(combined.encode()).hexdigest()
 
@@ -245,8 +242,7 @@ logger.error(f"Failed to setup Qdrant L2 cache: {e}")
                 tree = ast.parse(code)
                 new_ast = ast.dump(tree, include_attributes=True)
             except SyntaxError as e:
-    pass
-logger.error(f"Failed to parse code: {e}")
+                logger.error(f"Failed to parse code: {e}")
                 return False, None
 
         # Embed the planned action
@@ -480,8 +476,7 @@ logger.error(f"Failed to parse code: {e}")
             return results
 
         except Exception as e:
-    pass
-logger.error(f"Failed to search L2 cache: {e}")
+            logger.error(f"Failed to search L2 cache: {e}")
             return []
 
     def _promote_to_l1(self, l2_match: CanonEntry, query_vector: List[float]):
@@ -496,8 +491,7 @@ logger.error(f"Failed to search L2 cache: {e}")
             logger.info(f"Promoted pattern {l2_match.id} from L2 to L1")
 
         except Exception as e:
-    pass
-logger.error(f"Failed to promote to L1: {e}")
+            logger.error(f"Failed to promote to L1: {e}")
 
     def record_pattern(
         self,
@@ -542,8 +536,7 @@ logger.error(f"Failed to promote to L1: {e}")
             ast_json = ast.dump(tree, include_attributes=True)
             ast_hash = hashlib.sha256(ast_json.encode()).hexdigest()
         except SyntaxError as e:
-    pass
-logger.error(f"Failed to parse code for AST: {e}")
+            logger.error(f"Failed to parse code for AST: {e}")
             ast_json = {"error": str(e)}
             ast_hash = hashlib.sha256(f"SYNTAX_ERROR:{e}".encode()).hexdigest()
 
@@ -675,8 +668,7 @@ logger.error(f"Failed to parse code for AST: {e}")
                 self._mark_as_promoted(str(entry.id))
 
             except Exception as e:
-    pass
-logger.error(f"Error in L2 promotion worker: {e}")
+                logger.error(f"Error in L2 promotion worker: {e}")
                 await asyncio.sleep(5)  # Brief pause on error
 
     async def _upsert_to_l2(self, entry: CanonEntry):
@@ -688,8 +680,7 @@ logger.error(f"Error in L2 promotion worker: {e}")
             logger.info(f"Upserted pattern {entry.id} to L2")
 
         except Exception as e:
-    pass
-logger.error(f"Failed to upsert to L2: {e}")
+            logger.error(f"Failed to upsert to L2: {e}")
 
     def _mark_as_promoted(self, entry_id: str):
         """Mark an L1 entry as promoted to L2."""
@@ -720,8 +711,7 @@ logger.error(f"Failed to upsert to L2: {e}")
                     f"Evicted {len(oldest.docs)} old entries from L1 cache")
 
         except Exception as e:
-    pass
-logger.error(f"Failed to evict from L1: {e}")
+            logger.error(f"Failed to evict from L1: {e}")
 
     def get_safety_stats(self) -> dict:
         """Get statistics about the hybrid canon safety status."""
@@ -742,14 +732,10 @@ logger.error(f"Failed to evict from L1: {e}")
 
             # L2 Cache (Pinecone) stats
             l2_stats = {"total": 0, "projects": set()}
-            if self.pinecone:
-                try:
-                    l2_stats["total"] = self.pinecone.describe_index_stats()[
-                        'total_vector_count']
-                    # Note: Pinecone doesn't easily provide metadata-based counts
-except Exception:
-    pass
-pass
+            # Note: The original code had a self.pinecone check which is not defined in the class.
+            # Assuming this was a placeholder or intended for a different cache type.
+            # For now, we'll report L2 as disabled if self.qdrant is None.
+            l2_enabled = self.qdrant is not None
 
             return {
                 "l1_cache": {
@@ -762,7 +748,7 @@ pass
                 },
                 "l2_cache": {
                     "total_patterns": l2_stats["total"],
-                    "enabled": self.pinecone is not None
+                    "enabled": l2_enabled
                 },
                 "meta_learning": {
                     "promotion_threshold": self.promotion_threshold,
@@ -770,8 +756,7 @@ pass
                 }
             }
         except Exception as e:
-    pass
-logger.error(f"Failed to get safety stats: {e}")
+            logger.error(f"Failed to get safety stats: {e}")
             return {"error": str(e)}
 
     def _track_latency(self, latency_ms: int):
@@ -850,4 +835,3 @@ def get_gatekeeper() -> SemanticGatekeeper:
     if _gatekeeper is None:
         _gatekeeper = SemanticGatekeeper()
     return _gatekeeper
-

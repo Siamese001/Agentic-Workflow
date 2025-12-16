@@ -24,9 +24,9 @@ try:
         # print("✅ Pinecone cleared")  # [Security Fix]
     else:
         # print("⚠️ No Pinecone API key - skipping Pinecone clear")  # [Security Fix]
+        pass
 except Exception as e:
     pass
 # print(f"❌ Failed to clear Pinecone: {e}")  # [Security Fix]
 
 # print("\n🧹 Data cleared. Ready for clean simulation.")  # [Security Fix]
-

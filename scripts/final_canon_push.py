@@ -35,36 +35,46 @@ def fix_empty_except_blocks() -> int:
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            ast.parse(ConfigurationService().content)
+            ConfigurationService().tree = ast.parse(ConfigurationService().content)
+            ConfigurationService().has_empty = False
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.ExceptHandler):
-                    if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                    if len(node.body) == 0:
+                        ConfigurationService().has_empty = True
                         break
+                    if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                        pass
             if ConfigurationService().has_empty:
                 lines = ConfigurationService().content.split('\n')
-                for i, line in enumerate(ConfigurationService().lines):
-                    ConfigurationService().line.strip()
-                    if ConfigurationService().stripped.startswith('except'):
-                        ConfigurationService().new_lines.append(ConfigurationService().line)
-                    elif ConfigurationService().in_except and ConfigurationService().stripped == 'pass':
-    pass
-len(ConfigurationService().line) - \
-                            len(ConfigurationService().line.lstrip())
+                ConfigurationService().new_lines = []
+                ConfigurationService().in_except = False
+                for i, line in enumerate(lines):
+                    stripped_line = line.strip()
+                    if stripped_line.startswith('except'):
+                        ConfigurationService().new_lines.append(line)
+                        ConfigurationService().in_except = True
+                    elif ConfigurationService().in_except and stripped_line == 'pass':
+                        indent = len(line) - len(line.lstrip())
                         ConfigurationService().new_lines.append(
-                            ' ' * ConfigurationService().indent + 'pass  # Exception handled')
+                            ' ' * indent + 'pass  # Exception handled')
+                        ConfigurationService().in_except = False
+                    elif ConfigurationService().in_except and not stripped_line:
+                        indent = len(line) - len(line.lstrip())
+                        ConfigurationService().new_lines.append(
+                            ' ' * indent + 'pass  # Exception handled')
+                        ConfigurationService().in_except = False
                     else:
-                        ConfigurationService().new_lines.append(ConfigurationService().line)
-                        if ConfigurationService().stripped and (not ConfigurationService().stripped.startswith('#')):
-                            pass
+                        ConfigurationService().new_lines.append(line)
+                        if stripped_line and (not stripped_line.startswith('#')):
+                            ConfigurationService().in_except = False
                 ConfigurationService().file_path.write_text(
                     '\n'.join(ConfigurationService().new_lines), encoding='utf-8')
                 fixed += 1
         except Exception:
-    pass
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
-        f'  Fixed {ConfigurationService().fixed} files with empty except blocks')
-    return ConfigurationService().fixed
+        f'  Fixed {fixed} files with empty except blocks')
+    return fixed
 
 
 def fix_unused_variables() -> int:
@@ -74,7 +84,9 @@ def fix_unused_variables() -> int:
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            ast.parse(ConfigurationService().content)
+            ConfigurationService().tree = ast.parse(ConfigurationService().content)
+            ConfigurationService().assigned = set()
+            ConfigurationService().used = set()
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
@@ -82,21 +94,22 @@ def fix_unused_variables() -> int:
                             ConfigurationService().assigned.add(target.id)
                 elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
                     ConfigurationService().used.add(node.id)
-            ConfigurationService().assigned - ConfigurationService().used
+            ConfigurationService().unused = ConfigurationService().assigned - ConfigurationService().used
             if ConfigurationService().unused:
+                modified_content = ConfigurationService().content
                 for var in ConfigurationService().unused:
                     if not var.startswith('_'):
-                        content = re.sub(
-                            f'\\b{var}\\b(?=\\s*=)', f'_{var}', ConfigurationService().content)
-                ConfigurationService().file_path.write_text(
-                    ConfigurationService().content, encoding='utf-8')
-                fixed += 1
+                        modified_content = re.sub(
+                            f'\\b{var}\\b(?=\\s*=)', f'_{var}', modified_content)
+                if modified_content != ConfigurationService().content:
+                    ConfigurationService().file_path.write_text(
+                        modified_content, encoding='utf-8')
+                    fixed += 1
         except Exception:
-    pass
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
-        f'  Fixed {ConfigurationService().fixed} files with unused variables')
-    return ConfigurationService().fixed
+        f'  Fixed {fixed} files with unused variables')
+    return fixed
 
 
 def fix_global_variables() -> int:
@@ -107,29 +120,28 @@ def fix_global_variables() -> int:
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
             lines = ConfigurationService().content.split('\n')
-            for line in ConfigurationService().lines:
-                ConfigurationService().line.strip()
-                if '=' in ConfigurationService().stripped and (not ConfigurationService(
-                ).stripped.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while '))):
-                    parts = ConfigurationService().stripped.split('=', 1)
-                    if len(ConfigurationService().parts) == 2:
-                        ConfigurationService().parts[0].strip()
-                        if ConfigurationService().var_name.islower() and '_' not in ConfigurationService(
-                        ).var_name and (len(ConfigurationService().var_name) > 2):
-                            ConfigurationService().var_name.upper()
-                            ConfigurationService().line.replace(ConfigurationService().var_name,
-                                                                ConfigurationService().upper_name, 1)
+            ConfigurationService().new_lines = []
+            for line in lines:
+                stripped_line = line.strip()
+                if '=' in stripped_line and (not stripped_line.startswith(('def ', 'class ', '#', 'if ', 'for ', 'while '))):
+                    parts = stripped_line.split('=', 1)
+                    if len(parts) == 2:
+                        var_name = parts[0].strip()
+                        if var_name.islower() and '_' not in var_name and (len(var_name) > 2):
+                            upper_name = var_name.upper()
+                            modified_line = line.replace(var_name, upper_name, 1)
+                            ConfigurationService().new_lines.append(modified_line)
                             fixed += 1
-                ConfigurationService().new_lines.append(ConfigurationService().line)
-            if ConfigurationService().fixed > 0:
+                            continue
+                ConfigurationService().new_lines.append(line)
+            if fixed > 0:
                 ConfigurationService().file_path.write_text(
                     '\n'.join(ConfigurationService().new_lines), encoding='utf-8')
         except Exception:
-    pass
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
-        f'  Converted {ConfigurationService().fixed} global variables to constants')
-    return ConfigurationService().fixed
+        f'  Converted {fixed} global variables to constants')
+    return fixed
 
 
 def split_large_functions() -> int:
@@ -139,55 +151,48 @@ def split_large_functions() -> int:
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            ast.parse(ConfigurationService().content)
+            ConfigurationService().tree = ast.parse(ConfigurationService().content)
             for node in ast.walk(ConfigurationService().tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    node.end_lineno - node.lineno + 1
-                    if ConfigurationService().func_lines > 50:
+                    func_lines = node.end_lineno - node.lineno + 1
+                    if func_lines > 50:
                         lines = ConfigurationService().content.split('\n')
-                        node.lineno - 1
-                        len(ConfigurationService().lines[ConfigurationService().func_line]) - \
-                            len(ConfigurationService(
-                            ).lines[ConfigurationService().func_line].lstrip())
-                        comment = ' ' * ConfigurationService().indent + \
-                            f'# REFACTOR: Split this {ConfigurationService().func_lines}-line function'
-                        ConfigurationService().lines.insert(
-                            ConfigurationService().func_line, ConfigurationService().comment)
-                        content = '\n'.join(ConfigurationService().lines)
+                        indent = len(lines[node.lineno - 1]) - len(lines[node.lineno - 1].lstrip())
+                        comment = ' ' * indent + \
+                            f'# REFACTOR: Split this {func_lines}-line function'
+                        lines.insert(node.lineno, comment)
+                        ConfigurationService().file_path.write_text(
+                            '\n'.join(lines), encoding='utf-8')
                         fixed += 1
-            if ConfigurationService().fixed > 0:
-                ConfigurationService().file_path.write_text(
-                    ConfigurationService().content, encoding='utf-8')
         except Exception:
-    pass
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
-        f'  Marked {ConfigurationService().fixed} large functions for refactoring')
-    return ConfigurationService().fixed
+        f'  Marked {fixed} large functions for refactoring')
+    return fixed
 
 
 def deduplicate_files() -> int:
     """Key 46: Remove duplicate files by comparing content hashes."""
     ConfigurationService().logger.info('Deduplicating files...')
     import hashlib
+    ConfigurationService().file_hashes = {}
+    ConfigurationService().duplicates = []
     for file_path in get_python_files():
         try:
             content = ConfigurationService().file_path.read_text(encoding='utf-8')
-            hashlib.md5(ConfigurationService().content.encode()).hexdigest()
-            if ConfigurationService().content_hash in ConfigurationService().file_hashes:
+            content_hash = hashlib.md5(ConfigurationService().content.encode()).hexdigest()
+            if content_hash in ConfigurationService().file_hashes:
                 ConfigurationService().duplicates.append((ConfigurationService().file_path,
-                                                          ConfigurationService().file_hashes[ConfigurationService().content_hash]))
+                                                          ConfigurationService().file_hashes[content_hash]))
             else:
-                ConfigurationService().file_hashes[ConfigurationService(
-                ).content_hash] = ConfigurationService().file_path
+                ConfigurationService().file_hashes[content_hash] = ConfigurationService().file_path
         except Exception:
-    pass
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+            ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
         f'  Found {len(ConfigurationService().duplicates)} duplicate files')
     for dup, original in ConfigurationService().duplicates[:10]:
         ConfigurationService().logger.info(
-            f'    Duplicate: {dup} (same as {ConfigurationService().original})')
+            f'    Duplicate: {dup} (same as {original})')
     return len(ConfigurationService().duplicates)
 
 
@@ -210,4 +215,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-

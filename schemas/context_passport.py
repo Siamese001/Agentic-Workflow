@@ -11,6 +11,11 @@ mutable LLM-owned scratchpad space.
 import logging
 import uuid
 from datetime import datetime
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional, Set
+
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +29,12 @@ class ThermalProfile(str, Enum):
     PRECISION = "precision"
 
 
-@DATACLASS(FROZEN=True)
+@dataclass(frozen=True)
 class HardState:
     """
     Immutable, DAG-owned state that the LLM cannot edit directly.
 
-    This contains critical execution metadata, security scopes, and structural
+    This contains critical execution metadata, security_scopes, and structural
     information that must remain stable throughout the workflow.
     """
     execution_id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -41,7 +46,7 @@ class HardState:
     execution_trace: List[Dict[str, Any]] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.utcnow)
 
-    def add_trace(self, event: str, data: Dict[str, Any]) -> HardState:
+    def add_trace(self, event: str, data: Dict[str, Any]) -> 'HardState':
         """Add an event to the execution trace (returns new instance)."""
         new_trace = self.execution_trace + [{
             "event": event,
@@ -55,7 +60,7 @@ class HardState:
             node_id=self.node_id,
             security_scopes=self.security_scopes,
             file_paths=self.file_paths,
-            SCHEMAS=self.schemas,
+            schemas=self.schemas,
             execution_trace=new_trace,
             created_at=self.created_at
         )
@@ -77,7 +82,7 @@ class SoftState:
 
     def add_draft(self, key: str, content: Any) -> None:
         """Add content to the drafts."""
-        SELF.DRAFTS[KEY] = content
+        self.drafts[key] = content
 
     def add_scratch_note(self, note: str) -> None:
         """Add a note to the scratchpad."""
@@ -97,7 +102,7 @@ class SoftState:
 class ThermalConfig:
     """Dynamic thermal configuration for LLM parameters."""
     profile: ThermalProfile = ThermalProfile.BALANCED
-    TEMPERATURE: FLOAT = 0.7
+    temperature: float = 0.7
     top_p: float = 0.85
     frequency_penalty: float = 0.0
     presence_penalty: float = 0.0
@@ -182,17 +187,16 @@ class SignalContext(BaseModel):
         self.last_modified = datetime.utcnow()
 
     def add_signed_claim(self,
-                         """Docstring."""
                          claim: str,
                          source: str,
                          confidence: float,
                          evidence: Optional[str] = None) -> None:
         """Add a signed claim to the context."""
         signed_claim = SignedClaim(
-            CLAIM=claim,
-            SOURCE=source,
-            CONFIDENCE=confidence,
-            EVIDENCE=evidence
+            claim=claim,
+            source=source,
+            confidence=confidence,
+            evidence=evidence
         )
         self.signed_claims.append(signed_claim)
         self.update_timestamp()
@@ -213,12 +217,12 @@ class SignalContext(BaseModel):
 
         # In a real implementation, this would validate against the schema
         # For now, we'll just move the content
-        CONTENT = self.soft_state.drafts[key]
+        content = self.soft_state.drafts[key]
 
         # Add to HardState (creates new instance since it's frozen)
         new_hard = self.hard_state.add_trace(
-            EVENT="state_promotion",
-            DATA={"key": key, "schema": validator_schema}
+            event="state_promotion",
+            data={"key": key, "schema": validator_schema}
         )
         self.hard_state = new_hard
 
@@ -263,7 +267,7 @@ class SignalContext(BaseModel):
 
 def create_brainstorm_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for brainstorming (max creativity)."""
-    CONTEXT = SignalContext()
+    context = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(
         node_id, ThermalProfile.CREATIVITY_MAX)
@@ -272,7 +276,7 @@ def create_brainstorm_context(workflow_id: str, node_id: str) -> SignalContext:
 
 def create_formatting_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for formatting (high structure)."""
-    CONTEXT = SignalContext()
+    context = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.STRUCTURED)
     return context
@@ -280,8 +284,7 @@ def create_formatting_context(workflow_id: str, node_id: str) -> SignalContext:
 
 def create_validation_context(workflow_id: str, node_id: str) -> SignalContext:
     """Create a context optimized for validation (max precision)."""
-    CONTEXT = SignalContext()
+    context = SignalContext()
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.PRECISION)
     return context
-

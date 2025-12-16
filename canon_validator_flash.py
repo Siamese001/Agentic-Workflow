@@ -15,9 +15,7 @@ try:
     from redisvl.extensions.llmcache import SemanticCache
     REDISVL_AVAILABLE = True
 except ImportError:
-    pass
-pass
-REDISVL_AVAILABLE = False
+    REDISVL_AVAILABLE = False
     logging.warning("redisvl SemanticCache not available")
 
 logging.basicConfig(level=logging.INFO,
@@ -49,11 +47,7 @@ class CanonValidator:
                 )
                 logger.info("✅ L1 Semantic Cache initialized (384 dims)")
             except Exception as e:
-    pass
-pass
-
-
-logger.warning(f"⚠️ Failed to initialize SemanticCache: {e}")
+                logger.warning(f"⚠️ Failed to initialize SemanticCache: {e}")
                 self.cache = None
         else:
             self.cache = None
@@ -74,9 +68,7 @@ logger.warning(f"⚠️ Failed to initialize SemanticCache: {e}")
         try:
             vector = self.embed_fn(content)
         except Exception as e:
-    pass
-pass
-return {"status": "error", "message": f"Embedding failed: {e}"}
+            return {"status": "error", "message": f"Embedding failed: {e}"}
 
         # STAGE 2: L1 CACHE HIT
         if self.cache and self.cache.check(vector=vector):
@@ -92,9 +84,7 @@ return {"status": "error", "message": f"Embedding failed: {e}"}
                 if m['score'] > 0.80:
                     context_rules.append(f"- {m['metadata'].get('content')}")
         except Exception:
-    pass
-pass
-logger.debug("L2 retrieval failed or no matches")
+            logger.debug("L2 retrieval failed or no matches")
 
         # STAGE 4: GEMINI FLASH VALIDATION
         keys_block = get_keys_as_prompt()
@@ -165,9 +155,9 @@ VIOLATION REASON:
 {violation_reason}
 
 ORIGINAL CODE:
-```python
+
 {bad_code}
-```
+
 
 TASK:
 Rewrite the code to be fully compliant with the Subatomic Canon rules.
@@ -214,9 +204,7 @@ Return your response as JSON with this format:
             return {"success": True, "fixed_code": fixed_code}
 
         except Exception as e:
-    pass
-pass
-logger.error(f"Repair attempt failed: {e}")
+            logger.error(f"Repair attempt failed: {e}")
             return {"success": False, "error": str(e)}
 
     def _meta_learn(self, content, vector, decision):
@@ -233,7 +221,4 @@ logger.error(f"Repair attempt failed: {e}")
                     decision), vector=vector)
             logger.info("✅ Learned new pattern.")
         except Exception as e:
-    pass
-pass
-logger.error(f"Write-back failed: {e}")
-
+            logger.error(f"Write-back failed: {e}")

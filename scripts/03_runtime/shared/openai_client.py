@@ -17,127 +17,127 @@ class OpenAIClientManager:
     """Manages OpenAI client instances for agents."""
 
 
-def __init__(self: Any, api_key: Optional[str], base_url: Optional[str]) -> None:
-    """
-    Initialize OpenAI client manager.
+    def __init__(self: Any, api_key: Optional[str], base_url: Optional[str]) -> None:
+        """
+        Initialize OpenAI client manager.
 
-    Args:
-        api_key: OpenAI API key. If None, will try to get from environment.
-        base_url: Custom base URL for OpenAI API. Useful for Azure or proxy.
-    """
-    self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-    self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
+        Args:
+            api_key: OpenAI API key. If None, will try to get from environment.
+            base_url: Custom base URL for OpenAI API. Useful for Azure or proxy.
+        """
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
 
-    if not self.api_key:
-        raise ValueError(
-            "OpenAI API key not provided. Set OPENAI_API_KEY environment variable "
-            "or pass api_key parameter."
-        )
+        if not self.api_key:
+            raise ValueError(
+                "OpenAI API key not provided. Set OPENAI_API_KEY environment variable "
+                "or pass api_key parameter."
+            )
 
-    # Initialize clients
-    SELF.CLIENT = OpenAI(api_key=self.api_key, base_url=self.base_url)
-    self.async_client = AsyncOpenAI(
-        api_key=self.api_key, base_url=self.base_url)
-
-
-def chat_completion(self: Any,
-                    messages: list[Dict[str,
-                                        Any]],
-                    model: str,
-                    temperature: float,
-                    max_tokens: Optional[int]) -> ChatCompletion:
-    """
-    Create a chat completion.
-
-    Args:
-        messages: List of message objects with 'role' and 'content'.
-        model: OpenAI model to use.
-        temperature: Sampling temperature.
-        max_tokens: Maximum tokens to generate.
-        **kwargs: Additional parameters for OpenAI API.
-
-    Returns:
-        ChatCompletion object.
-    """
-    try:
-        RESPONSE = self.client.chat.completions.create(
-            MODEL=model,
-            MESSAGES=messages,
-            TEMPERATURE=temperature,
-            max_tokens=max_tokens,
-            **kwargs
-        )
-        return response
-    except Exception as e:
-logger.error(f"OpenAI API error: {e}")
-        raise
+        # Initialize clients
+        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        self.async_client = AsyncOpenAI(
+            api_key=self.api_key, base_url=self.base_url)
 
 
-async def achat_completion(self: Any,
-                           messages: list[Dict[str,
-                                               Any]],
-                           model: str,
-                           temperature: float,
-                           max_tokens: Optional[int]) -> ChatCompletion:
-    """
-    Create an async chat completion.
+    def chat_completion(self: Any,
+                        messages: list[Dict[str,
+                                            Any]],
+                        model: str,
+                        temperature: float,
+                        max_tokens: Optional[int]) -> ChatCompletion:
+        """
+        Create a chat completion.
 
-    Args:
-        messages: List of message objects with 'role' and 'content'.
-        model: OpenAI model to use.
-        temperature: Sampling temperature.
-        max_tokens: Maximum tokens to generate.
-        **kwargs: Additional parameters for OpenAI API.
+        Args:
+            messages: List of message objects with 'role' and 'content'.
+            model: OpenAI model to use.
+            temperature: Sampling temperature.
+            max_tokens: Maximum tokens to generate.
+            **kwargs: Additional parameters for OpenAI API.
 
-    Returns:
-        ChatCompletion object.
-    """
-    try:
-        RESPONSE = await self.async_client.chat.completions.create(
-            MODEL=model,
-            MESSAGES=messages,
-            TEMPERATURE=temperature,
-            max_tokens=max_tokens,
-            **kwargs
-        )
-        return response
-    except Exception as e:
-logger.error(f"OpenAI API error: {e}")
-        raise
-
-
-def create_embedding(self: Any, input_text: str, model: str) -> list[float]:
-    """
-    Create embeddings for text.
-
-    Args:
-        input_text: Text to embed.
-        model: Embedding model to use.
-        **kwargs: Additional parameters.
-
-    Returns:
-        List of embedding values.
-    """
-    try:
-        RESPONSE = self.client.embeddings.create(
-            MODEL=model,
-            INPUT=input_text,
-            **kwargs
-        )
-        return response.data[0].embedding
-    except Exception as e:
-logger.error(f"OpenAI embedding error: {e}")
-        raise
+        Returns:
+            ChatCompletion object.
+        """
+        try:
+            response = self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **kwargs
+            )
+            return response
+        except Exception as e:
+            LOGGER.error(f"OpenAI API error: {e}")
+            raise
 
 
-def list_models(self: Any) -> list[str]:
-    """List available OpenAI models."""
-    try:
-        MODELS = self.client.models.list()
-        return [model.id for model in models.data]
-    except Exception as e:
-logger.error(f"Failed to list models: {e}")
-        return []
+    async def achat_completion(self: Any,
+                               messages: list[Dict[str,
+                                                   Any]],
+                               model: str,
+                               temperature: float,
+                               max_tokens: Optional[int]) -> ChatCompletion:
+        """
+        Create an async chat completion.
+
+        Args:
+            messages: List of message objects with 'role' and 'content'.
+            model: OpenAI model to use.
+            temperature: Sampling temperature.
+            max_tokens: Maximum tokens to generate.
+            **kwargs: Additional parameters for OpenAI API.
+
+        Returns:
+            ChatCompletion object.
+        """
+        try:
+            response = await self.async_client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                **kwargs
+            )
+            return response
+        except Exception as e:
+            LOGGER.error(f"OpenAI API error: {e}")
+            raise
+
+
+    def create_embedding(self: Any, input_text: str, model: str) -> list[float]:
+        """
+        Create embeddings for text.
+
+        Args:
+            input_text: Text to embed.
+            model: Embedding model to use.
+            **kwargs: Additional parameters.
+
+        Returns:
+            List of embedding values.
+        """
+        try:
+            response = self.client.embeddings.create(
+                model=model,
+                input=input_text,
+                **kwargs
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            LOGGER.error(f"OpenAI embedding error: {e}")
+            raise
+
+
+    def list_models(self: Any) -> list[str]:
+        """List available OpenAI models."""
+        try:
+            models = self.client.models.list()
+            return [model.id for model in models.data]
+        except Exception as e:
+            LOGGER.error(f"Failed to list models: {e}")
+            return []
 
 
 # Global client manager instance
@@ -203,7 +203,7 @@ def create_agent_prompt(
     Returns:
         Formatted messages list for OpenAI API.
     """
-    MESSAGES = [
+    messages = [
         {"role": "system", "content": EXAMPLE_PROMPTS.get(task_type, "")}]
 
     if context:
@@ -219,24 +219,24 @@ def create_agent_prompt(
 def test_openai_connection():
     """Test OpenAI API connection."""
     try:
-        CLIENT = get_openai_client()
-        RESPONSE = client.chat_completion(
-            MESSAGES=[
+        client = get_openai_client()
+        response = client.chat_completion(
+            messages=[
                 {"role": "user", "content": "Say 'OpenAI connection successful!'"}],
-            MODEL="gpt-3.5-turbo",
+            model="gpt-3.5-turbo",
+            temperature=0.7,
             max_tokens=50
         )
-        logger.info(response.choices[0].message.content)
+        LOGGER.info(response.choices[0].message.content)
         return True
     except Exception as e:
-logger.error(f"OpenAI connection failed: {e}")
+        LOGGER.error(f"OpenAI connection failed: {e}")
         return False
 
 
 if __name__ == "__main__":
     # Example usage
-    logger.info("Testing OpenAI configuration...")
-
+    LOGGER.info("Testing OpenAI configuration...")
 
 def test_openai_connection() -> None:
-
+    pass

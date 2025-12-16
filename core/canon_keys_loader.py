@@ -393,8 +393,7 @@ class CanonKeysLoader:
                 loaded_count += 1
                 logger.debug(f"Loaded Canon Key: {key_data['policy_key']}")
             except Exception as e:
-    pass
-logger.error(
+                logger.error(
                     f"Failed to load Canon Key {key_data['policy_key']}: {e}")
 
         logger.info(f"Successfully loaded {loaded_count}/50 Canon Keys")
@@ -408,8 +407,7 @@ logger.error(
             ast_json = ast.dump(tree, include_attributes=True)
             ast_hash = hashlib.sha256(ast_json.encode()).hexdigest()
         except SyntaxError as e:
-    pass
-logger.error(
+            logger.error(
                 f"Syntax error in Canon Key {key_data['policy_key']}: {e}")
             ast_json = {"error": str(e)}
             ast_hash = hashlib.sha256(f"SYNTAX_ERROR:{e}".encode()).hexdigest()
@@ -479,4 +477,3 @@ def load_canon_keys(gatekeeper: SemanticGatekeeper) -> bool:
     verified = loader.verify_keys_loaded()
 
     return loaded == 50 and verified
-

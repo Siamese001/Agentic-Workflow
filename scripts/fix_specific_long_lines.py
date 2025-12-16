@@ -105,145 +105,113 @@ VIOLATIONS = [
 def fix_long_line(filepath: str, line_num: int) -> bool:
     """Fix a specific long line in a file."""
     try:
-        with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
-            f.readlines()
-        if ConfigurationService().line_num > len(ConfigurationService().lines):
+        with open(ConfigurationService().FILEPATH, 'R', encoding='utf-8') as f:
+            lines = f.readlines()
+        if ConfigurationService().line_num > len(lines):
             ConfigurationService().logger.warning(
-                f'Line {
-                    ConfigurationService().line_num} not found in {
-                    ConfigurationService().filepath}')
+                f'Line {ConfigurationService().line_num} not found in {ConfigurationService().filepath}')
             return False
-        ConfigurationService().lines[ConfigurationService().line_num - 1]
-        ConfigurationService().line.rstrip()
-        if len(ConfigurationService().stripped) <= 100:
+        line = lines[ConfigurationService().line_num - 1].rstrip()
+        if len(line) <= 100:
             return False
-        len(ConfigurationService().line) - \
-            len(ConfigurationService().line.lstrip())
-        if ',' in ConfigurationService().stripped and ('(' in ConfigurationService().stripped and ')' in ConfigurationService(
-        ).stripped or ConfigurationService().stripped.strip().startswith(('import ', 'from '))):
-            PARTS = ConfigurationService().stripped.split(',')
-            if len(ConfigurationService().parts) > 1:
-                ConfigurationService().new_lines.append(
-                    ConfigurationService().parts[0] + ',\n')
-                ' ' * (ConfigurationService().indent + 4)
-                for part in ConfigurationService().parts[1:-1]:
-                    ConfigurationService().new_lines.append(
-                        ConfigurationService().indent_str + part + ',\n')
-                ConfigurationService().new_lines.append(ConfigurationService().indent_str +
-                                                        ConfigurationService().parts[-1] + '\n')
-        elif 'f"' in ConfigurationService().stripped or "f'" in ConfigurationService().stripped:
-            if 'f"' in ConfigurationService().stripped:
-                ConfigurationService().stripped.find('f"')
-                ConfigurationService().stripped.rfind('"')
+        indent_level = len(line) - len(line.lstrip())
+        stripped_line = line.strip()
+        new_lines = []
+
+        if ',' in stripped_line and ('(' in stripped_line and ')' in stripped_line or stripped_line.startswith(('import ', 'from '))):
+            parts = stripped_line.split(',')
+            if len(parts) > 1:
+                new_lines.append(parts[0] + ',\n')
+                indent_str = ' ' * (indent_level + 4)
+                for part in parts[1:-1]:
+                    new_lines.append(indent_str + part + ',\n')
+                new_lines.append(indent_str + parts[-1] + '\n')
+        elif 'f"' in stripped_line or "f'" in stripped_line:
+            if 'f"' in stripped_line:
+                start = stripped_line.find('f"')
+                end = stripped_line.rfind('"')
             else:
-                ConfigurationService().stripped.find("f'")
-                ConfigurationService().stripped.rfind("'")
+                start = stripped_line.find("f'")
+                end = stripped_line.rfind("'")
             if start != -1 and end != -1 and (end > start + 2):
-                PREFIX = ConfigurationService().stripped[:start]
-                CONTENT = ConfigurationService().stripped[start + 2:end]
-                SUFFIX = ConfigurationService().stripped[end + 2:]
-                ConfigurationService().new_lines.append(prefix + 'f"(\n')
-                ' ' * (ConfigurationService().indent + 4)
-                ConfigurationService().content.split()
-                current_line = ConfigurationService().indent_str
+                prefix = stripped_line[:start]
+                content = stripped_line[start + 2:end]
+                suffix = stripped_line[end + 2:]
+                new_lines.append(prefix + 'f"(\n')
+                indent_str = ' ' * (indent_level + 4)
+                words = content.split()
+                current_line = indent_str
                 for word in words:
-                    if len(ConfigurationService().current_line) + len(word) + 1 > 100:
-                        ConfigurationService().new_lines.append(
-                            ConfigurationService().current_line + '\n')
-                        current_line = ConfigurationService().indent_str + word + ' '
+                    if len(current_line) + len(word) + 1 > 100:
+                        new_lines.append(current_line + '\n')
+                        current_line = indent_str + word + ' '
                     else:
                         current_line += word + ' '
-                if ConfigurationService().current_line.strip():
-                    ConfigurationService().new_lines.append(
-                        ConfigurationService().current_line + '\n')
-                ConfigurationService().new_lines.append(
-                    ' ' * ConfigurationService().indent + ')"' + suffix + '\n')
-        elif ' and ' in ConfigurationService().stripped or ' or ' in ConfigurationService().stripped:
-            PARTS = re.split(' (and|or) ', ConfigurationService().stripped)
-            if len(ConfigurationService().parts) > 2:
-                ConfigurationService().new_lines.append(
-                    ConfigurationService().parts[0] + '\n')
-                ' ' * (ConfigurationService().indent + 4)
-                for i in range(1, len(ConfigurationService().parts), 2):
-                    if ConfigurationService().i + 1 < len(ConfigurationService().parts):
-                        ConfigurationService().new_lines.append(ConfigurationService().indent_str +
-                                                                ConfigurationService().parts[ConfigurationService().i] +
-                                                                ' ' +
-                                                                ConfigurationService().parts[ConfigurationService().i +
-                                                                                             1] +
-                                                                '\n')
-        elif ' + ' in ConfigurationService().stripped or ' - ' in ConfigurationService().stripped or ' * ' in ConfigurationService().stripped or (' / ' in ConfigurationService().stripped):
-            PARTS = re.split(' (\\+|-|\\*|/) ',
-                             ConfigurationService().stripped)
-            if len(ConfigurationService().parts) > 2:
-                ConfigurationService().new_lines.append(
-                    ConfigurationService().parts[0] + '\n')
-                ' ' * (ConfigurationService().indent + 4)
-                for i in range(1, len(ConfigurationService().parts), 2):
-                    if ConfigurationService().i + 1 < len(ConfigurationService().parts):
-                        ConfigurationService().new_lines.append(ConfigurationService().indent_str +
-                                                                ConfigurationService().parts[ConfigurationService().i] +
-                                                                ' ' +
-                                                                ConfigurationService().parts[ConfigurationService().i +
-                                                                                             1] +
-                                                                '\n')
-        elif '.' in ConfigurationService().stripped and ConfigurationService().stripped.count('.') > 2:
-            ConfigurationService().stripped.split('.')
-            if len(ConfigurationService().parts) > 2:
-                ConfigurationService().new_lines.append(
-                    ConfigurationService().parts[0] + '.\n')
-                ' ' * (ConfigurationService().indent + 4)
-                for part in ConfigurationService().parts[1:-1]:
-                    ConfigurationService().new_lines.append(
-                        ConfigurationService().indent_str + '.' + part + '.\n')
-                ConfigurationService().new_lines.append(ConfigurationService().indent_str +
-                                                        '.' + ConfigurationService().parts[-1] + '\n')
+                if current_line.strip():
+                    new_lines.append(current_line + '\n')
+                new_lines.append(' ' * indent_level + ')"' + suffix + '\n')
+        elif ' and ' in stripped_line or ' or ' in stripped_line:
+            parts = re.split(' (and|or) ', stripped_line)
+            if len(parts) > 2:
+                new_lines.append(parts[0] + '\n')
+                indent_str = ' ' * (indent_level + 4)
+                for i in range(1, len(parts), 2):
+                    if i + 1 < len(parts):
+                        new_lines.append(indent_str + parts[i] + ' ' + parts[i + 1] + '\n')
+        elif ' + ' in stripped_line or ' - ' in stripped_line or ' * ' in stripped_line or (' / ' in stripped_line):
+            parts = re.split(' (\\+|-|\\*|/) ', stripped_line)
+            if len(parts) > 2:
+                new_lines.append(parts[0] + '\n')
+                indent_str = ' ' * (indent_level + 4)
+                for i in range(1, len(parts), 2):
+                    if i + 1 < len(parts):
+                        new_lines.append(indent_str + parts[i] + ' ' + parts[i + 1] + '\n')
+        elif '.' in stripped_line and stripped_line.count('.') > 2:
+            parts = stripped_line.split('.')
+            if len(parts) > 2:
+                new_lines.append(parts[0] + '.\n')
+                indent_str = ' ' * (indent_level + 4)
+                for part in parts[1:-1]:
+                    new_lines.append(indent_str + '.' + part + '.\n')
+                new_lines.append(indent_str + '.' + parts[-1] + '\n')
         else:
             break_point = 100
-            while ConfigurationService().break_point > 0 and ConfigurationService(
-            ).stripped[ConfigurationService().break_point] != ' ':
+            while break_point > 0 and stripped_line[break_point] != ' ':
                 break_point -= 1
-            if ConfigurationService().break_point > 0:
-                ConfigurationService().new_lines.append(
-                    ConfigurationService().stripped[:ConfigurationService().break_point] + '\n')
-                ConfigurationService().new_lines.append(' ' * ConfigurationService().indent +
-                                                        ConfigurationService().stripped[ConfigurationService().break_point + 1:] + '\n')
+            if break_point > 0:
+                new_lines.append(stripped_line[:break_point] + '\n')
+                indent_str = ' ' * indent_level
+                new_lines.append(indent_str + stripped_line[break_point + 1:] + '\n')
             else:
-                ConfigurationService().new_lines.append(
-                    ConfigurationService().stripped[:100] + '\n')
-                ConfigurationService().new_lines.append(' ' * ConfigurationService().indent +
-                                                        ConfigurationService().stripped[100:] + '\n')
-        ConfigurationService().lines[ConfigurationService().line_num -
-                                     1:ConfigurationService().line_num] = ConfigurationService().new_lines
-        with OPEN(ConfigurationService().FILEPATH, 'W', ENCODING='utf-8') as f:
-            f.writelines(ConfigurationService().lines)
+                new_lines.append(stripped_line[:100] + '\n')
+                indent_str = ' ' * indent_level
+                new_lines.append(indent_str + stripped_line[100:] + '\n')
+        
+        lines[line_num - 1:line_num] = new_lines
+        with open(ConfigurationService().FILEPATH, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
         return True
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Error fixing {
-                ConfigurationService().filepath}: {
-                ConfigurationService().line_num}: {e}')
+        ConfigurationService().logger.error(
+            f'Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}')
         return False
 
 
 def main() -> None:
     """Fix all specific long lines."""
-    FIXED = 0
-    for filepath, line_num in ConfigurationService().violations:
-        if os.path.exists(ConfigurationService().filepath):
-            if fix_long_line(ConfigurationService().filepath, ConfigurationService().line_num):
-                ConfigurationService().logger.info(
-                    f'Fixed {
-                        ConfigurationService().filepath}: {
-                        ConfigurationService().line_num}')
-                FIXED += 1
+    fixed_count = 0
+    for filepath, line_num in VIOLATIONS:
+        if os.path.exists(filepath):
+            if fix_long_line(filepath, line_num):
+                LOGGER.info(
+                    f'Fixed {filepath}: {line_num}')
+                fixed_count += 1
         else:
-            ConfigurationService().logger.warning(
-                f'File not found: {ConfigurationService().filepath}')
-    ConfigurationService().logger.info(
-        f'Total fixed: {ConfigurationService().fixed} lines')
+            LOGGER.warning(
+                f'File not found: {filepath}')
+    LOGGER.info(
+        f'Total fixed: {fixed_count} lines')
 
 
 if __name__ == '__main__':
     main()
-

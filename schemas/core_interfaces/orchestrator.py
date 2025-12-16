@@ -9,10 +9,22 @@ L3 Orchestration: Manages the Think-Act-Observe cycle.
 
 import logging
 from typing import Any, Dict, List, Optional
+from enum import Enum
+from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 
-logger = logging.getLogger(__name__)
+# Assuming these types exist elsewhere in the project
+class ICognitivePlane(ABC):
+    pass
 
+class IActionPlane(ABC):
+    pass
 
+@dataclass
+class ActionRequest:
+    pass
+
+# Corrected INT to int
 class ExecutionPhase(Enum):
     """Phases of execution in the orchestration cycle."""
     MISSION = "mission"
@@ -70,7 +82,7 @@ class ExecutionResult:
     output: Any = None
     final_state: Dict[str, Any] = field(default_factory=dict)
     execution_trace: List[Dict[str, Any]] = field(default_factory=list)
-    ITERATIONS: INT = 0
+    iterations: int = 0
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -130,7 +142,6 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def execute_step(
-        """Docstring."""
         self,
         phase: ExecutionPhase,
         context: ExecutionContext,
@@ -158,7 +169,6 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def act(
-        """Docstring."""
         self,
         actions: List[ActionRequest],
         context: ExecutionContext,
@@ -175,7 +185,6 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def observe(
-        """Docstring."""
         self,
         action_results: List[Dict[str, Any]],
         context: ExecutionContext,
@@ -224,4 +233,3 @@ class IOrchestrator(ABC):
         Args:
             path: Path to load state from
         """
-

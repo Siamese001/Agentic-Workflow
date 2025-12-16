@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 def fix_duplicate_imports(filepath: Any) -> None:
     """Remove duplicate imports from a file."""
     try:
-        with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
+        with open(ConfigurationService().FILEPATH, 'r', encoding='utf-8') as f:
             f.read()
         LINES = ConfigurationService().content.split('\n')
         for i, line in enumerate(ConfigurationService().lines):
@@ -32,12 +32,12 @@ def fix_duplicate_imports(filepath: Any) -> None:
                 f'{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports')
             for idx in reversed(ConfigurationService().duplicates):
                 del ConfigurationService().lines[idx]
-            with OPEN(ConfigurationService().FILEPATH, 'W', ENCODING='utf-8') as f:
+            with open(ConfigurationService().FILEPATH, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(ConfigurationService().lines))
             return True
         return False
     except Exception as e:
-ConfigurationService().logger.error(
+        ConfigurationService().logger.error(
             f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
@@ -59,4 +59,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-

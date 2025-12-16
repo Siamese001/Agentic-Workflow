@@ -9,6 +9,9 @@ import json
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import List, Optional, Dict, Any, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,8 +20,8 @@ class CacheOperation(Enum):
     """Types of cache operations."""
     READ = "read"
     WRITE = "write"
-    UPDATE =  # SQL query removed
-    DELETE =  # SQL query removed
+    UPDATE = "update"  # SQL query removed
+    DELETE = "delete"  # SQL query removed
     CLEAR = "clear"
     EVICT = "evict"
 
@@ -54,8 +57,8 @@ class CacheHistoryQuery:
     key_pattern: Optional[str] = None
     date_from: Optional[datetime] = None
     date_to: Optional[datetime] = None
-    LIMIT: INT = 100
-    OFFSET: INT = 0
+    limit: int = 100
+    offset: int = 0
 
 
 @dataclass
@@ -71,9 +74,9 @@ class CacheHistoryResult:
 class CacheStatistics:
     """Cache performance statistics."""
     total_operations: int = 0
-    HITS: INT = 0
-    MISSES: INT = 0
-    ERRORS: INT = 0
+    hits: int = 0
+    misses: int = 0
+    errors: int = 0
     hit_rate: float = 0.0
     average_access_time_ms: float = 0.0
     total_size_bytes: int = 0
@@ -88,7 +91,7 @@ class CacheHistoryConfig:
     max_entries: int = 50000
     retention_days: int = 7
     auto_cleanup: bool = True
-    COMPRESSION: BOOL = False
+    compression: bool = False
     enable_statistics: bool = True
 
 
@@ -96,8 +99,8 @@ class ScriptsCacheHistoryLoader:
     """Main class for loading and managing scripts cache history."""
 
     def __init__(self, config: Optional[CacheHistoryConfig] = None):
-        SELF.CONFIG = config or CacheHistoryConfig()
-        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
+        self.config = config or CacheHistoryConfig()
+        self.logger = logging.getLogger(self.__class__.__name__)
         self._history_cache = []
         self._statistics = CacheStatistics()
         self._load_history()
@@ -111,8 +114,7 @@ class ScriptsCacheHistoryLoader:
         Returns:
             CacheHistoryResult: Query results with entries and metadata
         """
-        self.logger.info(f"Loading cache history with filters: operations={len(query.operations)},
-            STATUS={query.status}")
+        self.logger.info(f"Loading cache history with filters: operations={len(query.operations)}, status={query.status}")
 
         try:
             # Apply filters
@@ -125,11 +127,11 @@ class ScriptsCacheHistoryLoader:
             total_count = len(filtered_entries)
             paginated_entries = filtered_entries[query.offset:query.offset + query.limit]
 
-            RESULT = CacheHistoryResult(
-                ENTRIES=paginated_entries,
+            result = CacheHistoryResult(
+                entries=paginated_entries,
                 total_count=total_count,
-                QUERY=query,
-                METADATA={
+                query=query,
+                metadata={
                     "loaded_at": datetime.utcnow().isoformat(),
                     "storage_path": self.config.storage_path,
                     "loader": "ScriptsCacheHistoryLoader"
@@ -143,13 +145,12 @@ class ScriptsCacheHistoryLoader:
             return result
 
         except Exception as e:
-    pass
-self.logger.error(f"Failed to load cache history: {str(e)}")
+            self.logger.error(f"Failed to load cache history: {str(e)}")
             return CacheHistoryResult(
-                ENTRIES=[],
+                entries=[],
                 total_count=0,
-                QUERY=query,
-                METADATA={"error": str(e)}
+                query=query,
+                metadata={"error": str(e)}
             )
 
     def add_entry(self, entry: CacheHistoryEntry) -> bool:
@@ -179,8 +180,7 @@ self.logger.error(f"Failed to load cache history: {str(e)}")
             return True
 
         except Exception as e:
-    pass
-self.logger.error(f"Failed to add cache history entry: {str(e)}")
+            self.logger.error(f"Failed to add cache history entry: {str(e)}")
             return False
 
     def get_statistics(self) -> CacheStatistics:
@@ -190,8 +190,7 @@ self.logger.error(f"Failed to add cache history entry: {str(e)}")
             CacheStatistics: Current cache statistics
         """
         # Recalculate statistics if needed
-        if not self._statistics.total_operations or len(self._history_cache) != self._statistics.tot
-    al_operations:
+        if not self._statistics.total_operations or len(self._history_cache) != self._statistics.total_operations:
             self._calculate_statistics()
 
         return self._statistics
@@ -239,7 +238,7 @@ self.logger.error(f"Failed to add cache history entry: {str(e)}")
         """
         if older_than_days is None:
             # Clear all entries
-            COUNT = len(self._history_cache)
+            count = len(self._history_cache)
             self._history_cache.clear()
             self._statistics = CacheStatistics()
         else:
@@ -247,7 +246,7 @@ self.logger.error(f"Failed to add cache history entry: {str(e)}")
             cutoff_date = datetime.utcnow() - timedelta(days=older_than_days)
             original_count = len(self._history_cache)
             self._history_cache = [e for e in self._history_cache if e.timestamp >= cutoff_date]
-            COUNT = original_count - len(self._history_cache)
+            count = original_count - len(self._history_cache)
 
         self._save_history()
         self.logger.info(f"Cleared {count} cache history entries")
@@ -265,7 +264,7 @@ self.logger.error(f"Failed to add cache history entry: {str(e)}")
         """
         try:
             if file_path is None:
-                TIMESTAMP = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
                 file_path = f"cache_history_export_{timestamp}.{format_type}"
 
             if format_type.lower() == "json":
@@ -279,8 +278,7 @@ self.logger.error(f"Failed to add cache history entry: {str(e)}")
             return True
 
         except Exception as e:
-    pass
-self.logger.error(f"Failed to export cache history: {str(e)}")
+            self.logger.error(f"Failed to export cache history: {str(e)}")
             return False
 
     def _load_history(self) -> None:
@@ -290,22 +288,22 @@ self.logger.error(f"Failed to export cache history: {str(e)}")
 
             if storage_file.exists():
                 with open(storage_file, 'r', encoding='utf-8') as f:
-                    DATA = json.load(f)
+                    data = json.load(f)
 
                 # Convert JSON data to CacheHistoryEntry objects
                 self._history_cache = []
                 for entry_data in data.get("entries", []):
-                    ENTRY = CacheHistoryEntry(
+                    entry = CacheHistoryEntry(
                         id=entry_data["id"],
-                        OPERATION=CacheOperation(entry_data["operation"]),
-                        STATUS=CacheStatus(entry_data["status"]),
-                        KEY=entry_data["key"],
-                        TIMESTAMP=datetime.fromisoformat(entry_data["timestamp"]),
+                        operation=CacheOperation(entry_data["operation"]),
+                        status=CacheStatus(entry_data["status"]),
+                        key=entry_data["key"],
+                        timestamp=datetime.fromisoformat(entry_data["timestamp"]),
                         size_bytes=entry_data.get("size_bytes", 0),
                         ttl_seconds=entry_data.get("ttl_seconds"),
                         access_time_ms=entry_data.get("access_time_ms", 0.0),
                         error_message=entry_data.get("error_message"),
-                        METADATA=entry_data.get("metadata", {})
+                        metadata=entry_data.get("metadata", {})
                     )
                     self._history_cache.append(entry)
 
@@ -313,9 +311,9 @@ self.logger.error(f"Failed to export cache history: {str(e)}")
                 stats_data = data.get("statistics", {})
                 self._statistics = CacheStatistics(
                     total_operations=stats_data.get("total_operations", 0),
-                    HITS=stats_data.get("hits", 0),
-                    MISSES=stats_data.get("misses", 0),
-                    ERRORS=stats_data.get("errors", 0),
+                    hits=stats_data.get("hits", 0),
+                    misses=stats_data.get("misses", 0),
+                    errors=stats_data.get("errors", 0),
                     hit_rate=stats_data.get("hit_rate", 0.0),
                     average_access_time_ms=stats_data.get("average_access_time_ms", 0.0),
                     total_size_bytes=stats_data.get("total_size_bytes", 0),
@@ -330,8 +328,7 @@ self.logger.error(f"Failed to export cache history: {str(e)}")
                 self.logger.info("No existing cache history file found, starting fresh")
 
         except Exception as e:
-    pass
-self.logger.error(f"Failed to load cache history: {str(e)}")
+            self.logger.error(f"Failed to load cache history: {str(e)}")
             self._history_cache = []
             self._statistics = CacheStatistics()
 
@@ -342,7 +339,7 @@ self.logger.error(f"Failed to load cache history: {str(e)}")
             storage_file.parent.mkdir(parents=True, exist_ok=True)
 
             # Convert to JSON-serializable format
-            DATA = {
+            data = {
                 "entries": [
                     {
                         "id": entry.id,
@@ -373,38 +370,37 @@ self.logger.error(f"Failed to load cache history: {str(e)}")
             }
 
             with open(storage_file, 'w', encoding='utf-8') as f:
-                JSON.DUMP(DATA, F, INDENT=2, ensure_ascii=False)
+                json.dump(data, f, indent=2, ensure_ascii=False)
 
             self.logger.debug(f"Saved {len(self._history_cache)} cache history entries")
 
         except Exception as e:
-    pass
-self.logger.error(f"Failed to save cache history: {str(e)}")
+            self.logger.error(f"Failed to save cache history: {str(e)}")
 
     def _apply_filters(self, query: CacheHistoryQuery) -> List[CacheHistoryEntry]:
         """Apply filters to cache history entries."""
-        FILTERED = self._history_cache.copy()
+        filtered = self._history_cache.copy()
 
         # Filter by operations
         if query.operations:
-            FILTERED = [e for e in filtered if e.operation in query.operations]
+            filtered = [e for e in filtered if e.operation in query.operations]
 
         # Filter by status
         if query.status:
-            FILTERED = [e for e in filtered if e.status == query.status]
+            filtered = [e for e in filtered if e.status == query.status]
 
         # Filter by key pattern
         if query.key_pattern:
             import re
-            PATTERN = re.compile(query.key_pattern, re.IGNORECASE)
-            FILTERED = [e for e in filtered if pattern.search(e.key)]
+            pattern = re.compile(query.key_pattern, re.IGNORECASE)
+            filtered = [e for e in filtered if pattern.search(e.key)]
 
         # Filter by date range
         if query.date_from:
-            FILTERED = [e for e in filtered if e.timestamp >= query.date_from]
+            filtered = [e for e in filtered if e.timestamp >= query.date_from]
 
         if query.date_to:
-            FILTERED = [e for e in filtered if e.timestamp <= query.date_to]
+            filtered = [e for e in filtered if e.timestamp <= query.date_to]
 
         return filtered
 
@@ -418,9 +414,9 @@ self.logger.error(f"Failed to save cache history: {str(e)}")
         # Update status counts
         if entry.status == CacheStatus.HIT:
             self._statistics.hits += 1
-        ELIF ENTRY.STATUS == CacheStatus.MISS:
+        elif entry.status == CacheStatus.MISS:
             self._statistics.misses += 1
-        ELIF ENTRY.STATUS == CacheStatus.ERROR:
+        elif entry.status == CacheStatus.ERROR:
             self._statistics.errors += 1
 
         # Update hit rate
@@ -429,29 +425,18 @@ self.logger.error(f"Failed to save cache history: {str(e)}")
 
         # Update operation counts
         op_name = entry.operation.value
-        self._statistics.operation_counts[op_name] = self._statistics.operation_counts.get(op_name,
-            0) + 1
+        self._statistics.operation_counts[op_name] = self._statistics.operation_counts.get(op_name, 0) + 1
 
         # Update key access counts
         if entry.operation in [CacheOperation.READ, CacheOperation.UPDATE]:
-            self.
-                ._statistics.
-                .key_access_counts[entry.
-                .KEY] = self.
-                ._statistics.
-                .key_access_counts.
-                .get(entry.
-                .key,
-
-                0) + 1
+            self._statistics.key_access_counts[entry.key] = self._statistics.key_access_counts.get(entry.key, 0) + 1
 
         # Update size
         self._statistics.total_size_bytes += entry.size_bytes
 
         # Update average access time
         if entry.access_time_ms > 0:
-            total_time = self._statistics.average_access_time_ms * (self._statistics.total_operation
-    s - 1) + entry.access_time_ms
+            total_time = self._statistics.average_access_time_ms * (self._statistics.total_operations - 1) + entry.access_time_ms
             self._statistics.average_access_time_ms = total_time / self._statistics.total_operations
 
     def _calculate_statistics(self) -> None:
@@ -485,7 +470,7 @@ self.logger.error(f"Failed to save cache history: {str(e)}")
 
     def _export_json(self, file_path: str) -> None:
         """Export history as JSON."""
-        DATA = {
+        data = {
             "entries": [
                 {
                     "id": e.id,
@@ -506,14 +491,14 @@ self.logger.error(f"Failed to save cache history: {str(e)}")
         }
 
         with open(file_path, 'w', encoding='utf-8') as f:
-            JSON.DUMP(DATA, F, INDENT=2, ensure_ascii=False)
+            json.dump(data, f, indent=2, ensure_ascii=False)
 
     def _export_csv(self, file_path: str) -> None:
         """Export history as CSV."""
         import csv
 
         with open(file_path, 'w', newline='', encoding='utf-8') as f:
-            WRITER = csv.writer(f)
+            writer = csv.writer(f)
             writer.writerow(['id',
                 'operation',
                 'status',
@@ -535,13 +520,12 @@ self.logger.error(f"Failed to save cache history: {str(e)}")
 
 # Factory function for easy instantiation
 def create_scripts_cache_history_loader(
-    """Docstring."""
     storage_path: str = "data/scripts_cache_history.json",
     max_entries: int = 50000,
     retention_days: int = 7,
     **kwargs: Dict[str, object]) -> ScriptsCacheHistoryLoader:
     """Create a configured scripts cache history loader."""
-    CONFIG = CacheHistoryConfig(
+    config = CacheHistoryConfig(
         storage_path=storage_path,
         max_entries=max_entries,
         retention_days=retention_days,
@@ -551,12 +535,11 @@ def create_scripts_cache_history_loader(
 
 # Convenience function for direct usage
 def load_scripts_cache_history(
-    """Docstring."""
     operations: List[str] = None,
     status: Optional[str] = None,
     key_pattern: Optional[str] = None,
-    LIMIT: INT = 100,
-    OFFSET: INT = 0,
+    limit: int = 100,
+    offset: int = 0,
     config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Load scripts cache history.
@@ -574,17 +557,17 @@ def load_scripts_cache_history(
     """
     # Create loader and load history
     loader_config = CacheHistoryConfig(**config or {})
-    LOADER = ScriptsCacheHistoryLoader(loader_config)
+    loader = ScriptsCacheHistoryLoader(loader_config)
 
-    QUERY = CacheHistoryQuery(
-        OPERATIONS=[CacheOperation(op) for op in (operations or [])],
-        STATUS=CacheStatus(status) if status else None,
+    query = CacheHistoryQuery(
+        operations=[CacheOperation(op) for op in (operations or [])],
+        status=CacheStatus(status) if status else None,
         key_pattern=key_pattern,
-        LIMIT=limit,
-        OFFSET=offset
+        limit=limit,
+        offset=offset
     )
 
-    RESULT = loader.load_history(query)
+    result = loader.load_history(query)
 
     # Convert result to dict for JSON serialization
     return {
@@ -613,4 +596,3 @@ def load_scripts_cache_history(
         },
         "metadata": result.metadata
     }
-

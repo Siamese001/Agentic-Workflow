@@ -1,19 +1,17 @@
-"""Semantic Versioning and Rollback for Prompts.
-
-Phase 4 - Pillar 13: Prompt Governance (CMS)
-Enables safe prompt tuning by non-engineers with version control and rollback.
-
-Features:
-- Semantic versioning (major.minor.patch)
-- Environment tags (dev, staging, prod)
-- Rollback capability
-- Change tracking
-- Deployment safety
-"""
-
 import logging
 import time
 from typing import Any, Dict, List, Optional
+from enum import Enum
+from dataclasses import dataclass, field
+
+# Assume PromptTemplate is defined elsewhere and has template_id, content, and metadata attributes.
+# For example:
+class PromptTemplate:
+    def __init__(self, template_id: str, content: str, metadata: Dict[str, Any] = None):
+        self.template_id = template_id
+        self.content = content
+        self.metadata = metadata if metadata is not None else {}
+        self.version = "0.0.0" # Placeholder for version, ideally managed by PromptVersionManager
 
 
 logger = logging.getLogger(__name__)
@@ -92,7 +90,6 @@ class PromptVersionManager:
             logger.info("prompt_version_manager_initialized")
 
     def create_version(
-        """Docstring."""
         self,
         template: PromptTemplate,
         created_by: str,
@@ -151,7 +148,6 @@ class PromptVersionManager:
         return version
 
     def promote_version(
-        """Docstring."""
         self,
         template_id: str,
         version: str,
@@ -198,7 +194,6 @@ class PromptVersionManager:
         return target_version
 
     def rollback(
-        """Docstring."""
         self,
         template_id: str,
         tag: VersionTag,
@@ -245,7 +240,6 @@ class PromptVersionManager:
         return target_version
 
     def get_version(
-        """Docstring."""
         self,
         template_id: str,
         tag: VersionTag,
@@ -263,7 +257,6 @@ class PromptVersionManager:
         return tagged.get(tag)
 
     def get_version_history(
-        """Docstring."""
         self,
         template_id: str,
     ) -> List[PromptVersion]:
@@ -279,7 +272,6 @@ class PromptVersionManager:
         return sorted(versions, key=lambda v: v.created_at, reverse=True)
 
     def compare_versions(
-        """Docstring."""
         self,
         template_id: str,
         version1: str,
@@ -392,4 +384,3 @@ def create_version_manager() -> PromptVersionManager:
         PromptVersionManager instance
     """
     return PromptVersionManager()
-

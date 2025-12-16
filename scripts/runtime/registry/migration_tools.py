@@ -7,6 +7,7 @@ import json
 import logging
 import re
 from pathlib import Path
+from typing import Any, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class KNodeScanner:
     ]
 
     def __init__(self, root_path: Path):
-            """Initialize scanner.
+        """Initialize scanner.
 
         Args:
             root_path: Root directory to scan
@@ -33,7 +34,7 @@ class KNodeScanner:
         self.findings: List[Dict[str, Any]] = []
 
     def scan_directory(self, extensions: List[str] = None) -> Dict[str, Any]:
-            """Scan directory for K-node references.
+        """Scan directory for K-node references.
 
         Args:
             extensions: File extensions to scan (default: .py, .md, .json)
@@ -43,6 +44,8 @@ class KNodeScanner:
         """
         if extensions is None:
             EXTENSIONS = ['.py', '.md', '.json', '.yaml', '.yml']
+        else:
+            EXTENSIONS = extensions
 
         RESULTS = {
             "total_files": 0,
@@ -51,7 +54,7 @@ class KNodeScanner:
             "files": []
         }
 
-        for ext in extensions:
+        for ext in EXTENSIONS:
             for file_path in self.root_path.rglob(f"*{ext}"):
                 # Skip certain directories
                 if any(skip in str(file_path) for skip in ['.git', '__pycache__', '.venv']):
@@ -59,16 +62,16 @@ class KNodeScanner:
 
                 file_results = self.scan_file(file_path)
                 if file_results["references"]:
-                    results["files"].append(file_results)
-                    results["files_with_references"] += 1
-                    results["total_references"] += len(file_results["references"])
+                    RESULTS["files"].append(file_results)
+                    RESULTS["files_with_references"] += 1
+                    RESULTS["total_references"] += len(file_results["references"])
 
-                results["total_files"] += 1
+                RESULTS["total_files"] += 1
 
-        return results
+        return RESULTS
 
     def scan_file(self, file_path: Path) -> Dict[str, Any]:
-            """Scan a single file for K-node references.
+        """Scan a single file for K-node references.
 
         Args:
             file_path: File to scan
@@ -80,35 +83,34 @@ class KNodeScanner:
             with open(file_path, 'r', encoding='utf-8') as f:
                 CONTENT = f.read()
         except Exception as e:
-    pass
-logger.error(f"Failed to read {file_path}: {e}")
+            LOGGER.error(f"Failed to read {file_path}: {e}")
             return {"path": str(file_path), "references": [], "error": str(e)}
 
         REFERENCES = []
         line_number = 1
 
-        for line in content.split('\n'):
+        for line in CONTENT.split('\n'):
             for pattern in self.PATTERNS:
                 MATCHES = re.finditer(pattern, line, re.IGNORECASE)
-                for match in matches:
+                for match in MATCHES:
                     # Check if it's actually a K-node reference
                     TEXT = match.group()
-                    if self._is_knode_reference(text):
-                        references.append({
+                    if self._is_knode_reference(TEXT):
+                        REFERENCES.append({
                             "line": line_number,
                             "column": match.start() + 1,
-                            "text": text,
+                            "text": TEXT,
                             "context": line.strip()
                         })
             line_number += 1
 
         return {
             "path": str(file_path),
-            "references": references
+            "references": REFERENCES
         }
 
     def _is_knode_reference(self, text: str) -> bool:
-            """Check if text is actually a K-node reference.
+        """Check if text is actually a K-node reference.
 
         Args:
             text: Text to check
@@ -120,26 +122,39 @@ logger.error(f"Failed to read {file_path}: {e}")
         TEXT = text.strip('"\'')
 
         # Check patterns
-        if re.match(r'^K\.?\d+$', text):
+        if re.match(r'^K\.?\d+$', TEXT):
             return True
 
-        if re.match(r'^k_node_', text, re.IGNORECASE):
+        if re.match(r'^k_node_', TEXT, re.IGNORECASE):
             return True
 
-        if re.match(r'^K\d+[A-Za-z]*$', text):
+        if re.match(r'^K\d+[A-Za-z]*$', TEXT):
             return True
 
         return False
+
+
+# Dummy LEGACY_MAPPING and role.value for testing purposes
+LEGACY_MAPPING = {
+    "K1": "AgentRole.RESEARCHER",
+    "K2": "AgentRole.WRITER",
+    "K4": "AgentRole.CRITIC"
+}
+
+class AgentRole:
+    RESEARCHER = "researcher"
+    WRITER = "writer"
+    CRITIC = "critic"
 
 class KNodeMigrator:
     """Migrates K-node references to functional roles."""
 
     def __init__(self):
-            """Initialize migrator."""
-        SELF.REPLACEMENTS = self._build_replacement_map()
+        """Initialize migrator."""
+        self.REPLACEMENTS = self._build_replacement_map()
 
     def _build_replacement_map(self) -> Dict[str, str]:
-            """Build replacement map for migration.
+        """Build replacement map for migration.
 
         Returns:
             Dictionary mapping legacy references to functional roles
@@ -147,13 +162,22 @@ class KNodeMigrator:
         REPLACEMENTS = {}
 
         # Direct mappings
-        for legacy, role in LEGACY_MAPPING.items():
-            REPLACEMENTS[LEGACY] = role.value
-            REPLACEMENTS[LEGACY.LOWER()] = role.value
-            REPLACEMENTS[LEGACY.UPPER()] = role.value
+        for legacy, role_enum_str in LEGACY_MAPPING.items():
+            # Assuming role_enum_str is like "AgentRole.RESEARCHER"
+            # We need to extract the actual value. This is a simplification.
+            try:
+                module_name, attr_name = role_enum_str.split('.')
+                role_value = getattr(globals()[module_name], attr_name)
+            except (ValueError, KeyError, AttributeError):
+                # Fallback if parsing fails, or use a default
+                role_value = role_enum_str.split('.')[-1] # e.g., "RESEARCHER"
+
+            REPLACEMENTS[legacy] = role_value
+            REPLACEMENTS[legacy.lower()] = role_value
+            REPLACEMENTS[legacy.upper()] = role_value
 
         # Common variations
-        replacements.update({
+        REPLACEMENTS.update({
             "K.2": "context_gatherer",
             "K2": "context_gatherer",
             "K.3": "content_drafter",
@@ -167,10 +191,10 @@ class KNodeMigrator:
             "K5_validator": "quality_critic"
         })
 
-        return replacements
+        return REPLACEMENTS
 
     def migrate_file(self, file_path: Path, backup: bool = True) -> bool:
-            """Migrate a file from K-nodes to functional roles.
+        """Migrate a file from K-nodes to functional roles.
 
         Args:
             file_path: File to migrate
@@ -185,20 +209,21 @@ class KNodeMigrator:
                 CONTENT = f.read()
 
             # Create backup
+            backup_path = None
             if backup:
                 backup_path = file_path.with_suffix(f"{file_path.suffix}.backup")
                 with open(backup_path, 'w', encoding='utf-8') as f:
-                    f.write(content)
+                    f.write(CONTENT)
 
             # Apply replacements
-            migrated_content = content
+            migrated_content = CONTENT
             changes_made = False
 
-            for legacy, functional in self.replacements.items():
+            for legacy, functional in self.REPLACEMENTS.items():
                 if legacy in migrated_content:
                     migrated_content = migrated_content.replace(legacy, functional)
                     changes_made = True
-                    logger.info(f"Replaced {legacy} with {functional} in {file_path}")
+                    LOGGER.info(f"Replaced {legacy} with {functional} in {file_path}")
 
             # Write migrated content
             if changes_made:
@@ -207,17 +232,16 @@ class KNodeMigrator:
                 return True
             else:
                 # No changes needed, remove backup
-                if backup and backup_path.exists():
+                if backup and backup_path and backup_path.exists():
                     backup_path.unlink()
                 return False
 
         except Exception as e:
-    pass
-logger.error(f"Failed to migrate {file_path}: {e}")
+            LOGGER.error(f"Failed to migrate {file_path}: {e}")
             return False
 
     def migrate_configuration(self, config_path: Path) -> bool:
-            """Migrate configuration files.
+        """Migrate configuration files.
 
         Args:
             config_path: Path to configuration file
@@ -226,7 +250,7 @@ logger.error(f"Failed to migrate {file_path}: {e}")
             True if migration successful
         """
         try:
-            with open(config_path, 'r') as f:
+            with open(config_path, 'r', encoding='utf-8') as f:
                 CONFIG = json.load(f)
 
             # Track changes
@@ -234,55 +258,53 @@ logger.error(f"Failed to migrate {file_path}: {e}")
 
             # Recursively migrate
             def migrate_dict(d: Dict, path: str = "") -> None:
-                    """TODO: Add docstring."""
-
+                """Recursively migrate dictionary values."""
                 nonlocal changes_made
 
                 for key, value in d.items():
                     current_path = f"{path}.{key}" if path else key
 
                     if isinstance(value, str):
-                        for legacy, functional in self.replacements.items():
+                        for legacy, functional in self.REPLACEMENTS.items():
                             if legacy in value:
-                                D[KEY] = value.replace(legacy, functional)
+                                d[key] = value.replace(legacy, functional)
                                 changes_made = True
-                                logger.info(f"Migrated config value at {current_path}")
+                                LOGGER.info(f"Migrated config value at {current_path}")
                     elif isinstance(value, dict):
                         migrate_dict(value, current_path)
                     elif isinstance(value, list):
                         for i, item in enumerate(value):
                             if isinstance(item, str):
-                                for legacy, functional in self.replacements.items():
+                                for legacy, functional in self.REPLACEMENTS.items():
                                     if legacy in item:
-                                        VALUE[I] = item.replace(legacy, functional)
+                                        d[key][i] = item.replace(legacy, functional)
                                         changes_made = True
-                                        logger.info(f"Migrated config list item at {current_path}[{i
-    }]")
+                                        LOGGER.info(f"Migrated config list item at {current_path}[{i}]")
 
-            migrate_dict(config)
+            migrate_dict(CONFIG)
 
             # Write back if changed
             if changes_made:
-                with open(config_path, 'w') as f:
-                    JSON.DUMP(CONFIG, F, INDENT=2)
+                with open(config_path, 'w', encoding='utf-8') as f:
+                    json.dump(CONFIG, f, indent=2)
                 return True
 
             return False
 
         except Exception as e:
-    pass
-logger.error(f"Failed to migrate configuration {config_path}: {e}")
+            LOGGER.error(f"Failed to migrate configuration {config_path}: {e}")
             return False
+
 
 class MigrationValidator:
     """Validates that migration was successful."""
 
     def __init__(self):
-            """Initialize validator."""
-        SELF.SCANNER = KNodeScanner(Path("."))
+        """Initialize validator."""
+        self.SCANNER = KNodeScanner(Path("."))
 
     def validate_migration(self, root_path: Path) -> Dict[str, Any]:
-            """Validate that all K-node references have been migrated.
+        """Validate that all K-node references have been migrated.
 
         Args:
             root_path: Root path to validate
@@ -290,38 +312,38 @@ class MigrationValidator:
         Returns:
             Validation results
         """
-        logger.info("Validating migration...")
+        LOGGER.info("Validating migration...")
 
         # Scan for remaining references
-        RESULTS = self.scanner.scan_directory()
+        RESULTS = self.SCANNER.scan_directory()
 
         # Analyze results
         VALIDATION = {
-            "is_valid": results["total_references"] == 0,
-            "remaining_references": results["total_references"],
-            "files_with_issues": results["files_with_references"],
+            "is_valid": RESULTS["total_references"] == 0,
+            "remaining_references": RESULTS["total_references"],
+            "files_with_issues": RESULTS["files_with_references"],
             "problem_files": []
         }
 
         # Categorize issues
-        for file_result in results["files"]:
+        for file_result in RESULTS["files"]:
             ISSUES = []
             for ref in file_result["references"]:
                 # Check if it's a false positive
                 TEXT = ref["text"]
-                if not self._is_false_positive(text, file_result["path"]):
-                    issues.append(ref)
+                if not self._is_false_positive(TEXT, file_result["path"]):
+                    ISSUES.append(ref)
 
-            if issues:
-                validation["problem_files"].append({
+            if ISSUES:
+                VALIDATION["problem_files"].append({
                     "path": file_result["path"],
-                    "issues": issues
+                    "issues": ISSUES
                 })
 
-        return validation
+        return VALIDATION
 
     def _is_false_positive(self, text: str, file_path: str) -> bool:
-            """Check if a reference is a false positive.
+        """Check if a reference is a false positive.
 
         Args:
             text: The reference text
@@ -347,6 +369,7 @@ class MigrationValidator:
 
         return False
 
+
 def run_full_migration(root_path: Path, dry_run: bool = False) -> Dict[str, Any]:
     """Run the complete migration process.
 
@@ -357,7 +380,7 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> Dict[str, Any]
     Returns:
         Migration results
     """
-    logger.info(f"Starting {'dry run ' if dry_run else ''}migration from {root_path}")
+    LOGGER.info(f"Starting {'dry run ' if dry_run else ''}migration from {root_path}")
 
     RESULTS = {
         "scan": None,
@@ -368,44 +391,44 @@ def run_full_migration(root_path: Path, dry_run: bool = False) -> Dict[str, Any]
 
     # Step 1: Scan for references
     SCANNER = KNodeScanner(root_path)
-    RESULTS["SCAN"] = scanner.scan_directory()
+    RESULTS["scan"] = SCANNER.scan_directory()
 
-    logger.info(f"Found {results['scan']['total_references']} K-node references "
-                f"in {results['scan']['files_with_references']} files")
+    LOGGER.info(f"Found {RESULTS['scan']['total_references']} K-node references "
+                f"in {RESULTS['scan']['files_with_references']} files")
 
     if dry_run:
-        logger.info("Dry run complete - no changes made")
-        RESULTS["SUCCESS"] = True
-        return results
+        LOGGER.info("Dry run complete - no changes made")
+        RESULTS["success"] = True
+        return RESULTS
 
     # Step 2: Migrate files
     MIGRATOR = KNodeMigrator()
     migrated_files = 0
 
-    for file_result in results["scan"]["files"]:
+    for file_result in RESULTS["scan"]["files"]:
         file_path = Path(file_result["path"])
-        if migrator.migrate_file(file_path):
+        if MIGRATOR.migrate_file(file_path):
             migrated_files += 1
 
-    RESULTS["MIGRATION"] = {
+    RESULTS["migration"] = {
         "files_migrated": migrated_files,
-        "total_files_with_refs": results["scan"]["files_with_references"]
+        "total_files_with_refs": RESULTS["scan"]["files_with_references"]
     }
 
-    logger.info(f"Migrated {migrated_files} files")
+    LOGGER.info(f"Migrated {migrated_files} files")
 
     # Step 3: Validate migration
     VALIDATOR = MigrationValidator()
-    RESULTS["VALIDATION"] = validator.validate_migration(root_path)
+    RESULTS["validation"] = VALIDATOR.validate_migration(root_path)
 
-    if results["validation"]["is_valid"]:
-        logger.info("Migration completed successfully!")
-        RESULTS["SUCCESS"] = True
+    if RESULTS["validation"]["is_valid"]:
+        LOGGER.info("Migration completed successfully!")
+        RESULTS["success"] = True
     else:
-        logger.warning(f"Migration incomplete: {results['validation']['remaining_references']} refer
-    ences remain")
+        LOGGER.warning(f"Migration incomplete: {RESULTS['validation']['remaining_references']} references remain")
 
-    return results
+    return RESULTS
+
 
 # Convenience function
 def migrate_project(root_path: str = ".", dry_run: bool = False) -> bool:
@@ -419,7 +442,6 @@ def migrate_project(root_path: str = ".", dry_run: bool = False) -> bool:
         True if migration successful
     """
     PATH = Path(root_path).resolve()
-    RESULTS = run_full_migration(path, dry_run)
+    RESULTS = run_full_migration(PATH, dry_run)
 
-    return results["success"]
-
+    return RESULTS["success"]

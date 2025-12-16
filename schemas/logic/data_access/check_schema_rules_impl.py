@@ -1,7 +1,9 @@
 """Implementation for check_schema_rules."""
 
 import logging
-from typing import Any, Dict, List, Optional
+import sys
+import time
+from typing import Any, Dict, List, Optional, Union
 
 # # from .check_schema_rules_types import *  # Star import removed
 
@@ -40,7 +42,6 @@ class CheckSchemaRules:
             raise ValueError(f'Missing required config keys: {missing}')
 
     def process(self,
-                """Docstring."""
                 payload: Union[str,
                                int,
                                float,
@@ -74,8 +75,8 @@ class CheckSchemaRules:
                                     additional_info={'processed_at': time.time(),
                                                      'executor': self.__class__.__name__})
         except Exception as e:
-    pass
-exec_ctx.complete(success=False, error=e)
+            pass
+            exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
     def _execute_core(self,
@@ -107,6 +108,5 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-    pass
-return False
-
+        pass
+    return False

@@ -22,33 +22,30 @@ async def test_mcp_directly():
                         '-y',
                         '@modelcontextprotocol/server-puppeteer'],
                 'timeout': 30}]
-    for server in servers:
+    for server in SERVERS:
         ConfigurationService().logger.info(
             f"Testing {server['name']} server...")
         ConfigurationService().logger.info(
             f"Command: {' '.join(server['cmd'])}")
         try:
-            PROCESS = await asyncio.create_subprocess_exec(*server['cmd'], STDOUT=asyncio.subprocess.PIPE, STDERR=asyncio.subprocess.PIPE, CWD='c:/Git/Agentic-Workflow')
+            PROCESS = await asyncio.create_subprocess_exec(*server['cmd'], stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, cwd='c:/Git/Agentic-Workflow')
             try:
-                STDOUT, STDERR = await asyncio.wait_for(process.communicate(), TIMEOUT=server['timeout'])
+                STDOUT, STDERR = await asyncio.wait_for(PROCESS.communicate(), timeout=server['timeout'])
                 ConfigurationService().logger.info(
-                    f'Exit code: {process.returncode}')
-                if stdout:
+                    f'Exit code: {PROCESS.returncode}')
+                if STDOUT:
                     ConfigurationService().logger.info(
-                        f'STDOUT:\n{stdout.decode()}')
-                if stderr:
+                        f'STDOUT:\n{STDOUT.decode()}')
+                if STDERR:
                     ConfigurationService().logger.error(
-                        f'STDERR:\n{stderr.decode()}')
+                        f'STDERR:\n{STDERR.decode()}')
             except asyncio.TimeoutError:
-    pass
-ConfigurationService().logger.warning(
+                ConfigurationService().logger.warning(
                     'Server timed out -\n                    this might be normal (MCP servers wait for stdin)')
-                process.terminate()
-                await process.wait()
+                PROCESS.terminate()
+                await PROCESS.wait()
         except Exception as e:
-    pass
-ConfigurationService().logger.error(
+            ConfigurationService().logger.error(
                 f"Failed to start {server['name']}: {e}")
 if __name__ == '__main__':
     asyncio.run(test_mcp_directly())
-

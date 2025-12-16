@@ -29,11 +29,7 @@ class MCPTimeClient:
             else:
                 logger.warning("MCP Time Server module not found")
         except Exception as e:
-    pass
-pass
-
-
-logger.error(f"Error checking MCP Time Server: {e}")
+            logger.error(f"Error checking MCP Time Server: {e}")
 
     def get_current_time(self, timezone: str = "UTC") -> str:
         """
@@ -56,9 +52,7 @@ logger.error(f"Error checking MCP Time Server: {e}")
                 now = datetime.now(tz)
                 return now.isoformat()
             except Exception as e:
-    pass
-pass
-logger.error(
+                logger.error(
                     f"Error getting time with timezone {timezone}: {e}")
                 return datetime.now().isoformat()
 
@@ -76,9 +70,7 @@ logger.error(
                 logger.error(f"MCP Time Server error: {result.stderr}")
                 return self._fallback_time(timezone)
         except Exception as e:
-    pass
-pass
-logger.error(f"Error calling MCP Time Server: {e}")
+            logger.error(f"Error calling MCP Time Server: {e}")
             return self._fallback_time(timezone)
 
     def convert_time(self, source_timezone: str, time: str, target_timezone: str) -> str:
@@ -103,9 +95,7 @@ logger.error(f"Error calling MCP Time Server: {e}")
             # This can be enhanced when the MCP server supports conversion
             return self._fallback_convert_time(source_timezone, time, target_timezone)
         except Exception as e:
-    pass
-pass
-logger.error(f"Error converting time: {e}")
+            logger.error(f"Error converting time: {e}")
             return self._fallback_convert_time(source_timezone, time, target_timezone)
 
     def _parse_time_output(self, output: str) -> str:
@@ -120,9 +110,7 @@ logger.error(f"Error converting time: {e}")
                 return data.get("time", output)
             return output.strip()
         except Exception:
-    pass
-pass
-return output.strip()
+            return output.strip()
 
     def _fallback_time(self, timezone: str) -> str:
         """Fallback method to get current time"""
@@ -135,9 +123,7 @@ return output.strip()
             now = datetime.now(tz)
             return now.isoformat()
         except Exception:
-    pass
-pass
-return datetime.now().isoformat()
+            return datetime.now().isoformat()
 
     def _fallback_convert_time(self, source_timezone: str, time: str, target_timezone: str) -> str:
         """Fallback method to convert time between timezones"""
@@ -167,9 +153,7 @@ return datetime.now().isoformat()
 
             return converted_dt.isoformat()
         except Exception as e:
-    pass
-pass
-logger.error(f"Error in fallback time conversion: {e}")
+            logger.error(f"Error in fallback time conversion: {e}")
             return f"Conversion failed: {e}"
 
 
@@ -187,4 +171,3 @@ def get_current_time(timezone: str = "UTC") -> str:
 def convert_time(source_timezone: str, time: str, target_timezone: str) -> str:
     """Convert time using the MCP Time Client"""
     return mcp_time_client.convert_time(source_timezone, time, target_timezone)
-

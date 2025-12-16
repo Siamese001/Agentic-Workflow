@@ -1,5 +1,13 @@
 """Types and models for l4_types."""
 import logging
+import hashlib
+import json
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, Generic, Optional, Tuple, TypeVar
+
+from l4.utils.common import DATACLASS, CLS, FROZEN, TUPLE, STR, STATEPATH, DATETIME
 
 logger = logging.getLogger(__name__)
 
@@ -11,8 +19,8 @@ class StateOperation(str, Enum):
     """Types of state operations."""
     CREATE = 'create'
     READ = 'read'
-    UPDATE =  # SQL query removed
-    DELETE =  # SQL query removed
+    UPDATE = 'update'
+    DELETE = 'delete'
     PATCH = 'patch'
 
 
@@ -58,12 +66,12 @@ class StateTransition(Generic[T]):
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
         return StateTransition(operation=self.operation,
-                               PATH=self.path,
-                               VALUE=self.value,
-                               CONDITION=self.condition,
-                               METADATA={**self.metadata,
+                               path=self.path,
+                               value=self.value,
+                               condition=self.condition,
+                               metadata={**self.metadata,
                                          **kwargs},
-                               TIMESTAMP=self.timestamp)
+                               TIMESTAMP=self.TIMESTAMP)
 
 
 @DATACLASS(FROZEN=True)
@@ -82,10 +90,9 @@ class StateSnapshot(Generic[T]):
         DATA = {'state_id': self.state_id,
                 'data': self.data,
                 'parent_id': self.parent_id,
-                'timestamp': self.timestamp.isoformat()}
+                'TIMESTAMP': self.TIMESTAMP.isoformat()}
         if self.transition:
             DATA['TRANSITION'] = {'operation': self.transition.operation.value,
                                   'path': str(self.transition.path),
                                   'value': self.transition.value}
-        return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
-
+        return hashlib.sha256(json.dumps(DATA, sort_keys=True).encode()).hexdigest()

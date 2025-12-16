@@ -40,9 +40,9 @@ def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
     """Docstring."""
 
 
-def generate_llm_cache_key_with_fingerlogger.info(model: str,
-                                                  messages: List[Dict[str, Any]],
-                                                  fingerprint: str) -> str:
+def generate_llm_cache_key_with_fingerprint(model: str,
+                                            messages: List[Dict[str, Any]],
+                                            fingerprint: str) -> str:
     """Generate a cache key with additional fingerprint.
 
     Args:
@@ -95,4 +95,3 @@ def should_invalidate_cache(
     # In a real implementation, this would check timestamps,
     # model versions, or other invalidation criteria
     return False
-

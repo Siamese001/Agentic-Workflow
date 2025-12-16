@@ -143,11 +143,7 @@ class NewsRAGPipeline:
             return insights
 
         except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ News search failed for {company}: {e}")
+            logger.error(f"❌ News search failed for {company}: {e}")
             return []
 
     def _search_industry_trends(self, industry: str) -> List[NewsInsight]:
@@ -191,9 +187,7 @@ logger.error(f"❌ News search failed for {company}: {e}")
             return insights
 
         except Exception as e:
-    pass
-pass
-logger.error(f"❌ Industry trends search failed: {e}")
+            logger.error(f"❌ Industry trends search failed: {e}")
             return []
 
     def _generate_contextual_intro(self, insights: List[NewsInsight], company: str) -> str:
@@ -286,9 +280,7 @@ logger.error(f"❌ Industry trends search failed: {e}")
                         self.session_cache[cache_key] = result
                         return result
             except Exception as e:
-    pass
-pass
-if logger:
+                if logger:
                     logger.warning(f"Redis cache check failed: {e}")
 
         # Fetch fresh news
@@ -332,9 +324,7 @@ if logger:
                 if logger:
                     logger.info("💾 News cached in Redis for 24 hours")
             except Exception as e:
-    pass
-pass
-if logger:
+                if logger:
                     logger.warning(f"Redis cache set failed: {e}")
 
         # Add to session cache
@@ -380,4 +370,3 @@ def execute_news_rag(
     """
     pipeline = get_news_rag_pipeline()
     return pipeline.execute_news_rag(company, industry, redis_get, redis_set, logger)
-

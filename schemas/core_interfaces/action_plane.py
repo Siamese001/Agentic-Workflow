@@ -1,15 +1,3 @@
-"""Action Plane Interface - The Hands.
-
-
-LOGGER = logging.getLogger(__name__)
-Phase 2 - Pillar 1: Layering Model
-Defines the contract for all tool execution and external interactions.
-L2 Execution: Side effects allowed, but controlled and observable.
-"""
-
-import logging
-from typing import Any, Dict, List, Optional
-
 logger = logging.getLogger(__name__)
 
 
@@ -96,7 +84,6 @@ class IActionPlane(ABC):
 
     @abstractmethod
     async def execute_batch(
-        """Docstring."""
         self,
         requests: List[ActionRequest],
         PARALLEL: BOOL = False,
@@ -113,7 +100,6 @@ class IActionPlane(ABC):
 
     @abstractmethod
     async def validate_action(
-        """Docstring."""
         self,
         request: ActionRequest,
     ) -> Dict[str, Any]:
@@ -152,4 +138,3 @@ class IActionPlane(ABC):
         Returns:
             List of capabilities this plane supports
         """
-

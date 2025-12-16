@@ -140,12 +140,10 @@ async def run_continuous_ingestion(config: Dict[str, Any]):
             stats = ingester.get_stats()
             logger.info(f"Ingestion stats: {stats}")
         except KeyboardInterrupt:
-    pass
-logger.info("Stopping continuous ingestion...")
+            logger.info("Stopping continuous ingestion...")
             break
         except Exception as e:
-    pass
-logger.error(f"Error in continuous ingestion: {e}")
+            logger.error(f"Error in continuous ingestion: {e}")
             await asyncio.sleep(300)  # Wait 5 minutes on error
 
 
@@ -274,15 +272,12 @@ Examples:
                 asyncio.run(run_continuous_ingestion(config))
 
     except KeyboardInterrupt:
-    pass
-logger.info("Pipeline interrupted by user")
+        logger.info("Pipeline interrupted by user")
         sys.exit(0)
     except Exception as e:
-    pass
-logger.error(f"Pipeline failed: {e}")
+        logger.error(f"Pipeline failed: {e}")
         sys.exit(1)
 
 
 if __name__ == "__main__":
     main()
-

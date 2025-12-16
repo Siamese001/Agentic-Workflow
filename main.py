@@ -249,11 +249,7 @@ def main():
         logger.info("  ✓ Real-time learning updates")
 
     except Exception as e:
-    pass
-pass
-
-
-logger.error(f"System error: {e}")
+        logger.error(f"System error: {e}")
         raise
 
     return 0
@@ -262,4 +258,3 @@ logger.error(f"System error: {e}")
 if __name__ == "__main__":
     exit_code = main()
     exit(exit_code)
-

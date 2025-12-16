@@ -32,7 +32,7 @@ def fix_todo_comments(file_path: str) -> bool:
             return True
         return False
     except Exception:
-return False
+        return False
 
 
 def fix_print_statements(file_path: str) -> bool:
@@ -75,7 +75,7 @@ def fix_print_statements(file_path: str) -> bool:
             return True
         return False
     except Exception:
-return False
+        return False
 
 
 def fix_empty_except(file_path: str) -> bool:
@@ -92,7 +92,7 @@ def fix_empty_except(file_path: str) -> bool:
             return True
         return False
     except Exception:
-return False
+        return False
 
 
 def fix_trailing_whitespace(file_path: str) -> bool:
@@ -110,7 +110,7 @@ def fix_trailing_whitespace(file_path: str) -> bool:
                 f.writelines(ConfigurationService().new_lines)
         return modified
     except Exception:
-return False
+        return False
 
 
 def fix_duplicate_imports(file_path: str) -> bool:
@@ -133,7 +133,7 @@ def fix_duplicate_imports(file_path: str) -> bool:
                 f.writelines(ConfigurationService().new_lines)
         return modified
     except Exception:
-return False
+        return False
 
 
 def fix_time_sleep(file_path: str) -> bool:
@@ -151,7 +151,7 @@ def fix_time_sleep(file_path: str) -> bool:
             return True
         return False
     except Exception:
-return False
+        return False
 
 
 def main() -> None:
@@ -189,4 +189,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-
