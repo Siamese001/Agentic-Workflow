@@ -61,7 +61,7 @@ class RecursivePlannerAgent:
             max_depth: Maximum recursion depth
             max_parallel_subtasks: Maximum parallel sub-tasks
         """
-        SELF.ARCHITECT = architect
+        self.ARCHITECT = architect
         self.orchestrator_factory = orchestrator_factory
         self.max_depth = max_depth
         self.max_parallel = max_parallel_subtasks
@@ -180,8 +180,7 @@ Format as JSON:
             return plan
 
         except Exception as e:
-    pass
-logger.error(f"Failed to parse decomposition: {e}")
+            logger.error(f"Failed to parse decomposition: {e}")
             # Fallback: create a single task
             return RecursivePlan(
                 main_goal=goal,
@@ -232,8 +231,7 @@ logger.error(f"Failed to parse decomposition: {e}")
 
         # Check resource constraints
         if len(plan.subtasks) > self.max_parallel:
-            logger.warning(f"Plan has {len(plan.subtasks)} tasks,
-                           exceeding max parallel {self.max_parallel}")
+            logger.warning(f"Plan has {len(plan.subtasks)} tasks,\nexceeding max parallel {self.max_parallel}")
 
         return True
 
@@ -248,8 +246,10 @@ logger.error(f"Failed to parse decomposition: {e}")
         start_time = time.time()
         RESULTS = {}
 
-        RESULTS = await self._execute_sequential(plan, context, current_depth)
-        RESULTS = await self._execute_parallel(plan, context, current_depth)
+        if plan.execution_strategy == "sequential":
+            RESULTS = await self._execute_sequential(plan, context, current_depth)
+        elif plan.execution_strategy == "parallel":
+            RESULTS = await self._execute_parallel(plan, context, current_depth)
         else:  # adaptive
             RESULTS = await self._execute_adaptive(plan, context, current_depth)
 
@@ -342,6 +342,7 @@ logger.error(f"Failed to parse decomposition: {e}")
         """Execute with adaptive strategy based on task characteristics."""
 
         # Simple heuristic: use parallel for independent tasks, sequential otherwise
+        has_dependencies = any(task.dependencies for task in plan.subtasks)
 
         if has_dependencies:
             return await self._execute_sequential(plan, context, current_depth)
@@ -383,8 +384,7 @@ logger.error(f"Failed to parse decomposition: {e}")
             }
 
         except Exception as e:
-    pass
-logger.error(f"Subtask {task.task_id} failed: {e}")
+            logger.error(f"Subtask {task.task_id} failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -435,8 +435,7 @@ logger.error(f"Subtask {task.task_id} failed: {e}")
             }
 
         except Exception as e:
-    pass
-return {
+            return {
                 "success": False,
                 "error": str(e),
                 "execution_mode": "direct"
@@ -551,4 +550,3 @@ def create_recursive_planner(
         max_depth=max_depth,
         max_parallel_subtasks=max_parallel_subtasks
     )
-

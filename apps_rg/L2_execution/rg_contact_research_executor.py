@@ -4,7 +4,12 @@ from typing import Optional
 from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
-'\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n'
+"""
+L2 safety execution for resume compliance and protection workflows.
+
+Executes comprehensive safety validation to ensure resume content
+meets security standards for job alignment.
+"""
 logger = logging.getLogger(__name__)
 
 
@@ -43,6 +48,5 @@ def execute_safety(self: Any, prompt: str) -> str:
                      'result_length': len(ConfigurationService().result)})
         return ConfigurationService().result
     except (ValueError, TypeError, RuntimeError, KeyError) as exc:
-record_exception('safety_execution_failure', exc)
+        record_exception('safety_execution_failure', exc)
         raise
-

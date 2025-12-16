@@ -81,9 +81,8 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
     try:
         validate_schema_version(m)
     except ValueError as exc:
-assert "Unexpected schema_version" in str(exc)
+        assert "Unexpected schema_version" in str(exc)
     else:  # pragma: no cover
         raise AssertionError(
             "validate_schema_version did not reject mismatched version"
         )
-

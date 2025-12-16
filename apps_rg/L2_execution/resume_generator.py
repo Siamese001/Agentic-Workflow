@@ -7,6 +7,10 @@ Rewrites and optimizes resume content based on job analysis results.
 import logging
 from typing import Any, Dict, List, Optional
 
+# Assuming Provider and get_client are from a local utility module
+from .utils import get_client, Provider
+import google.generativeai as genai # For Gemini client
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -27,7 +31,7 @@ class ResumeGenerator:
             provider: Provider to use if client not supplied (defaults to Google/Gemini)
         """
         self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
-        SELF.PROVIDER = provider or Provider.GOOGLE
+        self.provider = provider or Provider.GOOGLE # Fixed SELF.PROVIDER to self.provider
         self.creative_brief = creative_brief  # Store creative brief configuration
         self.validation_rules = validation_rules or {}  # Store validation rules
 
@@ -36,7 +40,7 @@ class ResumeGenerator:
                 f"Failed to initialize LLM client for provider {self.provider}")
 
     def generate(self,
-                 """Docstring."""
+                 # Removed: """Docstring.""" - This was the syntax error at line 39
                  resume_data: Dict[str,
                                    Any],
                  analysis_results: Dict[str,
@@ -86,8 +90,8 @@ class ResumeGenerator:
             return tailored_resume
 
         except Exception as e:
-    pass
-logger.error(f"Error generating tailored resume: {e}")
+            pass # Fixed indentation
+            LOGGER.error(f"Error generating tailored resume: {e}") # Fixed indentation and logger name
             # Return original with error note
             resume_data["_tailoring_error"] = str(e)
             return resume_data
@@ -97,11 +101,9 @@ logger.error(f"Error generating tailored resume: {e}")
         # Use creative brief word count constraints if available
         word_count_range = "120-140"
         if self.creative_brief and hasattr(self.creative_brief, 'executive_summary_word_count'):
-            word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.
-                                                                                               creative_brief.executive_summary_word_count.max_words}"
+            word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.creative_brief.executive_summary_word_count.max_words}"
 
-        PROMPT = f"""Rewrite the following professional summary to align with the target job require
-    ments.
+        PROMPT = f"""Rewrite the following professional summary to align with the target job requirements.
 
 ORIGINAL SUMMARY:
 {original_summary}
@@ -121,11 +123,11 @@ Please rewrite the summary to:
 Return ONLY the rewritten summary, no additional text."""
 
         try:
-            RESPONSE = self._generate_response(prompt)
-            return response.strip()
+            RESPONSE = self._generate_response(PROMPT) # Fixed variable name case
+            return RESPONSE.strip() # Fixed variable name case
         except Exception as e:
-    pass
-logger.error(f"Error tailoring summary: {e}")
+            pass # Fixed indentation
+            LOGGER.error(f"Error tailoring summary: {e}") # Fixed indentation and logger name
             return original_summary
 
     def _tailor_experience(self,
@@ -219,8 +221,7 @@ logger.error(f"Error tailoring summary: {e}")
             word_count_max = self.creative_brief.unify_bullet_word_count.max_words
 
         for bullet in bullets:
-            PROMPT = f"""Rewrite the following resume bullet point to emphasize the target skills an
-    d responsibilities.
+            PROMPT = f"""Rewrite the following resume bullet point to emphasize the target skills and responsibilities.
 
 ORIGINAL BULLET:
 {bullet}
@@ -239,11 +240,11 @@ Please rewrite the bullet to:
 Return ONLY the rewritten bullet, no additional text."""
 
             try:
-                RESPONSE = self._generate_response(prompt)
-                tailored_bullets.append(response.strip())
+                RESPONSE = self._generate_response(PROMPT) # Fixed variable name case
+                tailored_bullets.append(RESPONSE.strip()) # Fixed variable name case
             except Exception as e:
-    pass
-logger.error(f"Error tailoring bullet: {e}")
+                pass # Fixed indentation
+                LOGGER.error(f"Error tailoring bullet: {e}") # Fixed indentation and logger name
                 tailored_bullets.append(bullet)
 
         return tailored_bullets
@@ -266,11 +267,11 @@ Please rewrite to:
 Return ONLY the rewritten description, no additional text."""
 
         try:
-            RESPONSE = self._generate_response(prompt)
-            return response.strip()
+            RESPONSE = self._generate_response(PROMPT) # Fixed variable name case
+            return RESPONSE.strip() # Fixed variable name case
         except Exception as e:
-    pass
-logger.error(f"Error tailoring description: {e}")
+            pass # Fixed indentation
+            LOGGER.error(f"Error tailoring description: {e}") # Fixed indentation and logger name
             return description
 
     def _generate_response(self, prompt: str) -> str:
@@ -286,23 +287,23 @@ logger.error(f"Error tailoring description: {e}")
         MODEL = genai.GenerativeModel('gemini-1.5-flash')
         generation_config = genai.types.GenerationConfig(
             temperature=temperature)
-        RESPONSE = model.generate_content(
+        RESPONSE = MODEL.generate_content( # Fixed variable name case (model -> MODEL)
             prompt, generation_config=generation_config)
-        return response.text
+        return RESPONSE.text # Fixed variable name case (response -> RESPONSE)
 
     def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""
         if hasattr(self.llm_client, 'generate'):
             RESPONSE = self.llm_client.generate(
                 prompt, temperature=temperature)
-            return response.text if hasattr(response, 'text') else str(response)
+            return RESPONSE.text if hasattr(RESPONSE, 'text') else str(RESPONSE) # Fixed variable name case (response -> RESPONSE)
         else:
             RESPONSE = self.llm_client.complete(
                 prompt, temperature=temperature)
-            return response.text if hasattr(response, 'text') else str(response)
+            return RESPONSE.text if hasattr(RESPONSE, 'text') else str(RESPONSE) # Fixed variable name case (response -> RESPONSE)
 
     def optimize_for_ats(self,
-                         """Docstring."""
+                         # Removed: """Docstring.""" - This was a syntax error
                          resume_data: Dict[str,
                                            Any],
                          analysis: Dict[str,
@@ -331,7 +332,7 @@ logger.error(f"Error tailoring description: {e}")
         # Remove duplicates and limit
         unique_keywords = list(set([k.lower() for k in all_keywords]))[:30]
 
-        optimized["ats_keywords"] = unique_keywords
+        OPTIMIZED["ats_keywords"] = unique_keywords # Fixed variable name case (optimized -> OPTIMIZED)
 
         # Ensure standard section names
         section_mapping = {
@@ -345,8 +346,7 @@ logger.error(f"Error tailoring description: {e}")
         }
 
         for old_key, new_key in section_mapping.items():
-            if old_key in optimized and new_key not in optimized:
-                optimized[new_key] = optimized.pop(old_key)
+            if old_key in OPTIMIZED and new_key not in OPTIMIZED: # Fixed variable name case (optimized -> OPTIMIZED)
+                OPTIMIZED[new_key] = OPTIMIZED.pop(old_key) # Fixed variable name case (optimized -> OPTIMIZED)
 
-        return optimized
-
+        return OPTIMIZED

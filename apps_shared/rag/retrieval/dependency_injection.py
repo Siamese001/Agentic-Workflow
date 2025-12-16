@@ -23,7 +23,7 @@ class TestSimpleDIContainer:
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        SELF.CONTAINER = SimpleDIContainer()
+        self.CONTAINER = SimpleDIContainer()
 
     def test_register_and_get_service(self) -> None:
         """Test registering and retrieving services."""
@@ -32,13 +32,13 @@ class TestSimpleDIContainer:
         self.container.register(Mock, mock_service)
 
         # Retrieve the service
-        RETRIEVED = self.container.get(Mock)
+        retrieved = self.container.get(Mock)
 
         assert retrieved is mock_service
 
     def test_get_nonexistent_service(self) -> None:
         """Test getting a service that doesn't exist."""
-        RESULT = self.container.get(Mock)
+        result = self.container.get(Mock)
         assert result is None
 
     def test_clear_services(self) -> None:
@@ -68,7 +68,7 @@ class TestGlobalDIContainer:
     def setup_method(self) -> None:
         """Set up test fixtures."""
         # Clear global container before each test
-        CONTAINER = get_container()
+        container = get_container()
         container.clear()
 
     def test_global_register_and_get(self) -> None:
@@ -79,7 +79,7 @@ class TestGlobalDIContainer:
         register_service(Mock, mock_service)
 
         # Get globally
-        RETRIEVED = get_service(Mock)
+        retrieved = get_service(Mock)
 
         assert retrieved is mock_service
 
@@ -87,7 +87,7 @@ class TestGlobalDIContainer:
         """Test initialization of default services."""
         initialize_default_services()
 
-        CONTAINER = get_container()
+        container = get_container()
 
         # Should have PineconeAdapter and SafetyEngine
         assert container.get(PineconeAdapter) is not None
@@ -103,7 +103,7 @@ class TestDependencyInjection:
         initialize_default_services()
 
         # Create clean mock context
-        SELF.CTX = Mock()
+        self.ctx = Mock()
         self.ctx.user_id = "test_user"
         self.ctx.session_id = "test_session"
         # Remove any existing attributes that might interfere
@@ -183,14 +183,13 @@ class TestDIAtomicityCompliance:
             with open('l2/execution.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-    pass
-# Skip if file not found in test environment
+            pass  # Skip if file not found in test environment
             return
 
         SOURCE = ''.join(source_lines)
 
         # Should contain DI imports
-        assert 'from infra.di_container import' in source
+        assert 'from infra.di_container import' in SOURCE
 
         # Should not contain direct Pinecone imports for business logic
         # (except for type hints)
@@ -201,7 +200,7 @@ class TestDIAtomicityCompliance:
 
         for imp in business_logic_imports:
             # Allow in comments or type hints only
-            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().s...
+            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().startswith('#') and not 'typing.' in line]
             assert len(lines_with_imp) == 0, f"Found direct import: {imp}"
 
     def test_no_direct_imports_in_l3(self) -> None:
@@ -214,12 +213,11 @@ class TestDIAtomicityCompliance:
             with open('l3/__init__.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-    pass
-return
+            pass
+            return
 
         SOURCE = ''.join(source_lines)
-        assert 'from infra.di_container import' in source
+        assert 'from infra.di_container import' in SOURCE
 
 if __name__ == "__main__":
     pytest.main([__file__])
-

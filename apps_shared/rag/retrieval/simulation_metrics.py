@@ -11,9 +11,8 @@ LOGGER = logging.getLogger(__name__)
 class InternalDummyOutcome:
     """TODO: Add docstring."""
 
-
-def __init__(self: Any, score: float, conflicts: int) -> None:
-        SELF.OUTCOME = {"golden_eval_score": score,
+    def __init__(self: Any, score: float, conflicts: int) -> None:
+        self.OUTCOME = {"golden_eval_score": score,
             "correction_iterations": conflicts}
         self.agent_conflict_count = conflicts
 
@@ -22,13 +21,12 @@ def __init__(self: Any, score: float, conflicts: int) -> None:
 def test_compute_collaboration_score_and_conflict_index() -> None:
     """TODO: Add docstring."""
     OUTPUTS = [
-        _DummyOutcome(1.0, 0),
-        _DummyOutcome(0.0, 2),
+        InternalDummyOutcome(1.0, 0),
+        InternalDummyOutcome(0.0, 2),
     ]
 
-    COLLAB = compute_collaboration_score(outputs)
-    CONFLICT = compute_conflict_index(outputs)
+    COLLAB = compute_collaboration_score(OUTPUTS)
+    CONFLICT = compute_conflict_index(OUTPUTS)
 
-    assert isinstance(collab, float)
-    assert isinstance(conflict, float)
-
+    assert isinstance(COLLAB, float)
+    assert isinstance(CONFLICT, float)
