@@ -286,7 +286,7 @@ class CanonValidator:
             pinecone_record['metadata']['content_hash'] = current_hash
             
             self.pinecone_index.upsert(vectors=[pinecone_record])
-            logger.info(f"✅ Indexed {entry.file_path or 'unknown'} (Hash: {current_hash[:8]})")
+            logger.info(f"✅ Indexed {getattr(entry, 'file_path', 'unknown')} (Hash: {current_hash[:8]})")
 
             return {
                 "status": "ingested",
@@ -304,6 +304,8 @@ class CanonValidator:
             logger.error(f"Ingestion failed: {e}")
             return {
                 "status": "error",
+                "is_valid": False,
+                "confidence": 0.0,
                 "message": f"Ingestion failed: {str(e)}",
                 "query_time_ms": (time.time() - start_time) * 1000
             }
@@ -329,14 +331,51 @@ class CanonValidator:
         try:
             results = self.pinecone_index.query(
                 vector=query_vector,
+                filter=metadata_filter,
                 top_k=top_k,
-                include_metadata=True,
-                filter=metadata_filter  # Apply the shield
+                include_metadata=True
             )
             return results
         except Exception as e:
             self.logger.error(f"Semantic query failed: {e}")
-            return []
+            return None
+
+    def update_learning(self, pattern_id: str, is_valid: bool):
+        """
+        Stub method for updating learning based on validation results.
+        TODO: Implement actual learning mechanism.
+        """
+        self.logger.info(f"Learning update: Pattern {pattern_id} is {'valid' if is_valid else 'invalid'}")
+        # TODO: Implement learning logic
+
+    def get_stats(self) -> Dict[str, Any]:
+        """
+        Return validation statistics.
+        TODO: Implement actual stats collection.
+        """
+        return {
+            "redis_stats": {
+                "total_checks": 0,
+                "hits": 0,
+                "misses": 0
+            },
+            "pinecone_stats": {
+                "total_queries": 0,
+                "matches_found": 0,
+                "vectors_stored": 0
+            },
+            "thresholds": {
+                "similarity_threshold": self.similarity_threshold,
+                "failure_threshold": 0.5,
+                "success_threshold": 0.8,
+                "max_patterns": 1000
+            },
+            "total_validations": 0,
+            "valid_count": 0,
+            "invalid_count": 0,
+            "duplicate_count": 0,
+            "error_count": 0
+        }
 
     def _format_result(self, match: Dict, source: str, start_time: float) -> Dict[str, Any]:
         """

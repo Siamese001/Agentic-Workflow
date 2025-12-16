@@ -116,12 +116,10 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7.2-alpine
+    image: redis/redis-stack-server:latest
     container_name: canon-redis
-    command: >
-      redis-server 
-      --requirepass ${REDIS_PASSWORD:-defaultpassword}
-      --appendonly yes
+    environment:
+      - REDIS_ARGS=--requirepass ${REDIS_PASSWORD} --appendonly yes
     networks:
       - canon_net
     volumes:
