@@ -21,14 +21,17 @@ logger = logging.getLogger(__name__)
 def print_step(step_name):
     # print(f"\n🔹 TESTING: {step_name}")  # [Security Fix]
     # print("-" * 50)  # [Security Fix]
+    pass
 
 
 def print_success(message):
     # print(f"   ✅ PASS: {message}")  # [Security Fix]
+    pass
 
 
 def print_fail(message):
     # print(f"   ❌ FAIL: {message}")  # [Security Fix]
+    pass
 
 
 def run_integrity_test():
@@ -55,11 +58,7 @@ def run_integrity_test():
         embedding = embed_func(test_content)
         print_success(f"Generated embedding vector (Dim: {len(embedding)})")
     except Exception as e:
-    pass
-pass
-
-
-print_fail(f"Embedding generation failed: {e}")
+        print_fail(f"Embedding generation failed: {e}")
         return
 
     # Create CanonEntry with proper structure
@@ -145,9 +144,7 @@ def test_function():
             print_fail(f"Vector Search failed. Results: {results}")
 
     except Exception as e:
-    pass
-pass
-print_fail(f"RedisVL Operations failed: {e}")
+        print_fail(f"RedisVL Operations failed: {e}")
 
     # ---------------------------------------------------------
     # 3. PINECONE INTEGRITY (COLD MEMORY)
@@ -197,9 +194,7 @@ print_fail(f"RedisVL Operations failed: {e}")
             print_fail("Fetch failed - ID not found in Pinecone.")
 
     except Exception as e:
-    pass
-pass
-print_fail(f"Pinecone Operations failed: {e}")
+        print_fail(f"Pinecone Operations failed: {e}")
 
     # ---------------------------------------------------------
     # 4. CROSS-SYSTEM VALIDATION
@@ -228,7 +223,7 @@ print_fail(f"Pinecone Operations failed: {e}")
                 'project_context': redis_data.get(b'project_context', b'').decode()
             }
 
-            pinecone_meta = pinecone_data['vectors'][test_id]['metadata']
+            pinecone_meta = pinecone_data['vectors'][str(entry.id)]['metadata'] # Corrected to use entry.id
 
             if (redis_meta['failure_count'] == pinecone_meta['failure_count'] and
                 redis_meta['success_count'] == pinecone_meta['success_count'] and
@@ -242,9 +237,7 @@ print_fail(f"Pinecone Operations failed: {e}")
                 f"Entry missing - Redis: {redis_exists}, Pinecone: {pinecone_exists}")
 
     except Exception as e:
-    pass
-pass
-print_fail(f"Cross-system validation failed: {e}")
+        print_fail(f"Cross-system validation failed: {e}")
 
     # ---------------------------------------------------------
     # 5. CLEANUP
@@ -263,9 +256,7 @@ print_fail(f"Cross-system validation failed: {e}")
             print_success("Pinecone vector deleted.")
 
     except Exception as e:
-    pass
-pass
-print_fail(f"Cleanup failed: {e}")
+        print_fail(f"Cleanup failed: {e}")
 
     # print("\n✅ INTEGRITY SUITE COMPLETE")  # [Security Fix]
     # print("============================================================")  # [Security Fix]
@@ -279,4 +270,3 @@ print_fail(f"Cleanup failed: {e}")
 
 if __name__ == "__main__":
     run_integrity_test()
-

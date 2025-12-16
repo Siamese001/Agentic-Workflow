@@ -53,8 +53,8 @@ def test_temporal_vetting():
             return False
 
     except Exception as e:
-logger.error(f"❌ Temporal vetting test failed: {e}")
-return False
+        logger.error(f"❌ Temporal vetting test failed: {e}")
+        return False
 
 
 def test_governed_outreach():
@@ -127,8 +127,8 @@ def test_governed_outreach():
             return False
 
     except Exception as e:
-logger.error(f"❌ Governed outreach test failed: {e}")
-return False
+        logger.error(f"❌ Governed outreach test failed: {e}")
+        return False
 
 
 def test_time_bound_benchmarking():
@@ -163,8 +163,8 @@ def test_time_bound_benchmarking():
             return False
 
     except Exception as e:
-logger.error(f"❌ Time-bound benchmarking test failed: {e}")
-return False
+        logger.error(f"❌ Time-bound benchmarking test failed: {e}")
+        return False
 
 
 def main():
@@ -208,4 +208,3 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-

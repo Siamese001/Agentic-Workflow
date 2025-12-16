@@ -45,11 +45,7 @@ def test_figma_variable_extraction():
             return True  # Still pass as it's expected
 
     except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Figma test failed: {e}")
+        logger.error(f"❌ Figma test failed: {e}")
         return False
 
 
@@ -85,11 +81,7 @@ def test_design_context_retrieval():
             return True
 
     except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Design context test failed: {e}")
+        logger.error(f"❌ Design context test failed: {e}")
         return False
 
 
@@ -125,11 +117,7 @@ def test_screenshot_capture():
             return True
 
     except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Screenshot test failed: {e}")
+        logger.error(f"❌ Screenshot test failed: {e}")
         return False
 
 
@@ -224,11 +212,7 @@ def test_design_drift_detection():
             return False
 
     except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Design drift test failed: {e}")
+        logger.error(f"❌ Design drift test failed: {e}")
         return False
 
 
@@ -304,11 +288,7 @@ def test_design_compliance_validation():
         return compliance_status == "COMPLIANT"
 
     except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Design compliance test failed: {e}")
+        logger.error(f"❌ Design compliance test failed: {e}")
         return False
 
 
@@ -352,20 +332,14 @@ def test_time_aware_design_updates():
                 logger.info(f"✅ Time format valid: {parsed_time}")
                 return True
             except Exception as e:
-    pass
-pass
-
-
-logger.error(f"❌ Invalid time format: {e}")
+                logger.error(f"❌ Invalid time format: {e}")
                 return False
         else:
             logger.error("❌ Design update missing timestamp")
             return False
 
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Time-aware design test failed: {e}")
+        logger.error(f"❌ Time-aware design test failed: {e}")
         return False
 
 
@@ -417,4 +391,3 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-

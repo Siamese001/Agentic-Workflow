@@ -94,6 +94,7 @@ class MockLogger:
     # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
     # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]
     # def error(self, msg): print(f"[ERROR] {msg}")  # [Security Fix]
+    pass
 
 
 def test_cover_letter_generation():
@@ -157,4 +158,3 @@ def test_cover_letter_generation():
 
 if __name__ == "__main__":
     test_cover_letter_generation()
-
