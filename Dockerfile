@@ -1,88 +1,71 @@
-# Multi-stage Dockerfile for Canon Validator Engine
-# Prioritizes security, isolation, and minimal footprint
+# ====================================================================
+# STAGE 1: BUILDER - Installs ALL heavy dependencies (Cache Layer)
+# ====================================================================
+FROM python:3.11-slim as builder
 
-# ================================================
-# Stage 1: Builder - Install all dependencies
-# ================================================
-FROM python:3.11-slim AS builder
+# Set environment variables for non-interactive installs
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
-
-# Install system dependencies for building
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# 1. Install system dependencies needed for Python packages (e.g., git, gcc)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     build-essential \
     git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
-WORKDIR /app
+WORKDIR /tmp/build
 
-# Copy requirements first for better caching
+# 2. Copy only requirements files first to leverage caching
+# If requirements.txt doesn't change, Docker skips the pip install step.
 COPY requirements.txt .
 COPY requirements-test.txt .
+COPY pyproject.toml .
 
-# Install Python dependencies including test libraries
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install -r requirements-test.txt
+# 3. The CRITICAL step: Install all dependencies
+# This is the step that takes 386.2s, so we must cache it aggressively.
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-test.txt
 
-# Copy source code
-COPY . .
+# ====================================================================
+# STAGE 2: RUNTIME - Creates the final, lean image for execution
+# ====================================================================
+FROM python:3.11-slim as runtime
 
-# ================================================
-# Stage 3: Runtime - Minimal production image
-# ================================================
-FROM python:3.11-slim AS runtime
+# Define App User (as per your original Docker Compose)
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -r appgroup -g $GROUP_ID && \
+    useradd --no-log-init -r -g appgroup -u $USER_ID appuser
 
-# Security: Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PATH="/home/appuser/.local/bin:$PATH"
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
 
-# Install only runtime system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    git \
+# 1. Install necessary system tools for runtime (often lighter than builder stage)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    # Add any essential runtime dependencies here (e.g., openssl, libpq-dev for postgres)
+    # If using Redis-cli in a healthcheck, add redis-tools
+    redis-tools \
     && rm -rf /var/lib/apt/lists/*
 
-# Security: Create non-root user with minimal privileges
-RUN adduser --disabled-password --gecos "" appuser && \
-    mkdir -p /app && \
-    chown -R appuser:appuser /app
-
-# Set working directory
 WORKDIR /app
 
-# Install Python dependencies to user directory
-# Copy only production dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 2. Copy installed dependencies from the builder stage
+# This is much faster than running pip install again.
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
-# Security: Copy all runtime code from builder stage
-COPY --from=builder /app/ /app/
+# 3. Copy the rest of the application code
+# This is the only step that changes often, thus keeping the install step cached.
+COPY . /app
 
-# Copy health check script
-COPY healthcheck.py /app/
-RUN chmod +x /app/healthcheck.py
+# Set ownership to the non-root user
+RUN chown -R appuser:appgroup /app
 
-# Security: Set ownership to non-root user
-RUN chown -R appuser:appuser /app
-
-# Switch to non-root user
+# Switch to the non-root user
 USER appuser
 
-# Expose monitoring port only (internal)
-EXPOSE 8080
-
-# Health check for L4/L5 state monitoring
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD python /app/healthcheck.py || exit 1
-
-# Run the Canon Validator Engine
-CMD ["python", "/app/main.py"]
+# Define the entry point for containers
+ENTRYPOINT ["python"]

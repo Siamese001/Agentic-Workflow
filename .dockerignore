@@ -139,7 +139,6 @@ test_*.py
 
 # Development Tools
 .pre-commit-config.yaml
-pyproject.toml
 setup.cfg
 tox.ini
 
