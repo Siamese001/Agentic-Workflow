@@ -6,7 +6,7 @@ import yaml
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -37,3 +37,4 @@ class ConstitutionalOverseer:
 
         if resp.is_violation:
             raise ValueError(f"Constitutional Violation: {resp.reason}")
+

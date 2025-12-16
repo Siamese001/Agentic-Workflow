@@ -61,3 +61,4 @@ def compute(values: Sequence[float],
             config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""
     return ComputeScriptsEmbeddings(config).compute(values, operation)
+

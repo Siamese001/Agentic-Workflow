@@ -18,7 +18,8 @@ try:
     from rich.prompt import Prompt
     from schema_definitions import InterviewerProfile, StrategyRoadmap, TechnicalSWOT
 except ImportError as e:
-    LOGGER.info(f"CRITICAL: Missing dependencies. {e}")
+    pass
+LOGGER.info(f"CRITICAL: Missing dependencies. {e}")
     LOGGER.info("Run: pip install rich instructor openai anthropic pydantic")
     sys.exit(1)
 
@@ -38,7 +39,7 @@ class WarRoom:
                 data = json.load(f)
                 return data.get("4.reasoning", {})
         except FileNotFoundError:
-            self.console.logger.error(
+self.console.logger.error(
                 f"[bold red]Error:[/bold red] Config file {path} not found.")
             sys.exit(1)
 
@@ -87,7 +88,7 @@ class WarRoom:
                 line = input()
                 lines.append(line)
         except EOFError:
-            pass
+pass
         jd_text = "\n".join(lines)
 
         with self.console.status("[bold green]Synthesizing 90-Day Plan..."):
@@ -154,7 +155,7 @@ class WarRoom:
                 self.console.logger.info(
                     "[green]✅ MCP servers connected[/green]")
             except Exception as e:
-                self.console.logger.error(
+self.console.logger.error(
                     f"[yellow]⚠️ MCP connection failed: {e}[/yellow]")
 
         try:
@@ -196,3 +197,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

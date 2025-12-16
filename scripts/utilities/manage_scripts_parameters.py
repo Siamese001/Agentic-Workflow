@@ -15,7 +15,8 @@ from dataclasses import dataclass, field
 try:
     OBJECT
 except NameError:
-    OBJECT = object
+    pass
+OBJECT = object
 
 
 LOGGER = logging.getLogger(__name__)
@@ -88,3 +89,4 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
     elif operation == "delete":
         return COORDINATOR.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")
+

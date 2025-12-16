@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Generic, Optional, Tuple, TypeVar
 
 from l4.utils.common import DATACLASS, CLS, FROZEN, TUPLE, STR, STATEPATH, DATETIME
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -96,3 +96,4 @@ class StateSnapshot(Generic[T]):
                                   'path': str(self.transition.path),
                                   'value': self.transition.value}
         return hashlib.sha256(json.dumps(DATA, sort_keys=True).encode()).hexdigest()
+

@@ -18,7 +18,9 @@ try:
     import plotly.express as px
     DEPS_AVAILABLE = True
 except ImportError:
-    DEPS_AVAILABLE = False
+    pass
+pass
+DEPS_AVAILABLE = False
 
 st.set_page_config(layout="wide", page_title="✈️ Subatomic Flight Recorder")
 
@@ -36,7 +38,8 @@ def get_connection():
     try:
         return duckdb.connect(DB_PATH, read_only=True)
     except Exception as e:
-        st.error(f"Cannot connect to database: {e}")
+pass
+st.error(f"Cannot connect to database: {e}")
         st.info(f"Looking for database at: {Path(DB_PATH).absolute()}")
         return None
 
@@ -52,7 +55,9 @@ st.markdown("**Real-time Agent Cognition Observatory**")
 try:
     traces_df = CONN.execute(""" """).df()
 except Exception as e:
-    st.error(f"Database query error: {e}")
+    pass
+pass
+st.error(f"Database query error: {e}")
     st.info("The database might be empty. Run some agents to generate trace data.")
     st.stop()
 
@@ -182,7 +187,8 @@ with col_left:
                     st.json(PAYLOAD)
 
             except json.JSONDecodeError:
-                st.text(row['payload'])
+pass
+st.text(row['payload'])
         else:
             st.info("Select an event from the stream to view details")
 
@@ -229,7 +235,8 @@ with col_left:
                         st.error(PAYLOAD.get('error_message', 'Unknown error'))
                         st.json(PAYLOAD)
                     except Exception:
-                        st.text(row['payload'])
+pass
+st.text(row['payload'])
         else:
             st.success("✅ No errors recorded for this trace")
 
@@ -244,8 +251,10 @@ with col_left:
             st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
             st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")
         except Exception as e:
-            st.sidebar.error(f"Stats error: {e}")
+pass
+st.sidebar.error(f"Stats error: {e}")
 
         st.sidebar.markdown("---")
         st.sidebar.markdown("**Flight Recorder v1.0**")
         st.sidebar.markdown("*Subatomic Agent Observatory*")
+

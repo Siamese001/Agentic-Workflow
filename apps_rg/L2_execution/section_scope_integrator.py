@@ -24,7 +24,7 @@ import re
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass # Added missing import
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -164,7 +164,7 @@ class SectionScopeIntegrator:
                     if not recovery.should_retry:
                         break
                 continue
-            
+
             if self.gate_executor: # Check if gate_executor is initialized
                 self.gate_executor.results = validation_results
 
@@ -310,3 +310,4 @@ def create_section_scope_integrator( # Docstring should be inside the function.
     """Docstring."""
     """Factory function to create SectionScopeIntegrator instance"""
     return SectionScopeIntegrator(config=config)
+

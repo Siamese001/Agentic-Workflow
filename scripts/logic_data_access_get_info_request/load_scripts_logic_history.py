@@ -131,7 +131,7 @@ class ScriptsLogicHistoryLoader:
             return result
 
         except Exception as e:
-            self.logger.error(f"Failed to load history: {str(e)}")
+self.logger.error(f"Failed to load history: {str(e)}")
             return HistoryResult(
                 entries=[],
                 total_count=0,
@@ -163,7 +163,7 @@ class ScriptsLogicHistoryLoader:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to add history entry: {str(e)}")
+self.logger.error(f"Failed to add history entry: {str(e)}")
             return False
 
     def get_entry(self, entry_id: str) -> Optional[HistoryEntry]:
@@ -305,7 +305,7 @@ class ScriptsLogicHistoryLoader:
                     "No existing history file found, starting fresh")
 
         except Exception as e:
-            self.logger.error(f"Failed to load history: {str(e)}")
+self.logger.error(f"Failed to load history: {str(e)}")
             self._history_cache=[]
 
     def _save_history(self) -> None:
@@ -341,7 +341,7 @@ class ScriptsLogicHistoryLoader:
                 f"Saved {len(self._history_cache)} history entries")
 
         except Exception as e:
-            self.logger.error(f"Failed to save history: {str(e)}")
+self.logger.error(f"Failed to save history: {str(e)}")
 
     def _apply_filters(self, query: HistoryQuery) -> List[HistoryEntry]:
         """Apply filters to history entries."""
@@ -481,3 +481,4 @@ def load_scripts_logic_history(
         },
         "metadata": result.metadata
     }
+

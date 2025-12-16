@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 # Configure logging
-logger = logging.getLogger("SecurityFirewall")
+logger = logging.getLogger("SecurityFirewall")  # GLOBAL: Review if this should be constant
 logging.basicConfig(level=logging.INFO)
 
 class SecurityException(Exception):
@@ -59,5 +59,5 @@ class PromptFirewall:
         return True
 
 # Singleton instance for easy import across engines
-firewall = PromptFirewall()
+firewall = PromptFirewall()  # GLOBAL: Review if this should be constant
 

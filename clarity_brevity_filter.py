@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, List, Optional, Tuple
 
-logger = logging.getLogger("ClarityFilter")
+logger = logging.getLogger("ClarityFilter")  # GLOBAL: Review if this should be constant
 
 
 @dataclass

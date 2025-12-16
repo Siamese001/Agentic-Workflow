@@ -269,7 +269,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             return True
 
         except Exception as e:
-            LOGGER.error(f"Failed to add to dead letter queue: {e}")
+LOGGER.error(f"Failed to add to dead letter queue: {e}")
             return False
 
     async def get(self, item_id: str) -> Optional[DeadLetterItem]:
@@ -291,7 +291,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     data = json.loads(content)
                     return DeadLetterItem.from_dict(data)
                 except Exception as e:
-                    LOGGER.error(f"Failed to read dead letter item {item_id}: {e}")
+LOGGER.error(f"Failed to read dead letter item {item_id}: {e}")
 
         return None
 
@@ -344,7 +344,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                         items.append(item)
 
                 except Exception as e:
-                    LOGGER.error(f"Failed to read dead letter file {file_path}: {e}")
+LOGGER.error(f"Failed to read dead letter file {file_path}: {e}")
 
         # Sort by timestamp (newest first)
         items.sort(key=lambda x: x.timestamp, reverse=True)
@@ -394,7 +394,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             return True
 
         except Exception as e:
-            LOGGER.error(f"Failed to update dead letter item {item_id}: {e}")
+LOGGER.error(f"Failed to update dead letter item {item_id}: {e}")
             return False
 
     async def delete(self, item_id: str) -> bool:
@@ -417,7 +417,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
             return True
 
         except Exception as e:
-            LOGGER.error(f"Failed to delete dead letter item {item_id}: {e}")
+LOGGER.error(f"Failed to delete dead letter item {item_id}: {e}")
             return False
 
     async def cleanup(self, older_than: timedelta) -> int:
@@ -446,7 +446,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
                     count += 1
 
             except Exception as e:
-                LOGGER.error(f"Failed to cleanup dead letter file {file_path}: {e}")
+LOGGER.error(f"Failed to cleanup dead letter file {file_path}: {e}")
 
         LOGGER.info(f"Cleaned up {count} old dead letter items")
         return count
@@ -732,7 +732,7 @@ def dead_letter_handler(
             try:
                 return await func(envelope, *args, **kwargs)
             except Exception as e:
-                # Send to dead letter queue
+# Send to dead letter queue
                 dlq = await get_dead_letter_queue()
                 await dlq.add_failed_envelope(
                     envelope,
@@ -744,3 +744,4 @@ def dead_letter_handler(
                 raise
         return wrapper
     return decorator
+

@@ -221,3 +221,4 @@ def set_telemetry(telemetry: SystemTelemetry) -> None:
     """Set the default telemetry instance."""
     global _default_telemetry
     _default_telemetry = telemetry
+

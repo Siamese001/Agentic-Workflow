@@ -2,7 +2,7 @@ import logging
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 '\nReasoning configuration for LLM generation.\n\nEXTRACTED from: apps_rg/L3_orchestration/orchestrate_resume_generation.py\nCANON COMPLIANCE: Sub-atomic split for line limit enforcement\n'
 

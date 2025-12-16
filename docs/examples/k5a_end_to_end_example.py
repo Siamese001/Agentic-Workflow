@@ -366,7 +366,7 @@ async def main():
                         f"    - {failure.rule_name}: {failure.message}")
 
     except Exception as e:
-        LOGGER.error(f"Execution failed with error: {e}", exc_info=True)
+LOGGER.error(f"Execution failed with error: {e}", exc_info=True)
 
     LOGGER.info("\n" + "=" * 80)
     LOGGER.info("K.5A PROOF OF CONCEPT COMPLETE")
@@ -374,3 +374,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

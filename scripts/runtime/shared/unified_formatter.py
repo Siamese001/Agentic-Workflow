@@ -101,7 +101,7 @@ class DefaultFormatter(FormatterStrategy):
                 metadata={"original_type": type(data).__name__} # Fix: METADATA to metadata
             )
         except Exception as e:
-            LOGGER.error(f"Error formatting data with DefaultFormatter: {e}", exc_info=True)
+LOGGER.error(f"Error formatting data with DefaultFormatter: {e}", exc_info=True)
             return FormatResult( # Fix: Indent by 12, moved inside except block
                 data=data, # Fix: DATA to data
                 format_type=self.format_name,
@@ -145,7 +145,7 @@ class ResumeBulletFormatter(FormatterStrategy):
                 metadata={"bullet_count": len(bullets_list)} # Fix: METADATA to metadata, bullets to bullets_list
             )
         except Exception as e:
-            LOGGER.error(f"Error formatting data with ResumeBulletFormatter: {e}", exc_info=True)
+LOGGER.error(f"Error formatting data with ResumeBulletFormatter: {e}", exc_info=True)
             return FormatResult( # Fix: Indent by 12, moved inside except block
                 data=data, # Fix: DATA to data
                 format_type=self.format_name,
@@ -270,7 +270,7 @@ class ResumeSectionFormatter(FormatterStrategy):
                 metadata={"section_type": config.get("section_type", "general")} # Fix: METADATA to metadata
             )
         except Exception as e:
-            LOGGER.error(f"Error formatting data with ResumeSectionFormatter: {e}", exc_info=True)
+LOGGER.error(f"Error formatting data with ResumeSectionFormatter: {e}", exc_info=True)
             return FormatResult( # Fix: Indent by 12, moved inside except block
                 data=data, # Fix: DATA to data
                 format_type=self.format_name,
@@ -390,7 +390,7 @@ class OutreachMessageFormatter(FormatterStrategy):
                 metadata={"message_length": len(str(formatted))} # Fix: METADATA to metadata, formatted to formatted
             )
         except Exception as e:
-            LOGGER.error(f"Error formatting data with OutreachMessageFormatter: {e}", exc_info=True)
+LOGGER.error(f"Error formatting data with OutreachMessageFormatter: {e}", exc_info=True)
             return FormatResult( # Fix: Indent by 12, moved inside except block
                 data=data, # Fix: DATA to data
                 format_type=self.format_name,
@@ -474,7 +474,7 @@ class OutreachSubjectFormatter(FormatterStrategy):
                 metadata={"subject_length": len(formatted)} # Fix: METADATA to metadata, formatted to formatted
             )
         except Exception as e:
-            LOGGER.error(f"Error formatting data with OutreachSubjectFormatter: {e}", exc_info=True)
+LOGGER.error(f"Error formatting data with OutreachSubjectFormatter: {e}", exc_info=True)
             return FormatResult( # Fix: Indent by 12, moved inside except block
                 data=data, # Fix: DATA to data
                 format_type=self.format_name,
@@ -529,7 +529,7 @@ class JSONFormatter(FormatterStrategy):
                 try:
                     parsed = json.loads(data) # Fix: PARSED to parsed
                 except Exception:
-                    parsed = {"text": data} # Fix: Indent by 20, PARSED to parsed, moved inside except block
+parsed = {"text": data} # Fix: Indent by 20, PARSED to parsed, moved inside except block
             else:
                 parsed = data # Fix: PARSED to parsed
 
@@ -543,7 +543,7 @@ class JSONFormatter(FormatterStrategy):
                 metadata={"json_keys": len(parsed) if isinstance(parsed, dict) else 0} # Fix: METADATA to metadata, parsed to parsed
             )
         except Exception as e:
-            LOGGER.error(f"Error formatting data with JSONFormatter: {e}", exc_info=True)
+LOGGER.error(f"Error formatting data with JSONFormatter: {e}", exc_info=True)
             return FormatResult( # Fix: Indent by 12, moved inside except block
                 data=data, # Fix: DATA to data
                 format_type=self.format_name,
@@ -595,7 +595,7 @@ class UnifiedFormatter:
             try:
                 format_type = FormatType(format_type.lower())
             except ValueError:
-                LOGGER.warning(f"Invalid format type '{format_type}'. Defaulting to DEFAULT.", exc_info=True)
+LOGGER.warning(f"Invalid format type '{format_type}'. Defaulting to DEFAULT.", exc_info=True)
                 format_type = FormatType.DEFAULT # Fix: Indent by 20, moved inside except block
 
         # Get strategy
@@ -694,3 +694,4 @@ def format_outreach_message(data: Union[str, Dict], config: Optional[Dict] = Non
         Format result
     """
     return format_data(data, FormatType.OUTREACH_MESSAGE, EngineType.OUTREACH, config) # Fix: Indent by 4
+

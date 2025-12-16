@@ -109,7 +109,7 @@ class JudgeEvaluator:
                 response = await self.llm_client(prompt)
                 verdict = self._parse_llm_response(response, criterion)
             except Exception as e:
-                if self.enable_logging:
+if self.enable_logging:
                     LOGGER.error('llm_evaluation_failed',
                                  extra={'criterion': criterion.value,
                                         'error': str(e)},
@@ -208,7 +208,7 @@ class JudgeEvaluator:
         try:
             return float(line.split(':', 1)[1].strip())
         except (ValueError, IndexError):
-            return default
+return default
 
     def _parse_list_item(self,
                          line: str,
@@ -351,3 +351,4 @@ def create_judge_evaluator(llm_client: Optional[Callable[[str],
         JudgeEvaluator instance
     """
     return JudgeEvaluator(llm_client=llm_client, pass_threshold=pass_threshold)
+

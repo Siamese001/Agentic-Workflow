@@ -313,3 +313,4 @@ TOOL_CATEGORIES = {
 def create_tool_registry(embedder, enable_caching: bool=True) -> ToolRegistry:
     """ """
     return ToolRegistry(embedder=embedder, enable_caching=enable_caching)
+

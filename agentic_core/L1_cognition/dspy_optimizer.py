@@ -14,7 +14,9 @@ try:
     import dspy
     DSPY_AVAILABLE = True
 except ImportError:
-    DSPY_AVAILABLE = False
+    pass
+pass
+DSPY_AVAILABLE = False
     # logger.warning("DSPy not available. Install with: pip install dspy-ai")
     # Moved logger.warning to after the DSPY_AVAILABLE assignment
     # Corrected the logger usage to use the imported LOGGER object
@@ -81,7 +83,8 @@ class DSPyOptimizer:
                 # You could implement a mock LM for testing here
                 # For example: dspy.configure(lm=dspy.OpenAI(model='gpt-3.5-turbo', api_key='dummy'))
         except Exception as e:
-            LOGGER.error(f"Failed to configure DSPy: {e}")
+pass
+LOGGER.error(f"Failed to configure DSPy: {e}")
 
     async def optimize_prompt(
         self,
@@ -167,7 +170,8 @@ class DSPyOptimizer:
             return result
 
         except Exception as e:
-            LOGGER.error(f"Optimization failed: {e}")
+pass
+LOGGER.error(f"Optimization failed: {e}")
             # Return baseline as fallback
             return OptimizationResult(
                 optimized_prompt=base_prompt,
@@ -313,7 +317,8 @@ class DSPyOptimizer:
                 score = metric_func(result, ex.ideal_output)
                 scores.append(score)
             except Exception as e:
-                LOGGER.warning(f"Evaluation failed on example: {e}")
+pass
+LOGGER.warning(f"Evaluation failed on example: {e}")
                 scores.append(0.0)
 
         return sum(scores) / len(scores) if scores else 0.0
@@ -348,7 +353,8 @@ class DSPyOptimizer:
             return self._evaluate_module(base_module, examples, metric_func)
 
         except Exception as e:
-            LOGGER.error(f"Failed to evaluate baseline: {e}")
+pass
+LOGGER.error(f"Failed to evaluate baseline: {e}")
             return 0.0 # Return 0 if baseline evaluation fails
 
     def _extract_prompt_from_module(self, module: dspy.Module) -> str:
@@ -424,7 +430,8 @@ class DSPyOptimizer:
             with open(cache_file, 'wb') as f:
                 pickle.dump(result, f)
         except Exception as e:
-            LOGGER.warning(f"Failed to cache result: {e}")
+pass
+LOGGER.warning(f"Failed to cache result: {e}")
 
     def _load_from_cache(self, key: str) -> Optional[OptimizationResult]:
         """Load optimization result from cache."""
@@ -434,7 +441,8 @@ class DSPyOptimizer:
                 with open(cache_file, 'rb') as f:
                     return pickle.load(f)
         except Exception as e:
-            LOGGER.warning(f"Failed to load from cache: {e}")
+pass
+LOGGER.warning(f"Failed to load from cache: {e}")
         return None
 
 
@@ -528,7 +536,8 @@ class PromptSignatureRegistry:
             # If it looks like code but didn't trigger failure heuristics
             return 0.7
         except Exception as e:
-            LOGGER.warning(f"Code compilation metric check failed: {e}")
+pass
+LOGGER.warning(f"Code compilation metric check failed: {e}")
             return 0.0 # Failed to parse or other issues
 
 
@@ -565,3 +574,4 @@ def create_dspy_optimizer(
         model_name=model_name,
         optimization_cache_dir=cache_dir
     )
+

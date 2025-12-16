@@ -57,3 +57,4 @@ def test_majority_fail_complex_bug():
     # Expected failure as GPT-5.1 and Sonnet 4.5 dissent.
     assert result["status"] == "FAIL"
     assert result["score"] < 0.66
+

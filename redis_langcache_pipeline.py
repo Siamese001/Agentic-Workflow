@@ -41,8 +41,10 @@ def execute_governed_prompt_caching(
                 "entityName": "CostGovernance",
                 "contents": [f"LLM Generation AVOIDED (Cache Hit). Cost Savings: 1 run."]
             }])
-        except:
-            pass
+except Exception:
+    pass
+pass
+pass
         if logger:
             logger.info("✅ Cache Hit: LLM Generation AVOIDED (Cost Saved).")
         return {"status": "cache_hit", "draft": final_draft}
@@ -62,8 +64,10 @@ def execute_governed_prompt_caching(
                     "entityName": "CostGovernance",
                     "contents": [f"LLM Generation ABORTED. Daily budget of {DAILY_BUDGET} reached."]
                 }])
-            except:
-                pass
+except Exception:
+    pass
+pass
+pass
             if logger:
                 logger.error(
                     f"❌ LLM Budget Aborted. {DAILY_BUDGET} generations reached today.")
@@ -73,7 +77,8 @@ def execute_governed_prompt_caching(
         string_set(BUDGET_KEY, str(current_runs + 1))
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.warning(
                 f"L4 Redis Budget check failed: {e}. Bypassing governance and generating.")
 
@@ -91,8 +96,10 @@ def execute_governed_prompt_caching(
             "entityName": "CostGovernance",
             "contents": [f"LLM Generation SUCCESS. Cache written. Total runs today: {current_runs + 1}."]
         }])
-    except:
-        pass
+except Exception:
+    pass
+pass
+pass
 
     if logger:
         logger.info(
@@ -144,7 +151,8 @@ def execute_atomic_fix_validation(
         }
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.error(f"❌ Atomic transaction failed: {e}")
         return {"status": "atomic_failed", "error": str(e)}
 
@@ -213,7 +221,8 @@ def execute_temporal_rate_limiting(
         }
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.error(f"❌ Rate limiting failed: {e}")
         return {"status": "error", "error": str(e)}
 

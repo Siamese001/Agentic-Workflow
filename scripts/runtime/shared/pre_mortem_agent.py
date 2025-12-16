@@ -252,13 +252,13 @@ class PreMortemAgent(SimpleAgentBase):
                     )
                     failure_modes.append(failure)
                 except (KeyError, ValueError) as e:
-                    logger.warning(f"Skipping invalid failure mode: {e}")
+logger.warning(f"Skipping invalid failure mode: {e}")
                     continue
 
             return failure_modes
 
         except Exception as e:
-            logger.error(f"Failed to identify failure modes: {e}")
+logger.error(f"Failed to identify failure modes: {e}")
             # Return generic failure modes
             return [
                 FailureMode(
@@ -303,7 +303,7 @@ class PreMortemAgent(SimpleAgentBase):
             response = await self._call_llm(prompt, temperature=0.3)
             return response.content.strip()
         except Exception as e:
-            logger.error(f"Failed to generate mitigation: {e}")
+logger.error(f"Failed to generate mitigation: {e}")
             return "Implement regular check-ins and monitoring to address early signs of this risk."
 
     def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
@@ -550,7 +550,7 @@ class PreMortemAgent(SimpleAgentBase):
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+logger.error(f"LLM call failed: {e}")
             # Return fallback response
 
             class LLMResponseImpl:
@@ -560,3 +560,4 @@ class PreMortemAgent(SimpleAgentBase):
                     self.CONTENT = content
 
             return LLMResponseImpl('{"failure_modes": []}')
+

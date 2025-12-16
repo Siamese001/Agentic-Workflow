@@ -7,3 +7,4 @@ import pytest
 def test_mcp():
     """Test from original file."""
     pass
+

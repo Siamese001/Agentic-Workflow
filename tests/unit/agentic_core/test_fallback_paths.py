@@ -17,3 +17,4 @@ def test_error_triggered_fallback():
 def test_fallback_path_success():
     """Test from original file."""
     pass
+

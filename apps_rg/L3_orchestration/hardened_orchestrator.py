@@ -242,12 +242,12 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             logger.info(f"Hop {hop_id} completed successfully")
 
         except Exception as e:
-            # [CRITICAL] Distinguish between "Bad Code" (Terminal) and "Bad Infra" (Transient)
-            
+# [CRITICAL] Distinguish between "Bad Code" (Terminal) and "Bad Infra" (Transient)
+
             if isinstance(e, TERMINAL_ERRORS):
                 self.logger.critical(f"☠️ TERMINAL ERROR in {hop_id}: {e}")
                 self.logger.critical("Logic is broken. Retrying will not help. Workflow ABORTED.")
-                
+
                 # Mark state as FAILED (dead) so it cannot be mistakenly resumed
                 if self.workflow_state:
                     self.workflow_state.mark_failed(
@@ -255,19 +255,19 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                         reason=str(e)
                     )
                     self.state_manager.checkpoint(self.workflow_id, self.workflow_state)
-                
+
                 # Update checkpoint
                 CHECKPOINT.STATUS = HopStatus.FAILED
                 checkpoint.end_time = datetime.now()
                 checkpoint.error_message = f"TERMINAL: {str(e)}"
-                
+
                 # Crash the program to force human intervention
                 sys.exit(1)
-                
+
             elif isinstance(e, (InfrastructureError, TimeoutError, StatePersistenceError)):
                 self.logger.warning(f"⚠️ TRANSIENT ERROR in {hop_id}: {e}")
                 self.logger.warning("Infrastructure is unstable. Pausing workflow for resume.")
-                
+
                 # Checkpoint as "PAUSED" (recoverable)
                 if self.workflow_state:
                     self.workflow_state.mark_paused(
@@ -275,24 +275,24 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                         reason=str(e)
                     )
                     self.state_manager.checkpoint(self.workflow_id, self.workflow_state)
-                
+
                 # Update checkpoint
                 CHECKPOINT.STATUS = HopStatus.PAUSED
                 checkpoint.end_time = datetime.now()
                 checkpoint.error_message = f"TRANSIENT: {str(e)}"
-                
+
                 # Exit cleanly so the watchdog can restart or wait
                 sys.exit(0)
-                
+
             else:
                 # Unknown edge cases - Default to Pause
                 self.logger.error(f"🛑 UNHANDLED EXCEPTION: {e}")
-                
+
                 # Update checkpoint
                 CHECKPOINT.STATUS = HopStatus.FAILED
                 checkpoint.end_time = datetime.now()
                 checkpoint.error_message = str(e)
-                
+
                 # Update workflow state with failure
                 if self.workflow_state:
                     self.workflow_state.add_execution(
@@ -312,7 +312,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                             self.workflow_state,
                         )
                     except StatePersistenceError as checkpoint_error:
-                        logger.error(
+logger.error(
                             f"Failed to checkpoint failure state: {checkpoint_error}")
 
         self.hop_checkpoints.append(checkpoint)
@@ -437,7 +437,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                         self.workflow_state,
     )
                 except StatePersistenceError as e:
-                    logger.error(f"Failed to save final checkpoint: {e}")
+logger.error(f"Failed to save final checkpoint: {e}")
 
         # Add state information to results
         results["final_state"] = {

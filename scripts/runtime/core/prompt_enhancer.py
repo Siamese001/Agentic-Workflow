@@ -242,7 +242,7 @@ class PromptEnhancer:
                 return content, result
 
             except Exception as e:
-                LOGGER.error(f"Contract validation failed: {e}")
+LOGGER.error(f"Contract validation failed: {e}")
                 result["validation_errors"].append(str(e))
 
         # Parse response using prompt assembler
@@ -408,3 +408,4 @@ def enhance_prompt_advanced(
         enforce_contract=enforce_contract,
         **kwargs
     )
+

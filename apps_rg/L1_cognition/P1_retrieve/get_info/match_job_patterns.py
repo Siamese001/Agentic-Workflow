@@ -5,7 +5,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 'Match Job Patterns - atomic implementation.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class MatchJobPatterns:

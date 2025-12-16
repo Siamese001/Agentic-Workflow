@@ -25,7 +25,8 @@ class SemanticMapper(SubAtomicAgent):
                     if len(ConfigurationService().content.splitlines()) > 300:
                         ConfigurationService().large_files.append(fpath)
             except Exception as e:
-    pass
+pass
+pass
 pass
 
 
@@ -92,7 +93,8 @@ ConfigurationService().logger.info(
                     ConfigurationService().logger.info(
                         f'      ℹ No significant clusters found in {fpath}')
             except Exception as e:
-    pass
+pass
+pass
 pass
 ConfigurationService().logger.info(
                     f'      ❌ Failed to analyze {fpath}: {e}')

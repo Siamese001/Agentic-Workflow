@@ -9,15 +9,15 @@ from typing import Dict, List
 
 # Placeholder for types if not provided in the snippet, assuming they are defined globally or imported
 # For the purpose of syntax repair, we assume these are valid types that exist.
-ProvenanceStrategy = type('ProvenanceStrategy', (object,), {'JD_FIT_BASED': 'JD_FIT_BASED', 'INTERNAL_FIRST': 'INTERNAL_FIRST', 'TOP_SKILLS': 'TOP_SKILLS'})
-WordCountConstraint = type('WordCountConstraint', (object,), {'__init__': lambda self, min, max: None})
+ProvenanceStrategy = type('ProvenanceStrategy', (object,), {'JD_FIT_BASED': 'JD_FIT_BASED', 'INTERNAL_FIRST': 'INTERNAL_FIRST', 'TOP_SKILLS': 'TOP_SKILLS'})  # GLOBAL: Review if this should be constant
+WordCountConstraint = type('WordCountConstraint', (object,), {'__init__': lambda self, min, max: None})  # GLOBAL: Review if this should be constant
 STR = str
 INT = int
-HeadlineBrief = type('HeadlineBrief', (object,), {'__init__': lambda self: None})
-ExecutiveSummaryBrief = type('ExecutiveSummaryBrief', (object,), {'__init__': lambda self: None})
+HeadlineBrief = type('HeadlineBrief', (object,), {'__init__': lambda self: None})  # GLOBAL: Review if this should be constant
+ExecutiveSummaryBrief = type('ExecutiveSummaryBrief', (object,), {'__init__': lambda self: None})  # GLOBAL: Review if this should be constant
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -91,3 +91,4 @@ class RGCreativeBrief:
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     optimized_skills: OptimizedSkillsBrief = field(
         default_factory=OptimizedSkillsBrief)
+

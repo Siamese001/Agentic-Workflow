@@ -300,3 +300,4 @@ def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
     GATE = AdaptiveRetrievalGate()
     DECISION = GATE.should_retrieve(query, history)
     return DECISION.should_retrieve
+

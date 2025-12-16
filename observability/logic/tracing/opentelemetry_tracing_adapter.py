@@ -20,7 +20,8 @@ try:
     from opentelemetry.trace import Status, StatusCode
     OTEL_AVAILABLE = True
 except ImportError:
-    OTEL_AVAILABLE = False
+    pass
+OTEL_AVAILABLE = False
     pass
 
 
@@ -428,7 +429,7 @@ class OpenTelemetryTracingAdapter:
                     )
 
             except Exception as e:
-                # Mark as failed
+# Mark as failed
                 span.set_status(Status(StatusCode.ERROR, str(e)))
                 span.record_exception(e)
 
@@ -507,3 +508,4 @@ def reset_tracer():
     """Reset global tracer instance."""
     global _global_tracer
     _global_tracer = None
+

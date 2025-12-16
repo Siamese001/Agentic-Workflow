@@ -12,6 +12,8 @@ try:
     # print("✅ Redis cleared")  # [Security Fix]
 except Exception as e:
     pass
+pass
+pass
 # print(f"❌ Failed to clear Redis: {e}")  # [Security Fix]
 
 # Clear Pinecone
@@ -27,6 +29,8 @@ try:
         pass
 except Exception as e:
     pass
+pass
+pass
 # print(f"❌ Failed to clear Pinecone: {e}")  # [Security Fix]
 
 # print("\n🧹 Data cleared. Ready for clean simulation.")  # [Security Fix]

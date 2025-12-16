@@ -56,9 +56,10 @@ RUN apt-get update && \
 # Install Python formatting tools for CodeJanitor
 RUN pip install --no-cache-dir autopep8 black
 
-# HARDENING: Force symlinks so agents can find tools via raw commands OR python -m
-RUN ln -sf $(which autopep8) /usr/local/bin/autopep8 && \
-    ln -sf $(which black) /usr/local/bin/black
+# HARDENING: Only link if necessary to avoid "same file" error
+RUN which autopep8 > /usr/local/bin/autopep8_path && \
+    if [ "$(which autopep8)" != "/usr/local/bin/autopep8" ]; then ln -sf $(which autopep8) /usr/local/bin/autopep8; fi && \
+    if [ "$(which black)" != "/usr/local/bin/black" ]; then ln -sf $(which black) /usr/local/bin/black; fi
 
 WORKDIR /app
 

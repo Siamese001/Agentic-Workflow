@@ -177,7 +177,7 @@ async def test_error_recovery():
         )
         assert False, "Should have raised RetryExhaustedError"
     except Exception as e:
-    pass
+pass
 logger.info(f"✓ Permanent error correctly raised: {type(e).__name__}")
 
     logger.info("Error recovery test passed!\n")
@@ -271,7 +271,7 @@ async def test_hardening_mixin():
         await executor_cb.execute_with_hardening(should_fail=True)
         assert False, "Should have raised CircuitBreakerOpenError"
     except CircuitBreakerOpenError as e:
-    pass
+pass
 logger.info(f"✓ Circuit breaker activated: {e}")
 
     # Check circuit breaker state
@@ -296,7 +296,7 @@ async def test_token_validation():
         )
         logger.info("✓ Valid prompt accepted")
     except TokenLimitError:
-    pass
+pass
 logger.info("✗ Valid prompt rejected")
         assert False
 
@@ -311,7 +311,7 @@ logger.info("✗ Valid prompt rejected")
         logger.info("✗ Oversized prompt accepted")
         assert False
     except TokenLimitError as e:
-    pass
+pass
 logger.info(f"✓ Oversized prompt rejected: {e}")
 
     logger.info("Token validation test passed!\n")
@@ -333,7 +333,7 @@ async def test_hardened_executors():
             )
             logger.info(f"✓ OpenAI response: {result[:100]}...")
         except Exception as e:
-    pass
+pass
 logger.info(f"✗ OpenAI test failed: {e}")
     else:
         logger.info("⚠ Skipping OpenAI test (no API key)")
@@ -351,7 +351,7 @@ logger.info(f"✗ OpenAI test failed: {e}")
             )
             logger.info(f"✓ Anthropic response: {result[:100]}...")
         except Exception as e:
-    pass
+pass
 logger.info(f"✗ Anthropic test failed: {e}")
     else:
         logger.info("⚠ Skipping Anthropic test (no API key)")
@@ -381,7 +381,7 @@ async def main():
             await test()
             PASSED += 1
         except Exception as e:
-    pass
+pass
 logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()

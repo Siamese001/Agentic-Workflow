@@ -52,7 +52,8 @@ def fix_imports_in_file(filepath):
         return []
 
     except Exception as e:
-    pass
+pass
+pass
 print(f"Error processing {filepath}: {e}")
         return []
 
@@ -78,7 +79,8 @@ def find_all_import_violations(root_dir):
                             if re.search(r'from \.\.', line) or re.search(r'from \.[^.]', line):
                                 relative_imports.append(f"{filepath}:{i}")
                 except Exception:
-    pass
+pass
+pass
 continue
 
     return star_imports, relative_imports

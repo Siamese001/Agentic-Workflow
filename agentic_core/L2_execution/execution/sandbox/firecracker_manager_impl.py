@@ -50,7 +50,8 @@ class FirecrackerManager:
                                    'provider': self.provider.value,
                                    'status': instance.status.value})
         except Exception as e:
-            instance.status = VMStatus.FAILED
+pass
+instance.status = VMStatus.FAILED
             instance.metadata['ERROR'] = str(e)
             if self.enable_logging:
                 LOGGER.error('vm_creation_failed',
@@ -79,7 +80,8 @@ class FirecrackerManager:
                 LOGGER.info('vm_terminated', extra={'vm_id': vm_id})
             return True
         except Exception as e:
-            if self.enable_logging:
+pass
+if self.enable_logging:
                 LOGGER.error('vm_termination_failed',
                              extra={'vm_id': vm_id,
                                     'error': str(e)},
@@ -147,7 +149,8 @@ class FirecrackerManager:
             instance.endpoint = f'docker://{container_id}'
             instance.metadata['container_id'] = container_id
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f'Docker container creation failed: {e.stderr}')
+pass
+raise RuntimeError(f'Docker container creation failed: {e.stderr}')
 
     async def _terminate_firecracker_vm(self, instance: VMInstance) -> None:
         """Terminate Firecracker VM."""
@@ -167,10 +170,12 @@ class FirecrackerManager:
                                capture_output=True,
                                check=True)
             except subprocess.CalledProcessError:
-                pass
+pass
+pass
 # Container may already be removed, ignore error
 
 
 def create_firecracker_manager(provider: VMProvider = VMProvider.FIRECRACKER) -> FirecrackerManager:
     """Factory function to create Firecracker manager. """
     return FirecrackerManager(provider=provider)
+

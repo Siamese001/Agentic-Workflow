@@ -59,7 +59,7 @@ def is_shim_file(file_path: Path) -> bool:
             return True
 
     except Exception as e:
-        logger.warning(f"Ignored error: {e}")
+logger.warning(f"Ignored error: {e}")
 
     return False
 
@@ -111,7 +111,7 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
                 ROOT.write_text('\n'.join(LINES), encoding='utf-8')
                 STATS["files_updated"] += 1
             except Exception as e:
-                logger.info(f"      Error updating {ROOT}: {e}")
+logger.info(f"      Error updating {ROOT}: {e}")
 
         # Always track files to be deleted
         STATS["files_deleted"] += len(to_delete)
@@ -122,7 +122,7 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
                 try:
                     shim.unlink()
                 except Exception as e:
-                    logger.info(f"      Error deleting {shim}: {e}")
+logger.info(f"      Error deleting {shim}: {e}")
 
     return STATS
 
@@ -203,3 +203,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

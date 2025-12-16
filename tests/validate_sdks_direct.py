@@ -18,7 +18,7 @@ LOGGER = logging.getLogger(__name__)
         importlib.import_module(module_path)
         return True, None
     except ImportError as e:
-    pass
+pass
 return False, str(e)
 
 
@@ -147,7 +147,7 @@ def main():
         logger.info(f"✅ Tool Execution: OK (21 * 2 = {result.result})")
 
     except Exception as e:
-    pass
+pass
 logger.info(f"❌ MCP Server: Failed - {e}")
 
     # Check multi-provider clients
@@ -164,7 +164,7 @@ logger.info(f"❌ MCP Server: Failed - {e}")
             logger.info(f"  - {provider.value}")
 
     except Exception as e:
-    pass
+pass
 logger.info(f"❌ Multi-Provider Client: Failed - {e}")
 
     # Final verdict

@@ -111,7 +111,8 @@ def run_integrity_test():
         embedding = embed_func(test_content)
         print_success(f"Generated embedding vector (Dim: {len(embedding)})")
     except Exception as e:
-    pass
+pass
+pass
 pass
 
 
@@ -180,7 +181,8 @@ def test_function():
                     f"Redis data transformation failed. Got: {retrieved}")
 
     except Exception as e:
-    pass
+pass
+pass
 pass
 print_fail(f"Redis transformation test failed: {e}")
 
@@ -237,7 +239,8 @@ print_fail(f"Redis transformation test failed: {e}")
             print_fail("Invalid Pinecone vector structure")
 
     except Exception as e:
-    pass
+pass
+pass
 pass
 print_fail(f"Pinecone transformation test failed: {e}")
 
@@ -270,7 +273,8 @@ print_fail(f"Pinecone transformation test failed: {e}")
             print_fail("Metadata inconsistency between formats")
 
     except Exception as e:
-    pass
+pass
+pass
 pass
 print_fail(f"Cross-system test failed: {e}")
 
@@ -292,7 +296,8 @@ print_fail(f"Cross-system test failed: {e}")
         test_results['cleanup'] = True
 
     except Exception as e:
-    pass
+pass
+pass
 pass
 print_fail(f"Cleanup test failed: {e}")
 

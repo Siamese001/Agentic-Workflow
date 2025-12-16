@@ -133,7 +133,8 @@ class AutonomicMonitor:
             try:
                 callback(ALERT)
             except Exception as e:
-                if self.enable_logging:
+pass
+if self.enable_logging:
                     logger.error('alert_callback_failed', extra={'error': str(e)}, exc_info=True)
         if self.enable_logging:
             logger.warning('health_alert_triggered',
@@ -162,3 +163,4 @@ def create_autonomic_monitor(success_rate_threshold: float=0.8,
     """Factory function to create autonomic monitor. """
     return AutonomicMonitor(success_rate_threshold=success_rate_threshold,
         error_rate_threshold=error_rate_threshold)
+

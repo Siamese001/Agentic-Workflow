@@ -1,7 +1,7 @@
 """Agent Identity and Authentication. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 from .spiffe_manager import (
@@ -17,3 +17,4 @@ __all__ = [
 "IdentityVerificationResult",
 "create_spiffe_manager",
 ]
+

@@ -108,7 +108,8 @@ def detect_injection(prompt: str) -> InjectionResult:
         try:
             detected_patterns = [f"DETECTED: {pattern}" for pattern in rationale.split(": ")[1].split(",")]
         except IndexError:
-            # Handle cases where rationale might not be in the expected format
+pass
+# Handle cases where rationale might not be in the expected format
             detected_patterns = [f"DETECTED: {rationale.split(': ')[-1]}"]
 
 
@@ -144,3 +145,4 @@ def validate_safety_threshold(result: InjectionResult, threshold: float = 0.8) -
             f"Prompt injection detected above threshold: {result.confidence}")
         return False
     return True
+

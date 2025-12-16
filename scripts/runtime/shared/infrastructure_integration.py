@@ -234,7 +234,7 @@ class InfrastructureOrchestrator:
                     )
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Failed to handle artifact generated event: {e}")
 
     async def _handle_error_occurred(self, event: SystemEvent) -> None:
@@ -254,7 +254,7 @@ class InfrastructureOrchestrator:
             )
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Failed to handle error event: {e}")
 
     async def _handle_agent_completed(self, event: SystemEvent) -> None:
@@ -279,7 +279,7 @@ class InfrastructureOrchestrator:
                 )
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Failed to handle agent completed event: {e}")
 
     async def execute_with_infrastructure(
@@ -400,7 +400,7 @@ class InfrastructureOrchestrator:
             }
 
         except Exception as e:
-            pass
+pass
             # Publish error event
             await self.event_bus.publish(
                 "events.error_occurred",
@@ -567,3 +567,4 @@ def with_infrastructure(
 
         return async_wrapper
     return decorator
+

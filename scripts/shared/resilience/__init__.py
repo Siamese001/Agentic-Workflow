@@ -1,7 +1,7 @@
 """Resilience components for error recovery and circuit breaking."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -70,3 +70,4 @@ __all__ = [
     "HardeningMixin",
     "TokenLimitError",
 ]
+

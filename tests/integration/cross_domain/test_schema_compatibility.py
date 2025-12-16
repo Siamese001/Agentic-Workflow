@@ -22,3 +22,4 @@ def test_gate_decision_with_validation_result():
 def test_validation_severity_ordering():
     """Test from original file."""
     pass
+

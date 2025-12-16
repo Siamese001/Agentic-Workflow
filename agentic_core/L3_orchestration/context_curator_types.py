@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from typing import Dict, Any, List
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -61,3 +61,4 @@ class ContextWindow:
                 'max_tokens': self.max_tokens,
                 'pinned_tokens': self.pinned_tokens,
                 'available_tokens': self.max_tokens - self.total_tokens}
+

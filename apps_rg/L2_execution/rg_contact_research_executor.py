@@ -48,5 +48,6 @@ def execute_safety(self: Any, prompt: str) -> str:
                      'result_length': len(ConfigurationService().result)})
         return ConfigurationService().result
     except (ValueError, TypeError, RuntimeError, KeyError) as exc:
-        record_exception('safety_execution_failure', exc)
+record_exception('safety_execution_failure', exc)
         raise
+

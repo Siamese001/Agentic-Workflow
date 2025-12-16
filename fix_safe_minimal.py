@@ -53,10 +53,12 @@ def fix_file(file_path):
         return False
 
     except FileNotFoundError:
-        logging.error(f"File not found: {file_path}")
+pass
+logging.error(f"File not found: {file_path}")
         return False
     except Exception as e:
-        logging.error(f"Failed to fix {file_path}: {e}")
+pass
+logging.error(f"Failed to fix {file_path}: {e}")
         return False
 
 

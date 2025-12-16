@@ -96,3 +96,4 @@ def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None,
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span
+

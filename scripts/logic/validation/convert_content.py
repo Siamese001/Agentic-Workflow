@@ -50,7 +50,7 @@ def process_data(data: Dict[str,
         # Placeholder for actual processing logic
         return data
     except Exception as e:
-        LOGGER.error("Processing failed: {}".format(e))
+LOGGER.error("Processing failed: {}".format(e))
         raise ProcessingError("Failed to process data: {}".format(e))
 
 # Additional helper functions
@@ -77,3 +77,4 @@ __all__ = [
 # Module metadata
 __version__ = "1.0.0"
 __author__ = "Agentic-Workflow Team"
+

@@ -89,7 +89,8 @@ class ActionNode:
             output = self.allowed_tools[tool_key](**params)
             return {"step": step.get('step'), "status": "success", "output": output}
         except Exception as e:
-            logger.error(f"❌ Tool execution failed: {e}")
+pass
+logger.error(f"❌ Tool execution failed: {e}")
             return {"step": step.get('step'), "status": "error", "output": str(e)}
 
     # =========================================================================
@@ -156,7 +157,8 @@ class ActionNode:
             else:
                 return f"Command Failed:\n{result.stderr}"
         except subprocess.TimeoutExpired:
-            return "Error: Command timed out."
+pass
+return "Error: Command timed out."
 
 
 if __name__ == "__main__":

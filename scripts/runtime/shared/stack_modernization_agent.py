@@ -173,7 +173,7 @@ class StackModernizationAgent:
             return diagnostic
 
         except Exception as e:
-            LOGGER.error(f"Error diagnosing stack: {str(e)}")
+LOGGER.error(f"Error diagnosing stack: {str(e)}")
             return LegacyDiagnostic(
                 detected_legacy_tech=[],
                 implied_pain_points=[],
@@ -213,7 +213,7 @@ class StackModernizationAgent:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error generating thesis: {str(e)}")
+LOGGER.error(f"Error generating thesis: {str(e)}")
             return MigrationThesis(
                 current_state_diagnosis="Legacy technology stack",
                 target_state_vision="Modern architecture",
@@ -244,7 +244,7 @@ class StackModernizationAgent:
             return hook
 
         except Exception as e:
-            LOGGER.error(f"Error generating migration hook: {str(e)}")
+LOGGER.error(f"Error generating migration hook: {str(e)}")
             return "I have experience leading successful technology modernizations."
 
     def rewrite_resume_summary(self, thesis: MigrationThesis) -> str:
@@ -273,7 +273,7 @@ class StackModernizationAgent:
             return summary
 
         except Exception as e:
-            LOGGER.error(f"Error rewriting resume summary: {str(e)}")
+LOGGER.error(f"Error rewriting resume summary: {str(e)}")
             return "Senior AI Engineer with modernization experience"
 
     def _create_thesis_from_playbook(
@@ -310,7 +310,7 @@ class StackModernizationAgent:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error creating thesis from playbook: {str(e)}")
+LOGGER.error(f"Error creating thesis from playbook: {str(e)}")
             raise
 
 # Factory function for easy instantiation
@@ -342,3 +342,4 @@ def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
         "thesis": thesis.dict(),
         "has_opportunity": diagnostic.is_highly_legacy
     }
+

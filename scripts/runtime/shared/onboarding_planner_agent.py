@@ -119,7 +119,7 @@ class OnboardingPlannerAgent:
             return PLAN
 
         except Exception as e:
-            LOGGER.error(f"Error generating onboarding plan: {str(e)}")
+LOGGER.error(f"Error generating onboarding plan: {str(e)}")
             return self._generate_fallback_plan(role_title)
 
     def tailor_to_role(self, plan: OnboardingPlan, role_title: str) -> OnboardingPlan:
@@ -162,7 +162,7 @@ class OnboardingPlannerAgent:
             return plan
 
         except Exception as e:
-            LOGGER.error(f"Error tailoring plan to role: {str(e)}")
+LOGGER.error(f"Error tailoring plan to role: {str(e)}")
             return plan
 
     def render_roadmap_md(self, plan: OnboardingPlan) -> str:
@@ -226,7 +226,7 @@ class OnboardingPlannerAgent:
             return "\n".join(lines)
 
         except Exception as e:
-            LOGGER.error(f"Error rendering roadmap: {str(e)}")
+LOGGER.error(f"Error rendering roadmap: {str(e)}")
             return "# Onboarding Roadmap\n\nError rendering plan."
 
     def _extract_priorities(self, job_description: str, company_maturity: str) -> Dict[str, str]:
@@ -263,7 +263,7 @@ class OnboardingPlannerAgent:
             return priorities
 
         except Exception as e:
-            LOGGER.error(f"Error extracting priorities: {str(e)}")
+LOGGER.error(f"Error extracting priorities: {str(e)}")
             return {"general": "Execute on core job responsibilities"}
 
     def _generate_phases(
@@ -363,7 +363,7 @@ class OnboardingPlannerAgent:
             return phases
 
         except Exception as e:
-            LOGGER.error(f"Error generating phases: {str(e)}")
+LOGGER.error(f"Error generating phases: {str(e)}")
             return self._generate_fallback_phases()
 
     def _extract_tech_keywords(self, job_description: str) -> List[str]:
@@ -386,7 +386,7 @@ class OnboardingPlannerAgent:
             return found_tech
 
         except Exception as e:
-            LOGGER.error(f"Error extracting tech keywords: {str(e)}")
+LOGGER.error(f"Error extracting tech keywords: {str(e)}")
             return []
 
     def _assess_risks(self, company_maturity: str, role_title: str) -> str:
@@ -414,7 +414,7 @@ class OnboardingPlannerAgent:
                 )
 
         except Exception as e:
-            LOGGER.error(f"Error assessing risks: {str(e)}")
+LOGGER.error(f"Error assessing risks: {str(e)}")
             return "Standard onboarding risks apply with appropriate mitigations."
 
     def _identify_resources(self, phases: List[PlanPhase], company_maturity: str) -> List[str]:
@@ -448,7 +448,7 @@ class OnboardingPlannerAgent:
             return base_resources
 
         except Exception as e:
-            LOGGER.error(f"Error identifying resources: {str(e)}")
+LOGGER.error(f"Error identifying resources: {str(e)}")
             return ["Standard onboarding resources"]
 
     def _generate_fallback_plan(self, role_title: str) -> OnboardingPlan:
@@ -534,3 +534,4 @@ def generate_onboarding_plan(
     AGENT = create_onboarding_planner_agent()
     PLAN = AGENT.generate_plan(job_description, company_maturity, role_title)
     return AGENT.render_roadmap_md(PLAN)
+

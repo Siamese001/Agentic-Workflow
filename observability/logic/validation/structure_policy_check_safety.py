@@ -157,7 +157,7 @@ class StructurePolicyCheckSafety:
             )
 
         except Exception as e:
-            exec_ctx.complete(success=False, error=e)
+exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
                 success=False,
@@ -195,8 +195,9 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         executor = create_processor(config)
         return True
     except Exception:
-        return False
+return False
 
 
 # Module initialization
 LOGGER.info(f"{__name__} module loaded successfully")
+

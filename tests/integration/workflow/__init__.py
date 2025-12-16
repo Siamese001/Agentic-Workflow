@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 '\n10_tests.integration.workflow — Package initialization\n\nAuto-generated to satisfy SSoT structure requirements.\n'
 __all__: list = []

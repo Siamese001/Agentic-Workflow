@@ -32,3 +32,4 @@ def test_batch_key_generation():
     Batch key generation has no pathological overhead.
     """
     pass
+

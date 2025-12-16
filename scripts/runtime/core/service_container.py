@@ -121,7 +121,7 @@ class ServiceContainer:
                 try:
                     return type(implementation)()
                 except Exception:
-                    # If we can't create a new instance, return the original
+# If we can't create a new instance, return the original
                     LOGGER.warning(f"Could not create transient instance of {interface.__name__}, returning singleton")
                     return implementation
 
@@ -204,3 +204,4 @@ def resolve_default(interface: Type[T]) -> T:
 class Service(ABC):
     """Base class for services that can be dependency injected."""
     pass
+

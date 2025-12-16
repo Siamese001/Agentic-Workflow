@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -83,3 +83,4 @@ class ExecutiveSummaryBrief:
     GUIDANCE: STR = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography.
     . Do not use phrasing from the job posting.
     ."""
+

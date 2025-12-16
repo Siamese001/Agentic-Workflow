@@ -99,3 +99,4 @@ def validate(data: object,
              config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return CheckScriptsPolicy(config).validate(data, schema)
+

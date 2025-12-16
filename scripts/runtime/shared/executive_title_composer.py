@@ -125,7 +125,7 @@ class ExecutiveTitleComposer(Agent):
                 target_role,
                 value_propositions,
                 job_description)
-        
+
         response = await self._call_llm(prompt)
         response = response.strip()
         segments = self._parse_segments(response)
@@ -257,3 +257,4 @@ Generate the headline now ({self.word_count_min}-{self.word_count_max} words,
             if keyword.upper() in segment_upper:
                 found_keywords.append(keyword)
         return found_keywords
+

@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 """Immutable staging buffer for HOP-4."""
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ImmutableStagingBuffer:
@@ -49,3 +49,4 @@ class ImmutableStagingBuffer:
 
 class StagingBufferError(Exception):
     pass
+

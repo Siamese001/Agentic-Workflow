@@ -1,7 +1,7 @@
 """L3 Orchestration Layer. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .dag_engine import DAGEngine
 from .task import Task, TaskType, TaskStatus, DAGExecutionResult
@@ -18,3 +18,4 @@ __all__ = [
     "CycleConfig",
     "CycleState",
 ]
+

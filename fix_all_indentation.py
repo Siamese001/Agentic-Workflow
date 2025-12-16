@@ -56,7 +56,7 @@ def fix_all_indentation():
     with open('canon_validator_engine.py', 'w', encoding='utf-8') as f:
         f.write(content)
 
-    print('Fixed all indentation errors')
+    # print('Fixed all indentation errors')  # [Security Fix]
 
 if __name__ == "__main__":
     fix_all_indentation()

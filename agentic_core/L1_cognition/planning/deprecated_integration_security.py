@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.injection_detection import InjectionD...
@@ -155,3 +155,4 @@ class TestEndToEndSecurityFlow:
 
 if __name__ == "__main__":
     pytest.main([__file__])
+

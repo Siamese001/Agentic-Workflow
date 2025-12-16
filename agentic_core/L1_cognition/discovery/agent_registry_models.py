@@ -3,7 +3,7 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -92,3 +92,4 @@ class RegistrationResult:
         return {'success': self.success,
                 'agent_card': self.agent_card.to_dict() if self.agent_card else None,
                 'reason': self.REASON}
+

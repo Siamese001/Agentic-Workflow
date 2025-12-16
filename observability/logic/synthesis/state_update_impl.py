@@ -75,7 +75,7 @@ class StateUpdate:
                                     additional_info={'processed_at': time.time(),
                                                      'executor': self.__class__.__name__})
         except Exception as e:
-            # The 'pass' statement was mis-indented, and the following lines
+# The 'pass' statement was mis-indented, and the following lines
             # were also incorrectly indented, leading to SyntaxError/IndentationError.
             exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
@@ -109,5 +109,6 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-        # The 'pass' statement was mis-indented, leading to SyntaxError/IndentationError.
+# The 'pass' statement was mis-indented, leading to SyntaxError/IndentationError.
         return False
+

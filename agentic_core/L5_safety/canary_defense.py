@@ -153,3 +153,4 @@ class CanaryDefense:
     def get_active_canaries(self: Any) -> List[CanaryToken]:
         """Get list of all active canary tokens."""
         return list(self.active_canaries.values())
+

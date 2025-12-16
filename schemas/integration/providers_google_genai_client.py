@@ -69,10 +69,10 @@ def run_llm_google(
             return ""
 
         except ImportError:
-            # New v1beta API not installed. Fall through to legacy SDK.
+# New v1beta API not installed. Fall through to legacy SDK.
             pass
         except Exception as e:
-            # New v1beta API failed for some other reason. Log and fall through to legacy SDK.
+# New v1beta API failed for some other reason. Log and fall through to legacy SDK.
             logging.warning(
                 f"Google GenAI v1beta API failed, falling back to legacy: {e}")
 
@@ -94,3 +94,4 @@ def run_llm_google(
     # those are left to higher-level routing and not enforced here.
     resp: Any = model_client.generate_content(prompt)
     return str(getattr(resp, "text", "") or "")
+

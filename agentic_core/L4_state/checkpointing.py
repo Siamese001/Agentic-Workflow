@@ -65,7 +65,8 @@ class VerifiableCheckpointManager:
         try:
             data_bytes = await self.storage.read_blob(key=KEY)  # Changed key to key=KEY
         except FileNotFoundError:
-            LOGGER.debug(f"Checkpoint not found: {session_id}/{node_id}")  # Fixed indentation and used LOGGER
+pass
+LOGGER.debug(f"Checkpoint not found: {session_id}/{node_id}")  # Fixed indentation and used LOGGER
             return None
 
         state = None  # Initialize state before parsing
@@ -156,7 +157,8 @@ class VerifiableCheckpointManager:
             LOGGER.info(f"Loaded snapshot: {session_id}/{snapshot_name}")  # Changed logger.info to LOGGER.info
             return STATE  # Changed state to STATE to match assigned variable
         except FileNotFoundError:
-            LOGGER.debug(f"Snapshot not found: {session_id}/{snapshot_name}")  # Fixed indentation and used LOGGER
+pass
+LOGGER.debug(f"Snapshot not found: {session_id}/{snapshot_name}")  # Fixed indentation and used LOGGER
             return None
 
 
@@ -174,3 +176,4 @@ def create_checkpoint_manager(
 
     STORAGE = create_storage_adapter(storage_type, **storage_kwargs)
     return VerifiableCheckpointManager(STORAGE)  # Changed storage to STORAGE to match assigned variable
+

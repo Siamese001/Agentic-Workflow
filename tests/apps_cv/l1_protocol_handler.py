@@ -91,7 +91,7 @@ class L1ProtocolHandler:
             return sanitized_result
 
         except (ToolExecutionError, BlackoutProtocolError, GitConflictError) as e:
-    pass
+pass
 # Log CRITICAL error to L5 MEMory (as defined in EBP)
             protocol_error = f"L1_PROTOCOL_ERROR: {e.__class__.__name__}: {str(e)}"
             self._log_to_l5("L1", "Protocol Handler",
@@ -102,7 +102,7 @@ class L1ProtocolHandler:
                 toolExecutionError=f"{e.__class__.__name__}: {str(e)}"
             )
         except Exception as e:
-    pass
+pass
 # Log CRITICAL error to L5 MEMory
             protocol_error = f"L1_PROTOCOL_ERROR: Unexpected error: {str(e)}"
             self._log_to_l5("L1", "Protocol Handler",
@@ -145,7 +145,7 @@ class L1ProtocolHandler:
             }
             logger.warning(f"L5_LOG: {log_entry}")
         except Exception:
-    pass
+pass
 # Fail silently - logging should not break the protocol
             pass
 
@@ -178,7 +178,7 @@ class L1ProtocolHandler:
                         raise BlackoutProtocolError(
                             "EBP blackout active - tool execution blocked")
             except Exception as e:
-    pass
+pass
 # Only swallow Redis connection errors, not BlackoutProtocolError
                 if "BlackoutProtocolError" not in str(type(e)):
                     pass  # Redis unavailable, proceed
@@ -220,7 +220,7 @@ class L1ProtocolHandler:
                     raise ToolExecutionError(
                         "Temporal integrity violation: past timestamp")
         except json.JSONDecodeError:
-    pass
+pass
 # Not JSON, no temporal check needed
             pass
 
@@ -284,7 +284,7 @@ class L1ProtocolHandler:
                     summary = f"Found {len(data['results'])} search results"
                     sanitized_content = summary
             except json.JSONDecodeError:
-    pass
+pass
 pass
 
         result.content = sanitized_content

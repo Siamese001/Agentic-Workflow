@@ -151,7 +151,8 @@ class SupremeCourt:
 
             return ModelOpinion(model_name=model_name, plan=plan, reasoning=reasoning, risk_assessment=risk, confidence=confidence)
         except Exception as e:
-            ConfigurationService().logger.error(f"Error getting opinion from {model_name}: {e}")
+pass
+ConfigurationService().logger.error(f"Error getting opinion from {model_name}: {e}")
             # Return a default/error opinion to avoid breaking gather
             return ModelOpinion(model_name=model_name, plan='ERROR', reasoning=f'Error occurred: {e}', risk_assessment='CRITICAL', confidence=0.0)
 
@@ -236,7 +237,8 @@ class SupremeCourt:
                 safe_to_proceed=safe_to_proceed
             )
         except Exception as e:
-            ConfigurationService().logger.error(f'Judge analysis failed: {e}')
+pass
+ConfigurationService().logger.error(f'Judge analysis failed: {e}')
             # Fallback to simple consensus if judge fails
             return self._simple_consensus(opinions)
 
@@ -313,7 +315,8 @@ class SupremeCourt:
                     # Ensure the value is within the valid range [0.0, 1.0]
                     return max(0.0, min(value, 1.0))
                 except ValueError:
-                    continue # Ignore if conversion fails
+pass
+continue # Ignore if conversion fails
         return 0.5 # Default confidence if not found
 
 
@@ -340,3 +343,4 @@ async def create_supreme_court(openai_client: AsyncOpenAI) -> SupremeCourt:
 
 
     return SupremeCourt(openai_client, processed_secondary_clients)
+

@@ -168,7 +168,7 @@ class NodeNegotiator:
             try:
                 await handler(message, negotiation)
             except Exception as e:
-                LOGGER.error(f"Handler failed for message {message.message_id}: {e}")
+LOGGER.error(f"Handler failed for message {message.message_id}: {e}")
                 return False
 
         LOGGER.info(f"Sent {message_type} from {from_hop.config.hop_id} to {to_hop_id}")
@@ -532,3 +532,4 @@ class NegotiatingHop(SubatomicHop):
             change_request=modification,
             reason=reason
         )
+

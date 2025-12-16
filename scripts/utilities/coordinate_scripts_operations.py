@@ -79,7 +79,7 @@ class CoordinateScriptsOperations:
                     duration_ms=(time.time() - START) * 1000
                 ))
             except (ValueError, TypeError, KeyError) as e:
-                SUCCESS = False
+SUCCESS = False
                 RESULTS.append(StepResult(
                     step_name=step["name"],
                     status=StepStatus.FAILED,
@@ -104,3 +104,4 @@ def orchestrate(steps: List[Dict],
     for step in steps:
         ORCH.add_step(step["name"], step["executor"], step.get("dependencies"))
     return ORCH.execute(initial_input)
+

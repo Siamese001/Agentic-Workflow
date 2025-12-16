@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -43,3 +43,4 @@ def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
     hs = generate_initial_hypotheses("task", rag, agent)
     assert len(hs) == 1
     assert hs[0].CONFIDENCE <= 0.3
+

@@ -7,7 +7,7 @@ No NEW missing docstrings will be allowed. This list can only shrink.
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 DOCSTRING_DEBT = {
     'agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:Validatio\n    nStep',
     'agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:fail',

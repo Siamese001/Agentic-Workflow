@@ -80,7 +80,7 @@ def find_unused_imports(file_path: str) -> Tuple[Set[str], Dict[str, int]]:
         return unused, import_lines
 
     except Exception as e:
-        LOGGER.info(f"Error analyzing {file_path}: {e}")
+LOGGER.info(f"Error analyzing {file_path}: {e}")
         return set(), {}
 
 
@@ -156,7 +156,7 @@ def remove_unused_imports(file_path: str, unused_imports: Set[str]) -> bool:
         return modified
 
     except Exception as e:
-        LOGGER.info(f"Error fixing {file_path}: {e}")
+LOGGER.info(f"Error fixing {file_path}: {e}")
         return False
 
 
@@ -189,3 +189,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

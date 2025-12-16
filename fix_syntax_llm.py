@@ -22,12 +22,14 @@ REPAIR_MODELS = [
 ]
 
 if not API_KEY:
-    print("⚠️ WARNING: GOOGLE_API_KEY not found. Syntax repair will fail.")
+    # print("⚠️ WARNING: GOOGLE_API_KEY not found. Syntax repair will fail.")  # [Security Fix]
 
 try:
     genai.configure(api_key=API_KEY)
 except Exception as e:
-    print(f"❌ Failed to configure Gemini API: {e}")
+    pass
+pass
+# print(f"❌ Failed to configure Gemini API: {e}")  # [Security Fix]
 
 EXCLUDED_DIRS = {'reports', 'drafts', 'tests', '.git', '__pycache__', 'venv', 'archives', 'logs', '.pytest_cache', 'htmlcov', 'coverage.xml', '.mypy_cache', '.tox', 'build', 'dist', '.eggs', '*.egg-info'}
 EXCLUDED_FILES = {'canon_validator_backup.py', 'resume_engine_backup.py', 'fix_structural_debt_backup.py', '*.pyc', '*.pyo', '*.pyd', '.DS_Store', 'Thumbs.db'}
@@ -47,12 +49,12 @@ def get_target_files(root_dir: str) -> list[str]:
     manifest_path = os.path.join(root_dir, MANIFEST_FILE)
 
     if not os.path.exists(manifest_path):
-        print(f"❌ CRITICAL ERROR: {MANIFEST_FILE} not found!")
-        print(f"   Please run the Librarian first: python apps_rg/L0_maintenance/deduplicate_and_index.py")
+        # print(f"❌ CRITICAL ERROR: {MANIFEST_FILE} not found!")  # [Security Fix]
+        # print(f"   Please run the Librarian first: python apps_rg/L0_maintenance/deduplicate_and_index.py")  # [Security Fix]
         sys.exit(1)
 
     try:
-        print(f"📂 Loading active file list from {MANIFEST_FILE}...")
+        # print(f"📂 Loading active file list from {MANIFEST_FILE}...")  # [Security Fix]
         with open(manifest_path, 'r') as f:
             manifest = json.load(f)
 
@@ -65,15 +67,16 @@ def get_target_files(root_dir: str) -> list[str]:
             else:
                 files.append(os.path.join(root_dir, file_info["path"]))
 
-        print(f"✅ Loaded {len(files)} validated files from manifest")
-        print(f"   - Duplicates removed: {manifest.get('stats', {}).get('duplicates_removed', 0)}")
-        print(f"   - Created: {manifest.get('created_at', 'Unknown')}")
+        # print(f"✅ Loaded {len(files)} validated files from manifest")  # [Security Fix]
+        # print(f"   - Duplicates removed: {manifest.get('stats', {}).get('duplicates_removed', 0)}")  # [Security Fix]
+        # print(f"   - Created: {manifest.get('created_at', 'Unknown')}")  # [Security Fix]
 
         return files
 
     except Exception as e:
-        print(f"❌ Failed to load manifest: {e}")
-        print(f"   Please ensure the manifest is valid JSON")
+pass
+# print(f"❌ Failed to load manifest: {e}")  # [Security Fix]
+        # print(f"   Please ensure the manifest is valid JSON")  # [Security Fix]
         sys.exit(1)
 
 def get_llm_syntax_fix(code_content: str, file_path: str, error_msg: str, model_name: str) -> str:
@@ -109,7 +112,8 @@ def get_llm_syntax_fix(code_content: str, file_path: str, error_msg: str, model_
         cleaned_code = response.text.replace("```python", "").replace("```", "").strip()
         return cleaned_code
     except Exception as e:
-        print(f"    ❌ {model_name} failed to generate: {e}")
+pass
+# print(f"    ❌ {model_name} failed to generate: {e}")  # [Security Fix]
         return None
 
 def check_and_fix_file(file_path):
@@ -117,22 +121,25 @@ def check_and_fix_file(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             source = f.read()
     except UnicodeDecodeError:
-        return False # Skip binary files
+pass
+return False # Skip binary files
 
     # 1. Initial Check: Is the code already valid?
     try:
         compile(source, file_path, 'exec')
         return False
     except SyntaxError as e:
-        error_msg = f"{e.msg} at line {e.lineno}"
-        print(f"🔥 Syntax Error in {file_path}: {error_msg}")
+pass
+error_msg = f"{e.msg} at line {e.lineno}"
+        # print(f"🔥 Syntax Error in {file_path}: {error_msg}")  # [Security Fix]
     except Exception as e:
-        error_msg = str(e)
-        print(f"🔥 Unknown Error in {file_path}: {error_msg}")
+pass
+error_msg = str(e)
+        # print(f"🔥 Unknown Error in {file_path}: {error_msg}")  # [Security Fix]
 
     # 2. Tiered Repair Loop
     for model_name in REPAIR_MODELS:
-        print(f"  🤖 Engaging {model_name}...")
+        # print(f"  🤖 Engaging {model_name}...")  # [Security Fix]
 
         fixed_code = get_llm_syntax_fix(source, file_path, error_msg, model_name)
 
@@ -144,16 +151,17 @@ def check_and_fix_file(file_path):
                 # If we get here, the code is valid! Save it.
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(fixed_code)
-                print(f"  ✅ FIXED by {model_name}")
+                # print(f"  ✅ FIXED by {model_name}")  # [Security Fix]
                 return True
 
             except SyntaxError as verify_error:
-                print(f"    ⚠️ {model_name} proposed code was still broken: {verify_error.msg}")
+pass
+# print(f"    ⚠️ {model_name} proposed code was still broken: {verify_error.msg}")  # [Security Fix]
                 # Loop continues to the next model in the list
                 continue
 
     # If the loop finishes, all available models failed.
-    print(f"  ❌ All models failed to repair {file_path}. Requires manual fix.")
+    # print(f"  ❌ All models failed to repair {file_path}. Requires manual fix.")  # [Security Fix]
     return False
 
 def main():
@@ -161,18 +169,18 @@ def main():
     parser.add_argument('--root-dir', type=str, default='/app')
     args = parser.parse_args()
 
-    print(f"🚀 Starting Cost-Optimized Syntax Repair (Models: {REPAIR_MODELS})...")
+    # print(f"🚀 Starting Cost-Optimized Syntax Repair (Models: {REPAIR_MODELS})...")  # [Security Fix]
     count = 0
 
     # Get target files from manifest or fallback to os.walk
     target_files = get_target_files(args.root_dir)
-    print(f"📊 Processing {len(target_files)} files...")
+    # print(f"📊 Processing {len(target_files)} files...")  # [Security Fix]
 
     for file_path in target_files:
         if check_and_fix_file(file_path):
             count += 1
 
-    print(f"🏁 Syntax Repair Cycle Complete. Files rescued: {count}")
+    # print(f"🏁 Syntax Repair Cycle Complete. Files rescued: {count}")  # [Security Fix]
 
 if __name__ == '__main__':
     main()

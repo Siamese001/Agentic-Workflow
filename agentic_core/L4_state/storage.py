@@ -131,7 +131,8 @@ class S3Adapter:
             ConfigurationService().logger.info(
                 f'S3 adapter initialized (bucket={bucket_name}, region={region})')
         except ImportError:
-            raise ImportError('boto3 not installed. Run: pip install boto3')
+pass
+raise ImportError('boto3 not installed. Run: pip install boto3')
 
     async def write_blob(self, key: str, data: bytes, metadata: Optional[Dict[str, str]]) -> str:
         """ """
@@ -158,7 +159,8 @@ class S3Adapter:
             self.s3.head_object(Bucket=self.bucket, Key=key)
             return True
         except Exception:
-            return False
+pass
+return False
 
     async def delete_blob(self, key: str) -> bool:
         """ """
@@ -167,7 +169,8 @@ class S3Adapter:
             ConfigurationService().logger.debug(f'Deleted S3 blob: {key}')
             return True
         except Exception as e:
-            ConfigurationService().logger.error(f'Failed to delete S3 blob {key}: {e}')
+pass
+ConfigurationService().logger.error(f'Failed to delete S3 blob {key}: {e}')
             return False
 
     async def list_blobs(self, prefix: str) -> list:
@@ -198,3 +201,4 @@ def create_storage_adapter(adapter_type: str = 'local', **kwargs) -> BlobStorage
         return S3Adapter(bucket_name=bucket_name, region=region)
     else:
         raise ValueError(f'Unknown adapter type: {adapter_type}')
+

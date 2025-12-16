@@ -163,7 +163,7 @@ class ToneAnalyzer:
             return profile
 
         except Exception as e:
-            LOGGER.error(f"Error analyzing style: {str(e)}")
+LOGGER.error(f"Error analyzing style: {str(e)}")
             return self._get_neutral_profile()
 
     def _get_neutral_profile(self) -> StyleProfile:
@@ -216,7 +216,7 @@ class ToneAnalyzer:
                 "confidence": confidence
             }
         except Exception as e:
-            LOGGER.error(f"Error calculating metrics: {str(e)}")
+LOGGER.error(f"Error calculating metrics: {str(e)}")
             return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, """confidence""": 0.0}
 
     def _detect_primary_tone(self, text: str, metrics: Dict[str, float]) -> ToneType:
@@ -257,7 +257,7 @@ class ToneAnalyzer:
             return max(tone_scores, key=tone_scores.get)
 
         except Exception as e:
-            LOGGER.error(f"Error detecting primary tone: {str(e)}")
+LOGGER.error(f"Error detecting primary tone: {str(e)}")
             return ToneType.AUTHORITATIVE
 
     def _calculate_formality(self, text: str, metrics: Dict[str, float]) -> float:
@@ -294,7 +294,7 @@ class ToneAnalyzer:
             return max(0.0, min(1.0, formality))
 
         except Exception as e:
-            LOGGER.error(f"Error calculating formality: {str(e)}")
+LOGGER.error(f"Error calculating formality: {str(e)}")
             return 0.7  # Default to semi-formal
 
     def _calculate_emoji_frequency(self, text: str) -> float:
@@ -330,7 +330,7 @@ class ToneAnalyzer:
             return min(1.0, frequency)
 
         except Exception as e:
-            LOGGER.error(f"Error calculating emoji frequency: {str(e)}")
+LOGGER.error(f"Error calculating emoji frequency: {str(e)}")
             return 0.1
 
     def _calculate_vocabulary_complexity(self, text: str) -> float:
@@ -360,7 +360,7 @@ class ToneAnalyzer:
             return max(0.0, min(1.0, complexity))
 
         except Exception as e:
-            LOGGER.error(f"Error calculating vocabulary complexity: {str(e)}")
+LOGGER.error(f"Error calculating vocabulary complexity: {str(e)}")
             return 0.5
 
 class ToneAdapter:
@@ -455,7 +455,7 @@ class ToneAdapter:
             return adapted
 
         except Exception as e:
-            LOGGER.error(f"Error adapting message: {str(e)}")
+LOGGER.error(f"Error adapting message: {str(e)}")
             return draft
 
     def _shorten_sentences(self, text: str) -> str:
@@ -480,7 +480,7 @@ class ToneAdapter:
 
             return '. '.join(shortened)
         except Exception as e:
-            LOGGER.error(f"Error shortening sentences: {str(e)}")
+LOGGER.error(f"Error shortening sentences: {str(e)}")
             return text
 
     def _lengthen_sentences(self, text: str) -> str:
@@ -497,7 +497,7 @@ class ToneAdapter:
 
             return '. '.join(sentences)
         except Exception as e:
-            LOGGER.error(f"Error lengthening sentences: {str(e)}")
+LOGGER.error(f"Error lengthening sentences: {str(e)}")
             return text
 
 class ToneModel:
@@ -585,7 +585,7 @@ class ToneModel:
             return profile, config
 
         except Exception as e:
-            LOGGER.error(f"Error in analyze_and_configure: {str(e)}")
+LOGGER.error(f"Error in analyze_and_configure: {str(e)}")
             # Return safe defaults
             return self.analyzer._get_neutral_profile(), \
                 self.config_templates[ToneType.AUTHORITATIVE]
@@ -621,7 +621,7 @@ class ToneModel:
             return config
 
         except Exception as e:
-            LOGGER.error(f"Error adjusting for archetype: {str(e)}")
+LOGGER.error(f"Error adjusting for archetype: {str(e)}")
             return config
 
 # Factory functions for easy instantiation
@@ -638,3 +638,4 @@ def adapt_to_tone(draft: str, target_profile: StyleProfile) -> str:
     """Quickly adapt a message to a target tone."""
     adapter = ToneAdapter()
     return adapter.adapt_message(draft, target_profile)
+

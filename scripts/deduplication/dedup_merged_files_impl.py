@@ -117,7 +117,7 @@ def execute_dedup(dry_run: bool = False) -> DedupManifest:
                     archive_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(dup_file), str(archive_path))
                 except (ValueError, TypeError, KeyError) as e:
-                    manifest.errors.append( # Added indentation
+manifest.errors.append( # Added indentation
                         {'path': str(rel_path), 'error': str(e)})
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(MANIFEST_PATH, 'w') as f:
@@ -147,3 +147,4 @@ def print_summary(manifest: DedupManifest, dry_run: bool) -> None:
     else:
         logger.info("Deduplication complete.") # Added logging
         logger.info(f"Removed {manifest.files_removed} files, saving {manifest.bytes_saved / (1024*1024):.2f} MB.")
+

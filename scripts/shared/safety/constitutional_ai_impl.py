@@ -188,7 +188,7 @@ class ConstitutionalAISystem:
                                             CONFIDENCE=0.9)
                 VIOLATIONS.append(VIOLATION) # Corrected 'violations' to 'VIOLATIONS' and 'violation' to 'VIOLATION'
         except re.error as e:
-            # Corrected indentation and removed misplaced 'pass'
+# Corrected indentation and removed misplaced 'pass'
             if self.enable_logging:
                 LOGGER.error( # Corrected 'logger' to 'LOGGER'
                     f'Invalid regex pattern in rule {rule.rule_id}: {e}')
@@ -279,3 +279,4 @@ def review_content(content: str,
     """
     SYSTEM = ConstitutionalAISystem()
     return SYSTEM.review_content(content, context) # Corrected 'system' to 'SYSTEM'
+

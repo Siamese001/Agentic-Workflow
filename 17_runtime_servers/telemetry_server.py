@@ -7,7 +7,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 # GLOBAL: Review if this should be constant
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 MCP = FastMCP('TelemetryServer')
 CONN = duckdb.connect('flight_recorder.duckdb', read_only=True)
 
@@ -23,3 +23,4 @@ def search_errors(trace_id: str) -> str:
 
 if __name__ == '__main__':
     mcp.run()
+

@@ -64,13 +64,13 @@ def main():
     # Convert to relative paths for consistency
     rel_files = [os.path.relpath(f, root_dir) for f in source_files]
 
-    print(f"Found {len(rel_files)} source files")
+    # print(f"Found {len(rel_files)} source files")  # [Security Fix]
 
     # Save as manifest
     with open('active_manifest.json', 'w') as f:
         json.dump(rel_files, f, indent=2)
 
-    print("Saved to active_manifest.json")
+    # print("Saved to active_manifest.json")  # [Security Fix]
 
 if __name__ == '__main__':
     main()

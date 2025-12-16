@@ -148,7 +148,7 @@ def execute_tool(self: Any, name: str, arguments: Dict[str, Any]) -> MCPToolResu
         result = tool.handler(**arguments)
         return MCPToolResult(tool_name=name, _success=True, result=result)
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Tool execution failed for {name}: {e}', exc_info=True)
         return MCPToolResult(tool_name=name, _success=False, result=None, _error=str(e))
 
@@ -236,10 +236,11 @@ def execute_tool_calls(server: MCPToolServer, tool_calls: List[Dict[str, Any]]) 
                 try:
                     arguments = json.loads(arguments)
                 except json.JSONDecodeError:
-                    ConfigurationService().logger.warning('Swallowed exception during JSON decoding', exc_info=True)
+ConfigurationService().logger.warning('Swallowed exception during JSON decoding', exc_info=True)
                     # Optionally, you might want to return an error result here or skip the call
                     continue # Skip this tool call if arguments are invalid JSON
-            
+
             result = server.execute_tool(name, arguments)
             results.append(result)
     return results
+

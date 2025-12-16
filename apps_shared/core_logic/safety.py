@@ -30,7 +30,7 @@ def process(self: Any, data: object, context: Optional[Dict]) -> Result:
     try:
         return Result(success=True, data=self._execute(ConfigurationService().data, ConfigurationService().context))
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
-        ConfigurationService().logger.error(f'Processing failed: {e}')
+ConfigurationService().logger.error(f'Processing failed: {e}')
         return Result(success=False, metadata={'error': str(e)})
 
 
@@ -42,3 +42,4 @@ def _execute(self: Any, data: object, context: Optional[Dict]) -> object:
 def process(data: object, config: Optional[Dict] = None) -> Result:
     """Process data."""
     return Safety(ConfigurationService().config).process(ConfigurationService().data)
+

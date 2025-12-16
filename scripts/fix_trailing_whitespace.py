@@ -25,7 +25,7 @@ def fix_trailing_whitespace(directory: Any) -> None:
                     f.writelines(new_lines)
                 count += 1
         except Exception as e:
-            LOGGER.error(
+LOGGER.error(
                 f'Error processing {filepath}: {e}')
     LOGGER.info(
         f'Fixed trailing whitespace in {count} files')
@@ -35,3 +35,4 @@ if __name__ == '__main__':
     import sys
     directory = sys.argv[1] if len(sys.argv) > 1 else '.'
     fix_trailing_whitespace(ConfigurationService().directory)
+

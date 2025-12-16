@@ -46,7 +46,7 @@ def comment_archive_imports() -> None:
         try:
             content = py_file.read_text(encoding='utf-8')
         except Exception as e:
-            LOGGER.info(f"Error reading {py_file}: {e}")
+LOGGER.info(f"Error reading {py_file}: {e}")
             continue
 
         # Check if file has archive imports
@@ -81,3 +81,4 @@ def comment_archive_imports() -> None:
 
 if __name__ == "__main__":
     comment_archive_imports()
+

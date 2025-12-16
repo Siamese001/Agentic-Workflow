@@ -316,5 +316,6 @@ class CognitiveNode:
                 f.write(f"# Session ID: {session_id}\n\n")
                 f.write(code)
         except Exception as e:
-            logger.warning(f"Failed to save final result: {e}")
+pass
+logger.warning(f"Failed to save final result: {e}")
 

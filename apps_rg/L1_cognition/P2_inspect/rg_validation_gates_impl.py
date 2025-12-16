@@ -1,7 +1,7 @@
 """Implementation for rg_validation_gates."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -454,3 +454,4 @@ def run_gate(gate_id: str,
     """Run a specific validation gate."""
     GATES = RGValidationGates()
     return GATES.run_gate(gate_id, content, context) # Changed 'gates' to 'GATES' for consistency
+

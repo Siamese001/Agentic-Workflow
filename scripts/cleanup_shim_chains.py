@@ -57,7 +57,7 @@ class ShimChainCleaner:
                     return True
 
         except Exception as e:
-            pass
+pass
             LOGGER.warning(f"Ignored error: {e}")
 
         return False
@@ -130,7 +130,7 @@ class ShimChainCleaner:
                     break
 
             except Exception as e:
-                pass
+pass
                 self.errors.append(f"Error reading {current}: {e}")
                 break
 
@@ -155,7 +155,7 @@ class ShimChainCleaner:
                 if pattern.search(content):
                     return True
             except Exception as e:
-                pass
+pass
                 LOGGER.warning(f"Ignored error: {e}")
 
         return False
@@ -187,7 +187,7 @@ class ShimChainCleaner:
             self.updated_files.append(root_shim)
 
         except Exception as e:
-            pass
+pass
             self.errors.append(f"Error updating {root_shim}: {e}")
             return False
 
@@ -199,7 +199,7 @@ class ShimChainCleaner:
                     shim.unlink()
                     self.deleted_files.append(shim)
                 except Exception as e:
-                    pass
+pass
                     self.errors.append(f"Error deleting {shim}: {e}")
             else:
                 self.errors.append(f"Skipping {shim} - imported externally")
@@ -314,3 +314,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

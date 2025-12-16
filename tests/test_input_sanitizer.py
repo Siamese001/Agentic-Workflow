@@ -104,3 +104,4 @@ def test_nested_json_sanitization():
     Test sanitization of deeply nested JSON structures.
     """
     pass
+

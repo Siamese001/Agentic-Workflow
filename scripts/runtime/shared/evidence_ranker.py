@@ -199,7 +199,7 @@ class EvidenceRanker:
                     )
 
                 except Exception as e:
-                    logger.error(f"Error processing signal at index {idx}: {str(e)}")
+logger.error(f"Error processing signal at index {idx}: {str(e)}")
                     continue
 
             # Sort by final score descending
@@ -210,7 +210,7 @@ class EvidenceRanker:
             return ranked_signals
 
         except Exception as e:
-            logger.error(f"Error in rank_evidence: {str(e)}")
+logger.error(f"Error in rank_evidence: {str(e)}")
             return []
 
     def _score_freshness(self,
@@ -268,7 +268,7 @@ class EvidenceRanker:
                 # 5+ years ago - stale
                 return 0.2, year
         except Exception as e:
-            logger.error(f"Error scoring freshness: {str(e)}")
+logger.error(f"Error scoring freshness: {str(e)}")
             return 0.5, None
 
     def _extract_year(self, text: str) -> Optional[int]:
@@ -290,10 +290,10 @@ class EvidenceRanker:
                         if 2020 <= year <= 2030:
                             return year
                     except ValueError:
-                        continue
+continue
             return None
         except Exception as e:
-            logger.error(f"Error extracting year: {str(e)}")
+logger.error(f"Error extracting year: {str(e)}")
             return None
 
     def _count_corroboration(
@@ -334,7 +334,7 @@ class EvidenceRanker:
 
             return total_corroboration, key_entities
         except Exception as e:
-            logger.error(f"Error counting corroboration: {str(e)}")
+logger.error(f"Error counting corroboration: {str(e)}")
             return 0, []
 
     def _extract_all_entities(self, signals: List[Dict[str, Any]]) -> Dict[str, List[str]]:
@@ -361,7 +361,7 @@ class EvidenceRanker:
 
             return entity_map
         except Exception as e:
-            logger.error(f"Error extracting all entities: {str(e)}")
+logger.error(f"Error extracting all entities: {str(e)}")
             return {}
 
     def _extract_entities(self, content: str) -> List[str]:
@@ -408,7 +408,7 @@ class EvidenceRanker:
 
             return unique_entities
         except Exception as e:
-            logger.error(f"Error extracting entities: {str(e)}")
+logger.error(f"Error extracting entities: {str(e)}")
             return []
 
     def get_ranking_summary(self, ranked_evidence: List[RankedEvidence]) -> Dict[str, Any]:
@@ -450,7 +450,7 @@ class EvidenceRanker:
                 "bottom_score": ranked_evidence[-1].final_score
             }
         except Exception as e:
-            logger.error(f"Error getting ranking summary: {str(e)}")
+logger.error(f"Error getting ranking summary: {str(e)}")
             return {"error": str(e)}
 
 # Factory function for easy instantiation
@@ -504,3 +504,4 @@ def rank_evidence(
     )
 
     return ranker.rank_evidence(signals)
+

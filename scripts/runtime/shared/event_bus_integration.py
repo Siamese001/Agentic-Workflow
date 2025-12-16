@@ -169,7 +169,7 @@ class HardenedEventBus:
             return True
 
         except Exception as e:
-            self._stats["events_failed"] += 1
+self._stats["events_failed"] += 1
 
             # Send to dead letter queue
             DLQ = await get_dead_letter_queue()
@@ -349,7 +349,7 @@ class HardenedEventBus:
                 )
 
             except Exception as e:
-                # Log error but don't crash
+# Log error but don't crash
                 LOGGER.error(f"Failed to process event {event.id}: {e}")
 
                 # Send to dead letter queue
@@ -496,7 +496,7 @@ def hardened_event_publisher(
                 return RESULT
 
             except Exception as e:
-                # Publish error event
+# Publish error event
                 await publish_hardened_event(
                     EventType.ERROR_OCCURRED,
                     func.__module__ + "." + func.__name__,
@@ -508,3 +508,4 @@ def hardened_event_publisher(
 
         return async_wrapper
     return decorator
+

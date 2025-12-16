@@ -172,7 +172,7 @@ class SimilarityRetriever:
             return result
 
         except Exception as e:
-            self.logger.error(f"Similarity computation failed: {str(e)}")
+self.logger.error(f"Similarity computation failed: {str(e)}")
             return SimilarityResult(
                 scores=[],
                 indices=[],
@@ -214,7 +214,7 @@ class SimilarityRetriever:
                 f"Batch similarity completed for {len(results)} queries")
 
         except Exception as e:
-            self.logger.error(f"Batch similarity failed: {str(e)}")
+self.logger.error(f"Batch similarity failed: {str(e)}")
             # Return empty results for failed batch
             results = [SimilarityResult(scores=[], indices=[], metadata={"error": str(e)})
                        for _ in request.query_vectors]
@@ -436,3 +436,4 @@ def retrieve_similarity(
         "distances": result.distances,
         "metadata": result.metadata
     }
+

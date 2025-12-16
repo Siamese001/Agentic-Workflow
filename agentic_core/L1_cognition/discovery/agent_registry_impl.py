@@ -119,3 +119,4 @@ class AgentRegistry:
 def create_agent_registry() -> AgentRegistry:
     """Factory function to create agent registry. """
     return AgentRegistry()
+

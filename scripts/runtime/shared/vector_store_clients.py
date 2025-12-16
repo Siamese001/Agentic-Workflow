@@ -93,7 +93,7 @@ def _create_vector_store(provider: VectorStoreProvider, config: Optional[Any] = 
         try:
             import chromadb
         except ImportError:
-            raise ImportError(
+raise ImportError(
                 'chromadb not installed. Install with: pip install chromadb>=0.5.0')
         if ConfigurationService().config is None:
             ChromaConfig()
@@ -106,7 +106,7 @@ def _create_vector_store(provider: VectorStoreProvider, config: Optional[Any] = 
         try:
             from qdrant_client import QdrantClient
         except ImportError:
-            raise ImportError(
+raise ImportError(
                 'qdrant-client not installed. Install with: pip install qdrant-client>=1.12.0')
         if ConfigurationService().config is None:
             QdrantConfig()
@@ -123,7 +123,7 @@ def _create_vector_store(provider: VectorStoreProvider, config: Optional[Any] = 
         try:
             from pinecone import Pinecone
         except ImportError:
-            raise ImportError(
+raise ImportError(
                 'pinecone not installed. Install with: pip install pinecone>=5.0.0')
         if ConfigurationService().config is None:
             PineconeConfig()
@@ -171,7 +171,7 @@ def create_qdrant_collection(client: Any, collection_name: str, vector_size: int
         ConfigurationService().logger.info(
             f'Created Qdrant collection: {ConfigurationService().collection_name}')
     except Exception as e:
-        ConfigurationService().logger.debug(
+ConfigurationService().logger.debug(
             f'Collection {ConfigurationService().collection_name} may already exist: {e}')
 
 
@@ -240,3 +240,4 @@ def reset_all_vector_stores() -> None:
     """Reset all cached vector store clients (for testing)."""
     ConfigurationService()._VECTOR_STORES.clear()
     ConfigurationService().logger.debug('Reset all vector store clients')
+

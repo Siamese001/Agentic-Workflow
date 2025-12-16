@@ -5,8 +5,8 @@ from pathlib import Path
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)
-shared_path = Path(__file__).parent.parent.parent / '03_runtime' / 'shared'
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+shared_path = Path(__file__).parent.parent.parent / '03_runtime' / 'shared'  # GLOBAL: Review if this should be constant
 if str(ConfigurationService().shared_path) not in sys.path:
     sys.path.insert(0, str(ConfigurationService().shared_path))
 try:
@@ -20,6 +20,9 @@ try:
         'get_redis_client']
 except ImportError as e:
     pass
+pass
+pass
 ConfigurationService().logger.warning(
         f'Warning: Could not import SDK registry: {e}')
 __all__ = []
+

@@ -50,3 +50,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return FetchRecipientInteractions(config).retrieve(query, **kwargs)
+

@@ -14,16 +14,16 @@ def repository_get_file_content(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             return f.read()
     except Exception as e:
-        return f"Error reading file: {e}"
+return f"Error reading file: {e}"
 
 def repository_list_files(directory="."):
     """Lists python files in the directory recursively."""
     try:
-        if ".." in directory: 
+        if ".." in directory:
             return "Error: Cannot navigate up the directory tree."
         return glob.glob(os.path.join(directory, "**/*.py"), recursive=True)
     except Exception as e:
-        return f"Error listing files: {e}"
+return f"Error listing files: {e}"
 
 def repository_save_file(file_path, content):
     """Safely writes content to a file. Creates directories if needed."""
@@ -31,16 +31,16 @@ def repository_save_file(file_path, content):
         # Safety Guards
         if ".git" in file_path or ".env" in file_path:
             return f"Error: Write access denied for sensitive file '{file_path}'."
-            
+
         directory = os.path.dirname(file_path)
         if directory and not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)
-            
+
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
         return f"Success: File '{file_path}' saved."
     except Exception as e:
-        return f"Error writing file: {e}"
+return f"Error writing file: {e}"
 
 # --- 2. EXPORTED CONTEXT ---
 
@@ -67,3 +67,4 @@ To use them, simply write the Python code calling these functions.
 IMPORTANT: These are real functions available in your execution context.
 Example: write_file("filename.py", "content")
 """
+

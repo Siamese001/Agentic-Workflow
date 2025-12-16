@@ -35,7 +35,7 @@ This module defines unified quality standards that apply across all engines
 while allowing for domain-specific customizations.
 """
 
-logger = logging.getLogger(__name__) # Moved out of docstring and named 'logger' for consistency with its usage
+logger = logging.getLogger(__name__) # Moved out of docstring and named 'logger' for consistency with its usage  # GLOBAL: Review if this should be constant
 
 
 class StandardType(Enum):
@@ -585,3 +585,4 @@ def get_engine_quality_gates(engine_type: EngineType) -> Dict[str, Dict[str, Any
     """
     STANDARDS = get_quality_standards()
     return STANDARDS.get_quality_gates(engine_type) # Fixed standards -> STANDARDS
+

@@ -17,7 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger("Launcher")
 
 def main():
-    print("\n🛡️  Hardened Agentic System Initializing...")
+    # print("\n🛡️  Hardened Agentic System Initializing...")  # [Security Fix]
 
     try:
         # Lazy import AFTER sys.path fix to prevent ModuleNotFoundError
@@ -30,7 +30,7 @@ def main():
             user_goal = " ".join(sys.argv[1:])
         else:
             # Interactive prompt
-            print("   (No arguments provided. Entering interactive mode.)")
+            # print("   (No arguments provided. Entering interactive mode.)")  # [Security Fix]
             user_goal = input("\n🎯 Enter your goal: ").strip()
 
         if not user_goal:
@@ -46,19 +46,22 @@ def main():
         #  3. CognitiveNode.think() [Temperature Decay]
         run_agentic_loop(user_goal)
 
-        print("\n✅ Workflow Completed Successfully.")
+        # print("\n✅ Workflow Completed Successfully.")  # [Security Fix]
 
     except ImportError as e:
-        logger.critical(f"❌ Configuration Error: {e}")
-        print("\nFix: Ensure your folder structure matches: orchestrator.py in project root")
+pass
+logger.critical(f"❌ Configuration Error: {e}")
+        # print("\nFix: Ensure your folder structure matches: orchestrator.py in project root")  # [Security Fix]
         sys.exit(1)
 
     except KeyboardInterrupt:
-        print("\n\n⚠️  User Aborted.")
+pass
+# print("\n\n⚠️  User Aborted.")  # [Security Fix]
         sys.exit(0)
 
     except Exception as e:
-        # This catches anything that slipped past the Hardened Orchestrator
+pass
+# This catches anything that slipped past the Hardened Orchestrator
         logger.critical(f"❌ Unhandled System Crash: {e}", exc_info=True)
         sys.exit(1)
 

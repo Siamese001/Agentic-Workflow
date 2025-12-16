@@ -17,7 +17,7 @@ from typing import Dict, List, Any, Optional, Set
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ThermalProfile(str, Enum):
@@ -288,3 +288,4 @@ def create_validation_context(workflow_id: str, node_id: str) -> SignalContext:
     context.hard_state = HardState(workflow_id=workflow_id, node_id=node_id)
     context.thermal_config.set_node_profile(node_id, ThermalProfile.PRECISION)
     return context
+

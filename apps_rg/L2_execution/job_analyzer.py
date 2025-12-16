@@ -59,7 +59,7 @@ def analyze(self: Any, job_description: str) -> Dict[str, Any]:
             self._generate_with_generic_client(prompt, temperature)
         return self._parse_analysis_response(response)
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error analyzing job description: {e}')
         return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown',
                 'cultural_indicators': [], 'north_star_metric': 'unknown', 'error': str(e)}
@@ -113,7 +113,7 @@ def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
                                             'north_star_metric', 'unknown')}
         return RESULT
     except json.JSONDecodeError as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to parse JSON response: {e}')
         ConfigurationService().logger.debug(f'Response content: {response}')
         return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown',
@@ -139,3 +139,4 @@ def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List
             if len(ConfigurationService().found_keywords) >= max_keywords:
                 break
     return ConfigurationService().found_keywords
+

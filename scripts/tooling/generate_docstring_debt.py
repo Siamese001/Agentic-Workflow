@@ -38,8 +38,9 @@ for f in ROOT.rglob("*.py"):
                 if not ast.get_docstring(node):
                     MISSING.add(f"{REL}:{NAME}")
     except (ValueError, TypeError, KeyError):
-        # Skip files that can't be parsed or have invalid structure
+# Skip files that can't be parsed or have invalid structure
         pass
 
 for m in sorted(MISSING):
     LOGGER.info(m)
+

@@ -58,10 +58,10 @@ class InjectionPatterns:
             RESULT = self._execute_logic(payload, context)
             return ExecutionResult(success=True, data=RESULT)
         except (ValueError, TypeError, KeyError) as e:
-            self._logger.error(f"Validation error during processing: {e}")
+self._logger.error(f"Validation error during processing: {e}")
             return ExecutionResult(success=False, error_message=str(e))
         except Exception as e:
-            self._logger.error(f"Unexpected system error: {e}", exc_info=True)
+self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(self,
@@ -85,3 +85,4 @@ def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResu
     """Module-level entry point."""
     EXECUTOR = InjectionPatterns()
     return EXECUTOR.process(data)
+

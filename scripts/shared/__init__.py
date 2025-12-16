@@ -6,7 +6,7 @@ Phase 1: Foundation & Reliability - Active Runtime Components
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .resilience import (
     CircuitBreaker,
@@ -183,3 +183,4 @@ __all__ = [
     "BudgetExceededError",
     "enforce_token_budget",
 ]
+

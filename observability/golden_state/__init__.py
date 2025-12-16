@@ -7,7 +7,7 @@ Validation foundation with golden datasets and evaluators.
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .judge import (
     JudgeEvaluator,
@@ -26,3 +26,4 @@ __all__ = [
     "JudgmentScore",
     "create_judge_evaluator",
 ]
+

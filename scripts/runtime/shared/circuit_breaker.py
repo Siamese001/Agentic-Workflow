@@ -117,7 +117,7 @@ class CircuitBreaker:
             return result
 
         except Exception as e:
-            # Record failure # Corrected indentation of except block
+# Record failure # Corrected indentation of except block
             duration_ms = (time.time() - start_time) * 1000
             self.record_failure(e, duration_ms)
             raise
@@ -454,3 +454,4 @@ def circuit_breaker( # Removed stray docstring
             return sync_wrapper
 
     return decorator
+

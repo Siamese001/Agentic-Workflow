@@ -10,7 +10,8 @@ try:
     from .constants import DATA_DIR, CACHE_DIR # Correct path given the file location
     from .utils import _load_json_config
 except ImportError:
-    # Fallback for local testing or if constants are in a higher scope
+    pass
+# Fallback for local testing or if constants are in a higher scope
     DATA_DIR = Path(__file__).parent.parent / 'data'
     CACHE_DIR = Path(__file__).parent.parent / 'cache'
 
@@ -20,7 +21,7 @@ except ImportError:
             with open(path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-            if required:
+if required:
                 raise FileNotFoundError(f"Required config file '{name}' not found at {path}")
             logging.warning(f"Optional config file '{name}' not found at {path}. Using empty dict.")
             return {}
@@ -242,7 +243,7 @@ class RAGConfig:
             self.telemetry_log_dir.mkdir(parents=True, exist_ok=True)
             self.chroma_persist_dir.mkdir(parents=True, exist_ok=True)
         except (OSError, PermissionError) as e:
-            pass # Indented block for except
+pass # Indented block for except
             logging.warning(
                 f'Could not create cache directories (read-only filesystem?): {e}')
             logging.warning('Caching features will be disabled')
@@ -392,3 +393,4 @@ class AppConfig:
     enricher: EnricherConfig = field(default_builder=EnricherConfig)
     comp_config: CompetitiveAnalysisConfig = field(
         default_builder=CompetitiveAnalysisConfig)
+

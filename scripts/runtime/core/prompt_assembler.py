@@ -138,7 +138,7 @@ You are {role}. Your objective is {objective}.
                 LOGGER.debug(f"Loaded template: {template_name}")
 
             except Exception as e:
-                LOGGER.error(f"Failed to load template {file_path}: {e}")
+LOGGER.error(f"Failed to load template {file_path}: {e}")
                 pass # This pass is outside the try-except block, which is syntactically incorrect.
 
     """Docstring."""
@@ -235,7 +235,7 @@ You are {role}. Your objective is {objective}.
                 sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
 
         except SecurityIntegrityError as e:
-            LOGGER.error(f"Security validation failed during prompt assembly: {e}")
+LOGGER.error(f"Security validation failed during prompt assembly: {e}")
             raise
 
         # Format directives from sanitized injections
@@ -280,14 +280,14 @@ You are {role}. Your objective is {objective}.
         try:
             InputSanitizer.validate_template_integrity(prompt_formatted, expected_tags) # Corrected variable name
         except SecurityIntegrityError as e:
-            LOGGER.error(f"Tag integrity check failed: {e}")
+LOGGER.error(f"Tag integrity check failed: {e}")
             raise SecurityIntegrityError(f"Prompt assembly failed integrity check: {e}")
 
         # SECURITY: XML Structure Validation
         try:
             InputSanitizer.validate_xml_structure(prompt_formatted) # Corrected variable name
         except SecurityIntegrityError as e:
-            LOGGER.error(f"XML validation failed: {e}")
+LOGGER.error(f"XML validation failed: {e}")
             raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
 
         # Add metadata if provided (with sanitization)
@@ -400,7 +400,7 @@ You are {role}. Your objective is {objective}.
             try:
                 result["content"] = json.loads(response)
             except json.JSONDecodeError:
-                pass
+pass
         return result
 
     def validate_structure(self, prompt: str) -> List[str]:
@@ -432,7 +432,7 @@ You are {role}. Your objective is {objective}.
             wrapped = f"<root>{prompt}</root>"
             ET.fromstring(wrapped)
         except ET.ParseError as e:
-            errors.append(f"XML parsing error: {e}")
+errors.append(f"XML parsing error: {e}")
 
         return errors
 
@@ -566,3 +566,4 @@ def enhance_prompt_with_fencing(
         injections=injections,
         legacy_mode=True
     )
+

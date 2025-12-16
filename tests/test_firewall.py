@@ -50,3 +50,4 @@ def test_firewall_handles_empty_input():
     fw = PromptFirewall()
     assert fw.scan_input("") is True
     assert fw.scan_input(None) is True
+

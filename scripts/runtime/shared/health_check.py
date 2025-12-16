@@ -143,7 +143,7 @@ class BulkheadHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            LOGGER.error(f"Health check failed for {self.component_name}: {e}")
+LOGGER.error(f"Health check failed for {self.component_name}: {e}")
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -225,7 +225,7 @@ class CircuitBreakerHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            LOGGER.error(f"Health check failed for {self.component_name}: {e}")
+LOGGER.error(f"Health check failed for {self.component_name}: {e}")
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -292,7 +292,7 @@ class DeadLetterQueueHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            LOGGER.error(f"Health check failed for {self.component_name}: {e}")
+LOGGER.error(f"Health check failed for {self.component_name}: {e}")
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -366,7 +366,7 @@ class CheckpointManagerHealthChecker(HealthChecker):
             )
 
         except Exception as e:
-            LOGGER.error(f"Health check failed for {self.component_name}: {e}")
+LOGGER.error(f"Health check failed for {self.component_name}: {e}")
             return HealthCheckResult(
                 component_name=self.component_name,
                 component_type=self.component_type,
@@ -494,7 +494,7 @@ class HealthCheckRegistry:
         try:
             return await checker.check_health()
         except Exception as e:
-            LOGGER.error(f"Health check failed for {checker.component_name}: {e}")
+LOGGER.error(f"Health check failed for {checker.component_name}: {e}")
             return HealthCheckResult(
                 component_name=checker.component_name,
                 component_type=checker.component_type,
@@ -582,3 +582,4 @@ async def initialize_system_health_checks(
         await registry.register_checker(CheckpointManagerHealthChecker(checkpoint_manager))
 
     logger.info(f"Initialized health checks for {len(registry.list_components())} components")
+

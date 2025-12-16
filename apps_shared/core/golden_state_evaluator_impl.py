@@ -52,11 +52,11 @@ class GoldenStateEvaluator:
                 LOGGER.info('golden_cases_loaded', extra={
                             'count': len(self.golden_cases)})
         except FileNotFoundError:
-            if self.enable_logging:
+if self.enable_logging:
                 LOGGER.warning('golden_dataset_not_found', extra={
                                'path': str(self.dataset_path)})
         except Exception as e:
-            if self.enable_logging:
+if self.enable_logging:
                 LOGGER.error('failed_to_load_golden_cases', extra={
                              'error': str(e)}, exc_info=True)
 
@@ -219,3 +219,4 @@ async def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> Evalua
     """
     evaluator = GoldenStateEvaluator()
     return await evaluator.evaluate_case(case, output)
+

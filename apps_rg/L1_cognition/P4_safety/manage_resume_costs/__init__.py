@@ -75,3 +75,4 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -
     LOGGER.info(
         f"Created Manage Resume Costs instance with config: {final_config}")
     return final_config
+

@@ -119,7 +119,7 @@ class HardeningMixin:
             return result
 
         except CircuitBreakerOpenError as e:
-            # Circuit breaker is open
+# Circuit breaker is open
             latency_ms = (time.time() - start_time) * 1000
 
             self.telemetry.log_circuit_breaker(
@@ -132,7 +132,7 @@ class HardeningMixin:
             raise
 
         except Exception as e:
-            # All other errors
+# All other errors
             latency_ms = (time.time() - start_time) * 1000
 
             self.telemetry.log_failure(
@@ -217,3 +217,4 @@ class HardeningMixin:
         self.circuit_breaker.state = CircuitBreakerState.CLOSED
         self.circuit_breaker.failure_count = 0
         self.circuit_breaker.success_count = 0
+

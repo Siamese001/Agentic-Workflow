@@ -45,3 +45,4 @@ def test_handles_complex_formatting(mock_golden_record):
     """
     # Should pass because "Python" and "AWS" are in the verified list
     assert checker.validate_skills(draft) is True
+

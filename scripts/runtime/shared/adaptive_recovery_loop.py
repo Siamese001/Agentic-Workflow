@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 # This module implements temperature escalation protocol for adaptive recovery.
 # Handles both creative and mechanical failures with intelligent temperature adjustments.
 
@@ -275,3 +275,4 @@ class AdaptiveRecoveryLoop:
 def create_adaptive_recovery_loop(initial_temperature: float = 0.5) -> AdaptiveRecoveryLoop:
     """Factory function to create AdaptiveRecoveryLoop instance"""
     return AdaptiveRecoveryLoop(initial_temperature=initial_temperature)
+

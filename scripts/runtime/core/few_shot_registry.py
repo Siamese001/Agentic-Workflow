@@ -189,7 +189,7 @@ class FewShotRegistry(BaseModel):
                 LOGGER.info(f"Loaded examples from {file_path}")
 
             except Exception as e:
-                LOGGER.error(f"Failed to load examples from {file_path}: {e}")
+LOGGER.error(f"Failed to load examples from {file_path}: {e}")
                 pass
 
 
@@ -379,3 +379,4 @@ def create_custom_example(
 
     registry.add_example(example)
     LOGGER.info(f"Added custom example for {instruction_id}")
+

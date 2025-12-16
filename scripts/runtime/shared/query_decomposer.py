@@ -81,7 +81,7 @@ class QueryDecomposer(SimpleAgentBase):
                     return Decision()
             self.GATE = AdaptiveRetrievalGate()
         except ImportError:
-            logger.warning(
+logger.warning(
                 "AdaptiveRetrievalGate not available, skipping heuristic check")
             self.GATE = None
 
@@ -187,7 +187,7 @@ class QueryDecomposer(SimpleAgentBase):
             return LLMResponseImpl(RESPONSE.content[0].text)
 
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+logger.error(f"LLM call failed: {e}")
             # Return fallback response
 
             class LLMResponseImpl:
@@ -289,7 +289,7 @@ Output: {{
             )
 
         except Exception as e:
-            logger.error(f"Failed to decompose query: {e}")
+logger.error(f"Failed to decompose query: {e}")
             # Fallback to original query
             return DecomposedQuery(
                 original_query=query,
@@ -342,7 +342,7 @@ Output: {{
             return processed_results
 
         except Exception as e:
-            logger.error(f"Failed to execute sub-queries: {e}")
+logger.error(f"Failed to execute sub-queries: {e}")
             return [[] for _ in decomposed_query.sub_queries]
 
 # Convenience function for direct usage
@@ -358,3 +358,4 @@ async def decompose_query(query: str, model_name: str="gpt-4") -> DecomposedQuer
     """
     DECOMPOSER = QueryDecomposer(model_name=model_name)
     return await DECOMPOSER.decompose(query)
+

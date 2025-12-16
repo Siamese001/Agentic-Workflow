@@ -190,7 +190,7 @@ class ReflectionEngine:
                 self.stats["llm_critiques"] += 1
 
         except CircuitOpenError:
-            # Circuit is open - return conservative result
+# Circuit is open - return conservative result
             LOGGER.warning("Reflection Engine Circuit OPEN. Skipping critique.")
             result = CritiqueResult(
                 is_valid=True,  # Fail-open strategy
@@ -200,7 +200,7 @@ class ReflectionEngine:
             )
 
         except Exception as e:
-            # Unexpected error - return conservative result
+# Unexpected error - return conservative result
             LOGGER.error(f"Reflection evaluation failed: {e}")
             result = CritiqueResult(
                 is_valid=True,  # Fail-open to avoid blocking workflow
@@ -273,7 +273,7 @@ class ReflectionEngine:
                 total_weight += criterion.WEIGHT # Used WEIGHT
 
             except Exception as e:
-                LOGGER.error(f"Validation error for {criterion.name}: {e}")
+LOGGER.error(f"Validation error for {criterion.name}: {e}")
                 results_list.append(f"Error: {criterion.name} - {str(e)}")
 
         # Calculate overall result
@@ -344,7 +344,7 @@ Respond in JSON format:
             )
 
         except Exception as e:
-            LOGGER.error(f"LLM evaluation failed: {e}")
+LOGGER.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result
             return CritiqueResult(
                 is_valid=False,
@@ -404,13 +404,13 @@ Respond in JSON format:
                 json.dumps(content)
                 return True
             except (TypeError, ValueError):
-                return False
+return False
         elif isinstance(content, str):
             try:
                 json.loads(content)
                 return True
             except json.JSONDecodeError:
-                return False
+return False
         return False
 
     def _validate_no_empty_fields(self, content: Any) -> bool:
@@ -515,3 +515,4 @@ STRICT_CRITERIA = [
 LENIENT_CRITERIA = [
     "json_valid"
 ]
+

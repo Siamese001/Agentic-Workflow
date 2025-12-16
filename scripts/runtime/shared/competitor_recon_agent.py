@@ -38,7 +38,7 @@ class CompetitorMove(BaseModel):
                 datetime.strptime(v, "%Y-%m-%d")
                 return v
         except ValueError:
-            return "Recent"
+return "Recent"
 
 class StrategicHook(BaseModel):
     """Strategic outreach hook based on competitive intelligence."""
@@ -225,7 +225,7 @@ class CompetitorReconAgent:
                 return self._create_speed_hook(all_moves[0], target_company, candidate_skills)
 
         except Exception as e:
-            LOGGER.error(f"Error generating FOMO hook: {str(e)}")
+LOGGER.error(f"Error generating FOMO hook: {str(e)}")
             return None
 
     def get_strategic_ps(
@@ -253,7 +253,7 @@ class CompetitorReconAgent:
             return None
 
         except Exception as e:
-            LOGGER.error(f"Error getting strategic P.S.: {str(e)}")
+LOGGER.error(f"Error getting strategic P.S.: {str(e)}")
             return None
 
     def _identify_competitors(self, target_company: str, industry: str) -> List[str]:
@@ -277,7 +277,7 @@ class CompetitorReconAgent:
             return filtered
 
         except Exception as e:
-            LOGGER.error(f"Error identifying competitors: {str(e)}")
+LOGGER.error(f"Error identifying competitors: {str(e)}")
             return []
 
     def _gather_intel(self, competitor: str) -> List[CompetitorMove]:
@@ -302,7 +302,7 @@ class CompetitorReconAgent:
             return moves
 
         except Exception as e:
-            LOGGER.error(f"Error gathering intel on {competitor}: {str(e)}")
+LOGGER.error(f"Error gathering intel on {competitor}: {str(e)}")
             return []
 
     def _find_skill_matches(
@@ -356,7 +356,7 @@ class CompetitorReconAgent:
             return matches
 
         except Exception as e:
-            LOGGER.error(f"Error finding skill matches: {str(e)}")
+LOGGER.error(f"Error finding skill matches: {str(e)}")
             return []
 
     def _create_targeted_hook(
@@ -393,7 +393,7 @@ class CompetitorReconAgent:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error creating targeted hook: {str(e)}")
+LOGGER.error(f"Error creating targeted hook: {str(e)}")
             raise
 
     def _create_speed_hook(
@@ -429,7 +429,7 @@ class CompetitorReconAgent:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error creating speed hook: {str(e)}")
+LOGGER.error(f"Error creating speed hook: {str(e)}")
             raise
 
 # Factory function for easy instantiation
@@ -465,3 +465,4 @@ def generate_competitive_hook(
     agent = create_competitor_recon_agent()
     hook = agent.generate_fomo_hook(target_company, industry, candidate_skills)
     return hook.hook_text if hook else None
+

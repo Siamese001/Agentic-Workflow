@@ -39,7 +39,8 @@ def get_version_locked_design(file_id: str, version_id: str, logger: Optional[An
         return design_data
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.error(f"❌ Figma version-locked access failed: {e}")
         raise
 
@@ -63,8 +64,10 @@ def get_brand_style_guide(brand_id: str, logger: Optional[Any] = None) -> Dict[s
                     f"Tone: {style_data.get('tone', 'professional')}"
                 ]
             }])
-        except:
-            pass
+except Exception:
+    pass
+pass
+pass
 
         if logger:
             logger.info(f"✅ Figma: Retrieved brand style guide for {brand_id}")
@@ -72,7 +75,8 @@ def get_brand_style_guide(brand_id: str, logger: Optional[Any] = None) -> Dict[s
         return style_data
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.warning(f"⚠️ Figma brand guide retrieval failed: {e}")
         # Return fallback brand guidelines
         return {
@@ -127,7 +131,8 @@ def check_design_drift(file_id: str, canonical_version: str, logger: Optional[An
         return result
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.error(f"❌ Design drift check failed: {e}")
         return {"drift_detected": True, "error": str(e)}
 
@@ -153,8 +158,10 @@ def execute_cost_controlled_search(query: str, max_daily_queries: int = 500, log
             string_set(RESET_TIME_KEY, today)
             if logger:
                 logger.info("🔄 Daily search counter reset")
-    except:
-        pass
+except Exception:
+    pass
+pass
+pass
 
     # 2. Check Daily Budget (L4 Redis)
     try:
@@ -171,7 +178,8 @@ def execute_cost_controlled_search(query: str, max_daily_queries: int = 500, log
                 f"✅ Search budget check passed: {current_count}/{max_daily_queries}")
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.warning(
                 f"L4 Redis rate limiter failed ({e}). Proceeding without limit check.")
 
@@ -183,7 +191,8 @@ def execute_cost_controlled_search(query: str, max_daily_queries: int = 500, log
         return brave_search(query=query, count=5)
 
     except Exception as e:
-        if logger:
+pass
+if logger:
             logger.error(f"Brave Search MCP failed: {e}")
         return None
 

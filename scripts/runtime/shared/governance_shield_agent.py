@@ -15,7 +15,8 @@ from typing import List
 try:
     from pydantic import BaseModel, Field
 except ImportError:
-    # Define simple mock classes for compilation if pydantic is not available
+    pass
+# Define simple mock classes for compilation if pydantic is not available
     class BaseModel:
         pass
     def Field(default_factory=None, description=None, DESCRIPTION=None, **kwargs):
@@ -171,7 +172,7 @@ class GovernanceShieldAgent:
             return SANITIZED
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error sanitizing claims: {str(e)}")
             return content
 
@@ -191,7 +192,7 @@ class GovernanceShieldAgent:
                 return self._generate_standard_protocol(risk_profile)
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
                 validation_strategy="Comprehensive testing before deployment",
@@ -219,7 +220,7 @@ class GovernanceShieldAgent:
             return AUDITED
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error auditing outreach: {str(e)}")
             return email_draft
 
@@ -284,7 +285,7 @@ class GovernanceShieldAgent:
             )
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
                 industry_sensitivity=IndustrySensitivity.MEDIUM,
@@ -401,3 +402,4 @@ def sanitize_content(content: str) -> str:
     """
     AGENT = create_governance_shield_agent()
     return AGENT.sanitize_claims(content)
+

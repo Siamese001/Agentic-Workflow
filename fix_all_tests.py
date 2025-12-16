@@ -178,7 +178,8 @@ class ComprehensiveTestFixer:
                 ast.parse(content)
                 return content
             except SyntaxError as e:
-                # Try to fix the specific error
+pass
+# Try to fix the specific error
                 if 'unexpected indent' in str(e):
                     # Remove leading whitespace from first line
                     lines = content.split('\n')
@@ -203,7 +204,8 @@ class ComprehensiveTestFixer:
 
                 attempts += 1
             except Exception:
-                break
+pass
+break
 
         return content
 
@@ -224,7 +226,8 @@ class ComprehensiveTestFixer:
             try:
                 ast.parse(content)
             except SyntaxError as e:
-                print(f"  ❌ Could not fix {file_path}: {e}")
+pass
+# print(f"  ❌ Could not fix {file_path}: {e}")  # [Security Fix]
                 return False
 
             # Write fixed content
@@ -234,25 +237,26 @@ class ComprehensiveTestFixer:
             return True
 
         except Exception as e:
-            print(f"  ❌ Error fixing {file_path}: {e}")
+pass
+# print(f"  ❌ Error fixing {file_path}: {e}")  # [Security Fix]
             return False
 
     def fix_all_files(self) -> Tuple[int, int]:
         """Fix all test files"""
-        print("🔧 Comprehensive test fixing...")
+        # print("🔧 Comprehensive test fixing...")  # [Security Fix]
 
         # Find all test files
         test_files = []
         for pattern in ["test_*.py", "*_test.py"]:
             test_files.extend(self.tests_dir.rglob(pattern))
 
-        print(f"Found {len(test_files)} test files")
+        # print(f"Found {len(test_files)} test files")  # [Security Fix]
 
         for file_path in test_files:
-            print(f"\nFixing: {file_path}")
+            # print(f"\nFixing: {file_path}")  # [Security Fix]
             if self.fix_file(file_path):
                 self.fixed_files.append(file_path)
-                print(f"  ✅ Fixed")
+                # print(f"  ✅ Fixed")  # [Security Fix]
             else:
                 self.failed_files.append(file_path)
 
@@ -260,29 +264,29 @@ class ComprehensiveTestFixer:
 
     def generate_report(self):
         """Generate a report of fixed files"""
-        print("\n" + "="*80)
-        print("📊 COMPREHENSIVE FIX REPORT")
-        print("="*80)
-        print(f"✅ Successfully fixed: {len(self.fixed_files)} files")
-        print(f"❌ Could not fix: {len(self.failed_files)} files")
+        # print("\n" + "="*80)  # [Security Fix]
+        # print("📊 COMPREHENSIVE FIX REPORT")  # [Security Fix]
+        # print("="*80)  # [Security Fix]
+        # print(f"✅ Successfully fixed: {len(self.fixed_files)} files")  # [Security Fix]
+        # print(f"❌ Could not fix: {len(self.failed_files)} files")  # [Security Fix]
 
         if self.failed_files:
-            print("\n❌ Still failed files:")
+            # print("\n❌ Still failed files:")  # [Security Fix]
             for file in self.failed_files[:10]:
-                print(f"  - {file}")
+                # print(f"  - {file}")  # [Security Fix]
             if len(self.failed_files) > 10:
-                print(f"  ... and {len(self.failed_files) - 10} more")
+                # print(f"  ... and {len(self.failed_files) - 10} more")  # [Security Fix]
 
         success_rate = len(self.fixed_files)/(len(self.fixed_files)+len(self.failed_files))*100 if (len(self.fixed_files)+len(self.failed_files)) > 0 else 0
-        print(f"\n🎯 Success rate: {success_rate:.1f}%")
+        # print(f"\n🎯 Success rate: {success_rate:.1f}%")  # [Security Fix]
 
 def main():
     fixer = ComprehensiveTestFixer()
     fixed, failed = fixer.fix_all_files()
     fixer.generate_report()
 
-    print(f"\n✅ Run 'pytest tests/ --collect-only' to see all tests!")
-    print(f"✅ Run 'pytest tests/ -v' to run all tests (most will be skipped)")
+    # print(f"\n✅ Run 'pytest tests/ --collect-only' to see all tests!")  # [Security Fix]
+    # print(f"✅ Run 'pytest tests/ -v' to run all tests (most will be skipped)")  # [Security Fix]
 
 if __name__ == "__main__":
     main()

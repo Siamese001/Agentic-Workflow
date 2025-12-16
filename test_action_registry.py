@@ -1,8 +1,8 @@
 from action_registry import ActionRegistry
 
 # Test the Action Registry directly
-actions = ActionRegistry()
-tools = actions.get_tool_map()
+actions = ActionRegistry()  # GLOBAL: Review if this should be constant
+tools = actions.get_tool_map()  # GLOBAL: Review if this should be constant
 
 # print("Available tools:", list(tools.keys()))  # [Security Fix]
 

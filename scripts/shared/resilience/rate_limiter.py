@@ -12,7 +12,7 @@ from typing import Dict, Union
 
 from tenacity import retry, stop_after_attempt, wait_fixed
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class RateLimitExceeded(Exception):
@@ -244,3 +244,4 @@ class RateLimiter:
             return limiter.request_count < limiter.max_requests
 
         return True
+

@@ -278,7 +278,8 @@ pass
             import ast
             ast.parse(code)
         except SyntaxError as e:
-            raise CanonViolationError(
+pass
+raise CanonViolationError(
                 f"Generated code has syntax error: {e}",
                 violation_type="syntax_error",
                 agent_id=self.agent_id
@@ -306,7 +307,8 @@ pass
             ast_str = ast.dump(tree)
             return hashlib.sha256(ast_str.encode()).hexdigest()[:16]
         except Exception:
-            return "syntax_error"
+pass
+return "syntax_error"
 
 
 class AuditorAgent(BaseAgent):
@@ -405,7 +407,8 @@ class AuditorAgent(BaseAgent):
             ast.parse(code)
             return {"valid": True, "errors": []}
         except SyntaxError as e:
-            return {
+pass
+return {
                 "valid": False,
                 "errors": [f"Syntax error at line {e.lineno}: {e.msg}"]
             }
@@ -518,3 +521,4 @@ def create_agent(agent_type: str, config: Optional[Dict[str, Any]] = None) -> Ba
         raise ValueError(f"Unknown agent type: {agent_type}")
 
     return agents[agent_type](config)
+

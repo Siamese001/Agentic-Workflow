@@ -29,7 +29,9 @@ class DockerSandbox:
             return logs
 
         except Exception as e:
-            return f"Sandbox Error: {str(e)}"
+pass
+return f"Sandbox Error: {str(e)}"
 
     def _indent(self: Any, text: str) -> str:
         return "\n".join("    " + line for line in text.splitlines())
+

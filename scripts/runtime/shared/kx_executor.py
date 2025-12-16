@@ -175,7 +175,7 @@ class KXNodeExecutor:
             return sources[:config.rag_config.min_retrievers]
 
         except Exception as e:
-            LOGGER.warning(f"RAG retrieval failed for K.X node {config.node_id}: {e}")
+LOGGER.warning(f"RAG retrieval failed for K.X node {config.node_id}: {e}")
             return []
 
     def _build_messages(
@@ -424,3 +424,4 @@ def execute_kx_node(
     # Execute node
     executor = KXNodeExecutor(agent_executor)
     return executor.execute_node(node_key, context)
+

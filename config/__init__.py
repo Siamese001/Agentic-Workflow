@@ -74,3 +74,4 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -
 
     logger.info(f"Created Config instance with config: {final_config}")
     return final_config
+

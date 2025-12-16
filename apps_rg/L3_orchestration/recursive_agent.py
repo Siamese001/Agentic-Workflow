@@ -180,7 +180,7 @@ Format as JSON:
             return plan
 
         except Exception as e:
-            logger.error(f"Failed to parse decomposition: {e}")
+logger.error(f"Failed to parse decomposition: {e}")
             # Fallback: create a single task
             return RecursivePlan(
                 main_goal=goal,
@@ -384,7 +384,7 @@ Format as JSON:
             }
 
         except Exception as e:
-            logger.error(f"Subtask {task.task_id} failed: {e}")
+logger.error(f"Subtask {task.task_id} failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -435,7 +435,7 @@ Format as JSON:
             }
 
         except Exception as e:
-            return {
+return {
                 "success": False,
                 "error": str(e),
                 "execution_mode": "direct"
@@ -550,3 +550,4 @@ def create_recursive_planner(
         max_depth=max_depth,
         max_parallel_subtasks=max_parallel_subtasks
     )
+

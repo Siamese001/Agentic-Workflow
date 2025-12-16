@@ -108,7 +108,7 @@ class ScriptsPlanningOrchestrator:
             return result
 
         except Exception as e:
-            self.logger.error(f"Scripts planning failed: {str(e)}")
+self.logger.error(f"Scripts planning failed: {str(e)}")
             return ScriptsPlanningResult(
                 success=False,
                 errors=[str(e)],
@@ -304,3 +304,4 @@ if __name__ == "__main__":
     ]
 
     result = plan_script_execution(example_tasks)
+

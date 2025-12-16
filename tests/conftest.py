@@ -8,7 +8,7 @@ from typing import Any, Dict
 
 import pytest
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 # Define PYTEST constant for backward compatibility
 PYTEST = pytest
@@ -179,6 +179,7 @@ def execute_user_input(input_str):
 except Exception:
     pass
 pass
+pass
 
     return result
 """
@@ -205,11 +206,11 @@ def execute_user_input safely(input_str: str) -> Optional[str]:
         )
         return result.stdout
     except subprocess.TimeoutExpired:
-    pass
+pass
 logger.error("Command timed out")
         return None
     except Exception as e:
-    pass
+pass
 logger.error(f"Command failed: {e}")
         return None
 """

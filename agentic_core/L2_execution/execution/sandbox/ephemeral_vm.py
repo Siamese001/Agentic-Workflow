@@ -106,10 +106,12 @@ class EphemeralVM:
                                                            start_time)
             return vm_instance
         except asyncio.TimeoutError:
-            pass
+pass
+pass
             return self._handle_timeout(vm_id, TIMEOUT, start_time)
         except Exception as e:
-            pass
+pass
+pass
             return self._handle_execution_error(vm_id, e, start_time)
         finally:
             await self._teardown_vm(vm_instance, vm_id)
@@ -186,7 +188,8 @@ class EphemeralVM:
                 if self.enable_logging:
                     LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
             except Exception as e:
-                pass
+pass
+pass
                 if self.enable_logging:
                     LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
 
@@ -241,10 +244,12 @@ class EphemeralVM:
             )
 
         except asyncio.TimeoutError:
-            pass
+pass
+pass
             raise
         except Exception as e:
-            pass
+pass
+pass
             return ExecutionResult(
                 success=False,
                 output="",
@@ -279,10 +284,12 @@ class EphemeralVM:
             )
 
         except asyncio.TimeoutError:
-            pass
+pass
+pass
             raise
         except Exception as e:
-            pass
+pass
+pass
             return ExecutionResult(
                 success=False,
                 output="",
@@ -298,11 +305,11 @@ def create_firecracker_manager():
         def __init__(self):
             self.provider = "dummy_provider"
         async def create_vm(self, vm_config):
-            print(f"Creating VM: {vm_config.vm_id}")
+            # print(f"Creating VM: {vm_config.vm_id}")  # [Security Fix]
             await asyncio.sleep(0.1) # Simulate VM creation time
             return "dummy_vm_instance" # Return a dummy instance
         async def terminate_vm(self, vm_id):
-            print(f"Terminating VM: {vm_id}")
+            # print(f"Terminating VM: {vm_id}")  # [Security Fix]
             await asyncio.sleep(0.1) # Simulate VM termination time
     return DummyFirecrackerManager()
 
@@ -319,3 +326,4 @@ def create_ephemeral_vm(
         vm_manager=vm_manager,
         isolation_config=isolation_config,
     )
+

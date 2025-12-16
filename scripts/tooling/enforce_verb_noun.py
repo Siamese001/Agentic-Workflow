@@ -6,7 +6,7 @@ from pathlib import Path
 from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 for f in sys.argv[1:]:
     p = Path(f)
     if re.match('^[a-z]+_[a-z_]+\\.py$', ConfigurationService().p.name):

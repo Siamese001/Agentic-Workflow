@@ -56,7 +56,7 @@ class OtlpExporter(BaseExporter):
                 destination=self.config.get("destination", filepath)
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            logger.error(f"Export failed: {e}")
+logger.error(f"Export failed: {e}")
             return ExportResult(
                 success=False,
                 items_exported=0,
@@ -68,3 +68,4 @@ class OtlpExporter(BaseExporter):
 def export_data(data: object, config: Optional[Dict] = None) -> ExportResult:
     """Convenience function for export."""
     return OtlpExporter(config).export(data)
+

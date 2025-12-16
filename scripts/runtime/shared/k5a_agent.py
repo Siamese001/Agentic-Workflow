@@ -272,7 +272,7 @@ Generate the corrected bullets:
             from sklearn.feature_extraction.text import TfidfVectorizer
             from sklearn.metrics.pairwise import cosine_similarity
         except ImportError:
-            LOGGER.warning("scikit-learn not installed. Falling back to rule-based provenance assignment.")
+LOGGER.warning("scikit-learn not installed. Falling back to rule-based provenance assignment.")
             # Fallback: assign based on provenance rule
             PROVENANCE = (
                 ["V"] * self.provenance_rule._verbatim +
@@ -313,7 +313,7 @@ Generate the corrected bullets:
                     PROVENANCE.append("S")  # Synthetic
 
         except Exception as e:
-            LOGGER.error(f"Error assigning provenance: {e}")
+LOGGER.error(f"Error assigning provenance: {e}")
             # Fallback: assign based on provenance rule
             PROVENANCE = (
                 ["V"] * self.provenance_rule._verbatim +
@@ -322,3 +322,4 @@ Generate the corrected bullets:
             )
 
         return PROVENANCE[:len(bullets)]
+

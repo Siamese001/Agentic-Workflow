@@ -100,7 +100,7 @@ class LLMJudger:
                 tree = ast.parse(new_code)
                 new_ast = ast.dump(tree, include_attributes=True)
             except SyntaxError as e:
-                logger.error(f"Failed to parse new code: {e}")
+logger.error(f"Failed to parse new code: {e}")
                 return None, SemanticJudgement(
                     is_equivalent=False,
                     confidence=0.0,
@@ -187,7 +187,7 @@ class LLMJudger:
             return judgement
 
         except Exception as e:
-            logger.error(f"Failed to get LLM judgement: {e}")
+logger.error(f"Failed to get LLM judgement: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -312,7 +312,7 @@ Consider if the validation logic would be appropriate.
             return judgement
 
         except Exception as e:
-            logger.error(f"Failed to validate policy key: {e}")
+logger.error(f"Failed to validate policy key: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -333,3 +333,4 @@ def get_judger() -> LLMJudger:
     if _judger is None:
         _judger = LLMJudger()
     return _judger
+

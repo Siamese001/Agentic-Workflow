@@ -1,7 +1,7 @@
 """Security and Policy Enforcement. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .agent_permissions import (
     AgentPermissionManager,
@@ -18,3 +18,4 @@ __all__ = [
     "PermissionCheck",
     "create_permission_manager",
 ]
+

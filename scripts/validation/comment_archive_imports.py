@@ -46,7 +46,7 @@ def comment_archive_imports() -> None:
         try:
             CONTENT = py_file.read_text(encoding='utf-8')
         except Exception as e:
-    pass
+pass
 logger.info(f"Error reading {py_file}: {e}")
             continue
 

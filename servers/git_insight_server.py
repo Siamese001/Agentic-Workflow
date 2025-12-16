@@ -39,7 +39,7 @@ def analyze_hotspots(days: int = 30, limit: int = 10) -> str:
                 churn_map[file.filename] += file.added_lines + \
                     file.deleted_lines
     except Exception as e:
-        return f"Error analyzing repository at {path}: {str(e)}"
+return f"Error analyzing repository at {path}: {str(e)}"
 
     if commit_count == 0:
         return f"No commits found in the last {days} days."
@@ -82,7 +82,7 @@ def file_history_analytics(file_path: str) -> str:
             if created_at is None:
                 created_at = commit.author_date
     except Exception as e:
-        return f"Error analyzing file {file_path}: {str(e)}"
+return f"Error analyzing file {file_path}: {str(e)}"
 
     if revisions == 0:
         return f"File '{file_path}' not found in git history."
@@ -127,7 +127,7 @@ def detect_logical_coupling(file_path: str, min_correlation: float = 0.3) -> str
                 if file.filename != file_path:
                     co_changed[file.filename] += 1
     except Exception as e:
-        return f"Error analyzing coupling: {str(e)}"
+return f"Error analyzing coupling: {str(e)}"
 
     if total_commits_involving_target < 3:
         return f"Not enough history ({total_commits_involving_target} commits) to determine coupling for {file_path}."
@@ -158,3 +158,4 @@ def _format_counter(counter: Counter) -> str:
 
 if __name__ == "__main__":
     mcp.run()
+

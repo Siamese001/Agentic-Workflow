@@ -1,7 +1,7 @@
 """Agent Discovery and Registry. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 __all__ = [
@@ -11,3 +11,4 @@ __all__ = [
     "RegistrationResult",
     "create_agent_registry",
 ]
+

@@ -65,7 +65,7 @@ class SDKEntry:
             __import__(self.module)
             return True
         except ImportError:
-            return False
+return False
 
 
 def has_api_key(self: Any) -> bool:
@@ -435,3 +435,4 @@ def get_vector_store(config: Optional[Dict[str, Any]] = None) -> Any:
             return MockCollection(self.collections[name])
 
     return MockVectorStore(config)
+

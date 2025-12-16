@@ -249,7 +249,8 @@ def main():
         logger.info("  ✓ Real-time learning updates")
 
     except Exception as e:
-        logger.error(f"System error: {e}")
+pass
+logger.error(f"System error: {e}")
         raise
 
     return 0

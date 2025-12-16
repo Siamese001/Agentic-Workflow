@@ -101,9 +101,11 @@ class TestSyntaxFixer:
             ast.parse(content)
             return True, ""
         except SyntaxError as e:
-            return False, f"Line {e.lineno}: {e.msg}"
+pass
+return False, f"Line {e.lineno}: {e.msg}"
         except Exception as e:
-            return False, str(e)
+pass
+return False, str(e)
 
     def fix_file(self, file_path: Path) -> bool:
         """Fix syntax errors in a single file"""
@@ -126,28 +128,29 @@ class TestSyntaxFixer:
                     f.write(content)
                 return True
             else:
-                print(f"  ❌ Could not fix {file_path}: {error}")
+                # print(f"  ❌ Could not fix {file_path}: {error}")  # [Security Fix]
                 return False
 
         except Exception as e:
-            print(f"  ❌ Error fixing {file_path}: {e}")
+pass
+# print(f"  ❌ Error fixing {file_path}: {e}")  # [Security Fix]
             return False
 
     def fix_all_files(self) -> Tuple[int, int]:
         """Fix all test files in the directory"""
-        print("🔧 Fixing test syntax errors...")
+        # print("🔧 Fixing test syntax errors...")  # [Security Fix]
 
         # Find all Python test files
         test_files = list(self.tests_dir.rglob("test_*.py"))
         test_files.extend(self.tests_dir.rglob("*_test.py"))
 
-        print(f"Found {len(test_files)} test files")
+        # print(f"Found {len(test_files)} test files")  # [Security Fix]
 
         for file_path in test_files:
-            print(f"\nFixing: {file_path}")
+            # print(f"\nFixing: {file_path}")  # [Security Fix]
             if self.fix_file(file_path):
                 self.fixed_files.append(file_path)
-                print(f"  ✅ Fixed")
+                # print(f"  ✅ Fixed")  # [Security Fix]
             else:
                 self.failed_files.append(file_path)
 
@@ -155,18 +158,18 @@ class TestSyntaxFixer:
 
     def generate_report(self):
         """Generate a report of fixed files"""
-        print("\n" + "="*80)
-        print("📊 FIX REPORT")
-        print("="*80)
-        print(f"✅ Successfully fixed: {len(self.fixed_files)} files")
-        print(f"❌ Could not fix: {len(self.failed_files)} files")
+        # print("\n" + "="*80)  # [Security Fix]
+        # print("📊 FIX REPORT")  # [Security Fix]
+        # print("="*80)  # [Security Fix]
+        # print(f"✅ Successfully fixed: {len(self.fixed_files)} files")  # [Security Fix]
+        # print(f"❌ Could not fix: {len(self.failed_files)} files")  # [Security Fix]
 
         if self.failed_files:
-            print("\n❌ Failed files:")
+            # print("\n❌ Failed files:")  # [Security Fix]
             for file in self.failed_files:
-                print(f"  - {file}")
+                # print(f"  - {file}")  # [Security Fix]
 
-        print(f"\n🎯 Success rate: {len(self.fixed_files)/(len(self.fixed_files)+len(self.failed_files))*100:.1f}%")
+        # print(f"\n🎯 Success rate: {len(self.fixed_files)/(len(self.fixed_files)+len(self.failed_files))*100:.1f}%")  # [Security Fix]
 
 def main():
     import argparse
@@ -180,17 +183,17 @@ def main():
     fixer = TestSyntaxFixer(args.dir)
 
     if args.dry_run:
-        print("🔍 Dry run mode - no files will be modified")
+        # print("🔍 Dry run mode - no files will be modified")  # [Security Fix]
         # Just count files
         test_files = list(Path(args.dir).rglob("test_*.py"))
         test_files.extend(Path(args.dir).rglob("*_test.py"))
-        print(f"Found {len(test_files)} test files to potentially fix")
+        # print(f"Found {len(test_files)} test files to potentially fix")  # [Security Fix]
     else:
         fixed, failed = fixer.fix_all_files()
         fixer.generate_report()
 
         if fixed > 0:
-            print(f"\n✅ Run 'pytest tests/ --collect-only' to see the results!")
+            # print(f"\n✅ Run 'pytest tests/ --collect-only' to see the results!")  # [Security Fix]
 
 if __name__ == "__main__":
     main()

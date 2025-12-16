@@ -89,7 +89,8 @@ class CoreMCPTester:
                             "All Redis operations successful")
 
         except Exception as e:
-            self.log_result("Redis MCP", "FAIL", str(e))
+pass
+self.log_result("Redis MCP", "FAIL", str(e))
 
 
     def test_filesystem_mcp(self):
@@ -131,13 +132,15 @@ class CoreMCPTester:
             try:
                 os.remove(test_file)
             except Exception:
-                pass
+pass
+pass
 
             self.log_result("Filesystem MCP", "PASS",
                             "File operations successful")
 
         except Exception as e:
-            self.log_result("Filesystem MCP", "FAIL", str(e))
+pass
+self.log_result("Filesystem MCP", "FAIL", str(e))
 
     def test_gitkraken_mcp(self):
         """Test GitKraken MCP operations"""
@@ -177,10 +180,12 @@ class CoreMCPTester:
             try:
                 os.remove(test_file)
             except Exception:
-                pass
+pass
+pass
 
         except Exception as e:
-            self.log_result("GitKraken MCP", "FAIL", str(e))
+pass
+self.log_result("GitKraken MCP", "FAIL", str(e))
 
     def test_gemini_flash_connection(self):
         """Test Gemini Flash API connection"""
@@ -210,7 +215,8 @@ class CoreMCPTester:
                                 f"Unexpected response: {response[:100]}")
 
         except Exception as e:
-            self.log_result("Gemini Flash API", "FAIL", str(e))
+pass
+self.log_result("Gemini Flash API", "FAIL", str(e))
 
     def test_mcp_tool_integration(self):
         """Test MCP tool integration with LLM"""
@@ -239,10 +245,12 @@ class CoreMCPTester:
             try:
                 os.remove("integration_test.txt")
             except Exception:
-                pass
+pass
+pass
 
         except Exception as e:
-            self.log_result("MCP Integration", "FAIL", str(e))
+pass
+self.log_result("MCP Integration", "FAIL", str(e))
 
     def run_all_tests(self):
         """Run all Phase 1 core tests"""

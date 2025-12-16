@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 # Test 1: Manifest Integrity Check
 def test_manifest_integrity():
     """Test that corrupt manifests are rejected."""
-    print("\n🛡️  Running Test 1: Integrity Gate (Sabotage)...")
+    # print("\n🛡️  Running Test 1: Integrity Gate (Sabotage)...")  # [Security Fix]
 
     # Import the function
     from orchestrator import validate_manifest_integrity
@@ -23,10 +23,10 @@ def test_manifest_integrity():
     try:
         result = validate_manifest_integrity(tmp_path)
         if not result:
-            print("   ✅ Orchestrator successfully rejected corrupt manifest.")
+            # print("   ✅ Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
             return True
         else:
-            print("   ❌ Security Flaw: Orchestrator accepted corrupt JSON!")
+            # print("   ❌ Security Flaw: Orchestrator accepted corrupt JSON!")  # [Security Fix]
             return False
     finally:
         os.remove(tmp_path)
@@ -34,7 +34,7 @@ def test_manifest_integrity():
 # Test 2: Memory Ghost Shield
 def test_memory_filtering():
     """Test that memory queries include hash filtering."""
-    print("🛡️  Running Test 2: Memory Ghost Shield...")
+    # print("🛡️  Running Test 2: Memory Ghost Shield...")  # [Security Fix]
 
     try:
         from agent_logic_connectivity import CanonValidator
@@ -63,20 +63,21 @@ def test_memory_filtering():
         expected_filter = {"file_path": "auth.py", "content_hash": "HASH_V2_NEW"}
 
         if actual_filter == expected_filter:
-            print(f"   ✅ Query included strict hash filter: {actual_filter}")
+            # print(f"   ✅ Query included strict hash filter: {actual_filter}")  # [Security Fix]
             return True
         else:
-            print(f"   ❌ Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")
+            # print(f"   ❌ Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")  # [Security Fix]
             return False
 
     except Exception as e:
-        print(f"   ❌ Test failed with error: {e}")
+pass
+# print(f"   ❌ Test failed with error: {e}")  # [Security Fix]
         return False
 
 # Test 3: Error Classification
 def test_error_classification():
     """Test that errors are properly classified."""
-    print("🛡️  Running Test 3: Zombie Prevention...")
+    # print("🛡️  Running Test 3: Zombie Prevention...")  # [Security Fix]
 
     try:
         # Import the error definitions
@@ -85,21 +86,22 @@ def test_error_classification():
 
         # Check that SyntaxError is in terminal errors
         if SyntaxError in TERMINAL_ERRORS:
-            print("   ✅ SyntaxError correctly classified as terminal error.")
+            # print("   ✅ SyntaxError correctly classified as terminal error.")  # [Security Fix]
             return True
         else:
-            print("   ❌ SyntaxError not in terminal errors!")
+            # print("   ❌ SyntaxError not in terminal errors!")  # [Security Fix]
             return False
 
     except Exception as e:
-        print(f"   ❌ Test failed with error: {e}")
+pass
+# print(f"   ❌ Test failed with error: {e}")  # [Security Fix]
         return False
 
 def main():
     """Run all tests."""
-    print("=" * 60)
-    print("🔬 WINDSURF HARDENING VERIFICATION")
-    print("=" * 60)
+    # print("=" * 60)  # [Security Fix]
+    # print("🔬 WINDSURF HARDENING VERIFICATION")  # [Security Fix]
+    # print("=" * 60)  # [Security Fix]
 
     results = []
 
@@ -109,17 +111,17 @@ def main():
     results.append(test_error_classification())
 
     # Summary
-    print("\n" + "=" * 60)
+    # print("\n" + "=" * 60)  # [Security Fix]
     passed = sum(results)
     total = len(results)
 
     if passed == total:
-        print(f"✅ ALL TESTS PASSED ({passed}/{total})")
-        print("System is properly hardened!")
+        # print(f"✅ ALL TESTS PASSED ({passed}/{total})")  # [Security Fix]
+        # print("System is properly hardened!")  # [Security Fix]
         return 0
     else:
-        print(f"❌ SOME TESTS FAILED ({passed}/{total})")
-        print("System has security vulnerabilities!")
+        # print(f"❌ SOME TESTS FAILED ({passed}/{total})")  # [Security Fix]
+        # print("System has security vulnerabilities!")  # [Security Fix]
         return 1
 
 if __name__ == '__main__':

@@ -132,7 +132,7 @@ async def test_hardened_orchestrator_integration():
             assert results["final_state"]["progress_percentage"] == 100.0
             logger.info("* New workflow completed successfully")
         except AssertionError as e:
-    pass
+pass
 logger.info(f"X Assertion failed in Test 1:")
             logger.info(f"  Status: {results.get('status', 'MISSING')}")
             logger.info(
@@ -382,7 +382,7 @@ async def main():
             await test()
             PASSED += 1
         except Exception as e:
-    pass
+pass
 logger.info(f"X {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()

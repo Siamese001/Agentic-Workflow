@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional
 
 from dataclasses import dataclass
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -268,3 +268,4 @@ def create_strategist_biowriter(
 ) -> StrategistBioWriter:
     """Factory function to create StrategistBioWriter instance"""
     return StrategistBioWriter(config=config)
+

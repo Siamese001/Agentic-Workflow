@@ -2,7 +2,7 @@ import hashlib
 import logging
 from typing import Dict, Set
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,3 +30,4 @@ class GenealogyRegistry:
 
         self._fingerprints.add(FINGERPRINT)
         self._lineage_depths[trace_id] = current_depth + 1
+

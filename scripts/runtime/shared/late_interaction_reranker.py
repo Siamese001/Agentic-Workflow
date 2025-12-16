@@ -47,7 +47,7 @@ class LateInteractionReranker:
             import sentence_transformers
             return True
         except ImportError:
-            LOGGER.warning("sentence_transformers not available, reranker will be in fallback mode")
+LOGGER.warning("sentence_transformers not available, reranker will be in fallback mode")
             return False
 
     def _load_model(self: Any) -> bool:
@@ -77,13 +77,13 @@ class LateInteractionReranker:
             return True
 
         except ImportError as e:
-            LOGGER.error(f"Failed to import sentence_transformers: {e}")
+LOGGER.error(f"Failed to import sentence_transformers: {e}")
             LOGGER.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
             self._model_loaded = True  # Mark as loaded to avoid retrying
             return False
         except Exception as e:
-            LOGGER.error(f"Failed to load model {self.model_name}: {e}")
+LOGGER.error(f"Failed to load model {self.model_name}: {e}")
             LOGGER.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
             self._model_loaded = True
@@ -174,7 +174,7 @@ class LateInteractionReranker:
             return reranked
 
         except Exception as e:
-            LOGGER.error(f"Reranking failed: {e}")
+LOGGER.error(f"Reranking failed: {e}")
             # Fallback to original order
             LOGGER.info("Falling back to original document order")
             return documents[:top_k]
@@ -238,7 +238,7 @@ class LateInteractionReranker:
             return scored_docs[:top_k]
 
         except Exception as e:
-            LOGGER.error(f"Reranking with scores failed: {e}")
+LOGGER.error(f"Reranking with scores failed: {e}")
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
     def get_model_info(self: Any) -> dict:
@@ -266,7 +266,7 @@ class LateInteractionReranker:
                         "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
                     })
             except Exception as e:
-                LOGGER.warning(f"Ignored error when getting model info: {e}")
+LOGGER.warning(f"Ignored error when getting model info: {e}")
 
         return info
 
@@ -321,3 +321,4 @@ class PassThroughReranker:
             "fallback_mode": True,
             "available": True
         }
+

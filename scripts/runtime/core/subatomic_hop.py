@@ -223,7 +223,7 @@ class SubatomicHop:
             return final_checkpoint.partial_result or {}
 
         except Exception as e:
-            pass
+pass
             self.state = HopState.FAILED
             self.end_time = time.time()
             LOGGER.error(f"Hop {self.config.hop_id} failed: {e}")
@@ -276,7 +276,7 @@ class SubatomicHop:
                 break
 
             except Exception as e:
-                pass
+pass
                 retry_count += 1
                 self.stage_retry_counts[stage] = retry_count
 
@@ -373,7 +373,7 @@ class SubatomicHop:
                     plan["prompt_injections_applied"] = True
 
                 except json.JSONDecodeError:
-                    pass
+pass
                     # Fallback to original plan if parsing fails
                     LOGGER.warning(
                         "Failed to parse enhanced plan, using original")
@@ -382,7 +382,7 @@ class SubatomicHop:
                     f"Applied prompt injections for hop type: {hop_type}")
 
             except Exception as e:
-                pass
+pass
                 LOGGER.error(f"Failed to apply prompt injections: {e}")
 
         # Store plan in context for ACT stage
@@ -504,7 +504,7 @@ class SubatomicHop:
                         return enhanced_kwargs
 
                     except json.JSONDecodeError:
-                        pass
+pass
                         # If parsing fails, add injections as context
                         kwargs["instructional_injections"] = {
                             "applied": True,
@@ -516,7 +516,7 @@ class SubatomicHop:
             return kwargs
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Failed to apply stage injections: {e}")
             return kwargs
 
@@ -541,7 +541,7 @@ class SubatomicHop:
             return {"output": result}
 
         except CircuitOpenError:
-            pass
+pass
             # Circuit is open - generation is failing
             LOGGER.critical("Generation Circuit OPEN. Node failed.")
             # No fallback possible for generation - raise critical failure
@@ -549,7 +549,7 @@ class SubatomicHop:
                 "LLM Service Unreachable - circuit breaker open")
 
         except Exception as e:
-            pass
+pass
             # Other execution errors
             LOGGER.error(f"Hop execution failed: {e}")
             raise StageExecutionError(f"Failed to execute hop: {e}")
@@ -621,7 +621,7 @@ class SubatomicHop:
                 timeout=15.0
             )
         except asyncio.TimeoutError:
-            pass
+pass
             LOGGER.warning(f"Reflection timed out for hop {self.config.hop_id}. Using signal assessment.")
             # Create a result based on signal assessment
             critique_result = CritiqueResult(
@@ -720,7 +720,7 @@ class SubatomicHop:
                 LOGGER.debug(f"Committed result to {final_file}")
 
             except Exception as e:
-                pass
+pass
                 # Clean up temp file if it exists
                 if temp_file.exists():
                     temp_file.unlink()
@@ -764,7 +764,7 @@ class SubatomicHop:
             LOGGER.debug(
                 f"Saved secure checkpoint for stage {checkpoint.stage.value}")
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Failed to save secure checkpoint: {e}")
             # Continue execution - checkpoint failure shouldn't stop the hop
 
@@ -784,14 +784,14 @@ class SubatomicHop:
 
                 LOGGER.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}")
         except CheckpointIntegrityError as e:
-            pass
+pass
             LOGGER.error(f"Checkpoint integrity validation failed: {e}")
             # Quarantine all checkpoints and start fresh
             self.checkpoint_manager.quarantine_all_checkpoints()
             LOGGER.warning(
                 "Quarantined all checkpoints due to integrity failure")
         except Exception as e:
-            pass
+pass
             LOGGER.warning(f"Failed to load secure checkpoint: {e}")
             # Continue without checkpoint - start fresh
 
@@ -825,7 +825,7 @@ class SubatomicHop:
             try:
                 checkpoint_file.unlink()
             except Exception as e:
-                pass
+pass
                 LOGGER.warning(f"Failed to cleanup {checkpoint_file}: {e}")
 
         LOGGER.debug(f"Cleaned up hop {self.config.hop_id}")
@@ -968,3 +968,4 @@ def subatomic_hop(config: Optional[SubatomicHopConfig]=None):
             )
         return wrapper
     return decorator
+

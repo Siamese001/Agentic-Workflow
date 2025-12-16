@@ -263,3 +263,4 @@ def create_k25_research_agent(
 ) -> K25DeepResearchAgent:
     """Docstring."""
     return K25DeepResearchAgent(company_name=company_name, company_url=company_url)
+

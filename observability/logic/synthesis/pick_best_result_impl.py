@@ -77,7 +77,7 @@ class PickBestResult:
                                     additional_info={'processed_at': time.time(),
                                                      'executor': self.__class__.__name__})
         except Exception as e:
-            exec_ctx.complete(success=False, error=e)
+exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
     def _execute_core(self,
@@ -109,4 +109,5 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         processor = create_processor(config)
         return True
     except Exception:
-        return False
+return False
+

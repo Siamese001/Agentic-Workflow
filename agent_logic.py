@@ -228,7 +228,8 @@ class CanonValidator:
 
 
         except Exception:
-            pass
+pass
+pass
 
         return 0.0
 

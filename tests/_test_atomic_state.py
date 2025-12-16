@@ -230,7 +230,7 @@ def test_rollback_on_failure():
             manager.checkpoint("workflow_rollback_test", state_b)
             assert False, "Checkpoint should have failed"
         except StatePersistenceError as e:
-    pass
+pass
 logger.info(f"✓ Checkpoint failed as expected: {e}")
 
         # Restore original method
@@ -459,7 +459,7 @@ def main():
             test()
             PASSED += 1
         except Exception as e:
-    pass
+pass
 logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()

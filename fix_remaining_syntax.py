@@ -112,9 +112,11 @@ class AdvancedSyntaxFixer:
             ast.parse(content)
             return True, ""
         except SyntaxError as e:
-            return False, f"Line {e.lineno}: {e.msg}"
+pass
+return False, f"Line {e.lineno}: {e.msg}"
         except Exception as e:
-            return False, str(e)
+pass
+return False, str(e)
 
     def fix_file(self, file_path: Path) -> bool:
         """Fix syntax errors in a single file"""
@@ -147,11 +149,12 @@ class AdvancedSyntaxFixer:
                         f.write(content)
                     return True
                 else:
-                    print(f"  ❌ Could not fix {file_path}: {error}")
+                    # print(f"  ❌ Could not fix {file_path}: {error}")  # [Security Fix]
                     return False
 
         except Exception as e:
-            print(f"  ❌ Error fixing {file_path}: {e}")
+pass
+# print(f"  ❌ Error fixing {file_path}: {e}")  # [Security Fix]
             return False
 
     def aggressive_fix(self, content: str, filename: str) -> str:
@@ -180,7 +183,7 @@ class AdvancedSyntaxFixer:
 
     def fix_remaining_files(self, failed_files: List[Path] = None) -> Tuple[int, int]:
         """Fix the remaining failed files"""
-        print("🔧 Applying advanced fixes to remaining files...")
+        # print("🔧 Applying advanced fixes to remaining files...")  # [Security Fix]
 
         if failed_files:
             target_files = failed_files
@@ -189,13 +192,13 @@ class AdvancedSyntaxFixer:
             target_files = list(self.tests_dir.rglob("test_*.py"))
             target_files.extend(self.tests_dir.rglob("*_test.py"))
 
-        print(f"Attempting to fix {len(target_files)} files")
+        # print(f"Attempting to fix {len(target_files)} files")  # [Security Fix]
 
         for file_path in target_files:
-            print(f"\nFixing: {file_path}")
+            # print(f"\nFixing: {file_path}")  # [Security Fix]
             if self.fix_file(file_path):
                 self.fixed_files.append(file_path)
-                print(f"  ✅ Fixed")
+                # print(f"  ✅ Fixed")  # [Security Fix]
             else:
                 self.failed_files.append(file_path)
 
@@ -203,20 +206,20 @@ class AdvancedSyntaxFixer:
 
     def generate_report(self):
         """Generate a report of fixed files"""
-        print("\n" + "="*80)
-        print("📊 ADVANCED FIX REPORT")
-        print("="*80)
-        print(f"✅ Successfully fixed: {len(self.fixed_files)} files")
-        print(f"❌ Could not fix: {len(self.failed_files)} files")
+        # print("\n" + "="*80)  # [Security Fix]
+        # print("📊 ADVANCED FIX REPORT")  # [Security Fix]
+        # print("="*80)  # [Security Fix]
+        # print(f"✅ Successfully fixed: {len(self.fixed_files)} files")  # [Security Fix]
+        # print(f"❌ Could not fix: {len(self.failed_files)} files")  # [Security Fix]
 
         if self.failed_files:
-            print("\n❌ Still failed files:")
+            # print("\n❌ Still failed files:")  # [Security Fix]
             for file in self.failed_files[:10]:  # Show first 10
-                print(f"  - {file}")
+                # print(f"  - {file}")  # [Security Fix]
             if len(self.failed_files) > 10:
-                print(f"  ... and {len(self.failed_files) - 10} more")
+                # print(f"  ... and {len(self.failed_files) - 10} more")  # [Security Fix]
 
-        print(f"\n🎯 Success rate: {len(self.fixed_files)/(len(self.fixed_files)+len(self.failed_files))*100:.1f}%")
+        # print(f"\n🎯 Success rate: {len(self.fixed_files)/(len(self.fixed_files)+len(self.failed_files))*100:.1f}%")  # [Security Fix]
 
 def main():
     fixer = AdvancedSyntaxFixer()
@@ -224,7 +227,7 @@ def main():
     fixer.generate_report()
 
     if fixed > 0:
-        print(f"\n✅ Run 'pytest tests/ --collect-only' to see the results!")
+        # print(f"\n✅ Run 'pytest tests/ --collect-only' to see the results!")  # [Security Fix]
 
 if __name__ == "__main__":
     main()

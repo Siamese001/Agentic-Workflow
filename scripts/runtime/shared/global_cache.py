@@ -270,7 +270,7 @@ class SimpleEmbedder:
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
             except ImportError:
-                pass
+pass
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
 
@@ -648,3 +648,4 @@ def cache_search_semantic(
     """
     cache = get_global_cache()
     return cache.get_semantic(query_text, threshold, max_results)
+

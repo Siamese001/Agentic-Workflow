@@ -2,7 +2,7 @@ import logging
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 'AIS repair / mitigation policies.\n\n\nLOGGER = logging.getLogger(__name__)\nPolicies consume FailureSignal-like inputs and propose coarse-grained\nrepair actions (retry, downgrade, replan, escalate).\n'
 
 

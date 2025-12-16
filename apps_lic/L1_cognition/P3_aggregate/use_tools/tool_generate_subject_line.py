@@ -31,6 +31,7 @@ class GenerateSubjectLine:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
+pass
 return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),

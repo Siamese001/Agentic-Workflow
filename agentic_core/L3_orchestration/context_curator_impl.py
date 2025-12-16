@@ -176,3 +176,4 @@ class ContextCurator:
 def create_context_curator(max_tokens: int = 8000, reserved_tokens: int = 1000) -> ContextCurator:
     """Factory function to create context curator. """
     return ContextCurator(max_tokens=max_tokens, reserved_tokens=reserved_tokens)
+

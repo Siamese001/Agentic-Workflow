@@ -173,3 +173,4 @@ def test_mzlo_hygiene_compliance():
     Test MZLO Hygiene Scan passes on all agents
     """
     pass
+

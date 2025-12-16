@@ -198,7 +198,8 @@ class CanonValidator:
             logger.info(f"✅ Stored new pattern in Redis: {pattern_id}")
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 
 
@@ -221,7 +222,8 @@ logger.error(f"Failed to store in Redis: {e}")
             index.upsert(pinecone_data)
             logger.info(f"✅ Stored new pattern in Pinecone: {pattern_id}")
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to store in Pinecone: {e}")
 
@@ -291,7 +293,8 @@ logger.error(f"Failed to store in Pinecone: {e}")
             return entries
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Redis query failed: {e}")
             return []
@@ -340,7 +343,8 @@ logger.error(f"Redis query failed: {e}")
             return entries
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Pinecone query failed: {e}")
             return []
@@ -394,6 +398,8 @@ logger.error(f"Pinecone query failed: {e}")
 except Exception:
     pass
 pass
+pass
+pass
 return 0.0
 
     def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
@@ -431,7 +437,8 @@ return 0.0
             logger.info(f"Promoted pattern {entry.id} to L1")
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to promote pattern to L1: {e}")
 
@@ -475,7 +482,8 @@ logger.error(f"Failed to promote pattern to L1: {e}")
                 f"Updated learning for {entry_id}: {'SUCCESS' if outcome else 'FAILURE'}")
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to update learning: {e}")
 
@@ -509,7 +517,8 @@ logger.error(f"Failed to update learning: {e}")
                 logger.info(f"Updated Pinecone learning for {entry_id}")
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to update Pinecone learning: {e}")
 
@@ -529,7 +538,8 @@ logger.error(f"Failed to update Pinecone learning: {e}")
             logger.info(f"Promoted pattern {entry_id} to L2")
 
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to promote to L2: {e}")
 
@@ -554,7 +564,8 @@ logger.error(f"Failed to promote to L2: {e}")
                 "keyspace_misses": redis_info.get("keyspace_misses", 0)
             }
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to get Redis stats: {e}")
 
@@ -568,7 +579,8 @@ logger.error(f"Failed to get Redis stats: {e}")
                 "index_fullness": index_stats.get("index_fullness", 0)
             }
         except Exception as e:
-    pass
+pass
+pass
 pass
 logger.error(f"Failed to get Pinecone stats: {e}")
 

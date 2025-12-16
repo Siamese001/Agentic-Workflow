@@ -28,7 +28,8 @@ class InputProcessingStage(PipelineStage):
             self.semantic_cache = SemanticCache()
             self.hyde_processor = HyDEProcessor()
         except ImportError:
-            self.semantic_cache = None
+pass
+self.semantic_cache = None
             self.hyde_processor = None
             logger.warning("SemanticCache or HyDEProcessor not available")
 
@@ -79,7 +80,8 @@ class InputProcessingStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            logger.error(f"Input processing failed: {e}")
+pass
+logger.error(f"Input processing failed: {e}")
             envelope.mark_stage_failed(
                 stage_name,
                 str(e),
@@ -142,3 +144,4 @@ class InputProcessingStage(PipelineStage):
     def stage_name(self: Any) -> str:
         """Get stage name."""
         return "input_processing"
+

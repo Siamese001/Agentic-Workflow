@@ -425,3 +425,4 @@ class SignedClaim:
         self.source = source
         self.confidence = confidence
         self.evidence = evidence
+

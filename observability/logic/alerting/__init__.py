@@ -6,7 +6,7 @@ Per-agent cost tracking with SPIFFE identity integration.
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .cost_tracker import CostTracker
 from .cost_alert import CostAlert
@@ -19,3 +19,4 @@ __all__ = [
 "CostMetrics",
 "create_cost_tracker",
 ]
+

@@ -291,7 +291,8 @@ class DAGEngine:
                 LOGGER.info("task_completed", extra={"task_id": task_id})
             return True
         except Exception as e:
-            task.status = TaskStatus.FAILED
+pass
+task.status = TaskStatus.FAILED
             task.error = str(e)
             failed_tasks.append(task_id)
             if self.enable_logging:
@@ -351,7 +352,8 @@ class DAGEngine:
             return context.get(condition, False)
 
         except Exception as e:
-            if self.enable_logging:
+pass
+if self.enable_logging:
                 LOGGER.warning("condition_evaluation_failed",
                                extra={"condition": condition,
                                       "error": str(e)})
@@ -395,3 +397,4 @@ class DAGEngine:
 
         if self.enable_logging:
             LOGGER.info("dag_reset")
+

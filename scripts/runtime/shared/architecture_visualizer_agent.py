@@ -153,7 +153,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return nodes, relationships
 
         except Exception as e:
-    pass
+pass
 logger.error(f"Failed to extract components: {e}")
             return [], []
 
@@ -256,7 +256,7 @@ logger.error(f"Failed to extract components: {e}")
             return artifact
 
         except Exception as e:
-    pass
+pass
 logger.error(f"Failed to generate diagram: {e}")
             return None
 
@@ -335,7 +335,7 @@ logger.error(f"Failed to generate diagram: {e}")
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-    pass
+pass
 logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:

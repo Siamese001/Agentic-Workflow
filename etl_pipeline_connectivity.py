@@ -112,7 +112,8 @@ class ETLPipeline:
                             self.stats["errors"] += 1
 
                 except Exception as e:
-                    logging.error(f"Failed to process {file_path}: {e}")
+pass
+logging.error(f"Failed to process {file_path}: {e}")
                     self.stats["errors"] += 1
 
                 pbar.update(1)

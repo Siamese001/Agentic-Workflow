@@ -15,9 +15,11 @@ class DockerSandbox:
         try:
             self.client = docker.from_env()
         except docker.errors.DockerException:
-            logger.warning("Docker is not running or not installed. Sandbox capabilities are disabled.")
+pass
+logger.warning("Docker is not running or not installed. Sandbox capabilities are disabled.")
         except Exception as e:
-            logger.warning(f"Failed to initialize Docker client: {e}")
+pass
+logger.warning(f"Failed to initialize Docker client: {e}")
 
     def run_command(self,
                     command: str,
@@ -47,7 +49,8 @@ class DockerSandbox:
             try:
                 self.client.images.get(self.image)
             except docker.errors.ImageNotFound:
-                logger.info(f"Pulling image {self.image}...")
+pass
+logger.info(f"Pulling image {self.image}...")
                 self.client.images.pull(self.image)
 
             container = self.client.containers.run(
@@ -69,7 +72,8 @@ class DockerSandbox:
             return exit_code, logs
 
         except Exception as e:
-            logger.error(f"Sandbox execution failed: {e}")
+pass
+logger.error(f"Sandbox execution failed: {e}")
             return -1, str(e)
 
         finally:
@@ -78,7 +82,8 @@ class DockerSandbox:
                     container.remove(force=True)
                     logger.info("Sandbox container destroyed.")
                 except Exception as e:
-                    logger.warning(f"Failed to remove container: {e}")
+pass
+logger.warning(f"Failed to remove container: {e}")
 
 def execute_in_sandbox(repo_path: str, command: str) -> bool:
     """

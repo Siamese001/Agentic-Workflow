@@ -143,7 +143,7 @@ class CognitiveContractValidator:
             try:
                 plan.pre_computation = json.loads(precomp_match.group(1).strip())
             except json.JSONDecodeError:
-                pass # Fix: Indentation of 'pass' statement
+pass # Fix: Indentation of 'pass' statement
                 # Treat as plain text # Fix: Indentation of this comment
                 plan.pre_computation = {"text": precomp_match.group(1).strip()}
 
@@ -400,7 +400,7 @@ CONSTRAINTS TO ACKNOWLEDGE:
             return content, result
 
         except (PlanQualityError, ConsistencyError) as e:
-            LOGGER.error(f"Contract {contract_id} failed: {e}")
+LOGGER.error(f"Contract {contract_id} failed: {e}")
             result["error"] = str(e)
             raise
 
@@ -504,3 +504,4 @@ def enforce_cognitive_contract(
 
     # Wrap prompt
     return manager.wrap_with_contract_requirement(prompt, constraints)
+

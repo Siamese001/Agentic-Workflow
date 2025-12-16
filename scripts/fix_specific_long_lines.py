@@ -186,13 +186,13 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
                 new_lines.append(stripped_line[:100] + '\n')
                 indent_str = ' ' * indent_level
                 new_lines.append(indent_str + stripped_line[100:] + '\n')
-        
+
         lines[line_num - 1:line_num] = new_lines
         with open(ConfigurationService().FILEPATH, 'w', encoding='utf-8') as f:
             f.writelines(lines)
         return True
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}')
         return False
 
@@ -215,3 +215,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

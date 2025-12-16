@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import List, Dict, Any
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -47,3 +47,4 @@ class MessageAssemblerResult:
     validation_results: List[ValidationResult]
     success: bool
     metadata: Dict[str, Any]
+

@@ -63,7 +63,8 @@ class CanaryMonitor:
             with open(TERMINATE_PID_PATH, 'r') as f:
                 pid = int(f.read().strip())
         except (ValueError, FileNotFoundError):
-            logger.error("❌ Cannot find agent PID for termination.")
+pass
+logger.error("❌ Cannot find agent PID for termination.")
             sys.exit(1) # Kill the monitor itself if it can't kill the agent
 
         logger.critical(f"🔥 EMERGENCY SHUTDOWN: Killing Agent PID {pid} to contain breach.")
@@ -75,9 +76,11 @@ class CanaryMonitor:
                 os.kill(pid, signal.SIGKILL)
             logger.info("Agent process terminated.")
         except ProcessLookupError:
-            logger.warning(f"PID {pid} not found (already dead).")
+pass
+logger.warning(f"PID {pid} not found (already dead).")
         except PermissionError:
-            logger.error(f"❌ Permission denied to kill PID {pid}.")
+pass
+logger.error(f"❌ Permission denied to kill PID {pid}.")
 
         sys.exit(1) # Ensure the monitor also exits
 
@@ -88,7 +91,8 @@ def run_canary_monitor():
         while monitor.observer.is_alive():
             time.sleep(1)
     except KeyboardInterrupt:
-        pass
+pass
+pass
     finally:
         monitor.stop()
 

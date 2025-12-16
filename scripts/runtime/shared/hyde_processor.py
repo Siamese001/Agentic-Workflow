@@ -270,7 +270,7 @@ class HyDEProcessor:
                     )
 
         except Exception as e:
-            LOGGER.error(f"HyDE expansion failed: {str(e)}")
+LOGGER.error(f"HyDE expansion failed: {str(e)}")
 
             # Emergency fallback
             fallback_query = self._keyword_fallback(original_query,
@@ -332,7 +332,7 @@ class HyDEProcessor:
                         LOGGER.warning(f"Generated invalid document on attempt {attempt + 1}")
 
             except Exception as e:
-                LOGGER.warning(f"Generation attempt {attempt + 1} failed: {str(e)}")
+LOGGER.warning(f"Generation attempt {attempt + 1} failed: {str(e)}")
                 if attempt == self.max_retries:
                     break
 
@@ -409,7 +409,7 @@ class HyDEProcessor:
             LOGGER.info("LLM client not implemented, using fallback")
             return None
         except Exception as e:
-            LOGGER.error(f"LLM call failed: {str(e)}")
+LOGGER.error(f"LLM call failed: {str(e)}")
             return None
 
     def _mock_generation(self, query: str, archetype: str, industry: str) -> str:
@@ -508,3 +508,4 @@ def expand_query_with_hyde(
     processor = create_hyde_processor(llm_client=llm_client)
     result = processor.expand_query(query, archetype, industry)
     return result.expanded_query
+

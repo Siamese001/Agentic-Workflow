@@ -179,7 +179,7 @@ class MetricAugmenter:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error augmenting bullet: {str(e)}")
+LOGGER.error(f"Error augmenting bullet: {str(e)}")
             return AugmentedBullet(
                 original_text=bullet_text,
                 technical_metric=None,
@@ -249,7 +249,7 @@ class MetricAugmenter:
             return augmented
 
         except Exception as e:
-            LOGGER.error(f"Error augmenting batch: {str(e)}")
+LOGGER.error(f"Error augmenting batch: {str(e)}")
             return [AugmentedBullet(
                 original_text=b,
                 technical_metric=None,
@@ -345,7 +345,7 @@ class MetricAugmenter:
             return detected_metrics
 
         except Exception as e:
-            LOGGER.error(f"Error detecting metrics: {str(e)}")
+LOGGER.error(f"Error detecting metrics: {str(e)}")
             return []
 
     def _estimate_impact(
@@ -442,7 +442,7 @@ class MetricAugmenter:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error estimating impact: {str(e)}")
+LOGGER.error(f"Error estimating impact: {str(e)}")
             return None
 
     def _extract_number(self, value_str: str) -> Optional[float]:
@@ -465,7 +465,7 @@ class MetricAugmenter:
             else:
                 return float(value_str)
         except (ValueError, AttributeError):
-            return None
+return None
 
     def _create_augmented_text(self, original: str, impact: BusinessImpact) -> str:
         """Create final augmented text with business impact.
@@ -490,7 +490,7 @@ class MetricAugmenter:
             return augmented
 
         except Exception as e:
-            LOGGER.error(f"Error creating augmented text: {str(e)}")
+LOGGER.error(f"Error creating augmented text: {str(e)}")
             return original
 
 # Factory function for easy instantiation
@@ -524,3 +524,4 @@ def augment_metrics(
     augmenter = create_metric_augmenter(industry=industry)
     augmented_bullets = augmenter.augment_batch(bullets)
     return [b.final_text for b in augmented_bullets]
+

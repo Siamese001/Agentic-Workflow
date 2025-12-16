@@ -173,7 +173,7 @@ class GetInfoUnderstandRequest:
             )
 
         except Exception as e:
-            # Fix: Incorrect indentation for pass and exec_ctx.complete
+# Fix: Incorrect indentation for pass and exec_ctx.complete
             pass
             exec_ctx.complete(success=False, error=e)
 
@@ -215,7 +215,7 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         executor = create_processor(config)
         return True
     except Exception:
-        # Fix: Incorrect indentation for pass and return False
+# Fix: Incorrect indentation for pass and return False
         pass
         return False
 
@@ -223,3 +223,4 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
 # Module initialization
 # logger.info should be LOGGER.info for module-level logger
 LOGGER.info(f"{__name__} module loaded successfully")
+

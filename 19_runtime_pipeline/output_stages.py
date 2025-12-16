@@ -33,7 +33,8 @@ class QualityValidationStage(PipelineStage):
             self.constitutional_ai = ConstitutionalAISystem()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            self.bias_auditor = None
+pass
+self.bias_auditor = None
             self.pii_scrubber = None
             self.constitutional_ai = None
             self.semantic_cache = None
@@ -82,7 +83,8 @@ class QualityValidationStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            logger.error(f"Quality validation failed: {e}")
+pass
+logger.error(f"Quality validation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(
                 e), (time.time() - start_time) * 1000)
             raise
@@ -148,7 +150,8 @@ class OutputFormattingStage(PipelineStage):
         try:
             self.semantic_cache = SemanticCache()
         except ImportError:
-            self.semantic_cache = None
+pass
+self.semantic_cache = None
             logger.warning("SemanticCache not available")
 
 
@@ -192,7 +195,8 @@ class OutputFormattingStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            logger.error(f"Output formatting failed: {e}")
+pass
+logger.error(f"Output formatting failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
@@ -260,3 +264,4 @@ class OutputFormattingStage(PipelineStage):
     def stage_name(self: Any) -> str:
         """Get stage name."""
         return "output_formatting"
+

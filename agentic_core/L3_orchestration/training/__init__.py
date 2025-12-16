@@ -1,7 +1,7 @@
 """Agent Training and Self-Evolution. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 __all__ = [
 "AgentGym",
@@ -10,3 +10,4 @@ __all__ = [
 "TrainingSession",
 "create_agent_gym",
 ]
+

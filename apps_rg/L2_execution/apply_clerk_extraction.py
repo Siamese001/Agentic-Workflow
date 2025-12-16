@@ -6,7 +6,7 @@ import logging
 import re
 from typing import Dict, List, Tuple
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ClerkExtractor:
@@ -88,3 +88,4 @@ class ClerkExtractor:
         for pattern in patterns:
             metrics.extend(re.findall(pattern, text))
         return metrics
+

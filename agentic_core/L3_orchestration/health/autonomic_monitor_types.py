@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -63,3 +63,4 @@ class HealthAlert:
                 'metrics': self.metrics.to_dict(),
                 'recommended_actions': self.recommended_actions,
                 'timestamp': self.TIMESTAMP}
+

@@ -27,7 +27,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ValidationSeverity(Enum):
@@ -391,3 +391,4 @@ class IntegrityGateExecutor:
 def create_integrity_gate_executor() -> IntegrityGateExecutor:
     """Factory function to create IntegrityGateExecutor instance"""
     return IntegrityGateExecutor()
+

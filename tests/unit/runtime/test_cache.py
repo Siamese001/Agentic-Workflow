@@ -46,3 +46,4 @@ def test_returns_bool():
     Docstring.
     """
     pass
+

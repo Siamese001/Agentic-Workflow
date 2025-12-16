@@ -83,7 +83,7 @@ class KNodeScanner:
             with open(file_path, 'r', encoding='utf-8') as f:
                 CONTENT = f.read()
         except Exception as e:
-            LOGGER.error(f"Failed to read {file_path}: {e}")
+LOGGER.error(f"Failed to read {file_path}: {e}")
             return {"path": str(file_path), "references": [], "error": str(e)}
 
         REFERENCES = []
@@ -169,7 +169,7 @@ class KNodeMigrator:
                 module_name, attr_name = role_enum_str.split('.')
                 role_value = getattr(globals()[module_name], attr_name)
             except (ValueError, KeyError, AttributeError):
-                # Fallback if parsing fails, or use a default
+# Fallback if parsing fails, or use a default
                 role_value = role_enum_str.split('.')[-1] # e.g., "RESEARCHER"
 
             REPLACEMENTS[legacy] = role_value
@@ -237,7 +237,7 @@ class KNodeMigrator:
                 return False
 
         except Exception as e:
-            LOGGER.error(f"Failed to migrate {file_path}: {e}")
+LOGGER.error(f"Failed to migrate {file_path}: {e}")
             return False
 
     def migrate_configuration(self, config_path: Path) -> bool:
@@ -292,7 +292,7 @@ class KNodeMigrator:
             return False
 
         except Exception as e:
-            LOGGER.error(f"Failed to migrate configuration {config_path}: {e}")
+LOGGER.error(f"Failed to migrate configuration {config_path}: {e}")
             return False
 
 
@@ -445,3 +445,4 @@ def migrate_project(root_path: str = ".", dry_run: bool = False) -> bool:
     RESULTS = run_full_migration(PATH, dry_run)
 
     return RESULTS["success"]
+

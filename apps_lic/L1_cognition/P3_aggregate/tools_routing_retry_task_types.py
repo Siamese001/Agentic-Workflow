@@ -57,3 +57,4 @@ class ProcessingResult:
     error_message: Optional[str] = None
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
+

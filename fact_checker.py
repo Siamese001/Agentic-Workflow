@@ -26,7 +26,8 @@ class FactChecker:
             with open(self.record_path, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            logger.error(f"Failed to load Golden Record: {e}")
+pass
+logger.error(f"Failed to load Golden Record: {e}")
             return {}
 
     def validate_skills(self, draft_text: str) -> bool:

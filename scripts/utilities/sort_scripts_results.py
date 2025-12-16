@@ -47,3 +47,4 @@ def optimize(items: List[Any],
              config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""
     return SortScriptsResults(config).optimize(items, key)
+

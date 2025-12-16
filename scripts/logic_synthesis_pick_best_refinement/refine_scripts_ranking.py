@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, List, Set, Tuple
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 # from archives.legacy_root_folders.runtime.runtime_utils import Ranking  # DEPRECATED: Archive i...
@@ -154,3 +154,4 @@ def rank_documents(
         )
     )
     return RANKED
+

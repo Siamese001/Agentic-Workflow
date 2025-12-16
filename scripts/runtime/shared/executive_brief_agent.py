@@ -55,7 +55,8 @@ try:
     # In a real scenario, you'd import the tool here
     # from titanium_rag import get_titanium_search_tool
 except ImportError as e:
-    TITANIUM_AVAILABLE = False
+    pass
+TITANIUM_AVAILABLE = False
     LOGGER.warning(f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
 
 
@@ -121,7 +122,7 @@ class ExecutiveBriefAgent:
             self.tone_model = create_tone_model()
             self.target_tone = ToneType.DIRECT  # Executive briefs should be direct
         except ImportError:
-            LOGGER.warning("Tone model not available, using default tone")
+LOGGER.warning("Tone model not available, using default tone")
             self.tone_model = None
             self.target_tone = None
 
@@ -229,7 +230,7 @@ class ExecutiveBriefAgent:
             return research_data
 
         except Exception as e:
-            LOGGER.error(f"Error in Titanium research: {e}")
+LOGGER.error(f"Error in Titanium research: {e}")
             return {"name": company_name, "industry": industry}
 
     async def generate_brief_with_titanium(
@@ -258,7 +259,7 @@ class ExecutiveBriefAgent:
             return self.generate_brief(company_data, job_description, recipient_name)
 
         except Exception as e:
-            LOGGER.error(f"Error generating brief with Titanium: {e}")
+LOGGER.error(f"Error generating brief with Titanium: {e}")
             # Fallback to basic brief
             return self.generate_brief(
                 {"name": company_name, "industry": industry},
@@ -305,7 +306,7 @@ class ExecutiveBriefAgent:
             return BRIEF
 
         except Exception as e:
-            LOGGER.error(f"Error generating executive brief: {str(e)}")
+LOGGER.error(f"Error generating executive brief: {str(e)}")
             # Return safe fallback
             return self._generate_fallback_brief(company_data)
 
@@ -403,7 +404,7 @@ class ExecutiveBriefAgent:
             return CONTEXT
 
         except Exception as e:
-            LOGGER.error(f"Error assembling context: {str(e)}")
+LOGGER.error(f"Error assembling context: {str(e)}")
             return {
                 "company_name": "the company",
                 "industry": "technology",
@@ -466,7 +467,7 @@ class ExecutiveBriefAgent:
                 )
 
         except Exception as e:
-            LOGGER.error(f"Error generating observation: {str(e)}")
+LOGGER.error(f"Error generating observation: {str(e)}")
             return BriefSection(
                 HEADING="Observation: Strategic AI Opportunity",
                 CONTENT="The company is positioned to leverage AI for competitive advantage.",
@@ -501,7 +502,7 @@ class ExecutiveBriefAgent:
             return ADJUSTED
 
         except Exception as e:
-            LOGGER.error(f"Error applying tone enforcement: {str(e)}")
+LOGGER.error(f"Error applying tone enforcement: {str(e)}")
             return content
 
     def _generate_insight(self, context: Dict[str, Any], observation: BriefSection) -> BriefSection:
@@ -538,7 +539,7 @@ class ExecutiveBriefAgent:
                 )
 
         except Exception as e:
-            LOGGER.error(f"Error generating insight: {str(e)}")
+LOGGER.error(f"Error generating insight: {str(e)}")
             return BriefSection(
                 HEADING="Insight: Strategic Approach",
                 CONTENT="A systematic approach to AI scaling is essential for long-term success.",
@@ -576,7 +577,7 @@ class ExecutiveBriefAgent:
             )
 
         except Exception as e:
-            LOGGER.error(f"Error generating proposition: {str(e)}")
+LOGGER.error(f"Error generating proposition: {str(e)}")
             return BriefSection(
                 HEADING="Proposition: Strategic Partnership",
                 CONTENT="I can help accelerate your AI initiatives with proven methodologies.",
@@ -667,7 +668,7 @@ class ExecutiveBriefAgent:
             return "\n".join(LINES)
 
         except Exception as e:
-            LOGGER.error(f"Error rendering markdown: {str(e)}")
+LOGGER.error(f"Error rendering markdown: {str(e)}")
             # Return basic format
             return f"""
 # Executive Brief
@@ -723,3 +724,4 @@ def generate_executive_brief(
     AGENT = create_executive_brief_agent(candidate_name, candidate_background)
     BRIEF = AGENT.generate_brief(company_data, job_description)
     return AGENT.render_markdown(BRIEF)
+

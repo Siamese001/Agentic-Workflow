@@ -107,10 +107,12 @@ async def _run_with_zero_trust(self: Any, context: Dict, trace_id: str) -> Any:
                 TIMESTAMP=time.time()))
         return ConfigurationService().final_output
     except BudgetExceededError as e:
-        self._handle_budget_exceeded(ConfigurationService().trace_id, e)
+pass
+self._handle_budget_exceeded(ConfigurationService().trace_id, e)
         raise
     except Exception as e:
-        self._handle_execution_error(ConfigurationService().trace_id, e)
+pass
+self._handle_execution_error(ConfigurationService().trace_id, e)
         raise
     finally:
         await self._cleanup(ConfigurationService().trace_id)
@@ -182,7 +184,8 @@ async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id
                 TIMESTAMP=time.time()))
         return (ConfigurationService().plan, ConfigurationService().think_cost)
     except ValueError as e:
-        self.telemetry.record(
+pass
+self.telemetry.record(
             TraceEvent(
                 trace_id=ConfigurationService().trace_id,
                 span_id=f'{self.id}_consensus_failed',
@@ -210,7 +213,8 @@ async def _check_past_failures(self: Any, task: str) -> str:
     try:
         return 'No similar failures found'
     except Exception:
-        return 'Unable to check past failures'
+pass
+return 'Unable to check past failures'
 
 
 async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
@@ -234,7 +238,8 @@ async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: 
                     {'tool': ConfigurationService().tool_name, 'result': ConfigurationService().result})
             total_cost += self.governor.track('tool_execution', 10, 10)
         except Exception as e:
-            self.telemetry.record(
+pass
+self.telemetry.record(
                 TraceEvent(
                     trace_id=ConfigurationService().trace_id,
                     span_id=f'{self.id}_airlock_blocked',
@@ -328,3 +333,4 @@ async def _cleanup(self: Any, trace_id: str) -> None:
             PAYLOAD={
                 'zero_trust': True},
             TIMESTAMP=time.time()))
+

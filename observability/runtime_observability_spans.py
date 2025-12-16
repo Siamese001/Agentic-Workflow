@@ -3,7 +3,7 @@ import time
 import uuid
 from typing import Dict, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -69,3 +69,4 @@ def end_span(span_record: Dict[str, object]) -> None:
     #         },
     #     )
     # )
+

@@ -22,7 +22,7 @@ Non-responsibilities:
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -388,3 +388,4 @@ def create_specificity_prose_engine(
 ) -> SpecificityProseEngine:
     """Factory function to create SpecificityProseEngine instance"""
     return SpecificityProseEngine(config=config)
+

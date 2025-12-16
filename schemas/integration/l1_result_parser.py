@@ -1,7 +1,7 @@
 """L1 Result Parser - Pure result parsing logic only."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 

@@ -46,7 +46,7 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             return _TITANIUM_PIPELINE
 
         except Exception as e:
-            LOGGER.error(f"Failed to initialize Titanium pipeline: {e}")
+LOGGER.error(f"Failed to initialize Titanium pipeline: {e}")
             if _LEGACY_FALLBACK_ENABLED:
                 LOGGER.warning("Falling back to legacy search mode")
                 _TITANIUM_PIPELINE = await _create_fallback_pipeline()
@@ -131,7 +131,7 @@ async def get_titanium_search_tool(
                 return DOCUMENTS, METADATAS
 
             except Exception as e:
-                LOGGER.warning(f"Vector store retrieval failed: {e}")
+LOGGER.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
 
@@ -183,7 +183,7 @@ async def get_titanium_search_tool(
         return "\n\n".join(formatted_results)
 
     except Exception as e:
-        LOGGER.error(f"Search failed for query '{query}': {e}")
+LOGGER.error(f"Search failed for query '{query}': {e}")
         return f"Search encountered an error. Please try rephrasing your query."
 
 """Docstring."""
@@ -237,7 +237,7 @@ async def get_titanium_search_with_sources(
                 return DOCUMENTS, METADATAS
 
             except Exception as e:
-                LOGGER.warning(f"Vector store retrieval failed: {e}")
+LOGGER.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
 
@@ -272,7 +272,7 @@ async def get_titanium_search_with_sources(
         }
 
     except Exception as e:
-        LOGGER.error(f"Search with sources failed: {e}")
+LOGGER.error(f"Search with sources failed: {e}")
         return {
             'query': query,
             'sources': [],
@@ -301,7 +301,7 @@ def get_pipeline_stats() -> Dict[str, Any]:
             'components': component_info
         }
     except Exception as e:
-        return {'status': 'error', 'error': str(e)}
+return {'status': 'error', 'error': str(e)}
 
 async def clear_cache():
     """Clear the semantic cache.
@@ -344,7 +344,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
             return FUTURE.result(timeout=30) # Changed RESULT and TIMEOUT to .result(timeout=30)
 
     except RuntimeError:
-        # No running loop, safe to create new one
+# No running loop, safe to create new one
         return asyncio.run(get_titanium_search_tool(query, context))
 
 # Legacy compatibility
@@ -380,3 +380,4 @@ TOOL_REGISTRY = {
         }
     }
 }
+

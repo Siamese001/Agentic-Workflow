@@ -242,7 +242,8 @@ def run(
                 f"Successfully simulated (blocked) '{DELETE_ROOT_COMMAND}'. Stdout: {stdout}")
             return f"SUCCESS (Simulated/Blocked) running destructive action: {stdout}"
     except Exception as e:
-        logger.critical(
+pass
+logger.critical(
             f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
         return f"CRITICAL EXCEPTION running destructive action: {e}"
 

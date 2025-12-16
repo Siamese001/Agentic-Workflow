@@ -4,7 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -200,3 +200,4 @@ class IntegrityGateResult:
         self.rejection_reasons.append(reason)
         self.detailed_violations.append(detail)
         self.passed = False
+

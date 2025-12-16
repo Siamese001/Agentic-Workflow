@@ -6,7 +6,7 @@ import sys
 import glob
 
 from action_registry import ActionRegistry
-from canon_validator import CanonValidator
+from engines.canon_validator.canon_validator import CanonValidator
 from cognitive_node import CognitiveNode  # <--- NEW IMPORT
 from llm_client import LLMClient
 from apps_rg.L3_orchestration.toolbox import SAFE_TOOLS, TOOLBOX_DESC  # <--- NEW IMPORT
@@ -39,7 +39,6 @@ def get_latest_code_mtime(root_dir: str, exclude_dirs: list = None) -> float:
                     if mtime > latest_mtime:
                         latest_mtime = mtime
                 except OSError:
-                    continue
 
     return latest_mtime
 
@@ -110,14 +109,14 @@ def run_agentic_loop(user_goal: str):
     if not ensure_manifest_freshness(manifest_path):
         # Trigger Phase A: Librarian Boot Sequence
         try:
-            print("🔄 Re-indexing filesystem (Phase A)...")
+            # print("🔄 Re-indexing filesystem (Phase A)...")  # [Security Fix]
             # subprocess.run(["python", "apps_rg/L0_maintenance/deduplicate_and_index.py"], check=True)  # Disabled after manual cleanup
 
             # [CRITICAL ADDITION] 2. Verify Integrity immediately after generation
             if not validate_manifest_integrity(manifest_path):
                 raise RuntimeError("Phase A completed, but generated a corrupt manifest.")
 
-            print("✅ Sanitization complete & verified.")
+            # print("✅ Sanitization complete & verified.")  # [Security Fix]
 
         except subprocess.CalledProcessError as e:
             logging.critical(f"🛑 Librarian crashed (Exit Code {e.returncode}). Check logs.")
@@ -205,9 +204,15 @@ def run_agentic_loop(user_goal: str):
             kwargs = {}
             if "logger" in sig.parameters:
                 class MockLogger:
-                    # def __call__(self, msg): print(f"[LOG] {msg}")  # [Security Fix]
-                    # def info(self, msg): print(f"[LOG] {msg}")  # [Security Fix]
-                    pass
+                    # def info(self, msg): print(f"INFO: {msg}")  # [Security Fix]
+                    # def error(self, msg): print(f"ERROR: {msg}")  # [Security Fix]
+                    # def warning(self, msg): print(f"WARN: {msg}")  # [Security Fix]
+
+                    # This prevents the "not callable" error
+                    def __call__(self, *args, **kwargs):
+                        """Handle cases where agents try to call logger('message') directly."""
+                        if args:
+                            self.info(args[0])
                 kwargs["logger"] = MockLogger()
 
             res = local_scope[func_name](**kwargs)
@@ -217,27 +222,54 @@ def run_agentic_loop(user_goal: str):
         logger.error(f"Runtime Error: {e}")
 
 
-def pre_flight_check():
+def pre_flight_check(skip_purge=False):
     """Ensures the environment is in a Golden State before booting."""
-    try:
-        from clean_duplicates import purge_everything
-        purge_everything()
-        logger.info("✅ Pre-flight: Duplicates purged.")
-    except ImportError:
-        logger.warning("⚠️ clean_duplicates.py not found, skipping pre-flight.")
-
-    except Exception as e:
-        logger.error(f"⚠️ Pre-flight cleanup failed: {e}")
+    if skip_purge:
+        logger.info("✅ Pre-flight: Skipping purge (duplicates already cleaned).")
+    else:
+        try:
+            from clean_duplicates import purge_everything
+            purge_everything()
+            logger.info("✅ Pre-flight: Duplicates purged.")
+        except ImportError:
+            logger.warning("⚠️ clean_duplicates.py not found, skipping pre-flight.")
+        except Exception as e:
+            logger.error(f"⚠️ Pre-flight cleanup failed: {e}")
 
 
 if __name__ == "__main__":
-    # Run pre-flight check to maintain Golden State
-    pre_flight_check()
-    # The final strategic task for the L3 Agent
-    user_goal = """
-    I have integrated 9 core MCP Servers (MEMemory, Pinecone, Redis, GitKraken, Figma, Filesystem, Fetch, Playwright, Send Email) into my L3 Agent architecture.
+    import argparse
 
-    Perform an **Architectural Strategy Review** of this unified platform to maximize the utility across the three functional engines: **Canon Validator**, **Resume Engine**, and **Outreach Engine**.
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Agentic Workflow Orchestrator")
+    parser.add_argument("--task", choices=["resume_generation", "architectural_review", "outreach_campaign"],
+                       default="architectural_review", help="Specify the task to execute")
+    parser.add_argument("--skip-purge", action="store_true", help="Skip the duplicate file purge")
+    args = parser.parse_args()
+
+    # Run pre-flight check to maintain Golden State
+    pre_flight_check(skip_purge=args.skip_purge)
+
+    # Set the user goal based on the task
+    if args.task == "resume_generation":
+        user_goal = """
+        Generate a professional resume for a software engineer with 5 years of experience.
+        Focus on technical skills, project achievements, and quantifiable impact.
+        Use the Resume Engine to create a compelling narrative that highlights expertise in cloud technologies,
+        software development, and team leadership.
+        """
+    elif args.task == "outreach_campaign":
+        user_goal = """
+        Create a personalized LinkedIn outreach campaign for a SaaS product targeting CTOs and VPs of Engineering.
+        Use the Outreach Engine to craft compelling messages that highlight value proposition,
+        technical credibility, and business impact.
+        Include follow-up sequences and A/B testing strategies.
+        """
+    else:  # architectural_review (default)
+        user_goal = """
+        I have integrated 9 core MCP Servers (MEMemory, Pinecone, Redis, GitKraken, Figma, Filesystem, Fetch, Playwright, Send Email) into my L3 Agent architecture.
+
+        Perform an **Architectural Strategy Review** of this unified platform to maximize the utility across the three functional engines: **Canon Validator**, **Resume Engine**, and **Outreach Engine**.
 
     ### INSTRUCTIONS (Sequential Thinking):
 

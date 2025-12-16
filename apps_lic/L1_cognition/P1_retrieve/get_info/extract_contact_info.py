@@ -43,3 +43,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return ExtractContactInfo(config).retrieve(query, **kwargs)
+

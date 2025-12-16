@@ -68,7 +68,7 @@ class LLMClient:
                     result = json.loads(text)
                 except json.JSONDecodeError:
                     # Return structured error for JSON parsing failures
-                    logger.error(f"JSON parsing failed: {je}")
+                    logger.error(f"JSON parsing failed: {str(je)}")
                     logger.error(f"Full raw response: {response.text}")
                     return {
                         "status": "error",
@@ -85,5 +85,9 @@ class LLMClient:
 
         except Exception as e:
             logger.error(f"Gemini Call Failed: {e}")
-            return {"status": "error", "reasoning": str(e)}
+            return {
+                "status": "error",
+                "reasoning": f"LLM call failed: {str(e)}",
+                "raw_response": ""
+            }
 

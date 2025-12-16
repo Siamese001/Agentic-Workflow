@@ -82,7 +82,7 @@ services:
     image: canon-validator:latest
     user: appuser
     container_name: canon-orchestrator
-    command: ["orchestrator.py"]
+    command: ["python", "/app/orchestrator.py"]
     env_file:
       - .env
       - .env.production
@@ -91,6 +91,8 @@ services:
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - CANON_LOG_LEVEL=INFO
+      - HF_HOME=/app/.cache
+      - PYTHONPATH=/app:/app/agentic_core:/app/apps_lic:/app/apps_rg:/app/apps_shared:/app/scripts:/app/engines
     volumes:
       - .:/app:rw
       - logs:/app/logs:rw

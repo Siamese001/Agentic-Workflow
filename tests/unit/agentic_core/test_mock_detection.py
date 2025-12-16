@@ -7,7 +7,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 'Test Mock Detection - atomic execution layer.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @pytest.mark.skip(reason="Test not implemented")

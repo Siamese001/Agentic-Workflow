@@ -234,3 +234,4 @@ def enforce_token_budget(
         BudgetExceededError: If budget exceeded
     """
     budget.check_request_budget(prompt, max_completion_tokens)
+
