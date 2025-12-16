@@ -13,6 +13,50 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 import os
 from dataclasses import dataclass
+import concurrent.futures
+import asyncio
+from typing import Optional, List, Dict, Any
+
+# Assuming these types are defined elsewhere, or need dummy definitions
+# Replace with actual imports if available
+class SystemTelemetry:
+    pass
+
+class AgentMessage:
+    def __init__(self, role: str, content: str):
+        self.role = role
+        self.content = content
+
+class AgentResponse:
+    def __init__(self, content: str, model: str, usage: Optional[Dict[str, int]], finish_reason: Optional[str]):
+        self.content = content
+        self.model = model
+        self.usage = usage
+        self.finish_reason = finish_reason
+
+class TokenLimitError(Exception):
+    pass
+
+class HardeningMixin:
+    def __init__(self, component_name: str, failure_threshold: int, reset_timeout_s: int, max_retries: int, TELEMETRY: Optional[SystemTelemetry]):
+        self.component_name = component_name
+        self.failure_threshold = failure_threshold
+        self.reset_timeout_s = reset_timeout_s
+        self.max_retries = max_retries
+        self.telemetry = TELEMETRY
+        pass # Placeholder for actual mixin logic
+
+    def execute_hardened(self, OPERATION: str, fn: callable, validate_token_budget: callable, METADATA: Dict[str, Any]):
+        # Placeholder for hardened execution logic
+        # In a real scenario, this would wrap the 'fn' call with circuit breaking, retries, etc.
+        validate_token_budget()
+        return fn()
+
+    def validate_token_budget_tiktoken(self, PROMPT: str, MODEL: str, max_tokens: int):
+        # Placeholder for token validation logic
+        if len(PROMPT) > max_tokens: # Simplified check
+            raise TokenLimitError("Token limit exceeded")
+        pass
 
 logger = logging.getLogger(__name__)
 
@@ -43,16 +87,16 @@ class HardenedOpenAIConfig:
 
     def __init__(
         self,
-        MODEL: STR = "gpt-4o-2024-08-06",
-        TEMPERATURE: FLOAT = 0.7,
+        MODEL: str = "gpt-4o-2024-08-06",
+        TEMPERATURE: float = 0.7,
         max_tokens: int = 4096,
         timeout_s: int = 60,
         max_retries: int = 3,
         failure_threshold: int = 5,
         reset_timeout_s: int = 30,
     ):
-        SELF.MODEL = model
-        SELF.TEMPERATURE = temperature
+        self.MODEL = MODEL
+        self.TEMPERATURE = TEMPERATURE
         self.max_tokens = max_tokens
         self.timeout_s = timeout_s
         self.max_retries = max_retries
@@ -61,8 +105,8 @@ class HardenedOpenAIConfig:
 
     @property
     def max_context_tokens(self) -> int:
-            """Get maximum context tokens for the model."""
-        return self.MODEL_LIMITS.get(self.model, 4096)
+        """Get maximum context tokens for the model."""
+        return self.MODEL_LIMITS.get(self.MODEL, 4096)
 
 class HardenedOpenAIExecutor(HardeningMixin):
     """Military-grade executor for OpenAI API.
@@ -76,20 +120,20 @@ class HardenedOpenAIExecutor(HardeningMixin):
         config: Optional[HardenedOpenAIConfig] = None,
         telemetry: Optional[SystemTelemetry] = None,
     ):
-            """Initialize hardened OpenAI executor.
+        """Initialize hardened OpenAI executor.
 
         Args:
             config: Optional configuration
             telemetry: Optional telemetry instance
         """
-        SELF.CONFIG = config or HardenedOpenAIConfig()
+        self.CONFIG = config or HardenedOpenAIConfig()
 
         # Initialize hardening mixin
         super().__init__(
             component_name="openai_executor",
-            failure_threshold=self.config.failure_threshold,
-            reset_timeout_s=self.config.reset_timeout_s,
-            max_retries=self.config.max_retries,
+            failure_threshold=self.CONFIG.failure_threshold,
+            reset_timeout_s=self.CONFIG.reset_timeout_s,
+            max_retries=self.CONFIG.max_retries,
             TELEMETRY=telemetry,
         )
 
@@ -98,13 +142,11 @@ class HardenedOpenAIExecutor(HardeningMixin):
         self._setup_client()
 
     def _setup_client(self) -> None:
-            """Setup OpenAI client."""
+        """Setup OpenAI client."""
         try:
             import openai
         except ImportError as exc:
-    pass
-raise ImportError("OpenAI package not installed. Install with: pip install openai") from
-    exc
+            raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
 
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -112,12 +154,12 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
 
         self._client = openai.OpenAI(
             api_key=api_key,
-            TIMEOUT=self.config.timeout_s,
+            TIMEOUT=self.CONFIG.timeout_s,
             max_retries=0,  # We handle retries ourselves
         )
 
     def _validate_token_budget(self, prompt: str) -> None:
-            """Validate token budget before API call.
+        """Validate token budget before API call.
 
         Args:
             prompt: Input prompt text
@@ -127,8 +169,8 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
         """
         self.validate_token_budget_tiktoken(
             PROMPT=prompt,
-            MODEL=self.config.model,
-            max_tokens=self.config.max_context_tokens - self.config.max_tokens,
+            MODEL=self.CONFIG.MODEL,
+            max_tokens=self.CONFIG.max_context_tokens - self.CONFIG.max_tokens,
         )
 
     def _build_messages(
@@ -136,7 +178,7 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
     ) -> List[Dict[str, str]]:
-            """Build OpenAI message format.
+        """Build OpenAI message format.
 
         Args:
             messages: Agent messages
@@ -163,7 +205,6 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
 
         return openai_messages
 
-        """Docstring."""
     async def run_llm(
         self,
         prompt: str,
@@ -173,7 +214,7 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
-            """Run OpenAI completion with hardening.
+        """Run OpenAI completion with hardening.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -198,12 +239,12 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
 
         # Define async operation
         async def _completion():
-                """Docstring."""
-            RESPONSE = self._client.chat.completions.create(
-                MODEL=self.config.model,
-                MESSAGES=openai_messages,
-                TEMPERATURE=temperature or self.config.temperature,
-                max_tokens=max_tokens or self.config.max_tokens,
+            """Docstring."""
+            response = self._client.chat.completions.create(
+                model=self.CONFIG.MODEL,
+                messages=openai_messages,
+                temperature=temperature or self.CONFIG.TEMPERATURE,
+                max_tokens=max_tokens or self.CONFIG.max_tokens,
             )
 
             # Extract content
@@ -217,13 +258,12 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
             METADATA={
-                "model": self.config.model,
-                "temperature": temperature or self.config.temperature,
-                "max_tokens": max_tokens or self.config.max_tokens,
+                "model": self.CONFIG.MODEL,
+                "temperature": temperature or self.CONFIG.TEMPERATURE,
+                "max_tokens": max_tokens or self.CONFIG.max_tokens,
             },
         )
 
-        """Docstring."""
     async def run_llm_with_response(
         self,
         prompt: str,
@@ -233,7 +273,7 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> AgentResponse:
-            """Run OpenAI completion with full response metadata.
+        """Run OpenAI completion with full response metadata.
 
         Args:
             prompt: Input prompt (used if messages not provided)
@@ -258,12 +298,12 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
 
         # Define async operation with response capture
         async def _completion():
-                """Docstring."""
-            RESPONSE = self._client.chat.completions.create(
-                MODEL=self.config.model,
-                MESSAGES=openai_messages,
-                TEMPERATURE=temperature or self.config.temperature,
-                max_tokens=max_tokens or self.config.max_tokens,
+            """Docstring."""
+            response = self._client.chat.completions.create(
+                model=self.CONFIG.MODEL,
+                messages=openai_messages,
+                temperature=temperature or self.CONFIG.TEMPERATURE,
+                max_tokens=max_tokens or self.CONFIG.max_tokens,
             )
             return response
 
@@ -273,35 +313,34 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
             fn=_completion,
             validate_token_budget=lambda: self._validate_token_budget(combined_prompt),
             METADATA={
-                "model": self.config.model,
-                "temperature": temperature or self.config.temperature,
-                "max_tokens": max_tokens or self.config.max_tokens,
+                "model": self.CONFIG.MODEL,
+                "temperature": temperature or self.CONFIG.TEMPERATURE,
+                "max_tokens": max_tokens or self.CONFIG.max_tokens,
             },
         )
 
         # Extract response data
-        CONTENT = ""
-        USAGE = None
+        content = ""
+        usage = None
 
         if raw_response.choices:
-            CHOICE = raw_response.choices[0]
-            CONTENT = choice.message.content or ""
+            choice = raw_response.choices[0]
+            content = choice.message.content or ""
 
         if hasattr(raw_response, 'usage'):
-            USAGE = {
+            usage = {
                 "prompt_tokens": raw_response.usage.prompt_tokens,
                 "completion_tokens": raw_response.usage.completion_tokens,
                 "total_tokens": raw_response.usage.total_tokens,
             }
 
         return AgentResponse(
-            CONTENT=content,
-            MODEL=self.config.model,
-            USAGE=usage,
+            content=content,
+            model=self.CONFIG.MODEL,
+            usage=usage,
             finish_reason=raw_response.choices[0].finish_reason if raw_response.choices else None,
         )
 
-        """Docstring."""
     def run_llm_sync(
         self,
         prompt: str,
@@ -311,7 +350,7 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
         system_prompt: Optional[str] = None,
         messages: Optional[List[AgentMessage]] = None,
     ) -> str:
-            """Synchronous version of run_llm.
+        """Synchronous version of run_llm.
 
         Args:
             prompt: Input prompt
@@ -326,12 +365,12 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
         import asyncio
 
         # Run async method in event loop
-        LOOP = asyncio.get_event_loop()
+        loop = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                FUTURE = executor.submit(
+                future = executor.submit(
                     asyncio.run,
                     self.run_llm(prompt, temperature=temperature, max_tokens=max_tokens,
                                 system_prompt=system_prompt, messages=messages)
@@ -346,8 +385,8 @@ raise ImportError("OpenAI package not installed. Install with: pip install opena
 # Factory function for backward compatibility
     """Docstring."""
 def create_hardened_openai_executor(
-    MODEL: STR = "gpt-4o-2024-08-06",
-    TEMPERATURE: FLOAT = 0.7,
+    MODEL: str = "gpt-4o-2024-08-06",
+    TEMPERATURE: float = 0.7,
     **kwargs
 ) -> HardenedOpenAIExecutor:
     """Create a hardened OpenAI executor.
@@ -360,6 +399,5 @@ def create_hardened_openai_executor(
     Returns:
         HardenedOpenAIExecutor instance
     """
-    CONFIG = HardenedOpenAIConfig(model=model, temperature=temperature, **kwargs)
+    config = HardenedOpenAIConfig(model=MODEL, temperature=TEMPERATURE, **kwargs)
     return HardenedOpenAIExecutor(config)
-

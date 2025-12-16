@@ -1,9 +1,4 @@
-"""Token Budget Enforcement for cost control.
-
-Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
-Converts token budget inspector into active enforcement mechanism.
-"""
-
+from dataclasses import dataclass
 import logging
 from typing import Any, Dict, Optional
 
@@ -55,7 +50,7 @@ class TokenBudget:
             config: Budget configuration
             enable_logging: Enable logging of budget events
         """
-        SELF.CONFIG = config or TokenBudgetConfig()
+        self.config = config or TokenBudgetConfig()
         self.enable_logging = enable_logging
 
         self._prompt_tokens = 0
@@ -78,7 +73,6 @@ class TokenBudget:
         return len(text) // 4
 
     def check_request_budget(
-        """Docstring."""
         self,
         prompt: str,
         max_completion_tokens: int,
@@ -116,9 +110,9 @@ class TokenBudget:
 
         warn_threshold = self.config.max_total_tokens * self.config.warn_threshold
         if self.enable_logging and projected_total > warn_threshold:
-            logger.warning(
+            LOGGER.warning(
                 "token_budget_warning",
-                EXTRA={
+                extra={
                     "projected_total": projected_total,
                     "max_total": self.config.max_total_tokens,
                     "utilization": projected_total / self.config.max_total_tokens,
@@ -126,7 +120,6 @@ class TokenBudget:
             )
 
     def record_usage(
-        """Docstring."""
         self,
         prompt_tokens: int,
         completion_tokens: int,
@@ -143,9 +136,9 @@ class TokenBudget:
         self._request_count += 1
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "token_usage_recorded",
-                EXTRA={
+                extra={
                     "prompt_tokens": prompt_tokens,
                     "completion_tokens": completion_tokens,
                     "total_tokens": self._total_tokens,
@@ -210,7 +203,7 @@ class TokenBudget:
         self._request_count = 0
 
         if self.enable_logging:
-            logger.info("token_budget_reset")
+            LOGGER.info("token_budget_reset")
 
     def get_remaining(self) -> Dict[str, int]:
         """Get remaining token budget.
@@ -226,7 +219,6 @@ class TokenBudget:
 
 
 def enforce_token_budget(
-    """Docstring."""
     prompt: str,
     max_completion_tokens: int,
     budget: TokenBudget,
@@ -242,4 +234,3 @@ def enforce_token_budget(
         BudgetExceededError: If budget exceeded
     """
     budget.check_request_budget(prompt, max_completion_tokens)
-

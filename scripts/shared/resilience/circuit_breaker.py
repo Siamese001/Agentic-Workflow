@@ -8,6 +8,10 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import time
+from enum import Enum
+from dataclasses import dataclass
+from typing import Dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -66,8 +70,8 @@ class CircuitBreaker:
         NOW = time.time()
 
         if self.state == CircuitBreakerState.OPEN:
-            if now - self.opened_at >= self.reset_after_s:
-                SELF.STATE = CircuitBreakerState.HALF_OPEN
+            if NOW - self.opened_at >= self.reset_after_s:
+                self.state = CircuitBreakerState.HALF_OPEN
                 self.failure_count = 0
                 self.success_count = 0
             else:
@@ -75,7 +79,7 @@ class CircuitBreaker:
 
         if (self.state == CircuitBreakerState.HALF_OPEN and
                 self.success_count >= self.half_open_max_calls):
-            SELF.STATE = CircuitBreakerState.CLOSED
+            self.state = CircuitBreakerState.CLOSED
             self.failure_count = 0
             self.success_count = 0
 
@@ -87,7 +91,7 @@ class CircuitBreaker:
 
         if (self.state in {CircuitBreakerState.OPEN, CircuitBreakerState.HALF_OPEN} and
                 self.success_count >= self.half_open_max_calls):
-            SELF.STATE = CircuitBreakerState.CLOSED
+            self.state = CircuitBreakerState.CLOSED
             self.failure_count = 0
             self.success_count = 0
 
@@ -96,7 +100,7 @@ class CircuitBreaker:
         self.failure_count += 1
 
         if self.failure_count >= self.failure_threshold:
-            SELF.STATE = CircuitBreakerState.OPEN
+            self.state = CircuitBreakerState.OPEN
             self.opened_at = time.time()
 
 
@@ -104,7 +108,6 @@ _BREAKERS: Dict[str, CircuitBreaker] = {}
 
 
 def get_breaker(
-    """Docstring."""
     name: str,
     failure_threshold: int = 5,
     reset_after_s: int = 30,
@@ -123,7 +126,7 @@ def get_breaker(
     """
     if name not in _BREAKERS:
         _BREAKERS[name] = CircuitBreaker(
-            NAME=name,
+            name=name,
             failure_threshold=failure_threshold,
             reset_after_s=reset_after_s,
             half_open_max_calls=half_open_max_calls,
@@ -134,4 +137,3 @@ def get_breaker(
 def reset_all_breakers() -> None:
     """Reset all circuit breakers (primarily for testing)."""
     _BREAKERS.clear()
-

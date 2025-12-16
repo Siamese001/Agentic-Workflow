@@ -7,6 +7,7 @@ Migrated from archives/legacy_lic/LIC - Python/LIC_AGENTIC_v11_4.py
 import hashlib
 import logging
 import time
+from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ class CacheHit:
 class CacheMiss:
     """Cache miss result."""
     prompt: str
-    REASON: STR = "not_found"
+    reason: str = "not_found"
 
 
 class SemanticCache:
@@ -64,7 +65,7 @@ class SemanticCache:
 
     def __init__(
         self,
-        TTL: INT = 3600,
+        ttl: int = 3600,
         max_entries: int = 10000,
         enable_logging: bool = True,
     ):
@@ -75,7 +76,7 @@ class SemanticCache:
             max_entries: Maximum number of cache entries
             enable_logging: Enable logging of cache events
         """
-        SELF.TTL = ttl
+        self.ttl = ttl
         self.max_entries = max_entries
         self.enable_logging = enable_logging
 
@@ -103,7 +104,6 @@ class SemanticCache:
         return hashlib.sha256(cache_input.encode()).hexdigest()
 
     def get(
-        """Docstring."""
         self,
         prompt: str,
         context: Optional[Dict[str, Any]] = None,
@@ -117,16 +117,16 @@ class SemanticCache:
         Returns:
             CacheHit if found, CacheMiss otherwise
         """
-        KEY = self._hash_prompt(prompt, context)
-        ENTRY = self._cache.get(key)
+        key = self._hash_prompt(prompt, context)
+        entry = self._cache.get(key)
 
         if not entry:
             self._miss_count += 1
 
             if self.enable_logging:
-                logger.debug(
+                LOGGER.debug(
                     "cache_miss",
-                    EXTRA={"prompt_preview": prompt[:100]}
+                    extra={"prompt_preview": prompt[:100]}
                 )
 
             return CacheMiss(prompt=prompt, reason="not_found")
@@ -136,9 +136,9 @@ class SemanticCache:
             self._miss_count += 1
 
             if self.enable_logging:
-                logger.debug(
+                LOGGER.debug(
                     "cache_miss",
-                    EXTRA={
+                    extra={
                         "prompt_preview": prompt[:100],
                         "reason": "expired",
                     }
@@ -153,9 +153,9 @@ class SemanticCache:
         age_seconds = time.time() - entry.created_at
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "cache_hit",
-                EXTRA={
+                extra={
                     "prompt_preview": prompt[:100],
                     "age_seconds": age_seconds,
                     "hit_count": entry.hit_count,
@@ -163,13 +163,12 @@ class SemanticCache:
             )
 
         return CacheHit(
-            RESPONSE=entry.response,
-            ENTRY=entry,
+            response=entry.response,
+            entry=entry,
             age_seconds=age_seconds,
         )
 
     def set(
-        """Docstring."""
         self,
         prompt: str,
         response: str,
@@ -187,24 +186,24 @@ class SemanticCache:
         if len(self._cache) >= self.max_entries:
             self._evict_oldest()
 
-        KEY = self._hash_prompt(prompt, context)
-        NOW = time.time()
+        key = self._hash_prompt(prompt, context)
+        now = time.time()
 
-        ENTRY = CacheEntry(
-            KEY=key,
-            PROMPT=prompt,
-            RESPONSE=response,
+        entry = CacheEntry(
+            key=key,
+            prompt=prompt,
+            response=response,
             created_at=now,
             accessed_at=now,
-            METADATA=metadata or {},
+            metadata=metadata or {},
         )
 
         self._cache[key] = entry
 
         if self.enable_logging:
-            logger.debug(
+            LOGGER.debug(
                 "cache_set",
-                EXTRA={
+                extra={
                     "prompt_preview": prompt[:100],
                     "cache_size": len(self._cache),
                 }
@@ -217,15 +216,15 @@ class SemanticCache:
 
         oldest_key = min(
             self._cache.keys(),
-            KEY=lambda k: self._cache[k].accessed_at,
+            key=lambda k: self._cache[k].accessed_at,
         )
 
         del self._cache[oldest_key]
 
         if self.enable_logging:
-            logger.debug(
+            LOGGER.debug(
                 "cache_eviction",
-                EXTRA={"cache_size": len(self._cache)}
+                extra={"cache_size": len(self._cache)}
             )
 
     def clear(self) -> None:
@@ -233,7 +232,7 @@ class SemanticCache:
         self._cache.clear()
 
         if self.enable_logging:
-            logger.info("cache_cleared")
+            LOGGER.info("cache_cleared")
 
     def get_stats(self) -> Dict[str, Any]:
         """Get cache statistics.
@@ -269,17 +268,16 @@ class SemanticCache:
             del self._cache[key]
 
         if self.enable_logging and expired_keys:
-            logger.info(
+            LOGGER.info(
                 "cache_pruned",
-                EXTRA={"removed_count": len(expired_keys)}
+                extra={"removed_count": len(expired_keys)}
             )
 
         return len(expired_keys)
 
 
 def create_semantic_cache(
-    """Docstring."""
-    TTL: INT = 3600,
+    ttl: int = 3600,
     max_entries: int = 10000,
 ) -> SemanticCache:
     """Factory function to create a semantic cache.
@@ -292,4 +290,3 @@ def create_semantic_cache(
         Configured SemanticCache instance
     """
     return SemanticCache(ttl=ttl, max_entries=max_entries)
-

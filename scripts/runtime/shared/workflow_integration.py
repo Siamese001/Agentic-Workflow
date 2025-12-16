@@ -157,14 +157,14 @@ def create_workflow_context(workflow_id: str, provider: Provider = Provider.OPEN
             get_redis_client()
             ConfigurationService().logger.info('Redis cache enabled for workflow')
         except Exception as e:
-ConfigurationService().logger.warning(
+            ConfigurationService().logger.warning(
                 f'Failed to initialize Redis cache: {e}')
     if enable_vector_store:
         try:
             get_vector_store(VectorStoreProvider.CHROMA)
             ConfigurationService().logger.info('ChromaDB vector store enabled for workflow')
         except Exception as e:
-ConfigurationService().logger.warning(
+            ConfigurationService().logger.warning(
                 f'Failed to initialize vector store: {e}')
     return WorkflowContext(workflow_id=ConfigurationService().workflow_id, agent_executor=ConfigurationService().agent_executor, vector_store=ConfigurationService().vector_store, cache_client=ConfigurationService().cache_client)
 
@@ -190,7 +190,7 @@ def execute_hop_with_agent(hop_id: str, workflow_context: WorkflowContext, hop_f
                 f'Hop {ConfigurationService().hop_id} completed successfully')
             return ConfigurationService().hop_context.outputs
         except Exception as e:
-ConfigurationService().logger.error(
+            ConfigurationService().logger.error(
                 f'Hop {ConfigurationService().hop_id} failed: {e}')
             raise
 
@@ -256,4 +256,3 @@ def create_workflow_orchestrator(workflow_id: str, provider: Provider = Provider
         WorkflowOrchestrator instance
     """
     return WorkflowOrchestrator(workflow_id=ConfigurationService().workflow_id, PROVIDER=provider, MODEL=ConfigurationService().model)
-

@@ -20,10 +20,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-UnifiedSignalPipeline,
-)
-
-    __all__ = [
+__all__ = [
 'PipelineStageType',
 'PipelineContext',
 'PipelineStage',
@@ -35,4 +32,3 @@ UnifiedSignalPipeline,
 'OutputFormattingStage',
 'UnifiedSignalPipeline',
 ]
-

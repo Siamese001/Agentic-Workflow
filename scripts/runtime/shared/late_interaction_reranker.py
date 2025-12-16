@@ -6,7 +6,7 @@ ensuring the most relevant context hits the LLM first.
 
 import logging
 import time
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class LateInteractionReranker:
     """
 
 
-def __init__(self: Any, model_name: str, lazy_load: bool) -> None:
+    def __init__(self: Any, model_name: str, lazy_load: bool = True) -> None:
         """Initialize the Late Interaction Reranker.
 
         Args:
@@ -32,11 +32,11 @@ def __init__(self: Any, model_name: str, lazy_load: bool) -> None:
         self._model_loaded = False
         self._fallback_mode = False
 
-        logger.info(
+        LOGGER.info(
             f"Initialized LateInteractionReranker: model={model_name}, lazy={lazy_load}")
 
     @property
-def is_available(self: Any) -> bool:
+    def is_available(self: Any) -> bool:
         """Check if the reranker is available (model loaded or can be loaded)."""
         if self._model_loaded:
             return not self._fallback_mode
@@ -44,13 +44,13 @@ def is_available(self: Any) -> bool:
             return False
         # Try to check availability without loading
         try:
+            import sentence_transformers
             return True
         except ImportError:
-    pass
-logger.warning("sentence_transformers not available, reranker will be in fallback mode")
+            LOGGER.warning("sentence_transformers not available, reranker will be in fallback mode")
             return False
 
-def _load_model(self: Any) -> bool:
+    def _load_model(self: Any) -> bool:
         """Load the cross-encoder model.
 
         Returns:
@@ -61,41 +61,39 @@ def _load_model(self: Any) -> bool:
 
         try:
             # Import sentence_transformers
+            from sentence_transformers import CrossEncoder
 
-            logger.info(f"Loading CrossEncoder model: {self.model_name}")
+            LOGGER.info(f"Loading CrossEncoder model: {self.model_name}")
             start_time = time.time()
 
             # Load the model
             self._model = CrossEncoder(self.model_name)
 
             load_time = time.time() - start_time
-            logger.info(f"Model loaded in {load_time:.2f}s")
+            LOGGER.info(f"Model loaded in {load_time:.2f}s")
 
             self._model_loaded = True
             self._fallback_mode = False
             return True
 
         except ImportError as e:
-    pass
-logger.error(f"Failed to import sentence_transformers: {e}")
-            logger.warning("Reranker will operate in fallback mode (no reranking)")
+            LOGGER.error(f"Failed to import sentence_transformers: {e}")
+            LOGGER.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
             self._model_loaded = True  # Mark as loaded to avoid retrying
             return False
         except Exception as e:
-    pass
-logger.error(f"Failed to load model {self.model_name}: {e}")
-            logger.warning("Reranker will operate in fallback mode (no reranking)")
+            LOGGER.error(f"Failed to load model {self.model_name}: {e}")
+            LOGGER.warning("Reranker will operate in fallback mode (no reranking)")
             self._fallback_mode = True
             self._model_loaded = True
             return False
 
-        """Docstring."""
-def rerank(self: Any,
+    def rerank(self: Any,
      query: str,
      documents: List[str],
      top_k: Optional[int],
-     batch_size: int) -> List[str]:
+     batch_size: int = 16) -> List[str]:
         """Rerank documents based on query relevance.
 
         Args:
@@ -109,19 +107,26 @@ def rerank(self: Any,
         """
         # Validate inputs
         if not query:
-            logger.warning("Empty query provided, returning original documents")
+            LOGGER.warning("Empty query provided, returning original documents")
             return documents[:top_k] if top_k else documents
 
         if not documents:
-            logger.warning("No documents provided for reranking")
+            LOGGER.warning("No documents provided for reranking")
             return []
 
         # Load model if needed
-        if not self._model_loaded:
-            if not self._load_model():
+        if not self._model_loaded and not self.lazy_load:
+             if not self._load_model():
                 # Fallback mode: return original order
-                logger.info("Reranker in fallback mode, returning original order")
+                LOGGER.info("Reranker in fallback mode, returning original order")
                 return documents[:top_k] if top_k else documents
+
+        # If lazy_load is True, load model on first use within rerank
+        if self.lazy_load and self._model is None:
+            if not self._load_model():
+                LOGGER.info("Reranker in fallback mode, returning original order")
+                return documents[:top_k] if top_k else documents
+
 
         # Fallback mode check
         if self._fallback_mode:
@@ -134,14 +139,14 @@ def rerank(self: Any,
             top_k = min(top_k, len(documents))
 
         # Create query-document pairs
-        PAIRS = [(query, doc) for doc in documents]
+        pairs = [(query, doc) for doc in documents]
 
         try:
             # Score pairs in batches
-            logger.debug(f"Reranking {len(documents)} documents")
+            LOGGER.debug(f"Reranking {len(documents)} documents")
             start_time = time.time()
 
-            SCORES = self._model.predict(
+            scores = self._model.predict(
                 pairs,
                 batch_size=batch_size,
                 show_progress_bar=False
@@ -152,10 +157,10 @@ def rerank(self: Any,
             scored_docs.sort(key=lambda x: x[1], reverse=True)
 
             # Extract reranked documents
-            RERANKED = [doc for doc, _ in scored_docs[:top_k]]
+            reranked = [doc for doc, _ in scored_docs[:top_k]]
 
-            ELAPSED = time.time() - start_time
-            logger.debug(f"Reranking completed in {elapsed:.3f}s")
+            elapsed = time.time() - start_time
+            LOGGER.debug(f"Reranking completed in {elapsed:.3f}s")
 
             # Log score distribution for monitoring
             if scores is not None and len(scores) > 0:
@@ -164,23 +169,21 @@ def rerank(self: Any,
                     "max": float(max(scores)),
                     "mean": float(sum(scores) / len(scores))
                 }
-                logger.debug(f"Score distribution: {score_stats}")
+                LOGGER.debug(f"Score distribution: {score_stats}")
 
             return reranked
 
         except Exception as e:
-    pass
-logger.error(f"Reranking failed: {e}")
+            LOGGER.error(f"Reranking failed: {e}")
             # Fallback to original order
-            logger.info("Falling back to original document order")
+            LOGGER.info("Falling back to original document order")
             return documents[:top_k]
 
-        """Docstring."""
-def rerank_with_scores(self: Any,
+    def rerank_with_scores(self: Any,
      query: str,
      documents: List[str],
      top_k: Optional[int],
-     batch_size: int) -> List[Tuple[str,
+     batch_size: int = 16) -> List[Tuple[str,
      float]]:
         """Rerank documents and return with scores.
 
@@ -198,9 +201,14 @@ def rerank_with_scores(self: Any,
             return []
 
         # Load model if needed
-        if not self._model_loaded:
-            if not self._load_model():
+        if not self._model_loaded and not self.lazy_load:
+             if not self._load_model():
                 # Fallback mode: return original order with dummy scores
+                return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
+
+        # If lazy_load is True, load model on first use within rerank
+        if self.lazy_load and self._model is None:
+            if not self._load_model():
                 return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
         # Fallback mode check
@@ -214,10 +222,10 @@ def rerank_with_scores(self: Any,
             top_k = min(top_k, len(documents))
 
         # Create pairs and score
-        PAIRS = [(query, doc) for doc in documents]
+        pairs = [(query, doc) for doc in documents]
 
         try:
-            SCORES = self._model.predict(
+            scores = self._model.predict(
                 pairs,
                 batch_size=batch_size,
                 show_progress_bar=False
@@ -230,17 +238,16 @@ def rerank_with_scores(self: Any,
             return scored_docs[:top_k]
 
         except Exception as e:
-    pass
-logger.error(f"Reranking with scores failed: {e}")
+            LOGGER.error(f"Reranking with scores failed: {e}")
             return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
 
-def get_model_info(self: Any) -> dict:
+    def get_model_info(self: Any) -> dict:
         """Get information about the loaded model.
 
         Returns:
             Dictionary with model information
         """
-        INFO = {
+        info = {
             "model_name": self.model_name,
             "loaded": self._model_loaded,
             "fallback_mode": self._fallback_mode,
@@ -259,18 +266,17 @@ def get_model_info(self: Any) -> dict:
                         "num_labels": getattr(self._model.config, 'num_labels', 'unknown')
                     })
             except Exception as e:
-    pass
-logger.warning(f"Ignored error: {e}")
+                LOGGER.warning(f"Ignored error when getting model info: {e}")
 
         return info
 
 # Convenience function for direct usage
-    """Docstring."""
 def rerank_documents(
     query: str,
     documents: List[str],
     model_name: str = "ms-marco-MiniLM-L-6-v2",
-    top_k: int = 5
+    top_k: int = 5,
+    batch_size: int = 16
 ) -> List[str]:
     """Rerank documents using default settings.
 
@@ -279,22 +285,39 @@ def rerank_documents(
         documents: List of document texts
         model_name: Model to use for reranking
         top_k: Number of top documents to return
+        batch_size: Batch size for model inference
 
     Returns:
         Reranked list of documents
     """
-    RERANKER = LateInteractionReranker(model_name=model_name)
-    return reranker.rerank(query, documents, top_k=top_k)
+    reranker = LateInteractionReranker(model_name=model_name, lazy_load=True)
+    return reranker.rerank(query, documents, top_k=top_k, batch_size=batch_size)
 
 # Fallback pass-through reranker for when dependencies are missing
 class PassThroughReranker:
     """Fallback reranker that returns documents in original order."""
 
-def __init__(self: Any) -> None:
+    def __init__(self: Any) -> None:
         """Initialize the pass-through reranker."""
-        logger.warning("Using PassThroughReranker - no actual reranking will be performed")
+        LOGGER.warning("Using PassThroughReranker - no actual reranking will be performed")
 
-def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int]) -> List[str]:
+    def rerank(self: Any, query: str, documents: List[str], top_k: Optional[int], batch_size: int = 16) -> List[str]:
         """Return documents in original order."""
         return documents[:top_k] if top_k else documents
 
+    def rerank_with_scores(self: Any, query: str, documents: List[str], top_k: Optional[int], batch_size: int = 16) -> List[Tuple[str, float]]:
+        """Return documents in original order with dummy scores."""
+        return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]
+
+    def is_available(self: Any) -> bool:
+        """Pass-through reranker is always considered available."""
+        return True
+
+    def get_model_info(self: Any) -> dict:
+        """Return info for pass-through reranker."""
+        return {
+            "model_name": "PassThroughReranker",
+            "loaded": True,
+            "fallback_mode": True,
+            "available": True
+        }
