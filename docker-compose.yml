@@ -15,6 +15,9 @@ volumes:
   redis_data:
     driver: local
     # Persistent storage for L4 state snapshots
+  logs:
+    driver: local
+    # Persistent storage for application logs
 
 # ================================================
 # SERVICES
@@ -49,7 +52,7 @@ services:
     user: appuser
     container_name: canon-architect
     restart: "no"
-    command: python apps_rg/L0_maintenance/fix_structural_debt_llm.py
+    command: python fix_structural_debt_llm.py
     volumes:
       - .:/app:rw
       - logs:/app/logs:rw
@@ -71,7 +74,7 @@ services:
     user: appuser
     container_name: canon-surgeon
     restart: "no"
-    command: python apps_rg/L0_maintenance/fix_syntax_llm.py
+    command: python fix_syntax_llm.py
     volumes:
       - .:/app:rw
       - logs:/app/logs:rw
