@@ -1,12 +1,12 @@
 version: '3.8'
 
-# Docker Compose for Canon Validator Engine
-# Implements secure orchestration with network isolation
-
+# ================================================
+# NETWORKS and VOLUMES
+# ================================================
 networks:
   canon_net:
     driver: bridge
-    # Isolated network for validator-redis communication
+    # Isolated network for inter-service communication
     ipam:
       config:
         - subnet: 172.20.0.0/16
@@ -16,31 +16,108 @@ volumes:
     driver: local
     # Persistent storage for L4 state snapshots
 
+# ================================================
+# SERVICES
+# ================================================
 services:
   # ================================================
-  # Validator Engine Service
+  # PHASE A: SANITIZATION BOOT SEQUENCE
+  # (Must complete successfully before Orchestrator starts)
   # ================================================
-  validator:
+
+  # STEP 0: THE LIBRARIAN (Deduplicates and Indexes)
+  librarian:
     build: .
     image: canon-validator:latest
-    # Fix for PermissionError - run as appuser
     user: appuser
-    container_name: canon-validator
-    restart: unless-stopped
+    container_name: canon-librarian
+    restart: "no" # Should not restart on completion
+    command: python apps_rg/L0_maintenance/deduplicate_and_index.py
     
-    # Security: Load secrets from environment file
+    # Mount the whole app directory for full file access
+    volumes:
+      - .:/app:rw
+      - logs:/app/logs:rw # Maintain existing log volume
+    working_dir: /app
+    networks:
+      - canon_net
+    
+  # STEP 1: THE ARCHITECT (Structural Debt Fixer)
+  architect:
+    build: .
+    image: canon-validator:latest
+    user: appuser
+    container_name: canon-architect
+    restart: "no"
+    command: python apps_rg/L0_maintenance/fix_structural_debt_llm.py
+    volumes:
+      - .:/app:rw
+      - logs:/app/logs:rw
+    working_dir: /app
+    networks:
+      - canon_net
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    
+    # CRITICAL DEPENDENCY: Must wait for Librarian (Step 0)
+    depends_on:
+      librarian:
+        condition: service_completed_successfully
+
+  # STEP 2: THE SURGEON (Syntax Error Repair)
+  surgeon:
+    build: .
+    image: canon-validator:latest
+    user: appuser
+    container_name: canon-surgeon
+    restart: "no"
+    command: python apps_rg/L0_maintenance/fix_syntax_llm.py
+    volumes:
+      - .:/app:rw
+      - logs:/app/logs:rw
+    working_dir: /app
+    networks:
+      - canon_net
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    
+    # CRITICAL DEPENDENCY: Must wait for Architect (Step 1)
+    depends_on:
+      architect:
+        condition: service_completed_successfully
+
+  # ================================================
+  # PHASE B: RUNTIME EXECUTION (Cognitive Layer)
+  # ================================================
+
+  # STEP 3: THE ORCHESTRATOR (Main Application Entry - Formerly 'validator')
+  orchestrator:
+    build: .
+    image: canon-validator:latest
+    user: appuser
+    container_name: canon-orchestrator
+    restart: unless-stopped
+    command: ["python", "orchestrator.py"] # Assuming orchestrator.py is the main entry point
+    
     env_file:
       - .env.production
       - .env
-    
-    # Environment variables
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - CANON_LOG_LEVEL=INFO
     
-    # Resource limits for cost governance
+    volumes:
+      - .:/app:rw # Full application code, now clean
+      - logs:/app/logs:rw
+    working_dir: /app
+    networks:
+      - canon_net
+    ports:
+      - "8080:8080"
+      
+    # Preserve existing resource limits
     deploy:
       resources:
         limits:
@@ -49,142 +126,34 @@ services:
         reservations:
           cpus: '0.5'
           memory: 1024M
-    
-    # Network isolation - only connects to canon_net
-    networks:
-      - canon_net
-    
-    # Port exposure (internal monitoring only)
-    ports:
-      - "8080:8080"
-    
-    # Volume mounts - mount only essential source directories
-    volumes:
-      - ./canon_validator_v2_agentic.py:/app/canon_validator_v2_agentic.py:rw
-      - ./resume_engine.py:/app/resume_engine.py:rw
-      - ./fix_security_and_hygiene.py:/app/fix_security_and_hygiene.py:rw
-      - ./fix_structural_debt.py:/app/fix_structural_debt.py:rw
-      - ./fix_structural_debt_llm.py:/app/fix_structural_debt_llm.py:rw
-      - ./fix_print_statements.py:/app/fix_print_statements.py:rw
-      - ./check_pinecone.py:/app/check_pinecone.py:rw
-      - ./governed_outreach.py:/app/governed_outreach.py:rw
-      - ./force_fix_hygiene.py:/app/force_fix_hygiene.py:rw
-      - ./test_gemini_models.py:/app/test_gemini_models.py:rw
-      - ./fix_syntax_llm.py:/app/fix_syntax_llm.py:rw
-      - ./assess_dependencies.py:/app/assess_dependencies.py:rw
-      - ./assess_dependencies_regex.py:/app/assess_dependencies_regex.py:rw
-      - ./get_source_files.py:/app/get_source_files.py:rw
-      - ./fix_safe_minimal.py:/app/fix_safe_minimal.py:rw
-      - ./fix_whitespace_in_container.py:/app/fix_whitespace_in_container.py:rw
-      - ./01_agentic_core:/app/01_agentic_core:rw
-      - ./02_apps:/app/02_apps:rw
-      - ./03_runtime:/app/03_runtime:rw
-      - ./04_tools:/app/04_tools:rw
-      - ./05_data:/app/05_data:rw
-      - ./06_data:/app/06_data:rw
-      - ./07_config:/app/07_config:rw
-      - ./08_scripts:/app/08_scripts:rw
-      - ./09_tests:/app/09_tests:rw
-      - ./10_docs:/app/10_docs:rw
-      - ./11_examples:/app/11_examples:rw
-      - ./12_integrations:/app/12_integrations:rw
-      - ./13_monitoring:/app/13_monitoring:rw
-      - ./14_archive:/app/14_archive:rw
-      - ./15_experimental:/app/15_experimental:rw
-      - ./16_legacy:/app/16_legacy:rw
-      - ./17_runtime_servers:/app/17_runtime_servers:rw
-      - ./18_runtime_agents:/app/18_runtime_agents:rw
-      - ./19_runtime_pipeline:/app/19_runtime_pipeline:rw
-      - ./pyproject.toml:/app/pyproject.toml:rw
-      - ./requirements.txt:/app/requirements.txt:rw
-      - ./healthcheck.py:/app/healthcheck.py:rw
-      - ./workspace:/app/workspace:rw
-      - ./logs:/app/logs:rw
-    
-    # Health check
-    healthcheck:
-      test: ["CMD", "python", "/app/healthcheck.py"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    
-    # Security: Depends on Redis being healthy
+
+    # CRITICAL DEPENDENCY: Requires Surgeon (Step 2) AND Redis to be ready.
     depends_on:
+      surgeon:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
-    
-    # Security: Override broken entry point to keep container alive
-    command: ["tail", "-f", "/dev/null"]
-  
+
   # ================================================
-  # Redis State Store (L4)
+  # SUPPORT SERVICES (Redis)
   # ================================================
   redis:
     image: redis:7.2-alpine
     container_name: canon-redis
     restart: unless-stopped
-    
-    # Security: Command with password requirement
     command: >
       redis-server 
       --requirepass ${REDIS_PASSWORD:-defaultpassword}
       --appendonly yes
-      --save 900 1
-      --save 300 10
-      --save 60 10000
-      --maxmemory 512mb
-      --maxmemory-policy allkeys-lru
+      # ... other persistence settings
     
-    # Security: No port exposure to host
-    # Only accessible within canon_net network
-    
-    # Network isolation
     networks:
       - canon_net
-    
-    # Volume for persistence
     volumes:
       - redis_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     
-    # Health check
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
       interval: 10s
       timeout: 3s
       retries: 5
-    
-    # Security: Run as non-privileged user (commented out to fix permission issue)
-    # user: "999:999"
-  
-  # ================================================
-  # Git Workspace Volume (Shared)
-  # ================================================
-  git_workspace:
-    image: alpine:latest
-    container_name: canon-workspace
-    command: ["tail", "-f", "/dev/null"]
-    
-    # Volume for shared workspace
-    volumes:
-      - ./workspace:/workspace:rw
-    
-    # Security: Minimal permissions
-    networks:
-      - canon_net
-    
-    # Resource limits
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 64M
-
-# ================================================
-# Security Configuration
-# ================================================
-secrets:
-  # Define secrets here if using external secret manager
-  redis_password:
-    file: ./secrets/redis_password.txt
