@@ -18,6 +18,8 @@ from mcp_hardening import check_design_drift, execute_vulnerability_search
 
 # Import sandbox utilities for execution isolation
 from sandbox_utils import execute_in_sandbox
+# Import consensus engine for Protocol 6
+from consensus_engine import jury
 
 
 def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -129,6 +131,34 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
                 "details": "Code failed to execute or pass tests in isolated environment."
             }
         # --------------------------------------------
+
+        # --- HARDENING PROTOCOL 6: MULTI-MODEL CONSENSUS ---
+        if logger:
+            logger.info(f"Sandbox verification passed. Initiating Supreme Court consensus for {target_file}...")
+        
+        # Read the file content for consensus analysis
+        with open(target_file, 'r', encoding='utf-8') as f:
+            file_content = f.read()
+        
+        # Run consensus engine
+        consensus_result = jury.judge_artifact(file_content, context="Code Review")
+        
+        if consensus_result["status"] != "PASS":
+            if logger:
+                logger.critical(f"HARDENING TRIGGERED: Supreme Court rejected {target_file} with score {consensus_result['score']:.2f}")
+                for vote in consensus_result["votes"]:
+                    if vote["verdict"] == "NO":
+                        logger.warning(f"  - {vote['model']}: {vote['reason']}")
+            
+            return {
+                "status": "FAILED",
+                "reason": "CONSENSUS_VALIDATION_FAILURE",
+                "details": f"Multi-model consensus failed with score {consensus_result['score']:.2f}"
+            }
+        else:
+            if logger:
+                logger.info(f"✅ Supreme Court approved {target_file} with score {consensus_result['score']:.2f}")
+        # ----------------------------------------------------
 
         # 4. Commit the fix (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
