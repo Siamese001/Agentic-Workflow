@@ -111,7 +111,7 @@ def run_agentic_loop(user_goal: str):
         # Trigger Phase A: Librarian Boot Sequence
         try:
             print("🔄 Re-indexing filesystem (Phase A)...")
-            subprocess.run(["python", "apps_rg/L0_maintenance/deduplicate_and_index.py"], check=True)
+            # subprocess.run(["python", "apps_rg/L0_maintenance/deduplicate_and_index.py"], check=True)  # Disabled after manual cleanup
             
             # [CRITICAL ADDITION] 2. Verify Integrity immediately after generation
             if not validate_manifest_integrity(manifest_path):
