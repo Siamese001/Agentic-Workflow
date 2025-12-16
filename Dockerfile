@@ -67,10 +67,10 @@ RUN chown -R appuser:appgroup /app
 # Create logs directory with proper permissions before switching user
 RUN mkdir -p /app/logs && chown -R appuser:appgroup /app/logs
 
-# Switch to the non-root user
-USER appuser
-
 # Define the entry point for containers
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Switch to the non-root user
+USER appuser
 ENTRYPOINT ["/entrypoint.sh"]

@@ -52,8 +52,9 @@ class SystemSanityCheck:
         # Test RedisVL connection
         logger.info("1️⃣ Testing RedisVL Connection...")
         try:
-            redis_conn = ConnectionFactory.get_redis_connection()
-            redis_info = redis_conn.client.info()
+            # Fix: ConnectionFactory.get_redis_connection() now returns the client directly
+            redis_client = ConnectionFactory.get_redis_connection()
+            redis_info = redis_client.info()  # This now works because redis_client is an object
 
             # Check AOF persistence
             aof_enabled = redis_info.get("aof_enabled", False)
@@ -83,25 +84,25 @@ class SystemSanityCheck:
         # Test Pinecone connection
         logger.info("2️⃣ Testing Pinecone Connection...")
         try:
-            pinecone = ConnectionFactory.get_pinecone_connection()
-            indexes = pinecone.list_indexes()
+            pc = ConnectionFactory.get_pinecone_client()
+            index_list = pc.list_indexes()
             index_name = os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
 
             # Check if our index exists
-            index_exists = index_name in indexes.names()
+            index_exists = index_name in index_list
             index_status = "✅ EXISTS" if index_exists else "⚠️  WILL CREATE"
 
             results["components"]["pinecone"] = {
                 "status": "PASSED",
                 "details": {
-                    "indexes": len(indexes.names()),
+                    "indexes": len(index_list.names()),
                     "target_index": index_name,
                     "index_status": index_status
                 }
             }
 
             logger.info("   ✅ Pinecone connected successfully")
-            logger.info(f"   📋 Total indexes: {len(indexes.names())}")
+            logger.info(f"   📋 Total indexes: {len(index_list.names())}")
             logger.info(f"   🎯 Target index '{index_name}': {index_status}")
 
         except Exception as e:
