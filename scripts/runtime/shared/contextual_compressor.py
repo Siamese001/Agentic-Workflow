@@ -197,7 +197,7 @@ class ContextualCompressor:
             return self._compress_heuristic(chunks, query)
 
         except Exception as e:
-            ConfigurationService().logger.error(f'LLM compression failed: {e}')
+ConfigurationService().logger.error(f'LLM compression failed: {e}')
             return self._compress_heuristic(chunks, query)
 
 
@@ -277,3 +277,4 @@ def compress_chunks(chunks: List[str], query: str, similarity_threshold: float =
     # For now, assuming heuristic is sufficient or LLM fallback is handled within compress.
     compression_result = COMPRESSOR.compress(chunks, query) # If compress becomes async, this line needs await
     return compression_result.compressed_text
+

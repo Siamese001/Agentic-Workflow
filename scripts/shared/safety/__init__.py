@@ -6,7 +6,7 @@ Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .pii import (
     PIIScrubber,
@@ -63,3 +63,4 @@ __all__ = [
     "PolicyAction",
     "create_control_plane",
 ]
+

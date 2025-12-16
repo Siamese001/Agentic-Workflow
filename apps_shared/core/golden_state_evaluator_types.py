@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List
 from dataclasses import dataclass, field
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 """Types and models for golden_state_evaluator."""
@@ -64,3 +64,4 @@ class EvaluationReport:
                 'judge_result': self._judge_result.to_dict(),
                 'action_match_score': self._action_match_score,
                 'errors': self._errors}
+

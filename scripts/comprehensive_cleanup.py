@@ -65,7 +65,7 @@ class RepositoryCleaner:
                         return True
 
         except Exception as e:
-            pass
+pass
             self.stats["errors"].append(f"Error reading {file_path}: {e}") # Fixed indentation
 
         return False
@@ -89,7 +89,7 @@ class RepositoryCleaner:
                     return True
 
         except Exception as e:
-            pass
+pass
             logger.warning(f"Ignored error: {e}") # Fixed indentation
 
         return False
@@ -167,7 +167,7 @@ class RepositoryCleaner:
             self.stats["files_updated"] += 1
 
         except Exception as e:
-            pass
+pass
             self.stats["errors"].append(f"Error updating {root_shim}: {e}") # Fixed indentation
             return False
 
@@ -178,7 +178,7 @@ class RepositoryCleaner:
                     shim.unlink()
                     self.stats["shim_files_deleted"] += 1
                 except Exception as e:
-                    pass
+pass
                     self.stats["errors"].append(f"Error deleting {shim}: {e}") # Fixed indentation
 
         return True
@@ -284,3 +284,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

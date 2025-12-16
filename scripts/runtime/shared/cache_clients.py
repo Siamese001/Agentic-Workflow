@@ -67,7 +67,7 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
     try:
         import redis
     except ImportError:
-        raise ImportError(
+raise ImportError(
             'redis not installed. Install with: pip install redis>=5.0.0')
     if ConfigurationService().config is None:
         RedisConfig()
@@ -88,7 +88,7 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
         ConfigurationService().logger.info(
             f'Redis client connected to {host}:{port}')
     except Exception as e:
-        ConfigurationService().logger.warning(
+ConfigurationService().logger.warning(
             f'Redis connection test failed: {e}')
     return CLIENT
 
@@ -114,7 +114,7 @@ def cache_set(client: Any, key: str, value: Any, ttl: Optional[int] = None, SERI
         else:
             return client.set(key, value)
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to set cache key {key}: {e}')
         return False
 
@@ -138,10 +138,10 @@ def cache_get(client: Any, key: str, DESERIALIZE: bool = True) -> Optional[Any]:
             try:
                 return json.loads(value)
             except json.JSONDecodeError:
-                return value
+return value
         return value
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to get cache key {key}: {e}')
         return None
 
@@ -159,7 +159,7 @@ def cache_delete(client: Any, key: str) -> bool:
     try:
         return bool(client.delete(key))
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to delete cache key {key}: {e}')
         return False
 
@@ -177,7 +177,7 @@ def cache_exists(client: Any, key: str) -> bool:
     try:
         return bool(client.exists(key))
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to check cache key {key}: {e}')
         return False
 
@@ -204,12 +204,12 @@ def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool = True) -> Di
                 try:
                     result[key] = json.loads(value)
                 except json.JSONDecodeError:
-                    result[key] = value
+result[key] = value
             else:
                 result[key] = value
         return result
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to get multiple cache keys: {e}')
         return {}
 
@@ -242,7 +242,7 @@ def cache_set_many(client: Any, mapping: Dict[str, Any], ttl: Optional[int] = No
         pipeline.execute()
         return True
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to set multiple cache keys: {e}')
         return False
 
@@ -263,7 +263,7 @@ def cache_clear_pattern(client: Any, pattern: str) -> int:
             return client.delete(*keys_to_delete)
         return 0
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Failed to clear cache pattern {pattern}: {e}')
         return 0
 
@@ -273,3 +273,4 @@ def reset_redis_client() -> None:
     global _REDIS_CLIENT
     _REDIS_CLIENT = None
     ConfigurationService().logger.debug('Reset Redis client')
+

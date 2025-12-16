@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 'MCP-specific exceptions.\n\n\n\nLOGGER = logging.getLogger(__name__)\nPhase 1 - Pillar 3: Typed Contracts (Strict Schemas)\n'
 
 

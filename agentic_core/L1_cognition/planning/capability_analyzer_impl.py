@@ -198,3 +198,4 @@ class CapabilityAnalyzer:
 def create_capability_analyzer() -> CapabilityAnalyzer:
     """Factory function to create capability analyzer. """
     return CapabilityAnalyzer()
+

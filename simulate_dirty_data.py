@@ -14,7 +14,7 @@ from agent_logic_connectivity import CanonValidator
 
 # Configure clean output logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')
-logger = logging.getLogger("DirtyDataSim")
+logger = logging.getLogger("DirtyDataSim")  # GLOBAL: Review if this should be constant
 
 
 def print_section(title: str) -> None:

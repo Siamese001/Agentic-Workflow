@@ -123,7 +123,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
         try:
             import anthropic
         except ImportError as exc:
-            raise ImportError("Anthropic package not installed. Install with: pip install anthropic") from exc
+raise ImportError("Anthropic package not installed. Install with: pip install anthropic") from exc
 
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
@@ -378,3 +378,4 @@ def create_hardened_anthropic_executor(
     """
     CONFIG = HardenedAnthropicConfig(MODEL=MODEL, TEMPERATURE=TEMPERATURE, **kwargs)
     return HardenedAnthropicExecutor(config=CONFIG)
+

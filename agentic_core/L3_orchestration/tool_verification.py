@@ -211,7 +211,8 @@ async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
                         ))
 
     except SyntaxError as e:
-        issues.append(VerificationIssue(
+pass
+issues.append(VerificationIssue(
             _severity="error",
             _message=f"Syntax error: {e.msg}",
             _line_number=e.lineno,
@@ -308,7 +309,8 @@ async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
             ))
 
     except Exception as e:
-        issues.append(VerificationIssue(
+pass
+issues.append(VerificationIssue(
             _severity="error",
             _message=f"Verification error: {str(e)}",
             _suggestion="Check code for obvious errors"
@@ -358,3 +360,4 @@ def create_tool_verifier(
         sandbox=sandbox,
         enable_strict_mode=enable_strict_mode
     )
+

@@ -13,7 +13,9 @@ from unittest.mock import Mock, patch
 try:
     from core.models.models import ExecutionContext, JobInput, ResumeInput
 except ImportError:
-    # Define dummy classes if imports fail, allowing tests to run with mocks
+    pass
+pass
+# Define dummy classes if imports fail, allowing tests to run with mocks
     class ExecutionContext:
         def __init__(self, JOB, RESUME, user_id, CONFIG=None):
             self.JOB = JOB
@@ -37,7 +39,9 @@ except ImportError:
 try:
     from workflow.workflow_config import WorkflowConfig
 except ImportError:
-    # Define a dummy WorkflowConfig if it cannot be imported
+    pass
+pass
+# Define a dummy WorkflowConfig if it cannot be imported
     class WorkflowConfig:
         def __init__(self, enable_rag=True, enable_qa=True, enable_safety=True, max_drafts=2):
             self.enable_rag = enable_rag
@@ -58,7 +62,9 @@ try:
             self.qa = qa
             self.SAFETY = SAFETY
 except ImportError:
-    class L2ResultBundle:
+    pass
+pass
+class L2ResultBundle:
         def __init__(self, STRATEGY, RAG, DRAFTING, qa, SAFETY):
             self.STRATEGY = STRATEGY
             self.RAG = RAG
@@ -73,7 +79,7 @@ def run_dag(plans, ctx):
     # Simulate a successful execution result
     return Mock(final_state_patch={"strategy_text": "mock_strategy_text"})
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class TestEndToEndWorkflow:
@@ -253,3 +259,4 @@ class TestWorkflowPerformance:
 
 if __name__ == "__main__":
     pytest.main([__file__])
+

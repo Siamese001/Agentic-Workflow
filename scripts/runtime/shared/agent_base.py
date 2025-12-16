@@ -145,7 +145,7 @@ class Agent(ABC):
             return RESPONSE.content[0].text
 
         except Exception as e:
-            LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
+LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
             raise
 
     async def _call_llm_with_self_consistency(
@@ -254,3 +254,4 @@ class Agent(ABC):
         # RAG integration pending - requires vector store and retrieval infrastructure
         LOGGER.warning(f"RAG not yet implemented for {self.k_node_id}, calling LLM directly")
         return await self._call_llm(prompt)
+

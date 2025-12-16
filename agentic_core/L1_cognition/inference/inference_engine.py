@@ -226,7 +226,8 @@ class InferenceEngine:
             return result_obj # Corrected result to result_obj
 
         except Exception as e:
-            LOGGER.error( # Corrected logger to LOGGER
+pass
+LOGGER.error( # Corrected logger to LOGGER
                 "inference_failed",
                 extra={ # Corrected EXTRA to extra
                     "execution_id": request.context.hard_state.execution_id,
@@ -317,3 +318,4 @@ async def analytical_inference(
         provider=provider # Corrected PROVIDER to provider
     )
     return await engine_instance.infer(request_obj) # Corrected engine to engine_instance, request to request_obj
+

@@ -11,7 +11,7 @@ from typing import Dict, List, object
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def compute_error_rate(events: List[Dict[str, object]]) -> float:

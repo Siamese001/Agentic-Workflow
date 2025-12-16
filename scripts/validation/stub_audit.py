@@ -77,7 +77,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
         return False, "has_content"
 
     except (ValueError, TypeError, KeyError) as e:
-        return False, f"error: {e}"
+return False, f"error: {e}"
 
 
 def audit_stubs() -> Dict:
@@ -190,3 +190,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

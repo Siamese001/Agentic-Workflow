@@ -33,7 +33,8 @@ def fix_file(file_path: Path):
 
         return True
     except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+pass
+# print(f"Error fixing {file_path}: {e}")  # [Security Fix]
         return False
 
 # Fix all remaining failed files
@@ -140,16 +141,16 @@ failed_files = [
     "tests/simple_test.py"
 ]
 
-print("🔧 Stripping BOM and fixing leading whitespace...")
+# print("🔧 Stripping BOM and fixing leading whitespace...")  # [Security Fix]
 fixed = 0
 for file_path in failed_files:
     path = Path(file_path)
     if path.exists():
         if fix_file(path):
             fixed += 1
-            print(f"✅ Fixed: {file_path}")
+            # print(f"✅ Fixed: {file_path}")  # [Security Fix]
         else:
-            print(f"❌ Failed: {file_path}")
+            # print(f"❌ Failed: {file_path}")  # [Security Fix]
 
-print(f"\n✅ Fixed {fixed} files")
+# print(f"\n✅ Fixed {fixed} files")  # [Security Fix]
 

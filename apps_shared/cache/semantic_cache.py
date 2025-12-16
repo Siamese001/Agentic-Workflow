@@ -150,7 +150,7 @@ class EnhancedSemanticCache:
 
         self.entries[cache_key] = entry
         return cache_key
-    
+
     def _evict_oldest(self):
         """Evict the oldest entry from the cache."""
         if not self.entries:
@@ -163,7 +163,7 @@ class EnhancedSemanticCache:
             if entry.timestamp < oldest_timestamp:
                 oldest_timestamp = entry.timestamp
                 oldest_key = key
-        
+
         if oldest_key:
             del self.entries[oldest_key]
 
@@ -356,3 +356,4 @@ class EnhancedSemanticCache:
             del self.entries[key]
 
         return len(keys_to_remove)
+

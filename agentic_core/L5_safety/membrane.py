@@ -41,7 +41,8 @@ async def sanitize(self: Any, raw_content: str, source_type: str) -> str:
             f'Successfully sanitized content from {source_type}')
         return ConfigurationService().sanitized
     except Exception as e:
-        ConfigurationService().logger.error(f'Error during sanitization: {e}')
+pass
+ConfigurationService().logger.error(f'Error during sanitization: {e}')
         return self._emergency_sanitization(raw_content)
 
 
@@ -83,3 +84,4 @@ async def create_membrane(api_key: str) -> InputMembrane:
     """Create an InputMembrane instance."""
     CLIENT = AsyncOpenAI(api_key=ConfigurationService().api_key)
     return InputMembrane(client)
+

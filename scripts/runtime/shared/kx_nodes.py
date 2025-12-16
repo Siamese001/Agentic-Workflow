@@ -554,3 +554,4 @@ def get_outreach_kx_node(
     """
     REGISTRY = get_kx_registry()
     return REGISTRY.get_outreach_node(node_key, connection_request)
+

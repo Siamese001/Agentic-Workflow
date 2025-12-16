@@ -10,7 +10,7 @@ def get_active_files(entry_points, root_dir):
     """
     finder = ModuleFinder(path=[root_dir] + sys.path)
 
-    print(f"🔍 Tracing dependencies from: {entry_points}")
+    # print(f"🔍 Tracing dependencies from: {entry_points}")  # [Security Fix]
     for script in entry_points:
         # ModuleFinder acts like python execution but just scans for imports
         finder.run_script(script)
@@ -19,7 +19,7 @@ def get_active_files(entry_points, root_dir):
     # Normalize paths to absolute for comparison
     abs_root = os.path.abspath(root_dir)
 
-    print("\n📦 Active Modules Found:")
+    # print("\n📦 Active Modules Found:")  # [Security Fix]
     for name, mod in finder.modules.items():
         if mod.__file__:
             # Only include files inside our project root
@@ -48,15 +48,15 @@ def main():
                         help='Output file to store the list of active files')
     args = parser.parse_args()
 
-    print("🚀 Starting Dependency Assessment...")
+    # print("🚀 Starting Dependency Assessment...")  # [Security Fix]
     active_files = get_active_files(args.entry_points, args.root_dir)
 
-    print(f"\n✅ Assessment Complete. Found {len(active_files)} active files.")
-    print(f"   Ignored {len(list(os.walk(args.root_dir))) * 5 - len(active_files)} potentially junk/backup files.") # Rough estimate
+    # print(f"\n✅ Assessment Complete. Found {len(active_files)} active files.")  # [Security Fix]
+    # print(f"   Ignored {len(list(os.walk(args.root_dir))) * 5 - len(active_files)} potentially junk/backup files.") # Rough estimate  # [Security Fix]
 
     with open(args.output, 'w') as f:
         json.dump(active_files, f, indent=2)
-    print(f"💾 Manifest saved to {args.output}")
+    # print(f"💾 Manifest saved to {args.output}")  # [Security Fix]
 
 if __name__ == '__main__':
     main()

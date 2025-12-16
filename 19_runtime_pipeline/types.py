@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Set
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = __import__('logging').getLogger(__name__)
@@ -67,3 +67,4 @@ class PipelineExecutionError(Exception):
         self.stage = stage
         self.original_error = original_error
         super().__init__(f"Pipeline failed at {stage}: {message}")
+

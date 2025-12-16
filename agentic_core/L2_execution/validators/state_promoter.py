@@ -216,7 +216,8 @@ class StatePromoter:
                             key, context.soft_state.drafts[key], content
                         )
                     except json.JSONDecodeError:
-                        # If not JSON, use raw content
+pass
+# If not JSON, use raw content
                         content = result.content # Use lowercase variable name
                         context.soft_state.drafts[key] = content
                         context.soft_state.record_revision(
@@ -233,7 +234,8 @@ class StatePromoter:
                     )
 
                 except Exception as e:
-                    LOGGER.error(
+pass
+LOGGER.error(
                         "self_correction_failed",
                         extra = {
                             "execution_id": context.hard_state.execution_id,
@@ -284,7 +286,8 @@ class StatePromoter:
                         parsed_content = json.loads(content)
                         schema(**parsed_content)
                     except (json.JSONDecodeError, ValidationError) as e:
-                        LOGGER.warning(
+pass
+LOGGER.warning(
                             "pydantic_validation_failed",
                             extra = {
                                 "key": key,
@@ -293,7 +296,8 @@ class StatePromoter:
                         )
                         return ValidationResult.REQUIRES_CORRECTION
             except ValidationError as e:
-                LOGGER.warning(
+pass
+LOGGER.warning(
                     "pydantic_validation_failed",
                     extra = {
                         "key": key,
@@ -302,7 +306,8 @@ class StatePromoter:
                 )
                 return ValidationResult.REQUIRES_CORRECTION
             except Exception as e:
-                LOGGER.error(
+pass
+LOGGER.error(
                     "schema_validation_error",
                     extra={
                         "key": key,
@@ -326,7 +331,8 @@ class StatePromoter:
                         )
                         return ValidationResult.FAILED if rule.is_critical else ValidationResult.REQUIRES_CORRECTION
                 except Exception as e:
-                    LOGGER.error(
+pass
+LOGGER.error(
                         "validation_rule_error",
                         extra={
                             "key": key,
@@ -454,3 +460,4 @@ def create_resume_validator() -> StatePromoter:
     )
 
     return promoter
+

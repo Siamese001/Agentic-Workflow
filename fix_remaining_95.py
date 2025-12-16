@@ -9,7 +9,7 @@ from pathlib import Path
 
 def fix_file_simple(file_path: Path):
     """Simple fix - replace with basic test stub"""
-    print(f"\nFixing: {file_path}")
+    # print(f"\nFixing: {file_path}")  # [Security Fix]
 
     # Extract any test names
     try:
@@ -53,11 +53,12 @@ def {test_name}():
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(stub)
 
-        print(f"  ✅ Fixed with {len(matches)} test(s)")
+        # print(f"  ✅ Fixed with {len(matches)} test(s)")  # [Security Fix]
         return True
 
     except Exception as e:
-        print(f"  ❌ Error: {e}")
+pass
+# print(f"  ❌ Error: {e}")  # [Security Fix]
         return False
 
 # Find remaining broken files
@@ -72,16 +73,18 @@ for pattern in ["test_*.py", "*_test.py"]:
                     content = f.read()
                 # Try to parse
                 compile(content, str(file_path), 'exec')
-            except:
-                broken_files.append(file_path)
+except Exception:
+    pass
+pass
+broken_files.append(file_path)
 
-print(f"Found {len(broken_files)} broken files")
+# print(f"Found {len(broken_files)} broken files")  # [Security Fix]
 
 fixed = 0
 for file_path in broken_files:
     if fix_file_simple(file_path):
         fixed += 1
 
-print(f"\n✅ Fixed {fixed} files")
-print(f"\nRun 'pytest tests/ --collect-only' to see all tests!")
+# print(f"\n✅ Fixed {fixed} files")  # [Security Fix]
+# print(f"\nRun 'pytest tests/ --collect-only' to see all tests!")  # [Security Fix]
 

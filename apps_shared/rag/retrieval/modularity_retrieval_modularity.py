@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -59,3 +59,4 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
     for expected in expected_retrievers:
         assert any(expected in line for line in retriever_imports), \
             f"Expected retriever import not found: {expected}. Found: {retriever_imports}"
+

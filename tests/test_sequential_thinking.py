@@ -18,3 +18,4 @@ def test_sequential_thinking():
     Test the SequentialThinking implementation.
     """
     pass
+

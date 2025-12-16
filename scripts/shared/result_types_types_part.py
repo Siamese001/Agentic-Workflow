@@ -6,7 +6,7 @@ from enum import Enum
 
 from dataclasses import dataclass
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ResultStatus(Enum):
@@ -95,3 +95,4 @@ class ExecutionResult(Result):
             logger.warning(
                 f"Completed steps ({self.completed_steps}) is negative for workflow {self.workflow_id}"
             )
+

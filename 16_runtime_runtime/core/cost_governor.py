@@ -172,3 +172,4 @@ def track_api_call(model: str, input_tokens: int, output_tokens: int):
     """Convenience function to track API calls using global governor."""
     governor = get_global_cost_governor()
     return governor.track_usage(model, input_tokens, output_tokens)
+

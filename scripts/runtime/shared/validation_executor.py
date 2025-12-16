@@ -696,7 +696,7 @@ class ValidationGateExecutor:
             SIMILARITY = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
         except Exception as e:
-    pass
+pass
 logger.error(f"Error calculating similarity: {e}")
             return 0.0
 

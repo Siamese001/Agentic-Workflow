@@ -63,7 +63,7 @@ class UniversalMCPClient:
                     self.sessions[name] = session
                     self.logger.info(f'Connected to {name}')
             except Exception as e:
-                self.logger.error(
+self.logger.error(
                     f'Failed to connect to {name}: {e}')
 
 
@@ -82,7 +82,7 @@ class UniversalMCPClient:
                                      'description': f'[{name}] {tool.description}',
                                      'input_schema': tool.inputSchema})
             except Exception as e:
-                self.logger.warning(
+self.logger.warning(
                     f'Could not list tools for {name}: {e}')
         return all_tools
 
@@ -104,9 +104,10 @@ class UniversalMCPClient:
             result = await self.sessions[server_name].call_tool(tool_name, arguments=arguments)
             return result.content
         except Exception as e:
-            return f'Error executing {namespaced_tool_name}: {str(e)}'
+return f'Error executing {namespaced_tool_name}: {str(e)}'
 
 
     async def cleanup(self: Any) -> None:
         """Cleanup all MCP server connections."""
         await self.exit_stack.aclose()
+

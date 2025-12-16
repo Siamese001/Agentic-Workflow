@@ -1,7 +1,7 @@
 """Agent Health and Autonomic Monitoring. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 __all__ = [
     "AutonomicMonitor",
@@ -10,3 +10,4 @@ __all__ = [
     "HealthAlert",
     "create_autonomic_monitor",
 ]
+

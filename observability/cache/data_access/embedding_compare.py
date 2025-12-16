@@ -157,7 +157,7 @@ class GetInfoEmbeddingCompareMeaning:
             )
 
         except Exception as e:
-            exec_ctx.complete(success=False, error=e)
+exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
                 SUCCESS=False,
@@ -195,8 +195,9 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-        return False
+return False
 
 
 # Module initialization
 logger.info(f"{__name__} module loaded successfully")
+

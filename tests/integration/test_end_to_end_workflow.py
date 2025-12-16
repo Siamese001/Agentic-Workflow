@@ -112,3 +112,4 @@ def test_knowledge_search():
     Test knowledge search in vector store.
     """
     pass
+

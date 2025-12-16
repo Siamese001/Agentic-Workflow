@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import List, Dict, Any, Set
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -61,3 +61,4 @@ class PeerIntelligenceResult:
     validation_results: List[Any] # Assuming ValidationResult is defined elsewhere or a placeholder
     success: bool
     total_searches_executed: int
+

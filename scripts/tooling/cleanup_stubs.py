@@ -53,7 +53,7 @@ def is_empty_or_minimal(file_path: Path) -> bool:
 
         return False
     except (ValueError, TypeError, KeyError):
-        pass
+pass
         return False
 
 
@@ -78,7 +78,7 @@ def has_meaningful_content(file_path: Path) -> bool:
 
         return False
     except (ValueError, TypeError, KeyError):
-        pass
+pass
         return False
 
 
@@ -139,7 +139,7 @@ def cleanup_stubs() -> Dict:
                     py_file.unlink()
                     log["removed_files"].append(rel_path)
                 except (ValueError, TypeError, KeyError) as e:
-                    log["errors"].append(f"{rel_path}: {e}")
+log["errors"].append(f"{rel_path}: {e}")
 
     log["removed_directories"] = remove_empty_directories(REPO_ROOT)
 
@@ -191,3 +191,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

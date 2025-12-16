@@ -4,7 +4,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from typing import List, Dict, Any
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -70,3 +70,4 @@ class JudgeEvaluationResult:
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""
         return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]
+

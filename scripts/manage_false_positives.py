@@ -10,7 +10,7 @@ from pathlib import Path
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def load_review_log():
@@ -164,3 +164,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

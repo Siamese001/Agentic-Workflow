@@ -25,7 +25,7 @@ def process_file(pyfile: Path) -> bool:
         CONTENT = pyfile.read_text(encoding='utf-8')
         ast.parse(ConfigurationService().content)
     except (SyntaxError, OSError):
-        return False
+return False
     for node in ast.walk(ConfigurationService().tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             if node.name.startswith('_'):
@@ -53,7 +53,7 @@ def process_file(pyfile: Path) -> bool:
             '\n'.join(ConfigurationService().lines), encoding='utf-8')
         return True
     except (ValueError, TypeError, RuntimeError, OSError):
-        return False
+return False
 
 
 fixed_count = 0
@@ -63,3 +63,4 @@ for sdir in ConfigurationService().sovereign_dirs:
     for pyfile in Path(sdir).rglob('*.py'):
         if process_file(pyfile):
             fixed_count += 1
+

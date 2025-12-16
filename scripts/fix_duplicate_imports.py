@@ -37,7 +37,7 @@ def fix_duplicate_imports(filepath: Any) -> None:
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
@@ -59,3 +59,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

@@ -3,7 +3,7 @@ from typing import Dict
 
 _logger = logging.getLogger(__name__)
 'RAG configuration for resume generation.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass

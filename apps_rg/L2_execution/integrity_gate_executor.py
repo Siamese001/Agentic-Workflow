@@ -1,7 +1,7 @@
 import logging
 import re
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .models import ( # Added 'from .models import (' to resolve unexpected indent
     DeepResearchOutput,
@@ -201,3 +201,4 @@ def validate_research_output(
     """TODO: Add docstring.""" # Moved docstring to function body
     EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
     return EXECUTOR.execute(research_output) # Changed 'executor' to 'EXECUTOR' to match variable name
+

@@ -6,7 +6,7 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .client import (
     MCPClient,
@@ -47,3 +47,4 @@ __all__ = [
     "get_default_module",
     "get_default_class",
 ]
+

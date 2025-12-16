@@ -146,7 +146,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
         try:
             import openai
         except ImportError as exc:
-            raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
+raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
 
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
@@ -401,3 +401,4 @@ def create_hardened_openai_executor(
     """
     config = HardenedOpenAIConfig(model=MODEL, temperature=TEMPERATURE, **kwargs)
     return HardenedOpenAIExecutor(config)
+

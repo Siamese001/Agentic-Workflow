@@ -95,7 +95,7 @@ def split_large_types_files():
                     ConfigurationService().logger.info(
                         f'  Updated {ConfigurationService().full_path.name} as re-export shim')
             except Exception as e:
-                ConfigurationService().logger.info(
+ConfigurationService().logger.info(
                     f'Error processing {file_path}: {e}')
 
 
@@ -105,3 +105,4 @@ if __name__ == '__main__':
     ConfigurationService().logger.info('\nSplitting large _types files...')
     split_large_types_files()
     ConfigurationService().logger.info('\nDone! Re-run canon_validator.py to verify.')
+

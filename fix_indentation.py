@@ -41,7 +41,7 @@ def fix_indentation_errors():
     with open('canon_validator_engine.py', 'w') as f:
         f.write(content)
 
-    print("Fixed indentation errors in canon_validator_engine.py")
+    # print("Fixed indentation errors in canon_validator_engine.py")  # [Security Fix]
 
 if __name__ == "__main__":
     fix_indentation_errors()

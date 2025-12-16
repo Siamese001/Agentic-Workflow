@@ -78,7 +78,8 @@ class AgentGym:
                                                 execution_trace=result.get('trace',
                                                                            []))
             except Exception as e:
-                if self.enable_logging:
+pass
+if self.enable_logging:
                     LOGGER.error('test_case_failed', extra={
                                  'case_id': case.id, 'error': str(e)})
                 outputs[case.id] = GoldenOutput(case_id=case.id,
@@ -243,3 +244,4 @@ class AgentGym:
 def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator] = None) -> AgentGym:
     """Factory function to create Agent Gym. """
     return AgentGym(golden_evaluator=golden_evaluator)
+

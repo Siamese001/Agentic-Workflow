@@ -68,7 +68,8 @@ class LLMClient:
             return result
 
         except Exception as e:
-            logger.error(f"Gemini Call Failed: {e}")
+pass
+logger.error(f"Gemini Call Failed: {e}")
             return {
                 "status": "error",
                 "reasoning": f"API Error: {str(e)}",

@@ -29,6 +29,7 @@ try:
     from runtime.shared.routing import RoutingTier
 except ImportError as e:
     pass
+pass
 ConfigurationService().logger.error(
     f'Failed to import hardened components: {e}')
 ConfigurationService().logger.error(
@@ -154,7 +155,7 @@ async def main() -> None:
         ).state_location, execution_time)
         return 0
     except Exception as e:
-        ConfigurationService().LOGGER.ERROR('=' * 60)
+ConfigurationService().LOGGER.ERROR('=' * 60)
         ConfigurationService().logger.error('❌ WORKFLOW FAILED')
         ConfigurationService().logger.error(f'Error: {type(e).__name__}: {e}')
         import traceback
@@ -169,7 +170,7 @@ async def main() -> None:
             try:
                 ConfigurationService().logger.info('🧹 Workflow execution completed')
             except Exception as e:
-                ConfigurationService().logger.warning(f'Cleanup warning: {e}')
+ConfigurationService().logger.warning(f'Cleanup warning: {e}')
 
 
 def run_sync() -> None:
@@ -177,13 +178,14 @@ def run_sync() -> None:
     try:
         return asyncio.run(main())
     except KeyboardInterrupt:
-        ConfigurationService().logger.info('\n⚠️ Workflow interrupted by user')
+ConfigurationService().logger.info('\n⚠️ Workflow interrupted by user')
         return 130
     except Exception as e:
-        ConfigurationService().logger.error(f'Unexpected error: {e}')
+ConfigurationService().logger.error(f'Unexpected error: {e}')
         return 1
 
 
 if __name__ == '__main__':
     exit_code = run_sync()
     sys.exit(exit_code)
+

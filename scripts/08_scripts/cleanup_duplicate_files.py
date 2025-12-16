@@ -106,7 +106,7 @@ class DuplicateFileScanner:
                     hasher.update(chunk)
             return hasher.hexdigest()
         except Exception as e:
-    pass
+pass
 return f"ERROR: {e}"
 
     def _extract_base_name(self, file_path: Path) -> Optional[Tuple[str, str]]:
@@ -299,7 +299,7 @@ class DuplicateFileCleaner:
                     logger.info(f"  ✓ Deleted: {duplicate.duplicate_path}")
                     deleted.append(duplicate.duplicate_path)
                 except Exception as e:
-    pass
+pass
 logger.info(
                         f"  ✗ Error deleting {duplicate.duplicate_path}: {e}")
 
@@ -344,7 +344,7 @@ logger.info(
                         f"  ✓ Deleted ({status}): {duplicate.duplicate_path}")
                     deleted.append(duplicate.duplicate_path)
                 except Exception as e:
-    pass
+pass
 logger.info(
                         f"  ✗ Error deleting {duplicate.duplicate_path}: {e}")
 

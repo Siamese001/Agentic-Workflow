@@ -67,7 +67,7 @@ def add_type_hints_to_file(filepath: str) -> int:
             return 1
         return 0
     except Exception as e:
-        ConfigurationService().logger.error(
+ConfigurationService().logger.error(
             f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
 
@@ -93,3 +93,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

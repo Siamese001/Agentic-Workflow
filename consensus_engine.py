@@ -3,7 +3,7 @@ import time
 from typing import List, Dict, Any
 
 # Configure logging
-logger = logging.getLogger("ConsensusEngine")
+logger = logging.getLogger("ConsensusEngine")  # GLOBAL: Review if this should be constant
 logging.basicConfig(level=logging.INFO)
 
 class ConsensusEngine:
@@ -157,5 +157,5 @@ class ConsensusEngine:
 
 
 # Initialize the global jury instance
-jury = ConsensusEngine()
+jury = ConsensusEngine()  # GLOBAL: Review if this should be constant
 

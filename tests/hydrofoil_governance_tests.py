@@ -137,7 +137,7 @@ def test_gr_r01_quota_enforcement_failover():
                 )
                 results.append(result)
             except Exception as e:
-    pass
+pass
 results.append({"status": "quota_exceeded", "error": str(e)})
 
     # L3 Assertion: Cost governance enforced (simplified)
@@ -198,7 +198,7 @@ def test_gr_r02_atomic_state_integrity():
         assert "ROLLBACK" not in transaction_log, "L4: Unexpected rollback"
         # print("    ✅ Transaction committed successfully")  # [Security Fix]
     except Exception as e:
-    pass
+pass
 # print(f"    ❌ Unexpected failure: {e}")  # [Security Fix]
 
     # Test failed transaction
@@ -214,7 +214,7 @@ def test_gr_r02_atomic_state_integrity():
         tx2.exec()
         assert False, "L4: Should have raised exception"
     except Exception:
-    pass
+pass
 assert "ROLLBACK" in transaction_log, "L4: Rollback not executed"
         assert initial_state["audit:123"] == "PENDING", "L4: Initial state changed!"
         # print("    ✅ Transaction rolled back - state preserved")  # [Security Fix]
@@ -320,7 +320,7 @@ def test_gr_r04_l5_logging_resilience():
         mock_local_buffer_store("audit_log", result)
 
     except Exception as e:
-    pass
+pass
 # Handle L5 failure gracefully
         result = {
             "status": "validation_completed",
@@ -367,7 +367,7 @@ def test_circuit_breaker_pattern():
             result = mock_service_call()
             results.append(result)
         except Exception as e:
-    pass
+pass
 results.append(str(e))
 
     # L3/L4 Assertion: Circuit breaker protects system
@@ -404,7 +404,7 @@ def run_governance_audit():
             test()
             passed += 1
         except Exception as e:
-    pass
+pass
 # print(f"  ❌ FAILED: {e}")  # [Security Fix]
             failed += 1
 

@@ -275,3 +275,4 @@ def create_relevance_scorer(
         RelevanceScorer instance
     """
     return RelevanceScorer(method=method)
+

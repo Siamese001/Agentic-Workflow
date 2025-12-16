@@ -202,14 +202,14 @@ class LLMExecutionStrategy(ExecutionStrategy):
             )
 
         except CircuitOpenError:
-            return ExecutionResult(
+return ExecutionResult(
                 status=ExecutionStatus.CIRCUIT_OPEN,
                 data=None,
                 context=context,
                 error="Circuit breaker is open"
             )
         except Exception as e:
-            return ExecutionResult(
+return ExecutionResult(
                 status=ExecutionStatus.FAILED,
                 data=None,
                 context=context,
@@ -334,14 +334,14 @@ class APIExecutionStrategy(ExecutionStrategy):
             )
 
         except CircuitOpenError:
-            return ExecutionResult(
+return ExecutionResult(
                 status=ExecutionStatus.CIRCUIT_OPEN,
                 data=None,
                 context=context,
                 error="API circuit breaker is open"
             )
         except Exception as e:
-            return ExecutionResult(
+return ExecutionResult(
                 status=ExecutionStatus.FAILED,
                 data=None,
                 context=context,
@@ -426,7 +426,7 @@ class BatchExecutionStrategy(ExecutionStrategy):
             )
 
         except Exception as e:
-            return ExecutionResult(
+return ExecutionResult(
                 status=ExecutionStatus.FAILED,
                 data=None,
                 context=context,
@@ -736,3 +736,4 @@ async def execute_outreach_generation(
     """
     executor = get_engine_executor(EngineType.OUTREACH)
     return await executor.generate_content(input_data, content_type, config)
+

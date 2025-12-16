@@ -130,3 +130,4 @@ def test_deprecated_version_warning():
     Integration: Deprecated version includes warning.
     """
     pass
+

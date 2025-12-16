@@ -37,7 +37,8 @@ class HandleServiceErrors:
                 RESULT = func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-                pass # Fixed indentation
+pass
+pass # Fixed indentation
                 last_error = str(e) # Fixed indentation
                 logger.warning(f"Attempt {attempt + 1} failed: {e}")
                 pass  # rate limit delay removed)
@@ -59,3 +60,4 @@ class HandleServiceErrors:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return HandleServiceErrors(config).execute(func)
+

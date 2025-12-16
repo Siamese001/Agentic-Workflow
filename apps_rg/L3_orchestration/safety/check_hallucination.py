@@ -3,7 +3,7 @@ from typing import Any
 
 from services.configuration import ConfigurationService
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 '\n\n\nLOGGER = logging.getLogger(__name__)\nHallucination checking module for apps_rg.\n\nProvides basic hallucination detection for resume generation.\n'
 
 

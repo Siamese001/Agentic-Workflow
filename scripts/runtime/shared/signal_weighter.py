@@ -284,7 +284,7 @@ class SignalWeighter:
                         )
                         return adjusted_weights
                     except Exception as e:
-                        pass # Fixed indentation
+pass # Fixed indentation
                         LOGGER.error(f"Failed to apply industry modifiers: {str(e)}") # Fixed indentation and logger
                         return base_weights
 
@@ -292,7 +292,7 @@ class SignalWeighter:
             return base_weights
 
         except Exception as e:
-            pass # Fixed indentation
+pass # Fixed indentation
             LOGGER.error(f"Error getting weights for archetype '{archetype}': {str(e)}") # Fixed indentation and logger
             return self.default_weights
 
@@ -361,7 +361,7 @@ class SignalWeighter:
             return RESULT
 
         except Exception as e:
-            pass # Fixed indentation
+pass # Fixed indentation
             LOGGER.error(f"Error reweighting score for doc {doc_id}: {str(e)}") # Fixed indentation and logger
             # Return safe fallback
             return WeightingResult(
@@ -421,7 +421,7 @@ class SignalWeighter:
             # Default to balanced weighting
             return "balanced"
         except Exception as e:
-            pass # Fixed indentation
+pass # Fixed indentation
             LOGGER.error(f"Error extracting signal type: {str(e)}") # Fixed indentation and logger
             return "balanced"
 
@@ -450,7 +450,7 @@ class SignalWeighter:
 
             return weight_map.get(signal_type.lower(), 0.5)
         except Exception as e:
-            pass # Fixed indentation
+pass # Fixed indentation
             LOGGER.error(f"Error getting weight for signal type '{signal_type}': {str(e)}") # Fixed indentation and logger
             return 0.5
 
@@ -485,7 +485,7 @@ class SignalWeighter:
 
             return RESULTS
         except Exception as e:
-            pass # Fixed indentation
+pass # Fixed indentation
             LOGGER.error(f"Error in batch reweighting: {str(e)}") # Fixed indentation and logger
             return []
 
@@ -520,3 +520,4 @@ def weight_results(
     """
     WEIGHTER = create_signal_weighter()
     return WEIGHHTER.batch_reweight(documents, archetype, industry)
+

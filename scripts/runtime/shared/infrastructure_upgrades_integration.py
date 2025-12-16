@@ -112,7 +112,7 @@ class InfrastructureUpgradesOrchestrator:
                     )
 
         except Exception as e:
-            LOGGER.error(f"Failed to handle content generated: {e}")
+LOGGER.error(f"Failed to handle content generated: {e}")
 
 
     async def _handle_cache_miss(self, event: 'SystemEvent') -> None:
@@ -132,7 +132,7 @@ class InfrastructureUpgradesOrchestrator:
             # Could trigger cache warming logic here
 
         except Exception as e:
-            LOGGER.error(f"Failed to handle cache miss: {e}")
+LOGGER.error(f"Failed to handle cache miss: {e}")
 
     async def _handle_tone_violation(self, event: 'SystemEvent') -> None:
         """Handle tone violation event.
@@ -152,7 +152,7 @@ class InfrastructureUpgradesOrchestrator:
             # Could trigger adaptive learning here
 
         except Exception as e:
-            LOGGER.error(f"Failed to handle tone violation: {e}")
+LOGGER.error(f"Failed to handle tone violation: {e}")
 
     async def _verify_content_facts(self, content: str, trace_id: str) -> List['VerificationResult']:
         """Verify facts in generated content.
@@ -339,7 +339,7 @@ class InfrastructureUpgradesOrchestrator:
             }
 
         except Exception as e:
-            # Publish error
+# Publish error
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_failed",
                 SystemEvent(
@@ -530,3 +530,4 @@ class ToneViolation:
         return {"type": self.type}
 
 import uuid
+

@@ -126,7 +126,7 @@ def run_emergency_bailout_test():
         assert shutdown_called, "Graceful shutdown not called"
         # print("    ✅ Graceful shutdown successful")  # [Security Fix]
     except Exception as e:
-    pass
+pass
 # print(f"    ❌ Graceful shutdown failed: {e}")  # [Security Fix]
         bailout_success = False
 
@@ -162,7 +162,7 @@ def run_emergency_bailout_test():
         assert not transaction_state["committed"], "Transaction not rolled back"
         # print("    ✅ Transaction rollback successful")  # [Security Fix]
     except Exception as e:
-    pass
+pass
 # print(f"    ❌ Transaction rollback failed: {e}")  # [Security Fix]
         bailout_success = False
 
@@ -189,7 +189,7 @@ def run_emergency_bailout_test():
         assert current_state["version"] == "1.0.0", "State not preserved"
         # print("    ✅ State preservation successful")  # [Security Fix]
     except Exception as e:
-    pass
+pass
 # print(f"    ❌ State preservation failed: {e}")  # [Security Fix]
         bailout_success = False
 
@@ -233,7 +233,7 @@ def main():
             if not success:
                 overall_success = False
         except Exception as e:
-    pass
+pass
 # print(f"  ❌ Suite failed with exception: {e}")  # [Security Fix]
             audit_report.update_suite_result(suite_name, 0, 4, False)
             overall_success = False

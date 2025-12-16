@@ -128,7 +128,8 @@ def generate_ast_structure(code_str: str) -> Dict[str, Any]:
         tree = ast.parse(code_str)
         return ast.dump(tree, include_attributes=True)
     except SyntaxError as e:
-        # Return error structure for invalid code
+pass
+# Return error structure for invalid code
         return {
             "error": str(e),
             "type": "SyntaxError",
@@ -156,6 +157,7 @@ def validate_ast_integrity(ast_structure: Dict[str, Any]) -> bool:
             ast.parse(ast_structure)
         return True
     except Exception:
-        pass
+pass
+pass
     return False
 

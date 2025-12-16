@@ -5,7 +5,7 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from presidio_anonymizer.entities import OperatorConfig
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -42,3 +42,4 @@ class PIIVault:
         # Implementation would use stored mappings to reverse the redaction
         # For L5 MVP, we simply pass through or warn.
         return text
+

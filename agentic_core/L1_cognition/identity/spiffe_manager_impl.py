@@ -205,3 +205,4 @@ def create_spiffe_manager(trust_domain: TrustDomain = TrustDomain.LOCAL,
                           default_ttl_seconds: int = 3600) -> SPIFFEManager:
     """Factory function to create SPIFFE manager. """
     return SPIFFEManager(trust_domain=trust_domain, default_ttl_seconds=default_ttl_seconds)
+

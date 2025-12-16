@@ -152,7 +152,7 @@ class ClaimExtractor:
 
                             break
                         except ValueError:
-                            pass # If parsing fails, numeric_value remains None
+pass # If parsing fails, numeric_value remains None
                 if value_str:
                     break
 
@@ -633,3 +633,4 @@ def load_profile_facts(profile_data: Dict[str, Any]) -> None:
     """
     ledger = get_fact_ledger()
     ledger.load_facts(profile_data)
+

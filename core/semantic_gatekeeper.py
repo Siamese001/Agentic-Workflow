@@ -141,7 +141,7 @@ class SemanticGatekeeper:
                     f"Loaded existing L1 index: {self.redis_index_name}")
 
         except Exception as e:
-            logger.error(f"Failed to setup Redis L1 index: {e}")
+logger.error(f"Failed to setup Redis L1 index: {e}")
             raise
 
     def _setup_qdrant(self):
@@ -163,7 +163,7 @@ class SemanticGatekeeper:
                 self._promotion_worker())
 
         except Exception as e:
-            logger.error(f"Failed to setup Qdrant L2 cache: {e}")
+logger.error(f"Failed to setup Qdrant L2 cache: {e}")
             self.qdrant = None
 
     def embed_action(self, action: str) -> List[float]:
@@ -202,7 +202,7 @@ class SemanticGatekeeper:
             return hashlib.sha256(ast_str.encode()).hexdigest()
 
         except SyntaxError as e:
-            # For invalid code, hash the error and code
+# For invalid code, hash the error and code
             combined = f"SYNTAX_ERROR:{e}:{code}"
             return hashlib.sha256(combined.encode()).hexdigest()
 
@@ -242,7 +242,7 @@ class SemanticGatekeeper:
                 tree = ast.parse(code)
                 new_ast = ast.dump(tree, include_attributes=True)
             except SyntaxError as e:
-                logger.error(f"Failed to parse code: {e}")
+logger.error(f"Failed to parse code: {e}")
                 return False, None
 
         # Embed the planned action
@@ -476,7 +476,7 @@ class SemanticGatekeeper:
             return results
 
         except Exception as e:
-            logger.error(f"Failed to search L2 cache: {e}")
+logger.error(f"Failed to search L2 cache: {e}")
             return []
 
     def _promote_to_l1(self, l2_match: CanonEntry, query_vector: List[float]):
@@ -491,7 +491,7 @@ class SemanticGatekeeper:
             logger.info(f"Promoted pattern {l2_match.id} from L2 to L1")
 
         except Exception as e:
-            logger.error(f"Failed to promote to L1: {e}")
+logger.error(f"Failed to promote to L1: {e}")
 
     def record_pattern(
         self,
@@ -536,7 +536,7 @@ class SemanticGatekeeper:
             ast_json = ast.dump(tree, include_attributes=True)
             ast_hash = hashlib.sha256(ast_json.encode()).hexdigest()
         except SyntaxError as e:
-            logger.error(f"Failed to parse code for AST: {e}")
+logger.error(f"Failed to parse code for AST: {e}")
             ast_json = {"error": str(e)}
             ast_hash = hashlib.sha256(f"SYNTAX_ERROR:{e}".encode()).hexdigest()
 
@@ -668,7 +668,7 @@ class SemanticGatekeeper:
                 self._mark_as_promoted(str(entry.id))
 
             except Exception as e:
-                logger.error(f"Error in L2 promotion worker: {e}")
+logger.error(f"Error in L2 promotion worker: {e}")
                 await asyncio.sleep(5)  # Brief pause on error
 
     async def _upsert_to_l2(self, entry: CanonEntry):
@@ -680,7 +680,7 @@ class SemanticGatekeeper:
             logger.info(f"Upserted pattern {entry.id} to L2")
 
         except Exception as e:
-            logger.error(f"Failed to upsert to L2: {e}")
+logger.error(f"Failed to upsert to L2: {e}")
 
     def _mark_as_promoted(self, entry_id: str):
         """Mark an L1 entry as promoted to L2."""
@@ -711,7 +711,7 @@ class SemanticGatekeeper:
                     f"Evicted {len(oldest.docs)} old entries from L1 cache")
 
         except Exception as e:
-            logger.error(f"Failed to evict from L1: {e}")
+logger.error(f"Failed to evict from L1: {e}")
 
     def get_safety_stats(self) -> dict:
         """Get statistics about the hybrid canon safety status."""
@@ -756,7 +756,7 @@ class SemanticGatekeeper:
                 }
             }
         except Exception as e:
-            logger.error(f"Failed to get safety stats: {e}")
+logger.error(f"Failed to get safety stats: {e}")
             return {"error": str(e)}
 
     def _track_latency(self, latency_ms: int):
@@ -835,3 +835,4 @@ def get_gatekeeper() -> SemanticGatekeeper:
     if _gatekeeper is None:
         _gatekeeper = SemanticGatekeeper()
     return _gatekeeper
+

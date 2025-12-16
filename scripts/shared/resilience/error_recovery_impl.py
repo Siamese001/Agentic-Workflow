@@ -100,7 +100,7 @@ class ErrorRecoveryManager:
                 self._handle_success(breaker, attempt, context)
                 return result
             except Exception as exc:
-    pass
+pass
 last_error = exc
                 await self._handle_retry_error(exc, breaker, attempt, context)
         if last_error:

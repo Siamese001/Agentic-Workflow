@@ -446,3 +446,4 @@ def validate_no_legacy_code(text: str, context: str = 'Unknown') -> None:
                 ConfigurationService().context}: {
                 ConfigurationService().legacy_refs}. Use functional roles instead.'''
 )
+

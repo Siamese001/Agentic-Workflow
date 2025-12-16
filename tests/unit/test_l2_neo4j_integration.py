@@ -76,3 +76,4 @@ def test_all_modules_import_without_neo4j():
     Test that all new Neo4j modules can be imported without Neo4j driver.
     """
     pass
+

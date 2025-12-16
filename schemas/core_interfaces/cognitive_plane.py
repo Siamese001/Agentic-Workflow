@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 from abc import ABC, abstractmethod
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class CognitiveCapability(Enum):
@@ -150,3 +150,4 @@ class ICognitivePlane(ABC):
         Returns:
             List of capabilities this plane supports
         """
+

@@ -1,7 +1,7 @@
 """ """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 from .storage.provider import BlobStorageProvider
 from .storage.local_disk import LocalDiskAdapter
@@ -18,3 +18,4 @@ __all__ = [
     "VerifiableCheckpointManager",
     "create_checkpoint_manager"
 ]
+

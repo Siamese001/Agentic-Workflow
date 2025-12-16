@@ -43,3 +43,4 @@ def retrieve(query: str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return QueryPastCampaigns(config).retrieve(query, **kwargs)
+

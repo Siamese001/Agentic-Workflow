@@ -140,7 +140,7 @@ class ScriptsLogicVectorSearcher:
             return search_results
 
         except Exception as e:
-            self.logger.error(f"Vector search failed: {str(e)}")
+self.logger.error(f"Vector search failed: {str(e)}")
             return SearchResults(
                 query=query,
                 results=[],
@@ -187,7 +187,7 @@ class ScriptsLogicVectorSearcher:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
+self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
             return False
 
     def delete_vector(self, vector_id: str) -> bool:
@@ -461,3 +461,4 @@ def search_scripts_logic_vectors(
         "search_time_ms": results.search_time_ms,
         "metadata": results.metadata
     }
+

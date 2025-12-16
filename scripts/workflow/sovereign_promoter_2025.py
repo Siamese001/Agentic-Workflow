@@ -86,7 +86,7 @@ def analyze_file_content(content: str, filename: str) -> Tuple[int, List[str], b
             json.loads(content)
             return 10, ["valid-json"], False
         except json.JSONDecodeError:
-            return 0, ["invalid-json-syntax"], False
+return 0, ["invalid-json-syntax"], False
 
     # --- PYTHON HANDLING ---
     if "from __future__ import annotations" in content:
@@ -268,3 +268,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

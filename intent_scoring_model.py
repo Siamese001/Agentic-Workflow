@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-logger = logging.getLogger("IntentScoring")
+logger = logging.getLogger("IntentScoring")  # GLOBAL: Review if this should be constant
 
 
 @dataclass

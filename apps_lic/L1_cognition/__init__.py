@@ -80,3 +80,4 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created L1 Cognition instance with config: {final_config}")
     return final_config
+

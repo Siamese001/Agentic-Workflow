@@ -296,7 +296,7 @@ logging.basicConfig(
     await test()
             PASSED += 1
         except Exception as e:
-    pass
+pass
 logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()

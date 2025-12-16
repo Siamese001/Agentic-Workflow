@@ -31,7 +31,8 @@ class ExecuteMessageGeneration:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
+pass
+return ExecutionResult(
                 success=False,
                 error=str(e),
                 duration_ms=(time.time() - start) * 1000
@@ -49,3 +50,4 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteMessageGeneration(config).execute(action, params)
+

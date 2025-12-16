@@ -183,7 +183,7 @@ class TestDIAtomicityCompliance:
             with open('l2/execution.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-            pass  # Skip if file not found in test environment
+pass  # Skip if file not found in test environment
             return
 
         SOURCE = ''.join(source_lines)
@@ -213,7 +213,7 @@ class TestDIAtomicityCompliance:
             with open('l3/__init__.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-            pass
+pass
             return
 
         SOURCE = ''.join(source_lines)
@@ -221,3 +221,4 @@ class TestDIAtomicityCompliance:
 
 if __name__ == "__main__":
     pytest.main([__file__])
+

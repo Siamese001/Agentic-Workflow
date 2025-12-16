@@ -32,7 +32,7 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
                 config_service.data = data # Assuming this is how data is set
                 return config_service.data
         except json.JSONDecodeError as e:
-            logging.error(
+logging.error(
                 f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting.")
             raise
     if required:
@@ -43,3 +43,4 @@ def _load_json_config(filename: str, description: str, required: bool = True) ->
     logging.warning(
         f"Optional config file '{filename}' not found, returning empty dict")
     return {}
+

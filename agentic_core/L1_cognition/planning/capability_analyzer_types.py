@@ -1,7 +1,7 @@
 """Types and models for capability_analyzer."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -76,3 +76,4 @@ class AnalysisReport:
                 'recommendations': [r.to_dict() for r in self.recommendations],
                 'overall_health_score': self.overall_health_score,
                 'analysis_timestamp': self.analysis_timestamp}
+

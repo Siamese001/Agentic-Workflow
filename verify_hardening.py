@@ -18,8 +18,10 @@ try:
     from apps_rg.L3_orchestration.hardened_orchestrator import HardenedOrchestrator, TERMINAL_ERRORS
     from connection_manager import InfrastructureError
 except ImportError as e:
-    print(f"❌ Setup Error: Could not import project modules. {e}")
-    print("Ensure this script is in the root directory and your PYTHONPATH is set.")
+    pass
+pass
+# print(f"❌ Setup Error: Could not import project modules. {e}")  # [Security Fix]
+    # print("Ensure this script is in the root directory and your PYTHONPATH is set.")  # [Security Fix]
     sys.exit(1)
 
 class TestSystemHardening(unittest.TestCase):
@@ -29,7 +31,7 @@ class TestSystemHardening(unittest.TestCase):
     # Goal: Verify the Orchestrator refuses to load a corrupt manifest.
     # =========================================================================
     def test_integrity_gate_catches_corruption(self):
-        print("\n🛡️  Running Test 1: Integrity Gate (Sabotage)...")
+        # print("\n🛡️  Running Test 1: Integrity Gate (Sabotage)...")  # [Security Fix]
 
         with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
             # Write broken JSON (simulating a bad write or merge conflict)
@@ -40,7 +42,7 @@ class TestSystemHardening(unittest.TestCase):
             # Should return False or raise Exception
             result = validate_manifest_integrity(tmp_path)
             self.assertFalse(result, "❌ Security Flaw: Orchestrator accepted corrupt JSON!")
-            print("   ✅ Orchestrator successfully rejected corrupt manifest.")
+            # print("   ✅ Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
         finally:
             os.remove(tmp_path)
 
@@ -51,7 +53,7 @@ class TestSystemHardening(unittest.TestCase):
     @patch('agent_logic_connectivity.Pinecone')
     @patch('agent_logic_connectivity.Redis')
     def test_memory_uses_version_shield(self, mock_redis, mock_pinecone):
-        print("🛡️  Running Test 2: Memory Ghost Shield...")
+        # print("🛡️  Running Test 2: Memory Ghost Shield...")  # [Security Fix]
 
         # Setup
         validator = CanonValidator(manifest_path="active_manifest.json")
@@ -74,7 +76,7 @@ class TestSystemHardening(unittest.TestCase):
         self.assertEqual(actual_filter, expected_filter,
             f"❌ Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")
 
-        print(f"   ✅ Query included strict hash filter: {actual_filter}")
+        # print(f"   ✅ Query included strict hash filter: {actual_filter}")  # [Security Fix]
 
     # =========================================================================
     # TEST 3: THE ZOMBIE TEST (Error Classification)
@@ -97,7 +99,7 @@ class TestSystemHardening(unittest.TestCase):
         return orchestrator.workflow_state, mock_exit
 
     def test_resilience_error_classification(self):
-        print("🛡️  Running Test 3: Zombie Prevention...")
+        # print("🛡️  Running Test 3: Zombie Prevention...")  # [Security Fix]
         loop = asyncio.new_event_loop()
 
         # Scenario A: SyntaxError (Terminal) -> Should FAILED
@@ -105,14 +107,14 @@ class TestSystemHardening(unittest.TestCase):
             self.run_resilience_check(SyntaxError("Bad Code"), "FAILED")
         )
         state_fail.mark_failed.assert_called()
-        print("   ✅ SyntaxError correctly triggered 'mark_failed'.")
+        # print("   ✅ SyntaxError correctly triggered 'mark_failed'.")  # [Security Fix]
 
         # Scenario B: InfrastructureError (Transient) -> Should PAUSED
         state_pause, mock_exit_pause = loop.run_until_complete(
             self.run_resilience_check(InfrastructureError("Redis down"), "PAUSED")
         )
         state_pause.mark_paused.assert_called()
-        print("   ✅ InfrastructureError correctly triggered 'mark_paused'.")
+        # print("   ✅ InfrastructureError correctly triggered 'mark_paused'.")  # [Security Fix]
 
         loop.close()
 

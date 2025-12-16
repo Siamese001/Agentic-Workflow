@@ -27,7 +27,8 @@ def fix_whitespace_in_file(filepath):
 
         return True
     except Exception:
-        # print(f"Error fixing {filepath}: {e}")  # [Security Fix]
+pass
+# print(f"Error fixing {filepath}: {e}")  # [Security Fix]
         return False
 
 

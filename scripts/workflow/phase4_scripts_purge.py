@@ -35,7 +35,7 @@ class Phase4108ScriptsPurge:
                                    DATA=result,
                                    METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, KeyError) as e:
-    pass
+pass
 logger.error("Operation failed: %s", e)
             return OperationResult(success=False, message=str(e))
 

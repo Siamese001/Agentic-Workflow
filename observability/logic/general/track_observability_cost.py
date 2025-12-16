@@ -36,7 +36,7 @@ class TrackObservabilityCost:
                                    DATA=RESULT,
                                    METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            pass
+pass
             LOGGER.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
 
@@ -51,3 +51,4 @@ def execute(data: object,
                            object]) -> OperationResult:
     """Convenience function."""
     return TrackObservabilityCost(config).execute(data, **kwargs)
+

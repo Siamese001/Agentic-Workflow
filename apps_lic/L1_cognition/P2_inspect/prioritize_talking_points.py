@@ -29,7 +29,8 @@ class PrioritizeTalkingPoints:
                           ConfigurationService().context)
             return OperationResult(success=True, data=ConfigurationService().result)
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            ConfigurationService().logger.error(f'Processing failed: {e}')
+pass
+ConfigurationService().logger.error(f'Processing failed: {e}')
             return OperationResult(success=False, metadata={'error': str(e)})
 
 
@@ -41,3 +42,4 @@ class PrioritizeTalkingPoints:
 def process(data: Union[str, Dict], config: Optional[Dict] = None) -> OperationResult:
     """Process input data through the transformation pipeline."""
     return PrioritizeTalkingPoints(ConfigurationService().config).process(ConfigurationService().data)
+

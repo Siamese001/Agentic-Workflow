@@ -90,7 +90,7 @@ def execute_dedup(dry_run: bool = True) -> Dict:
                 RESULTS['files_archived'] += 1
                 RESULTS['bytes_recovered'] += file_size
             except (ValueError, TypeError, KeyError) as e:
-                RESULTS['errors'].append(
+RESULTS['errors'].append(
                     {'path': nc_path_str, 'error': str(e)})
         RESULTS['clusters_processed'] += 1
     if ConfigurationService().dry_run:
@@ -107,3 +107,4 @@ if __name__ == '__main__':
     results_path.parent.mkdir(parents=True, exist_ok=True)
     with open(results_path, 'w') as f:
         json.dump(RESULTS, f, indent=2)
+

@@ -189,3 +189,4 @@ def scrub_pii(text: str) -> PIIResult:
     """
     SCRUBBER=PIIScrubber()
     return scrubber.scrub_text(text)
+

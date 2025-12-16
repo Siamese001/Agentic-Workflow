@@ -113,7 +113,7 @@ class SwarmNetwork:
                 return True
 
             except Exception as e:
-                logger.error(
+logger.error(
                     f"Connection attempt {self._connection_attempts} failed: {e}")
 
                 if self._connection_attempts < self._max_attempts:
@@ -140,7 +140,7 @@ class SwarmNetwork:
             self.gatekeeper.redis.ping()
             logger.debug("Redis connection verified")
         except Exception as e:
-            raise MemorySyncError(
+raise MemorySyncError(
                 "Redis connection failed",
                 operation="ping",
                 backend="redis",
@@ -154,7 +154,7 @@ class SwarmNetwork:
             self.qdrant_cache.client.get_collections()
             logger.debug("Qdrant connection verified")
         except Exception as e:
-            raise MemorySyncError(
+raise MemorySyncError(
                 "Qdrant connection failed",
                 operation="get_collections",
                 backend="qdrant",
@@ -231,9 +231,9 @@ class SwarmNetwork:
             return is_safe, pattern
 
         except CanonViolationError:
-            raise
+raise
         except Exception as e:
-            self.metrics["errors"] += 1
+self.metrics["errors"] += 1
             raise MemorySyncError(
                 f"Canon consultation failed: {e}",
                 operation="consult_canon",
@@ -282,7 +282,7 @@ class SwarmNetwork:
                 f"Recorded outcome for pattern {pattern_id}: {'SUCCESS' if success else 'FAILURE'}")
 
         except Exception as e:
-            logger.error(f"Failed to record outcome: {e}")
+logger.error(f"Failed to record outcome: {e}")
             self.metrics["errors"] += 1
 
     def get_metrics(self) -> Dict[str, Any]:
@@ -350,3 +350,4 @@ class SwarmNetwork:
             cls._instance.disconnect()
         cls._instance = None
         cls._initialized = False
+

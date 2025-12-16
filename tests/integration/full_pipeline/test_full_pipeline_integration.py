@@ -102,3 +102,4 @@ def test_partial_failure_recovery():
     Integration: Pipeline recovers from partial failures.
     """
     pass
+

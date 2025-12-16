@@ -5,7 +5,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 'Enforce Execution Policy - atomic execution layer.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def enforce_execution_policy(data: Dict[str, object]) -> Dict[str, object]:

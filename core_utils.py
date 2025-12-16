@@ -31,11 +31,13 @@ def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
         return True, None
 
     except SyntaxError as e:
-        error_msg = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
+pass
+error_msg = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
         logger.error(error_msg)
         return False, error_msg
     except Exception as e:
-        error_msg = f"Unexpected error validating {file_path}: {str(e)}"
+pass
+error_msg = f"Unexpected error validating {file_path}: {str(e)}"
         logger.error(error_msg)
         return False, error_msg
 
@@ -271,7 +273,8 @@ def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
             try:
                 return func(*args, **kwargs)
             except Exception:
-                pass
+pass
+pass
 
             if attempt == max_retries - 1:
                 raise
@@ -314,7 +317,8 @@ def setup_gpg_signing(key_id: str):
         subprocess.run(["git", "config", "--global", "user.signingkey", key_id], check=True, capture_output=True)
         logger.info(f"✅ Git configured for signing with key: {key_id}")
     except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Failed to configure Git signing: {e.stderr.decode()}")
+pass
+logger.error(f"❌ Failed to configure Git signing: {e.stderr.decode()}")
         raise RuntimeError("Git GPG configuration failed.")
 
 
@@ -340,7 +344,8 @@ def sign_and_commit(path: str, message: str, key_id: str = None) -> bool:
         logger.info(f"✅ Commit successful (demo mode - no GPG signing): {result.stdout.strip()}")
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Commit failed (Git Error): {e.stderr}")
+pass
+logger.error(f"❌ Commit failed (Git Error): {e.stderr}")
         return False
 
 
@@ -391,7 +396,8 @@ def register_process(pid_file_path: str = "run/agent.pid"):
             f.write(str(os.getpid()))
         logging.info(f"Process registered. PID: {os.getpid()}")
     except Exception as e:
-        logging.error(f"Failed to register PID: {e}")
+pass
+logging.error(f"Failed to register PID: {e}")
 
 
 def log_action(action_name: str, details: str, log_file: str = "logs/agent_actions.log"):
@@ -407,5 +413,6 @@ def log_action(action_name: str, details: str, log_file: str = "logs/agent_actio
         with open(log_file, 'a') as f:
             f.write(f"[{timestamp}] ACTION_EXECUTED: {action_name} - {details}\n")
     except Exception as e:
-        logging.error(f"Failed to log action: {e}")
+pass
+logging.error(f"Failed to log action: {e}")
 

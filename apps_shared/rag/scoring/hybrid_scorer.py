@@ -11,7 +11,7 @@ import re
 from typing import Any, Dict, List, Optional
 from collections import Counter
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -330,3 +330,4 @@ class HybridScorer:
         # In a real scenario, parse the date and compare to current date
         # For now, return a default value
         return 0.8
+

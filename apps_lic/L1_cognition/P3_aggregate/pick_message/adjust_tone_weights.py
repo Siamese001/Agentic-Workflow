@@ -50,3 +50,4 @@ class RefinementResult:
         self.original = original
         self.refined = refined
         self.changes = changes
+

@@ -6,7 +6,7 @@ from enum import Enum
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -85,3 +85,4 @@ class IdentityVerificationResult:
                 'identity': self.identity.to_dict() if self.identity else None,
                 'reason': self.REASON,
                 'verified_at': self.verified_at}
+

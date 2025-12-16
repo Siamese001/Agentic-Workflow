@@ -206,7 +206,7 @@ class Bulkhead:
             try:
                 await asyncio.wait_for(self.SEMAPHORE.acquire(), timeout=effective_timeout)
             except asyncio.TimeoutError:
-                self.QUEUE.get_nowait()  # Remove from queue
+self.QUEUE.get_nowait()  # Remove from queue
                 self._rejected_count += 1
                 self.METRICS.rejected_tasks = self._rejected_count
                 if circuit_breaker:
@@ -243,7 +243,7 @@ class Bulkhead:
                 try:
                     self.QUEUE.get_nowait()
                 except asyncio.QueueEmpty:
-                    pass # Should not happen if logic is correct, but good practice
+pass # Should not happen if logic is correct, but good practice
             self.SEMAPHORE.release()
             self._update_metrics()
 
@@ -270,14 +270,14 @@ class Bulkhead:
             try:
                 return await circuit_breaker.call(coro, *args, **kwargs)
             except Exception as e:
-                # Circuit breaker's call method should handle recording failures
+# Circuit breaker's call method should handle recording failures
                 raise
         else:
             # Execute normally
             try:
                 return await coro(*args, **kwargs)
             except Exception as e:
-                LOGGER.error(f"Task in bulkhead '{self.NAME}' failed: {e}")
+LOGGER.error(f"Task in bulkhead '{self.NAME}' failed: {e}")
                 raise
 
     def _update_metrics(self) -> None:
@@ -332,7 +332,7 @@ class Bulkhead:
             )
             return self.try_acquire()
         except asyncio.TimeoutError:
-            return False
+return False
 
 class BulkheadManager:
     """Manages multiple bulkheads for resource isolation."""
@@ -622,3 +622,4 @@ def with_engine_bulkhead(engine_type: EngineType, timeout: Optional[float] = Non
         raise ValueError(f"Unknown engine type: {engine_type}")
 
     return with_bulkhead(bulkhead_name_map[engine_type], timeout)
+

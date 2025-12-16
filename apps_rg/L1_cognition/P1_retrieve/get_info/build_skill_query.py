@@ -50,3 +50,4 @@ class RetrievalResult:
         self.items = items
         self.total = total
         self.query = query
+

@@ -158,7 +158,8 @@ class AirlockProtocol:
                     raise PermissionError(f"Human rejected action: {reason}")
 
             except (json.JSONDecodeError, IOError):
-                # Ticket file may be corrupted or unreadable, continue waiting
+pass
+# Ticket file may be corrupted or unreadable, continue waiting
                 pass
 
             # Wait before next check
@@ -186,7 +187,8 @@ class AirlockProtocol:
             ticket_path.unlink()
 
         except Exception as e:
-            LOGGER.error(f"Error moving ticket: {e}")
+pass
+LOGGER.error(f"Error moving ticket: {e}")
 
     def get_pending_requests(self) -> list:
         """Get all pending airlock requests."""
@@ -197,7 +199,8 @@ class AirlockProtocol:
                     data = json.load(f)
                 pending.append(data)
             except Exception:
-                continue
+pass
+continue
         return pending
 
     def approve_request(self, ticket_id: str, approver: str = "human"):
@@ -272,3 +275,4 @@ def create_airlock_interface():
 
 if __name__ == "__main__":
     create_airlock_interface()
+

@@ -9,7 +9,7 @@ from common.components.bullet_synthesizer.bullet_synthesizer_result import Bulle
 from common.components.bullet_synthesizer.integrity_gate_executor import IntegrityGateExecutor
 from common.components.bullet_synthesizer.recovery_loop import AdaptiveRecoveryLoop
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -240,3 +240,4 @@ class AchvBulletSynthesizer:
 def create_achv_bullet_synthesizer(config: Optional[BulletSynthesizerConfig]=None) -> AchvBulletSynthesizer:
     """Factory function to create AchvBulletSynthesizer instance"""
     return AchvBulletSynthesizer(config=config)
+

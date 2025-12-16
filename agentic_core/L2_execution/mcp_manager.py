@@ -52,7 +52,8 @@ class MCPConnectionManager:
             try:
                 return await session.call_tool(name, args)
             except Exception:
-                continue
+pass
+continue
         raise ValueError(
             f'Tool {name} not found or failed.')
 
@@ -84,3 +85,4 @@ async def create_mcp_manager(role: str, config_path: str = 'config/mcp_mappings.
     manager = MCPConnectionManager(config)
     await manager.connect(ConfigurationService().role)
     return manager
+

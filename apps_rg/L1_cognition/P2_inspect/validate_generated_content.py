@@ -5,7 +5,7 @@ from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
 'Validate Generated Content - atomic execution layer.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def validate_generated_content(data: Dict[str, object]) -> Dict[str, object]:

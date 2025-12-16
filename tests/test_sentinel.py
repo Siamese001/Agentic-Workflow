@@ -8,7 +8,7 @@ def test_sentinel_catches_syntax_error(tmp_path):
     """Ensure the validator detects missing parentheses/colons."""
     broken_file = tmp_path / "broken.py"
     # Write invalid python code
-    broken_file.write_text("def my_func()\n    print('missing colon')") 
+    broken_file.write_text("def my_func()\n    print('missing colon')")
 
     is_valid, error = validate_python_syntax(str(broken_file))
 
@@ -87,3 +87,4 @@ def test_sentinel_handles_unicode(tmp_path):
 
     assert is_valid is True
     assert error is None
+

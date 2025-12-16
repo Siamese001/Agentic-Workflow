@@ -29,7 +29,8 @@ class ContextEnrichmentStage(PipelineStage):
             self.rag_processor = SelfRAGProcessor()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            # Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
+pass
+# Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
             self.kg_injector = None
             self.rag_processor = None
             self.semantic_cache = None
@@ -92,7 +93,8 @@ class ContextEnrichmentStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            # Fix: Correctly indenting the error handling and removing extra 'pass' statements.
+pass
+# Fix: Correctly indenting the error handling and removing extra 'pass' statements.
             logger.error(f"Context enrichment failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -141,7 +143,8 @@ class SignalAugmentationStage(PipelineStage):
             self.tone_model = ToneModel()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            # Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
+pass
+# Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
             self.claim_scorer = None
             self.prompt_optimizer = None
             self.tone_model = None
@@ -188,7 +191,8 @@ class SignalAugmentationStage(PipelineStage):
             return envelope
 
         except Exception as e:
-            # Fix: Correctly indenting the error handling and removing extra 'pass' statements.
+pass
+# Fix: Correctly indenting the error handling and removing extra 'pass' statements.
             logger.error(f"Signal augmentation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
@@ -234,3 +238,4 @@ class SignalAugmentationStage(PipelineStage):
     def stage_name(self) -> str:
         """Get stage name."""
         return "signal_augmentation"
+

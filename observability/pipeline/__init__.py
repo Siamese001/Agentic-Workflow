@@ -74,3 +74,4 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -
 
     LOGGER.info(f"Created Pipeline instance with config: {final_config}")
     return final_config
+

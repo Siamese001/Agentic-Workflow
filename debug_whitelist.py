@@ -1,5 +1,5 @@
 # Test the validator's whitelist check logic
-content = """import time
+content = """import time  # GLOBAL: Review if this should be constant
 
 # Search for the current price of Bitcoin
 search_query = "current price of Bitcoin"
@@ -10,9 +10,9 @@ print(f"Search Query: {search_query}")
 print(f"Search Result: {search_result}")
 """
 
-allowed_tools = {"search_web", "print"}
-has_imports = False
-uses_only_allowed = True
+allowed_tools = {"search_web", "print"}  # GLOBAL: Review if this should be constant
+has_imports = False  # GLOBAL: Review if this should be constant
+uses_only_allowed = True  # GLOBAL: Review if this should be constant
 
 # print("Testing whitelist check...")  # [Security Fix]
 # print(f"Content:\n{content}\n")  # [Security Fix]

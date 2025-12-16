@@ -188,7 +188,7 @@ def mock_rag_responses():
 
 
 # Test markers for organizing tests
-pytest_plugins = []
+pytest_plugins = []  # GLOBAL: Review if this should be constant
 
 
 def pytest_configure(config):

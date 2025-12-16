@@ -80,3 +80,4 @@ def create_instance(config: Optional[Dict[str,
 
     LOGGER.info(f"Created Schemas instance with config: {final_config}")
     return final_config
+

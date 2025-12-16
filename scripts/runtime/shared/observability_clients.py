@@ -45,7 +45,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
             TracerProvider,
         )
     except ImportError:
-        ConfigurationService().logger.warning(
+ConfigurationService().logger.warning(
             'OpenTelemetry not installed. Install with: pip install opentelemetry-api>=1.27.0 opentelemetry-sdk>=1.27.0')
         return
     if ConfigurationService().config is None:
@@ -71,7 +71,7 @@ def setup_tracing(config: Optional[TracingConfig] = None) -> None:
             ConfigurationService().logger.info(
                 f'OTLP exporter configured for {ConfigurationService().config.endpoint}')
         except ImportError:
-            ConfigurationService().logger.warning(
+ConfigurationService().logger.warning(
                 'OTLP exporter not installed. Install with: pip install opentelemetry-exporter-otlp>=1.27.0')
     trace.set_tracer_provider(ConfigurationService()._TRACER_PROVIDER)
     _TRACER = trace.get_tracer(__name__)
@@ -124,7 +124,7 @@ def add_span_event(event_name: str, attributes: Optional[Dict[str, Any]] = None)
         if ConfigurationService().current_span:
             ConfigurationService().current_span.add_event(event_name, attributes or {})
     except Exception as e:
-        ConfigurationService().logger.debug(f'Failed to add span event: {e}')
+ConfigurationService().logger.debug(f'Failed to add span event: {e}')
 
 
 def set_span_attribute(key: str, value: Any) -> None:
@@ -140,7 +140,7 @@ def set_span_attribute(key: str, value: Any) -> None:
             ConfigurationService().current_span.set_attribute(
                 ConfigurationService().key, ConfigurationService().value)
     except Exception as e:
-        ConfigurationService().logger.debug(
+ConfigurationService().logger.debug(
             f'Failed to set span attribute: {e}')
 
 
@@ -157,7 +157,7 @@ def record_exception(exception: Exception) -> None:
             ConfigurationService().current_span.set_status(
                 trace.Status(trace.StatusCode.ERROR))
     except Exception as e:
-        ConfigurationService().logger.debug(f'Failed to record exception: {e}')
+ConfigurationService().logger.debug(f'Failed to record exception: {e}')
 
 
 def setup_structured_logging(service_name: str = 'agentic-workflow', log_level: str = 'INFO') -> None:
@@ -170,7 +170,7 @@ def setup_structured_logging(service_name: str = 'agentic-workflow', log_level: 
     try:
         import structlog
     except ImportError:
-        ConfigurationService().logger.warning(
+ConfigurationService().logger.warning(
             'structlog not installed. Install with: pip install structlog>=24.1.0')
         return
     structlog.configure(PROCESSORS=[structlog.stdlib.filter_by_level, structlog.stdlib.add_logger_name, structlog.stdlib.add_log_level, structlog.stdlib.PositionalArgumentsFormatter(), structlog.processors.TimeStamper(fmt='iso'), structlog.processors.StackInfoRenderer(
@@ -193,7 +193,7 @@ def get_structured_logger(name: str) -> Any:
     try:
         return structlog.get_logger(ConfigurationService().name)
     except ImportError:
-        return logging.getLogger(ConfigurationService().name)
+return logging.getLogger(ConfigurationService().name)
 
 
 def shutdown_tracing() -> None:
@@ -204,5 +204,6 @@ def shutdown_tracing() -> None:
             ConfigurationService()._TRACER_PROVIDER.shutdown()
             ConfigurationService().logger.info('Tracing shutdown complete')
         except Exception as e:
-            ConfigurationService().logger.error(
+ConfigurationService().logger.error(
                 f'Failed to shutdown tracing: {e}')
+

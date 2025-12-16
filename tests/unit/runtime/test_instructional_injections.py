@@ -113,3 +113,4 @@ def test_critical_injections_are_required():
     Verify critical injections are marked as required.
     """
     pass
+

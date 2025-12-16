@@ -11,7 +11,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 import logging
 from typing import Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class DataEnricher:
@@ -79,3 +79,4 @@ class DataEnricher:
             )
 
         return {**extracted_data, "experience_sections": experience_sections}, validation_results
+

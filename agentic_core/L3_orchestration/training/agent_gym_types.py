@@ -1,7 +1,7 @@
 """Types and models for agent_gym."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -93,3 +93,4 @@ class TrainingSession:
                 'duration_seconds': self.completed_at - self.started_at,
                 'benchmark_results': [r.to_dict() for r in self.benchmark_results],
                 'improvement_areas': self.improvement_areas}
+

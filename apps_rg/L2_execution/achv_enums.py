@@ -1,7 +1,7 @@
 """Enum types for achv_bullet_synthesizer_types."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 

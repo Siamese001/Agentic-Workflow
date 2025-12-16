@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     FLOAT = float
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class BackoffStrategy(ABC):
@@ -127,3 +127,4 @@ def calculate_backoff_ms(
         raise ValueError(f"Unknown backoff strategy: {strategy}")
 
     return BACKOFF.calculate(attempt)
+

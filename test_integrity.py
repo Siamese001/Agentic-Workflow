@@ -58,7 +58,8 @@ def run_integrity_test():
         embedding = embed_func(test_content)
         print_success(f"Generated embedding vector (Dim: {len(embedding)})")
     except Exception as e:
-        print_fail(f"Embedding generation failed: {e}")
+pass
+print_fail(f"Embedding generation failed: {e}")
         return
 
     # Create CanonEntry with proper structure
@@ -144,7 +145,8 @@ def test_function():
             print_fail(f"Vector Search failed. Results: {results}")
 
     except Exception as e:
-        print_fail(f"RedisVL Operations failed: {e}")
+pass
+print_fail(f"RedisVL Operations failed: {e}")
 
     # ---------------------------------------------------------
     # 3. PINECONE INTEGRITY (COLD MEMORY)
@@ -194,7 +196,8 @@ def test_function():
             print_fail("Fetch failed - ID not found in Pinecone.")
 
     except Exception as e:
-        print_fail(f"Pinecone Operations failed: {e}")
+pass
+print_fail(f"Pinecone Operations failed: {e}")
 
     # ---------------------------------------------------------
     # 4. CROSS-SYSTEM VALIDATION
@@ -237,7 +240,8 @@ def test_function():
                 f"Entry missing - Redis: {redis_exists}, Pinecone: {pinecone_exists}")
 
     except Exception as e:
-        print_fail(f"Cross-system validation failed: {e}")
+pass
+print_fail(f"Cross-system validation failed: {e}")
 
     # ---------------------------------------------------------
     # 5. CLEANUP
@@ -256,7 +260,8 @@ def test_function():
             print_success("Pinecone vector deleted.")
 
     except Exception as e:
-        print_fail(f"Cleanup failed: {e}")
+pass
+print_fail(f"Cleanup failed: {e}")
 
     # print("\n✅ INTEGRITY SUITE COMPLETE")  # [Security Fix]
     # print("============================================================")  # [Security Fix]

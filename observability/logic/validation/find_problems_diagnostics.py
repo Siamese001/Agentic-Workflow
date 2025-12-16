@@ -156,7 +156,7 @@ class FindProblemsDiagnostics:
             )
 
         except Exception as e:
-    pass
+pass
 exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
@@ -195,7 +195,7 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-    pass
+pass
 return False
 
 

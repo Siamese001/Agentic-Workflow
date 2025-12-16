@@ -28,7 +28,8 @@ class SemanticGatekeeper:
             ConfigurationService().logger.debug(
                 f'Completed execution for trace {ConfigurationService().trace_id}')
         except asyncio.TimeoutError:
-            ConfigurationService().logger.error(
+pass
+ConfigurationService().logger.error(
                 f'Timeout for trace {ConfigurationService().operation}')
             self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id,
                                            'operation': ConfigurationService().operation,
@@ -36,7 +37,8 @@ class SemanticGatekeeper:
                                            'timestamp': datetime.now().isoformat()})
             raise
         except Exception as e:
-            ConfigurationService().logger.error(
+pass
+ConfigurationService().logger.error(
                 f'Execution failed for trace {ConfigurationService().trace_id}: {e}')
             self.dead_letter_queue.append({'trace_id': ConfigurationService().trace_id,
                                            'operation': ConfigurationService().operation,
@@ -79,3 +81,4 @@ def get_gatekeeper() -> SemanticGatekeeper:
 async def with_gatekeeping(trace_id: str, operation: str, coro):
     gatekeeper = get_gatekeeper()
     return await gatekeeper.run_with_gating(trace_id, operation, coro)
+

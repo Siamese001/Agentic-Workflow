@@ -110,7 +110,7 @@ class AgentExecutor:
                 try:
                     return self._execute_internal(messages, system_prompt, tools, **kwargs)
                 except Exception as e:
-                    record_exception(e)
+record_exception(e)
                     raise
         else:
             return self._execute_internal(messages, system_prompt, tools, **kwargs)
@@ -360,7 +360,7 @@ class AgentExecutor:
                 )
 
             except Exception as e:
-                logger.error(f"Google GenAI Interactions API error: {e}")
+logger.error(f"Google GenAI Interactions API error: {e}")
                 raise
 
         return _execute_with_retry()
@@ -582,7 +582,7 @@ class AgentExecutor:
             else:
                 return parsed
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse JSON response: {e}")
+logger.error(f"Failed to parse JSON response: {e}")
             logger.error(f"Raw content: {content}")
             raise ValueError(f"Invalid JSON response from model: {e}")
 
@@ -612,3 +612,4 @@ def create_agent_executor(
     )
 
     return AgentExecutor(config)
+

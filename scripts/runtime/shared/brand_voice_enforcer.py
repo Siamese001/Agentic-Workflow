@@ -615,3 +615,4 @@ def analyze_tone(text: str) -> ToneAnalysisResult:
     """
     enforcer = get_tone_enforcer() # Changed ENFORCER to enforcer
     return enforcer.analyze_tone(text)
+

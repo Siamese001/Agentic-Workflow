@@ -31,7 +31,8 @@ class RetryGenerationFailures:
                 RESULT = func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=RESULT)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-                last_error = str(e)
+pass
+last_error = str(e)
                 LOGGER.warning(f"Attempt {attempt + 1} failed: {e}")
                 pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
@@ -52,3 +53,4 @@ class RetryGenerationFailures:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return RetryGenerationFailures(config).execute(func)
+

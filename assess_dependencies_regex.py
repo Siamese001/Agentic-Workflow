@@ -14,8 +14,10 @@ def extract_imports_regex(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-    except:
-        return imports
+except Exception:
+    pass
+pass
+return imports
 
     # Regex patterns for various import styles
     patterns = [
@@ -75,12 +77,12 @@ def trace_dependencies(entry_points, root_dir, max_depth=3):
 
     to_visit.update(entry_files)
 
-    print(f"🔍 Tracing dependencies from: {entry_files}")
+    # print(f"🔍 Tracing dependencies from: {entry_files}")  # [Security Fix]
 
     depth = 0
     while to_visit and depth < max_depth:
         depth += 1
-        print(f"\n📦 Depth {depth}: Processing {len(to_visit)} files...")
+        # print(f"\n📦 Depth {depth}: Processing {len(to_visit)} files...")  # [Security Fix]
 
         current_batch = list(to_visit)
         to_visit = set()
@@ -119,20 +121,20 @@ def main():
                         help='Maximum depth to trace imports')
     args = parser.parse_args()
 
-    print("🚀 Starting Regex-Based Dependency Assessment...")
+    # print("🚀 Starting Regex-Based Dependency Assessment...")  # [Security Fix]
     active_files = trace_dependencies(args.entry_points, args.root_dir, args.max_depth)
 
-    print(f"\n✅ Assessment Complete. Found {len(active_files)} active files.")
+    # print(f"\n✅ Assessment Complete. Found {len(active_files)} active files.")  # [Security Fix]
 
     # Count total Python files for comparison
     total_py_files = 0
     for root, dirs, files in os.walk(args.root_dir):
         total_py_files += sum(1 for f in files if f.endswith('.py'))
-    print(f"   Ignored {total_py_files - len(active_files)} potentially unused files.")
+    # print(f"   Ignored {total_py_files - len(active_files)} potentially unused files.")  # [Security Fix]
 
     with open(args.output, 'w') as f:
         json.dump(active_files, f, indent=2)
-    print(f"💾 Manifest saved to {args.output}")
+    # print(f"💾 Manifest saved to {args.output}")  # [Security Fix]
 
 if __name__ == '__main__':
     main()

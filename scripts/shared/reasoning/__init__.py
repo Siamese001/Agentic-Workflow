@@ -1,7 +1,7 @@
 """Structured reasoning components for agentic workflows."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -41,3 +41,4 @@ __all__ = [
     "ObservationStep",
     "ReasoningTraceModel",
 ]
+

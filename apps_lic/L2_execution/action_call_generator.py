@@ -378,3 +378,4 @@ def create_action_call_generator(
 ) -> ActionCallGenerator:
     """Factory function to create ActionCallGenerator instance"""
     return ActionCallGenerator(config=config)
+

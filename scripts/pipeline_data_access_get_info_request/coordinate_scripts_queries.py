@@ -139,7 +139,7 @@ class ScriptsQueriesCoordinator:
             return result
 
         except Exception as e:
-            self.logger.error(f"Scripts queries coordination failed: {str(e)}")
+self.logger.error(f"Scripts queries coordination failed: {str(e)}")
             return ScriptsQueriesResult(
                 success=False,
                 errors=[str(e)],
@@ -260,7 +260,7 @@ class ScriptsQueriesCoordinator:
             )
 
         except Exception as e:
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+execution_time = (datetime.utcnow() - start_time).total_seconds()
             self.logger.error(f"Query {query.id} failed: {str(e)}")
 
             return QueryResult(
@@ -391,3 +391,4 @@ if __name__ == "__main__":
     ]
 
     result = coordinate_script_queries(example_queries)
+

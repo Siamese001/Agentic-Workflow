@@ -156,7 +156,7 @@ class TalentSignalEnhancer:
             return ENHANCED
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error enhancing management bullet: {str(e)}")
             return bullet_text
 
@@ -190,7 +190,7 @@ class TalentSignalEnhancer:
             return HOOK
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error generating network hook: {str(e)}")
             return None
 
@@ -219,7 +219,7 @@ class TalentSignalEnhancer:
             return None
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error getting HyDE context: {str(e)}")
             return None
 
@@ -259,7 +259,7 @@ class TalentSignalEnhancer:
             return DETECTED[:5]  # Limit to 5 most prestigious
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error detecting pedigree: {str(e)}")
             return []
 
@@ -290,7 +290,7 @@ class TalentSignalEnhancer:
             return 0
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error extracting team size: {str(e)}")
             return 0
 
@@ -324,7 +324,7 @@ class TalentSignalEnhancer:
             return None
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error extracting hiring metric: {str(e)}")
             return None
 
@@ -359,7 +359,7 @@ class TalentSignalEnhancer:
             return None
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error extracting retention metric: {str(e)}")
             return None
 
@@ -401,7 +401,7 @@ class TalentSignalEnhancer:
             return BULLET
 
         except Exception as e:
-            pass
+pass
             LOGGER.error(f"Error strengthening generic bullet: {str(e)}")
             return bullet
 
@@ -440,3 +440,4 @@ def enhance_talent_signals(
         HOOK = ENHANCER.generate_network_hook("Senior AI Engineer")
 
     return ENHANCED, HOOK
+

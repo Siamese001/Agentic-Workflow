@@ -72,3 +72,4 @@ def adjust(values: Sequence[float],
            config: Optional[Dict] = None) -> List[AdjustmentResult]:
     """Convenience function for adjustment."""
     return NormalizeScriptsVectors(config).adjust(values, method=method)
+

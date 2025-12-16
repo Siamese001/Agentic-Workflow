@@ -150,7 +150,7 @@ class FeedbackLoopOrchestrator:
             try:
                 content = await generator(context, temperature)
             except Exception as e:
-                LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
+LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
                 continue
 
             # Validate content
@@ -489,3 +489,4 @@ class FeedbackLoopOrchestrator:
             report_lines.append("- Verify input data quality")
 
         return "\n".join(report_lines)
+

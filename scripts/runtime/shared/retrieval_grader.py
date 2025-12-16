@@ -277,7 +277,7 @@ class WebSearchFallback:
                 }
 
             except Exception as e:
-                LOGGER.error(f"Web search failed: {e}")
+LOGGER.error(f"Web search failed: {e}")
                 return {
                     "query": query,
                     "results": [],
@@ -349,3 +349,4 @@ async def fallback_web_search(query: str, **kwargs) -> Dict[str, Any]:
     """
     FALLBACK = get_web_search_fallback(**kwargs)
     return await FALLBACK.search(query)
+

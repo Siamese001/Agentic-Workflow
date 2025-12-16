@@ -480,7 +480,7 @@ class TitaniumRAGPipeline:
                             f"Graph entities: {len(fusion_result.graph_results.entities)}")
 
             except Exception as e:
-                self.stats["graphrag_fallbacks"] += 1
+self.stats["graphrag_fallbacks"] += 1
                 logger.error(f"GraphRAG fusion failed: {e}")
                 # Continue with vector results only
 
@@ -689,3 +689,4 @@ def create_titanium_pipeline(
         )
     else:
         return TitaniumRAGPipeline(**kwargs)
+

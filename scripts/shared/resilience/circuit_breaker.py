@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class CircuitBreakerState(Enum):
@@ -137,3 +137,4 @@ def get_breaker(
 def reset_all_breakers() -> None:
     """Reset all circuit breakers (primarily for testing)."""
     _BREAKERS.clear()
+

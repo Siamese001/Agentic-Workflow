@@ -78,7 +78,7 @@ class PromptInjectionLoader:
                     f"Loaded injection {injection.id} from {file_path}")
 
             except Exception as e:
-                LOGGER.error(f"Failed to load {file_path}: {e}")
+LOGGER.error(f"Failed to load {file_path}: {e}")
                 pass
 
         # Load instructional injections
@@ -422,7 +422,7 @@ class PromptInjectionLoader:
             # Try to parse as JSON first
             context = json.loads(base_prompt)
         except json.JSONDecodeError:
-            # Treat as plain text
+# Treat as plain text
             context = {"prompt": base_prompt}
 
         # Use prompt assembler for semantic fencing (lazy import)
@@ -440,7 +440,7 @@ class PromptInjectionLoader:
                 ]
             )
         except ImportError:
-            # Fallback to simple concatenation
+# Fallback to simple concatenation
             enhanced = base_prompt
             for match in matches:
                 template = match.injection.template
@@ -482,7 +482,7 @@ class PromptInjectionLoader:
         try:
             from subatomic_hops.core.prompt_assembler import assemble_prompt
         except ImportError:
-            raise ImportError("Prompt assembler not found. Please install subatomic_hops correctly.")
+raise ImportError("Prompt assembler not found. Please install subatomic_hops correctly.")
 
         # Find matching injections
         matches = self.find_matching_injections(
@@ -580,3 +580,4 @@ def enhance_prompt(
         return loader.apply_injections(base_prompt, matches)
 
     return base_prompt
+

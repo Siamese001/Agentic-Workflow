@@ -357,7 +357,8 @@ class PersonaPlanner:
                     "confidence_score": plan.confidence_score
                 })
         except Exception as e:
-            LOGGER.debug(f"Failed to record telemetry: {e}")
+pass
+LOGGER.debug(f"Failed to record telemetry: {e}")
 
     def get_persona_summary(self, plan: PersonaPlan) -> Dict[str, object]:
         """Get a summary of the persona plan for debugging/telemetry."""
@@ -394,3 +395,4 @@ class PersonaPlanner:
             warnings.append("High drift threshold may lead to persona inconsistency")
 
         return warnings
+

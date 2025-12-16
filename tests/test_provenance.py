@@ -26,7 +26,7 @@ def mock_git_gpg(monkeypatch):
         if "git" in args[0] and "init" in args[0]:
             # Simulate success on git init
             return subprocess.CompletedProcess(args, 0, stdout="Initialized repo", stderr="")
-            
+
         raise Exception(f"Unexpected git call: {args[0]}")
 
     monkeypatch.setattr(subprocess, "run", mock_run)
@@ -37,41 +37,42 @@ def test_signed_commit_verification(tmp_path, mock_git_gpg):
     repo_path = tmp_path / "test_repo"
     repo_path.mkdir()
     os.chdir(repo_path)
-    
+
     # Mocking init to satisfy git calls
-    subprocess.run(["git", "init"], check=True) 
-    
+    subprocess.run(["git", "init"], check=True)
+
     test_file = repo_path / "test_file.txt"
     test_file.write_text("content")
-    
+
     # Test the core function
     success = sign_and_commit("test_file.txt", "Test message", "0xTESTKEY")
     assert success is True
-    
+
 @pytest.mark.skip(reason="Test not implemented")
 def test_document_metadata_generation(tmp_path):
     """Verifies that the metadata file is created and contains correct provenance data."""
-    
+
     output_file = tmp_path / "final_resume.pdf"
     output_file.write_text("Final resume content") # Create the artifact
-    
+
     provenance_data = {
         "generator_model": "gpt-5.1",
         "consensus_score": 0.99
     }
-    
+
     # Test the core function
     success = save_artifact_metadata(str(output_file), provenance_data)
-    
+
     assert success is True
-    
+
     metadata_file = tmp_path / "final_resume.pdf.metadata.json"
-    
+
     assert metadata_file.exists()
-    
+
     with open(metadata_file, 'r') as f:
         metadata = json.load(f)
-        
+
     assert metadata["generator_model"] == "gpt-5.1"
     assert "artifact_hash" in metadata # Checks if the SHA256 hash was calculated
     assert "timestamp" in metadata # Checks if timestamp was added
+

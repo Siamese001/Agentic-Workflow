@@ -117,11 +117,11 @@ def test_aws_connection() -> None:
         logger.info(result.stdout)
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"✗ AWS connection failed: {e}")
+logger.error(f"✗ AWS connection failed: {e}")
         logger.error(f"Error output: {e.stderr}")
         return False
     except FileNotFoundError:
-        logger.info(
+logger.info(
             "✗ AWS CLI not found. Please install it with: pip install awscli")
         return False
 
@@ -137,7 +137,7 @@ def main() -> None:
         import mcp_server_aws.server
         logger.info("✓ mcp-server-aws is installed")
     except ImportError:
-        logger.info("✗ mcp-server-aws not found. Installing...")
+logger.info("✗ mcp-server-aws not found. Installing...")
         subprocess.check_call(
             [sys.executable, "-m", "pip", "install", "mcp-server-aws"])
 
@@ -160,3 +160,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

@@ -36,8 +36,8 @@ class TestDashboard:
 
     def discover_tests(self) -> Dict[str, Any]:
         """Discover all tests in the tests/ directory"""
-        print(f"\n{Colors.HEADER}🔍 Discovering Tests{Colors.ENDC}")
-        print(f"Scanning: {self.tests_dir}")
+        # print(f"\n{Colors.HEADER}🔍 Discovering Tests{Colors.ENDC}")  # [Security Fix]
+        # print(f"Scanning: {self.tests_dir}")  # [Security Fix]
 
         # Collect all tests
         result = subprocess.run(
@@ -48,8 +48,8 @@ class TestDashboard:
         )
 
         if result.returncode != 0:
-            print(f"{Colors.FAIL}❌ Error collecting tests:{Colors.ENDC}")
-            print(result.stderr)
+            # print(f"{Colors.FAIL}❌ Error collecting tests:{Colors.ENDC}")  # [Security Fix]
+            # print(result.stderr)  # [Security Fix]
             return {"status": "error", "message": result.stderr}
 
         # Parse the output
@@ -70,7 +70,7 @@ class TestDashboard:
 
     def run_tests(self, test_pattern: str = None, generate_report: bool = True) -> Dict[str, Any]:
         """Run tests and generate reports"""
-        print(f"\n{Colors.HEADER}🚀 Running Tests{Colors.ENDC}")
+        # print(f"\n{Colors.HEADER}🚀 Running Tests{Colors.ENDC}")  # [Security Fix]
 
         # Determine which tests to run
         if test_pattern:
@@ -124,16 +124,16 @@ class TestDashboard:
         }
 
         # Print summary
-        print(f"\n{Colors.BOLD}Test Results Summary:{Colors.ENDC}")
-        print(f"  Total: {summary['total']}")
-        print(f"  {Colors.GREEN}✅ Passed: {summary['passed']}{Colors.ENDC}")
+        # print(f"\n{Colors.BOLD}Test Results Summary:{Colors.ENDC}")  # [Security Fix]
+        # print(f"  Total: {summary['total']}")  # [Security Fix]
+        # print(f"  {Colors.GREEN}✅ Passed: {summary['passed']}{Colors.ENDC}")  # [Security Fix]
         if failed > 0:
-            print(f"  {Colors.FAIL}❌ Failed: {failed}{Colors.ENDC}")
+            # print(f"  {Colors.FAIL}❌ Failed: {failed}{Colors.ENDC}")  # [Security Fix]
         if skipped > 0:
-            print(f"  {Colors.WARNING}⏭️  Skipped: {skipped}{Colors.ENDC}")
+            # print(f"  {Colors.WARNING}⏭️  Skipped: {skipped}{Colors.ENDC}")  # [Security Fix]
         if errors > 0:
-            print(f"  {Colors.FAIL}🚨 Errors: {errors}{Colors.ENDC}")
-        print(f"  Duration: {duration:.2f}s")
+            # print(f"  {Colors.FAIL}🚨 Errors: {errors}{Colors.ENDC}")  # [Security Fix]
+        # print(f"  Duration: {duration:.2f}s")  # [Security Fix]
 
         # Save report
         report_data = {
@@ -146,9 +146,9 @@ class TestDashboard:
         with open(json_report, 'w') as f:
             json.dump(report_data, f, indent=2)
 
-        print(f"\n{Colors.CYAN}📊 Reports generated:{Colors.ENDC}")
-        print(f"  HTML: {html_report}")
-        print(f"  JSON: {json_report}")
+        # print(f"\n{Colors.CYAN}📊 Reports generated:{Colors.ENDC}")  # [Security Fix]
+        # print(f"  HTML: {html_report}")  # [Security Fix]
+        # print(f"  JSON: {json_report}")  # [Security Fix]
 
         return {
             "status": "success" if result.returncode == 0 else "failed",
@@ -161,7 +161,7 @@ class TestDashboard:
 
     def show_test_categories(self):
         """Show different test categories available"""
-        print(f"\n{Colors.HEADER}📁 Test Categories{Colors.ENDC}")
+        # print(f"\n{Colors.HEADER}📁 Test Categories{Colors.ENDC}")  # [Security Fix]
 
         categories = {
             "Core Implementation": [
@@ -198,9 +198,9 @@ class TestDashboard:
         }
 
         for category, tests in categories.items():
-            print(f"\n{Colors.BLUE}{category}:{Colors.ENDC}")
+            # print(f"\n{Colors.BLUE}{category}:{Colors.ENDC}")  # [Security Fix]
             for test in tests:
-                print(f"  • {test}")
+                # print(f"  • {test}")  # [Security Fix]
 
     def run_category(self, category: str):
         """Run tests for a specific category"""
@@ -214,28 +214,28 @@ class TestDashboard:
         }
 
         if category not in category_map:
-            print(f"{Colors.FAIL}❌ Unknown category: {category}{Colors.ENDC}")
-            print(f"Available categories: {', '.join(category_map.keys())}")
+            # print(f"{Colors.FAIL}❌ Unknown category: {category}{Colors.ENDC}")  # [Security Fix]
+            # print(f"Available categories: {', '.join(category_map.keys())}")  # [Security Fix]
             return
 
-        print(f"\n{Colors.HEADER}Running {category.upper()} tests{Colors.ENDC}")
+        # print(f"\n{Colors.HEADER}Running {category.upper()} tests{Colors.ENDC}")  # [Security Fix]
         return self.run_tests(category_map[category])
 
     def interactive_mode(self):
         """Run in interactive mode"""
-        print(f"\n{Colors.BOLD}{Colors.HEADER}🎛️  Agentic Workflow Test Dashboard{Colors.ENDC}")
-        print(f"Root Directory: {self.root_dir}")
-        print(f"Tests Directory: {self.tests_dir}")
+        # print(f"\n{Colors.BOLD}{Colors.HEADER}🎛️  Agentic Workflow Test Dashboard{Colors.ENDC}")  # [Security Fix]
+        # print(f"Root Directory: {self.root_dir}")  # [Security Fix]
+        # print(f"Tests Directory: {self.tests_dir}")  # [Security Fix]
 
         while True:
-            print(f"\n{Colors.CYAN}Options:{Colors.ENDC}")
-            print("  1. Discover all tests")
-            print("  2. Run core implementation tests")
-            print("  3. Run all tests (may have errors)")
-            print("  4. Show test categories")
-            print("  5. Run specific category")
-            print("  6. View latest report")
-            print("  7. Exit")
+            # print(f"\n{Colors.CYAN}Options:{Colors.ENDC}")  # [Security Fix]
+            # print("  1. Discover all tests")  # [Security Fix]
+            # print("  2. Run core implementation tests")  # [Security Fix]
+            # print("  3. Run all tests (may have errors)")  # [Security Fix]
+            # print("  4. Show test categories")  # [Security Fix]
+            # print("  5. Run specific category")  # [Security Fix]
+            # print("  6. View latest report")  # [Security Fix]
+            # print("  7. Exit")  # [Security Fix]
 
             choice = input(f"\n{Colors.BOLD}Select option (1-7): {Colors.ENDC}").strip()
 
@@ -253,28 +253,30 @@ class TestDashboard:
             elif choice == "6":
                 self.view_latest_report()
             elif choice == "7":
-                print(f"\n{Colors.GREEN}👋 Goodbye!{Colors.ENDC}")
+                # print(f"\n{Colors.GREEN}👋 Goodbye!{Colors.ENDC}")  # [Security Fix]
                 break
             else:
-                print(f"{Colors.FAIL}❌ Invalid option. Please try again.{Colors.ENDC}")
+                # print(f"{Colors.FAIL}❌ Invalid option. Please try again.{Colors.ENDC}")  # [Security Fix]
 
     def view_latest_report(self):
         """View the latest test report"""
         html_reports = list(self.report_dir.glob("test_report_*.html"))
         if not html_reports:
-            print(f"{Colors.WARNING}⚠️  No test reports found.{Colors.ENDC}")
+            # print(f"{Colors.WARNING}⚠️  No test reports found.{Colors.ENDC}")  # [Security Fix]
             return
 
         latest = max(html_reports, key=lambda p: p.stat().st_mtime)
-        print(f"\n{Colors.CYAN}📊 Latest Report: {Colors.ENDC}{latest}")
+        # print(f"\n{Colors.CYAN}📊 Latest Report: {Colors.ENDC}{latest}")  # [Security Fix]
 
         # Try to open in browser
         try:
             import webbrowser
             webbrowser.open(f"file://{latest.absolute()}")
-            print(f"Opened in default browser.")
-        except:
-            print(f"Open manually: file://{latest.absolute()}")
+            # print(f"Opened in default browser.")  # [Security Fix]
+except Exception:
+    pass
+pass
+# print(f"Open manually: file://{latest.absolute()}")  # [Security Fix]
 
 def main():
     parser = argparse.ArgumentParser(description="Agentic Workflow Test Dashboard")

@@ -27,7 +27,7 @@ for f in sys.argv[1:]:
     try:
         REL = ConfigurationService().p.relative_to(ROOT).as_posix()
     except ValueError:
-        continue
+continue
     if not REL.startswith(('agentic_core/', 'apps_lic/', 'apps_rg/')):
         continue
     test_path = ROOT / 'tests' / 'unit' / REL.replace('.py', '_test.py')
@@ -36,3 +36,4 @@ for f in sys.argv[1:]:
     if test_path.stat().st_mtime < p.stat().st_mtime:
         exit_code = 1
 sys.exit(exit_code)
+

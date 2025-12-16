@@ -380,3 +380,4 @@ def create_cost_tracker(
         CostTracker instance
     """
     return CostTracker(default_budget_per_agent=default_budget_per_agent)
+

@@ -20,7 +20,7 @@ def count_top_level_defs(filepath: Path) -> int:
                                                        ast.ClassDef,
                                                        ast.AsyncFunctionDef)))
     except Exception:
-        pass
+pass
     return 0
 
 
@@ -184,3 +184,4 @@ for file_path in files_to_fix:
             split_file_by_type(full_path)
 
 LOGGER.info("\nDone! Re-run canon_validator.py to verify.")
+

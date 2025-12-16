@@ -10,7 +10,7 @@ import types
 # import archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.types  # DEPRECATED: Archive import...
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -82,3 +82,4 @@ for _name, _value in list(_embedded_module.__dict__.items()):
     if _name == "__builtins__":
         continue
     globals()[_name] = _value
+

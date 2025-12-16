@@ -4,7 +4,7 @@ import logging
 from typing import List
 from urllib.parse import urlparse
 
-logger = logging.getLogger("EgressFilter")
+logger = logging.getLogger("EgressFilter")  # GLOBAL: Review if this should be constant
 logging.basicConfig(level=logging.WARNING)
 
 class NetworkViolationError(Exception):

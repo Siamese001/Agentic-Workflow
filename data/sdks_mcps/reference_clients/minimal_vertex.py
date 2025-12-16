@@ -158,3 +158,4 @@ if __name__ == "__main__":
 
     # Test safe generation
     pass # Added pass to fix indentation error
+

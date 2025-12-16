@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 # from archives.legacy_root_folders.core.models.models import ReasoningMode  # DEPRECATED: Archiv...
@@ -21,3 +21,4 @@ class LLMProfile(BaseModel):
                             'premium'.""")
     max_cost_usd: float = Field(default=0.10, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)
+

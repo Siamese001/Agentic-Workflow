@@ -27,7 +27,7 @@ class InjectionScope:
         self.hop_types = hop_types
         self.STAGES = STAGES
         self.CONTEXTS = CONTEXT
-        
+
 class InjectionPattern:
     def __init__(self, id: str, NAME: str, TYPE: str, DESCRIPTION: str, TEMPLATE: str, VARIABLES: List[str], SCOPE: InjectionScope, PRIORITY: int):
         self.id = id
@@ -38,7 +38,7 @@ class InjectionPattern:
         self.VARIABLES = VARIABLES
         self.SCOPE = SCOPE
         self.PRIORITY = PRIORITY
-        
+
     def dict(self):
         # Dummy dict method for compatibility
         return {
@@ -958,3 +958,4 @@ if __name__ == "__main__":
         LOGGER.info(f"\n{stage.value}:")
         LOGGER.info(f"  Applicable: {len(applicable)} injections")
         LOGGER.info(f"  Required: {len(required)} injections")
+

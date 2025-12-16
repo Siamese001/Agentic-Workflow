@@ -95,3 +95,4 @@ def should_invalidate_cache(
     # In a real implementation, this would check timestamps,
     # model versions, or other invalidation criteria
     return False
+

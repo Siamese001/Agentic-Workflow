@@ -380,7 +380,7 @@ class GraphRAGFusion:
             )
 
         except Exception as e:
-            LOGGER.error(f"Vector query failed: {e}")
+LOGGER.error(f"Vector query failed: {e}")
             return FusionResult(
                 query=query,
                 query_type=QueryType.VECTOR_ONLY,
@@ -451,7 +451,7 @@ class GraphRAGFusion:
                 )
 
         except Exception as e:
-            LOGGER.error(f"Graph query failed: {e}")
+LOGGER.error(f"Graph query failed: {e}")
             # Fallback to vector
             return await self._vector_only_query(query, max_results)
 
@@ -652,3 +652,4 @@ async def graphrag_query(
     """
     fusion_instance = get_graphrag_fusion(**kwargs)
     return await fusion_instance.query(query, query_type, max_results)
+

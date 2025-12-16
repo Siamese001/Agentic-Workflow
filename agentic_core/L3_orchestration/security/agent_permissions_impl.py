@@ -154,3 +154,4 @@ class AgentPermissionManager:
 def create_permission_manager(control_plane: Optional[ControlPlane] = None) -> AgentPermissionManager:
     """Factory function to create permission manager. """
     return AgentPermissionManager(control_plane=control_plane)
+

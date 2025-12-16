@@ -74,3 +74,4 @@ def create_instance(config: Optional[Dict[str, Any]] = None) -> Dict[str, Union[
 
     LOGGER.info(f"Created P1 Retrieve instance with config: {final_config}")
     return final_config
+

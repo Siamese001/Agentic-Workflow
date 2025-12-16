@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -168,3 +168,4 @@ def create_rag_scorer(config: Optional[Dict[str, Any]] = None) -> RAGScorer:
         RAGScorer instance
     """
     return RAGScorer(config)
+

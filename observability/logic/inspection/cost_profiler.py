@@ -66,3 +66,4 @@ class CostProfiler:
             return {}
         return {'total_cost': self.get_total_cost(), 'total_tokens': sum((m.tokens_used for m in self.metrics)), 'operation_costs': self.get_cost_by_operation(),
                 'operation_count': len(self.metrics), 'average_cost_per_operation': self.get_total_cost() / len(self.metrics)}
+

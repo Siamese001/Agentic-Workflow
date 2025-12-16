@@ -262,7 +262,7 @@ def test_se_r03_state_exhaustion():
             conn.close()
             successful_requests += 1
         except Exception as e:
-    pass
+pass
 failed_requests += 1
             if i == 100:  # Log first failure
                 # print(f"    First failure at request {i}: {e}")  # [Security Fix]
@@ -305,7 +305,7 @@ def test_binary_input_handling():
             assert result["status"] in ["rejected",
                                         "error"], "L1: Binary input not rejected"
         except Exception:
-    pass
+pass
 # Should handle gracefully
             assert True, "L1: Exception on binary input acceptable"
 
@@ -336,7 +336,7 @@ def test_concurrent_validation_isolation():
                 f"code_from_worker_{worker_id}_validate")
             results.append((worker_id, result))
         except Exception as e:
-    pass
+pass
 errors.append((worker_id, e))
 
     # Run 20 concurrent validations
@@ -384,7 +384,7 @@ def run_security_audit():
             test()
             passed += 1
         except Exception as e:
-    pass
+pass
 # print(f"  FAILED: {e}")  # [Security Fix]
             failed += 1
 

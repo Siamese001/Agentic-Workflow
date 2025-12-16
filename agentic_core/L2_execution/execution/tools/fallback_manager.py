@@ -188,7 +188,8 @@ class FallbackManager:
                                   metadata={"total_attempts": len(attempts), # Changed 'METADATA' to 'metadata'
                                             "fallback_used": attempt_num > 0})
         except Exception as e:
-            # The following lines were incorrectly indented.
+pass
+# The following lines were incorrectly indented.
             # They should be part of the 'except' block.
             # The 'pass' statement was also incorrectly placed and is removed.
             attempts.append({"provider": provider.name,
@@ -233,3 +234,4 @@ def create_fallback_manager(
 ) -> FallbackManager:
     """Factory function to create fallback manager. """
     return FallbackManager(strategy=strategy)
+

@@ -9,7 +9,7 @@ import logging
 from typing import Dict, Optional
 from enum import Enum
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ProviderType(Enum):
@@ -89,3 +89,4 @@ def register_provider(
     """
     DEFAULT_PROVIDER_MODULES[provider.lower()] = module
     DEFAULT_PROVIDER_CLASSES[provider.lower()] = class_name
+

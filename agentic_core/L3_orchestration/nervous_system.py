@@ -61,7 +61,8 @@ class NervousSystem(IOrchestrator):
             execution_trace = await self._execute_phases(context, execution_trace, errors)
             return self._create_execution_result(context, execution_trace, errors, start_time)
         except Exception as e:
-            return self._handle_execution_error(context, execution_trace, start_time, e)
+pass
+return self._handle_execution_error(context, execution_trace, start_time, e)
 
     async def _execute_phases(self,
         context: ExecutionContext,
@@ -327,3 +328,4 @@ class NervousSystem(IOrchestrator):
                 actions.append(action)
 
         return actions
+

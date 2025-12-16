@@ -27,6 +27,9 @@ try:
         'get_vector_store',
         'get_redis_client']
 except ImportError as e:
-    logger.warning(
+    pass
+pass
+logger.warning(
         f'Warning: Could not import runtime components: {e}')
     __all__ = []
+

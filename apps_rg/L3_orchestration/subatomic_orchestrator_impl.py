@@ -334,7 +334,7 @@ class SubatomicOrchestrator:
             else:
                 execution_state['status'] = 'partial_failure'
         except Exception as e:
-            LOGGER.error(f'Graph execution failed: {e}')
+LOGGER.error(f'Graph execution failed: {e}')
             execution_state['status'] = 'failed'
             execution_state['error'] = str(e)
         finally:
@@ -404,7 +404,7 @@ class SubatomicOrchestrator:
             RESULT = await node.run(**inputs)
             return RESULT
         except Exception as e:
-            LOGGER.error(f'Node execution error: {e}')
+LOGGER.error(f'Node execution error: {e}')
             raise
 
     async def _handle_node_failure(self,
@@ -437,7 +437,7 @@ class SubatomicOrchestrator:
                         graph.add_node(new_hop, role=role)
                         graph.add_edge(new_hop, node)
             except Exception as e:
-                LOGGER.error(f'Failed to apply mutation: {e}')
+LOGGER.error(f'Failed to apply mutation: {e}')
 
     def get_execution_stats(self) -> Dict[str, Any]:
         """Get execution statistics.
@@ -513,3 +513,4 @@ async def execute_message_workflow(recipient_data: Dict[str, Any],
     return await ORCHESTRATOR.execute_graph(GRAPH,
                                             initial_inputs={'recipient': recipient_data,
                                                             'type': message_type})
+

@@ -229,7 +229,7 @@ class SafetyEngine:
                 )
 
             except Exception as e:
-                error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
+error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
                 logger.error(error_msg, exc_info=True)
 
                 # Create a blocking decision for the failed policy
@@ -314,3 +314,4 @@ class SafetyEngine:
         """
         result = self.evaluate(context, policy_ids, severity_threshold)
         return result.final_verdict != Verdict.BLOCK
+

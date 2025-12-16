@@ -37,7 +37,7 @@ def get_file_hash(path: Path) -> str:
         content = path.read_bytes()
         return hashlib.md5(content).hexdigest()
     except (ValueError, TypeError, KeyError):
-        return ""
+return ""
 
 
 def get_file_signature(path: Path) -> tuple:
@@ -52,7 +52,7 @@ def get_file_signature(path: Path) -> tuple:
                 break
         return (get_file_hash(path), path.stat().st_size, first_meaningful)
     except (ValueError, TypeError, KeyError):
-        return ("", 0, "")
+return ("", 0, "")
 
 
 def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Path]]]:
@@ -144,7 +144,7 @@ def _print_file_preview(f: Path) -> None:
                 LOGGER.info("    ...")
                 break
     except (ValueError, TypeError, KeyError) as e:
-        LOGGER.info(f"    Error reading file: {e}")
+LOGGER.info(f"    Error reading file: {e}")
 
 
 def _print_unique_file_analysis(unique_files: List[Path]) -> None:
@@ -204,3 +204,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

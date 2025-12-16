@@ -75,7 +75,7 @@ class ReasoningRouter:
             try:
                 return TaskType(context["task_type"])
             except ValueError:
-                pass  # Ignore invalid task types from context
+pass  # Ignore invalid task types from context
 
         task_lower = task.lower()
 
@@ -207,3 +207,4 @@ def select_reasoning_strategy(
         ROUTER = router
 
     return ROUTER.select_strategy(task, context)
+

@@ -35,7 +35,7 @@ class SignatureVerifier:
                                    DATA=result,
                                    METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-    pass
+pass
 logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
 

@@ -28,7 +28,8 @@ class ImplementFallbackTemplates:
                 RESULT = func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-    pass
+pass
+pass
 last_error = str(e)
                 logger.warning(f"Attempt {attempt + 1} failed: {e}")
                 pass  # rate limit delay removed)

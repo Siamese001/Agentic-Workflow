@@ -69,7 +69,7 @@ class OpenAIClientManager:
             )
             return response
         except Exception as e:
-            LOGGER.error(f"OpenAI API error: {e}")
+LOGGER.error(f"OpenAI API error: {e}")
             raise
 
 
@@ -102,7 +102,7 @@ class OpenAIClientManager:
             )
             return response
         except Exception as e:
-            LOGGER.error(f"OpenAI API error: {e}")
+LOGGER.error(f"OpenAI API error: {e}")
             raise
 
 
@@ -126,7 +126,7 @@ class OpenAIClientManager:
             )
             return response.data[0].embedding
         except Exception as e:
-            LOGGER.error(f"OpenAI embedding error: {e}")
+LOGGER.error(f"OpenAI embedding error: {e}")
             raise
 
 
@@ -136,7 +136,7 @@ class OpenAIClientManager:
             models = self.client.models.list()
             return [model.id for model in models.data]
         except Exception as e:
-            LOGGER.error(f"Failed to list models: {e}")
+LOGGER.error(f"Failed to list models: {e}")
             return []
 
 
@@ -230,7 +230,7 @@ def test_openai_connection():
         LOGGER.info(response.choices[0].message.content)
         return True
     except Exception as e:
-        LOGGER.error(f"OpenAI connection failed: {e}")
+LOGGER.error(f"OpenAI connection failed: {e}")
         return False
 
 
@@ -240,3 +240,4 @@ if __name__ == "__main__":
 
 def test_openai_connection() -> None:
     pass
+

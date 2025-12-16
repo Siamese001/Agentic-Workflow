@@ -225,7 +225,7 @@ class RetryPolicy:
                 )
 
             except Exception as e:
-                last_exception = e
+last_exception = e
                 DELAY = DelayCalculator.calculate_delay(retry_config, attempt)
                 total_delay += DELAY
 
@@ -260,7 +260,7 @@ class RetryPolicy:
                     try:
                         on_retry(attempt_info)
                     except Exception as callback_error:
-                        LOGGER.error(f"Retry callback failed: {callback_error}")
+LOGGER.error(f"Retry callback failed: {callback_error}")
 
         # All attempts failed
         self._update_stats(len(attempts_history), False)
@@ -495,3 +495,4 @@ async def init_default_policies() -> None:
         EXECUTOR.register_policy(name, config)
 
     LOGGER.info("Initialized default retry policies")
+

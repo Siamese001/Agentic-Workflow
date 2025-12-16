@@ -63,3 +63,4 @@ def compute(values: Sequence[float],
             config: Optional[Dict] = None) -> ComputationResult:
     """Convenience function for computation."""
     return CalculateScriptsSimilarity(config).compute(values, operation)
+

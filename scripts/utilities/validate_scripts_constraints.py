@@ -93,3 +93,4 @@ def validate(data: object,
     """Docstring."""
     """Convenience function for validation."""
     return ValidateScriptsConstraints(config).validate(data, schema)
+

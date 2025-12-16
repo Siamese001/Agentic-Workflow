@@ -53,3 +53,4 @@ def test_rollback_completion_logging():
     Test that rollback completion is properly logged
     """
     pass
+

@@ -44,7 +44,7 @@ LOGGER = logging.getLogger(__name__)
 
 # Mock logger if enable_logging is true and global logger isn't configured
 # For fixing syntax, we assume 'logger' is defined, possibly `LOGGER`
-logger = LOGGER
+logger = LOGGER  # GLOBAL: Review if this should be constant
 
 
 class ModelRouter:
@@ -215,3 +215,4 @@ class ModelRouter:
 def create_model_router(cost_budget_per_request: Optional[float] = None) -> ModelRouter:
     """Factory function to create model router. """
     return ModelRouter(cost_budget_per_request=cost_budget_per_request)
+

@@ -8,8 +8,9 @@ try:
     client = docker.from_env()
     client.ping()
     DOCKER_AVAILABLE = True
-except:
-    DOCKER_AVAILABLE = False
+except Exception:
+    pass
+DOCKER_AVAILABLE = False
 
 @pytest.mark.skipif(not DOCKER_AVAILABLE, reason="Docker not available")
 def test_sandbox_filesystem_isolation(tmp_path):
@@ -27,7 +28,7 @@ def test_sandbox_filesystem_isolation(tmp_path):
     }
 
     # Attempt to delete the file inside container
-    # Should fail because /data is RO. 
+    # Should fail because /data is RO.
     exit_code, logs = sandbox.run_command("rm /data/important_host_file.txt", volumes=volumes)
 
     assert exit_code != 0
@@ -58,3 +59,4 @@ def test_execute_in_sandbox_wrapper(tmp_path):
 
     success = execute_in_sandbox(str(repo_dir), cmd)
     assert success is True
+

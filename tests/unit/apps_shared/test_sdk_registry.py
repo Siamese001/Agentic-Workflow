@@ -42,3 +42,4 @@ def test_invalid_provider():
 def test_default_config():
     """Test from original file."""
     pass
+

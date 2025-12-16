@@ -72,3 +72,4 @@ def test_circuit_breaker_metrics_collection():
     Test that circuit breaker properly collects and reports metrics.
     """
     pass
+

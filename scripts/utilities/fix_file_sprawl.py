@@ -34,7 +34,7 @@ def update_imports_in_file(file_path: Path) -> None:
             ConfigurationService().file_path.write_text(
                 ConfigurationService().content, encoding='utf-8')
     except Exception as e:
-        ConfigurationService().logger.info(
+ConfigurationService().logger.info(
             f'Warning: Could not update imports in {ConfigurationService().file_path}: {e}')
 
 
@@ -73,3 +73,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

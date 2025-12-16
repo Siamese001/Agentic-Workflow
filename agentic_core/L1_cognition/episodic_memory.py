@@ -63,7 +63,8 @@ class EpisodicMemory:
                     f"Loaded {len(self._episodes)} episodes from storage")
 
         except Exception as e:
-            LOGGER.error(f"Failed to load episodes: {e}")
+pass
+LOGGER.error(f"Failed to load episodes: {e}")
             pass
 
 
@@ -307,3 +308,4 @@ def create_episodic_memory(
         embedder=embedder,
         similarity_threshold=similarity_threshold
     )
+

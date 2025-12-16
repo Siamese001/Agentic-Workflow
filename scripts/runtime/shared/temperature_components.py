@@ -144,7 +144,7 @@ class DepthScorer:
                                     if DAYS <= 90:
                                         recent_count += 1
                             except (ValueError, AttributeError):
-                                pass  # Ignore malformed dates
+pass  # Ignore malformed dates
                                 continue
                     elif isinstance(post,
                                    str) and len(post) > 20:  # Assume recent if non-empty string
@@ -179,7 +179,7 @@ class DepthScorer:
             return depth_score
 
         except Exception as e:
-            LOGGER.error(f"Error calculating depth: {str(e)}")
+LOGGER.error(f"Error calculating depth: {str(e)}")
             return DepthScore(LEVEL=0, SCORE=0.1, rationale=["Error in calculation"])
 
 
@@ -280,7 +280,7 @@ class MicroHookGenerator:
             return HOOKS
 
         except Exception as e:
-            LOGGER.error(f"Error generating hooks: {str(e)}")
+LOGGER.error(f"Error generating hooks: {str(e)}")
             # Return generic hook as fallback
             return [MicroHook(
                 PHRASE="I came across your profile and was impressed...",
@@ -373,7 +373,7 @@ class SentimentAnalyzer:
             return PROFILE
 
         except Exception as e:
-            LOGGER.error(f"Error assessing sentiment: {str(e)}")
+LOGGER.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
                 mood=SentimentMood.NEUTRAL,
                 risk_level=RiskLevel.LOW,
@@ -464,7 +464,7 @@ class WarmthManager:
             return WARMTH
 
         except Exception as e:
-            LOGGER.error(f"Error determining warmth: {str(e)}")
+LOGGER.error(f"Error determining warmth: {str(e)}")
             return WarmthSetting(
                 formality_level=0.6,
                 strategy_name="Professional Default",
@@ -550,7 +550,7 @@ class TemperatureEngine:
             return RESULTS
 
         except Exception as e:
-            LOGGER.error(f"Error in temperature analysis: {str(e)}")
+LOGGER.error(f"Error in temperature analysis: {str(e)}")
             return {
                 "error": str(e),
                 "depth_score": {"LEVEL": 0, "SCORE": 0.1, "rationale": ["Error"]},
@@ -618,3 +618,4 @@ def analyze_temperature(
     """Quickly analyze temperature for a profile."""
     ENGINE = create_temperature_engine()
     return ENGINE.analyze_temperature(profile, context)
+

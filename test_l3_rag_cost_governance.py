@@ -10,7 +10,7 @@ from unittest.mock import patch
 # Setup logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("RAGCostGovernanceTest")
+logger = logging.getLogger("RAGCostGovernanceTest")  # GLOBAL: Review if this should be constant
 
 
 def test_canon_rag_low_cost_priority():

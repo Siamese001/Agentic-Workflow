@@ -12,7 +12,7 @@ FLOAT = float
 BOOL = bool
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -134,3 +134,4 @@ class GlobalConfig:
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+

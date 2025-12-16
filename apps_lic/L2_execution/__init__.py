@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 '\n\n\nLOGGER = logging.getLogger(__name__)\n09_apps/apps_lic/L2_execution package initialization.\n\nGenerated: 2025-12-07T13:28:54.109707\n'
 __all__: list[str] = [
     'LICStateManager',

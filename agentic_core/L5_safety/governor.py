@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -30,3 +30,4 @@ class CostGovernor:
             raise BudgetExceededError(f"Global budget limit ${self.LIMIT} exceeded. Current spend: ${self.SPEND}")
 
         return COST
+

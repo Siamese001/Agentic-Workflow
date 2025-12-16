@@ -91,7 +91,7 @@ class ASTAwareChunker:
             return chunks
 
         except Exception as e:
-            self.logger.error(f"Failed to chunk {file_path}: {e}")
+self.logger.error(f"Failed to chunk {file_path}: {e}")
             return []
 
     def _extract_module_chunk(self, tree: ast.AST, content: str, file_path: Path) -> Optional[CodeChunk]:
@@ -149,7 +149,7 @@ class ASTAwareChunker:
             ast_json = ast.dump(ast.parse(chunk_content),
                                 include_attributes=True)
         except SyntaxError:
-            # Might be a method with incomplete syntax
+# Might be a method with incomplete syntax
             return None
 
         return CodeChunk(
@@ -183,7 +183,7 @@ class ASTAwareChunker:
             ast_json = ast.dump(ast.parse(chunk_content),
                                 include_attributes=True)
         except SyntaxError:
-            return None
+return None
 
         # Extract methods and properties
         methods = []
@@ -235,7 +235,7 @@ class ASTAwareChunker:
                     for alias in node.names:
                         imports.append(f"{module}.{alias.name}")
         except Exception:
-            pass
+pass
         return imports
 
 
@@ -350,7 +350,7 @@ class BackfillPipeline:
                     self.stats["files_processed"] += 1
 
             except Exception as e:
-                self.logger.error(
+self.logger.error(
                     f"Failed to extract from Git repo {repo_path}: {e}")
                 self.stats["errors"] += 1
 
@@ -400,7 +400,7 @@ class BackfillPipeline:
                         temp_file.unlink()
 
             except ClientError as e:
-                self.logger.error(
+self.logger.error(
                     f"Failed to extract from S3 bucket {bucket_name}: {e}")
                 self.stats["errors"] += 1
 
@@ -477,7 +477,7 @@ class BackfillPipeline:
                     self.stats["chunks_created"] += 1
 
                 except Exception as e:
-                    self.logger.error(
+self.logger.error(
                         f"Failed to transform chunk {chunk.name}: {e}")
                     self.stats["errors"] += 1
 
@@ -508,7 +508,7 @@ class BackfillPipeline:
                         f"Loaded {i + len(batch)}/{len(entries)} vectors to Qdrant")
 
             except Exception as e:
-                self.logger.error(f"Failed to load batch to Qdrant: {e}")
+self.logger.error(f"Failed to load batch to Qdrant: {e}")
                 self.stats["errors"] += 1
 
 
@@ -570,7 +570,7 @@ class ContinuousIngester:
             self.logger.info(f"Ingested success pattern: {entry.id}")
 
         except Exception as e:
-            self.logger.error(
+self.logger.error(
                 f"Failed to ingest success pattern {entry.id}: {e}")
             self.stats["errors"] += 1
 
@@ -612,7 +612,7 @@ class ContinuousIngester:
             self.logger.info(f"Ingested failure pattern: {entry.id}")
 
         except Exception as e:
-            self.logger.error(
+self.logger.error(
                 f"Failed to ingest failure pattern {entry.id}: {e}")
             self.stats["errors"] += 1
 
@@ -641,8 +641,9 @@ class ContinuousIngester:
                 f"Cleaned up {len(expired)} expired failure patterns")
 
         except Exception as e:
-            self.logger.error(f"Failed to cleanup expired failures: {e}")
+self.logger.error(f"Failed to cleanup expired failures: {e}")
 
     def get_stats(self) -> Dict[str, Any]:
         """Get ingestion statistics."""
         return self.stats.copy()
+

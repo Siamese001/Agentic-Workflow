@@ -265,7 +265,7 @@ class InputGuardrail:
             return RESULT # Variable was `result`
 
         except Exception as e:
-            # Fix: Indentation error and `logger` vs `LOGGER` inconsistency
+# Fix: Indentation error and `logger` vs `LOGGER` inconsistency
             LOGGER.error(f"Error during input scan: {e}")
             # Fail safe - allow but warn
             return GuardResult(
@@ -523,3 +523,4 @@ def scan_input(input_text: str, **kwargs) -> GuardResult:
     """
     GUARDRAIL = get_input_guardrail(**kwargs)
     return GUARDRAIL.scan(input_text) # Variable was `guardrail`
+

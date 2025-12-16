@@ -58,7 +58,8 @@ class StructuredEngine:
                 f'Structured inference successful. Confidence score: {result._confidence_score:.2f}')
             return result
         except Exception as e:
-            ConfigurationService().logger.error(f'Structured inference failed after {max_retries} retries: {e}')
+pass
+ConfigurationService().logger.error(f'Structured inference failed after {max_retries} retries: {e}')
             raise
 
 
@@ -121,3 +122,4 @@ async def create_structured_engine(api_key: str, MODEL: str = 'gpt-4o',
     else:
         client = AsyncOpenAI(api_key=api_key)
         return StructuredEngine(client)
+

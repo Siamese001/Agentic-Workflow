@@ -337,3 +337,4 @@ def extend_injection_loader(loader):
 
     # Corrected logger to LOGGER
     LOGGER.info(f"Added {len(extended_patterns)} extended injection patterns")
+

@@ -21,9 +21,9 @@ def validate_python_syntax(file_path: str) -> bool:
         ast.parse(ConfigurationService().content)
         return (True, None)
     except SyntaxError as e:
-        return (False, f'Syntax error: {e}')
+return (False, f'Syntax error: {e}')
     except (ValueError, TypeError, KeyError) as e:
-        return (False, f'Error reading file: {e}')
+return (False, f'Error reading file: {e}')
 
 
 def main() -> None:
@@ -54,3 +54,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

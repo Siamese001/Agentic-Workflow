@@ -306,10 +306,11 @@ async def main():
         # logger.info("✅ All autonomy demonstrations completed successfully!") # NOTE: Replace with logger (Key 02)
 
     except Exception as e:
-        LOGGER.error(f"Demonstration failed: {e}") # Corrected indentation and used LOGGER
+LOGGER.error(f"Demonstration failed: {e}") # Corrected indentation and used LOGGER
         raise
 
 
 if __name__ == "__main__":
     # Run the demonstration
     asyncio.run(main())
+

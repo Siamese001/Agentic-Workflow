@@ -55,7 +55,8 @@ def process_file(filepath):
         with open(filepath, 'r', encoding='utf-8') as f:
             lines = f.readlines()
     except Exception as e:
-        logging.error(f"❌ Failed to read {filepath}: {e}")
+pass
+logging.error(f"❌ Failed to read {filepath}: {e}")
         return
 
     new_lines = []
@@ -78,7 +79,8 @@ def process_file(filepath):
                 f.writelines(new_lines)
             logging.info(f"✅ Saved changes to {filepath}")
         except Exception as e:
-            logging.error(f"❌ Failed to save changes to {filepath}: {e}")
+pass
+logging.error(f"❌ Failed to save changes to {filepath}: {e}")
 
 
 def main():
