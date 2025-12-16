@@ -225,6 +225,7 @@ def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_o
     
     # --- HARDENING PROTOCOL 3: PROMPT FIREWALL ---
     # We validate the fetched content BEFORE sending it to Pinecone or LLM.
+    firewall = PromptFirewall()
     try:
         if logger:
             logger.info("Scanning Job Description for injection attacks...")
