@@ -3,6 +3,7 @@ import sys
 import json
 import logging
 import subprocess
+import hashlib
 from typing import Dict, Any, Optional, Tuple
 from datetime import datetime
 from pathlib import Path
@@ -409,13 +410,14 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
         
         # 4. Commit the fix with GPG signature (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
+        commit_result = "mock_commit_hash"  # Placeholder for actual commit hash
         
         # --- HARDENING PROTOCOL 10: SHADOW MODE EXECUTION ---
         if SHADOW_MODE_ACTIVE:
             if logger:
                 logger.warning(f"👻 SHADOW MODE: Blocked final commit of {target_file}.")
                 logger.warning(f"Diff would be saved to shadow_output/{issue_id}_shadow.diff for review.")
-            
+        
             # Return success from the perspective of the agent workflow (it did its job)
             return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED", "file": target_file}
         # --------------------------------------------------
@@ -463,7 +465,7 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
                 f"⚠️ L5 MEMemory logging failed (non-critical): {e}")
 
     return {
-        "status": "refactor_complete",
+        "status": "SUCCESS",
         "message": f"Issue {issue_id} fixed, committed, and logged. Redis key: {fix_hash}",
         "commit_result": commit_result,
         "target_file": target_file,
