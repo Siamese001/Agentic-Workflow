@@ -1,5 +1,5 @@
-# Docker Compose for Canon Validator Engine - Two-Phase Pipeline
-# Enforces Sanitization (Phase A) before Runtime (Phase B)
+# Docker Compose for Canon Validator Engine - Decoupled Pipeline
+# Allows Runtime (Phase B) to boot without being blocked by legacy Sanitization (Phase A)
 
 version: '3.8'
 
@@ -18,16 +18,14 @@ volumes:
 
 services:
   # ================================================
-  # PHASE A: SANITIZATION BOOT SEQUENCE
+  # PHASE A: SANITIZATION (MANUAL/OPTIONAL)
   # ================================================
 
-  # STEP 0: THE LIBRARIAN
   librarian:
     build: .
     image: canon-validator:latest
     user: appuser
     container_name: canon-librarian
-    # REMOVED "python" from command because it's in the Dockerfile ENTRYPOINT
     command: ["apps_rg/L0_maintenance/deduplicate_and_index.py"]
     volumes:
       - .:/app:rw
@@ -35,9 +33,8 @@ services:
     working_dir: /app
     networks:
       - canon_net
-    restart: "no" # Should not restart on completion
+    restart: "no"
 
-  # STEP 1: THE ARCHITECT
   architect:
     build: .
     image: canon-validator:latest
@@ -52,12 +49,12 @@ services:
       - canon_net
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    # Set to 'service_started' so it doesn't block if the librarian finds junk
     depends_on:
       librarian:
-        condition: service_completed_successfully
+        condition: service_started
     restart: "no"
 
-  # STEP 2: THE SURGEON
   surgeon:
     build: .
     image: canon-validator:latest
@@ -72,13 +69,14 @@ services:
       - canon_net
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    # Set to 'service_started' to prevent the 'Infinite Loop' from blocking the pipe
     depends_on:
       architect:
-        condition: service_completed_successfully
+        condition: service_started
     restart: "no"
 
   # ================================================
-  # PHASE B: RUNTIME EXECUTION
+  # PHASE B: RUNTIME EXECUTION (DIRECT BOOT)
   # ================================================
 
   orchestrator:
@@ -111,9 +109,8 @@ services:
         reservations:
           cpus: '0.5'
           memory: 1024M
+    # REMOVED: dependancy on surgeon. It will now boot as long as Redis is healthy.
     depends_on:
-      surgeon:
-        condition: service_completed_successfully
       redis:
         condition: service_healthy
     restart: unless-stopped

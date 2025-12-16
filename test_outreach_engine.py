@@ -78,6 +78,7 @@ For media inquiries: press@techcorp.com
 
 
 class MockLogger:
+    pass
     # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
     # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]
     # def error(self, msg): print(f"[ERROR] {msg}")  # [Security Fix]
@@ -141,4 +142,3 @@ def test_lead_vetting():
 
 if __name__ == "__main__":
     test_lead_vetting()
-

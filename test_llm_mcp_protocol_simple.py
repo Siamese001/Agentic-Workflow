@@ -31,37 +31,27 @@ def test_tool_interface_compliance():
                 "/tmp/test_protocol.txt", "Protocol test content")
             test_results.append(("write_file", "callable", result))
         except Exception as e:
-    pass
-pass
-
-
-test_results.append(("write_file", "error", str(e)))
+            test_results.append(("write_file", "error", str(e)))
 
         # Test read_text_file
         try:
             result = core_utils.read_text_file("/tmp/test_protocol.txt")
             test_results.append(("read_text_file", "callable", result))
         except Exception as e:
-    pass
-pass
-test_results.append(("read_text_file", "error", str(e)))
+            test_results.append(("read_text_file", "error", str(e)))
 
         # Test Time MCP tools
         try:
             result = core_utils.get_current_time("UTC")
             test_results.append(("get_current_time", "callable", result))
         except Exception as e:
-    pass
-pass
-test_results.append(("get_current_time", "error", str(e)))
+            test_results.append(("get_current_time", "error", str(e)))
 
         try:
             result = core_utils.convert_time("UTC", "10:00", "Europe/London")
             test_results.append(("convert_time", "callable", result))
         except Exception as e:
-    pass
-pass
-test_results.append(("convert_time", "error", str(e)))
+            test_results.append(("convert_time", "error", str(e)))
 
         # Validate response formats
         valid_formats = 0
@@ -74,9 +64,7 @@ test_results.append(("convert_time", "error", str(e)))
                         f"✅ {tool}: Returns valid JSON-serializable response")
                     valid_formats += 1
                 except (TypeError, ValueError):
-    pass
-pass
-logger.error(
+                    logger.error(
                         f"❌ {tool}: Returns non-serializable response")
             else:
                 logger.error(f"❌ {tool}: {result}")
@@ -90,9 +78,7 @@ logger.error(
             return False
 
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Tool interface test failed: {e}")
+        logger.error(f"❌ Tool interface test failed: {e}")
         return False
 
 
@@ -146,9 +132,7 @@ def test_tool_parameter_validation():
                             f"✅ {case['tool']}({case['description']}): Handled gracefully")
                         passed += 1
                 except Exception as e:
-    pass
-pass
-if case["should_fail"]:
+                    if case["should_fail"]:
                         logger.info(
                             f"✅ {case['tool']}({case['description']}): Failed as expected")
                         passed += 1
@@ -165,9 +149,7 @@ if case["should_fail"]:
             return False
 
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Parameter validation test failed: {e}")
+        logger.error(f"❌ Parameter validation test failed: {e}")
         return False
 
 
@@ -223,9 +205,7 @@ def test_sequential_tool_execution():
                     logger.info(
                         f"✅ Step {step['step']}: {step['description']} - Success")
                 except Exception as e:
-    pass
-pass
-results.append({
+                    results.append({
                         "step": step["step"],
                         "tool": step["tool"],
                         "success": False,
@@ -255,9 +235,7 @@ results.append({
             return False
 
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Sequential execution test failed: {e}")
+        logger.error(f"❌ Sequential execution test failed: {e}")
         return False
 
 
@@ -327,9 +305,7 @@ def test_mock_llm_response_format():
                     json.dumps(result)
                     valid_results += 1
             except (TypeError, ValueError):
-    pass
-pass
-logger.error(f"❌ Non-serializable result: {result}")
+                logger.error(f"❌ Non-serializable result: {result}")
 
         if valid_responses == len(mock_responses) and valid_results == len(tool_results):
             logger.info("✅ All mock LLM responses are properly formatted")
@@ -339,9 +315,7 @@ logger.error(f"❌ Non-serializable result: {result}")
             return False
 
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Mock LLM response format test failed: {e}")
+        logger.error(f"❌ Mock LLM response format test failed: {e}")
         return False
 
 
@@ -383,9 +357,7 @@ def test_error_handling():
                             f"⚠️ {case['tool']}: Unexpected success response")
                         handled_errors += 1  # Still counts as handled
                 except Exception as e:
-    pass
-pass
-# Exceptions should be caught and handled
+                    # Exceptions should be caught and handled
                     logger.error(
                         f"❌ {case['tool']}: Unhandled exception - {e}")
 
@@ -398,9 +370,7 @@ pass
             return False
 
     except Exception as e:
-    pass
-pass
-logger.error(f"❌ Error handling test failed: {e}")
+        logger.error(f"❌ Error handling test failed: {e}")
         return False
 
 
@@ -456,4 +426,3 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-

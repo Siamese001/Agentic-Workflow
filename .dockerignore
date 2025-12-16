@@ -1,154 +1,59 @@
-# .dockerignore - Exclude files from Docker build context
-# Reduces attack surface and prevents sensitive data leakage
+# .dockerignore - Canonical 50 Keys Enforcement
+# Purpose: Prevents the Surgeon from seeing legacy/junk files in the root.
 
-# Version Control
-.git
-.gitignore
-.gitattributes
-.gitmodules
-
-# Python
+# 1. Global Exclusions
+.git/
+.github/
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual Environments
 venv/
-env/
-ENV/
 .venv/
-.env/
-
-# IDE and Editor Files
+.env*
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
-
-# Test Files and Coverage
-.coverage
-.pytest_cache/
-.tox/
-htmlcov/
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-
-# Documentation
-docs/_build/
-*.md
-!README.md
-
-# Logs and Temporary Files
-*.log
-*.tmp
-*.temp
 logs/
 tmp/
-temp/
 
-# Secrets and Configuration
-.env
-.env.local
-.env.development
-.env.test
-.env.production
+# 2. Strict Root Protection
+# This ignores ALL python files in the root directory first...
+/*.py
+
+# ...then whitelists ONLY the absolute essentials for Phase B boot.
+!/main.py
+!/orchestrator.py
+!/requirements.txt
+
+# 3. Pattern-Based Junk Removal
+# Prevents "Surgeon Leaks" where variants were being scanned
+**/*_backup.py
+**/*_v[0-9]*.py
+**/*_old.py
+**/temp_*.py
+**/scratch_*.py
+**/test_*.py
+**/*_test.py
+
+# 4. Directory Cordoning
+# Explicitly ignore non-production areas to speed up the Librarian scan
+experimental/
+local/
+dev/
+archives/
+backup/
+docs/
+node_modules/
+build/
+dist/
+
+# 5. Infrastructure and Security
 secrets/
 *.key
 *.pem
-*.crt
-*.p12
-passwords.txt
-
-# Cache and Data
-.cache/
-data/
-datasets/
-models/
-*.pkl
-*.joblib
-*.h5
-*.bin
-
-# Build Artifacts
-build/
-dist/
-target/
-node_modules/
-
-# Docker Files (prevent recursion)
-Dockerfile*
-docker-compose*.yml
-.dockerignore
-
-# CI/CD
-.github/
-.gitlab-ci.yml
-.travis.yml
-Jenkinsfile
-
-# Archives and Backup
-*.tar.gz
-*.zip
-*.rar
-*.7z
-archives/
-backup/
-
-# OS Generated Files
-.DS_Store?
-ehthumbs.db
-Icon?
-Thumbs.db
-
-# Application Specific
-workspace/
-reports/
-outputs/
-results/
 *.sqlite
 *.db
 
-# Test Suites
-tests/
-!tests/apps_cv/
-test_*.py
-*_test.py
-
-# Development Tools
-.pre-commit-config.yaml
-setup.cfg
-tox.ini
-
-# Monitoring and Observability
-.grafana/
-.prometheus/
-jaeger/
-otel-collector-config.yaml
-
-# Local Development
-local/
-dev/
-experimental/
+# 6. Docker Recursion Prevention
+Dockerfile*
+docker-compose*.yml
+.dockerignore
