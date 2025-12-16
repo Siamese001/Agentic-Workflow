@@ -36,3 +36,4 @@ logs/
 
 # Temp extraction folders
 temp_*/
+.cache/
