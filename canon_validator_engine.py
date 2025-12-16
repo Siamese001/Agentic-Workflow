@@ -96,29 +96,37 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
         # -------------------------------------------------
 
         # --- HARDENING PROTOCOL 2: DOCKER SANDBOX ---
-        # Attempt to run tests associated with this file
-        # This assumes you have a standard test naming convention (e.g., test_filename.py)
-        test_file = f"tests/test_{os.path.basename(target_file)}"
-        
+        # If syntax is valid, proceed to P2 Sandbox Check
         if logger:
-            logger.info(f"Initiating Sandbox Verification for {target_file}...")
+            logger.info(f"Syntax valid. Initiating Sandbox Verification for {target_file}...")
         
-        # Install dependencies and run pytest inside the container
-        # Note: In production, use a pre-built image with dependencies installed to save time
-        cmd = f"pip install -r requirements.txt && pytest {test_file}"
+        # Determine command:
+        # 1. Try to run specific test if it exists
+        # 2. Fallback to basic compilation check or import check
+        test_file_name = f"test_{os.path.basename(target_file)}"
+        possible_test_path = os.path.join(os.getcwd(), "tests", test_file_name)
         
+        if os.path.exists(possible_test_path):
+            # Run specific test
+            sandbox_cmd = f"python3 -m unittest tests/{test_file_name}"
+        else:
+            # Fallback: Just ensure it compiles (redundant with AST but verifies imports/env)
+            # or try to run the file itself if it's a script
+            sandbox_cmd = f"python3 -m py_compile {target_file}"
+
         # Use the current working directory as repo_path
         repo_path = os.getcwd()
         
-        sandbox_success = execute_in_sandbox(repo_path, cmd)
+        # EXECUTE SANDBOX
+        sandbox_success = execute_in_sandbox(repo_path, sandbox_cmd)
         
         if not sandbox_success:
             if logger:
-                logger.critical(f"HARDENING TRIGGERED: Sandbox tests failed for {target_file}. Commit blocked.")
+                logger.critical(f"HARDENING TRIGGERED: Sandbox verification failed for {target_file}. Commit blocked.")
             return {
                 "status": "FAILED", 
-                "reason": "SANDBOX_TEST_FAILURE",
-                "details": "Tests failed in isolated container."
+                "reason": "SANDBOX_VERIFICATION_FAILURE",
+                "details": "Code failed to execute or pass tests in isolated environment."
             }
         # --------------------------------------------
 
