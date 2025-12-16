@@ -8,6 +8,19 @@ address security, privacy, and evaluation frameworks.
 import logging
 import re
 from enum import Enum
+from typing import List
+
+# Assuming BaseModel and Field are from pydantic. Adding imports if they are missing to ensure code compiles.
+# If these are custom classes, they should be defined elsewhere or imported from their actual module.
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    # Define simple mock classes for compilation if pydantic is not available
+    class BaseModel:
+        pass
+    def Field(default_factory=None, description=None, DESCRIPTION=None, **kwargs):
+        return None
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +44,7 @@ class RiskProfile(BaseModel):
 
     @property
     def is_high_risk(self) -> bool:
-            """Check if this is a high-risk profile."""
+        """Check if this is a high-risk profile."""
         return self.industry_sensitivity == IndustrySensitivity.HIGH
 
 class SafetyProtocol(BaseModel):
@@ -45,7 +58,7 @@ class SafetyProtocol(BaseModel):
 
     @property
     def is_comprehensive(self) -> bool:
-            """Check if protocol covers all major areas."""
+        """Check if protocol covers all major areas."""
         return all([
             self.validation_strategy,
             self.data_privacy_approach,
@@ -56,7 +69,7 @@ class GovernanceShieldAgent:
     """Audits and upgrades content for risk maturity."""
 
     def __init__(self):
-            """Initialize the governance shield agent."""
+        """Initialize the governance shield agent."""
         # Naive claim patterns to detect and replace
         self.naive_patterns = {
             "absolute_accuracy": [
@@ -120,10 +133,10 @@ class GovernanceShieldAgent:
             "general": ["GDPR", "CCPA", "SOX"]
         }
 
-        logger.info("Initialized GovernanceShieldAgent")
+        LOGGER.info("Initialized GovernanceShieldAgent")
 
     def sanitize_claims(self, content: str) -> str:
-            """Sanitize naive claims with mature, risk-aware language.
+        """Sanitize naive claims with mature, risk-aware language.
 
         Args:
             content: Content to sanitize
@@ -135,36 +148,35 @@ class GovernanceShieldAgent:
             SANITIZED = content
 
             # Check for zero tolerance violations
-            if "zero hallucinations" in sanitized.lower():
-                logger.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualif
-    ier")
-                SANITIZED = self._critical_fix_zero_hallucinations(sanitized)
+            if "zero hallucinations" in SANITIZED.lower():
+                LOGGER.warning("CRITICAL: 'Zero hallucinations' claim detected - immediate disqualifier")
+                SANITIZED = self._critical_fix_zero_hallucinations(SANITIZED)
 
             # Apply pattern replacements
             for category, patterns in self.naive_patterns.items():
                 for pattern in patterns:
-                    MATCHES = re.findall(pattern, sanitized, re.IGNORECASE)
-                    if matches:
+                    MATCHES = re.findall(pattern, SANITIZED, re.IGNORECASE)
+                    if MATCHES:
                         # Replace with senior language
                         REPLACEMENTS = self.senior_replacements[category]
-                        REPLACEMENT = replacements[0]  # Use first replacement
+                        REPLACEMENT = REPLACEMENTS[0]  # Use first replacement
 
                         # Replace all occurrences
-                        SANITIZED = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
-                        logger.debug(f"Replaced {category} claim with: {replacement}")
+                        SANITIZED = re.sub(pattern, REPLACEMENT, SANITIZED, flags=re.IGNORECASE)
+                        LOGGER.debug(f"Replaced {category} claim with: {REPLACEMENT}")
 
             # Additional privacy fixes
-            SANITIZED = self._fix_privacy_language(sanitized)
+            SANITIZED = self._fix_privacy_language(SANITIZED)
 
-            return sanitized
+            return SANITIZED
 
         except Exception as e:
-    pass
-logger.error(f"Error sanitizing claims: {str(e)}")
+            pass
+            LOGGER.error(f"Error sanitizing claims: {str(e)}")
             return content
 
     def generate_safety_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
-            """Generate safety protocol based on risk profile.
+        """Generate safety protocol based on risk profile.
 
         Args:
             risk_profile: Risk profile for target company
@@ -179,8 +191,8 @@ logger.error(f"Error sanitizing claims: {str(e)}")
                 return self._generate_standard_protocol(risk_profile)
 
         except Exception as e:
-    pass
-logger.error(f"Error generating safety protocol: {str(e)}")
+            pass
+            LOGGER.error(f"Error generating safety protocol: {str(e)}")
             return SafetyProtocol(
                 validation_strategy="Comprehensive testing before deployment",
                 data_privacy_approach="Privacy by design principles",
@@ -188,7 +200,7 @@ logger.error(f"Error generating safety protocol: {str(e)}")
             )
 
     def audit_outreach(self, email_draft: str) -> str:
-            """Audit final email draft for compliance.
+        """Audit final email draft for compliance.
 
         Args:
             email_draft: Email content to audit
@@ -201,19 +213,18 @@ logger.error(f"Error generating safety protocol: {str(e)}")
             AUDITED = self.sanitize_claims(email_draft)
 
             # Add compliance disclaimer if needed
-            if any(term in audited.lower() for term in ["hipaa", "phi", "health data"]):
-                AUDITED += "\n\n[Note: All healthcare applications maintain HIPAA compliance through
-    on-prem deployment or BAA-compliant APIs.]"
+            if any(term in AUDITED.lower() for term in ["hipaa", "phi", "health data"]):
+                AUDITED += "\n\n[Note: All healthcare applications maintain HIPAA compliance through on-prem deployment or BAA-compliant APIs.]"
 
-            return audited
+            return AUDITED
 
         except Exception as e:
-    pass
-logger.error(f"Error auditing outreach: {str(e)}")
+            pass
+            LOGGER.error(f"Error auditing outreach: {str(e)}")
             return email_draft
 
     def scan_risk_level(self, industry: str, job_description: str) -> RiskProfile:
-            """Scan industry and JD to determine risk level.
+        """Scan industry and JD to determine risk level.
 
         Args:
             industry: Target company industry
@@ -254,9 +265,9 @@ logger.error(f"Error auditing outreach: {str(e)}")
                 "audit",
                 "sox",
                 "hipaa"]):
-                if sensitivity == IndustrySensitivity.MEDIUM:
+                if SENSITIVITY == IndustrySensitivity.MEDIUM:
                     SENSITIVITY = IndustrySensitivity.HIGH
-                    logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
+                    LOGGER.info("Boosted to HIGH sensitivity due to JD compliance keywords")
 
             # Extract additional compliance keywords from JD
             additional_compliance = []
@@ -264,17 +275,17 @@ logger.error(f"Error auditing outreach: {str(e)}")
                 if framework.lower() in jd_lower:
                     additional_compliance.append(framework)
 
-            compliance.extend(additional_compliance)
+            COMPLIANCE.extend(additional_compliance)
 
             return RiskProfile(
-                industry_sensitivity=sensitivity,
-                compliance_keywords=list(set(compliance)),  # Remove duplicates
+                industry_sensitivity=SENSITIVITY,
+                compliance_keywords=list(set(COMPLIANCE)),  # Remove duplicates
                 data_sensitivity=data_types
             )
 
         except Exception as e:
-    pass
-logger.error(f"Error scanning risk level: {str(e)}")
+            pass
+            LOGGER.error(f"Error scanning risk level: {str(e)}")
             return RiskProfile(
                 industry_sensitivity=IndustrySensitivity.MEDIUM,
                 compliance_keywords=["GDPR"],
@@ -282,7 +293,7 @@ logger.error(f"Error scanning risk level: {str(e)}")
             )
 
     def _critical_fix_zero_hallucinations(self, content: str) -> str:
-            """Critical fix for zero hallucination claims.
+        """Critical fix for zero hallucination claims.
 
         Args:
             content: Content with critical violation
@@ -295,20 +306,20 @@ logger.error(f"Error scanning risk level: {str(e)}")
             r"zero hallucinations",
             "minimized hallucinations through rigorous validation",
             content,
-            FLAGS=re.IGNORECASE
+            flags=re.IGNORECASE
         )
 
         CONTENT = re.sub(
             r"hallucination[- ]free",
             "hallucination-mitigated",
-            content,
-            FLAGS=re.IGNORECASE
+            CONTENT, # Changed content to CONTENT here for consistency
+            flags=re.IGNORECASE
         )
 
-        return content
+        return CONTENT # Changed content to CONTENT here for consistency
 
     def _fix_privacy_language(self, content: str) -> str:
-            """Fix privacy-related language issues.
+        """Fix privacy-related language issues.
 
         Args:
             content: Content to fix
@@ -325,12 +336,12 @@ logger.error(f"Error scanning risk level: {str(e)}")
         }
 
         for pattern, replacement in privacy_fixes.items():
-            CONTENT = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
+            content = re.sub(pattern, replacement, content, flags=re.IGNORECASE) # Changed CONTENT to content, assuming intent was to update `content` iteratively
 
         return content
 
     def _generate_high_risk_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
-            """Generate protocol for high-risk industries.
+        """Generate protocol for high-risk industries.
 
         Args:
             risk_profile: High-risk profile
@@ -341,24 +352,20 @@ logger.error(f"Error scanning risk level: {str(e)}")
         FRAMEWORKS = risk_profile.compliance_keywords
 
         # Check for HIPAA requirement
-        if "HIPAA" in frameworks:
+        if "HIPAA" in FRAMEWORKS:
             PRIVACY = "On-prem deployment or BAA-compliant APIs with PII redaction (Presidio)"
         else:
             PRIVACY = "End-to-end encryption with data minimization and anonymization"
 
         return SafetyProtocol(
-            validation_strategy="Automated eval pipeline (Ragas) +
-                human expert review before production",
-
-
-            data_privacy_approach=privacy,
-            human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with a
-    udit trails",
-            compliance_frameworks=frameworks
+            validation_strategy="Automated eval pipeline (Ragas) + human expert review before production",
+            data_privacy_approach=PRIVACY,
+            human_in_the_loop_policy="Mandatory human oversight for all high-stakes decisions with audit trails",
+            compliance_frameworks=FRAMEWORKS
         )
 
     def _generate_standard_protocol(self, risk_profile: RiskProfile) -> SafetyProtocol:
-            """Generate protocol for standard risk industries.
+        """Generate protocol for standard risk industries.
 
         Args:
             risk_profile: Standard risk profile
@@ -367,8 +374,7 @@ logger.error(f"Error scanning risk level: {str(e)}")
             Standard safety protocol
         """
         return SafetyProtocol(
-            validation_strategy="Comprehensive testing including bias, fairness, and performance met
-    rics",
+            validation_strategy="Comprehensive testing including bias, fairness, and performance metrics",
             data_privacy_approach="Privacy by design with differential privacy techniques",
             human_in_the_loop_policy="Human review for edge cases and sensitive applications",
             compliance_frameworks=risk_profile.compliance_keywords
@@ -394,5 +400,4 @@ def sanitize_content(content: str) -> str:
         Sanitized content
     """
     AGENT = create_governance_shield_agent()
-    return agent.sanitize_claims(content)
-
+    return AGENT.sanitize_claims(content)

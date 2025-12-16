@@ -6,6 +6,8 @@ description analysis and company maturity.
 """
 
 import logging
+from typing import List, Dict
+from pydantic import BaseModel, Field, validator
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +24,7 @@ class PlanPhase(BaseModel):
 
     @validator('key_deliverables')
     def validate_deliverables(cls, v):
-            """Ensure at least 3 deliverables."""
+        """Ensure at least 3 deliverables."""
         if len(v) < 3:
             raise ValueError("Each phase must have at least 3 key deliverables")
         return v
@@ -36,7 +38,7 @@ class OnboardingPlan(BaseModel):
 
     @validator('phases')
     def validate_three_phases(cls, v):
-            """Ensure exactly 3 phases."""
+        """Ensure exactly 3 phases."""
         if len(v) != 3:
             raise ValueError("Onboarding plan must have exactly 3 phases")
         return v
@@ -45,7 +47,7 @@ class OnboardingPlannerAgent:
     """Generates strategic 30-60-90 day onboarding roadmaps."""
 
     def __init__(self):
-            """Initialize the onboarding planner agent."""
+        """Initialize the onboarding planner agent."""
         # Priority mappings for different company types
         self.startup_priorities = {
             "speed": "Focus on rapid iteration and MVP delivery",
@@ -73,16 +75,16 @@ class OnboardingPlannerAgent:
             "llm": "Review LLM deployment and inference costs"
         }
 
-        logger.info("Initialized OnboardingPlannerAgent")
+        LOGGER.info("Initialized OnboardingPlannerAgent")
 
-        """Docstring."""
+    """Docstring."""
     def generate_plan(
         self,
         job_description: str,
         company_maturity: str,
         role_title: str
     ) -> OnboardingPlan:
-            """Generate a 30-60-90 day onboarding plan.
+        """Generate a 30-60-90 day onboarding plan.
 
         Args:
             job_description: Job description text
@@ -97,32 +99,31 @@ class OnboardingPlannerAgent:
             PRIORITIES = self._extract_priorities(job_description, company_maturity)
 
             # Generate the three phases
-            PHASES = self._generate_phases(priorities,
-                job_description,
-                company_maturity,
-                role_title)
+            PHASES = self._generate_phases(PRIORITIES,
+                                        job_description,
+                                        company_maturity,
+                                        role_title)
 
             # Assess risks and requirements
             risk_assessment = self._assess_risks(company_maturity, role_title)
-            resource_requirements = self._identify_resources(phases, company_maturity)
+            resource_requirements = self._identify_resources(PHASES, company_maturity)
 
             PLAN = OnboardingPlan(
-                PHASES=phases,
+                phases=PHASES,
                 risk_assessment=risk_assessment,
                 resource_requirements=resource_requirements
             )
 
-            logger.info(f"Generated onboarding plan for {role_title} at {company_maturity}")
+            LOGGER.info(f"Generated onboarding plan for {role_title} at {company_maturity}")
 
-            return plan
+            return PLAN
 
         except Exception as e:
-    pass
-logger.error(f"Error generating onboarding plan: {str(e)}")
+            LOGGER.error(f"Error generating onboarding plan: {str(e)}")
             return self._generate_fallback_plan(role_title)
 
     def tailor_to_role(self, plan: OnboardingPlan, role_title: str) -> OnboardingPlan:
-            """Tailor the plan to specific role focus.
+        """Tailor the plan to specific role focus.
 
         Args:
             plan: Base onboarding plan
@@ -139,16 +140,14 @@ logger.error(f"Error generating onboarding plan: {str(e)}")
                 for phase in plan.phases:
                     phase.key_deliverables = [
                         d for d in phase.key_deliverables
-                        if "architecture" in d.lower() or "code" in d.lower() or "technical" in d.lo
-    wer()
+                        if "architecture" in d.lower() or "code" in d.lower() or "technical" in d.lower()
                     ] + [
                         "Complete technical debt assessment",
                         "Establish coding standards and review process",
                         "Create system architecture documentation"
                     ][:3]
 
-            elif "head of ai" in role_lower or "vp of ai" in role_lower or "director of ai" in role_
-    lower:
+            elif "head of ai" in role_lower or "vp of ai" in role_lower or "director of ai" in role_lower:
                 # Focus on leadership and strategy
                 for phase in plan.phases:
                     phase.key_deliverables = [
@@ -163,12 +162,11 @@ logger.error(f"Error generating onboarding plan: {str(e)}")
             return plan
 
         except Exception as e:
-    pass
-logger.error(f"Error tailoring plan to role: {str(e)}")
+            LOGGER.error(f"Error tailoring plan to role: {str(e)}")
             return plan
 
     def render_roadmap_md(self, plan: OnboardingPlan) -> str:
-            """Render the plan as a 1-page Markdown document.
+        """Render the plan as a 1-page Markdown document.
 
         Args:
             plan: Onboarding plan to render
@@ -177,12 +175,11 @@ logger.error(f"Error tailoring plan to role: {str(e)}")
             Formatted Markdown document
         """
         try:
-            LINES = [
+            lines = [
                 "# Operational Roadmap: Q1 Objectives",
                 "",
                 "## Overview",
-                f"This 90-day roadmap focuses on strategic value delivery while ensuring smooth inte
-    gration and team alignment.",
+                "This 90-day roadmap focuses on strategic value delivery while ensuring smooth integration and team alignment.",
                 "",
                 "---",
                 ""
@@ -223,19 +220,17 @@ logger.error(f"Error tailoring plan to role: {str(e)}")
                 "",
                 "---",
                 "",
-                f"*This roadmap demonstrates operational readiness and strategic thinking for the ro
-    le.*"
+                "*This roadmap demonstrates operational readiness and strategic thinking for the role.*"
             ])
 
             return "\n".join(lines)
 
         except Exception as e:
-    pass
-logger.error(f"Error rendering roadmap: {str(e)}")
+            LOGGER.error(f"Error rendering roadmap: {str(e)}")
             return "# Onboarding Roadmap\n\nError rendering plan."
 
     def _extract_priorities(self, job_description: str, company_maturity: str) -> Dict[str, str]:
-            """Extract priorities from job description.
+        """Extract priorities from job description.
 
         Args:
             job_description: Job description text
@@ -249,27 +244,26 @@ logger.error(f"Error rendering roadmap: {str(e)}")
 
             # Base priorities by company type
             if company_maturity.lower() == "startup":
-                PRIORITIES = self.startup_priorities.copy()
+                priorities = self.startup_priorities.copy()
             else:
-                PRIORITIES = self.enterprise_priorities.copy()
+                priorities = self.enterprise_priorities.copy()
 
             # Extract specific priorities from JD
             if "migration" in jd_lower:
                 priorities["tech_debt"] = "Audit and plan legacy system migration"
             if "new product" in jd_lower or "product launch" in jd_lower:
-                PRIORITIES["CUSTOMER"] = "Voice of customer research and validation"
+                priorities["CUSTOMER"] = "Voice of customer research and validation"
             if "scale" in jd_lower or "growth" in jd_lower:
-                PRIORITIES["SCALING"] = "Prepare infrastructure and team for scale"
+                priorities["SCALING"] = "Prepare infrastructure and team for scale"
             if "cost" in jd_lower or "budget" in jd_lower:
-                PRIORITIES["EFFICIENCY"] = "Identify and deliver cost optimizations"
+                priorities["EFFICIENCY"] = "Identify and deliver cost optimizations"
             if "team" in jd_lower or "hire" in jd_lower:
-                PRIORITIES["HIRING"] = "Build and structure high-performing team"
+                priorities["HIRING"] = "Build and structure high-performing team"
 
             return priorities
 
         except Exception as e:
-    pass
-logger.error(f"Error extracting priorities: {str(e)}")
+            LOGGER.error(f"Error extracting priorities: {str(e)}")
             return {"general": "Execute on core job responsibilities"}
 
     def _generate_phases(
@@ -279,7 +273,7 @@ logger.error(f"Error extracting priorities: {str(e)}")
         company_maturity: str,
         role_title: str
     ) -> List[PlanPhase]:
-            """Generate the three phases of the plan.
+        """Generate the three phases of the plan.
 
         Args:
             priorities: Extracted priorities
@@ -324,9 +318,9 @@ logger.error(f"Error extracting priorities: {str(e)}")
                 ])
             else:
                 phase2_deliverables.extend([
-                "Launch pilot program or beta feature",
-                "Implement governance and compliance frameworks"
-            ])
+                    "Launch pilot program or beta feature",
+                    "Implement governance and compliance frameworks"
+                ])
 
             # Phase 3: Strategize and Scale
             phase3_deliverables = [
@@ -345,7 +339,7 @@ logger.error(f"Error extracting priorities: {str(e)}")
                     "Mentor team members on advanced techniques"
                 ])
 
-            PHASES = [
+            phases = [
                 PlanPhase(
                     phase_name="Days 1-30: Discovery & Quick Win",
                     primary_objective="Understand current state and deliver immediate value",
@@ -369,12 +363,11 @@ logger.error(f"Error extracting priorities: {str(e)}")
             return phases
 
         except Exception as e:
-    pass
-logger.error(f"Error generating phases: {str(e)}")
+            LOGGER.error(f"Error generating phases: {str(e)}")
             return self._generate_fallback_phases()
 
     def _extract_tech_keywords(self, job_description: str) -> List[str]:
-            """Extract technology keywords from job description.
+        """Extract technology keywords from job description.
 
         Args:
             job_description: Job description text
@@ -393,12 +386,11 @@ logger.error(f"Error generating phases: {str(e)}")
             return found_tech
 
         except Exception as e:
-    pass
-logger.error(f"Error extracting tech keywords: {str(e)}")
+            LOGGER.error(f"Error extracting tech keywords: {str(e)}")
             return []
 
     def _assess_risks(self, company_maturity: str, role_title: str) -> str:
-            """Assess potential risks for the plan.
+        """Assess potential risks for the plan.
 
         Args:
             company_maturity: Company maturity level
@@ -416,19 +408,17 @@ logger.error(f"Error extracting tech keywords: {str(e)}")
                 )
             else:
                 return (
-                    "Primary risks include organizational resistance and complex stakeholder landsca
-    pe. "
+                    "Primary risks include organizational resistance and complex stakeholder landscape. "
                     "Mitigation: Build coalitions, demonstrate quick wins, "
                     "and align initiatives with existing business processes."
                 )
 
         except Exception as e:
-    pass
-logger.error(f"Error assessing risks: {str(e)}")
+            LOGGER.error(f"Error assessing risks: {str(e)}")
             return "Standard onboarding risks apply with appropriate mitigations."
 
     def _identify_resources(self, phases: List[PlanPhase], company_maturity: str) -> List[str]:
-            """Identify resources needed for the plan.
+        """Identify resources needed for the plan.
 
         Args:
             phases: Plan phases
@@ -458,12 +448,11 @@ logger.error(f"Error assessing risks: {str(e)}")
             return base_resources
 
         except Exception as e:
-    pass
-logger.error(f"Error identifying resources: {str(e)}")
+            LOGGER.error(f"Error identifying resources: {str(e)}")
             return ["Standard onboarding resources"]
 
     def _generate_fallback_plan(self, role_title: str) -> OnboardingPlan:
-            """Generate fallback plan when errors occur.
+        """Generate fallback plan when errors occur.
 
         Args:
             role_title: Role title
@@ -472,13 +461,13 @@ logger.error(f"Error identifying resources: {str(e)}")
             Basic onboarding plan
         """
         return OnboardingPlan(
-            PHASES=self._generate_fallback_phases(),
+            phases=self._generate_fallback_phases(),
             risk_assessment="Standard onboarding risks apply",
             resource_requirements=["Basic onboarding resources"]
         )
 
     def _generate_fallback_phases(self) -> List[PlanPhase]:
-            """Generate fallback phases.
+        """Generate fallback phases.
 
         Returns:
             Basic three phases
@@ -543,6 +532,5 @@ def generate_onboarding_plan(
         Rendered Markdown roadmap
     """
     AGENT = create_onboarding_planner_agent()
-    PLAN = agent.generate_plan(job_description, company_maturity, role_title)
-    return agent.render_roadmap_md(plan)
-
+    PLAN = AGENT.generate_plan(job_description, company_maturity, role_title)
+    return AGENT.render_roadmap_md(PLAN)

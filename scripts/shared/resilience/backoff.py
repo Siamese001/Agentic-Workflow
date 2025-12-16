@@ -7,6 +7,16 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import random
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Literal
+
+    STR = Literal["exponential", "linear"]
+    FLOAT = float
+
 
 logger = logging.getLogger(__name__)
 
@@ -87,11 +97,10 @@ class LinearBackoff(BackoffStrategy):
 
 
 def calculate_backoff_ms(
-    """Docstring."""
     base_backoff_ms: int,
     attempt: int,
     jitter_ms: int = 100,
-    STRATEGY: STR = "exponential",
+    strategy: STR = "exponential",
 ) -> int:
     """Convenience function for calculating backoff.
 
@@ -109,7 +118,7 @@ def calculate_backoff_ms(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
         )
-    elif STRATEGY == "linear":
+    elif strategy == "linear":
         BACKOFF = LinearBackoff(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
@@ -117,5 +126,4 @@ def calculate_backoff_ms(
     else:
         raise ValueError(f"Unknown backoff strategy: {strategy}")
 
-    return backoff.calculate(attempt)
-
+    return BACKOFF.calculate(attempt)

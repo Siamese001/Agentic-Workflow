@@ -8,6 +8,7 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
+from validation_gate_executor import (  # Assuming this import is correct
     ValidationGateExecutor,
     ValidationStatus,
     ValidationResult,
@@ -36,7 +37,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         forbidden_verbs: List[str],
         forbidden_filler_phrases: List[str],
     ):
-            """Initialize outreach validation executor.
+        """Initialize outreach validation executor.
 
         Args:
             validation_gates: Validation gates from config
@@ -54,7 +55,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         self.forbidden_verbs = [v.lower() for v in forbidden_verbs]
         self.forbidden_filler_phrases = [p.lower() for p in forbidden_filler_phrases]
 
-        logger.info(
+        LOGGER.info(
             f"OutreachValidationExecutor initialized: "
             f"{len(forbidden_verbs)} forbidden verbs, "
             f"{len(forbidden_filler_phrases)} forbidden phrases"
@@ -67,7 +68,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         k_node_id: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-            """Execute outreach-specific validation check.
+        """Execute outreach-specific validation check.
 
         Args:
             check: Check identifier
@@ -114,7 +115,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return super()._execute_check(check, content, k_node_id, context)
 
     def _check_placeholders_lic(self, content: str) -> Optional[RuleFailure]:
-            """Check for placeholders (LIC-QA-001 - CRITICAL).
+        """Check for placeholders (LIC-QA-001 - CRITICAL).
 
         Args:
             content: Content to check
@@ -131,7 +132,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         found_placeholders = []
         for pattern in placeholder_patterns:
-            MATCHES = re.findall(pattern, content, re.IGNORECASE)
+            matches = re.findall(pattern, content, re.IGNORECASE)
             if matches:
                 found_placeholders.extend(matches)
 
@@ -148,7 +149,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return None
 
     def _check_forbidden_verbs(self, content: str) -> Optional[RuleFailure]:
-            """Check for forbidden corporate verbs (LIC-QA-008 - MEDIUM).
+        """Check for forbidden corporate verbs (LIC-QA-008 - MEDIUM).
 
         Args:
             content: Content to check
@@ -176,7 +177,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return None
 
     def _check_filler_phrases(self, content: str) -> Optional[RuleFailure]:
-            """Check for weak filler phrases (LIC-QA-009 - MEDIUM).
+        """Check for weak filler phrases (LIC-QA-009 - MEDIUM).
 
         Args:
             content: Content to check
@@ -208,7 +209,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-            """Check metric source binding (LIC-QA-041 - HIGH).
+        """Check metric source binding (LIC-QA-041 - HIGH).
 
         Every metric must map to metric_source_map entry.
 
@@ -221,7 +222,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         """
         metric_source_map = context.get("metric_source_map", {})
         if not metric_source_map:
-            logger.warning("No metric_source_map in context for LIC-QA-041")
+            LOGGER.warning("No metric_source_map in context for LIC-QA-041")
             return None
 
         # Extract metrics from content (numbers with %, $, or units)
@@ -233,7 +234,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
 
         found_metrics = []
         for pattern in metric_patterns:
-            MATCHES = re.findall(pattern, content, re.IGNORECASE)
+            matches = re.findall(pattern, content, re.IGNORECASE)
             found_metrics.extend(matches)
 
         # Check if each metric has source binding
@@ -260,7 +261,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-            """Check metric context validation (LIC-QA-043 - HIGH).
+        """Check metric context validation (LIC-QA-043 - HIGH).
 
         Metrics must have keyword context from RAG.
 
@@ -273,14 +274,14 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         """
         rag_evidence = context.get("rag_evidence", [])
         if not rag_evidence:
-            logger.warning("No rag_evidence in context for LIC-QA-043")
+            LOGGER.warning("No rag_evidence in context for LIC-QA-043")
             return None
 
         # Extract metrics
         metric_patterns = [r'\d+%', r'\$\d+[KMB]?']
         found_metrics = []
         for pattern in metric_patterns:
-            MATCHES = re.findall(pattern, content)
+            matches = re.findall(pattern, content)
             found_metrics.extend(matches)
 
         # Check if metrics have surrounding context from RAG
@@ -315,7 +316,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-            """Check redundancy guard for EXISTING contacts.
+        """Check redundancy guard for EXISTING contacts.
 
         Jaccard similarity must be ≤0.40 with previous message.
 
@@ -331,7 +332,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             return None  # Not EXISTING contact
 
         # Calculate Jaccard similarity
-        JACCARD = self._calculate_jaccard_similarity(content, previous_message)
+        jaccard = self._calculate_jaccard_similarity(content, previous_message)
 
         if jaccard > 0.40:
             return RuleFailure(
@@ -351,7 +352,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-            """Check transition phrase presence.
+        """Check transition phrase presence.
 
         Args:
             content: Content to check
@@ -381,7 +382,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         content: str,
         context: Dict[str, Any],
     ) -> Optional[RuleFailure]:
-            """Check signature immutability.
+        """Check signature immutability.
 
         Signature must be exact 4-line block:
         Regards,
@@ -397,7 +398,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
             RuleFailure if signature format violated
         """
         # Extract signature block (last 4 lines before fence end)
-        LINES = content.split("\n")
+        lines = content.split("\n")
 
         # Find signature (look for "Regards,")
         regards_index = -1
@@ -430,7 +431,7 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         return None
 
     def _extract_metric_context(self, content: str, metric: str) -> str:
-            """Extract surrounding context for a metric.
+        """Extract surrounding context for a metric.
 
         Args:
             content: Full content
@@ -439,18 +440,18 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         Returns:
             Context string (5 words before and after)
         """
-        WORDS = content.split()
+        words = content.split()
 
         for i, word in enumerate(words):
             if metric in word:
-                START = max(0, i - 5)
-                END = min(len(words), i + 6)
+                start = max(0, i - 5)
+                end = min(len(words), i + 6)
                 return " ".join(words[start:end])
 
         return ""
 
     def _calculate_jaccard_similarity(self, text1: str, text2: str) -> float:
-            """Calculate Jaccard similarity between two texts.
+        """Calculate Jaccard similarity between two texts.
 
         Args:
             text1: First text
@@ -459,14 +460,13 @@ class OutreachValidationExecutor(ValidationGateExecutor):
         Returns:
             Jaccard similarity (0.0-1.0)
         """
-        WORDS1 = set(text1.lower().split())
-        WORDS2 = set(text2.lower().split())
+        words1 = set(text1.lower().split())
+        words2 = set(text2.lower().split())
 
-        INTERSECTION = words1.intersection(words2)
-        UNION = words1.union(words2)
+        intersection = words1.intersection(words2)
+        union = words1.union(words2)
 
         if not union:
             return 0.0
 
         return len(intersection) / len(union)
-

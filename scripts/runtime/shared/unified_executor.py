@@ -9,9 +9,62 @@ import asyncio
 import json
 import logging
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional, List
+
+# Mock imports for CircuitBreakerFactory, get_rate_limiter, get_resource_manager,
+# get_unified_formatter, get_shared_infrastructure, EngineType, CircuitOpenError
+# These would be defined in other modules in a real project.
+class CircuitBreakerFactory:
+    @staticmethod
+    def get_breaker(name, failure_threshold, recovery_timeout):
+        return MockCircuitBreaker()
+
+class MockCircuitBreaker:
+    async def call(self, func, *args, **kwargs):
+        return await func(*args, **kwargs)
+
+class CircuitOpenError(Exception):
+    pass
+
+def get_rate_limiter(name, rate):
+    return MockRateLimiter()
+
+class MockRateLimiter:
+    def can_proceed(self):
+        return True
+
+def get_resource_manager():
+    return MockResourceManager()
+
+class MockResourceManager:
+    pass
+
+def get_unified_formatter():
+    return MockFormatter()
+
+class MockFormatter:
+    def format(self, data, format_type, engine_type, config):
+        return MockFormattedData(data)
+
+class MockFormattedData:
+    def __init__(self, data):
+        self.data = data
+
+def get_shared_infrastructure():
+    return MockSharedInfrastructure()
+
+class MockSharedInfrastructure:
+    pass
+
+class EngineType(Enum):
+    RESUME = "resume"
+    OUTREACH = "outreach"
+
+from collections import defaultdict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,7 +94,7 @@ class ExecutionContext:
 
     @property
     def duration(self) -> Optional[float]:
-            """Get execution duration in seconds."""
+        """Get execution duration in seconds."""
         if self.start_time and self.end_time:
             return (self.end_time - self.start_time).total_seconds()
         return None
@@ -57,7 +110,7 @@ class ExecutionResult:
     metrics: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-            """Convert to dictionary."""
+        """Convert to dictionary."""
         return {
             "status": self.status.value,
             "data": self.data,
@@ -73,7 +126,7 @@ class ExecutionStrategy(ABC):
 
     @abstractmethod
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-            """Execute the operation.
+        """Execute the operation.
 
         Args:
             context: Execution context
@@ -86,14 +139,14 @@ class ExecutionStrategy(ABC):
     @property
     @abstractmethod
     def strategy_name(self) -> str:
-            """Get strategy name."""
+        """Get strategy name."""
         pass
 
 class LLMExecutionStrategy(ExecutionStrategy):
     """Strategy for LLM-based execution."""
 
     def __init__(self, model_name: str = "default"):
-            """Initialize LLM execution strategy.
+        """Initialize LLM execution strategy.
 
         Args:
             model_name: Name of LLM model to use
@@ -108,7 +161,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
         self.resource_manager = get_resource_manager()
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-            """Execute LLM operation.
+        """Execute LLM operation.
 
         Args:
             context: Execution context
@@ -122,51 +175,49 @@ class LLMExecutionStrategy(ExecutionStrategy):
             # Check rate limit
             if not self.rate_limiter.can_proceed():
                 return ExecutionResult(
-                    STATUS=ExecutionStatus.RATE_LIMITED,
-                    DATA=None,
-                    CONTEXT=context,
-                    ERROR="Rate limit exceeded"
+                    status=ExecutionStatus.RATE_LIMITED,
+                    data=None,
+                    context=context,
+                    error="Rate limit exceeded"
                 )
 
             # Execute with circuit breaker
-            RESULT = await self.circuit_breaker.call(
+            result = await self.circuit_breaker.call(
                 self._execute_llm,
                 context
             )
 
             # Update metrics
-            METRICS = {
+            metrics = {
                 "llm_calls": 1,
                 "tokens_used": self._estimate_tokens(context.input_data),
                 "execution_time": time.time() - start_time
             }
 
             return ExecutionResult(
-                STATUS=ExecutionStatus.COMPLETED,
-                DATA=result,
-                CONTEXT=context,
-                METRICS=metrics
+                status=ExecutionStatus.COMPLETED,
+                data=result,
+                context=context,
+                metrics=metrics
             )
 
         except CircuitOpenError:
-    pass
-return ExecutionResult(
-                STATUS=ExecutionStatus.CIRCUIT_OPEN,
-                DATA=None,
-                CONTEXT=context,
-                ERROR="Circuit breaker is open"
+            return ExecutionResult(
+                status=ExecutionStatus.CIRCUIT_OPEN,
+                data=None,
+                context=context,
+                error="Circuit breaker is open"
             )
         except Exception as e:
-    pass
-return ExecutionResult(
-                STATUS=ExecutionStatus.FAILED,
-                DATA=None,
-                CONTEXT=context,
-                ERROR=str(e)
+            return ExecutionResult(
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=str(e)
             )
 
     async def _execute_llm(self, context: ExecutionContext) -> Any:
-            """Execute actual LLM call.
+        """Execute actual LLM call.
 
         Args:
             context: Execution context
@@ -184,7 +235,7 @@ return ExecutionResult(
             return self._process_outreach_input(context.input_data)
 
     def _process_resume_input(self, input_data: Any) -> str:
-            """Process resume input.
+        """Process resume input.
 
         Args:
             input_data: Resume input
@@ -201,7 +252,7 @@ return ExecutionResult(
         return "Generated resume content"
 
     def _process_outreach_input(self, input_data: Any) -> str:
-            """Process outreach input.
+        """Process outreach input.
 
         Args:
             input_data: Outreach input
@@ -218,7 +269,7 @@ return ExecutionResult(
         return "Generated outreach message"
 
     def _estimate_tokens(self, input_data: Any) -> int:
-            """Estimate token count.
+        """Estimate token count.
 
         Args:
             input_data: Input data
@@ -227,25 +278,25 @@ return ExecutionResult(
             Estimated token count
         """
         TEXT = json.dumps(input_data, default=str)
-        return len(text.split()) * 1.3  # Rough estimate
+        return int(len(TEXT.split()) * 1.3)  # Rough estimate
 
     @property
     def strategy_name(self) -> str:
-            """Get strategy name."""
+        """Get strategy name."""
         return f"llm_{self.model_name}"
 
 class APIExecutionStrategy(ExecutionStrategy):
     """Strategy for API-based execution."""
 
     def __init__(self, api_endpoint: str, timeout: float = 30.0):
-            """Initialize API execution strategy.
+        """Initialize API execution strategy.
 
         Args:
             api_endpoint: API endpoint URL
             timeout: Request timeout
         """
         self.api_endpoint = api_endpoint
-        SELF.TIMEOUT = timeout
+        self.timeout = timeout
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
             f"api_{api_endpoint}",
             failure_threshold=3,
@@ -253,7 +304,7 @@ class APIExecutionStrategy(ExecutionStrategy):
         )
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-            """Execute API operation.
+        """Execute API operation.
 
         Args:
             context: Execution context
@@ -265,42 +316,40 @@ class APIExecutionStrategy(ExecutionStrategy):
 
         try:
             # Execute with circuit breaker
-            RESULT = await self.circuit_breaker.call(
+            result = await self.circuit_breaker.call(
                 self._execute_api,
                 context
             )
 
-            METRICS = {
+            metrics = {
                 "api_calls": 1,
                 "response_time": time.time() - start_time
             }
 
             return ExecutionResult(
-                STATUS=ExecutionStatus.COMPLETED,
-                DATA=result,
-                CONTEXT=context,
-                METRICS=metrics
+                status=ExecutionStatus.COMPLETED,
+                data=result,
+                context=context,
+                metrics=metrics
             )
 
         except CircuitOpenError:
-    pass
-return ExecutionResult(
-                STATUS=ExecutionStatus.CIRCUIT_OPEN,
-                DATA=None,
-                CONTEXT=context,
-                ERROR="API circuit breaker is open"
+            return ExecutionResult(
+                status=ExecutionStatus.CIRCUIT_OPEN,
+                data=None,
+                context=context,
+                error="API circuit breaker is open"
             )
         except Exception as e:
-    pass
-return ExecutionResult(
-                STATUS=ExecutionStatus.FAILED,
-                DATA=None,
-                CONTEXT=context,
-                ERROR=str(e)
+            return ExecutionResult(
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=str(e)
             )
 
     async def _execute_api(self, context: ExecutionContext) -> Any:
-            """Execute actual API call.
+        """Execute actual API call.
 
         Args:
             context: Execution context
@@ -320,25 +369,25 @@ return ExecutionResult(
 
     @property
     def strategy_name(self) -> str:
-            """Get strategy name."""
+        """Get strategy name."""
         return f"api_{self.api_endpoint}"
 
 class BatchExecutionStrategy(ExecutionStrategy):
     """Strategy for batch execution."""
 
     def __init__(self, batch_size: int = 10, concurrency: int = 5):
-            """Initialize batch execution strategy.
+        """Initialize batch execution strategy.
 
         Args:
             batch_size: Size of each batch
             concurrency: Maximum concurrent operations
         """
         self.batch_size = batch_size
-        SELF.CONCURRENCY = concurrency
-        SELF.SEMAPHORE = asyncio.Semaphore(concurrency)
+        self.concurrency = concurrency
+        self.semaphore = asyncio.Semaphore(concurrency)
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-            """Execute batch operation.
+        """Execute batch operation.
 
         Args:
             context: Execution context
@@ -350,43 +399,42 @@ class BatchExecutionStrategy(ExecutionStrategy):
 
         try:
             # Get input items
-            ITEMS = context.input_data if isinstance(context.input_data,
+            items = context.input_data if isinstance(context.input_data,
                 list) else [context.input_data]
 
             # Process in batches
-            RESULTS = []
+            results = []
             for i in range(0, len(items), self.batch_size):
-                BATCH = items[i:i + self.batch_size]
+                batch = items[i:i + self.batch_size]
                 batch_results = await asyncio.gather(
                     *[self._process_item(item, context) for item in batch],
                     return_exceptions=True
                 )
                 results.extend(batch_results)
 
-            METRICS = {
+            metrics = {
                 "items_processed": len(results),
                 "batches_processed": len(range(0, len(items), self.batch_size)),
                 "execution_time": time.time() - start_time
             }
 
             return ExecutionResult(
-                STATUS=ExecutionStatus.COMPLETED,
-                DATA=results,
-                CONTEXT=context,
-                METRICS=metrics
+                status=ExecutionStatus.COMPLETED,
+                data=results,
+                context=context,
+                metrics=metrics
             )
 
         except Exception as e:
-    pass
-return ExecutionResult(
-                STATUS=ExecutionStatus.FAILED,
-                DATA=None,
-                CONTEXT=context,
-                ERROR=str(e)
+            return ExecutionResult(
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=str(e)
             )
 
     async def _process_item(self, item: Any, context: ExecutionContext) -> Any:
-            """Process a single item.
+        """Process a single item.
 
         Args:
             item: Item to process
@@ -406,15 +454,15 @@ return ExecutionResult(
 
     @property
     def strategy_name(self) -> str:
-            """Get strategy name."""
+        """Get strategy name."""
         return f"batch_{self.batch_size}"
 
 class UnifiedExecutor:
     """Unified executor for all engines."""
 
     def __init__(self):
-            """Initialize the unified executor."""
-        SELF.STRATEGIES = {
+        """Initialize the unified executor."""
+        self.strategies = {
             "llm": LLMExecutionStrategy(),
             "api": APIExecutionStrategy("default"),
             "batch": BatchExecutionStrategy()
@@ -428,9 +476,8 @@ class UnifiedExecutor:
             "strategy_usage": defaultdict(int)
         }
 
-        logger.info("Initialized UnifiedExecutor")
+        LOGGER.info("Initialized UnifiedExecutor")
 
-        """Docstring."""
     async def execute(
         self,
         input_data: Any,
@@ -439,7 +486,7 @@ class UnifiedExecutor:
         config: Optional[Dict[str, Any]] = None,
         operation_id: Optional[str] = None
     ) -> ExecutionResult:
-            """Execute operation using specified strategy.
+        """Execute operation using specified strategy.
 
         Args:
             input_data: Input data
@@ -456,22 +503,22 @@ class UnifiedExecutor:
             operation_id = f"{engine_type.value}_{strategy}_{int(time.time())}"
 
         # Create execution context
-        CONTEXT = ExecutionContext(
+        context = ExecutionContext(
             engine_type=engine_type,
             operation_id=operation_id,
             input_data=input_data,
-            CONFIG=config or {},
+            config=config or {},
             start_time=datetime.now()
         )
 
         # Get strategy
-        EXECUTOR = self.strategies.get(strategy)
+        executor = self.strategies.get(strategy)
         if not executor:
-            RESULT = ExecutionResult(
-                STATUS=ExecutionStatus.FAILED,
-                DATA=None,
-                CONTEXT=context,
-                ERROR=f"Unknown strategy: {strategy}"
+            result = ExecutionResult(
+                status=ExecutionStatus.FAILED,
+                data=None,
+                context=context,
+                error=f"Unknown strategy: {strategy}"
             )
             return result
 
@@ -480,7 +527,7 @@ class UnifiedExecutor:
         self._stats["strategy_usage"][strategy] += 1
 
         # Execute
-        RESULT = await executor.execute(context)
+        result = await executor.execute(context)
         context.end_time = datetime.now()
 
         # Update stats
@@ -492,22 +539,22 @@ class UnifiedExecutor:
         return result
 
     def register_strategy(self, name: str, strategy: ExecutionStrategy) -> None:
-            """Register a custom execution strategy.
+        """Register a custom execution strategy.
 
         Args:
             name: Strategy name
             strategy: Execution strategy
         """
-        SELF.STRATEGIES[NAME] = strategy
+        self.strategies[name] = strategy
         logger.info(f"Registered custom strategy: {name}")
 
     def get_stats(self) -> Dict[str, Any]:
-            """Get execution statistics.
+        """Get execution statistics.
 
         Returns:
             Statistics dictionary
         """
-        STATS = self._stats.copy()
+        stats = self._stats.copy()
         if stats["total_executions"] > 0:
             stats["success_rate"] = stats["successful_executions"] / stats["total_executions"]
         else:
@@ -518,29 +565,28 @@ class EngineExecutor:
     """Engine-specific executor with unified backend."""
 
     def __init__(self, engine_type: EngineType):
-            """Initialize engine executor.
+        """Initialize engine executor.
 
         Args:
             engine_type: Type of engine
         """
         self.engine_type = engine_type
         self.unified_executor = UnifiedExecutor()
-        SELF.FORMATTER = get_unified_formatter()
+        self.formatter = get_unified_formatter()
         self.shared_infra = get_shared_infrastructure()
 
         # Engine-specific configuration
-        SELF.CONFIG = self._get_engine_config()
+        self.config = self._get_engine_config()
 
         logger.info(f"Initialized {engine_type.value} executor")
 
-        """Docstring."""
     async def generate_content(
         self,
         input_data: Any,
         content_type: str = "default",
         config: Optional[Dict[str, Any]] = None
     ) -> ExecutionResult:
-            """Generate content using unified executor.
+        """Generate content using unified executor.
 
         Args:
             input_data: Input data
@@ -554,7 +600,7 @@ class EngineExecutor:
         merged_config = {**self.config, **(config or {})}
 
         # Execute with LLM strategy
-        RESULT = await self.unified_executor.execute(
+        result = await self.unified_executor.execute(
             input_data,
             "llm",
             self.engine_type,
@@ -564,23 +610,22 @@ class EngineExecutor:
         # Format output if successful
         if result.status == ExecutionStatus.COMPLETED:
             format_type = self._get_format_type(content_type)
-            FORMATTED = self.formatter.format(
+            formatted = self.formatter.format(
                 result.data,
                 format_type,
                 self.engine_type,
                 merged_config
             )
-            RESULT.DATA = formatted.data
+            result.data = formatted.data
 
         return result
 
-        """Docstring."""
     async def process_batch(
         self,
         items: List[Any],
         config: Optional[Dict[str, Any]] = None
     ) -> ExecutionResult:
-            """Process batch of items.
+        """Process batch of items.
 
         Args:
             items: Items to process
@@ -597,7 +642,7 @@ class EngineExecutor:
         )
 
     def _get_engine_config(self) -> Dict[str, Any]:
-            """Get engine-specific configuration.
+        """Get engine-specific configuration.
 
         Returns:
             Configuration dictionary
@@ -618,7 +663,7 @@ class EngineExecutor:
             }
 
     def _get_format_type(self, content_type: str) -> str:
-            """Get format type for content.
+        """Get format type for content.
 
         Args:
             content_type: Content type
@@ -656,7 +701,6 @@ def get_engine_executor(engine_type: EngineType) -> EngineExecutor:
     return _executors[engine_type]
 
 # Convenience functions
-    """Docstring."""
 async def execute_resume_generation(
     input_data: Any,
     content_type: str = "default",
@@ -672,10 +716,9 @@ async def execute_resume_generation(
     Returns:
         Execution result
     """
-    EXECUTOR = get_engine_executor(EngineType.RESUME)
+    executor = get_engine_executor(EngineType.RESUME)
     return await executor.generate_content(input_data, content_type, config)
 
-    """Docstring."""
 async def execute_outreach_generation(
     input_data: Any,
     content_type: str = "message",
@@ -691,6 +734,5 @@ async def execute_outreach_generation(
     Returns:
         Execution result
     """
-    EXECUTOR = get_engine_executor(EngineType.OUTREACH)
+    executor = get_engine_executor(EngineType.OUTREACH)
     return await executor.generate_content(input_data, content_type, config)
-
