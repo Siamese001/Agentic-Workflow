@@ -24,6 +24,21 @@ from core_utils import (
 from mcp_hardening import (ensure_brand_compliance,
                            execute_cost_controlled_search,
                            get_brand_style_guide)
+# Import egress filter for Protocol 8
+from network_utils import strict_egress_filter
+
+# Define the specific allow-list for the Outreach Engine
+OUTREACH_ALLOWED_HOSTS = [
+    "api.openai.com", "anthropic.com", "genai.google.com",  # LLM APIs
+    "smtp.sendgrid.net", "mailgun.com",  # Email/SMTP providers
+    "linkedin.com", "www.linkedin.com"  # Professional networking
+]
+
+
+@strict_egress_filter(allowed_domains=OUTREACH_ALLOWED_HOSTS)
+def _fetch_company_content(url: str, fetch_tool: Any, max_length: int = 1000) -> Optional[str]:
+    """Fetches company content with egress filtering."""
+    return fetch_tool(url=url, max_length=max_length)
 
 
 def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -50,8 +65,8 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
 
     # --- Step 1: Fetch Company News (L1 Fetch) ---
     try:
-        # Fetch the company's latest news or press releases
-        company_news = fetch(url=company_url, max_length=1000)
+        # Fetch the company's latest news or press releases with egress filtering
+        company_news = _fetch_company_content(company_url, fetch, max_length=1000)
         if logger:
             logger.info(f"✅ Fetched company content from {company_url}")
     except Exception as e:

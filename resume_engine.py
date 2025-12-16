@@ -18,10 +18,18 @@ from mcp_hardening import get_version_locked_design
 from redis_langcache_pipeline import execute_governed_prompt_caching
 # Import time-bound benchmarking function
 from time_bound_benchmarking import execute_time_bound_salary_benchmarking
-# Import security utilities for prompt firewall
-from security_utils import firewall, SecurityException
+# Import hardening protocols
+from security_utils import PromptFirewall, SecurityException
 # Import fact checker for truth anchor validation
-from fact_checker import fact_checker, HallucinationException
+from fact_checker import FactChecker, HallucinationException
+# Import egress filter for Protocol 8
+from network_utils import strict_egress_filter
+
+# Define the specific allow-list for the Resume Engine
+RESUME_ALLOWED_HOSTS = [
+    "api.openai.com", "anthropic.com", "genai.google.com", 
+    "www.ycombinator.com", "linkedin.com", "indeed.com"  # Approved job board domains
+]
 
 
 def _extract_tools(tools: Dict[str, Any]) -> Dict[str, Any]:
@@ -48,6 +56,7 @@ def _validate_tools(tool_keys: list, tools: Dict[str, Any], logger: Optional[Any
     return True
 
 
+@strict_egress_filter(allowed_domains=RESUME_ALLOWED_HOSTS)
 def _fetch_job_description(job_url: str, fetch_tool: Any, logger: Optional[Any] = None) -> Optional[str]:
     """Fetches job description content."""
     try:
