@@ -242,12 +242,21 @@ class CognitiveNode:
 
         {toolbox_desc}
 
-        RULES:
+        CRITICAL RULES:
         - Write only ONE entry point function (e.g., 'run' or 'main').
-        - Avoid triple-quoted f-strings. Use string concatenation or .format() instead.
-        - Ensure all quotes are properly escaped.
+        - NEVER use triple-quoted f-strings (\"\"\" or ''''). Use string concatenation or .format() instead.
+        - ALL string literals must have matching opening and closing quotes.
+        - Escape any internal quotes in strings with backslashes (\\\\").
         - Output valid Python code that will compile without syntax errors.
         - Output JSON ONLY: {{ "code": "..." }}
+        
+        EXAMPLE OF CORRECT STRING HANDLING:
+        message = "Hello, " + name + "!"
+        query = "SELECT * FROM users WHERE name = \\"" + user_name + "\\""
+        
+        EXAMPLE OF WHAT TO AVOID:
+        message = "Hello, " + name + "  # Missing closing quote
+        text = \"\"\"This is bad\"\"\"  # Triple quotes cause issues
         """
 
             if attempt > 0 and last_error:
@@ -260,6 +269,10 @@ class CognitiveNode:
             )
 
             code = final_response.get("code", "")
+            
+            # Debug: Log the raw LLM response
+            logger.debug(f"Raw LLM response: {final_response}")
+            logger.debug(f"Extracted code (first 500 chars): {code[:500] if code else 'EMPTY'}")
 
             # Validate syntax
             try:
