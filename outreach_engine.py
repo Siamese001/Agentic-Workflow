@@ -1024,6 +1024,7 @@ Best regards,
             ]
         }])
     except:
+        # Silently ignore MEMory logging failures to not interrupt outreach flow
         pass
 
     return {

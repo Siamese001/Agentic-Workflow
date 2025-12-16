@@ -12,6 +12,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict
 
+# Import components
 from agent_logic_connectivity import CanonValidator
 from connection_manager import ConnectionFactory
 from etl_pipeline_connectivity import ETLPipeline
@@ -22,9 +23,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-# Import components
-
 
 class SystemSanityCheck:
     """Comprehensive system health checker."""
@@ -40,9 +38,10 @@ class SystemSanityCheck:
         Returns:
             Dictionary with handshake results
         """
-        # print("\n" + "="*60)  # [Security Fix]
-        # print("🔗 CONNECTIVITY HANDSHAKE")  # [Security Fix]
-        # print("="*60)  # [Security Fix]
+        # [Security Fix] Using logger instead of print for production logs
+        logger.info("="*60)
+        logger.info("🔗 CONNECTIVITY HANDSHAKE")
+        logger.info("="*60)
 
         results = {
             "timestamp": datetime.utcnow().isoformat(),
@@ -51,7 +50,7 @@ class SystemSanityCheck:
         }
 
         # Test RedisVL connection
-        # print("\n1️⃣ Testing RedisVL Connection...")  # [Security Fix]
+        logger.info("1️⃣ Testing RedisVL Connection...")
         try:
             redis_conn = ConnectionFactory.get_redis_connection()
             redis_info = redis_conn.client.info()
@@ -69,24 +68,20 @@ class SystemSanityCheck:
                 }
             }
 
-            # print(f"   ✅ RedisVL connected successfully")  # [Security Fix]
-            # print(f"   📊 Memory: {redis_info.get('used_memory_human', '0B')}")  # [Security Fix]
-            # print(f"   💾 AOF: {aof_status}")  # [Security Fix]
+            logger.info("   ✅ RedisVL connected successfully")
+            logger.info(f"   📊 Memory: {redis_info.get('used_memory_human', '0B')}")
+            logger.info(f"   💾 AOF: {aof_status}")
 
         except Exception as e:
-    pass
-pass
-
-
-results["components"]["redis"] = {
+            results["components"]["redis"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            # print(f"   ❌ RedisVL connection failed: {e}")  # [Security Fix]
+            logger.error(f"   ❌ RedisVL connection failed: {e}")
 
         # Test Pinecone connection
-        # print("\n2️⃣ Testing Pinecone Connection...")  # [Security Fix]
+        logger.info("2️⃣ Testing Pinecone Connection...")
         try:
             pinecone = ConnectionFactory.get_pinecone_connection()
             indexes = pinecone.list_indexes()
@@ -105,22 +100,20 @@ results["components"]["redis"] = {
                 }
             }
 
-            # print(f"   ✅ Pinecone connected successfully")  # [Security Fix]
-            # print(f"   📋 Total indexes: {len(indexes.names())}")  # [Security Fix]
-            # print(f"   🎯 Target index '{index_name}': {index_status}")  # [Security Fix]
+            logger.info("   ✅ Pinecone connected successfully")
+            logger.info(f"   📋 Total indexes: {len(indexes.names())}")
+            logger.info(f"   🎯 Target index '{index_name}': {index_status}")
 
         except Exception as e:
-    pass
-pass
-results["components"]["pinecone"] = {
+            results["components"]["pinecone"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            # print(f"   ❌ Pinecone connection failed: {e}")  # [Security Fix]
+            logger.error(f"   ❌ Pinecone connection failed: {e}")
 
         # Test embedding function
-        # print("\n3️⃣ Testing Embedding Function...")  # [Security Fix]
+        logger.info("3️⃣ Testing Embedding Function...")
         try:
             embed_func = ConnectionFactory.get_embedding_function()
             test_text = "Test embedding generation"
@@ -140,23 +133,20 @@ results["components"]["pinecone"] = {
                 }
             }
 
-            # print(f"   ✅ Embedding function initialized")  # [Security Fix]
-            # print(  # [Security Fix]
-                f"   🔧 Provider: {os.getenv('EMBEDDING_PROVIDER', 'unknown')}")
-            # print(f"   📐 Dimensions: {dims_status}")  # [Security Fix]
+            logger.info("   ✅ Embedding function initialized")
+            logger.info(f"   🔧 Provider: {os.getenv('EMBEDDING_PROVIDER', 'unknown')}")
+            logger.info(f"   📐 Dimensions: {dims_status}")
 
         except Exception as e:
-    pass
-pass
-results["components"]["embeddings"] = {
+            results["components"]["embeddings"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            # print(f"   ❌ Embedding function failed: {e}")  # [Security Fix]
+            logger.error(f"   ❌ Embedding function failed: {e}")
 
         # Test RedisVL index creation
-        # print("\n4️⃣ Testing RedisVL Index Creation...")  # [Security Fix]
+        logger.info("4️⃣ Testing RedisVL Index Creation...")
         try:
             redis_index = ConnectionFactory.create_redis_index(None)
 
@@ -168,35 +158,32 @@ results["components"]["embeddings"] = {
                 }
             }
 
-            # print(f"   ✅ RedisVL index created successfully")  # [Security Fix]
-            # print(f"   📁 Index name: {redis_index.name}")  # [Security Fix]
-            # print(f"   🔑 Key prefix: {redis_index.prefix}")  # [Security Fix]
+            logger.info("   ✅ RedisVL index created successfully")
+            logger.info(f"   📁 Index name: {redis_index.name}")
+            logger.info(f"   🔑 Key prefix: {redis_index.prefix}")
 
         except Exception as e:
-    pass
-pass
-results["components"]["redis_index"] = {
+            results["components"]["redis_index"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            # print(f"   ❌ RedisVL index creation failed: {e}")  # [Security Fix]
+            logger.error(f"   ❌ RedisVL index creation failed: {e}")
 
         # Summary
-        # print("\n" + "="*60)  # [Security Fix]
+        logger.info("="*60)
         status_color = "✅" if results["overall_status"] == "PASSED" else "❌"
-        # print(  # [Security Fix]
-            f"{status_color} CONNECTIVITY HANDSHAKE: {results['overall_status']}")
-        # print("="*60)  # [Security Fix]
+        logger.info(f"{status_color} CONNECTIVITY HANDSHAKE: {results['overall_status']}")
+        logger.info("="*60)
 
         return results
 
 
 def run_agent_loop():
     """Run the main agent validation loop."""
-    # print("\n" + "="*60)  # [Security Fix]
-    # print("🤖 AGENT VALIDATION LOOP")  # [Security Fix]
-    # print("="*60)  # [Security Fix]
+    logger.info("="*60)
+    logger.info("🤖 AGENT VALIDATION LOOP")
+    logger.info("="*60)
 
     # Initialize validator
     validator = CanonValidator()
@@ -237,8 +224,8 @@ async def fetch_data(url):
     ]
 
     for i, test in enumerate(test_cases, 1):
-        # print(f"\n📝 Test Case {i}: {test['name']}")  # [Security Fix]
-        # print("-" * 40)  # [Security Fix]
+        logger.info(f"\n📝 Test Case {i}: {test['name']}")
+        logger.info("-" * 40)
 
         # Validate code
         result = validator.check_and_learn(
@@ -248,59 +235,57 @@ async def fetch_data(url):
 
         # Display results
         status_icon = "✅" if result["is_valid"] else "❌"
-        # print(f"{status_icon} Valid: {result['is_valid']}")  # [Security Fix]
-        # print(f"📊 Confidence: {result['confidence']:.3f}")  # [Security Fix]
-        # print(f"📍 Source: {result['source']}")  # [Security Fix]
-        # print(f"💡 Recommendation: {result['recommendation']}")  # [Security Fix]
+        logger.info(f"{status_icon} Valid: {result['is_valid']}")
+        logger.info(f"📊 Confidence: {result['confidence']:.3f}")
+        logger.info(f"📍 Source: {result['source']}")
+        logger.info(f"💡 Recommendation: {result['recommendation']}")
 
         if result["matched_pattern"]:
-            # print(f"🎯 Matched pattern: {result['matched_pattern']}")  # [Security Fix]
-
-        # Update learning (mock success for valid code)
-        if result["matched_pattern"]:
+            logger.info(f"🎯 Matched pattern: {result['matched_pattern']}")
+            # Update learning (mock success for valid code)
             validator.update_learning(
                 result["matched_pattern"],
                 result["is_valid"]
             )
 
-        time.sleep(0.5)  # Brief pause between tests
+        time.sleep(0.5)
 
     # Show final stats
-    # print("\n" + "="*60)  # [Security Fix]
-    # print("📈 FINAL STATISTICS")  # [Security Fix]
-    # print("="*60)  # [Security Fix]
+    logger.info("="*60)
+    logger.info("📈 FINAL STATISTICS")
+    logger.info("="*60)
 
     stats = validator.get_stats()
 
-    # print("\nRedis L1 Cache:")  # [Security Fix]
+    logger.info("\nRedis L1 Cache:")
     redis_stats = stats["redis_stats"]
-    # print(f"  💾 Memory used: {redis_stats.get('used_memory', 'N/A')}")  # [Security Fix]
-    # print(f"  🔍 Cache hits: {redis_stats.get('keyspace_hits', 0)}")  # [Security Fix]
-    # print(f"  ❌ Cache misses: {redis_stats.get('keyspace_misses', 0)}")  # [Security Fix]
+    logger.info(f"   💾 Memory used: {redis_stats.get('used_memory', 'N/A')}")
+    logger.info(f"   🔍 Cache hits: {redis_stats.get('keyspace_hits', 0)}")
+    logger.info(f"   ❌ Cache misses: {redis_stats.get('keyspace_misses', 0)}")
 
-    # print("\nPinecone L2 Cache:")  # [Security Fix]
+    logger.info("\nPinecone L2 Cache:")
     pinecone_stats = stats["pinecone_stats"]
-    # print(f"  📊 Total vectors: {pinecone_stats.get('vector_count', 0)}")  # [Security Fix]
-    # print(f"  📐 Dimensions: {pinecone_stats.get('dimension', 0)}")  # [Security Fix]
-    # print(f"  📈 Index fullness: {pinecone_stats.get('index_fullness', 0):.2%}")  # [Security Fix]
+    logger.info(f"   📊 Total vectors: {pinecone_stats.get('vector_count', 0)}")
+    logger.info(f"   📐 Dimensions: {pinecone_stats.get('dimension', 0)}")
+    logger.info(f"   📈 Index fullness: {pinecone_stats.get('index_fullness', 0):.2%}")
 
-    # print("\nThresholds:")  # [Security Fix]
+    logger.info("\nThresholds:")
     thresholds = stats["thresholds"]
-    # print(f"  ⚠️  Failure threshold: {thresholds['failure_threshold']}")  # [Security Fix]
-    # print(f"  ✅ Success threshold: {thresholds['success_threshold']}")  # [Security Fix]
+    logger.info(f"   ⚠️  Failure threshold: {thresholds['failure_threshold']}")
+    logger.info(f"   ✅ Success threshold: {thresholds['success_threshold']}")
 
 
 def main():
     """Main entry point with complete boot sequence."""
-    # print("\n" + "="*60)  # [Security Fix]
-    # print("🚀 CONNECTIVITY-HARDENED CANON VALIDATOR")  # [Security Fix]
-    # print("="*60)  # [Security Fix]
-    # print("\nBoot sequence initiated...")  # [Security Fix]
+    logger.info("="*60)
+    logger.info("🚀 CONNECTIVITY-HARDENED CANON VALIDATOR")
+    logger.info("="*60)
+    logger.info("Boot sequence initiated...")
 
     # Step 1: Load environment
-    # print("\n📋 Step 1: Loading environment variables...")  # [Security Fix]
+    logger.info("📋 Step 1: Loading environment variables...")
     if not os.path.exists(".env"):
-        # print("⚠️  Warning: .env file not found. Using defaults.")  # [Security Fix]
+        logger.warning("⚠️  Warning: .env file not found. Using defaults.")
 
     env_vars = [
         "REDIS_URL", "PINECONE_API_KEY", "PINECONE_INDEX_NAME",
@@ -310,50 +295,42 @@ def main():
     for var in env_vars:
         value = os.getenv(var, "NOT SET")
         status = "✅" if value != "NOT SET" else "⚠️"
-        # print(f"   {status} {var}: {value[:30]}..." if len(  # [Security Fix]
-            value) > 30 else f"   {status} {var}: {value}")
+        display_val = f"{value[:30]}..." if len(value) > 30 else value
+        logger.info(f"   {status} {var}: {display_val}")
 
     # Step 2: Connectivity handshake
     handshake_results = SystemSanityCheck.run_connectivity_handshake()
 
     # Step 3: Check if we should proceed
     if handshake_results["overall_status"] != "PASSED":
-        # print("\n❌ CRITICAL: Connectivity handshake failed!")  # [Security Fix]
-        # print("Please check the errors above and restart.")  # [Security Fix]
+        logger.error("❌ CRITICAL: Connectivity handshake failed!")
+        logger.error("Please check the errors above and restart.")
         return 1
 
     # Step 4: Hydrate cache
-    # print("\n" + "="*60)  # [Security Fix]
-    # print("💾 HYDRATING CACHE")  # [Security Fix]
-    # print("="*60)  # [Security Fix]
+    logger.info("="*60)
+    logger.info("💾 HYDRATING CACHE")
+    logger.info("="*60)
 
     if os.getenv("CACHE_WARMUP", "true").lower() == "true":
-        # print("\nWarming up cache with golden patterns...")  # [Security Fix]
+        logger.info("Warming up cache with golden patterns...")
         etl = ETLPipeline()
         hydration_stats = etl.hydrate_cache()
 
-        # print(f"\n✅ Cache hydration complete:")  # [Security Fix]
-        # print(  # [Security Fix]
-            f"   📥 Fetched from Pinecone: {hydration_stats['fetched_from_pinecone']}")
-        # print(f"   📤 Loaded to Redis: {hydration_stats['loaded_to_redis']}")  # [Security Fix]
+        logger.info("✅ Cache hydration complete:")
+        logger.info(f"   📥 Fetched from Pinecone: {hydration_stats['fetched_from_pinecone']}")
+        logger.info(f"   📤 Loaded to Redis: {hydration_stats['loaded_to_redis']}")
     else:
-        # print("\n⏭️  Cache warmup disabled by configuration")  # [Security Fix]
+        logger.info("⏭️  Cache warmup disabled by configuration")
 
     # Step 5: Run agent loop
     run_agent_loop()
 
     # Step 6: Final summary
-    # print("\n" + "="*60)  # [Security Fix]
-    # print("🎉 SYSTEM READY")  # [Security Fix]
-    # print("="*60)  # [Security Fix]
-    # print("\nThe Connectivity-Hardened Canon Validator is ready!")  # [Security Fix]
-    # print("\nKey features demonstrated:")  # [Security Fix]
-    # print("  ✅ RedisVL for L1 semantic cache")  # [Security Fix]
-    # print("  ✅ Pinecone for L2 long-term storage")  # [Security Fix]
-    # print("  ✅ Explicit connectivity handshake")  # [Security Fix]
-    # print("  ✅ AST-based structural validation")  # [Security Fix]
-    # print("  ✅ Meta-learning with success/failure tracking")  # [Security Fix]
-    # print("  ✅ Hybrid cache with automatic promotion")  # [Security Fix]
+    logger.info("="*60)
+    logger.info("🎉 SYSTEM READY")
+    logger.info("="*60)
+    logger.info("The Connectivity-Hardened Canon Validator is ready!")
 
     return 0
 
@@ -363,15 +340,10 @@ if __name__ == "__main__":
         exit_code = main()
         sys.exit(exit_code)
     except KeyboardInterrupt:
-    pass
-pass
-# print("\n\n⏹️  Shutdown requested by user")  # [Security Fix]
+        logger.info("⏹️  Shutdown requested by user")
         sys.exit(0)
     except Exception as e:
-    pass
-pass
-f"\n❌ Fatal error: {e}")  # [Security Fix]
+        logger.error(f"❌ Fatal error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
-
