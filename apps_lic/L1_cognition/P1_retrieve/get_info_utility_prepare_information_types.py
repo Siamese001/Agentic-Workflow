@@ -1,5 +1,10 @@
 """Types and models for get_info_utility_prepare_information."""
 import logging
+import time
+import traceback
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,22 +31,21 @@ class ExecutionContext:
 
     def start(self) -> None:
         """Mark execution as started."""
-        SELF.STATUS = ExecutionStatus.RUNNING
+        self.status = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        logger.info(f'Execution started for operation: {self.operation_id}')
+        LOGGER.info(f'Execution started for operation: {self.operation_id}')
 
     def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
-        SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
+        self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
             self.error_details = {'type': type(error).__name__,
                                   'message': str(error),
                                   'traceback': traceback.format_exc()}
-            logger.error(f'Execution failed: {error}')
+            LOGGER.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time: .2f}s
-                        ')
+            LOGGER.info(f'Execution completed successfully in {self.end_time - self.start_time: .2f}s')
 
 
 @dataclass
@@ -52,4 +56,3 @@ class ProcessingResult:
     error_message: Optional[str] = None
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
-

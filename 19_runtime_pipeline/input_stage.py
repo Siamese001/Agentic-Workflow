@@ -18,7 +18,7 @@ class InputProcessingStage(PipelineStage):
     """Processes and normalizes input data."""
 
 
-def __init__(self: Any) -> None:
+    def __init__(self: Any) -> None:
         """Initialize input processing stage."""
         try:
 
@@ -28,45 +28,12 @@ def __init__(self: Any) -> None:
             self.semantic_cache = SemanticCache()
             self.hyde_processor = HyDEProcessor()
         except ImportError:
-    pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-self.semantic_cache = None
+            self.semantic_cache = None
             self.hyde_processor = None
             logger.warning("SemanticCache or HyDEProcessor not available")
 
 
-async def execute(self: Any, envelope: Any) -> Any:
+    async def execute(self: Any, envelope: Any) -> Any:
         """Process input data. """
         start_time = time.time()
         stage_name = self.stage_name
@@ -82,10 +49,10 @@ async def execute(self: Any, envelope: Any) -> Any:
             logger.debug(
                 f"Processing input for {envelope.payload.payload_type}")
 
-            CONTENT = self._extract_content_from_payload(envelope.payload)
+            content = self._extract_content_from_payload(envelope.payload)
 
             cache_key = f"input_processed_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
-            CACHED = self.semantic_cache.get(
+            cached = self.semantic_cache.get(
                 cache_key) if self.semantic_cache else None
 
             if cached:
@@ -97,7 +64,7 @@ async def execute(self: Any, envelope: Any) -> Any:
                 )
                 return envelope
 
-            PROCESSED = await self._process_content(content, envelope)
+            processed = await self._process_content(content, envelope)
             self._update_payload_with_processed_data(envelope, processed)
 
             if self.semantic_cache:
@@ -112,40 +79,7 @@ async def execute(self: Any, envelope: Any) -> Any:
             return envelope
 
         except Exception as e:
-    pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-logger.error(f"Input processing failed: {e}")
+            logger.error(f"Input processing failed: {e}")
             envelope.mark_stage_failed(
                 stage_name,
                 str(e),
@@ -154,7 +88,7 @@ logger.error(f"Input processing failed: {e}")
             raise
 
 
-def _extract_content_from_payload(self: Any, payload: Any) -> str:
+    def _extract_content_from_payload(self: Any, payload: Any) -> str:
         """Extract text content from payload. """
         if hasattr(payload, 'text'):
             return payload.text
@@ -171,9 +105,9 @@ def _extract_content_from_payload(self: Any, payload: Any) -> str:
             return str(payload)
 
 
-async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
+    async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, Any]:
         """Process text content. """
-        RESULT = {
+        result = {
             "word_count": len(content.split()),
             "char_count": len(content),
             "language": "en"
@@ -181,11 +115,11 @@ async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, 
 
         if self.hyde_processor:
             if envelope.payload.payload_type.value == "resume_data":
-                QUERY = f"resume achievements skills {content[:100]}"
+                query = f"resume achievements skills {content[:100]}"
             else:
-                QUERY = f"outreach personalization {content[:100]}"
+                query = f"outreach personalization {content[:100]}"
 
-            EXPANDED = self.hyde_processor.expand_query_with_hyde(
+            expanded = self.hyde_processor.expand_query_with_hyde(
                 query, envelope.payload.payload_type.value
             )
             result["expanded_query"] = expanded
@@ -193,10 +127,10 @@ async def _process_content(self: Any, content: str, envelope: Any) -> Dict[str, 
         return result
 
 
-def _update_payload_with_processed_data(self: Any,
-     envelope: Any,
-     processed: Dict[str,
-     Any]) -> None:
+    def _update_payload_with_processed_data(self: Any,
+         envelope: Any,
+         processed: Dict[str,
+         Any]) -> None:
         """Update payload with processed data. """
         if hasattr(envelope.payload, 'metadata'):
             envelope.payload.metadata.update(processed)
@@ -205,7 +139,6 @@ def _update_payload_with_processed_data(self: Any,
                 {f"processed_{k}": v for k, v in processed.items()})
 
     @property
-def stage_name(self: Any) -> str:
+    def stage_name(self: Any) -> str:
         """Get stage name."""
         return "input_processing"
-

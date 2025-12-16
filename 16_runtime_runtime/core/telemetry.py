@@ -21,21 +21,17 @@ class TraceEvent:
 
 
 class TelemetryRecorder:
+    def __init__(self: Any, db_path: Any) -> None:
+        self.conn = duckdb.connect(db_path)
+        self.conn.execute(""" """)
 
-
-def __init__(self: Any, db_path: Any) -> None:
-    SELF.CONN = duckdb.connect(db_path)
-    self.conn.execute(""" """)
-
-
-def record(self: Any, event: TraceEvent) -> None:
-    self.conn.execute(
-        "INSERT INTO traces VALUES (?, ?, ?, ?, ?, ?)",
-        (event.trace_id,
-            event.span_id,
-            event.role,
-            event.event_type,
-            json.dumps(event.payload),
-            event.timestamp)
-    )
-
+    def record(self: Any, event: TraceEvent) -> None:
+        self.conn.execute(
+            "INSERT INTO traces VALUES (?, ?, ?, ?, ?, ?)",
+            (event.trace_id,
+                event.span_id,
+                event.role,
+                event.event_type,
+                json.dumps(event.payload),
+                event.timestamp)
+        )

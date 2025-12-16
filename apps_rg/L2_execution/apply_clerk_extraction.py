@@ -1,9 +1,9 @@
-
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Clerk extraction for resume generation HOP-1."""
 
 import logging
+import re
 from typing import Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
@@ -49,15 +49,15 @@ class ClerkExtractor:
         """Validate master resume has required keys."""
         if not self.master_resume:
             raise ValueError("MASTER_RESUME_JSON is empty or not provided.")
-        MISSING = [k for k in self.REQUIRED_KEYS if k not in self.master_resume]
+        missing = [k for k in self.REQUIRED_KEYS if k not in self.master_resume]
         if missing:
             raise ValueError(f"Missing required keys: {', '.join(missing)}")
 
     def _build_experience_sections(self) -> List[Dict]:
         """Build structured experience_sections from master resume."""
-        SECTIONS = []
+        sections = []
         for exp in self.master_resume.get("experience", []):
-            BULLETS = [
+            bullets = [
                 {
                     "bullet_text": text,
                     "quantified_metrics": self._extract_metrics(text),
@@ -80,14 +80,11 @@ class ClerkExtractor:
 
     def _extract_metrics(self, text: str) -> List[str]:
         """Extract quantified metrics from bullet text."""
-        PATTERNS = [r"\$\d+\.?\d*[MBK]\+?",
+        patterns = [r"\$\d+\.?\d*[MBK]\+?",
                     r"\d+\.?\d*%",
                     r"\d+\.?\d*[MBK]\+",
-                    r"\d{1,
-                         3}(?:,
-                            \d{3}) +"]
-        METRICS = []
+                    r"\d{1,3}(?:,\d{3})*"]
+        metrics = []
         for pattern in patterns:
             metrics.extend(re.findall(pattern, text))
         return metrics
-

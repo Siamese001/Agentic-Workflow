@@ -4,18 +4,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-AgentCard,
-AgentRegistry,
-AgentCapability,
-RegistrationResult,
-create_agent_registry,
-)
-
-    __all__ = [
-"AgentCard",
-"AgentRegistry",
-"AgentCapability",
-"RegistrationResult",
-"create_agent_registry",
+__all__ = [
+    "AgentCard",
+    "AgentRegistry",
+    "AgentCapability",
+    "RegistrationResult",
+    "create_agent_registry",
 ]
-

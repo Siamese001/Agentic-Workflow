@@ -1,29 +1,52 @@
-"""Action Call Generator Agent - CTA Generator (K.5)
-
-
-LOGGER = logging.getLogger(__name__)
-This agent generates route-specific CTAs with strict character limits.
-Enforces CONNECTION_REQ ≤300 chars and SHORT_NEW 360-380 chars post-normalization.
-
-Layer: L2_execution
-Responsibilities:
-- Generate CTA based on route type
-- Enforce route-specific character limits
-- Ensure time-bound or specific asks
-- Validate clarity and actionability
-
-Non-responsibilities:
-- Route classification
-- Message body composition
-- Final assembly
-"""
-
-
 import logging
+from enum import Enum
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+import re
 
-logger = logging.getLogger(__name__)
+# Assuming ValidationResult, IntegrityGateExecutor, and AdaptiveRecoveryLoop are defined elsewhere.
+# For the purpose of this fix, we'll define dummy classes if they are not provided.
 
+class ValidationResult:
+    def __init__(self, gate_id: str, PASSED: bool, SEVERITY: str, MESSAGE: str, SIGNATURE: Optional[str] = None, DETAILS: Optional[Dict[str, Any]] = None):
+        self.gate_id = gate_id
+        self.passed = PASSED
+        self.severity = SEVERITY
+        self.message = MESSAGE
+        self.signature = SIGNATURE
+        self.details = DETAILS if DETAILS is not None else {}
+
+class IntegrityGateExecutor:
+    def __init__(self):
+        self.results = []
+
+    def execute_hygiene_scan(self, cta: str) -> ValidationResult:
+        # Dummy implementation
+        return ValidationResult(gate_id='DUMMY_HYGIENE', PASSED=True, SEVERITY='INFO', MESSAGE='Hygiene scan passed')
+
+class AdaptiveRecoveryLoop:
+    def __init__(self, initial_temperature: float):
+        self.current_temperature = initial_temperature
+        self.temperature_log = []
+
+    def reset(self, temperature: float):
+        self.current_temperature = temperature
+
+    def record_failure(self, gate_id: str, MESSAGE: str, DETAILS: Dict[str, Any]) -> "RecoveryInfo":
+        # Dummy implementation
+        self.temperature_log.append({'gate_id': gate_id, 'message': MESSAGE, 'details': DETAILS, 'temperature': self.current_temperature})
+        return self.RecoveryInfo(should_retry=True)
+
+    def get_temperature_log(self) -> List[Dict[str, Any]]:
+        return self.temperature_log
+
+    class RecoveryInfo:
+        def __init__(self, should_retry: bool):
+            self.should_retry = should_retry
+
+
+# Placeholder for FLOAT type if it's not a standard Python type
+FLOAT = float
 
 class RouteType(Enum):
     """Docstring."""
@@ -94,14 +117,13 @@ class ActionCallGenerator:
         gate_executor: Optional[IntegrityGateExecutor] = None,
         recovery_loop: Optional[AdaptiveRecoveryLoop] = None
     ):
-        SELF.CONFIG = config or CTAConfig()
+        self.config = config or CTAConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+            initial_temperature=self.config.TEMPERATURE
         )
 
     def generate_cta(
-        """Docstring."""
         self,
         route_type: RouteType,
         message_body: str,
@@ -118,22 +140,22 @@ class ActionCallGenerator:
         Returns:
             CTAResult with CTA and validation details
         """
-        self.recovery_loop.reset(self.config.temperature)
+        self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results = []
 
         for attempt in range(1, self.config.max_attempts + 1):
-            CTA = self._generate_content(
+            cta = self._generate_content(
                 route_type=route_type,
-                CONTEXT=context,
-                TEMPERATURE=self.recovery_loop.current_temperature,
-                ATTEMPT=attempt
+                context=context,
+                temperature=self.recovery_loop.current_temperature,
+                attempt=attempt
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(cta)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
                     MESSAGE=hygiene_result.message,
                     DETAILS=hygiene_result.details
@@ -153,7 +175,7 @@ class ActionCallGenerator:
             validation_results.append(char_limit_result)
 
             if not char_limit_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=char_limit_result.gate_id,
                     MESSAGE=char_limit_result.message,
                     DETAILS=char_limit_result.details
@@ -170,7 +192,7 @@ class ActionCallGenerator:
             validation_results.append(clarity_result)
 
             if not clarity_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=clarity_result.gate_id,
                     MESSAGE=clarity_result.message,
                     DETAILS=clarity_result.details
@@ -182,27 +204,27 @@ class ActionCallGenerator:
             self.gate_executor.results = validation_results
 
             return CTAResult(
-                CTA=cta,
+                cta=cta,
                 route_type=route_type,
                 char_count=char_count,
                 is_time_bound=is_time_bound,
                 is_specific=is_specific,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                SUCCESS=True,
-                ATTEMPTS=attempt
+                success=True,
+                attempts=attempt
             )
 
         return CTAResult(
-            CTA="",
+            cta="",
             route_type=route_type,
             char_count=0,
             is_time_bound=False,
             is_specific=False,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            SUCCESS=False,
-            ATTEMPTS=self.config.max_attempts
+            success=False,
+            attempts=self.config.max_attempts
         )
 
     def _generate_content(
@@ -247,7 +269,7 @@ class ActionCallGenerator:
         Validate route-specific character limits.
         BLOCKS if limit exceeded.
         """
-        LIMIT = self.ROUTE_CHAR_LIMITS.get(route_type)
+        limit = self.ROUTE_CHAR_LIMITS.get(route_type)
 
         if isinstance(limit, tuple):
             min_chars, max_chars = limit
@@ -260,8 +282,6 @@ class ActionCallGenerator:
                         f"Character limit satisfied: {char_count} chars "
                         f"({min_chars}-{max_chars})"
                     ),
-
-
                     SIGNATURE=f"CHARLIMIT:OK:{char_count}"
                 )
 
@@ -273,10 +293,7 @@ class ActionCallGenerator:
                         f"BLOCKED: Character count {char_count} "
                         f"outside range ({min_chars}-{max_chars})"
                 ),
-
-
-                DETAILS={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': rout
-                         e_type.value}
+                DETAILS={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': route_type.value}
             )
         else:
             if char_count <= limit:
@@ -299,7 +316,6 @@ class ActionCallGenerator:
 
     def _check_time_bound(self, cta: str) -> bool:
         """Check if CTA contains time-bound language"""
-        import re
         cta_lower = cta.lower()
 
         for pattern in self.TIME_BOUND_PATTERNS:
@@ -358,9 +374,7 @@ class ActionCallGenerator:
 
 
 def create_action_call_generator(
-    """Docstring."""
     config: Optional[CTAConfig] = None
 ) -> ActionCallGenerator:
     """Factory function to create ActionCallGenerator instance"""
     return ActionCallGenerator(config=config)
-

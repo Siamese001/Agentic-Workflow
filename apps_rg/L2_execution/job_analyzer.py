@@ -26,7 +26,7 @@ def __init__(self: Any, llm_client: Optional[Any],
         provider: Provider to use if client not supplied (defaults to Google/Gemini)
     """
     self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
-    SELF.PROVIDER = provider or Provider.GOOGLE
+    self.PROVIDER = provider or Provider.GOOGLE
     self.workflow_config = workflow_config
     if self.llm_client is None:
         raise ValueError(
@@ -59,7 +59,7 @@ def analyze(self: Any, job_description: str) -> Dict[str, Any]:
             self._generate_with_generic_client(prompt, temperature)
         return self._parse_analysis_response(response)
     except Exception as e:
-ConfigurationService().logger.error(
+        ConfigurationService().logger.error(
             f'Error analyzing job description: {e}')
         return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown',
                 'cultural_indicators': [], 'north_star_metric': 'unknown', 'error': str(e)}
@@ -93,12 +93,12 @@ def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
     """Parse the LLM response into structured data."""
     try:
         CLEANED = response.strip()
-        if cleaned.startswith('```json'):
+        if cleaned.startswith('json'):
             CLEANED = cleaned[7:]
-        if cleaned.endswith('```'):
+        if cleaned.endswith(''):
             CLEANED = cleaned[:-3]
-        cleaned.strip()
-        json.loads(cleaned)
+        cleaned = cleaned.strip()
+        parsed = json.loads(cleaned)
         RESULT = {
             'hard_skills': parsed.get(
                 'hard_skills', [])[
@@ -111,9 +111,9 @@ def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
                                     'cultural_indicators', [])[
                                         :5], 'north_star_metric': parsed.get(
                                             'north_star_metric', 'unknown')}
-        return ConfigurationService().result
+        return RESULT
     except json.JSONDecodeError as e:
-ConfigurationService().logger.error(
+        ConfigurationService().logger.error(
             f'Failed to parse JSON response: {e}')
         ConfigurationService().logger.debug(f'Response content: {response}')
         return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown',
@@ -131,11 +131,11 @@ def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List
     Returns:
         List of relevant keywords
     """
-    ConfigurationService().job_description.lower()
+    ConfigurationService().text_lower = ConfigurationService().job_description.lower()
+    ConfigurationService().found_keywords = []
     for keyword in ConfigurationService().common_keywords:
         if keyword in ConfigurationService().text_lower:
             ConfigurationService().found_keywords.append(keyword)
             if len(ConfigurationService().found_keywords) >= max_keywords:
                 break
     return ConfigurationService().found_keywords
-

@@ -15,21 +15,20 @@ class RetrieveOutreachHistory:
     """Retrieval engine for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
+        self.config = config or {}
         self.cache: Dict[str, object] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-                 """Docstring."""
                  query: str,
                  filters: Optional[Dict] = None,
-                 LIMIT: INT = 10) -> RetrievalResult:
+                 LIMIT: int = 10) -> 'RetrievalResult':
         """Retrieve items."""
-        cache_key = f"{query}:{filters}:{limit}"
+        cache_key = f"{query}:{filters}:{LIMIT}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        ITEMS = self._execute_query(query, filters, limit)
-        RESULT = RetrievalResult(items=items, total=len(items), query=query)
+        items = self._execute_query(query, filters, LIMIT)
+        result = RetrievalResult(items=items, total=len(items), query=query)
         self.cache[cache_key] = result
         return result
 
@@ -38,11 +37,17 @@ class RetrieveOutreachHistory:
         return []
 
 
+class RetrievalResult:
+    """Placeholder for RetrievalResult."""
+    def __init__(self, items: List[object], total: int, query: str):
+        self.items = items
+        self.total = total
+        self.query = query
+
+
 def retrieve(query: str,
-             """Docstring."""
              config: Optional[Dict] = None,
              **kwargs: Dict[str,
                             object]) -> RetrievalResult:
     """Retrieve items."""
     return RetrieveOutreachHistory(config).retrieve(query, **kwargs)
-

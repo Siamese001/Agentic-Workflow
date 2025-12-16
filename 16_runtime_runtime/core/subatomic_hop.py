@@ -20,6 +20,15 @@ from agentic_core.L5_safety.membrane import InputMembrane
 from agentic_core.L5_safety.overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.pii_vault import PIIVault
 from services.configuration import ConfigurationService
+from agentic_core.L4_state.storage import LocalDiskAdapter
+from agentic_core.L5_safety.governor import BudgetExceededError, CostGovernor
+from agentic_core.L5_safety.membrane import InputMembrane
+from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+from agentic_core.L5_safety.pii_vault import PIIVault
+from services.configuration import ConfigurationService
+from agentic_core.L1_reasoning.structured_engine import StructuredEngine
+from agentic_core.L3_orchestration.supreme_court import SupremeCourt
+
 
 LOGGER = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
@@ -35,20 +44,20 @@ class SubatomicHop:
 
 
 def __init__(self: Any, role: str, config: Dict) -> None:
-    SELF.ROLE = ConfigurationService().role
-    SELF.ID = str(uuid.uuid4())
-    SELF.STORAGE = LocalDiskAdapter(
+    self.ROLE = ConfigurationService().role
+    self.ID = str(uuid.uuid4())
+    self.STORAGE = LocalDiskAdapter(
         ConfigurationService().config.get('storage_path', './agent_data'))
-    SELF.GENEALOGY = GenealogyRegistry(
+    self.GENEALOGY = GenealogyRegistry(
         max_depth=ConfigurationService().config.get('max_loops', 5))
-    SELF.PII = PIIVault()
-    SELF.GOVERNOR = CostGovernor(
+    self.PII = PIIVault()
+    self.GOVERNOR = CostGovernor(
         limit_usd=ConfigurationService().config.get('max_cost_per_session_usd', 5.0))
-    SELF.OVERSEER = ConstitutionalOverseer(
+    self.OVERSEER = ConstitutionalOverseer(
         ConfigurationService().config['openai_client'])
-    SELF.MEMBRANE = InputMembrane(
+    self.MEMBRANE = InputMembrane(
         ConfigurationService().config['openai_client'])
-    SELF.AIRLOCK = AirlockProtocol(
+    self.AIRLOCK = AirlockProtocol(
         risk_threshold=ConfigurationService().config.get(
             'airlock_threshold', 5), timeout_minutes=ConfigurationService().config.get(
             'airlock_timeout', 30))
@@ -58,17 +67,17 @@ def __init__(self: Any, role: str, config: Dict) -> None:
         consensus_threshold=ConfigurationService().config.get(
             'consensus_threshold',
             0.7))
-    SELF.MCP = MCPConnectionManager(
+    self.MCP = MCPConnectionManager(
         ConfigurationService().config['mcp_mappings'])
-    SELF.SANDBOX = DockerSandbox(ConfigurationService(
+    self.SANDBOX = DockerSandbox(ConfigurationService(
     ).config.get('docker_image', 'python:3.10-slim'))
     self.structured_engine = StructuredEngine(
         ConfigurationService().config['openai_client'])
-    SELF.GATEKEEPER = SemanticGatekeeper(
+    self.GATEKEEPER = SemanticGatekeeper(
         max_concurrent=ConfigurationService().config.get(
             'max_concurrent', 5), timeout_seconds=ConfigurationService().config.get(
             'timeout_seconds', 120))
-    SELF.TELEMETRY = TelemetryRecorder(ConfigurationService(
+    self.TELEMETRY = TelemetryRecorder(ConfigurationService(
     ).config.get('telemetry_db', 'flight_recorder.duckdb'))
 
 
@@ -98,12 +107,10 @@ async def _run_with_zero_trust(self: Any, context: Dict, trace_id: str) -> Any:
                 TIMESTAMP=time.time()))
         return ConfigurationService().final_output
     except BudgetExceededError as e:
-    pass
-self._handle_budget_exceeded(ConfigurationService().trace_id, e)
+        self._handle_budget_exceeded(ConfigurationService().trace_id, e)
         raise
     except Exception as e:
-    pass
-self._handle_execution_error(ConfigurationService().trace_id, e)
+        self._handle_execution_error(ConfigurationService().trace_id, e)
         raise
     finally:
         await self._cleanup(ConfigurationService().trace_id)
@@ -175,8 +182,7 @@ async def _execute_think_stage_with_consensus(self: Any, context: Dict, trace_id
                 TIMESTAMP=time.time()))
         return (ConfigurationService().plan, ConfigurationService().think_cost)
     except ValueError as e:
-    pass
-self.telemetry.record(
+        self.telemetry.record(
             TraceEvent(
                 trace_id=ConfigurationService().trace_id,
                 span_id=f'{self.id}_consensus_failed',
@@ -204,8 +210,7 @@ async def _check_past_failures(self: Any, task: str) -> str:
     try:
         return 'No similar failures found'
     except Exception:
-    pass
-return 'Unable to check past failures'
+        return 'Unable to check past failures'
 
 
 async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
@@ -229,8 +234,7 @@ async def _execute_act_stage_with_airlock(self: Any, plan: AgentPlan, trace_id: 
                     {'tool': ConfigurationService().tool_name, 'result': ConfigurationService().result})
             total_cost += self.governor.track('tool_execution', 10, 10)
         except Exception as e:
-    pass
-self.telemetry.record(
+            self.telemetry.record(
                 TraceEvent(
                     trace_id=ConfigurationService().trace_id,
                     span_id=f'{self.id}_airlock_blocked',
@@ -324,4 +328,3 @@ async def _cleanup(self: Any, trace_id: str) -> None:
             PAYLOAD={
                 'zero_trust': True},
             TIMESTAMP=time.time()))
-

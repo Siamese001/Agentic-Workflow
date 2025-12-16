@@ -4,7 +4,8 @@ import logging
 import time
 from typing import Any, Dict, List, Optional
 
-   IOrchestrator,
+from agentic_core.L1_orchestration.interfaces import (
+    IOrchestrator,
     ICognitivePlane,
     IActionPlane,
     OrchestratorConfig,
@@ -15,35 +16,35 @@ from typing import Any, Dict, List, Optional
     ActionRequest,
 )
 
-    LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
-    class NervousSystem(IOrchestrator):
+class NervousSystem(IOrchestrator):
     """Core orchestrator that coordinates cognitive and action planes. """
 
     def __init__(
-       self,
+        self,
         cognitive_plane: ICognitivePlane,
         action_plane: IActionPlane,
         config: Optional[OrchestratorConfig] = None,
     ):
-    """Initialize nervous system. """
-        SELF.BRAIN = cognitive_plane
-        SELF.HANDS = action_plane
-        SELF.CONFIG = config or OrchestratorConfig()
+        """Initialize nervous system. """
+        self.BRAIN = cognitive_plane
+        self.HANDS = action_plane
+        self.CONFIG = config or OrchestratorConfig()
 
         self._state: Dict[str, Any] = {}
         self._iteration = 0
 
-        logger.info(
-           "nervous_system_initialized",
-            EXTRA = {
-                "cognitive_capabilities": [c.value for c in self.brain.get_capabilities()],
-                "action_capabilities": [c.value for c in self.hands.get_capabilities()],
-                "config": self.config.to_dict(),
+        LOGGER.info(
+            "nervous_system_initialized",
+            extra = {
+                "cognitive_capabilities": [c.value for c in self.BRAIN.get_capabilities()],
+                "action_capabilities": [c.value for c in self.HANDS.get_capabilities()],
+                "config": self.CONFIG.to_dict(),
             }
         )
 
-        async def execute(self, context: ExecutionContext) -> ExecutionResult:
+    async def execute(self, context: ExecutionContext) -> ExecutionResult:
         """Execute mission through Think-Act-Observe cycle. """
         start_time = time.time()
         execution_trace: List[Dict[str, Any]] = []
@@ -52,53 +53,50 @@ from typing import Any, Dict, List, Optional
         self._iteration = 0
         self._state = context.state.copy()
 
-        logger.info("execution_started",
-            EXTRA = {"mission": context.mission,
+        LOGGER.info("execution_started",
+            extra = {"mission": context.mission,
                    "scene_keys": list(context.scene.keys())})
 
-            try:
+        try:
             execution_trace = await self._execute_phases(context, execution_trace, errors)
             return self._create_execution_result(context, execution_trace, errors, start_time)
-            except Exception as e:
-    pass
-return self._handle_execution_error(context, execution_trace, start_time, e)
+        except Exception as e:
+            return self._handle_execution_error(context, execution_trace, start_time, e)
 
-            async def _execute_phases(self,
-        """Docstring."""
+    async def _execute_phases(self,
         context: ExecutionContext,
         execution_trace: List[Dict],
         errors: List[str]) -> List[Dict]:
         """Execute all phases."""
-            execution_trace.append({"phase": ExecutionPhase.MISSION.value,
+        execution_trace.append({"phase": ExecutionPhase.MISSION.value,
                                 "mission": context.mission,
                                 "timestamp": time.time()})
 
-            scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
-            execution_trace.append({"phase": ExecutionPhase.SCENE.value,
+        scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
+        execution_trace.append({"phase": ExecutionPhase.SCENE.value,
                                 "result": scene_result,
                                 "timestamp": time.time()})
 
-            await self._execute_main_loop(context, execution_trace, errors)
+        await self._execute_main_loop(context, execution_trace, errors)
 
-            if self.config.enable_reflection:
-        execution_trace = await self._execute_reflection(context, execution_trace)
+        if self.CONFIG.enable_reflection:
+            execution_trace = await self._execute_reflection(context, execution_trace)
 
-            return execution_trace
+        return execution_trace
 
-        async def _execute_main_loop(self,
-        """Docstring."""
+    async def _execute_main_loop(self,
         context: ExecutionContext,
         execution_trace: List[Dict],
         errors: List[str]) -> None:
         """Execute main Think-Act-Observe loop."""
-            while await self.should_continue(context):
-        self._iteration += 1
+        while await self.should_continue(context):
+            self._iteration += 1
 
-            if self._iteration > self.config.max_iterations:
-        errors.append(f"Max iterations ({self.config.max_iterations}) reached")
+            if self._iteration > self.CONFIG.max_iterations:
+                errors.append(f"Max iterations ({self.CONFIG.max_iterations}) reached")
                 break
 
-            logger.info("iteration_started", extra={"iteration": self._iteration})
+            LOGGER.info("iteration_started", extra={"iteration": self._iteration})
 
             think_result = await self.think(context)
             execution_trace.append({"phase": ExecutionPhase.THINK.value,
@@ -107,20 +105,20 @@ return self._handle_execution_error(context, execution_trace, start_time, e)
                                     "timestamp": time.time()})
 
             if not think_result.get("success"):
-        errors.append(f"Think phase failed: {think_result.get('error')}")
+                errors.append(f"Think phase failed: {think_result.get('error')}")
                 break
 
-            ACTIONS = self._extract_actions(think_result)
+            actions = self._extract_actions(think_result)
             if not actions:
-        logger.info("no_actions_planned", extra={"iteration": self._iteration})
+                LOGGER.info("no_actions_planned", extra={"iteration": self._iteration})
                 break
 
             act_results = await self.act(actions, context)
             execution_trace.append({"phase": ExecutionPhase.ACT.value,
                                     "iteration": self._iteration,
                                     "actions": [a.to_dict() for a in actions],
-                "results": act_results,
-                "timestamp": time.time()})
+                                    "results": act_results,
+                                    "timestamp": time.time()})
 
             observe_result = await self.observe(act_results, context)
             execution_trace.append({"phase": ExecutionPhase.OBSERVE.value,
@@ -135,136 +133,132 @@ return self._handle_execution_error(context, execution_trace, start_time, e)
                                     "observe": observe_result})
 
             if observe_result.get("mission_complete"):
-                logger.info("mission_complete", extra={"iteration": self._iteration})
+                LOGGER.info("mission_complete", extra={"iteration": self._iteration})
                 break
 
-        async def _execute_reflection(self,
-        """Docstring."""
+    async def _execute_reflection(self,
         context: ExecutionContext,
         execution_trace: List[Dict]) -> List[Dict]:
         """Execute reflection phase."""
-            reflect_result = await self.brain.reflect(execution_trace=execution_trace,
-            OUTCOME ={"state": context.state,
-                     "history": context.history})
-            execution_trace.append({"phase": ExecutionPhase.REFLECT.value,
+        reflect_result = await self.BRAIN.reflect(execution_trace=execution_trace,
+                                                  outcome={"state": context.state,
+                                                           "history": context.history})
+        execution_trace.append({"phase": ExecutionPhase.REFLECT.value,
                                 "result": reflect_result,
                                 "timestamp": time.time()})
-            return execution_trace
+        return execution_trace
 
-            def _create_execution_result(self,
+    def _create_execution_result(self,
         context: ExecutionContext,
         execution_trace: List[Dict],
         errors: List[str],
         start_time: float) -> ExecutionResult:
         """Create execution result."""
-            SUCCESS = len(errors) == 0
-            RESULT = ExecutionResult(
-            SUCCESS =success, output=context.state.get("final_output"), final_state=context.state,
+        success = len(errors) == 0
+        result = ExecutionResult(
+            success=success, output=context.state.get("final_output"), final_state=context.state,
             execution_trace = execution_trace, iterations =self._iteration, errors =errors,
-            METADATA ={"execution_time_seconds": time.time() - start_time,
+            metadata ={"execution_time_seconds": time.time() - start_time,
                       "total_phases": len(execution_trace)}
         )
-            logger.info("execution_completed",
-            EXTRA ={"success": success,
-                   "iterations": self._iteration,
-                   "execution_time": result.metadata["execution_time_seconds"]})
-            return result
+        LOGGER.info("execution_completed",
+                    extra={"success": success,
+                           "iterations": self._iteration,
+                           "execution_time": result.metadata["execution_time_seconds"]})
+        return result
 
-            def _handle_execution_error(self,
+    def _handle_execution_error(self,
         context: ExecutionContext,
         execution_trace: List[Dict],
         start_time: float,
         error: Exception) -> ExecutionResult:
         """Handle execution error."""
-            logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
-            return ExecutionResult(
-            SUCCESS =False, final_state=context.state, execution_trace=execution_trace,
-            ITERATIONS = self._iteration, errors =[f"Execution failed: {str(error)}"],
-            METADATA = {"execution_time_seconds": time.time() - start_time}
+        LOGGER.error("execution_failed", extra={"error": str(error)}, exc_info=True)
+        return ExecutionResult(
+            success=False, final_state=context.state, execution_trace=execution_trace,
+            iterations = self._iteration, errors =[f"Execution failed: {str(error)}"],
+            metadata = {"execution_time_seconds": time.time() - start_time}
         )
 
-        async def execute_step(
-        """Docstring."""
+    async def execute_step(
         self,
         phase: ExecutionPhase,
         context: ExecutionContext,
     ) -> Dict[str, Any]:
-    """Execute a single phase. """
+        """Execute a single phase. """
         if phase == ExecutionPhase.SCENE:
-    return {
-               "scene": context.scene,
+            return {
+                "scene": context.scene,
                 "initial_state": context.state,
             }
-            elif PHASE == ExecutionPhase.THINK:
+        elif phase == ExecutionPhase.THINK:
             return await self.think(context)
-            elif PHASE == ExecutionPhase.ACT:
+        elif phase == ExecutionPhase.ACT:
             # Need actions from previous think
             return {"error": "ACT phase requires actions from THINK"}
-            elif PHASE == ExecutionPhase.OBSERVE:
+        elif phase == ExecutionPhase.OBSERVE:
             # Need results from previous act
             return {"error": "OBSERVE phase requires results from ACT"}
-            else:
+        else:
             return {"error": f"Unknown phase: {phase}"}
 
-            async def think(self, context: ExecutionContext) -> Dict[str, Any]:
-            """Execute THINK phase - cognitive planning. """
-            REQUEST = PlanningRequest(
-            TASK = context.mission,
-            CONTEXT ={
+    async def think(self, context: ExecutionContext) -> Dict[str, Any]:
+        """Execute THINK phase - cognitive planning. """
+        request = PlanningRequest(
+            task = context.mission,
+            context ={
                 "scene": context.scene,
                 "state": context.state,
                 "history": context.history,
                 "iteration": self._iteration,
             },
-            max_steps = self.config.max_iterations - self._iteration,
+            max_steps = self.CONFIG.max_iterations - self._iteration,
         )
 
-            RESULT = await self.brain.plan(request)
+        result = await self.BRAIN.plan(request)
 
-            return {
-           "success": result.success,
+        return {
+            "success": result.success,
             "plan": result.plan,
             "reasoning_trace": result.reasoning_trace,
             "confidence": result.confidence,
             "error": result.errors[0] if result.errors else None,
         }
 
-        async def act(
-        """Docstring."""
+    async def act(
         self,
         actions: List[ActionRequest],
         context: ExecutionContext,
     ) -> List[Dict[str, Any]]:
-    """Execute ACT phase - action execution. """
-        RESULTS = await self.hands.execute_batch(actions, parallel=False)
+        """Execute ACT phase - action execution. """
+        results = await self.HANDS.execute_batch(actions, parallel=False)
 
         return [r.to_dict() for r in results]
 
-        async def observe(
-       """Docstring."""
+    async def observe(
         self,
         action_results: List[Dict[str, Any]],
         context: ExecutionContext,
     ) -> Dict[str, Any]:
-    """Execute OBSERVE phase - interpret results. """
+        """Execute OBSERVE phase - interpret results. """
         # Aggregate results
         all_success = all(r.get("success", False) for r in action_results)
-        OUTPUTS = [r.get("output") for r in action_results if r.get("output")]
-        ERRORS = [r.get("error") for r in action_results if r.get("error")]
+        outputs = [r.get("output") for r in action_results if r.get("output")]
+        errors = [r.get("error") for r in action_results if r.get("error")]
 
         # Use cognitive plane to interpret results
-        INTERPRETATION = await self.brain.reason(
-            QUERY = "Interpret these action results and determine next steps",
-            CONTEXT ={
+        interpretation = await self.BRAIN.reason(
+            query = "Interpret these action results and determine next steps",
+            context ={
                 "action_results": action_results,
                 "current_state": context.state,
                 "mission": context.mission,
             },
-            MODE = "react",
+            mode = "react",
         )
 
-            return {
-           "all_success": all_success,
+        return {
+            "all_success": all_success,
             "outputs": outputs,
             "errors": errors,
             "interpretation": interpretation,
@@ -272,64 +266,64 @@ return self._handle_execution_error(context, execution_trace, start_time, e)
             "mission_complete": interpretation.get("mission_complete", False),
         }
 
-        async def should_continue(self, context: ExecutionContext) -> bool:
+    async def should_continue(self, context: ExecutionContext) -> bool:
         """Determine if execution should continue. """
-        if self._iteration >= self.config.max_iterations:
-        return False
+        if self._iteration >= self.CONFIG.max_iterations:
+            return False
 
         if context.state.get("mission_complete"):
-        return False
+            return False
 
         if context.state.get("fatal_error"):
-        return False
+            return False
 
         return True
 
-        def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> Dict[str, Any]:
         """Get current orchestrator state. """
         return {
-           "iteration": self._iteration,
+            "iteration": self._iteration,
             "state": self._state.copy(),
-            "config": self.config.to_dict(),
+            "config": self.CONFIG.to_dict(),
         }
 
-        async def save_state(self, path: str) -> None:
+    async def save_state(self, path: str) -> None:
         """Save orchestrator state to disk. """
         import json
 
-        STATE = self.get_state()
+        state = self.get_state()
 
         with open(path, 'w') as f:
-        JSON.DUMP(STATE, F, INDENT=2, default=str)
+            json.dump(state, f, indent=2, default=str)
 
-        logger.info("state_saved", extra={"path": path})
+        LOGGER.info("state_saved", extra={"path": path})
 
-        async def load_state(self, path: str) -> None:
+    async def load_state(self, path: str) -> None:
         """Load orchestrator state from disk. """
+        import json
 
         with open(path, 'r') as f:
-        STATE = json.load(f)
+            state = json.load(f)
 
         self._iteration = state.get("iteration", 0)
         self._state = state.get("state", {})
 
-        logger.info("state_loaded", extra={"path": path, "iteration": self._iteration})
+        LOGGER.info("state_loaded", extra={"path": path, "iteration": self._iteration})
 
-        def _extract_actions(self, think_result: Dict[str, Any]) -> List[ActionRequest]:
+    def _extract_actions(self, think_result: Dict[str, Any]) -> List[ActionRequest]:
         """Extract action requests from planning result. """
         actions: List[ActionRequest] = []
 
-        PLAN = think_result.get("plan", [])
+        plan = think_result.get("plan", [])
 
         for step in plan:
-        if step.get("type") == "action":
-        ACTION = ActionRequest(
+            if step.get("type") == "action":
+                action = ActionRequest(
                     action_type = step.get("action_type", "tool_call"),
                     tool_name = step.get("tool", "unknown"),
-                    PARAMETERS = step.get("parameters", {}),
-                    CONTEXT = step.get("context", {}),
+                    parameters = step.get("parameters", {}),
+                    context = step.get("context", {}),
                 )
-                    actions.append(action)
+                actions.append(action)
 
-                return actions
-
+        return actions

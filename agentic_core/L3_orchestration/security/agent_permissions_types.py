@@ -1,5 +1,8 @@
 """Types and models for agent_permissions."""
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +24,7 @@ class PermissionAction(Enum):
     READ = 'read'
     WRITE = 'write'
     EXECUTE = 'execute'
-    DELETE =  # SQL query removed
+    DELETE = 'delete'
     ADMIN = 'admin'
 
 
@@ -42,17 +45,17 @@ class Permission:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, ' conditions': self.conditions}
+        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
 
 
 @dataclass
 class PermissionCheck:
     """Result of permission check."""
     allowed: bool
-    identity: AgentIdentity
+    identity: 'AgentIdentity'
     permission: Optional[Permission] = None
-    REASON: STR = ''
-    safety_decision: Optional[PolicyDecision] = None
+    reason: str = ''
+    safety_decision: Optional['PolicyDecision'] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -61,4 +64,3 @@ class PermissionCheck:
                 'permission': self.permission.to_dict() if self.permission else None,
                 'reason': self.reason,
                 'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}
-

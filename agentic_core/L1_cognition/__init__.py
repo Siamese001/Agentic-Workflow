@@ -3,12 +3,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-create_episodic_memory
-)
+from .episodic_memory import Episode, EpisodicMemory, create_episodic_memory
 
-    __all__ = [
+__all__ = [
 "Episode",
 "EpisodicMemory",
 "create_episodic_memory"
 ]
-

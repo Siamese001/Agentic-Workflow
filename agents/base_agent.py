@@ -184,12 +184,10 @@ class BaseAgent(ABC):
             return token
 
         except CANON_EXCEPTIONS:
-    pass
-self.metrics["canon_violations"] += 1
+            self.metrics["canon_violations"] += 1
             raise
         except Exception as e:
-    pass
-raise MemorySyncError(
+            raise MemorySyncError(
                 f"Canon consultation failed: {e}",
                 operation="consult_canon",
                 backend="both",
@@ -234,8 +232,7 @@ raise MemorySyncError(
                 f"Recorded outcome for {self.agent_id}: {'SUCCESS' if success else 'FAILURE'}")
 
         except Exception as e:
-    pass
-logger.error(f"Failed to record outcome for {self.agent_id}: {e}")
+            logger.error(f"Failed to record outcome for {self.agent_id}: {e}")
 
     def _update_latency(self, latency_ms: int):
         """Update average latency metric."""
@@ -288,14 +285,12 @@ logger.error(f"Failed to record outcome for {self.agent_id}: {e}")
             return result
 
         except CanonViolationError:
-    pass
-# Record violation
+            # Record violation
             self._record_outcome(
                 success=False, error_trace=str(CanonViolationError))
             raise
         except Exception as e:
-    pass
-# Record failure
+            # Record failure
             latency_ms = int((time.perf_counter() - start_time) * 1000)
             self._record_outcome(
                 success=False, latency_ms=latency_ms, error_trace=str(e))
@@ -345,4 +340,3 @@ logger.error(f"Failed to record outcome for {self.agent_id}: {e}")
 
     def __repr__(self) -> str:
         return f"<BaseAgent id={self.agent_id} executions={self.metrics['executions']}>"
-
