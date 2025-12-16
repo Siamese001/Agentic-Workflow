@@ -43,7 +43,7 @@ services:
     image: canon-validator:latest
     user: appuser
     container_name: canon-architect
-    command: ["apps_rg/L0_maintenance/fix_structural_debt_llm.py"]
+    command: ["fix_structural_debt_llm.py"]
     volumes:
       - .:/app:rw
       - logs:/app/logs:rw
@@ -63,7 +63,7 @@ services:
     image: canon-validator:latest
     user: appuser
     container_name: canon-surgeon
-    command: ["apps_rg/L0_maintenance/fix_syntax_llm.py"]
+    command: ["fix_syntax_llm.py"]
     volumes:
       - .:/app:rw
       - logs:/app/logs:rw
