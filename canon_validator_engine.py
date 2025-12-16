@@ -23,8 +23,11 @@ from sandbox_utils import execute_in_sandbox
 # Import consensus engine for Protocol 6
 from consensus_engine import jury
 
+# Add this global configuration flag (or load from environment/config)
+SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"
 
-def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+
+def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Orchestrates a 5-MCP repair cycle: Git context (L1), canonical fix (L3), code edit (L1),
     cache (L4), and historical logging (L5).
@@ -167,6 +170,17 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
         
         # 4. Commit the fix with GPG signature (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
+        
+        # --- HARDENING PROTOCOL 10: SHADOW MODE EXECUTION ---
+        if SHADOW_MODE_ACTIVE:
+            if logger:
+                logger.warning(f"👻 SHADOW MODE: Blocked final commit of {target_file}.")
+                logger.warning(f"Diff would be saved to shadow_output/{issue_id}_shadow.diff for review.")
+            
+            # Return success from the perspective of the agent workflow (it did its job)
+            return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED", "file": target_file}
+        # --------------------------------------------------
+        
         if not sign_and_commit(target_file, commit_message, key_id=BOT_GPG_KEY_ID):
             return {"status": "FAILED", "reason": "GPG_SIGNING_FAILURE"}
         
