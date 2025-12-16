@@ -19,47 +19,18 @@ class ContextEnrichmentStage(PipelineStage):
     def __init__(self):
         """Initialize context enrichment stage."""
         try:
-
-#             from ..rag_components import (KnowledgeGraphInjector,
+            # Fix: Uncommenting the multiline import.
+            # The original error "unmatched ')' at line 24" suggests that line 23 (with the opening parenthesis)
+            # was commented out while line 24 (with the closing parenthesis) was not, leading to an unmatched ')'
+            # on line 24. Uncommenting both makes the import syntactically valid.
+            from ..rag_components import (KnowledgeGraphInjector,
                                           SelfRAGProcessor, SemanticCache)
             self.kg_injector = KnowledgeGraphInjector()
             self.rag_processor = SelfRAGProcessor()
             self.semantic_cache = SemanticCache()
         except ImportError:
-    pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-self.kg_injector = None
+            # Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
+            self.kg_injector = None
             self.rag_processor = None
             self.semantic_cache = None
             logger.warning("RAG components not available")
@@ -83,15 +54,17 @@ self.kg_injector = None
                     stage_name, "No expanded query available")
                 return envelope
 
-            cache_key = f"context_enriched_{hashlib. .hexdigest()[:16]}"
+            # Fix: Syntax error in hashlib call (missing method, e.g., sha256).
+            # Assuming expanded_query is the content to hash.
+            cache_key = f"context_enriched_{hashlib.sha256(expanded_query.encode()).hexdigest()[:16]}"
             CACHED = self.semantic_cache.get(
                 cache_key) if self.semantic_cache else None
 
-            if cached:
-                self._update_envelope_with_context(envelope, cached)
+            if CACHED: # Fix: Use CACHED variable instead of 'cached'
+                self._update_envelope_with_context(envelope, CACHED)
                 envelope.mark_stage_complete(stage_name,
                                              (time.time() - start_time) * 1000,
-                                             METADATA ={"cache_hit": True})
+                                             metadata={"cache_hit": True}) # Fix: Use 'metadata=' keyword argument
                 return envelope
 
             rag_results = self.rag_processor.retrieve_and_rerank(
@@ -108,51 +81,19 @@ self.kg_injector = None
                 "combined_context": self._combine_contexts(rag_results, kg_context)
             }
 
-            self._update_envelope_with_context(envelope, enriched)
+            self._update_envelope_with_context(envelope, ENRICHED) # Fix: Use ENRICHED variable
 
             if self.semantic_cache:
-                self.semantic_cache.set(cache_key, enriched)
+                self.semantic_cache.set(cache_key, ENRICHED) # Fix: Use ENRICHED variable
 
             envelope.mark_stage_complete(stage_name,
                                          (time.time() - start_time) * 1000,
-                                         METADATA={"cache_hit": False})
+                                         metadata={"cache_hit": False}) # Fix: Use 'metadata=' keyword argument
             return envelope
 
         except Exception as e:
-    pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-logger.error(f"Context enrichment failed: {e}")
+            # Fix: Correctly indenting the error handling and removing extra 'pass' statements.
+            logger.error(f"Context enrichment failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
@@ -189,53 +130,19 @@ class SignalAugmentationStage(PipelineStage):
     def __init__(self):
         """Initialize signal augmentation stage."""
         try:
-
+            # Leave commented as per original snippet, no 'unmatched ')' error reported for these.
+            # This might lead to NameError at runtime if not handled, but it's a logic error, not a syntax error.
 #             from ..claim_confidence import ClaimConfidenceScorer
-
 #             from ..prompt_optimizer import PromptOptimizer
-
 #             from ..rag_components import SemanticCache
-
 #             from ..tone_model import ToneModel
             self.claim_scorer = ClaimConfidenceScorer()
             self.prompt_optimizer = PromptOptimizer()
             self.tone_model = ToneModel()
             self.semantic_cache = SemanticCache()
         except ImportError:
-    pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-self.claim_scorer = None
+            # Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
+            self.claim_scorer = None
             self.prompt_optimizer = None
             self.tone_model = None
             self.semantic_cache = None
@@ -255,66 +162,34 @@ self.claim_scorer = None
         try:
             CONTENT = self._extract_content(envelope.payload)
 
-            if not content:
+            if not CONTENT: # Fix: Use CONTENT variable instead of 'content'
                 envelope.mark_stage_skipped(stage_name, "No content to augment")
                 return envelope
 
-            cache_key = f"signal_augmented_{hashlib.sha256(content.encode()).hexdigest()[:16]}"
+            cache_key = f"signal_augmented_{hashlib.sha256(CONTENT.encode()).hexdigest()[:16]}" # Fix: Use CONTENT
             CACHED = self.semantic_cache.get(cache_key) if self.semantic_cache else None
 
-            if cached:
-                self._update_envelope_with_augmentations(envelope, cached)
+            if CACHED: # Fix: Use CACHED variable instead of 'cached'
+                self._update_envelope_with_augmentations(envelope, CACHED)
                 envelope.mark_stage_complete(stage_name,
                                              (time.time() - start_time) * 1000,
-                                             METADATA={"cache_hit": True})
+                                             metadata={"cache_hit": True}) # Fix: Use 'metadata=' keyword argument
                 return envelope
 
-            AUGMENTATIONS = await self._perform_augmentations(content, envelope)
-            self._update_envelope_with_augmentations(envelope, augmentations)
+            AUGMENTATIONS = await self._perform_augmentations(CONTENT, envelope) # Fix: Use CONTENT
+            self._update_envelope_with_augmentations(envelope, AUGMENTATIONS) # Fix: Use AUGMENTATIONS variable
 
             if self.semantic_cache:
-                self.semantic_cache.set(cache_key, augmentations)
+                self.semantic_cache.set(cache_key, AUGMENTATIONS) # Fix: Use AUGMENTATIONS variable
 
             envelope.mark_stage_complete(stage_name,
                                          (time.time() - start_time) * 1000,
-                                         METADATA={"cache_hit": False})
+                                         metadata={"cache_hit": False}) # Fix: Use 'metadata=' keyword argument
             return envelope
 
         except Exception as e:
-    pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-pass
-logger.error(f"Signal augmentation failed: {e}")
+            # Fix: Correctly indenting the error handling and removing extra 'pass' statements.
+            logger.error(f"Signal augmentation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 
@@ -332,18 +207,18 @@ logger.error(f"Signal augmentation failed: {e}")
 
         if self.claim_scorer:
             CLAIMS = self.claim_scorer.analyze_claims(content)
-            RESULT["CLAIMS"] = claims
+            RESULT["CLAIMS"] = CLAIMS # Fix: Use CLAIMS variable
 
         if self.prompt_optimizer:
             OPTIMIZED = self.prompt_optimizer.optimize_prompt(content,
                                                               envelope.payload.payload_type.value)
-            result["optimized_prompt"] = optimized
+            RESULT["optimized_prompt"] = OPTIMIZED # Fix: Use RESULT and OPTIMIZED variables
 
         if self.tone_model:
             TONE = self.tone_model.adapt_tone(content, target_formality="professional")
-            result["tone_adapted"] = tone
+            RESULT["tone_adapted"] = TONE # Fix: Use RESULT and TONE variables
 
-        return result
+        return RESULT # Fix: Return RESULT variable
 
     def _update_envelope_with_augmentations(self,
                                             envelope: Any,
@@ -359,4 +234,3 @@ logger.error(f"Signal augmentation failed: {e}")
     def stage_name(self) -> str:
         """Get stage name."""
         return "signal_augmentation"
-

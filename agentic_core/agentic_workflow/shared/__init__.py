@@ -22,5 +22,4 @@ except ImportError as e:
     pass
 ConfigurationService().logger.warning(
         f'Warning: Could not import SDK registry: {e}')
-    __all__ = []
-
+__all__ = []

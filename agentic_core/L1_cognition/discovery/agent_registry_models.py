@@ -23,8 +23,7 @@ class MCPContract:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'provider': self.provider, 'endpoints': self.endpoints, 'parameters': self.parameter
-                s, 'version': self.version}
+        return {'provider': self.provider, 'endpoints': self.endpoints, 'parameters': self.parameters, 'version': self.VERSION}
 
 
 @dataclass
@@ -37,7 +36,7 @@ class ToolPermission:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'tool_name': self.tool_name, 'allowed_operations': self.allowed_operations, 'rate_li mit': self.rate_limit, 'requires_approval': self.requires_approval}
+        return {'tool_name': self.tool_name, 'allowed_operations': self.allowed_operations, 'rate_limit': self.rate_limit, 'requires_approval': self.requires_approval}
 
 
 @dataclass
@@ -92,5 +91,4 @@ class RegistrationResult:
         """Convert to dictionary."""
         return {'success': self.success,
                 'agent_card': self.agent_card.to_dict() if self.agent_card else None,
-                'reason': self.reason}
-
+                'reason': self.REASON}

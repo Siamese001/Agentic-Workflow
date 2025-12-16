@@ -27,8 +27,6 @@ try:
         'get_vector_store',
         'get_redis_client']
 except ImportError as e:
-    pass
-ConfigurationService().logger.warning(
+    logger.warning(
         f'Warning: Could not import runtime components: {e}')
     __all__ = []
-

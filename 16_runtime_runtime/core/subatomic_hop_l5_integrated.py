@@ -79,12 +79,10 @@ async def run(self: Any, context: Dict) -> Dict[str, Any]:
         return {'output': ConfigurationService().final_output, 'trace_id': ConfigurationService().trace_id, 'session_id': self.session_id, 'execution_time': ConfigurationService().execution_time, 'cost_summary': self.cost_governor.get_usage_summary(
         ), 'pii_summary': ConfigurationService().pii_summary, 'safety_validations': {'canary_integrity': canary.token if canary else None, 'constitutional_checks': 'passed', 'budget_remaining': self.cost_governor.get_remaining_budget()}}
     except BudgetExceededError as e:
-    pass
-await self._handle_budget_exceeded(ConfigurationService().trace_id, e)
+        await self._handle_budget_exceeded(ConfigurationService().trace_id, e)
         raise
     except Exception as e:
-    pass
-await self._handle_execution_error(ConfigurationService().trace_id, e)
+        await self._handle_execution_error(ConfigurationService().trace_id, e)
         raise
     finally:
         await self._cleanup(ConfigurationService().trace_id)
@@ -172,7 +170,7 @@ async def _execute_act_stage(self: Any, plan: AgentPlan, trace_id: str) -> Tuple
     try:
         for call in ConfigurationService().plan.tool_calls:
             if call['name'] == 'run_python':
-                call['args'].get('code', '')
+                code = call['args'].get('code', '')
                 self.sandbox.run_code(code)
                 ConfigurationService().results.append(
                     {'tool': 'sandbox', 'result': ConfigurationService().result})
@@ -300,4 +298,3 @@ class SecurityError(Exception):
 
 class ConstitutionalViolationError(Exception):
     """Raised when constitutional rules are violated."""
-

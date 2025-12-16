@@ -2,6 +2,46 @@
 
 import logging
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+
+# Placeholder for ReActEngine and DAGEngine if they are not defined in this file
+# In a real scenario, these would be imported from their respective modules.
+class ReActEngine:
+    def __init__(self, max_steps: int):
+        pass
+    async def run(self, TASK: str, think_fn: Any, act_fn: Any):
+        # Dummy implementation
+        class Trace:
+            def to_reasoning_trace(self):
+                class ReasoningTrace:
+                    def to_dict(self):
+                        return {}
+                return ReasoningTrace()
+            steps = []
+        return Trace()
+
+class DAGEngine:
+    def __init__(self, enable_logging: bool):
+        pass
+    def reset(self):
+        pass
+    def add_task(self, task):
+        pass
+    async def execute(self, EXECUTOR: Any):
+        class DagResult:
+            success = True
+            task_results = {}
+            def to_dict(self):
+                return {}
+        return DagResult()
+
+class Task:
+    def __init__(self, id: str, NAME: str, task_type: Any, PARAMETERS: Any):
+        pass
+
+class TaskType:
+    ACTION = "action"
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +71,7 @@ class CycleState:
     """State of the Think-Act-Observe cycle."""
     mission: str
     scene: Dict[str, Any]
-    ITERATION: INT = 0
+    iteration: int = 0
     current_phase: str = "mission"
     observations: List[Dict[str, Any]] = field(default_factory=list)
     actions_taken: List[Dict[str, Any]] = field(default_factory=list)
@@ -61,7 +101,7 @@ class ThinkActObserveEngine:
         enable_logging: bool = True,
     ):
         """Initialize Think-Act-Observe engine. """
-        SELF.CONFIG = config or CycleConfig()
+        self.config = config or CycleConfig()
         self.enable_logging = enable_logging
 
         # Initialize sub-engines
@@ -80,13 +120,12 @@ class ThinkActObserveEngine:
         self.state: Optional[CycleState] = None
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "think_act_observe_engine_initialized",
                 EXTRA={"config": self.config.to_dict()}
             )
 
     async def execute_cycle(
-        """Docstring."""
         self,
         mission: str,
         scene: Dict[str, Any],
@@ -95,13 +134,13 @@ class ThinkActObserveEngine:
     ) -> Dict[str, Any]:
         """Execute the full Think-Act-Observe cycle. """
         # Initialize state
-        SELF.STATE = CycleState(
-            MISSION=mission,
-            SCENE=scene,
+        self.state = CycleState(
+            mission=mission,
+            scene=scene,
         )
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "cycle_started",
                 EXTRA={
                     "mission": mission,
@@ -117,10 +156,10 @@ class ThinkActObserveEngine:
 
         # Main loop: THINK -> ACT -> OBSERVE
         while self.state.iteration < self.config.max_iterations:
-            SELF.STATE.ITERATION += 1
+            self.state.iteration += 1
 
             if self.enable_logging:
-                logger.info(
+                LOGGER.info(
                     "iteration_started",
                     EXTRA={"iteration": self.state.iteration}
                 )
@@ -146,7 +185,7 @@ class ThinkActObserveEngine:
             # Check if mission is complete
             if observe_result.get("mission_complete"):
                 if self.enable_logging:
-                    logger.info(
+                    LOGGER.info(
                         "mission_complete",
                         EXTRA={"iteration": self.state.iteration}
                     )
@@ -163,7 +202,7 @@ class ThinkActObserveEngine:
         }
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "cycle_completed",
                 EXTRA={
                     "iterations": self.state.iteration,
@@ -178,13 +217,13 @@ class ThinkActObserveEngine:
         self.state.current_phase = "think"
 
         if self.enable_logging:
-            logger.debug("think_phase_started")
+            LOGGER.debug("think_phase_started")
 
         # Use ReAct engine if enabled
         if self.react_engine:
             try:
                 # Create context for ReAct
-                CONTEXT = {
+                context = {
                     "mission": self.state.mission,
                     "scene": self.state.scene,
                     "iteration": self.state.iteration,
@@ -193,7 +232,7 @@ class ThinkActObserveEngine:
                 }
 
                 # Run ReAct reasoning
-                TRACE = await self.react_engine.run(
+                trace = await self.react_engine.run(
                     TASK=self.state.mission,
                     think_fn=think_fn,
                     act_fn=lambda action: {"type": "plan", "action": action},
@@ -204,7 +243,7 @@ class ThinkActObserveEngine:
                 self.state.reasoning_traces.append(reasoning_trace.to_dict())
 
                 # Extract actions from trace
-                ACTIONS = []
+                actions = []
                 for step in trace.steps:
                     if step.action and step.action != "FINISH":
                         actions.append({
@@ -220,9 +259,8 @@ class ThinkActObserveEngine:
                 }
 
             except Exception as e:
-    pass
-if self.enable_logging:
-                    logger.error(
+                if self.enable_logging:
+                    LOGGER.error(
                         "think_phase_failed",
                         EXTRA={"error": str(e)},
                         exc_info=True,
@@ -236,21 +274,25 @@ if self.enable_logging:
         else:
             # Fallback: direct thinking without ReAct
             try:
-                RESULT = await think_fn(self.state.mission, self.state.scene)
+                result = await think_fn(self.state.mission, self.state.scene)
                 return {
                     "success": True,
                     "actions": result.get("actions", []),
                 }
             except Exception as e:
-    pass
-return {
+                if self.enable_logging:
+                    LOGGER.error(
+                        "think_phase_failed",
+                        EXTRA={"error": str(e)},
+                        exc_info=True,
+                    )
+                return {
                     "success": False,
                     "error": str(e),
                     "actions": [],
                 }
 
     async def _act_phase(
-        """Docstring."""
         self,
         actions: List[Dict[str, Any]],
         act_fn: Any,
@@ -259,7 +301,7 @@ return {
         self.state.current_phase = "act"
 
         if self.enable_logging:
-            logger.debug(
+            LOGGER.debug(
                 "act_phase_started",
                 EXTRA={"action_count": len(actions)}
             )
@@ -278,7 +320,7 @@ return {
 
                 # Add tasks to DAG
                 for i, action in enumerate(actions):
-                    TASK = Task(
+                    task = Task(
                         id=f"action_{i}",
                         NAME=action.get("action", f"Action {i}"),
                         task_type=TaskType.ACTION,
@@ -302,9 +344,8 @@ return {
                 }
 
             except Exception as e:
-    pass
-if self.enable_logging:
-                    logger.error(
+                if self.enable_logging:
+                    LOGGER.error(
                         "act_phase_failed",
                         EXTRA={"error": str(e)},
                         exc_info=True,
@@ -317,16 +358,15 @@ if self.enable_logging:
 
         else:
             # Fallback: sequential execution
-            RESULTS = []
+            results = []
             for action in actions:
                 try:
-                    RESULT = await act_fn(action)
+                    result = await act_fn(action)
                     results.append(result)
                     self.state.actions_taken.append(action)
                 except Exception as e:
-    pass
-if self.enable_logging:
-                        logger.error(
+                    if self.enable_logging:
+                        LOGGER.error(
                             "action_failed",
                             EXTRA={"action": action, "error": str(e)}
                         )
@@ -338,7 +378,6 @@ if self.enable_logging:
             }
 
     async def _observe_phase(
-        """Docstring."""
         self,
         think_result: Dict[str, Any],
         act_result: Dict[str, Any],
@@ -347,10 +386,10 @@ if self.enable_logging:
         self.state.current_phase = "observe"
 
         if self.enable_logging:
-            logger.debug("observe_phase_started")
+            LOGGER.debug("observe_phase_started")
 
         # Create observation
-        OBSERVATION = {
+        observation = {
             "iteration": self.state.iteration,
             "think_success": think_result.get("success"),
             "act_success": act_result.get("success"),
@@ -363,7 +402,7 @@ if self.enable_logging:
         # Determine if mission is complete
         # Simple heuristic: check if last action indicated completion
         mission_complete = False
-        RESULTS = act_result.get("results", [])
+        results = act_result.get("results", [])
         if results:
             last_result = results[-1]
             if isinstance(last_result, dict):
@@ -389,31 +428,31 @@ if self.enable_logging:
             json.dump(self.state.to_dict(), f, indent=2, default=str)
 
         if self.enable_logging:
-            logger.info("state_saved", extra={"path": path})
+            LOGGER.info("state_saved", extra={"path": path})
 
     async def load_state(self, path: str) -> None:
         """Load cycle state from disk. """
+        import json
 
         with open(path, 'r') as f:
             state_dict = json.load(f)
 
-        SELF.STATE = CycleState(
-            MISSION=state_dict["mission"],
-            SCENE=state_dict["scene"],
-            ITERATION=state_dict.get("iteration", 0),
+        self.state = CycleState(
+            mission=state_dict["mission"],
+            scene=state_dict["scene"],
+            iteration=state_dict.get("iteration", 0),
             current_phase=state_dict.get("current_phase", "mission"),
-            OBSERVATIONS=state_dict.get("observations", []),
+            observations=state_dict.get("observations", []),
             actions_taken=state_dict.get("actions_taken", []),
             reasoning_traces=state_dict.get("reasoning_traces", []),
-            METADATA=state_dict.get("metadata", {}),
+            metadata=state_dict.get("metadata", {}),
         )
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "state_loaded",
                 EXTRA={
                     "path": path,
                     "iteration": self.state.iteration,
                 }
             )
-

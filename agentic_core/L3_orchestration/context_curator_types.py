@@ -1,5 +1,8 @@
 """Types and models for context_curator."""
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Dict, Any, List
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +38,12 @@ class ContextChunk:
     priority: ContextPriority
     token_count: int
     relevance_score: float = 0.0
-    PINNED: BOOL = False
+    PINNED: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priori ty': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_sco
-                re, 'pinned': self.pinned, 'metadata': self.metadata}
+        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priority': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_score, 'pinned': self.PINNED, 'metadata': self.metadata}
 
 
 @dataclass
@@ -59,4 +61,3 @@ class ContextWindow:
                 'max_tokens': self.max_tokens,
                 'pinned_tokens': self.pinned_tokens,
                 'available_tokens': self.max_tokens - self.total_tokens}
-

@@ -10,6 +10,7 @@ Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification
 
 import logging
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ class ResumeSectionConfig:
     section_name: str
     required: bool
     max_length: int
-    PRIORITY: INT  # 1 = highest
+    PRIORITY: int  # 1 = highest
     content_type: str  # "experience", "skills", "education", "projects"
     extraction_rules: List[str]
     validation_rules: List[str]
@@ -76,7 +77,7 @@ class RGPlanner:
                  config: Optional[Dict[str, object]] = None,
                  telemetry_bus: Optional[Any] = None) -> None:
         """Initialize resume generation planner."""
-        SELF.CONFIG = config or {}
+        self.CONFIG = config or {}
         self.telemetry_bus = telemetry_bus
 
         # Default resume processing configurations
@@ -98,7 +99,6 @@ class RGPlanner:
         ]
 
     def plan_resume_processing(
-        """Docstring."""
         self,
         *,
         job_input: Dict[str, object],
@@ -161,7 +161,7 @@ class RGPlanner:
             validation_params=k_node_params["validation"],
             execution_order=execution_order,
             fallback_strategies=fallback_strategies,
-            METADATA={
+            metadata={
                 "job_analysis": job_analysis,
                 "resume_analysis": resume_analysis,
                 "processing_strategy": processing_strategy,
@@ -189,7 +189,7 @@ class RGPlanner:
 
     def _analyze_resume_structure(self, resume_input: Dict[str, object]) -> Dict[str, object]:
         """Analyze current resume structure and content."""
-        SECTIONS = resume_input.get("sections", {})
+        sections = resume_input.get("sections", {})
 
         return {
             "total_sections": len(sections),
@@ -268,9 +268,9 @@ class RGPlanner:
         section_configs = []
 
         for section_name in self.standard_sections:
-            CONFIG = ResumeSectionConfig(
+            config = ResumeSectionConfig(
                 section_name=section_name,
-                REQUIRED=section_name in [
+                required=section_name in [
                     "contact_info", "summary", "experience"],
                 max_length=self._get_section_max_length(
                     section_name, strategy),
@@ -371,7 +371,7 @@ class RGPlanner:
     def _assess_format_quality(self, resume_input: Dict[str, object]) -> float:
         """Assess current resume formatting quality."""
         # Simple heuristic based on structure and organization
-        SECTIONS = resume_input.get("sections", {})
+        sections = resume_input.get("sections", {})
         structure_score = len(sections) / len(self.standard_sections) * 0.5
         content_score = min(
             len(resume_input.get("content", "")) / 1000, 1.0) * 0.5
@@ -379,7 +379,7 @@ class RGPlanner:
 
     def _calculate_completeness(self, resume_input: Dict[str, object]) -> float:
         """Calculate resume completeness score."""
-        SECTIONS = resume_input.get("sections", {})
+        sections = resume_input.get("sections", {})
         required_sections = ["contact_info", "summary", "experience"]
         present_required = sum(
             1 for section in required_sections if section in sections)
@@ -451,7 +451,7 @@ class RGPlanner:
                     "validation_level": processing_plan.analysis_plan.validation_level
                 })
         except Exception as e:
-logger.debug(f"Failed to record telemetry: {e}")
+            LOGGER.debug(f"Failed to record telemetry: {e}")
 
     def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> Dict[str, object]:
         """Get a summary of the planning execution for debugging/telemetry."""
@@ -463,4 +463,3 @@ logger.debug(f"Failed to record telemetry: {e}")
             "execution_order": processing_plan.execution_order,
             "validation_level": processing_plan.analysis_plan.validation_level
         }
-

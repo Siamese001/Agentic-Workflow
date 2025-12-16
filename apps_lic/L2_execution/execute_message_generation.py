@@ -16,24 +16,24 @@ class ExecuteMessageGeneration:
     """Executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
-        SELF.TIMEOUT = self.config.get("timeout", 30.0)
+        self.config = config or {}
+        self.timeout = self.config.get("timeout", 30.0)
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        START = time.time()
+        start = time.time()
         try:
-            OUTPUT = self._perform_action(action, params)
+            output = self._perform_action(action, params)
             return ExecutionResult(
-                SUCCESS=True,
-                OUTPUT=output,
+                success=True,
+                output=output,
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-return ExecutionResult(
-                SUCCESS=False,
-                ERROR=str(e),
+            return ExecutionResult(
+                success=False,
+                error=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
 
@@ -44,10 +44,8 @@ return ExecutionResult(
 
 
 def execute(action: str,
-            """Docstring."""
             params: Dict[str,
                          object],
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteMessageGeneration(config).execute(action, params)
-

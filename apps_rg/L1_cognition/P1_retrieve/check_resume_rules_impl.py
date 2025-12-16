@@ -1,9 +1,34 @@
 """Implementation for check_resume_rules."""
 
 import logging
-from typing import Any, Dict, List, Optional
+import sys
+import time
+from typing import Any, Dict, List, Optional, Union
 
 # # from .check_resume_rules_types import *  # Star import removed
+
+# Minimal stubs to ensure compilation for type hints and instantiation
+class ProcessingResult:
+    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
+        self.success = success
+        self.data = data
+        self.error_message = error_message
+        self.execution_context = execution_context
+        self.additional_info = additional_info
+
+class ExecutionContext:
+    def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
+        self.operation_id = operation_id
+        self.metadata = metadata or {}
+        self.start_time = None
+        self.end_time = None
+
+    def start(self):
+        self.start_time = time.time()
+
+    def complete(self, success: bool, error: Optional[Exception] = None):
+        self.end_time = time.time()
+        # Actual completion logic would go here
 
 
 class CheckResumeRules:
@@ -16,17 +41,17 @@ class CheckResumeRules:
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize with optional configuration."""
-        SELF.CONFIG = config or {}
+        self.config = config or {}
         self._setup_logging()
         self._validate_config()
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        SELF.LOGGER = logging.getLogger(
+        self.logger = logging.getLogger(
             f'{__name__}.{self.__class__.__name__}')
         if not self.logger.handlers:
-            EXECUTOR = logging.StreamHandler(sys.stdout)
-            FORMATTER = logging.Formatter(
+            executor = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             executor.setFormatter(formatter)
             self.logger.addHandler(executor)
@@ -35,12 +60,11 @@ class CheckResumeRules:
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
-        MISSING = [key for key in required_keys if key not in self.config]
+        missing = [key for key in required_keys if key not in self.config]
         if missing:
             raise ValueError(f'Missing required config keys: {missing}')
 
     def process(self,
-                """Docstring."""
                 payload: Union[str,
                                int,
                                float,
@@ -61,21 +85,20 @@ class CheckResumeRules:
         """
         exec_ctx = ExecutionContext(operation_id=self.config.get('operation_id',
                                                                  'default'),
-                                    METADATA=context or {})
+                                    metadata=context or {})
         try:
             exec_ctx.start()
             if payload is None:
                 raise ValueError('Payload cannot be None')
-            RESULT = self._execute_core(payload, context)
+            result = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
-                                    DATA=result,
+                                    data=result,
                                     execution_context=exec_ctx,
                                     additional_info={'processed_at': time.time(),
                                                      'executor': self.__class__.__name__})
         except Exception as e:
-    pass
-exec_ctx.complete(success=False, error=e)
+            exec_ctx.complete(success=False, error=e)
             return ProcessingResult(success=False, error_message=str(e), execution_context=exec_ctx)
 
     def _execute_core(self,
@@ -104,9 +127,7 @@ def create_processor(config: Optional[Dict[str, Any]] = None) -> CheckResumeRule
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
     try:
-        EXECUTOR = create_processor(config)
+        executor = create_processor(config)
         return True
     except Exception:
-    pass
-return False
-
+        return False

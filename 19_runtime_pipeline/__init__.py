@@ -3,8 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-PipelineExecutionError
-)
+__all__ = [
     'PipelineStageType',
     'PipelineContext',
     'PipelineStage',
@@ -16,4 +15,3 @@ PipelineExecutionError
     'OutputFormattingStage',
     'UnifiedSignalPipeline',
 ]
-

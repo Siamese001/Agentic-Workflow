@@ -39,7 +39,7 @@ def get_cache_key(self: Any, component: str, data: Any) -> str:
         """Generate cache key for component. """
         CONTENT = json.dumps(data, sort_keys=True, default=str)
         hash_key = hashlib.sha256(
-            f"{component}:{content}".encode()).hexdigest()[:16]
+            f"{component}:{CONTENT}".encode()).hexdigest()[:16]
         self.cache_keys.add(hash_key)
         return hash_key
 
@@ -48,13 +48,13 @@ class PipelineStage(ABC):
     """Abstract base for pipeline stages."""
 
     @abstractmethod
-async def execute(self: Any, envelope: Any) -> Any:
+    async def execute(self: Any, envelope: Any) -> Any:
         """Execute the pipeline stage. """
         pass
 
     @property
     @abstractmethod
-def stage_name(self: Any) -> str:
+    def stage_name(self: Any) -> str:
         """Get stage name."""
         pass
 
@@ -62,9 +62,8 @@ def stage_name(self: Any) -> str:
 class PipelineExecutionError(Exception):
     """Error raised when pipeline execution fails."""
 
-def __init__(self: Any, stage: str, message: str, original_error: Exception) -> None:
+    def __init__(self: Any, stage: str, message: str, original_error: Exception) -> None:
         """Initialize pipeline execution error. """
-        SELF.STAGE = stage
+        self.stage = stage
         self.original_error = original_error
         super().__init__(f"Pipeline failed at {stage}: {message}")
-

@@ -4,16 +4,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-SPIFFEManager,
-AgentIdentity,
-IdentityVerificationResult,
-create_spiffe_manager,
+from .spiffe_manager import (
+    SPIFFEManager,
+    AgentIdentity,
+    IdentityVerificationResult,
+    create_spiffe_manager,
 )
 
-    __all__ = [
+__all__ = [
 "SPIFFEManager",
 "AgentIdentity",
 "IdentityVerificationResult",
 "create_spiffe_manager",
 ]
-

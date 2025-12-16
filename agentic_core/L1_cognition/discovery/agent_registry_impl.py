@@ -20,7 +20,7 @@ class AgentRegistry:
         self._capability_index: Dict[AgentCapability,
                                      Set[str]] = {cap: set() for cap in AgentCapability}
         if self.enable_logging:
-            logger.info('agent_registry_initialized')
+            LOGGER.info('agent_registry_initialized')
 
     def register(self, agent_card: AgentCard) -> RegistrationResult:
         """Register an agent. """
@@ -33,13 +33,13 @@ class AgentRegistry:
         for capability in agent_card.capabilities:
             self._capability_index[capability].add(spiffe_id)
         if self.enable_logging:
-            logger.info('agent_registered',
-                        EXTRA={'spiffe_id': spiffe_id,
+            LOGGER.info('agent_registered',
+                        extra={'spiffe_id': spiffe_id,
                                'name': agent_card.name,
                                'capabilities': [c.value for c in agent_card.capabilities]})
         return RegistrationResult(success=True,
                                   agent_card=agent_card,
-                                  REASON='Agent registered successfully')
+                                  reason='Agent registered successfully')
 
     def deregister(self, spiffe_id: str) -> bool:
         """Deregister an agent. """
@@ -50,7 +50,7 @@ class AgentRegistry:
             self._capability_index[capability].discard(spiffe_id)
         del self._agents[spiffe_id]
         if self.enable_logging:
-            logger.info('agent_deregistered', extra={'spiffe_id': spiffe_id})
+            LOGGER.info('agent_deregistered', extra={'spiffe_id': spiffe_id})
         return True
 
     def get_agent(self, spiffe_id: str) -> Optional[AgentCard]:
@@ -58,15 +58,14 @@ class AgentRegistry:
         return self._agents.get(spiffe_id)
 
     def find_by_capability(self,
-                           """Docstring."""
                            capability: AgentCapability,
                            status: Optional[AgentStatus] = None) -> List[AgentCard]:
         """Find agents by capability. """
         spiffe_ids = self._capability_index.get(capability, set())
-        AGENTS = [self._agents[sid]
+        agents = [self._agents[sid]
                   for sid in spiffe_ids if sid in self._agents]
         if status:
-            AGENTS = [a for a in agents if a.status == status]
+            agents = [a for a in agents if a.status == status]
         return agents
 
     def find_by_tool(self, tool_name: str, operation: str) -> List[AgentCard]:
@@ -77,9 +76,9 @@ class AgentRegistry:
     def find_available(self,
                        capabilities: Optional[List[AgentCapability]] = None) -> List[AgentCard]:
         """Find available agents. """
-        AGENTS = [a for a in self._agents.values() if a.is_available()]
+        agents = [a for a in self._agents.values() if a.is_available()]
         if capabilities:
-            AGENTS = [a for a in agents if all(
+            agents = [a for a in agents if all(
                 (a.has_capability(cap) for cap in capabilities))]
         return agents
 
@@ -91,8 +90,8 @@ class AgentRegistry:
         old_status = agent_card.status
         agent_card.status = status
         if self.enable_logging:
-            logger.info('agent_status_updated',
-                        EXTRA={'spiffe_id': spiffe_id,
+            LOGGER.info('agent_status_updated',
+                        extra={'spiffe_id': spiffe_id,
                                'old_status': old_status.value,
                                'new_status': status.value})
         return True
@@ -105,12 +104,12 @@ class AgentRegistry:
         """Get registry statistics. """
         status_counts = {}
         for status in AgentStatus:
-            COUNT = sum(
+            count = sum(
                 (1 for a in self._agents.values() if a.status == status))
             status_counts[status.value] = count
         capability_counts = {}
         for capability in AgentCapability:
-            COUNT = len(self._capability_index[capability])
+            count = len(self._capability_index[capability])
             capability_counts[capability.value] = count
         return {'total_agents': len(self._agents),
                 'status_counts': status_counts,
@@ -120,4 +119,3 @@ class AgentRegistry:
 def create_agent_registry() -> AgentRegistry:
     """Factory function to create agent registry. """
     return AgentRegistry()
-
