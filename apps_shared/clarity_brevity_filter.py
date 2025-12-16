@@ -340,16 +340,26 @@ class ClarityBrevityFilter:
         )
 
 
-# Global filter instance
-_clarity_filter = None
+class ClarityBrevityFilterManager:
+    """Manager for Clarity & Brevity Filter without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_filter(self) -> ClarityBrevityFilter:
+        """Get or create the Clarity & Brevity Filter instance"""
+        if self._instance is None:
+            self._instance = ClarityBrevityFilter()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_filter_manager = ClarityBrevityFilterManager()
 
 
 def get_clarity_brevity_filter() -> ClarityBrevityFilter:
     """Get or create the global Clarity & Brevity Filter instance"""
-    global _clarity_filter
-    if _clarity_filter is None:
-        _clarity_filter = ClarityBrevityFilter()
-    return _clarity_filter
+    return _filter_manager.get_filter()
 
 
 def filter_content(

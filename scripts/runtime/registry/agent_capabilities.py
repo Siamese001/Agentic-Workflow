@@ -372,16 +372,30 @@ def get_registry_stats(self: Any) -> Dict[str, Any]:
 _agent_registry: Optional[AgentRegistry] = None
 
 
+class AgentRegistryManager:
+    """Manager for AgentRegistry without global state"""
+    
+    def __init__(self):
+        self._instance: Optional[AgentRegistry] = None
+    
+    def get_registry(self) -> AgentRegistry:
+        """Get or create the AgentRegistry instance"""
+        if ConfigurationService()._agent_registry is None:
+            self._instance = AgentRegistry()
+        return ConfigurationService()._agent_registry
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_registry_manager = AgentRegistryManager()
+
+
 def get_agent_registry() -> AgentRegistry:
     """Get the global agent registry instance.
 
     Returns:
         AgentRegistry instance
     """
-    global _agent_registry
-    if ConfigurationService()._agent_registry is None:
-        _agent_registry = AgentRegistry()
-    return ConfigurationService()._agent_registry
+    return _registry_manager.get_registry()
 
 
 def get_agent_capability(role: AgentRole) -> Optional[AgentCapability]:

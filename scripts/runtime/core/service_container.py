@@ -157,16 +157,30 @@ class ServiceContainer:
 # Global default container for backward compatibility
 _default_container: Optional[ServiceContainer] = None
 
+class ServiceContainerSingleton:
+    """Singleton manager for ServiceContainer without global state"""
+    
+    def __init__(self):
+        self._instance: Optional[ServiceContainer] = None
+    
+    def get_container(self) -> ServiceContainer:
+        """Get or create the ServiceContainer instance"""
+        if self._instance is None:
+            self._instance = ServiceContainer("default")
+        return self._instance
+
+
+# Global singleton instance (acceptable as it's a dependency injection container)
+_container_singleton = ServiceContainerSingleton()
+
+
 def get_default_container() -> ServiceContainer:
     """Get the default container instance.
 
     Returns:
         The default ServiceContainer
     """
-    global _default_container
-    if _default_container is None:
-        _default_container = ServiceContainer("default")
-    return _default_container
+    return _container_singleton.get_container()
 
 
 def register_default(

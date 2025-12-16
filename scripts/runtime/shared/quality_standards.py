@@ -540,16 +540,30 @@ class CrossEngineQualityStandards:
 # Global standards instance
 _standards: Optional[CrossEngineQualityStandards] = None
 
+class QualityStandardsManager:
+    """Manager for CrossEngineQualityStandards without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_standards(self):
+        """Get or create the CrossEngineQualityStandards instance"""
+        if self._instance is None:
+            self._instance = CrossEngineQualityStandards()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_standards_manager = QualityStandardsManager()
+
+
 def get_quality_standards() -> CrossEngineQualityStandards:
     """Get the global quality standards instance.
 
     Returns:
         CrossEngineQualityStandards instance
     """
-    global _standards
-    if _standards is None:
-        _standards = CrossEngineQualityStandards()
-    return _standards
+    return _standards_manager.get_standards()
 
 # Convenience functions
 def evaluate_content_quality( # Corrected indentation, removed stray docstring

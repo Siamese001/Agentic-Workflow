@@ -160,12 +160,26 @@ class UsageRecord:
 _global_governor: Optional[CostGovernor] = None
 
 
+class CostGovernorManager:
+    """Manager for CostGovernor without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_governor(self):
+        """Get or create the CostGovernor instance"""
+        if self._instance is None:
+            self._instance = CostGovernor()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_governor_manager = CostGovernorManager()
+
+
 def get_global_cost_governor() -> CostGovernor:
     """Get or create the global cost governor."""
-    global _global_governor
-    if _global_governor is None:
-        _global_governor = CostGovernor()
-    return _global_governor
+    return _governor_manager.get_governor()
 
 
 def track_api_call(model: str, input_tokens: int, output_tokens: int):

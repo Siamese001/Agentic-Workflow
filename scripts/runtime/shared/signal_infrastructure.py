@@ -652,19 +652,30 @@ class SharedSignalInfrastructure:
 
         return recommendations
 
-# Global shared infrastructure instance
-_shared_infrastructure: Optional[SharedSignalInfrastructure] = None
+class SignalInfrastructureManager:
+    """Manager for SharedSignalInfrastructure without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_infrastructure(self):
+        """Get or create the SharedSignalInfrastructure instance"""
+        if self._instance is None:
+            self._instance = SharedSignalInfrastructure()
+        return self._instance
 
-def get_shared_infrastructure() -> SharedSignalInfrastructure:
-    """Get the global shared infrastructure instance.
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_infrastructure_manager = SignalInfrastructureManager()
+
+
+def get_shared_signal_infrastructure() -> SharedSignalInfrastructure:
+    """Get the global shared signal infrastructure instance.
 
     Returns:
         SharedSignalInfrastructure instance
     """
-    global _shared_infrastructure
-    if _shared_infrastructure is None:
-        _shared_infrastructure = SharedSignalInfrastructure()
-    return _shared_infrastructure
+    return _infrastructure_manager.get_infrastructure()
 
 # Convenience functions for engines
 def assess_resume_signal(

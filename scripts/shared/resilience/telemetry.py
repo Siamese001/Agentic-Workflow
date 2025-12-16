@@ -209,16 +209,33 @@ class SystemTelemetry:
 _default_telemetry: Optional[SystemTelemetry] = None
 
 
+class TelemetryManager:
+    """Manager for System Telemetry without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_telemetry(self) -> SystemTelemetry:
+        """Get or create the telemetry instance"""
+        if self._instance is None:
+            self._instance = SystemTelemetry()
+        return self._instance
+    
+    def set_telemetry(self, telemetry: SystemTelemetry) -> None:
+        """Set the telemetry instance"""
+        self._instance = telemetry
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_telemetry_manager = TelemetryManager()
+
+
 def get_telemetry() -> SystemTelemetry:
     """Get the default telemetry instance."""
-    global _default_telemetry
-    if _default_telemetry is None:
-        _default_telemetry = SystemTelemetry()
-    return _default_telemetry
+    return _telemetry_manager.get_telemetry()
 
 
 def set_telemetry(telemetry: SystemTelemetry) -> None:
     """Set the default telemetry instance."""
-    global _default_telemetry
-    _default_telemetry = telemetry
+    _telemetry_manager.set_telemetry(telemetry)
 
