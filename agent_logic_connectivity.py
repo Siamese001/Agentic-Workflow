@@ -36,7 +36,7 @@ class CanonValidator:
         self.redis_client = self.cm.get_redis_client()
         self.redis_index = self.cm.get_redis_index()
         self.pinecone_index = self.cm.get_pinecone_index()
-        
+
         # Load manifest immediately to prime the hash cache
         self._refresh_manifest()
         self.embedding_fn = self.cm.get_embedding
@@ -64,10 +64,10 @@ class CanonValidator:
         """
         # Ensure we have the latest hashes
         self._refresh_manifest()
-        
+
         # Look up file entry in manifest (assuming structure: {path: {hash: "..."}})
         file_entry = self.manifest_cache.get(file_path)
-        
+
         if file_entry and isinstance(file_entry, dict):
             return file_entry.get('content_hash', 'unknown_hash')
         return "global_context"
@@ -75,7 +75,7 @@ class CanonValidator:
     def _generate_compound_key(self, query_content: str, context_file_path: Optional[str] = None) -> str:
         """
         [HARDENED 6b] Generates a cache key that binds the query to the SPECIFIC file version.
-        
+
         Key Structure:
         SHA256( Query_Content + Separator + File_Content_Hash )
         """
@@ -167,10 +167,10 @@ class CanonValidator:
         # Extract metadata from the entry object
         query_content = entry.content
         file_path = getattr(entry, 'file_path', None) # specific file this entry relates to
-        
+
         # Generate the version-aware key
         cache_key = self._generate_compound_key(query_content, file_path)
-        
+
         # Query Redis
         try:
             cached_data = self.redis_client.get(cache_key)
@@ -179,7 +179,7 @@ class CanonValidator:
                 return json.loads(cached_data)
         except Exception as e:
             self.logger.error(f"Redis lookup failed: {e}")
-            
+
         self.logger.info(f"Reasoning cache miss - Code version may have changed.")
         return None
 
@@ -189,9 +189,9 @@ class CanonValidator:
         """
         query_content = entry.content
         file_path = getattr(entry, 'file_path', None)
-        
+
         cache_key = self._generate_compound_key(query_content, file_path)
-        
+
         try:
             # Set with expiration (e.g., 1 hour) to prevent stale build-up
             self.redis_client.setex(cache_key, 3600, json.dumps(result))
@@ -248,13 +248,13 @@ class CanonValidator:
                 try:
                     with open(manifest_path, 'r') as f:
                         manifest = json.load(f)
-                    
+
                     # Check if file is in the active manifest
                     file_paths_in_manifest = {
-                        file_info.get("absolute_path", "") 
+                        file_info.get("absolute_path", "")
                         for file_info in manifest.get("files", [])
                     }
-                    
+
                     if entry.file_path not in file_paths_in_manifest:
                         logger.warning(f"⚠️  Skipping indexing for non-manifest file: {entry.file_path}")
                         return {
@@ -268,11 +268,11 @@ class CanonValidator:
                         }
                 except Exception as e:
                     logger.warning(f"⚠️  Failed to check manifest: {e}")
-        
+
         try:
             # 1. Get the authoritative hash for this file version
             current_hash = self._get_file_hash(entry.file_path) if hasattr(entry, 'file_path') and entry.file_path else "unknown"
-            
+
             # 2. Write to Redis (Hot)
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
@@ -284,7 +284,7 @@ class CanonValidator:
             if 'metadata' not in pinecone_record:
                 pinecone_record['metadata'] = {}
             pinecone_record['metadata']['content_hash'] = current_hash
-            
+
             self.pinecone_index.upsert(vectors=[pinecone_record])
             logger.info(f"✅ Indexed {getattr(entry, 'file_path', 'unknown')} (Hash: {current_hash[:8]})")
 
@@ -315,11 +315,11 @@ class CanonValidator:
         [HARDENED] Retrieval that ignores 'Ghost' vectors.
         """
         query_vector = self.embedding_fn(query)
-        
+
         # Default Filter: None
         metadata_filter = {}
-        
-        # If we are asking about a specific file, ONLY show me memories 
+
+        # If we are asking about a specific file, ONLY show me memories
         # that match the CURRENT version of that file.
         if context_file:
             active_hash = self._get_file_hash(context_file)
@@ -327,7 +327,7 @@ class CanonValidator:
                 "file_path": context_file,
                 "content_hash": active_hash  # <--- The Shield
             }
-            
+
         try:
             results = self.pinecone_index.query(
                 vector=query_vector,

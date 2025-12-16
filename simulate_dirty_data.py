@@ -146,3 +146,4 @@ def get_tuesday_menu():
 
 if __name__ == "__main__":
     run_simulation()
+

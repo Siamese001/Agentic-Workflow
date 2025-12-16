@@ -268,3 +268,4 @@ if __name__ == "__main__":
     print(f"Local Time: {result2['lead_local_time']}")
     if 'next_optimal_send_time' in result2:
         print(f"Next Send Time: {result2['next_optimal_send_time']}")
+

@@ -43,7 +43,7 @@ class CognitiveNode:
         self.slow_step_threshold = self.config.get('slow_step_threshold', 30)
         self.persist_history = self.config.get('persist_history', True)
         self.max_syntax_attempts = self.config.get('max_syntax_attempts', 2)
-        
+
         # [HARDENED 5c] Temperature decay configuration
         self.base_temp = self.config.get('base_temperature', 0.7)
         self.min_temp = self.config.get('min_temperature', 0.0)
@@ -62,11 +62,11 @@ class CognitiveNode:
         """
         if self.max_steps <= 1:
             return self.min_temp
-            
+
         progress = current_step / (self.max_steps - 1)
         # Linear decay formula
         current_temp = self.base_temp * (1.0 - progress)
-        
+
         # Clamp to ensure we don't go below absolute zero logic
         return max(self.min_temp, current_temp)
 
@@ -125,7 +125,7 @@ class CognitiveNode:
             # [HARDENED 5c] 1. Dynamic Hardening parameters
             current_temp = self._calculate_dynamic_temperature(i)
             phase_directive = self._get_system_directive(i)
-            
+
             self.logger.debug(f"Step {i+1}/{self.max_steps} | Temp: {current_temp:.2f} | {phase_directive}")
 
             # Dynamic Prompt that evolves based on past thoughts
@@ -134,7 +134,7 @@ class CognitiveNode:
 
             system_prompt = f"""
             You are a Sequential Thinking Engine. {phase_directive}
-            
+
             Goal: {user_goal}
             Tools: {toolbox_desc}
             Current Step: {i+1}/{self.max_steps}
@@ -227,7 +227,7 @@ class CognitiveNode:
 
         max_attempts = self.max_syntax_attempts
         last_error = None
-        
+
         # [HARDENED 5c] Ensure synthesis uses low temp (0.0) for precision
         synthesis_temp = 0.0
 
@@ -249,11 +249,11 @@ class CognitiveNode:
         - Escape any internal quotes in strings with backslashes (\\\\").
         - Output valid Python code that will compile without syntax errors.
         - Output JSON ONLY: {{ "code": "..." }}
-        
+
         EXAMPLE OF CORRECT STRING HANDLING:
         message = "Hello, " + name + "!"
         query = "SELECT * FROM users WHERE name = \\"" + user_name + "\\""
-        
+
         EXAMPLE OF WHAT TO AVOID:
         message = "Hello, " + name + "  # Missing closing quote
         text = \"\"\"This is bad\"\"\"  # Triple quotes cause issues
@@ -269,7 +269,7 @@ class CognitiveNode:
             )
 
             code = final_response.get("code", "")
-            
+
             # Debug: Log the raw LLM response
             logger.debug(f"Raw LLM response: {final_response}")
             logger.debug(f"Extracted code (first 500 chars): {code[:500] if code else 'EMPTY'}")

@@ -41,10 +41,10 @@ class DeadManSwitch:
             else:  # Unix/Linux
                 os.kill(pid, signal.SIGKILL)
             logger.info(f"✅ PID {pid} successfully terminated.")
-            
+
             # Optional: Send Alert (Email/Slack)
             # send_alert("Agent killed due to spam loop.")
-            
+
         except ProcessLookupError:
             logger.warning(f"PID {pid} not found (already dead?).")
         except PermissionError:
@@ -53,7 +53,7 @@ class DeadManSwitch:
     def monitor(self):
         """Main loop: Tails the log file and counts actions."""
         logger.info(f"Monitoring {self.log_file} (Threshold: {self.max_actions} actions / {self.window_seconds}s)...")
-        
+
         # Ensure log file exists
         if not os.path.exists(self.log_file):
             open(self.log_file, 'a').close()
@@ -61,13 +61,13 @@ class DeadManSwitch:
         with open(self.log_file, 'r') as f:
             # Seek to end of file to ignore past history
             f.seek(0, os.SEEK_END)
-            
+
             while True:
                 line = f.readline()
                 if not line:
                     time.sleep(0.1) # efficient polling
                     continue
-                
+
                 # Check for "ACTION" keyword (Protocol convention)
                 if "ACTION_EXECUTED" in line:
                     now = time.time()
@@ -76,7 +76,7 @@ class DeadManSwitch:
 
                     # Prune old timestamps
                     self.action_timestamps = [t for t in self.action_timestamps if now - t <= self.window_seconds]
-                    
+
                     count = len(self.action_timestamps)
                     logger.info(f"Activity Level: {count}/{self.max_actions} in last {self.window_seconds}s")
 
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     # Default Config
     LOG_PATH = "logs/agent_actions.log"
     PID_PATH = "run/agent.pid"
-    
+
     # Ensure directories exist
     os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
     os.makedirs(os.path.dirname(PID_PATH), exist_ok=True)
@@ -102,3 +102,4 @@ if __name__ == "__main__":
         watchdog.monitor()
     except KeyboardInterrupt:
         logger.info("Watchdog stopped by user.")
+

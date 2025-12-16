@@ -229,7 +229,7 @@ class CanonValidator:
 
         except Exception:
             pass
-        
+
         return 0.0
 
     def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
@@ -335,3 +335,4 @@ class CanonValidator:
             })
 
         return formatted
+

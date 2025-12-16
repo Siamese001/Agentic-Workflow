@@ -18,12 +18,12 @@ logger = logging.getLogger("Launcher")
 
 def main():
     print("\n🛡️  Hardened Agentic System Initializing...")
-    
+
     try:
         # Lazy import AFTER sys.path fix to prevent ModuleNotFoundError
         # Adjust this import path if your orchestrator file name differs
         from orchestrator import run_agentic_loop
-        
+
         # --- 2. CAPTURE GOAL ---
         if len(sys.argv) > 1:
             # Goal from command line argument
@@ -39,24 +39,24 @@ def main():
 
         # --- 3. EXECUTE HARDENED RUNTIME ---
         logger.info(f"Dispatching Goal: {user_goal}")
-        
+
         # This function triggers:
         #  1. ensure_manifest_freshness() [Drift Check]
         #  2. validate_manifest_integrity() [Integrity Gate]
         #  3. CognitiveNode.think() [Temperature Decay]
         run_agentic_loop(user_goal)
-        
+
         print("\n✅ Workflow Completed Successfully.")
 
     except ImportError as e:
         logger.critical(f"❌ Configuration Error: {e}")
         print("\nFix: Ensure your folder structure matches: orchestrator.py in project root")
         sys.exit(1)
-        
+
     except KeyboardInterrupt:
         print("\n\n⚠️  User Aborted.")
         sys.exit(0)
-        
+
     except Exception as e:
         # This catches anything that slipped past the Hardened Orchestrator
         logger.critical(f"❌ Unhandled System Crash: {e}", exc_info=True)
@@ -64,3 +64,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -549,3 +549,4 @@ class CanonValidator:
             logger.error(f"Failed to get Pinecone stats: {e}")
 
         return stats
+

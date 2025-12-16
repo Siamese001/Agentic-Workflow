@@ -122,3 +122,4 @@ if __name__ == "__main__":
     # print(f"\n🧠 Thinking about: '{query}'...")  # [Security Fix]
     hits = querier.search(query)
     print_results(hits)
+

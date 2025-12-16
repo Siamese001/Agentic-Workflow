@@ -52,7 +52,7 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
     """
     # 1. Register PID for the Watchdog
     register_process()
-    
+
     if logger:
         logger.info(
             f"🚀 Starting Automated Lead Vetting for {company_url} (User: {user_name})...")
@@ -165,7 +165,7 @@ Context: Automated lead vetting based on recent company activity
                 body=personalized_pitch
             )
         # --------------------------------------------------
-        
+
         # Log action for watchdog
         log_action("SEND_EMAIL", f"Sent to {primary_contact.get('email', 'contact@company.com')}")
 

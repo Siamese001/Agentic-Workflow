@@ -25,21 +25,21 @@ class PromptFirewall:
             r"import os", # Python injection attempt
             r"rm -rf",    # Bash injection attempt
         ]
-        
+
         # Compile regex for performance (Case Insensitive)
         self.compiled_patterns = [re.compile(p, re.IGNORECASE) for p in self.blocklist_patterns]
 
     def scan_input(self, text: str, context_name: str = "Input") -> bool:
         """
         Scans the input text for malicious patterns.
-        
+
         Args:
             text: The untrusted input string.
             context_name: Label for logging (e.g., "Job Description").
-            
+
         Returns:
             bool: True if safe.
-            
+
         Raises:
             SecurityException: If a threat is detected.
         """
@@ -54,9 +54,10 @@ class PromptFirewall:
                 logger.warning(f"Pattern matched: '{matched_pattern}'")
                 # Raise exception to abort the process immediately
                 raise SecurityException(f"Malicious content detected in {context_name}: Pattern '{matched_pattern}'")
-        
+
         logger.info(f"Firewall scan passed for {context_name}.")
         return True
 
 # Singleton instance for easy import across engines
 firewall = PromptFirewall()
+

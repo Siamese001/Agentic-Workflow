@@ -37,14 +37,14 @@ REGRESSION_SUITE_PATH = os.environ.get("REGRESSION_SUITE_PATH", "tests/")
 def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
     """
     Execute the full regression test suite (Test 5).
-    
+
     Returns:
         Dict with status and details
     """
-    
+
     if logger:
         logger.info(f"🧪 TEST_5: Running regression suite from {REGRESSION_SUITE_PATH}")
-    
+
     # Check if regression suite path exists
     if not os.path.exists(REGRESSION_SUITE_PATH):
         error_msg = f"Regression suite path does not exist: {REGRESSION_SUITE_PATH}"
@@ -54,7 +54,7 @@ def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
             "status": "FAILED",
             "reason": error_msg
         }
-    
+
     try:
         # Run pytest on the regression suite with timeout
         result = subprocess.run(
@@ -64,7 +64,7 @@ def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
             cwd=os.getcwd(),
             timeout=300  # 5 minute timeout
         )
-        
+
         if result.returncode == 0:
             if logger:
                 logger.info("✅ TEST_5: Regression suite passed")
@@ -82,7 +82,7 @@ def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
                 "stderr": result.stderr,
                 "reason": "REGRESSION_TEST_FAILURE"
             }
-            
+
     except subprocess.TimeoutExpired:
         error_msg = f"Regression suite timed out after 5 minutes"
         if logger:
@@ -105,7 +105,7 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
     """
     Zero-Loss Merge (ZLM) wrapper for execute_dependency_refactor.
     Implements retry logic with P6 self-correction up to MAX_P6_ATTEMPTS.
-    
+
     ZLM Policy: The agent MUST NOT stop until P9 finalization passes or max attempts reached.
     """
     # P5 Compliance: Register the process ID for Watchdog monitoring
@@ -117,48 +117,48 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
     except Exception as e:
         if logger:
             logger.warning(f"⚠️ P5: Could not register process: {e}")
-    
+
     attempts = 0
-    
+
     while attempts < MAX_P6_ATTEMPTS:
         attempts += 1
-        
+
         if logger:
             logger.info(f"🔄 ZLM Attempt {attempts}/{MAX_P6_ATTEMPTS} for {target_file}")
-        
+
         # Initialize regression result
         regression_result = {"status": "SKIPPED"}
-        
+
         # Execute the standard validation pipeline
         result = execute_dependency_refactor(issue_id, target_file, tools, logger)
-        
+
         # Check for success conditions - P2 passed, now run Test 5 (Regression Suite)
         regression_failed = False
         if result.get("status") in ["SUCCESS", "success"]:
             if logger:
                 logger.info(f"✅ P2_PASS: Unit tests passed on attempt {attempts}")
-            
+
             # Test 5: Run full regression suite
             regression_result = execute_regression_suite(logger)
-            
+
             if regression_result.get("status") == "SUCCESS":
                 if logger:
                     logger.info(f"✅ ZLM_SUCCESS: All tests passed on attempt {attempts}")
-                
+
                 # Log success to L5
                 if tools.get('add_observations'):
                     tools['add_observations']([{
                         "entityName": f"ZLM_{issue_id}",
                         "observations": [f"ZLM_SUCCESS: P2 and Regression passed on attempt {attempts}"]
                     }])
-                
+
                 return result
             else:
                 # Regression failed - set flag to trigger P6
                 regression_failed = True
                 if logger:
                     logger.warning(f"⚠️ TEST_5_FAIL: Regression suite failed. Triggering P6 fix.")
-                
+
                 # Log regression failure to L5
                 if tools.get('add_observations'):
                     tools['add_observations']([{
@@ -169,7 +169,7 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
                             f"Reason: {regression_result.get('reason', 'REGRESSION_TEST_FAILURE')}"
                         ]
                     }])
-        
+
         # P6 Self-Correction Trigger (triggered by P2 failure or Regression failure)
         if result.get("reason") in ["SANDBOX_VERIFICATION_FAILURE", "CONSENSUS_VALIDATION_FAILURE"] or regression_failed:
             if logger:
@@ -177,7 +177,7 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
                     logger.warning(f"⚠️ ZLM: Regression failure detected. Attempt {attempts}/{MAX_P6_ATTEMPTS}")
                 else:
                     logger.warning(f"⚠️ ZLM: P2/P6 failure detected. Attempt {attempts}/{MAX_P6_ATTEMPTS}")
-            
+
             # Skip logging here for regression failures since they're already logged above
             if not regression_failed and tools.get('add_observations'):
                 tools['add_observations']([{
@@ -188,77 +188,77 @@ def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict
                         f"Reason: {result.get('reason')}"
                     ]
                 }])
-            
+
             # If we haven't reached max attempts, try P6 consensus fix
             if attempts < MAX_P6_ATTEMPTS:
                 if logger:
                     logger.info(f"🔧 ZLM: Triggering P6 consensus for self-correction...")
-                
+
                 # Read current file content
                 try:
                     with open(target_file, 'r', encoding='utf-8') as f:
                         file_content = f.read()
-                    
+
                     # Query consensus for fix
                     fix_result = jury.propose_fix(
                         code=file_content,
                         error_message=result.get('details', ''),
                         context=f"ZLM Attempt {attempts}"
                     )
-                    
+
                     if fix_result.get("status") == "SUCCESS" and fix_result.get("fixed_code"):
                         if logger:
                             logger.info(f"✅ P6 proposed fix. Applying and retrying...")
-                        
+
                         # Apply the fix
                         with open(target_file, 'w', encoding='utf-8') as f:
                             f.write(fix_result["fixed_code"])
-                        
+
                         # Log fix application
                         if tools.get('add_observations'):
                             tools['add_observations']([{
                                 "entityName": f"ZLM_{issue_id}",
                                 "observations": [f"P6_FIX_APPLIED: Attempt {attempts}"]
                             }])
-                        
+
                         # Continue loop to retry validation
                         continue
                     else:
                         if logger:
                             logger.warning(f"⚠️ P6 could not generate fix. Continuing to next attempt...")
-                        
+
                 except Exception as e:
                     if logger:
                         logger.error(f"❌ Error during P6 fix application: {e}")
-            
+
             # Continue to next attempt
             continue
-        
+
         # For other failure types (P1, GPG, etc.), fail immediately
         if result.get("status") in ["FAILED", "error"]:
             if logger:
                 logger.error(f"❌ ZLM_FAIL: Non-recoverable failure - {result.get('reason')}")
-            
+
             # Log non-recoverable failure
             if tools.get('add_observations'):
                 tools['add_observations']([{
                     "entityName": f"ZLM_{issue_id}",
                     "observations": [f"ZLM_FAIL: {result.get('reason')} (Non-recoverable)"]
                 }])
-            
+
             return result
-    
+
     # Max attempts reached
     if logger:
         logger.critical(f"❌ ZLM_FAIL: Maximum P6 attempts ({MAX_P6_ATTEMPTS}) reached for {target_file}")
-    
+
     # Log max attempts failure
     if tools.get('add_observations'):
         tools['add_observations']([{
             "entityName": f"ZLM_{issue_id}",
             "observations": [f"ZLM_FAIL: P6 Max Attempts Reached ({MAX_P6_ATTEMPTS})"]
         }])
-    
+
     return {
         "status": "FAILED",
         "reason": "ZLM_MAX_ATTEMPTS_REACHED",
@@ -330,11 +330,11 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
 
         # --- HARDENING PROTOCOL 1: PRE-COMMIT SENTINEL ---
         is_valid, error_msg = validate_python_syntax(target_file)
-        
+
         if not is_valid:
             if logger:
                 logger.critical(f"HARDENING TRIGGERED: Blocked commit for {target_file} due to syntax error.")
-            
+
             return {
                 "status": "FAILED",
                 "reason": "AST_VALIDATION_FAILURE",
@@ -346,13 +346,13 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
         # If syntax is valid, proceed to P2 Sandbox Check
         if logger:
             logger.info(f"Syntax valid. Initiating Sandbox Verification for {target_file}...")
-        
+
         # Determine command:
         # 1. Try to run specific test if it exists
         # 2. Fallback to basic compilation check or import check
         test_file_name = f"test_{os.path.basename(target_file)}"
         possible_test_path = os.path.join(os.getcwd(), "tests", test_file_name)
-        
+
         if os.path.exists(possible_test_path):
             # Run specific test
             sandbox_cmd = f"python3 -m unittest tests/{test_file_name}"
@@ -363,15 +363,15 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
 
         # Use the current working directory as repo_path
         repo_path = os.getcwd()
-        
+
         # EXECUTE SANDBOX
         sandbox_success = execute_in_sandbox(repo_path, sandbox_cmd)
-        
+
         if not sandbox_success:
             if logger:
                 logger.critical(f"HARDENING TRIGGERED: Sandbox verification failed for {target_file}. Commit blocked.")
             return {
-                "status": "FAILED", 
+                "status": "FAILED",
                 "reason": "SANDBOX_VERIFICATION_FAILURE",
                 "details": "Code failed to execute or pass tests in isolated environment."
             }
@@ -380,21 +380,21 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
         # --- HARDENING PROTOCOL 6: MULTI-MODEL CONSENSUS ---
         if logger:
             logger.info(f"Sandbox verification passed. Initiating Supreme Court consensus for {target_file}...")
-        
+
         # Read the file content for consensus analysis
         with open(target_file, 'r', encoding='utf-8') as f:
             file_content = f.read()
-        
+
         # Run consensus engine
         consensus_result = jury.judge_artifact(file_content, context="Code Review")
-        
+
         if consensus_result["status"] != "PASS":
             if logger:
                 logger.critical(f"HARDENING TRIGGERED: Supreme Court rejected {target_file} with score {consensus_result['score']:.2f}")
                 for vote in consensus_result["votes"]:
                     if vote["verdict"] == "NO":
                         logger.warning(f"  - {vote['model']}: {vote['reason']}")
-            
+
             return {
                 "status": "FAILED",
                 "reason": "CONSENSUS_VALIDATION_FAILURE",
@@ -407,24 +407,24 @@ def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str
 
         # --- HARDENING PROTOCOL 9: CRYPTOGRAPHIC PROVENANCE (Code) ---
         BOT_GPG_KEY_ID = "0xAGENTICBOTID"  # Placeholder for your actual key
-        
+
         # 4. Commit the fix with GPG signature (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
         commit_result = "mock_commit_hash"  # Placeholder for actual commit hash
-        
+
         # --- HARDENING PROTOCOL 10: SHADOW MODE EXECUTION ---
         if SHADOW_MODE_ACTIVE:
             if logger:
                 logger.warning(f"👻 SHADOW MODE: Blocked final commit of {target_file}.")
                 logger.warning(f"Diff would be saved to shadow_output/{issue_id}_shadow.diff for review.")
-        
+
             # Return success from the perspective of the agent workflow (it did its job)
             return {"status": "SUCCESS", "reason": "SHADOW_BLOCKED", "file": target_file}
         # --------------------------------------------------
-        
+
         if not sign_and_commit(target_file, commit_message, key_id=BOT_GPG_KEY_ID):
             return {"status": "FAILED", "reason": "GPG_SIGNING_FAILURE"}
-        
+
         if logger:
             logger.info(
                 f"✅ L1 GitKraken: Signed and committed changes with message: {commit_message}")

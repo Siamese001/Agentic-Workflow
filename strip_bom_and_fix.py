@@ -11,26 +11,26 @@ def fix_file(file_path: Path):
     try:
         with open(file_path, 'rb') as f:
             content = f.read()
-        
+
         # Remove BOM if present
         if content.startswith(b'\xef\xbb\xbf'):
             content = content[3:]
-        
+
         # Convert to string and fix leading whitespace
         text = content.decode('utf-8')
         lines = text.split('\n')
-        
+
         # Fix first line if it has unexpected indent
         if lines:
             first_line = lines[0]
             if first_line.strip() and (first_line.startswith(' ') or first_line.startswith('\t')):
                 # Remove leading spaces/tabs from first line
                 lines[0] = first_line.lstrip()
-        
+
         # Write back
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines))
-        
+
         return True
     except Exception as e:
         print(f"Error fixing {file_path}: {e}")
@@ -152,3 +152,4 @@ for file_path in failed_files:
             print(f"❌ Failed: {file_path}")
 
 print(f"\n✅ Fixed {fixed} files")
+

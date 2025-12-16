@@ -30,3 +30,4 @@ except Exception as e:
 # print(f"❌ Failed to clear Pinecone: {e}")  # [Security Fix]
 
 # print("\n🧹 Data cleared. Ready for clean simulation.")  # [Security Fix]
+

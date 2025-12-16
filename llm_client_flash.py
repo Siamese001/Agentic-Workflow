@@ -74,3 +74,4 @@ class LLMClient:
                 "reasoning": f"API Error: {str(e)}",
                 "plan": {}
             }
+

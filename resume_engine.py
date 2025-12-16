@@ -27,7 +27,7 @@ from network_utils import strict_egress_filter
 
 # Define the specific allow-list for the Resume Engine
 RESUME_ALLOWED_HOSTS = [
-    "api.openai.com", "anthropic.com", "genai.google.com", 
+    "api.openai.com", "anthropic.com", "genai.google.com",
     "www.ycombinator.com", "linkedin.com", "indeed.com"  # Approved job board domains
 ]
 
@@ -155,10 +155,10 @@ def _save_output(file_path_out: str, content: str, write_file_tool: Any, logger:
 def save_artifact_metadata(file_path: str, metadata: Dict, logger: Optional[Any] = None) -> bool:
     """Saves a verifiable JSON file with LLM provenance metadata."""
     metadata_path = f"{file_path}.metadata.json"
-    
+
     # Add audit timestamps
     metadata['timestamp'] = time.time()
-    
+
     # Hash the final content to link metadata to artifact integrity
     import hashlib
     try:
@@ -168,7 +168,7 @@ def save_artifact_metadata(file_path: str, metadata: Dict, logger: Optional[Any]
         if logger:
             logger.error(f"Failed to hash artifact for metadata: {e}")
         metadata['artifact_hash'] = None
-    
+
     try:
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=4)
@@ -222,14 +222,14 @@ def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_o
     job_description_markdown = _fetch_job_description(job_url, tools['fetch'], logger)
     if not job_description_markdown:
         return {"status": "error", "message": "Failed to retrieve job description."}
-    
+
     # --- HARDENING PROTOCOL 3: PROMPT FIREWALL ---
     # We validate the fetched content BEFORE sending it to Pinecone or LLM.
     firewall = PromptFirewall()
     try:
         if logger:
             logger.info("Scanning Job Description for injection attacks...")
-        
+
         # Check if fetch returned valid text
         if not job_description_markdown or not isinstance(job_description_markdown, str):
             if logger:
@@ -238,7 +238,7 @@ def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_o
 
         # EXECUTE SCAN
         firewall.scan_input(job_description_markdown, context_name="Job Description")
-        
+
     except SecurityException as e:
         if logger:
             logger.critical(f"HARDENING TRIGGERED: Job Description rejected. {e}")
@@ -602,7 +602,7 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
                 "message": "LLM generation budget exhausted",
                 "attempts": attempts
             }
-        
+
         draft_content = generation_result.get("draft")
         score = generation_result.get("score", 0.0)
         source = generation_result.get("source", "generated")
@@ -671,3 +671,4 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
         "user_name": user_name,
         "target_threshold": score_threshold
     }
+

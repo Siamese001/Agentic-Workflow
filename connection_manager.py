@@ -40,7 +40,7 @@ class ConnectionFactory:
             api_key = os.getenv("PINECONE_API_KEY")
             if not api_key:
                 raise ValueError("PINECONE_API_KEY is not set")
-            
+
             pc = Pinecone(api_key=api_key)
             logger.info("✅ Pinecone client connection successful")
             return pc
@@ -62,7 +62,7 @@ class ConnectionFactory:
             api_key = os.getenv("PINECONE_API_KEY")
             if not api_key:
                 raise ValueError("PINECONE_API_KEY is not set")
-            
+
             pc = Pinecone(api_key=api_key)
             index_name = os.getenv("PINECONE_INDEX_NAME", "canon-memory-l2")
             index = pc.Index(index_name)
@@ -82,11 +82,11 @@ class ConnectionFactory:
         Fixes the 'mock' provider dependency error.
         """
         provider = os.getenv("EMBEDDING_PROVIDER", "mock").lower()
-        
+
         if provider == "mock":
             logger.info("🔧 Using mock embedding function (768 dims)")
             return lambda x: [0.1] + [0.0] * 767
-            
+
         elif provider == "openai":
             try:
                 from openai import OpenAI
@@ -122,7 +122,7 @@ class ConnectionFactory:
         """
         index_name = os.getenv("REDIS_INDEX_NAME", "canon_index")
         redis_url = os.getenv("REDIS_URL", "redis://redis:6379")
-        
+
         # Default schema if none provided
         if not schema:
             schema = {
@@ -136,14 +136,14 @@ class ConnectionFactory:
         try:
             index = SearchIndex.from_dict(schema)
             index.connect(redis_url)
-            
+
             # This triggers FT._LIST internally
             if not index.exists():
                 index.create(overwrite=True)
                 logger.info(f"📁 Created new Redis index: {index_name}")
             else:
                 logger.info(f"📂 Connected to existing Redis index: {index_name}")
-            
+
             return index
         except Exception as e:
             logger.error(f"❌ Failed to create Redis index: {e}")
@@ -154,3 +154,4 @@ ConnectionManager = ConnectionFactory
 ConnectionFactory.get_redis_client = staticmethod(ConnectionFactory.get_redis_connection)
 ConnectionFactory.get_redis_index = staticmethod(ConnectionFactory.create_redis_index)
 ConnectionFactory.get_pinecone_index = staticmethod(ConnectionFactory.get_pinecone_connection)
+

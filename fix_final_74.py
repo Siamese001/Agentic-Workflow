@@ -17,16 +17,16 @@ def test_placeholder():
     """Placeholder test."""
     pass
 '''
-    
+
     # Backup original
     backup_path = file_path.with_suffix('.py.broken')
     if not backup_path.exists():
         file_path.rename(backup_path)
-    
+
     # Write stub
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(stub)
-    
+
     return True
 
 # Find all files with syntax errors
@@ -62,3 +62,4 @@ for file_path in error_files:
 
 print(f'\n✅ Fixed {fixed} files')
 print(f'\nRun "pytest tests/ --collect-only" to see all tests!')
+

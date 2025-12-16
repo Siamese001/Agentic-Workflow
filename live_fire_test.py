@@ -46,14 +46,14 @@ def start_canary_trap():
     except Exception as e:
         logger.critical(f"Failed to start Canary Monitor: {e}")
         sys.exit(1)
-    
+
 def stop_canary_trap():
     """Cleanup canary monitor process on exit."""
     if CANARY_MONITOR_PID:
         logger.info("Stopping Canary Monitor...")
         try:
             # Use SIGTERM for graceful shutdown
-            os.kill(CANARY_MONITOR_PID, signal.SIGTERM) 
+            os.kill(CANARY_MONITOR_PID, signal.SIGTERM)
         except Exception as e:
             logger.warning(f"Error stopping canary trap: {e}")
 
@@ -61,7 +61,7 @@ def start_watchdog():
     """Starts the P5 Dead Man's Switch as a background subprocess."""
     global WATCHDOG_PID
     logger.info("🛡️  Bootstrapping Protocol 5 (Watchdog)...")
-    
+
     # Check if watchdog script exists
     if not os.path.exists("watchdog_sidecar.py"):
         logger.error("❌ watchdog_sidecar.py not found! Aborting.")
@@ -72,11 +72,11 @@ def start_watchdog():
     # On Windows, creationflags=subprocess.CREATE_NEW_CONSOLE could be used
     try:
         if sys.platform == "win32":
-            proc = subprocess.Popen([sys.executable, "watchdog_sidecar.py"], 
+            proc = subprocess.Popen([sys.executable, "watchdog_sidecar.py"],
                                     creationflags=subprocess.CREATE_NEW_CONSOLE)
         else:
             proc = subprocess.Popen([sys.executable, "watchdog_sidecar.py"])
-        
+
         WATCHDOG_PID = proc.pid
         logger.info(f"✅ Watchdog active (PID: {WATCHDOG_PID})")
         time.sleep(1) # Warmup
@@ -99,7 +99,7 @@ def stop_watchdog():
 def run_live_test(target_url: str, user_name: str):
     """Executes the full Resume Generation Workflow."""
     logger.info(f"🚀 Starting Live Fire Test for target: {target_url}")
-    
+
     # Mock tools for testing
     mock_tools = {
         'fetch': lambda url, max_length=None: f"Mock job description from {url}",
@@ -108,21 +108,21 @@ def run_live_test(target_url: str, user_name: str):
         'write_file': lambda path, content: None,
         'add_observations': lambda observations: None
     }
-    
+
     # 1. Trigger the Generation (Protocols 3 & 4 run inside this call)
     # Note: resume_engine.py should have P3 (Firewall) and P4 (Fact Checker) integrated.
     result = generate_personalized_cover_letter(target_url, user_name, "output.txt", mock_tools, logger)
-    
+
     # 2. Analyze Result
     status = result.get("status")
-    
+
     if status == "success" or status == "optimized":
         logger.info("✅ SUCCESS: Workflow completed without security violations.")
         logger.info(f"📂 Output saved to: {result.get('file_path', 'Unknown')}")
     elif status == "FAILED":
         reason = result.get("reason")
         details = result.get("details")
-        
+
         if reason == "SECURITY_VIOLATION":
             logger.warning(f"🛡️  BLOCKED BY PROTOCOL 3 (FIREWALL): {details}")
         elif reason == "HALLUCINATION_DETECTED":
@@ -156,3 +156,4 @@ if __name__ == "__main__":
         # Ensure cleanup runs even if code crashes
         stop_canary_trap()
         stop_watchdog()
+

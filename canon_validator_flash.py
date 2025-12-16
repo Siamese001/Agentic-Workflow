@@ -222,3 +222,4 @@ Return your response as JSON with this format:
             logger.info("✅ Learned new pattern.")
         except Exception as e:
             logger.error(f"Write-back failed: {e}")
+

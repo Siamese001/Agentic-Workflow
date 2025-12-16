@@ -30,12 +30,12 @@ class TestSystemHardening(unittest.TestCase):
     # =========================================================================
     def test_integrity_gate_catches_corruption(self):
         print("\n🛡️  Running Test 1: Integrity Gate (Sabotage)...")
-        
+
         with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
             # Write broken JSON (simulating a bad write or merge conflict)
-            tmp.write('{"files": { "broken_entry": [ }') 
+            tmp.write('{"files": { "broken_entry": [ }')
             tmp_path = tmp.name
-            
+
         try:
             # Should return False or raise Exception
             result = validate_manifest_integrity(tmp_path)
@@ -52,28 +52,28 @@ class TestSystemHardening(unittest.TestCase):
     @patch('agent_logic_connectivity.Redis')
     def test_memory_uses_version_shield(self, mock_redis, mock_pinecone):
         print("🛡️  Running Test 2: Memory Ghost Shield...")
-        
+
         # Setup
         validator = CanonValidator(manifest_path="active_manifest.json")
         validator.pinecone_index = MagicMock()
         validator.embedding_fn = lambda x: [0.1, 0.2] # Mock embedding
-        
+
         # Mock the manifest lookup to return a specific hash
         validator._get_file_hash = MagicMock(return_value="HASH_V2_NEW")
-        
+
         # Action: Query memory
         validator.query_semantic_memory("login logic", context_file="auth.py")
-        
+
         # Verification: Did we send the filter?
         call_args = validator.pinecone_index.query.call_args
         _, kwargs = call_args
-        
+
         actual_filter = kwargs.get('filter', {})
         expected_filter = {"file_path": "auth.py", "content_hash": "HASH_V2_NEW"}
-        
-        self.assertEqual(actual_filter, expected_filter, 
+
+        self.assertEqual(actual_filter, expected_filter,
             f"❌ Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")
-        
+
         print(f"   ✅ Query included strict hash filter: {actual_filter}")
 
     # =========================================================================
@@ -86,20 +86,20 @@ class TestSystemHardening(unittest.TestCase):
         orchestrator.router = MagicMock()
         orchestrator.state_manager = MagicMock()
         orchestrator.workflow_state = MagicMock()
-        
+
         # Mock router to throw the specific error
         orchestrator.router.execute_with_fallback = MagicMock(side_effect=error_to_raise)
-        
+
         # Mock sys.exit so test doesn't actually quit
         with patch('sys.exit') as mock_exit:
             await orchestrator.execute_hop_with_hardening(MagicMock(name="TestHop"), {})
-        
+
         return orchestrator.workflow_state, mock_exit
 
     def test_resilience_error_classification(self):
         print("🛡️  Running Test 3: Zombie Prevention...")
         loop = asyncio.new_event_loop()
-        
+
         # Scenario A: SyntaxError (Terminal) -> Should FAILED
         state_fail, mock_exit_fail = loop.run_until_complete(
             self.run_resilience_check(SyntaxError("Bad Code"), "FAILED")
@@ -113,8 +113,9 @@ class TestSystemHardening(unittest.TestCase):
         )
         state_pause.mark_paused.assert_called()
         print("   ✅ InfrastructureError correctly triggered 'mark_paused'.")
-        
+
         loop.close()
 
 if __name__ == '__main__':
     unittest.main(verbosity=0)
+

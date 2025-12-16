@@ -360,3 +360,4 @@ class HybridDatabaseManager:
             "redis_stats": self.gatekeeper.get_safety_stats(),
             "qdrant_stats": self.qdrant.get_stats()
         }
+

@@ -46,3 +46,4 @@ def fix_all_files(root_dir):
 if __name__ == '__main__':
     count = fix_all_files('.')
     # print(f"Fixed whitespace in {count} files")  # [Security Fix]
+

@@ -158,3 +158,4 @@ def test_cover_letter_generation():
 
 if __name__ == "__main__":
     test_cover_letter_generation()
+

@@ -13,26 +13,26 @@ class TestStubGenerator:
     def __init__(self, tests_dir: str = "tests"):
         self.tests_dir = Path(tests_dir)
         self.regenerated_files = []
-        
+
     def extract_test_functions(self, file_path: Path) -> List[Dict]:
         """Extract test function names and their docstrings"""
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
-            
+
             tests = []
-            
+
             # Find all test functions
             test_pattern = r'def\s+(test_[a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\):\s*\n\s*"""([^"]*)"""'
             matches = re.findall(test_pattern, content, re.MULTILINE | re.DOTALL)
-            
+
             for test_name, docstring in matches:
                 tests.append({
                     'name': test_name,
                     'docstring': docstring.strip(),
                     'is_async': 'async def ' + test_name in content
                 })
-            
+
             # If no tests with docstrings found, just find function names
             if not tests:
                 simple_pattern = r'def\s+(test_[a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\):'
@@ -43,32 +43,32 @@ class TestStubGenerator:
                         'docstring': '',
                         'is_async': 'async def ' + test_name in content
                     })
-            
+
             return tests
-            
+
         except Exception as e:
             print(f"  ❌ Error extracting from {file_path}: {e}")
             return []
-    
+
     def extract_class_names(self, file_path: Path) -> List[str]:
         """Extract test class names"""
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
-            
+
             # Find test classes
             class_pattern = r'class\s+(Test\w*)\s*\('
             matches = re.findall(class_pattern, content)
-            
+
             return matches
-            
+
         except Exception:
             return []
-    
+
     def generate_stub_file(self, file_path: Path, tests: List[Dict], classes: List[str]) -> str:
         """Generate a stub test file"""
         relative_path = file_path.relative_to(self.tests_dir)
-        
+
         # Generate file header
         lines = [
             '"""',
@@ -85,18 +85,18 @@ class TestStubGenerator:
             'from pathlib import Path',
             '',
         ]
-        
+
         # Add any necessary imports based on test patterns
         needs_json = any('json' in test['docstring'].lower() for test in tests)
         needs_tempfile = any('temp' in test['docstring'].lower() for test in tests)
-        
+
         if needs_json:
             lines.append('import json')
         if needs_tempfile:
             lines.append('import tempfile')
-        
+
         lines.append('')
-        
+
         # Generate mock classes if needed
         mock_classes_needed = set()
         for test in tests:
@@ -107,7 +107,7 @@ class TestStubGenerator:
                 mock_classes_needed.add('AgentResponse')
             if 'workflow' in doc and 'state' in doc:
                 mock_classes_needed.add('WorkflowState')
-        
+
         if mock_classes_needed:
             lines.append('# Mock classes for testing')
             if 'HardenedOrchestrator' in mock_classes_needed:
@@ -117,14 +117,14 @@ class TestStubGenerator:
             if 'WorkflowState' in mock_classes_needed:
                 lines.append('class WorkflowState:\n    def __init__(self, workflow_id="", current_k_node="", completed_nodes=None, context=None):\n        self.workflow_id = workflow_id\n        self.current_k_node = current_k_node\n        self.completed_nodes = completed_nodes or []\n        self.context = context or {}')
             lines.append('')
-        
+
         # Generate test classes
         for class_name in classes:
             lines.append(f'class {class_name}:')
             lines.append('    """Test class."""')
             lines.append('    pass')
             lines.append('')
-        
+
         # Generate test functions
         for test in tests:
             if test['is_async']:
@@ -137,26 +137,26 @@ class TestStubGenerator:
                 lines.append(f'    """')
             lines.append('    pass')
             lines.append('')
-        
+
         return '\n'.join(lines)
-    
+
     def regenerate_file(self, file_path: Path) -> bool:
         """Regenerate a broken test file as a stub"""
         print(f"\nRegenerating: {file_path}")
-        
+
         # Extract test information
         tests = self.extract_test_functions(file_path)
         classes = self.extract_class_names(file_path)
-        
+
         if not tests:
             print(f"  ⚠️  No tests found in {file_path}")
             return False
-        
+
         print(f"  Found {len(tests)} tests and {len(classes)} classes")
-        
+
         # Generate stub content
         stub_content = self.generate_stub_file(file_path, tests, classes)
-        
+
         # Write the stub file
         try:
             # Backup original
@@ -164,19 +164,19 @@ class TestStubGenerator:
             if not backup_path.exists():
                 file_path.rename(backup_path)
                 print(f"  📦 Backed up original to {backup_path.name}")
-            
+
             # Write stub
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(stub_content)
-            
+
             self.regenerated_files.append(file_path)
             print(f"  ✅ Regenerated with {len(tests)} test stubs")
             return True
-            
+
         except Exception as e:
             print(f"  ❌ Error regenerating {file_path}: {e}")
             return False
-    
+
     def regenerate_all_broken_files(self, failed_files: List[str] = None) -> int:
         """Regenerate all broken test files"""
         if failed_files:
@@ -186,10 +186,10 @@ class TestStubGenerator:
             target_files = []
             for pattern in ["test_*.py", "*_test.py"]:
                 target_files.extend(self.tests_dir.rglob(pattern))
-        
+
         print("🔧 Regenerating broken test files as stubs...")
         print(f"Processing {len(target_files)} files")
-        
+
         regenerated = 0
         for file_path in target_files:
             # Skip if already a stub
@@ -202,12 +202,12 @@ class TestStubGenerator:
                         continue
                 except:
                     pass
-                
+
                 if self.regenerate_file(file_path):
                     regenerated += 1
-        
+
         return regenerated
-    
+
     def generate_report(self):
         """Generate a report"""
         print("\n" + "="*80)
@@ -321,13 +321,14 @@ def main():
         "tests/debug_resume_test.py",
         "tests/simple_test.py"
     ]
-    
+
     generator = TestStubGenerator()
     regenerated = generator.regenerate_all_broken_files(failed_files)
     generator.generate_report()
-    
+
     print(f"\n✅ Run 'pytest tests/ --collect-only' to see all {regenerated} regenerated tests!")
     print(f"✅ All tests will show as SKIPPED (yellow) in the Testing tab")
 
 if __name__ == "__main__":
     main()
+
