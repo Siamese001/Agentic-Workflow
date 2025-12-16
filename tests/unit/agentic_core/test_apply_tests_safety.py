@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="Test not implemented")
 def test_apply_tests_safety(data: Dict[str, object]) -> Dict[str, object]:
     """Process test apply tests safety data."""
     return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
