@@ -4,7 +4,7 @@
 ================================================================================
 
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                          SECURITY LAYER (Protocols 1-5)                     │
+│                     SECURITY LAYER (Protocols 1-10)                        │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
@@ -27,6 +27,30 @@
 │                          │  Multi-Model      │                             │
 │                          │  Consensus        │                             │
 │                          │  (Supreme Court)  │                             │
+│                          └─────────┬─────────┘                             │
+│                                    │                                        │
+│                          ┌─────────▼─────────┐                             │
+│                          │   Protocol 7      │                             │
+│                          │  Canary Trap      │                             │
+│                          │  File Monitor     │                             │
+│                          └─────────┬─────────┘                             │
+│                                    │                                        │
+│                          ┌─────────▼─────────┐                             │
+│                          │   Protocol 8      │                             │
+│                          │  Egress Filter    │                             │
+│                          │  Network Block    │                             │
+│                          └─────────┬─────────┘                             │
+│                                    │                                        │
+│                          ┌─────────▼─────────┐                             │
+│                          │   Protocol 9      │                             │
+│                          │  Crypto           │                             │
+│                          │  Provenance       │                             │
+│                          └─────────┬─────────┘                             │
+│                                    │                                        │
+│                          ┌─────────▼─────────┐                             │
+│                          │   Protocol 10     │                             │
+│                          │  Shadow Mode      │                             │
+│                          │  Execution        │                             │
 │                          └───────────────────┘                             │
 └─────────────────────────────────────────────────────────────────────────────┘
                                     │
@@ -181,14 +205,16 @@
 │                          │  Knowledge Graph  │                             │
 │                          └───────────────────┘                             │
 │                                                                             │
-│  Core Utilities (core_utils.py):                                           │
-│  • validate_python_syntax() ────────────► Protocol 1                       │
-│  • generate_draft_llm() ─────────────────► Resume Engine                   │
-│  • semantic_score_draft() ───────────────► Resume Engine                   │
-│  • register_process() ───────────────────► Protocol 5                      │
-│  • log_action() ─────────────────────────► Protocol 5                      │
-│  • search_nodes(), search_records() ─────► All Engines                     │
-│  • add_observations() ───────────────────► All Engines                     │
+│  Core Utilities (core_utils.py):                                         Core Utilities (core_utils.py):
+  • validate_python_syntax() ────────────► Protocol 1
+  • generate_draft_llm() ─────────────────► Resume Engine
+  • semantic_score_draft() ───────────────► Resume Engine
+  • register_process() ───────────────────► Protocol 5
+  • log_action() ─────────────────────────► Protocol 5
+  • search_nodes(), search_records() ─────► All Engines
+  • add_observations() ───────────────────► All Engines
+  • setup_gpg_signing() ─────────────────► Protocol 9
+  • sign_and_commit() ───────────────────► Protocol 9                     │
 │                                                                             │
 │  Security Utilities (security_utils.py):                                   │
 │  • PromptFirewall.scan_input() ──────────► Protocol 3                      │
@@ -222,6 +248,19 @@
 │  Time-Bound Benchmarking (time_bound_benchmarking.py):                     │
 │  • execute_time_bound_salary_benchmarking() ► Resume Engine                │
 │  • Salary data retrieval ────────────────► Context Enhancement             │
+│                                                                             │
+│  Network Utils (network_utils.py):                                         │
+│  • strict_egress_filter() ───────────────► Protocol 8                      │
+│  • RESUME_ALLOWED_HOSTS ─────────────────► Resume Engine                   │
+│  • OUTREACH_ALLOWED_HOSTS ───────────────► Outreach Engine                 │
+│                                                                             │
+│  Consensus Engine (consensus_engine.py):                                    │
+│  • jury.evaluate() ─────────────────────► Protocol 6                       │
+│  • ConsensusEngine ────────────────────► Multi-Model Review                │
+│                                                                             │
+│  File Monitor (file_monitor.py):                                           │
+│  • monitor_canonical_files() ───────────► Protocol 7                       │
+│  • CanaryTrap ─────────────────────────► File Integrity Check              │
 └─────────────────────────────────────────────────────────────────────────────┘
 
 ================================================================================
@@ -468,7 +507,10 @@ Root Directory (c:\Git\Agentic-Workflow\):
     ├── tests/test_firewall.py          (P3 Tests)
     ├── tests/test_truth_anchor.py      (P4 Tests)
     ├── tests/test_watchdog.py          (P5 Tests)
-    └── tests/test_sandbox.py           (P2 Tests)
+    ├── tests/test_sandbox.py           (P2 Tests)
+    ├── tests/test_consensus.py         (P6 Tests)
+    ├── tests/test_provenance.py        (P9 Tests)
+    └── tests/test_shadow_mode.py       (P10 Tests)
 
 ================================================================================
                         KEY INTERACTIONS
@@ -497,6 +539,21 @@ Root Directory (c:\Git\Agentic-Workflow\):
 6. All Engines → L1 Fetch/Filesystem:
    fetch(url) → Retrieve external data
    write_file(path, content) → Save output
+
+7. Canon Validator → Protocol 6:
+   jury.evaluate() → Multi-model consensus review
+
+8. Resume Engine → Protocol 7:
+   monitor_canonical_files() → File integrity check
+
+9. Resume/Outreach Engines → Protocol 8:
+    strict_egress_filter() → Network egress blocking
+
+10. Canon Validator → Protocol 9:
+    sign_and_commit() → GPG signed commits
+
+11. Canon/Outreach Engines → Protocol 10:
+    SHADOW_MODE_ACTIVE → Block side effects in shadow mode
 
 ================================================================================
                         STATUS: PRODUCTION READY ✓
