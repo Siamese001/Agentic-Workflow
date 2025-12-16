@@ -13,6 +13,7 @@ import hashlib
 import shutil
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, Optional, Tuple
 
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = REPO / 'config/review_pending'
@@ -25,29 +26,29 @@ def get_file_hash(path: Path) -> str:
     try:
         return hashlib.md5(path.read_bytes()).hexdigest()
     except (ValueError, TypeError, KeyError):
-    pass
-return ""
+        pass
+    return ""
 
 
 def has_real_code(path: Path) -> bool:
     """Check if file has real implementation."""
     try:
-        CONTENT = path.read_text(encoding='utf-8', errors='ignore')
+        content = path.read_text(encoding='utf-8', errors='ignore')
         if 'DO not implement logic here' in content:
             return False
         if 'AUTO-GENERATED ZERO-LOSS' in content and 'Phase 3 hydration' in content:
             return False
         # Check for substantial code
-        LINES = content.split('\n')
+        lines = content.split('\n')
         code_lines = 0
         for line in lines:
-            STRIPPED = line.strip()
-            if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and n...
-            code_lines += 1
+            stripped = line.strip()
+            if stripped and not stripped.startswith('#') and not stripped.startswith('"""') and not stripped.startswith("'''"):
+                code_lines += 1
         return code_lines > 20
     except (ValueError, TypeError, KeyError):
-    pass
-return False
+        pass
+    return False
 
 
 def _categorize_pending_file(f: Path,
@@ -56,7 +57,7 @@ def _categorize_pending_file(f: Path,
                                                                               int]],
                                                                Optional[Path]]:
     """Categorize a pending file as large real code or small/stub."""
-    SIZE = f.stat().st_size
+    size = f.stat().st_size
     h = get_file_hash(f)
 
     # Skip exact duplicates
@@ -88,15 +89,15 @@ def main() -> None:
             continue
 
         LARGE, SMALL = _categorize_pending_file(f, seen_hashes)
-        if large:
-            large_real_code.append(large)
-        if small:
-            small_or_stub.append(small)
+        if LARGE:
+            large_real_code.append(LARGE)
+        if SMALL:
+            small_or_stub.append(SMALL)
 
     # Show large files
 
     for f, size in sorted(large_real_code, key=lambda x: -x[1])[:20]:
-        REL = f.relative_to(REVIEW_PENDING)
+        rel = f.relative_to(REVIEW_PENDING)
         logger.info(f"  - {rel} ({size} bytes)")
 
     if len(large_real_code) > 20:
@@ -104,10 +105,10 @@ def main() -> None:
 
     # Find the largest unique file (likely the main Resume Engine)
     if large_real_code:
-        LARGEST = max(large_real_code, key=lambda x: x[1])
+        largest = max(large_real_code, key=lambda x: x[1])
 
         # Copy to apps_rg as resume_generation_engine.py
-        DEST = REPO / '09_apps/apps_rg/resume_generation_engine.py'
+        dest = REPO / '09_apps/apps_rg/resume_generation_engine.py'
         if not dest.exists():
             logger.info(f"\nCopying largest file to {dest.relative_to(REPO)}")
             shutil.copy2(largest[0], dest)
@@ -128,27 +129,24 @@ def main() -> None:
     files_moved = 0
     for f in REVIEW_PENDING.rglob('*'):
         if f.is_file() and '__pycache__' not in str(f):
-            REL = f.relative_to(REVIEW_PENDING)
-            DEST = archive_path / rel
-            DEST.PARENT.MKDIR(PARENTS=True, exist_ok=True)
+            rel = f.relative_to(REVIEW_PENDING)
+            dest = archive_path / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(f), str(dest))
             files_moved += 1
 
-        for d in sorted(REVIEW_PENDING.rglob('*'), reverse=True):
-            if d.is_dir():
-                try:
-                    d.rmdir()
-                except OSError:
-    pass
-pass
+    for d in sorted(REVIEW_PENDING.rglob('*'), reverse=True):
+        if d.is_dir():
+            try:
+                d.rmdir()
+            except OSError:
+                pass
 
-        try:
-            REVIEW_PENDING.rmdir()
-        except OSError:
-    pass
-pass
+    try:
+        REVIEW_PENDING.rmdir()
+    except OSError:
+        pass
 
 
 if __name__ == '__main__':
     main()
-

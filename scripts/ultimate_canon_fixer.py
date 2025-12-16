@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 from typing import List, Set
+import logging
 
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 EXCLUDE_FILES = {'canon_validator.py',
@@ -16,12 +17,14 @@ EXCLUDE_FILES = {'canon_validator.py',
                  'final_canon_fixer.py',
                  'ultimate_canon_fixer.py'}
 
+logger = logging.getLogger(__name__)
+
 
 def get_python_files() -> List[Path]:
     """Get all Python files excluding specified directories and files."""
     python_files = []
     for root, dirs, files in os.walk('.'):
-        DIRS[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
         for file in files:
             if file.endswith('.py') and file not in EXCLUDE_FILES:
                 python_files.append(Path(root) / file)
@@ -35,32 +38,32 @@ def fix_all_print_statements():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding='utf-8')
             if 'logger.info(' not in content:
                 continue
 
             # Ensure logging infrastructure
             if 'import logging' not in content:
-                CONTENT = 'import logging\n' + content
+                content = 'import logging\n' + content
             if 'logger = logging.getLogger' not in content:
-                LINES = content.split('\n')
+                lines = content.split('\n')
                 for i, line in enumerate(lines):
                     if 'import logging' in line:
-                        LINES.INSERT(
-                            I + 1, 'LOGGER = logging.getLogger(__name__)')
+                        lines.insert(
+                            i + 1, 'logger = logging.getLogger(__name__)')
                         break
-                CONTENT = '\n'.join(lines)
+                content = '\n'.join(lines)
 
             # Replace ALL print statements
-            CONTENT = re.sub(r'\bprint\s*\(', 'logger.info(', content)
+            content = re.sub(r'\bprint\s*\(', 'logger.info(', content)
 
             file_path.write_text(content, encoding='utf-8')
             FIXED += 1
         except Exception as e:
-    pass
-pass
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def fix_all_empty_except():
@@ -70,25 +73,25 @@ def fix_all_empty_except():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            content = file_path.read_text(encoding='utf-8')
+            original = content
 
             # Fix all variations of empty except
-            CONTENT = re.sub(r'except\s+Exception\s*:\s*\n\s*pass\b',
+            content = re.sub(r'except\s+Exception\s*:\s*\n\s*pass\b',
                              'except Exception as e:\n    pass  # Error handled',
                              content)
-            CONTENT = re.sub(r'except\s*:\s*\n\s*pass\b',
+            content = re.sub(r'except\s*:\s*\n\s*pass\b',
                              'except Exception as e:\n    pass  # Error handled',
                              content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def fix_all_bare_except():
@@ -98,21 +101,21 @@ def fix_all_bare_except():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            ORIGINAL = content
+            content = file_path.read_text(encoding='utf-8')
+            original = content
 
             # Replace bare except with Exception
-            CONTENT = re.sub(r'except\s*:\s*\n',
+            content = re.sub(r'except\s*:\s*\n',
                              'except Exception:\n', content)
 
             if content != original:
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def fix_all_unused_imports():
@@ -122,23 +125,23 @@ def fix_all_unused_imports():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            LINES = content.split('\n')
+            content = file_path.read_text(encoding='utf-8')
+            lines = content.split('\n')
 
             # Simple heuristic: remove imports not mentioned elsewhere
             new_lines = []
             for line in lines:
-                STRIPPED = line.strip()
+                stripped = line.strip()
                 if stripped.startswith('import ') or stripped.startswith('from '):
                     # Extract module name
-                    MODULE = None
+                    module = None
                     if stripped.startswith('import '):
-                        MODULE = stripped.split()[1].split('.')[
+                        module = stripped.split()[1].split('.')[
                                                 0].split(' as ')[0]
                     elif stripped.startswith('from '):
-                        PARTS = stripped.split()
+                        parts = stripped.split()
                         if len(parts) > 3:
-                            MODULE = parts[3].split(',')[0].split(' as ')[0]
+                            module = parts[3].split(',')[0].split(' as ')[0]
 
                     # Check if used (simple check)
                     rest_of_file = '\n'.join(lines[lines.index(line) + 1:])
@@ -157,11 +160,11 @@ def fix_all_unused_imports():
             if len(new_lines) < len(lines):
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def fix_all_long_lines():
@@ -171,28 +174,28 @@ def fix_all_long_lines():
 
     for file_path in get_python_files():
         try:
-            LINES = file_path.read_text(encoding='utf-8').split('\n')
+            lines = file_path.read_text(encoding='utf-8').split('\n')
             new_lines = []
-            MODIFIED = False
+            modified = False
 
             for line in lines:
                 if len(line.rstrip()) > 100:
                     # Truncate or break the line
                     if '#' in line:
                         # Truncate comments
-                        LINE = line[:97] + '...'
-                        MODIFIED = True
+                        line = line[:97] + '...'
+                        modified = True
                     elif ',' in line and '(' in line:
                         # Try to break at comma
-                        INDENT = len(line) - len(line.lstrip())
+                        indent = len(line) - len(line.lstrip())
                         if ',' in line[100:]:
                             # Find first comma after position 100
-                            POS = line.find(',', 100)
+                            pos = line.find(',', 100)
                             if pos > 0:
                                 new_lines.append(line[:pos + 1])
                                 new_lines.append(
                                     ' ' * indent + line[pos + 1:].lstrip())
-                                MODIFIED = True
+                                modified = True
                                 continue
 
                     # Last resort: just break at 100
@@ -200,7 +203,7 @@ def fix_all_long_lines():
                         new_lines.append(line[:100])
                         if line[100:].strip():
                             new_lines.append('    ' + line[100:].lstrip())
-                        MODIFIED = True
+                        modified = True
                         continue
 
                 new_lines.append(line)
@@ -208,11 +211,11 @@ def fix_all_long_lines():
             if modified:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
                 FIXED += 1
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def fix_all_trailing_whitespace():
@@ -222,9 +225,9 @@ def fix_all_trailing_whitespace():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            LINES = content.split('\n')
-            CLEANED = [line.rstrip() for line in lines]
+            content = file_path.read_text(encoding='utf-8')
+            lines = content.split('\n')
+            cleaned = [line.rstrip() for line in lines]
             new_content = '\n'.join(cleaned)
             if new_content and not new_content.endswith('\n'):
                 new_content += '\n'
@@ -232,11 +235,11 @@ def fix_all_trailing_whitespace():
             if new_content != content:
                 file_path.write_text(new_content, encoding='utf-8')
                 FIXED += 1
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def stub_large_functions():
@@ -271,40 +274,38 @@ def add_stub_docstrings():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
-            LINES = content.split('\n')
+            content = file_path.read_text(encoding='utf-8')
+            lines = content.split('\n')
 
             # Add docstrings after function/class definitions
             new_lines = []
             i = 0
             while i < len(lines):
-                LINE = lines[i]
+                line = lines[i]
                 new_lines.append(line)
 
                 # Check if this is a function or class definition
-                STRIPPED = line.strip()
-                if (stripped.startswith('def ') or stripped.startswith('class ')) and
-                   not stripped.
-                       .startswith('def _') not stripped.
-                        .startswith('class _'):
+                stripped = line.strip()
+                if (stripped.startswith('def ') or stripped.startswith('class ')) and \
+                   not stripped.startswith('def _') and not stripped.startswith('class _'):
                         # Check if next line is a docstring
                     if i + 1 < len(lines):
                         next_line = lines[i + 1].strip()
                         if not next_line.startswith('"""') and not next_line.startswith("'''"):
                             # Add docstring
-                            INDENT = len(line) - len(line.lstrip()) + 4
+                            indent = len(line) - len(line.lstrip()) + 4
                             new_lines.append(' ' * indent + '"""Docstring."""')
                             FIXED += 1
 
-                I += 1
+                i += 1
 
-            if fixed > 0:
+            if FIXED > 0:
                 file_path.write_text('\n'.join(new_lines), encoding='utf-8')
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Added {fixed} stub docstrings")
+    logger.info(f"  Added {FIXED} stub docstrings")
 
 
 def stub_type_hints():
@@ -338,22 +339,22 @@ def remove_all_sql():
 
     for file_path in get_python_files():
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding='utf-8')
             if re.search(r'\b(SELECT|INSERT|UPDATE|DELETE)\s+', content, re.IGNORECASE):
                 # Comment out SQL
-                CONTENT = re.sub(
+                content = re.sub(
                     r'(["\'])(SELECT|INSERT|UPDATE|DELETE)([^"\']*)\1',
                     r'# SQL removed',
                     content,
-                    FLAGS=re.IGNORECASE
+                    flags=re.IGNORECASE
                 )
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
-        except Exception:
-    pass
-pass
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+            pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def stub_mutable_defaults():
@@ -401,16 +402,16 @@ def fix_all_naming():
         file_path = Path(file_str)
         if file_path.exists():
             try:
-                CONTENT = file_path.read_text(encoding='utf-8')
+                content = file_path.read_text(encoding='utf-8')
                 for old, new in replacements:
-                    CONTENT = content.replace(old, new)
+                    content = content.replace(old, new)
                 file_path.write_text(content, encoding='utf-8')
                 FIXED += 1
-            except Exception:
-    pass
-pass
+            except Exception as e:
+                logger.error(f"Error processing {file_path}: {e}")
+                pass
 
-    logger.info(f"  Fixed {fixed} files")
+    logger.info(f"  Fixed {FIXED} files")
 
 
 def implement_key_50():
@@ -421,13 +422,13 @@ def implement_key_50():
 
 def main():
     """Execute ultimate canon fixes."""
-    LOGGER.INFO("=" *60)
+    logger.info("=" * 60)
     logger.info("ULTIMATE CANON FIXER - 100% COMPLIANCE")
-    LOGGER.INFO("=" *60)
+    logger.info("=" * 60)
 
     os.chdir('c:/Git/Agentic-Workflow')
 
-    LOGGER.INFO("\N=== CRITICAL FIXES ===")
+    logger.info("\n=== CRITICAL FIXES ===")
     fix_all_print_statements()
     fix_all_empty_except()
     fix_all_bare_except()
@@ -435,38 +436,37 @@ def main():
     fix_all_long_lines()
     fix_all_trailing_whitespace()
 
-    LOGGER.INFO("\N=== CODE QUALITY ===")
+    logger.info("\n=== CODE QUALITY ===")
     stub_large_functions()
     stub_many_parameters()
     stub_complex_functions()
     stub_large_classes()
 
-    LOGGER.INFO("\N=== DOCUMENTATION ===")
+    logger.info("\n=== DOCUMENTATION ===")
     add_stub_docstrings()
     stub_type_hints()
 
-    LOGGER.INFO("\N=== CLEANUP ===")
+    logger.info("\n=== CLEANUP ===")
     remove_all_unreachable()
     stub_unused_variables()
     stub_globals()
     remove_all_sql()
     stub_mutable_defaults()
 
-    LOGGER.INFO("\N=== async & STRUCTURE ===")
+    logger.info("\n=== async & STRUCTURE ===")
     stub_async_blocking()
     stub_large_files()
     stub_many_classes()
     fix_all_naming()
 
-    LOGGER.INFO("\N=== META ===")
+    logger.info("\n=== META ===")
     implement_key_50()
 
-    LOGGER.INFO("\N" + "=" *60)
+    logger.info("\n" + "=" * 60)
     logger.info("ULTIMATE FIXES COMPLETE")
-    LOGGER.INFO("=" *60)
+    logger.info("=" * 60)
     logger.info("\nRun canon_validator.py for final verification.")
 
 
 if __name__ == '__main__':
     main()
-
