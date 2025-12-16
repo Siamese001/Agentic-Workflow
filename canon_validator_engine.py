@@ -8,12 +8,13 @@ from typing import Any, Dict, Optional
 # Import core utilities for Figma functions
 from core_utils import (
     validate_python_syntax,
-    commit,
     sign_and_commit,
     search_nodes,
     add_observations,
     semantic_score_draft,
     write_file,
+    register_process,
+    log_action,
 )
 # Import hardened MCP functions
 from mcp_hardening import check_design_drift, execute_vulnerability_search
@@ -25,6 +26,222 @@ from consensus_engine import jury
 
 # Add this global configuration flag (or load from environment/config)
 SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"
+MAX_P6_ATTEMPTS = int(os.environ.get("MAX_P6_ATTEMPTS", "3"))
+REGRESSION_SUITE_PATH = os.environ.get("REGRESSION_SUITE_PATH", "tests/")
+
+
+def execute_regression_suite(logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Execute the full regression test suite (Test 5).
+    
+    Returns:
+        Dict with status and details
+    """
+    import subprocess
+    
+    if logger:
+        logger.info(f"🧪 TEST_5: Running regression suite from {REGRESSION_SUITE_PATH}")
+    
+    try:
+        # Run pytest on the regression suite
+        result = subprocess.run(
+            ["python", "-m", "pytest", REGRESSION_SUITE_PATH, "-v", "--tb=short"],
+            capture_output=True,
+            text=True,
+            cwd=os.getcwd()
+        )
+        
+        if result.returncode == 0:
+            if logger:
+                logger.info("✅ TEST_5: Regression suite passed")
+            return {
+                "status": "SUCCESS",
+                "output": result.stdout,
+                "stderr": result.stderr
+            }
+        else:
+            if logger:
+                logger.warning(f"⚠️ TEST_5: Regression suite failed\n{result.stderr}")
+            return {
+                "status": "FAILED",
+                "output": result.stdout,
+                "stderr": result.stderr,
+                "reason": "REGRESSION_TEST_FAILURE"
+            }
+            
+    except Exception as e:
+        error_msg = f"Error running regression suite: {str(e)}"
+        if logger:
+            logger.error(f"❌ TEST_5: {error_msg}")
+        return {
+            "status": "FAILED",
+            "reason": error_msg
+        }
+
+
+def execute_dependency_refactor_zlm(issue_id: str, target_file: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
+    """
+    Zero-Loss Merge (ZLM) wrapper for execute_dependency_refactor.
+    Implements retry logic with P6 self-correction up to MAX_P6_ATTEMPTS.
+    
+    ZLM Policy: The agent MUST NOT stop until P9 finalization passes or max attempts reached.
+    """
+    # P5 Compliance: Register the process ID for Watchdog monitoring
+    try:
+        register_process()
+        if logger:
+            logger.info("📋 P5: Process registered with watchdog")
+        log_action("P5_PROCESS_REGISTERED", f"CanonValidatorEngine ZLM started for {issue_id}")
+    except Exception as e:
+        if logger:
+            logger.warning(f"⚠️ P5: Could not register process: {e}")
+    
+    attempts = 0
+    
+    while attempts < MAX_P6_ATTEMPTS:
+        attempts += 1
+        
+        if logger:
+            logger.info(f"🔄 ZLM Attempt {attempts}/{MAX_P6_ATTEMPTS} for {target_file}")
+        
+        # Initialize regression result
+        regression_result = {"status": "SKIPPED"}
+        
+        # Execute the standard validation pipeline
+        result = execute_dependency_refactor(issue_id, target_file, tools, logger)
+        
+        # Check for success conditions - P2 passed, now run Test 5 (Regression Suite)
+        if result.get("status") in ["SUCCESS", "success"]:
+            if logger:
+                logger.info(f"✅ P2_PASS: Unit tests passed on attempt {attempts}")
+            
+            # Test 5: Run full regression suite
+            regression_result = execute_regression_suite(logger)
+            
+            if regression_result.get("status") == "SUCCESS":
+                if logger:
+                    logger.info(f"✅ ZLM_SUCCESS: All tests passed on attempt {attempts}")
+                
+                # Log success to L5
+                if tools.get('add_observations'):
+                    tools['add_observations']([{
+                        "entityName": f"ZLM_{issue_id}",
+                        "observations": [f"ZLM_SUCCESS: P2 and Regression passed on attempt {attempts}"]
+                    }])
+                
+                return result
+            else:
+                # Regression failed - treat as P2 failure to trigger P6
+                if logger:
+                    logger.warning(f"⚠️ TEST_5_FAIL: Regression suite failed. Triggering P6 fix.")
+                
+                # Log regression failure to L5
+                if tools.get('add_observations'):
+                    tools['add_observations']([{
+                        "entityName": f"ZLM_{issue_id}",
+                        "observations": [
+                            f"REGRESSION_FAIL_ATTEMPT_{attempts}",
+                            f"Error: {regression_result.get('stderr', 'Unknown error')}",
+                            f"Reason: {regression_result.get('reason', 'REGRESSION_TEST_FAILURE')}"
+                        ]
+                    }])
+                
+                # Continue to P6 self-correction below
+                pass
+        
+        # P6 Self-Correction Trigger (triggered by P2 failure or Regression failure)
+        if result.get("reason") in ["SANDBOX_VERIFICATION_FAILURE", "CONSENSUS_VALIDATION_FAILURE"] or \
+           (result.get("status") in ["SUCCESS", "success"] and regression_result.get("status") == "FAILED"):
+            if logger:
+                logger.warning(f"⚠️ ZLM: P2/P6 failure detected. Attempt {attempts}/{MAX_P6_ATTEMPTS}")
+            
+            # Log failure to L5
+            if tools.get('add_observations'):
+                tools['add_observations']([{
+                    "entityName": f"ZLM_{issue_id}",
+                    "observations": [
+                        f"P2_FAIL_ATTEMPT_{attempts}",
+                        f"Error: {result.get('details', 'Unknown error')}",
+                        f"Reason: {result.get('reason')}"
+                    ]
+                }])
+            
+            # If we haven't reached max attempts, try P6 consensus fix
+            if attempts < MAX_P6_ATTEMPTS:
+                if logger:
+                    logger.info(f"🔧 ZLM: Triggering P6 consensus for self-correction...")
+                
+                # Read current file content
+                try:
+                    with open(target_file, 'r', encoding='utf-8') as f:
+                        file_content = f.read()
+                    
+                    # Query consensus for fix
+                    fix_result = jury.propose_fix(
+                        code=file_content,
+                        error_message=result.get('details', ''),
+                        context=f"ZLM Attempt {attempts}"
+                    )
+                    
+                    if fix_result.get("status") == "SUCCESS" and fix_result.get("fixed_code"):
+                        if logger:
+                            logger.info(f"✅ P6 proposed fix. Applying and retrying...")
+                        
+                        # Apply the fix
+                        with open(target_file, 'w', encoding='utf-8') as f:
+                            f.write(fix_result["fixed_code"])
+                        
+                        # Log fix application
+                        if tools.get('add_observations'):
+                            tools['add_observations']([{
+                                "entityName": f"ZLM_{issue_id}",
+                                "observations": [f"P6_FIX_APPLIED: Attempt {attempts}"]
+                            }])
+                        
+                        # Continue loop to retry validation
+                        continue
+                    else:
+                        if logger:
+                            logger.warning(f"⚠️ P6 could not generate fix. Continuing to next attempt...")
+                        
+                except Exception as e:
+                    if logger:
+                        logger.error(f"❌ Error during P6 fix application: {e}")
+            
+            # Continue to next attempt
+            continue
+        
+        # For other failure types (P1, GPG, etc.), fail immediately
+        if result.get("status") in ["FAILED", "error"]:
+            if logger:
+                logger.error(f"❌ ZLM_FAIL: Non-recoverable failure - {result.get('reason')}")
+            
+            # Log non-recoverable failure
+            if tools.get('add_observations'):
+                tools['add_observations']([{
+                    "entityName": f"ZLM_{issue_id}",
+                    "observations": [f"ZLM_FAIL: {result.get('reason')} (Non-recoverable)"]
+                }])
+            
+            return result
+    
+    # Max attempts reached
+    if logger:
+        logger.critical(f"❌ ZLM_FAIL: Maximum P6 attempts ({MAX_P6_ATTEMPTS}) reached for {target_file}")
+    
+    # Log max attempts failure
+    if tools.get('add_observations'):
+        tools['add_observations']([{
+            "entityName": f"ZLM_{issue_id}",
+            "observations": [f"ZLM_FAIL: P6 Max Attempts Reached ({MAX_P6_ATTEMPTS})"]
+        }])
+    
+    return {
+        "status": "FAILED",
+        "reason": "ZLM_MAX_ATTEMPTS_REACHED",
+        "details": f"Failed after {MAX_P6_ATTEMPTS} P6 self-correction attempts",
+        "attempts": attempts
+    }
 
 
 def execute_dependency_refactor(issue_id: str, target_file: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:

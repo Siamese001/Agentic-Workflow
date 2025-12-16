@@ -98,5 +98,63 @@ class ConsensusEngine:
             "votes": votes
         }
 
-# Singleton instance
+    def propose_fix(self, code: str, error_message: str, context: str = "") -> Dict[str, Any]:
+        """
+        Propose a fix for code that failed validation.
+        
+        Args:
+            code: The original code that failed
+            error_message: The error message describing the failure
+            context: Additional context about the failure
+            
+        Returns:
+            Dict with status and fixed_code if successful
+        """
+        logger.info(f"🔧 Consensus Engine: Proposing fix for error: {error_message[:100]}...")
+        
+        # Simulate generating a fix based on the error
+        fixed_code = code
+        
+        # Simple fix patterns based on common errors
+        error_lower = error_message.lower()
+        
+        if "syntax error" in error_lower:
+            # Fix common syntax issues
+            fixed_code = code.replace(";;", ";")
+            fixed_code = fixed_code.replace(":::", ":")
+            
+        elif "import error" in error_lower or "module not found" in error_lower:
+            # Add import statements
+            if "import os" not in code and "os." in code:
+                fixed_code = "import os\n" + code
+            if "import json" not in code and "json." in code:
+                fixed_code = "import json\n" + code
+                
+        elif "name 'None' is not defined" in error_lower:
+            # Fix NoneType issues
+            fixed_code = code.replace("None", "None")
+            
+        elif "indentation" in error_lower:
+            # Fix indentation issues (simplified)
+            lines = code.split('\n')
+            fixed_lines = []
+            for line in lines:
+                if line.strip():  # Non-empty line
+                    fixed_lines.append('    ' + line.strip())
+                else:
+                    fixed_lines.append('')
+            fixed_code = '\n'.join(fixed_lines)
+        
+        # Check if we actually made any changes
+        if fixed_code == code:
+            return {"status": "FAILED", "error": "No fix could be generated"}
+        
+        return {
+            "status": "SUCCESS",
+            "fixed_code": fixed_code,
+            "context": context
+        }
+
+
+# Initialize the global jury instance
 jury = ConsensusEngine()
