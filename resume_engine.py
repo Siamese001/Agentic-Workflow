@@ -18,6 +18,10 @@ from mcp_hardening import get_version_locked_design
 from redis_langcache_pipeline import execute_governed_prompt_caching
 # Import time-bound benchmarking function
 from time_bound_benchmarking import execute_time_bound_salary_benchmarking
+# Import security utilities for prompt firewall
+from security_utils import firewall, SecurityException
+# Import fact checker for truth anchor validation
+from fact_checker import fact_checker, HallucinationException
 
 
 def _extract_tools(tools: Dict[str, Any]) -> Dict[str, Any]:
@@ -180,6 +184,32 @@ def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_o
     job_description_markdown = _fetch_job_description(job_url, tools['fetch'], logger)
     if not job_description_markdown:
         return {"status": "error", "message": "Failed to retrieve job description."}
+    
+    # --- HARDENING PROTOCOL 3: PROMPT FIREWALL ---
+    # We validate the fetched content BEFORE sending it to Pinecone or LLM.
+    try:
+        if logger:
+            logger.info("Scanning Job Description for injection attacks...")
+        
+        # Check if fetch returned valid text
+        if not job_description_markdown or not isinstance(job_description_markdown, str):
+            if logger:
+                logger.warning("Job description is empty or invalid format.")
+            return {"status": "FAILED", "reason": "EMPTY_INPUT"}
+
+        # EXECUTE SCAN
+        firewall.scan_input(job_description_markdown, context_name="Job Description")
+        
+    except SecurityException as e:
+        if logger:
+            logger.critical(f"HARDENING TRIGGERED: Job Description rejected. {e}")
+        # Abort the process safely. DO NOT proceed to LLM generation.
+        return {
+            "status": "FAILED",
+            "reason": "SECURITY_VIOLATION",
+            "details": str(e)
+        }
+    # ---------------------------------------------
 
     # --- Step 2: Get Internal Context (L5 MEMemory) ---
     user_profile = _get_user_profile(user_name, tools['search_nodes'], logger)
@@ -551,6 +581,25 @@ def generate_optimized_draft(job_description: str, user_name: str, score_thresho
                 f"Threshold not met after {max_iterations} attempts. Returning best effort.")
     elif final_draft is None:
         return {"status": "error", "message": "Draft generation failed after all attempts."}
+
+    # --- HARDENING PROTOCOL 4: TRUTH ANCHOR ---
+    try:
+        if logger:
+            logger.info("Verifying draft against Golden Record...")
+        fact_checker.validate_skills(final_draft)
+    except HallucinationException as e:
+        if logger:
+            logger.critical(f"HARDENING TRIGGERED: Draft rejected due to hallucination. {e}")
+        # Self-Correction Strategy:
+        # We could loop back to the LLM with a correction prompt:
+        # "You included unverified skills: {e}. Remove them."
+        # For now, we fail closed.
+        return {
+            "status": "FAILED",
+            "reason": "HALLUCINATION_DETECTED",
+            "details": str(e)
+        }
+    # ------------------------------------------
 
     # --- Finalization (L1 Filesystem) ---
     final_file_path = f"drafts/{user_name}_optimized_draft.txt"
