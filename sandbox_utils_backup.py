@@ -80,7 +80,7 @@ class DockerSandbox:
                 except Exception as e:
                     logger.warning(f"Failed to remove container: {e}")
 
-def execute_in_sandbox(repo_path: str, command: str) -> bool:
+    def execute_in_sandbox(repo_path: str, command: str) -> bool:
     """
     High-level wrapper to run a check in the repo safely.
     Mounts repo_path as Read-Only to /code, copies to /app, and executes.
