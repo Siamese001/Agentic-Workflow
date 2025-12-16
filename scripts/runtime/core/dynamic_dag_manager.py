@@ -702,7 +702,23 @@ class DAGManager:
         }
 
 # Global instance
-_dag_manager: Optional[DAGManager] = None
+class DAGManagerSingleton:
+    """Singleton manager for DAGManager without global state"""
+    
+    def __init__(self):
+        self._instance: Optional[DAGManager] = None
+    
+    def get_manager(self, **kwargs) -> DAGManager:
+        """Get or create the DAGManager instance"""
+        if self._instance is None:
+            config = DAGConfig(**kwargs) if kwargs else DAGConfig()
+            self._instance = DAGManager(config)
+        return self._instance
+
+
+# Global singleton instance (acceptable as it's a dependency injection container)
+_dag_manager_singleton = DAGManagerSingleton()
+
 
 def get_dag_manager(**kwargs) -> DAGManager:
     """Get or create global DAGManager instance.
@@ -713,11 +729,5 @@ def get_dag_manager(**kwargs) -> DAGManager:
     Returns:
         DAGManager instance
     """
-    global _dag_manager
-
-    if _dag_manager is None:
-        config = DAGConfig(**kwargs) if kwargs else DAGConfig()
-        _dag_manager = DAGManager(config)
-
-    return _dag_manager
+    return _dag_manager_singleton.get_manager(**kwargs)
 

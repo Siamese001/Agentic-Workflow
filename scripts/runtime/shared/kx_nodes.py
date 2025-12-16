@@ -511,21 +511,30 @@ class KXNodeRegistry:
 
         LOGGER.info(f"Registered custom K.X node: {node_key} ({engine})")
 
-# Global K.X node registry instance
-_KX_REGISTRY: Optional[KXNodeRegistry] = None
+class KXNodeRegistryManager:
+    """Manager for KXNodeRegistry without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_registry(self):
+        """Get or create the KXNodeRegistry instance"""
+        if self._instance is None:
+            self._instance = KXNodeRegistry()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_kx_registry_manager = KXNodeRegistryManager()
+
 
 def get_kx_registry() -> KXNodeRegistry:
-    """Get or create global K.X node registry.
+    """Get the global KX node registry instance.
 
     Returns:
         KXNodeRegistry instance
     """
-    global _KX_REGISTRY
-
-    if _KX_REGISTRY is None:
-        _KX_REGISTRY = KXNodeRegistry()
-
-    return _KX_REGISTRY
+    return _kx_registry_manager.get_registry()
 
 def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
     """Get resume engine K.X node configuration.

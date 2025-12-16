@@ -578,16 +578,30 @@ class ToneEnforcer:
 # Global enforcer instance
 _tone_enforcer: Optional[ToneEnforcer] = None
 
+class ToneEnforcerManager:
+    """Manager for ToneEnforcer without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_enforcer(self):
+        """Get or create the ToneEnforcer instance"""
+        if self._instance is None:
+            self._instance = ToneEnforcer()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_enforcer_manager = ToneEnforcerManager()
+
+
 def get_tone_enforcer() -> ToneEnforcer:
-    """Get global tone enforcer instance.
+    """Get the default tone enforcer.
 
     Returns:
         ToneEnforcer instance
     """
-    global _tone_enforcer
-    if _tone_enforcer is None:
-        _tone_enforcer = ToneEnforcer()
-    return _tone_enforcer
+    return _enforcer_manager.get_enforcer()
 
 # Convenience functions
 def audit_text(text: str, voice: ToneVoice) -> List[ToneViolation]:

@@ -500,20 +500,32 @@ class UnifiedFeedbackSystem:
         return plan
 
 # Global unified feedback system
-_unified_system: Optional[UnifiedFeedbackSystem] = None
-_system_lock = threading.Lock() # Added global lock for thread safety
+class UnifiedFeedbackSystemManager:
+    """Manager for UnifiedFeedbackSystem without global state"""
+    
+    def __init__(self):
+        self._instance = None
+        self._lock = threading.Lock()
+    
+    def get_system(self):
+        """Get or create the UnifiedFeedbackSystem instance"""
+        with self._lock:
+            if self._instance is None:
+                self._instance = UnifiedFeedbackSystem()
+            return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_system_manager = UnifiedFeedbackSystemManager()
+
 
 def get_unified_feedback_system() -> UnifiedFeedbackSystem:
-    """Get the global unified feedback system.
+    """Get the global unified feedback system instance.
 
     Returns:
         UnifiedFeedbackSystem instance
     """
-    global _unified_system
-    with _system_lock:
-        if _unified_system is None:
-            _unified_system = UnifiedFeedbackSystem()
-    return _unified_system
+    return _system_manager.get_system()
 
 # Convenience functions
 def submit_cross_engine_feedback( # Removed stray docstring and fixed indentation

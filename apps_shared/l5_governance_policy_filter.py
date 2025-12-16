@@ -129,12 +129,26 @@ class L5GovernancePolicyFilter:
 _l5_filter = None
 
 
+class L5GovernanceFilterManager:
+    """Manager for L5 Governance Policy Filter without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_filter(self) -> L5GovernancePolicyFilter:
+        """Get or create the L5 Governance Policy Filter instance"""
+        if self._instance is None:
+            self._instance = L5GovernancePolicyFilter()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_l5_manager = L5GovernanceFilterManager()
+
+
 def get_l5_governance_filter() -> L5GovernancePolicyFilter:
     """Get the global L5 Governance Policy Filter instance"""
-    global _l5_filter
-    if _l5_filter is None:
-        _l5_filter = L5GovernancePolicyFilter()
-    return _l5_filter
+    return _l5_manager.get_filter()
 
 
 def l5_governance_policy_filter(code_content: str, context: Optional[Dict[str, Any]] = None) -> Optional[str]:

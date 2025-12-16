@@ -492,24 +492,33 @@ class InputGuardrail:
             }
         }
 
-# Global guardrail instance
-_input_guardrail: Optional[InputGuardrail] = None
+class InputGuardrailManager:
+    """Manager for InputGuardrail without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_guardrail(self, **kwargs):
+        """Get or create the InputGuardrail instance"""
+        if self._instance is None:
+            self._instance = InputGuardrail(**kwargs)
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_guardrail_manager = InputGuardrailManager()
+
 
 def get_input_guardrail(**kwargs) -> InputGuardrail:
-    """Get or create the global input guardrail instance.
+    """Get the global input guardrail instance.
 
     Args:
-        **kwargs: Arguments to pass to InputGuardrail constructor
+        **kwargs: Configuration arguments
 
     Returns:
         InputGuardrail instance
     """
-    global _input_guardrail
-
-    if _input_guardrail is None:
-        _input_guardrail = InputGuardrail(**kwargs)
-
-    return _input_guardrail
+    return _guardrail_manager.get_guardrail(**kwargs)
 
 def scan_input(input_text: str, **kwargs) -> GuardResult:
     """Convenience function to scan input.

@@ -6,11 +6,11 @@ import time
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from .canon_keys import get_keys_as_prompt
+from canon_keys import get_keys_as_prompt
 
 # Infrastructure
-from connection_manager import ConnectionManager
-from llm_client import LLMClient
+from apps_rg.connection_manager import ConnectionManager
+from apps_rg.llm_client import LLMClient
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -99,6 +99,7 @@ class CanonValidator:
                     logger.info("⚡ L1 Cache Hit! (Redis)")
                     return {"status": "valid", "source": "l1_redis_cache", "metrics": {"latency": "0.01s"}}
             except Exception:
+                pass
 
         # STAGE 3: PINECONE CONTEXT (Retrieving Wisdom)
         context_rules = []

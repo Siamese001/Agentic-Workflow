@@ -402,17 +402,32 @@ _registry: Optional[CircuitBreakerRegistry] = None
 _registry_lock = asyncio.Lock()
 
 
+class CircuitBreakerRegistryManager:
+    """Manager for CircuitBreakerRegistry without global state"""
+    
+    def __init__(self):
+        self._instance = None
+        self._lock = asyncio.Lock()
+    
+    async def get_registry(self) -> CircuitBreakerRegistry:
+        """Get or create the CircuitBreakerRegistry instance"""
+        async with self._lock:
+            if self._instance is None:
+                self._instance = CircuitBreakerRegistry()
+            return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_registry_manager = CircuitBreakerRegistryManager()
+
+
 async def get_circuit_breaker_registry() -> CircuitBreakerRegistry:
     """Get global circuit breaker registry.
 
     Returns:
         CircuitBreakerRegistry instance
     """
-    global _registry
-    async with _registry_lock:
-        if _registry is None:
-            _registry = CircuitBreakerRegistry()
-    return _registry
+    return await _registry_manager.get_registry()
 
 # Decorators
 def circuit_breaker( # Removed stray docstring

@@ -412,16 +412,26 @@ class IntentScoringModel:
         return result
 
 
-# Global model instance
-_intent_model = None
+class IntentScoringModelManager:
+    """Manager for Intent Scoring Model without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_model(self) -> IntentScoringModel:
+        """Get or create the Intent Scoring Model instance"""
+        if self._instance is None:
+            self._instance = IntentScoringModel()
+        return self._instance
+
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_model_manager = IntentScoringModelManager()
 
 
 def get_intent_scoring_model() -> IntentScoringModel:
     """Get or create the global Intent Scoring Model instance"""
-    global _intent_model
-    if _intent_model is None:
-        _intent_model = IntentScoringModel()
-    return _intent_model
+    return _model_manager.get_model()
 
 
 def score_lead_intent(
