@@ -37,25 +37,25 @@ def get_target_files(root_dir: str) -> list[str]:
     """
     Returns files ONLY from the active_manifest.json.
     This ensures we only process files that have been deduplicated and validated.
-    
+
     Args:
         root_dir: Root directory to search
-        
+
     Returns:
         List of absolute file paths to process
     """
     manifest_path = os.path.join(root_dir, MANIFEST_FILE)
-    
+
     if not os.path.exists(manifest_path):
         print(f"❌ CRITICAL ERROR: {MANIFEST_FILE} not found!")
         print(f"   Please run the Librarian first: python apps_rg/L0_maintenance/deduplicate_and_index.py")
         sys.exit(1)
-    
+
     try:
         print(f"📂 Loading active file list from {MANIFEST_FILE}...")
         with open(manifest_path, 'r') as f:
             manifest = json.load(f)
-        
+
         # Extract file paths from manifest
         files = []
         for file_info in manifest.get("files", []):
@@ -64,13 +64,13 @@ def get_target_files(root_dir: str) -> list[str]:
                 files.append(file_info["absolute_path"])
             else:
                 files.append(os.path.join(root_dir, file_info["path"]))
-        
+
         print(f"✅ Loaded {len(files)} validated files from manifest")
         print(f"   - Duplicates removed: {manifest.get('stats', {}).get('duplicates_removed', 0)}")
         print(f"   - Created: {manifest.get('created_at', 'Unknown')}")
-        
+
         return files
-        
+
     except Exception as e:
         print(f"❌ Failed to load manifest: {e}")
         print(f"   Please ensure the manifest is valid JSON")
@@ -82,18 +82,18 @@ def get_llm_syntax_fix(code_content: str, file_path: str, error_msg: str, model_
     """
     try:
         model = genai.GenerativeModel(model_name)
-        
+
         prompt = f'''
         You are an expert Python Syntax Repair Agent.
-        
+
         FILE: {file_path}
         ERROR: {error_msg}
-        
+
         BROKEN CODE:
         ```python
         {code_content}
         ```
-        
+
         TASK:
         1. Fix the specific SyntaxError or IndentationError described above.
         2. Do NOT refactor the logic. Only fix the syntax so it compiles.
@@ -102,7 +102,7 @@ def get_llm_syntax_fix(code_content: str, file_path: str, error_msg: str, model_
         '''
 
         response = model.generate_content(prompt)
-        
+
         if not response.text:
             return None
         # Strip markdown fences if the model adds them
@@ -122,7 +122,7 @@ def check_and_fix_file(file_path):
     # 1. Initial Check: Is the code already valid?
     try:
         compile(source, file_path, 'exec')
-        return False 
+        return False
     except SyntaxError as e:
         error_msg = f"{e.msg} at line {e.lineno}"
         print(f"🔥 Syntax Error in {file_path}: {error_msg}")
@@ -133,25 +133,25 @@ def check_and_fix_file(file_path):
     # 2. Tiered Repair Loop
     for model_name in REPAIR_MODELS:
         print(f"  🤖 Engaging {model_name}...")
-        
+
         fixed_code = get_llm_syntax_fix(source, file_path, error_msg, model_name)
 
         if fixed_code:
             # 3. Verify the fix immediately
             try:
                 compile(fixed_code, file_path, 'exec')
-                
+
                 # If we get here, the code is valid! Save it.
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(fixed_code)
                 print(f"  ✅ FIXED by {model_name}")
                 return True
-            
+
             except SyntaxError as verify_error:
                 print(f"    ⚠️ {model_name} proposed code was still broken: {verify_error.msg}")
                 # Loop continues to the next model in the list
                 continue
-    
+
     # If the loop finishes, all available models failed.
     print(f"  ❌ All models failed to repair {file_path}. Requires manual fix.")
     return False
@@ -163,16 +163,17 @@ def main():
 
     print(f"🚀 Starting Cost-Optimized Syntax Repair (Models: {REPAIR_MODELS})...")
     count = 0
-    
+
     # Get target files from manifest or fallback to os.walk
     target_files = get_target_files(args.root_dir)
     print(f"📊 Processing {len(target_files)} files...")
-    
+
     for file_path in target_files:
         if check_and_fix_file(file_path):
             count += 1
-    
+
     print(f"🏁 Syntax Repair Cycle Complete. Files rescued: {count}")
 
 if __name__ == '__main__':
     main()
+

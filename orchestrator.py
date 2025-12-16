@@ -24,13 +24,13 @@ def get_latest_code_mtime(root_dir: str, exclude_dirs: list = None) -> float:
     """
     if exclude_dirs is None:
         exclude_dirs = {'.git', '__pycache__', 'venv', 'env', '.idea', '.vscode'}
-        
+
     latest_mtime = 0.0
-    
+
     for root, dirs, files in os.walk(root_dir):
         # Modify dirs in-place to skip excluded directories during traversal
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
-        
+
         for file in files:
             if file.endswith('.py'):
                 file_path = os.path.join(root, file)
@@ -40,12 +40,12 @@ def get_latest_code_mtime(root_dir: str, exclude_dirs: list = None) -> float:
                         latest_mtime = mtime
                 except OSError:
                     continue
-                    
+
     return latest_mtime
 
 def ensure_manifest_freshness(manifest_path: str, root_dir: str = ".") -> bool:
     """
-    Hardened Pre-Flight Check [4a]: 
+    Hardened Pre-Flight Check [4a]:
     Ensures manifest exists AND is newer than the latest code change.
     Returns True if fresh, False if stale (triggering Phase A).
     """
@@ -53,43 +53,43 @@ def ensure_manifest_freshness(manifest_path: str, root_dir: str = ".") -> bool:
     if not os.path.exists(manifest_path):
         logger.warning(f"🚫 Manifest missing at {manifest_path}. Triggering Librarian...")
         return False
-        
+
     # 2. Freshness Check (Time-Based Drift Detection)
     manifest_mtime = os.path.getmtime(manifest_path)
     latest_code_mtime = get_latest_code_mtime(root_dir)
-    
+
     # Add a small buffer (e.g., 1 second) to handle file system resolution differences
     if latest_code_mtime > (manifest_mtime + 1.0):
         time_diff = latest_code_mtime - manifest_mtime
         logger.warning(f"⚠️  Code drift detected ({time_diff:.2f}s outdated). Triggering Librarian...")
         return False
-        
+
     logger.info("✅ Manifest is fresh. Proceeding to Phase B runtime.")
     return True
 
 def validate_manifest_integrity(manifest_path: str) -> bool:
     """
-    [HARDENED] Quality Gate: Ensures the manifest is valid JSON 
+    [HARDENED] Quality Gate: Ensures the manifest is valid JSON
     and contains the expected structure before loading it.
     """
     try:
         if not os.path.exists(manifest_path):
             return False
-            
+
         with open(manifest_path, 'r') as f:
             data = json.load(f)
-            
+
         # Basic Schema Validation
         if not isinstance(data, dict):
             logging.error("❌ Manifest corruption: Root element is not a dictionary.")
             return False
-            
+
         # Check for non-empty content (an empty manifest is effectively useless)
         if not data:
             logging.warning("⚠️ Manifest is empty. Librarian may have failed to find files.")
-            
+
         return True
-        
+
     except json.JSONDecodeError as e:
         logging.error(f"❌ Manifest corruption: Invalid JSON syntax. {e}")
         return False
@@ -105,20 +105,20 @@ def run_agentic_loop(user_goal: str):
     # print("="*60)  # [Security Fix]
 
     manifest_path = "active_manifest.json"
-    
+
     # [HARDENED 4a & 4b] Check freshness instead of just existence
     if not ensure_manifest_freshness(manifest_path):
         # Trigger Phase A: Librarian Boot Sequence
         try:
             print("🔄 Re-indexing filesystem (Phase A)...")
             # subprocess.run(["python", "apps_rg/L0_maintenance/deduplicate_and_index.py"], check=True)  # Disabled after manual cleanup
-            
+
             # [CRITICAL ADDITION] 2. Verify Integrity immediately after generation
             if not validate_manifest_integrity(manifest_path):
                 raise RuntimeError("Phase A completed, but generated a corrupt manifest.")
-                
+
             print("✅ Sanitization complete & verified.")
-            
+
         except subprocess.CalledProcessError as e:
             logging.critical(f"🛑 Librarian crashed (Exit Code {e.returncode}). Check logs.")
             sys.exit(1) # Hard Stop
@@ -138,7 +138,7 @@ def run_agentic_loop(user_goal: str):
     # 2. Use imported toolbox description
     toolbox_desc = TOOLBOX_DESC
 
-    
+
     # 3. THINK SEQUENTIALLY (Generate Draft using the Cognitive Node)
     # The Cognitive Node manages the entire thought process
     try:
@@ -217,7 +217,22 @@ def run_agentic_loop(user_goal: str):
         logger.error(f"Runtime Error: {e}")
 
 
+def pre_flight_check():
+    """Ensures the environment is in a Golden State before booting."""
+    try:
+        from clean_duplicates import purge_everything
+        purge_everything()
+        logger.info("✅ Pre-flight: Duplicates purged.")
+    except ImportError:
+        logger.warning("⚠️ clean_duplicates.py not found, skipping pre-flight.")
+
+    except Exception as e:
+        logger.error(f"⚠️ Pre-flight cleanup failed: {e}")
+
+
 if __name__ == "__main__":
+    # Run pre-flight check to maintain Golden State
+    pre_flight_check()
     # The final strategic task for the L3 Agent
     user_goal = """
     I have integrated 9 core MCP Servers (MEMemory, Pinecone, Redis, GitKraken, Figma, Filesystem, Fetch, Playwright, Send Email) into my L3 Agent architecture.

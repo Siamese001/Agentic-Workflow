@@ -9,7 +9,7 @@ def get_active_files(entry_points, root_dir):
     Traces imports starting from entry_points to find all 'active' files.
     """
     finder = ModuleFinder(path=[root_dir] + sys.path)
-    
+
     print(f"🔍 Tracing dependencies from: {entry_points}")
     for script in entry_points:
         # ModuleFinder acts like python execution but just scans for imports
@@ -40,7 +40,7 @@ def get_active_files(entry_points, root_dir):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--entry-points', nargs='+', required=True, 
+    parser.add_argument('--entry-points', nargs='+', required=True,
                         help='Main script(s) that trigger the application (e.g., canon_validator_v2_agentic.py)')
     parser.add_argument('--root-dir', type=str, default='/app',
                         help='Root directory of the project')
@@ -50,13 +50,14 @@ def main():
 
     print("🚀 Starting Dependency Assessment...")
     active_files = get_active_files(args.entry_points, args.root_dir)
-    
+
     print(f"\n✅ Assessment Complete. Found {len(active_files)} active files.")
     print(f"   Ignored {len(list(os.walk(args.root_dir))) * 5 - len(active_files)} potentially junk/backup files.") # Rough estimate
-    
+
     with open(args.output, 'w') as f:
         json.dump(active_files, f, indent=2)
     print(f"💾 Manifest saved to {args.output}")
 
 if __name__ == '__main__':
     main()
+

@@ -370,3 +370,4 @@ def execute_news_rag(
     """
     pipeline = get_news_rag_pipeline()
     return pipeline.execute_news_rag(company, industry, redis_get, redis_set, logger)
+

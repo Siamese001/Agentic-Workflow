@@ -49,7 +49,16 @@ RUN apt-get update && \
     # Add any essential runtime dependencies here (e.g., openssl, libpq-dev for postgres)
     # If using Redis-cli in a healthcheck, add redis-tools
     redis-tools \
+    bash \
+    git \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Python formatting tools for CodeJanitor
+RUN pip install --no-cache-dir autopep8 black
+
+# HARDENING: Force symlinks so agents can find tools via raw commands OR python -m
+RUN ln -sf $(which autopep8) /usr/local/bin/autopep8 && \
+    ln -sf $(which black) /usr/local/bin/black
 
 WORKDIR /app
 

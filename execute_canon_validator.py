@@ -26,19 +26,19 @@ def setup_test_environment():
             shutil.rmtree(test_dir)
         except PermissionError:
             print(f"⚠️ Could not remove existing {test_dir}, will create new directory")
-    
+
     os.makedirs(test_dir)
     os.chdir(test_dir)
-    
+
     # Initialize Git repo
     subprocess.run(["git", "init"], check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test User"], check=True)
     subprocess.run(["git", "config", "user.email", "test@example.com"], check=True)
-    
+
     # Create target file
     with open("target_file.py", "w") as f:
         f.write("def old_func():\n    return 1\n")
-    
+
     # Create tests directory for sandbox
     os.makedirs("tests", exist_ok=True)
     with open("tests/test_target_file.py", "w") as f:
@@ -50,17 +50,17 @@ class TestTargetFile(unittest.TestCase):
     def test_old_func(self):
         self.assertEqual(target_file.old_func(), 1)
 """)
-    
+
     # Initial commit
     subprocess.run(["git", "add", "."], check=True)
     subprocess.run(["git", "commit", "-m", "Initial commit"], check=True)
-    
+
     print(f"✅ Test environment created in {os.getcwd()}")
     return test_dir
 
 def create_missing_dependencies():
     """Create mock implementations for missing dependencies."""
-    
+
     # Create sandbox_utils.py if it doesn't exist
     if not os.path.exists("sandbox_utils.py"):
         with open("sandbox_utils.py", "w") as f:
@@ -72,14 +72,14 @@ def execute_in_sandbox(repo_path: str, command: str) -> bool:
     \"\"\"Mock sandbox execution that returns success.\"\"\"
     print(f"[SANDBOX] Executing: {command}")
     try:
-        result = subprocess.run(command, shell=True, cwd=repo_path, 
+        result = subprocess.run(command, shell=True, cwd=repo_path,
                               capture_output=True, text=True, timeout=30)
         return result.returncode == 0
     except Exception as e:
         print(f"[SANDBOX] Error: {e}")
         return False
 """)
-    
+
     # Create consensus_engine.py if it doesn't exist
     if not os.path.exists("consensus_engine.py"):
         with open("consensus_engine.py", "w") as f:
@@ -96,7 +96,7 @@ class MockJury:
                 {"model": "mock_model_3", "verdict": "YES", "reason": "No issues"}
             ]
         }
-    
+
     def propose_fix(self, code: str, error_message: str, context: str = "") -> dict:
         \"\"\"Mock fix proposal.\"\"\"
         return {
@@ -106,7 +106,7 @@ class MockJury:
 
 jury = MockJury()
 """)
-    
+
     # Create mcp_hardening.py if it doesn't exist
     if not os.path.exists("mcp_hardening.py"):
         with open("mcp_hardening.py", "w") as f:
@@ -123,7 +123,7 @@ def execute_vulnerability_search(query: str, logger=None) -> str:
         "url": "https://example.com/fix"
     }])
 """)
-    
+
     # Create core_utils.py if it doesn't exist
     if not os.path.exists("core_utils.py"):
         with open("core_utils.py", "w") as f:
@@ -187,22 +187,22 @@ def apply_mock_edit(path: str, edits: list) -> bool:
     try:
         with open(path, 'r') as f:
             content = f.read()
-        
+
         # For demo, replace old_func with new_func
         new_content = content.replace("def old_func():\n    return 1", "def new_func():\n    return 2")
-        
+
         with open(path, 'w') as f:
             f.write(new_content)
-        
+
         # Also update the test file to match
         with open("tests/test_target_file.py", 'r') as f:
             test_content = f.read()
-        
+
         new_test_content = test_content.replace("target_file.old_func()", "target_file.new_func()").replace("self.assertEqual(target_file.old_func(), 1)", "self.assertEqual(target_file.new_func(), 2)").replace("def test_old_func(self):", "def test_new_func(self):").replace("self.assertEqual(target_file.new_func(), 1)", "self.assertEqual(target_file.new_func(), 2)")
-        
+
         with open("tests/test_target_file.py", 'w') as f:
             f.write(new_test_content)
-        
+
         print(f"[EDIT] Applied changes to {path} and updated test")
         return True
     except Exception as e:
@@ -211,16 +211,16 @@ def apply_mock_edit(path: str, edits: list) -> bool:
 
 def execute_canon_validator():
     """Execute the Canon Validator with mocked dependencies."""
-    
+
     # Set up environment variables
     os.environ["AGENT_MODE"] = "PRODUCTION"  # Not shadow mode
     os.environ["MAX_P6_ATTEMPTS"] = "1"
     os.environ["REGRESSION_SUITE_PATH"] = "tests/"
-    
+
     # Import after creating mocks
     try:
         from canon_validator_engine import execute_dependency_refactor_zlm
-        
+
         # Mock tools dictionary
         tools = {
             'issues_get_detail': lambda issue_id: json.dumps({
@@ -233,16 +233,16 @@ def execute_canon_validator():
             'string_set': lambda key, value: None,
             'add_observations': lambda observations: print(f"[OBSERVATIONS] {observations}")
         }
-        
+
         # Fix the undefined new_dependency in the module
         import canon_validator_engine
         canon_validator_engine.new_dependency = "mock_dependency"
-        
+
         # Create a logger
         import logging
         logging.basicConfig(level=logging.INFO)
         logger = logging.getLogger("CanonValidator")
-        
+
         # Execute
         print("\n=== Executing Canon Validator ===")
         result = execute_dependency_refactor_zlm(
@@ -251,21 +251,21 @@ def execute_canon_validator():
             tools=tools,
             logger=logger
         )
-        
+
         print(f"\n=== Result ===")
         print(json.dumps(result, indent=2))
-        
+
         # Verify the changes
         print("\n=== Verification ===")
         print("Git log:")
         subprocess.run(["git", "log", "--oneline", "-n", "5"])
-        
+
         print("\nTarget file content:")
         with open("target_file.py", "r") as f:
             print(f.read())
-        
+
         return result
-        
+
     except Exception as e:
         print(f"❌ Error executing Canon Validator: {e}")
         import traceback
@@ -275,33 +275,33 @@ def execute_canon_validator():
 def main():
     """Main execution function."""
     print("🚀 Setting up Canon Validator execution environment...")
-    
+
     # Save original directory
     original_dir = os.getcwd()
     test_dir = None
-    
+
     try:
         # 1. Setup test environment
         test_dir = setup_test_environment()
-        
+
         # 2. Create missing dependencies
         print("\n📦 Creating missing dependencies...")
         create_missing_dependencies()
-        
+
         # 3. Execute Canon Validator
         print("\n⚡ Executing Canon Validator...")
         result = execute_canon_validator()
-        
+
         if result.get("status") in ["SUCCESS", "refactor_complete", "success"]:
             print("\n✅ Canon Validator executed successfully!")
         else:
             print(f"\n❌ Canon Validator failed: {result.get('reason', 'Unknown error')}")
-            
+
     except Exception as e:
         print(f"\n❌ Fatal error: {e}")
         import traceback
         traceback.print_exc()
-        
+
     finally:
         # Cleanup
         os.chdir(original_dir)
@@ -312,3 +312,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -303,3 +303,4 @@ if __name__ == "__main__":
 
     # Run pipeline
     run_etl_pipeline()
+

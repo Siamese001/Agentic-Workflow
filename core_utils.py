@@ -13,23 +13,23 @@ logger = logging.getLogger("CanonValidator")
 def validate_python_syntax(file_path: str) -> Tuple[bool, Optional[str]]:
     """
     Parses a Python file to check for syntax errors without executing it.
-    
+
     Args:
         file_path (str): The path to the file to check.
-        
+
     Returns:
-        Tuple[bool, Optional[str]]: (True, None) if valid. 
+        Tuple[bool, Optional[str]]: (True, None) if valid.
                                     (False, error_message) if invalid.
     """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             source = f.read()
-        
-        # Parse the source code into an AST node. 
+
+        # Parse the source code into an AST node.
         # This will raise SyntaxError if the code is invalid.
         ast.parse(source)
         return True, None
-        
+
     except SyntaxError as e:
         error_msg = f"SyntaxError in {file_path}: {e.msg} at line {e.lineno}"
         logger.error(error_msg)
@@ -272,7 +272,7 @@ def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
                 return func(*args, **kwargs)
             except Exception:
                 pass
-            
+
             if attempt == max_retries - 1:
                 raise
             delay = base_delay * (2 ** attempt)
@@ -325,11 +325,11 @@ def sign_and_commit(path: str, message: str, key_id: str = None) -> bool:
     """
     # Skip GPG setup for demo
     # setup_gpg_signing(key_id)
-    
+
     try:
         # Add the file to stage
         subprocess.run(["git", "add", path], check=True, capture_output=True)
-        
+
         # Commit without signing for demo (would use -S flag in production)
         result = subprocess.run(
             ["git", "commit", "-m", message],

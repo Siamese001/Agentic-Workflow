@@ -1,0 +1,14 @@
+# Log files
+logs/
+*.log
+
+# Temporary/Cache files
+__pycache__/
+*.pyc
+.cache/
+active_manifest.json.tmp
+
+# Environment and Local Data
+.env
+data/output/
+active_manifest.json

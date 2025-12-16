@@ -245,3 +245,4 @@ def run(
         logger.critical(
             f"CRITICAL EXCEPTION during '{DELETE_ROOT_COMMAND}' attempt: {e}", exc_info=True)
         return f"CRITICAL EXCEPTION running destructive action: {e}"
+

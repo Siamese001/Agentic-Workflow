@@ -158,3 +158,4 @@ def validate_ast_integrity(ast_structure: Dict[str, Any]) -> bool:
     except Exception:
         pass
     return False
+

@@ -33,12 +33,12 @@ class TestDashboard:
         self.tests_dir = self.root_dir / "tests"
         self.report_dir = self.root_dir / "test_reports"
         self.report_dir.mkdir(exist_ok=True)
-        
+
     def discover_tests(self) -> Dict[str, Any]:
         """Discover all tests in the tests/ directory"""
         print(f"\n{Colors.HEADER}🔍 Discovering Tests{Colors.ENDC}")
         print(f"Scanning: {self.tests_dir}")
-        
+
         # Collect all tests
         result = subprocess.run(
             [sys.executable, "-m", "pytest", str(self.tests_dir), "--collect-only", "-q"],
@@ -46,43 +46,43 @@ class TestDashboard:
             text=True,
             cwd=self.root_dir
         )
-        
+
         if result.returncode != 0:
             print(f"{Colors.FAIL}❌ Error collecting tests:{Colors.ENDC}")
             print(result.stderr)
             return {"status": "error", "message": result.stderr}
-        
+
         # Parse the output
         lines = result.stdout.split('\n')
         test_files = []
         test_count = 0
-        
+
         for line in lines:
             if '.py::' in line:
                 test_files.append(line.strip())
                 test_count += 1
-        
+
         return {
             "status": "success",
             "test_count": test_count,
             "test_files": test_files
         }
-    
+
     def run_tests(self, test_pattern: str = None, generate_report: bool = True) -> Dict[str, Any]:
         """Run tests and generate reports"""
         print(f"\n{Colors.HEADER}🚀 Running Tests{Colors.ENDC}")
-        
+
         # Determine which tests to run
         if test_pattern:
             test_path = self.tests_dir / test_pattern
         else:
             test_path = self.tests_dir
-        
+
         # Prepare report filenames with timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         html_report = self.report_dir / f"test_report_{timestamp}.html"
         json_report = self.report_dir / f"test_report_{timestamp}.json"
-        
+
         # Build pytest command
         cmd = [
             sys.executable, "-m", "pytest",
@@ -92,17 +92,17 @@ class TestDashboard:
             "-v",
             "--tb=short"
         ]
-        
+
         # Run tests
         start_time = time.time()
         result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.root_dir)
         duration = time.time() - start_time
-        
+
         # Parse results
         output_lines = result.stdout.split('\n')
         summary = {}
         passed = failed = skipped = errors = 0
-        
+
         for line in output_lines:
             if " passed " in line:
                 passed = int(line.split(" passed ")[0].split()[-1])
@@ -112,7 +112,7 @@ class TestDashboard:
                 skipped = int(line.split(" skipped ")[0].split()[-1])
             elif " error " in line:
                 errors = int(line.split(" error ")[0].split()[-1])
-        
+
         summary = {
             "passed": passed,
             "failed": failed,
@@ -122,7 +122,7 @@ class TestDashboard:
             "duration": duration,
             "exit_code": result.returncode
         }
-        
+
         # Print summary
         print(f"\n{Colors.BOLD}Test Results Summary:{Colors.ENDC}")
         print(f"  Total: {summary['total']}")
@@ -134,7 +134,7 @@ class TestDashboard:
         if errors > 0:
             print(f"  {Colors.FAIL}🚨 Errors: {errors}{Colors.ENDC}")
         print(f"  Duration: {duration:.2f}s")
-        
+
         # Save report
         report_data = {
             "timestamp": timestamp,
@@ -142,14 +142,14 @@ class TestDashboard:
             "html_report": str(html_report),
             "command": " ".join(cmd)
         }
-        
+
         with open(json_report, 'w') as f:
             json.dump(report_data, f, indent=2)
-        
+
         print(f"\n{Colors.CYAN}📊 Reports generated:{Colors.ENDC}")
         print(f"  HTML: {html_report}")
         print(f"  JSON: {json_report}")
-        
+
         return {
             "status": "success" if result.returncode == 0 else "failed",
             "summary": summary,
@@ -158,11 +158,11 @@ class TestDashboard:
                 "json": str(json_report)
             }
         }
-    
+
     def show_test_categories(self):
         """Show different test categories available"""
         print(f"\n{Colors.HEADER}📁 Test Categories{Colors.ENDC}")
-        
+
         categories = {
             "Core Implementation": [
                 "test_zlm.py - ZLM (Zero-Latency Mode) tests",
@@ -196,12 +196,12 @@ class TestDashboard:
                 "golden/safety/ - Safety property tests"
             ]
         }
-        
+
         for category, tests in categories.items():
             print(f"\n{Colors.BLUE}{category}:{Colors.ENDC}")
             for test in tests:
                 print(f"  • {test}")
-    
+
     def run_category(self, category: str):
         """Run tests for a specific category"""
         category_map = {
@@ -212,21 +212,21 @@ class TestDashboard:
             "e2e": "e2e/",
             "golden": "golden/"
         }
-        
+
         if category not in category_map:
             print(f"{Colors.FAIL}❌ Unknown category: {category}{Colors.ENDC}")
             print(f"Available categories: {', '.join(category_map.keys())}")
             return
-        
+
         print(f"\n{Colors.HEADER}Running {category.upper()} tests{Colors.ENDC}")
         return self.run_tests(category_map[category])
-    
+
     def interactive_mode(self):
         """Run in interactive mode"""
         print(f"\n{Colors.BOLD}{Colors.HEADER}🎛️  Agentic Workflow Test Dashboard{Colors.ENDC}")
         print(f"Root Directory: {self.root_dir}")
         print(f"Tests Directory: {self.tests_dir}")
-        
+
         while True:
             print(f"\n{Colors.CYAN}Options:{Colors.ENDC}")
             print("  1. Discover all tests")
@@ -236,9 +236,9 @@ class TestDashboard:
             print("  5. Run specific category")
             print("  6. View latest report")
             print("  7. Exit")
-            
+
             choice = input(f"\n{Colors.BOLD}Select option (1-7): {Colors.ENDC}").strip()
-            
+
             if choice == "1":
                 self.discover_tests()
             elif choice == "2":
@@ -257,17 +257,17 @@ class TestDashboard:
                 break
             else:
                 print(f"{Colors.FAIL}❌ Invalid option. Please try again.{Colors.ENDC}")
-    
+
     def view_latest_report(self):
         """View the latest test report"""
         html_reports = list(self.report_dir.glob("test_report_*.html"))
         if not html_reports:
             print(f"{Colors.WARNING}⚠️  No test reports found.{Colors.ENDC}")
             return
-        
+
         latest = max(html_reports, key=lambda p: p.stat().st_mtime)
         print(f"\n{Colors.CYAN}📊 Latest Report: {Colors.ENDC}{latest}")
-        
+
         # Try to open in browser
         try:
             import webbrowser
@@ -281,15 +281,15 @@ def main():
     parser.add_argument("--root", default=".", help="Root directory of the project")
     parser.add_argument("--discover", action="store_true", help="Discover all tests")
     parser.add_argument("--run", help="Run specific test pattern")
-    parser.add_argument("--category", choices=["core", "unit", "integration", "perf", "e2e", "golden"], 
+    parser.add_argument("--category", choices=["core", "unit", "integration", "perf", "e2e", "golden"],
                        help="Run tests for specific category")
     parser.add_argument("--interactive", "-i", action="store_true", help="Run in interactive mode")
     parser.add_argument("--report", action="store_true", help="Generate HTML report")
-    
+
     args = parser.parse_args()
-    
+
     dashboard = TestDashboard(args.root)
-    
+
     if args.interactive:
         dashboard.interactive_mode()
     elif args.discover:
@@ -304,3 +304,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

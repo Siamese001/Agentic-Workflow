@@ -13,22 +13,22 @@ class NetworkViolationError(Exception):
 
 def strict_egress_filter(allowed_domains: List[str]):
     """
-    Decorator that patches socket.getaddrinfo to enforce an Allow-List 
+    Decorator that patches socket.getaddrinfo to enforce an Allow-List
     on all outbound network connections within the decorated function.
     """
-    
+
     # Normalize allowed domains (e.g., remove 'www.' and force lowercase)
     normalized_allowed = {d.lower().lstrip('www.') for d in allowed_domains}
 
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            
+
             original_getaddrinfo = socket.getaddrinfo
-            
+
             def patched_getaddrinfo(host, port, family=0, socktype=0, proto=0, flags=0):
                 """The function replacing the standard socket lookup."""
-                
+
                 if host is None:
                     # Allow internal/local connections (e.g., to Redis or Docker DNS)
                     return original_getaddrinfo(host, port, family, socktype, proto, flags)
@@ -54,8 +54,9 @@ def strict_egress_filter(allowed_domains: List[str]):
             finally:
                 # Restore original function regardless of success or failure
                 socket.getaddrinfo = original_getaddrinfo
-                
+
             return result
-            
+
         return wrapper
     return decorator
+

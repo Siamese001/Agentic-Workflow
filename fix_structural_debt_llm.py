@@ -70,9 +70,9 @@ def get_llm_refactor(code_content: str, file_path: str, violation_type: str) -> 
     VIOLATION: {violation_type}
 
     CODE:
-    
+
     {code_content}
-    
+
 
     TASK:
     1. Refactor the code to fix the '{violation_type}'.
@@ -224,25 +224,25 @@ def get_target_files(root_dir: str) -> list[str]:
     """
     Returns files ONLY from the active_manifest.json.
     This ensures we only process files that have been deduplicated and validated.
-    
+
     Args:
         root_dir: Root directory to search
-        
+
     Returns:
         List of absolute file paths to process
     """
     manifest_path = os.path.join(root_dir, MANIFEST_FILE)
-    
+
     if not os.path.exists(manifest_path):
         print(f"❌ CRITICAL ERROR: {MANIFEST_FILE} not found!")
         print(f"   Please run the Librarian first: python apps_rg/L0_maintenance/deduplicate_and_index.py")
         sys.exit(1)
-    
+
     try:
         print(f"📂 Loading active file list from {MANIFEST_FILE}...")
         with open(manifest_path, 'r') as f:
             manifest = json.load(f)
-        
+
         # Extract file paths from manifest
         files = []
         for file_info in manifest.get("files", []):
@@ -251,13 +251,13 @@ def get_target_files(root_dir: str) -> list[str]:
                 files.append(file_info["absolute_path"])
             else:
                 files.append(os.path.join(root_dir, file_info["path"]))
-        
+
         print(f"✅ Loaded {len(files)} validated files from manifest")
         print(f"   - Duplicates removed: {manifest.get('stats', {}).get('duplicates_removed', 0)}")
         print(f"   - Created: {manifest.get('created_at', 'Unknown')}")
-        
+
         return files
-        
+
     except Exception as e:
         print(f"❌ Failed to load manifest: {e}")
         print(f"   Please ensure the manifest is valid JSON")
@@ -269,19 +269,20 @@ def main():
     args = parser.parse_args()
 
     print("🚀 Starting LLM-Powered Structural Debt Fixer...")
-    
+
     count = 0
-    
+
     # Get target files from manifest or fallback to os.walk
     target_files = get_target_files(args.root_dir)
     print(f"📊 Processing {len(target_files)} files...")
-    
+
     for file_path in target_files:
         if analyze_and_fix(file_path):
             count += 1
             # Rate limit protection (simple)
-            time.sleep(1) 
+            time.sleep(1)
     print(f"🏁 LLM Refactoring Cycle Complete. Files modified: {count}")
 
 if __name__ == '__main__':
     main()
+
