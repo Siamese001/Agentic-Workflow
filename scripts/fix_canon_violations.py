@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Fix all canon violations to achieve 50/50 pass rate.
@@ -8,6 +7,7 @@ This script renames directories and files to comply with the canon.
 import logging
 import os
 import shutil
+import re
 from pathlib import Path
 
 import scripts.validation.check_canonical_structure
@@ -39,7 +39,7 @@ def fix_smashed_directories():
     Example: check_rules_policy_check_safety -> check_rules/policy_check_safety
     """
 
-    SMASHED = []
+    smashed = []
     for root in sovereign_roots():
         for d in root.rglob("*"):
             if not d.is_dir():
@@ -50,11 +50,11 @@ def fix_smashed_directories():
                 smashed.append(d)
 
     # Sort by depth (deepest first to avoid parent conflicts)
-    SMASHED.SORT(KEY=lambda p: len(p.parts), reverse=True)
+    smashed.sort(key=lambda p: len(p.parts), reverse=True)
 
     for d in smashed:
-        NAME = d.name
-        PARTS = name.split("_")
+        name = d.name
+        parts = name.split("_")
 
         # Split into 2 parts: first 2 words + rest
         if len(parts) >= 4:
@@ -80,7 +80,8 @@ def fix_smashed_directories():
             # Move the directory
             shutil.move(str(d), str(new_path))
 
-        Exception as e: pass
+        except Exception as e:
+            pass
 
 
 def fix_repeated_concept_filenames():
@@ -88,15 +89,8 @@ def fix_repeated_concept_filenames():
     Rename files with repeated concepts like state_update_update_safety_usage.py
     """
 
-    PATTERN = re.compile(
-        r"(update.
-            .*update | check.
-            .*check | state.
-            .*state | cost.
-            .*cost | policy.
-            .*policy | rule.
-            .*rule | safety.
-            .*safety)",
+    pattern = re.compile(
+        r"(update\..*update|check\..*check|state\..*state|cost\..*cost|policy\..*policy|rule\..*rule|safety\..*safety)",
 
         re.IGNORECASE,
     )
@@ -107,12 +101,12 @@ def fix_repeated_concept_filenames():
         if ".git" in f.parts or "__pycache__" in f.parts:
             continue
 
-        STEM = f.stem
-        MATCH = pattern.search(stem)
+        stem = f.stem
+        match = pattern.search(stem)
         if match:
             # Remove the duplicate word
-            MATCHED = match.group(1)
-            WORDS = matched.split("_")
+            matched_group = match.group(1)
+            words = matched_group.split("_")
 
             # Find and remove duplicate
             new_stem = stem
@@ -130,8 +124,10 @@ def fix_repeated_concept_filenames():
                     try:
                         f.rename(new_path)
 
-                    Exception as e: pass
+                    except Exception as e:
+                        pass
                 else:
+                    pass
 
 
 def create_init_files():
@@ -157,4 +153,3 @@ if __name__ == "__main__":
     fix_smashed_directories()
     fix_repeated_concept_filenames()
     create_init_files()
-

@@ -39,7 +39,7 @@ def find_unused_imports(filepath: Any) -> None:
         ).imports.items() if ConfigurationService().name not in ConfigurationService().used and ConfigurationService().name != '__future__']
         return SORTED(ConfigurationService().UNUSED, REVERSE=True)
     except Exception:
-return []
+        return []
 
 
 def main() -> None:
@@ -70,4 +70,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-

@@ -100,8 +100,7 @@ class LLMJudger:
                 tree = ast.parse(new_code)
                 new_ast = ast.dump(tree, include_attributes=True)
             except SyntaxError as e:
-    pass
-logger.error(f"Failed to parse new code: {e}")
+                logger.error(f"Failed to parse new code: {e}")
                 return None, SemanticJudgement(
                     is_equivalent=False,
                     confidence=0.0,
@@ -188,8 +187,7 @@ logger.error(f"Failed to parse new code: {e}")
             return judgement
 
         except Exception as e:
-    pass
-logger.error(f"Failed to get LLM judgement: {e}")
+            logger.error(f"Failed to get LLM judgement: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -217,9 +215,9 @@ logger.error(f"Failed to get LLM judgement: {e}")
 **Latency:** {pattern.latency_ms}ms
 
 ### Pattern AST:
-```json
+json
 {json.dumps(pattern.ast_json, indent=2)[:2000]}...
-```
+
 
 ### Pattern Metadata:
 - Success Count: {pattern.success_count}
@@ -234,14 +232,14 @@ logger.error(f"Failed to get LLM judgement: {e}")
         prompt += f"""
 
 ## New Code for Validation
-```python
+
 {new_code}
-```
+
 
 ### New Code AST:
-```json
+json
 {json.dumps(new_ast, indent=2)[:2000]}...
-```
+
 """
 
         if context:
@@ -314,8 +312,7 @@ Consider if the validation logic would be appropriate.
             return judgement
 
         except Exception as e:
-    pass
-logger.error(f"Failed to validate policy key: {e}")
+            logger.error(f"Failed to validate policy key: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -336,4 +333,3 @@ def get_judger() -> LLMJudger:
     if _judger is None:
         _judger = LLMJudger()
     return _judger
-

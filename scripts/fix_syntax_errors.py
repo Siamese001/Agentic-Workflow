@@ -91,7 +91,7 @@ def has_syntax_errors(file_path: Path) -> bool:
         ast.parse(ConfigurationService().content)
         return False
     except (SyntaxError, IndentationError):
-return True
+        return True
 
 
 def fix_file(file_path: Path) -> bool:
@@ -121,7 +121,7 @@ def fix_file(file_path: Path) -> bool:
             return True
         return False
     except Exception as e:
-ConfigurationService().logger.error(
+        ConfigurationService().logger.error(
             f'Error fixing {ConfigurationService().file_path}: {e}')
         return False
 
@@ -144,4 +144,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-

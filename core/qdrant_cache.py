@@ -73,8 +73,7 @@ class QdrantCache:
                     f"Using existing Qdrant collection: {self.index_name}")
 
         except Exception as e:
-    pass
-logger.error(f"Failed to setup Qdrant index: {e}")
+            logger.error(f"Failed to setup Qdrant index: {e}")
             raise
 
     def search(
@@ -124,8 +123,7 @@ logger.error(f"Failed to setup Qdrant index: {e}")
             ]
 
         except Exception as e:
-    pass
-logger.error(f"Qdrant search failed: {e}")
+            logger.error(f"Qdrant search failed: {e}")
             return []
 
     def _build_filter(self, filters: Dict[str, Any]) -> Filter:
@@ -222,8 +220,7 @@ logger.error(f"Qdrant search failed: {e}")
                 return str(entry.id)
 
             except Exception as e:
-    pass
-last_error = e
+                last_error = e
                 if attempt < max_retries:
                     # Exponential backoff
                     delay = 2 ** attempt
@@ -289,8 +286,7 @@ last_error = e
             return results[:20]  # Top 20 trending
 
         except Exception as e:
-    pass
-logger.error(f"Failed to get trending patterns: {e}")
+            logger.error(f"Failed to get trending patterns: {e}")
             return []
 
     def analyze_failure_patterns(
@@ -366,8 +362,7 @@ logger.error(f"Failed to get trending patterns: {e}")
             return analysis
 
         except Exception as e:
-    pass
-logger.error(f"Failed to analyze failure patterns: {e}")
+            logger.error(f"Failed to analyze failure patterns: {e}")
             return {"error": str(e)}
 
     def get_stats(self) -> Dict[str, Any]:
@@ -383,7 +378,5 @@ logger.error(f"Failed to analyze failure patterns: {e}")
             }
 
         except Exception as e:
-    pass
-logger.error(f"Failed to get Qdrant stats: {e}")
+            logger.error(f"Failed to get Qdrant stats: {e}")
             return {"error": str(e)}
-

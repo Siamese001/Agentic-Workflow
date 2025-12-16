@@ -81,42 +81,42 @@ class DockerSandbox:
                     logger.warning(f"Failed to remove container: {e}")
 
     def execute_in_sandbox(repo_path: str, command: str) -> bool:
-    """
-    High-level wrapper to run a check in the repo safely.
-    Mounts repo_path as Read-Only to /code, copies to /app, and executes.
-    
-    Args:
-        repo_path: Path to the host repository.
-        command: Command to run inside the sandbox.
+        """
+        High-level wrapper to run a check in the repo safely.
+        Mounts repo_path as Read-Only to /code, copies to /app, and executes.
         
-    Returns:
-        bool: True if command executed successfully (exit code 0), False otherwise.
-    """
-    sandbox = DockerSandbox()
-    
-    if not sandbox.client:
-        logger.error("Skipping sandbox check: Docker unavailable.")
-        # FAIL CLOSED: If we can't verify safety, we don't proceed.
-        # Change to True if you want "Fail Open" (allow bypass if docker is down)
-        return False
-    
-    abs_repo_path = os.path.abspath(repo_path)
-    
-    # Mount host repo to /code (Read-Only)
-    volumes = {
-        abs_repo_path: {'bind': '/code', 'mode': 'ro'}
-    }
-    
-    # 1. Copy /code to /app (to allow writing .pyc or temp files without error)
-    # 2. cd /app
-    # 3. Run command
-    safe_command = f"cp -r /code/. /app && cd /app && {command}"
-    
-    exit_code, logs = sandbox.run_command(safe_command, volumes=volumes)
-    
-    if exit_code != 0:
-        logger.warning(f"Sandbox Check Failed (Exit Code {exit_code}):\n{logs}")
-        return False
-    
-    logger.info("Sandbox Check Passed.")
-    return True
+        Args:
+            repo_path: Path to the host repository.
+            command: Command to run inside the sandbox.
+            
+        Returns:
+            bool: True if command executed successfully (exit code 0), False otherwise.
+        """
+        sandbox = DockerSandbox()
+        
+        if not sandbox.client:
+            logger.error("Skipping sandbox check: Docker unavailable.")
+            # FAIL CLOSED: If we can't verify safety, we don't proceed.
+            # Change to True if you want "Fail Open" (allow bypass if docker is down)
+            return False
+        
+        abs_repo_path = os.path.abspath(repo_path)
+        
+        # Mount host repo to /code (Read-Only)
+        volumes = {
+            abs_repo_path: {'bind': '/code', 'mode': 'ro'}
+        }
+        
+        # 1. Copy /code to /app (to allow writing .pyc or temp files without error)
+        # 2. cd /app
+        # 3. Run command
+        safe_command = f"cp -r /code/. /app && cd /app && {command}"
+        
+        exit_code, logs = sandbox.run_command(safe_command, volumes=volumes)
+        
+        if exit_code != 0:
+            logger.warning(f"Sandbox Check Failed (Exit Code {exit_code}):\n{logs}")
+            return False
+        
+        logger.info("Sandbox Check Passed.")
+        return True

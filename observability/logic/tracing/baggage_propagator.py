@@ -19,7 +19,7 @@ class BaggagePropagator:
     HEADER_SAMPLED = "X-Sampled"
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
+        self.CONFIG = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def inject(self, context: Dict[str, object], carrier: Dict[str, str]) -> None:
@@ -45,9 +45,7 @@ class BaggagePropagator:
         return context
 
 
-def inject_context(context: Dict[str,
-                                 """Docstring."""
-                                 object],
+def inject_context(context: Dict[str, object],
                    carrier: Dict[str,
                                  str],
                    config: Optional[Dict] = None) -> None:
@@ -58,4 +56,3 @@ def inject_context(context: Dict[str,
 def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, object]:
     """Extract context from carrier."""
     return BaggagePropagator(config).extract(carrier)
-

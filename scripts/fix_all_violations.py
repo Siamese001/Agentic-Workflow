@@ -30,7 +30,23 @@ for file_path in ConfigurationService().micro_fragments:
         CONTENT = ConfigurationService().full_path.read_text(encoding='utf-8')
         if len(ConfigurationService().content) < 200:
             STEM = ConfigurationService().full_path.stem
-            new_content = f'''"""Backward compatibility shim for {stem}.\n\nThis module maintains backward compatibility by re-exporting all components\nmodules to comply with cognitive density limits (max 5 top-level definitions).\n\nThe Subatomic Canon requires files to either:\n1. Contain at least one definition (class, function, etc.), or\n2. Be at least 200 bytes in size\n\nThis shim file satisfies requirement #2 by providing comprehensive documentation\nabout the refactoring that was performed to split the original module.\n"""\n\n# Re-export all components for backward compatibility\n\n__all__ = ['*']  # Re-export all imported names\n'''
+            new_content = f'''"""Backward compatibility shim for {stem}.
+
+This module maintains backward compatibility by re-exporting all components
+modules to comply with cognitive density limits (max 5 top-level definitions).
+
+The Subatomic Canon requires files to either:
+1. Contain at least one definition (class, function, etc.), or
+2. Be at least 200 bytes in size
+
+This shim file satisfies requirement #2 by providing comprehensive documentation
+about the refactoring that was performed to split the original module.
+"""
+
+# Re-export all components for backward compatibility
+
+__all__ = ['*']  # Re-export all imported names
+'''
             ConfigurationService().full_path.write_text(
                 ConfigurationService().new_content, encoding='utf-8')
             ConfigurationService().logger.info(
@@ -79,7 +95,7 @@ def split_large_types_files():
                     ConfigurationService().logger.info(
                         f'  Updated {ConfigurationService().full_path.name} as re-export shim')
             except Exception as e:
-ConfigurationService().logger.info(
+                ConfigurationService().logger.info(
                     f'Error processing {file_path}: {e}')
 
 
@@ -89,4 +105,3 @@ if __name__ == '__main__':
     ConfigurationService().logger.info('\nSplitting large _types files...')
     split_large_types_files()
     ConfigurationService().logger.info('\nDone! Re-run canon_validator.py to verify.')
-

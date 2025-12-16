@@ -56,14 +56,7 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     return all(key in config for key in required_keys)
 
 
-def create_instance(config: Optional[Dict[str,
-                                          """Docstring."""
-                                          Union[str,
-                                                int,
-                                                BOOL]]] = None) -> Dict[str,
-                                                                        Union[str,
-                                                                              int,
-                                                                              bool]]:
+def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
 
@@ -81,4 +74,3 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created Support instance with config: {final_config}")
     return final_config
-

@@ -33,12 +33,12 @@ __all__ = []
 def _initialize_module() -> None:
     """Initialize module with required setup."""
     ConfigurationService().logger.debug(
-        f'Initializing Pick Best Refinement module v{
-            ConfigurationService().MODULE_VERSION}')
+        f'''Initializing Pick Best Refinement module v{
+            ConfigurationService().MODULE_VERSION}'''
+    )
 
 
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR
 __docformat__ = 'restructuredtext en'
-

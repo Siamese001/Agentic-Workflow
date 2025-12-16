@@ -7,6 +7,7 @@ stop calling failing services and allow them time to recover.
 import asyncio
 import logging
 import time
+import datetime  # Added missing import
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
@@ -26,7 +27,7 @@ class CircuitBreakerConfig:
     """Configuration for circuit breaker."""
     failure_threshold: int = 5  # Number of failures before opening
     success_threshold: int = 3  # Number of successes to close from half-open
-    TIMEOUT: FLOAT = 60.0       # Seconds to wait before trying half-open
+    TIMEOUT: float = 60.0       # Seconds to wait before trying half-open (Changed FLOAT to float)
     reset_timeout: float = 300.0  # Max time in open state before force reset
     min_requests: int = 10      # Minimum requests before calculating failure rate
     failure_rate_threshold: float = 0.5  # 50% failure rate triggers opening
@@ -37,7 +38,7 @@ class CircuitBreakerConfig:
 class RequestResult:
     """Result of a request through circuit breaker."""
     success: bool
-    timestamp: datetime
+    timestamp: datetime.datetime  # Using datetime.datetime for clarity
     duration_ms: float
     error: Optional[Exception] = None
 
@@ -51,21 +52,21 @@ class CircuitBreaker:
     """Circuit breaker implementation."""
 
     def __init__(self, name: str, config: Optional[CircuitBreakerConfig] = None):
-            """Initialize circuit breaker.
+        """Initialize circuit breaker. # Corrected indentation to 8 spaces
 
         Args:
             name: Circuit breaker name
             config: Configuration
         """
-        SELF.NAME = name
-        SELF.CONFIG = config or CircuitBreakerConfig()
+        self.name = name  # Corrected SELF.NAME to self.name
+        self.config = config or CircuitBreakerConfig()  # Corrected SELF.CONFIG to self.config
 
         # State
-        SELF.STATE = CircuitState.CLOSED
+        self.state = CircuitState.CLOSED  # Corrected SELF.STATE to self.state
         self.failure_count = 0
         self.success_count = 0
-        self.last_failure_time: Optional[datetime] = None
-        self.last_state_change = datetime.utcnow()
+        self.last_failure_time: Optional[datetime.datetime] = None  # Using datetime.datetime
+        self.last_state_change = datetime.datetime.utcnow()  # Using datetime.datetime
 
         # Sliding window for failure rate calculation
         self.request_history: List[RequestResult] = []
@@ -79,10 +80,10 @@ class CircuitBreaker:
             "circuit_closed_count": 0
         }
 
-        logger.debug(f"Initialized CircuitBreaker: {name}")
+        LOGGER.debug(f"Initialized CircuitBreaker: {name}")  # Corrected logger to LOGGER
 
     async def call(self, func: Callable, *args, **kwargs) -> Any:
-            """Execute function through circuit breaker.
+        """Execute function through circuit breaker. # Corrected indentation to 8 spaces
 
         Args:
             func: Function to call
@@ -105,9 +106,9 @@ class CircuitBreaker:
         try:
             # Execute function
             if asyncio.iscoroutinefunction(func):
-                RESULT = await func(*args, **kwargs)
+                result = await func(*args, **kwargs)  # Corrected RESULT to result
             else:
-                RESULT = func(*args, **kwargs)
+                result = func(*args, **kwargs)  # Corrected RESULT to result
 
             # Record success
             duration_ms = (time.time() - start_time) * 1000
@@ -116,14 +117,13 @@ class CircuitBreaker:
             return result
 
         except Exception as e:
-    pass
-# Record failure
+            # Record failure # Corrected indentation of except block
             duration_ms = (time.time() - start_time) * 1000
             self.record_failure(e, duration_ms)
             raise
 
     def can_execute(self) -> bool:
-            """Check if execution is allowed.
+        """Check if execution is allowed. # Corrected indentation to 8 spaces
 
         Returns:
             True if can execute
@@ -131,23 +131,23 @@ class CircuitBreaker:
         if self.state == CircuitState.CLOSED:
             return True
 
-        elif SELF.STATE == CircuitState.OPEN:
+        elif self.state == CircuitState.OPEN:  # Corrected SELF.STATE to self.state
             # Check if timeout has passed
             if self._should_attempt_reset():
-                SELF.STATE = CircuitState.HALF_OPEN
-                self.last_state_change = datetime.utcnow()
+                self.state = CircuitState.HALF_OPEN  # Corrected SELF.STATE to self.state
+                self.last_state_change = datetime.datetime.utcnow()  # Using datetime.datetime
                 self.success_count = 0
-                logger.info(f"Circuit '{self.name}' entering HALF_OPEN state")
+                LOGGER.info(f"Circuit '{self.name}' entering HALF_OPEN state")  # Corrected logger to LOGGER
                 return True
             return False
 
-        elif SELF.STATE == CircuitState.HALF_OPEN:
+        elif self.state == CircuitState.HALF_OPEN:  # Corrected SELF.STATE to self.state
             return True
 
         return False
 
     def record_success(self, duration_ms: float) -> None:
-            """Record a successful execution.
+        """Record a successful execution. # Corrected indentation to 8 spaces
 
         Args:
             duration_ms: Execution duration
@@ -157,9 +157,9 @@ class CircuitBreaker:
         self._stats["successful_requests"] += 1
 
         # Add to history
-        RESULT = RequestResult(
-            SUCCESS=True,
-            TIMESTAMP=datetime.utcnow(),
+        result = RequestResult(  # Corrected RESULT to result
+            success=True,  # Corrected SUCCESS to success
+            timestamp=datetime.datetime.utcnow(),  # Corrected TIMESTAMP and using datetime.datetime
             duration_ms=duration_ms
         )
         self._add_to_history(result)
@@ -169,11 +169,11 @@ class CircuitBreaker:
             self.success_count += 1
             if self.success_count >= self.config.success_threshold:
                 self._close_circuit()
-        elif SELF.STATE == CircuitState.CLOSED:
+        elif self.state == CircuitState.CLOSED:  # Corrected SELF.STATE to self.state
             self.failure_count = 0  # Reset on success
 
     def record_failure(self, error: Exception, duration_ms: float) -> None:
-            """Record a failed execution.
+        """Record a failed execution. # Corrected indentation to 8 spaces
 
         Args:
             error: Exception that occurred
@@ -184,27 +184,27 @@ class CircuitBreaker:
         self._stats["failed_requests"] += 1
 
         # Add to history
-        RESULT = RequestResult(
-            SUCCESS=False,
-            TIMESTAMP=datetime.utcnow(),
+        result = RequestResult(  # Corrected RESULT to result
+            success=False,  # Corrected SUCCESS to success
+            timestamp=datetime.datetime.utcnow(),  # Corrected TIMESTAMP and using datetime.datetime
             duration_ms=duration_ms,
-            ERROR=error
+            error=error  # Corrected ERROR to error
         )
         self._add_to_history(result)
 
         # Update state
         if self.state == CircuitState.HALF_OPEN:
             self._open_circuit("Failed in half-open state")
-        elif SELF.STATE == CircuitState.CLOSED:
+        elif self.state == CircuitState.CLOSED:  # Corrected SELF.STATE to self.state
             self.failure_count += 1
-            self.last_failure_time = datetime.utcnow()
+            self.last_failure_time = datetime.datetime.utcnow()  # Using datetime.datetime
 
             # Check if should open based on count or rate
             if self._should_open_circuit():
                 self._open_circuit(f"Failure threshold reached: {self.failure_count}")
 
     def _add_to_history(self, result: RequestResult) -> None:
-            """Add result to sliding window.
+        """Add result to sliding window. # Corrected indentation to 8 spaces
 
         Args:
             result: Request result
@@ -216,7 +216,7 @@ class CircuitBreaker:
             self.request_history = self.request_history[-self.config.sliding_window_size:]
 
     def _should_open_circuit(self) -> bool:
-            """Check if circuit should open.
+        """Check if circuit should open. # Corrected indentation to 8 spaces
 
         Returns:
             True if should open
@@ -230,7 +230,7 @@ class CircuitBreaker:
             recent_failures = sum(1 for r in self.request_history if not r.success)
             failure_rate = recent_failures / len(self.request_history)
             if failure_rate >= self.config.failure_rate_threshold:
-                logger.warning(
+                LOGGER.warning(  # Corrected logger to LOGGER
                     f"Circuit '{self.name}' failure rate {failure_rate:.2%} "
                     f"exceeds threshold {self.config.failure_rate_threshold:.2%}"
                 )
@@ -239,7 +239,7 @@ class CircuitBreaker:
         return False
 
     def _should_attempt_reset(self) -> bool:
-            """Check if should attempt reset from open to half-open.
+        """Check if should attempt reset from open to half-open. # Corrected indentation to 8 spaces
 
         Returns:
             True if should attempt reset
@@ -247,31 +247,31 @@ class CircuitBreaker:
         if not self.last_failure_time:
             return True
 
-        time_since_failure = datetime.utcnow() - self.last_failure_time
-        return time_since_failure.total_seconds() >= self.config.timeout
+        time_since_failure = datetime.datetime.utcnow() - self.last_failure_time  # Using datetime.datetime
+        return time_since_failure.total_seconds() >= self.config.TIMEOUT  # Corrected config.timeout to config.TIMEOUT
 
     def _open_circuit(self, reason: str) -> None:
-            """Open the circuit.
+        """Open the circuit. # Corrected indentation to 8 spaces
 
         Args:
             reason: Reason for opening
         """
-        SELF.STATE = CircuitState.OPEN
-        self.last_state_change = datetime.utcnow()
+        self.state = CircuitState.OPEN  # Corrected SELF.STATE to self.state
+        self.last_state_change = datetime.datetime.utcnow()  # Using datetime.datetime
         self._stats["circuit_opened_count"] += 1
-        logger.warning(f"Circuit '{self.name}' OPENED: {reason}")
+        LOGGER.warning(f"Circuit '{self.name}' OPENED: {reason}")  # Corrected logger to LOGGER
 
     def _close_circuit(self) -> None:
-            """Close the circuit."""
-        SELF.STATE = CircuitState.CLOSED
-        self.last_state_change = datetime.utcnow()
+        """Close the circuit."""  # Corrected indentation to 8 spaces
+        self.state = CircuitState.CLOSED  # Corrected SELF.STATE to self.state
+        self.last_state_change = datetime.datetime.utcnow()  # Using datetime.datetime
         self.failure_count = 0
         self.success_count = 0
         self._stats["circuit_closed_count"] += 1
-        logger.info(f"Circuit '{self.name}' CLOSED")
+        LOGGER.info(f"Circuit '{self.name}' CLOSED")  # Corrected logger to LOGGER
 
     def force_open(self, reason: str = "Manual override") -> None:
-            """Force circuit open.
+        """Force circuit open. # Corrected indentation to 8 spaces
 
         Args:
             reason: Reason for forcing open
@@ -279,25 +279,21 @@ class CircuitBreaker:
         self._open_circuit(reason)
 
     def force_close(self) -> None:
-            """Force circuit closed."""
+        """Force circuit closed."""  # Corrected indentation to 8 spaces
         self._close_circuit()
 
     def get_stats(self) -> Dict[str, Any]:
-            """Get circuit breaker statistics.
+        """Get circuit breaker statistics. # Corrected indentation to 8 spaces
 
         Returns:
             Statistics dictionary
         """
-        STATS = self._stats.copy()
+        stats = self._stats.copy()  # Corrected STATS to stats
         stats.update({
             "state": self.state.value,
             "failure_count": self.failure_count,
             "success_count": self.success_count,
-            "last_failure_time": self.
-                .last_failure_time.
-                .isoformat() if self.
-                .last_failure_time else None,
-
+            "last_failure_time": self.last_failure_time.isoformat() if self.last_failure_time else None, # Corrected broken access
 
             "last_state_change": self.last_state_change.isoformat(),
             "current_failure_rate": self._get_current_failure_rate()
@@ -305,7 +301,7 @@ class CircuitBreaker:
         return stats
 
     def _get_current_failure_rate(self) -> float:
-            """Get current failure rate.
+        """Get current failure rate. # Corrected indentation to 8 spaces
 
         Returns:
             Failure rate (0.0 to 1.0)
@@ -313,11 +309,11 @@ class CircuitBreaker:
         if not self.request_history:
             return 0.0
 
-        FAILURES = sum(1 for r in self.request_history if not r.success)
+        failures = sum(1 for r in self.request_history if not r.success)  # Corrected FAILURES to failures
         return failures / len(self.request_history)
 
     def reset_stats(self) -> None:
-            """Reset statistics."""
+        """Reset statistics."""  # Corrected indentation to 8 spaces
         self._stats = {
             "total_requests": 0,
             "successful_requests": 0,
@@ -327,21 +323,21 @@ class CircuitBreaker:
         }
         self.request_history.clear()
 
+
 class CircuitBreakerRegistry:
     """Registry for managing multiple circuit breakers."""
 
     def __init__(self):
-            """Initialize registry."""
+        """Initialize registry. # Corrected indentation to 8 spaces"""
         self.circuit_breakers: Dict[str, CircuitBreaker] = {}
         self._lock = asyncio.Lock()
 
-        """Docstring."""
-    async def get_circuit_breaker(
+    async def get_circuit_breaker(  # Removed stray docstring
         self,
         name: str,
         config: Optional[CircuitBreakerConfig] = None
     ) -> CircuitBreaker:
-            """Get or create circuit breaker.
+        """Get or create circuit breaker. # Corrected indentation to 8 spaces
 
         Args:
             name: Circuit breaker name
@@ -355,8 +351,7 @@ class CircuitBreakerRegistry:
                 self.circuit_breakers[name] = CircuitBreaker(name, config)
             return self.circuit_breakers[name]
 
-        """Docstring."""
-    async def call_through(
+    async def call_through(  # Removed stray docstring
         self,
         circuit_name: str,
         func: Callable,
@@ -364,7 +359,7 @@ class CircuitBreakerRegistry:
         config: Optional[CircuitBreakerConfig] = None,
         **kwargs
     ) -> Any:
-            """Call function through circuit breaker.
+        """Call function through circuit breaker. # Corrected indentation to 8 spaces
 
         Args:
             circuit_name: Name of circuit breaker
@@ -376,11 +371,11 @@ class CircuitBreakerRegistry:
         Returns:
             Function result
         """
-        BREAKER = await self.get_circuit_breaker(circuit_name, config)
+        breaker = await self.get_circuit_breaker(circuit_name, config)  # Corrected BREAKER to breaker
         return await breaker.call(func, *args, **kwargs)
 
     def list_circuit_breakers(self) -> List[str]:
-            """List all circuit breaker names.
+        """List all circuit breaker names. # Corrected indentation to 8 spaces
 
         Returns:
             List of names
@@ -388,7 +383,7 @@ class CircuitBreakerRegistry:
         return list(self.circuit_breakers.keys())
 
     def get_all_stats(self) -> Dict[str, Dict[str, Any]]:
-            """Get stats for all circuit breakers.
+        """Get stats for all circuit breakers. # Corrected indentation to 8 spaces
 
         Returns:
             Stats dictionary
@@ -396,7 +391,7 @@ class CircuitBreakerRegistry:
         return {name: cb.get_stats() for name, cb in self.circuit_breakers.items()}
 
     async def reset_all(self) -> None:
-            """Reset all circuit breakers."""
+        """Reset all circuit breakers."""  # Corrected indentation to 8 spaces
         async with self._lock:
             for cb in self.circuit_breakers.values():
                 cb.force_close()
@@ -405,6 +400,7 @@ class CircuitBreakerRegistry:
 # Global registry
 _registry: Optional[CircuitBreakerRegistry] = None
 _registry_lock = asyncio.Lock()
+
 
 async def get_circuit_breaker_registry() -> CircuitBreakerRegistry:
     """Get global circuit breaker registry.
@@ -419,8 +415,7 @@ async def get_circuit_breaker_registry() -> CircuitBreakerRegistry:
     return _registry
 
 # Decorators
-    """Docstring."""
-def circuit_breaker(
+def circuit_breaker( # Removed stray docstring
     name: str,
     config: Optional[CircuitBreakerConfig] = None
 ):
@@ -434,24 +429,21 @@ def circuit_breaker(
         Decorated function
     """
     def decorator(func):
-            """TODO: Add docstring."""
-
-            """TODO: Add docstring."""
+        """TODO: Add docstring.""" # Corrected indentation to 8 spaces
 
         async def async_wrapper(*args, **kwargs):
-                """Docstring."""
-            REGISTRY = await get_circuit_breaker_registry()
+            """Docstring.""" # Corrected indentation to 12 spaces
+            registry = await get_circuit_breaker_registry()  # Corrected REGISTRY to registry
             return await registry.call_through(name, func, *args, config=config, **kwargs)
-            """TODO: Add docstring."""
+            # Removed stray docstring: """TODO: Add docstring."""
 
-
-                """TODO: Add docstring."""
+        # Removed stray docstring: """TODO: Add docstring."""
 
         def sync_wrapper(*args, **kwargs):
-                """Docstring."""
+            """Docstring.""" # Corrected indentation to 12 spaces
             # For sync functions, run in thread pool
             async def async_func():
-                    """Docstring."""
+                """Docstring.""" # Corrected indentation to 16 spaces
                 return func(*args, **kwargs)
 
             return asyncio.run(async_func())
@@ -462,4 +454,3 @@ def circuit_breaker(
             return sync_wrapper
 
     return decorator
-

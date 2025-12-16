@@ -8,22 +8,19 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path("/workspace")
-BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finaliz
-e"
+BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finalize"
 
 
 def backup_file(file_path: Path):
     """Docstring."""
 
 
-LOGGER = logging.getLogger(__name__)
-
-"""Backup a file before modification."""
-if file_path.exists():
-    backup_path = BACKUP_DIR / file_path.name
-    backup_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(file_path, backup_path)
-    logger.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
+    """Backup a file before modification."""
+    if file_path.exists():
+        backup_path = BACKUP_DIR / file_path.name
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(file_path, backup_path)
+        logger.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
 
 
 def clean_merged_file(file_path: Path):
@@ -36,29 +33,29 @@ def clean_merged_file(file_path: Path):
     backup_file(file_path)
 
     with open(file_path, 'r', encoding='utf-8') as f:
-        CONTENT = f.read()
+        content = f.read()
 
     # Split by merge markers
-    PARTS = content.split('# ============================================')
+    parts = content.split('# ============================================')
 
     if len(parts) <= 1:
         logger.info(f"  ℹ No merge markers found")
         return
 
     # Keep first part (original)
-    CLEANED = parts[0].rstrip()
+    cleaned = parts[0].rstrip()
 
     # Process merged parts
     for i in range(1, len(parts)):
-        PART = parts[i]
-        LINES = part.split('\n')
+        part = parts[i]
+        lines = part.split('\n')
 
         # Skip merge comment lines
         code_lines = []
         skip_header = True
 
         for line in lines:
-            STRIPPED = line.strip()
+            stripped = line.strip()
 
             if skip_header:
                 # Skip merge comments, docstrings, and imports
@@ -76,7 +73,7 @@ def clean_merged_file(file_path: Path):
 
         # Add cleaned content
         if code_lines:
-            CLEANED += '\n\n' + '\n'.join(code_lines).strip()
+            cleaned += '\n\n' + '\n'.join(code_lines).strip()
 
     # Write cleaned content
     with open(file_path, 'w', encoding='utf-8') as f:
@@ -140,7 +137,7 @@ def main():
     logger.info("━" * 50)
     logger.info()
 
-    ORPHANS = [
+    orphans = [
         (ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models_2.py",
          ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models.py"),
         (ROOT / "apps_rg/L1_cognition/P3_aggregate/brief_models_2.py",
@@ -173,4 +170,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

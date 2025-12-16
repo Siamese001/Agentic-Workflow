@@ -21,6 +21,8 @@ import logging
 import sys
 import time
 import traceback
+from enum import Enum
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
 # Configure module-specific logger
@@ -66,8 +68,8 @@ class ExecutionContext:
             }
             logger.error(f"Execution failed: {error}")
         else:
-            logger.info(f"Execution completed successfully in {self.end_time - self.start_time: .2f}s
-                        ")
+            logger.info(f"""Execution completed successfully in {self.end_time - self.start_time: .2f}s
+                        """)
 
 
 @dataclass
@@ -115,7 +117,6 @@ class GetInfoEmbeddingCompareMeaning:
             raise ValueError(f"Missing required config keys: {missing}")
 
     def process(self,
-                """Docstring."""
                 payload: Union[str, int, float, bool, List, Dict],
                 context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
         """
@@ -156,8 +157,7 @@ class GetInfoEmbeddingCompareMeaning:
             )
 
         except Exception as e:
-    pass
-exec_ctx.complete(success=False, error=e)
+            exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
                 SUCCESS=False,
@@ -195,10 +195,8 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-    pass
-return False
+        return False
 
 
 # Module initialization
 logger.info(f"{__name__} module loaded successfully")
-

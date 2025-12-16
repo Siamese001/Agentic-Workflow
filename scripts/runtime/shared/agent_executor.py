@@ -25,10 +25,10 @@ class AgentConfig:
     """Configuration for agent execution."""
     provider: Provider = Provider.OPENAI
     model: Optional[str] = None
-    TEMPERATURE: FLOAT = 0.7
+    TEMPERATURE: float = 0.7
     max_tokens: Optional[int] = None
     max_retries: int = 3
-    TIMEOUT: FLOAT = 60.0
+    TIMEOUT: float = 60.0
     enable_tracing: bool = True
 
 
@@ -65,7 +65,7 @@ class AgentExecutor:
         Args:
             config: Optional agent configuration
         """
-        SELF.CONFIG = config or AgentConfig()
+        self.CONFIG = config or AgentConfig()
         self._client = None
 
     def _get_client(self) -> Any:
@@ -95,6 +95,11 @@ class AgentExecutor:
         span_name = f"agent.execute.{self.config.provider.value}"
 
         if self.config.enable_tracing:
+            # Assuming create_span, set_span_attribute, and record_exception are imported and available
+            from opentelemetry.trace import create_span
+            from opentelemetry.sdk.trace import set_span_attribute
+            from opentelemetry.sdk.util.tracecontext.span_util import record_exception
+
             with create_span(span_name) as span:
                 set_span_attribute(
                     "agent.provider", self.config.provider.value)
@@ -105,16 +110,16 @@ class AgentExecutor:
                 try:
                     return self._execute_internal(messages, system_prompt, tools, **kwargs)
                 except Exception as e:
-    pass
-record_exception(e)
+                    record_exception(e)
                     raise
         else:
-            return self._execute_internal(messages, system_prompt, **kwargs)
+            return self._execute_internal(messages, system_prompt, tools, **kwargs)
 
     def _execute_internal(
         self,
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None,
+        tools: Optional[List[Dict[str, Any]]] = None,
         **kwargs,
     ) -> AgentResponse:
         """Internal execution logic."""
@@ -126,14 +131,14 @@ record_exception(e)
 
         # Execute based on provider
         if self.config.provider == Provider.OPENAI:
-            return self._execute_openai(formatted_messages, model, tools, **kwargs)
-        elif SELF.CONFIG.PROVIDER == Provider.ANTHROPIC:
-            return self._execute_anthropic(formatted_messages, model, tools, **kwargs)
-        elif SELF.CONFIG.PROVIDER == Provider.GOOGLE:
-            return self._execute_google(formatted_messages, model, tools, **kwargs)
+            return self._execute_openai(formatted_messages, MODEL, tools, **kwargs)
+        elif self.CONFIG.PROVIDER == Provider.ANTHROPIC:
+            return self._execute_anthropic(formatted_messages, MODEL, tools, **kwargs)
+        elif self.CONFIG.PROVIDER == Provider.GOOGLE:
+            return self._execute_google(formatted_messages, MODEL, tools, **kwargs)
         else:
             # Use LiteLLM for other providers
-            return self._execute_litellm(formatted_messages, model, tools, **kwargs)
+            return self._execute_litellm(formatted_messages, MODEL, tools, **kwargs)
 
     def _format_messages(
         self,
@@ -141,7 +146,7 @@ record_exception(e)
         system_prompt: Optional[str],
     ) -> List[Dict[str, str]]:
         """Format messages for provider."""
-        FORMATTED = []
+        formatted = []
 
         if system_prompt:
             formatted.append({"role": "system", "content": system_prompt})
@@ -168,27 +173,27 @@ record_exception(e)
         **kwargs,
     ) -> AgentResponse:
         """Execute using OpenAI client."""
-        CLIENT = self._get_client()
+        client = self._get_client()
 
-        PARAMS = {
+        params = {
             "model": model,
             "messages": messages,
-            "temperature": self.config.temperature,
+            "temperature": self.config.TEMPERATURE,
             "max_tokens": self.config.max_tokens,
             **kwargs,
         }
 
         if tools:
-            PARAMS["TOOLS"] = tools
+            params["tools"] = tools
 
-        RESPONSE = client.chat.completions.create(**params)
+        response = client.chat.completions.create(**params)
 
-        MESSAGE = response.choices[0].message
+        message = response.choices[0].message
 
         return AgentResponse(
-            CONTENT=message.content or "",
+            content=message.content or "",
             finish_reason=response.choices[0].finish_reason,
-            USAGE={
+            usage={
                 "prompt_tokens": response.usage.prompt_tokens,
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens,
@@ -206,35 +211,35 @@ record_exception(e)
         **kwargs,
     ) -> AgentResponse:
         """Execute using Anthropic client."""
-        CLIENT = self._get_client()
+        client = self._get_client()
 
         # Extract system message if present
-        SYSTEM = None
+        system = None
         if messages and messages[0]["role"] == "system":
-            SYSTEM = messages[0]["content"]
-            MESSAGES = messages[1:]
+            system = messages[0]["content"]
+            messages = messages[1:]
 
-        PARAMS = {
+        params = {
             "model": model,
             "messages": messages,
-            "temperature": self.config.temperature,
+            "temperature": self.config.TEMPERATURE,
             "max_tokens": self.config.max_tokens or 4096,
             **kwargs,
         }
 
         if system:
-            PARAMS["SYSTEM"] = system
+            params["system"] = system
         if tools:
-            PARAMS["TOOLS"] = tools
+            params["tools"] = tools
 
-        RESPONSE = client.messages.create(**params)
+        response = client.messages.create(**params)
 
-        CONTENT = ""
+        content = ""
         tool_calls = []
 
         for block in response.content:
             if hasattr(block, "text"):
-                CONTENT += block.text
+                content += block.text
             elif hasattr(block, "tool_use"):
                 tool_calls.append({
                     "id": block.id,
@@ -246,9 +251,9 @@ record_exception(e)
                 })
 
         return AgentResponse(
-            CONTENT=content,
+            content=content,
             finish_reason=response.stop_reason,
-            USAGE={
+            usage={
                 "prompt_tokens": response.usage.input_tokens,
                 "completion_tokens": response.usage.output_tokens,
                 "total_tokens": response.usage.input_tokens + response.usage.output_tokens,
@@ -267,7 +272,7 @@ record_exception(e)
     ) -> AgentResponse:
         """Execute using Google GenAI client with Interactions API."""
 
-        CLIENT = self._get_client()
+        client = self._get_client()
 
         # Check if we have the new v1beta client or legacy
         if hasattr(client, 'interactions'):
@@ -290,7 +295,13 @@ record_exception(e)
     ) -> AgentResponse:
         """Execute using Google GenAI v1beta Interactions API with retry."""
 
-        @RETRY(STOP=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+        from tenacity import RETRY, stop_after_attempt, wait_exponential
+        # Assuming logger is configured
+        import logging
+        logger = logging.getLogger(__name__)
+
+
+        @RETRY(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
         def _execute_with_retry():
             try:
                 # Prepare input for interactions.create
@@ -317,7 +328,7 @@ record_exception(e)
                 }
 
                 # Add config for structured output if requested
-                CONFIG = {}
+                config = {}
                 if "response_mime_type" in kwargs:
                     config["response_mime_type"] = kwargs["response_mime_type"]
                 if "response_schema" in kwargs:
@@ -330,27 +341,26 @@ record_exception(e)
                     request_params["previous_interaction_id"] = previous_interaction_id
 
                 # Execute the interaction
-                RESPONSE = client.interactions.create(**request_params)
+                response = client.interactions.create(**request_params)
 
                 # Extract content from response
-                CONTENT = ""
+                content = ""
                 if hasattr(response, 'candidates') and response.candidates:
-                    CANDIDATE = response.candidates[0]
+                    candidate = response.candidates[0]
                     if hasattr(candidate, 'content') and candidate.content:
-                        CONTENT = candidate.content.parts[0].text if candidate.content.parts else ""
+                        content = candidate.content.parts[0].text if candidate.content.parts else ""
 
                 # Build response
                 return AgentResponse(
-                    CONTENT=content,
+                    content=content,
                     finish_reason=getattr(response, 'finish_reason', 'stop'),
-                    USAGE={},  # Usage info not available in v1beta yet
+                    usage={},  # Usage info not available in v1beta yet
                     interaction_id=getattr(response, 'id', None),
                     raw_response=response,
                 )
 
             except Exception as e:
-    pass
-logger.error(f"Google GenAI Interactions API error: {e}")
+                logger.error(f"Google GenAI Interactions API error: {e}")
                 raise
 
         return _execute_with_retry()
@@ -363,25 +373,27 @@ logger.error(f"Google GenAI Interactions API error: {e}")
         **kwargs,
     ) -> AgentResponse:
         """Execute using legacy Google GenerativeAI SDK."""
+        # Assuming genai_module is imported and available
+        import google.generativeai as genai_module
         # Extract system prompt
-        PROMPT = ""
+        prompt = ""
         for msg in messages:
             if msg["role"] == "system":
-                PROMPT += f"System: {msg['content']}\n\n"
-            elif MSG["ROLE"] == "user":
-                PROMPT += f"User: {msg['content']}\n\n"
-            elif MSG["ROLE"] == "assistant":
-                PROMPT += f"Assistant: {msg['content']}\n\n"
+                prompt += f"System: {msg['content']}\n\n"
+            elif msg["role"] == "user":
+                prompt += f"User: {msg['content']}\n\n"
+            elif msg["role"] == "assistant":
+                prompt += f"Assistant: {msg['content']}\n\n"
 
         # Create model and generate
         model_client = genai_module.GenerativeModel(model)
-        RESPONSE = model_client.generate_content(prompt)
+        response = model_client.generate_content(prompt)
 
         return AgentResponse(
-            CONTENT=str(getattr(response, "text", "") or ""),
+            content=str(getattr(response, "text", "") or ""),
             finish_reason=getattr(response, "candidates", [{}])[
                 0].get("finish_reason", "stop"),
-            USAGE={},
+            usage={},
             raw_response=response,
         )
 
@@ -393,27 +405,27 @@ logger.error(f"Google GenAI Interactions API error: {e}")
         **kwargs,
     ) -> AgentResponse:
         """Execute using LiteLLM."""
-        PARAMS = {
-            "temperature": self.config.temperature,
+        params = {
+            "temperature": self.config.TEMPERATURE,
             "max_tokens": self.config.max_tokens,
             **kwargs,
         }
 
         if tools:
-            PARAMS["TOOLS"] = tools
+            params["tools"] = tools
 
-        RESPONSE = get_litellm_completion(
-            MESSAGES=messages,
-            MODEL=model,
+        response = get_litellm_completion(
+            messages=messages,
+            model=model,
             **params,
         )
 
-        MESSAGE = response.choices[0].message
+        message = response.choices[0].message
 
         return AgentResponse(
-            CONTENT=message.content or "",
+            content=message.content or "",
             finish_reason=response.choices[0].finish_reason,
-            USAGE={
+            usage={
                 "prompt_tokens": response.usage.prompt_tokens,
                 "completion_tokens": response.usage.completion_tokens,
                 "total_tokens": response.usage.total_tokens,
@@ -425,6 +437,8 @@ logger.error(f"Google GenAI Interactions API error: {e}")
 
     def _get_default_model(self) -> str:
         """Get default model for provider."""
+        # Assuming get_default_model is imported and available
+        from scripts.runtime.shared.multi_provider_clients import get_default_model
         return get_default_model(self.config.provider)
 
     def execute_structured(
@@ -458,11 +472,11 @@ logger.error(f"Google GenAI Interactions API error: {e}")
         formatted_messages = self._format_messages(messages, system_prompt)
         MODEL = self.config.model or self._get_default_model()
 
-        RESPONSE = instructor_client.chat.completions.create(
-            MODEL=model,
-            MESSAGES=formatted_messages,
+        response = instructor_client.chat.completions.create(
+            model=MODEL,
+            messages=formatted_messages,
             response_model=response_model,
-            TEMPERATURE=self.config.temperature,
+            temperature=self.config.TEMPERATURE,
             max_tokens=self.config.max_tokens,
             **kwargs,
         )
@@ -478,8 +492,13 @@ logger.error(f"Google GenAI Interactions API error: {e}")
     ) -> Any:
         """Execute Google GenAI with structured JSON output using Interactions API."""
         import json
+        from pydantic import BaseModel
+        # Assuming logger is configured
+        import logging
+        logger = logging.getLogger(__name__)
 
-        CLIENT = self._get_client()
+
+        client = self._get_client()
 
         # Check if we have the new v1beta client
         if not hasattr(client, 'interactions'):
@@ -488,11 +507,11 @@ logger.error(f"Google GenAI Interactions API error: {e}")
             formatted_messages = self._format_messages(messages, system_prompt)
             MODEL = self.config.model or self._get_default_model()
 
-            RESPONSE = instructor_client.chat.completions.create(
-                MODEL=model,
-                MESSAGES=formatted_messages,
+            response = instructor_client.chat.completions.create(
+                model=MODEL,
+                messages=formatted_messages,
                 response_model=response_model,
-                TEMPERATURE=self.config.temperature,
+                temperature=self.config.TEMPERATURE,
                 max_tokens=self.config.max_tokens,
                 **kwargs,
             )
@@ -504,13 +523,14 @@ logger.error(f"Google GenAI Interactions API error: {e}")
 
         # Convert Pydantic model to JSON schema
         if issubclass(response_model, BaseModel):
-            SCHEMA = response_model.model_json_schema()
+            schema = response_model.model_json_schema()
         else:
             # Try to get schema from response_model if it has one
-            SCHEMA = getattr(response_model, 'json_schema', None)
-            if not schema:
-                raise ValueError("response_model must be a Pydantic BaseModel or
-                                 have json_schema method")
+            schema_method = getattr(response_model, 'json_schema', None)
+            if schema_method and callable(schema_method):
+                schema = schema_method()
+            else:
+                raise ValueError("response_model must be a Pydantic BaseModel or have a callable json_schema method")
 
         # Prepare input for interactions.create
         input_messages = []
@@ -533,38 +553,36 @@ logger.error(f"Google GenAI Interactions API error: {e}")
         if input_messages:
             last_msg = input_messages[-1]
             if last_msg["role"] == "user":
-                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the
-                required schema."
+                last_msg["content"] += "\n\nIMPORTANT: Respond with valid JSON that matches the required schema."
 
         # Execute the interaction with JSON schema
-        RESPONSE = client.interactions.create(
-            MODEL=model,
-            INPUT=input_messages,
-            CONFIG={
+        response = client.interactions.create(
+            model=MODEL,
+            input=input_messages,
+            config={
                 "response_mime_type": "application/json",
                 "response_schema": schema,
-                "temperature": self.config.temperature,
+                "temperature": self.config.TEMPERATURE,
                 "max_output_tokens": self.config.max_tokens,
             }
         )
 
         # Extract and parse JSON response
-        CONTENT = ""
+        content = ""
         if hasattr(response, 'candidates') and response.candidates:
-            CANDIDATE = response.candidates[0]
+            candidate = response.candidates[0]
             if hasattr(candidate, 'content') and candidate.content:
-                CONTENT = candidate.content.parts[0].text if candidate.content.parts else ""
+                content = candidate.content.parts[0].text if candidate.content.parts else ""
 
         # Parse JSON into response model
         try:
-            PARSED = json.loads(content)
+            parsed = json.loads(content)
             if issubclass(response_model, BaseModel):
                 return response_model(**parsed)
             else:
                 return parsed
         except json.JSONDecodeError as e:
-    pass
-logger.error(f"Failed to parse JSON response: {e}")
+            logger.error(f"Failed to parse JSON response: {e}")
             logger.error(f"Raw content: {content}")
             raise ValueError(f"Invalid JSON response from model: {e}")
 
@@ -572,7 +590,7 @@ logger.error(f"Failed to parse JSON response: {e}")
 def create_agent_executor(
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
-    TEMPERATURE: FLOAT = 0.7,
+    TEMPERATURE: float = 0.7,
     **kwargs,
 ) -> AgentExecutor:
     """Factory function to create agent executor.
@@ -586,12 +604,11 @@ def create_agent_executor(
     Returns:
         AgentExecutor instance
     """
-    CONFIG = AgentConfig(
-        PROVIDER=provider,
-        MODEL=model,
-        TEMPERATURE=temperature,
+    config = AgentConfig(
+        provider=provider,
+        model=model,
+        TEMPERATURE=TEMPERATURE,
         **kwargs,
     )
 
     return AgentExecutor(config)
-

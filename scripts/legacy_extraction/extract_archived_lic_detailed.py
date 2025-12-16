@@ -22,16 +22,11 @@ SOVEREIGN_ROOTS = {
 
 
 def get_existing_filenames() -> Set[str]:
-    """Docstring."""
+    """Get set of all Python filenames in sovereign codebase."""
+    existing = set()
+    repo_root = Path(".")
 
-
-LOGGER = logging.getLogger(__name__)
-
-"""Get set of all Python filenames in sovereign codebase."""
- EXISTING = set()
-  repo_root = Path(".")
-
-   for root in SOVEREIGN_ROOTS:
+    for root in SOVEREIGN_ROOTS:
         root_path = repo_root / root
         if root_path.exists():
             for py_file in root_path.rglob("*.py"):
@@ -41,13 +36,16 @@ LOGGER = logging.getLogger(__name__)
     return existing
 
 
+LOGGER = logging.getLogger(__name__)
+
+
 def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
     """Analyze legacy files and categorize them."""
     source_dir = Path("archives/legacy_lic")
     existing_filenames = get_existing_filenames()
 
     net_incremental = []
-    DUPLICATES = []
+    duplicates = []
     all_files = []
 
     # Scan all Python files in legacy_lic
@@ -55,7 +53,7 @@ def analyze_legacy_files() -> Tuple[List[str], List[str], List[str]]:
         if "__pycache__" in py_file.parts or ".git" in py_file.parts:
             continue
 
-        FILENAME = py_file.name
+        filename = py_file.name
         all_files.append(filename)
 
         if filename in existing_filenames:
@@ -84,7 +82,7 @@ def extract_net_incremental() -> None:
         if "__pycache__" in py_file.parts or ".git" in py_file.parts:
             continue
 
-        FILENAME = py_file.name
+        filename = py_file.name
 
         if filename not in existing_filenames:
             # Copy to staging
@@ -104,7 +102,7 @@ if __name__ == "__main__":
         for f in sorted(net_incremental):
             # logger.info(f"  - {f}")
             pass
-        EXTRACTED = extract_net_incremental()
+        extracted = extract_net_incremental()
 
     else:
         # logger.info("\nNo net incremental files to extract")
@@ -113,4 +111,3 @@ if __name__ == "__main__":
             for f in sorted(set(duplicates)):
                 # logger.info(f"  - {f}")
                 pass
-

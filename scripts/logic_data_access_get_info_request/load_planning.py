@@ -8,6 +8,8 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 import logging
 from datetime import datetime
 from enum import Enum
+from dataclasses import dataclass, field
+from typing import Dict, Any, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,7 +70,7 @@ class LoadPlan:
     load_strategy: LoadStrategy
     sources: List[LoadSource]
     transformations: List[LoadTransformation] = field(default_factory=list)
-    DESTINATION: STR = ""
+    DESTINATION: str = ""
     batch_size: int = 1000
     parallel_workers: int = 1
     retry_attempts: int = 3
@@ -104,8 +106,8 @@ class ScriptsLoadPlanner:
     """Planner for scripts data loading operations."""
 
     def __init__(self, config: Optional[LoadPlanningConfig] = None):
-        SELF.CONFIG = config or LoadPlanningConfig()
-        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
+        self.config = config or LoadPlanningConfig()
+        self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.setLevel(self.config.log_level)
 
     def plan_load(self, load_request: Dict[str, Any]) -> LoadPlanningResult:
@@ -125,10 +127,10 @@ class ScriptsLoadPlanner:
             self._validate_request(load_request)
 
             # Parse load sources
-            SOURCES = self._parse_sources(load_request)
+            sources = self._parse_sources(load_request)
 
             # Parse transformations
-            TRANSFORMATIONS = self._parse_transformations(load_request)
+            transformations = self._parse_transformations(load_request)
 
             # Create load plan
             load_plan = self._create_load_plan(
@@ -144,13 +146,13 @@ class ScriptsLoadPlanner:
             resource_requirements = self._calculate_resource_requirements(
                 load_plan)
 
-            RESULT = LoadPlanningResult(
-                SUCCESS=True,
+            result = LoadPlanningResult(
+                success=True,
                 load_plan=load_plan,
                 estimated_duration=estimated_duration,
                 data_volume_estimate=data_volume,
                 resource_requirements=resource_requirements,
-                METADATA={
+                metadata={
                     "planned_at": datetime.utcnow().isoformat(),
                     "plan_name": load_request.get("plan_name"),
                     "source_count": len(sources),
@@ -158,17 +160,15 @@ class ScriptsLoadPlanner:
                 }
             )
 
-            self.logger.info(f"Successfully planned load: {len(sources)} sources,
-                             {estimated_duration}s estimated")
+            self.logger.info(f"Successfully planned load: {len(sources)} sources, {estimated_duration}s estimated")
             return result
 
         except Exception as e:
-    pass
-self.logger.error(f"Load planning failed: {str(e)}")
+            self.logger.error(f"Load planning failed: {str(e)}")
             return LoadPlanningResult(
-                SUCCESS=False,
-                ERRORS=[str(e)],
-                METADATA={
+                success=False,
+                errors=[str(e)],
+                metadata={
                     "failed_at": datetime.utcnow().isoformat(),
                     "planner": "ScriptsLoadPlanner"
                 }
@@ -187,7 +187,7 @@ self.logger.error(f"Load planning failed: {str(e)}")
 
     def _parse_sources(self, request: Dict[str, Any]) -> List[LoadSource]:
         """Parse load sources from request."""
-        SOURCES = []
+        sources = []
         raw_sources = request.get("sources", [])
 
         for raw_source in raw_sources:
@@ -209,20 +209,20 @@ self.logger.error(f"Load planning failed: {str(e)}")
                     "binary": DataFormat.BINARY
                 }
 
-                SOURCE = LoadSource(
+                source = LoadSource(
                     id=raw_source.get("id", f"source_{len(sources)}"),
-                    NAME=raw_source.get("name", "unnamed"),
+                    name=raw_source.get("name", "unnamed"),
                     source_type=source_mapping.get(
                         raw_source.get("source_type", "file_system"),
                         DataSourceType.FILE_SYSTEM
                     ),
-                    LOCATION=raw_source.get("location", ""),
-                    FORMAT=format_mapping.get(
+                    location=raw_source.get("location", ""),
+                    format=format_mapping.get(
                         raw_source.get("format", "json"),
                         DataFormat.JSON
                     ),
-                    CREDENTIALS=raw_source.get("credentials", {}),
-                    METADATA=raw_source.get("metadata", {})
+                    credentials=raw_source.get("credentials", {}),
+                    metadata=raw_source.get("metadata", {})
                 )
                 sources.append(source)
 
@@ -237,19 +237,19 @@ self.logger.error(f"Load planning failed: {str(e)}")
 
     def _parse_transformations(self, request: Dict[str, Any]) -> List[LoadTransformation]:
         """Parse load transformations from request."""
-        TRANSFORMATIONS = []
+        transformations = []
         raw_transformations = request.get("transformations", [])
 
         for raw_transform in raw_transformations:
             if isinstance(raw_transform, dict):
-                TRANSFORMATION = LoadTransformation(
+                transformation = LoadTransformation(
                     id=raw_transform.get(
                         "id", f"transform_{len(transformations)}"),
-                    NAME=raw_transform.get("name", "unnamed"),
+                    name=raw_transform.get("name", "unnamed"),
                     transformation_type=raw_transform.get(
                         "transformation_type", "filter"),
-                    PARAMETERS=raw_transform.get("parameters", {}),
-                    CONDITIONS=raw_transform.get("conditions", [])
+                    parameters=raw_transform.get("parameters", {}),
+                    conditions=raw_transform.get("conditions", [])
                 )
                 transformations.append(transformation)
 
@@ -278,17 +278,17 @@ self.logger.error(f"Load planning failed: {str(e)}")
         return LoadPlan(
             id=request.get(
                 "plan_id", f"plan_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"),
-            NAME=request.get("plan_name", "unnamed_plan"),
+            name=request.get("plan_name", "unnamed_plan"),
             load_strategy=load_strategy,
-            SOURCES=sources,
-            TRANSFORMATIONS=transformations,
+            sources=sources,
+            transformations=transformations,
             DESTINATION=request.get("destination", ""),
             batch_size=request.get(
                 "batch_size", self.config.default_batch_size),
             parallel_workers=request.get("parallel_workers", 1),
             retry_attempts=request.get("retry_attempts", 3),
             timeout_seconds=request.get("timeout_seconds", 300),
-            METADATA=request.get("metadata", {})
+            metadata=request.get("metadata", {})
         )
 
     def _estimate_load_duration(self, plan: LoadPlan) -> int:
@@ -308,10 +308,9 @@ self.logger.error(f"Load planning failed: {str(e)}")
         parallel_factor = max(0.5, 1 / plan.parallel_workers)
 
         total_duration = (base_duration + source_duration +
-                          transform_duration) * batch_factor * par
-    allel_factor
+                          transform_duration) * batch_factor * parallel_factor
 
-    return int(total_duration)
+        return int(total_duration)
 
     def _estimate_data_volume(self, plan: LoadPlan) -> int:
         """Estimate data volume in bytes."""
@@ -322,9 +321,9 @@ self.logger.error(f"Load planning failed: {str(e)}")
             if source.source_type == DataSourceType.FILE_SYSTEM:
                 if source.format == DataFormat.JSON:
                     total_volume += 1024 * 1024  # 1MB estimate
-                ELIF SOURCE.FORMAT == DataFormat.CSV:
+                elif source.format == DataFormat.CSV:
                     total_volume += 2 * 1024 * 1024  # 2MB estimate
-                ELIF SOURCE.FORMAT == DataFormat.PARQUET:
+                elif source.format == DataFormat.PARQUET:
                     total_volume += 512 * 1024  # 512KB estimate
             elif source.source_type == DataSourceType.DATABASE:
                 total_volume += 5 * 1024 * 1024  # 5MB estimate
@@ -335,7 +334,7 @@ self.logger.error(f"Load planning failed: {str(e)}")
 
     def _calculate_resource_requirements(self, plan: LoadPlan) -> Dict[str, Any]:
         """Calculate resource requirements for the load plan."""
-        REQUIREMENTS = {
+        requirements = {
             "cpu_cores": 1,
             "memory_mb": 512,
             "disk_mb": self._estimate_data_volume(plan) // (1024 * 1024),
@@ -353,8 +352,7 @@ self.logger.error(f"Load planning failed: {str(e)}")
         # Network requirements for remote sources
         remote_sources = [
             s for s in plan.sources
-            if s.source_type in [DataSourceType.API, DataSourceType.CLOUD_STORAGE, DataSourceType.DA
-                                 TABASE]
+            if s.source_type in [DataSourceType.API, DataSourceType.CLOUD_STORAGE, DataSourceType.DATABASE]
         ]
         if remote_sources:
             # 10 Mbps per remote so...
@@ -366,12 +364,11 @@ self.logger.error(f"Load planning failed: {str(e)}")
 
 
 def create_scripts_load_planner(
-    """Docstring."""
     enable_parallel_loading: bool = True,
     enable_validation: bool = True,
-        **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
+    **kwargs: Dict[str, object]) -> ScriptsLoadPlanner:
     """Create a configured scripts load planner."""
-    CONFIG = LoadPlanningConfig(
+    config = LoadPlanningConfig(
         enable_parallel_loading=enable_parallel_loading,
         enable_validation=enable_validation,
         **kwargs
@@ -382,7 +379,6 @@ def create_scripts_load_planner(
 
 
 def plan_scripts_load(
-    """Docstring."""
     plan_name: str,
     sources: List[Dict[str, Any]],
     load_strategy: str = "batch_load",
@@ -402,7 +398,7 @@ def plan_scripts_load(
         Dict: Planning result with load plan and resource requirements
     """
     # Build request
-    REQUEST = {
+    request = {
         "plan_name": plan_name,
         "sources": sources,
         "load_strategy": load_strategy,
@@ -411,8 +407,8 @@ def plan_scripts_load(
 
     # Create planner and execute
     planner_config = LoadPlanningConfig(**config) if config else None
-    PLANNER = ScriptsLoadPlanner(planner_config)
-    RESULT = planner.plan_load(request)
+    planner = ScriptsLoadPlanner(planner_config)
+    result = planner.plan_load(request)
 
     # Convert result to dict for JSON serialization
     return {
@@ -457,4 +453,3 @@ def plan_scripts_load(
         "errors": result.errors,
         "metadata": result.metadata
     }
-

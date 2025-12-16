@@ -16,6 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 import re
 from pathlib import Path
+from typing import List, Optional, Set, Dict
 
 
 class ShimChainCleaner:
@@ -28,7 +29,7 @@ class ShimChainCleaner:
             r'from \.(\w+_impl(?:_impl)*) import \*')
         self.deleted_files = []
         self.updated_files = []
-        SELF.ERRORS = []
+        self.errors = []
 
     def is_shim_file(self, file_path: Path) -> bool:
         """Check if a file is likely a shim based on size and content."""
@@ -40,7 +41,7 @@ class ShimChainCleaner:
             return False
 
         try:
-            CONTENT = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding='utf-8')
 
             # Check for shim signature
             if "Backward compatibility shim" in content and "re-export all components" in content:
@@ -48,7 +49,7 @@ class ShimChainCleaner:
 
             # Check for simple import pattern
             if self.import_pattern.search(content):
-                LINES = content.strip().split('\n')
+                lines = content.strip().split('\n')
                 # If file has mostly comments and one import, it's a shim
                 code_lines = [l for l in lines if l.strip(
                 ) and not l.strip().startswith('#')]
@@ -56,15 +57,15 @@ class ShimChainCleaner:
                     return True
 
         except Exception as e:
-    pass
-logger.warning(f"Ignored error: {e}")
+            pass
+            LOGGER.warning(f"Ignored error: {e}")
 
-    return False
+        return False
 
     def find_shim_chains(self, directory: Path) -> List[List[Path]]:
         """Find all shim chains in a directory."""
-        CHAINS = []
-        PROCESSED = set()
+        chains = []
+        processed = set()
 
         # Get all Python files
         py_files = list(directory.rglob("*.py"))
@@ -76,10 +77,10 @@ logger.warning(f"Ignored error: {e}")
                 continue
 
             # Extract base name (remove _impl suffixes)
-            MATCH = re.match(
+            match = re.match(
                 r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
             if match:
-                BASE = match.group(1)
+                base = match.group(1)
                 if base not in base_groups:
                     base_groups[base] = []
                 base_groups[base].append(file_path)
@@ -88,7 +89,7 @@ logger.warning(f"Ignored error: {e}")
         for base, files in base_groups.items():
             if len(files) > 1:
                 # Sort by number of _impl suffixes
-                FILES.SORT(KEY=lambda f: f.name.count('_impl'))
+                files.sort(key=lambda f: f.name.count('_impl'))
 
                 # Check if it's a chain (all are shims except possibly the last)
                 if all(self.is_shim_file(f) for f in files[:-1]):
@@ -99,15 +100,15 @@ logger.warning(f"Ignored error: {e}")
 
     def trace_chain_to_implementation(self, chain: List[Path]) -> Optional[Path]:
         """Follow the chain to find the actual implementation."""
-        CURRENT = chain[0]
-        VISITED = set()
+        current = chain[0]
+        visited = set()
 
         while current and current not in visited:
             visited.add(current)
 
             try:
-                CONTENT = current.read_text(encoding='utf-8')
-                MATCH = self.import_pattern.search(content)
+                content = current.read_text(encoding='utf-8')
+                match = self.import_pattern.search(content)
 
                 if match:
                     imported_name = match.group(1) + '.py'
@@ -117,20 +118,20 @@ logger.warning(f"Ignored error: {e}")
                         # Check if this is the real implementation
                         if not self.is_shim_file(next_file):
                             return next_file
-                        CURRENT = next_file
+                        current = next_file
                         continue
                     else:
                         # Try to find the file in subdirectories
                         for candidate in current.parent.rglob(imported_name):
                             if not self.is_shim_file(candidate):
                                 return candidate
-                        CURRENT = current.parent / imported_name
+                        current = current.parent / imported_name
                 else:
                     break
 
             except Exception as e:
-    pass
-self.errors.append(f"Error reading {current}: {e}")
+                pass
+                self.errors.append(f"Error reading {current}: {e}")
                 break
 
         return None
@@ -141,7 +142,7 @@ self.errors.append(f"Error reading {current}: {e}")
         parent_dir = file_path.parent
 
         # Search for imports of this file
-        PATTERN = re.compile(
+        pattern = re.compile(
             rf'from [^.]*(?:{file_name})|import [^.]*(?:{file_name})')
 
         for py_file in self.repo_root.rglob("*.py"):
@@ -150,14 +151,14 @@ self.errors.append(f"Error reading {current}: {e}")
                 continue
 
             try:
-                CONTENT = py_file.read_text(encoding='utf-8')
+                content = py_file.read_text(encoding='utf-8')
                 if pattern.search(content):
                     return True
             except Exception as e:
-    pass
-logger.warning(f"Ignored error: {e}")
+                pass
+                LOGGER.warning(f"Ignored error: {e}")
 
-    return False
+        return False
 
     def clean_chain(self, chain: List[Path]) -> bool:
         """Clean a single shim chain."""
@@ -165,7 +166,7 @@ logger.warning(f"Ignored error: {e}")
             return False
 
         # Find the actual implementation
-        IMPLEMENTATION = self.trace_chain_to_implementation(chain)
+        implementation = self.trace_chain_to_implementation(chain)
         if not implementation:
             self.errors.append(
                 f"Could not find implementation for chain starting with {chain[0]}")
@@ -174,16 +175,11 @@ logger.warning(f"Ignored error: {e}")
         # Update the root shim to import directly
         root_shim = chain[0]
         try:
-            CONTENT = root_shim.read_text(encoding='utf-8')
+            content = root_shim.read_text(encoding='utf-8')
 
             # Replace the import
-
-
-
-
-
-# # new_import = f"from .{implementation.stem} import *"
-            CONTENT = re.sub(
+            new_import = f"from .{implementation.stem} import *"
+            content = re.sub(
                 r'from \.\w+_impl(?:_impl)* import \*', new_import, content)
 
             # Write back
@@ -191,8 +187,8 @@ logger.warning(f"Ignored error: {e}")
             self.updated_files.append(root_shim)
 
         except Exception as e:
-    pass
-self.errors.append(f"Error updating {root_shim}: {e}")
+            pass
+            self.errors.append(f"Error updating {root_shim}: {e}")
             return False
 
         # Delete intermediate shims
@@ -203,8 +199,8 @@ self.errors.append(f"Error updating {root_shim}: {e}")
                     shim.unlink()
                     self.deleted_files.append(shim)
                 except Exception as e:
-    pass
-self.errors.append(f"Error deleting {shim}: {e}")
+                    pass
+                    self.errors.append(f"Error deleting {shim}: {e}")
             else:
                 self.errors.append(f"Skipping {shim} - imported externally")
 
@@ -212,9 +208,9 @@ self.errors.append(f"Error deleting {shim}: {e}")
 
     def clean_directory(self, directory: Path) -> Dict[str, int]:
         """Clean all shim chains in a directory."""
-        CHAINS = self.find_shim_chains(directory)
+        chains = self.find_shim_chains(directory)
 
-        RESULTS = {
+        results = {
             "chains_found": len(chains),
             "chains_cleaned": 0,
             "files_deleted": 0,
@@ -228,7 +224,7 @@ self.errors.append(f"Error deleting {shim}: {e}")
 
         results["files_deleted"] = len(self.deleted_files)
         results["files_updated"] = len(self.updated_files)
-        RESULTS["ERRORS"] = len(self.errors)
+        results["errors"] = len(self.errors)
 
         return results
 
@@ -238,17 +234,17 @@ self.errors.append(f"Error deleting {shim}: {e}")
             exclude_dirs = {'.git', '__pycache__',
                             '.pytest_cache', 'node_modules'}
 
-        RESULTS = {}
+        results = {}
 
         for item in self.repo_root.iterdir():
             if item.is_dir() and item.name not in exclude_dirs:
-                logger.info(f"\nCleaning directory: {item.name}")
-                RESULTS[ITEM.NAME] = self.clean_directory(item)
+                LOGGER.info(f"\nCleaning directory: {item.name}")
+                results[item.name] = self.clean_directory(item)
 
                 # Reset counters for next directory
                 self.deleted_files = []
                 self.updated_files = []
-                SELF.ERRORS = []
+                self.errors = []
 
         return results
 
@@ -256,9 +252,9 @@ self.errors.append(f"Error deleting {shim}: {e}")
 def main():
     """Main entry point."""
     repo_root = Path(__file__).parent.parent
-    CLEANER = ShimChainCleaner(repo_root)
+    cleaner = ShimChainCleaner(repo_root)
 
-    logger.info("Scanning for shim chains...")
+    LOGGER.info("Scanning for shim chains...")
     LOGGER.INFO("=" * 60)
 
     # Get directories to check
@@ -270,14 +266,14 @@ def main():
                                                'node_modules'}:
             dirs_to_check.append(item.name)
 
-    logger.info(f"Found {len(dirs_to_check)} directories to check")
+    LOGGER.info(f"Found {len(dirs_to_check)} directories to check")
 
     # Clean all directories
-    RESULTS = cleaner.clean_all()
+    results = cleaner.clean_all()
 
     # Print summary
-    LOGGER.INFO("\N" + "=" * 60)
-    logger.info("CLEANUP SUMMARY")
+    LOGGER.INFO("\n" + "=" * 60)
+    LOGGER.info("CLEANUP SUMMARY")
     LOGGER.INFO("=" * 60)
 
     total_chains = 0
@@ -288,13 +284,13 @@ def main():
 
     for dir_name, result in results.items():
         if result["chains_found"] > 0:
-            logger.info(f"\n{dir_name}:")
-            logger.info(f"  Chains found: {result['chains_found']}")
-            logger.info(f"  Chains cleaned: {result['chains_cleaned']}")
-            logger.info(f"  Files deleted: {result['files_deleted']}")
-            logger.info(f"  Files updated: {result['files_updated']}")
+            LOGGER.info(f"\n{dir_name}:")
+            LOGGER.info(f"  Chains found: {result['chains_found']}")
+            LOGGER.info(f"  Chains cleaned: {result['chains_cleaned']}")
+            LOGGER.info(f"  Files deleted: {result['files_deleted']}")
+            LOGGER.info(f"  Files updated: {result['files_updated']}")
             if result['errors'] > 0:
-                logger.info(f"  Errors: {result['errors']}")
+                LOGGER.info(f"  Errors: {result['errors']}")
 
             total_chains += result['chains_found']
             total_cleaned += result['chains_cleaned']
@@ -302,20 +298,19 @@ def main():
             total_updated += result['files_updated']
             total_errors += result['errors']
 
-    LOGGER.INFO("\N" + "=" * 60)
-    logger.info("TOTALS:")
-    logger.info(f"  Total chains found: {total_chains}")
-    logger.info(f"  Total chains cleaned: {total_cleaned}")
-    logger.info(f"  Total files deleted: {total_deleted}")
-    logger.info(f"  Total files updated: {total_updated}")
-    logger.info(f"  Total errors: {total_errors}")
+    LOGGER.INFO("\n" + "=" * 60)
+    LOGGER.info("TOTALS:")
+    LOGGER.info(f"  Total chains found: {total_chains}")
+    LOGGER.info(f"  Total chains cleaned: {total_cleaned}")
+    LOGGER.info(f"  Total files deleted: {total_deleted}")
+    LOGGER.info(f"  Total files updated: {total_updated}")
+    LOGGER.info(f"  Total errors: {total_errors}")
 
     if cleaner.errors:
-        logger.info("\nERRORS:")
+        LOGGER.info("\nERRORS:")
         for error in cleaner.errors:
-            logger.info(f"  - {error}")
+            LOGGER.info(f"  - {error}")
 
 
 if __name__ == "__main__":
     main()
-

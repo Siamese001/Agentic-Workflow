@@ -21,7 +21,7 @@ def get_python_files(root_dir: str = ".") -> List[str]:
 
     for root, dirs, files in os.walk(root_dir):
         # Remove excluded directories from traversal
-        DIRS[:] = [d for d in dirs if d not in exclude_dirs]
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
 
         for file in files:
             if file.endswith(".py"):
@@ -37,22 +37,22 @@ def fix_empty_except_blocks(file_path: str) -> bool:
     """Fix Key 04: Replace empty except blocks with pass statements."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            CONTENT = f.read()
+            content = f.read()
 
-        MODIFIED = False
+        modified = False
 
         # Simple regex-based fix for empty except blocks
-        PATTERN = r'except\s+([^:]+):\s*\n\s*\n'
-        REPLACEMENT = r'\1: pass
+        pattern = r'except\s+([^:]+):\s*\n\s*\n'
+        replacement = r'\1: pass\n'
         if re.search(pattern, content):
-            CONTENT = re.sub(pattern, replacement, content)
-            MODIFIED = True
+            content = re.sub(pattern, replacement, content)
+            modified = True
 
-        PATTERN2 = r'except Exception: \s*\n\s*\n'
-        REPLACEMENT2 = 'except Exception: pass
+        pattern2 = r'except Exception: \s*\n\s*\n'
+        replacement2 = 'except Exception: pass\n'
         if re.search(pattern2, content):
-            CONTENT = re.sub(pattern2, replacement2, content)
-            MODIFIED = True
+            content = re.sub(pattern2, replacement2, content)
+            modified = True
 
         if modified:
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -62,7 +62,7 @@ def fix_empty_except_blocks(file_path: str) -> bool:
         return False
 
     except Exception as e:
-logger.info(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 
@@ -70,14 +70,14 @@ def fix_bare_except(file_path: str) -> bool:
     """Fix Key 05: Replace bare except with except Exception."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            CONTENT = f.read()
+            content = f.read()
 
         # Replace bare except with except Exception
-        PATTERN = r'except Exception: \s*'
-        REPLACEMENT = 'except Exception: '
+        pattern = r'except Exception: \s*'
+        replacement = 'except Exception: '
 
         if re.search(pattern, content):
-            CONTENT = re.sub(pattern, replacement, content)
+            content = re.sub(pattern, replacement, content)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
             return True
@@ -85,7 +85,7 @@ def fix_bare_except(file_path: str) -> bool:
         return False
 
     except Exception as e:
-logger.info(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 
@@ -93,15 +93,15 @@ def fix_trailing_whitespace(file_path: str) -> bool:
     """Fix Key 11: Remove trailing whitespace."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            LINES = f.readlines()
+            lines = f.readlines()
 
-        MODIFIED = False
+        modified = False
         new_lines = []
 
         for line in lines:
-            STRIPPED = line.rstrip()
+            stripped = line.rstrip()
             if stripped != line.rstrip('\n\r'):
-                MODIFIED = True
+                modified = True
             new_lines.append(stripped + '\n')
 
         if modified:
@@ -112,7 +112,7 @@ def fix_trailing_whitespace(file_path: str) -> bool:
         return False
 
     except Exception as e:
-logger.info(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 
@@ -120,7 +120,7 @@ def fix_missing_newline(file_path: str) -> bool:
     """Fix Key 12: Ensure files end with newline."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            CONTENT = f.read()
+            content = f.read()
 
         if content and not content.endswith('\n'):
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -130,7 +130,7 @@ def fix_missing_newline(file_path: str) -> bool:
         return False
 
     except Exception as e:
-logger.info(f"Error fixing {file_path}: {e}")
+        logger.info(f"Error fixing {file_path}: {e}")
         return False
 
 
@@ -139,7 +139,7 @@ def main():
     root_dir = "."
     python_files = get_python_files(root_dir)
 
-    FIXES = {
+    fixes = {
         "Key 04 - Empty except blocks": fix_empty_except_blocks,
         "Key 05 - Bare except": fix_bare_except,
         "Key 11 - Trailing whitespace": fix_trailing_whitespace,
@@ -162,4 +162,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

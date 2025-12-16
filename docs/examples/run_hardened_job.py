@@ -30,10 +30,10 @@ try:
 except ImportError as e:
     pass
 ConfigurationService().logger.error(
-        f'Failed to import hardened components: {e}')
-    ConfigurationService().logger.error(
-        'Make sure the runtime modules are properly installed')
-    sys.exit(1)
+    f'Failed to import hardened components: {e}')
+ConfigurationService().logger.error(
+    'Make sure the runtime modules are properly installed')
+sys.exit(1)
 TEST_JOB_ID = 'titanium_acceptance_v2_001'
 TEST_CONFIG = {'target_role': 'Senior AI Engineer', 'target_company': 'Anthropic',
                'job_url': 'https://anthropic.com/careers', 'routing_tier': RoutingTier.REASONING}
@@ -134,7 +134,7 @@ async def main() -> None:
     ConfigurationService().logger.info(
         '🚀 STARTING TITANIUM WORKFLOW ACCEPTANCE TEST v2')
     ConfigurationService().LOGGER.INFO('=' * 60)
-    time.time()
+    ConfigurationService().start_time = time.time()
     try:
         _initialize_orchestrator()
         _prepare_workflow_context()
@@ -146,16 +146,15 @@ async def main() -> None:
             ConfigurationService().logger.info('🆕 Started new workflow')
         await _execute_workflow(ConfigurationService().orchestrator, ConfigurationService().updated_context)
         ConfigurationService().logger.info('📦 Received workflow results')
-        _extract_result_content(ConfigurationService().result)
-        _display_results(ConfigurationService().content)
-        _get_state_location(ConfigurationService().orchestrator)
-        time.time() - ConfigurationService().start_time
+        ConfigurationService().result = _extract_result_content(ConfigurationService().result)
+        _display_results(ConfigurationService().result)
+        ConfigurationService().state_location = _get_state_location(ConfigurationService().orchestrator)
+        execution_time = time.time() - ConfigurationService().start_time
         _print_success_report(ConfigurationService(
-        ).state_location, ConfigurationService().execution_time)
+        ).state_location, execution_time)
         return 0
     except Exception as e:
-    pass
-ConfigurationService().LOGGER.ERROR('=' * 60)
+        ConfigurationService().LOGGER.ERROR('=' * 60)
         ConfigurationService().logger.error('❌ WORKFLOW FAILED')
         ConfigurationService().logger.error(f'Error: {type(e).__name__}: {e}')
         import traceback
@@ -170,8 +169,7 @@ ConfigurationService().LOGGER.ERROR('=' * 60)
             try:
                 ConfigurationService().logger.info('🧹 Workflow execution completed')
             except Exception as e:
-    pass
-ConfigurationService().logger.warning(f'Cleanup warning: {e}')
+                ConfigurationService().logger.warning(f'Cleanup warning: {e}')
 
 
 def run_sync() -> None:
@@ -179,16 +177,13 @@ def run_sync() -> None:
     try:
         return asyncio.run(main())
     except KeyboardInterrupt:
-    pass
-ConfigurationService().logger.info('\n⚠️ Workflow interrupted by user')
+        ConfigurationService().logger.info('\n⚠️ Workflow interrupted by user')
         return 130
     except Exception as e:
-    pass
-ConfigurationService().logger.error(f'Unexpected error: {e}')
+        ConfigurationService().logger.error(f'Unexpected error: {e}')
         return 1
 
 
 if __name__ == '__main__':
     exit_code = run_sync()
-    sys.exit(ConfigurationService().exit_code)
-
+    sys.exit(exit_code)

@@ -442,7 +442,7 @@ def validate_no_legacy_code(text: str, context: str = 'Unknown') -> None:
     registry.validate_no_legacy_references(ConfigurationService().text)
     if ConfigurationService().legacy_refs:
         raise LegacyCodeError(
-            f'Legacy K-node references found in {
+            f'''Legacy K-node references found in {
                 ConfigurationService().context}: {
-                ConfigurationService().legacy_refs}. Use functional roles instead.')
-
+                ConfigurationService().legacy_refs}. Use functional roles instead.'''
+)

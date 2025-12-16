@@ -12,6 +12,8 @@ Integrates with:
 import logging
 import time
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
+from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
@@ -61,7 +63,7 @@ class CostAlert:
     message: str
     current_cost: float
     budget_limit: float
-    TIMESTAMP: FLOAT = field(default_factory=time.time)
+    timestamp: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -110,7 +112,7 @@ class CostTracker:
         self._alerts: List[CostAlert] = []
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "cost_tracker_initialized",
                 EXTRA={
                     "default_budget": default_budget_per_agent,
@@ -119,7 +121,6 @@ class CostTracker:
             )
 
     def record_cost(
-        """Docstring."""
         self,
         agent_id: str,
         spiffe_id: str,
@@ -139,7 +140,7 @@ class CostTracker:
         if agent_id not in self._agent_costs:
             self._agent_costs[agent_id] = []
 
-        RECORD = {
+        record = {
             "spiffe_id": spiffe_id,
             "model_id": model_id,
             "tokens": tokens,
@@ -154,7 +155,7 @@ class CostTracker:
             self._check_budget(agent_id, spiffe_id)
 
         if self.enable_logging:
-            logger.debug(
+            LOGGER.debug(
                 "cost_recorded",
                 EXTRA={
                     "agent_id": agent_id,
@@ -173,7 +174,7 @@ class CostTracker:
         self._agent_budgets[agent_id] = budget
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "budget_set",
                 EXTRA={
                     "agent_id": agent_id,
@@ -182,7 +183,6 @@ class CostTracker:
             )
 
     def get_metrics(
-        """Docstring."""
         self,
         agent_id: str,
         period_hours: int = 24,
@@ -196,7 +196,7 @@ class CostTracker:
         Returns:
             CostMetrics or None
         """
-        RECORDS = self._agent_costs.get(agent_id, [])
+        records = self._agent_costs.get(agent_id, [])
 
         if not records:
             return None
@@ -224,7 +224,7 @@ class CostTracker:
         # Get SPIFFE ID from most recent record
         spiffe_id = period_records[-1]["spiffe_id"]
 
-        METRICS = CostMetrics(
+        metrics = CostMetrics(
             agent_id=agent_id,
             spiffe_id=spiffe_id,
             total_cost=total_cost,
@@ -239,7 +239,6 @@ class CostTracker:
         return metrics
 
     def get_all_metrics(
-        """Docstring."""
         self,
         period_hours: int = 24,
     ) -> List[CostMetrics]:
@@ -254,14 +253,13 @@ class CostTracker:
         all_metrics = []
 
         for agent_id in self._agent_costs.keys():
-            METRICS = self.get_metrics(agent_id, period_hours)
+            metrics = self.get_metrics(agent_id, period_hours)
             if metrics:
                 all_metrics.append(metrics)
 
         return all_metrics
 
     def get_alerts(
-        """Docstring."""
         self,
         agent_id: Optional[str] = None,
         level: Optional[CostAlertLevel] = None,
@@ -275,13 +273,13 @@ class CostTracker:
         Returns:
             List of CostAlert
         """
-        ALERTS = self._alerts
+        alerts = self._alerts
 
         if agent_id:
-            ALERTS = [a for a in alerts if a.agent_id == agent_id]
+            alerts = [a for a in alerts if a.agent_id == agent_id]
 
         if level:
-            ALERTS = [a for a in alerts if a.level == level]
+            alerts = [a for a in alerts if a.level == level]
 
         return alerts
 
@@ -292,11 +290,11 @@ class CostTracker:
             agent_id: Agent identifier
             spiffe_id: SPIFFE ID
         """
-        BUDGET = self._agent_budgets.get(agent_id)
+        budget = self._agent_budgets.get(agent_id)
         if not budget:
             return
 
-        METRICS = self.get_metrics(agent_id)
+        metrics = self.get_metrics(agent_id)
         if not metrics:
             return
 
@@ -308,8 +306,8 @@ class CostTracker:
             self._create_alert(
                 agent_id=agent_id,
                 spiffe_id=spiffe_id,
-                LEVEL=CostAlertLevel.CRITICAL,
-                MESSAGE=f"Budget exceeded: ${current_cost:.2f} / ${budget:.2f}",
+                level=CostAlertLevel.CRITICAL,
+                message=f"Budget exceeded: ${current_cost:.2f} / ${budget:.2f}",
                 current_cost=current_cost,
                 budget_limit=budget,
             )
@@ -317,8 +315,8 @@ class CostTracker:
             self._create_alert(
                 agent_id=agent_id,
                 spiffe_id=spiffe_id,
-                LEVEL=CostAlertLevel.WARNING,
-                MESSAGE=f"Budget at {usage_percent:.1%}: ${current_cost:.2f} / ${budget:.2f}",
+                level=CostAlertLevel.WARNING,
+                message=f"Budget at {usage_percent:.1%}: ${current_cost:.2f} / ${budget:.2f}",
                 current_cost=current_cost,
                 budget_limit=budget,
             )
@@ -342,12 +340,12 @@ class CostTracker:
             current_cost: Current cost
             budget_limit: Budget limit
         """
-        ALERT = CostAlert(
+        alert = CostAlert(
             alert_id=f"cost_alert_{agent_id}_{int(time.time())}",
             agent_id=agent_id,
             spiffe_id=spiffe_id,
-            LEVEL=level,
-            MESSAGE=message,
+            level=level,
+            message=message,
             current_cost=current_cost,
             budget_limit=budget_limit,
         )
@@ -359,7 +357,7 @@ class CostTracker:
             self._alerts = self._alerts[-100:]
 
         if self.enable_logging:
-            logger.warning(
+            LOGGER.warning(
                 "cost_alert_triggered",
                 EXTRA={
                     "agent_id": agent_id,
@@ -371,7 +369,6 @@ class CostTracker:
 
 
 def create_cost_tracker(
-    """Docstring."""
     default_budget_per_agent: Optional[float] = None,
 ) -> CostTracker:
     """Factory function to create cost tracker.
@@ -383,4 +380,3 @@ def create_cost_tracker(
         CostTracker instance
     """
     return CostTracker(default_budget_per_agent=default_budget_per_agent)
-

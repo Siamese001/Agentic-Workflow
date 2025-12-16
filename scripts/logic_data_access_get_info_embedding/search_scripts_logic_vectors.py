@@ -7,6 +7,10 @@ Follows the functional component pattern with proper logging.
 
 import logging
 from datetime import datetime
+from enum import Enum
+from typing import List, Dict, Any, Optional
+from dataclasses import dataclass, field
+import numpy as np
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +38,7 @@ class SearchQuery:
     query_vector: Optional[List[float]] = None
     search_mode: SearchMode = SearchMode.SEMANTIC
     top_k: int = 10
-    THRESHOLD: FLOAT = 0.7
+    THRESHOLD: float = 0.7
     filters: Dict[str, Any] = field(default_factory=dict)
     include_metadata: bool = True
 
@@ -68,7 +72,7 @@ class VectorIndexConfig:
     distance_metric: VectorDistance = VectorDistance.COSINE
     index_type: str = "hnsw"
     ef_construction: int = 200
-    M: INT = 16
+    M: int = 16
     max_elements: int = 10000
 
 
@@ -76,9 +80,9 @@ class ScriptsLogicVectorSearcher:
     """Main class for scripts logic vector search operations."""
 
     def __init__(self, config: Optional[VectorIndexConfig] = None):
-        SELF.CONFIG = config or VectorIndexConfig(
+        self.config = config or VectorIndexConfig(
             index_name="scripts_logic", dimension=1536)
-        SELF.LOGGER = logging.getLogger(self.__class__.__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
         self._index = {}
         self._vectors = {}
         self._metadata = {}
@@ -105,24 +109,24 @@ class ScriptsLogicVectorSearcher:
 
             # Perform search based on mode
             if query.search_mode == SearchMode.SEMANTIC:
-                RESULTS = self._semantic_search(query)
+                results = self._semantic_search(query)
             elif query.search_mode == SearchMode.HYBRID:
-                RESULTS = self._hybrid_search(query)
+                results = self._hybrid_search(query)
             elif query.search_mode == SearchMode.KEYWORD:
-                RESULTS = self._keyword_search(query)
+                results = self._keyword_search(query)
             else:  # EXACT
-                RESULTS = self._exact_search(query)
+                results = self._exact_search(query)
 
             # Calculate search time
             search_time = (datetime.utcnow() -
                            start_time).total_seconds() * 1000
 
             search_results = SearchResults(
-                QUERY=query,
-                RESULTS=results,
+                query=query,
+                results=results,
                 total_found=len(results),
                 search_time_ms=search_time,
-                METADATA={
+                metadata={
                     "searched_at": datetime.utcnow().isoformat(),
                     "index_name": self.config.index_name,
                     "searcher": "ScriptsLogicVectorSearcher"
@@ -136,19 +140,17 @@ class ScriptsLogicVectorSearcher:
             return search_results
 
         except Exception as e:
-    pass
-self.logger.error(f"Vector search failed: {str(e)}")
+            self.logger.error(f"Vector search failed: {str(e)}")
             return SearchResults(
-                QUERY=query,
-                RESULTS=[],
+                query=query,
+                results=[],
                 total_found=0,
                 search_time_ms=(datetime.utcnow() -
                                 start_time).total_seconds() * 1000,
-                METADATA={"error": str(e)}
+                metadata={"error": str(e)}
             )
 
     def add_vector(self,
-        """Docstring."""
         vector_id: str,
         vector: List[float],
         content: str,
@@ -168,8 +170,7 @@ self.logger.error(f"Vector search failed: {str(e)}")
         try:
             # Validate vector dimension
             if len(vector) != self.config.dimension:
-                raise ValueError(f"Vector dimension {len(vector)} != expected {self.config.dimension
-    }")
+                raise ValueError(f"Vector dimension {len(vector)} != expected {self.config.dimension}")
 
             # Store vector and metadata
             self._vectors[vector_id] = np.array(vector)
@@ -186,8 +187,7 @@ self.logger.error(f"Vector search failed: {str(e)}")
             return True
 
         except Exception as e:
-    pass
-self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
+            self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
             return False
 
     def delete_vector(self, vector_id: str) -> bool:
@@ -203,7 +203,7 @@ self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
             del self._vectors[vector_id]
             del self._metadata[vector_id]
             self._update_index()
-            self.logger.debug(f  # SQL query removed)
+            self.logger.debug(f"Deleted vector {vector_id} from index")
             return True
         return False
 
@@ -239,52 +239,51 @@ self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
 
     def _semantic_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform semantic vector search."""
-        RESULTS=[]
-        query_vector=np.array(query.query_vector)
+        results = []
+        query_vector = np.array(query.query_vector)
 
         for vector_id, vector in self._vectors.items():
             # Calculate similarity
-            SIMILARITY=self._calculate_similarity(query_vector,
-                vector,
-                self.config.distance_metric)
+            similarity = self._calculate_similarity(query_vector,
+                                                    vector,
+                                                    self.config.distance_metric)
 
-            if similarity >= query.threshold:
-                RESULT=SearchResult(
+            if similarity >= query.THRESHOLD:
+                result = SearchResult(
                     id=vector_id,
-                    CONTENT=self._metadata[vector_id]["content"],
-                    SCORE=float(similarity),
-                    METADATA=self._metadata[vector_id] if query.include_metadata else {
-                        },
-                    VECTOR=vector.tolist() if query.include_metadata else None,
-                    TIMESTAMP=datetime.fromisoformat(
+                    content=self._metadata[vector_id]["content"],
+                    score=float(similarity),
+                    metadata=self._metadata[vector_id] if query.include_metadata else {},
+                    vector=vector.tolist() if query.include_metadata else None,
+                    timestamp=datetime.fromisoformat(
                         self._metadata[vector_id]["timestamp"])
                 )
                 results.append(result)
 
         # Sort by score and limit to top_k
-        RESULTS.SORT(KEY=lambda x: x.score, reverse=True)
+        results.sort(key=lambda x: x.score, reverse=True)
         return results[:query.top_k]
 
     def _hybrid_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform hybrid search combining semantic and keyword matching."""
         # Get semantic results
-        semantic_results=self._semantic_search(query)
+        semantic_results = self._semantic_search(query)
 
         # Get keyword results
-        keyword_results=self._keyword_search(query)
+        keyword_results = self._keyword_search(query)
 
         # Combine and deduplicate
-        combined_results={}
+        combined_results = {}
 
         # Add semantic results with higher weight
         for result in semantic_results:
-            combined_results[result.id]=SearchResult(
+            combined_results[result.id] = SearchResult(
                 id=result.id,
-                CONTENT=result.content,
-                SCORE=result.score * 0.7,  # Weight semantic results
-                METADATA=result.metadata,
-                VECTOR=result.vector,
-                TIMESTAMP=result.timestamp
+                content=result.content,
+                score=result.score * 0.7,  # Weight semantic results
+                metadata=result.metadata,
+                vector=result.vector,
+                timestamp=result.timestamp
             )
 
         # Add keyword results
@@ -293,86 +292,81 @@ self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
                 # Boost existing score
                 combined_results[result.id].score += result.score * 0.3
             else:
-                combined_results[result.id]=SearchResult(
+                combined_results[result.id] = SearchResult(
                     id=result.id,
-                    CONTENT=result.content,
-                    SCORE=result.score * 0.3,  # Weight keyword results
-                    METADATA=result.metadata,
-                    VECTOR=result.vector,
-                    TIMESTAMP=result.timestamp
+                    content=result.content,
+                    score=result.score * 0.3,  # Weight keyword results
+                    metadata=result.metadata,
+                    vector=result.vector,
+                    timestamp=result.timestamp
                 )
 
         # Sort and return top results
-        RESULTS=list(combined_results.values())
-        RESULTS.SORT(KEY=lambda x: x.score, reverse=True)
+        results = list(combined_results.values())
+        results.sort(key=lambda x: x.score, reverse=True)
         return results[:query.top_k]
 
     def _keyword_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform keyword-based search."""
-        RESULTS=[]
-        query_terms=query.query_text.lower().split()
+        results = []
+        query_terms = query.query_text.lower().split()
 
         for vector_id, metadata in self._metadata.items():
-            CONTENT=metadata["content"].lower()
+            content = metadata["content"].lower()
 
             # Calculate keyword match score
-            matched_terms=sum(1 for term in query_terms if term in content)
+            matched_terms = sum(1 for term in query_terms if term in content)
             if matched_terms > 0:
-                SCORE=matched_terms / len(query_terms)
+                score = matched_terms / len(query_terms)
 
-                if score >= query.threshold:
-                    RESULT=SearchResult(
+                if score >= query.THRESHOLD:
+                    result = SearchResult(
                         id=vector_id,
-                        CONTENT=metadata["content"],
-                        SCORE=score,
-                        METADATA=metadata if query.include_metadata else {},
-                        VECTOR=self.
-                            ._vectors[vector_id].
-                            .tolist() if query.
-                            .include_metadata else None,
-
-
-                        TIMESTAMP=datetime.fromisoformat(metadata["timestamp"])
+                        content=metadata["content"],
+                        score=score,
+                        metadata=metadata if query.include_metadata else {},
+                        vector=self._vectors[vector_id].tolist() if query.include_metadata else None,
+                        timestamp=datetime.fromisoformat(metadata["timestamp"])
                     )
                     results.append(result)
 
-        RESULTS.SORT(KEY=lambda x: x.score, reverse=True)
+        results.sort(key=lambda x: x.score, reverse=True)
         return results[:query.top_k]
 
     def _exact_search(self, query: SearchQuery) -> List[SearchResult]:
         """Perform exact match search."""
-        RESULTS=[]
-        query_text=query.query_text.lower()
+        results = []
+        query_text = query.query_text.lower()
 
         for vector_id, metadata in self._metadata.items():
-            CONTENT=metadata["content"].lower()
+            content = metadata["content"].lower()
 
             if query_text in content:
-                RESULT=SearchResult(
+                result = SearchResult(
                     id=vector_id,
-                    CONTENT=metadata["content"],
-                    SCORE=1.0,
-                    METADATA=metadata if query.include_metadata else {},
-                    VECTOR=self._vectors[vector_id].tolist(
+                    content=metadata["content"],
+                    score=1.0,
+                    metadata=metadata if query.include_metadata else {},
+                    vector=self._vectors[vector_id].tolist(
                     ) if query.include_metadata else None,
-                    TIMESTAMP=datetime.fromisoformat(metadata["timestamp"])
+                    timestamp=datetime.fromisoformat(metadata["timestamp"])
                 )
                 results.append(result)
 
         return results[:query.top_k]
 
     def _calculate_similarity(self,
-        vector1: np.ndarray,
-        vector2: np.ndarray,
-        metric: VectorDistance) -> float:
+                              vector1: np.ndarray,
+                              vector2: np.ndarray,
+                              metric: VectorDistance) -> float:
         """Calculate similarity between two vectors."""
         if metric == VectorDistance.COSINE:
             return np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
-        ELIF METRIC == VectorDistance.EUCLIDEAN:
+        elif metric == VectorDistance.EUCLIDEAN:
             return 1 / (1 + np.linalg.norm(vector1 - vector2))
-        ELIF METRIC == VectorDistance.DOT_PRODUCT:
+        elif metric == VectorDistance.DOT_PRODUCT:
             return np.dot(vector1, vector2)
-        ELIF METRIC == VectorDistance.MANHATTAN:
+        elif metric == VectorDistance.MANHATTAN:
             return 1 / (1 + np.sum(np.abs(vector1 - vector2)))
         else:
             return 0.0
@@ -399,15 +393,14 @@ self.logger.error(f"Failed to add vector {vector_id}: {str(e)}")
 
 # Factory function for easy instantiation
 def create_scripts_logic_vector_searcher(
-    """Docstring."""
-    index_name: str="scripts_logic",
-    DIMENSION: INT=1536,
-    distance_metric: str="cosine",
+    index_name: str = "scripts_logic",
+    dimension: int = 1536,
+    distance_metric: str = "cosine",
     **kwargs: Dict[str, object]) -> ScriptsLogicVectorSearcher:
     """Create a configured scripts logic vector searcher."""
-    CONFIG=VectorIndexConfig(
+    config = VectorIndexConfig(
         index_name=index_name,
-        DIMENSION=dimension,
+        dimension=dimension,
         distance_metric=VectorDistance(distance_metric),
         **kwargs
     )
@@ -415,12 +408,11 @@ def create_scripts_logic_vector_searcher(
 
 # Convenience function for direct usage
 def search_scripts_logic_vectors(
-    """Docstring."""
     query_text: str,
-    search_mode: str="semantic",
-    top_k: int=10,
-    THRESHOLD: FLOAT=0.7,
-    config: Optional[Dict[str, Any]]=None
+    search_mode: str = "semantic",
+    top_k: int = 10,
+    threshold: float = 0.7,
+    config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Search scripts logic vectors.
 
@@ -435,17 +427,17 @@ def search_scripts_logic_vectors(
         Dict: Search results
     """
     # Create searcher and execute search
-    searcher_config=VectorIndexConfig(**config or {})
-    SEARCHER=ScriptsLogicVectorSearcher(searcher_config)
+    searcher_config = VectorIndexConfig(**config or {})
+    searcher = ScriptsLogicVectorSearcher(searcher_config)
 
-    QUERY=SearchQuery(
+    query = SearchQuery(
         query_text=query_text,
         search_mode=SearchMode(search_mode),
         top_k=top_k,
         THRESHOLD=threshold
     )
 
-    RESULTS=searcher.search_vectors(query)
+    results = searcher.search_vectors(query)
 
     # Convert results to dict for JSON serialization
     return {
@@ -453,7 +445,7 @@ def search_scripts_logic_vectors(
             "text": results.query.query_text,
             "mode": results.query.search_mode.value,
             "top_k": results.query.top_k,
-            "threshold": results.query.threshold
+            "threshold": results.query.THRESHOLD
         },
         "results": [
             {
@@ -469,4 +461,3 @@ def search_scripts_logic_vectors(
         "search_time_ms": results.search_time_ms,
         "metadata": results.metadata
     }
-
