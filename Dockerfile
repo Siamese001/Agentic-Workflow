@@ -64,8 +64,13 @@ COPY . /app
 # Set ownership to the non-root user
 RUN chown -R appuser:appgroup /app
 
+# Create logs directory with proper permissions before switching user
+RUN mkdir -p /app/logs && chown -R appuser:appgroup /app/logs
+
 # Switch to the non-root user
 USER appuser
 
 # Define the entry point for containers
-ENTRYPOINT ["python"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
