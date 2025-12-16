@@ -32,8 +32,8 @@ class LLMClient:
 
         genai.configure(api_key=api_key)
 
-        # 2. Hardcode the Flash Model (Stable Version)
-        self.model_id = "gemini-2.5-flash-lite-preview-09-2025"
+        # 2. Get model from environment or use standard Flash
+        self.model_id = os.getenv("LLM_MODEL", "gemini-2.5-flash-preview-09-2025")
 
     def generate_plan(self, system_context: str, user_goal: str, complexity: str = "mini") -> Dict[str, Any]:
         """
@@ -56,6 +56,7 @@ class LLMClient:
             )
 
             # Parse Response
+            logger.debug(f"Raw LLM response: {response.text}")
             try:
                 result = json.loads(response.text)
             except json.JSONDecodeError as je:
@@ -63,15 +64,17 @@ class LLMClient:
                 try:
                     text = response.text.replace(
                         "```json", "").replace("```", "")
+                    logger.debug(f"Cleaned response for JSON parsing: {text}")
                     result = json.loads(text)
                 except json.JSONDecodeError:
                     # Return structured error for JSON parsing failures
                     logger.error(f"JSON parsing failed: {je}")
+                    logger.error(f"Full raw response: {response.text}")
                     return {
                         "status": "error",
                         "reasoning": f"LLM response parse error: {str(je)}",
-                        # First 200 chars for debugging
-                        "raw_response": response.text[:200]
+                        # First 500 chars for debugging
+                        "raw_response": response.text[:500]
                     }
 
             result["metrics"] = {
