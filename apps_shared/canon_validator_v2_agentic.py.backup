@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-SubAtomic Canon Validator - Complete 50 Key Implementation
-All 50 Subatomic Canon keys are validated with proper AST-based checks.
+Canon Validator v2.0 - 100% Agentic Architecture
+All 50 keys are now covered by Agent classes with zero legacy functions.
 """
 
 import ast
@@ -12,9 +12,7 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Set, Tuple, Optional
-
-logger = logging.getLogger(__name__)
+from typing import Any, Dict, List, Set, Tuple
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -23,10 +21,8 @@ logger = logging.getLogger(__name__)
 # Fix Windows console encoding
 if sys.platform == "win32":
     import io
-    sys.stdout = io.TextIOWrapper(
-        sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(
-        sys.stderr.buffer, encoding="utf-8", errors="replace")
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # ==============================================================================
 # CONFIGURATION: EXCLUSION ZONES
@@ -46,23 +42,28 @@ EXCLUDED_FILES = {
 }
 
 def is_excluded(path: str) -> bool:
-    """Check if a path should be excluded from validation."""
-    path_parts = path.split(os.sep)
-    
-    # Check directory exclusions
-    for part in path_parts:
-        if part in EXCLUDED_DIRS:
-            return True
-    
-    # Check file exclusions
-    filename = os.path.basename(path)
-    if filename in EXCLUDED_FILES:
+    """Check if path should be excluded from validation."""
+    parts = path.split(os.sep)
+    if any(p in EXCLUDED_DIRS for p in parts):
         return True
-    
+    if any(p.startswith('.') and len(p) > 1 and p not in ['.github'] for p in parts):
+        return True
     return False
 
+def get_python_files() -> List[str]:
+    """Get all Python files excluding specified directories and files."""
+    python_files = []
+    for root, dirs, files in os.walk('.'):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+        for file in files:
+            if file.endswith('.py') and file not in EXCLUDED_FILES:
+                file_path = os.path.join(root, file)
+                if not is_excluded(file_path):
+                    python_files.append(file_path)
+    return python_files
+
 # ==============================================================================
-# VALIDATION CONTEXT (BLACKBOARD PATTERN)
+# 1. THE BLACKBOARD (Shared Memory)
 # ==============================================================================
 @dataclass
 class ValidationContext:
