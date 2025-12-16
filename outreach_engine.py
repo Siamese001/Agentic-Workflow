@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from typing import Any, Dict, Optional
 
@@ -26,6 +27,9 @@ from mcp_hardening import (ensure_brand_compliance,
                            get_brand_style_guide)
 # Import egress filter for Protocol 8
 from network_utils import strict_egress_filter
+
+# Add this global configuration flag (or load from environment/config)
+SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"
 
 # Define the specific allow-list for the Outreach Engine
 OUTREACH_ALLOWED_HOSTS = [
@@ -148,11 +152,19 @@ Context: Automated lead vetting based on recent company activity
 
     # --- Step 5: Send Email (Action Tool) ---
     try:
-        email_result = send_email(
-            recipient=primary_contact.get('email', 'contact@company.com'),
-            subject=f"Re: {', '.join(news_keywords) if news_keywords else 'Potential Collaboration'}",
-            body=personalized_pitch
-        )
+        # --- HARDENING PROTOCOL 10: SHADOW MODE EXECUTION ---
+        if SHADOW_MODE_ACTIVE:
+            if logger:
+                logger.warning(f"👻 SHADOW MODE: Email to {primary_contact.get('email', 'contact@company.com')} blocked.")
+                logger.warning(f"Email content saved to shadow_output/email_{primary_contact.get('email', 'contact@company.com')}.txt")
+            email_result = {"status": "SUCCESS", "result": "SHADOW_BLOCKED"}
+        else:
+            email_result = send_email(
+                recipient=primary_contact.get('email', 'contact@company.com'),
+                subject=f"Re: {', '.join(news_keywords) if news_keywords else 'Potential Collaboration'}",
+                body=personalized_pitch
+            )
+        # --------------------------------------------------
         
         # Log action for watchdog
         log_action("SEND_EMAIL", f"Sent to {primary_contact.get('email', 'contact@company.com')}")
