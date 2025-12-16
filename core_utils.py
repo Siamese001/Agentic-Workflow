@@ -297,7 +297,49 @@ def sanitize_filename(filename: str) -> str:
     invalid_chars = '<>:"/\\|?*'
     for char in invalid_chars:
         filename = filename.replace(char, '_')
-    return filename
+
+
+# --- CRYPTOGRAPHIC PROVENANCE UTILITIES (Protocol 9) ---
+
+def setup_gpg_signing(key_id: str):
+    """
+    Configures Git to use a specific GPG key for signing commits.
+    In a production container, this GPG key must be pre-loaded and trusted.
+    """
+    try:
+        # 1. Tell Git the GPG program to use
+        subprocess.run(["git", "config", "--global", "gpg.program", "gpg"], check=True, capture_output=True)
+        # 2. Set the key ID for signing
+        subprocess.run(["git", "config", "--global", "user.signingkey", key_id], check=True, capture_output=True)
+        logger.info(f"✅ Git configured for signing with key: {key_id}")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"❌ Failed to configure Git signing: {e.stderr.decode()}")
+        raise RuntimeError("Git GPG configuration failed.")
+
+
+def sign_and_commit(path: str, message: str, key_id: str) -> bool:
+    """
+    Executes a commit with the -S (signoff/sign) flag.
+    """
+    # Ensure signing key is set for this commit operation
+    setup_gpg_signing(key_id)
+    
+    try:
+        # Add the file to stage
+        subprocess.run(["git", "add", path], check=True, capture_output=True)
+        
+        # Commit with signing flag (-S)
+        result = subprocess.run(
+            ["git", "commit", "-S", "-m", message],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        logger.info(f"✅ Signed Commit successful: {result.stdout.strip()}")
+        return True
+    except subprocess.CalledProcessError as e:
+        logger.error(f"❌ Signed Commit failed (GPG/Git Error): {e.stderr.decode()}")
+        return False
 
 
 def get_variable_defs(node_id: str, version: Optional[str] = None) -> str:

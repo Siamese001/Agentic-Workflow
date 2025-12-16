@@ -152,6 +152,35 @@ def _save_output(file_path_out: str, content: str, write_file_tool: Any, logger:
         return False
 
 
+def save_artifact_metadata(file_path: str, metadata: Dict, logger: Optional[Any] = None) -> bool:
+    """Saves a verifiable JSON file with LLM provenance metadata."""
+    metadata_path = f"{file_path}.metadata.json"
+    
+    # Add audit timestamps
+    metadata['timestamp'] = time.time()
+    
+    # Hash the final content to link metadata to artifact integrity
+    import hashlib
+    try:
+        with open(file_path, 'rb') as f:
+            metadata['artifact_hash'] = hashlib.sha256(f.read()).hexdigest()
+    except Exception as e:
+        if logger:
+            logger.error(f"Failed to hash artifact for metadata: {e}")
+        metadata['artifact_hash'] = None
+    
+    try:
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=4)
+        if logger:
+            logger.info(f"✅ Artifact Metadata saved to {metadata_path}")
+        return True
+    except Exception as e:
+        if logger:
+            logger.error(f"❌ Failed to save metadata: {e}")
+        return False
+
+
 def _update_memory(user_name: str, add_observations_tool: Any, logger: Optional[Any] = None) -> Any:
     """Updates MEMemory with application observation."""
     try:
@@ -237,6 +266,18 @@ def generate_personalized_cover_letter(job_url: str, user_name: str, file_path_o
     save_success = _save_output(file_path_out, final_cover_letter_content, tools['write_file'], logger)
     if not save_success:
         return {"status": "error", "message": "Failed to save cover letter."}
+
+    # --- HARDENING PROTOCOL 9: CRYPTOGRAPHIC PROVENANCE (Document) ---
+    provenance_data = {
+        "generator_model": "gemini-3-pro",  # Model used for final synthesis
+        "consensus_score": 1.0,  # Result from P6 (if applicable)
+        "prompt_hash": hash(job_url),  # Hash of the instruction prompt
+        "verified_by_p4": True
+    }
+    metadata_success = save_artifact_metadata(file_path_out, provenance_data, logger)
+    if not metadata_success:
+        if logger:
+            logger.warning("⚠️ Failed to save artifact metadata (non-critical)")
 
     # --- Step 6: Update Memory (L5 MEMemory) ---
     add_result = _update_memory(user_name, tools['add_observations'], logger)

@@ -7,11 +7,13 @@ from typing import Any, Dict, Optional
 
 # Import core utilities for Figma functions
 from core_utils import (
-    add_observations,
-    get_file_versions,
-    get_variable_defs,
-    search_records,
     validate_python_syntax,
+    commit,
+    sign_and_commit,
+    search_nodes,
+    add_observations,
+    semantic_score_draft,
+    write_file,
 )
 # Import hardened MCP functions
 from mcp_hardening import check_design_drift, execute_vulnerability_search
@@ -160,12 +162,18 @@ def execute_dependency_refactor(issue_id: str, new_dependency: str, tools: Dict[
                 logger.info(f"✅ Supreme Court approved {target_file} with score {consensus_result['score']:.2f}")
         # ----------------------------------------------------
 
-        # 4. Commit the fix (L1 GitKraken)
+        # --- HARDENING PROTOCOL 9: CRYPTOGRAPHIC PROVENANCE (Code) ---
+        BOT_GPG_KEY_ID = "0xAGENTICBOTID"  # Placeholder for your actual key
+        
+        # 4. Commit the fix with GPG signature (L1 GitKraken)
         commit_message = f"Fix({issue_id}): Refactored dependency using canonical pattern."
-        commit_result = commit(path=target_file, message=commit_message)
+        if not sign_and_commit(target_file, commit_message, key_id=BOT_GPG_KEY_ID):
+            return {"status": "FAILED", "reason": "GPG_SIGNING_FAILURE"}
+        
         if logger:
             logger.info(
-                f"✅ L1 GitKraken: Committed changes with message: {commit_message}")
+                f"✅ L1 GitKraken: Signed and committed changes with message: {commit_message}")
+        # -------------------------------------------------------------------
     except Exception as e:
         return {"status": "error", "message": f"Filesystem/GitKraken L1 failed during repair/commit: {e}"}
 
