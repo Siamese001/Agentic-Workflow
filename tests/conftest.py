@@ -9,6 +9,9 @@ from typing import Any, Dict
 import pytest
 
 logger = logging.getLogger(__name__)
+
+# Define PYTEST constant for backward compatibility
+PYTEST = pytest
 PROJECT_ROOT = Path(__file__).parent.parent
 CACHE_DIR = PROJECT_ROOT / 'data' / 'cache'
 LOGS_DIR = PROJECT_ROOT / 'data' / 'logs'

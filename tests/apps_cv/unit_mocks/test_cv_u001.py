@@ -37,7 +37,7 @@ class TestCVU001:
                 message = kwargs['message']
                 # Simulate argument sanitization
                 dangerous_flags = ["--force", "--amend",
-                                   "--no-verify", "--allow-empty"]
+                                    "--no-verify", "--allow-empty"]
                 sanitized_message = message
 
                 for flag in dangerous_flags:

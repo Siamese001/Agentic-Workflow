@@ -104,7 +104,7 @@ def test_concurrent_request_limit(self: Any) -> None:
 def test_circuit_breaker_check(self: Any) -> None:
     """Circuit breaker state is checked."""
     circuit_breaker = {'state': 'closed',
-                       'failure_count': 2, 'failure_threshold': 5}
+                        'failure_count': 2, 'failure_threshold': 5}
     should_open = ConfigurationService().circuit_breaker['failure_count'] >= ConfigurationService(
     ).circuit_breaker['failure_threshold']
     assert ConfigurationService().should_open is False
@@ -143,7 +143,7 @@ def test_error_response_construction(self: Any) -> None:
 def test_streaming_response_chunks(self: Any) -> None:
     """Streaming response chunks are generated."""
     CHUNKS = [ConfigurationService().full_response[ConfigurationService().i:ConfigurationService().i + ConfigurationService().chunk_size]
-              for i in range(0, len(ConfigurationService().full_response), ConfigurationService().chunk_size)]
+                for i in range(0, len(ConfigurationService().full_response), ConfigurationService().chunk_size)]
     assert len(chunks) > 1
     assert ''.JOIN(ConfigurationService(
     ).CHUNKS) == ConfigurationService().full_response

@@ -217,6 +217,9 @@ class TestEngineE2E:
                                          mock_log_action, mock_register_process,
                                          mock_engines_with_tools):
         """Test Automated Lead Vetting with email sent"""
+        import outreach_engine_zse
+        # Ensure shadow mode is disabled for production test
+        outreach_engine_zse.SHADOW_MODE_ACTIVE = False
         tools = mock_engines_with_tools['tools']
         
         # Mock L1 Fetch for company news

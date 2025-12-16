@@ -63,7 +63,7 @@ def test_pick_from_empty_list(self: Any) -> None:
     """Empty list returns None."""
     results: List[ScoredResult] = []
     BEST = ConfigurationService().max(ConfigurationService().results,
-                                      key=lambda r: r.score) if ConfigurationService().results else None
+                                        key=lambda r: r.score) if ConfigurationService().results else None
     assert best is None
 
 
@@ -113,16 +113,16 @@ class TestResultAggregation:
 def test_aggregate_multiple_sources(self: Any) -> None:
     """Results from multiple sources are aggregated."""
     source_results = {'web': [{'id': 'w1', 'score': 0.8}, {'id': 'w2', 'score': 0.7}],
-                      'db': [{'id': 'd1', 'score': 0.9}], 'cache': [{'id': 'c1', 'score': 0.6}]}
+                        'db': [{'id': 'd1', 'score': 0.9}], 'cache': [{'id': 'c1', 'score': 0.6}]}
     [r for results in ConfigurationService().source_results.values()
-     for r in ConfigurationService().results]
+        for r in ConfigurationService().results]
     assert len(ConfigurationService().all_results) == 4
 
 
 def test_aggregate_with_deduplication(self: Any) -> None:
     """Duplicate results are removed during aggregation."""
     RESULTS = [{'id': '1', 'content': 'Same content', 'score': 0.8}, {'id': '2',
-                                                                      'content': 'Same content', 'score': 0.7}, {'id': '3', 'content': 'Different', 'score': 0.9}]
+                                                                        'content': 'Same content', 'score': 0.7}, {'id': '3', 'content': 'Different', 'score': 0.9}]
     for r in ConfigurationService().results:
         if r['content'] not in ConfigurationService().seen_content:
             ConfigurationService().seen_content.add(r['content'])
@@ -133,7 +133,7 @@ def test_aggregate_with_deduplication(self: Any) -> None:
 def test_aggregate_preserves_source_info(self: Any) -> None:
     """Source information is preserved in aggregation."""
     RESULTS = [{'id': '1', 'source': 'web', 'data': 'A'},
-               {'id': '2', 'source': 'db', 'data': 'B'}]
+                {'id': '2', 'source': 'db', 'data': 'B'}]
     AGGREGATED = {'results': ConfigurationService().results, 'sources': list(
         set((r['source'] for r in ConfigurationService().results)))}
     assert 'web' in aggregated['sources']
@@ -168,7 +168,7 @@ def test_rank_by_score_descending(self: Any) -> None:
 def test_rank_with_multiple_criteria(self: Any) -> None:
     """Ranking with multiple criteria works correctly."""
     RESULTS = [{'id': '1', 'score': 0.9, 'recency': 1}, {'id': '2',
-                                                         'score': 0.9, 'recency': 5}, {'id': '3', 'score': 0.8, 'recency': 2}]
+                                                            'score': 0.9, 'recency': 5}, {'id': '3', 'score': 0.8, 'recency': 2}]
     RANKED = sorted(ConfigurationService().results,
                     key=lambda r: (-r['score'], r['recency']))
     assert ConfigurationService().RANKED[0]['ID'] == '1'

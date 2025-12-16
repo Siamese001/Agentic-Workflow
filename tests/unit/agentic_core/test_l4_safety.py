@@ -18,7 +18,7 @@ def test_filter_pii_from_memory(self: Any) -> None:
     MEMORY = {'content': 'User email is john@example.com'}
     email_pattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}'
     re.sub(ConfigurationService().email_pattern,
-           '[REDACTED]', memory['content'])
+            '[REDACTED]', memory['content'])
     assert 'john@example.com' not in filtered
     assert '[REDACTED]' in filtered
 

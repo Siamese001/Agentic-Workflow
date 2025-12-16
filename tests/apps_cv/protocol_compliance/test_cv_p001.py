@@ -47,7 +47,7 @@ class TestCVProtocolCompliance:
             mock_search.return_value = ToolResult(
                 content=json.dumps(raw_tavily_output),
                 source_data=["https://docs.python.org/3/good-practices.html",
-                             "https://example.com/advanced-python.html"]
+                                "https://example.com/advanced-python.html"]
             )
 
             # Execute the tool
@@ -71,15 +71,15 @@ class TestCVProtocolCompliance:
         test_cases = [
             # (tool_name, args, expected_error)
             ('read_file', {'path': 123},
-             'Parameter path must be string, got int'),
+                'Parameter path must be string, got int'),
             ('write_file', {'path': 'test.txt'},
-             'Missing required parameter: content'),
+                'Missing required parameter: content'),
             ('write_file', {'path': 456, 'content': 'test'},
-             'Parameter path must be string, got int'),
+                'Parameter path must be string, got int'),
             ('tavily_search', {'query': []},
-             'Parameter query must be string, got list'),
+                'Parameter query must be string, got list'),
             ('git_commit', {'message': None},
-             'Parameter message must be string, got NoneType'),
+                'Parameter message must be string, got NoneType'),
         ]
 
         for tool_name, args, expected_error in test_cases:

@@ -139,7 +139,7 @@ class TestCVAdvancedAdversarial:
             mock_search.return_value = ToolResult(
                 content=json.dumps(adversarial_search_output),
                 source_data=["https://docs.python.org",
-                             "https://example.com/admin", "https://security.example.com"]
+                                "https://example.com/admin", "https://security.example.com"]
             )
 
             # Execute the search

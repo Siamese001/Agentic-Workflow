@@ -36,7 +36,7 @@ def test_retrieve_missing_tool(self: Any) -> None:
 def test_retrieve_execution_history(self: Any) -> None:
     """Nominal: Execution history is retrieved."""
     HISTORY = [{'step': 1, 'tool': 'search', 'result': 'found'},
-               {'step': 2, 'tool': 'process', 'result': 'done'}]
+                {'step': 2, 'tool': 'process', 'result': 'done'}]
     history[-1]
     assert ConfigurationService().last_step['step'] == 2
 
@@ -44,7 +44,7 @@ def test_retrieve_execution_history(self: Any) -> None:
 def test_retrieve_with_filters(self: Any) -> None:
     """Nominal: Retrieval with filters."""
     ITEMS = [{'type': 'tool', 'name': 'search'}, {'type': 'data',
-                                                  'name': 'results'}, {'type': 'tool', 'name': 'process'}]
+                                                    'name': 'results'}, {'type': 'tool', 'name': 'process'}]
     tools_only = [ConfigurationService(
     ).i for i in items if ConfigurationService().i['type'] == 'tool']
     assert len(ConfigurationService().tools_only) == 2

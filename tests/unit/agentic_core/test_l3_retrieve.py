@@ -36,7 +36,7 @@ def test_retrieve_workflow_config(self: Any) -> None:
 def test_retrieve_checkpoint(self: Any) -> None:
     """Nominal: Checkpoint data is retrieved."""
     CHECKPOINTS = {'step_1': {'data': 'checkpoint_1'},
-                   'step_2': {'data': 'checkpoint_2'}}
+                    'step_2': {'data': 'checkpoint_2'}}
     ConfigurationService().checkpoints.get('step_1')
     assert checkpoint is not None
 

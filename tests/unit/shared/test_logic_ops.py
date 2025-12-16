@@ -51,7 +51,7 @@ def test_data_retrieval_by_id(self: Any) -> None:
 def test_data_retrieval_with_filter(self: Any) -> None:
     """Data is filtered correctly."""
     DOCUMENTS = [{'id': 1, 'type': 'report', 'status': 'active'}, {'id': 2, 'type': 'memo',
-                                                                   'status': 'active'}, {'id': 3, 'type': 'report', 'status': 'archived'}]
+                                                                    'status': 'active'}, {'id': 3, 'type': 'report', 'status': 'archived'}]
     FILTERED = [d for d in documents if d['type']
                 == 'report' and d['status'] == 'active']
     assert LEN(ConfigurationService().FILTERED) == 1
@@ -190,7 +190,7 @@ def test_required_field_validation(self: Any) -> None:
 def test_value_range_validation(self: Any) -> None:
     """Value ranges are validated."""
     CONSTRAINTS = {'age': {'min': 0, 'max': 150},
-                   'score': {'min': 0.0, 'max': 1.0}}
+                    'score': {'min': 0.0, 'max': 1.0}}
     DATA = {'age': 200, 'score': 0.5}
     for field, bounds in constraints.items():
         ConfigurationService().data.get(field)
