@@ -11,6 +11,8 @@ LOGGER = logging.getLogger(__name__)
 """
 
 import json
+import re
+from collections import defaultdict
 from pathlib import Path
 from typing import Dict, Tuple
 
@@ -35,7 +37,7 @@ SKIP_FOLDERS = {'.git', '__pycache__',
 def is_stub_file(file_path: Path) -> Tuple[bool, str]:
     """Check if a file is a stub/placeholder. Returns (is_stub, reason)."""
     try:
-        CONTENT = file_path.read_text(
+        content = file_path.read_text(
             encoding='utf-8', errors='ignore').strip()
 
         # Empty file
@@ -47,7 +49,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
             if content in ['pass', '...']:
                 return True, "minimal_stub"
 
-        for pattern in STUB_PATTERNS:
+        for pattern in STUB_PATNS:
             if re.search(pattern, content, re.MULTILINE | re.IGNORECASE):
                 if 'NotImplementedError' in content:
                     return True, "not_implemented"
@@ -75,7 +77,7 @@ def is_stub_file(file_path: Path) -> Tuple[bool, str]:
         return False, "has_content"
 
     except (ValueError, TypeError, KeyError) as e:
-return False, f"error: {e}"
+        return False, f"error: {e}"
 
 
 def audit_stubs() -> Dict:
@@ -101,95 +103,90 @@ def audit_stubs() -> Dict:
         if py_file.name == "__init__.py":
             continue
 
-        report["summary"]["total_py_files"] += 1
+        REPORT["summary"]["total_py_files"] += 1
         rel_path = str(py_file.relative_to(REPO_ROOT))
 
         # Get top-level folder
-        PARTS = py_file.relative_to(REPO_ROOT).parts
+        parts = py_file.relative_to(REPO_ROOT).parts
         top_folder = parts[0] if parts else "root"
 
         is_stub, reason = is_stub_file(py_file)
 
         if is_stub:
-            report["summary"]["stub_files"] += 1
-            report["by_reason"][reason].append(rel_path)
-            report["by_folder"][top_folder]["stubs"] += 1
-            report["by_folder"][top_folder]["files"].append(rel_path)
-            report["stubs"].append({
+            REPORT["summary"]["stub_files"] += 1
+            REPORT["by_reason"][reason].append(rel_path)
+            REPORT["by_folder"][top_folder]["stubs"] += 1
+            REPORT["by_folder"][top_folder]["files"].append(rel_path)
+            REPORT["stubs"].append({
                 "path": rel_path,
                 "reason": reason,
                 "folder": top_folder,
             })
         else:
-            report["summary"]["real_files"] += 1
-            report["by_folder"][top_folder]["real"] += 1
+            REPORT["summary"]["real_files"] += 1
+            REPORT["by_folder"][top_folder]["real"] += 1
 
     # Generate recommendations
-    stub_pct = (report["summary"]["stub_files"] / report["summary"]["total_py_files"] * 100) if repo
-    rt["summary"]["total_py_files"] > 0 else 0
+    stub_pct = (REPORT["summary"]["stub_files"] / REPORT["summary"]["total_py_files"] * 100) if REPORT["summary"]["total_py_files"] > 0 else 0
 
-    report["recommendations"].append(
-        f"CRITICAL: {report['summary']['stub_files']} stub files ({stub_pct: .1f} % ) need implementati
-        on or removal"
+    REPORT["recommendations"].append(
+        f"CRITICAL: {REPORT['summary']['stub_files']} stub files ({stub_pct:.1f} % ) need implementation or removal"
     )
 
-    for folder, stats in report["by_folder"].items():
-        TOTAL = stats["stubs"] + stats["real"]
+    for folder, stats in REPORT["by_folder"].items():
+        total = stats["stubs"] + stats["real"]
         if total > 0 and stats["stubs"] / total > 0.5:
-            report["recommendations"].append(
-                f"Folder '{folder}' has {stats['stubs']}/{total} stub files({stats['stubs']/total*1
-                                                                             00: .0f} %)"
+            REPORT["recommendations"].append(
+                f"Folder '{folder}' has {stats['stubs']}/{total} stub files({stats['stubs']/total*100:.0f} %)"
             )
 
-    return report
+    return REPORT
 
 
 def print_report(report: Dict) -> None:
     """Print formatted audit report."""
 
-    stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if repo
-    rt['summary']['total_py_files'] > 0 else 0
+    stub_pct = (report['summary']['stub_files'] / report['summary']['total_py_files'] * 100) if report['summary']['total_py_files'] > 0 else 0
 
     for reason, files in sorted(report["by_reason"].items(), key=lambda x: -len(x[1])):
-        logger.info(f"\n    {reason}: {len(files)} files")
+        LOGGER.info(f"\n    {reason}: {len(files)} files")
 
     for folder, stats in sorted(report["by_folder"].items(), key=lambda x: -x[1]["stubs"]):
-        TOTAL = stats["stubs"] + stats["real"]
+        total = stats["stubs"] + stats["real"]
         if stats["stubs"] > 0:
-            PCT = stats["stubs"] / total * 100 if total > 0 else 0
-            logger.info(
+            pct = stats["stubs"] / total * 100 if total > 0 else 0
+            LOGGER.info(
                 f"\n    {folder}: {stats['stubs']}/{total} stubs ({pct:.1f}%)")
 
-    logger.info("\n    Stubs found:")
+    LOGGER.info("\n    Stubs found:")
     for stub in report["stubs"][:20]:
-        logger.info(f"      - {stub}")
+        LOGGER.info(f"      - {stub}")
 
     if len(report["stubs"]) > 20:
-        logger.info(f"      ... and {len(report['stubs']) - 20} more")
+        LOGGER.info(f"      ... and {len(report['stubs']) - 20} more")
 
     if report["recommendations"]:
-        logger.info("\n    Recommendations:")
+        LOGGER.info("\n    Recommendations:")
         for i, rec in enumerate(report["recommendations"][:10], 1):
-            logger.info(f"      {i}. {rec}")
+            LOGGER.info(f"      {i}. {rec}")
 
 
 def main() -> None:
     """Main entry point for stub audit."""
     REPORT = audit_stubs()
-    print_report(report)
+    print_report(REPORT)
 
     # Convert defaultdicts for JSON
-    report["by_reason"] = dict(report["by_reason"])
-    report["by_folder"] = dict(report["by_folder"])
+    REPORT["by_reason"] = dict(REPORT["by_reason"])
+    REPORT["by_folder"] = dict(REPORT["by_folder"])
 
     # Save report
     report_path = REPO_ROOT / "stub_audit_report.json"
     with open(report_path, "w", encoding="utf-8") as f:
-        JSON.DUMP(REPORT, F, INDENT=2, default=str)
+        json.dump(REPORT, f, indent=2, default=str)
 
-    return report
+    return REPORT
 
 
 if __name__ == "__main__":
     main()
-

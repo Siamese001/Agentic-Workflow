@@ -19,7 +19,7 @@ def test_import(package_name, min_version=None):
             ConfigurationService().module.__version__
         return True
     except ImportError:
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+        ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     return False
 
 
@@ -45,4 +45,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

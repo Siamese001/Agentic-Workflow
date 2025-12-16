@@ -18,9 +18,8 @@ try:
     from rich.prompt import Prompt
     from schema_definitions import InterviewerProfile, StrategyRoadmap, TechnicalSWOT
 except ImportError as e:
-    pass
-logger.info(f"CRITICAL: Missing dependencies. {e}")
-    logger.info("Run: pip install rich instructor openai anthropic pydantic")
+    LOGGER.info(f"CRITICAL: Missing dependencies. {e}")
+    LOGGER.info("Run: pip install rich instructor openai anthropic pydantic")
     sys.exit(1)
 
 # Initialize Rich Console for beautiful output
@@ -29,18 +28,17 @@ CONSOLE = Console()
 
 class WarRoom:
     def __init__(self, config_path: str = "Job_Workflow_v24.9.json"):
-        SELF.CONSOLE = console
-        SELF.ORCHESTRATOR = ExecutiveAgentOrchestrator()
-        SELF.CONFIG = self._load_config(config_path)
+        self.console = CONSOLE
+        self.orchestrator = ExecutiveAgentOrchestrator()
+        self.config = self._load_config(config_path)
 
     def _load_config(self, path: str) -> Dict[str, Any]:
         try:
             with open(path, 'r') as f:
-                DATA = json.load(f)
+                data = json.load(f)
                 return data.get("4.reasoning", {})
         except FileNotFoundError:
-    pass
-self.console.logger.error(
+            self.console.logger.error(
                 f"[bold red]Error:[/bold red] Config file {path} not found.")
             sys.exit(1)
 
@@ -50,46 +48,29 @@ self.console.logger.error(
 
         company_name = Prompt.ask("Target Company Name")
 
-        self.
-        .console.
-        .logger.
-        .info(f"[green]🕵️  Using autonomous deep search for {company_name}.
-              ..
-              ..
-              .[/green]")
+        self.console.logger.info(f"[green]🕵️  Using autonomous deep search for {company_name}....[/green]")
 
         with self.console.status(f"[bold green]Running Shadow Audit on {company_name}..."):
-            SWOT = await self.orchestrator.execute_k11_shadow_audit(
+            swot = await self.orchestrator.execute_k11_shadow_audit(
                 company_name=company_name,
                 search_context=None,  # Always use autonomous search now
-                CONFIG=self.config.get("K.11_shadow_audit", {})
+                config=self.config.get("K.11_shadow_audit", {})
             )
 
         # Display Results
         self.console.logger.info(Panel(f"[bold]Technical SWOT Analysis for {company_name}[/bold]",
-                                       STYLE="blue"))
+                                       style="blue"))
 
         self.console.logger.info("[bold]Inferred Tech Stack:[/bold]")
         for item in swot.current_stack:
-            self.
-            .console.
-            .logger.
-            .info(f" - [cyan]{item.
-                              .tool_name}[/cyan]({item.
-                                                  .category}): {item.
-                                                                .confidence_score*100: .
-                                                                .0f} % confidence")
+            self.console.logger.info(f" - [cyan]{item.tool_name}[/cyan]({item.category}): {item.confidence_score*100:.0f}% confidence")
 
         self.console.logger.info(
             "\n[bold red]Suspected Bottlenecks:[/bold red]")
         for b in swot.suspected_bottlenecks:
             self.console.logger.info(f" - {b}")
 
-        self.
-        .console.
-        .logger.
-        .info(f"\n[bold green]Strategic Opportunity: [/bold green] {swot.
-                                                                    .strategic_opportunity}")
+        self.console.logger.info(f"\n[bold green]Strategic Opportunity: [/bold green] {swot.strategic_opportunity}")
 
         return swot
 
@@ -97,48 +78,32 @@ self.console.logger.error(
         """Execute K.12: 30-60-90 Day Strategy"""
         self.console.rule("[bold blue]K.12 STRATEGY GENERATOR")
 
-        self.
-        .console.
-        .logger.
-        .info("[yellow]Paste the full Job Description.
-              . Press Ctrl+D(Linux/Mac) or
-              Ctrl+Z(Windows) when done: [/yellow]")
+        self.console.logger.info("[yellow]Paste the full Job Description. Press Ctrl+D(Linux/Mac) or Ctrl+Z(Windows) when done: [/yellow]")
         # Clear stdin buffer if needed or re-open (simplified for script flow)
         # Using input() loop for simpler copy-paste handling in basic terminals
-        LINES = []
+        lines = []
         try:
             while True:
-                LINE = input()
+                line = input()
                 lines.append(line)
         except EOFError:
-    pass
-pass
+            pass
         jd_text = "\n".join(lines)
 
         with self.console.status("[bold green]Synthesizing 90-Day Plan..."):
-            ROADMAP = await self.orchestrator.execute_k12_strategy(
+            roadmap = await self.orchestrator.execute_k12_strategy(
                 job_description=jd_text,
                 technical_swot=technical_swot,
-                CONFIG=self.config.get("K.12_strategy_roadmap", {})
+                config=self.config.get("K.12_strategy_roadmap", {})
             )
 
         self.console.logger.info(Panel(Markdown(f"# {roadmap.executive_summary}"),
-                                       TITLE="Executive Vision",
-                                       STYLE="green"))
+                                       title="Executive Vision",
+                                       style="green"))
 
         for milestone in roadmap.milestones:
-            self.
-            .console.
-            .logger.
-            .info(f"[bold]{milestone.
-                           .timeframe}[/bold]({milestone.
-                                               .focus_area}): {milestone.
-                                                               .initiative}")
-            self.
-            .console.
-            .logger.
-            .info(f"   [italic]Success Metric: {milestone.
-                                                .success_metric}[/italic]")
+            self.console.logger.info(f"[bold]{milestone.timeframe}[/bold]({milestone.focus_area}): {milestone.initiative}")
+            self.console.logger.info(f"   [italic]Success Metric: {milestone.success_metric}[/italic]")
 
         self.console.logger.info(
             "\n[bold yellow]Immediate Wins (Week 1):[/bold yellow]")
@@ -156,30 +121,20 @@ pass
         resume_text = sys.stdin.read()
 
         with self.console.status(f"[bold green]Analyzing interviewer profile..."):
-            PROFILE = await self.orchestrator.execute_k13_simulation(
+            profile = await self.orchestrator.execute_k13_simulation(
                 interviewer_linkedin=interviewer_linkedin,
                 resume_text=resume_text,
-                CONFIG=self.config.get("K.13_interviewer_simulation", {})
+                config=self.config.get("K.13_interviewer_simulation", {})
             )
 
         # Display Results
-        self.
-        .console.
-        .logger.
-        .info(Panel(f"[bold]Interviewer Analysis for {role} at {company_name}[/bold]",
-                    STYLE="purple"))
+        self.console.logger.info(Panel(f"[bold]Interviewer Analysis for {profile.role} at {profile.company_name}[/bold]",
+                                       style="purple"))
 
         self.console.logger.info("[bold]Likely Interviewer Archetypes:[/bold]")
         for interviewer in profile.interviewers:
-            self.
-            .console.
-            .logger.
-            .info(f" - [cyan]{interviewer.
-                              .name}[/cyan]({interviewer.
-                                             .archetype}): {interviewer.
-                                                            .background}")
-            self.console.logger.info(f"   [italic]Focus Areas: {',
-                                                                '.join(interviewer.focus_areas)}[/italic]")
+            self.console.logger.info(f" - [cyan]{interviewer.name}[/cyan]({interviewer.archetype}): {interviewer.background}")
+            self.console.logger.info(f"   [italic]Focus Areas: {', '.join(interviewer.focus_areas)}[/italic]")
 
         self.console.logger.info(
             "\n[bold yellow]Predicted Questions:[/bold yellow]")
@@ -199,8 +154,7 @@ pass
                 self.console.logger.info(
                     "[green]✅ MCP servers connected[/green]")
             except Exception as e:
-    pass
-self.console.logger.error(
+                self.console.logger.error(
                     f"[yellow]⚠️ MCP connection failed: {e}[/yellow]")
 
         try:
@@ -215,17 +169,17 @@ self.console.logger.error(
                     "3. [bold]Interviewer Sim[/bold] (K.13)")
                 self.console.logger.info("4. Exit")
 
-                CHOICE = Prompt.ask("Select Operation", choices=[
+                choice = Prompt.ask("Select Operation", choices=[
                                     "1", "2", "3", "4"])
 
                 if choice == "1":
-                    SWOT = await self.run_k11_shadow_audit()
+                    swot = await self.run_k11_shadow_audit()
                     await self.run_k12_strategy(swot)
-                elif CHOICE == "2":
+                elif choice == "2":
                     await self.run_k11_shadow_audit()
-                elif CHOICE == "3":
+                elif choice == "3":
                     await self.run_k13_simulation()
-                elif CHOICE == "4":
+                elif choice == "4":
                     break
         finally:
             # Cleanup MCP connections
@@ -242,4 +196,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-

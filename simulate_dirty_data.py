@@ -57,6 +57,7 @@ def validate_cognitive_action_separation():
 
     if result_1.get('is_valid') and result_1.get('source') == 'no_match':
         # print("✅ PASS: Anchor truth ingested successfully.")  # [Security Fix]
+        pass
     else:
         # print(f"❌ FAIL: Anchor truth was rejected. Reason: {result_1}")  # [Security Fix]
         return  # Stop if we can't seed
@@ -77,8 +78,10 @@ def validate_cognitive_action_separation():
     # We expect a match in L1 or L2 for duplicates
     if result_2.get('source') in ['l1_match', 'l2_match']:
         # print("✅ PASS: Exact duplicate was correctly filtered.")  # [Security Fix]
+        pass
     else:
         # print(f"⚠️ WARNING: Duplicate was ingested. (Did L1 Cache miss?)")  # [Security Fix]
+        pass
 
         # ---------------------------------------------------------
         # SCENARIO 3: THE MIMIC (Semantic Duplicate)
@@ -107,8 +110,10 @@ def prevent_hallucination_loops():
     # If cosine similarity is working, this should be flagged as similar
     if result_3.get('source') in ['l1_match', 'l2_match']:
         # print("✅ PASS: Semantic duplicate was correctly identified via Vectors.")  # [Security Fix]
+        pass
     else:
         # print(f"⚠️ WARNING: Semantic duplicate was treated as new. (Threshold might be too high?)")  # [Security Fix]
+        pass
 
         # ---------------------------------------------------------
         # SCENARIO 4: THE NOVELTY (Completely New)
@@ -131,12 +136,13 @@ def get_tuesday_menu():
 
     if result_4.get('is_valid') and result_4.get('source') == 'no_match':
         # print("✅ PASS: Novel data was correctly ingested.")  # [Security Fix]
+        pass
     else:
         # print(f"❌ FAIL: Novel data was rejected.")  # [Security Fix]
+        pass
 
     print_section("SIMULATION COMPLETE")
 
 
 if __name__ == "__main__":
     run_simulation()
-

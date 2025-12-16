@@ -7,6 +7,8 @@ Generated: 2025-12-07T12:07:59.873366
 
 import logging
 from typing import Dict, List, Optional
+from enum import Enum
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,24 +37,22 @@ class ValidationResult:
     findings: List[ValidationFinding] = field(default_factory=list)
 
     @property
-    """TODO: Add docstring."""
-
     def errors(self) -> List[ValidationFinding]:
         """Docstring."""
-        return [F for F in SELF.FINDINGS if F.SEVERITY == ValidationSeverity.ERROR]
+        return [f for f in self.findings if f.severity == ValidationSeverity.ERROR]
 
 
 class CheckScriptsCompliance:
     """Validator for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
-        SELF.STRICT = self.config.get("strict", False)
+        self.config = config or {}
+        self.strict = self.config.get("strict", False)
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def validate(self, data: object, schema: Optional[Dict] = None) -> ValidationResult:
         """Validate data against schema."""
-        FINDINGS = []
+        findings = []
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
 
@@ -62,37 +62,35 @@ class CheckScriptsCompliance:
 
     def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate data types."""
-        FINDINGS = []
+        findings = []
         if schema and "type" in schema:
-            EXPECTED = schema["type"]
-            ACTUAL = type(data).__name__
+            expected = schema["type"]
+            actual = type(data).__name__
             if expected != actual:
                 findings.append(ValidationFinding(
-                    CODE="TYPE_MISMATCH",
-                    MESSAGE=f"Expected {expected}, got {actual}",
-                    SEVERITY=ValidationSeverity.ERROR
+                    code="TYPE_MISMATCH",
+                    message=f"Expected {expected}, got {actual}",
+                    severity=ValidationSeverity.ERROR
                 ))
         return findings
 
     def _validate_required(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate required fields."""
-        FINDINGS = []
+        findings = []
         if schema and "required" in schema and isinstance(data, dict):
             for field in schema["required"]:
                 if field not in data:
                     findings.append(ValidationFinding(
-                        CODE="MISSING_REQUIRED",
-                        MESSAGE=f"Missing: {field}",
-                        SEVERITY=ValidationSeverity.ERROR,
-                        PATH=field
+                        code="MISSING_REQUIRED",
+                        message=f"Missing: {field}",
+                        severity=ValidationSeverity.ERROR,
+                        path=field
                     ))
         return findings
 
 
 def validate(data: object,
-             """Docstring."""
              schema: Optional[Dict] = None,
              config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return CheckScriptsCompliance(config).validate(data, schema)
-

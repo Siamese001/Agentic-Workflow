@@ -47,6 +47,7 @@ class MockMCPTools:
 
 
 class MockLogger:
+    pass
     # def info(self, msg): print(f"[INFO] {msg}")  # [Security Fix]
     # def warning(self, msg): print(f"[WARN] {msg}")  # [Security Fix]
     # def error(self, msg): print(f"[ERROR] {msg}")  # [Security Fix]
@@ -111,4 +112,3 @@ def test_design_compliance():
 
 if __name__ == "__main__":
     test_design_compliance()
-
