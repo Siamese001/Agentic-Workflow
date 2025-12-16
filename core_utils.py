@@ -328,3 +328,31 @@ def get_file_versions(component_id: str) -> str:
 
     return json.dumps({"versions": versions})
 
+
+def register_process(pid_file_path: str = "run/agent.pid"):
+    """Writes the current process ID to the PID file."""
+    import logging
+    try:
+        os.makedirs(os.path.dirname(pid_file_path), exist_ok=True)
+        with open(pid_file_path, 'w') as f:
+            f.write(str(os.getpid()))
+        logging.info(f"Process registered. PID: {os.getpid()}")
+    except Exception as e:
+        logging.error(f"Failed to register PID: {e}")
+
+
+def log_action(action_name: str, details: str, log_file: str = "logs/agent_actions.log"):
+    """
+    Logs an operational action for the Watchdog to see.
+    Keyword 'ACTION_EXECUTED' is mandatory for the trigger.
+    """
+    import logging
+    import time
+    try:
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        with open(log_file, 'a') as f:
+            f.write(f"[{timestamp}] ACTION_EXECUTED: {action_name} - {details}\n")
+    except Exception as e:
+        logging.error(f"Failed to log action: {e}")
+
