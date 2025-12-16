@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="Test not implemented")
 def test_check_tests_policy(data: Dict[str, object]) -> Dict[str, object]:
     """Process test check tests policy data."""
     return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}

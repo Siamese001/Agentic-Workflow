@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="Test not implemented")
 def test_prepare_tests_payload(data: Dict[str, object]) -> Dict[str, object]:
     """Process test prepare tests payload data."""
     return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}

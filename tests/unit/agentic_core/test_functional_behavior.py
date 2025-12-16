@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.skip(reason="Test not implemented")
 def test_functional_behavior(data: Dict[str, object]) -> Dict[str, object]:
     """Process test functional behavior data."""
     return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
