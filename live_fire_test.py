@@ -14,6 +14,9 @@ except ImportError:
     print("CRITICAL: Could not import generate_personalized_cover_letter. Running in skeleton mode?")
     sys.exit(1)
 
+# Import canary monitor for Protocol 7
+from canary_monitor import run_canary_monitor, CanaryMonitor
+
 # Configure Main Logging
 logging.basicConfig(
     level=logging.INFO,
@@ -23,6 +26,36 @@ logging.basicConfig(
 logger = logging.getLogger("Orchestrator")
 
 WATCHDOG_PID: Optional[int] = None
+CANARY_MONITOR_PID: Optional[int] = None
+
+def start_canary_trap():
+    """Starts the P7 Canary Trap monitor in a background process."""
+    global CANARY_MONITOR_PID
+    logger.info("🚨 Bootstrapping Protocol 7 (Canary Trap)...")
+
+    if not os.path.exists("canary_monitor.py"):
+        logger.error("❌ canary_monitor.py not found! Aborting.")
+        sys.exit(1)
+
+    try:
+        # Launch run_canary_monitor script in background
+        proc = subprocess.Popen([sys.executable, "canary_monitor.py"])
+        CANARY_MONITOR_PID = proc.pid
+        logger.info(f"✅ Canary Monitor active (PID: {CANARY_MONITOR_PID})")
+        time.sleep(1) # Warmup
+    except Exception as e:
+        logger.critical(f"Failed to start Canary Monitor: {e}")
+        sys.exit(1)
+    
+def stop_canary_trap():
+    """Cleanup canary monitor process on exit."""
+    if CANARY_MONITOR_PID:
+        logger.info("Stopping Canary Monitor...")
+        try:
+            # Use SIGTERM for graceful shutdown
+            os.kill(CANARY_MONITOR_PID, signal.SIGTERM) 
+        except Exception as e:
+            logger.warning(f"Error stopping canary trap: {e}")
 
 def start_watchdog():
     """Starts the P5 Dead Man's Switch as a background subprocess."""
@@ -108,8 +141,9 @@ if __name__ == "__main__":
     # Register cleanup
     signal.signal(signal.SIGINT, signal_handler)
 
-    # 1. Start Immune System
-    start_watchdog()
+    # 1. Start Immune System - P7 is the highest priority defense
+    start_canary_trap()
+    start_watchdog() # P5 runs after P7
 
     # 2. Define Test Inputs
     # Real URL for realism (though our mock fetcher might just use the string)
@@ -120,4 +154,5 @@ if __name__ == "__main__":
         run_live_test(TEST_URL, USER_NAME)
     finally:
         # Ensure cleanup runs even if code crashes
+        stop_canary_trap()
         stop_watchdog()
