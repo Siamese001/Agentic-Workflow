@@ -2750,31 +2750,22 @@ class SwarmScheduler:
             # 1. INTEGRITY (Sequential, Safe)
             "integrity_seq": [
                 Historian(self.ctx),        # Skip unchanged
-                VoidEnforcer(self.ctx),      # Root hygiene
-                SystemArchitect(self.ctx),   # Core check
-                DepthEnforcer(self.ctx),     # Nesting 3-5
-                AtomicityEnforcer(self.ctx), # Split >200 lines
-                TaxonomyEnforcer(self.ctx)   # Refine names & patch imports
+                VoidEnforcer(self.ctx),      # Law 3 (Root)
+                SystemArchitect(self.ctx),   # Law 1/2 Baseline
+                DepthEnforcer(self.ctx),     # Law 1 (Depth) + Patching
+                AtomicityEnforcer(self.ctx), # Law 2 (Size) + Patching
+                TaxonomyEnforcer(self.ctx)   # Law 4 (Meaning) + Patching
             ],
-            # 2. CURATION (Organization)
-            "curator_seq": [
-                TheCurator(self.ctx) # Moves scripts to Depth 3
+            # 2. REFINEMENT (Parallel Enhancement)
+            "refinement_parallel": [
+                NamingEnforcer(self.ctx),    # Identity
+                DocEnforcer(self.ctx),       # Narrative
+                TypeEnforcer(self.ctx),      # Contract
+                TheCartographer(self.ctx)    # Deep Brain Update
             ],
-            # 3. PARALLEL SWARM (The Magnificent 8)
-            "parallel_swarm": [
-                TheCartographer(self.ctx),   # Memory & Embeddings
-                TheOmniContext(self.ctx),    # Semantic Wisdom
-                SafetyInspector(self.ctx),   # Security & Secrets
-                BudgetAgent(self.ctx),       # Complexity Analysis
-                TypeMechanic(self.ctx),      # Type Checking
-                StructuralEngineer(self.ctx), # Architecture
-                RedSentinel(self.ctx),       # Active Fuzzing
-                TruthKeeper(self.ctx),       # Docstring Consistency
-                DocumentationAgent(self.ctx) # Documentation Generation
-            ],
-            # 4. VERIFICATION (Regression)
+            # 3. VERIFICATION (Regression)
             "verification_seq": [
-                TestPilot(self.ctx)          # Run tests after mutations
+                TestPilot(self.ctx)          # Final Regression Test
             ]
         }
 
@@ -3449,11 +3440,991 @@ class TaxonomyEnforcer(SubAtomicAgent, ImportPatcher):
         report_content += f"\n## Import Dependencies\n\n"
         
         # Build import map for reporting
-        import_map = self.ctx.build_import_dependency_map(successful_moves.keys())
+        import_map = self.build_import_dependency_map(successful_moves.keys())
         for module, files in import_map.items():
             report_content += f"### `{module}`\n"
             for file_path in files:
                 report_content += f"- {file_path}\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class NamingEnforcer(SubAtomicAgent):
+    """ROLE: Semantic Naming Guardian. Enforces intention-revealing names and PEP 8 compliance."""
+    
+    # Common abbreviations to expand
+    ABBREVIATION_MAP = {
+        'mgr': 'manager',
+        'cfg': 'config',
+        'conf': 'configuration',
+        'val': 'value',
+        'var': 'variable',
+        'param': 'parameter',
+        'params': 'parameters',
+        'temp': 'temporary',
+        'tmp': 'temporary',
+        'calc': 'calculate',
+        'eval': 'evaluate',
+        'exec': 'execute',
+        'init': 'initialize',
+        'proc': 'process',
+        'msg': 'message',
+        'info': 'information',
+        'data': 'data',
+        'obj': 'object',
+        'str': 'string',
+        'num': 'number',
+        'idx': 'index',
+        'len': 'length',
+        'cnt': 'count',
+        'req': 'request',
+        'resp': 'response',
+        'auth': 'authenticate',
+        'sync': 'synchronize',
+        'async': 'asynchronous',
+        'spec': 'specification',
+        'impl': 'implementation',
+        'util': 'utility',
+        'utils': 'utilities',
+        'lib': 'library',
+        'libs': 'libraries',
+        'pkg': 'package',
+        'mod': 'module',
+        'mods': 'modules',
+        'func': 'function',
+        'funcs': 'functions',
+        'meth': 'method',
+        'meths': 'methods',
+        'attr': 'attribute',
+        'attrs': 'attributes',
+        'prop': 'property',
+        'props': 'properties',
+        'const': 'constant',
+        'consts': 'constants',
+        'var': 'variable',
+        'vars': 'variables',
+        'arg': 'argument',
+        'args': 'arguments',
+        'kwargs': 'keyword_arguments',
+        'kw': 'keyword',
+        'kws': 'keywords',
+        'dict': 'dictionary',
+        'dicts': 'dictionaries',
+        'list': 'list',
+        'lists': 'lists',
+        'set': 'set',
+        'sets': 'sets',
+        'tuple': 'tuple',
+        'tuples': 'tuples',
+        'iter': 'iterator',
+        'iters': 'iterators',
+        'gen': 'generator',
+        'gens': 'generators',
+        'decor': 'decorator',
+        'decors': 'decorators',
+        'context': 'context',
+        'ctx': 'context',
+        'handler': 'handler',
+        'hdlr': 'handler',
+        'except': 'exception',
+        'exc': 'exception',
+        'ex': 'exception',
+        'err': 'error',
+        'errs': 'errors',
+        'result': 'result',
+        'res': 'result',
+        'ret': 'return',
+        'retval': 'return_value',
+        'out': 'output',
+        'inp': 'input',
+        'io': 'input_output',
+        'ref': 'reference',
+        'refs': 'references',
+        'ptr': 'pointer',
+        'ptrs': 'pointers',
+        'addr': 'address',
+        'addrs': 'addresses',
+        'buf': 'buffer',
+        'bufs': 'buffers',
+        'cache': 'cache',
+        'cch': 'cache',
+        'queue': 'queue',
+        'q': 'queue',
+        'stack': 'stack',
+        'stk': 'stack',
+        'heap': 'heap',
+        'hp': 'heap',
+        'tree': 'tree',
+        'trie': 'trie',
+        'graph': 'graph',
+        'node': 'node',
+        'nodes': 'nodes',
+        'edge': 'edge',
+        'edges': 'edges',
+        'vert': 'vertex',
+        'verts': 'vertices',
+        'path': 'path',
+        'paths': 'paths',
+        'route': 'route',
+        'routes': 'routes',
+        'url': 'url',
+        'urls': 'urls',
+        'uri': 'uri',
+        'uris': 'uris',
+        'json': 'json',
+        'xml': 'xml',
+        'html': 'html',
+        'css': 'css',
+        'js': 'javascript',
+        'ts': 'typescript',
+        'sql': 'sql',
+        'db': 'database',
+        'dbs': 'databases',
+        'tbl': 'table',
+        'tbls': 'tables',
+        'col': 'column',
+        'cols': 'columns',
+        'row': 'row',
+        'rows': 'rows',
+        'rec': 'record',
+        'recs': 'records',
+        'fld': 'field',
+        'flds': 'fields',
+        'key': 'key',
+        'keys': 'keys',
+        'val': 'value',
+        'vals': 'values',
+        'pair': 'pair',
+        'pairs': 'pairs',
+        'map': 'map',
+        'maps': 'maps',
+        'hash': 'hash',
+        'hashes': 'hashes',
+        'tbl': 'table',
+        'tbls': 'tables',
+        'vw': 'view',
+        'vws': 'views',
+        'sp': 'stored_procedure',
+        'sps': 'stored_procedures',
+        'fn': 'function',
+        'fns': 'functions',
+        'trg': 'trigger',
+        'trgs': 'triggers',
+        'idx': 'index',
+        'idxs': 'indexes',
+        'seq': 'sequence',
+        'seqs': 'sequences',
+        'syn': 'synonym',
+        'syns': 'synonyms',
+        'type': 'type',
+        'types': 'types',
+        'cls': 'class',
+        'intf': 'interface',
+        'intfs': 'interfaces',
+        'abs': 'abstract',
+        'base': 'base',
+        'derived': 'derived',
+        'super': 'super',
+        'sub': 'sub',
+        'parent': 'parent',
+        'child': 'child',
+        'sib': 'sibling',
+        'sibs': 'siblings',
+        'cous': 'cousin',
+        'cousins': 'cousins',
+        'anc': 'ancestor',
+        'ancs': 'ancestors',
+        'desc': 'descendant',
+        'descs': 'descendants',
+        'root': 'root',
+        'roots': 'roots',
+        'leaf': 'leaf',
+        'leaves': 'leaves',
+        'branch': 'branch',
+        'branches': 'branches',
+        'trunk': 'trunk',
+        'trunks': 'trunks',
+        'stem': 'stem',
+        'stems': 'stems',
+        'bark': 'bark',
+        'barks': 'barks',
+        'wood': 'wood',
+        'woods': 'woods',
+        'forest': 'forest',
+        'forests': 'forests',
+        'tree': 'tree',
+        'trees': 'trees',
+        'plant': 'plant',
+        'plants': 'plants',
+        'seed': 'seed',
+        'seeds': 'seeds',
+        'fruit': 'fruit',
+        'fruits': 'fruits',
+        'flower': 'flower',
+        'flowers': 'flowers',
+        'petal': 'petal',
+        'petals': 'petals',
+        'pollen': 'pollen',
+        'nectar': 'nectar',
+        'thorn': 'thorn',
+        'thorns': 'thorns',
+        'leaf': 'leaf',
+        'leaves': 'leaves',
+        'root': 'root',
+        'roots': 'roots',
+        'trunk': 'trunk',
+        'trunks': 'trunks',
+        'branch': 'branch',
+        'branches': 'branches',
+        'tree': 'tree',
+        'trees': 'trees',
+        'forest': 'forest',
+        'forests': 'forests',
+        'wood': 'wood',
+        'woods': 'woods',
+        'plant': 'plant',
+        'plants': 'plants',
+        'seed': 'seed',
+        'seeds': 'seeds',
+        'fruit': 'fruit',
+        'fruits': 'fruits',
+        'flower': 'flower',
+        'flowers': 'flowers',
+        'petal': 'petal',
+        'petals': 'petals',
+        'pollen': 'pollen',
+        'nectar': 'nectar',
+        'thorn': 'thorn',
+        'thorns': 'thorns',
+        'leaf': 'leaf',
+        'leaves': 'leaves',
+        'root': 'root',
+        'roots': 'roots',
+        'trunk': 'trunk',
+        'trunks': 'trunks',
+        'branch': 'branch',
+        'branches': 'branches',
+        'tree': 'tree',
+        'trees': 'trees',
+        'forest': 'forest',
+        'forests': 'forests',
+        'wood': 'wood',
+        'woods': 'woods',
+        'plant': 'plant',
+        'plants': 'plants',
+        'seed': 'seed',
+        'seeds': 'seeds',
+        'fruit': 'fruit',
+        'fruits': 'fruits',
+        'flower': 'flower',
+        'flowers': 'flowers',
+        'petal': 'petal',
+        'petals': 'petals',
+        'pollen': 'pollen',
+        'nectar': 'nectar',
+        'thorn': 'thorn',
+        'thorns': 'thorns'
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Semantic Naming Standards...")
+        await asyncio.sleep(0)
+        
+        # Focus on modified files or all Python files if none tracked
+        target_files = getattr(self.ctx, 'modified_files', self.ctx.python_files)
+        
+        if not target_files:
+            print("   ✅ No files to check for naming")
+            return
+        
+        print(f"   🔍 Analyzing naming in {len(target_files)} files...")
+        
+        # Process files in batches of 5 for cross-module context
+        batch_size = 5
+        batches = [target_files[i:i + batch_size] for i in range(0, len(target_files), batch_size)]
+        
+        refactored_files = []
+        naming_log = []
+        
+        for i, batch in enumerate(batches, 1):
+            print(f"   📦 Processing batch {i}/{len(batches)} ({len(batch)} files)...")
+            
+            # Analyze and refactor batch
+            batch_results = await self._refactor_batch(batch)
+            refactored_files.extend(batch_results['refactored'])
+            naming_log.extend(batch_results['log'])
+        
+        # Save naming refactor report
+        self._save_naming_report(naming_log, refactored_files)
+        
+        if refactored_files:
+            print(f"   ✅ Naming refactored in {len(refactored_files)} files")
+        else:
+            print("   ✅ All names comply with semantic standards")
+    
+    async def _refactor_batch(self, file_batch):
+        """Refactor a batch of files for better naming."""
+        batch_content = {}
+        symbol_analysis = {}
+        
+        # Extract symbols from each file
+        for file_path in file_batch:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    batch_content[file_path] = content
+                    
+                    # Extract symbols using AST
+                    symbols = self._extract_symbols(content)
+                    symbol_analysis[file_path] = symbols
+            except Exception as e:
+                print(f"   ❌ Failed to read {file_path}: {e}")
+        
+        # Check if any files need refactoring
+        needs_refactor = any(
+            self._has_poor_naming(symbols) 
+            for symbols in symbol_analysis.values()
+        )
+        
+        if not needs_refactor:
+            return {'refactored': [], 'log': []}
+        
+        # Generate refactored code using Gemini
+        refactored = []
+        log_entries = []
+        
+        for file_path, content in batch_content.items():
+            symbols = symbol_analysis[file_path]
+            
+            # Create refactoring task
+            task = self._create_refactoring_task(file_path, content, symbols)
+            
+            # Request refactoring
+            refactored_content = await self.ctx.request_mutation(
+                self.name, task, content, reasoning_mode=True
+            )
+            
+            # Apply if changed
+            if refactored_content and refactored_content != content:
+                if self.ctx.write_compliant_file(file_path, refactored_content):
+                    refactored.append(file_path)
+                    log_entries.append({
+                        'file': file_path,
+                        'symbols': symbols,
+                        'reasoning': 'Poor naming detected and refactored'
+                    })
+                    print(f"   ✅ Refactored naming: {os.path.basename(file_path)}")
+        
+        return {'refactored': refactored, 'log': log_entries}
+    
+    def _extract_symbols(self, content):
+        """Extract all symbols from Python code using AST."""
+        symbols = {
+            'classes': [],
+            'functions': [],
+            'variables': [],
+            'abbreviations': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            for node in ast.walk(tree):
+                # Class names
+                if isinstance(node, ast.ClassDef):
+                    symbols['classes'].append(node.name)
+                    self._check_abbreviations(node.name, symbols['abbreviations'])
+                
+                # Function names
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    symbols['functions'].append(node.name)
+                    self._check_abbreviations(node.name, symbols['abbreviations'])
+                    
+                    # Function arguments
+                    for arg in node.args.args:
+                        symbols['variables'].append(arg.arg)
+                        self._check_abbreviations(arg.arg, symbols['abbreviations'])
+                
+                # Variable assignments
+                elif isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name):
+                            symbols['variables'].append(target.id)
+                            self._check_abbreviations(target.id, symbols['abbreviations'])
+                
+                # Import aliases
+                elif isinstance(node, ast.Import):
+                    for alias in node.names:
+                        if alias.asname:
+                            symbols['variables'].append(alias.asname)
+                            self._check_abbreviations(alias.asname, symbols['abbreviations'])
+                
+                elif isinstance(node, ast.ImportFrom):
+                    for alias in node.names:
+                        if alias.asname:
+                            symbols['variables'].append(alias.asname)
+                            self._check_abbreviations(alias.asname, symbols['abbreviations'])
+        
+        except Exception as e:
+            print(f"   ⚠️  AST parsing failed: {e}")
+        
+        return symbols
+    
+    def _check_abbreviations(self, name, abbreviations):
+        """Check if a name contains common abbreviations."""
+        name_lower = name.lower()
+        
+        for abbrev, full_word in self.ABBREVIATION_MAP.items():
+            if abbrev in name_lower and name_lower != full_word:
+                abbreviations.append({
+                    'name': name,
+                    'abbreviation': abbrev,
+                    'suggestion': name_lower.replace(abbrev, full_word)
+                })
+    
+    def _has_poor_naming(self, symbols):
+        """Check if symbols contain poor naming patterns."""
+        # Check for abbreviations
+        if symbols['abbreviations']:
+            return True
+        
+        # Check for short names
+        for name in symbols['classes'] + symbols['functions']:
+            if len(name) < 3 and name not in ['i', 'j', 'k', 'x', 'y', 'z']:
+                return True
+        
+        # Check for camelCase (should be snake_case)
+        for name in symbols['functions'] + symbols['variables']:
+            if self._is_camel_case(name):
+                return True
+        
+        return False
+    
+    def _is_camel_case(self, name):
+        """Check if a name uses camelCase instead of snake_case."""
+        return name != name.lower() and '_' not in name and name[0].islower()
+    
+    def _create_refactoring_task(self, file_path, content, symbols):
+        """Create a refactoring task for Gemini."""
+        issues = []
+        
+        # Document naming issues
+        if symbols['abbreviations']:
+            issues.append("Contains abbreviations that should be expanded")
+        
+        for name in symbols['classes'] + symbols['functions']:
+            if len(name) < 3 and name not in ['i', 'j', 'k', 'x', 'y', 'z']:
+                issues.append(f"Name '{name}' is too short")
+        
+        for name in symbols['functions'] + symbols['variables']:
+            if self._is_camel_case(name):
+                issues.append(f"Name '{name}' uses camelCase instead of snake_case")
+        
+        task = (
+            f"NAMING REFACTOR TASK for {file_path}\n\n"
+            f"Issues detected:\n"
+            + "\n".join(f"- {issue}" for issue in issues) + "\n\n"
+            "Requirements:\n"
+            "1. Expand all abbreviations to full words\n"
+            "2. Convert camelCase to snake_case\n"
+            "3. Ensure all names are descriptive and intention-revealing\n"
+            "4. Preserve all functionality and logic\n"
+            "5. Update all references consistently within the file\n"
+            "6. Follow PEP 8 naming conventions\n\n"
+            f"Code to refactor:\n{content}\n\n"
+            "Return ONLY the complete refactored Python code."
+        )
+        
+        return task
+    
+    def _save_naming_report(self, log_entries, refactored_files):
+        """Save the naming refactor report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/naming_refactor_{timestamp}.md"
+        
+        report_content = f"# Naming Refactor Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files analyzed: {len(log_entries)}\n"
+        report_content += f"- Files refactored: {len(refactored_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Refactored Files\n\n"
+            for entry in log_entries:
+                report_content += f"### {entry['file']}\n\n"
+                
+                if entry['symbols']['abbreviations']:
+                    report_content += "**Abbreviations Found:**\n"
+                    for abbrev in entry['symbols']['abbreviations']:
+                        report_content += f"- `{abbrev['name']}` → `{abbrev['suggestion']}`\n"
+                    report_content += "\n"
+                
+                report_content += f"**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class DocEnforcer(SubAtomicAgent):
+    """ROLE: Documentation Surgeon. Ensures 100% docstring coverage for subatomic units."""
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Documentation Standards...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for documentation")
+            return
+        
+        print(f"   📝 Checking documentation for {len(target_files)} files...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track documentation improvements
+        doc_log = []
+        improved_files = []
+        
+        # Process each file
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._ensure_documentation(file_path)
+            if result:
+                improved_files.append(file_path)
+                doc_log.append(result)
+        
+        # Save documentation refinement report
+        self._save_doc_report(doc_log, improved_files)
+        
+        if improved_files:
+            print(f"   ✅ Documentation improved in {len(improved_files)} files")
+        else:
+            print("   ✅ All documentation meets standards")
+    
+    async def _ensure_documentation(self, file_path):
+        """Ensure file has proper docstrings reflecting its subatomic context."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Analyze current documentation state
+            doc_analysis = self._analyze_documentation(content)
+            
+            # Skip if already has good documentation
+            if doc_analysis['is_complete']:
+                print(f"   ✅ Already documented: {os.path.basename(file_path)}")
+                return None
+            
+            # Generate documentation
+            print(f"   📝 Generating documentation: {os.path.basename(file_path)}")
+            
+            # Extract domain context from path
+            domain_context = self._extract_domain_context(file_path)
+            
+            # Generate docstrings using Gemini
+            updated_content = await self._generate_documentation(
+                file_path, content, domain_context, doc_analysis
+            )
+            
+            # Apply updates
+            if updated_content and updated_content != content:
+                if self.ctx.write_compliant_file(file_path, updated_content):
+                    return {
+                        'file': file_path,
+                        'domain': domain_context,
+                        'before': doc_analysis,
+                        'reasoning': 'Missing or incomplete docstrings detected and generated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to update documentation for {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _analyze_documentation(self, content):
+        """Analyze current documentation state."""
+        analysis = {
+            'is_complete': False,
+            'has_module_doc': False,
+            'missing_class_docs': [],
+            'missing_function_docs': [],
+            'placeholder_docs': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Check module docstring
+            if ast.get_docstring(tree):
+                analysis['has_module_doc'] = True
+                doc = ast.get_docstring(tree)
+                if any(placeholder in doc.lower() for placeholder in ['todo', 'fixme', 'placeholder', 'tbd']):
+                    analysis['placeholder_docs'].append('module')
+            
+            # Check classes and functions
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ClassDef):
+                    if not ast.get_docstring(node):
+                        analysis['missing_class_docs'].append(node.name)
+                    else:
+                        doc = ast.get_docstring(node)
+                        if any(placeholder in doc.lower() for placeholder in ['todo', 'fixme', 'placeholder', 'tbd']):
+                            analysis['placeholder_docs'].append(f"class {node.name}")
+                
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    # Skip private methods
+                    if node.name.startswith('_'):
+                        continue
+                    
+                    if not ast.get_docstring(node):
+                        analysis['missing_function_docs'].append(node.name)
+                    else:
+                        doc = ast.get_docstring(node)
+                        if any(placeholder in doc.lower() for placeholder in ['todo', 'fixme', 'placeholder', 'tbd']):
+                            analysis['placeholder_docs'].append(f"function {node.name}")
+            
+            # Determine if documentation is complete
+            analysis['is_complete'] = (
+                analysis['has_module_doc'] and
+                not analysis['missing_class_docs'] and
+                not analysis['missing_function_docs'] and
+                not analysis['placeholder_docs']
+            )
+            
+        except Exception as e:
+            print(f"   ⚠️  AST parsing failed: {e}")
+        
+        return analysis
+    
+    def _has_proper_documentation(self, content: str) -> bool:
+        """Check if file already has proper docstrings."""
+        analysis = self._analyze_documentation(content)
+        return analysis['is_complete']
+    
+    def _extract_domain_context(self, file_path: str) -> str:
+        """Extract domain context from file path."""
+        parts = file_path.replace('\\', '/').split('/')
+        
+        # Skip root and focus on meaningful parts
+        domain_parts = []
+        for part in parts:
+            if part and part not in ['.', '__pycache__', 'tests']:
+                # Clean up common patterns
+                clean_part = part.replace('.py', '').replace('_', ' ').title()
+                domain_parts.append(clean_part)
+        
+        return ' → '.join(domain_parts[-3:])  # Last 3 parts for context
+    
+    async def _generate_documentation(self, file_path: str, content: str, domain: str, analysis: dict):
+        """Generate proper docstrings for the file."""
+        # Build specific requirements based on analysis
+        requirements = []
+        
+        if not analysis['has_module_doc']:
+            requirements.append("Add module-level docstring explaining the file's purpose")
+        
+        if analysis['missing_class_docs']:
+            requirements.append(f"Add docstrings for classes: {', '.join(analysis['missing_class_docs'])}")
+        
+        if analysis['missing_function_docs']:
+            requirements.append(f"Add docstrings for functions: {', '.join(analysis['missing_function_docs'])}")
+        
+        if analysis['placeholder_docs']:
+            requirements.append(f"Replace placeholder docs in: {', '.join(analysis['placeholder_docs'])}")
+        
+        prompt = (
+            f"DOCUMENTATION TASK: Generate PEP 257 compliant Google-style docstrings.\n\n"
+            f"Domain Context: {domain}\n"
+            f"File: {file_path}\n\n"
+            f"Requirements:\n"
+            + "\n".join(f"- {req}" for req in requirements) + "\n"
+            "Additional Rules:\n"
+            "1. Include Args, Returns, and Raises where applicable\n"
+            "2. Reference the domain context in descriptions\n"
+            "3. Use clear, professional language\n"
+            "4. Preserve all existing code, only add/update docstrings\n"
+            "5. Follow Google-style format consistently\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete updated Python code with proper docstrings."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_doc_report(self, log_entries, improved_files):
+        """Save the documentation refinement report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/doc_refinement_{timestamp}.md"
+        
+        report_content = f"# Documentation Refinement Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files analyzed: {len(log_entries)}\n"
+        report_content += f"- Files improved: {len(improved_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Documentation Improvements\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    report_content += f"**Domain:** {entry['domain']}\n\n"
+                    
+                    before = entry['before']
+                    report_content += f"**Before State:**\n"
+                    report_content += f"- Module doc: {'✅' if before['has_module_doc'] else '❌'}\n"
+                    
+                    if before['missing_class_docs']:
+                        report_content += f"- Missing classes: {', '.join(before['missing_class_docs'])}\n"
+                    
+                    if before['missing_function_docs']:
+                        report_content += f"- Missing functions: {', '.join(before['missing_function_docs'])}\n"
+                    
+                    if before['placeholder_docs']:
+                        report_content += f"- Placeholder docs: {', '.join(before['placeholder_docs'])}\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class TypeEnforcer(SubAtomicAgent):
+    """ROLE: Type Guardian. Enforces PEP 484 type hints for compile-time contracts."""
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for typing")
+            return
+        
+        print(f"   🔍 Analyzing types in {len(target_files)} files...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track typing improvements
+        type_log = []
+        improved_files = []
+        
+        # Process each file
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._ensure_typing(file_path)
+            if result:
+                improved_files.append(file_path)
+                type_log.append(result)
+        
+        # Save type refinement report
+        self._save_type_report(type_log, improved_files)
+        
+        if improved_files:
+            print(f"   ✅ Type contracts added to {len(improved_files)} files")
+        else:
+            print("   ✅ All functions properly typed")
+    
+    async def _ensure_typing(self, file_path):
+        """Ensure file has proper type hints for all public functions."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Analyze current typing state
+            type_analysis = self._analyze_typing(content)
+            
+            # Skip if already fully typed
+            if type_analysis['is_fully_typed']:
+                print(f"   ✅ Already typed: {os.path.basename(file_path)}")
+                return None
+            
+            # Generate type hints
+            print(f"   🔧 Adding type hints: {os.path.basename(file_path)}")
+            
+            # Generate typed code using Gemini
+            updated_content = await self._generate_typed_code(
+                file_path, content, type_analysis
+            )
+            
+            # Apply updates
+            if updated_content and updated_content != content:
+                if self.ctx.write_compliant_file(file_path, updated_content):
+                    return {
+                        'file': file_path,
+                        'before': type_analysis,
+                        'reasoning': 'Missing type hints detected and inferred'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to add types to {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _analyze_typing(self, content):
+        """Analyze current typing state in the file."""
+        analysis = {
+            'is_fully_typed': False,
+            'needs_future_import': False,
+            'untyped_functions': [],
+            'partially_typed': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Check if __future__ import is needed
+            for node in ast.walk(tree):
+                if isinstance(node, ast.ImportFrom) and node.module == '__future__':
+                    for alias in node.names:
+                        if alias.name == 'annotations':
+                            analysis['needs_future_import'] = True
+                            break
+            
+            # Analyze functions
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    # Skip private methods and dunder methods
+                    if node.name.startswith('_') and not node.name.startswith('__'):
+                        continue
+                    
+                    # Skip test methods
+                    if 'test' in node.name.lower():
+                        continue
+                    
+                    func_info = {
+                        'name': node.name,
+                        'line': node.lineno,
+                        'args': [],
+                        'return_annotated': node.returns is not None
+                    }
+                    
+                    # Check parameter annotations
+                    all_args_typed = True
+                    for arg in node.args.args:
+                        is_typed = arg.annotation is not None
+                        func_info['args'].append({
+                            'name': arg.arg,
+                            'typed': is_typed
+                        })
+                        if not is_typed:
+                            all_args_typed = False
+                    
+                    # Check if function needs typing
+                    if not all_args_typed or not func_info['return_annotated']:
+                        if all_args_typed or func_info['return_annotated']:
+                            analysis['partially_typed'].append(func_info)
+                        else:
+                            analysis['untyped_functions'].append(func_info)
+            
+            # Determine if file is fully typed
+            analysis['is_fully_typed'] = (
+                not analysis['untyped_functions'] and
+                not analysis['partially_typed']
+            )
+            
+        except Exception as e:
+            print(f"   ⚠️  AST parsing failed: {e}")
+        
+        return analysis
+    
+    async def _generate_typed_code(self, file_path: str, content: str, analysis: dict):
+        """Generate fully typed code using Gemini."""
+        # Build specific requirements based on analysis
+        requirements = []
+        
+        if analysis['untyped_functions']:
+            func_names = [f['name'] for f in analysis['untyped_functions']]
+            requirements.append(f"Add type hints to functions: {', '.join(func_names)}")
+        
+        if analysis['partially_typed']:
+            func_names = [f['name'] for f in analysis['partially_typed']]
+            requirements.append(f"Complete type hints for functions: {', '.join(func_names)}")
+        
+        if analysis['needs_future_import']:
+            requirements.append("Add 'from __future__ import annotations' at the top")
+        
+        prompt = (
+            f"TYPE ENFORCEMENT TASK: Add PEP 484 type hints to Python code.\n\n"
+            f"File: {file_path}\n\n"
+            f"Requirements:\n"
+            + "\n".join(f"- {req}" for req in requirements) + "\n"
+            "Typing Rules:\n"
+            "1. Use modern syntax (list[str] instead of List[str])\n"
+            "2. Add 'from __future__ import annotations' if needed\n"
+            "3. Infer types from context and usage patterns\n"
+            "4. Use Optional[T] for nullable parameters\n"
+            "5. Use Union[T, None] for return types that may be None\n"
+            "6. Use Callable[[args], return] for function parameters\n"
+            "7. Use Dict[str, Any] for generic dictionaries\n"
+            "8. Use List[str] or List[int] for typed lists\n"
+            "9. Preserve all existing logic and functionality\n"
+            "10. Add type hints to all public functions and methods\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete updated Python code with type hints."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_type_report(self, log_entries, improved_files):
+        """Save the type refinement report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/type_refinement_{timestamp}.md"
+        
+        report_content = f"# Type Refinement Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files analyzed: {len(log_entries)}\n"
+        report_content += f"- Files improved: {len(improved_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Type Improvements\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    before = entry['before']
+                    report_content += f"**Analysis:**\n"
+                    
+                    if before['untyped_functions']:
+                        report_content += f"- Untyped functions: {len(before['untyped_functions'])}\n"
+                        for func in before['untyped_functions'][:5]:  # Show first 5
+                            report_content += f"  - {func['name']} (line {func['line']})\n"
+                    
+                    if before['partially_typed']:
+                        report_content += f"- Partially typed functions: {len(before['partially_typed'])}\n"
+                        for func in before['partially_typed'][:5]:  # Show first 5
+                            report_content += f"  - {func['name']} (line {func['line']})\n"
+                    
+                    if before['needs_future_import']:
+                        report_content += f"- Added __future__ import\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
         
         self.ctx.write_compliant_file(report_path, report_content)
 
