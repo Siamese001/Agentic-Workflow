@@ -12,7 +12,7 @@ services:
   redis-stack:
     image: redis/redis-stack-server:7.4.0-v3
     container_name: agentic-redis-stack
-    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"    # Redis API
       - "8001:8001"    # RedisInsight UI
@@ -28,7 +28,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 2G
+          cpus: '1.0'
 
   # ---------------------------------------------------------------------------
   # 2. VECTOR STORAGE (Critical Priority)
@@ -52,6 +53,11 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
 
   # ---------------------------------------------------------------------------
   # 3. OBSERVABILITY & TELEMETRY
@@ -130,7 +136,8 @@ services:
         max_attempts: 3
       resources:
         limits:
-          memory: 2G
+          memory: 24G
+          cpus: '6.0'
     restart: unless-stopped
     command: python verify_installation.py
 
