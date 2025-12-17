@@ -31,6 +31,14 @@ except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install google-genai redis pinecone python-dotenv")
     sys.exit(1)
 
+# AutoGen: Collective Intelligence (Optional)
+try:
+    from autogen import AssistantAgent, GroupChat, GroupChatManager, UserProxyAgent
+    AUTOGEN_AVAILABLE = True
+except ImportError:
+    AUTOGEN_AVAILABLE = False
+    print("   ⚠️ AutoGen not found. Install 'pyautogen' for conversational repair.")
+
 load_dotenv()  # Auto-load .env
 
 # Configure logging
@@ -410,6 +418,15 @@ class ValidationContext:
     def client(self):
         """Lazy client access."""
         return self._client
+    
+    @property
+    def autogen_config_list(self):
+        """Bridges ValidationContext config to AutoGen format."""
+        return [{
+            "model": self.model_id,
+            "api_key": os.getenv("GOOGLE_API_KEY"),
+            "api_type": "google"
+        }]
 
     def inject_instruction(self, source_agent: str, instruction: str):
         """Add a guiding hint to the blackboard for downstream agents."""
@@ -636,6 +653,83 @@ class ValidationContext:
                 self.mutation_stats["total"] += 1
 
         return current_code # Fallback
+    
+    async def conversational_repair(self, failure_desc: str, affected_files: list) -> str | None:
+        """Spins up a targeted AutoGen GroupChat to debate and fix complex failures."""
+        if not AUTOGEN_AVAILABLE or not self.intelligence_enabled:
+            return None
+        
+        print(f"\n   🗣️ INITIATING AUTOGEN DEBATE on: {affected_files}")
+        config_list = self.autogen_config_list
+
+        # 1. Define The Council
+        sherlock = AssistantAgent(
+            name="Sherlock",
+            system_message="You are the Lead Investigator. Analyze the traceback. Propose the logical fix. Criticize unsafe proposals.",
+            llm_config={"config_list": config_list}
+        )
+        
+        safety = AssistantAgent(
+            name="SafetyInspector",
+            system_message="You are the Security Guard. REJECT any fix that uses eval(), exec(), or weakens permissions. Ensure imports are clean.",
+            llm_config={"config_list": config_list}
+        )
+        
+        coder = AssistantAgent(
+            name="SeniorEngineer",
+            system_message=f"You are the Implementer. Output the final Unified Diff for {affected_files[0] if affected_files else 'target file'}. Output ONLY the Code block.",
+            llm_config={"config_list": config_list}
+        )
+
+        user_proxy = UserProxyAgent(
+            name="SystemAdmin",
+            human_input_mode="NEVER",
+            code_execution_config=False,
+            max_consecutive_auto_reply=0
+        )
+
+        # 2. Define the Chat
+        groupchat = GroupChat(
+            agents=[user_proxy, sherlock, safety, coder],
+            messages=[],
+            max_round=6  # Limit debate length
+        )
+        
+        manager = GroupChatManager(groupchat=groupchat, llm_config={"config_list": config_list})
+
+        # 3. Start Debate
+        prompt = f"""
+CRITICAL FAILURE DETECTED:
+{failure_desc[:2000]}
+
+Context Files: {affected_files}
+
+GOAL: Agree on a fix. 
+1. Sherlock analyzes root cause.
+2. Safety checks constraints.
+3. SeniorEngineer generates a Unified Diff.
+"""
+        
+        # Run chat (blocking, so we wrap in thread)
+        try:
+            await asyncio.to_thread(
+                user_proxy.initiate_chat,
+                manager,
+                message=prompt
+            )
+            
+            # 4. Extract Final Outcome
+            # We look for the last code block from SeniorEngineer
+            for msg in reversed(groupchat.messages):
+                if msg['name'] == "SeniorEngineer" and "```" in msg['content']:
+                    return self._clean_llm_code(msg['content'])
+            
+            print("   ⚠️ AutoGen debate finished but produced no code.")
+            return None
+            
+        except Exception as e:
+            print(f"   ❌ AutoGen Failed: {e}")
+            return None
     
     def move_file(self, src: str, dst: str) -> bool:
         """Smart Move: Handles files (with compliance check) and directories."""
@@ -3083,8 +3177,9 @@ class TestPilot(SubAtomicAgent):
                         if retry_process.returncode == 0:
                             return True
                         else:
-                            print(f"   Test output after install: {stderr.decode()}")
-                            return False
+                            stderr_text = stderr.decode()
+                            print(f"   Test output after install: {stderr_text}")
+                            # Fall through to AutoGen debate below
                     else:
                         print(f"   ⚠️ Failed to install '{module}'")
                         return False
@@ -3092,6 +3187,43 @@ class TestPilot(SubAtomicAgent):
             if process.returncode == 0:
                 return True
             else:
+                # AUTOGEN: Escalate complex failures to multi-agent debate
+                print(f"   ❌ Tests failed. Escalating to AutoGen Council...")
+                
+                # Identify failing file from modified files
+                target_file = None
+                for modified_file in self.ctx.modified_files:
+                    if os.path.exists(modified_file):
+                        target_file = modified_file
+                        break
+                
+                if target_file and AUTOGEN_AVAILABLE:
+                    # TRIGGER THE DEBATE
+                    fix = await self.ctx.conversational_repair(stderr_text, [target_file])
+                    
+                    if fix:
+                        print(f"   🤝 Council reached consensus. Applying fix...")
+                        # Read original content
+                        try:
+                            with open(target_file, 'r', encoding='utf-8') as f:
+                                original_content = f.read()
+                            
+                            # Apply the unified diff
+                            patched = self.ctx.apply_unified_diff(target_file, fix, original_content)
+                            if patched:
+                                if self.ctx.write_compliant_file(target_file, patched):
+                                    print(f"   ✅ Fix Applied. Re-running tests...")
+                                    # Re-run tests to verify fix
+                                    verify_process = await asyncio.create_subprocess_exec(
+                                        sys.executable, "-m", "pytest", test_file, "-v",
+                                        stdout=asyncio.subprocess.PIPE,
+                                        stderr=asyncio.subprocess.PIPE
+                                    )
+                                    await verify_process.communicate()
+                                    return verify_process.returncode == 0
+                        except Exception as e:
+                            print(f"   ❌ Failed to apply AutoGen fix: {e}")
+                
                 print(f"   Test output: {stderr_text}")
                 return False
         except Exception as e:
