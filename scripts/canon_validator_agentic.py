@@ -11,7 +11,6 @@ import hashlib
 import json
 import logging
 import os
-import random
 import re
 import shutil
 import subprocess
@@ -22,27 +21,17 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 
-# Try to import Tri-Brain SDKs (optional dependencies)
-try:
-    from google import genai
-    GENAI_AVAILABLE = True
-except ImportError:
-    GENAI_AVAILABLE = False
-    genai = None
-
+# Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
     import redis.asyncio as redis
-    REDIS_AVAILABLE = True
-except ImportError:
-    REDIS_AVAILABLE = False
-    redis = None
+    from dotenv import load_dotenv
+    from google import genai
+    from pinecone import Pinecone
+except ImportError as e:
+    print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install google-genai redis pinecone python-dotenv")
+    sys.exit(1)
 
-try:
-    from pinecone import Pinecone, ServerlessSpec
-    PINECONE_AVAILABLE = True
-except ImportError:
-    PINECONE_AVAILABLE = False
-    Pinecone = None
+load_dotenv()  # Auto-load .env
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -193,56 +182,41 @@ class ValidationContext:
         return self._client
 
     def __post_init__(self):
+        print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
         self.python_files = get_python_files()
         self._load_memory()
-        
-        print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN (STRICT MODE)...")
 
-        # 1. SMART BRAIN (Gemini) - MANDATORY
-        if not GENAI_AVAILABLE:
-            raise RuntimeError("CRITICAL: 'google-genai' library missing. Install via pip.")
-        
-        # Using GOOGLE_API_KEY standard (default for Google GenAI SDK)
-        if not os.environ.get("GOOGLE_API_KEY"):
+        # Hard-Gate: Gemini
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
             raise RuntimeError("CRITICAL: GOOGLE_API_KEY environment variable is missing.")
-            
         try:
-            # The SDK automatically looks for GOOGLE_API_KEY, but we pass it explicitly to be safe
-            self._client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
+            self._client = genai.Client(api_key=api_key)
             self.intelligence_enabled = True
-            print(f"      ✅ Gemini Connected: {self.model_id}")
+            print(f"      ✅ Gemini Connected")
         except Exception as e:
-            raise RuntimeError(f"CRITICAL: Failed to connect to Gemini: {e}")
+            raise RuntimeError(f"CRITICAL: Gemini connection failed: {e}")
 
-        # 2. HOT BRAIN (Redis) - MANDATORY
-        if not REDIS_AVAILABLE:
-            raise RuntimeError("CRITICAL: 'redis' library missing. Install via pip.")
-        if not os.environ.get("REDIS_URL"):
+        # Hard-Gate: Redis
+        redis_url = os.environ.get("REDIS_URL")
+        if not redis_url:
             raise RuntimeError("CRITICAL: REDIS_URL environment variable is missing.")
-        try:
-            self.redis_client = redis.from_url(os.environ["REDIS_URL"], decode_responses=True)
-            self.redis_available = True
-            print(f"      ✅ Redis Configured: {os.environ['REDIS_URL']}")
-        except Exception as e:
-            raise RuntimeError(f"CRITICAL: Failed to configure Redis: {e}")
+        self.redis_client = redis.from_url(redis_url, decode_responses=True)
+        self.redis_available = True
+        print(f"      ✅ Redis Configured")
 
-        # 3. DEEP BRAIN (Pinecone) - MANDATORY
-        if not PINECONE_AVAILABLE:
-            raise RuntimeError("CRITICAL: 'pinecone-client' library missing. Install via pip.")
-        if not os.environ.get("PINECONE_API_KEY"):
+        # Hard-Gate: Pinecone
+        pine_key = os.environ.get("PINECONE_API_KEY")
+        if not pine_key:
             raise RuntimeError("CRITICAL: PINECONE_API_KEY environment variable is missing.")
         try:
-            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
-            index_name = "subatomic-codebase"
-            if index_name not in pc.list_indexes().names():
-                raise RuntimeError(f"CRITICAL: Pinecone index '{index_name}' does not exist.")
-            
-            self.pinecone_index = pc.Index(index_name)
+            pc = Pinecone(api_key=pine_key)
+            self.pinecone_index = pc.Index("canon-memory-l2")
             self.pinecone_available = True
-            print(f"      ✅ Pinecone Connected: Index '{index_name}'")
+            print(f"      ✅ Pinecone Connected")
         except Exception as e:
-            raise RuntimeError(f"CRITICAL: Failed to connect to Pinecone: {e}")
-            
+            raise RuntimeError(f"CRITICAL: Pinecone connection failed: {e}")
+
         print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
         print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
     
@@ -549,7 +523,6 @@ class ValidationContext:
         if not self.intelligence_enabled: return ""
         
         # Log reasoning if requested
-        system_prompt = "You are a Subatomic Software Architect."
         if reasoning_mode:
             task += "\nProvide a detailed step-by-step reasoning before generating the code/JSON."
             
@@ -1231,46 +1204,48 @@ class SafetyInspector(SubAtomicAgent):
                               for node in ast.walk(tree))
                 
                 if has_async:
-                    needs_patch = False
                     for pattern in blocking_patterns:
                         if pattern in content:
-                            needs_patch = True
                             violations.append(f"{file_path}: {pattern} in async context")
                     
                     # Use intelligence to patch the file
-                    if needs_patch and self.ctx.intelligence_enabled:
-                        print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
-                        
-                        # Build context for the mutation
-                        context = "\n".join(self.ctx.instructions)
-                        mutation_task = f"""
-                        Replace blocking calls with async alternatives.
-                        Context: {context}
-                        Rules:
-                        - Replace time.sleep with asyncio.sleep
-                        - Replace requests.get/http with httpx.get
-                        - Replace requests.post/http with httpx.post
-                        - Add 'import asyncio' if needed
-                        - Add 'import httpx' if needed
-                        """
-                        
-                        new_code = self.ctx.request_mutation(
-                            self.name, 
-                            mutation_task, 
-                            content
-                        )
-                        
-                        # Write back if different using Compliance Governor
-                        if new_code != content:
-                            if self.ctx.write_compliant_file(file_path, new_code):
-                                self.ctx.modified_files.add(file_path)
-                                print(f"   ✅ Patched {file_path}")
-                        
-                        # Inject migration advice for manual review
-                        self.ctx.inject_instruction(
-                            self.name,
-                            f"MIGRATION ADVICE: Async blocking calls patched in {file_path}. Review imports and error handling."
-                        )
+                    if False:  # AI auto-patching disabled to prevent syntax errors; report only mode
+                        # NOTE: Entire mutation section commented out to silence console spam
+                        # The SafetyInspector now acts as a pure auditor, reporting violations only
+                        # 
+                        # print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
+                        # 
+                        # # Build context for the mutation
+                        # context = "\n".join(self.ctx.instructions)
+                        # mutation_task = f'''
+                        # Replace blocking calls with async alternatives.
+                        # Context: {context}
+                        # Rules:
+                        # - Replace time.sleep with asyncio.sleep
+                        # - Replace requests.get/http with httpx.get
+                        # - Replace requests.post/http with httpx.post
+                        # - Add 'import asyncio' if needed
+                        # - Add 'import httpx' if needed
+                        # '''
+                        # 
+                        # new_code = self.ctx.request_mutation(
+                        #     self.name, 
+                        #     mutation_task, 
+                        #     content
+                        # )
+                        # 
+                        # # Write back if different using Compliance Governor
+                        # if new_code != content:
+                        #     if self.ctx.write_compliant_file(file_path, new_code):
+                        #         self.ctx.modified_files.add(file_path)
+                        #         print(f"   ✅ Patched {file_path}")
+                        # 
+                        # # Inject migration advice for manual review
+                        # self.ctx.inject_instruction(
+                        #     self.name,
+                        #     f"MIGRATION ADVICE: Async blocking calls patched in {file_path}. Review imports and error handling."
+                        # )
+                        pass
             except Exception as e:
                 print(f"   ❌ Failed to patch {file_path}: {e}")
                 continue
@@ -2486,7 +2461,7 @@ class TruthKeeper(SubAtomicAgent):
                 contents=prompt
             )
             
-            new_docstring = response.text.strip()
+            response.text.strip()
             
             # In a full implementation, we would update the file
             print(f"   ✅ Generated new docstring for {name}")
@@ -5517,7 +5492,6 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         cycles = []
         visited = set()
         rec_stack = set()
-        path = []
         
         def dfs(node, parent_path):
             if node in rec_stack:
@@ -5648,7 +5622,6 @@ class DeadlockDetector(SubAtomicAgent):
         cycles = []
         visited = set()
         rec_stack = set()
-        path = []
         
         def dfs(node, parent_path):
             if node in rec_stack:
@@ -6004,7 +5977,7 @@ class Sherlock(SubAtomicAgent):
     def _extract_error_file(self, traceback: str) -> str:
         """Extract the actual error file from pytest traceback."""
         import re
-        
+
         # Look for file paths in the traceback
         pattern = r'File "([^"]+)", line \d+'
         matches = re.findall(pattern, traceback)
@@ -6017,6 +5990,12 @@ class Sherlock(SubAtomicAgent):
     
     async def _request_cross_file_fix(self, files_content: dict, failure_info: dict):
         """Request a fix for the cross-file interaction issue."""
+        # Build files block with explicit loop (Python 3.11 f-string compatibility)
+        files_block = []
+        for path, content in files_content.items():
+            files_block.append(f"### {path}\n{content[:1000]}...")
+        files_content_str = "\n".join(files_block)
+        
         prompt = f"""
         Role: Debugging Expert
         Context: We modified a file and it caused a test failure in another file.
@@ -6029,7 +6008,7 @@ class Sherlock(SubAtomicAgent):
         {failure_info['traceback']}
         
         Files Content:
-        {chr(10).join(f"### {path}\n{content[:1000]}..." for path, content in files_content.items())}
+        {files_content_str}
         
         Task: Identify the root cause and provide the fix. The issue might be in the
         interaction between files, not just in the modified file.
@@ -6055,27 +6034,27 @@ class Sherlock(SubAtomicAgent):
 # ==============================================================================
 # --- MAIN ENTRY ---
 if __name__ == "__main__":
-    ctx = ValidationContext()
-    
-    # MAGNIFICENT SEVEN Agent Sequence (7 core + Sherlock trigger-only)
+    try:
+        ctx = ValidationContext()
+    except Exception as e:
+        print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
+        sys.exit(1)
+        
     agents = [
-        Historian(ctx),              # 1. Memory/Skip logic
-        ArchitectureGovernor(ctx),   # 2. Architecture + Complexity
-        HygieneGuardian(ctx),        # 3. File system hygiene
-        CodeStyleGuardian(ctx),      # 4. Code style + formatting
-        DependencySentinel(ctx),     # 5. Imports
-        SafetyInspector(ctx),        # 6. Security
-        ConcurrencyGuardian(ctx),    # 7. Concurrency safety
+        Historian(ctx), ArchitectureGovernor(ctx), HygieneGuardian(ctx),
+        CodeStyleGuardian(ctx), DependencySentinel(ctx), SafetyInspector(ctx),
+        ConcurrencyGuardian(ctx)
     ]
 
     async def run_mission():
         print("🚀 STARTING MAGNIFICENT SEVEN MISSION")
-        for agent in agents:
-            if agent.can_run():
-                await agent.execute()
-        
-        print("\n" + "="*50)
-        print("MISSION COMPLETE")
-        print("="*50)
+        try:
+            for agent in agents:
+                if agent.can_run():
+                    await agent.execute()
+        finally:
+            print("\n💾 SAVING BLACKBOARD STATE...")
+            ctx._save_memory()
+            print("\nMISSION COMPLETE")
 
     asyncio.run(run_mission())

@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+
 def load_env_file():
     """Load environment variables from .env file if it exists"""
     env_path = Path(__file__).parent.parent / '.env'

@@ -1,6 +1,7 @@
 """Dataclass models for constitutional_ai."""
 
 from typing import Any, Dict, List, Optional
+
 # from .constitutional_ai_enums import *  # Star import removed
 
 @dataclass
