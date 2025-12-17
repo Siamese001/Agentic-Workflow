@@ -4,10 +4,14 @@
 # Output directories
 logs/
 output/
+output/resumes/
+output/logs/
 outputs/
 results/
 
 # Data directories (keep only schemas indexed)
+data/raw/
+data/processed/
 data/resumes/
 data/output/
 data/cache/
@@ -38,6 +42,7 @@ ENV/
 .ruff_cache/
 .mypy_cache/
 .tox/
+.coverage
 
 # IDE
 .vscode/
@@ -55,9 +60,11 @@ archives/
 *.db
 *.sqlite
 
-# Docker volumes
+# Docker volumes & Vector DB storage
 redis_data/
 qdrant_data/
+qdrant_storage/
+chroma_db/
 
 # Temporary files
 *.tmp
