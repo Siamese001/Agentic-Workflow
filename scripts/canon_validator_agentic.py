@@ -2632,6 +2632,15 @@ class TestPilot(SubAtomicAgent):
     Runs after any mutation phase to ensure code stability.
     """
     
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.scheduler = None
+    
+    def set_scheduler(self, scheduler):
+        """Set scheduler reference for Sherlock integration."""
+        self.scheduler = scheduler
+        self.ctx._scheduler_ref = scheduler
+    
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Running Test Suite...")
         await asyncio.sleep(0)
@@ -2756,41 +2765,192 @@ class SwarmScheduler:
                 AtomicityEnforcer(self.ctx), # Law 2 (Size) + Patching
                 TaxonomyEnforcer(self.ctx)   # Law 4 (Meaning) + Patching
             ],
-            # 2. REFINEMENT (Parallel Enhancement)
-            "refinement_parallel": [
-                NamingEnforcer(self.ctx),    # Identity
-                DocEnforcer(self.ctx),       # Narrative
-                TypeEnforcer(self.ctx),      # Contract
-                TheCartographer(self.ctx)    # Deep Brain Update
+            # 2. CURATION (Sequential)
+            "curation_seq": [
+                TheCurator(self.ctx),       # File organization
+                # DependencySentinel(self.ctx),  # TODO: Implement
+                # CodeJanitor(self.ctx)       # TODO: Implement
             ],
-            # 3. VERIFICATION (Regression)
-            "verification_seq": [
-                TestPilot(self.ctx)          # Final Regression Test
+            # 3. TESTING (Sequential)
+            "test_seq": [
+                TestPilot(self.ctx)         # Regression testing
+            ],
+            # 4. MEMORY (Parallel)
+            "memory_parallel": [
+                TheCartographer(self.ctx),  # Vector embeddings
+                TheOmniContext(self.ctx)    # Global context
+            ],
+            # 5. SECURITY & PERFORMANCE (Parallel)
+            "security_performance_parallel": [
+                SafetyInspector(self.ctx),  # Banned patterns
+                SecurityEnforcer(self.ctx),  # Intelligent remediation
+                PerformanceEnforcer(self.ctx) # Logic and Efficiency
+            ],
+            # 6. ENGINEERING (Parallel)
+            "engineering_parallel": [
+                # BudgetAgent(self.ctx),     # TODO: Implement
+                TypeMechanic(self.ctx),     # Type checking
+                # StructuralEngineer(self.ctx) # TODO: Implement
+            ],
+            # 7. REFINEMENT (Parallel)
+            "refinement_parallel": [
+                # SemanticMapper(self.ctx),  # TODO: Implement
+                NamingEnforcer(self.ctx),   # Semantic naming
+                DocEnforcer(self.ctx),      # Documentation
+                TypeEnforcer(self.ctx),     # Type contracts
+                # RedSentinel(self.ctx),     # TODO: Implement
+                # TruthKeeper(self.ctx)      # TODO: Implement
+            ],
+            # 8. OPTIMIZATION (Conditional - Sequential)
+            "optimization_conditional": [
+                TheStrategist(self.ctx)     # Architectural evolution
             ]
         }
 
     async def run_mission(self):
         print("🚀 STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         
-        # Phase 1: Integrity
-        for agent in self.phases["integrity_seq"]:
+        # Main execution loop with convergence check
+        max_cycles = 10
+        for cycle in range(max_cycles):
+            print(f"\n{'='*60}")
+            print(f"CYCLE {cycle + 1}/{max_cycles}")
+            print(f"{'='*60}")
+            
+            # Reset cycle state
+            self.ctx.modified_files.clear()
+            self.ctx.signals.clear()
+            
+            # Execute all phases
+            converged = await self._execute_all_phases()
+            
+            # Check for convergence
+            if converged:
+                print("\n✅ CONVERGENCE ACHIEVED - All checks passed!")
+                break
+            
+            # Check for critical failures
+            if "CRITICAL_FAIL" in self.ctx.signals:
+                print("\n❌ CRITICAL FAILURE - Mission aborted!")
+                break
+        
+        # Final mission report
+        self._generate_mission_report()
+    
+    async def _execute_all_phases(self):
+        """Execute all phases in order with early abort logic."""
+        # Phase 1: Integrity (Sequential - Hard Gate)
+        print("\n[PHASE 1] INTEGRITY CHECK (Sequential)")
+        if not await self._run_sequential("integrity_seq"):
+            if "CRITICAL_FAIL" in self.ctx.signals:
+                return False
+        
+        # Phase 2: Curation (Sequential)
+        print("\n[PHASE 2] CURATION (Sequential)")
+        await self._run_sequential("curation_seq")
+        
+        # Phase 3: Testing (Sequential)
+        print("\n[PHASE 3] TESTING (Sequential)")
+        await self._run_sequential_with_scheduler("test_seq")
+        
+        # Phase 4: Memory (Parallel)
+        print("\n[PHASE 4] MEMORY ENHANCEMENT (Parallel)")
+        await self._run_parallel("memory_parallel")
+        
+        # Phase 5: SECURITY & PERFORMANCE (Parallel)
+        print("\n[PHASE 5] SECURITY & PERFORMANCE HARDENING (Parallel)")
+        await self._run_parallel("security_performance_parallel")
+        
+        # Phase 6: Engineering (Parallel)
+        print("\n[PHASE 6] ENGINEERING (Parallel)")
+        await self._run_parallel("engineering_parallel")
+        
+        # Phase 7: Refinement (Parallel)
+        print("\n[PHASE 7] REFINEMENT (Parallel)")
+        await self._run_parallel("refinement_parallel")
+        
+        # Phase 8: Optimization (Conditional - Sequential)
+        print("\n[PHASE 8] OPTIMIZATION (Conditional)")
+        if self._is_converged():
+            await self._run_sequential("optimization_conditional")
+        else:
+            print("   ⏭️  Skipping optimization - not fully converged")
+        
+        # Return convergence status
+        return self._is_converged()
+    
+    async def _run_sequential(self, phase_name):
+        """Execute a phase sequentially."""
+        agents = self.phases.get(phase_name, [])
+        for agent in agents:
             await agent.execute()
             
-        # Phase 2: Curation
-        for agent in self.phases["curator_seq"]:
+            # Early abort for critical failures in integrity phase
+            if phase_name == "integrity_seq" and "CRITICAL_FAIL" in self.ctx.signals:
+                print(f"   🚨 CRITICAL FAIL from {agent.name} - Aborting {phase_name}")
+                return False
+        
+        return True
+    
+    async def _run_sequential_with_scheduler(self, phase_name):
+        """Execute a phase sequentially, passing scheduler reference to agents."""
+        agents = self.phases.get(phase_name, [])
+        for agent in agents:
+            # Pass scheduler reference to TestPilot for Sherlock integration
+            if hasattr(agent, 'set_scheduler'):
+                agent.set_scheduler(self)
             await agent.execute()
-            
-        # Phase 3: Parallel Swarm
-        print("⚡ Unleashing Parallel Swarm...")
-        parallel_tasks = [agent.execute() for agent in self.phases["parallel_swarm"]]
-        if parallel_tasks:
-            await asyncio.gather(*parallel_tasks)
-            
-        # Phase 4: Verification
-        for agent in self.phases["verification_seq"]:
-            await agent.execute()
-            
-        print("🏁 MISSION COMPLETE")
+    
+    async def _run_parallel(self, phase_name):
+        """Execute a phase in parallel."""
+        agents = self.phases.get(phase_name, [])
+        if not agents:
+            return
+        
+        # Create rate-limited tasks
+        tasks = []
+        for agent in agents:
+            if hasattr(agent, 'execute'):
+                task = self.rate_limited_retry(agent.execute)
+                tasks.append(task)
+        
+        # Execute all agents in parallel
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+    
+    def _is_converged(self):
+        """Check if all agents have passed."""
+        if not self.ctx.results:
+            return False
+        
+        return all(r.get("passed", False) for r in self.ctx.results.values())
+    
+    def _generate_mission_report(self):
+        """Generate final mission report."""
+        print("\n" + "="*60)
+        print("MISSION REPORT")
+        print("="*60)
+        
+        total_keys = len(self.ctx.results)
+        passed_keys = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
+        
+        print(f"\n📊 SUMMARY:")
+        print(f"   Total Keys Checked: {total_keys}")
+        print(f"   Keys Passed: {passed_keys}")
+        print(f"   Keys Failed: {total_keys - passed_keys}")
+        print(f"   Success Rate: {passed_keys/total_keys*100:.1f}%")
+        
+        if self._is_converged():
+            print("\n✅ MISSION SUCCESS - Full convergence achieved!")
+        else:
+            print("\n⚠️  MISSION INCOMPLETE - Some issues remain")
+        
+        print("\n📝 DETAILED RESULTS:")
+        for key, result in sorted(self.ctx.results.items()):
+            status = "✅ PASS" if result.get("passed", False) else "❌ FAIL"
+            print(f"   {status} Key {key:02d}: {result.get('agent', 'Unknown')}")
+        
+        print("\n" + "="*60)
 
 # Legacy alias for backward compatibility
 IntelligentOrchestrator = SwarmScheduler
@@ -4423,6 +4583,616 @@ class TypeEnforcer(SubAtomicAgent):
                     
                     if before['needs_future_import']:
                         report_content += f"- Added __future__ import\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class SecurityEnforcer(SubAtomicAgent):
+    """ROLE: Security Guardian. Detects and intelligently remediates high-risk security patterns."""
+    
+    # High-risk security patterns for fast scanning
+    RISK_PATTERNS = {
+        'hardcoded_secret': re.compile(
+            r'(password\s*=\s*["\'][^"\']+["\']|'
+            r'api_key\s*=\s*["\'][^"\']+["\']|'
+            r'secret_key\s*=\s*["\'][^"\']+["\']|'
+            r'token\s*=\s*["\'][^"\']+["\']|'
+            r'auth\s*=\s*["\'][^"\']+["\'])',
+            re.IGNORECASE
+        ),
+        'weak_hash': re.compile(
+            r'(md5\(|sha1\(|hashlib\.md5\(|hashlib\.sha1\()',
+            re.IGNORECASE
+        ),
+        'insecure_random': re.compile(
+            r'(random\.random\(|random\.randint\(|random\.choice\()',
+            re.IGNORECASE
+        ),
+        'sql_injection': re.compile(
+            r'(execute\(|cursor\.execute\().*["\'].*\%.*["\']|'
+            r'execute\(|cursor\.execute\).*["\'].*\+.*["\']|'
+            r'execute\(|cursor\.execute\().*f["\'].*\{.*\}.*["\']',
+            re.IGNORECASE
+        ),
+        'eval_usage': re.compile(
+            r'\b(eval\(|exec\(|__import__\(|open\().*["\'].*\+|'
+            r'\b(eval|exec|__import__|open)\(.*%.*\)',
+            re.IGNORECASE
+        ),
+        'pickle_usage': re.compile(
+            r'pickle\.loads\(|pickle\.load\(',
+            re.IGNORECASE
+        ),
+        'temp_file': re.compile(
+            r'tempfile\.mktemp\(|tempfile\.NamedTemporaryFile\(delete=True\)',
+            re.IGNORECASE
+        ),
+        'urlopen_no_verify': re.compile(
+            r'urllib\.request\.urlopen\(|urlopen\([^)]*verify=False\)',
+            re.IGNORECASE
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Standards...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for security")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for security risks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track security fixes
+        security_log = []
+        fixed_files = []
+        critical_secrets_found = False
+        
+        # Two-pass scanning: regex filter -> AST context
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                security_log.append(result)
+                
+                # Check for critical secrets
+                if any('critical' in str(result.get('risks', {})).lower() for risk in result.get('risks', {}).values()):
+                    critical_secrets_found = True
+        
+        # Save security hardening report
+        self._save_security_report(security_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   🔒 Security hardening applied to {len(fixed_files)} files")
+            
+            # Signal critical findings
+            if critical_secrets_found:
+                print("   🚨 CRITICAL: Secrets detected - SECURE_REBOOT recommended!")
+                self.ctx.signals.append("SECURE_REBOOT: Critical secrets found and remediated")
+        else:
+            print("   ✅ No security risks detected")
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for risks and apply intelligent remediation."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_risks = self._detect_risks(content)
+            
+            if not detected_risks:
+                return None
+            
+            # Pass 2: AST context analysis
+            risk_context = self._analyze_risk_context(content, detected_risks)
+            
+            print(f"   🔧 Remediating security risks: {os.path.basename(file_path)}")
+            
+            # Generate secure code using Gemini
+            secured_content = await self._generate_secure_code(
+                file_path, content, risk_context, detected_risks
+            )
+            
+            # Apply fixes
+            if secured_content and secured_content != content:
+                if self.ctx.write_compliant_file(file_path, secured_content):
+                    return {
+                        'file': file_path,
+                        'risks': detected_risks,
+                        'context': risk_context,
+                        'reasoning': 'Security risks detected and intelligently remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to secure {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_risks(self, content):
+        """Fast regex-based risk detection."""
+        risks = {}
+        
+        for risk_name, pattern in self.RISK_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                risks[risk_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return risks
+    
+    def _analyze_risk_context(self, content, risks):
+        """Analyze AST to understand risk context."""
+        context = {
+            'functions_with_risks': [],
+            'variables_with_secrets': [],
+            'sql_queries': [],
+            'imports': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find functions containing risks
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    
+                    # Check if any risks are in this function
+                    for risk_name, risk_list in risks.items():
+                        for risk in risk_list:
+                            if func_start <= risk['line'] <= func_end:
+                                context['functions_with_risks'].append({
+                                    'function': node.name,
+                                    'risk': risk_name,
+                                    'line': risk['line']
+                                })
+                
+                # Track variable assignments with secrets
+                elif isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name):
+                            # Check if this is a secret assignment
+                            line_num = node.lineno
+                            for risk in risks.get('hardcoded_secret', []):
+                                if risk['line'] == line_num:
+                                    context['variables_with_secrets'].append({
+                                        'variable': target.id,
+                                        'line': line_num
+                                    })
+                
+                # Track SQL queries
+                elif isinstance(node, ast.Call):
+                    if isinstance(node.func, ast.Attribute):
+                        if node.func.attr == 'execute':
+                            context['sql_queries'].append({
+                                'line': node.lineno,
+                                'has_risk': any(r['line'] == node.lineno for r in risks.get('sql_injection', []))
+                            })
+                
+                # Track imports
+                elif isinstance(node, ast.Import):
+                    for alias in node.names:
+                        context['imports'].append(alias.name)
+                elif isinstance(node, ast.ImportFrom):
+                    if node.module:
+                        context['imports'].append(node.module)
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    async def _generate_secure_code(self, file_path: str, content: str, context: dict, detected_risks: dict = None):
+        """Generate secure code using Gemini with context awareness."""
+        # Build risk summary
+        risk_summary = []
+        risks_to_use = detected_risks if detected_risks else {}
+        for risk_name, risk_list in risks_to_use.items():
+            risk_summary.append(f"- {risk_name}: {len(risk_list)} occurrences")
+        
+        prompt = (
+            f"SECURITY REMEDIATION TASK: Fix high-risk security patterns in Python code.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Risks:\n"
+            + "\n".join(risk_summary) + "\n\n"
+            "Security Rules:\n"
+            "1. Replace hardcoded secrets with os.getenv() calls\n"
+            "2. Replace MD5/SHA1 with hashlib.sha256()\n"
+            "3. Replace random.random() with secrets.randbelow()\n"
+            "4. Replace SQL injection risks with parameterized queries\n"
+            "5. Replace eval/exec with safer alternatives\n"
+            "6. Replace pickle with json or msgpack\n"
+            "7. Replace insecure temp files with secure alternatives\n"
+            "8. Add SSL verification for HTTP requests\n\n"
+            "Context:\n"
+            f"- Functions with risks: {len(context.get('functions_with_risks', []))}\n"
+            f"- Variables with secrets: {len(context.get('variables_with_secrets', []))}\n"
+            f"- Risky SQL queries: {len([q for q in context.get('sql_queries', []) if q.get('has_risk')])}\n\n"
+            "Requirements:\n"
+            "1. Preserve all existing functionality\n"
+            "2. Use the most secure standard library alternatives\n"
+            "3. Add comments explaining security changes\n"
+            "4. Do not break existing logic\n"
+            "5. Import required modules if needed\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete secured Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_security_report(self, log_entries, fixed_files):
+        """Save the security hardening report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/security_hardening_{timestamp}.md"
+        
+        report_content = f"# Security Hardening Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Security Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    risks = entry['risks']
+                    report_content += f"**Risks Found:**\n"
+                    for risk_name, risk_list in risks.items():
+                        report_content += f"- {risk_name}: {len(risk_list)} occurrences\n"
+                    
+                    context = entry['context']
+                    if context.get('functions_with_risks'):
+                        report_content += f"\n**Affected Functions:**\n"
+                        for func in context['functions_with_risks'][:5]:
+                            report_content += f"- {func['function']} ({func['risk']})\n"
+                    
+                    if context.get('variables_with_secrets'):
+                        report_content += f"\n**Secret Variables:**\n"
+                        for var in context['variables_with_secrets']:
+                            report_content += f"- {var['variable']} (line {var['line']})\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class PerformanceEnforcer(SubAtomicAgent):
+    """ROLE: Performance Guardian. Identifies and remediates computational inefficiencies."""
+    
+    # Performance anti-patterns for fast scanning
+    PERFORMANCE_PATTERNS = {
+        'n_plus_one_query': re.compile(
+            r'for\s+\w+\s+in.*:\s*.*query\(|'
+            r'\.query\(.*\).*\s+for\s+|'
+            r'for.*in.*:\s*.*\.get\(',
+            re.IGNORECASE | re.MULTILINE
+        ),
+        'string_concat_loop': re.compile(
+            r'for\s+\w+\s+in.*:\s*.*\w+\s*\+=\s*["\']',
+            re.IGNORECASE | re.MULTILINE
+        ),
+        'blocking_sleep': re.compile(
+            r'time\.sleep\(',
+            re.IGNORECASE
+        ),
+        'blocking_requests': re.compile(
+            r'requests\.(get|post|put|delete|patch)\(',
+            re.IGNORECASE
+        ),
+        'inefficient_list_build': re.compile(
+            r'\[\]\s*;\s*for\s+\w+\s+in.*:\s*.*\.append\(',
+            re.IGNORECASE | re.MULTILINE
+        ),
+        'nested_loops_deep': re.compile(
+            r'for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in',
+            re.IGNORECASE | re.MULTILINE
+        ),
+        'regex_compile_each_time': re.compile(
+            r're\.(match|search|findall)\(["\'].*["\']',
+            re.IGNORECASE
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Optimizing Performance...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for performance")
+            return
+        
+        print(f"   ⚡ Analyzing performance in {len(target_files)} files...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track performance optimizations
+        perf_log = []
+        optimized_files = []
+        
+        # Scan and optimize files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_optimize(file_path)
+            if result:
+                optimized_files.append(file_path)
+                perf_log.append(result)
+        
+        # Save performance report
+        self._save_performance_report(perf_log, optimized_files)
+        
+        if optimized_files:
+            print(f"   ⚡ Performance optimized in {len(optimized_files)} files")
+        else:
+            print("   ✅ No performance issues detected")
+    
+    async def _scan_and_optimize(self, file_path):
+        """Scan file for performance issues and apply optimizations."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_issues = self._detect_performance_issues(content)
+            
+            if not detected_issues:
+                return None
+            
+            # Pass 2: AST context analysis
+            perf_context = self._analyze_performance_context(content, detected_issues)
+            
+            # Filter by confidence
+            high_confidence_issues = self._filter_by_confidence(perf_context)
+            
+            if not high_confidence_issues:
+                print(f"   ℹ️  Low-confidence patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   ⚡ Optimizing performance: {os.path.basename(file_path)}")
+            
+            # Generate optimized code using Gemini
+            optimized_content = await self._generate_optimized_code(
+                file_path, content, high_confidence_issues
+            )
+            
+            # Apply optimizations
+            if optimized_content and optimized_content != content:
+                if self.ctx.write_compliant_file(file_path, optimized_content):
+                    return {
+                        'file': file_path,
+                        'issues': high_confidence_issues,
+                        'context': perf_context,
+                        'reasoning': 'Performance anti-patterns detected and optimized'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to optimize {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_performance_issues(self, content):
+        """Fast regex-based performance issue detection."""
+        issues = {}
+        
+        for issue_name, pattern in self.PERFORMANCE_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                issues[issue_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return issues
+    
+    def _analyze_performance_context(self, content, issues):
+        """Analyze AST to understand performance context."""
+        context = {
+            'functions_with_issues': [],
+            'async_functions': set(),
+            'long_functions': [],
+            'string_concats_in_loops': [],
+            'blocking_io_in_async': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find async functions
+            for node in ast.walk(tree):
+                if isinstance(node, ast.AsyncFunctionDef):
+                    context['async_functions'].add(node.name)
+                    
+                    # Check for blocking I/O in async functions
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    
+                    for issue_name, issue_list in issues.items():
+                        if issue_name in ['blocking_sleep', 'blocking_requests']:
+                            for issue in issue_list:
+                                if func_start <= issue['line'] <= func_end:
+                                    context['blocking_io_in_async'].append({
+                                        'function': node.name,
+                                        'issue': issue_name,
+                                        'line': issue['line']
+                                    })
+                
+                # Find functions with performance issues
+                elif isinstance(node, ast.FunctionDef):
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    func_length = func_end - func_start
+                    
+                    # Check for long functions (>50 lines)
+                    if func_length > 50:
+                        context['long_functions'].append({
+                            'function': node.name,
+                            'length': func_length
+                        })
+                    
+                    # Check for issues in this function
+                    for issue_name, issue_list in issues.items():
+                        for issue in issue_list:
+                            if func_start <= issue['line'] <= func_end:
+                                context['functions_with_issues'].append({
+                                    'function': node.name,
+                                    'issue': issue_name,
+                                    'line': issue['line']
+                                })
+                                
+                                # Special check for string concat in loops
+                                if issue_name == 'string_concat_loop':
+                                    context['string_concats_in_loops'].append({
+                                        'function': node.name,
+                                        'line': issue['line']
+                                    })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _filter_by_confidence(self, context):
+        """Filter issues by confidence level."""
+        high_confidence = {
+            'string_concat_loop': [],
+            'blocking_sleep': [],
+            'blocking_requests': [],
+            'inefficient_list_build': []
+        }
+        
+        # High confidence: String concatenation in loops
+        for concat in context.get('string_concats_in_loops', []):
+            high_confidence['string_concat_loop'].append(concat)
+        
+        # High confidence: Blocking sleep in async functions
+        for blocking in context.get('blocking_io_in_async', []):
+            if blocking['issue'] in ['blocking_sleep', 'blocking_requests']:
+                high_confidence[blocking['issue']].append(blocking)
+        
+        # High confidence: Inefficient list building pattern
+        # (This is always safe to optimize)
+        if any('inefficient_list_build' in f.get('issue', '') for f in context.get('functions_with_issues', [])):
+            high_confidence['inefficient_list_build'] = [
+                f for f in context.get('functions_with_issues', [])
+                if 'inefficient_list_build' in f.get('issue', '')
+            ]
+        
+        return {k: v for k, v in high_confidence.items() if v}
+    
+    async def _generate_optimized_code(self, file_path: str, content: str, issues: dict):
+        """Generate optimized code using Gemini."""
+        # Build optimization summary
+        opt_summary = []
+        for issue_name, issue_list in issues.items():
+            opt_summary.append(f"- {issue_name}: {len(issue_list)} occurrences")
+        
+        prompt = (
+            f"PERFORMANCE OPTIMIZATION TASK: Optimize Python code for better performance.\n\n"
+            f"File: {file_path}\n\n"
+            f"Performance Issues:\n"
+            + "\n".join(opt_summary) + "\n\n"
+            "Optimization Rules:\n"
+            "1. Replace string concatenation in loops with ''.join() or list comprehension\n"
+            "2. Replace time.sleep() with asyncio.sleep() in async functions\n"
+            "3. Replace requests.get() with aiohttp or async equivalent in async functions\n"
+            "4. Convert inefficient list building to list comprehensions where appropriate\n"
+            "5. Pre-compile regex patterns outside loops\n"
+            "6. Maintain readability and the subatomic philosophy (<200 lines per file)\n"
+            "7. Add comments explaining performance improvements\n"
+            "8. Preserve all existing functionality\n\n"
+            "Requirements:\n"
+            "1. Do not sacrifice readability for micro-optimizations\n"
+            "2. Only apply optimizations that are semantically equivalent\n"
+            "3. Import required modules (asyncio, aiohttp) if needed\n"
+            "4. Keep functions focused and atomic\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete optimized Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_performance_report(self, log_entries, optimized_files):
+        """Save the performance optimization report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/performance_gains_{timestamp}.md"
+        
+        report_content = f"# Performance Gains Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files analyzed: {len(log_entries)}\n"
+        report_content += f"- Files optimized: {len(optimized_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Performance Optimizations\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ⚡ {entry['file']}\n\n"
+                    
+                    issues = entry['issues']
+                    report_content += f"**Optimizations Applied:**\n"
+                    for issue_name, issue_list in issues.items():
+                        report_content += f"- {issue_name}: {len(issue_list)} fixes\n"
+                    
+                    context = entry['context']
+                    if context.get('blocking_io_in_async'):
+                        report_content += f"\n**Async I/O Fixes:**\n"
+                        for fix in context['blocking_io_in_async']:
+                            report_content += f"- {fix['function']} (line {fix['line']})\n"
+                    
+                    if context.get('string_concats_in_loops'):
+                        report_content += f"\n**String Concat Optimizations:**\n"
+                        for concat in context['string_concats_in_loops']:
+                            report_content += f"- {concat['function']} (line {concat['line']})\n"
                     
                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
         
