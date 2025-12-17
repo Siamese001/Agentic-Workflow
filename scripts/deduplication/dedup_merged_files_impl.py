@@ -100,16 +100,11 @@ def execute_dedup(dry_run: bool=False) -> DedupManifest:
 def print_summary(manifest: DedupManifest, dry_run: bool) -> None:
     """Print deduplication summary."""
     if manifest.errors:
-        pass
         for err in manifest.errors[:5]:
             pass
         if len(manifest.errors) > 5:
             pass
     if dry_run:
         pass
-        pass
-        pass
     else:
-        pass
-        pass
         pass
