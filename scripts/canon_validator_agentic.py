@@ -997,60 +997,6 @@ class ArchitectureGovernor(SubAtomicAgent, ImportPatcher):
         
         return False
 
-class SystemArchitect(SubAtomicAgent):
-    """
-    KEYS: 40 (Metaclasses), 41 (Root Hygiene), 49 (Folder Depth), 50 (Integrity)
-    ROLE: The Gatekeeper. Enforces the strict unified folder allowlist.
-    """
-    
-    # Use global constants for unified governance
-    ALLOWED_ROOT_FOLDERS = ALLOWED_ROOT_FOLDERS
-    ALLOWED_ROOT_FILES = ALLOWED_ROOT_FILES
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
-        await asyncio.sleep(0)  # Compatibility no-op
-
-        # Inject architectural whitelist for all downstream agents
-        self.ctx.inject_instruction(
-            self.name,
-            "VALIDATE ONLY: agentic_core, apps_lic, apps_rg, apps_shared, schemas, prompt_governance, observability, config, tests. SKIP: data, archives."
-        )
-        
-        # Inject depth constraints for intelligent mutations
-        self.ctx.inject_instruction(
-            self.name,
-            "MANDATORY DEPTH: All new files must be at depth 3-5. Root files are exceptions."
-        )
-
-        # Key 40: No metaclasses
-        passed, details = self.check_key_40_no_metaclasses()
-        self.ctx.report(self.name, 40, passed, details)
-
-        # Key 41: Root Hygiene - Now handled by VoidEnforcer
-
-        # Key 49: Directory Depth - Now handled by DepthEnforcer
-        
-        # Key 50: Integrity
-        passed, details = self.check_key_50_canon_integrity()
-        self.ctx.report(self.name, 50, passed, details)
-
-    def check_key_40_no_metaclasses(self) -> Tuple[bool, List[str]]:
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    if "metaclass=" in f.read():
-                        violations.append(file_path)
-            except Exception: continue
-        return (len(violations) == 0, violations)
-
-    def check_key_50_canon_integrity(self) -> Tuple[bool, List[str]]:
-        violations = []
-        for req in ['README.md', '.gitignore']:
-            if not os.path.exists(req): violations.append(f"Missing {req}")
-        return (len(violations) == 0, violations)
-
 class StyleGuardian(SubAtomicAgent):
     """
     Unified style checking agent.
@@ -1078,6 +1024,7 @@ class StyleGuardian(SubAtomicAgent):
         total_violations = len(doc_violations) + len(naming_violations)
         
         if total_violations > 0:
+            print(f"   Found {total_violations} style issues (passive check)")
             print(f"   📝 Found {total_violations} style issues (passive check)")
         else:
             print("   ✅ All style conventions satisfied")
@@ -1705,44 +1652,10 @@ class SafetyInspector(SubAtomicAgent):
                 
         return (len(violations) == 0, violations)
 
-class DocumentationAgent(SubAtomicAgent):
-    """KEYS: 21 (Pragmatic Docs)"""
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation (Relaxed)...")
-        await asyncio.sleep(0)
-        violations = []
-        for file_path in self.ctx.python_files:
-            if 'tests' in file_path or 'scripts' in file_path: continue
-            try:
-                tree = ast.parse(open(file_path, "r", encoding="utf-8").read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef) and not node.name.startswith('_'):
-                        if not ast.get_docstring(node): violations.append(f"{file_path}:{node.lineno}")
-            except Exception: continue
-        self.ctx.report(self.name, 21, len(violations) == 0, violations)
-
-class NamingAgent(SubAtomicAgent):
-    """KEYS: 47 (Pragmatic Naming)"""
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Naming (Relaxed)...")
-        await asyncio.sleep(0)
-        violations = []
-        for file_path in self.ctx.python_files:
-            if 'test' in file_path.lower(): continue
-            try:
-                tree = ast.parse(open(file_path, "r", encoding="utf-8").read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name): violations.append(f"{file_path}:{node.lineno}")
-                    elif isinstance(node, ast.FunctionDef) and not node.name.startswith('_'):
-                        if not re.match(r'^[a-z_][a-z0-9_]*$', node.name): violations.append(f"{file_path}:{node.lineno}")
-            except Exception: continue
-        self.ctx.report(self.name, 47, len(violations) == 0, violations)
-
-class TypeMechanic(SubAtomicAgent):
+class SecurityEnforcer(SubAtomicAgent):
     """
-    KEYS: 22 (Missing Types), 23 (Unreachable Code), 24 (Unused Vars)
-    ROLE: Precision Engineering. Requires AST_VALID signal.
+    KEYS: 25 (SQL Injection), 26 (Path Traversal), 28 (XSS), 29 (CSRF), 30 (Insecure Deserialization)
+    ROLE: Security Hardening with Intelligence.
     """
 
     def can_run(self) -> bool:
@@ -4031,10 +3944,7 @@ class TheStrategist(SubAtomicAgent):
         except Exception as e:
             print(f"   ❌ Failed to generate refactor proposal: {e}")
 
-class AtomicityEnforcer(SubAtomicAgent, ImportPatcher):
-    """ROLE: Law 2 Surgeon. Splits monoliths into subatomic units with global import patching."""
-
-    async def execute(self):
+class MemoryLeakDetector(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Atomicity Law ({MIN_LINES}-{MAX_LINES} lines)...")
         await asyncio.sleep(0)
         
@@ -4255,7 +4165,7 @@ class AtomicityEnforcer(SubAtomicAgent, ImportPatcher):
         
         self.ctx.write_compliant_file(report_path, report_content)
 
-class VoidEnforcer(SubAtomicAgent):
+class PerformanceEnforcer(SubAtomicAgent):
     """ROLE: Law 3 Guardian. Keeps Project Root clean."""
     
     IMMUTABLE = {
@@ -4316,7 +4226,7 @@ class VoidEnforcer(SubAtomicAgent):
         except Exception as e:
             print(f"   ❌ Relocation Error: {e}")
 
-class DepthEnforcer(SubAtomicAgent, ImportPatcher):
+class PerformanceEnforcer(SubAtomicAgent):
     """ROLE: Law 1 Surgeon. Enforces Universal Depth (3-5) with global import patching."""
 
     async def execute(self):
@@ -4443,7 +4353,7 @@ class DepthEnforcer(SubAtomicAgent, ImportPatcher):
         
         self.ctx.write_compliant_file(report_path, report_content)
 
-class TaxonomyEnforcer(SubAtomicAgent, ImportPatcher):
+class PerformanceEnforcer(SubAtomicAgent):
     """ROLE: Taxonomy Architect. Elevates structure to domain-driven design with global import patching."""
     
     BAD_PATTERNS = {'utils', 'helpers', 'common', 'misc', 'tools', 'lib', 'core', 'shared'}
