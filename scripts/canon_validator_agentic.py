@@ -447,22 +447,29 @@ class ValidationContext:
         self.instructions.append(f"[{source_agent}] {instruction}")
 
     def write_compliant_file(self, path: str, content: str, dry_run: bool = False) -> bool:
-        """Enforces Laws before writing to disk."""
-        parts = path.split(os.sep)
+        """Enforces Laws and Syntax Safety before writing to disk."""
+        # 1. Strip Markdown artifacts (Common LLM Hallucination)
+        clean_content = content
+        if "```" in clean_content:
+            clean_content = re.sub(r"```[a-z]*\n", "", clean_content)
+            clean_content = clean_content.replace("```", "")
         
-        # Gate 1: Root Sprawl
+        clean_content = clean_content.strip()
+
+        # 2. STRICT AST CHECK: Do not write if syntax is invalid
+        if path.endswith(".py"):
+            try:
+                ast.parse(clean_content)
+            except SyntaxError as e:
+                print(f"   🛑 BLOCKED WRITE: Agent produced invalid syntax for {path}")
+                print(f"      Error: {e}")
+                return False
+
+        # 3. Standard Subatomic Checks
+        parts = path.split(os.sep)
         if len(parts) == 1 and parts[0] not in ALLOWED_ROOT_FILES:
             print(f"   🛑 BLOCKED: {path} is an illegal root file.")
             return False
-            
-        # Gate 2: Depth
-        # Adjust logic based on absolute/relative paths in your env
-        # relative_depth = len(parts) 
-        
-        # Gate 3: Atomicity (Only check if we have intelligence to fix it later)
-        if len(content.splitlines()) > MAX_LINES and self.intelligence_enabled:
-            # We allow the write but flag it for the AtomicityEnforcer to catch in next cycle
-            pass 
 
         if dry_run:
             print(f"   [GOVERNOR] ✅ Dry run: File would be written compliantly")
@@ -471,7 +478,7 @@ class ValidationContext:
         try:
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'w', encoding='utf-8') as f:
-                f.write(content)
+                f.write(clean_content)
             return True
         except Exception as e:
             print(f"   ❌ Write Failed: {e}")
