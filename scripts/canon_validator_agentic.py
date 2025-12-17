@@ -6789,6 +6789,15 @@ if __name__ == "__main__":
         MAX_CYCLES = 5
         cycle = 0
         
+        # LEVEL 6: Create healing branch on start (GitOps)
+        import time
+        branch_name = f"healing/auto_{int(time.time())}"
+        try:
+            subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
+            print(f"   🌱 GitOps: Created healing branch '{branch_name}'")
+        except Exception:
+            print("   ⚠️ GitOps: Could not create branch (may not be in git repo)")
+        
         while cycle < MAX_CYCLES:
             cycle += 1
             ctx.signal_healing_cycle(cycle)
@@ -6797,11 +6806,15 @@ if __name__ == "__main__":
             # Reset tracking for this cycle
             ctx.modified_files.clear()
             
-            # --- 🧠 STRATEGIC PLANNING PHASE (LEVEL 5) ---
+            # --- 🧠 STRATEGIC PLANNING PHASE (LEVEL 6) ---
             agenda = []
+            
+            # LEVEL 6: GitOps runs first to secure state
+            agenda.insert(0, GitAgent(ctx))
+            
             if cycle == 1:
                 # Cycle 1: Baseline Scan (Run Everyone)
-                agenda = agents
+                agenda.extend(agents)
                 print("   📋 PLAN: Executing full system diagnostic.")
             else:
                 # Cycle N: Surgical Strike based on Signals
