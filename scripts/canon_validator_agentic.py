@@ -201,10 +201,14 @@ class ValidationContext:
         # 1. SMART BRAIN (Gemini) - MANDATORY
         if not GENAI_AVAILABLE:
             raise RuntimeError("CRITICAL: 'google-genai' library missing. Install via pip.")
-        if not os.environ.get("GEMINI_API_KEY"):
-            raise RuntimeError("CRITICAL: GEMINI_API_KEY environment variable is missing.")
+        
+        # Using GOOGLE_API_KEY standard (default for Google GenAI SDK)
+        if not os.environ.get("GOOGLE_API_KEY"):
+            raise RuntimeError("CRITICAL: GOOGLE_API_KEY environment variable is missing.")
+            
         try:
-            self._client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+            # The SDK automatically looks for GOOGLE_API_KEY, but we pass it explicitly to be safe
+            self._client = genai.Client(api_key=os.environ["GOOGLE_API_KEY"])
             self.intelligence_enabled = True
             print(f"      ✅ Gemini Connected: {self.model_id}")
         except Exception as e:
@@ -216,9 +220,7 @@ class ValidationContext:
         if not os.environ.get("REDIS_URL"):
             raise RuntimeError("CRITICAL: REDIS_URL environment variable is missing.")
         try:
-            import redis.asyncio as redis
             self.redis_client = redis.from_url(os.environ["REDIS_URL"], decode_responses=True)
-            self.redis = self.redis_client  # Backward compatibility
             self.redis_available = True
             print(f"      ✅ Redis Configured: {os.environ['REDIS_URL']}")
         except Exception as e:
@@ -230,16 +232,12 @@ class ValidationContext:
         if not os.environ.get("PINECONE_API_KEY"):
             raise RuntimeError("CRITICAL: PINECONE_API_KEY environment variable is missing.")
         try:
-            from pinecone import Pinecone
             pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
-            index_name = "canon-memory-l2"  # Using existing index
-            # Strict check: Index MUST exist
+            index_name = "subatomic-codebase"
             if index_name not in pc.list_indexes().names():
                 raise RuntimeError(f"CRITICAL: Pinecone index '{index_name}' does not exist.")
             
             self.pinecone_index = pc.Index(index_name)
-            self.pinecone = self.pinecone_index  # Backward compatibility
-            self.pinecone_client = pc  # For backward compatibility
             self.pinecone_available = True
             print(f"      ✅ Pinecone Connected: Index '{index_name}'")
         except Exception as e:
