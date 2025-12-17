@@ -2780,19 +2780,27 @@ class SwarmScheduler:
                 TheCartographer(self.ctx),  # Vector embeddings
                 TheOmniContext(self.ctx)    # Global context
             ],
-            # 5. SECURITY & PERFORMANCE (Parallel)
-            "security_performance_parallel": [
+            # 5. RESILIENCE (Parallel)
+            "resilience_parallel": [
                 SafetyInspector(self.ctx),  # Banned patterns
                 SecurityEnforcer(self.ctx),  # Intelligent remediation
-                PerformanceEnforcer(self.ctx) # Logic and Efficiency
+                PerformanceEnforcer(self.ctx), # Logic and Efficiency
             ],
-            # 6. ENGINEERING (Parallel)
+            # 6. RESOURCE SAFETY (Parallel)
+            "resource_safety_parallel": [
+                MemoryLeakDetector(self.ctx),  # Resource Sustainability
+                DeadlockDetector(self.ctx),        # UPGRADED: Cycle-aware analysis
+                AsyncSafetyEnforcer(self.ctx),  # Async Correctness
+                RaceConditionDetector(self.ctx), # Data Race Prevention
+                LivelockPreventionAgent(self.ctx) # NEW: Progress Guarantee
+            ],
+            # 7. ENGINEERING (Parallel)
             "engineering_parallel": [
                 # BudgetAgent(self.ctx),     # TODO: Implement
                 TypeMechanic(self.ctx),     # Type checking
                 # StructuralEngineer(self.ctx) # TODO: Implement
             ],
-            # 7. REFINEMENT (Parallel)
+            # 8. REFINEMENT (Parallel)
             "refinement_parallel": [
                 # SemanticMapper(self.ctx),  # TODO: Implement
                 NamingEnforcer(self.ctx),   # Semantic naming
@@ -2801,7 +2809,11 @@ class SwarmScheduler:
                 # RedSentinel(self.ctx),     # TODO: Implement
                 # TruthKeeper(self.ctx)      # TODO: Implement
             ],
-            # 8. OPTIMIZATION (Conditional - Sequential)
+            # 9. BENCHMARKING (Sequential)
+            "benchmarking_seq": [
+                BenchmarkingAgent(self.ctx) # Empirical Validation
+            ],
+            # 10. OPTIMIZATION (Conditional - Sequential)
             "optimization_conditional": [
                 TheStrategist(self.ctx)     # Architectural evolution
             ]
@@ -2857,20 +2869,28 @@ class SwarmScheduler:
         print("\n[PHASE 4] MEMORY ENHANCEMENT (Parallel)")
         await self._run_parallel("memory_parallel")
         
-        # Phase 5: SECURITY & PERFORMANCE (Parallel)
-        print("\n[PHASE 5] SECURITY & PERFORMANCE HARDENING (Parallel)")
-        await self._run_parallel("security_performance_parallel")
+        # Phase 5: RESILIENCE (Parallel)
+        print("\n[PHASE 5] RESILIENCE HARDENING (Parallel)")
+        await self._run_parallel("resilience_parallel")
         
-        # Phase 6: Engineering (Parallel)
-        print("\n[PHASE 6] ENGINEERING (Parallel)")
+        # Phase 6: RESOURCE SAFETY (Parallel)
+        print("\n[PHASE 6] RESOURCE SAFETY (Parallel)")
+        await self._run_parallel("resource_safety_parallel")
+        
+        # Phase 7: ENGINEERING (Parallel)
+        print("\n[PHASE 7] ENGINEERING (Parallel)")
         await self._run_parallel("engineering_parallel")
         
-        # Phase 7: Refinement (Parallel)
-        print("\n[PHASE 7] REFINEMENT (Parallel)")
+        # Phase 8: Refinement (Parallel)
+        print("\n[PHASE 8] REFINEMENT (Parallel)")
         await self._run_parallel("refinement_parallel")
         
-        # Phase 8: Optimization (Conditional - Sequential)
-        print("\n[PHASE 8] OPTIMIZATION (Conditional)")
+        # Phase 9: Benchmarking (Sequential)
+        print("\n[PHASE 9] BENCHMARKING (Sequential)")
+        await self._run_sequential("benchmarking_seq")
+        
+        # Phase 10: Optimization (Conditional - Sequential)
+        print("\n[PHASE 10] OPTIMIZATION (Conditional)")
         if self._is_converged():
             await self._run_sequential("optimization_conditional")
         else:
@@ -5193,6 +5213,2103 @@ class PerformanceEnforcer(SubAtomicAgent):
                         report_content += f"\n**String Concat Optimizations:**\n"
                         for concat in context['string_concats_in_loops']:
                             report_content += f"- {concat['function']} (line {concat['line']})\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class BenchmarkingAgent(SubAtomicAgent):
+    """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
+    
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.benchmark_dir = "data/benchmarks"
+        self.history_file = os.path.join(self.benchmark_dir, "history.json")
+        self.regression_threshold = 0.10  # 10% performance regression threshold
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Running Performance Benchmarks...")
+        await asyncio.sleep(0)
+        
+        # Ensure benchmark directory exists
+        os.makedirs(self.benchmark_dir, exist_ok=True)
+        
+        # Find benchmark test files
+        benchmark_files = self._find_benchmark_files()
+        
+        if not benchmark_files:
+            print("   ✅ No benchmark files found - skipping")
+            return
+        
+        print(f"   📊 Found {len(benchmark_files)} benchmark suite(s)")
+        
+        # Load historical data
+        history = self._load_history()
+        
+        # Run benchmarks
+        current_results = await self._run_benchmarks(benchmark_files)
+        
+        if not current_results:
+            print("   ⚠️  Benchmark execution failed")
+            return
+        
+        # Analyze results for regressions
+        regressions = self._detect_regressions(history, current_results)
+        
+        # Store current results in history
+        self._save_results(current_results, history)
+        
+        # Generate trend report
+        self._generate_trend_report(history, current_results, regressions)
+        
+        # Signal regressions if detected
+        if regressions:
+            print(f"   🚨 PERFORMANCE REGRESSION DETECTED: {len(regressions)} benchmarks degraded")
+            self.ctx.signals.append("PERFORMANCE_REGRESSION")
+            for regression in regressions:
+                print(f"      - {regression['name']}: {regression['change']:.1f}% slower")
+        else:
+            print(f"   ✅ All benchmarks stable (±{self.regression_threshold*100:.0f}% threshold)")
+    
+    def _find_benchmark_files(self):
+        """Find benchmark test files in the repository."""
+        benchmark_files = []
+        
+        # Look for tests/benchmark_*.py pattern
+        for root, dirs, files in os.walk("."):
+            # Skip hidden directories and common non-test directories
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['__pycache__', 'node_modules', '.git']]
+            
+            for file in files:
+                if file.startswith("benchmark_") and file.endswith(".py"):
+                    benchmark_files.append(os.path.join(root, file))
+        
+        return benchmark_files
+    
+    def _load_history(self):
+        """Load historical benchmark data."""
+        try:
+            if os.path.exists(self.history_file):
+                with open(self.history_file, 'r') as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"   ⚠️  Failed to load history: {e}")
+        
+        return []
+    
+    async def _run_benchmarks(self, benchmark_files):
+        """Run pytest-benchmark on the benchmark files."""
+        # Create temporary file for benchmark JSON output
+        temp_json = os.path.join(self.benchmark_dir, "current_run.json")
+        
+        try:
+            # Try with pytest-benchmark first
+            cmd = [
+                sys.executable, "-m", "pytest",
+                "--benchmark-json", temp_json,
+                "--benchmark-only",
+                "--quiet"
+            ] + benchmark_files
+            
+            process = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            
+            stdout, stderr = await process.communicate()
+            
+            # Check if pytest-benchmark is available
+            if process.returncode != 0:
+                if "benchmark" in stderr.decode().lower():
+                    print("   ℹ️  pytest-benchmark not installed, falling back to pytest")
+                    return await self._run_simple_pytest(benchmark_files)
+                else:
+                    print(f"   ❌ Benchmark failed: {stderr.decode()}")
+                    return None
+            
+            # Parse benchmark results
+            if os.path.exists(temp_json):
+                with open(temp_json, 'r') as f:
+                    return json.load(f)
+            
+        except Exception as e:
+            print(f"   ❌ Failed to run benchmarks: {e}")
+        finally:
+            # Clean up temporary file
+            if os.path.exists(temp_json):
+                os.remove(temp_json)
+        
+        return None
+    
+    async def _run_simple_pytest(self, benchmark_files):
+        """Fallback: Run simple pytest without benchmarking."""
+        print("   📊 Running simple pytest (no timing data)")
+        
+        cmd = [sys.executable, "-m", "pytest", "--quiet"] + benchmark_files
+        
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        
+        stdout, stderr = await process.communicate()
+        
+        if process.returncode == 0:
+            # Return a minimal structure indicating tests passed
+            return {
+                "benchmarks": [],
+                "machine_info": {"node": "unknown"},
+                "datetime": datetime.datetime.now().isoformat(),
+                "pytest_fallback": True
+            }
+        else:
+            print(f"   ❌ Tests failed: {stderr.decode()}")
+            return None
+    
+    def _detect_regressions(self, history, current_results):
+        """Detect performance regressions compared to historical data."""
+        regressions = []
+        
+        if not history or "benchmarks" not in current_results:
+            return regressions
+        
+        # Get the most recent historical run
+        last_run = history[-1] if history else None
+        
+        if not last_run or "benchmarks" not in last_run:
+            return regressions
+        
+        # Create lookup table for current benchmarks
+        current_lookup = {
+            bench["name"]: bench["stats"]["mean"]
+            for bench in current_results["benchmarks"]
+            if "stats" in bench and "mean" in bench["stats"]
+        }
+        
+        # Create lookup table for historical benchmarks
+        historical_lookup = {
+            bench["name"]: bench["stats"]["mean"]
+            for bench in last_run["benchmarks"]
+            if "stats" in bench and "mean" in bench["stats"]
+        }
+        
+        # Compare each benchmark
+        for name, current_mean in current_lookup.items():
+            if name in historical_lookup:
+                historical_mean = historical_lookup[name]
+                
+                # Calculate percentage change
+                change = (current_mean - historical_mean) / historical_mean
+                
+                # Check for regression (positive change = slower)
+                if change > self.regression_threshold:
+                    regressions.append({
+                        "name": name,
+                        "current": current_mean,
+                        "historical": historical_mean,
+                        "change": change * 100  # Convert to percentage
+                    })
+        
+        return regressions
+    
+    def _save_results(self, results, history):
+        """Save current results to history, keeping only last 20 runs."""
+        # Add timestamp to results
+        results["timestamp"] = int(time.time())
+        results["datetime"] = datetime.datetime.now().isoformat()
+        
+        # Append to history
+        history.append(results)
+        
+        # Keep only last 20 runs
+        if len(history) > 20:
+            history = history[-20:]
+        
+        # Save to file
+        try:
+            with open(self.history_file, 'w') as f:
+                json.dump(history, f, indent=2)
+        except Exception as e:
+            print(f"   ❌ Failed to save history: {e}")
+    
+    def _generate_trend_report(self, history, current_results, regressions):
+        """Generate a benchmark trend report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/benchmark_trends_{timestamp}.md"
+        
+        report_content = f"# Benchmark Trends Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        
+        # Summary
+        report_content += f"## Summary\n\n"
+        report_content += f"- Historical runs: {len(history)}\n"
+        report_content += f"- Current benchmarks: {len(current_results.get('benchmarks', []))}\n"
+        report_content += f"- Regressions detected: {len(regressions)}\n\n"
+        
+        # Machine info
+        if "machine_info" in current_results:
+            report_content += f"## Machine Info\n\n"
+            machine = current_results["machine_info"]
+            report_content += f"- Node: {machine.get('node', 'unknown')}\n"
+            report_content += f"- Processor: {machine.get('processor', 'unknown')}\n"
+            report_content += f"- Python Version: {machine.get('python_version', 'unknown')}\n\n"
+        
+        # Benchmark results
+        if "benchmarks" in current_results:
+            report_content += f"## Benchmark Results\n\n"
+            
+            for bench in current_results["benchmarks"][:10]:  # Show first 10
+                name = bench.get("name", "unknown")
+                if "stats" in bench:
+                    stats = bench["stats"]
+                    mean = stats.get("mean", 0)
+                    std = stats.get("stddev", 0)
+                    report_content += f"### {name}\n"
+                    report_content += f"- Mean: {mean:.6f}s ± {std:.6f}s\n"
+                    
+                    # Check if this benchmark has history
+                    if len(history) > 1:
+                        # Find trend over last 5 runs
+                        recent_means = []
+                        for run in history[-5:]:
+                            for b in run.get("benchmarks", []):
+                                if b.get("name") == name and "stats" in b:
+                                    recent_means.append(b["stats"]["mean"])
+                                    break
+                        
+                        if len(recent_means) > 1:
+                            trend = (recent_means[-1] - recent_means[0]) / recent_means[0] * 100
+                            trend_icon = "📈" if trend > 0 else "📉"
+                            report_content += f"- Trend (5 runs): {trend_icon} {trend:+.1f}%\n"
+                
+                report_content += "\n"
+        
+        # Regressions
+        if regressions:
+            report_content += f"## 🚨 Performance Regressions\n\n"
+            for regression in regressions:
+                report_content += f"### {regression['name']}\n"
+                report_content += f"- Current: {regression['current']:.6f}s\n"
+                report_content += f"- Previous: {regression['historical']:.6f}s\n"
+                report_content += f"- Change: +{regression['change']:.1f}%\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class MemoryLeakDetector(SubAtomicAgent):
+    """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
+    
+    # Resource leak patterns for fast scanning
+    LEAK_PATTERNS = {
+        'naked_open': re.compile(
+            r'(?<!with\s+)(?<!\.\s+)open\s*\(',
+            re.IGNORECASE
+        ),
+        'naked_connect': re.compile(
+            r'(?<!with\s+)(?<!\.\s+)(socket\.|urllib\.|http\.|mysql\.|psycopg2\.|sqlite3\.)',
+            re.IGNORECASE
+        ),
+        'unbounded_cache': re.compile(
+            r'@lru_cache\s*\(\s*\)',
+            re.IGNORECASE
+        ),
+        'global_list_append': re.compile(
+            r'^[A-Z_]+\s*=\s*\[\]\s*\n.*\.append\(',
+            re.IGNORECASE | re.MULTILINE
+        ),
+        'file_no_close': re.compile(
+            r'open\s*\([^)]+\)\s*[^.\n]*\n(?!.*\.close\(\))',
+            re.IGNORECASE | re.MULTILINE
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Detecting Resource Leaks...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for leaks")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for resource leaks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track leak fixes
+        leak_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                leak_log.append(result)
+        
+        # Save resource safety report
+        self._save_safety_report(leak_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   🛡️  Resource leaks fixed in {len(fixed_files)} files")
+        else:
+            print("   ✅ No resource leaks detected")
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for leaks and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_leaks = self._detect_leaks(content)
+            
+            if not detected_leaks:
+                return None
+            
+            # Pass 2: AST context analysis
+            leak_context = self._analyze_leak_context(content, detected_leaks)
+            
+            # Prioritize critical leaks
+            critical_leaks = self._prioritize_leaks(leak_context)
+            
+            if not critical_leaks:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   🛡️  Fixing resource leaks: {os.path.basename(file_path)}")
+            
+            # Generate leak-free code using Gemini
+            fixed_content = await self._generate_leak_free_code(
+                file_path, content, critical_leaks
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'leaks': critical_leaks,
+                        'context': leak_context,
+                        'reasoning': 'Resource leaks detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix leaks in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_leaks(self, content):
+        """Fast regex-based leak detection."""
+        leaks = {}
+        
+        for leak_name, pattern in self.LEAK_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                leaks[leak_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return leaks
+    
+    def _analyze_leak_context(self, content, leaks):
+        """Analyze AST to understand leak context."""
+        context = {
+            'global_containers': [],
+            'naked_opens': [],
+            'missing_context_managers': [],
+            'unbounded_caches': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Track module-level assignments
+            for node in ast.walk(tree):
+                # Module-level growing containers
+                if isinstance(node, ast.Assign):
+                    # Check if at module level (col_offset == 0)
+                    if hasattr(node, 'col_offset') and node.col_offset == 0:
+                        for target in node.targets:
+                            if isinstance(target, ast.Name):
+                                var_name = target.id.upper()
+                                # Check if it's initialized as empty list/dict
+                                if isinstance(node.value, (ast.List, ast.Dict)):
+                                    if isinstance(node.value, ast.List) and not node.value.elts:
+                                        context['global_containers'].append({
+                                            'variable': var_name,
+                                            'line': node.lineno,
+                                            'type': 'list'
+                                        })
+                
+                # Function-level analysis
+                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    func_name = node.name
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    
+                    # Check for naked opens
+                    for leak_name, leak_list in leaks.items():
+                        if leak_name in ['naked_open', 'naked_connect']:
+                            for leak in leak_list:
+                                if func_start <= leak['line'] <= func_end:
+                                    context['naked_opens'].append({
+                                        'function': func_name,
+                                        'line': leak['line'],
+                                        'type': leak_name
+                                    })
+                    
+                    # Check for unclosed files
+                    for child in ast.walk(node):
+                        if isinstance(child, ast.Call):
+                            if isinstance(child.func, ast.Name) and child.func.id == 'open':
+                                # Check if wrapped in 'with' or has .close()
+                                if not self._is_in_with_block(child, node):
+                                    if not self._has_close_call(child, node):
+                                        context['missing_context_managers'].append({
+                                            'function': func_name,
+                                            'line': child.lineno,
+                                            'resource': 'file'
+                                        })
+                
+                # Check for unbounded lru_cache
+                elif isinstance(node, ast.FunctionDef):
+                    for decorator in node.decorator_list:
+                        if isinstance(decorator, ast.Call):
+                            if isinstance(decorator.func, ast.Name) and decorator.func.id == 'lru_cache':
+                                if not decorator.args:  # No maxsize specified
+                                    context['unbounded_caches'].append({
+                                        'function': node.name,
+                                        'line': decorator.lineno
+                                    })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _is_in_with_block(self, node, function_node):
+        """Check if a node is inside a 'with' statement."""
+        parent = node.parent if hasattr(node, 'parent') else None
+        while parent and parent != function_node:
+            if isinstance(parent, ast.With):
+                # Check if this node is part of the with items
+                for item in parent.items:
+                    if item.context_expr == node:
+                        return True
+            parent = parent.parent if hasattr(parent, 'parent') else None
+        return False
+    
+    def _has_close_call(self, node, function_node):
+        """Check if the opened file has a .close() call."""
+        # This is a simplified check - in reality, we'd need to track variable assignments
+        # and find all subsequent .close() calls on that variable
+        return False
+    
+    def _prioritize_leaks(self, context):
+        """Prioritize leaks by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: Naked opens without context managers
+        for naked in context.get('naked_opens', []):
+            prioritized['critical'].append({
+                'type': 'naked_resource',
+                'function': naked['function'],
+                'line': naked['line'],
+                'severity': 'critical'
+            })
+        
+        # High: Global growing containers
+        for container in context.get('global_containers', []):
+            prioritized['high'].append({
+                'type': 'global_container',
+                'variable': container['variable'],
+                'line': container['line'],
+                'severity': 'high'
+            })
+        
+        # Medium: Missing context managers
+        for missing in context.get('missing_context_managers', []):
+            prioritized['medium'].append({
+                'type': 'missing_context_manager',
+                'function': missing['function'],
+                'line': missing['line'],
+                'severity': 'medium'
+            })
+        
+        # Return only critical and high priority leaks for auto-fix
+        return {
+            k: v for k, v in prioritized.items() 
+            if k in ['critical', 'high'] and v
+        }
+    
+    async def _generate_leak_free_code(self, file_path: str, content: str, leaks: dict):
+        """Generate leak-free code using Gemini."""
+        # Build leak summary
+        leak_summary = []
+        for severity, leak_list in leaks.items():
+            for leak in leak_list:
+                leak_summary.append(f"- {leak['type']} ({severity}): line {leak['line']}")
+        
+        prompt = (
+            f"RESOURCE SAFETY TASK: Fix memory and resource leaks in Python code.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Leaks:\n"
+            + "\n".join(leak_summary) + "\n\n"
+            "Safety Rules:\n"
+            "1. Wrap all open() calls in 'with' statements for automatic cleanup\n"
+            "2. Replace global growing lists with rotating buffers or logging\n"
+            "3. Add maxsize parameter to @lru_cache decorators\n"
+            "4. Use context managers for all resources (files, sockets, connections)\n"
+            "5. Import contextlib and weakref as needed\n"
+            "6. Add comments explaining resource management\n"
+            "7. Preserve all existing functionality\n\n"
+            "Requirements:\n"
+            "1. Ensure all resources are properly closed even on exceptions\n"
+            "2. Use weakref for cache keys to prevent memory retention\n"
+            "3. Implement proper cleanup in __exit__ methods if needed\n"
+            "4. Do not sacrifice functionality for safety\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete leak-free Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_safety_report(self, log_entries, fixed_files):
+        """Save the resource safety report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/resource_safety_{timestamp}.md"
+        
+        report_content = f"# Resource Safety Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Resource Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    leaks = entry['leaks']
+                    report_content += f"**Leaks Fixed:**\n"
+                    for severity, leak_list in leaks.items():
+                        for leak in leak_list:
+                            report_content += f"- {leak['type']} ({severity}): line {leak['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('global_containers'):
+                        report_content += f"\n**Global Containers:**\n"
+                        for container in context['global_containers']:
+                            report_content += f"- {container['variable']} (line {container['line']})\n"
+                    
+                    if context.get('naked_opens'):
+                        report_content += f"\n**Naked Resources:**\n"
+                        for naked in context['naked_opens']:
+                            report_content += f"- {naked['function']} (line {naked['line']})\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class DeadlockAnalyzer(ast.NodeVisitor):
+    """AST visitor to build lock acquisition graph and detect potential deadlocks."""
+    
+    def __init__(self):
+        from collections import defaultdict
+        self.graph = defaultdict(set)  # Lock acquisition graph: lock_a -> {lock_b, lock_c}
+        self.lock_sequences = []  # List of lock acquisition sequences per function
+        self.current_function = None
+        self.current_sequence = []
+        self.locks_without_timeout = []
+        self.lock_acquisitions = []  # Track all lock.acquire() calls
+        
+    def visit_Module(self, node):
+        """Visit the module and analyze all functions."""
+        self.generic_visit(node)
+        
+    def visit_FunctionDef(self, node):
+        """Analyze a function for lock acquisition patterns."""
+        old_function = self.current_function
+        old_sequence = self.current_sequence
+        self.current_function = node.name
+        self.current_sequence = []
+        
+        # Visit function body
+        for stmt in node.body:
+            self.visit(stmt)
+        
+        # Record the lock sequence for this function
+        if len(self.current_sequence) > 1:
+            self.lock_sequences.append({
+                'function': node.name,
+                'sequence': self.current_sequence.copy(),
+                'line': node.lineno
+            })
+            
+            # Build graph edges from acquisition order
+            for i in range(len(self.current_sequence) - 1):
+                lock_a = self.current_sequence[i]
+                lock_b = self.current_sequence[i + 1]
+                self.graph[lock_a].add(lock_b)
+        
+        self.current_function = old_function
+        self.current_sequence = old_sequence
+    
+    def visit_AsyncFunctionDef(self, node):
+        """Analyze async functions for lock patterns."""
+        self.visit_FunctionDef(node)
+    
+    def visit_With(self, node):
+        """Analyze 'with' statements for lock acquisitions."""
+        for item in node.items:
+            lock_name = self._extract_lock_name(item.context_expr)
+            if lock_name:
+                self.current_sequence.append(lock_name)
+        
+        # Visit the with body
+        for stmt in node.body:
+            self.visit(stmt)
+        
+        # Remove locks from current sequence
+        for item in node.items:
+            lock_name = self._extract_lock_name(item.context_expr)
+            if lock_name:
+                self.current_sequence.pop()
+    
+    def visit_AsyncWith(self, node):
+        """Analyze 'async with' statements."""
+        self.visit_With(node)
+    
+    def visit_Call(self, node):
+        """Check for .acquire() calls without timeout."""
+        if isinstance(node.func, ast.Attribute):
+            if node.func.attr == 'acquire':
+                # Check if timeout parameter is provided
+                has_timeout = any(
+                    kw.arg == 'timeout' for kw in node.keywords
+                ) or len(node.args) > 1
+                
+                if not has_timeout:
+                    lock_name = self._extract_lock_name(node.func.value)
+                    if lock_name:
+                        self.locks_without_timeout.append({
+                            'lock': lock_name,
+                            'line': node.lineno,
+                            'function': self.current_function
+                        })
+        
+        self.generic_visit(node)
+    
+    def _extract_lock_name(self, node):
+        """Extract the lock name from an AST node."""
+        if isinstance(node, ast.Name):
+            return node.id
+        elif isinstance(node, ast.Attribute):
+            # For self.lock, return 'self.lock'
+            if isinstance(node.value, ast.Name) and node.value.id == 'self':
+                return f'self.{node.attr}'
+            # For other attributes, return the full path
+            return ast.unparse(node) if hasattr(ast, 'unparse') else str(node.lineno)
+        return None
+    
+    def detect_cycles(self):
+        """Detect cycles in the lock acquisition graph using DFS."""
+        cycles = []
+        visited = set()
+        rec_stack = set()
+        path = []
+        
+        def dfs(node, parent_path):
+            if node in rec_stack:
+                # Found a cycle
+                cycle_start = parent_path.index(node)
+                cycle = parent_path[cycle_start:] + [node]
+                cycles.append(cycle)
+                return
+            
+            if node in visited:
+                return
+            
+            visited.add(node)
+            rec_stack.add(node)
+            parent_path.append(node)
+            
+            for neighbor in self.graph.get(node, []):
+                dfs(neighbor, parent_path.copy())
+            
+            rec_stack.remove(node)
+        
+        # Run DFS from each node
+        for lock in self.graph:
+            if lock not in visited:
+                dfs(lock, [])
+        
+        return cycles
+
+class DeadlockDetector(SubAtomicAgent):
+    """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Lock Acquisition Patterns...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for deadlocks")
+            return
+        
+        print(f"   🔍 Analyzing {len(target_files)} files for deadlock patterns...")
+        print(f"   🎯 Building global lock acquisition graph")
+        
+        # Global graph to merge all file graphs
+        from collections import defaultdict
+        global_graph = defaultdict(set)
+        all_cycles = []
+        all_timeouts = []
+        deadlock_log = []
+        fixed_files = []
+        
+        # Analyze each file and build global graph
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Analyze the file
+                analyzer = DeadlockAnalyzer()
+                tree = ast.parse(content)
+                analyzer.visit(tree)
+                
+                # Merge into global graph
+                for lock, neighbors in analyzer.graph.items():
+                    global_graph[lock].update(neighbors)
+                
+                # Check for cycles in this file's graph
+                cycles = analyzer.detect_cycles()
+                if cycles:
+                    all_cycles.extend([{
+                        'file': file_path,
+                        'cycle': cycle,
+                        'function': seq['function'] if analyzer.lock_sequences else 'unknown'
+                    } for cycle in cycles for seq in analyzer.lock_sequences])
+                
+                # Collect timeout issues
+                if analyzer.locks_without_timeout:
+                    all_timeouts.extend([{
+                        'file': file_path,
+                        **timeout
+                    } for timeout in analyzer.locks_without_timeout])
+                
+                # Check if this file has issues that need fixing
+                if cycles or analyzer.locks_without_timeout:
+                    print(f"   🔒 Potential deadlock detected: {os.path.basename(file_path)}")
+                    
+                    # Generate fixes
+                    fixed_content = await self._generate_deadlock_free_code(
+                        file_path, content, cycles, analyzer.locks_without_timeout
+                    )
+                    
+                    if fixed_content and fixed_content != content:
+                        if self.ctx.write_compliant_file(file_path, fixed_content):
+                            fixed_files.append(file_path)
+                            deadlock_log.append({
+                                'file': file_path,
+                                'cycles': cycles,
+                                'timeouts': analyzer.locks_without_timeout,
+                                'reasoning': 'Deadlock patterns detected and remediated'
+                            })
+            
+            except Exception as e:
+                print(f"   ❌ Failed to analyze {file_path}: {e}")
+        
+        # Detect cycles in the global graph
+        global_cycles = self._detect_global_cycles(global_graph)
+        if global_cycles:
+            print(f"   🚨 Global deadlock cycles detected: {len(global_cycles)}")
+        
+        # Save deadlock analysis report
+        self._save_analysis_report(global_graph, global_cycles, all_timeouts, fixed_files)
+        
+        if fixed_files:
+            print(f"   🔒 Deadlock risks fixed in {len(fixed_files)} files")
+        else:
+            print("   ✅ No deadlock risks detected")
+    
+    def _detect_global_cycles(self, graph):
+        """Detect cycles in the global lock acquisition graph."""
+        cycles = []
+        visited = set()
+        rec_stack = set()
+        path = []
+        
+        def dfs(node, parent_path):
+            if node in rec_stack:
+                # Found a cycle
+                cycle_start = parent_path.index(node)
+                cycle = parent_path[cycle_start:] + [node]
+                cycles.append(cycle)
+                return
+            
+            if node in visited:
+                return
+            
+            visited.add(node)
+            rec_stack.add(node)
+            parent_path.append(node)
+            
+            for neighbor in graph.get(node, []):
+                dfs(neighbor, parent_path.copy())
+            
+            rec_stack.remove(node)
+        
+        for lock in graph:
+            if lock not in visited:
+                dfs(lock, [])
+        
+        return cycles
+    
+    async def _generate_deadlock_free_code(self, file_path: str, content: str, cycles: list, timeouts: list):
+        """Generate deadlock-free code using Gemini."""
+        # Build issue summary
+        issue_summary = []
+        
+        for cycle in cycles:
+            cycle_str = " → ".join(cycle)
+            issue_summary.append(f"- Lock cycle detected: {cycle_str}")
+        
+        for timeout in timeouts:
+            issue_summary.append(f"- Missing timeout on {timeout['lock']}.acquire() (line {timeout['line']})")
+        
+        prompt = (
+            f"DEADLOCK PREVENTION TASK: Fix potential deadlocks in Python code.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Issues:\n"
+            + "\n".join(issue_summary) + "\n\n"
+            "Deadlock Prevention Rules:\n"
+            "1. Enforce consistent global lock acquisition order (e.g., alphabetical by lock name)\n"
+            "2. Add timeout parameter to all lock.acquire() calls (e.g., acquire(timeout=5.0))\n"
+            "3. Use context managers (with lock:) instead of manual acquire/release\n"
+            "4. Consider using asyncio.Lock for async code\n"
+            "5. Add proper error handling for timeout exceptions\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Prevent all detected deadlock cycles\n"
+            "3. Add timeouts to prevent indefinite blocking\n"
+            "4. Use try/except for timeout handling where needed\n"
+            "5. Add comments explaining lock ordering strategy\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete deadlock-free Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_analysis_report(self, graph, cycles, timeouts, fixed_files):
+        """Save the deadlock analysis report with lock order graph."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/deadlock_analysis_{timestamp}.md"
+        
+        report_content = f"# Deadlock Analysis Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Lock nodes in graph: {len(graph)}\n"
+        report_content += f"- Deadlock cycles detected: {len(cycles)}\n"
+        report_content += f"- Locks without timeout: {len(timeouts)}\n"
+        report_content += f"- Files fixed: {len(fixed_files)}\n\n"
+        
+        # Lock acquisition graph
+        report_content += f"## Lock Acquisition Graph\n\n"
+        if graph:
+            report_content += "```\n"
+            for lock, neighbors in sorted(graph.items()):
+                if neighbors:
+                    for neighbor in sorted(neighbors):
+                        report_content += f"{lock} → {neighbor}\n"
+            report_content += "```\n\n"
+        
+        # Deadlock cycles
+        if cycles:
+            report_content += f"## Deadlock Cycles\n\n"
+            for i, cycle in enumerate(cycles, 1):
+                cycle_str = " → ".join(cycle)
+                report_content += f"### Cycle {i}\n"
+                report_content += f"`{cycle_str}`\n\n"
+        
+        # Timeouts
+        if timeouts:
+            report_content += f"## Locks Without Timeout\n\n"
+            for timeout in timeouts:
+                report_content += f"- **{timeout['file']}**: {timeout['lock']}.acquire() at line {timeout['line']}\n"
+            report_content += "\n"
+        
+        # Fixed files
+        if fixed_files:
+            report_content += f"## Files Fixed\n\n"
+            for file_path in fixed_files:
+                report_content += f"- ✅ {file_path}\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class TheCurator(SubAtomicAgent):
+    """ROLE: Async Guardian. Identifies and remediates async anti-patterns for non-blocking architecture."""
+    
+    # Async anti-patterns for fast scanning
+    BLOCKING_PATTERNS = {
+        'time_sleep': re.compile(
+            r'time\.sleep\s*\(',
+            re.IGNORECASE
+        ),
+        'requests_calls': re.compile(
+            r'requests\.(get|post|put|delete|patch|head|options)\s*\(',
+            re.IGNORECASE
+        ),
+        'subprocess_blocking': re.compile(
+            r'subprocess\.(run|call|check_call|check_output)\s*\(',
+            re.IGNORECASE
+        ),
+        'sync_file_ops': re.compile(
+            r'(open\s*\([^)]+\)\s*\.read|\.write|\.readlines|\.writelines)',
+            re.IGNORECASE
+        ),
+        'urllib_blocking': re.compile(
+            r'urllib\.request\.(urlopen|request)\s*\(',
+            re.IGNORECASE
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Async Safety...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for async safety")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for async risks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track async fixes
+        async_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                async_log.append(result)
+        
+        # Save async resilience report
+        self._save_resilience_report(async_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   ⚡ Async safety enforced in {len(fixed_files)} files")
+        else:
+            print("   ✅ No async safety issues detected")
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for async issues and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_issues = self._detect_async_issues(content)
+            
+            if not detected_issues:
+                return None
+            
+            # Pass 2: AST context analysis
+            async_context = self._analyze_async_context(content, detected_issues)
+            
+            # Prioritize critical issues
+            critical_issues = self._prioritize_issues(async_context)
+            
+            if not critical_issues:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   ⚡ Enforcing async safety: {os.path.basename(file_path)}")
+            
+            # Generate async-safe code using Gemini
+            fixed_content = await self._generate_async_safe_code(
+                file_path, content, critical_issues
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'issues': critical_issues,
+                        'context': async_context,
+                        'reasoning': 'Async anti-patterns detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix async in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_async_issues(self, content):
+        """Fast regex-based async issue detection."""
+        issues = {}
+        
+        for issue_name, pattern in self.BLOCKING_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                issues[issue_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return issues
+    
+    def _analyze_async_context(self, content, issues):
+        """Analyze AST to understand async context."""
+        context = {
+            'blocking_in_async': [],
+            'missing_awaits': [],
+            'sync_file_ops_in_async': [],
+            'fire_and_forget': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find async functions with blocking calls
+            for node in ast.walk(tree):
+                if isinstance(node, ast.AsyncFunctionDef):
+                    func_name = node.name
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    
+                    # Check for blocking calls in async functions
+                    for issue_name, issue_list in issues.items():
+                        if issue_name in ['time_sleep', 'requests_calls', 'subprocess_blocking', 'urllib_blocking']:
+                            for issue in issue_list:
+                                if func_start <= issue['line'] <= func_end:
+                                    context['blocking_in_async'].append({
+                                        'function': func_name,
+                                        'line': issue['line'],
+                                        'call': issue['full_match'],
+                                        'type': issue_name
+                                    })
+                    
+                    # Check for sync file operations in async
+                    if 'sync_file_ops' in issues:
+                        for issue in issues['sync_file_ops']:
+                            if func_start <= issue['line'] <= func_end:
+                                context['sync_file_ops_in_async'].append({
+                                    'function': func_name,
+                                    'line': issue['line'],
+                                    'operation': issue['full_match']
+                                })
+                    
+                    # Check for missing awaits
+                    for child in ast.walk(node):
+                        if isinstance(child, ast.Call):
+                            # Check if this is an awaitable call without await
+                            if self._is_awaitable_call(child):
+                                # Check if not already awaited
+                                parent = self._find_parent(child, node)
+                                if not isinstance(parent, ast.Await):
+                                    context['missing_awaits'].append({
+                                        'function': func_name,
+                                        'line': child.lineno,
+                                        'call': ast.unparse(child) if hasattr(ast, 'unparse') else str(child.lineno)
+                                    })
+                    
+                    # Check for fire-and-forget async calls
+                    for child in ast.walk(node):
+                        if isinstance(child, ast.Call):
+                            if isinstance(child.func, ast.Name) and child.func.id.endswith('_async'):
+                                parent = self._find_parent(child, node)
+                                if not isinstance(parent, ast.Await) and not isinstance(parent, ast.Assign):
+                                    context['fire_and_forget'].append({
+                                        'function': func_name,
+                                        'line': child.lineno,
+                                        'call': child.func.id
+                                    })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _is_awaitable_call(self, node):
+        """Check if a call returns an awaitable."""
+        if isinstance(node, ast.Call):
+            # Common async patterns
+            if isinstance(node.func, ast.Attribute):
+                # Method calls that are typically async
+                async_methods = {
+                    'fetch', 'execute', 'query', 'connect', 'send', 'receive',
+                    'read', 'write', 'open', 'close', 'acquire', 'release'
+                }
+                if node.func.attr in async_methods:
+                    return True
+            
+            # Function calls with async prefixes
+            if isinstance(node.func, ast.Name):
+                if node.func.id.startswith(('async_', 'aio')):
+                    return True
+        
+        return False
+    
+    def _find_parent(self, node, root):
+        """Find the parent of a node within a subtree."""
+        for child in ast.walk(root):
+            for field, value in ast.iter_fields(child):
+                if isinstance(value, list):
+                    for item in value:
+                        if item is node:
+                            return child
+                elif value is node:
+                    return child
+        return None
+    
+    def _prioritize_issues(self, context):
+        """Prioritize async issues by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: time.sleep in async functions
+        for blocking in context.get('blocking_in_async', []):
+            if blocking['type'] == 'time_sleep':
+                prioritized['critical'].append({
+                    'type': 'blocking_sleep',
+                    'function': blocking['function'],
+                    'line': blocking['line'],
+                    'severity': 'critical'
+                })
+        
+        # High: requests calls in async, missing awaits
+        for blocking in context.get('blocking_in_async', []):
+            if blocking['type'] == 'requests_calls':
+                prioritized['high'].append({
+                    'type': 'blocking_requests',
+                    'function': blocking['function'],
+                    'line': blocking['line'],
+                    'severity': 'high'
+                })
+        
+        for missing in context.get('missing_awaits', []):
+            prioritized['high'].append({
+                'type': 'missing_await',
+                'function': missing['function'],
+                'line': missing['line'],
+                'severity': 'high'
+            })
+        
+        # Medium: sync file ops, fire-and-forget
+        for sync_op in context.get('sync_file_ops_in_async', []):
+            prioritized['medium'].append({
+                'type': 'sync_file_op',
+                'function': sync_op['function'],
+                'line': sync_op['line'],
+                'severity': 'medium'
+            })
+        
+        for fire in context.get('fire_and_forget', []):
+            prioritized['medium'].append({
+                'type': 'fire_and_forget',
+                'function': fire['function'],
+                'line': fire['line'],
+                'severity': 'medium'
+            })
+        
+        # Return only critical and high priority issues for auto-fix
+        return {
+            k: v for k, v in prioritized.items() 
+            if k in ['critical', 'high'] and v
+        }
+    
+    async def _generate_async_safe_code(self, file_path: str, content: str, issues: dict):
+        """Generate async-safe code using Gemini."""
+        # Build issue summary
+        issue_summary = []
+        for severity, issue_list in issues.items():
+            for issue in issue_list:
+                issue_summary.append(f"- {issue['type']} ({severity}): line {issue['line']}")
+        
+        prompt = (
+            f"ASYNC SAFETY TASK: Fix async anti-patterns in Python code for non-blocking architecture.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Issues:\n"
+            + "\n".join(issue_summary) + "\n\n"
+            "Async Safety Rules:\n"
+            "1. Replace time.sleep() with asyncio.sleep() in async functions\n"
+            "2. Replace requests.* with aiohttp in async functions (use async with)\n"
+            "3. Add await keyword to all awaitable calls in async functions\n"
+            "4. Replace sync file ops with aiofiles in async functions\n"
+            "5. Use asyncio.subprocess instead of subprocess in async functions\n"
+            "6. Handle fire-and-forget tasks properly (await or create_task)\n"
+            "7. Import asyncio, aiohttp, aiofiles as needed\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Ensure no blocking calls in async functions\n"
+            "3. Add proper error handling for async operations\n"
+            "4. Use context managers for resources (async with)\n"
+            "5. Add comments explaining async changes\n"
+            "6. Preserve function signatures and return types\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete async-safe Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_resilience_report(self, log_entries, fixed_files):
+        """Save the async resilience report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/async_resilience_{timestamp}.md"
+        
+        report_content = f"# Async Resilience Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Async Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    issues = entry['issues']
+                    report_content += f"**Issues Fixed:**\n"
+                    for severity, issue_list in issues.items():
+                        for issue in issue_list:
+                            report_content += f"- {issue['type']} ({severity}): line {issue['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('blocking_in_async'):
+                        report_content += f"\n**Blocking in Async:**\n"
+                        for blocking in context['blocking_in_async']:
+                            report_content += f"- {blocking['function']} (line {blocking['line']}): {blocking['call']}\n"
+                    
+                    if context.get('missing_awaits'):
+                        report_content += f"\n** Missing Awaits:**\n"
+                        for missing in context['missing_awaits']:
+                            report_content += f"- {missing['function']} (line {missing['line']})\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class RaceAnalyzer(ast.NodeVisitor):
+    """AST visitor to analyze potential race conditions."""
+    
+    def __init__(self):
+        self.races = []
+        self.current_function = None
+        self.current_class = None
+        self.in_with_context = []
+        self.global_variables = set()
+        self.shared_state = []
+        
+    def visit(self, node):
+        # Add parent info to nodes for context tracking
+        for child in ast.walk(node):
+            for field, value in ast.iter_fields(child):
+                if isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, ast.AST):
+                            item._parent = child
+                elif isinstance(value, ast.AST):
+                    value._parent = child
+        return super().visit(node)
+    
+    def visit_Module(self, node):
+        # Track module-level assignments (global state)
+        for stmt in node.body:
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Name):
+                        self.global_variables.add(target.id)
+        self.generic_visit(node)
+    
+    def visit_ClassDef(self, node):
+        old_class = self.current_class
+        self.current_class = node.name
+        
+        # Track class attributes as shared state
+        for stmt in node.body:
+            if isinstance(stmt, ast.Assign):
+                for target in stmt.targets:
+                    if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name):
+                        if target.value.id == 'self':
+                            self.shared_state.append({
+                                'type': 'class_attribute',
+                                'name': target.attr,
+                                'line': stmt.lineno,
+                                'class': node.name
+                            })
+        
+        self.generic_visit(node)
+        self.current_class = old_class
+    
+    def visit_FunctionDef(self, node):
+        old_function = self.current_function
+        self.current_function = node.name
+        
+        # Check for global statements
+        for stmt in node.body:
+            if isinstance(stmt, ast.Global):
+                self.global_variables.update(stmt.names)
+        
+        self.generic_visit(node)
+        self.current_function = old_function
+    
+    def visit_AsyncFunctionDef(self, node):
+        self.visit_FunctionDef(node)
+    
+    def visit_With(self, node):
+        # Check if this 'with' statement uses a lock
+        is_lock_context = False
+        for item in node.items:
+            if isinstance(item.context_expr, ast.Name):
+                if 'lock' in item.context_expr.id.lower():
+                    is_lock_context = True
+            elif isinstance(item.context_expr, ast.Attribute):
+                if 'lock' in item.context_expr.attr.lower():
+                    is_lock_context = True
+        
+        self.in_with_context.append(('lock' if is_lock_context else 'other', node.lineno))
+        self.generic_visit(node)
+        self.in_with_context.pop()
+    
+    def visit_AsyncWith(self, node):
+        self.visit_With(node)
+    
+    def visit_Assign(self, node):
+        # Check for assignments to shared mutable state
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                # Module/global variable assignment
+                if target.id in self.global_variables:
+                    if not self._is_in_lock_context():
+                        self.races.append({
+                            'type': 'global_mutable_assignment',
+                            'variable': target.id,
+                            'line': node.lineno,
+                            'function': self.current_function,
+                            'context': 'module'
+                        })
+            
+            elif isinstance(target, ast.Attribute):
+                # Class attribute assignment (self.x)
+                if isinstance(target.value, ast.Name) and target.value.id == 'self':
+                    if not self._is_in_lock_context():
+                        self.races.append({
+                            'type': 'class_attribute_assignment',
+                            'attribute': target.attr,
+                            'line': node.lineno,
+                            'function': self.current_function,
+                            'class': self.current_class
+                        })
+            
+            elif isinstance(target, ast.Subscript):
+                # Dictionary/list element assignment (shared_dict[key])
+                if not self._is_in_lock_context():
+                    self.races.append({
+                        'type': 'shared_collection_assignment',
+                        'line': node.lineno,
+                        'function': self.current_function,
+                        'class': self.current_class
+                    })
+        
+        self.generic_visit(node)
+    
+    def visit_AugAssign(self, node):
+        # Check for compound operations (+=, -=, *=, /=)
+        # These are always non-atomic
+        if isinstance(node.target, ast.Name):
+            if node.target.id in self.global_variables:
+                if not self._is_in_lock_context():
+                    self.races.append({
+                        'type': 'global_compound_operation',
+                        'variable': node.target.id,
+                        'operator': type(node.op).__name__,
+                        'line': node.lineno,
+                        'function': self.current_function,
+                        'context': 'module'
+                    })
+        
+        elif isinstance(node.target, ast.Attribute):
+            if isinstance(node.target.value, ast.Name) and node.target.value.id == 'self':
+                if not self._is_in_lock_context():
+                    self.races.append({
+                        'type': 'class_compound_operation',
+                        'attribute': node.target.attr,
+                        'operator': type(node.op).__name__,
+                        'line': node.lineno,
+                        'function': self.current_function,
+                        'class': self.current_class
+                    })
+        
+        self.generic_visit(node)
+    
+    def visit_Call(self, node):
+        # Check for method calls on shared objects without locks
+        if isinstance(node.func, ast.Attribute):
+            # Check if it's a mutable method on shared state
+            mutable_methods = {'append', 'extend', 'insert', 'pop', 'remove', 'clear', 
+                              'update', 'popitem', 'setdefault', 'add', 'discard', 
+                              'update', 'intersection_update', 'difference_update'}
+            
+            if node.func.attr in mutable_methods:
+                if isinstance(node.func.value, ast.Name):
+                    if node.func.value.id in self.global_variables:
+                        if not self._is_in_lock_context():
+                            self.races.append({
+                                'type': 'shared_mutable_method_call',
+                                'method': node.func.attr,
+                                'object': node.func.value.id,
+                                'line': node.lineno,
+                                'function': self.current_function
+                            })
+        
+        self.generic_visit(node)
+    
+    def _is_in_lock_context(self):
+        """Check if current node is inside a 'with lock:' context."""
+        return any(context[0] == 'lock' for context in self.in_with_context)
+
+class RaceConditionDetector(SubAtomicAgent):
+    """ROLE: Race Guardian. Detects and remediates data races in shared mutable state."""
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Detecting Race Conditions...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for race conditions")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for race conditions...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track race fixes
+        race_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                race_log.append(result)
+        
+        # Save race safety report
+        self._save_safety_report(race_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   🛡️  Race conditions fixed in {len(fixed_files)} files")
+        else:
+            print("   ✅ No race conditions detected")
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for race conditions and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Parse and analyze AST
+            tree = ast.parse(content)
+            analyzer = RaceAnalyzer()
+            analyzer.visit(tree)
+            
+            if not analyzer.races:
+                return None
+            
+            # Categorize races by type
+            race_context = self._categorize_races(analyzer.races)
+            
+            # Prioritize critical races
+            critical_races = self._prioritize_races(race_context)
+            
+            if not critical_races:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   🛡️  Fixing race conditions: {os.path.basename(file_path)}")
+            
+            # Generate race-safe code using Gemini
+            fixed_content = await self._generate_race_safe_code(
+                file_path, content, critical_races
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'races': critical_races,
+                        'context': race_context,
+                        'reasoning': 'Race conditions detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix races in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _categorize_races(self, races):
+        """Categorize detected race conditions."""
+        context = {
+            'global_races': [],
+            'class_races': [],
+            'compound_operations': [],
+            'shared_collection_races': []
+        }
+        
+        for race in races:
+            if race['type'].startswith('global'):
+                context['global_races'].append(race)
+            elif race['type'].startswith('class'):
+                context['class_races'].append(race)
+            elif 'compound' in race['type']:
+                context['compound_operations'].append(race)
+            elif 'shared_collection' in race['type']:
+                context['shared_collection_races'].append(race)
+        
+        return context
+    
+    def _prioritize_races(self, context):
+        """Prioritize race conditions by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: Compound operations on shared state
+        for op in context.get('compound_operations', []):
+            prioritized['critical'].append({
+                'type': op['type'],
+                'target': op.get('variable', op.get('attribute')),
+                'line': op['line'],
+                'severity': 'critical'
+            })
+        
+        # High: Mutable method calls on shared collections
+        for race in context.get('shared_collection_races', []):
+            prioritized['high'].append({
+                'type': race['type'],
+                'method': race.get('method'),
+                'line': race['line'],
+                'severity': 'high'
+            })
+        
+        # Medium: Simple assignments to shared state
+        for race in context.get('global_races', []):
+            prioritized['medium'].append({
+                'type': race['type'],
+                'variable': race.get('variable'),
+                'line': race['line'],
+                'severity': 'medium'
+            })
+        
+        for race in context.get('class_races', []):
+            prioritized['medium'].append({
+                'type': race['type'],
+                'attribute': race.get('attribute'),
+                'line': race['line'],
+                'severity': 'medium'
+            })
+        
+        # Return all races for auto-fix (races are always critical)
+        return {
+            k: v for k, v in prioritized.items() if v
+        }
+    
+    async def _generate_race_safe_code(self, file_path: str, content: str, races: dict):
+        """Generate race-safe code using Gemini."""
+        # Build race summary
+        race_summary = []
+        for severity, race_list in races.items():
+            for race in race_list:
+                target = race.get('target', race.get('attribute', race.get('method')))
+                race_summary.append(f"- {race['type']} on '{target}' ({severity}): line {race['line']}")
+        
+        prompt = (
+            f"RACE CONDITION SAFETY TASK: Fix data races in Python code by adding proper synchronization.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Races:\n"
+            + "\n".join(race_summary) + "\n\n"
+            "Race Safety Rules:\n"
+            "1. Add threading.Lock() for shared state in synchronous functions\n"
+            "2. Add asyncio.Lock() for shared state in async functions\n"
+            "3. Use 'with lock:' context managers for compound operations\n"
+            "4. Initialize locks at class or module level as appropriate\n"
+            "5. Ensure all access to shared mutable state is protected\n"
+            "6. Import threading or asyncio as needed\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Prevent all identified race conditions\n"
+            "3. Use appropriate lock types (threading vs asyncio)\n"
+            "4. Add comments explaining synchronization\n"
+            "5. Minimize lock scope to avoid deadlocks\n"
+            "6. Do not over-synchronize local variables\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete race-safe Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_safety_report(self, log_entries, fixed_files):
+        """Save the race safety report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/race_safety_{timestamp}.md"
+        
+        report_content = f"# Race Safety Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Race Condition Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    races = entry['races']
+                    report_content += f"**Races Fixed:**\n"
+                    for severity, race_list in races.items():
+                        for race in race_list:
+                            target = race.get('target', race.get('attribute', race.get('method')))
+                            report_content += f"- {race['type']} on '{target}' ({severity}): line {race['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('compound_operations'):
+                        report_content += f"\n**Compound Operations:**\n"
+                        for op in context['compound_operations']:
+                            report_content += f"- {op['variable']} (line {op['line']})\n"
+                    
+                    if context.get('global_races'):
+                        report_content += f"\n**Global State Races:**\n"
+                        for race in context['global_races']:
+                            report_content += f"- {race['variable']} (line {race['line']})\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class LivelockPreventionAgent(SubAtomicAgent):
+    """ROLE: Livelock Guardian. Detects and remediates active non-progress patterns to ensure progress guarantees."""
+    
+    # Livelock anti-patterns for fast scanning
+    LIVELOCK_PATTERNS = {
+        'tight_loop': re.compile(
+            r'while\s+True\s*:\s*.*?(?:pass|continue|break)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'busy_wait': re.compile(
+            r'while\s+.*:\s*.*?time\.sleep\s*\(\s*[0-9.]+\s*\)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'infinite_retry': re.compile(
+            r'while\s+.*:\s*.*?try\s*:.*?except.*?:\s*.*?continue',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'polite_oscillation': re.compile(
+            r'if\s+.*lock.*:\s*.*?release.*?\s*.*?try.*?acquire',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'spin_wait': re.compile(
+            r'while\s+not\s+.*:\s*pass',
+            re.IGNORECASE
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Preventing Livelock Patterns...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for livelock patterns")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for livelock risks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track livelock fixes
+        livelock_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                livelock_log.append(result)
+        
+        # Save livelock prevention report
+        self._save_prevention_report(livelock_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   ⚡ Livelock risks fixed in {len(fixed_files)} files")
+        else:
+            print("   ✅ No livelock risks detected")
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for livelock patterns and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_issues = self._detect_livelock_patterns(content)
+            
+            if not detected_issues:
+                return None
+            
+            # Pass 2: AST context analysis
+            livelock_context = self._analyze_livelock_context(content, detected_issues)
+            
+            # Prioritize critical issues
+            critical_issues = self._prioritize_issues(livelock_context)
+            
+            if not critical_issues:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   ⚡ Fixing livelock patterns: {os.path.basename(file_path)}")
+            
+            # Generate livelock-free code using Gemini
+            fixed_content = await self._generate_livelock_free_code(
+                file_path, content, critical_issues
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'issues': critical_issues,
+                        'context': livelock_context,
+                        'reasoning': 'Livelock patterns detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix livelock in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_livelock_patterns(self, content):
+        """Fast regex-based livelock pattern detection."""
+        issues = {}
+        
+        for issue_name, pattern in self.LIVELOCK_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                issues[issue_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return issues
+    
+    def _analyze_livelock_context(self, content, issues):
+        """Analyze AST to understand livelock context."""
+        context = {
+            'tight_loops': [],
+            'busy_waits': [],
+            'infinite_retries': [],
+            'polite_oscillations': [],
+            'spin_waits': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find problematic loops
+            for node in ast.walk(tree):
+                if isinstance(node, ast.While):
+                    # Check for while True loops
+                    if isinstance(node.test, ast.Constant) and node.test.value is True:
+                        # Check if loop has proper exit conditions
+                        has_exit = self._has_loop_exit(node)
+                        if not has_exit:
+                            context['tight_loops'].append({
+                                'type': 'while_true',
+                                'line': node.lineno,
+                                'has_break': False
+                            })
+                    
+                    # Check for busy wait patterns
+                    elif isinstance(node.test, ast.Compare):
+                        # Look for patterns like "while not condition:"
+                        if not self._has_proper_wait(node):
+                            context['spin_waits'].append({
+                                'line': node.lineno,
+                                'condition': ast.unparse(node.test) if hasattr(ast, 'unparse') else str(node.lineno)
+                            })
+                
+                # Check for retry patterns without backoff
+                elif isinstance(node, ast.Try):
+                    handlers = [h for h in node.handlers if isinstance(h.type, ast.Name) and h.type.id == 'Exception']
+                    if handlers:
+                        # Check if exception handler continues without delay
+                        for handler in handlers:
+                            if self._is_immediate_retry(handler):
+                                context['infinite_retries'].append({
+                                    'line': node.lineno,
+                                    'handler': handler.type.id
+                                })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _has_loop_exit(self, while_node):
+        """Check if a while loop has proper exit conditions."""
+        for node in ast.walk(while_node):
+            if isinstance(node, ast.Break):
+                return True
+            if isinstance(node, ast.Return):
+                return True
+        return False
+    
+    def _has_proper_wait(self, while_node):
+        """Check if a while loop has proper waiting mechanism."""
+        for node in ast.walk(while_node):
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Attribute):
+                    if node.func.attr in ['sleep', 'wait', 'acquire']:
+                        return True
+        return False
+    
+    def _is_immediate_retry(self, handler):
+        """Check if exception handler retries immediately."""
+        for stmt in handler.body:
+            if isinstance(stmt, ast.Continue):
+                return True
+            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+                # Check if it's a retry call
+                if isinstance(stmt.value.func, ast.Name):
+                    if stmt.value.func.id.endswith('retry'):
+                        return True
+        return False
+    
+    def _prioritize_issues(self, context):
+        """Prioritize livelock issues by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: while True loops without exit
+        for loop in context.get('tight_loops', []):
+            prioritized['critical'].append({
+                'type': 'tight_loop',
+                'line': loop['line'],
+                'severity': 'critical'
+            })
+        
+        # High: Infinite retries without backoff
+        for retry in context.get('infinite_retries', []):
+            prioritized['high'].append({
+                'type': 'infinite_retry',
+                'line': retry['line'],
+                'severity': 'high'
+            })
+        
+        # Medium: Spin waits without proper blocking
+        for spin in context.get('spin_waits', []):
+            prioritized['medium'].append({
+                'type': 'spin_wait',
+                'line': spin['line'],
+                'condition': spin['condition'],
+                'severity': 'medium'
+            })
+        
+        # Return all issues for auto-fix (livelocks are always critical)
+        return {
+            k: v for k, v in prioritized.items() if v
+        }
+    
+    async def _generate_livelock_free_code(self, file_path: str, content: str, issues: dict):
+        """Generate livelock-free code using Gemini."""
+        # Build issue summary
+        issue_summary = []
+        for severity, issue_list in issues.items():
+            for issue in issue_list:
+                issue_summary.append(f"- {issue['type']} ({severity}): line {issue['line']}")
+        
+        prompt = (
+            f"LIVELOCK PREVENTION TASK: Fix livelock patterns in Python code to ensure progress guarantees.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Issues:\n"
+            + "\n".join(issue_summary) + "\n\n"
+            "Livelock Prevention Rules:\n"
+            "1. Replace while True loops with bounded retries (max_attempts)\n"
+            "2. Add exponential backoff with jitter to retry logic\n"
+            "3. Replace busy waits with asyncio.Event or threading.Condition\n"
+            "4. Use proper blocking primitives instead of spin loops\n"
+            "5. Add random jitter to prevent thundering herd\n"
+            "6. Import random, asyncio, or threading as needed\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Ensure all loops have guaranteed exit conditions\n"
+            "3. Add exponential backoff: delay = base * (2 ** attempt) + random jitter\n"
+            "4. Use event-driven patterns instead of polling\n"
+            "5. Add comments explaining livelock prevention\n"
+            "6. Import required modules (random, asyncio, threading)\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete livelock-free Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_prevention_report(self, log_entries, fixed_files):
+        """Save the livelock prevention report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/livelock_prevention_{timestamp}.md"
+        
+        report_content = f"# Livelock Prevention Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Livelock Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    issues = entry['issues']
+                    report_content += f"**Issues Fixed:**\n"
+                    for severity, issue_list in issues.items():
+                        for issue in issue_list:
+                            report_content += f"- {issue['type']} ({severity}): line {issue['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('tight_loops'):
+                        report_content += f"\n**Tight Loops:**\n"
+                        for loop in context['tight_loops']:
+                            report_content += f"- while True at line {loop['line']}\n"
+                    
+                    if context.get('infinite_retries'):
+                        report_content += f"\n**Infinite Retries:**\n"
+                        for retry in context['infinite_retries']:
+                            report_content += f"- Exception handler at line {retry['line']}\n"
+                    
+                    if context.get('spin_waits'):
+                        report_content += f"\n**Spin Waits:**\n"
+                        for spin in context['spin_waits']:
+                            report_content += f"- {spin['condition']} at line {spin['line']}\n"
                     
                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
         
