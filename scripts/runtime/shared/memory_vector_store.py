@@ -34,12 +34,8 @@ class InMemoryVectorCache:
         self.max_memory_gb = max_memory_gb
         
         try:
-            # Initialize ephemeral ChromaDB client
-            self.client = chromadb.Client(Settings(
-                chroma_db_impl="duckdb+parquet",
-                persist_directory=None,  # Forces in-memory only
-                anonymized_telemetry=False
-            ))
+            # Initialize ephemeral ChromaDB client (in-memory only)
+            self.client = chromadb.Client()
             
             # Create or get collection
             self.collection = self.client.get_or_create_collection(
