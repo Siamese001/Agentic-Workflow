@@ -481,17 +481,20 @@ class ValidationContext:
             return original_content
     
     def _clean_llm_code(self, raw_code: str) -> str:
-        """Strips Markdown backticks and cleans whitespace."""
-        # 1. Strip Markdown code blocks
+        """Extracts code from Chain-of-Thought responses."""
         import re
-        code_match = re.search(r"```python\n(.*?)```", raw_code, re.DOTALL)
+        # 1. Remove reasoning blocks to isolate code
+        raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
+
+        # 2. Strip Markdown code blocks
+        code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
         if code_match:
             return code_match.group(1).strip()
-        
-        # 2. Strip generic backticks if regex failed
+
+        # 3. Strip generic backticks
         if raw_code.strip().startswith("```"):
             return raw_code.strip().strip("`").replace("python", "", 1).strip()
-            
+
         return raw_code.strip()
     
     def apply_diff_patch(self, file_path: str, diff_text: str, original_content: str) -> str | None:
@@ -528,6 +531,9 @@ class ValidationContext:
                 if attempt > 1:
                     hardened_task += f"\n\n[ATTEMPT {attempt}/{max_attempts}] PREVIOUS ATTEMPT FAILED. FIX SYNTAX/FORMAT."
                     hardened_task += "\nRETURN ONLY RAW CODE. NO MARKDOWN."
+                
+                # Enforce Chain-of-Thought reasoning
+                hardened_task += "\n\nINSTRUCTIONS: First, think step-by-step about the fix inside <reasoning> tags. Explain WHY the error occurred and HOW you will fix it. Then, provide the corrected Python code inside ```python blocks."
 
                 # Call Gemini
                 if not self.intelligence_enabled:
@@ -806,59 +812,69 @@ class ImportPatcher:
 class TestPilot(SubAtomicAgent):
     """
     ROLE: Integration Guardian & Healing Orchestrator.
-    Runs the full test suite. On failure, triggers Sherlock for root-cause repair.
-    Creates the closed self-healing loop.
+    CAPABILITIES: Runs pytest, analyzes tracebacks, and USES TOOLS (pip) to fix environment issues.
     """
     def __init__(self, ctx: ValidationContext):
         super().__init__(ctx)
         self.name = "TestPilot"
 
     async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Running integration tests for self-healing...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Verifying System Integrity...")
         await asyncio.sleep(0)
 
-        try:
-            # Run pytest quietly, capture output
-            result = subprocess.run(
-                ["pytest", "-q", "--tb=short"],
+        # Tool Definition: Pytest Runner
+        def run_tests():
+            return subprocess.run(
+                ["pytest", "-q", "--tb=short", "tests/"],
                 capture_output=True,
                 text=True,
-                timeout=300 
+                timeout=300
             )
 
+        try:
+            result = run_tests()
+
+            # --- TOOL USE: Self-Repairing Environment ---
+            if result.returncode != 0 and "ModuleNotFoundError" in result.stderr:
+                print("   🔧 TOOL USE: Missing module detected. Attempting auto-install...")
+                import re
+                match = re.search(r"No module named '(.*?)'", result.stderr)
+                if match:
+                    module = match.group(1)
+                    print(f"      -> EXEC: pip install {module}")
+                    
+                    # Execute Tool: PIP
+                    install_result = subprocess.run(
+                        [sys.executable, "-m", "pip", "install", module],
+                        capture_output=True,
+                        text=True
+                    )
+                    
+                    if install_result.returncode == 0:
+                        print("      ✅ Install successful. Retrying tests immediately...")
+                        result = run_tests() # RECURSIVE CHECK
+                    else:
+                        print(f"      ❌ Install failed: {install_result.stderr}")
+
+            # --- Analysis ---
             if result.returncode == 0:
                 print("   ✅ All tests passed - system healthy")
                 self.ctx.results["TestPilot"] = {"passed": True}
-                return
-
-            print(f"   ❌ Tests failed ({result.returncode}) - initiating self-healing")
-            self.ctx.results["TestPilot"] = {"passed": False, "output": result.stderr}
-            
-            # Simple heuristic to find the failing test file
-            test_file = None
-            for line in result.stderr.splitlines():
-                if "tests/" in line or ".py" in line:
-                    import re
-                    match = re.search(r"(tests?/[^\s:]+\.py)", line)
-                    if match:
-                        test_file = match.group(1)
-                        break
-            
-            if not test_file:
-                print("   ⚠️ Could not identify failing test file from traceback")
-                return
-
-            # Trigger Sherlock for Root Cause Analysis
-            print(f"   🕵️ Triggering Sherlock on {test_file}...")
-            # (In a real implementation, we would instantiate Sherlock here or use a shared instance)
-            # For now, we log the intent to the Blackboard for the next cycle
-            self.ctx.results["Sherlock_Request"] = {
-                "test_file": test_file,
-                "traceback": result.stderr[:2000] # Cap size
-            }
+                # Clear failure signals if they existed
+                self.ctx.signals.discard("TEST_FAILURE")
+            else:
+                print(f"   ❌ Tests failed ({result.returncode})")
+                self.ctx.results["TestPilot"] = {"passed": False, "output": result.stderr}
+                self.ctx.signals.add("TEST_FAILURE")
+                
+                # Signal Sherlock with context
+                self.ctx.results["Sherlock_Request"] = {
+                    "traceback": result.stderr[:3000]
+                }
 
         except subprocess.TimeoutExpired:
             print("   ⏰ Test suite timed out - potential infinite loop or deadlock")
+            self.ctx.signals.add("TEST_FAILURE")
         except Exception as e:
             print(f"   ❌ Test execution failed: {e}")
 
@@ -1340,17 +1356,20 @@ class SafetyInspector(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
     def _clean_llm_code(self, raw_code: str) -> str:
-        """Strips Markdown backticks and cleans whitespace."""
-        # 1. Strip Markdown code blocks
+        """Extracts code from Chain-of-Thought responses."""
         import re
-        code_match = re.search(r"```python\n(.*?)```", raw_code, re.DOTALL)
+        # 1. Remove reasoning blocks to isolate code
+        raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
+
+        # 2. Strip Markdown code blocks
+        code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
         if code_match:
             return code_match.group(1).strip()
-        
-        # 2. Strip generic backticks if regex failed
+
+        # 3. Strip generic backticks
         if raw_code.strip().startswith("```"):
             return raw_code.strip().strip("`").replace("python", "", 1).strip()
-            
+
         return raw_code.strip()
 
     def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
@@ -6224,8 +6243,56 @@ if __name__ == "__main__":
             # Reset tracking for this cycle
             ctx.modified_files.clear()
             
-            # Execute Agents
-            for agent in agents:
+            # --- 🧠 STRATEGIC PLANNING PHASE ---
+            agenda = []
+            if cycle == 1:
+                # Cycle 1: Baseline Scan (Run Everyone)
+                agenda = agents
+                print("   📋 PLAN: Executing full system diagnostic.")
+            else:
+                # Cycle N: Surgical Strike based on Signals
+                print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
+                
+                # 1. Always run Historian to sync memory state
+                agenda.append(agents[0]) 
+                
+                # 2. Map Signals to Agents
+                signals_str = str(ctx.signals)
+                
+                if "TEST_FAILURE" in ctx.signals:
+                    # Logic: If tests fail, we need Root Cause Analysis (Sherlock) + Verification (TestPilot)
+                    agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
+                    print("      -> Priority: Root Cause Analysis & Verification")
+                
+                if any(s for s in ctx.signals if "IMPORT" in s or "ModuleNotFound" in s):
+                    # Logic: If imports are broken, summon the Sentinel
+                    agenda.extend([a for a in agents if a.name == "DependencySentinel"])
+                    print("      -> Priority: Dependency Resolution")
+                
+                if ctx.modified_files:
+                    # Logic: If files changed, re-validate Safety and Style ONLY on those files
+                    agenda.extend([a for a in agents if a.name in ["SafetyInspector", "CodeStyleGuardian"]])
+                    print("      -> Priority: Safety/Style check on modified files")
+                
+                if "SYNTAX_ERROR" in str(ctx.signals):
+                    agenda.extend([a for a in agents if a.name == "SafetyInspector"])
+                    print("      -> Priority: Syntax Repair")
+
+                # 3. Fallback: If no specific plan but not converged, run TestPilot
+                if len(agenda) == 1: # Only Historian
+                    agenda.append(agents[-1]) # TestPilot
+                    print("      -> Plan: General System Verification")
+            
+            # Deduplicate Agenda (preserve order)
+            seen = set()
+            final_agenda = []
+            for a in agenda:
+                if a.name not in seen:
+                    final_agenda.append(a)
+                    seen.add(a.name)
+            
+            # --- EXECUTION PHASE ---
+            for agent in final_agenda:
                 if agent.can_run():
                     await agent.execute()
             
