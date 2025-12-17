@@ -2792,7 +2792,8 @@ class SwarmScheduler:
                 DeadlockDetector(self.ctx),        # UPGRADED: Cycle-aware analysis
                 AsyncSafetyEnforcer(self.ctx),  # Async Correctness
                 RaceConditionDetector(self.ctx), # Data Race Prevention
-                LivelockPreventionAgent(self.ctx) # NEW: Progress Guarantee
+                LivelockPreventionAgent(self.ctx), # Progress Guarantee
+                StarvationPreventionAgent(self.ctx) # NEW: Fairness & Progress
             ],
             # 7. ENGINEERING (Parallel)
             "engineering_parallel": [
@@ -7043,8 +7044,10 @@ class LivelockPreventionAgent(SubAtomicAgent):
         
         if fixed_files:
             print(f"   ⚡ Livelock risks fixed in {len(fixed_files)} files")
+            self.ctx.report(self.name, 63, True, [f"Livelock risks fixed in {len(fixed_files)} files"])
         else:
             print("   ✅ No livelock risks detected")
+            self.ctx.report(self.name, 63, True, ["No livelock risks detected"])
     
     async def _scan_and_fix(self, file_path):
         """Scan file for livelock patterns and apply fixes."""
@@ -7310,6 +7313,334 @@ class LivelockPreventionAgent(SubAtomicAgent):
                         report_content += f"\n**Spin Waits:**\n"
                         for spin in context['spin_waits']:
                             report_content += f"- {spin['condition']} at line {spin['line']}\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class StarvationPreventionAgent(SubAtomicAgent):
+    """ROLE: Starvation Guardian. Ensures fair resource usage and prevents greedy tasks from monopolizing the event loop."""
+    
+    # Starvation anti-patterns for fast scanning
+    STARVATION_PATTERNS = {
+        'greedy_loop': re.compile(
+            r'async\s+def\s+\w+.*?:\s*.*?(?:for|while).*:(?!.*await)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'long_lock': re.compile(
+            r'with\s+.*lock.*:\s*.{400,}',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'cpu_bound_async': re.compile(
+            r'async\s+def.*?:\s*.*?(?:heavy|compute|intensive|process).*:(?!.*await\s+asyncio)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'priority_inversion': re.compile(
+            r'queue\.Queue\s*\(\s*\)',
+            re.IGNORECASE
+        ),
+        'no_yield': re.compile(
+            r'for\s+\w+\s+in.*range.*:\s*.{200,}',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Ensuring Fair Resource Usage...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for starvation patterns")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for starvation risks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track starvation fixes
+        starvation_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                starvation_log.append(result)
+        
+        # Save starvation prevention report
+        self._save_prevention_report(starvation_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   ⚖️ Starvation risks fixed in {len(fixed_files)} files")
+            self.ctx.report(self.name, 64, True, [f"Starvation risks fixed in {len(fixed_files)} files"])
+        else:
+            print("   ✅ No starvation risks detected")
+            self.ctx.report(self.name, 64, True, ["No starvation risks detected"])
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for starvation patterns and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_issues = self._detect_starvation_patterns(content)
+            
+            if not detected_issues:
+                return None
+            
+            # Pass 2: AST context analysis
+            starvation_context = self._analyze_starvation_context(content, detected_issues)
+            
+            # Prioritize critical issues
+            critical_issues = self._prioritize_issues(starvation_context)
+            
+            if not critical_issues:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   ⚖️ Fixing starvation patterns: {os.path.basename(file_path)}")
+            
+            # Generate starvation-free code using Gemini
+            fixed_content = await self._generate_fairness_code(
+                file_path, content, critical_issues
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'issues': critical_issues,
+                        'context': starvation_context,
+                        'reasoning': 'Starvation patterns detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix starvation in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_starvation_patterns(self, content):
+        """Fast regex-based starvation pattern detection."""
+        issues = {}
+        
+        for issue_name, pattern in self.STARVATION_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                issues[issue_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return issues
+    
+    def _analyze_starvation_context(self, content, issues):
+        """Analyze AST to understand starvation context."""
+        context = {
+            'greedy_loops': [],
+            'long_locks': [],
+            'cpu_bound_tasks': [],
+            'priority_inversions': [],
+            'no_yield_loops': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find problematic async functions
+            for node in ast.walk(tree):
+                if isinstance(node, ast.AsyncFunctionDef):
+                    func_name = node.name
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    
+                    # Check for async functions without yields
+                    has_await = False
+                    has_yield = False
+                    
+                    for child in ast.walk(node):
+                        if isinstance(child, ast.Await):
+                            has_await = True
+                        if isinstance(child, ast.Expr) and isinstance(child.value, ast.Call):
+                            if isinstance(child.value.func, ast.Attribute):
+                                if child.value.func.attr == 'sleep':
+                                    has_yield = True
+                    
+                    # Check for loops without yielding
+                    for child in ast.walk(node):
+                        if isinstance(child, (ast.For, ast.While)):
+                            # Count lines in loop
+                            loop_lines = child.end_lineno - child.lineno if hasattr(child, 'end_lineno') else 0
+                            if loop_lines > 20 and not has_yield:
+                                context['no_yield_loops'].append({
+                                    'function': func_name,
+                                    'line': child.lineno,
+                                    'type': type(child).__name__
+                                })
+                
+                # Check for long lock durations
+                elif isinstance(node, ast.With):
+                    for item in node.items:
+                        if isinstance(item.context_expr, ast.Name):
+                            if 'lock' in item.context_expr.id.lower():
+                                # Count lines in with block
+                                with_lines = node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
+                                if with_lines > 20:
+                                    context['long_locks'].append({
+                                        'line': node.lineno,
+                                        'duration': with_lines
+                                    })
+                
+                # Check for unfair queue usage
+                elif isinstance(node, ast.Call):
+                    if isinstance(node.func, ast.Attribute):
+                        if node.func.attr == 'Queue' and isinstance(node.func.value, ast.Name):
+                            if node.func.value.id == 'queue':
+                                context['priority_inversions'].append({
+                                    'line': node.lineno,
+                                    'type': 'FIFO Queue'
+                                })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _prioritize_issues(self, context):
+        """Prioritize starvation issues by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: Long-held locks
+        for lock in context.get('long_locks', []):
+            prioritized['critical'].append({
+                'type': 'long_lock',
+                'line': lock['line'],
+                'duration': lock['duration'],
+                'severity': 'critical'
+            })
+        
+        # High: No-yield loops in async functions
+        for loop in context.get('no_yield_loops', []):
+            prioritized['high'].append({
+                'type': 'no_yield_loop',
+                'line': loop['line'],
+                'function': loop['function'],
+                'severity': 'high'
+            })
+        
+        # Medium: Unfair queue usage
+        for queue in context.get('priority_inversions', []):
+            prioritized['medium'].append({
+                'type': 'priority_inversion',
+                'line': queue['line'],
+                'queue_type': queue['type'],
+                'severity': 'medium'
+            })
+        
+        # Return all issues for auto-fix (starvation affects system fairness)
+        return {
+            k: v for k, v in prioritized.items() if v
+        }
+    
+    async def _generate_fairness_code(self, file_path: str, content: str, issues: dict):
+        """Generate fair code using Gemini."""
+        # Build issue summary
+        issue_summary = []
+        for severity, issue_list in issues.items():
+            for issue in issue_list:
+                issue_summary.append(f"- {issue['type']} ({severity}): line {issue['line']}")
+        
+        prompt = (
+            f"STARVATION PREVENTION TASK: Fix unfair resource usage in Python async code.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Issues:\n"
+            + "\n".join(issue_summary) + "\n\n"
+            "Fairness Rules:\n"
+            "1. Add `await asyncio.sleep(0)` in long loops to yield control\n"
+            "2. Split long critical sections into smaller chunks\n"
+            "3. Use asyncio.Queue for fair task scheduling\n"
+            "4. Add cooperative yielding points every 10-20 iterations\n"
+            "5. Use fair locks or priority queues when needed\n"
+            "6. Import asyncio for yielding mechanisms\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Ensure no single task monopolizes the event loop\n"
+            "3. Add yielding points in CPU-bound sections\n"
+            "4. Use fair data structures for shared resources\n"
+            "5. Add comments explaining fairness improvements\n"
+            "6. Import required modules (asyncio, queue)\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete fairness-guaranteed Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_prevention_report(self, log_entries, fixed_files):
+        """Save the starvation prevention report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/starvation_safety_{timestamp}.md"
+        
+        report_content = f"# Starvation Prevention Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Starvation Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    issues = entry['issues']
+                    report_content += f"**Issues Fixed:**\n"
+                    for severity, issue_list in issues.items():
+                        for issue in issue_list:
+                            report_content += f"- {issue['type']} ({severity}): line {issue['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('long_locks'):
+                        report_content += f"\n**Long Locks:**\n"
+                        for lock in context['long_locks']:
+                            report_content += f"- Lock held for {lock['duration']} lines at line {lock['line']}\n"
+                    
+                    if context.get('no_yield_loops'):
+                        report_content += f"\n**No-Yield Loops:**\n"
+                        for loop in context['no_yield_loops']:
+                            report_content += f"- {loop['function']} at line {loop['line']}\n"
+                    
+                    if context.get('priority_inversions'):
+                        report_content += f"\n**Priority Inversions:**\n"
+                        for inversion in context['priority_inversions']:
+                            report_content += f"- {inversion['queue_type']} at line {inversion['line']}\n"
                     
                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
         
