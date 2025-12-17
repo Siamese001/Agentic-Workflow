@@ -497,72 +497,125 @@ class ValidationContext:
 
         return raw_code.strip()
     
-    def apply_diff_patch(self, file_path: str, diff_text: str, original_content: str) -> str | None:
-        """Applies a unified diff safely. Returns None on failure."""
-        import difflib
+    def apply_unified_diff(self, file_path: str, diff_text: str, original_content: str) -> str | None:
+        """Applies a unified diff safely. Returns new content or None on failure."""
         try:
+            # 1. Clean and Prep
             diff_text = self._clean_llm_code(diff_text)
-            # Ensure headers exist for difflib
-            lines = diff_text.splitlines()
-            if not any(l.startswith('---') for l in lines):
-                lines.insert(0, f"--- {file_path}")
-                lines.insert(1, f"+++ {file_path}")
-            
+            diff_lines = diff_text.strip().splitlines()
             original_lines = original_content.splitlines(keepends=True)
-            # For robustness, use full file replacement with cleaning
-            # This is safer than complex diff parsing for now
-            cleaned = self._clean_llm_code(diff_text)
-            return cleaned if cleaned else None
             
+            # 2. Header Synthesis (if missing)
+            if not diff_lines or not diff_lines[0].startswith('---'):
+                diff_lines.insert(0, f"--- {file_path}")
+                diff_lines.insert(1, f"+++ {file_path}")
+
+            # 3. Apply Patch (Pure Python Implementation)
+            import re
+            hunk_re = re.compile(r'@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@')
+            new_lines = original_lines[:]
+            i = 0
+            
+            # Skip headers
+            while i < len(diff_lines) and not diff_lines[i].startswith('@@'): i += 1
+            
+            # Process Hunks
+            while i < len(diff_lines):
+                line = diff_lines[i]
+                if line.startswith('@@'):
+                    m = hunk_re.match(line)
+                    if not m: return None
+                    old_start = int(m.group(1)) - 1
+                    old_len = int(m.group(2) or '1')
+                    
+                    # Delete old
+                    del new_lines[old_start:old_start + old_len]
+                    
+                    # Collect additions
+                    i += 1
+                    added = []
+                    while i < len(diff_lines) and not diff_lines[i].startswith('@@'):
+                        if diff_lines[i].startswith('+'):
+                            added.append(diff_lines[i][1:] + '\n')
+                        elif diff_lines[i].startswith(' '): # Context line (optional support)
+                            pass 
+                        i += 1
+                    
+                    # Insert new
+                    new_lines[old_start:old_start] = added
+                    continue
+                i += 1
+                
+            return ''.join(new_lines)
         except Exception as e:
-            print(f"   ❌ Patch failed: {e}")
+            print(f"   ❌ Diff Application Failed: {e}")
             return None
     
-    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", *, max_attempts: int = 5, require_json: bool = False, fallback_content: str = None) -> str:
-        """Resilient mutation with retry logic, AST validation, and prompt hardening."""
+    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, *, max_attempts: int = 4, diff_mode: bool = False, min_confidence: float = 0.7) -> str:
+        """
+        Level 4 Mutation: Supports Diffs, Confidence Scoring, and AST Validation.
+        If diff_mode is True, returns the FULL PATCHED CONTENT (internally applied).
+        """
         import ast, json, asyncio
         current_code = code or ""
-        fallback = fallback_content or current_code
-
+        
         for attempt in range(1, max_attempts + 1):
             try:
-                # Progressive Prompt Hardening
-                hardened_task = task
+                # 1. Prompt Engineering
+                prompt = task
+                if diff_mode:
+                    prompt += "\n\nOUTPUT FORMAT: Unified Diff ONLY.\nHeaders: --- a/file\n+++ b/file\nUse @@ ... @@ hunks. NO MARKDOWN."
+                else:
+                    prompt += "\n\nOUTPUT FORMAT: Full Python Code. NO MARKDOWN."
+
                 if attempt > 1:
-                    hardened_task += f"\n\n[ATTEMPT {attempt}/{max_attempts}] PREVIOUS ATTEMPT FAILED. FIX SYNTAX/FORMAT."
-                    hardened_task += "\nRETURN ONLY RAW CODE. NO MARKDOWN."
+                    prompt += f"\n[ATTEMPT {attempt}] Previous attempt failed. Fix syntax/patching errors."
+
+                # 2. Call Gemini with Logprobs
+                if not self.intelligence_enabled: return current_code
                 
-                # Enforce Chain-of-Thought reasoning
-                hardened_task += "\n\nINSTRUCTIONS: First, think step-by-step about the fix inside <reasoning> tags. Explain WHY the error occurred and HOW you will fix it. Then, provide the corrected Python code inside ```python blocks."
-
-                # Call Gemini
-                if not self.intelligence_enabled:
-                    return fallback
-
                 response = await asyncio.to_thread(
                     self._client.models.generate_content,
                     model=self.model_id,
-                    contents=[f"Agent: {agent_name}\nTask: {hardened_task}\nCode Context:\n{current_code[:2000]}"]
+                    contents=[f"Agent: {agent_name}\nTask: {prompt}\nContext:\n{current_code[:4000]}"],
+                    config={"response_logprobs": True, "logprobs": 3} # Enable Confidence
                 )
+                
+                # 3. Confidence Check
+                confidence = 1.0
+                if hasattr(response, 'candidates') and response.candidates and hasattr(response.candidates[0], 'avg_logprobs'):
+                    # Convert logprob to confidence (approx 0 to 1 scale)
+                    avg_lp = response.candidates[0].avg_logprobs
+                    confidence = min(1.0, max(0.0, (avg_lp + 2.0) / 2.0)) # Normalize -2.0..0.0 to 0..1
+                    print(f"   [{agent_name}] 🧠 Confidence: {confidence:.2f}")
+                
+                if confidence < min_confidence:
+                    print(f"   [{agent_name}] ⚠️ Confidence too low ({confidence:.2f}). Retrying...")
+                    continue
 
-                cleaned = self._clean_llm_code(response.text)
+                result_text = self._clean_llm_code(response.text)
+                final_content = result_text
 
-                # Validation
-                if require_json:
-                    json.loads(cleaned)
-                elif cleaned.endswith(".py") or "def " in cleaned:
-                    ast.parse(cleaned)
+                # 4. Diff Application (if enabled)
+                if diff_mode:
+                    patched = self.apply_unified_diff(file_path, result_text, current_code)
+                    if patched is None:
+                        print(f"   [{agent_name}] ⚠️ Patch failed to apply. Retrying...")
+                        continue
+                    final_content = patched
 
-                print(f"   [{agent_name}] ✅ Mutation succeeded (Attempt {attempt})")
-                return cleaned
+                # 5. Validation (AST)
+                if final_content.strip() and (file_path and file_path.endswith('.py')):
+                    ast.parse(final_content) # Syntax Check
+
+                print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
+                return final_content
 
             except Exception as e:
-                print(f"   [{agent_name}] ⚠️ Attempt {attempt} failed: {e}")
-                if "429" in str(e):
-                    await asyncio.sleep(2 ** attempt) # Exponential Backoff
+                print(f"   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}")
+                if "429" in str(e): await asyncio.sleep(2 ** attempt)
 
-        self.signal_llm_failure(agent_name, "EXHAUSTED_RETRIES")
-        return fallback
+        return current_code # Fallback
     
     def move_file(self, src: str, dst: str) -> bool:
         """Smart Move: Handles files (with compliance check) and directories."""
@@ -1415,7 +1468,9 @@ RETURN ONLY THE RAW PYTHON CODE. NO MARKDOWN. NO BACKTICKS. Ensure indentation m
                             agent_name="SafetyInspector",
                             task=mutation_task,
                             code=content,
-                            fallback_content=content
+                            file_path=file_path,
+                            diff_mode=True,
+                            min_confidence=0.6
                         )
                         
                         # Write back if different using Compliance Governor
@@ -1592,7 +1647,14 @@ class ConcurrencyGuardian(SubAtomicAgent):
             "Return ONLY the fixed Python code."
         )
 
-        fixed_content = await self.ctx.request_mutation(self.name, prompt, content, reasoning_mode=True)
+        fixed_content = await self.ctx.resilient_mutation(
+            agent_name=self.name,
+            task=prompt,
+            code=content,
+            file_path=file_path,
+            diff_mode=True,
+            min_confidence=0.6
+        )
 
         if fixed_content and fixed_content.strip() != content.strip():
             if self.ctx.write_compliant_file(file_path, fixed_content):
@@ -6305,6 +6367,16 @@ if __name__ == "__main__":
             if cycle < MAX_CYCLES:
                 print(f"   🔄 Modifications detected. Rerunning validation to ensure stability...")
                 await asyncio.sleep(1)
+        else:
+            print(f"\n⚠️ MAX HEALING CYCLES REACHED. Escalating...")
+            if ctx.modified_files or ctx.signals:
+                import time
+                from pathlib import Path
+                esc_dir = Path("observability/human_review")
+                esc_dir.mkdir(parents=True, exist_ok=True)
+                report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
+                (esc_dir / f"escalation_{int(time.time())}.md").write_text(report)
+                print(f"   🚨 Manual Review Required. Report saved to: {esc_dir}")
 
         print("\n💾 SAVING BLACKBOARD STATE...")
         ctx._save_memory()
