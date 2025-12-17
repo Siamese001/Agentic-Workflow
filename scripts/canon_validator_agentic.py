@@ -474,14 +474,34 @@ class ValidationContext:
         except Exception as e:
             print(f"   ❌ Write Failed: {e}")
             return False
+    
+    @rate_limited_retry()
+    async def request_mutation(self, agent_name: str, prompt: str, original_content: str, reasoning_mode: bool = False) -> str:
+        """Centralized Gemini mutation request with standardized handling."""
+        if not self.intelligence_enabled:
+            print(f"   [{agent_name}] ⚠️ Intelligence disabled - skipping mutation")
+            return original_content
 
-    # --- REDIS LOCKING ---
-    async def acquire_lock(self, key: str, timeout: int = 30) -> bool:
-        if not self.redis: return True # Local fallback: always allow
-        return await self.redis.set(f"lock:{key}", "1", nx=True, ex=timeout)
+        full_prompt = prompt
+        if reasoning_mode:
+            full_prompt += "\n\nThink step-by-step before returning the final code."
 
-    async def release_lock(self, key: str):
-        if self.redis: await self.redis.delete(f"lock:{key}")
+        try:
+            response = await asyncio.to_thread(
+                self.client.models.generate_content,
+                model=self.model_id,
+                contents=full_prompt
+            )
+            text = response.text.strip()
+            # Clean markdown
+            if text.startswith("```python"):
+                text = text[10:]
+            if text.endswith("```"):
+                text = text[:-3]
+            return text.strip()
+        except Exception as e:
+            print(f"   [{agent_name}] ❌ Mutation failed: {e}")
+            return original_content
     
     def move_file(self, src: str, dst: str) -> bool:
         """Smart Move: Handles files (with compliance check) and directories."""
@@ -6030,7 +6050,7 @@ class Sherlock(SubAtomicAgent):
 if __name__ == "__main__":
     ctx = ValidationContext()
     
-    # MAGNIFICENT SEVEN Agent Sequence
+    # MAGNIFICENT SEVEN Agent Sequence (7 core + Sherlock trigger-only)
     agents = [
         Historian(ctx),              # 1. Memory/Skip logic
         ArchitectureGovernor(ctx),   # 2. Architecture + Complexity
