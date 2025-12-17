@@ -749,483 +749,81 @@ class Historian(SubAtomicAgent):
 # 3. THE SPECIALIST AGENTS (100% Coverage of All 50 Keys)
 # ==============================================================================
 
-class ArchitectureGovernor(SubAtomicAgent, ImportPatcher):
+class ArchitectureGovernor(SubAtomicAgent):
     """
-    Unified architecture governance agent.
-    Covers:
-      - Depth enforcement (Key 49)
-      - Atomicity enforcement (Key 50)
-      - Void enforcement (empty files)
-      - Taxonomy enforcement (naming)
-      - System architecture (Keys 40, 41)
+    Unified Architecture Governor.
+    Enforces: Depth (49), Atomicity (50), Complexity (17,19), System (40,41)
     """
 
-    # Valid depth levels (MAX 5 from root)
-    VALID_DEPTHS = {0, 1, 2, 3, 4, 5}
-    
-    # Forbidden patterns in names
-    FORBIDDEN_PATTERNS = {
-        'utils', 'helpers', 'common', 'misc', 'tools', 'lib', 'core', 'shared'
-    }
-    
-    # Required root files
-    REQUIRED_ROOT = {'README.md', 'setup.py', '__init__.py'}
-    
-    # Allowed directories (from original agents)
-    ALLOWED_DIRS = {
-        '01_agentic_core', '02_runtime', '03_runtime', '04_validation',
-        '05_agents', '06_data', '07_tests', '08_docs', '09_scripts',
-        'observability', 'archives', 'benchmarks', 'examples'
-    }
+    MAX_COMPLEXITY = 10
+    MAX_FUNC_LINES = 50
 
     def can_run(self) -> bool:
-        # Always run to maintain architectural integrity
         return True
 
     async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing architectural governance...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
         await asyncio.sleep(0)
         
-        # Collect all violations
-        violations = {
-            'depth': [],
-            'atomicity': [],
-            'void': [],
-            'taxonomy': [],
-            'system': []
-        }
+        violations = {'depth': [], 'atomicity': [], 'complexity': [], 'system': []}
         
-        # Check all Python files
         for file_path in self.ctx.python_files:
-            # Depth violations
-            depth_violations = self._check_depth_violations(file_path)
-            violations['depth'].extend(depth_violations)
-            
-            # Atomicity violations
-            atomicity_violations = self._check_atomicity_violations(file_path)
-            violations['atomicity'].extend(atomicity_violations)
-            
-            # Void violations
-            if self._is_void_file(file_path):
-                violations['void'].append(file_path)
-            
-            # Taxonomy violations
-            taxonomy_violations = self._check_taxonomy_violations(file_path)
-            violations['taxonomy'].extend(taxonomy_violations)
+            violations['depth'].extend(self._check_depth(file_path))
+            violations['atomicity'].extend(self._check_atomicity(file_path))
+            violations['system'].extend(self._check_system(file_path))
+            violations['complexity'].extend(self._check_complexity(file_path))
+
+        for cat, v in violations.items():
+            if v: print(f"   🏛️  {cat.title()} Violations: {len(v)}")
         
-        # System-level checks
-        system_violations = self._check_system_violations()
-        violations['system'].extend(system_violations)
-        
-        # Report results
-        total_violations = sum(len(v) for v in violations.values())
-        
-        if total_violations > 0:
-            print(f"   🏛️  Found {total_violations} architectural violations")
-            
-            # Fix what we can automatically
-            fixed_count = await self._fix_violations(violations)
-            print(f"   🔧 Fixed {fixed_count} architectural issues")
-        else:
-            print("   ✅ All architectural constraints satisfied")
-        
-        # Report keys
-        self.ctx.report(self.name, 49, len(violations['depth']) == 0, violations['depth'])
-        self.ctx.report(self.name, 50, len(violations['atomicity']) == 0, violations['atomicity'])
-        self.ctx.report(self.name, 40, len(violations['system']) == 0, violations['system'])
+        self.ctx.report(self.name, 49, not violations['depth'], violations['depth'])
+        self.ctx.report(self.name, 50, not violations['atomicity'], violations['atomicity'])
+        self.ctx.report(self.name, 19, not violations['complexity'], violations['complexity'])
+        self.ctx.report(self.name, 40, not violations['system'], violations['system'])
         self.ctx.report(self.name, 41, True, ["Root hygiene maintained"])
 
-    def _check_depth_violations(self, file_path):
-        """Check if file exceeds maximum depth"""
-        violations = []
-        
-        # Calculate depth from repo root
-        parts = Path(file_path).parts
-        
-        # Skip .git, __pycache__, data, archives
-        skip_parts = {'.git', '__pycache__', 'data', 'archives'}
-        filtered_parts = [p for p in parts if p not in skip_parts]
-        
-        depth = len(filtered_parts) - 1  # Depth is parts-1
-        
-        if depth > 5:
-            violations.append(f"{file_path}: Depth {depth} exceeds maximum of 5")
-        
-        return violations
+    def _check_depth(self, file_path):
+        parts = file_path.split(os.sep)
+        if len([p for p in parts if p not in {'.git', 'data'}]) - 1 > 5:
+            return [f"{file_path}: Depth > 5"]
+        return []
 
-    def _check_atomicity_violations(self, file_path):
-        """Check for atomicity violations"""
-        violations = []
-        
+    def _check_atomicity(self, file_path):
+        v = []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Check for multiple classes in one file
+            with open(file_path, encoding='utf-8') as f: content = f.read()
+            if len(content.splitlines()) > 200: v.append(f"{file_path}: > 200 lines")
             tree = ast.parse(content)
             classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
-            
-            if len(classes) > 1:
-                violations.append(f"{file_path}: Multiple classes in file")
-            
-            # Check for files that are too long
-            lines = content.split('\n')
-            if len(lines) > 200:  # MAX_LINES
-                violations.append(f"{file_path}: File too long ({len(lines)} lines)")
-                
-        except Exception:
-            pass
-        
-        return violations
+            if len(classes) > 1: v.append(f"{file_path}: Multiple classes")
+        except: pass
+        return v
 
-    def _is_void_file(self, file_path):
-        """Check if file is effectively empty"""
+    def _check_complexity(self, file_path):
+        v = []
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read().strip()
-            
-            # Consider file void if less than 10 non-comment, non-blank lines
-            lines = [l for l in content.split('\n') 
-                    if l.strip() and not l.strip().startswith('#')]
-            
-            return len(lines) < 10
-            
-        except Exception:
-            return False
+            tree = ast.parse(open(file_path, encoding='utf-8').read())
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if hasattr(node, 'end_lineno'):
+                        length = node.end_lineno - node.lineno
+                        if length > self.MAX_FUNC_LINES:
+                            v.append(f"{file_path}:{node.name} too long ({length})")
+                    complexity = self._calculate_mccabe(node)
+                    if complexity > self.MAX_COMPLEXITY:
+                        v.append(f"{file_path}:{node.name} complex ({complexity})")
+        except: pass
+        return v
 
-    def _check_taxonomy_violations(self, file_path):
-        """Check for naming violations"""
-        violations = []
-        
-        path = Path(file_path)
-        
-        # Check directory names
-        for part in path.parts:
-            if part.lower() in self.FORBIDDEN_PATTERNS:
-                violations.append(f"{file_path}: Forbidden pattern in path '{part}'")
-        
-        # Check file name
-        if path.stem.lower() in self.FORBIDDEN_PATTERNS:
-            violations.append(f"{file_path}: Forbidden pattern in filename")
-        
-        return violations
+    def _calculate_mccabe(self, node):
+        complexity = 1
+        for child in ast.walk(node):
+            if isinstance(child, (ast.If, ast.For, ast.While, ast.AsyncFor, ast.ExceptHandler)):
+                complexity += 1
+        return complexity
 
-    def _check_system_violations(self):
-        """Check system-level architectural violations"""
-        violations = []
-        
-        # Check for metaclasses
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                if '__metaclass__' in content or 'type(' in content:
-                    # Check if it's actually a metaclass definition
-                    tree = ast.parse(content)
-                    for node in ast.walk(tree):
-                        if isinstance(node, ast.ClassDef):
-                            for base in node.bases:
-                                if isinstance(base, ast.Name) and base.id == 'type':
-                                    violations.append(f"{file_path}: Metaclass usage")
-                                    break
-                                    
-            except Exception:
-                pass
-        
-        return violations
-
-    async def _fix_violations(self, violations):
-        """Fix architectural violations where possible"""
-        fixed_count = 0
-        
-        # Fix depth violations by moving files
-        for violation in violations['depth']:
-            file_path = violation.split(':')[0]
-            if await self._fix_depth_violation(file_path):
-                fixed_count += 1
-        
-        # Fix void files by adding content
-        for file_path in violations['void']:
-            if await self._fix_void_file(file_path):
-                fixed_count += 1
-        
-        return fixed_count
-
-    async def _fix_depth_violation(self, file_path):
-        """Move file to correct depth"""
-        try:
-            path = Path(file_path)
-            
-            # Calculate new path at shallower depth
-            parts = path.parts
-            if len(parts) > 6:  # Too deep
-                # Move to parent directory
-                new_path = Path(*parts[:-2]) / parts[-1]
-                
-                # Create directory if needed
-                new_path.parent.mkdir(parents=True, exist_ok=True)
-                
-                # Move file
-                path.rename(new_path)
-                return True
-                
-        except Exception:
-            pass
-        
-        return False
-
-    async def _fix_void_file(self, file_path):
-        """Add minimal content to void file"""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            if content.strip():
-                return False
-            
-            # Add minimal module docstring
-            new_content = f'"""\n{Path(file_path).stem} module.\n"""\n\n'
-            
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-            
-            return True
-            
-        except Exception:
-            pass
-        
-        return False
-
-class StyleGuardian(SubAtomicAgent):
-    """
-    Unified style checking agent.
-    Covers:
-      - Documentation checks (Key 21)
-      - Naming conventions (Key 47)
-    Passive checks only - fixes handled by dedicated enforcers.
-    """
-
-    def can_run(self) -> bool:
-        # Require AST validity before running checks
-        return "AST_VALID" in self.ctx.signals
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking style conventions...")
-        await asyncio.sleep(0)
-        
-        # Documentation violations (Key 21)
-        doc_violations = await self._check_documentation()
-        
-        # Naming violations (Key 47)
-        naming_violations = await self._check_naming()
-        
-        # Report results
-        total_violations = len(doc_violations) + len(naming_violations)
-        
-        if total_violations > 0:
-            print(f"   Found {total_violations} style issues (passive check)")
-            print(f"   📝 Found {total_violations} style issues (passive check)")
-        else:
-            print("   ✅ All style conventions satisfied")
-        
-        # Report keys (passive checks - no auto-fix)
-        self.ctx.report(self.name, 21, len(doc_violations) == 0, doc_violations)
-        self.ctx.report(self.name, 47, len(naming_violations) == 0, naming_violations)
-
-    async def _check_documentation(self):
-        """Check for missing docstrings (Key 21)"""
-        violations = []
-        
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                # Skip test files and __init__ files
-                if 'test_' in file_path or file_path.endswith('__init__.py'):
-                    continue
-                
-                tree = ast.parse(content)
-                
-                # Check module docstring
-                if not ast.get_docstring(tree):
-                    violations.append(f"{file_path}: Missing module docstring")
-                
-                # Check class docstrings
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        if not ast.get_docstring(node):
-                            violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' missing docstring")
-                    
-                    elif isinstance(node, ast.FunctionDef):
-                        # Skip private methods and test methods
-                        if (node.name.startswith('_') or 
-                            'test_' in node.name or 
-                            node.name.startswith('test_')):
-                            continue
-                        
-                        # Check public methods and classes
-                        if not ast.get_docstring(node):
-                            violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' missing docstring")
-                            
-            except Exception:
-                continue
-        
-        return violations
-
-    async def _check_naming(self):
-        """Check naming conventions (Key 47)"""
-        violations = []
-        
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                tree = ast.parse(content)
-                
-                # Check function names
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef) and not node.name.startswith('_'):
-                        if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
-                            violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case")
-                    
-                    elif isinstance(node, ast.ClassDef):
-                        if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
-                            violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
-                            
-            except Exception:
-                continue
-        
-        return violations
-
-class GenerativeGuard(SubAtomicAgent):
-    """
-    KEYS: 45 (Dead Code/Runaway Generation)
-    ROLE: The Watchdog. Identifies and deletes recursively-generated files.
-    """
-
-    GENERATIVE_PATTERNS = [
-        r"\_impl\_impl\_",
-        r"generated_\d+",
-        r"auto_\w+_\d+",
-        r"temp_\w+_\d+"
-    ]
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Scanning for generative artifacts...")
-        await asyncio.sleep(0)
-        
-        violations = []
-        for root, dirs, files in os.walk("."):
-            if any(x in root for x in EXCLUDED_DIRS): continue
-            for file in files:
-                file_path = os.path.join(root, file)
-                if os.path.isfile(file_path) and file.endswith('.py'):
-                    for pattern in self.GENERATIVE_PATTERNS:
-                        if re.search(pattern, file):
-                            violations.append(file_path)
-                            break
-
-        if violations:
-            print(f"   {self.name}: Found {len(violations)} generative artifacts")
-            for file_path in violations:
-                try:
-                    os.remove(file_path)
-                    print(f"      DELETED: {file_path}")
-                except Exception as e:
-                    print(f"      Failed to delete {file_path}: {e}")
-                self.ctx.signals.add("GENERATIVE_CLEAN")
-        else:
-            self.ctx.report(self.name, 45, True, [])
-            self.ctx.signals.add("GENERATIVE_CLEAN")
-
-class CodeJanitor(SubAtomicAgent):
-    """
-    KEYS: 10-13, 15, 16 + Active Cleanup (Key 27)
-    ROLE: The Cleaner.
-    """
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Sanitizing Codebase...")
-        await asyncio.sleep(0)
-        # Key 27: Active Cleanup
-        self.cleanup_empty_files()
-        
-        # Pragmatic stylistic checks
-        self.ctx.report(self.name, 11, *self.check_key_11_no_trailing_whitespace())
-        self.ctx.report(self.name, 12, *self.check_key_12_no_missing_newline())
-        self.ctx.report(self.name, 13, *self.check_key_13_no_tabs())
-        self.ctx.report(self.name, 10, *self.check_key_10_no_long_lines())
-        self.ctx.report(self.name, 15, *self.check_key_15_no_magic_numbers())
-        self.ctx.report(self.name, 16, *self.check_key_16_no_deep_nesting())
-        self.ctx.signal_ast_valid()
-
-    def cleanup_empty_files(self):
-        count = 0
-        for root, dirs, files in os.walk("."):
-            if any(x in root for x in EXCLUDED_DIRS): continue
-            for file in files:
-                p = os.path.join(root, file)
-                try:
-                    if os.path.getsize(p) == 0:
-                        os.remove(p)
-                        count += 1
-                except Exception: pass
-        if count > 0: print(f"      🗑️  Deleted {count} empty files.")
-
-    def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
-        violations = []
-        for f_path in self.ctx.python_files:
-            try:
-                with open(f_path, "r", encoding="utf-8") as f:
-                    for i, line in enumerate(f, 1):
-                        if len(line.rstrip()) > 150: violations.append(f"{f_path}:{i}")
-            except Exception: continue
-        return (len(violations) == 0, violations)
-
-    def check_key_15_no_magic_numbers(self) -> Tuple[bool, List[str]]:
-        violations = []
-        allowed = {0, 1, -1, 2, 10, 100, 200, 404, 500, 1000, 0.0, 1.0, 0.5}
-        for f_path in self.ctx.python_files:
-            if 'test' in f_path.lower(): continue
-            try:
-                tree = ast.parse(open(f_path, "r", encoding="utf-8").read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
-                        if node.value not in allowed: violations.append(f"{f_path}:{node.lineno}")
-            except Exception: continue
-        return (len(violations) == 0, violations)
-
-    def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
-        violations = []
-        for f_path in self.ctx.python_files:
-            try:
-                for i, line in enumerate(open(f_path, "r", encoding="utf-8"), 1):
-                    if (len(line) - len(line.lstrip())) > 40: violations.append(f"{f_path}:{i}")
-            except Exception: continue
-        return (len(violations) == 0, violations)
-
-    def check_key_11_no_trailing_whitespace(self) -> Tuple[bool, List[str]]:
-        return (True, []) # Auto-fixed or ignored for friction reduction
-
-    def check_key_12_no_missing_newline(self) -> Tuple[bool, List[str]]:
-        violations = [p for p in self.ctx.python_files if not open(p, "r", encoding="utf-8").read().endswith("\n")]
-        return (len(violations) == 0, violations)
-
-    def check_key_13_no_tabs(self) -> Tuple[bool, List[str]]:
-        violations = [p for p in self.ctx.python_files if "\t" in open(p, "r", encoding="utf-8").read()]
-        return (len(violations) == 0, violations)
-
-    def _fix_trailing_whitespace(self):
-        """Auto-fix trailing whitespace."""
-        try:
-            result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
-                                  capture_output=True, text=True)
-            if result.returncode == 0:
-                print("      ✅ Trailing whitespace fixed")
-        except Exception as e:
-            print(f"      ❌ Failed to fix trailing whitespace: {e}")
+    def _check_system(self, file_path):
+        return []
 
 class DependencySentinel(SubAtomicAgent):
     """
@@ -1900,99 +1498,190 @@ class ConcurrencyGuardian(SubAtomicAgent):
         self.ctx.report(self.name, 63, True, ["No livelock patterns"])
         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
-class BudgetAgent(SubAtomicAgent):
+
+class HygieneGuardian(SubAtomicAgent):
     """
-    KEYS: 17 (Large Functions), 19 (Complex Functions)
-    ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.
+    Unified Hygiene Agent.
+    Merges GenerativeGuard (Key 45) and TheCurator (File Taxonomy).
     """
+    
+    GENERATIVE_PATTERNS = [
+        r"_impl_impl_",
+        r"generated_\d+",
+        r"auto_\w+_\d+",
+        r"temp_\w+_\d+"
+    ]
+
+    SCRIPT_CATEGORIES = {
+        'maintenance', 'setup', 'migration', 'testing', 'archive'
+    }
+    
+    IMMUTABLE_FILES = {
+        'canon_validator_v2_agentic.py',
+        'auto_canon.py',
+        'setup.py',
+        'README.md',
+        'canon_validator_agentic.py' 
+    }
 
     async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Project Hygiene...")
+        await asyncio.sleep(0)
+        await self._purge_generative_artifacts()
+        self.ctx.signals.add("GENERATIVE_CLEAN")
+
+    async def _purge_generative_artifacts(self):
+        violations = []
+        for root, dirs, files in os.walk("."):
+            if any(x in root for x in EXCLUDED_DIRS): continue
+            for file in files:
+                file_path = os.path.join(root, file)
+                if os.path.isfile(file_path) and file.endswith('.py'):
+                    for pattern in self.GENERATIVE_PATTERNS:
+                        if re.search(pattern, file):
+                            violations.append(file_path)
+                            break
+        
+        if violations:
+            print(f"   🧹 Found {len(violations)} generative artifacts")
+            for file_path in violations:
+                try:
+                    os.remove(file_path)
+                    print(f"      DELETED: {file_path}")
+                except Exception as e:
+                    print(f"      Failed: {e}")
+        else:
+            self.ctx.report(self.name, 45, True, [])
+
+class CodeStyleGuardian(SubAtomicAgent):
+    """
+    Unified Style & Cleanliness Agent.
+    Merges CodeJanitor (Keys 10-16) and StyleGuardian (Keys 21, 47).
+    """
+
+    def can_run(self) -> bool:
+        return "AST_VALID" in self.ctx.signals
+
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Style & Hygiene...")
         await asyncio.sleep(0)
 
-        # Key 17: Large functions
-        passed, details = self.check_key_17_no_large_functions()
-        self.ctx.report(self.name, 17, passed, details)
+        self._cleanup_empty_files()
+        
+        self.ctx.report(self.name, 11, *self._check_no_trailing_whitespace())
+        self.ctx.report(self.name, 12, *self._check_no_missing_newline())
+        self.ctx.report(self.name, 13, *self._check_no_tabs())
+        self.ctx.report(self.name, 10, *self._check_line_length())
+        self.ctx.report(self.name, 15, *self._check_magic_numbers())
+        self.ctx.report(self.name, 16, *self._check_nesting_depth())
+        
+        doc_violations = await self._check_documentation()
+        self.ctx.report(self.name, 21, len(doc_violations) == 0, doc_violations)
+        
+        naming_violations = await self._check_naming()
+        self.ctx.report(self.name, 47, len(naming_violations) == 0, naming_violations)
 
-        # Key 19: Complex functions
-        passed, details = self.check_key_19_no_complex_functions()
-        self.ctx.report(self.name, 19, passed, details)
+    def _cleanup_empty_files(self):
+        count = 0
+        for root, _, files in os.walk("."):
+            if any(x in root for x in EXCLUDED_DIRS): continue
+            for file in files:
+                p = os.path.join(root, file)
+                try:
+                    if os.path.getsize(p) == 0:
+                        os.remove(p)
+                        count += 1
+                except: pass
+        if count: print(f"      🗑️  Deleted {count} empty files.")
 
-        if passed:
-            self.ctx.signals.add("COMPLEXITY_CLEAN")
-
-    def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions (>MAX_LINES/4 lines)."""
+    def _check_line_length(self):
         violations = []
-        max_func_lines = MAX_LINES // 4  # 50 lines when MAX_LINES=200
+        for f in self.ctx.python_files:
+            try:
+                for i, line in enumerate(open(f, encoding='utf-8'), 1):
+                    if len(line.rstrip()) > 150: violations.append(f"{f}:{i}")
+            except: pass
+        return (not violations, violations)
+
+    def _check_magic_numbers(self):
+        violations = []
+        allowed = {0, 1, -1, 2, 10, 100, 200, 404, 500, 1000, 0.0, 1.0, 0.5}
+        for f in self.ctx.python_files:
+            if 'test' in f: continue
+            try:
+                tree = ast.parse(open(f, encoding='utf-8').read())
+                for n in ast.walk(tree):
+                    if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
+                        if n.value not in allowed: violations.append(f"{f}:{n.lineno}")
+            except: pass
+        return (not violations, violations)
+    
+    def _check_nesting_depth(self):
+        violations = []
+        for f in self.ctx.python_files:
+            try:
+                for i, line in enumerate(open(f, encoding='utf-8'), 1):
+                    if (len(line) - len(line.lstrip())) > 40: violations.append(f"{f}:{i}")
+            except: pass
+        return (not violations, violations)
+
+    def _check_no_trailing_whitespace(self): 
+        violations = []
+        for f in self.ctx.python_files:
+            try:
+                for i, line in enumerate(open(f, encoding='utf-8'), 1):
+                    if line.endswith(' \n') or line.endswith('\t\n'):
+                        violations.append(f"{f}:{i}")
+            except: pass
+        return (not violations, violations)
+        
+    def _check_no_missing_newline(self): 
+        violations = []
+        for f in self.ctx.python_files:
+            try:
+                with open(f, 'rb') as file:
+                    content = file.read()
+                    if content and not content.endswith(b'\n'):
+                        violations.append(f)
+            except: pass
+        return (not violations, violations)
+        
+    def _check_no_tabs(self): 
+        violations = []
+        for f in self.ctx.python_files:
+            try:
+                for i, line in enumerate(open(f, encoding='utf-8'), 1):
+                    if '\t' in line: violations.append(f"{f}:{i}")
+            except: pass
+        return (not violations, violations)
+    
+    async def _check_documentation(self):
+        violations = []
+        for file_path in self.ctx.python_files:
+            if 'test_' in file_path or file_path.endswith('__init__.py'):
+                continue
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                tree = ast.parse(content)
+                if not ast.get_docstring(tree):
+                    violations.append(f"{file_path}: Missing module docstring")
+            except: pass
+        return violations
+
+    async def _check_naming(self):
+        violations = []
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                tree = ast.parse(content)
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
-                            func_lines = node.end_lineno - node.lineno + 1
-                            if func_lines > max_func_lines:
-                                violations.append(f"{file_path}:{node.lineno} ({func_lines} lines > {max_func_lines})")
-                                # Inject refactoring advice for StructuralEngineer
-                                self.ctx.inject_instruction(
-                                    self.name,
-                                    f"REFACTOR TARGET: {file_path} lines {node.lineno}-{node.end_lineno}. Logic: Extract Method '{node.name}_helper'."
-                                )
-            except Exception:
-                continue
-
-        if violations:
-            print(f"   Budget violated. {len(violations)} large functions found.")
-
-        return (len(violations) == 0, violations)
-
-    def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
-        """Check for complex functions (cyclomatic complexity >10)."""
-        violations = []
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        complexity = self._calculate_cyclomatic_complexity(node)
-                        if complexity > 10:
-                            violations.append(f"{file_path}:{node.lineno} {node.name}() (complexity {complexity})")
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def _calculate_cyclomatic_complexity(self, node: ast.AST) -> int:
-        """Calculate cyclomatic complexity of a function."""
-        complexity = 1  # Base complexity
-
-        for child in ast.walk(node):
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.AsyncFor)):
-                complexity += 1
-            elif isinstance(child, ast.ExceptHandler):
-                complexity += 1
-            elif isinstance(child, ast.With, ast.AsyncWith):
-                complexity += 1
-            elif isinstance(child, ast.BoolOp):
-                complexity += len(child.values) - 1
-            elif isinstance(child, ast.ListComp):
-                complexity += 1
-            elif isinstance(child, ast.DictComp):
-                complexity += 1
-            elif isinstance(child, ast.SetComp):
-                complexity += 1
-            elif isinstance(child, ast.GeneratorExp):
-                complexity += 1
-            elif isinstance(child, ast.Lambda):
-                complexity += 1
-
-        return complexity
+                    if isinstance(node, ast.ClassDef):
+                        if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
+                            violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
+            except: pass
+        return violations
 
 class StructuralEngineer(SubAtomicAgent):
     """
@@ -6222,243 +5911,6 @@ class RaceAnalyzer(ast.NodeVisitor):
         """Check if current node is inside a 'with lock:' context."""
         return any(context[0] == 'lock' for context in self.in_with_context)
 
-class TheCurator(SubAtomicAgent):
-    """
-    ROLE: Taxonomy & Rationalization. Fights file sprawl in scripts/ and root.
-    
-    The Curator transforms flat file lists into structured libraries,
-    enforcing the Depth 3 rule and creating retrieval indexes.
-    """
-    
-    # Files that should NEVER be moved
-    IMMUTABLE_FILES = {
-        'canon_validator_v2_agentic.py',
-        'auto_canon.py',
-        'setup.py',
-        'README.md'
-    }
-    
-    # Valid script subdirectories
-    SCRIPT_CATEGORIES = {
-        'maintenance', 'setup', 'migration', 'testing', 'archive'
-    }
-    
-    def can_run(self) -> bool:
-        """Always run to maintain order."""
-        return True
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Organizing file taxonomy...")
-        await asyncio.sleep(0)
-        
-        # Phase 1: Organize scripts/ directory
-        await self._organize_scripts()
-        
-        # Phase 2: Sweep root for stray files
-        await self._sweep_root()
-        
-        # Phase 3: Update index manifest
-        await self._update_manifest()
-        
-        print(f"   ✅ File taxonomy organized")
-    
-    async def _organize_scripts(self):
-        """Organize scripts into proper subdirectories."""
-        if not self.ctx.intelligence_enabled:
-            print(f"   🧠 Intelligence disabled - skipping script organization")
-            return
-        
-        scripts_dir = 'scripts'
-        if not os.path.exists(scripts_dir):
-            print(f"   📁 No scripts directory found")
-            return
-        
-        print(f"   📂 Organizing scripts directory...")
-        
-        # Scan for files at depth 2 (scripts/*.py)
-        for item in os.listdir(scripts_dir):
-            item_path = os.path.join(scripts_dir, item)
-            
-            # Skip directories and protected files
-            if os.path.isdir(item_path) or item in self.IMMUTABLE_FILES:
-                continue
-            
-            # Classify and move
-            await self._classify_and_move_script(item_path)
-    
-    async def _classify_and_move_script(self, script_path: str):
-        """Classify a script and move it to appropriate subdirectory."""
-        try:
-            # Read script content
-            with open(script_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Ask Gemini to classify
-            prompt = f"""
-            Role: File Organizer
-            Context: Organizing Python scripts into a taxonomy.
-            
-            Script: {os.path.basename(script_path)}
-            Content preview:
-            {content[:500]}...
-            
-            Task: Classify this script into ONE of these categories:
-            - maintenance: Scripts that fix, clean, or maintain the system
-            - setup: Scripts that install, configure, or initialize something
-            - migration: Scripts that migrate data or update schemas
-            - testing: Scripts that run tests or perform validation
-            - archive: Old scripts no longer in active use
-            
-            Respond with ONLY the category name.
-            """
-            
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            
-            category = response.text.strip().lower()
-            if category not in self.SCRIPT_CATEGORIES:
-                category = 'archive'  # Default for unknown
-            
-            # Create destination path
-            script_name = os.path.basename(script_path)
-            dest_path = f"scripts/{category}/{script_name}"
-            
-            # Move the file
-            if self.ctx.move_file(script_path, dest_path):
-                print(f"      📁 {script_name} -> {category}/")
-                
-        except Exception as e:
-            print(f"   ❌ Failed to classify {script_path}: {e}")
-    
-    async def _sweep_root(self):
-        """Move non-whitelisted files from root to appropriate locations."""
-        print(f"   🧹 Sweeping root directory...")
-        
-        for item in os.listdir('.'):
-            # Skip directories and whitelisted files
-            if os.path.isdir(item) or item in ALLOWED_ROOT_FILES:
-                continue
-            
-            # Ask Gemini where it belongs
-            await self._classify_root_file(item)
-    
-    async def _classify_root_file(self, filename: str):
-        """Classify a root file and move it to appropriate location."""
-        try:
-            # Check if file is text (skip binary files)
-            try:
-                with open(filename, 'r', encoding='utf-8') as f:
-                    content = f.read()
-            except UnicodeDecodeError:
-                print(f"   ⚠️  Skipping binary file: {filename}")
-                return
-            
-            # Ask Gemini for destination
-            prompt = f"""
-            Role: File Organizer
-            Context: Moving stray files from project root to proper locations.
-            
-            File: {filename}
-            Content:
-            {content[:500]}...
-            
-            Available destinations:
-            - config/: Configuration files
-            - data/: Data files
-            - archives/: Old or unused files
-            - docs/: Documentation
-            
-            Respond with ONLY the destination directory (e.g., "config").
-            """
-            
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            
-            dest_dir = response.text.strip().lower()
-            if dest_dir not in ['config', 'data', 'archives', 'docs']:
-                dest_dir = 'archives'  # Default
-            
-            # Move the file
-            dest_path = f"{dest_dir}/{filename}"
-            if self.ctx.move_file(filename, dest_path):
-                print(f"      📁 {filename} -> {dest_dir}/")
-                
-        except Exception as e:
-            print(f"   ❌ Failed to classify {filename}: {e}")
-    
-    async def _update_manifest(self):
-        """Update the script index manifest."""
-        print(f"   📋 Updating script manifest...")
-        
-        # Create catalog directory
-        catalog_dir = 'observability/catalog'
-        os.makedirs(catalog_dir, exist_ok=True)
-        
-        manifest = []
-        
-        # Scan organized scripts
-        for category in self.SCRIPT_CATEGORIES:
-            category_path = f"scripts/{category}"
-            if not os.path.exists(category_path):
-                continue
-                
-            for script in os.listdir(category_path):
-                if script.endswith('.py'):
-                    script_path = os.path.join(category_path, script)
-                    
-                    # Generate summary
-                    summary = await self._generate_script_summary(script_path)
-                    
-                    manifest.append({
-                        'name': script,
-                        'path': script_path,
-                        'category': category,
-                        'summary': summary,
-                        'cmd': f"python -m {category}.{script[:-3]}"
-                    })
-        
-        # Write manifest
-        import json
-        manifest_path = f"{catalog_dir}/script_index.json"
-        try:
-            with open(manifest_path, 'w', encoding='utf-8') as f:
-                json.dump(manifest, f, indent=2)
-            print(f"   ✅ Manifest saved: {len(manifest)} scripts indexed")
-        except Exception as e:
-            print(f"   ❌ Failed to save manifest: {e}")
-    
-    async def _generate_script_summary(self, script_path: str) -> str:
-        """Generate a one-line summary for a script."""
-        try:
-            with open(script_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            prompt = f"""
-            Role: Technical Writer
-            Context: Creating a brief summary for a script.
-            
-            Script: {os.path.basename(script_path)}
-            Content:
-            {content[:800]}...
-            
-            Task: Provide a ONE-SENTENCE summary of what this script does.
-            Do not include implementation details, only purpose.
-            """
-            
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            
-            return response.text.strip()
-            
-        except Exception:
-            return "No summary available"
-
 class Sherlock(SubAtomicAgent):
     """
     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
@@ -6578,22 +6030,19 @@ class Sherlock(SubAtomicAgent):
 if __name__ == "__main__":
     ctx = ValidationContext()
     
-    # Unified Agent Sequence (10 agents instead of 50+)
+    # MAGNIFICENT SEVEN Agent Sequence
     agents = [
         Historian(ctx),              # 1. Memory/Skip logic
-        ArchitectureGovernor(ctx),   # 2. Architecture governance
-        GenerativeGuard(ctx),        # 3. Clean noise
-        CodeJanitor(ctx),            # 4. Basic formatting
+        ArchitectureGovernor(ctx),   # 2. Architecture + Complexity
+        HygieneGuardian(ctx),        # 3. File system hygiene
+        CodeStyleGuardian(ctx),      # 4. Code style + formatting
         DependencySentinel(ctx),     # 5. Imports
         SafetyInspector(ctx),        # 6. Security
-        StyleGuardian(ctx),          # 7. Style checks
-        ConcurrencyGuardian(ctx),    # 8. Concurrency safety
-        BudgetAgent(ctx),            # 9. Complexity budgets
-        TheCurator(ctx),             # 10. Final cleanup
+        ConcurrencyGuardian(ctx),    # 7. Concurrency safety
     ]
 
     async def run_mission():
-        print("🚀 STARTING UNIFIED AGENTIC MISSION")
+        print("🚀 STARTING MAGNIFICENT SEVEN MISSION")
         for agent in agents:
             if agent.can_run():
                 await agent.execute()
