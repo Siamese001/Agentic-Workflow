@@ -826,82 +826,116 @@ class ValidationContext:
 
         return current_code # Fallback
     
-    async def conversational_repair(self, failure_desc: str, affected_files: list) -> str | None:
-        """Spins up a targeted AutoGen GroupChat to debate and fix complex failures."""
-        if not AUTOGEN_AVAILABLE or not self.intelligence_enabled:
-            return None
+    async def conversational_repair(self, failure_traceback: str, primary_file: str, dependent_files: List[str]) -> str:
+        """
+        Level 6+ Collective Intelligence: Uses AutoGen GroupChat to debate root cause and generate a high-quality fix.
+        Only runs if AUTOGEN_AVAILABLE and intelligence enabled.
+        Returns cleaned proposed code or empty string on failure.
+        """
+        if not AUTOGEN_AVAILABLE:
+            print("   ⚠️ AutoGen unavailable - falling back to single-agent mutation")
+            return ""
         
-        print(f"\n   🗣️ INITIATING AUTOGEN DEBATE on: {affected_files}")
+        if not self.intelligence_enabled:
+            return ""
+        
+        print(f"   🗣️ Initiating CONVERSATIONAL REPAIR for {primary_file}")
+        
         config_list = self.autogen_config_list
-
-        # 1. Define The Council
+        
+        # Define debating agents (tuned to existing roles)
         sherlock = AssistantAgent(
             name="Sherlock",
-            system_message="You are the Lead Investigator. Analyze the traceback. Propose the logical fix. Criticize unsafe proposals.",
-            llm_config={"config_list": config_list}
+            system_message="You are a root-cause detective. Analyze tracebacks and cross-file interactions.",
+            llm_config={"config_list": config_list, "temperature": 0.5}
         )
         
         safety = AssistantAgent(
             name="SafetyInspector",
-            system_message="You are the Security Guard. REJECT any fix that uses eval(), exec(), or weakens permissions. Ensure imports are clean.",
+            system_message="You enforce security: no eval/exec, no hardcoded secrets, no dangerous calls.",
             llm_config={"config_list": config_list}
         )
         
-        coder = AssistantAgent(
-            name="SeniorEngineer",
-            system_message=f"You are the Implementer. Output the final Unified Diff for {affected_files[0] if affected_files else 'target file'}. Output ONLY the Code block.",
+        dependency = AssistantAgent(
+            name="DependencySentinel",
+            system_message="You fix import paths, circular dependencies, and module resolution.",
             llm_config={"config_list": config_list}
         )
-
-        user_proxy = UserProxyAgent(
-            name="SystemAdmin",
+        
+        governor = AssistantAgent(
+            name="ArchitectureGovernor",
+            system_message="You enforce Subatomic Laws: depth 3-5, file size limits, root sanctity.",
+            llm_config={"config_list": config_list}
+        )
+        
+        # Coordinator (acts as UserProxy but never asks human)
+        coordinator = UserProxyAgent(
+            name="Coordinator",
+            system_message="You initiate debate with failure context. Terminate when a final fix is proposed.",
             human_input_mode="NEVER",
             code_execution_config=False,
-            max_consecutive_auto_reply=0
+            llm_config={"config_list": config_list}
         )
-
-        # 2. Define the Chat
+        
         groupchat = GroupChat(
-            agents=[user_proxy, sherlock, safety, coder],
+            agents=[coordinator, sherlock, safety, dependency, governor],
             messages=[],
-            max_round=6  # Limit debate length
+            max_round=10  # Prevents runaway debates
         )
         
         manager = GroupChatManager(groupchat=groupchat, llm_config={"config_list": config_list})
+        
+        # Build initiation message
+        files_summary = f"Primary: {primary_file}\nDependents: {dependent_files}"
+        init_msg = f"""
+CRITICAL TEST FAILURE DETECTED
 
-        # 3. Start Debate
-        prompt = f"""
-CRITICAL FAILURE DETECTED:
-{failure_desc[:2000]}
+Traceback:
+{failure_traceback[:3000]}
 
-Context Files: {affected_files}
+Affected Files:
+{files_summary}
 
-GOAL: Agree on a fix. 
-1. Sherlock analyzes root cause.
-2. Safety checks constraints.
-3. SeniorEngineer generates a Unified Diff.
+Task: Debate the root cause and propose a MINIMAL, SAFE fix.
+Final response must be ONLY the complete corrected Python code for the primary file.
+Do not explain — only output clean code.
 """
         
-        # Run chat (blocking, so we wrap in thread)
         try:
             await asyncio.to_thread(
-                user_proxy.initiate_chat,
+                coordinator.initiate_chat,
                 manager,
-                message=prompt
+                message=init_msg
             )
             
-            # 4. Extract Final Outcome
-            # We look for the last code block from SeniorEngineer
-            for msg in reversed(groupchat.messages):
-                if msg['name'] == "SeniorEngineer" and "```" in msg['content']:
-                    return self._clean_llm_code(msg['content'])
+            # Extract final proposed code
+            final_msg = groupchat.messages[-1]["content"] if groupchat.messages else ""
+            cleaned = self._clean_llm_code(final_msg)
             
-            print("   ⚠️ AutoGen debate finished but produced no code.")
-            return None
+            # Safety: AST check before returning
+            if primary_file.endswith(".py") and cleaned:
+                try:
+                    ast.parse(cleaned)
+                    print("   🗣️ Conversational repair produced AST-valid code")
+                except SyntaxError as e:
+                    print(f"   🛑 Conversational repair produced invalid syntax: {e}")
+                    return ""
+            
+            # Track success for learning
+            if cleaned:
+                self.mutation_stats["success"] += 1
+                self.successful_traces.append({
+                    "type": "conversational",
+                    "task": init_msg[:200],
+                    "result": cleaned[:200]
+                })
+            
+            return cleaned
             
         except Exception as e:
-            print(f"   ❌ AutoGen Failed: {e}")
-            return None
+            print(f"   ❌ Conversational repair failed: {e}")
+            self.mutation_stats["total"] += 1
+            return ""
     
     def move_file(self, src: str, dst: str) -> bool:
         """Smart Move: Handles files (with compliance check) and directories."""
@@ -3360,41 +3394,43 @@ class TestPilot(SubAtomicAgent):
                 return True
             else:
                 # AUTOGEN: Escalate complex failures to multi-agent debate
-                print(f"   ❌ Tests failed. Escalating to AutoGen Council...")
+                self.ctx.signals.add("TEST_FAILURE")
+                print(f"   ❌ Tests failed. Initiating COLLECTIVE REPAIR...")
                 
-                # Identify failing file from modified files
-                target_file = None
-                for modified_file in self.ctx.modified_files:
-                    if os.path.exists(modified_file):
-                        target_file = modified_file
-                        break
+                # Determine primary file (simplified: last modified, or parse traceback)
+                primary_file = list(self.ctx.modified_files)[0] if self.ctx.modified_files else None
                 
-                if target_file and AUTOGEN_AVAILABLE:
-                    # TRIGGER THE DEBATE
-                    fix = await self.ctx.conversational_repair(stderr_text, [target_file])
-                    
-                    if fix:
-                        print(f"   🤝 Council reached consensus. Applying fix...")
-                        # Read original content
-                        try:
-                            with open(target_file, 'r', encoding='utf-8') as f:
-                                original_content = f.read()
-                            
-                            # Apply the unified diff
-                            patched = self.ctx.apply_unified_diff(target_file, fix, original_content)
-                            if patched:
-                                if self.ctx.write_compliant_file(target_file, patched):
-                                    print(f"   ✅ Fix Applied. Re-running tests...")
-                                    # Re-run tests to verify fix
-                                    verify_process = await asyncio.create_subprocess_exec(
-                                        sys.executable, "-m", "pytest", test_file, "-v",
-                                        stdout=asyncio.subprocess.PIPE,
-                                        stderr=asyncio.subprocess.PIPE
-                                    )
-                                    await verify_process.communicate()
-                                    return verify_process.returncode == 0
-                        except Exception as e:
-                            print(f"   ❌ Failed to apply AutoGen fix: {e}")
+                if not primary_file:
+                    print(f"   Test output: {stderr_text}")
+                    return False
+                
+                # Use blast radius from Level 6
+                dependents = list(getattr(self.ctx, "impact_zone", set()))
+                
+                # Run conversational repair
+                proposed_fix = await self.ctx.conversational_repair(
+                    failure_traceback=stderr_text,
+                    primary_file=primary_file,
+                    dependent_files=dependents
+                )
+                
+                if proposed_fix:
+                    print(f"   🛠️ Applying collective fix to {primary_file}")
+                    if self.ctx.write_compliant_file(primary_file, proposed_fix):
+                        self.ctx.modified_files.add(primary_file)
+                        print(f"   ✅ Fix Applied. Re-running tests...")
+                        # Re-run tests to verify fix
+                        verify_process = await asyncio.create_subprocess_exec(
+                            sys.executable, "-m", "pytest", test_file, "-v",
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE
+                        )
+                        await verify_process.communicate()
+                        return verify_process.returncode == 0
+                    else:
+                        print("   🛑 Fix blocked by governor")
+                else:
+                    print("   ⚠️ No valid fix from collective intelligence")
                 
                 print(f"   Test output: {stderr_text}")
                 return False
@@ -6728,47 +6764,24 @@ class Sherlock(SubAtomicAgent):
         return None
     
     async def _request_cross_file_fix(self, files_content: dict, failure_info: dict):
-        """Request a fix for the cross-file interaction issue."""
-        # Build files block with explicit loop (Python 3.11 f-string compatibility)
-        files_block = []
-        for path, content in files_content.items():
-            files_block.append(f"### {path}\n{content[:1000]}...")
-        files_content_str = "\n".join(files_block)
+        """Request a fix for the cross-file interaction issue using collective repair."""
+        # Use collective repair instead of single LLM call
+        primary = failure_info['modified_file']
+        proposed = await self.ctx.conversational_repair(
+            failure_info['traceback'],
+            primary_file=primary,
+            dependent_files=list(files_content.keys())
+        )
         
-        prompt = f"""
-        Role: Debugging Expert
-        Context: We modified a file and it caused a test failure in another file.
-        
-        Modified File: {failure_info['modified_file']}
-        Test File: {failure_info['test_file']}
-        Error File: {list(files_content.keys())[1] if len(files_content) > 1 else 'Unknown'}
-        
-        Traceback:
-        {failure_info['traceback']}
-        
-        Files Content:
-        {files_content_str}
-        
-        Task: Identify the root cause and provide the fix. The issue might be in the
-        interaction between files, not just in the modified file.
-        
-        Provide the exact fix needed, specifying which file to modify.
-        """
-        
-        try:
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            
-            print(f"\n   🕵️ Sherlock's Analysis:")
-            print(response.text)
-            
-            # TODO: Parse response and apply fixes automatically
-            # For now, just display the analysis
-        
-        except Exception as e:
-            print(f"   ❌ Failed to analyze failure: {e}")
+        if proposed:
+            print(f"   🕵️ Sherlock collective fix applied to {primary}")
+            if self.ctx.write_compliant_file(primary, proposed):
+                self.ctx.modified_files.add(primary)
+                print(f"   ✅ Cross-file fix successfully applied")
+            else:
+                print(f"   🛑 Fix blocked by governor")
+        else:
+            print(f"   ⚠️ No valid fix from collective intelligence")
 
 # ==============================================================================
 # --- MAIN ENTRY ---
