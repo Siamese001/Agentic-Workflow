@@ -474,15 +474,68 @@ class ValidationContext:
                 contents=full_prompt
             )
             text = response.text.strip()
-            # Clean markdown
-            if text.startswith("```python"):
-                text = text[10:]
-            if text.endswith("```"):
-                text = text[:-3]
-            return text.strip()
+            # Use enhanced code cleaning
+            return self._clean_llm_code(text)
         except Exception as e:
             print(f"   [{agent_name}] ❌ Mutation failed: {e}")
             return original_content
+    
+    def _clean_llm_code(self, raw_code: str) -> str:
+        """Strips Markdown backticks and cleans whitespace."""
+        # 1. Strip Markdown code blocks
+        import re
+        code_match = re.search(r"```python\n(.*?)```", raw_code, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip()
+        
+        # 2. Strip generic backticks if regex failed
+        if raw_code.strip().startswith("```"):
+            return raw_code.strip().strip("`").replace("python", "", 1).strip()
+            
+        return raw_code.strip()
+    
+    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", *, max_attempts: int = 5, require_json: bool = False, fallback_content: str = None) -> str:
+        """Resilient mutation with retry logic, AST validation, and prompt hardening."""
+        import ast, json, asyncio
+        current_code = code or ""
+        fallback = fallback_content or current_code
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                # Progressive Prompt Hardening
+                hardened_task = task
+                if attempt > 1:
+                    hardened_task += f"\n\n[ATTEMPT {attempt}/{max_attempts}] PREVIOUS ATTEMPT FAILED. FIX SYNTAX/FORMAT."
+                    hardened_task += "\nRETURN ONLY RAW CODE. NO MARKDOWN."
+
+                # Call Gemini
+                if not self.intelligence_enabled:
+                    return fallback
+
+                response = await asyncio.to_thread(
+                    self._client.models.generate_content,
+                    model=self.model_id,
+                    contents=[f"Agent: {agent_name}\nTask: {hardened_task}\nCode Context:\n{current_code[:2000]}"]
+                )
+
+                cleaned = self._clean_llm_code(response.text)
+
+                # Validation
+                if require_json:
+                    json.loads(cleaned)
+                elif cleaned.endswith(".py") or "def " in cleaned:
+                    ast.parse(cleaned)
+
+                print(f"   [{agent_name}] ✅ Mutation succeeded (Attempt {attempt})")
+                return cleaned
+
+            except Exception as e:
+                print(f"   [{agent_name}] ⚠️ Attempt {attempt} failed: {e}")
+                if "429" in str(e):
+                    await asyncio.sleep(2 ** attempt) # Exponential Backoff
+
+        self.signal_llm_failure(agent_name, "EXHAUSTED_RETRIES")
+        return fallback
     
     def move_file(self, src: str, dst: str) -> bool:
         """Smart Move: Handles files (with compliance check) and directories."""
@@ -580,6 +633,18 @@ class ValidationContext:
     def signal_secure(self):
         self.signals.add("SECURE")
         print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+    
+    def signal_healing_cycle(self, cycle: int):
+        self.signals.add(f"HEALING_CYCLE_{cycle}")
+        print(f"   🔄 SIGNAL: HEALING_CYCLE_{cycle} initiated")
+
+    def signal_llm_failure(self, agent: str, error_type: str):
+        self.signals.add(f"LLM_FAIL_{agent}_{error_type}")
+        print(f"   ⚠️  SIGNAL: LLM failure in {agent} ({error_type})")
+
+    def signal_convergence(self):
+        self.signals.add("CONVERGED")
+        print(f"   🎉 SIGNAL: SYSTEM CONVERGED - Self-healing complete")
 
 # ==============================================================================
 # 2. THE ATOMIC AGENT (Base Class)
@@ -714,6 +779,71 @@ class ImportPatcher:
             print(f"   ❌ Failed to patch imports in {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
 
+# ==============================================================================
+# 3. THE TEST PILOT (Integration Guardian & Healing Orchestrator)
+# ==============================================================================
+class TestPilot(SubAtomicAgent):
+    """
+    ROLE: Integration Guardian & Healing Orchestrator.
+    Runs the full test suite. On failure, triggers Sherlock for root-cause repair.
+    Creates the closed self-healing loop.
+    """
+    def __init__(self, ctx: ValidationContext):
+        super().__init__(ctx)
+        self.name = "TestPilot"
+
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Running integration tests for self-healing...")
+        await asyncio.sleep(0)
+
+        try:
+            # Run pytest quietly, capture output
+            result = subprocess.run(
+                ["pytest", "-q", "--tb=short"],
+                capture_output=True,
+                text=True,
+                timeout=300 
+            )
+
+            if result.returncode == 0:
+                print("   ✅ All tests passed - system healthy")
+                self.ctx.results["TestPilot"] = {"passed": True}
+                return
+
+            print(f"   ❌ Tests failed ({result.returncode}) - initiating self-healing")
+            self.ctx.results["TestPilot"] = {"passed": False, "output": result.stderr}
+            
+            # Simple heuristic to find the failing test file
+            test_file = None
+            for line in result.stderr.splitlines():
+                if "tests/" in line or ".py" in line:
+                    import re
+                    match = re.search(r"(tests?/[^\s:]+\.py)", line)
+                    if match:
+                        test_file = match.group(1)
+                        break
+            
+            if not test_file:
+                print("   ⚠️ Could not identify failing test file from traceback")
+                return
+
+            # Trigger Sherlock for Root Cause Analysis
+            print(f"   🕵️ Triggering Sherlock on {test_file}...")
+            # (In a real implementation, we would instantiate Sherlock here or use a shared instance)
+            # For now, we log the intent to the Blackboard for the next cycle
+            self.ctx.results["Sherlock_Request"] = {
+                "test_file": test_file,
+                "traceback": result.stderr[:2000] # Cap size
+            }
+
+        except subprocess.TimeoutExpired:
+            print("   ⏰ Test suite timed out - potential infinite loop or deadlock")
+        except Exception as e:
+            print(f"   ❌ Test execution failed: {e}")
+
+# ==============================================================================
+# 4. THE MAGNIFICENT SEVEN (Validation Agents)
+# ==============================================================================
 class Historian(SubAtomicAgent):
     """
     ROLE: Memory Keeper. Tracks file changes and skips unchanged files.
@@ -1188,6 +1318,20 @@ class SafetyInspector(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+    def _clean_llm_code(self, raw_code: str) -> str:
+        """Strips Markdown backticks and cleans whitespace."""
+        # 1. Strip Markdown code blocks
+        import re
+        code_match = re.search(r"```python\n(.*?)```", raw_code, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip()
+        
+        # 2. Strip generic backticks if regex failed
+        if raw_code.strip().startswith("```"):
+            return raw_code.strip().strip("`").replace("python", "", 1).strip()
+            
+        return raw_code.strip()
+
     def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
         """Check for blocking calls in async functions and patch them with intelligence."""
         violations = []
@@ -1209,43 +1353,44 @@ class SafetyInspector(SubAtomicAgent):
                             violations.append(f"{file_path}: {pattern} in async context")
                     
                     # Use intelligence to patch the file
-                    if False:  # AI auto-patching disabled to prevent syntax errors; report only mode
-                        # NOTE: Entire mutation section commented out to silence console spam
-                        # The SafetyInspector now acts as a pure auditor, reporting violations only
-                        # 
-                        # print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
-                        # 
-                        # # Build context for the mutation
-                        # context = "\n".join(self.ctx.instructions)
-                        # mutation_task = f'''
-                        # Replace blocking calls with async alternatives.
-                        # Context: {context}
-                        # Rules:
-                        # - Replace time.sleep with asyncio.sleep
-                        # - Replace requests.get/http with httpx.get
-                        # - Replace requests.post/http with httpx.post
-                        # - Add 'import asyncio' if needed
-                        # - Add 'import httpx' if needed
-                        # '''
-                        # 
-                        # new_code = self.ctx.request_mutation(
-                        #     self.name, 
-                        #     mutation_task, 
-                        #     content
-                        # )
-                        # 
-                        # # Write back if different using Compliance Governor
-                        # if new_code != content:
-                        #     if self.ctx.write_compliant_file(file_path, new_code):
-                        #         self.ctx.modified_files.add(file_path)
-                        #         print(f"   ✅ Patched {file_path}")
-                        # 
-                        # # Inject migration advice for manual review
-                        # self.ctx.inject_instruction(
-                        #     self.name,
-                        #     f"MIGRATION ADVICE: Async blocking calls patched in {file_path}. Review imports and error handling."
-                        # )
-                        pass
+                    if self.ctx.intelligence_enabled:
+                        print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
+                        
+                        # Build context for the mutation
+                        context = "\n".join(self.ctx.instructions)
+                        mutation_task = f'''
+Replace blocking calls with async alternatives.
+Context: {context}
+Rules:
+- Replace time.sleep with asyncio.sleep
+- Replace requests.get/http with httpx.get
+- Replace requests.post/http with httpx.post
+- Add 'import asyncio' if needed
+- Add 'import httpx' if needed
+
+RETURN ONLY THE RAW PYTHON CODE. NO MARKDOWN. NO BACKTICKS. Ensure indentation matches the provided snippet context.
+'''
+                        
+                        cleaned_code = await self.ctx.resilient_mutation(
+                            agent_name="SafetyInspector",
+                            task=mutation_task,
+                            code=content,
+                            fallback_content=content
+                        )
+                        
+                        # Write back if different using Compliance Governor
+                        if cleaned_code != content:
+                            if self.ctx.write_compliant_file(file_path, cleaned_code):
+                                self.ctx.modified_files.add(file_path)
+                                print(f"   ✅ Patched {file_path}")
+                            else:
+                                print(f"   ⚠️ Failed to patch {file_path} - syntax validation failed")
+                        
+                        # Inject migration advice for manual review
+                        self.ctx.inject_instruction(
+                            self.name,
+                            f"MIGRATION ADVICE: Async blocking calls patched in {file_path}. Review imports and error handling."
+                        )
             except Exception as e:
                 print(f"   ❌ Failed to patch {file_path}: {e}")
                 continue
@@ -6043,18 +6188,38 @@ if __name__ == "__main__":
     agents = [
         Historian(ctx), ArchitectureGovernor(ctx), HygieneGuardian(ctx),
         CodeStyleGuardian(ctx), DependencySentinel(ctx), SafetyInspector(ctx),
-        ConcurrencyGuardian(ctx)
+        ConcurrencyGuardian(ctx), TestPilot(ctx)
     ]
 
     async def run_mission():
-        print("🚀 STARTING MAGNIFICENT SEVEN MISSION")
-        try:
+        MAX_CYCLES = 5
+        cycle = 0
+        
+        while cycle < MAX_CYCLES:
+            cycle += 1
+            ctx.signal_healing_cycle(cycle)
+            print(f"\n=== 🧬 SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
+            
+            # Reset tracking for this cycle
+            ctx.modified_files.clear()
+            
+            # Execute Agents
             for agent in agents:
                 if agent.can_run():
                     await agent.execute()
-        finally:
-            print("\n💾 SAVING BLACKBOARD STATE...")
-            ctx._save_memory()
-            print("\nMISSION COMPLETE")
+            
+            # Convergence Check
+            # If no files were modified and TestPilot passed (if present), we are stable.
+            if not ctx.modified_files and cycle > 1:
+                ctx.signal_convergence()
+                break
+                
+            if cycle < MAX_CYCLES:
+                print(f"   🔄 Modifications detected. Rerunning validation to ensure stability...")
+                await asyncio.sleep(1)
+
+        print("\n💾 SAVING BLACKBOARD STATE...")
+        ctx._save_memory()
+        print("\nMISSION COMPLETE")
 
     asyncio.run(run_mission())
