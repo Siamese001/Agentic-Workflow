@@ -468,7 +468,7 @@ class DashboardGenerator:
         
         # Write file
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-        Path(output_path).write_text(html)
+        Path(output_path).write_text(html, encoding="utf-8")
         
         self._generated_reports.append(output_path)
         
