@@ -148,6 +148,90 @@ def get_python_files() -> List[str]:
     return python_files
 
 # ==============================================================================
+# LEVEL 6: SOVEREIGN ARCHITECTURE
+# ==============================================================================
+class DependencyGraph:
+    """Builds a directed graph of imports and class hierarchies."""
+    def __init__(self):
+        self.graph = {}  # file_path -> {imports: [], defined_classes: []}
+        self.reverse_graph = {}  # dependency -> [file_paths]
+
+    def build(self, files: list):
+        import ast
+        print("   🕸️ Building Holistic Code Graph...")
+        for file_path in files:
+            self.graph[file_path] = {"imports": [], "classes": []}
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                
+                # Extract Imports and Definitions
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        for n in node.names:
+                            self.graph[file_path]["imports"].append(n.name)
+                    elif isinstance(node, ast.ImportFrom):
+                        if node.module:
+                            self.graph[file_path]["imports"].append(node.module)
+                    elif isinstance(node, ast.ClassDef):
+                        self.graph[file_path]["classes"].append(node.name)
+            except Exception:
+                pass  # Skip unparseable files
+
+        # Build Reverse Index for rapid lookup
+        for file, data in self.graph.items():
+            for imp in data["imports"]:
+                if imp not in self.reverse_graph:
+                    self.reverse_graph[imp] = []
+                self.reverse_graph[imp].append(file)
+
+    def get_impact_radius(self, file_path: str) -> list:
+        """Returns files that import modules defined in file_path."""
+        impacted = set()
+        # Heuristic: map file path back to module name (e.g. apps/utils.py -> apps.utils)
+        module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
+        
+        # Direct imports
+        if module_name in self.reverse_graph:
+            impacted.update(self.reverse_graph[module_name])
+            
+        # Also check defined classes (simplified)
+        for cls in self.graph.get(file_path, {}).get("classes", []):
+            # In a real system, we'd check for "from module import Class"
+            pass
+            
+        return list(impacted)
+
+class BudgetManager:
+    """Tracks estimated token usage and enforces stops."""
+    def __init__(self, limit_usd: float = 2.0):
+        self.limit = limit_usd
+        self.spent = 0.0
+        # Conservative "Pro" pricing for safety: $0.50 / 1M input, $1.50 / 1M output
+        self.input_tokens = 0
+        self.output_tokens = 0
+
+    def track(self, prompt: str, response: str):
+        in_t = len(prompt) / 4  # Rough estimate
+        out_t = len(response) / 4
+        self.input_tokens += in_t
+        self.output_tokens += out_t
+        
+        # Calculate Cost
+        cost = (in_t / 1_000_000 * 0.50) + (out_t / 1_000_000 * 1.50)
+        self.spent += cost
+
+    def check_budget(self) -> bool:
+        if self.spent > self.limit:
+            print(f"   💸 BUDGET EXCEEDED (${self.spent:.4f} / ${self.limit}). Halting Intelligence.")
+            return False
+        return True
+    
+    def get_status(self) -> str:
+        """Returns current budget status."""
+        return f"${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
+
+# ==============================================================================
 # 1. THE BLACKBOARD (Shared Memory)
 # ==============================================================================
 @dataclass
@@ -230,8 +314,16 @@ class ValidationContext:
         self.successful_traces = []  # Store successful fixes for learning
         self.strategic_plan = None
         
+        # Level 5+: Safety Net (Automatic Rollback)
+        self.file_backups = {}  # Store original content before mutations
+        
+        # Level 6: Sovereign Architecture
+        self.code_graph = DependencyGraph()
+        self.budget = BudgetManager(limit_usd=2.0)
+        
         print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
         print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
+        print(f"   [CTX] 💸 Budget Manager: ${self.budget.limit} limit enforced.")
     
     async def _test_redis(self):
         """Test Redis connection."""
@@ -428,6 +520,59 @@ class ValidationContext:
             "api_type": "google"
         }]
 
+    def refresh_graph(self):
+        """Rebuilds graph after mutations."""
+        self.code_graph.build(self.python_files)
+    
+    def deterministic_clean(self, file_path: str):
+        """Runs standard formatters to save LLM tokens."""
+        try:
+            # 1. Sort Imports
+            subprocess.run([sys.executable, "-m", "isort", file_path, "--profile", "black"], capture_output=True, timeout=10)
+            # 2. Fix simple formatting/indentation
+            subprocess.run([sys.executable, "-m", "autopep8", "--in-place", "--aggressive", file_path], capture_output=True, timeout=10)
+            # 3. Remove unused imports (if installed)
+            # subprocess.run(["autoflake", "--in-place", "--remove-all-unused-imports", file_path])
+            print(f"   🧹 Pre-cleaned {file_path}")
+        except Exception:
+            pass  # Fail silently if tools missing
+    
+    def get_dependent_files(self, modified_file: str) -> list:
+        """Returns a list of files that import the modified_file (Blast Radius)."""
+        # Level 6: Use AST-based graph if available, fallback to regex
+        if self.code_graph.graph:
+            return self.code_graph.get_impact_radius(modified_file)
+        
+        # Fallback: Simple regex-based detection
+        impacted = []
+        target_module = modified_file.replace("/", ".").replace("\\", ".").replace(".py", "")
+        
+        for file in self.python_files:
+            if file == modified_file: continue
+            try:
+                with open(file, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    if f"import {target_module}" in content or f"from {target_module}" in content:
+                        impacted.append(file)
+            except Exception:
+                pass
+        return impacted
+    
+    def rollback_changes(self):
+        """Reverts all changes made in the current cycle."""
+        if not self.file_backups:
+            return
+        print(f"   ⏪ ROLLING BACK {len(self.file_backups)} files due to critical failure...")
+        for path, original in self.file_backups.items():
+            try:
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(original)
+                print(f"      Restored: {path}")
+            except Exception as e:
+                print(f"      Failed to restore {path}: {e}")
+        self.file_backups.clear()
+        self.modified_files.clear()
+
     def inject_instruction(self, source_agent: str, instruction: str):
         """Add a guiding hint to the blackboard for downstream agents."""
         self.instructions.append(f"[{source_agent}] {instruction}")
@@ -460,6 +605,14 @@ class ValidationContext:
         if dry_run:
             print(f"   [GOVERNOR] ✅ Dry run: File would be written compliantly")
             return True
+
+        # Level 5+: Save Backup before writing (for rollback)
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    self.file_backups[path] = f.read()
+            except Exception:
+                pass  # If we can't read, we can't backup, but continue
 
         try:
             os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -567,11 +720,21 @@ class ValidationContext:
     
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, *, max_attempts: int = 4, diff_mode: bool = False, min_confidence: float = 0.7) -> str:
         """
-        Level 5 Mutation: Supports Diffs, Confidence Scoring, AST Validation, and Self-Improvement.
+        Level 6 Mutation: Supports Diffs, Confidence Scoring, AST Validation, Self-Improvement, and Pre-Flight Cleaning.
         If diff_mode is True, returns the FULL PATCHED CONTENT (internally applied).
         """
         import ast, json, asyncio
         current_code = code or ""
+        
+        # LEVEL 6: PRE-FLIGHT CLEANING - Run deterministic formatters before LLM
+        if file_path and os.path.exists(file_path):
+            self.deterministic_clean(file_path)
+            # Reload content after cleaning
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    current_code = f.read()
+            except Exception:
+                pass
         
         # LEVEL 5: PRE-COMPUTATION - Search for similar past successes (Few-Shot Learning)
         similar_fixes = ""
@@ -599,12 +762,21 @@ class ValidationContext:
                 # 2. Call Gemini with Logprobs
                 if not self.intelligence_enabled: return current_code
                 
+                # LEVEL 6: Budget Check
+                if not self.budget.check_budget():
+                    return current_code  # Fail closed if budget exceeded
+                
+                full_prompt = f"Agent: {agent_name}\nTask: {prompt}\nContext:\n{current_code[:4000]}"
+                
                 response = await asyncio.to_thread(
                     self._client.models.generate_content,
                     model=self.model_id,
-                    contents=[f"Agent: {agent_name}\nTask: {prompt}\nContext:\n{current_code[:4000]}"],
+                    contents=[full_prompt],
                     config={"response_logprobs": True, "logprobs": 3} # Enable Confidence
                 )
+                
+                # LEVEL 6: Track Token Usage
+                self.budget.track(full_prompt, response.text)
                 
                 # 3. Confidence Check
                 confidence = 1.0
@@ -5213,10 +5385,47 @@ class StrategicPlanner(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
         if not self.ctx.intelligence_enabled:
             return
+        
+        # LEVEL 6: Refresh Dependency Graph
+        self.ctx.refresh_graph()
+        print(f"   🕸️ Code Graph: {len(self.ctx.code_graph.graph)} files mapped.")
 
         # 1. Aggregate State
         violations = [f"Key {k}: {v.get('details','')}..." for k, v in self.ctx.results.items() if not v.get('passed')]
         signals = list(self.ctx.signals)
+        
+        # LEVEL 6: Dynamic Instruction Watcher (Telepathy Interface)
+        from pathlib import Path
+        instruction_file = Path("observability/human_instructions.md")
+        if instruction_file.exists():
+            instructions = instruction_file.read_text().strip()
+            if instructions and not instructions.startswith("# DONE"):
+                print(f"   🗣️ HUMAN INTERVENTION: New orders received -> '{instructions[:50]}...'")
+                
+                # Inject into agenda based on text
+                if "stop" in instructions.lower():
+                    print("   🛑 Stopping per user request.")
+                    sys.exit(0)
+                if "test" in instructions.lower():
+                    self.ctx.signals.add("TEST_FAILURE")  # Force testing
+                if "style" in instructions.lower():
+                    self.ctx.modified_files.add("FORCE_STYLE_CHECK")
+                
+                # Mark handled
+                instruction_file.write_text(f"# DONE (Cycle {len(self.ctx.successful_traces)})\n" + instructions)
+        
+        # LEVEL 6: Analyze Dependency Graph for Blast Radius
+        if self.ctx.modified_files:
+            print("   🕸️ Analyzing Dependency Graph for Blast Radius...")
+            all_impacted = set()
+            for f in self.ctx.modified_files:
+                deps = self.ctx.code_graph.get_impact_radius(f)
+                all_impacted.update(deps)
+            
+            if all_impacted:
+                print(f"      -> ☢️ Blast Radius detected: {len(all_impacted)} dependent files.")
+                # Store for TestPilot to use
+                self.ctx.impact_zone = all_impacted
         
         # 2. Generate Plan
         prompt = f"""
@@ -5266,6 +5475,33 @@ class ReflectionAgent(SubAtomicAgent):
         self.ctx.successful_traces.clear()  # Reset short-term memory
         if count > 0:
             print(f"   🧠 Learned {count} new patterns from this session.")
+
+class GitAgent(SubAtomicAgent):
+    """Manages Git checkpoints for ultimate safety."""
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.name = "GitOps"
+    
+    def run_cmd(self, cmd: list) -> bool:
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, cwd=os.getcwd())
+            return True
+        except subprocess.CalledProcessError:
+            return False
+
+    async def execute(self):
+        # 1. Checkpoint Current State
+        if "CRITICAL_FAILURE" in self.ctx.signals:
+            print(f"   ⏪ GitOps: Critical Failure detected. REVERTING to last safe commit...")
+            self.run_cmd(["git", "reset", "--hard", "HEAD"])
+            self.ctx.signals.discard("CRITICAL_FAILURE")
+        else:
+            # Commit Progress
+            if self.ctx.modified_files:
+                print(f"   💾 GitOps: Committing {len(self.ctx.modified_files)} changes...")
+                self.run_cmd(["git", "add"] + list(self.ctx.modified_files))
+                self.run_cmd(["git", "commit", "-m", f"Auto-fix cycle {len(self.ctx.successful_traces)}"])
+                print(f"   ✅ GitOps: Checkpoint saved.")
 
 class BenchmarkingAgent(SubAtomicAgent):
     """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
@@ -6594,6 +6830,17 @@ if __name__ == "__main__":
                     # Logic: If files changed, re-validate Safety and Style ONLY on those files
                     agenda.extend([a for a in agents if a.name in ["SafetyInspector", "CodeStyleGuardian"]])
                     print("      -> Priority: Safety/Style check on modified files")
+                    
+                    # LEVEL 5+: Calculate Blast Radius
+                    impact_zone = set()
+                    for f in ctx.modified_files:
+                        deps = ctx.get_dependent_files(f)
+                        impact_zone.update(deps)
+                    
+                    if impact_zone:
+                        print(f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope.")
+                        # Store impact zone for TestPilot to use
+                        ctx.impact_zone = impact_zone
                 
                 if "SYNTAX_ERROR" in str(ctx.signals):
                     agenda.extend([a for a in agents if a.name == "SafetyInspector"])
@@ -6619,6 +6866,13 @@ if __name__ == "__main__":
             for agent in final_agenda:
                 if agent.can_run():
                     await agent.execute()
+            
+            # LEVEL 5+: Rollback on Critical Regression
+            if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
+                # If we tried to fix something and tests failed immediately, REVERT.
+                print("   🚨 Critical Regression Detected. Initiating Rollback Protocol.")
+                ctx.rollback_changes()
+                ctx.signals.discard("TEST_FAILURE")  # Clear signal so we can try a different strategy next time
             
             # Convergence Check
             # If no files were modified and TestPilot passed (if present), we are stable.
