@@ -32,6 +32,18 @@ from .healing import (
     ConvergenceDetector,
     AutomaticRollback,
 )
+from .learning import (
+    ConfidenceLevel,
+    LearningExample,
+    ConfidenceResult,
+    Instruction,
+    MemoryState,
+    LearningLoop,
+    ConfidenceScorer,
+    InstructionInjector,
+    MemoryPersistence,
+    ResumeLearningAgent,
+)
 
 __all__ = [
     # Context
@@ -64,4 +76,15 @@ __all__ = [
     "run_self_healing_mission",
     "ConvergenceDetector",
     "AutomaticRollback",
+    # Learning & Intelligence (Phase 3)
+    "ConfidenceLevel",
+    "LearningExample",
+    "ConfidenceResult",
+    "Instruction",
+    "MemoryState",
+    "LearningLoop",
+    "ConfidenceScorer",
+    "InstructionInjector",
+    "MemoryPersistence",
+    "ResumeLearningAgent",
 ]
