@@ -98,9 +98,22 @@ from .governance import (
     DependencyArbiter,
     StrictDocEnforcer,
     DashboardGenerator,
+)
+from .governance import (
     PromptGovernor,
     PredictiveBudgetManager,
     Phase7Orchestrator,
+)
+from .proactive import (
+    TaskPriority,
+    HandoffReason,
+    ProactiveTask,
+    HandoffRequest,
+    CapabilityProfile,
+    ProactiveScheduler,
+    PredictiveHandoff,
+    CapabilityMonitor,
+    ProactiveAgent,
 )
 
 __all__ = [
@@ -199,4 +212,14 @@ __all__ = [
     "PromptGovernor",
     "PredictiveBudgetManager",
     "Phase7Orchestrator",
+    # Proactive & Predictive (L4.5 Enhancements)
+    "TaskPriority",
+    "HandoffReason",
+    "ProactiveTask",
+    "HandoffRequest",
+    "CapabilityProfile",
+    "ProactiveScheduler",
+    "PredictiveHandoff",
+    "CapabilityMonitor",
+    "ProactiveAgent",
 ]
