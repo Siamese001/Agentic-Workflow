@@ -3021,7 +3021,7 @@ class TestPilot(SubAtomicAgent):
         return None
     
     async def _run_test_file(self, test_file: str) -> bool:
-        """Run pytest on a specific test file."""
+        """Run pytest on a specific test file with auto-install for missing modules."""
         try:
             # Run pytest in async way
             process = await asyncio.create_subprocess_exec(
@@ -3031,11 +3031,48 @@ class TestPilot(SubAtomicAgent):
             )
             
             stdout, stderr = await process.communicate()
+            stderr_text = stderr.decode()
+            
+            # TOOL USE: Auto-Install missing modules
+            if process.returncode != 0 and "ModuleNotFoundError" in stderr_text:
+                import re
+                match = re.search(r"No module named '(.*?)'", stderr_text)
+                if match:
+                    module = match.group(1)
+                    print(f"   🔧 TOOL USE: Auto-installing '{module}'...")
+                    
+                    # Install the missing module
+                    install_process = await asyncio.create_subprocess_exec(
+                        sys.executable, "-m", "pip", "install", module,
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE
+                    )
+                    await install_process.communicate()
+                    
+                    if install_process.returncode == 0:
+                        print(f"   ✅ Successfully installed '{module}'. Retrying tests...")
+                        
+                        # Retry the test immediately
+                        retry_process = await asyncio.create_subprocess_exec(
+                            sys.executable, "-m", "pytest", test_file, "-v",
+                            stdout=asyncio.subprocess.PIPE,
+                            stderr=asyncio.subprocess.PIPE
+                        )
+                        stdout, stderr = await retry_process.communicate()
+                        
+                        if retry_process.returncode == 0:
+                            return True
+                        else:
+                            print(f"   Test output after install: {stderr.decode()}")
+                            return False
+                    else:
+                        print(f"   ⚠️ Failed to install '{module}'")
+                        return False
             
             if process.returncode == 0:
                 return True
             else:
-                print(f"   Test output: {stderr.decode()}")
+                print(f"   Test output: {stderr_text}")
                 return False
         except Exception as e:
             print(f"   ❌ Failed to run tests: {e}")
