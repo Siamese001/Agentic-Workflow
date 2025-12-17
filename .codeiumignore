@@ -1,0 +1,76 @@
+# Codeium Ignore File - Optimize IDE Performance
+# Excludes large data/output folders from indexing
+
+# Output directories
+logs/
+output/
+outputs/
+results/
+
+# Data directories (keep only schemas indexed)
+data/resumes/
+data/output/
+data/cache/
+data/temp/
+data/embeddings/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+venv_stable/
+env/
+ENV/
+
+# Test cache
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+
+# Archives (legacy code not actively developed)
+archives/
+
+# Memory and state
+.memory/
+.workflow_state/
+*.db
+*.sqlite
+
+# Docker volumes
+redis_data/
+qdrant_data/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+
+# Large binary files
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.parquet
