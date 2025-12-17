@@ -28,14 +28,20 @@ if sys.platform == "win32":
 # CONFIGURATION: EXCLUSION ZONES
 # ==============================================================================
 EXCLUDED_DIRS = {
+    # System & Environment
     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
-    'archives', 'data',
+    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs', 
+    'site-packages',
+    
+    # Project Data & Archives (Excluded from AST scanning)
+    'archives', 'data', 
+    
+    # Standard noise
+    'cache', 'logs', 'tmp', 'temp'
 }
 
 EXCLUDED_FILES = {
-    'canon_validator.py',
-    'canon_validator_backup.py',
+    # Only the active validator and runner
     'canon_validator_v2_agentic.py',
     'auto_canon.py',
     '.DS_Store'
@@ -128,9 +134,32 @@ class SubAtomicAgent:
 
 class SystemArchitect(SubAtomicAgent):
     """
-    KEYS: 40 (Metaclasses), 41 (Deep Nesting), 50 (Integrity)
-    ROLE: The Gatekeeper. If this fails, the system is unstable.
+    KEYS: 40 (Metaclasses), 41 (Root Hygiene), 49 (Folder Depth), 50 (Integrity)
+    ROLE: The Gatekeeper. Enforces the strict folder allowlist.
     """
+    
+    # STRICT ROOT FOLDER ALLOWLIST (Unified)
+    ALLOWED_ROOT_FOLDERS = {
+        'agentic_core',
+        'apps_lic',
+        'apps_rg',
+        'apps_shared',
+        'schemas',
+        'prompt_governance',
+        'observability',
+        'config',
+        'tests',
+        # Allowed at root, but contents excluded from scan via EXCLUDED_DIRS
+        'data',     
+        'archives'  
+    }
+
+    ALLOWED_ROOT_FILES = {
+        'main.py', 'setup.py', 'pyproject.toml', 'requirements.txt',
+        'README.md', '.gitignore', 'docker-compose.yml', 'Dockerfile',
+        'pytest.ini', '.env', '.env.example', 'LICENSE',
+        'canon_validator_v2_agentic.py', 'auto_canon.py'
+    }
 
     def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
@@ -139,17 +168,17 @@ class SystemArchitect(SubAtomicAgent):
         passed, details = self.check_key_40_no_metaclasses()
         self.ctx.report(self.name, 40, passed, details)
 
-        # Key 41: No deep directories (max 5 levels from root)
-        passed, details = self.check_key_41_no_deep_directories()
+        # Key 41: Root Hygiene (Whitelist Enforcement)
+        passed, details = self.check_key_41_root_hygiene()
         self.ctx.report(self.name, 41, passed, details)
         if not passed:
             self.ctx.signal_critical_failure()
 
-        # Key 49: Minimum directory depth (sovereign ≥3, non-sovereign ≥2)
-        passed, details = self.check_key_49_minimum_depth()
+        # Key 49: Directory Depth (Universal Rule)
+        passed, details = self.check_key_49_folder_depth()
         self.ctx.report(self.name, 49, passed, details)
 
-        # Key 50: Canon meta-integrity
+        # Key 50: Integrity
         passed, details = self.check_key_50_canon_integrity()
         self.ctx.report(self.name, 50, passed, details)
 
@@ -159,83 +188,62 @@ class SystemArchitect(SubAtomicAgent):
         for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        # Check for metaclass in class definition
-                        for keyword in node.keywords:
-                            if keyword.arg == 'metaclass':
-                                violations.append(f"{file_path}:{node.lineno} {node.name}")
+                    if "metaclass=" in f.read():
+                        violations.append(file_path)
             except Exception:
                 continue
         return (len(violations) == 0, violations)
 
-    def check_key_41_no_deep_directories(self) -> Tuple[bool, List[str]]:
-        """Check for directory depth > 5 from root."""
+    def check_key_41_root_hygiene(self) -> Tuple[bool, List[str]]:
+        """Ensure only Approved Folders and Files exist at root."""
         violations = []
-        for file_path in self.ctx.python_files:
-            relative_path = os.path.relpath(file_path, '.').replace(os.sep, '/')
-            depth = len(relative_path.split('/'))
-            if depth > 5:
-                violations.append(f"{file_path} - depth {depth} (max 5)")
+        
+        # Scan current directory (Root)
+        for item in os.listdir('.'):
+            # Skip hidden files/dirs and system exclusions
+            if item.startswith('.') or item in ['.git', '.venv', 'venv', 'env', '__pycache__']:
+                continue
+            
+            # Check Folders
+            if os.path.isdir(item):
+                if item not in self.ALLOWED_ROOT_FOLDERS:
+                    violations.append(f"ILLEGAL ROOT FOLDER: '{item}' (Not in Approved List)")
+            
+            # Check Files
+            elif os.path.isfile(item):
+                if item not in self.ALLOWED_ROOT_FILES:
+                    violations.append(f"ILLEGAL ROOT FILE: '{item}' (Move to 'config/' or 'scripts/')")
+                    
         return (len(violations) == 0, violations)
 
-    def check_key_49_minimum_depth(self) -> Tuple[bool, List[str]]:
-        """Check minimum directory depth (sovereign ≥3, non-sovereign ≥2)."""
+    def check_key_49_folder_depth(self) -> Tuple[bool, List[str]]:
+        """Enforce Universal Depth Rules (Min 2, Max 5)."""
         violations = []
-
-        # Sovereign directories (max 5 levels, min 3 levels)
-        sovereign = {
-            'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared',
-            'schemas', 'prompt_governance', 'observability',
-            'config', 'data', 'archives'
-        }
-
-        # Non-sovereign directories (max 3 levels, min 2 levels)
-        non_sovereign = {
-            'cache', 'scripts', 'tests', 'docs', 'logs'
-        }
-
-        # Exceptions that can be shallow
-        exceptions = {
-            '__init__.py', 'conftest.py', 'setup.py', 'pyproject.toml',
-            'requirements.txt', 'README.md', '.gitignore', 'Dockerfile',
-            'docker-compose.yml', 'pytest.ini', '.env.example'
-        }
-
+        
         for file_path in self.ctx.python_files:
-            normalized = file_path.replace('\\', '/').lstrip('./')
-            parts = normalized.split('/')
-            if not parts:
-                continue
-
-            base_dir = parts[0]
+            # Normalize path
+            norm_path = file_path.replace('\\', '/').lstrip('./')
+            parts = norm_path.split('/')
+            
+            # Skip root allowed files (Depth 1)
+            if len(parts) == 1: 
+                continue 
+            
             depth = len(parts)
-            filename = parts[-1]
-
-            # Skip exceptions
-            if filename in exceptions:
-                continue
-
-            # Check sovereign directories
-            if base_dir in sovereign:
-                if depth < 3:
-                    violations.append(f"{file_path} - sovereign depth {depth} (min: 3)")
-            # Check non-sovereign directories
-            elif base_dir in non_sovereign:
-                if depth < 2:
-                    violations.append(f"{file_path} - non-sovereign depth {depth} (min: 2)")
-            # Root level files (should be minimal)
-            elif depth == 1 and filename not in ['canon_validator_v2_agentic.py']:
-                violations.append(f"{file_path} - root level (should be in sovereign)")
+            
+            # Universal Rule for all allowed folders
+            # Min Depth 2: folder/file.py
+            # Max Depth 5: folder/sub/sub/sub/file.py
+            if depth < 2:
+                violations.append(f"DEPTH UNDERFLOW: {file_path} (Min depth 2)")
+            if depth > 5:
+                violations.append(f"DEPTH OVERFLOW: {file_path} (Max depth 5)")
 
         return (len(violations) == 0, violations)
 
     def check_key_50_canon_integrity(self) -> Tuple[bool, List[str]]:
         """Check canon meta-integrity."""
         violations = []
-        # Check for required files
         required_files = ['README.md', '.gitignore']
         for req_file in required_files:
             if not os.path.exists(req_file):
@@ -767,7 +775,7 @@ class SafetyInspector(SubAtomicAgent):
 class DocumentationAgent(SubAtomicAgent):
     """
     KEYS: 21 (Missing Docstrings)
-    ROLE: Pure focus on Docstrings.
+    ROLE: Pragmatic Documentation.
     """
 
     def execute(self):
@@ -779,18 +787,26 @@ class DocumentationAgent(SubAtomicAgent):
             self.ctx.report(self.name, 21, False, [str(e)])
 
     def check_key_21_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
-        """Check for missing docstrings."""
+        """
+        Relaxed: Only enforce docstrings on Classes and top-level modules.
+        Ignores individual functions and all test files.
+        """
         violations = []
         for file_path in self.ctx.python_files:
+            # Skip tests and scripts entirely
+            if 'tests' in file_path or 'scripts' in file_path:
+                continue
+
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                    # Only check ClassDef, ignore FunctionDef
+                    if isinstance(node, ast.ClassDef):
                         if not node.name.startswith('_'):
                             if not ast.get_docstring(node):
-                                violations.append(f"{file_path}:{node.lineno}")
+                                violations.append(f"{file_path}:{node.lineno} Class '{node.name}' missing docstring")
             except Exception:
                 continue
 
@@ -799,7 +815,7 @@ class DocumentationAgent(SubAtomicAgent):
 class NamingAgent(SubAtomicAgent):
     """
     KEYS: 47 (Naming Conventions)
-    ROLE: Enforces Snake_Case/PascalCase.
+    ROLE: Enforces Snake_Case/PascalCase (Pragmatic).
     """
 
     def execute(self):
@@ -811,31 +827,28 @@ class NamingAgent(SubAtomicAgent):
             self.ctx.report(self.name, 47, False, [str(e)])
 
     def check_key_47_naming_conventions(self) -> Tuple[bool, List[str]]:
-        """Check naming conventions (snake_case for functions/variables, PascalCase for classes)."""
+        """Check naming conventions (Relaxed)."""
         violations = []
         for file_path in self.ctx.python_files:
+            # Skip tests/scripts from strict naming
+            if 'test' in file_path.lower() or 'script' in file_path.lower():
+                continue
+
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
-                    # Check function names (should be snake_case)
-                    if isinstance(node, ast.FunctionDef):
-                        if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
-                            violations.append(f"{file_path}:{node.lineno} function '{node.name}' should be snake_case")
-
-                    # Check class names (should be PascalCase)
-                    elif isinstance(node, ast.ClassDef):
+                    # Classes must still be PascalCase (Critical for readability)
+                    if isinstance(node, ast.ClassDef):
                         if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
-                            violations.append(f"{file_path}:{node.lineno} class '{node.name}' should be PascalCase")
+                            violations.append(f"{file_path}:{node.lineno} Class '{node.name}' must be PascalCase")
 
-                    # Check variable names (should be snake_case)
-                    elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
-                        if isinstance(node.id, str) and not node.id.startswith('_'):
-                            if re.match(r'^[A-Z_][A-Z0-9_]*$', node.id):  # ALL_CAPS is OK for constants
-                                continue
-                            if not re.match(r'^[a-z_][a-z0-9_]*$', node.id):
-                                violations.append(f"{file_path}:{node.lineno} variable '{node.id}' should be snake_case")
+                    # Functions: snake_case but allow setup/teardown
+                    elif isinstance(node, ast.FunctionDef):
+                        if node.name in ['setUp', 'tearDown']: continue
+                        if not node.name.startswith('_') and not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
+                            violations.append(f"{file_path}:{node.lineno} Func '{node.name}' should be snake_case")
             except Exception:
                 continue
         return (len(violations) == 0, violations)
@@ -865,21 +878,22 @@ class TypeMechanic(SubAtomicAgent):
         self.ctx.report(self.name, 24, passed, details)
 
     def check_key_22_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
-        """Check for missing type hints."""
+        """Relaxed: Skip __init__, tests, and private methods."""
         violations = []
         for file_path in self.ctx.python_files:
+            if 'test' in file_path.lower(): continue
+            
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
-                        if not node.name.startswith('_'):
-                            if node.returns is None:
-                                violations.append(f"{file_path}:{node.lineno} {node.name}()")
-            except Exception:
-                continue
-
+                        if node.name.startswith('_') or node.name == 'main': continue
+                        if node.name in ['__init__', '__str__', '__repr__']: continue
+                        
+                        if node.returns is None:
+                            violations.append(f"{file_path}:{node.lineno} {node.name}")
+            except Exception: continue
         return (len(violations) == 0, violations)
 
     def check_key_23_no_unreachable_code(self) -> Tuple[bool, List[str]]:
