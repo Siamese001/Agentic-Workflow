@@ -44,6 +44,17 @@ from .learning import (
     MemoryPersistence,
     ResumeLearningAgent,
 )
+from .gitops import (
+    MutationMode,
+    FileBackup,
+    MutationResult,
+    RepairProposal,
+    GitOpsManager,
+    ResilientMutator,
+    ImportPatcher,
+    ConversationalRepair,
+    Phase4Orchestrator,
+)
 
 __all__ = [
     # Context
@@ -87,4 +98,14 @@ __all__ = [
     "InstructionInjector",
     "MemoryPersistence",
     "ResumeLearningAgent",
+    # GitOps & Advanced Mutation (Phase 4)
+    "MutationMode",
+    "FileBackup",
+    "MutationResult",
+    "RepairProposal",
+    "GitOpsManager",
+    "ResilientMutator",
+    "ImportPatcher",
+    "ConversationalRepair",
+    "Phase4Orchestrator",
 ]

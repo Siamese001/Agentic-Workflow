@@ -409,6 +409,176 @@
       "confidence": 0.9,
       "timestamp": "2025-12-17T14:22:25.080448",
       "metadata": {}
+    },
+    {
+      "id": "phase4_healing_1766004108_3168897a",
+      "task_type": "phase4_healing",
+      "input_context": "{'summary': 'Experienced software engineer with 10+ years building scalable systems. Led teams of 5-10 engineers and delivered projects that increased revenue by 25%.', 'experience': [{'company': 'Tech Corp', 'title': 'Senior Engineer', 'description': 'Developed microservices architecture serving 1M+ users. Reduced latency by 40%.'}, {'company': 'StartupXYZ', 'title': 'Software Engineer', 'description': 'Built core platform features used by 100K+ customers.'}], 'skills': ['Python', 'JavaScript', 'TypeScript', 'AWS', 'Docker', 'Kubernetes'], 'education': 'BS Computer Science, MIT, 2010'}",
+      "output_result": "Converged in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:41:48.626207",
+      "metadata": {}
+    },
+    {
+      "id": "phase4_healing_1766004131_3168897a",
+      "task_type": "phase4_healing",
+      "input_context": "{'summary': 'Experienced software engineer with 10+ years building scalable systems. Led teams of 5-10 engineers and delivered projects that increased revenue by 25%.', 'experience': [{'company': 'Tech Corp', 'title': 'Senior Engineer', 'description': 'Developed microservices architecture serving 1M+ users. Reduced latency by 40%.'}, {'company': 'StartupXYZ', 'title': 'Software Engineer', 'description': 'Built core platform features used by 100K+ customers.'}], 'skills': ['Python', 'JavaScript', 'TypeScript', 'AWS', 'Docker', 'Kubernetes'], 'education': 'BS Computer Science, MIT, 2010'}",
+      "output_result": "Converged in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:11.555247",
+      "metadata": {}
+    },
+    {
+      "id": "quality_fix_1766004144_6d1a7b11",
+      "task_type": "quality_fix",
+      "input_context": "Fix summary with metrics and quantification",
+      "output_result": "Added 25% improvement metric",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.174337",
+      "metadata": {}
+    },
+    {
+      "id": "quality_fix_1766004144_56c7c80d",
+      "task_type": "quality_fix",
+      "input_context": "Fix summary",
+      "output_result": "Fixed summary",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.263809",
+      "metadata": {}
+    },
+    {
+      "id": "mission_success_1766004144_bae8457a",
+      "task_type": "mission_success",
+      "input_context": "Job: \n    Senior Software Engineer\n    \n    We are looking for an experienced software engineer to join o",
+      "output_result": "Converged in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.300948",
+      "metadata": {}
+    },
+    {
+      "id": "summary_fix_1766004144_febac4a2",
+      "task_type": "summary_fix",
+      "input_context": "Summary without metrics",
+      "output_result": "Summary with 3 quantified achievements",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.325881",
+      "metadata": {}
+    },
+    {
+      "id": "mission_0_1766004144_cbdf1ffd",
+      "task_type": "mission_0",
+      "input_context": "Mission 0",
+      "output_result": "Success in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.340322",
+      "metadata": {}
+    },
+    {
+      "id": "mission_1_1766004144_d2e85a64",
+      "task_type": "mission_1",
+      "input_context": "Mission 1",
+      "output_result": "Success in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.342602",
+      "metadata": {}
+    },
+    {
+      "id": "mission_2_1766004144_b9e96fbd",
+      "task_type": "mission_2",
+      "input_context": "Mission 2",
+      "output_result": "Success in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.344756",
+      "metadata": {}
+    },
+    {
+      "id": "uncertain_fix_1766004144_ebdedfcd",
+      "task_type": "uncertain_fix",
+      "input_context": "Uncertain input",
+      "output_result": "Uncertain output",
+      "success": true,
+      "confidence": 0.3,
+      "timestamp": "2025-12-17T15:42:24.520711",
+      "metadata": {}
+    },
+    {
+      "id": "full_workflow_1766004144_e4517484",
+      "task_type": "full_workflow",
+      "input_context": "Resume with 5 sections",
+      "output_result": "Converged in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.539761",
+      "metadata": {}
+    },
+    {
+      "id": "quality_fix_1766004144_97f29857",
+      "task_type": "quality_fix",
+      "input_context": "Resume with weak summary",
+      "output_result": "Resume with strong metrics-driven summary",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.558076",
+      "metadata": {}
+    },
+    {
+      "id": "ats_optimization_1766004144_b1742a4e",
+      "task_type": "ats_optimization",
+      "input_context": "Resume with special characters and formatting issues",
+      "output_result": "Clean ATS-friendly resume without special characters",
+      "success": true,
+      "confidence": 0.85,
+      "timestamp": "2025-12-17T15:42:24.572314",
+      "metadata": {}
+    },
+    {
+      "id": "full_diagnostic_1766004144_be3b739f",
+      "task_type": "full_diagnostic",
+      "input_context": "{'summary': 'Experienced software engineer with 10+ years building scalable systems. Led teams of 5-10 engineers and delivered projects that increased revenue by 25%.', 'experience': [{'company': 'Tech Corp', 'title': 'Senior Engineer', 'description': 'Developed microservices architecture serving 1M+ users. Reduced latency by 40% through optimization.'}], 'skills': ['Python', 'JavaScript', 'AWS', 'Docker', 'Kubernetes'], 'education': 'BS Computer Science, MIT, 2010'}",
+      "output_result": "Validation passed",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.630355",
+      "metadata": {}
+    },
+    {
+      "id": "summary_improvement_1766004144_1bea5d8a",
+      "task_type": "summary_improvement",
+      "input_context": "Weak summary without metrics",
+      "output_result": "Strong summary with 3 quantified achievements",
+      "success": true,
+      "confidence": 0.95,
+      "timestamp": "2025-12-17T15:42:24.655971",
+      "metadata": {}
+    },
+    {
+      "id": "content_quality_1766004144_5f60476e",
+      "task_type": "content_quality",
+      "input_context": "Experienced software engineer with 10+ years building scalable systems. Led teams of 5-10 engineers and delivered projects that increased revenue by 25%.",
+      "output_result": "Validation passed",
+      "success": true,
+      "confidence": 0.7,
+      "timestamp": "2025-12-17T15:42:24.672712",
+      "metadata": {}
+    },
+    {
+      "id": "full_healing_1766004144_850c26e0",
+      "task_type": "full_healing",
+      "input_context": "Resume with 4 sections",
+      "output_result": "Converged in 1 cycles",
+      "success": true,
+      "confidence": 0.9,
+      "timestamp": "2025-12-17T15:42:24.688101",
+      "metadata": {}
     }
   ]
 }
