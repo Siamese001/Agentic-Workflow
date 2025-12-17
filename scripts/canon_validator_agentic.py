@@ -5074,11 +5074,11 @@ class MemoryLeakDetector(SubAtomicAgent):
     # Resource leak patterns for fast scanning
     LEAK_PATTERNS = {
         'naked_open': re.compile(
-            r'(?<!with\s+)(?<!\.\s+)open\s*\(',
+            r'\bopen\s*\(',
             re.IGNORECASE
         ),
         'naked_connect': re.compile(
-            r'(?<!with\s+)(?<!\.\s+)(socket\.|urllib\.|http\.|mysql\.|psycopg2\.|sqlite3\.)',
+            r'\b(socket\.|urllib\.|http\.|mysql\.|psycopg2\.|sqlite3\.)',
             re.IGNORECASE
         ),
         'unbounded_cache': re.compile(
