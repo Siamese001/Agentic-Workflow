@@ -160,6 +160,9 @@ class ResumeEngineContext:
     successful_generations: List[Dict] = field(default_factory=list)
     generation_stats: Dict[str, int] = field(default_factory=lambda: {"total": 0, "success": 0, "failed": 0})
     
+    # Dynamic instructions for agent steering
+    instructions: List[str] = field(default_factory=list)
+    
     # Budget management
     budget: BudgetManager = field(default=None, init=False)
     
