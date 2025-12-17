@@ -85,7 +85,7 @@ class ValidationContext:
             print(f"   [{agent}] Key {key}: {status} ({len(details)} violations)")
         else:
             print(f"   [{agent}] Key {key}: {status}")
-        
+
         self.results[key] = {"passed": passed, "details": details}
 
     def signal_critical_failure(self):
@@ -353,11 +353,11 @@ class CodeJanitor(SubAtomicAgent):
         violations = []
         # Allow common small numbers, powers of 2, and common ranges
         allowed_numbers = {
-            0, 1, -1, True, False, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 8, -8, 
-            10, -10, 12, -12, 16, -16, 20, -20, 24, -24, 32, -32, 64, -64, 
+            0, 1, -1, True, False, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 8, -8,
+            10, -10, 12, -12, 16, -16, 20, -20, 24, -24, 32, -32, 64, -64,
             100, -100, 1000, -1000, 3600, -3600, 86400, -86400
         }
-        
+
         for file_path in self.ctx.python_files:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -1280,7 +1280,7 @@ class PatternEnforcer(SubAtomicAgent):
                 # Skip test files and abstract base classes
                 if 'test' in file_path.lower() or 'abc' in file_path.lower():
                     continue
-                    
+
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
@@ -1289,7 +1289,7 @@ class PatternEnforcer(SubAtomicAgent):
                         # Only check concrete classes (not abstract)
                         if any('ABC' in base.id for base in node.bases if hasattr(base, 'id')):
                             continue
-                            
+
                         # Check for methods that raise NotImplementedError (limit to 5 per file)
                         not_impl_count = 0
                         for item in node.body:
@@ -1332,13 +1332,13 @@ class PatternEnforcer(SubAtomicAgent):
             'datetime', 'date', 'time', 'timedelta', 'uuid', 'Path',
             'logging', 'Logger', 'ConfigParser', 'json', 'yaml', 'csv'
         }
-        
+
         for file_path in self.ctx.python_files:
             try:
                 # Skip test files and simple scripts
                 if 'test' in file_path.lower() or 'script' in file_path.lower():
                     continue
-                    
+
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
@@ -1414,14 +1414,14 @@ class PatternEnforcer(SubAtomicAgent):
         violations = []
         # In relaxed mode, only check critical operations
         critical_operations = ['open', 'json.loads', 'requests.get', 'subprocess.run']
-        
+
         for file_path in self.ctx.python_files:
             try:
                 # Skip test files in relaxed mode
                 if not hasattr(self, 'strict_mode') or not self.strict_mode:
                     if 'test' in file_path.lower():
                         continue
-                        
+
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
@@ -1429,7 +1429,7 @@ class PatternEnforcer(SubAtomicAgent):
                     if isinstance(node, ast.FunctionDef):
                         # Check for try/except blocks
                         has_try = any(isinstance(stmt, ast.Try) for stmt in ast.walk(node))
-                        
+
                         # In strict mode, check all calls; in relaxed, only critical
                         if hasattr(self, 'strict_mode') and self.strict_mode:
                             risky_ops = any(isinstance(stmt, ast.Call) for stmt in ast.walk(node))
@@ -1518,13 +1518,13 @@ class PatternEnforcer(SubAtomicAgent):
             'logger', 'logging', 'CONFIG', 'settings', 'ENV', 'VERSION',
             'DEBUG', 'TEST_MODE', 'DEFAULT_TIMEOUT', 'MAX_RETRIES'
         }
-        
+
         for file_path in self.ctx.python_files:
             try:
                 # Skip config files and __init__ files
                 if 'config' in file_path.lower() or file_path.endswith('__init__.py'):
                     continue
-                    
+
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
@@ -1533,8 +1533,8 @@ class PatternEnforcer(SubAtomicAgent):
                         for target in node.targets:
                             if isinstance(target, ast.Name):
                                 # Skip constants and allowed globals
-                                if (target.id.isupper() or 
-                                    target.id.startswith('_') or 
+                                if (target.id.isupper() or
+                                    target.id.startswith('_') or
                                     target.id in allowed_globals):
                                     continue
                                 violations.append(f"{file_path}:{node.lineno} Global variable: {target.id}")
@@ -1564,26 +1564,26 @@ class PatternEnforcer(SubAtomicAgent):
     def check_key_39_defensive_programming(self) -> Tuple[bool, List[str]]:
         """Check for defensive programming practices."""
         violations = []
-        
+
         for file_path in self.ctx.python_files:
             try:
                 # Skip test files, simple getters, and private methods
-                if ('test' in file_path.lower() or 
+                if ('test' in file_path.lower() or
                     'utils' in file_path.lower() or
                     'helpers' in file_path.lower()):
                     continue
-                    
+
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.FunctionDef):
                         # Skip private methods, getters, setters, and simple methods
-                        if (node.name.startswith('_') or 
+                        if (node.name.startswith('_') or
                             node.name.startswith(('get_', 'set_', 'is_', 'has_')) or
                             len(node.args.args) <= 1):
                             continue
-                            
+
                         # Check for input validation
                         has_validation = False
                         for stmt in node.body:
@@ -1731,12 +1731,12 @@ class IntelligentOrchestrator:
 # ==============================================================================
 if __name__ == "__main__":
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Canon Validator v2.0 - 50 Key Compliance Checker")
     parser.add_argument("--strict", action="store_true", help="Enable strict validation mode")
     parser.add_argument("--max-iterations", type=int, default=10, help="Maximum validation cycles")
-    
+
     args = parser.parse_args()
-    
+
     orchestrator = IntelligentOrchestrator()
     orchestrator.run_mission(max_iterations=args.max_iterations, strict=args.strict)
