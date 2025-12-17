@@ -217,6 +217,11 @@ class ValidationContext:
         except Exception as e:
             raise RuntimeError(f"CRITICAL: Pinecone connection failed: {e}")
 
+        # Level 5: Learning Infrastructure
+        self.mutation_stats = {"success": 0, "total": 0}
+        self.successful_traces = []  # Store successful fixes for learning
+        self.strategic_plan = None
+        
         print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
         print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
     
@@ -282,63 +287,55 @@ class ValidationContext:
         except Exception:
             self._local_cache[key] = value
     
-    # Deep Brain (Pinecone) Operations
-    async def search_embeddings(self, query: str, top_k: int = 3) -> List[Dict]:
-        """Search for similar code using Pinecone."""
+    # Deep Brain (Pinecone) Operations - Level 5 Learning
+    async def search_embeddings(self, query: str, top_k: int = 2) -> List[Dict]:
+        """Recalls past successful fixes from Deep Brain."""
         if not self.pinecone_available or not self.intelligence_enabled:
             return []
         
         try:
             # Generate embedding using Gemini
-            response = self._client.models.embed_content(
-                model="text-embedding-004",
-                content=query
+            emb = await asyncio.to_thread(
+                self._client.models.embed_content,
+                model="models/text-embedding-004",
+                contents=query
             )
-            query_embedding = response.embedding.values
             
             # Search Pinecone
             results = self.pinecone_index.query(
-                vector=query_embedding,
+                vector=emb.embeddings[0].values,
                 top_k=top_k,
                 include_metadata=True
             )
             
             return results.matches
         except Exception as e:
-            print(f"   [CTX] ⚠️ Embedding search failed: {e}")
+            print(f"   [CTX] ⚠️ Memory recall failed: {e}")
             return []
     
-    async def upsert_embedding(self, file_path: str, content: str, metadata: Dict = None):
-        """Upsert code embedding to Pinecone."""
+    async def upsert_embedding(self, key: str, text: str, metadata: dict):
+        """Learns from success by saving to Deep Brain."""
         if not self.pinecone_available or not self.intelligence_enabled:
             return
         
         try:
-            # Generate embedding
-            response = self._client.models.embed_content(
-                model="text-embedding-004",
-                content=content[:1000]  # First 1000 chars
+            # Generate embedding via Gemini
+            emb = await asyncio.to_thread(
+                self._client.models.embed_content,
+                model="models/text-embedding-004",
+                contents=text
             )
-            embedding = response.embedding.values
-            
-            # Prepare metadata
-            if metadata is None:
-                metadata = {}
-            metadata.update({
-                "path": file_path,
-                "preview": content[:200]
-            })
             
             # Upsert to Pinecone
             self.pinecone_index.upsert(
-                vectors=[{
-                    "id": hashlib.md5(file_path.encode()).hexdigest(),
-                    "values": embedding,
-                    "metadata": metadata
-                }]
+                vectors=[(
+                    key,
+                    emb.embeddings[0].values,
+                    metadata
+                )]
             )
         except Exception as e:
-            print(f"   [CTX] ⚠️ Embedding upsert failed: {e}")
+            print(f"   [CTX] ⚠️ Memory upsert failed: {e}")
     
     def _load_memory(self):
         """Load file hashes and skip logic from persistent storage."""
@@ -553,11 +550,18 @@ class ValidationContext:
     
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, *, max_attempts: int = 4, diff_mode: bool = False, min_confidence: float = 0.7) -> str:
         """
-        Level 4 Mutation: Supports Diffs, Confidence Scoring, and AST Validation.
+        Level 5 Mutation: Supports Diffs, Confidence Scoring, AST Validation, and Self-Improvement.
         If diff_mode is True, returns the FULL PATCHED CONTENT (internally applied).
         """
         import ast, json, asyncio
         current_code = code or ""
+        
+        # LEVEL 5: PRE-COMPUTATION - Search for similar past successes (Few-Shot Learning)
+        similar_fixes = ""
+        if self.intelligence_enabled:
+            matches = await self.search_embeddings(task, top_k=1)
+            if matches:
+                similar_fixes = "\n\n🧠 RECALLED SIMILAR SUCCESSFUL FIX:\n" + matches[0].metadata.get('code_after', '')[:500]
         
         for attempt in range(1, max_attempts + 1):
             try:
@@ -570,6 +574,10 @@ class ValidationContext:
 
                 if attempt > 1:
                     prompt += f"\n[ATTEMPT {attempt}] Previous attempt failed. Fix syntax/patching errors."
+                
+                # Inject wisdom from past successes
+                if similar_fixes:
+                    prompt += similar_fixes
 
                 # 2. Call Gemini with Logprobs
                 if not self.intelligence_enabled: return current_code
@@ -608,12 +616,24 @@ class ValidationContext:
                 if final_content.strip() and (file_path and file_path.endswith('.py')):
                     ast.parse(final_content) # Syntax Check
 
+                # LEVEL 5: ON SUCCESS - Record Learning
+                self.mutation_stats["success"] += 1
+                self.mutation_stats["total"] += 1
+                self.successful_traces.append({
+                    "task": task[:200],
+                    "code_before": current_code[:200],
+                    "code_after": final_content[:200],
+                    "agent": agent_name
+                })
+                
                 print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
                 return final_content
 
             except Exception as e:
                 print(f"   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}")
                 if "429" in str(e): await asyncio.sleep(2 ** attempt)
+                # LEVEL 5: ON FAILURE - Track stats
+                self.mutation_stats["total"] += 1
 
         return current_code # Fallback
     
@@ -5048,6 +5068,73 @@ class PerformanceEnforcer(SubAtomicAgent):
         
         self.ctx.write_compliant_file(report_path, report_content)
 
+class StrategicPlanner(SubAtomicAgent):
+    """
+    ROLE: High-level strategist.
+    Analyzes aggregated signals/violations and generates multi-step refactor plans.
+    """
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.name = "StrategicPlanner"
+
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
+        if not self.ctx.intelligence_enabled:
+            return
+
+        # 1. Aggregate State
+        violations = [f"Key {k}: {v.get('details','')}..." for k, v in self.ctx.results.items() if not v.get('passed')]
+        signals = list(self.ctx.signals)
+        
+        # 2. Generate Plan
+        prompt = f"""
+You are a Codebase Architect.
+Current State:
+- Signals: {signals}
+- Violations: {json.dumps(violations[:10])}
+
+Task: Generate a strategic refactor plan.
+- If tests are failing, prioritize root cause analysis.
+- If architecture is messy, prioritize modularization.
+- Output "NO_PLAN_NEEDED" if system is stable.
+
+Output ONLY the plan in Markdown.
+"""
+        
+        plan = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=2)
+        
+        if "NO_PLAN_NEEDED" not in plan:
+            print(f"   📋 STRATEGIC PLAN:\n{plan[:500]}...")
+            self.ctx.strategic_plan = plan
+            # Save to observability
+            from pathlib import Path
+            p = Path("observability/plans")
+            p.mkdir(parents=True, exist_ok=True)
+            (p / f"plan_cycle_{len(self.ctx.successful_traces)}.md").write_text(plan)
+        else:
+            print("   ✅ Strategy: Maintain current trajectory.")
+
+class ReflectionAgent(SubAtomicAgent):
+    """Consolidates successful mutations into long-term memory."""
+    def __init__(self, ctx):
+        super().__init__(ctx)
+        self.name = "ReflectionAgent"
+
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Internalizing Lessons...")
+        count = 0
+        for trace in self.ctx.successful_traces:
+            # Create a "Lesson" for the Deep Brain
+            await self.ctx.upsert_embedding(
+                key=f"trace_{hash(trace['task'])}",
+                text=trace['task'] + "\n" + trace['code_before'],
+                metadata=trace
+            )
+            count += 1
+        self.ctx.successful_traces.clear()  # Reset short-term memory
+        if count > 0:
+            print(f"   🧠 Learned {count} new patterns from this session.")
+
 class BenchmarkingAgent(SubAtomicAgent):
     """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
     
@@ -6342,7 +6429,7 @@ if __name__ == "__main__":
             # Reset tracking for this cycle
             ctx.modified_files.clear()
             
-            # --- 🧠 STRATEGIC PLANNING PHASE ---
+            # --- 🧠 STRATEGIC PLANNING PHASE (LEVEL 5) ---
             agenda = []
             if cycle == 1:
                 # Cycle 1: Baseline Scan (Run Everyone)
@@ -6354,6 +6441,9 @@ if __name__ == "__main__":
                 
                 # 1. Always run Historian to sync memory state
                 agenda.append(agents[0]) 
+                
+                # LEVEL 5: Run Strategic Planner First
+                agenda.append(StrategicPlanner(ctx))
                 
                 # 2. Map Signals to Agents
                 signals_str = str(ctx.signals)
@@ -6378,9 +6468,12 @@ if __name__ == "__main__":
                     print("      -> Priority: Syntax Repair")
 
                 # 3. Fallback: If no specific plan but not converged, run TestPilot
-                if len(agenda) == 1: # Only Historian
+                if len(agenda) == 2: # Only Historian + StrategicPlanner
                     agenda.append(agents[-1]) # TestPilot
                     print("      -> Plan: General System Verification")
+            
+            # LEVEL 5: Add Reflection at the very end of the agenda
+            agenda.append(ReflectionAgent(ctx))
             
             # Deduplicate Agenda (preserve order)
             seen = set()
