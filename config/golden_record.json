@@ -1,0 +1,19 @@
+{
+  "skills": {
+    "python": {"level": "expert", "verified": true},
+    "javascript": {"level": "advanced", "verified": true},
+    "react": {"level": "intermediate", "verified": true},
+    "docker": {"level": "intermediate", "verified": true},
+    "aws": {"level": "beginner", "verified": true}
+  },
+  "experience": {
+    "years_total": 5,
+    "companies": ["TechCorp", "StartupXYZ"],
+    "positions": ["Senior Developer", "Lead Engineer"]
+  },
+  "education": {
+    "degree": "Bachelor of Science",
+    "field": "Computer Science",
+    "university": "State University"
+  }
+}
