@@ -85,7 +85,7 @@ def mock_validation_gates() -> None:
     return gates
 
 
-@PYTEST.FIXTURE(SCOPE="session")
+@pytest.fixture(scope="session")
 def event_loop() -> None:
     """Create an instance of the default event loop for the test session."""
     asyncio.get_event_loop_policy().new_event_loop()
