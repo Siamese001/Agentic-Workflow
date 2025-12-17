@@ -196,54 +196,56 @@ class ValidationContext:
         self.python_files = get_python_files()
         self._load_memory()
         
-        # --- TRI-BRAIN INIT (Graceful Degradation) ---
-        self.redis = None
-        self.pinecone = None
-        self.client = None
-        
-        # 1. SMART BRAIN (Gemini)
-        try:
-            if GENAI_AVAILABLE:
-                self.client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-                self.intelligence_enabled = True
-                print(f"   [CTX] 🧠 Smart Brain enabled: {self.model_id}")
-            else:
-                raise ImportError("google-genai not installed")
-        except Exception as e:
-            print(f"⚠️  Gemini Disabled: {e}")
-            self.intelligence_enabled = False
+        print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN (STRICT MODE)...")
 
-        # 2. HOT BRAIN (Redis)
+        # 1. SMART BRAIN (Gemini) - MANDATORY
+        if not GENAI_AVAILABLE:
+            raise RuntimeError("CRITICAL: 'google-genai' library missing. Install via pip.")
+        if not os.environ.get("GEMINI_API_KEY"):
+            raise RuntimeError("CRITICAL: GEMINI_API_KEY environment variable is missing.")
+        try:
+            self._client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+            self.intelligence_enabled = True
+            print(f"      ✅ Gemini Connected: {self.model_id}")
+        except Exception as e:
+            raise RuntimeError(f"CRITICAL: Failed to connect to Gemini: {e}")
+
+        # 2. HOT BRAIN (Redis) - MANDATORY
+        if not REDIS_AVAILABLE:
+            raise RuntimeError("CRITICAL: 'redis' library missing. Install via pip.")
+        if not os.environ.get("REDIS_URL"):
+            raise RuntimeError("CRITICAL: REDIS_URL environment variable is missing.")
         try:
             import redis.asyncio as redis
-            redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
-            if redis_url:
-                self.redis = redis.from_url(redis_url, decode_responses=True)
-                print(f"   [CTX] 🔥 Hot Brain enabled: Redis")
-        except ImportError:
-            print("⚠️  Redis Disabled: 'redis' lib missing")
+            self.redis_client = redis.from_url(os.environ["REDIS_URL"], decode_responses=True)
+            self.redis = self.redis_client  # Backward compatibility
+            self.redis_available = True
+            print(f"      ✅ Redis Configured: {os.environ['REDIS_URL']}")
         except Exception as e:
-            print(f"⚠️  Redis Disabled: {e}")
+            raise RuntimeError(f"CRITICAL: Failed to configure Redis: {e}")
 
-        # 3. DEEP BRAIN (Pinecone)
+        # 3. DEEP BRAIN (Pinecone) - MANDATORY
+        if not PINECONE_AVAILABLE:
+            raise RuntimeError("CRITICAL: 'pinecone-client' library missing. Install via pip.")
+        if not os.environ.get("PINECONE_API_KEY"):
+            raise RuntimeError("CRITICAL: PINECONE_API_KEY environment variable is missing.")
         try:
             from pinecone import Pinecone
-            api_key = os.environ.get("PINECONE_API_KEY")
-            if api_key:
-                pc = Pinecone(api_key=api_key)
-                self.pinecone = pc.Index("subatomic-codebase")
-                print(f"   [CTX] 🧊 Deep Brain enabled: Pinecone")
-        except ImportError:
-            print("⚠️  Pinecone Disabled: 'pinecone-client' lib missing")
-        except Exception as e:
-            print(f"⚠️  Pinecone Disabled: {e}")
+            pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
+            index_name = "subatomic-codebase"
+            # Strict check: Index MUST exist
+            if index_name not in pc.list_indexes().names():
+                raise RuntimeError(f"CRITICAL: Pinecone index '{index_name}' does not exist.")
             
-        # Initialize additional attributes
-        self.redis_available = bool(self.redis)
-        self.pinecone_available = bool(self.pinecone)
-        self.pinecone_client = None  # For backward compatibility
-        self.redis_client = None  # For backward compatibility
-        
+            self.pinecone_index = pc.Index(index_name)
+            self.pinecone = self.pinecone_index  # Backward compatibility
+            self.pinecone_client = pc  # For backward compatibility
+            self.pinecone_available = True
+            print(f"      ✅ Pinecone Connected: Index '{index_name}'")
+        except Exception as e:
+            raise RuntimeError(f"CRITICAL: Failed to connect to Pinecone: {e}")
+            
+        print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
         print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
     
     async def _test_redis(self):
