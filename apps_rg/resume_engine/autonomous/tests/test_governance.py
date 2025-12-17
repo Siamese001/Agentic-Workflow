@@ -322,7 +322,7 @@ class TestDashboardGenerator:
         result = generator.generate(results, signals, output_path)
         
         assert Path(result).exists()
-        content = Path(result).read_text()
+        content = Path(result).read_text(encoding="utf-8")
         assert "Mission Control" in content
         assert "Agent1" in content
     

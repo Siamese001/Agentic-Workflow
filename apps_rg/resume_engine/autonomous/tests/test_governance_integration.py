@@ -202,7 +202,7 @@ class TestDashboardWithMissionResults:
         dashboard_path = str(tmp_path / "signals_dashboard.html")
         generator.generate(results, signals, dashboard_path)
         
-        content = Path(dashboard_path).read_text()
+        content = Path(dashboard_path).read_text(encoding="utf-8")
         assert "QUALITY_ISSUE" in content
         assert "NEEDS_REVIEW" in content
 
@@ -274,7 +274,7 @@ class TestBudgetManagerWithMissionPlanning:
         assert manager.get_remaining_budget() == 0.4
         
         manager.record_cost(0.2)
-        assert manager.get_remaining_budget() == 0.2
+        assert abs(manager.get_remaining_budget() - 0.2) < 0.001
         
         # Check budget still available
         assert manager.check_budget() is True
