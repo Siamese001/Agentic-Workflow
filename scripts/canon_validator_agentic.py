@@ -31,6 +31,15 @@ except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install google-genai redis pinecone python-dotenv")
     sys.exit(1)
 
+# L5 Watchman: File System Monitoring
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+    WATCHDOG_AVAILABLE = True
+except ImportError:
+    WATCHDOG_AVAILABLE = False
+    print("   ⚠️ Watchdog not found. Install 'watchdog' for L5 Autonomous Mode.")
+
 # AutoGen: Collective Intelligence (Optional)
 try:
     from autogen import AssistantAgent, GroupChat, GroupChatManager, UserProxyAgent
@@ -3529,8 +3538,36 @@ class SwarmScheduler:
             ]
         }
 
-    async def run_mission(self):
-        print("🚀 STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
+    async def run_mission(self, target_scope: str = None):
+        """
+        Run the validation mission.
+        
+        Args:
+            target_scope: Optional file path for surgical validation (L5 Watchman mode).
+                         If provided, only validates this file and its dependents (blast radius).
+        """
+        if target_scope:
+            print(f"🎯 SURGICAL MISSION: Targeting {target_scope}")
+            # Build dependency graph if not already built
+            if not self.ctx.code_graph.graph:
+                self.ctx.code_graph.build(self.ctx.python_files)
+            
+            # Calculate blast radius: target file + all files that import it
+            blast_radius = set([target_scope])
+            dependents = self.ctx.code_graph.get_impact_radius(target_scope)
+            blast_radius.update(dependents)
+            
+            # Restrict python_files to blast radius only
+            original_files = self.ctx.python_files.copy()
+            self.ctx.python_files = [f for f in self.ctx.python_files if f in blast_radius or any(f.endswith(b.lstrip('./')) for b in blast_radius)]
+            
+            print(f"   ☢️ BLAST RADIUS: {len(self.ctx.python_files)} files in scope")
+            for f in self.ctx.python_files[:5]:  # Show first 5
+                print(f"      - {f}")
+            if len(self.ctx.python_files) > 5:
+                print(f"      ... and {len(self.ctx.python_files) - 5} more")
+        else:
+            print("🚀 STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         
         # Main execution loop with convergence check
         max_cycles = 10
@@ -3558,6 +3595,10 @@ class SwarmScheduler:
         
         # Final mission report
         self._generate_mission_report()
+        
+        # Restore original file list if we were in surgical mode
+        if target_scope and 'original_files' in locals():
+            self.ctx.python_files = original_files
     
     async def _execute_all_phases(self):
         """Execute all phases in order with early abort logic."""
@@ -6784,144 +6825,282 @@ class Sherlock(SubAtomicAgent):
             print(f"   ⚠️ No valid fix from collective intelligence")
 
 # ==============================================================================
-# --- MAIN ENTRY ---
-if __name__ == "__main__":
-    try:
-        ctx = ValidationContext()
-    except Exception as e:
-        print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
-        sys.exit(1)
+# --- L5 WATCHMAN: PROACTIVE MONITORING ---
+# ==============================================================================
+class WatchmanHandler:
+    """
+    L5 Autonomous Mode: File system event handler for proactive validation.
+    Monitors repository for changes and triggers surgical validation missions.
+    """
+    def __init__(self, loop):
+        self.loop = loop
+        self._debounce_tasks = {}  # Prevent rapid re-triggers
+        self._debounce_delay = 1.0  # seconds
+    
+    def on_modified(self, event):
+        """Handle file modification events."""
+        # Ignore directories and non-python files
+        if event.is_directory or not event.src_path.endswith('.py'):
+            return
         
-    agents = [
-        Historian(ctx), ArchitectureGovernor(ctx), HygieneGuardian(ctx),
-        CodeStyleGuardian(ctx), DependencySentinel(ctx), SafetyInspector(ctx),
-        ConcurrencyGuardian(ctx), TestPilot(ctx)
-    ]
-
-    async def run_mission():
-        MAX_CYCLES = 5
-        cycle = 0
+        # Avoid self-triggering from excluded directories
+        if any(excluded in event.src_path for excluded in EXCLUDED_DIRS):
+            return
         
-        # LEVEL 6: Create healing branch on start (GitOps)
-        import time
-        branch_name = f"healing/auto_{int(time.time())}"
+        # Normalize path
+        file_path = os.path.normpath(event.src_path)
+        
+        # Debounce: Cancel previous task for this file if still pending
+        if file_path in self._debounce_tasks:
+            self._debounce_tasks[file_path].cancel()
+        
+        print(f"\n[WATCHMAN] 👁️ Change detected: {file_path}")
+        
+        # Schedule the mission in the existing event loop with debounce
+        task = asyncio.run_coroutine_threadsafe(
+            self._debounced_trigger(file_path), 
+            self.loop
+        )
+        self._debounce_tasks[file_path] = task
+    
+    async def _debounced_trigger(self, file_path: str):
+        """Debounced trigger to avoid rapid re-validation."""
+        await asyncio.sleep(self._debounce_delay)
+        await self.trigger_mission(file_path)
+    
+    async def trigger_mission(self, file_path: str):
+        """Trigger a surgical validation mission for the modified file."""
+        print(f"\n[WATCHMAN] 🎯 Triggering surgical mission for: {file_path}")
         try:
-            subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
-            print(f"   🌱 GitOps: Created healing branch '{branch_name}'")
-        except Exception:
-            print("   ⚠️ GitOps: Could not create branch (may not be in git repo)")
+            scheduler = SwarmScheduler()
+            await scheduler.run_mission(target_scope=file_path)
+        except Exception as e:
+            print(f"[WATCHMAN] ❌ Mission failed: {e}")
+        finally:
+            # Clean up debounce tracking
+            self._debounce_tasks.pop(file_path, None)
+
+
+# ==============================================================================
+# --- MAIN ENTRY ---
+# ==============================================================================
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+        description="Canon Validator v2.0 - Agentic Architecture",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Modes:
+  Standard (L4):  python canon_validator_agentic.py
+  Daemon (L5):    python canon_validator_agentic.py --daemon
+
+The Watchman (L5 Daemon Mode):
+  Monitors the repository for file changes and automatically triggers
+  surgical validation missions using blast radius analysis.
+        """
+    )
+    parser.add_argument(
+        "--daemon", 
+        action="store_true", 
+        help="Run in L5 Autonomous Mode (The Watchman)"
+    )
+    parser.add_argument(
+        "--target",
+        type=str,
+        default=None,
+        help="Target a specific file for surgical validation"
+    )
+    args = parser.parse_args()
+
+    if args.daemon:
+        # L5 Autonomous Mode: The Watchman
+        if not WATCHDOG_AVAILABLE:
+            print("❌ WATCHDOG NOT AVAILABLE. Install with: pip install watchdog")
+            sys.exit(1)
         
-        while cycle < MAX_CYCLES:
-            cycle += 1
-            ctx.signal_healing_cycle(cycle)
-            print(f"\n=== 🧬 SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
+        print("=" * 60)
+        print("🚀 THE WATCHMAN: L5 Autonomous Mode Active")
+        print("=" * 60)
+        print("   Monitoring repository for changes...")
+        print("   Press Ctrl+C to stop.")
+        print("=" * 60)
+        
+        # Create event loop for async operations
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        # Create handler and observer
+        handler = WatchmanHandler(loop)
+        
+        # Wrap handler to work with watchdog's FileSystemEventHandler
+        class WatchdogAdapter(FileSystemEventHandler):
+            def __init__(self, watchman_handler):
+                self.watchman = watchman_handler
             
-            # Reset tracking for this cycle
-            ctx.modified_files.clear()
+            def on_modified(self, event):
+                self.watchman.on_modified(event)
+        
+        adapter = WatchdogAdapter(handler)
+        observer = Observer()
+        observer.schedule(adapter, path='.', recursive=True)
+        observer.start()
+        
+        try:
+            # Run the event loop
+            loop.run_forever()
+        except KeyboardInterrupt:
+            print("\n[WATCHMAN] 🛑 Shutting down gracefully...")
+            observer.stop()
+        finally:
+            observer.join()
+            loop.close()
+            print("[WATCHMAN] 👋 The Watchman has left the building.")
+    
+    elif args.target:
+        # Surgical mode: Target a specific file
+        print(f"🎯 SURGICAL MODE: Targeting {args.target}")
+        scheduler = SwarmScheduler()
+        asyncio.run(scheduler.run_mission(target_scope=args.target))
+    
+    else:
+        # Standard L4 Mode
+        try:
+            ctx = ValidationContext()
+        except Exception as e:
+            print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
+            sys.exit(1)
             
-            # --- 🧠 STRATEGIC PLANNING PHASE (LEVEL 6) ---
-            agenda = []
+        agents = [
+            Historian(ctx), ArchitectureGovernor(ctx), HygieneGuardian(ctx),
+            CodeStyleGuardian(ctx), DependencySentinel(ctx), SafetyInspector(ctx),
+            ConcurrencyGuardian(ctx), TestPilot(ctx)
+        ]
+
+        async def run_mission():
+            MAX_CYCLES = 5
+            cycle = 0
             
-            # LEVEL 6: GitOps runs first to secure state
-            agenda.insert(0, GitAgent(ctx))
+            # LEVEL 6: Create healing branch on start (GitOps)
+            import time
+            branch_name = f"healing/auto_{int(time.time())}"
+            try:
+                subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
+                print(f"   🌱 GitOps: Created healing branch '{branch_name}'")
+            except Exception:
+                print("   ⚠️ GitOps: Could not create branch (may not be in git repo)")
             
-            if cycle == 1:
-                # Cycle 1: Baseline Scan (Run Everyone)
-                agenda.extend(agents)
-                print("   📋 PLAN: Executing full system diagnostic.")
+            while cycle < MAX_CYCLES:
+                cycle += 1
+                ctx.signal_healing_cycle(cycle)
+                print(f"\n=== 🧬 SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
+                
+                # Reset tracking for this cycle
+                ctx.modified_files.clear()
+                
+                # --- 🧠 STRATEGIC PLANNING PHASE (LEVEL 6) ---
+                agenda = []
+                
+                # LEVEL 6: GitOps runs first to secure state
+                agenda.insert(0, GitAgent(ctx))
+                
+                if cycle == 1:
+                    # Cycle 1: Baseline Scan (Run Everyone)
+                    agenda.extend(agents)
+                    print("   📋 PLAN: Executing full system diagnostic.")
+                else:
+                    # Cycle N: Surgical Strike based on Signals
+                    print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
+                    
+                    # 1. Always run Historian to sync memory state
+                    agenda.append(agents[0]) 
+                    
+                    # LEVEL 5: Run Strategic Planner First
+                    agenda.append(StrategicPlanner(ctx))
+                    
+                    # 2. Map Signals to Agents
+                    signals_str = str(ctx.signals)
+                    
+                    if "TEST_FAILURE" in ctx.signals:
+                        # Logic: If tests fail, we need Root Cause Analysis (Sherlock) + Verification (TestPilot)
+                        agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
+                        print("      -> Priority: Root Cause Analysis & Verification")
+                    
+                    if any(s for s in ctx.signals if "IMPORT" in s or "ModuleNotFound" in s):
+                        # Logic: If imports are broken, summon the Sentinel
+                        agenda.extend([a for a in agents if a.name == "DependencySentinel"])
+                        print("      -> Priority: Dependency Resolution")
+                    
+                    if ctx.modified_files:
+                        # Logic: If files changed, re-validate Safety and Style ONLY on those files
+                        agenda.extend([a for a in agents if a.name in ["SafetyInspector", "CodeStyleGuardian"]])
+                        print("      -> Priority: Safety/Style check on modified files")
+                        
+                        # LEVEL 5+: Calculate Blast Radius
+                        impact_zone = set()
+                        for f in ctx.modified_files:
+                            deps = ctx.get_dependent_files(f)
+                            impact_zone.update(deps)
+                        
+                        if impact_zone:
+                            print(f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope.")
+                            # Store impact zone for TestPilot to use
+                            ctx.impact_zone = impact_zone
+                    
+                    if "SYNTAX_ERROR" in str(ctx.signals):
+                        agenda.extend([a for a in agents if a.name == "SafetyInspector"])
+                        print("      -> Priority: Syntax Repair")
+
+                    # 3. Fallback: If no specific plan but not converged, run TestPilot
+                    if len(agenda) == 2: # Only Historian + StrategicPlanner
+                        agenda.append(agents[-1]) # TestPilot
+                        print("      -> Plan: General System Verification")
+                
+                # LEVEL 5: Add Reflection at the very end of the agenda
+                agenda.append(ReflectionAgent(ctx))
+                
+                # Deduplicate Agenda (preserve order)
+                seen = set()
+                final_agenda = []
+                for a in agenda:
+                    if a.name not in seen:
+                        final_agenda.append(a)
+                        seen.add(a.name)
+                
+                # --- EXECUTION PHASE ---
+                for agent in final_agenda:
+                    if agent.can_run():
+                        await agent.execute()
+                
+                # LEVEL 5+: Rollback on Critical Regression
+                if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
+                    # If we tried to fix something and tests failed immediately, REVERT.
+                    print("   🚨 Critical Regression Detected. Initiating Rollback Protocol.")
+                    ctx.rollback_changes()
+                    ctx.signals.discard("TEST_FAILURE")  # Clear signal so we can try a different strategy next time
+                
+                # Convergence Check
+                # If no files were modified and TestPilot passed (if present), we are stable.
+                if not ctx.modified_files and cycle > 1:
+                    ctx.signal_convergence()
+                    break
+                    
+                if cycle < MAX_CYCLES:
+                    print(f"   🔄 Modifications detected. Rerunning validation to ensure stability...")
+                    await asyncio.sleep(1)
             else:
-                # Cycle N: Surgical Strike based on Signals
-                print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
-                
-                # 1. Always run Historian to sync memory state
-                agenda.append(agents[0]) 
-                
-                # LEVEL 5: Run Strategic Planner First
-                agenda.append(StrategicPlanner(ctx))
-                
-                # 2. Map Signals to Agents
-                signals_str = str(ctx.signals)
-                
-                if "TEST_FAILURE" in ctx.signals:
-                    # Logic: If tests fail, we need Root Cause Analysis (Sherlock) + Verification (TestPilot)
-                    agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
-                    print("      -> Priority: Root Cause Analysis & Verification")
-                
-                if any(s for s in ctx.signals if "IMPORT" in s or "ModuleNotFound" in s):
-                    # Logic: If imports are broken, summon the Sentinel
-                    agenda.extend([a for a in agents if a.name == "DependencySentinel"])
-                    print("      -> Priority: Dependency Resolution")
-                
-                if ctx.modified_files:
-                    # Logic: If files changed, re-validate Safety and Style ONLY on those files
-                    agenda.extend([a for a in agents if a.name in ["SafetyInspector", "CodeStyleGuardian"]])
-                    print("      -> Priority: Safety/Style check on modified files")
-                    
-                    # LEVEL 5+: Calculate Blast Radius
-                    impact_zone = set()
-                    for f in ctx.modified_files:
-                        deps = ctx.get_dependent_files(f)
-                        impact_zone.update(deps)
-                    
-                    if impact_zone:
-                        print(f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope.")
-                        # Store impact zone for TestPilot to use
-                        ctx.impact_zone = impact_zone
-                
-                if "SYNTAX_ERROR" in str(ctx.signals):
-                    agenda.extend([a for a in agents if a.name == "SafetyInspector"])
-                    print("      -> Priority: Syntax Repair")
+                print(f"\n⚠️ MAX HEALING CYCLES REACHED. Escalating...")
+                if ctx.modified_files or ctx.signals:
+                    import time
+                    from pathlib import Path
+                    esc_dir = Path("observability/human_review")
+                    esc_dir.mkdir(parents=True, exist_ok=True)
+                    report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
+                    (esc_dir / f"escalation_{int(time.time())}.md").write_text(report)
+                    print(f"   🚨 Manual Review Required. Report saved to: {esc_dir}")
 
-                # 3. Fallback: If no specific plan but not converged, run TestPilot
-                if len(agenda) == 2: # Only Historian + StrategicPlanner
-                    agenda.append(agents[-1]) # TestPilot
-                    print("      -> Plan: General System Verification")
-            
-            # LEVEL 5: Add Reflection at the very end of the agenda
-            agenda.append(ReflectionAgent(ctx))
-            
-            # Deduplicate Agenda (preserve order)
-            seen = set()
-            final_agenda = []
-            for a in agenda:
-                if a.name not in seen:
-                    final_agenda.append(a)
-                    seen.add(a.name)
-            
-            # --- EXECUTION PHASE ---
-            for agent in final_agenda:
-                if agent.can_run():
-                    await agent.execute()
-            
-            # LEVEL 5+: Rollback on Critical Regression
-            if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
-                # If we tried to fix something and tests failed immediately, REVERT.
-                print("   🚨 Critical Regression Detected. Initiating Rollback Protocol.")
-                ctx.rollback_changes()
-                ctx.signals.discard("TEST_FAILURE")  # Clear signal so we can try a different strategy next time
-            
-            # Convergence Check
-            # If no files were modified and TestPilot passed (if present), we are stable.
-            if not ctx.modified_files and cycle > 1:
-                ctx.signal_convergence()
-                break
-                
-            if cycle < MAX_CYCLES:
-                print(f"   🔄 Modifications detected. Rerunning validation to ensure stability...")
-                await asyncio.sleep(1)
-        else:
-            print(f"\n⚠️ MAX HEALING CYCLES REACHED. Escalating...")
-            if ctx.modified_files or ctx.signals:
-                import time
-                from pathlib import Path
-                esc_dir = Path("observability/human_review")
-                esc_dir.mkdir(parents=True, exist_ok=True)
-                report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
-                (esc_dir / f"escalation_{int(time.time())}.md").write_text(report)
-                print(f"   🚨 Manual Review Required. Report saved to: {esc_dir}")
+            print("\n💾 SAVING BLACKBOARD STATE...")
+            ctx._save_memory()
+            print("\nMISSION COMPLETE")
 
-        print("\n💾 SAVING BLACKBOARD STATE...")
-        ctx._save_memory()
-        print("\nMISSION COMPLETE")
-
-    asyncio.run(run_mission())
+        asyncio.run(run_mission())
