@@ -28,7 +28,7 @@ def find_long_lines() -> None:
                                 logger.info(f"{filepath}:{line_num} - {len(line.rstrip())} chars")
                                 logger.info(f"  {line[:150]}...")
                                 logger.info("")
-                except Exception as e:
+                except Exception:
                     pass  # Exception handled
 
     logger.info(f"\nTotal violations: {len(violations)}")
