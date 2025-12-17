@@ -412,9 +412,19 @@ class ProactiveAgent(ResumeAgent):
     
     def __init__(self, ctx: ResumeEngineContext):
         super().__init__(ctx)
+        self.name = "ProactiveAgent"
         self.scheduler = ProactiveScheduler(ctx)
         self.handoff = PredictiveHandoff(ctx)
         self.monitor = CapabilityMonitor(ctx)
+    
+    def record_result(self, passed: bool, details: str = ""):
+        """Record the agent's result."""
+        self.ctx.record_result(self.name, passed, details)
+    
+    def add_signal(self, signal: str):
+        """Add a signal to the context."""
+        self.ctx.add_signal(signal)
+        print(f"   [{self.name}] 📡 Signal: {signal}")
     
     async def execute(self) -> None:
         print(f"   [{self.name}] Running proactive analysis...")
