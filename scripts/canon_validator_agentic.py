@@ -232,7 +232,7 @@ class ValidationContext:
         try:
             from pinecone import Pinecone
             pc = Pinecone(api_key=os.environ["PINECONE_API_KEY"])
-            index_name = "subatomic-codebase"
+            index_name = "canon-memory-l2"  # Using existing index
             # Strict check: Index MUST exist
             if index_name not in pc.list_indexes().names():
                 raise RuntimeError(f"CRITICAL: Pinecone index '{index_name}' does not exist.")
@@ -4197,8 +4197,8 @@ class SecurityEnforcer(SubAtomicAgent):
         ),
         'sql_injection': re.compile(
             r'(execute\(|cursor\.execute\().*["\'].*\%.*["\']|'
-            r'execute\(|cursor\.execute\).*["\'].*\+.*["\']|'
-            r'execute\(|cursor\.execute\().*f["\'].*\{.*\}.*["\']',
+            r'(execute\(|cursor\.execute\().*["\'].*\+.*["\']|'
+            r'(execute\(|cursor\.execute\().*f["\'].*\{.*\}.*["\']',
             re.IGNORECASE
         ),
         'eval_usage': re.compile(
