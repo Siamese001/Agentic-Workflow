@@ -6222,6 +6222,911 @@ class RaceAnalyzer(ast.NodeVisitor):
         """Check if current node is inside a 'with lock:' context."""
         return any(context[0] == 'lock' for context in self.in_with_context)
 
+class RaceConditionDetector(SubAtomicAgent):
+    """ROLE: Race Guardian. Detects and remediates data races in shared mutable state."""
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Detecting Race Conditions...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for race conditions")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for race conditions...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track race fixes
+        race_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                race_log.append(result)
+        
+        # Save race safety report
+        self._save_safety_report(race_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   🛡️  Race conditions fixed in {len(fixed_files)} files")
+        else:
+            print("   ✅ No race conditions detected")
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for race conditions and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Parse and analyze AST
+            tree = ast.parse(content)
+            analyzer = RaceAnalyzer()
+            analyzer.visit(tree)
+            
+            if not analyzer.races:
+                return None
+            
+            # Categorize races by type
+            race_context = self._categorize_races(analyzer.races)
+            
+            # Prioritize critical races
+            critical_races = self._prioritize_races(race_context)
+            
+            if not critical_races:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   🛡️  Fixing race conditions: {os.path.basename(file_path)}")
+            
+            # Generate race-safe code using Gemini
+            fixed_content = await self._generate_race_safe_code(
+                file_path, content, critical_races
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'races': critical_races,
+                        'context': race_context,
+                        'reasoning': 'Race conditions detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix races in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _categorize_races(self, races):
+        """Categorize detected race conditions."""
+        context = {
+            'global_races': [],
+            'class_races': [],
+            'compound_operations': [],
+            'shared_collection_races': []
+        }
+        
+        for race in races:
+            if race['type'].startswith('global'):
+                context['global_races'].append(race)
+            elif race['type'].startswith('class'):
+                context['class_races'].append(race)
+            elif 'compound' in race['type']:
+                context['compound_operations'].append(race)
+            elif 'shared_collection' in race['type']:
+                context['shared_collection_races'].append(race)
+        
+        return context
+    
+    def _prioritize_races(self, context):
+        """Prioritize race conditions by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: Compound operations on shared state
+        for op in context.get('compound_operations', []):
+            prioritized['critical'].append({
+                'type': op['type'],
+                'target': op.get('variable', op.get('attribute')),
+                'line': op['line'],
+                'severity': 'critical'
+            })
+        
+        # High: Mutable method calls on shared collections
+        for race in context.get('shared_collection_races', []):
+            prioritized['high'].append({
+                'type': race['type'],
+                'method': race.get('method'),
+                'line': race['line'],
+                'severity': 'high'
+            })
+        
+        # Medium: Simple assignments to shared state
+        for race in context.get('global_races', []):
+            prioritized['medium'].append({
+                'type': race['type'],
+                'variable': race.get('variable'),
+                'line': race['line'],
+                'severity': 'medium'
+            })
+        
+        for race in context.get('class_races', []):
+            prioritized['medium'].append({
+                'type': race['type'],
+                'attribute': race.get('attribute'),
+                'line': race['line'],
+                'severity': 'medium'
+            })
+        
+        # Return all races for auto-fix (races are always critical)
+        return {
+            k: v for k, v in prioritized.items() if v
+        }
+    
+    async def _generate_race_safe_code(self, file_path: str, content: str, races: dict):
+        """Generate race-safe code using Gemini."""
+        # Build race summary
+        race_summary = []
+        for severity, race_list in races.items():
+            for race in race_list:
+                target = race.get('target', race.get('attribute', race.get('method')))
+                race_summary.append(f"- {race['type']} on '{target}' ({severity}): line {race['line']}")
+        
+        prompt = (
+            f"RACE CONDITION SAFETY TASK: Fix data races in Python code by adding proper synchronization.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Races:\n"
+            + "\n".join(race_summary) + "\n\n"
+            "Race Safety Rules:\n"
+            "1. Add threading.Lock() for shared state in synchronous functions\n"
+            "2. Add asyncio.Lock() for shared state in async functions\n"
+            "3. Use 'with lock:' context managers for compound operations\n"
+            "4. Initialize locks at class or module level as appropriate\n"
+            "5. Ensure all access to shared mutable state is protected\n"
+            "6. Import threading or asyncio as needed\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Prevent all identified race conditions\n"
+            "3. Use appropriate lock types (threading vs asyncio)\n"
+            "4. Add comments explaining synchronization\n"
+            "5. Minimize lock scope to avoid deadlocks\n"
+            "6. Do not over-synchronize local variables\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete race-safe Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_safety_report(self, log_entries, fixed_files):
+        """Save the race safety report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/race_safety_{timestamp}.md"
+        
+        report_content = f"# Race Safety Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Race Condition Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    races = entry['races']
+                    report_content += f"**Races Fixed:**\n"
+                    for severity, race_list in races.items():
+                        for race in race_list:
+                            target = race.get('target', race.get('attribute', race.get('method')))
+                            report_content += f"- {race['type']} on '{target}' ({severity}): line {race['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('compound_operations'):
+                        report_content += f"\n**Compound Operations:**\n"
+                        for op in context['compound_operations']:
+                            report_content += f"- {op['variable']} (line {op['line']})\n"
+                    
+                    if context.get('global_races'):
+                        report_content += f"\n**Global State Races:**\n"
+                        for race in context['global_races']:
+                            report_content += f"- {race['variable']} (line {race['line']})\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class LivelockPreventionAgent(SubAtomicAgent):
+    """ROLE: Livelock Guardian. Detects and remediates active non-progress patterns to ensure progress guarantees."""
+    
+    # Livelock anti-patterns for fast scanning
+    LIVELOCK_PATTERNS = {
+        'tight_loop': re.compile(
+            r'while\s+True\s*:\s*.*?(?:pass|continue|break)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'busy_wait': re.compile(
+            r'while\s+.*:\s*.*?time\.sleep\s*\(\s*[0-9.]+\s*\)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'infinite_retry': re.compile(
+            r'while\s+.*:\s*.*?try\s*:.*?except.*?:\s*.*?continue',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'polite_oscillation': re.compile(
+            r'if\s+.*lock.*:\s*.*?release.*?\s*.*?try.*?acquire',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'spin_wait': re.compile(
+            r'while\s+not\s+.*:\s*pass',
+            re.IGNORECASE
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Preventing Livelock Patterns...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for livelock patterns")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for livelock risks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track livelock fixes
+        livelock_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                livelock_log.append(result)
+        
+        # Save livelock prevention report
+        self._save_prevention_report(livelock_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   ⚡ Livelock risks fixed in {len(fixed_files)} files")
+            self.ctx.report(self.name, 63, True, [f"Livelock risks fixed in {len(fixed_files)} files"])
+        else:
+            print("   ✅ No livelock risks detected")
+            self.ctx.report(self.name, 63, True, ["No livelock risks detected"])
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for livelock patterns and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_issues = self._detect_livelock_patterns(content)
+            
+            if not detected_issues:
+                return None
+            
+            # Pass 2: AST context analysis
+            livelock_context = self._analyze_livelock_context(content, detected_issues)
+            
+            # Prioritize critical issues
+            critical_issues = self._prioritize_issues(livelock_context)
+            
+            if not critical_issues:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   ⚡ Fixing livelock patterns: {os.path.basename(file_path)}")
+            
+            # Generate livelock-free code using Gemini
+            fixed_content = await self._generate_livelock_free_code(
+                file_path, content, critical_issues
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'issues': critical_issues,
+                        'context': livelock_context,
+                        'reasoning': 'Livelock patterns detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix livelock in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_livelock_patterns(self, content):
+        """Fast regex-based livelock pattern detection."""
+        issues = {}
+        
+        for issue_name, pattern in self.LIVELOCK_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                issues[issue_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return issues
+    
+    def _analyze_livelock_context(self, content, issues):
+        """Analyze AST to understand livelock context."""
+        context = {
+            'tight_loops': [],
+            'busy_waits': [],
+            'infinite_retries': [],
+            'polite_oscillations': [],
+            'spin_waits': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find problematic loops
+            for node in ast.walk(tree):
+                if isinstance(node, ast.While):
+                    # Check for while True loops
+                    if isinstance(node.test, ast.Constant) and node.test.value is True:
+                        # Check if loop has proper exit conditions
+                        has_exit = self._has_loop_exit(node)
+                        if not has_exit:
+                            context['tight_loops'].append({
+                                'type': 'while_true',
+                                'line': node.lineno,
+                                'has_break': False
+                            })
+                    
+                    # Check for busy wait patterns
+                    elif isinstance(node.test, ast.Compare):
+                        # Look for patterns like "while not condition:"
+                        if not self._has_proper_wait(node):
+                            context['spin_waits'].append({
+                                'line': node.lineno,
+                                'condition': ast.unparse(node.test) if hasattr(ast, 'unparse') else str(node.lineno)
+                            })
+                
+                # Check for retry patterns without backoff
+                elif isinstance(node, ast.Try):
+                    handlers = [h for h in node.handlers if isinstance(h.type, ast.Name) and h.type.id == 'Exception']
+                    if handlers:
+                        # Check if exception handler continues without delay
+                        for handler in handlers:
+                            if self._is_immediate_retry(handler):
+                                context['infinite_retries'].append({
+                                    'line': node.lineno,
+                                    'handler': handler.type.id
+                                })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _has_loop_exit(self, while_node):
+        """Check if a while loop has proper exit conditions."""
+        for node in ast.walk(while_node):
+            if isinstance(node, ast.Break):
+                return True
+            if isinstance(node, ast.Return):
+                return True
+        return False
+    
+    def _has_proper_wait(self, while_node):
+        """Check if a while loop has proper waiting mechanism."""
+        for node in ast.walk(while_node):
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Attribute):
+                    if node.func.attr in ['sleep', 'wait', 'acquire']:
+                        return True
+        return False
+    
+    def _is_immediate_retry(self, handler):
+        """Check if exception handler retries immediately."""
+        for stmt in handler.body:
+            if isinstance(stmt, ast.Continue):
+                return True
+            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+                # Check if it's a retry call
+                if isinstance(stmt.value.func, ast.Name):
+                    if stmt.value.func.id.endswith('retry'):
+                        return True
+        return False
+    
+    def _prioritize_issues(self, context):
+        """Prioritize livelock issues by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: while True loops without exit
+        for loop in context.get('tight_loops', []):
+            prioritized['critical'].append({
+                'type': 'tight_loop',
+                'line': loop['line'],
+                'severity': 'critical'
+            })
+        
+        # High: Infinite retries without backoff
+        for retry in context.get('infinite_retries', []):
+            prioritized['high'].append({
+                'type': 'infinite_retry',
+                'line': retry['line'],
+                'severity': 'high'
+            })
+        
+        # Medium: Spin waits without proper blocking
+        for spin in context.get('spin_waits', []):
+            prioritized['medium'].append({
+                'type': 'spin_wait',
+                'line': spin['line'],
+                'condition': spin['condition'],
+                'severity': 'medium'
+            })
+        
+        # Return all issues for auto-fix (livelocks are always critical)
+        return {
+            k: v for k, v in prioritized.items() if v
+        }
+    
+    async def _generate_livelock_free_code(self, file_path: str, content: str, issues: dict):
+        """Generate livelock-free code using Gemini."""
+        # Build issue summary
+        issue_summary = []
+        for severity, issue_list in issues.items():
+            for issue in issue_list:
+                issue_summary.append(f"- {issue['type']} ({severity}): line {issue['line']}")
+        
+        prompt = (
+            f"LIVELOCK PREVENTION TASK: Fix livelock patterns in Python code to ensure progress guarantees.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Issues:\n"
+            + "\n".join(issue_summary) + "\n\n"
+            "Livelock Prevention Rules:\n"
+            "1. Replace while True loops with bounded retries (max_attempts)\n"
+            "2. Add exponential backoff with jitter to retry logic\n"
+            "3. Replace busy waits with asyncio.Event or threading.Condition\n"
+            "4. Use proper blocking primitives instead of spin loops\n"
+            "5. Add random jitter to prevent thundering herd\n"
+            "6. Import random, asyncio, or threading as needed\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Ensure all loops have guaranteed exit conditions\n"
+            "3. Add exponential backoff: delay = base * (2 ** attempt) + random jitter\n"
+            "4. Use event-driven patterns instead of polling\n"
+            "5. Add comments explaining livelock prevention\n"
+            "6. Import required modules (random, asyncio, threading)\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete livelock-free Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_prevention_report(self, log_entries, fixed_files):
+        """Save the livelock prevention report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/livelock_prevention_{timestamp}.md"
+        
+        report_content = f"# Livelock Prevention Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Livelock Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    issues = entry['issues']
+                    report_content += f"**Issues Fixed:**\n"
+                    for severity, issue_list in issues.items():
+                        for issue in issue_list:
+                            report_content += f"- {issue['type']} ({severity}): line {issue['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('tight_loops'):
+                        report_content += f"\n**Tight Loops:**\n"
+                        for loop in context['tight_loops']:
+                            report_content += f"- while True at line {loop['line']}\n"
+                    
+                    if context.get('infinite_retries'):
+                        report_content += f"\n**Infinite Retries:**\n"
+                        for retry in context['infinite_retries']:
+                            report_content += f"- Exception handler at line {retry['line']}\n"
+                    
+                    if context.get('spin_waits'):
+                        report_content += f"\n**Spin Waits:**\n"
+                        for spin in context['spin_waits']:
+                            report_content += f"- {spin['condition']} at line {spin['line']}\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
+class StarvationPreventionAgent(SubAtomicAgent):
+    """ROLE: Starvation Guardian. Ensures fair resource usage and prevents greedy tasks from monopolizing the event loop."""
+    
+    # Starvation anti-patterns for fast scanning
+    STARVATION_PATTERNS = {
+        'greedy_loop': re.compile(
+            r'async\s+def\s+\w+.*?:\s*.*?(?:for|while).*:(?!.*await)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'long_lock': re.compile(
+            r'with\s+.*lock.*:\s*.{400,}',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'cpu_bound_async': re.compile(
+            r'async\s+def.*?:\s*.*?(?:heavy|compute|intensive|process).*:(?!.*await\s+asyncio)',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        ),
+        'priority_inversion': re.compile(
+            r'queue\.Queue\s*\(\s*\)',
+            re.IGNORECASE
+        ),
+        'no_yield': re.compile(
+            r'for\s+\w+\s+in.*range.*:\s*.{200,}',
+            re.IGNORECASE | re.MULTILINE | re.DOTALL
+        )
+    }
+    
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Ensuring Fair Resource Usage...")
+        await asyncio.sleep(0)
+        
+        # Priority 1: Process modified files
+        modified_files = getattr(self.ctx, 'modified_files', set())
+        
+        # Priority 2: Fall back to all Python files if no tracking
+        target_files = list(modified_files) if modified_files else self.ctx.python_files
+        
+        if not target_files:
+            print("   ✅ No files to check for starvation patterns")
+            return
+        
+        print(f"   🔍 Scanning {len(target_files)} files for starvation risks...")
+        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+        
+        # Track starvation fixes
+        starvation_log = []
+        fixed_files = []
+        
+        # Scan and fix files
+        for file_path in target_files:
+            if not file_path.endswith('.py'):
+                continue
+            
+            result = await self._scan_and_fix(file_path)
+            if result:
+                fixed_files.append(file_path)
+                starvation_log.append(result)
+        
+        # Save starvation prevention report
+        self._save_prevention_report(starvation_log, fixed_files)
+        
+        if fixed_files:
+            print(f"   ⚖️ Starvation risks fixed in {len(fixed_files)} files")
+            self.ctx.report(self.name, 64, True, [f"Starvation risks fixed in {len(fixed_files)} files"])
+        else:
+            print("   ✅ No starvation risks detected")
+            self.ctx.report(self.name, 64, True, ["No starvation risks detected"])
+    
+    async def _scan_and_fix(self, file_path):
+        """Scan file for starvation patterns and apply fixes."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Pass 1: Fast regex scanning
+            detected_issues = self._detect_starvation_patterns(content)
+            
+            if not detected_issues:
+                return None
+            
+            # Pass 2: AST context analysis
+            starvation_context = self._analyze_starvation_context(content, detected_issues)
+            
+            # Prioritize critical issues
+            critical_issues = self._prioritize_issues(starvation_context)
+            
+            if not critical_issues:
+                print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
+                return None
+            
+            print(f"   ⚖️ Fixing starvation patterns: {os.path.basename(file_path)}")
+            
+            # Generate starvation-free code using Gemini
+            fixed_content = await self._generate_fairness_code(
+                file_path, content, critical_issues
+            )
+            
+            # Apply fixes
+            if fixed_content and fixed_content != content:
+                if self.ctx.write_compliant_file(file_path, fixed_content):
+                    return {
+                        'file': file_path,
+                        'issues': critical_issues,
+                        'context': starvation_context,
+                        'reasoning': 'Starvation patterns detected and remediated'
+                    }
+            
+        except Exception as e:
+            print(f"   ❌ Failed to fix starvation in {file_path}: {e}")
+            return {
+                'file': file_path,
+                'error': str(e),
+                'reasoning': 'Failed to process file'
+            }
+        
+        return None
+    
+    def _detect_starvation_patterns(self, content):
+        """Fast regex-based starvation pattern detection."""
+        issues = {}
+        
+        for issue_name, pattern in self.STARVATION_PATTERNS.items():
+            matches = pattern.finditer(content)
+            if matches:
+                issues[issue_name] = [
+                    {
+                        'line': content[:match.start()].count('\n') + 1,
+                        'snippet': content[match.start():match.end()][:50],
+                        'full_match': match.group()
+                    }
+                    for match in matches
+                ]
+        
+        return issues
+    
+    def _analyze_starvation_context(self, content, issues):
+        """Analyze AST to understand starvation context."""
+        context = {
+            'greedy_loops': [],
+            'long_locks': [],
+            'cpu_bound_tasks': [],
+            'priority_inversions': [],
+            'no_yield_loops': []
+        }
+        
+        try:
+            tree = ast.parse(content)
+            
+            # Find problematic async functions
+            for node in ast.walk(tree):
+                if isinstance(node, ast.AsyncFunctionDef):
+                    func_name = node.name
+                    func_start = node.lineno
+                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+                    
+                    # Check for async functions without yields
+                    has_await = False
+                    has_yield = False
+                    
+                    for child in ast.walk(node):
+                        if isinstance(child, ast.Await):
+                            has_await = True
+                        if isinstance(child, ast.Expr) and isinstance(child.value, ast.Call):
+                            if isinstance(child.value.func, ast.Attribute):
+                                if child.value.func.attr == 'sleep':
+                                    has_yield = True
+                    
+                    # Check for loops without yielding
+                    for child in ast.walk(node):
+                        if isinstance(child, (ast.For, ast.While)):
+                            # Count lines in loop
+                            loop_lines = child.end_lineno - child.lineno if hasattr(child, 'end_lineno') else 0
+                            if loop_lines > 20 and not has_yield:
+                                context['no_yield_loops'].append({
+                                    'function': func_name,
+                                    'line': child.lineno,
+                                    'type': type(child).__name__
+                                })
+                
+                # Check for long lock durations
+                elif isinstance(node, ast.With):
+                    for item in node.items:
+                        if isinstance(item.context_expr, ast.Name):
+                            if 'lock' in item.context_expr.id.lower():
+                                # Count lines in with block
+                                with_lines = node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
+                                if with_lines > 20:
+                                    context['long_locks'].append({
+                                        'line': node.lineno,
+                                        'duration': with_lines
+                                    })
+                
+                # Check for unfair queue usage
+                elif isinstance(node, ast.Call):
+                    if isinstance(node.func, ast.Attribute):
+                        if node.func.attr == 'Queue' and isinstance(node.func.value, ast.Name):
+                            if node.func.value.id == 'queue':
+                                context['priority_inversions'].append({
+                                    'line': node.lineno,
+                                    'type': 'FIFO Queue'
+                                })
+        
+        except Exception as e:
+            print(f"   ⚠️  AST analysis failed: {e}")
+        
+        return context
+    
+    def _prioritize_issues(self, context):
+        """Prioritize starvation issues by severity."""
+        prioritized = {
+            'critical': [],
+            'high': [],
+            'medium': []
+        }
+        
+        # Critical: Long-held locks
+        for lock in context.get('long_locks', []):
+            prioritized['critical'].append({
+                'type': 'long_lock',
+                'line': lock['line'],
+                'duration': lock['duration'],
+                'severity': 'critical'
+            })
+        
+        # High: No-yield loops in async functions
+        for loop in context.get('no_yield_loops', []):
+            prioritized['high'].append({
+                'type': 'no_yield_loop',
+                'line': loop['line'],
+                'function': loop['function'],
+                'severity': 'high'
+            })
+        
+        # Medium: Unfair queue usage
+        for queue in context.get('priority_inversions', []):
+            prioritized['medium'].append({
+                'type': 'priority_inversion',
+                'line': queue['line'],
+                'queue_type': queue['type'],
+                'severity': 'medium'
+            })
+        
+        # Return all issues for auto-fix (starvation affects system fairness)
+        return {
+            k: v for k, v in prioritized.items() if v
+        }
+    
+    async def _generate_fairness_code(self, file_path: str, content: str, issues: dict):
+        """Generate fair code using Gemini."""
+        # Build issue summary
+        issue_summary = []
+        for severity, issue_list in issues.items():
+            for issue in issue_list:
+                issue_summary.append(f"- {issue['type']} ({severity}): line {issue['line']}")
+        
+        prompt = (
+            f"STARVATION PREVENTION TASK: Fix unfair resource usage in Python async code.\n\n"
+            f"File: {file_path}\n\n"
+            f"Detected Issues:\n"
+            + "\n".join(issue_summary) + "\n\n"
+            "Fairness Rules:\n"
+            "1. Add `await asyncio.sleep(0)` in long loops to yield control\n"
+            "2. Split long critical sections into smaller chunks\n"
+            "3. Use asyncio.Queue for fair task scheduling\n"
+            "4. Add cooperative yielding points every 10-20 iterations\n"
+            "5. Use fair locks or priority queues when needed\n"
+            "6. Import asyncio for yielding mechanisms\n\n"
+            "Requirements:\n"
+            "1. Maintain all existing functionality\n"
+            "2. Ensure no single task monopolizes the event loop\n"
+            "3. Add yielding points in CPU-bound sections\n"
+            "4. Use fair data structures for shared resources\n"
+            "5. Add comments explaining fairness improvements\n"
+            "6. Import required modules (asyncio, queue)\n\n"
+            f"Code:\n{content}\n\n"
+            "Return ONLY the complete fairness-guaranteed Python code."
+        )
+        
+        return await self.ctx.request_mutation(
+            self.name, prompt, content, reasoning_mode=True
+        )
+    
+    def _save_prevention_report(self, log_entries, fixed_files):
+        """Save the starvation prevention report."""
+        timestamp = int(time.time())
+        report_path = f"observability/audit/starvation_safety_{timestamp}.md"
+        
+        report_content = f"# Starvation Prevention Report\n\n"
+        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+        report_content += f"## Summary\n\n"
+        report_content += f"- Files scanned: {len(log_entries)}\n"
+        report_content += f"- Files secured: {len(fixed_files)}\n\n"
+        
+        if log_entries:
+            report_content += f"## Starvation Fixes\n\n"
+            for entry in log_entries:
+                if 'error' in entry:
+                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"**Error:** {entry['error']}\n\n"
+                else:
+                    report_content += f"### ✅ {entry['file']}\n\n"
+                    
+                    issues = entry['issues']
+                    report_content += f"**Issues Fixed:**\n"
+                    for severity, issue_list in issues.items():
+                        for issue in issue_list:
+                            report_content += f"- {issue['type']} ({severity}): line {issue['line']}\n"
+                    
+                    context = entry['context']
+                    if context.get('long_locks'):
+                        report_content += f"\n**Long Locks:**\n"
+                        for lock in context['long_locks']:
+                            report_content += f"- Lock held for {lock['duration']} lines at line {lock['line']}\n"
+                    
+                    if context.get('no_yield_loops'):
+                        report_content += f"\n**No-Yield Loops:**\n"
+                        for loop in context['no_yield_loops']:
+                            report_content += f"- {loop['function']} at line {loop['line']}\n"
+                    
+                    if context.get('priority_inversions'):
+                        report_content += f"\n**Priority Inversions:**\n"
+                        for inversion in context['priority_inversions']:
+                            report_content += f"- {inversion['queue_type']} at line {inversion['line']}\n"
+                    
+                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+        
+        self.ctx.write_compliant_file(report_path, report_content)
+
 class TheCurator(SubAtomicAgent):
     """
     ROLE: Taxonomy & Rationalization. Fights file sprawl in scripts/ and root.
@@ -6578,26 +7483,27 @@ class Sherlock(SubAtomicAgent):
 if __name__ == "__main__":
     ctx = ValidationContext()
     
-    # Unified Agent Sequence (10 agents instead of 50+)
+    # Define the Unified Agent Sequence
     agents = [
         Historian(ctx),              # 1. Memory/Skip logic
-        ArchitectureGovernor(ctx),   # 2. Architecture governance
+        ArchitectureGovernor(ctx),   # 2. Laws (Depth/Atomicity/Void) - Moves files!
         GenerativeGuard(ctx),        # 3. Clean noise
         CodeJanitor(ctx),            # 4. Basic formatting
         DependencySentinel(ctx),     # 5. Imports
-        SafetyInspector(ctx),        # 6. Security
-        StyleGuardian(ctx),          # 7. Style checks
-        ConcurrencyGuardian(ctx),    # 8. Concurrency safety
-        BudgetAgent(ctx),            # 9. Complexity budgets
-        TheCurator(ctx),             # 10. Final cleanup
+        SafetyInspector(ctx),        # 6. Basic Security
+        StyleGuardian(ctx),          # 7. Passive Style Checks
+        TypeMechanic(ctx),           # 8. Type Hints
+        ConcurrencyGuardian(ctx),    # 9. Races/Deadlocks/Starvation
+        TheCurator(ctx),             # 10. Final Cleanup
     ]
 
     async def run_mission():
-        print("🚀 STARTING UNIFIED AGENTIC MISSION")
+        print("🚀 STARTING DEDUPLICATED AGENTIC MISSION")
         for agent in agents:
             if agent.can_run():
                 await agent.execute()
         
+        # Summary Reporting
         print("\n" + "="*50)
         print("MISSION COMPLETE")
         print("="*50)
