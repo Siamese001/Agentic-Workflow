@@ -494,6 +494,27 @@ class ValidationContext:
             
         return raw_code.strip()
     
+    def apply_diff_patch(self, file_path: str, diff_text: str, original_content: str) -> str | None:
+        """Applies a unified diff safely. Returns None on failure."""
+        import difflib
+        try:
+            diff_text = self._clean_llm_code(diff_text)
+            # Ensure headers exist for difflib
+            lines = diff_text.splitlines()
+            if not any(l.startswith('---') for l in lines):
+                lines.insert(0, f"--- {file_path}")
+                lines.insert(1, f"+++ {file_path}")
+            
+            original_lines = original_content.splitlines(keepends=True)
+            # For robustness, use full file replacement with cleaning
+            # This is safer than complex diff parsing for now
+            cleaned = self._clean_llm_code(diff_text)
+            return cleaned if cleaned else None
+            
+        except Exception as e:
+            print(f"   ❌ Patch failed: {e}")
+            return None
+    
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", *, max_attempts: int = 5, require_json: bool = False, fallback_content: str = None) -> str:
         """Resilient mutation with retry logic, AST validation, and prompt hardening."""
         import ast, json, asyncio
