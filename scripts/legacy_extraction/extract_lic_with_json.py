@@ -10,13 +10,8 @@ from typing import Dict, List, Set, Tuple
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""
-
-
-LOGGER = logging.getLogger(__name__)
-
- """Get SHA256 hash of file content."""
-  HASHER = hashlib.sha256()
-   with open(filepath, 'rb') as f:
+    hasher = hashlib.sha256()
+    with open(filepath, 'rb') as f:
         for chunk in iter(lambda: f.read(4096), b''):
             hasher.update(chunk)
     return hasher.hexdigest()
@@ -24,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 
 def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
-    EXISTING = {}
+    existing = {}
     repo_root = Path(".")
 
     sovereign_roots = {
@@ -75,23 +70,23 @@ def analyze_and_extract() -> None:
         FILENAME = file_path.name
         legacy_hash = get_file_hash(file_path)
 
-        if filename not in existing_hashes:
+        if FILENAME not in existing_hashes:
             # Truly new filename
-            dest_path = staging_dir / filename
+            dest_path = staging_dir / FILENAME
             shutil.copy2(file_path, dest_path)
-            extracted_files.append(filename)
+            extracted_files.append(FILENAME)
 
-        elif existing_hashes[filename] != legacy_hash:
+        elif existing_hashes[FILENAME] != legacy_hash:
             # Same filename but different content - might be valuable
             # Rename with _LIC suffix to preserve
-            name_parts = filename.rsplit('.', 1)
+            name_parts = FILENAME.rsplit('.', 1)
             new_name = f"{name_parts[0]}_LIC.{name_parts[1]}"
             dest_path = staging_dir / new_name
             shutil.copy2(file_path, dest_path)
-            unique_content_files.append((filename, new_name))
+            unique_content_files.append((FILENAME, new_name))
 
         else:
-            duplicate_files.append(filename)
+            duplicate_files.append(FILENAME)
 
     return extracted_files, unique_content_files, duplicate_files
 
@@ -111,3 +106,4 @@ if __name__ == "__main__":
         for orig, new in sorted(unique_content):
             # logger.info(f"  - {orig} -> {new}")
             pass
+

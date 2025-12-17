@@ -6,8 +6,8 @@ These symbols lack proper docstrings and are acknowledged as technical debt.
 No NEW missing docstrings will be allowed. This list can only shrink.
 """
 import logging
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 DOCSTRING_DEBT = {
     'agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:Validatio\n    nStep',
     'agentic_core/L1_cognition/P1_retrieve/check_rules/policy/validate_cognition_output.py:fail',
@@ -433,3 +433,4 @@ DOCSTRING_DEBT = {
     'tests/unit/apps_lic/test_lic_outreach_engine_dag.py:test_outreach_stack_handles_string_draft_fr\n    om_architect',
     'tests/unit/apps_lic/test_lic_safety_planner.py:test_known_malicious_prompt_remains_blocked',
     'tests/unit/apps_rg/test_rg_resume_builder.py:ResumeSection'}
+

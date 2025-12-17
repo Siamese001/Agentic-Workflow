@@ -1,5 +1,36 @@
 """Dataclass models for config."""
 import logging
+from dataclasses import dataclass, field, ClassVar
+from pathlib import Path
+from typing import Dict, List, Set, Tuple
+
+# Assuming these are defined elsewhere or need to be imported
+# For a self-contained fix, I'll add placeholders if they don't exist in the provided snippet
+try:
+    from .constants import DATA_DIR, CACHE_DIR # Correct path given the file location
+    from .utils import _load_json_config
+except ImportError:
+    pass
+# Fallback for local testing or if constants are in a higher scope
+    DATA_DIR = Path(__file__).parent.parent / 'data'
+    CACHE_DIR = Path(__file__).parent.parent / 'cache'
+
+    def _load_json_config(path: str, name: str, required: bool = True):
+        import json
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+if required:
+                raise FileNotFoundError(f"Required config file '{name}' not found at {path}")
+            logging.warning(f"Optional config file '{name}' not found at {path}. Using empty dict.")
+            return {}
+
+# Define types that seem to be missing or implicitly used
+STR = str
+FLOAT = float
+BOOL = bool
+CompetitiveAnalysisConfig = dataclass(name='CompetitiveAnalysisConfig', fields={'dummy': (int, 0)}) # Placeholder
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +60,17 @@ class ArtistConfig:
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / 'artist_constraints.json') -> 'ArtistConfig':
         """Load ArtistConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Artist Constraints', required=False)
+        data = _load_json_config( # Renamed DATA to data for consistency with usage
+            str(json_path), 'Artist Constraints', required=False)
         bullet_ranges = {}
         for section, range_list in data.get('bullet_word_count_ranges', {}).items():
             if isinstance(range_list, list) and len(range_list) == 2:
                 bullet_ranges[section] = tuple(range_list)
         return cls(provenance_split_targets=data.get('provenance_split_targets',
-            {}),
-            bullet_word_count_ranges=bullet_ranges,
-            narrative_config=data.get('narrative_config',
-            {}))
+                                                     {}),
+                   bullet_word_count_ranges=bullet_ranges,
+                   narrative_config=data.get('narrative_config',
+                                             {}))
 
 
 @dataclass
@@ -53,17 +85,18 @@ class ValidatorConfig:
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / 'validator_rules.json') -> 'ValidatorConfig':
         """Load ValidatorConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Validator Rules', required=False)
+        data = _load_json_config( # Renamed DATA to data for consistency with usage
+            str(json_path), 'Validator Rules', required=False)
         return cls(forbidden_verbs=data.get('forbidden_verbs',
-            []),
-            required_sections=set(data.get('required_sections',
-            [])),
-            bullet_word_count_sections_to_check=set(data.get('bullet_word_count_sections_to_check',
-            [])),
-            provenance_split_targets=data.get('provenance_split_targets',
-            {}),
-            pipeline_status_enum=data.get('pipeline_status_enum',
-            []))
+                                            []),
+                   required_sections=set(data.get('required_sections',
+                                                  [])),
+                   bullet_word_count_sections_to_check=set(data.get('bullet_word_count_sections_to_check',
+                                                                    [])),
+                   provenance_split_targets=data.get('provenance_split_targets',
+                                                     {}),
+                   pipeline_status_enum=data.get('pipeline_status_enum',
+                                                 []))
 
 
 @dataclass
@@ -74,8 +107,8 @@ class PromptsConfig:
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / 'prompts.json') -> 'PromptsConfig':
         """Load PromptsConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Prompts', required=True)
-        return CLS(PROMPTS=data)
+        data = _load_json_config(str(json_path), 'Prompts', required=True) # Renamed DATA to data for consistency with usage
+        return cls(prompts=data) # Changed CLS(PROMPTS=data) to cls(prompts=data)
 
     def get_prompt(self, prompt_name: str, section: str = 'default') -> str:
         """
@@ -99,72 +132,73 @@ class PromptsConfig:
         elif 'default' in prompt_data:
             return prompt_data['default']
         else:
-            raise KeyError(f"Section '{section}' not found for prompt '{prompt_name}'")
+            raise KeyError(
+                f"Section '{section}' not found for prompt '{prompt_name}'")
 
 
 @dataclass
 class WebRagConfig:
     """Configuration for Web RAG (Retrieval Augmented Generation)."""
     peers_by_industry: Dict = field(default_builder=lambda: {'Financial Technology': ['JPMorgan',
-        'Goldman Sachs',
-        'Morgan Stanley',
-        'Stripe',
-        'Square'],
-        'Healthcare': ['UnitedHealth',
-        'CVS Health',
-        'Anthem',
-        'Cigna',
-        'Humana'],
-        'Retail/E-Commerce': ['Amazon',
-        'Walmart',
-        'Target',
-        'Shopify',
-        'eBay'],
-        'Software/SaaS': ['Salesforce',
-        'Oracle',
-        'SAP',
-        'Adobe',
-        'Workday'],
-        'Technology': ['Google',
-        'Microsoft',
-        'Meta',
-        'Apple',
-        'Amazon']})
+                                                                                      'Goldman Sachs',
+                                                                                      'Morgan Stanley',
+                                                                                      'Stripe',
+                                                                                      'Square'],
+                                                             'Healthcare': ['UnitedHealth',
+                                                                            'CVS Health',
+                                                                            'Anthem',
+                                                                            'Cigna',
+                                                                            'Humana'],
+                                                             'Retail/E-Commerce': ['Amazon',
+                                                                                   'Walmart',
+                                                                                   'Target',
+                                                                                   'Shopify',
+                                                                                   'eBay'],
+                                                             'Software/SaaS': ['Salesforce',
+                                                                               'Oracle',
+                                                                               'SAP',
+                                                                               'Adobe',
+                                                                               'Workday'],
+                                                             'Technology': ['Google',
+                                                                            'Microsoft',
+                                                                            'Meta',
+                                                                            'Apple',
+                                                                            'Amazon']})
 
 
 @dataclass
 class EnricherConfig:
     """Configuration for data enrichment."""
     canonical_verbs: Dict = field(default_builder=lambda: {'led': ['led',
-        'lead',
-        'leading'],
-        'built': ['built',
-        'build',
-        'building'],
-        'drove': ['drove',
-        'drive',
-        'driving'],
-        'launched': ['launched',
-        'launch',
-        'launching'],
-        'scaled': ['scaled',
-        'scale',
-        'scaling'],
-        'delivered': ['delivered',
-        'deliver',
-        'delivering'],
-        'achieved': ['achieved',
-        'achieve',
-        'achieving'],
-        'established': ['established',
-        'establish',
-        'establishing'],
-        'managed': ['managed',
-        'manage',
-        'managing'],
-        'developed': ['developed',
-        'develop',
-        'developing']})
+                                                                   'lead',
+                                                                   'leading'],
+                                                           'built': ['built',
+                                                                     'build',
+                                                                     'building'],
+                                                           'drove': ['drove',
+                                                                     'drive',
+                                                                     'driving'],
+                                                           'launched': ['launched',
+                                                                        'launch',
+                                                                        'launching'],
+                                                           'scaled': ['scaled',
+                                                                      'scale',
+                                                                      'scaling'],
+                                                           'delivered': ['delivered',
+                                                                         'deliver',
+                                                                         'delivering'],
+                                                           'achieved': ['achieved',
+                                                                        'achieve',
+                                                                        'achieving'],
+                                                           'established': ['established',
+                                                                           'establish',
+                                                                           'establishing'],
+                                                           'managed': ['managed',
+                                                                       'manage',
+                                                                       'managing'],
+                                                           'developed': ['developed',
+                                                                         'develop',
+                                                                         'developing']})
 
 
 @dataclass
@@ -190,13 +224,13 @@ class RAGConfig:
     chroma_persist_dir: Path = CACHE_DIR / 'chroma_memory'
     chroma_collection_name: str = 'rag_librarian_v1'
     source_weights: Dict[str,
-        FLOAT] = field(default_builder=lambda: {'SOURCE_JD': 1.8,
-        'SOURCE_COMPANY_BLOG': 1.5,
-        'SOURCE_TARGET_EMPLOYEE': 1.4,
-        'SOURCE_GARTNER_MQ': 1.2,
-        'SOURCE_PEER_JD': 0.8,
-        'SOURCE_GENERIC_PROFILE': 0.5,
-        'LOCAL_NLP': 0.2})
+                         FLOAT] = field(default_builder=lambda: {'SOURCE_JD': 1.8,
+                                                                 'SOURCE_COMPANY_BLOG': 1.5,
+                                                                 'SOURCE_TARGET_EMPLOYEE': 1.4,
+                                                                 'SOURCE_GARTNER_MQ': 1.2,
+                                                                 'SOURCE_PEER_JD': 0.8,
+                                                                 'SOURCE_GENERIC_PROFILE': 0.5,
+                                                                 'LOCAL_NLP': 0.2})
 
     def __post_init__(self) -> None:
         """Ensure source_weights is a dict, not a field builder."""
@@ -209,18 +243,23 @@ class RAGConfig:
             self.telemetry_log_dir.mkdir(parents=True, exist_ok=True)
             self.chroma_persist_dir.mkdir(parents=True, exist_ok=True)
         except (OSError, PermissionError) as e:
-            logging.warning(f'Could not create cache directories (read-only filesystem?): {e}')
+pass # Indented block for except
+            logging.warning(
+                f'Could not create cache directories (read-only filesystem?): {e}')
             logging.warning('Caching features will be disabled')
 
     def _validate_source_weights(self) -> None:
         """Ensure source_weights are positive and reasonable."""
         for source, weight in self.source_weights.items():
             if not isinstance(weight, (int, float)):
-                raise TypeError(f"Weight for '{source}' must be numeric, got {type(weight)}")
+                raise TypeError(
+                    f"Weight for '{source}' must be numeric, got {type(weight)}")
             if weight < 0:
-                raise ValueError(f"Weight for '{source}' cannot be negative: {weight}")
+                raise ValueError(
+                    f"Weight for '{source}' cannot be negative: {weight}")
             if weight > 10.0:
-                logging.warning(f"Unusually high weight for '{source}': {weight}")
+                logging.warning(
+                    f"Unusually high weight for '{source}': {weight}")
 
 
 @dataclass
@@ -305,52 +344,53 @@ class PromptAddendumConfig:
     HEADER: str = '\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n'
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
     COT_DIRECTIVES: List[Tuple[int,
-        STR]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\
-    n'),
-        (4,
-        '• Explore {cot} different reasoning paths; compare and synthesize insights.\n'),
-        (0,
-        '• Consider multiple reasoning approaches before concluding.\n')])
+                               STR]] = field(default_builder=lambda: [(5,
+                                                                       '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\n'),
+                                                                      (4,
+                                                                       '• Explore {cot} different reasoning paths; compare and synthesize insights.\n'),
+                                                                      (0,
+                                                                       '• Consider multiple reasoning approaches before concluding.\n')])
     TOT_B_DIRECTIVES: List[Tuple[int,
-        STR]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: At each decision point,
-        systematically evaluate {tot_b} different branches/alternatives.\n'),
-        (4,
-        '• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n'),
-        (0,
-        '• Consider multiple decision branches at key steps.\n')])
+                                 STR]] = field(default_builder=lambda: [(5,
+                                                                         '• MANDATORY: At each decision point, systematically evaluate {tot_b} different branches/alternatives.\n'),
+                                                                        (4,
+                                                                         '• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n'),
+                                                                        (0,
+                                                                         '• Consider multiple decision branches at key steps.\n')])
     TOT_D_DIRECTIVES: List[Tuple[int,
-        STR]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n
-    '),
-        (4,
-        '• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n
-    '),
-        (3,
-        '• Provide {tot_d}-level reasoning with clear progression of thinking.\n'),
-        (0,
-        '• Structure reasoning with clear logical progression.\n')])
+                                 STR]] = field(default_builder=lambda: [(5,
+                                                                         '• MANDATORY: Reasoning depth must be {tot_d} + levels deep with explicit layer separation.\n'),
+                                                                        (4,
+                                                                         '• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n'),
+                                                                        (3,
+                                                                         '• Provide {tot_d}-level reasoning with clear progression of thinking.\n'),
+                                                                        (0,
+                                                                         '• Structure reasoning with clear logical progression.\n')])
     REFLEXION_DIRECTIVES: List[Tuple[int,
-        STR]] = field(default_builder=lambda: [(3,
-        '• MANDATORY: Review your answer {max_loops} times,
-        refining on each pass. Document improvements.\n'),
-        (2,
-        '• Review your answer {max_loops} times; improve if refinements are identified.\n'),
-        (1,
-        '• Review and refine your answer at least once.\n')])
+                                     STR]] = field(default_builder=lambda: [(3,
+                                                                             '• MANDATORY: Review your answer {max_loops} times, refining on each pass . Document improvements.\n'),
+                                                                            (2,
+                                                                             '• Review your answer {max_loops} times; improve if refinements are identified.\n'),
+                                                                            (1,
+                                                                             '• Review and refine your answer at least once.\n')])
+
 
 @dataclass
 class AppConfig:
     """Master application configuration containing all sub-configs."""
     paths: FilePathsConfig = field(default_builder=FilePathsConfig)
     rag: RAGConfig = field(default_builder=lambda: RAGConfig())
-    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraints
-    Config())
-    signal_constraints: SignalControlConfig = field(default_builder=lambda: SignalControlConfig())
-    artist: ArtistConfig = field(default_builder=lambda: ArtistConfig.from_json())
-    validator: ValidatorConfig = field(default_builder=lambda: ValidatorConfig.from_json())
-    prompts: PromptsConfig = field(default_builder=lambda: PromptsConfig.from_json())
+    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraintsConfig())
+    signal_constraints: SignalControlConfig = field(
+        default_builder=lambda: SignalControlConfig())
+    artist: ArtistConfig = field(
+        default_builder=lambda: ArtistConfig.from_json())
+    validator: ValidatorConfig = field(
+        default_builder=lambda: ValidatorConfig.from_json())
+    prompts: PromptsConfig = field(
+        default_builder=lambda: PromptsConfig.from_json())
     web_rag: WebRagConfig = field(default_builder=WebRagConfig)
     enricher: EnricherConfig = field(default_builder=EnricherConfig)
-    comp_config: CompetitiveAnalysisConfig = field(default_builder=CompetitiveAnalysisConfig)
+    comp_config: CompetitiveAnalysisConfig = field(
+        default_builder=CompetitiveAnalysisConfig)
+

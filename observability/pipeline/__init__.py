@@ -56,14 +56,7 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     return all(key in config for key in required_keys)
 
 
-def create_instance(config: Optional[Dict[str,
-                                          """Docstring."""
-                                          Union[str,
-                                                int,
-                                                BOOL]]] = None) -> Dict[str,
-                                                                        Union[str,
-                                                                              int,
-                                                                              bool]]:
+def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
 
@@ -79,5 +72,6 @@ def create_instance(config: Optional[Dict[str,
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
 
-    logger.info(f"Created Pipeline instance with config: {final_config}")
+    LOGGER.info(f"Created Pipeline instance with config: {final_config}")
     return final_config
+

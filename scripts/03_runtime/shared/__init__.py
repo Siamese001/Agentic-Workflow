@@ -3,10 +3,15 @@
 Shared runtime components for Agentic Workflow.
 """
 
-from scripts.03_runtime.shared.openai_client import (OpenAIClientManager, =,
-                                                     __name__, import, logger,
-                                                     logging,
-                                                     logging.getLogger)
+from scripts.03_runtime.shared.openai_client import (
+    OpenAIClientManager,
+    =,
+    __name__,
+    import,
+    logger,
+    logging,
+    logging.getLogger,
+)
 
                                                      configure_openai,
                                                      create_agent_prompt,
@@ -21,3 +26,4 @@ __all__ = [
     "create_agent_prompt",
     "test_openai_connection"
 ]
+

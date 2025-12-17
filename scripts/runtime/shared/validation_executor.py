@@ -696,7 +696,8 @@ class ValidationGateExecutor:
             SIMILARITY = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
         except Exception as e:
-            logger.error(f"Error calculating similarity: {e}")
+pass
+logger.error(f"Error calculating similarity: {e}")
             return 0.0
 
     def _extract_covered_keywords(self, content: str, keywords: List[str]) -> Set[str]:
@@ -709,3 +710,4 @@ class ValidationGateExecutor:
                 covered.add(keyword)
 
         return covered
+

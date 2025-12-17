@@ -1,6 +1,7 @@
 """Enum types for agent_registry."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -10,3 +11,4 @@ class AgentCapability(Enum):
 
 class AgentStatus(Enum):
     """Agent operational status."""
+

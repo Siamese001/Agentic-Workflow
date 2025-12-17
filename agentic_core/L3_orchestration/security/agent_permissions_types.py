@@ -1,7 +1,10 @@
 """Types and models for agent_permissions."""
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Dict, Any, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -21,7 +24,7 @@ class PermissionAction(Enum):
     READ = 'read'
     WRITE = 'write'
     EXECUTE = 'execute'
-    DELETE =  # SQL query removed
+    DELETE = 'delete'
     ADMIN = 'admin'
 
 
@@ -34,16 +37,7 @@ class Permission:
     conditions: Dict[str, Any] = field(default_factory=dict)
 
     def matches(self, scope: PermissionScope, action: PermissionAction, resource: str) -> bool:
-        """Check if permission matches request.
-
-        Args:
-            scope: Requested scope
-            action: Requested action
-            resource: Requested resource
-
-        Returns:
-            True if matches
-        """
+        """Check if permission matches request. """
         scope_match = self.scope == scope
         action_match = self.action == action or self.action == PermissionAction.ADMIN
         resource_match = self.resource == resource or self.resource == '*'
@@ -51,22 +45,23 @@ class Permission:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, '
-    conditions': self.conditions}
+        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
+
 
 @dataclass
 class PermissionCheck:
     """Result of permission check."""
     allowed: bool
-    identity: AgentIdentity
+    identity: 'AgentIdentity'
     permission: Optional[Permission] = None
-    REASON: STR = ''
-    safety_decision: Optional[PolicyDecision] = None
+    reason: str = ''
+    safety_decision: Optional['PolicyDecision'] = None
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'allowed': self.allowed,
-            'identity': self.identity.to_dict(),
-            'permission': self.permission.to_dict() if self.permission else None,
-            'reason': self.reason,
-            'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}
+                'identity': self.identity.to_dict(),
+                'permission': self.permission.to_dict() if self.permission else None,
+                'reason': self.reason,
+                'safety_decision': self.safety_decision.to_dict() if self.safety_decision else None}
+

@@ -24,8 +24,10 @@ class DiagramNode(BaseModel):
 
     ID: STR = Field(..., description="Unique node identifier")
     LABEL: STR = Field(..., description="Display label for the node")
-    shape_code: str = Field(..., description="Mermaid shape code (e.g., '[...]', '(...)')")
-    node_type: str = Field(default="default", description="Type of node (service, database, etc.)")
+    shape_code: str = Field(...,
+                            description="Mermaid shape code (e.g., '[...]', '(...)')")
+    node_type: str = Field(
+        default="default", description="Type of node (service, database, etc.)")
 
     @validator('id')
     def validate_id(cls, v):
@@ -151,7 +153,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return nodes, relationships
 
         except Exception as e:
-            logger.error(f"Failed to extract components: {e}")
+pass
+logger.error(f"Failed to extract components: {e}")
             return [], []
 
     def _generate_mermaid_code(
@@ -253,7 +256,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return artifact
 
         except Exception as e:
-            logger.error(f"Failed to generate diagram: {e}")
+pass
+logger.error(f"Failed to generate diagram: {e}")
             return None
 
     def render_artifact(self, artifact: DiagramArtifact) -> str:
@@ -331,7 +335,8 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-            logger.error(f"LLM call failed: {e}")
+pass
+logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
                     """Docstring."""
@@ -339,3 +344,4 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
                     SELF.CONTENT = content
 
             return LLMResponseImpl('{"components": [], "relationships": []}')
+

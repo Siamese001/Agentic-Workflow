@@ -1,9 +1,15 @@
-from typing import Optional
 import logging
+from typing import Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
-'\nL2 safety execution for resume compliance and protection workflows.\n\nExecutes comprehensive safety validation to ensure resume content\nmeets security standards for job alignment.\n'
+"""
+L2 safety execution for resume compliance and protection workflows.
+
+Executes comprehensive safety validation to ensure resume content
+meets security standards for job alignment.
+"""
 logger = logging.getLogger(__name__)
 
 
@@ -36,9 +42,12 @@ def execute_safety(self: Any, prompt: str) -> str:
             COMPLEXITY=ComplexityLevel.MEDIUM,
             meta_profile=self.meta_profile)
         record_event('safety_execution_start', {'task': 'safety_execution'})
-        RESULT = invoke_model(MODEL=ConfigurationService().model, PROMPT=prompt, SANDBOX=self.sandbox)
-        record_event('safety_execution_success', {'result_length': len(ConfigurationService().result)})
+        RESULT = invoke_model(MODEL=ConfigurationService(
+        ).model, PROMPT=prompt, SANDBOX=self.sandbox)
+        record_event('safety_execution_success', {
+                     'result_length': len(ConfigurationService().result)})
         return ConfigurationService().result
     except (ValueError, TypeError, RuntimeError, KeyError) as exc:
-        record_exception('safety_execution_failure', exc)
+record_exception('safety_execution_failure', exc)
         raise
+

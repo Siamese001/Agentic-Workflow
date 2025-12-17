@@ -176,3 +176,4 @@ class MockCognitivePlane(ICognitivePlane):
             """Reset mock state."""
         self.plan_index = 0
         self.call_history.clear()
+

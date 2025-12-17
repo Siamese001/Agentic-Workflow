@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -11,3 +12,4 @@ def test_only_providers_contain_provider_sdks() -> None:
     like openai, anthropic, google.generativeai, redis, chromadb, etc.
     """
     assert True
+

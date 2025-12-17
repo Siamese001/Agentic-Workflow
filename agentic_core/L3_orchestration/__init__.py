@@ -1,32 +1,21 @@
-"""L3 Orchestration Layer.
-
-
-Phase 2 - Pillars 1 & 4: Layering Model + Workflow (DAGs)
-Coordinates between cognitive and action planes with DAG-based workflow execution.
-"""
+"""L3 Orchestration Layer. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
-DAGEngine,
-Task,
-TaskType,
-TaskStatus,
-DAGExecutionResult,
-)
-    ThinkActObserveEngine,
-    CycleConfig,
-    CycleState,
-)
+from .dag_engine import DAGEngine
+from .task import Task, TaskType, TaskStatus, DAGExecutionResult
+from .think_act_observe_engine import ThinkActObserveEngine
+from .cycle import CycleConfig, CycleState
 
-    __all__ = [
-        "NervousSystem",
-        "DAGEngine",
-        "Task",
-        "TaskType",
-        "TaskStatus",
-        "DAGExecutionResult",
-        "ThinkActObserveEngine",
-        "CycleConfig",
-        "CycleState",
-    ]
+__all__ = [
+    "DAGEngine",
+    "Task",
+    "TaskType",
+    "TaskStatus",
+    "DAGExecutionResult",
+    "ThinkActObserveEngine",
+    "CycleConfig",
+    "CycleState",
+]
+

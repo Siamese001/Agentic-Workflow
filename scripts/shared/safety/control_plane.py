@@ -5,9 +5,32 @@ Provides unified defense system for prompt generation and output processing.
 """
 
 import logging
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
-LOGGER = logging.getLogger(__name__)
+from .bias_auditor import BiasAuditor
+from .constitutional_ai import ConstitutionalAISystem
+from .pii_scrubber import PIIScrubber
 
+# Placeholder types for clarity, replace with actual types if available
+# Example: from typing import NamedTuple
+# class PIIResult(NamedTuple): ...
+# class BiasResult(NamedTuple): ...
+# class ConstitutionalReviewResult(NamedTuple): ...
+
+# Assuming these classes exist and have the expected attributes/methods
+class PIIResult:
+    def has_pii(self) -> bool:
+        return False
+
+class BiasResult:
+    has_bias: bool = False
+    bias_types: List[Any] = []
+
+class ConstitutionalReviewResult:
+    is_compliant: bool = True
+    violations: List[str] = []
 
 class PolicyAction(Enum):
     """Actions the control plane can take."""
@@ -45,11 +68,11 @@ class PolicyDecision:
 
     def __post_init__(self) -> None:
         if self.warnings is None:
-            SELF.WARNINGS = []
+            self.warnings = []
         if self.errors is None:
-            SELF.ERRORS = []
+            self.errors = []
         if self.metadata is None:
-            SELF.METADATA = {}
+            self.metadata = {}
 
 
 class ControlPlane:
@@ -74,18 +97,18 @@ class ControlPlane:
             policy: Safety policy configuration
             enable_logging: Enable logging of decisions
         """
-        SELF.POLICY = policy or SafetyPolicy()
+        self.policy = policy or SafetyPolicy()
         self.enable_logging = enable_logging
 
         self.pii_scrubber = PIIScrubber(enable_logging=enable_logging)
         self.bias_auditor = BiasAuditor(enable_logging=enable_logging)
-        self.constitutional_ai = ConstitutionalAISystem(enable_logging=enable_logging)
+        self.constitutional_ai = ConstitutionalAISystem(
+            enable_logging=enable_logging)
 
         self._decision_count = 0
         self._block_count = 0
 
     def evaluate_input(
-        """Docstring."""
         self,
         content: str,
         context: Optional[Dict[str, Any]] = None,
@@ -102,7 +125,6 @@ class ControlPlane:
         return self._evaluate(content, context, is_input=True)
 
     def evaluate_output(
-        """Docstring."""
         self,
         content: str,
         context: Optional[Dict[str, Any]] = None,
@@ -135,24 +157,25 @@ class ControlPlane:
             PolicyDecision
         """
         self._decision_count += 1
-        WARNINGS, ERRORS = [], []
+        warnings, errors = [], []
         sanitized_content = content
 
-        pii_result, sanitized_content, pii_blocked = self._check_pii(content, warnings, errors)
+        pii_result, sanitized_content, pii_blocked = self._check_pii(
+            content, warnings, errors)
         if pii_blocked:
             return self._create_block_decision(pii_result=pii_result,
-                                               WARNINGS=warnings,
-                                               ERRORS=errors)
+                                               warnings=warnings,
+                                               errors=errors)
 
-        bias_result, bias_blocked = self._check_bias(sanitized_content, warnings, errors)
+        bias_result, bias_blocked = self._check_bias(
+            sanitized_content, warnings, errors)
         if bias_blocked:
             return self._create_block_decision(pii_result=pii_result,
                                                bias_result=bias_result,
-                                               WARNINGS=warnings,
-                                               ERRORS=errors)
+                                               warnings=warnings,
+                                               errors=errors)
 
-        constitutional_result,
-        const_blocked = self._check_constitutional(sanitized_content,
+        constitutional_result, const_blocked = self._check_constitutional(sanitized_content,
                                                    context,
                                                    warnings,
                                                    errors)
@@ -160,8 +183,8 @@ class ControlPlane:
             return self._create_block_decision(pii_result=pii_result,
                                                bias_result=bias_result,
                                                constitutional_result=constitutional_result,
-                                               WARNINGS=warnings,
-                                               ERRORS=errors)
+                                               warnings=warnings,
+                                               errors=errors)
 
         return self._create_final_decision(content,
                                            sanitized_content,
@@ -179,8 +202,9 @@ class ControlPlane:
 
         pii_result = self.pii_scrubber.scrub_text(content)
         if pii_result.has_pii():
-            warnings.append(f"Detected {len(pii_result.detected_pii)} PII items")
-            SANITIZED = pii_result.scrubbed_text if self.policy.auto_sanitize else content
+            warnings.append(
+                f"Detected {len(pii_result.detected_pii)} PII items")
+            sanitized = pii_result.scrubbed_text if self.policy.auto_sanitize else content
             if self.policy.block_on_pii:
                 errors.append("Content blocked due to PII detection")
                 return pii_result, sanitized, True
@@ -194,8 +218,7 @@ class ControlPlane:
 
         bias_result = self.bias_auditor.audit_content(content)
         if bias_result.has_bias:
-            warnings.append(f"Detected {len(bias_result.bias_types)} bias types: {[bt.value for bt i
-                                                                                   n bias_result.bias_types]}")
+            warnings.append(f"Detected {len(bias_result.bias_types)} bias types: {[bt.value for bt in bias_result.bias_types]}")
             if self.policy.block_on_bias:
                 errors.append("Content blocked due to bias detection")
                 return bias_result, True
@@ -210,11 +233,14 @@ class ControlPlane:
         if not self.policy.enable_constitutional_review:
             return None, False
 
-        constitutional_result = self.constitutional_ai.review_content(content, context)
+        constitutional_result = self.constitutional_ai.review_content(
+            content, context)
         if not constitutional_result.is_compliant:
-            warnings.append(f"Constitutional violations: {len(constitutional_result.violations)}")
+            warnings.append(
+                f"Constitutional violations: {len(constitutional_result.violations)}")
             if self.policy.block_on_violations:
-                errors.append("Content blocked due to constitutional violations")
+                errors.append(
+                    "Content blocked due to constitutional violations")
                 return constitutional_result, True
         return constitutional_result, False
 
@@ -228,27 +254,27 @@ class ControlPlane:
                                errors: List[str],
                                is_input: bool) -> PolicyDecision:
         """Create final policy decision."""
-        ACTION = PolicyAction.BLOCK if errors else (PolicyAction.SANITIZE if sanitized_content != co
-                                                    ntent else (PolicyAction.WARN if warnings else PolicyAction.ALLOW))
+        action = PolicyAction.BLOCK if errors else (PolicyAction.SANITIZE if sanitized_content != content else (PolicyAction.WARN if warnings else PolicyAction.ALLOW))
         is_safe = not errors
 
-        DECISION = PolicyDecision(
-            ACTION=action, is_safe=is_safe, pii_result=pii_result, bias_result=bias_result,
+        decision = PolicyDecision(
+            action=action, is_safe=is_safe, pii_result=pii_result, bias_result=bias_result,
             constitutional_result=constitutional_result,
             sanitized_content=sanitized_content if action == PolicyAction.SANITIZE else None,
-            WARNINGS=warnings, errors=errors,
-            METADATA={"is_input": is_input, "decision_id": self._decision_count}
+            warnings=warnings, errors=errors,
+            metadata={"is_input": is_input,
+                      "decision_id": self._decision_count}
         )
 
         if self.enable_logging:
+            logger = logging.getLogger(__name__) # Ensure logger is defined here or imported
             logger.info("control_plane_decision",
-                        EXTRA={"action": action.value,
+                        extra={"action": action.value,
                                "is_safe": is_safe,
                                "is_input": is_input,
                                "has_pii": pii_result.has_pii() if pii_result else False,
                                "has_bias": bias_result.has_bias if bias_result else False,
-                               "is_compliant": constitutional_result.is_compliant if constitutional_result else Tru
-                               e,
+                               "is_compliant": constitutional_result.is_compliant if constitutional_result else True,
                                "warning_count": len(warnings),
                                "error_count": len(errors)})
 
@@ -277,15 +303,15 @@ class ControlPlane:
         self._block_count += 1
 
         return PolicyDecision(
-            ACTION=PolicyAction.BLOCK,
+            action=PolicyAction.BLOCK,
             is_safe=False,
             pii_result=pii_result,
             bias_result=bias_result,
             constitutional_result=constitutional_result,
             sanitized_content=None,
-            WARNINGS=warnings or [],
-            ERRORS=errors or [],
-            METADATA={
+            warnings=warnings or [],
+            errors=errors or [],
+            metadata={
                 "block_id": self._block_count,
             },
         )
@@ -304,7 +330,6 @@ class ControlPlane:
 
 
 def create_control_plane(
-    """Docstring."""
     enable_pii_scrubbing: bool = True,
     enable_bias_detection: bool = True,
     enable_constitutional_review: bool = True,
@@ -325,7 +350,7 @@ def create_control_plane(
     Returns:
         Configured ControlPlane instance
     """
-    POLICY = SafetyPolicy(
+    policy = SafetyPolicy(
         enable_pii_scrubbing=enable_pii_scrubbing,
         enable_bias_detection=enable_bias_detection,
         enable_constitutional_review=enable_constitutional_review,
@@ -335,3 +360,4 @@ def create_control_plane(
     )
 
     return ControlPlane(policy=policy)
+

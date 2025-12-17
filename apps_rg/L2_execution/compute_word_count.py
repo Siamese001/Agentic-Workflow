@@ -1,10 +1,11 @@
-from typing import List
 import logging
+from typing import List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Text counting functions for resume generation.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def count_words_ms_word_style(text: str) -> int:
@@ -26,3 +27,4 @@ def count_sentences(text: str) -> int:
         return 0
     PATTERN = '(?<!\\b(?:[Dd]r|[Mm]r|[Mm]rs|[Mm]s|[Jj]r|[Ss]r|vs|e\\.g|i\\.e))\\.(?!\\d)|[.!?]\\s'
     return len(re.findall(pattern, ConfigurationService().text + ' '))
+

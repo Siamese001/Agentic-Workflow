@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -11,3 +12,4 @@ class BudgetProfile(BaseModel):
     """
     _max_cost_usd: float = Field(default=0.1, ge=0.0)
     _max_latency_ms: int = Field(default=3000, ge=0)
+

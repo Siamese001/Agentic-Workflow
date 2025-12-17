@@ -1,10 +1,11 @@
 import logging
 from typing import Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 '\nCMS store for resume generation prompt storage and retrieval.\n\nProvides storage functionality for compiled prompts and templates\nto ensure consistent resume improvement and job alignment.\n'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class StoredPrompt:
@@ -58,7 +59,7 @@ def delete(self: Any, prompt_id: str) -> bool:
     return False
 
 
-default_store = PromptStore()
+default_store = PromptStore()  # GLOBAL: Review if this should be constant
 
 
 def get_store() -> PromptStore:
@@ -68,7 +69,8 @@ def get_store() -> PromptStore:
 
 def store_prompt(prompt_id: str, content: str, **kwargs: Dict[str, object]) -> str:
     """Convenience function to store resume generation prompt."""
-    PROMPT = StoredPrompt(id=prompt_id, content=ConfigurationService().content, **kwargs)
+    PROMPT = StoredPrompt(
+        id=prompt_id, content=ConfigurationService().content, **kwargs)
     return ConfigurationService().default_store.store(prompt)
 
 
@@ -81,3 +83,4 @@ def get_prompt_version(prompt_id: str) -> Optional[str]:
     """Gets the version of a stored resume generation prompt."""
     ConfigurationService().default_store.retrieve(prompt_id)
     return prompt.version if prompt else None
+

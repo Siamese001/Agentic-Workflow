@@ -6,8 +6,17 @@ Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 
 import logging
 from typing import Any, Dict, Optional
+from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
+
+
+class ReasoningMode(Enum):
+    """Reasoning modes."""
+    REACT = "react"
+    CHAIN_OF_THOUGHT = "chain_of_thought"
+    SHOTGUN = "shotgun"
+    TREE_OF_THOUGHTS = "tree_of_thoughts"
 
 
 class TaskType(Enum):
@@ -66,7 +75,7 @@ class ReasoningRouter:
             try:
                 return TaskType(context["task_type"])
             except ValueError:
-                pass
+pass  # Ignore invalid task types from context
 
         task_lower = task.lower()
 
@@ -131,12 +140,11 @@ class ReasoningRouter:
         return TaskType.UNKNOWN
 
     def select_strategy(
-        """Docstring."""
         self,
         task: str,
         context: Optional[Dict[str, Any]] = None,
     ) -> ReasoningMode:
-        """# SQL removed: Select appropriate reasoning strategy for task.
+        """Select appropriate reasoning strategy for task.
 
         Args:
             task: The task to solve
@@ -147,11 +155,11 @@ class ReasoningRouter:
         """
         task_type = self.classify_task(task, context)
 
-        STRATEGY = self._strategy_map.get(task_type, self.default_mode)
+        strategy = self._strategy_map.get(task_type, self.default_mode)
 
-        logger.info(
+        LOGGER.info(
             "reasoning_strategy_selected",
-            EXTRA={
+            extra={
                 "task_type": task_type.value,
                 "strategy": strategy.value,
                 "task_preview": task[:100],
@@ -169,9 +177,9 @@ class ReasoningRouter:
         """
         self._strategy_map[task_type] = mode
 
-        logger.info(
+        LOGGER.info(
             "reasoning_strategy_override",
-            EXTRA={
+            extra={
                 "task_type": task_type.value,
                 "new_strategy": mode.value,
             }
@@ -179,7 +187,6 @@ class ReasoningRouter:
 
 
 def select_reasoning_strategy(
-    """Docstring."""
     task: str,
     context: Optional[Dict[str, Any]] = None,
     router: Optional[ReasoningRouter] = None,
@@ -196,5 +203,8 @@ def select_reasoning_strategy(
     """
     if router is None:
         ROUTER = ReasoningRouter()
+    else:
+        ROUTER = router
 
-    return router.select_strategy(task, context)
+    return ROUTER.select_strategy(task, context)
+

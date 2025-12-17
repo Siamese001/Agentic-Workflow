@@ -4,6 +4,7 @@ Phase 4 - Pillar 13: Prompt Governance (CMS)
 Central management system for constitutional prompt assets.
 """
 
+from .registry import (
     PromptRegistry,
     PromptTemplate,
     PromptCategory,
@@ -16,3 +17,4 @@ __all__ = [
     "PromptCategory",
     "create_prompt_registry",
 ]
+

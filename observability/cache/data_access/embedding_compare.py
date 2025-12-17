@@ -21,6 +21,8 @@ import logging
 import sys
 import time
 import traceback
+from enum import Enum
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Union
 
 # Configure module-specific logger
@@ -66,8 +68,9 @@ class ExecutionContext:
             }
             logger.error(f"Execution failed: {error}")
         else:
-            logger.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ")
+            logger.info(f"""Execution completed successfully in {self.end_time - self.start_time: .2f}s
+                        """)
+
 
 @dataclass
 class ProcessingResult:
@@ -77,6 +80,7 @@ class ProcessingResult:
     error_message: Optional[str] = None
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
+
 
 class GetInfoEmbeddingCompareMeaning:
     """
@@ -94,7 +98,8 @@ class GetInfoEmbeddingCompareMeaning:
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        SELF.LOGGER = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        SELF.LOGGER = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}")
         if not self.logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
             FORMATTER = logging.Formatter(
@@ -112,7 +117,6 @@ class GetInfoEmbeddingCompareMeaning:
             raise ValueError(f"Missing required config keys: {missing}")
 
     def process(self,
-        """Docstring."""
                 payload: Union[str, int, float, bool, List, Dict],
                 context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
         """
@@ -153,7 +157,7 @@ class GetInfoEmbeddingCompareMeaning:
             )
 
         except Exception as e:
-            exec_ctx.complete(success=False, error=e)
+exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
                 SUCCESS=False,
@@ -162,11 +166,12 @@ class GetInfoEmbeddingCompareMeaning:
             )
 
     def _execute_core(self,
-                     data: Union[str, int, float, bool, List, Dict],
-                     context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
+                      data: Union[str, int, float, bool, List, Dict],
+                      context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
         """Core execution logic to be overridden by subclasses."""
         # Default implementation just returns the data
         return data
+
 
 # Module-level exports and utilities
 __all__ = [
@@ -178,9 +183,11 @@ __all__ = [
     "validate_module_config"
 ]
 
+
 def create_processor(config: Optional[Dict[str, Any]] = None) -> GetInfoEmbeddingCompareMeaning:
     """module function to create configured executor instance."""
     return GetInfoEmbeddingCompareMeaning(config or {})
+
 
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
@@ -188,7 +195,9 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         EXECUTOR = create_processor(config)
         return True
     except Exception:
-        return False
+return False
+
 
 # Module initialization
 logger.info(f"{__name__} module loaded successfully")
+

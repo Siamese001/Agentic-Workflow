@@ -57,10 +57,9 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
 
 
 def create_instance(config: Optional[Dict[str,
-                                          """Docstring."""
                                           Union[str,
                                                 int,
-                                                BOOL]]] = None) -> Dict[str,
+                                                bool]]] = None) -> Dict[str,
                                                                         Union[str,
                                                                               int,
                                                                               bool]]:
@@ -79,5 +78,7 @@ def create_instance(config: Optional[Dict[str,
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
 
-    logger.info(f"Created L3 Orchestration instance with config: {final_config}")
+    logger.info(
+        f"Created L3 Orchestration instance with config: {final_config}")
     return final_config
+

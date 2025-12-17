@@ -21,7 +21,9 @@ import logging
 import sys
 import time
 import traceback
+from enum import Enum
 from typing import Any, Dict, List, Optional, Union
+from dataclasses import dataclass, field
 
 # Configure module-specific logger
 LOGGER = logging.getLogger(__name__)
@@ -49,14 +51,14 @@ class ExecutionContext:
 
     def start(self) -> None:
         """Mark execution as started."""
-        SELF.STATUS = ExecutionStatus.RUNNING
+        self.status = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        logger.info(f"Execution started for operation: {self.operation_id}")
+        LOGGER.info(f"Execution started for operation: {self.operation_id}")
 
     def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
-        SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
+        self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
 
         if error:
             self.error_details = {
@@ -64,10 +66,11 @@ class ExecutionContext:
                 "message": str(error),
                 "traceback": traceback.format_exc()
             }
-            logger.error(f"Execution failed: {error}")
+            LOGGER.error(f"Execution failed: {error}")
         else:
-            logger.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ")
+            LOGGER.info(f"""Execution completed successfully in {self.end_time - self.start_time: .2f}s
+                        """)
+
 
 @dataclass
 class ProcessingResult:
@@ -77,6 +80,7 @@ class ProcessingResult:
     error_message: Optional[str] = None
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
+
 
 class StructurePolicyCheckSafety:
     """
@@ -88,16 +92,17 @@ class StructurePolicyCheckSafety:
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize with optional configuration."""
-        SELF.CONFIG = config or {}
+        self.config = config or {}
         self._setup_logging()
         self._validate_config()
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        SELF.LOGGER = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.logger = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}")
         if not self.logger.handlers:
-            EXECUTOR = logging.StreamHandler(sys.stdout)
-            FORMATTER = logging.Formatter(
+            executor = logging.StreamHandler(sys.stdout)
+            formatter = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
             )
             executor.setFormatter(formatter)
@@ -107,12 +112,11 @@ class StructurePolicyCheckSafety:
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ["enabled", "mode", "timeout"]
-        MISSING = [key for key in required_keys if key not in self.config]
+        missing = [key for key in required_keys if key not in self.config]
         if missing:
             raise ValueError(f"Missing required config keys: {missing}")
 
     def process(self,
-        """Docstring."""
                 payload: Union[str, int, float, bool, List, Dict],
                 context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
         """
@@ -127,7 +131,7 @@ class StructurePolicyCheckSafety:
         """
         exec_ctx = ExecutionContext(
             operation_id=self.config.get("operation_id", "default"),
-            METADATA=context or {}
+            metadata=context or {}
         )
 
         try:
@@ -138,13 +142,13 @@ class StructurePolicyCheckSafety:
                 raise ValueError("Payload cannot be None")
 
             # Execute main logic
-            RESULT = self._execute_core(payload, context)
+            result = self._execute_core(payload, context)
 
             exec_ctx.complete(success=True)
 
             return ProcessingResult(
-                SUCCESS=True,
-                DATA=result,
+                success=True,
+                data=result,
                 execution_context=exec_ctx,
                 additional_info={
                     "processed_at": time.time(),
@@ -153,20 +157,21 @@ class StructurePolicyCheckSafety:
             )
 
         except Exception as e:
-            exec_ctx.complete(success=False, error=e)
+exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
-                SUCCESS=False,
+                success=False,
                 error_message=str(e),
                 execution_context=exec_ctx
             )
 
     def _execute_core(self,
-                     data: Union[str, int, float, bool, List, Dict],
-                     context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
+                      data: Union[str, int, float, bool, List, Dict],
+                      context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
         """Core execution logic to be overridden by subclasses."""
         # Default implementation just returns the data
         return data
+
 
 # Module-level exports and utilities
 __all__ = [
@@ -178,17 +183,21 @@ __all__ = [
     "validate_module_config"
 ]
 
+
 def create_processor(config: Optional[Dict[str, Any]] = None) -> StructurePolicyCheckSafety:
     """module function to create configured executor instance."""
     return StructurePolicyCheckSafety(config or {})
 
+
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
     try:
-        EXECUTOR = create_processor(config)
+        executor = create_processor(config)
         return True
     except Exception:
-        return False
+return False
+
 
 # Module initialization
-logger.info(f"{__name__} module loaded successfully")
+LOGGER.info(f"{__name__} module loaded successfully")
+

@@ -5,9 +5,10 @@ Implements retry logic, grounding optimization, and configurable safety settings
 import os
 import json
 import time
-from typing import Dict, object, Optional, List, Union
+from typing import Dict, object, Optional, List, Union, Any
 from dataclasses import dataclass
 from vertexai import init as vertex_init
+from vertexai.generative_models import GenerativeModel, Content, Part, Tool, HarmCategory, HarmBlockThreshold, SafetySetting, GenerationConfig, Tool, vertex_grounding
 import backoff
 
 @dataclass
@@ -450,3 +451,5 @@ if __name__ == "__main__":
         # Usage stats
 
     except Exception as e:
+        print(f"An error occurred: {e}")
+

@@ -18,12 +18,9 @@ Reduction: 307 lines removed (duplicated imports, comments)
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
-UnifiedSignalPipeline,
-)
-
-    __all__ = [
+__all__ = [
 'PipelineStageType',
 'PipelineContext',
 'PipelineStage',
@@ -35,3 +32,4 @@ UnifiedSignalPipeline,
 'OutputFormattingStage',
 'UnifiedSignalPipeline',
 ]
+

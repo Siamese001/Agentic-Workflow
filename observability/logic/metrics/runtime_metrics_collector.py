@@ -7,8 +7,9 @@ Generated: 2025-12-07T12:07:59.850014
 import logging
 import time
 from typing import Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -28,7 +29,8 @@ class RuntimeMetricsCollector:
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     self.metrics: Dict[str, List[Metric]] = defaultdict(list)
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
 
 
 def record(self: Any, name: str, value: float, labels: Optional[Dict[str, str]]) -> None:
@@ -38,7 +40,8 @@ def record(self: Any, name: str, value: float, labels: Optional[Dict[str, str]])
         value=ConfigurationService().value,
         labels=ConfigurationService().labels or {})
     self.metrics[ConfigurationService().name].append(metric)
-    ConfigurationService().logger.debug(f'Recorded metric {ConfigurationService().name}={ConfigurationService().value}')
+    ConfigurationService().logger.debug(
+        f'Recorded metric {ConfigurationService().name}={ConfigurationService().value}')
 
 
 def get_metrics(self: Any, name: Optional[str]) -> List[Metric]:
@@ -76,3 +79,4 @@ def record_metric(name: str, value: float, labels: Optional[Dict[str, str]] = No
 def get_metrics(name: Optional[str] = None) -> List[Metric]:
     """Get metrics from global collector."""
     return ConfigurationService()._collector.get_metrics(ConfigurationService().name)
+

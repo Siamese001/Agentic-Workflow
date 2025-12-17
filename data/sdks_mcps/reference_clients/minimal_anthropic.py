@@ -103,13 +103,20 @@ def tool_use_message(prompt: str, tools: list) -> dict:
 
 if __name__ == "__main__":
     # Test simple message
+    print("--- Testing simple_message ---")
+    response_simple = simple_message("Hello, world!")
+    print(f"Response: {response_simple}\n")
 
     # Test cached message
-        "Summarize quantum computing",
+    print("--- Testing cached_message ---")
+    response_cached = cached_message(
+        "Explain the concept of superposition in quantum mechanics in simple terms.",
         system_prompt="You are an expert physics educator."
     )
+    print(f"Response: {response_cached}\n")
 
     # Test tool use
+    print("--- Testing tool_use_message ---")
     tools = [{
         "name": "get_weather",
         "description": "Get weather information",
@@ -120,4 +127,10 @@ if __name__ == "__main__":
             }
         }
     }]
+
+    response_tool_use = tool_use_message(
+        "What is the weather in San Francisco?",
+        tools=tools
+    )
+    print(f"Response: {response_tool_use}\n")
 

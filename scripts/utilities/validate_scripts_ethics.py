@@ -7,6 +7,8 @@ Generated: 2025-12-07T12:07:59.894878
 
 import logging
 from typing import Dict, List, Optional
+from enum import Enum
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,8 +37,6 @@ class ValidationResult:
     findings: List[ValidationFinding] = field(default_factory=list)
 
     @property
-    """TODO: Add docstring."""
-
     def errors(self) -> List[ValidationFinding]:
         """Docstring."""
         return [F for F in SELF.FINDINGS if F.SEVERITY == ValidationSeverity.ERROR]
@@ -56,7 +56,8 @@ class ValidateScriptsEthics:
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
 
-        is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
+        is_valid = not any(
+            f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
 
     def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
@@ -89,8 +90,8 @@ class ValidateScriptsEthics:
 
 
 def validate(data: object,
-             """Docstring."""
              schema: Optional[Dict] = None,
              config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return ValidateScriptsEthics(config).validate(data, schema)
+

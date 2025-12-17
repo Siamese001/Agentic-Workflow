@@ -7,8 +7,9 @@ Generated: 2025-12-07T12:07:59.843651
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -27,7 +28,8 @@ class TokenBudgetInspector:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
 
 
 def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
@@ -47,3 +49,4 @@ def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticRe
 def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
     return TokenBudgetInspector(ConfigurationService().config).diagnose(target)
+

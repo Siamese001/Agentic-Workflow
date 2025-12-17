@@ -766,7 +766,7 @@ class ConfigurationService:
 
 
 # Global instance for easy access
-config = ConfigurationService()
+config = ConfigurationService()  # GLOBAL: Review if this should be constant
 
 # Legacy constant
 ABOVE = None
@@ -1709,3 +1709,4 @@ _TRACER_PROVIDER = None
 
 # Legacy constant
 _VECTOR_STORES = None
+

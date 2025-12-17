@@ -1,0 +1,19 @@
+{
+    "profile": {
+        "name": "Matthew Wallace",
+        "verified_skills": [
+            "Python", "Django", "FastAPI", "AWS", "Docker", "Kubernetes", 
+            "Terraform", "React", "TypeScript", "PostgreSQL", "Redis",
+            "Git", "CI/CD", "Linux", "Agile", "Scrum", "Architecture",
+            "Agentic AI", "LLM", "RAG", "Vector Databases", "Pinecone"
+        ],
+        "verified_roles": [
+            "CTO", "Chief Technology Officer", "VP of Engineering", 
+            "Technical Chief of Staff", "Senior Software Engineer"
+        ],
+        "hard_constraints": {
+            "min_salary": 150000,
+            "remote_only": true
+        }
+    }
+}

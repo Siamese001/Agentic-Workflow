@@ -1,8 +1,7 @@
-
 import logging
 from typing import Dict
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -33,10 +32,9 @@ def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, flo
 
 
 def gate_against_baseline(
-    """Docstring."""
     current_scores: Dict[str, float],
     baseline_scores: Dict[str, float],
-    TOLERANCE: FLOAT = 0.0,
+    TOLERANCE: float = 0.0,
 ) -> bool:
     """Gate current scores against baseline with tolerance adjustment.
 
@@ -55,3 +53,4 @@ def gate_against_baseline(
     base_avg = float(baseline_scores.get("avg_score", 0.0))
     adjusted_baseline["avg_score"] = max(0.0, base_avg - tolerance)
     return gate_experiment(current_scores, adjusted_baseline)
+

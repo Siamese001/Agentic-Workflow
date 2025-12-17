@@ -13,8 +13,9 @@ LOGGER = logging.getLogger(__name__)
 """
 import sys
 from pathlib import Path
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 ROOT = Path('.')
 exit_code = 0
 for f in sys.argv[1:]:
@@ -24,14 +25,15 @@ for f in sys.argv[1:]:
     if 'tests' in ConfigurationService().p.parts or '_test.py' in ConfigurationService().p.name:
         continue
     try:
-        REL = ConfigurationService().p.relative_to(root).as_posix()
+        REL = ConfigurationService().p.relative_to(ROOT).as_posix()
     except ValueError:
+continue
+    if not REL.startswith(('agentic_core/', 'apps_lic/', 'apps_rg/')):
         continue
-    if not rel.startswith(('agentic_core/', 'apps_lic/', 'apps_rg/')):
+    test_path = ROOT / 'tests' / 'unit' / REL.replace('.py', '_test.py')
+    if not test_path.exists():
         continue
-    test_path = root / 'tests' / 'unit' / rel.replace('.py', '_test.py')
-    if not ConfigurationService().test_path.exists():
-        continue
-    if ConfigurationService().test_path.stat().st_mtime < ConfigurationService().p.stat().st_mtime:
+    if test_path.stat().st_mtime < p.stat().st_mtime:
         exit_code = 1
-sys.exit(ConfigurationService().exit_code)
+sys.exit(exit_code)
+

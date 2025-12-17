@@ -1,7 +1,7 @@
 """Types and models for dedup_merged_files."""
 import logging
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -16,3 +16,4 @@ class DedupManifest:
     _kept_files: List[Dict] = field(default_factory=list)
     _removed_files: List[Dict] = field(default_factory=list)
     _errors: List[Dict] = field(default_factory=list)
+

@@ -57,10 +57,9 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
 
 
 def create_instance(config: Optional[Dict[str,
-                                          """Docstring."""
                                           Union[str,
                                                 int,
-                                                BOOL]]] = None) -> Dict[str,
+                                                bool]]] = None) -> Dict[str,
                                                                         Union[str,
                                                                               int,
                                                                               bool]]:
@@ -81,3 +80,4 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created L1 Cognition instance with config: {final_config}")
     return final_config
+

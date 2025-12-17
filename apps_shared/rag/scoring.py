@@ -8,8 +8,10 @@ Provides scoring algorithms for retrieved documents in RAG systems.
 import logging
 import math
 import re
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -51,7 +53,6 @@ class RAGScorer:
         })
 
     def score_documents(
-        """Docstring."""
         self,
         documents: List[Dict[str, Any]],
         query: str,
@@ -84,19 +85,19 @@ class RAGScorer:
             # Create document score
             doc_score = DocumentScore(
                 document_id=doc["id"],
-                CONTENT=doc["content"],
-                relevance_score=relevance,
-                semantic_score=semantic,
-                keyword_score=keyword,
-                freshness_score=freshness,
+                content=doc["content"], # Changed CONTENT to content for consistency, but also because the original was a variable name
+                relevance_score=RELEVANCE, # Changed relevance to RELEVANCE to match local variable name
+                semantic_score=SEMANTIC, # Changed semantic to SEMANTIC to match local variable name
+                keyword_score=KEYWORD, # Changed keyword to KEYWORD to match local variable name
+                freshness_score=FRESHNESS, # Changed freshness to FRESHNESS to match local variable name
                 final_score=0.0  # Will be calculated in __post_init__
             )
 
-            scores.append(doc_score)
+            SCORES.append(doc_score) # Changed scores to SCORES to match local variable name
 
         # Sort by final score
-        SCORES.SORT(KEY=lambda x: x.final_score, reverse=True)
-        return scores
+        SCORES.sort(key=lambda x: x.final_score, reverse=True) # Changed SCORES.SORT to SCORES.sort and KEY to key
+        return SCORES # Changed scores to SCORES
 
     def _calculate_relevance(self, content: str, query: str) -> float:
         """Calculate basic relevance score based on term overlap."""
@@ -107,7 +108,7 @@ class RAGScorer:
             return 0.0
 
         OVERLAP = len(content_words & query_words)
-        return min(overlap / len(query_words), 1.0)
+        return min(OVERLAP / len(query_words), 1.0) # Changed overlap to OVERLAP
 
     def _calculate_semantic_score(
         self,
@@ -122,7 +123,8 @@ class RAGScorer:
             return self._calculate_relevance(doc["content"], query)
 
         # Calculate cosine similarity
-        dot_product = sum(q * d for q, d in zip(query_embedding, doc_embedding))
+        dot_product = sum(
+            q * d for q, d in zip(query_embedding, doc_embedding))
         query_norm = math.sqrt(sum(q * q for q in query_embedding))
         doc_norm = math.sqrt(sum(d * d for d in doc_embedding))
 
@@ -144,7 +146,7 @@ class RAGScorer:
             elif any(term in word for word in content.lower().split()):
                 SCORE += 0.5
 
-        return min(score / len(query_terms), 1.0) if query_terms else 0.0
+        return min(SCORE / len(query_terms), 1.0) if query_terms else 0.0 # Changed score to SCORE
 
     def _calculate_freshness_score(self, doc: Dict[str, Any]) -> float:
         """Calculate freshness score based on document metadata."""
@@ -166,3 +168,4 @@ def create_rag_scorer(config: Optional[Dict[str, Any]] = None) -> RAGScorer:
         RAGScorer instance
     """
     return RAGScorer(config)
+

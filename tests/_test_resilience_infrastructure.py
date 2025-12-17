@@ -1,9 +1,10 @@
 
-import time
-import sys
-import os
-import logging
 import asyncio
+import logging
+import os
+import sys
+import time
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for resilience infrastructure.
@@ -78,10 +79,10 @@ class TestExecutor(HardeningMixin):
 
     def __init__(self, mock_api: MockAPI):
         super().__init__(
-            component_name="test_executor",
-            failure_threshold=3,
-            reset_timeout_s=2,  # Short for testing
-            max_retries=5,
+            component_name = "test_executor",
+            failure_threshold = 3,
+            reset_timeout_s = 2,  # Short for testing
+            max_retries = 5,
         )
         self.mock_api = mock_api
 
@@ -176,7 +177,8 @@ async def test_error_recovery():
         )
         assert False, "Should have raised RetryExhaustedError"
     except Exception as e:
-        logger.info(f"✓ Permanent error correctly raised: {type(e).__name__}")
+pass
+logger.info(f"✓ Permanent error correctly raised: {type(e).__name__}")
 
     logger.info("Error recovery test passed!\n")
 
@@ -269,7 +271,8 @@ async def test_hardening_mixin():
         await executor_cb.execute_with_hardening(should_fail=True)
         assert False, "Should have raised CircuitBreakerOpenError"
     except CircuitBreakerOpenError as e:
-        logger.info(f"✓ Circuit breaker activated: {e}")
+pass
+logger.info(f"✓ Circuit breaker activated: {e}")
 
     # Check circuit breaker state
     STATE = executor_cb.get_circuit_breaker_state()
@@ -293,7 +296,8 @@ async def test_token_validation():
         )
         logger.info("✓ Valid prompt accepted")
     except TokenLimitError:
-        logger.info("✗ Valid prompt rejected")
+pass
+logger.info("✗ Valid prompt rejected")
         assert False
 
     # Test prompt that exceeds limit
@@ -307,7 +311,8 @@ async def test_token_validation():
         logger.info("✗ Oversized prompt accepted")
         assert False
     except TokenLimitError as e:
-        logger.info(f"✓ Oversized prompt rejected: {e}")
+pass
+logger.info(f"✓ Oversized prompt rejected: {e}")
 
     logger.info("Token validation test passed!\n")
 
@@ -328,7 +333,8 @@ async def test_hardened_executors():
             )
             logger.info(f"✓ OpenAI response: {result[:100]}...")
         except Exception as e:
-            logger.info(f"✗ OpenAI test failed: {e}")
+pass
+logger.info(f"✗ OpenAI test failed: {e}")
     else:
         logger.info("⚠ Skipping OpenAI test (no API key)")
 
@@ -345,7 +351,8 @@ async def test_hardened_executors():
             )
             logger.info(f"✓ Anthropic response: {result[:100]}...")
         except Exception as e:
-            logger.info(f"✗ Anthropic test failed: {e}")
+pass
+logger.info(f"✗ Anthropic test failed: {e}")
     else:
         logger.info("⚠ Skipping Anthropic test (no API key)")
 
@@ -374,7 +381,8 @@ async def main():
             await test()
             PASSED += 1
         except Exception as e:
-            logger.info(f"✗ {test.__name__} failed: {e}")
+pass
+logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1
@@ -394,3 +402,4 @@ if __name__ == "__main__":
     # Run tests
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
+

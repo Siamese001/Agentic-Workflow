@@ -7,9 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .peer_intelligence_auditor_types import *  # Star import removed
+
+
+
+# # from .peer_intelligence_auditor_types import *  # Star import removed
 
 
 class PeerIntelligenceAuditor:
@@ -152,7 +153,8 @@ class PeerIntelligenceAuditor:
             keyword_lower = keyword.lower()
             frequency_score = sum((1 for hop in hops if keyword_lower in hop.keywords_found)) / len(
     hops)
-            competitive_density = len([kw for kw in all_keywords_found if keyword_lower in kw]) / ma
+            competitive_density = len(
+                [kw for kw in all_keywords_found if keyword_lower in kw]) / ma
                 x(len(all_keywords_found),
 
                 1)
@@ -161,7 +163,7 @@ class PeerIntelligenceAuditor:
                 REASONING = f'High frequency ({frequency_score:.1%}) indicates common requirement'
             elif competitive_density < self.config.differentiator_threshold:
                 CLASSIFICATION = KeywordClassification.DIFFERENTIATOR
-                REASONING = f'Low competitive density ({competitive_density:.1%}) indicates unique p
+                REASONING = f'Low competitive density ({competitive_density: .1 %}) indicates unique p
     ositioning opportunity'
             else:
                 CLASSIFICATION = KeywordClassification.TABLE_STAKES
@@ -213,3 +215,4 @@ def create_peer_intelligence_auditor(config: Optional[PeerIntelligenceConfig]=No
     nceAuditor:
     """Factory function to create PeerIntelligenceAuditor instance"""
     return PeerIntelligenceAuditor(config=config)
+

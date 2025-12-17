@@ -13,36 +13,62 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.runtime.shared.adaptive_retrieval_gate import (
-    AdaptiveRetrievalGate, RetrievalDecision)
+    AdaptiveRetrievalGate,
+    RetrievalDecision,
+)
+
 # Phase 1: Precision Layer
-from scripts.runtime.shared.contextual_compressor import (CompressionResult,
-                                                          ContextualCompressor)
-from scripts.runtime.shared.graphrag_fusion import (FusionResult,
-                                                    GraphRAGFusion, QueryType,
-                                                    get_graphrag_fusion,
-                                                    graphrag_query)
-from scripts.runtime.shared.hybrid_scorer import (HybridScorer, ScoringResult,
-                                                  create_hybrid_scorer)
+from scripts.runtime.shared.contextual_compressor import (
+    CompressionResult,
+    ContextualCompressor,
+)
+from scripts.runtime.shared.graphrag_fusion import (
+    FusionResult,
+    GraphRAGFusion,
+    QueryType,
+    get_graphrag_fusion,
+    graphrag_query,
+)
+from scripts.runtime.shared.hybrid_scorer import (
+    HybridScorer,
+    ScoringResult,
+    create_hybrid_scorer,
+)
+
 # Security Layer
-from scripts.runtime.shared.input_guardrails import (GuardAction, GuardResult,
-                                                     InputGuardrail,
-                                                     get_input_guardrail)
+from scripts.runtime.shared.input_guardrails import (
+    GuardAction,
+    GuardResult,
+    InputGuardrail,
+    get_input_guardrail,
+)
+
 # Phase 3: SOTA Layer
 from scripts.runtime.shared.late_interaction_reranker import (
-    LateInteractionReranker, PassThroughReranker, rerank_documents)
+    LateInteractionReranker,
+    PassThroughReranker,
+    rerank_documents,
+)
+
 # Phase 2: Reasoning Layer
-from scripts.runtime.shared.query_decomposer import (DecomposedQuery,
-                                                     QueryDecomposer,
-                                                     decompose_query)
-from scripts.runtime.shared.retrieval_grader import (GradeStatus,
-                                                     RetrievalGrade,
-                                                     RetrievalGrader,
-                                                     WebSearchFallback,
-                                                     get_retrieval_grader,
-                                                     get_web_search_fallback,
-                                                     grade_retrieval)
+from scripts.runtime.shared.query_decomposer import (
+    DecomposedQuery,
+    QueryDecomposer,
+    decompose_query,
+)
+from scripts.runtime.shared.retrieval_grader import (
+    GradeStatus,
+    RetrievalGrade,
+    RetrievalGrader,
+    WebSearchFallback,
+    get_retrieval_grader,
+    get_web_search_fallback,
+    grade_retrieval,
+)
 from scripts.runtime.shared.signal_quality_pipeline import (
-    SignalQualityPipeline, create_signal_pipeline)
+    SignalQualityPipeline,
+    create_signal_pipeline,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -114,27 +140,27 @@ class TitaniumRAGPipeline:
             top_k_final: Number of top documents to return
         """
         # Initialize components if not provided
-        SELF.GATE = gate or AdaptiveRetrievalGate()
-        SELF.COMPRESSOR = compressor or ContextualCompressor()
-        SELF.DECOMPOSER = decomposer or QueryDecomposer()
-        SELF.SCORER = scorer or HybridScorer(dynamic_alpha=True)
-        SELF.RERANKER = reranker or LateInteractionReranker()
+        self.gate = gate or AdaptiveRetrievalGate()
+        self.compressor = compressor or ContextualCompressor()
+        self.decomposer = decomposer or QueryDecomposer()
+        self.scorer = scorer or HybridScorer(dynamic_alpha=True)
+        self.reranker = reranker or LateInteractionReranker()
         # self.cache = cache or ContrastiveSemanticCache()  # Commented out as class doesn't exist
 
         # Initialize security layer
-        self.input_guardrail = input_guardrail or
+        self.input_guardrail = input_guardrail or \
             (get_input_guardrail() if enable_security else None)
         self.enable_security = enable_security and self.input_guardrail is not None
 
         # Initialize CRAG layer
-        self.retrieval_grader = retrieval_grader or
+        self.retrieval_grader = retrieval_grader or \
             (get_retrieval_grader() if enable_crag else None)
-        self.web_search_fallback = web_search_fallback or
+        self.web_search_fallback = web_search_fallback or \
             (get_web_search_fallback() if enable_crag else None)
         self.enable_crag = enable_crag and self.retrieval_grader is not None
 
         # Initialize GraphRAG layer
-        self.graphrag_fusion = graphrag_fusion or
+        self.graphrag_fusion = graphrag_fusion or \
             (get_graphrag_fusion() if enable_graphrag else None)
         self.enable_graphrag = enable_graphrag and self.graphrag_fusion is not None
 
@@ -147,7 +173,7 @@ class TitaniumRAGPipeline:
         self.top_k_final = top_k_final
 
         # Statistics
-        SELF.STATS = {
+        self.stats = {
             "total_queries": 0,
             "gate_blocks": 0,
             "cache_hits": 0,
@@ -164,9 +190,9 @@ class TitaniumRAGPipeline:
         }
 
         logger.info(f"Initialized TitaniumRAGPipeline with all 3 phases + "
-                   f"Security Layer: {self.enable_security} + "
-                   f"CRAG Layer: {self.enable_crag} + "
-                   f"GraphRAG Layer: {self.enable_graphrag}")
+                    f"Security Layer: {self.enable_security} + "
+                    f"CRAG Layer: {self.enable_crag} + "
+                    f"GraphRAG Layer: {self.enable_graphrag}")
 
         """Docstring."""
 
@@ -194,12 +220,14 @@ class TitaniumRAGPipeline:
         # Security Layer: Input validation (Phase 0 - Outermost)
         # ----------------------------------------------------
         if self.enable_security and self.input_guardrail:
-            guard_result = self.input_guardrail.scan(query, user_id=kwargs.get('user_id'))
+            guard_result = self.input_guardrail.scan(
+                query, user_id=kwargs.get('user_id'))
 
             # Handle security actions
             if guard_result.action == GuardAction.BLOCK:
                 self.stats["security_blocks"] += 1
-                logger.warning(f"Query blocked by security: {guard_result.reason}")
+                logger.warning(
+                    f"Query blocked by security: {guard_result.reason}")
                 return {
                     "query": query,
                     "response": "I cannot process that request due to safety protocols.",
@@ -213,12 +241,13 @@ class TitaniumRAGPipeline:
                 }
             elif guard_result.action == GuardAction.WARN:
                 self.stats["security_warnings"] += 1
-                logger.warning(f"Security warning for query: {guard_result.reason}")
+                logger.warning(
+                    f"Security warning for query: {guard_result.reason}")
                 # Continue but mark as suspicious
             elif guard_result.action == GuardAction.REDACT:
                 self.stats["pii_redactions"] += 1
                 logger.info(f"PII redacted from query")
-                QUERY = guard_result.sanitized_input or query
+                query = guard_result.sanitized_input or query
 
         # Phase 1: Precision Layer
         # ----------------------
@@ -274,8 +303,9 @@ class TitaniumRAGPipeline:
             decomposed_result = await self.decomposer.decompose(query)
             if len(decomposed_result.sub_queries) > 1:
                 queries_to_process = decomposed_result.sub_queries
-                SELF.STATS["DECOMPOSITIONS"] += 1
-                logger.info(f"Decomposed into {len(queries_to_process)} sub-queries")
+                self.stats["decompositions"] += 1
+                logger.info(
+                    f"Decomposed into {len(queries_to_process)} sub-queries")
 
         # 4. Retrieve documents for each query
         all_retrieved = []
@@ -288,13 +318,13 @@ class TitaniumRAGPipeline:
             )
 
             # Score with dynamic alpha
-            SCORED = self.scorer.score_documents(
+            scored_results = self.scorer.score_documents(
                 dense_results=dense_results,
                 sparse_results=sparse_results,
-                QUERY=sub_query
+                query=sub_query
             )
 
-            all_retrieved.extend(scored)
+            all_retrieved.extend(scored_results)
 
         # Remove duplicates and sort by score
         seen_docs = set()
@@ -325,7 +355,7 @@ class TitaniumRAGPipeline:
                     doc_texts.append(f"Document {doc.doc_id}")
 
             # Grade the documents
-            GRADE = await self.retrieval_grader.grade_documents(query, doc_texts)
+            grade = await self.retrieval_grader.grade_documents(query, doc_texts)
 
             # Handle grading results
             if grade.status == GradeStatus.FALLBACK_REQUIRED:
@@ -367,7 +397,7 @@ class TitaniumRAGPipeline:
                             "processing_time": time.time() - start_time
                         }
                     }
-            elif GRADE.STATUS == GradeStatus.pass:
+            elif grade.status == GradeStatus.PASS:
                 self.stats["crag_passes"] += 1
                 logger.info(f"CRAG passed: {grade.reasoning}")
             else:
@@ -381,15 +411,15 @@ class TitaniumRAGPipeline:
                 async def vector_retriever_func(q: str, k: int) -> List[Dict[str, Any]]:
                     """Docstring."""
                     # Use already retrieved documents
-                    RESULTS = []
+                    results = []
                     for doc in retrieved_docs[:k]:
-                        TEXT = ""
+                        text = ""
                         if hasattr(doc, 'metadata') and 'text' in doc.metadata:
-                            TEXT = doc.metadata['text']
+                            text = doc.metadata['text']
                         elif hasattr(doc, 'text'):
-                            TEXT = doc.text
+                            text = doc.text
                         elif hasattr(doc, 'content'):
-                            TEXT = doc.content
+                            text = doc.content
 
                         results.append({
                             'text': text,
@@ -446,14 +476,11 @@ class TitaniumRAGPipeline:
                 # Use fused results
                 retrieved_docs = fused_docs
 
-                logger.
-                    .info(f"GraphRAG fusion completed - Vector: {len(fusion_result.
-                    .vector_results)},
-                    "
-                           f"Graph entities: {len(fusion_result.graph_results.entities)}")
+                logger.info(f"GraphRAG fusion completed - Vector: {len(fusion_result.vector_results)},"
+                            f"Graph entities: {len(fusion_result.graph_results.entities)}")
 
             except Exception as e:
-                self.stats["graphrag_fallbacks"] += 1
+self.stats["graphrag_fallbacks"] += 1
                 logger.error(f"GraphRAG fusion failed: {e}")
                 # Continue with vector results only
 
@@ -478,8 +505,8 @@ class TitaniumRAGPipeline:
 
             # Rerank
             reranked_texts = self.reranker.rerank(
-                QUERY=query,
-                DOCUMENTS=doc_texts,
+                query=query,
+                documents=doc_texts,
                 top_k=self.top_k_final
             )
 
@@ -511,7 +538,7 @@ class TitaniumRAGPipeline:
                         if len(final_docs) >= self.top_k_final:
                             break
 
-            SELF.STATS["RERANKINGS"] += 1
+            self.stats["rerankings"] += 1
             logger.info(f"Reranked to {len(final_docs)} documents")
         else:
             final_docs = retrieved_docs[:self.top_k_final]
@@ -521,15 +548,17 @@ class TitaniumRAGPipeline:
         if self.enable_compression and final_docs:
             doc_texts = [doc.metadata.get("text", "") for doc in final_docs]
             compression_result = self.compressor.compress(
-                CHUNKS=doc_texts,
-                QUERY=query
+                chunks=doc_texts,
+                query=query
             )
             compressed_context = compression_result.compressed_text
-            SELF.STATS["COMPRESSIONS"] += 1
-            logger.info(f"Compressed context: {compression_result.compression_ratio:.2f} ratio")
+            self.stats["compressions"] += 1
+            logger.info(
+                f"Compressed context: {compression_result.compression_ratio:.2f} ratio")
 
         # Generate response (mock - would use LLM in real implementation)
-        RESPONSE = self._generate_response(query, final_docs, compressed_context)
+        response = self._generate_response(
+            query, final_docs, compressed_context)
 
         # 7. Cache the result
         if self.enable_caching and response:
@@ -571,12 +600,12 @@ class TitaniumRAGPipeline:
             return "I couldn't find relevant information to answer your question."
 
         # Mock response based on available documents
-        RESPONSE = f"Based on {len(documents)} relevant documents"
+        response = f"Based on {len(documents)} relevant documents"
 
         if compressed_context:
-            RESPONSE += f" (compressed to {len(compressed_context)} characters)"
+            response += f" (compressed to {len(compressed_context)} characters)"
 
-        RESPONSE += f", here's the answer to: {query}"
+        response += f", here's the answer to: {query}"
 
         return response
 
@@ -586,8 +615,8 @@ class TitaniumRAGPipeline:
         Returns:
             Dictionary with usage statistics
         """
-        TOTAL = self.stats["total_queries"]
-        STATS = self.stats.copy()
+        total = self.stats["total_queries"]
+        stats = self.stats.copy()
 
         # Calculate rates
         if total > 0:
@@ -635,6 +664,8 @@ class TitaniumRAGPipeline:
 
 # Convenience function for quick setup
     """Docstring."""
+
+
 def create_titanium_pipeline(
     enable_all: bool = True,
     **kwargs
@@ -658,3 +689,4 @@ def create_titanium_pipeline(
         )
     else:
         return TitaniumRAGPipeline(**kwargs)
+

@@ -1,7 +1,10 @@
 """Types and models for peer_intelligence_auditor."""
 import logging
+from enum import Enum
+from dataclasses import dataclass
+from typing import List, Dict, Any, Set
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -16,9 +19,6 @@ class KeywordClassification(Enum):
 
 
 @dataclass
-"""TODO: Add docstring."""
-
-
 class RAGHop:
     """Docstring."""
     hop_number: int
@@ -58,6 +58,7 @@ class PeerIntelligenceResult:
     keyword_analyses: List[KeywordAnalysis]
     table_stakes: List[str]
     differentiators: List[str]
-    validation_results: List[ValidationResult]
+    validation_results: List[Any] # Assuming ValidationResult is defined elsewhere or a placeholder
     success: bool
     total_searches_executed: int
+

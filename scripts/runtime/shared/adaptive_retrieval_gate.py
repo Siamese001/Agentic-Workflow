@@ -16,10 +16,12 @@ LOGGER = logging.getLogger(__name__)
 class RetrievalDecision(BaseModel):
     """Decision about whether to retrieve from vector database."""
 
-    should_retrieve: bool = Field(..., description="Whether retrieval is needed")
-    REASON: STR = Field(..., description="Explanation for the decision")
+    should_retrieve: bool = Field(...,
+                                  description="Whether retrieval is needed")
+    REASON: str = Field(..., description="Explanation for the decision")
     query_type: str = Field(..., description="Type of query classified")
-    CONFIDENCE: FLOAT = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
+    CONFIDENCE: float = Field(
+        default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
 
 
 class AdaptiveRetrievalGate:
@@ -32,7 +34,7 @@ class AdaptiveRetrievalGate:
     def __init__(self):
         """Initialize the Adaptive Retrieval Gate."""
         # Compile regex patterns for efficiency
-        SELF.PATTERNS = {
+        self.PATTERNS = {
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
                 r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye)'
@@ -81,9 +83,10 @@ class AdaptiveRetrievalGate:
         ]
 
         # Compile question patterns
-        self.compiled_questions = [re.compile(p, re.IGNORECASE) for p in self.question_patterns]
+        self.compiled_questions = [re.compile(
+            p, re.IGNORECASE) for p in self.question_patterns]
 
-        logger.info("Initialized AdaptiveRetrievalGate")
+        LOGGER.info("Initialized AdaptiveRetrievalGate")
 
     def _classify_query_type(self, query: str) -> str:
         """Classify the type of query.
@@ -97,19 +100,19 @@ class AdaptiveRetrievalGate:
         query_lower = query.lower().strip()
 
         # Check conversational patterns
-        if self.patterns['conversational'].match(query):
+        if self.PATTERNS['conversational'].match(query):
             return "CONVERSATIONAL"
 
         # Check self-reference
-        if self.patterns['self_reference'].search(query):
+        if self.PATTERNS['self_reference'].search(query):
             return "SELF_REFERENCE"
 
         # Check reference patterns
-        if self.patterns['reference'].search(query):
+        if self.PATTERNS['reference'].search(query):
             return "REFERENCE"
 
         # Check continuation
-        if self.patterns['continuation'].match(query):
+        if self.PATTERNS['continuation'].match(query):
             return "CONTINUATION"
 
         # Check for complex keywords
@@ -157,9 +160,11 @@ class AdaptiveRetrievalGate:
             base_score = min(1.0, base_score + 0.1)
 
         # Adjust based on complex keywords presence
-        complex_count = sum(1 for keyword in self.complex_keywords if keyword in query.lower())
+        complex_count = sum(
+            1 for keyword in self.complex_keywords if keyword in query.lower())
         if complex_count > 0:
-            base_score = min(1.0, base_score + 0.1 * min(complex_count, 3))  # Changed from 2 to 3
+            base_score = min(1.0, base_score + 0.1 *
+                             min(complex_count, 3))  # Changed from 2 to 3
 
         return base_score
 
@@ -176,7 +181,7 @@ class AdaptiveRetrievalGate:
             RetrievalDecision with recommendation
         """
         # Clean and normalize query
-        QUERY = query.strip()
+        query = query.strip()
         if not query:
             return RetrievalDecision(
                 should_retrieve=False,
@@ -234,21 +239,21 @@ class AdaptiveRetrievalGate:
         # Additional checks
         if should_retrieve:
             # Check if this might be a clarification
-            if len(query.split()) < 4 and
-            not any(pattern.search(query) for pattern in self.compiled_questions):
+            if len(query.split()) < 4 and \
+               not any(pattern.search(query) for pattern in self.compiled_questions):
                 should_retrieve = False
                 REASON = "Short query likely a clarification"
                 CONFIDENCE = 0.7
 
         # Log decision for monitoring
-        logger.info(f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
-                    f"Reason: {reason} | Query: {query[:50]}...")
+        LOGGER.info(f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
+                    f"Reason: {REASON} | Query: {query[:50]}...")
 
         return RetrievalDecision(
             should_retrieve=should_retrieve,
-            REASON=reason,
+            REASON=REASON,
             query_type=query_type,
-            CONFIDENCE=confidence
+            CONFIDENCE=CONFIDENCE
         )
 
     def get_statistics(self, decisions: List[RetrievalDecision]) -> Dict[str, float]:
@@ -263,19 +268,20 @@ class AdaptiveRetrievalGate:
         if not decisions:
             return {}
 
-        TOTAL = len(decisions)
+        total = len(decisions)
         retrieve_count = sum(1 for d in decisions if d.should_retrieve)
 
         # Count by type
         type_counts = {}
         for decision in decisions:
-            type_counts[decision.query_type] = type_counts.get(decision.query_type, 0) + 1
+            type_counts[decision.query_type] = type_counts.get(
+                decision.query_type, 0) + 1
 
         return {
             "total_queries": total,
             "retrieval_rate": retrieve_count / total,
             "type_distribution": {k: v / total for k, v in type_counts.items()},
-            "avg_confidence": sum(d.confidence for d in decisions) / total
+            "avg_confidence": sum(d.CONFIDENCE for d in decisions) / total
         }
 
 # Convenience function for direct usage
@@ -292,5 +298,6 @@ def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
         Boolean indicating if retrieval is needed
     """
     GATE = AdaptiveRetrievalGate()
-    DECISION = gate.should_retrieve(query, history)
-    return decision.should_retrieve
+    DECISION = GATE.should_retrieve(query, history)
+    return DECISION.should_retrieve
+

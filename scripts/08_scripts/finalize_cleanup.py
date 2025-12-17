@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """Finalize cleanup - handle orphans and clean merged files."""
 
+import logging
 import os
 import shutil
 from datetime import datetime
 from pathlib import Path
 
 ROOT = Path("/workspace")
-BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finaliz
-    e"
+BACKUP_DIR = ROOT / "archives" / f"cleanup_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}_finalize"
+
 
 def backup_file(file_path: Path):
     """Docstring."""
-import logging
 
-LOGGER = logging.getLogger(__name__)
 
     """Backup a file before modification."""
     if file_path.exists():
@@ -22,6 +21,7 @@ LOGGER = logging.getLogger(__name__)
         backup_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(file_path, backup_path)
         logger.info(f"  ✓ Backed up: {file_path.relative_to(ROOT)}")
+
 
 def clean_merged_file(file_path: Path):
     """Remove duplicate imports and docstrings from merged files."""
@@ -33,29 +33,29 @@ def clean_merged_file(file_path: Path):
     backup_file(file_path)
 
     with open(file_path, 'r', encoding='utf-8') as f:
-        CONTENT = f.read()
+        content = f.read()
 
     # Split by merge markers
-    PARTS = content.split('# ============================================')
+    parts = content.split('# ============================================')
 
     if len(parts) <= 1:
         logger.info(f"  ℹ No merge markers found")
         return
 
     # Keep first part (original)
-    CLEANED = parts[0].rstrip()
+    cleaned = parts[0].rstrip()
 
     # Process merged parts
     for i in range(1, len(parts)):
-        PART = parts[i]
-        LINES = part.split('\n')
+        part = parts[i]
+        lines = part.split('\n')
 
         # Skip merge comment lines
         code_lines = []
         skip_header = True
 
         for line in lines:
-            STRIPPED = line.strip()
+            stripped = line.strip()
 
             if skip_header:
                 # Skip merge comments, docstrings, and imports
@@ -73,13 +73,14 @@ def clean_merged_file(file_path: Path):
 
         # Add cleaned content
         if code_lines:
-            CLEANED += '\n\n' + '\n'.join(code_lines).strip()
+            cleaned += '\n\n' + '\n'.join(code_lines).strip()
 
     # Write cleaned content
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(cleaned + '\n')
 
     logger.info(f"  ✓ Cleaned")
+
 
 def rename_orphan(src: Path, dst: Path):
     """Rename orphan file by removing _2 suffix."""
@@ -90,6 +91,7 @@ def rename_orphan(src: Path, dst: Path):
     backup_file(src)
     src.rename(dst)
     logger.info(f"  ✓ Renamed: {src.name} → {dst.name}")
+
 
 def main():
     """Docstring."""
@@ -135,7 +137,7 @@ def main():
     logger.info("━" * 50)
     logger.info()
 
-    ORPHANS = [
+    orphans = [
         (ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models_2.py",
          ROOT / "apps_lic/L1_cognition/P3_aggregate/route_models.py"),
         (ROOT / "apps_rg/L1_cognition/P3_aggregate/brief_models_2.py",
@@ -165,5 +167,7 @@ def main():
     logger.info(f"  - Renamed {len(orphans)} orphan files")
     logger.info(f"  - Backup: {BACKUP_DIR.relative_to(ROOT)}")
 
+
 if __name__ == '__main__':
     main()
+

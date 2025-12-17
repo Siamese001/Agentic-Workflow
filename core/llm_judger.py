@@ -9,10 +9,11 @@ in the vector search results.
 import ast
 import json
 import logging
-from typing import List, Dict, Optional, Tuple
-from pydantic import BaseModel, Field
+from typing import Dict, List, Optional, Tuple
+
 import instructor
 from openai import OpenAI
+from pydantic import BaseModel, Field
 
 from schemas.canon_models import CanonEntry
 
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class SemanticJudgement(BaseModel):
     """Result of semantic judgement by LLM."""
-    
+
     is_equivalent: bool = Field(
         description="Whether the retrieved pattern is semantically equivalent to the new code"
     )
@@ -45,11 +46,11 @@ class SemanticJudgement(BaseModel):
 class LLMJudger:
     """
     LLM-Based Judger for semantic validation of canon patterns.
-    
+
     Uses structured outputs with Instructor to ensure consistent,
     parseable judgements from the LLM.
     """
-    
+
     def __init__(
         self,
         model: str = "gpt-4-turbo-preview",
@@ -61,9 +62,9 @@ class LLMJudger:
         client = OpenAI(api_key=api_key)
         self.llm = instructor.from_openai(client)
         self.model = model
-        
+
         logger.info(f"LLM Judger initialized with model: {model}")
-    
+
     def judge_pattern_equivalence(
         self,
         candidate_patterns: List[CanonEntry],
@@ -73,13 +74,13 @@ class LLMJudger:
     ) -> Tuple[Optional[CanonEntry], SemanticJudgement]:
         """
         Judge if any of the candidate patterns are semantically equivalent to new code.
-        
+
         Args:
             candidate_patterns: Retrieved patterns from cache
             new_code: The new code to validate
             new_ast: AST of the new code (optional, will be generated if not provided)
             context: Additional context about the validation task
-            
+
         Returns:
             Tuple of (best_matching_pattern, judgement_result)
         """
@@ -92,14 +93,14 @@ class LLMJudger:
                 functional_match=False,
                 risk_assessment="Unknown - no patterns to compare"
             )
-        
+
         # Generate AST for new code if not provided
         if new_ast is None:
             try:
                 tree = ast.parse(new_code)
                 new_ast = ast.dump(tree, include_attributes=True)
             except SyntaxError as e:
-                logger.error(f"Failed to parse new code: {e}")
+logger.error(f"Failed to parse new code: {e}")
                 return None, SemanticJudgement(
                     is_equivalent=False,
                     confidence=0.0,
@@ -108,27 +109,28 @@ class LLMJudger:
                     functional_match=False,
                     risk_assessment="High - syntax error in new code"
                 )
-        
+
         best_match = None
         best_judgement = None
         highest_confidence = 0.0
-        
+
         # Judge each candidate pattern
         for pattern in candidate_patterns:
-            judgement = self._compare_single_pattern(pattern, new_code, new_ast, context)
-            
+            judgement = self._compare_single_pattern(
+                pattern, new_code, new_ast, context)
+
             if judgement.is_equivalent and judgement.confidence > highest_confidence:
                 best_match = pattern
                 best_judgement = judgement
                 highest_confidence = judgement.confidence
-        
+
         # If no equivalent patterns found, return the highest confidence judgement
         if best_match is None and candidate_patterns:
             # Return the first pattern's judgement as "not equivalent"
             best_judgement = self._compare_single_pattern(
                 candidate_patterns[0], new_code, new_ast, context
             )
-        
+
         return best_match, best_judgement or SemanticJudgement(
             is_equivalent=False,
             confidence=0.0,
@@ -137,7 +139,7 @@ class LLMJudger:
             functional_match=False,
             risk_assessment="Unknown"
         )
-    
+
     def _compare_single_pattern(
         self,
         pattern: CanonEntry,
@@ -146,10 +148,11 @@ class LLMJudger:
         context: Optional[str] = None
     ) -> SemanticJudgement:
         """Compare a single pattern against new code using LLM."""
-        
+
         # Prepare the comparison prompt
-        prompt = self._build_comparison_prompt(pattern, new_code, new_ast, context)
-        
+        prompt = self._build_comparison_prompt(
+            pattern, new_code, new_ast, context)
+
         try:
             # Get structured judgement from LLM
             judgement = self.llm.chat.completions.create(
@@ -159,15 +162,15 @@ class LLMJudger:
                     {
                         "role": "system",
                         "content": """You are an expert Python code analyst specializing in semantic equivalence.
-                        
+
                         Your task is to determine if a retrieved code pattern is semantically equivalent
                         to new code that needs validation. Consider:
-                        
+
                         1. Structural equivalence (AST similarity)
                         2. Functional equivalence (does it do the same thing)
                         3. Context appropriateness
                         4. Risk assessment if applied
-                        
+
                         Be conservative - if unsure, mark as not equivalent.
                         Provide detailed reasoning for your decision."""
                     },
@@ -178,12 +181,13 @@ class LLMJudger:
                 ],
                 temperature=0.1  # Low temperature for consistent judgements
             )
-            
-            logger.debug(f"LLM Judgement: {judgement.is_equivalent} (confidence: {judgement.confidence})")
+
+            logger.debug(
+                f"LLM Judgement: {judgement.is_equivalent} (confidence: {judgement.confidence})")
             return judgement
-            
+
         except Exception as e:
-            logger.error(f"Failed to get LLM judgement: {e}")
+logger.error(f"Failed to get LLM judgement: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -192,7 +196,7 @@ class LLMJudger:
                 functional_match=False,
                 risk_assessment="Unknown - LLM error"
             )
-    
+
     def _build_comparison_prompt(
         self,
         pattern: CanonEntry,
@@ -201,7 +205,7 @@ class LLMJudger:
         context: Optional[str] = None
     ) -> str:
         """Build the comparison prompt for the LLM."""
-        
+
         prompt = f"""# Code Pattern Comparison
 
 ## Retrieved Pattern
@@ -211,9 +215,9 @@ class LLMJudger:
 **Latency:** {pattern.latency_ms}ms
 
 ### Pattern AST:
-```json
+json
 {json.dumps(pattern.ast_json, indent=2)[:2000]}...
-```
+
 
 ### Pattern Metadata:
 - Success Count: {pattern.success_count}
@@ -228,14 +232,14 @@ class LLMJudger:
         prompt += f"""
 
 ## New Code for Validation
-```python
+
 {new_code}
-```
+
 
 ### New Code AST:
-```json
+json
 {json.dumps(new_ast, indent=2)[:2000]}...
-```
+
 """
 
         if context:
@@ -258,9 +262,9 @@ Pay special attention to:
 
 Provide your structured judgement.
 """
-        
+
         return prompt
-    
+
     def validate_canon_key(
         self,
         pattern: CanonEntry,
@@ -268,7 +272,7 @@ Provide your structured judgement.
     ) -> SemanticJudgement:
         """
         Validate if a pattern matches the expected policy key.
-        
+
         This is used to ensure retrieved patterns are relevant to the specific
         Canon rule being evaluated.
         """
@@ -304,11 +308,11 @@ Consider if the validation logic would be appropriate.
                 ],
                 temperature=0.1
             )
-            
+
             return judgement
-            
+
         except Exception as e:
-            logger.error(f"Failed to validate policy key: {e}")
+logger.error(f"Failed to validate policy key: {e}")
             return SemanticJudgement(
                 is_equivalent=False,
                 confidence=0.0,
@@ -329,3 +333,4 @@ def get_judger() -> LLMJudger:
     if _judger is None:
         _judger = LLMJudger()
     return _judger
+

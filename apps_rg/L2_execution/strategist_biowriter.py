@@ -23,7 +23,9 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
+from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -32,20 +34,17 @@ class BioWriterConfig:
 
     min_words: int = 118
     max_words: int = 135
-    VOICE: STR = "THIRD_PERSON_IMPLIED"
-    TEMPERATURE: FLOAT = 0.6
+    VOICE: str = "THIRD_PERSON_IMPLIED"
+    TEMPERATURE: float = 0.6
     max_attempts: int = 3
 
 
 @dataclass
-"""TODO: Add docstring."""
-
-
 class BioWriterResult:
     """Docstring."""
     summary: str
     word_count: int
-    validation_results: List[ValidationResult]
+    validation_results: List[Any]
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
@@ -69,17 +68,16 @@ class StrategistBioWriter:
     def __init__(
         self,
         config: Optional[BioWriterConfig] = None,
-        gate_executor: Optional[IntegrityGateExecutor] = None,
-        recovery_loop: Optional[AdaptiveRecoveryLoop] = None
+        gate_executor: Optional[Any] = None,
+        recovery_loop: Optional[Any] = None
     ):
-        SELF.CONFIG = config or BioWriterConfig()
+        self.config = config or BioWriterConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
             initial_temperature=self.config.temperature
         )
 
     def generate_summary(
-        """Docstring."""
         self,
         bullet_pool: List[str],
         context: Dict[str, Any]
@@ -98,21 +96,21 @@ class StrategistBioWriter:
         validation_results = []
 
         for attempt in range(1, self.config.max_attempts + 1):
-            SUMMARY = self._generate_content(
+            summary = self._generate_content(
                 bullet_pool=bullet_pool,
-                CONTEXT=context,
-                TEMPERATURE=self.recovery_loop.current_temperature,
-                ATTEMPT=attempt
+                context=context,
+                temperature=self.recovery_loop.current_temperature,
+                attempt=attempt
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(summary)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
-                    MESSAGE=hygiene_result.message,
-                    DETAILS=hygiene_result.details
+                    message=hygiene_result.message,
+                    details=hygiene_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -122,17 +120,17 @@ class StrategistBioWriter:
             validation_results.append(voice_result)
 
             if not voice_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=voice_result.gate_id,
-                    MESSAGE=voice_result.message,
-                    DETAILS=voice_result.details
+                    message=voice_result.message,
+                    details=voice_result.details
                 )
                 if not recovery.should_retry:
                     break
                 continue
 
             word_count_result = self.gate_executor.execute_word_count_gate(
-                CONTENT=summary,
+                content=summary,
                 min_words=self.config.min_words,
                 max_words=self.config.max_words,
                 gate_id='VG_MANDATORY_WORD_COUNT_COMPLIANCE'
@@ -140,27 +138,27 @@ class StrategistBioWriter:
             validation_results.append(word_count_result)
 
             if not word_count_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=word_count_result.gate_id,
-                    MESSAGE=word_count_result.message,
-                    DETAILS=word_count_result.details
+                    message=word_count_result.message,
+                    details=word_count_result.details
                 )
                 if not recovery.should_retry:
                     break
                 continue
 
             grounding_result = self.gate_executor.execute_grounding_check(
-                CONTENT=summary,
+                content=summary,
                 evidence_pool=bullet_pool,
                 gate_id='VG_SUMMARY_GROUNDING_CHECK'
             )
             validation_results.append(grounding_result)
 
             if not grounding_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=grounding_result.gate_id,
-                    MESSAGE=grounding_result.message,
-                    DETAILS=grounding_result.details
+                    message=grounding_result.message,
+                    details=grounding_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -169,21 +167,21 @@ class StrategistBioWriter:
             self.gate_executor.results = validation_results
 
             return BioWriterResult(
-                SUMMARY=summary,
+                summary=summary,
                 word_count=len(summary.split()),
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                SUCCESS=True,
-                ATTEMPTS=attempt
+                success=True,
+                attempts=attempt
             )
 
         return BioWriterResult(
-            SUMMARY="",
+            summary="",
             word_count=0,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            SUCCESS=False,
-            ATTEMPTS=self.config.max_attempts
+            success=False,
+            attempts=self.config.max_attempts
         )
 
     def _generate_content(
@@ -197,7 +195,7 @@ class StrategistBioWriter:
         Generate summary content using LLM.
         This is a placeholder - actual implementation would call LLM.
         """
-        PROMPT = self._build_prompt(bullet_pool, context, attempt)
+        prompt = self._build_prompt(bullet_pool, context, attempt)
 
         return f"Placeholder summary for attempt {attempt} at temp {temperature}"
 
@@ -208,9 +206,10 @@ class StrategistBioWriter:
         attempt: int
     ) -> str:
         """Build prompt for summary generation"""
-        evidence_section = "\n".join(f"- {bullet}" for bullet in bullet_pool[:10])
+        evidence_section = "\n".join(
+            f"- {bullet}" for bullet in bullet_pool[:10])
 
-        PROMPT = f"""Generate an executive summary for a resume.
+        prompt = f"""Generate an executive summary for a resume.
 
 STRICT REQUIREMENTS:
 1. Word Count: EXACTLY 118-135 words (count carefully)
@@ -230,15 +229,15 @@ Generate the executive summary now:"""
 
         return prompt
 
-    def _validate_voice(self, content: str) -> ValidationResult:
+    def _validate_voice(self, content: str) -> Any:
         """
         Validate third-person voice constraint.
         BLOCKS if first-person pronouns detected.
         """
-        VIOLATIONS = []
+        violations = []
 
         for pattern in self.FIRST_PERSON_PATTERNS:
-            MATCHES = re.finditer(pattern, content, re.IGNORECASE)
+            matches = re.finditer(pattern, content, re.IGNORECASE)
             for match in matches:
                 violations.append({
                     'pronoun': match.group(),
@@ -249,24 +248,24 @@ Generate the executive summary now:"""
         if violations:
             return ValidationResult(
                 gate_id='VG_THIRD_PERSON_VOICE',
-                PASSED=False,
-                SEVERITY='BLOCK',
-                MESSAGE=f"BLOCKED: {len(violations)} first-person pronouns detected",
-                DETAILS={'violations': violations[:5]}
+                passed=False,
+                severity='BLOCK',
+                message=f"BLOCKED: {len(violations)} first-person pronouns detected",
+                details={'violations': violations[:5]}
             )
 
         return ValidationResult(
             gate_id='VG_THIRD_PERSON_VOICE',
-            PASSED=True,
-            SEVERITY='INFO',
-            MESSAGE="Voice constraint satisfied - third-person only",
-            SIGNATURE=f"VOICE:OK:{hash(content) % 10000}"
+            passed=True,
+            severity='INFO',
+            message="Voice constraint satisfied - third-person only",
+            signature=f"VOICE:OK:{hash(content) % 10000}"
         )
 
 
 def create_strategist_biowriter(
-    """Docstring."""
     config: Optional[BioWriterConfig] = None
 ) -> StrategistBioWriter:
     """Factory function to create StrategistBioWriter instance"""
     return StrategistBioWriter(config=config)
+

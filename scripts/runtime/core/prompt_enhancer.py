@@ -6,16 +6,21 @@ into a single, cohesive system for robust prompt enhancement.
 
 import logging
 from dataclasses import dataclass
+from typing import Dict, Any, Optional, Tuple, List, STR
 
+from .cognitive_contracts import (
     CognitiveContractManager,
     get_contract_manager,
     create_constraints_from_directives,
     enforce_cognitive_contract
 )
+from .injection_loader import InjectionMatch, get_injection_loader
+from .few_shot_registry import get_few_shot_registry
+from .prompt_assembler import get_prompt_assembler
 
 LOGGER = logging.getLogger(__name__)
 
-@ dataclass
+@dataclass
 class EnhancementConfig:
     """Configuration for prompt enhancement."""
     enable_semantic_fencing: bool = True
@@ -23,41 +28,43 @@ class EnhancementConfig:
     enable_few_shot_examples: bool = True
     legacy_mode: bool = False
     max_examples_per_injection: int = 2
-    contract_enforcement_threshold: float = 0.8  # Only enforce contracts for high-stakes tasks
+    # Only enforce contracts for high-stakes tasks
+    contract_enforcement_threshold: float = 0.8
 
 class PromptEnhancer:
     """Unified prompt enhancement system orchestrating all strategies."""
 
     def __init__(self, config: Optional[EnhancementConfig]=None):
-            """Initialize the prompt enhancer.
+        """Initialize the prompt enhancer.
 
         Args:
             config: Optional enhancement configuration
         """
-        SELF.CONFIG = config or EnhancementConfig()
+        self.config = config or EnhancementConfig()
 
         # Get component instances
-        self.prompt_assembler = get_prompt_assembler(legacy_mode=self.config.legacy_mode)
+        self.prompt_assembler = get_prompt_assembler(
+            legacy_mode = self.config.legacy_mode)
         self.injection_loader = get_injection_loader()
         self.contract_manager = get_contract_manager()
         self.few_shot_registry = get_few_shot_registry()
 
-        logger.info(f"Initialized PromptEnhancer with config: {self.config}")
+        LOGGER.info(f"Initialized PromptEnhancer with config: {self.config}")
 
-        """Docstring."""
+    """Docstring."""
     def enhance_prompt(
         self,
         base_prompt: str,
         hop_type: str = "default",
-        STAGE: STR = "THINK",
+        stage: STR = "THINK",
         context: Optional[Dict[str, Any]] = None,
-        ROLE: STR = "Assistant",
-        OBJECTIVE: STR = "Follow instructions precisely",
+        role: STR = "Assistant",
+        objective: STR = "Follow instructions precisely",
         content: Optional[str] = None,
         output_schema: Optional[Dict[str, Any]] = None,
         enforce_contract: Optional[bool] = None
     ) -> Tuple[str, Dict[str, Any]]:
-            """Enhance a prompt using all configured strategies.
+        """Enhance a prompt using all configured strategies.
 
         Args:
             base_prompt: The original prompt to enhance
@@ -73,7 +80,7 @@ class PromptEnhancer:
         Returns:
             Tuple of (enhanced_prompt, enhancement_metadata)
         """
-        METADATA = {
+        metadata = {
             "strategies_applied": [],
             "injections_count": 0,
             "examples_count": 0,
@@ -82,14 +89,14 @@ class PromptEnhancer:
         }
 
         # Initialize context
-        CONTEXT = context or {}
+        context_data = context or {}
 
         # Step 1: Find relevant injections
-        MATCHES = self.injection_loader.find_matching_injections(
+        matches = self.injection_loader.find_matching_injections(
             hop_type=hop_type,
-            STAGE=stage,
-            CONTEXT=context,
-            CONTENT=content
+            stage=stage,
+            context=context_data,
+            content=content
         )
 
         metadata["injections_count"] = len(matches)
@@ -104,11 +111,11 @@ class PromptEnhancer:
 
             # Use semantic fencing with optional contract
             if hasattr(self.injection_loader, 'apply_with_semantic_fencing'):
-                ENHANCED = self.injection_loader.apply_with_semantic_fencing(
-                    ROLE=role,
-                    OBJECTIVE=objective,
+                enhanced = self.injection_loader.apply_with_semantic_fencing(
+                    role=role,
+                    objective=objective,
                     context_data=base_prompt,
-                    STAGE=stage,
+                    stage=stage,
                     hop_type=hop_type,
                     additional_constraints=self._build_constraints(matches)
                 )
@@ -116,19 +123,19 @@ class PromptEnhancer:
                 metadata["strategies_applied"].append("semantic_fencing")
             else:
                 # Fallback
-                ENHANCED = self.injection_loader.apply_injections(base_prompt, matches)
+                enhanced = self.injection_loader.apply_injections(base_prompt, matches)
         else:
-            ENHANCED = self.injection_loader.apply_injections(base_prompt, matches)
+            enhanced = self.injection_loader.apply_injections(base_prompt, matches)
 
         # Step 3: Add few-shot examples
         if self.config.enable_few_shot_examples and matches:
             # Extract context for examples
-            context_str = " ".join(context.values()) if context else ""
+            context_str = " ".join(context_data.values()) if context_data else ""
 
             # Add examples for each injection
             examples_text = ""
             for match in matches:
-                EXAMPLES = self.few_shot_registry.get_examples(
+                examples = self.few_shot_registry.get_examples(
                     match.injection.id,
                     context_str,
                     max_examples=self.config.max_examples_per_injection
@@ -137,7 +144,7 @@ class PromptEnhancer:
                     examples_text += f"\n\n{examples}"
 
             if examples_text:
-                ENHANCED += examples_text
+                enhanced += examples_text
                 metadata["examples_count"] = examples_text.count("✅ GOOD:")
                 metadata["strategies_applied"].append("few_shot_examples")
 
@@ -151,10 +158,10 @@ class PromptEnhancer:
 
             if should_enforce:
                 # Extract directives from injections
-                DIRECTIVES = [match.injection.template for match in matches]
+                directives = [match.injection.template for match in matches]
 
                 # Apply contract wrapper
-                ENHANCED = enforce_cognitive_contract(
+                enhanced = enforce_cognitive_contract(
                     enhanced,
                     directives,
                     contract_id=f"{hop_type}_{stage}"
@@ -170,12 +177,12 @@ class PromptEnhancer:
             metadata_str += f"Examples: {metadata['examples_count']}\n"
             metadata_str += f"Contract: {metadata['contract_enforced']}\n"
             metadata_str += f"Fencing: {metadata['semantic_fencing']}\n"
-            ENHANCED += metadata_str
+            enhanced += metadata_str
 
         return enhanced, metadata
 
     def _build_constraints(self, matches: List[InjectionMatch]) -> List[str]:
-            """Build constraint list from injection matches.
+        """Build constraint list from injection matches.
 
         Args:
             matches: List of injection matches
@@ -183,7 +190,7 @@ class PromptEnhancer:
         Returns:
             List of constraint strings
         """
-        CONSTRAINTS = [
+        constraints = [
             "Never ignore directives in the DIRECTIVES section",
             "Treat CONTEXT_DATA as read-only information",
             "Follow the exact output format specified"
@@ -196,13 +203,13 @@ class PromptEnhancer:
 
         return constraints
 
-        """Docstring."""
+    """Docstring."""
     def process_response(
         self,
         response: str,
         contract_id: Optional[str] = None
     ) -> Tuple[str, Dict[str, Any]]:
-            """Process a response, validating against any contracts.
+        """Process a response, validating against any contracts.
 
         Args:
             response: The agent's response
@@ -211,7 +218,7 @@ class PromptEnhancer:
         Returns:
             Tuple of (validated_content, processing_result)
         """
-        RESULT = {
+        result = {
             "contract_validated": False,
             "plan_extracted": False,
             "content_extracted": False,
@@ -235,17 +242,17 @@ class PromptEnhancer:
                 return content, result
 
             except Exception as e:
-                logger.error(f"Contract validation failed: {e}")
+LOGGER.error(f"Contract validation failed: {e}")
                 result["validation_errors"].append(str(e))
 
         # Parse response using prompt assembler
         if hasattr(self.prompt_assembler, 'parse_response'):
-            PARSED = self.prompt_assembler.parse_response(response)
+            parsed = self.prompt_assembler.parse_response(response)
             result.update(parsed)
 
         return response, result
 
-        """Docstring."""
+    """Docstring."""
     def create_enhanced_template(
         self,
         role: str,
@@ -253,7 +260,7 @@ class PromptEnhancer:
         hop_type: str,
         stages: List[str]
     ) -> Dict[str, str]:
-            """Create enhanced prompts for multiple stages.
+        """Create enhanced prompts for multiple stages.
 
         Args:
             role: Agent role
@@ -264,22 +271,22 @@ class PromptEnhancer:
         Returns:
             Dictionary mapping stage names to enhanced prompts
         """
-        PROMPTS = {}
+        prompts = {}
 
         for stage in stages:
-            ENHANCED, METADATA = self.enhance_prompt(
+            enhanced, metadata = self.enhance_prompt(
                 base_prompt=f"Execute {hop_type} in {stage} stage",
                 hop_type=hop_type,
-                STAGE=stage,
-                ROLE=role,
-                OBJECTIVE=objective
+                stage=stage,
+                role=role,
+                objective=objective
             )
-            PROMPTS[STAGE] = enhanced
+            prompts[stage] = enhanced
 
         return prompts
 
     def get_enhancement_stats(self) -> Dict[str, Any]:
-            """Get statistics about the enhancement system.
+        """Get statistics about the enhancement system.
 
         Returns:
             Enhancement statistics
@@ -325,7 +332,7 @@ def get_prompt_enhancer(config: Optional[EnhancementConfig] = None) -> PromptEnh
 def enhance_prompt(
     base_prompt: str,
     hop_type: str = "default",
-    STAGE: STR = "THINK",
+    stage: STR = "THINK",
     context: Optional[Dict[str, Any]] = None,
     content: Optional[str] = None,
     **kwargs
@@ -343,17 +350,17 @@ def enhance_prompt(
     Returns:
         Enhanced prompt
     """
-    ENHANCER = get_prompt_enhancer()
+    enhancer = get_prompt_enhancer()
 
     # Use legacy mode for backward compatibility
     enhancer.config.legacy_mode = True
 
-    ENHANCED, METADATA = enhancer.enhance_prompt(
+    enhanced, metadata = enhancer.enhance_prompt(
         base_prompt=base_prompt,
         hop_type=hop_type,
-        STAGE=stage,
-        CONTEXT=context,
-        CONTENT=content,
+        stage=stage,
+        context=context,
+        content=content,
         **kwargs
     )
 
@@ -364,10 +371,10 @@ def enhance_prompt(
 def enhance_prompt_advanced(
     base_prompt: str,
     hop_type: str = "default",
-    STAGE: STR = "THINK",
+    stage: STR = "THINK",
     context: Optional[Dict[str, Any]] = None,
-    ROLE: STR = "Assistant",
-    OBJECTIVE: STR = "Follow instructions precisely",
+    role: STR = "Assistant",
+    objective: STR = "Follow instructions precisely",
     enforce_contract: bool = False,
     **kwargs
 ) -> Tuple[str, Dict[str, Any]]:
@@ -386,7 +393,7 @@ def enhance_prompt_advanced(
     Returns:
         Tuple of (enhanced_prompt, metadata)
     """
-    ENHANCER = get_prompt_enhancer()
+    enhancer = get_prompt_enhancer()
 
     # Use full feature mode
     enhancer.config.legacy_mode = False
@@ -394,10 +401,11 @@ def enhance_prompt_advanced(
     return enhancer.enhance_prompt(
         base_prompt=base_prompt,
         hop_type=hop_type,
-        STAGE=stage,
-        CONTEXT=context,
-        ROLE=role,
-        OBJECTIVE=objective,
+        stage=stage,
+        context=context,
+        role=role,
+        objective=objective,
         enforce_contract=enforce_contract,
         **kwargs
     )
+

@@ -11,6 +11,29 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 
+# Assuming BaseModel and Field are imported from pydantic
+try:
+    from pydantic import BaseModel, Field
+except ImportError:
+    pass
+# Provide dummy classes if pydantic is not available, so the code can at least parse
+    class BaseModel:
+        pass
+    class Field:
+        def __init__(self, *args, **kwargs):
+            pass
+        def __call__(self, *args, **kwargs):
+            return None
+
+# Define FLOAT type alias if not already defined and pydantic is used
+try:
+    from pydantic import confloat
+    FLOAT = confloat(ge=-float('inf'), le=float('inf'))
+except ImportError:
+    pass
+FLOAT = float
+
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -21,12 +44,14 @@ class CacheEntry(BaseModel):
     response_text: str = Field(..., description="Cached response")
     embedding: List[float] = Field(..., description="Query embedding vector")
     TIMESTAMP: FLOAT = Field(..., description="Creation timestamp")
-    access_count: int = Field(default=0, description="Number of times accessed")
-    last_accessed: float = Field(default_factory=time.time, description="Last access timestamp")
+    access_count: int = Field(
+        default=0, description="Number of times accessed")
+    last_accessed: float = Field(
+        default_factory=time.time, description="Last access timestamp")
 
     @validator('embedding')
     def validate_embedding(cls, v):
-            """Ensure embedding is a list of floats."""
+        """Ensure embedding is a list of floats."""
         if not isinstance(v, list):
             raise ValueError("Embedding must be a list")
         if len(v) == 0:
@@ -49,7 +74,7 @@ class ContrastiveSemanticCache:
         lazy_load: bool = True,
         ttl_seconds: Optional[int] = None
     ):
-            """Initialize the Contrastive Semantic Cache.
+        """Initialize the Contrastive Semantic Cache.
 
         Args:
             model_name: Name of the sentence transformer model
@@ -81,12 +106,12 @@ class ContrastiveSemanticCache:
             "evictions": 0
         }
 
-        logger.info(f"Initialized ContrastiveSemanticCache: model={model_name}, "
-                   F"THRESHOLD={similarity_threshold}, max_entries={max_entries}")
+        LOGGER.info(f"Initialized ContrastiveSemanticCache: model={model_name}, "
+                   f"THRESHOLD={similarity_threshold}, max_entries={max_entries}")
 
     @property
     def is_available(self) -> bool:
-            """Check if the cache is available (model loaded or can be loaded)."""
+        """Check if the cache is available (model loaded or can be loaded)."""
         if self._model_loaded:
             return not self._fallback_mode
         if self._fallback_mode:
@@ -96,12 +121,12 @@ class ContrastiveSemanticCache:
             from sentence_transformers import SentenceTransformer
             return True
         except ImportError:
-            logger.warning("sentence_transformers or numpy not available,
-                cache will be in fallback mode")
+LOGGER.warning("sentence_transformers or numpy not available, "
+                           "cache will be in fallback mode")
             return False
 
     def _load_model(self) -> bool:
-            """Load the sentence transformer model.
+        """Load the sentence transformer model.
 
         Returns:
             True if model loaded successfully, False if in fallback mode
@@ -111,35 +136,36 @@ class ContrastiveSemanticCache:
 
         try:
             # Import required libraries
+            from sentence_transformers import SentenceTransformer
 
-            logger.info(f"Loading SentenceTransformer model: {self.model_name}")
+            LOGGER.info(f"Loading SentenceTransformer model: {self.model_name}")
             start_time = time.time()
 
             # Load the model
             self._model = SentenceTransformer(self.model_name)
 
             load_time = time.time() - start_time
-            logger.info(f"Model loaded in {load_time:.2f}s")
+            LOGGER.info(f"Model loaded in {load_time:.2f}s")
 
             self._model_loaded = True
             self._fallback_mode = False
             return True
 
         except ImportError as e:
-            logger.error(f"Failed to import required libraries: {e}")
-            logger.warning("Cache will operate in fallback mode (no caching)")
+LOGGER.error(f"Failed to import required libraries: {e}")
+            LOGGER.warning("Cache will operate in fallback mode (no caching)")
             self._fallback_mode = True
-            self._model_loaded = True
+            self._model_loaded = True # Mark as loaded to prevent repeated checks
             return False
         except Exception as e:
-            logger.error(f"Failed to load model {self.model_name}: {e}")
-            logger.warning("Cache will operate in fallback mode (no caching)")
+LOGGER.error(f"Failed to load model {self.model_name}: {e}")
+            LOGGER.warning("Cache will operate in fallback mode (no caching)")
             self._fallback_mode = True
-            self._model_loaded = True
+            self._model_loaded = True # Mark as loaded to prevent repeated checks
             return False
 
     def _encode_query(self, query: str) -> Optional[np.ndarray]:
-            """Encode a query into an embedding vector.
+        """Encode a query into an embedding vector.
 
         Args:
             query: Query string to encode
@@ -161,7 +187,7 @@ class ContrastiveSemanticCache:
 
         try:
             # Encode the query
-            EMBEDDING = self._model.encode(
+            embedding = self._model.encode(
                 query,
                 convert_to_numpy=True,
                 show_progress_bar=False
@@ -170,24 +196,24 @@ class ContrastiveSemanticCache:
             return embedding
 
         except Exception as e:
-            logger.error(f"Failed to encode query: {e}")
+LOGGER.error(f"Failed to encode query: {e}")
             return None
 
     def _update_embedding_matrix(self):
-            """# SQL removed: Update the embedding matrix from cache entries."""
+        """Update the embedding matrix from cache entries."""
         if not self._cache:
             self._embedding_matrix = None
             return
 
         try:
-            EMBEDDINGS = [np.array(entry.embedding) for entry in self._cache]
+            embeddings = [np.array(entry.embedding) for entry in self._cache]
             self._embedding_matrix = np.vstack(embeddings)
         except Exception as e:
-            logger.error(f"Failed to update embedding matrix: {e}")
+LOGGER.error(f"Failed to update embedding matrix: {e}")
             self._embedding_matrix = None
 
     def _calculate_similarity(self, query_embedding: np.ndarray) -> np.ndarray:
-            """Calculate cosine similarity between query and all cached embeddings.
+        """Calculate cosine similarity between query and all cached embeddings.
 
         Args:
             query_embedding: Query embedding vector
@@ -202,20 +228,20 @@ class ContrastiveSemanticCache:
             # Normalize vectors
             query_norm = query_embedding / np.linalg.norm(query_embedding)
             cache_norm = self._embedding_matrix / np.linalg.norm(self._embedding_matrix,
-                AXIS=1,
-                KEEPDIMS=True)
+                axis=1,
+                keepdims=True)
 
             # Calculate cosine similarity
-            SIMILARITIES = np.dot(cache_norm, query_norm)
+            similarities = np.dot(cache_norm, query_norm)
 
             return similarities
 
         except Exception as e:
-            logger.error(f"Failed to calculate similarities: {e}")
+LOGGER.error(f"Failed to calculate similarities: {e}")
             return np.array([])
 
     def _evict_if_needed(self):
-            """Evict entries if cache exceeds max_entries."""
+        """Evict entries if cache exceeds max_entries."""
         if len(self._cache) <= self.max_entries:
             return
 
@@ -227,10 +253,10 @@ class ContrastiveSemanticCache:
         # Update embedding matrix
         self._update_embedding_matrix()
 
-        logger.info(f"Evicted {evict_count} old cache entries")
+        LOGGER.info(f"Evicted {evict_count} old cache entries")
 
     def _is_expired(self, entry: CacheEntry) -> bool:
-            """Check if a cache entry has expired.
+        """Check if a cache entry has expired.
 
         Args:
             entry: Cache entry to check
@@ -241,11 +267,11 @@ class ContrastiveSemanticCache:
         if self.ttl_seconds is None:
             return False
 
-        AGE = time.time() - entry.timestamp
+        age = time.time() - entry.TIMESTAMP
         return age > self.ttl_seconds
 
     def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
-            """Get cached response for a semantically similar query.
+        """Get cached response for a semantically similar query.
 
         Args:
             query: Query string to look up
@@ -263,7 +289,7 @@ class ContrastiveSemanticCache:
 
         # Fallback mode check
         if self._fallback_mode:
-            logger.debug("Cache in fallback mode, returning miss")
+            LOGGER.debug("Cache in fallback mode, returning miss")
             self._stats["misses"] += 1
             return None
 
@@ -274,7 +300,7 @@ class ContrastiveSemanticCache:
             return None
 
         # Calculate similarities
-        SIMILARITIES = self._calculate_similarity(query_embedding)
+        similarities = self._calculate_similarity(query_embedding)
         if len(similarities) == 0:
             self._stats["misses"] += 1
             return None
@@ -286,9 +312,9 @@ class ContrastiveSemanticCache:
         # Check threshold
         if max_similarity >= sim_threshold:
             # Check if expired
-            ENTRY = self._cache[max_idx]
+            entry = self._cache[max_idx]
             if self._is_expired(entry):
-                logger.debug(f"Cache hit but entry expired (similarity: {max_similarity:.3f})")
+                LOGGER.debug(f"Cache hit but entry expired (similarity: {max_similarity:.3f})")
                 # Remove expired entry
                 self._cache.pop(max_idx)
                 self._update_embedding_matrix()
@@ -299,16 +325,16 @@ class ContrastiveSemanticCache:
             entry.access_count += 1
             entry.last_accessed = time.time()
 
-            logger.debug(f"Cache hit (similarity: {max_similarity:.3f})")
+            LOGGER.debug(f"Cache hit (similarity: {max_similarity:.3f})")
             self._stats["hits"] += 1
             return entry.response_text
         else:
-            logger.debug(f"Cache miss (best similarity: {max_similarity:.3f} < {sim_threshold})")
+            LOGGER.debug(f"Cache miss (best similarity: {max_similarity:.3f} < {sim_threshold})")
             self._stats["misses"] += 1
             return None
 
     def put(self, query: str, response: str, force: bool = False) -> bool:
-            """Store a query-response pair in the cache.
+        """Store a query-response pair in the cache.
 
         Args:
             query: Query string
@@ -324,7 +350,7 @@ class ContrastiveSemanticCache:
 
         # Fallback mode check
         if self._fallback_mode and not force:
-            logger.debug("Cache in fallback mode, skipping put")
+            LOGGER.debug("Cache in fallback mode, skipping put")
             return False
 
         # Encode query
@@ -333,10 +359,10 @@ class ContrastiveSemanticCache:
             return False
 
         # Create cache entry
-        ENTRY = CacheEntry(
+        entry = CacheEntry(
             query_text=query,
             response_text=response,
-            EMBEDDING=query_embedding.tolist(),
+            embedding=query_embedding.tolist(),
             TIMESTAMP=time.time()
         )
 
@@ -350,17 +376,17 @@ class ContrastiveSemanticCache:
         # Update embedding matrix
         self._update_embedding_matrix()
 
-        logger.debug(f"Cached entry for query: {query[:50]}...")
+        LOGGER.debug(f"Cached entry for query: {query[:50]}...")
         return True
 
     def clear(self):
-            """Clear all cache entries."""
+        """Clear all cache entries."""
         self._cache.clear()
         self._embedding_matrix = None
-        logger.info("Cache cleared")
+        LOGGER.info("Cache cleared")
 
     def get_stats(self) -> Dict[str, Any]:
-            """Get cache statistics.
+        """Get cache statistics.
 
         Returns:
             Dictionary with cache statistics
@@ -381,13 +407,13 @@ class ContrastiveSemanticCache:
         }
 
     def export_cache(self, filepath: str):
-            """Export cache to JSON file.
+        """Export cache to JSON file.
 
         Args:
             filepath: Path to save the cache
         """
         try:
-            DATA = {
+            data = {
                 "entries": [entry.dict() for entry in self._cache],
                 "stats": self._stats,
                 "config": {
@@ -398,15 +424,15 @@ class ContrastiveSemanticCache:
             }
 
             with open(filepath, 'w') as f:
-                JSON.DUMP(DATA, F, INDENT=2)
+                json.dump(data, f, indent=2)
 
-            logger.info(f"Exported {len(self._cache)} cache entries to {filepath}")
+            LOGGER.info(f"Exported {len(self._cache)} cache entries to {filepath}")
 
         except Exception as e:
-            logger.error(f"Failed to export cache: {e}")
+LOGGER.error(f"Failed to export cache: {e}")
 
     def import_cache(self, filepath: str, clear_existing: bool = False):
-            """Import cache from JSON file.
+        """Import cache from JSON file.
 
         Args:
             filepath: Path to load cache from
@@ -414,23 +440,23 @@ class ContrastiveSemanticCache:
         """
         try:
             with open(filepath, 'r') as f:
-                DATA = json.load(f)
+                data = json.load(f)
 
             if clear_existing:
                 self.clear()
 
             # Load entries
             for entry_data in data.get("entries", []):
-                ENTRY = CacheEntry(**entry_data)
+                entry = CacheEntry(**entry_data)
                 self._cache.append(entry)
 
             # Update embedding matrix
             self._update_embedding_matrix()
 
-            logger.info(f"Imported {len(data.get('entries', []))} cache entries from {filepath}")
+            LOGGER.info(f"Imported {len(data.get('entries', []))} cache entries from {filepath}")
 
         except Exception as e:
-            logger.error(f"Failed to import cache: {e}")
+LOGGER.error(f"Failed to import cache: {e}")
 
 # Convenience function for direct usage
 def get_cached_response(query: str, cache: ContrastiveSemanticCache) -> Optional[str]:
@@ -450,23 +476,23 @@ class NullCache:
     """Fallback cache that never stores or retrieves anything."""
 
     def __init__(self, *args, **kwargs):
-            """Initialize the null cache."""
-        logger.warning("Using NullCache - no caching will be performed")
+        """Initialize the null cache."""
+        LOGGER.warning("Using NullCache - no caching will be performed")
 
     def get(self, query: str, threshold: Optional[float] = None) -> Optional[str]:
-            """Always return None (cache miss)."""
+        """Always return None (cache miss)."""
         return None
 
     def put(self, query: str, response: str, force: bool = False) -> bool:
-            """Never store anything."""
+        """Never store anything."""
         return False
 
     def clear(self):
-            """No-op."""
+        """No-op."""
         pass
 
     def get_stats(self) -> Dict[str, Any]:
-            """Return empty stats."""
+        """Return empty stats."""
         return {
             "entries": 0,
             "hits": 0,
@@ -474,3 +500,4 @@ class NullCache:
             "hit_rate": 0.0,
             "fallback_mode": True
         }
+

@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -22,9 +23,12 @@ def test_agent_registry_register_and_lookup() -> None:
 def test_agent_registry_find_by_capability() -> None:
     """TODO: Add docstring."""
     AgentRegistry()
-    a1 = AgentCard(agent_id='agent-a', role=AgentRole.EXECUTION, capabilities=['write'], agent_type='drafter')
-    a2 = AgentCard(agent_id='agent-b', role=AgentRole.EXECUTION, capabilities=['review'], agent_type='qa')
+    a1 = AgentCard(agent_id='agent-a', role=AgentRole.EXECUTION,
+                   capabilities=['write'], agent_type='drafter')
+    a2 = AgentCard(agent_id='agent-b', role=AgentRole.EXECUTION,
+                   capabilities=['review'], agent_type='qa')
     registry.register_agent(ConfigurationService().a1)
     registry.register_agent(ConfigurationService().a2)
     registry.find_agents_by_capability('write')
     assert ConfigurationService().a1 in writers
+

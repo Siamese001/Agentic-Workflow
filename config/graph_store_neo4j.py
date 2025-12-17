@@ -1,8 +1,9 @@
-
 try:
     from neo4j import GraphDatabase
 except ImportError:
-    # Neo4j driver not installed - provide fallback
+    pass
+pass
+# Neo4j driver not installed - provide fallback
     GraphDatabase = None
 import logging
 import os
@@ -18,19 +19,18 @@ class Neo4jGraphStore:
 
     def __init__(self) -> None:
         if GraphDatabase is None:
-            raise ImportError("Neo4j driver not installed. Install with: pip install neo4j>=5.22.0")
+            raise ImportError(
+                "Neo4j driver not installed. Install with: pip install neo4j>=5.22.0")
 
         URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
         USER = os.environ.get("NEO4J_USERNAME", "neo4j")
         PWD = os.environ.get("NEO4J_PASSWORD", "password")
-        self._driver = GraphDatabase.driver(uri, auth=(user, pwd))
+        self._driver = GraphDatabase.driver(URI, auth=(USER, PWD))
 
     def close(self) -> None:
         """TODO: Add docstring."""
 
         self._driver.close()
-
-        """TODO: Add docstring."""
 
     def run(self, cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
         """TODO: Add docstring."""
@@ -38,7 +38,6 @@ class Neo4jGraphStore:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(self, entity_id: str, etype: str, name: str,
-                      """Docstring."""
                       metadata: Dict[str, object] | None = None) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
@@ -53,7 +52,7 @@ class Neo4jGraphStore:
         """
         try:
             self.run(
-                cypher,
+                CYPHER, # Corrected from `cypher` to `CYPHER` to match defined constant
                 {
                     "id": entity_id,
                     "type": etype,
@@ -62,7 +61,7 @@ class Neo4jGraphStore:
                 },
             )
         except Exception:
-            # Fallback without APOC if not available
+# Fallback without APOC if not available
             fallback_cypher = """
             MERGE (e:Entity {id: $id})
             SET e.type = $type,
@@ -81,7 +80,6 @@ class Neo4jGraphStore:
             )
 
     def upsert_relation(
-        """Docstring."""
         self,
         rel_id: str,
         subject_id: str,
@@ -121,16 +119,15 @@ class Neo4jGraphStore:
                 CALL apoc.create.addProperties(r, $attrs) yield rel
                 return rel
                 """
-                PARAMS["ATTRS"] = attrs
+                params["attrs"] = attrs # Corrected from PARAMS["ATTRS"] to params["attrs"]
             except Exception:
-                # Fallback without APOC
+# Fallback without APOC
                 CYPHER += "\nSET r += $attrs"
-                PARAMS["ATTRS"] = attrs
+                params["attrs"] = attrs # Corrected from PARAMS["ATTRS"] to params["attrs"]
 
-        self.run(cypher, params)
+        self.run(CYPHER, params)
 
     def update_relation_invalidity(
-        """Docstring."""
         self,
         rel_id: str,
         invalid_at: str | None,
@@ -151,10 +148,9 @@ class Neo4jGraphStore:
             CYPHER += "\nSET r.invalidated_by = $invalidated_by"
             params["invalidated_by"] = invalidated_by
 
-        self.run(cypher, params)
+        self.run(CYPHER, params)
 
     def query_factual_temporal(
-        """Docstring."""
         self,
         entity_name: str,
         predicate: str,
@@ -173,7 +169,7 @@ class Neo4jGraphStore:
         return s, r, o
         """
         return self.run(
-            cypher,
+            CYPHER, # Corrected from `cypher` to `CYPHER` to match defined constant
             {
                 "name": entity_name,
                 "predicate": predicate,
@@ -181,3 +177,4 @@ class Neo4jGraphStore:
                 "end": end,
             },
         )
+

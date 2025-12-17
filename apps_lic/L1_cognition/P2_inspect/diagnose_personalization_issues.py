@@ -6,9 +6,11 @@ Generated: 2025-12-07T13:28:54.059373
 """
 import logging
 from typing import Dict, Optional, Union
+
 from shared.result_types import DiagnosticReport
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -18,7 +20,8 @@ class DiagnosePersonalizationIssues:
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
 
 
 def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
@@ -37,3 +40,4 @@ def diagnose(self: Any, target: Union[str, Dict]) -> DiagnosticReport:
 def diagnose(target: Union[str, Dict], config: Optional[Dict] = None) -> DiagnosticReport:
     """Run diagnostics."""
     return DiagnosePersonalizationIssues(ConfigurationService().config).diagnose(target)
+

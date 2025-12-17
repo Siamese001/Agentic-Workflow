@@ -5,12 +5,12 @@ Implements robust error handling, retry logic, and structured output parsing.
 import os
 import json
 import time
-from typing import Dict, object, Optional, List, Union
+from typing import Dict, Any, Optional, List, Union
 from dataclasses import dataclass
 import data.sdks_mcps.reference_clients.minimal_openai
-from data.sdks_mcps.reference_clients.minimal_openai import OpenAI,
-    APIError,
-    RateLimitError,
+from data.sdks_mcps.reference_clients.minimal_openai import OpenAI, \
+    APIError, \
+    RateLimitError, \
     APITimeoutError
 from openai.types.chat import ChatCompletion
 import backoff
@@ -353,3 +353,4 @@ if __name__ == "__main__":
         # Usage stats
 
     except Exception as e:
+

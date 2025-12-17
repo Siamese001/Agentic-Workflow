@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -10,3 +11,4 @@ def test_control_plane_allows_safe_text() -> None:
     assert DECISION.ACTION == 'allow'
     assert DECISION.VERDICT == 'safe'
     assert trace.rules_engine['match_count'] == 0
+

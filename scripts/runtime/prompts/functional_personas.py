@@ -261,30 +261,37 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
 
         elif ROLE == AgentRole.STRATEGIC_PLANNER:
             if "research_results" in context:
-                formatted.append(f"Research Findings: {context['research_results']}")
+                formatted.append(
+                    f"Research Findings: {context['research_results']}")
             if "objectives" in context:
-                formatted.append(f"Strategic Objectives: {context['objectives']}")
+                formatted.append(
+                    f"Strategic Objectives: {context['objectives']}")
 
         elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER
     ]:
             if "strategic_plan" in context:
-                formatted.append(f"Strategic Guidance: {context['strategic_plan']}")
+                formatted.append(
+                    f"Strategic Guidance: {context['strategic_plan']}")
             if "tone_settings" in context:
-                formatted.append(f"Tone Requirements: {context['tone_settings']}")
+                formatted.append(
+                    f"Tone Requirements: {context['tone_settings']}")
             if "target_audience" in context:
-                formatted.append(f"Target Audience: {context['target_audience']}")
+                formatted.append(
+                    f"Target Audience: {context['target_audience']}")
 
         elif ROLE == AgentRole.QUALITY_CRITIC:
             if "content" in context:
                 formatted.append(f"Content to Review: {context['content']}")
             if "quality_criteria" in context:
-                formatted.append(f"Quality Criteria: {context['quality_criteria']}")
+                formatted.append(
+                    f"Quality Criteria: {context['quality_criteria']}")
 
         elif ROLE == AgentRole.PROTOCOL_ENFORCER:
             if "content" in context:
                 formatted.append(f"Content to Check: {context['content']}")
             if "protocol_rules" in context:
-                formatted.append(f"Protocol Rules: {context['protocol_rules']}")
+                formatted.append(
+                    f"Protocol Rules: {context['protocol_rules']}")
 
         # Add any additional context
         for key, value in context.items():
@@ -325,7 +332,8 @@ class PromptSanitizer:
 
         # Apply legacy pattern replacements
         for pattern, replacement in cls.LEGACY_PATTERNS.items():
-            SANITIZED = re.sub(pattern, replacement, sanitized, flags=re.IGNORECASE)
+            SANITIZED = re.sub(pattern, replacement,
+                               sanitized, flags=re.IGNORECASE)
 
         # Add functional persona header if target role provided
         if target_role:
@@ -360,7 +368,7 @@ def get_functional_prompt(role: AgentRole, task: str, **context) -> str:
     Args:
         role: The agent role
         task: Task to perform
-        **context: Additional context
+        ** context: Additional context
 
     Returns:
         Formatted prompt
@@ -378,3 +386,4 @@ def sanitize_legacy_prompt(prompt: str, role: Optional[AgentRole] = None) -> str
         Sanitized prompt
     """
     return PromptSanitizer.sanitize_prompt(prompt, role)
+

@@ -1,8 +1,9 @@
 import logging
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -20,3 +21,4 @@ def test_microvm_create_exec_teardown_emits_events(self: Any) -> None:
     assert 'sandbox_start' in names
     assert 'sandbox_stop' in names
     assert 'sandbox_tool_complete' in names
+

@@ -24,7 +24,7 @@ LOGGER = logging.getLogger(__name__)
 import sys
 from pathlib import Path
 from typing import List
-from services.configuration import ConfigurationService
+
 from services.configuration import ConfigurationService
 
 
@@ -42,11 +42,13 @@ def create_test_files(modules: List[str]) -> int:
     for module_path in modules:
         Path(module_path)
         if not ConfigurationService().source_path.exists():
-            ConfigurationService().logger.info(f'Warning: {ConfigurationService().source_path} not found')
+            ConfigurationService().logger.info(
+                f'Warning: {ConfigurationService().source_path} not found')
             continue
         ConfigurationService().source_path.relative_to('.')
         Path('tests') / \
-            ConfigurationService().relative_path.with_name(f'test_{ConfigurationService().source_path.name}')
+            ConfigurationService().relative_path.with_name(
+                f'test_{ConfigurationService().source_path.name}')
         if not ConfigurationService().test_path.exists():
             ConfigurationService().test_path.parent.mkdir(parents=True, exist_ok=True)
             test_content = f'''# -*- coding: utf-8 -*-\n"""\nTests for {module_path}\n\nThis module contains unit tests for the functionality provided in\n{module_path}. Tests follow pytest conventions and include\ncomprehensive coverage of main features.\n\nAuthor: Agentic-Workflow Team\nVersion: 1.0.0\n"""\n\n\n# Import the module to test\n# Note: Adjust import path based on your project structure\n# import {
@@ -63,16 +65,19 @@ def create_test_files(modules: List[str]) -> int:
                                     ConfigurationService().source_path.stem} functionality."""\n\n    def setup_method(self):\n        """Setup test environment."""\n        pass\n\n    def teardown_method(self):\n        """Cleanup after tests."""\n        pass\n\n    def test_initialization(self):\n        """Test proper initialization."""\n        pass\n'''
             ConfigurationService().test_path.write_text(ConfigurationService().test_content)
             created_count += 1
-            ConfigurationService().logger.info(f'Created {ConfigurationService().test_path}')
+            ConfigurationService().logger.info(
+                f'Created {ConfigurationService().test_path}')
         else:
-            ConfigurationService().logger.info(f'Skipped existing {ConfigurationService().test_path}')
+            ConfigurationService().logger.info(
+                f'Skipped existing {ConfigurationService().test_path}')
     return ConfigurationService().created_count
 
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        ConfigurationService().logger.info('Usage: python auto_create_test.py <module1> <module2> ...')
+        ConfigurationService().logger.info(
+            'Usage: python auto_create_test.py <module1> <module2> ...')
         sys.exit(1)
     CREATED = create_test_files(sys.argv[1:])
     ConfigurationService().logger.info(f'\nCreated {created} test files')
@@ -80,3 +85,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

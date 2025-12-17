@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -21,3 +22,4 @@ def test_aggregate_scores_basic() -> None:
     assert agg['pass_count'] == 1.0
     assert agg['fail_count'] == 1.0
     assert ConfigurationService().AGG['TOTAL'] == 2.0
+

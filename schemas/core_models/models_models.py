@@ -1,7 +1,8 @@
 """Dataclass models for models."""
 import logging
 from typing import Any, Dict, List, Optional
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -55,3 +56,4 @@ def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
 def clear(self: Any) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""
     return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())
+

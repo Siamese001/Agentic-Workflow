@@ -31,7 +31,8 @@ class GenerateSubjectLine:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
+pass
+return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
@@ -50,3 +51,4 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return GenerateSubjectLine(config).execute(action, params)
+

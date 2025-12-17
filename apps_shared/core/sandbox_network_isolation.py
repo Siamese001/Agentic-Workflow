@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -19,3 +20,4 @@ def test_allowlist_allows_specific_host() -> None:
     ConfigurationService().POLICY['ALLOWLIST'] = ['example.com']
     assert is_destination_allowed(policy, 'example.com') is True
     assert is_destination_allowed(policy, 'other.com') is False
+

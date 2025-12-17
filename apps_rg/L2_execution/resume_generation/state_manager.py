@@ -151,7 +151,7 @@ class StateSerializer:
             PATH = self.get_path_for_hop(hop_num)
             return os.path.exists(path)
         except ValueError:
-            return False
+return False
 
     def _serialize(self, data: object, expected_type: type) -> Dict[str, object]:
         """
@@ -235,7 +235,7 @@ class StateSerializer:
                 return True
             return False
         except (ValueError, OSError):
-            return False
+return False
 
     def get_all_hop_files(self) -> Dict[int, str]:
         """
@@ -312,7 +312,8 @@ class ManifestManager:
             FileNotFoundError: If manifest doesn't exist
         """
         if not os.path.exists(self.manifest_path):
-            raise FileNotFoundError(f"Manifest not found at {self.manifest_path}")
+            raise FileNotFoundError(
+                f"Manifest not found at {self.manifest_path}")
 
         with open(self.manifest_path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -391,3 +392,4 @@ class ManifestManager:
 
         with open(self.manifest_path, 'w', encoding='utf-8') as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)
+

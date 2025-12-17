@@ -1,43 +1,27 @@
-# Version Control
-.git
-.gitignore
-
-# Python Artifacts
-__pycache__
+# .dockerignore - RECOVERY VERSION
+.git/
+__pycache__/
 *.pyc
-*.pyo
-*.pyd
-.Python
-env/
 venv/
 .venv/
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Data & Archives (From your specific exclusion request)
-data/
-archives/
-cache/
 logs/
-*.log
-validator_run*.txt
 
-# IDE Settings
-.vscode/
-.idea/
-.DS_Store
+# BLOCK ALL FIRST, THEN WHITELIST
+*
 
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
+# WHITELIST CORE FILES
+!/main.py
+!/orchestrator.py
+!/connection_manager.py
+!/main_connectivity.py
+!/agent_logic_connectivity.py
+!/etl_pipeline_connectivity.py
+!/requirements.txt
+!/requirements-test.txt
+!/pyproject.toml
+!/entrypoint.sh
 
-# Test outputs
-*.pytest_cache
-.coverage
-htmlcov/
-
-# Build artifacts
-build/
-dist/
-*.egg-info/
+# WHITELIST CORE DIRECTORIES (Essential for 50 Keys)
+!/app/
+!/mcp/
+!/apps_rg/

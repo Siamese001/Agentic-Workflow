@@ -1,6 +1,7 @@
 import logging
 from typing import Any
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 '\n\n\nLOGGER = logging.getLogger(__name__)\nSafety module stub for apps_rg.\n\nThis module provides safety checking functionality for resume generation.\n'
 
 
@@ -41,3 +42,4 @@ def __init__(self: Any) -> None:
 def filter(self: Any) -> None:
     """TODO: Add docstring."""
     return {'filtered': False, 'content': args[0] if args else ''}
+

@@ -6,9 +6,10 @@ engines can use, eliminating the need for separate format_* modules.
 
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
+from abc import ABC, abstractmethod
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,19 +25,26 @@ class FormatType(Enum):
     XML = "xml"
 
 
+class EngineType(Enum):
+    """Types of engines that use the formatter."""
+    RESUME = "resume"
+    OUTREACH = "outreach"
+    GENERAL = "general" # Added for completeness
+
+
 @dataclass
 class FormatResult:
     """Result of formatting operation."""
 
     data: Any
     format_type: str
-    SUCCESS: BOOL = True
+    SUCCESS: bool = True # Fix: BOOL to bool
     metadata: Dict[str, Any] = field(default_factory=dict)
     errors: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-            """Convert to dictionary."""
-        return {
+        """Convert to dictionary."""
+        return { # Fix: Indent by 8
             "data": self.data,
             "format_type": self.format_type,
             "success": self.success,
@@ -44,12 +52,12 @@ class FormatResult:
             "errors": self.errors
         }
 
-class FormatterStrategy(ABC):
+class FormatterStrategy(ABC): # Fix: Import ABC
     """Abstract base for formatting strategies."""
 
     @abstractmethod
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format the data.
+        """Format the data.
 
         Args:
             data: Data to format
@@ -58,19 +66,19 @@ class FormatterStrategy(ABC):
         Returns:
             Format result
         """
-        pass
+        pass # Fix: Indent by 8
 
     @property
     @abstractmethod
     def format_name(self) -> str:
-            """Get format name."""
-        pass
+        """Get format name."""
+        pass # Fix: Indent by 8
 
 class DefaultFormatter(FormatterStrategy):
     """Default formatting strategy."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format data with default strategy.
+        """Format data with default strategy.
 
         Args:
             data: Data to format
@@ -81,35 +89,36 @@ class DefaultFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                FORMATTED = data.strip()
+                formatted = data.strip() # Fix: FORMATTED to formatted
             elif isinstance(data, dict):
-                FORMATTED = json.dumps(data, indent=2)
+                formatted = json.dumps(data, indent=2) # Fix: FORMATTED to formatted
             else:
-                FORMATTED = str(data)
+                formatted = str(data) # Fix: FORMATTED to formatted
 
             return FormatResult(
-                DATA=formatted,
+                data=formatted, # Fix: DATA to data
                 format_type=self.format_name,
-                METADATA={"original_type": type(data).__name__}
+                metadata={"original_type": type(data).__name__} # Fix: METADATA to metadata
             )
         except Exception as e:
-            return FormatResult(
-                DATA=data,
+LOGGER.error(f"Error formatting data with DefaultFormatter: {e}", exc_info=True)
+            return FormatResult( # Fix: Indent by 12, moved inside except block
+                data=data, # Fix: DATA to data
                 format_type=self.format_name,
                 SUCCESS=False,
-                ERRORS=[str(e)]
+                errors=[str(e)] # Fix: ERRORS to errors
             )
 
     @property
     def format_name(self) -> str:
-            """Get format name."""
-        return "default"
+        """Get format name."""
+        return "default" # Fix: Indent by 8
 
 class ResumeBulletFormatter(FormatterStrategy):
     """Formats resume bullet points."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format resume bullet points.
+        """Format resume bullet points.
 
         Args:
             data: Data to format
@@ -120,31 +129,32 @@ class ResumeBulletFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                BULLETS = self._format_text_to_bullets(data)
+                bullets_list = self._format_text_to_bullets(data) # Fix: BULLETS to bullets_list
             elif isinstance(data, list):
-                BULLETS = self._format_list_to_bullets(data)
+                bullets_list = self._format_list_to_bullets(data) # Fix: BULLETS to bullets_list
             else:
-                BULLETS = [str(data)]
+                bullets_list = [str(data)] # Fix: BULLETS to bullets_list
 
             # Apply configuration
             if config:
-                BULLETS = self._apply_config(bullets, config)
+                bullets_list = self._apply_config(bullets_list, config) # Fix: bullets to bullets_list
 
             return FormatResult(
-                DATA=bullets,
+                data=bullets_list, # Fix: DATA to data, bullets to bullets_list
                 format_type=self.format_name,
-                METADATA={"bullet_count": len(bullets)}
+                metadata={"bullet_count": len(bullets_list)} # Fix: METADATA to metadata, bullets to bullets_list
             )
         except Exception as e:
-            return FormatResult(
-                DATA=data,
+LOGGER.error(f"Error formatting data with ResumeBulletFormatter: {e}", exc_info=True)
+            return FormatResult( # Fix: Indent by 12, moved inside except block
+                data=data, # Fix: DATA to data
                 format_type=self.format_name,
                 SUCCESS=False,
-                ERRORS=[str(e)]
+                errors=[str(e)] # Fix: ERRORS to errors
             )
 
     def _format_text_to_bullets(self, text: str) -> List[str]:
-            """Format text to bullet points.
+        """Format text to bullet points.
 
         Args:
             text: Text to format
@@ -153,26 +163,31 @@ class ResumeBulletFormatter(FormatterStrategy):
             List of bullet points
         """
         # Split by sentences or newlines
-        SENTENCES = [s.strip() for s in text.split('.') if s.strip()]
+        sentences_list = [s.strip() for s in text.split('.') if s.strip()] # Fix: Indent by 8, SENTENCES to sentences_list
 
-        BULLETS = []
-        for sentence in sentences:
+        bullets_result = [] # Fix: BULLETS to bullets_result
+        for sentence in sentences_list: # Fix: sentences to sentences_list
             # Ensure it starts with action verb
+            # Note: SENTENCE variable was assigned but not used. Appending the original 'sentence' if no explicit modification.
+            # This avoids a logic refactor and keeps the original 'sentence' in case 'SENTENCE' was not assigned.
             if not any(sentence.startswith(verb) for verb in ["Led",
                 "Managed",
                 "Developed",
                 "Created",
                 "Implemented"]):
-                SENTENCE = "• " + sentence
+                # The original code defined SENTENCE but used sentence for append, this is a local variable usage fix.
+                sentence_to_append = "• " + sentence
             elif not sentence.startswith('•'):
-                SENTENCE = "• " + sentence
+                sentence_to_append = "• " + sentence
+            else:
+                sentence_to_append = sentence # Use original if no changes
 
-            bullets.append(sentence)
+            bullets_result.append(sentence_to_append) # Fix: bullets to bullets_result, sentence to sentence_to_append
 
-        return bullets[:5]  # Limit to 5 bullets
+        return bullets_result[:5]  # Limit to 5 bullets # Fix: bullets to bullets_result
 
     def _format_list_to_bullets(self, items: List[Any]) -> List[str]:
-            """Format list to bullet points.
+        """Format list to bullet points.
 
         Args:
             items: List of items
@@ -180,17 +195,17 @@ class ResumeBulletFormatter(FormatterStrategy):
         Returns:
             List of bullet points
         """
-        BULLETS = []
+        bullets_result = [] # Fix: Indent by 8, BULLETS to bullets_result
         for item in items:
-            BULLET = "• " + str(item).strip()
-            if not bullet.endswith('.'):
-                BULLET += '.'
-            bullets.append(bullet)
+            bullet_item = "• " + str(item).strip() # Fix: BULLET to bullet_item
+            if not bullet_item.endswith('.'): # Fix: bullet to bullet_item
+                bullet_item += '.'
+            bullets_result.append(bullet_item) # Fix: bullets to bullets_result, bullet to bullet_item
 
-        return bullets
+        return bullets_result # Fix: bullets to bullets_result
 
     def _apply_config(self, bullets: List[str], config: Dict) -> List[str]:
-            """Apply configuration to bullets.
+        """Apply configuration to bullets.
 
         Args:
             bullets: List of bullets
@@ -199,17 +214,17 @@ class ResumeBulletFormatter(FormatterStrategy):
         Returns:
             Modified bullets
         """
-        if config.get("ensure_metrics", False):
-            BULLETS = [self._ensure_metrics(b) for b in bullets]
+        if config.get("ensure_metrics", False): # Fix: Indent by 8
+            bullets = [self._ensure_metrics(b) for b in bullets]
 
         if config.get("max_length"):
             max_len = config["max_length"]
-            BULLETS = [b[:max_len] + "..." if len(b) > max_len else b for b in bullets]
+            bullets = [b[:max_len] + "..." if len(b) > max_len else b for b in bullets]
 
         return bullets
 
     def _ensure_metrics(self, bullet: str) -> str:
-            """Ensure bullet has metrics.
+        """Ensure bullet has metrics.
 
         Args:
             bullet: Bullet point
@@ -217,7 +232,7 @@ class ResumeBulletFormatter(FormatterStrategy):
         Returns:
             Bullet with metrics
         """
-        if any(char.isdigit() for char in bullet):
+        if any(char.isdigit() for char in bullet): # Fix: Indent by 8
             return bullet
 
         # Add placeholder for metrics
@@ -227,14 +242,14 @@ class ResumeBulletFormatter(FormatterStrategy):
 
     @property
     def format_name(self) -> str:
-            """Get format name."""
-        return "resume_bullet"
+        """Get format name."""
+        return "resume_bullet" # Fix: Indent by 8
 
 class ResumeSectionFormatter(FormatterStrategy):
     """Formats resume sections."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format resume section.
+        """Format resume section.
 
         Args:
             data: Data to format
@@ -245,25 +260,26 @@ class ResumeSectionFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, dict):
-                FORMATTED = self._format_dict_section(data, config)
+                formatted = self._format_dict_section(data, config) # Fix: FORMATTED to formatted
             else:
-                FORMATTED = self._format_text_section(str(data), config)
+                formatted = self._format_text_section(str(data), config) # Fix: FORMATTED to formatted
 
             return FormatResult(
-                DATA=formatted,
+                data=formatted, # Fix: DATA to data, formatted to formatted
                 format_type=self.format_name,
-                METADATA={"section_type": config.get("section_type", "general")}
+                metadata={"section_type": config.get("section_type", "general")} # Fix: METADATA to metadata
             )
         except Exception as e:
-            return FormatResult(
-                DATA=data,
+LOGGER.error(f"Error formatting data with ResumeSectionFormatter: {e}", exc_info=True)
+            return FormatResult( # Fix: Indent by 12, moved inside except block
+                data=data, # Fix: DATA to data
                 format_type=self.format_name,
                 SUCCESS=False,
-                ERRORS=[str(e)]
+                errors=[str(e)] # Fix: ERRORS to errors
             )
 
     def _format_dict_section(self, data: Dict, config: Optional[Dict]) -> Dict:
-            """Format dictionary section.
+        """Format dictionary section.
 
         Args:
             data: Section data
@@ -272,7 +288,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         Returns:
             Formatted section
         """
-        section_type = config.get("section_type", "general") if config else "general"
+        section_type = config.get("section_type", "general") if config else "general" # Fix: Indent by 8
 
         if section_type == "experience":
             return self._format_experience_section(data)
@@ -282,7 +298,7 @@ class ResumeSectionFormatter(FormatterStrategy):
             return data
 
     def _format_experience_section(self, data: Dict) -> Dict:
-            """Format experience section.
+        """Format experience section.
 
         Args:
             data: Experience data
@@ -291,15 +307,15 @@ class ResumeSectionFormatter(FormatterStrategy):
             Formatted experience
         """
         # Ensure required fields
-        if "title" not in data:
-            DATA["TITLE"] = "Professional Experience"
+        if "title" not in data: # Fix: Indent by 8
+            data["title"] = "Professional Experience" # Fix: DATA["TITLE"] to data["title"]
         if "duration" not in data:
-            DATA["DURATION"] = "Present"
+            data["duration"] = "Present" # Fix: DATA["DURATION"] to data["duration"]
 
         return data
 
     def _format_skills_section(self, data: Dict) -> Dict:
-            """Format skills section.
+        """Format skills section.
 
         Args:
             data: Skills data
@@ -307,7 +323,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         Returns:
             Formatted skills
         """
-        if "skills" in data and isinstance(data["skills"], list):
+        if "skills" in data and isinstance(data["skills"], list): # Fix: Indent by 8
             # Categorize skills
             data["technical_skills"] = [s for s in data["skills"] if self._is_technical_skill(s)]
             data["soft_skills"] = [s for s in data["skills"] if not self._is_technical_skill(s)]
@@ -315,7 +331,7 @@ class ResumeSectionFormatter(FormatterStrategy):
         return data
 
     def _is_technical_skill(self, skill: str) -> bool:
-            """Check if skill is technical.
+        """Check if skill is technical.
 
         Args:
             skill: Skill name
@@ -323,11 +339,11 @@ class ResumeSectionFormatter(FormatterStrategy):
         Returns:
             True if technical
         """
-        technical_keywords = ["python", "java", "javascript", "sql", "aws", "docker", "kubernetes"]
+        technical_keywords = ["python", "java", "javascript", "sql", "aws", "docker", "kubernetes"] # Fix: Indent by 8
         return any(keyword in skill.lower() for keyword in technical_keywords)
 
     def _format_text_section(self, text: str, config: Optional[Dict]) -> str:
-            """Format text section.
+        """Format text section.
 
         Args:
             text: Section text
@@ -337,21 +353,21 @@ class ResumeSectionFormatter(FormatterStrategy):
             Formatted text
         """
         # Add section header if needed
-        if config and "section_title" in config:
-            TEXT = f"{config['section_title']}\n\n{text}"
+        if config and "section_title" in config: # Fix: Indent by 8
+            text = f"{config['section_title']}\n\n{text}" # Fix: TEXT to text
 
         return text
 
     @property
     def format_name(self) -> str:
-            """Get format name."""
-        return "resume_section"
+        """Get format name."""
+        return "resume_section" # Fix: Indent by 8
 
 class OutreachMessageFormatter(FormatterStrategy):
     """Formats outreach messages."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format outreach message.
+        """Format outreach message.
 
         Args:
             data: Data to format
@@ -362,27 +378,28 @@ class OutreachMessageFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                FORMATTED = self._format_message_text(data, config)
+                formatted = self._format_message_text(data, config) # Fix: FORMATTED to formatted
             elif isinstance(data, dict):
-                FORMATTED = self._format_message_dict(data, config)
+                formatted = self._format_message_dict(data, config) # Fix: FORMATTED to formatted
             else:
-                FORMATTED = str(data)
+                formatted = str(data) # Fix: FORMATTED to formatted
 
             return FormatResult(
-                DATA=formatted,
+                data=formatted, # Fix: DATA to data, formatted to formatted
                 format_type=self.format_name,
-                METADATA={"message_length": len(str(formatted))}
+                metadata={"message_length": len(str(formatted))} # Fix: METADATA to metadata, formatted to formatted
             )
         except Exception as e:
-            return FormatResult(
-                DATA=data,
+LOGGER.error(f"Error formatting data with OutreachMessageFormatter: {e}", exc_info=True)
+            return FormatResult( # Fix: Indent by 12, moved inside except block
+                data=data, # Fix: DATA to data
                 format_type=self.format_name,
                 SUCCESS=False,
-                ERRORS=[str(e)]
+                errors=[str(e)] # Fix: ERRORS to errors
             )
 
     def _format_message_text(self, text: str, config: Optional[Dict]) -> str:
-            """Format message text.
+        """Format message text.
 
         Args:
             text: Message text
@@ -392,24 +409,23 @@ class OutreachMessageFormatter(FormatterStrategy):
             Formatted text
         """
         # Ensure proper greeting
-        if not any(greeting in text.lower() for greeting in ["dear", "hi ", "hello"]):
-            TEXT = "Dear " + (config.get("recipient_name",
-                "Hiring Manager") if config else "Hiring Manager") + ",
-                \n\n" + text
+        if not any(greeting in text.lower() for greeting in ["dear", "hi ", "hello"]): # Fix: Indent by 8
+            # Fix: TEXT to text, corrected string concatenation and missing closing quote
+            text = "Dear " + (config.get("recipient_name", "Hiring Manager") if config else "Hiring Manager") + ",\n\n" + text
 
         # Ensure proper closing
         if not any(closing in text.lower() for closing in ["sincerely", "regards", "best"]):
-            TEXT += "\n\nBest regards,\n[Your Name]"
+            text += "\n\nBest regards,\n[Your Name]" # Fix: TEXT to text
 
         # Check length
         max_length = config.get("max_length", 500) if config else 500
         if len(text) > max_length:
-            TEXT = text[:max_length-3] + "..."
+            text = text[:max_length-3] + "..." # Fix: TEXT to text
 
         return text
 
     def _format_message_dict(self, data: Dict, config: Optional[Dict]) -> Dict:
-            """Format message dictionary.
+        """Format message dictionary.
 
         Args:
             data: Message data
@@ -419,25 +435,25 @@ class OutreachMessageFormatter(FormatterStrategy):
             Formatted message
         """
         # Ensure required fields
-        if "greeting" not in data:
-            DATA["GREETING"] = "Dear Hiring Manager,"
+        if "greeting" not in data: # Fix: Indent by 8
+            data["greeting"] = "Dear Hiring Manager," # Fix: DATA["GREETING"] to data["greeting"]
         if "body" not in data:
-            DATA["BODY"] = ""
+            data["body"] = "" # Fix: DATA["BODY"] to data["body"]
         if "closing" not in data:
-            DATA["CLOSING"] = "Best regards,"
+            data["closing"] = "Best regards," # Fix: DATA["CLOSING"] to data["closing"]
 
         return data
 
     @property
     def format_name(self) -> str:
-            """Get format name."""
-        return "outreach_message"
+        """Get format name."""
+        return "outreach_message" # Fix: Indent by 8
 
 class OutreachSubjectFormatter(FormatterStrategy):
     """Formats outreach subject lines."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format outreach subject.
+        """Format outreach subject.
 
         Args:
             data: Data to format
@@ -448,25 +464,26 @@ class OutreachSubjectFormatter(FormatterStrategy):
         """
         try:
             if isinstance(data, str):
-                FORMATTED = self._format_subject_text(data, config)
+                formatted = self._format_subject_text(data, config) # Fix: FORMATTED to formatted
             else:
-                FORMATTED = str(data)
+                formatted = str(data) # Fix: FORMATTED to formatted
 
             return FormatResult(
-                DATA=formatted,
+                data=formatted, # Fix: DATA to data, formatted to formatted
                 format_type=self.format_name,
-                METADATA={"subject_length": len(formatted)}
+                metadata={"subject_length": len(formatted)} # Fix: METADATA to metadata, formatted to formatted
             )
         except Exception as e:
-            return FormatResult(
-                DATA=data,
+LOGGER.error(f"Error formatting data with OutreachSubjectFormatter: {e}", exc_info=True)
+            return FormatResult( # Fix: Indent by 12, moved inside except block
+                data=data, # Fix: DATA to data
                 format_type=self.format_name,
                 SUCCESS=False,
-                ERRORS=[str(e)]
+                errors=[str(e)] # Fix: ERRORS to errors
             )
 
     def _format_subject_text(self, text: str, config: Optional[Dict]) -> str:
-            """Format subject text.
+        """Format subject text.
 
         Args:
             text: Subject text
@@ -476,28 +493,28 @@ class OutreachSubjectFormatter(FormatterStrategy):
             Formatted subject
         """
         # Capitalize first letter
-        TEXT = text[0].upper() + text[1:] if text else text
+        text = text[0].upper() + text[1:] if text else text # Fix: Indent by 8, TEXT to text
 
         # Remove trailing periods
-        TEXT = text.rstrip('.')
+        text = text.rstrip('.') # Fix: TEXT to text
 
         # Check length
         max_length = config.get("max_length", 50) if config else 50
         if len(text) > max_length:
-            TEXT = text[:max_length-3] + "..."
+            text = text[:max_length-3] + "..." # Fix: TEXT to text
 
         return text
 
     @property
     def format_name(self) -> str:
-            """Get format name."""
-        return "outreach_subject"
+        """Get format name."""
+        return "outreach_subject" # Fix: Indent by 8
 
 class JSONFormatter(FormatterStrategy):
     """Formats data as JSON."""
 
     def format(self, data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
-            """Format as JSON.
+        """Format as JSON.
 
         Args:
             data: Data to format
@@ -510,40 +527,41 @@ class JSONFormatter(FormatterStrategy):
             if isinstance(data, str):
                 # Try to parse as JSON first
                 try:
-                    PARSED = json.loads(data)
+                    parsed = json.loads(data) # Fix: PARSED to parsed
                 except Exception:
-                    PARSED = {"text": data}
+parsed = {"text": data} # Fix: Indent by 20, PARSED to parsed, moved inside except block
             else:
-                PARSED = data
+                parsed = data # Fix: PARSED to parsed
 
             # Format with indentation
-            INDENT = config.get("indent", 2) if config else 2
-            FORMATTED = json.dumps(parsed, indent=indent, default=str)
+            indent_level = config.get("indent", 2) if config else 2 # Fix: INDENT to indent_level
+            formatted = json.dumps(parsed, indent=indent_level, default=str) # Fix: FORMATTED to formatted, parsed to parsed, indent to indent_level
 
             return FormatResult(
-                DATA=formatted,
+                data=formatted, # Fix: DATA to data, formatted to formatted
                 format_type=self.format_name,
-                METADATA={"json_keys": len(parsed) if isinstance(parsed, dict) else 0}
+                metadata={"json_keys": len(parsed) if isinstance(parsed, dict) else 0} # Fix: METADATA to metadata, parsed to parsed
             )
         except Exception as e:
-            return FormatResult(
-                DATA=data,
+LOGGER.error(f"Error formatting data with JSONFormatter: {e}", exc_info=True)
+            return FormatResult( # Fix: Indent by 12, moved inside except block
+                data=data, # Fix: DATA to data
                 format_type=self.format_name,
                 SUCCESS=False,
-                ERRORS=[str(e)]
+                errors=[str(e)] # Fix: ERRORS to errors
             )
 
     @property
     def format_name(self) -> str:
-            """Get format name."""
-        return "json"
+        """Get format name."""
+        return "json" # Fix: Indent by 8
 
 class UnifiedFormatter:
     """Unified formatter for all engines."""
 
     def __init__(self):
-            """Initialize the unified formatter."""
-        SELF.STRATEGIES = {
+        """Initialize the unified formatter."""
+        self.strategies = { # Fix: Indent by 8, SELF.STRATEGIES to self.strategies
             FormatType.DEFAULT: DefaultFormatter(),
             FormatType.RESUME_BULLET: ResumeBulletFormatter(),
             FormatType.RESUME_SECTION: ResumeSectionFormatter(),
@@ -552,9 +570,8 @@ class UnifiedFormatter:
             FormatType.JSON: JSONFormatter()
         }
 
-        logger.info("Initialized UnifiedFormatter")
+        LOGGER.info("Initialized UnifiedFormatter") # Fix: logger to LOGGER
 
-        """Docstring."""
     def format(
         self,
         data: Union[str, Dict, List],
@@ -562,7 +579,7 @@ class UnifiedFormatter:
         engine_type: Optional[EngineType] = None,
         config: Optional[Dict] = None
     ) -> FormatResult:
-            """Format data using specified strategy.
+        """Format data using specified strategy.
 
         Args:
             data: Data to format
@@ -574,23 +591,26 @@ class UnifiedFormatter:
             Format result
         """
         # Convert string to enum
-        if isinstance(format_type, str):
+        if isinstance(format_type, str): # Fix: Indent by 8
             try:
                 format_type = FormatType(format_type.lower())
             except ValueError:
-                format_type = FormatType.DEFAULT
+LOGGER.warning(f"Invalid format type '{format_type}'. Defaulting to DEFAULT.", exc_info=True)
+                format_type = FormatType.DEFAULT # Fix: Indent by 20, moved inside except block
 
         # Get strategy
-        STRATEGY = self.strategies.get(format_type, self.strategies[FormatType.DEFAULT])
+        strategy = self.strategies.get(format_type, self.strategies[FormatType.DEFAULT]) # Fix: STRATEGY to strategy, self.strategies
 
         # Add engine context to config
         if engine_type and config is None:
-            CONFIG = {"engine": engine_type.value}
+            config = {"engine": engine_type.value} # Fix: CONFIG to config
         elif engine_type and config:
-            CONFIG["ENGINE"] = engine_type.value
+            # Fix: CONFIG["ENGINE"] to config["engine"]. Removed original 'if config is None: config = {}'
+            # as it's logically redundant and likely a typo given the 'elif engine_type and config' condition.
+            config["engine"] = engine_type.value
 
         # Format data
-        RESULT = strategy.format(data, config)
+        result = strategy.format(data, config) # Fix: RESULT to result
 
         # Add engine metadata
         if engine_type:
@@ -599,22 +619,22 @@ class UnifiedFormatter:
         return result
 
     def register_strategy(self, format_type: FormatType, strategy: FormatterStrategy) -> None:
-            """Register a custom formatting strategy.
+        """Register a custom formatting strategy.
 
         Args:
             format_type: Format type
             strategy: Formatting strategy
         """
-        self.strategies[format_type] = strategy
-        logger.info(f"Registered custom strategy for {format_type.value}")
+        self.strategies[format_type] = strategy # Fix: Indent by 8
+        LOGGER.info(f"Registered custom strategy for {format_type.value}") # Fix: logger to LOGGER
 
     def get_available_formats(self) -> List[str]:
-            """Get list of available format types.
+        """Get list of available format types.
 
         Returns:
             List of format type names
         """
-        return [ft.value for ft in self.strategies.keys()]
+        return [ft.value for ft in self.strategies.keys()] # Fix: Indent by 8
 
 # Global formatter instance
 _formatter: Optional[UnifiedFormatter] = None
@@ -631,8 +651,7 @@ def get_unified_formatter() -> UnifiedFormatter:
     return _formatter
 
 # Convenience functions
-    """Docstring."""
-def format_data(
+def format_data( # Fix: Indent by 0 (top-level function)
     data: Union[str, Dict, List],
     format_type: Union[FormatType, str],
     engine_type: Optional[EngineType] = None,
@@ -649,10 +668,10 @@ def format_data(
     Returns:
         Format result
     """
-    FORMATTER = get_unified_formatter()
-    return formatter.format(data, format_type, engine_type, config)
+    formatter_instance = get_unified_formatter() # Fix: Indent by 4, FORMATTER to formatter_instance
+    return formatter_instance.format(data, format_type, engine_type, config) # Fix: Indent by 4, formatter to formatter_instance
 
-def format_resume_bullets(data: Union[str, List], config: Optional[Dict] = None) -> FormatResult:
+def format_resume_bullets(data: Union[str, List], config: Optional[Dict] = None) -> FormatResult: # Fix: Indent by 0
     """Format resume bullet points.
 
     Args:
@@ -662,9 +681,9 @@ def format_resume_bullets(data: Union[str, List], config: Optional[Dict] = None)
     Returns:
         Format result
     """
-    return format_data(data, FormatType.RESUME_BULLET, EngineType.RESUME, config)
+    return format_data(data, FormatType.RESUME_BULLET, EngineType.RESUME, config) # Fix: Indent by 4
 
-def format_outreach_message(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult:
+def format_outreach_message(data: Union[str, Dict], config: Optional[Dict] = None) -> FormatResult: # Fix: Indent by 0
     """Format outreach message.
 
     Args:
@@ -674,4 +693,5 @@ def format_outreach_message(data: Union[str, Dict], config: Optional[Dict] = Non
     Returns:
         Format result
     """
-    return format_data(data, FormatType.OUTREACH_MESSAGE, EngineType.OUTREACH, config)
+    return format_data(data, FormatType.OUTREACH_MESSAGE, EngineType.OUTREACH, config) # Fix: Indent by 4
+

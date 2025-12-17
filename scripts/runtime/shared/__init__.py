@@ -6,48 +6,54 @@ This is a minimal version to unblock testing while syntax errors are fixed.
 """
 
 # Core SDK Registry - Required for tests
-from scripts.runtime.shared.sdk_registry import (SDK_REGISTRY, SDKCategory, =,
-                                                 __name__, import, logger,
-                                                 logging, logging.getLogger)
-
-SDKEntry, get_vector_store,
 import logging
 
-reset_all_clients,
-validate_sdk)
+from scripts.runtime.shared.sdk_registry import (
+    SDK_REGISTRY,
+    SDKCategory,
+    SDKEntry,
+    get_vector_store,
+    reset_all_clients,
+    validate_sdk,
+)
 
-    # Core Models and Exceptions - Temporarily commented out due to missing imports
-    # from .models import (
-    #     ReasoningConfig,
-    #     ValidationResult,
-    #     HopCheckpoint,
-    #     RAGState
-    # )
+# Core Models and Exceptions - Temporarily commented out due to missing imports
 
-    # Exceptions - Temporarily commented out
-    # from .exceptions import (
-    #     AgenticWorkflowError,
-    #     ValidationError,
-    #     APIError,
-    #     HopExecutionError
-    # )
+#     # from .models import (
+#     ReasoningConfig,
+#     ValidationResult,
+#     HopCheckpoint,
+#     RAGState
+# )
 
-    # Configuration - Temporarily commented out
-    # from .config import CONFIG
+# Exceptions - Temporarily commented out
 
-    # Basic utilities - Temporarily commented out
-    # from .utils import TextUtils, DuplicateDetector
+#     # from .exceptions import (
+#     AgenticWorkflowError,
+#     ValidationError,
+#     APIError,
+#     HopExecutionError
+# )
 
-    # OpenAI Client - Temporarily commented out
-    # from .openai_client import (
-    #     OpenAIClientManager,
-    #     get_openai_client,
-    #     configure_openai,
-    #     create_agent_prompt,
-    #     test_openai_connection
-    # )
+# Configuration - Temporarily commented out
 
-    __all__ = [
+#     # from .config import CONFIG
+
+# Basic utilities - Temporarily commented out
+
+#     # from .utils import TextUtils, DuplicateDetector
+
+# OpenAI Client - Temporarily commented out
+
+#     # from .openai_client import (
+#     OpenAIClientManager,
+#     get_openai_client,
+#     configure_openai,
+#     create_agent_prompt,
+#     test_openai_connection
+# )
+
+__all__ = [
 # SDK Registry
 "SDK_REGISTRY",
 "SDKEntry",
@@ -57,12 +63,13 @@ validate_sdk)
 "get_vector_store"
 ]
 
-    # Note: The following imports are commented out due to syntax errors:
-    # - titanium_rag_pipeline.py (syntax errors)
-    # - titanium_search_tool.py (indentation errors)
-    # - signal_quality_pipeline.py (syntax errors)
-    # - adversarial_defense.py (may have issues)
-    # - corrective_rag.py (may have issues)
-    # - graphrag_fusion.py (may have issues)
-    # And many more...
-    # These will be re-enabled once syntax errors are fixed.
+# Note: The following imports are commented out due to syntax errors:
+# - titanium_rag_pipeline.py (syntax errors)
+# - titanium_search_tool.py (indentation errors)
+# - signal_quality_pipeline.py (syntax errors)
+# - adversarial_defense.py (may have issues)
+# - corrective_rag.py (may have issues)
+# - graphrag_fusion.py (may have issues)
+# And many more...
+# These will be re-enabled once syntax errors are fixed.
+

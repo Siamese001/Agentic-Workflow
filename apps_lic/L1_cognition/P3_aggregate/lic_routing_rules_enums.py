@@ -1,6 +1,7 @@
 """Enum types for lic_routing_rules."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -18,3 +19,4 @@ class SignatureFormat(Enum):
 
 class CTAFormat(Enum):
     """Call-to-action format types."""
+

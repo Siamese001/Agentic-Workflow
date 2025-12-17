@@ -1,8 +1,9 @@
 import asyncio
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -17,8 +18,10 @@ def test_dag_executor_records_agent_assignments() -> None:
     edges: list[Edge] = []
     GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
     AgentRegistry()
-    registry.register_agent(AgentCard(agent_id='planner-1', role=AgentRole.PLANNER, agent_type='planner'))
+    registry.register_agent(
+        AgentCard(agent_id='planner-1', role=AgentRole.PLANNER, agent_type='planner'))
     EXECUTOR = DAGExecutor(graph, agent_registry=registry)
     asyncio.run(executor.run())
     ConfigurationService().result.get('_agent_assignments', {})
     assert ConfigurationService().ASSIGNMENTS.GET('N1') == 'planner-1'
+

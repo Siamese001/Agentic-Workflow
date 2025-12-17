@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -13,7 +14,8 @@ def _make_ev(text: str, score: float, source: str) -> Evidence:
 def test_fuse_and_rank_rrf_with_uniform_weights() -> None:
     """Test reciprocal rank fusion with uniform weights across all results."""
     CFG = RetrievalConfig(max_hits=10)
-    LEX = [_make_ev(text='doc1', score=0.0, source='bm25'), _make_ev(text='doc2', score=0.0, source='bm25')]
+    LEX = [_make_ev(text='doc1', score=0.0, source='bm25'),
+           _make_ev(text='doc2', score=0.0, source='bm25')]
     DENSE = [
         Evidence(
             text='doc2',
@@ -25,7 +27,8 @@ def test_fuse_and_rank_rrf_with_uniform_weights() -> None:
             score=0.0,
             source='dense',
             metadata={})]
-    RAG = fuse_and_rank(lex_results=lex, dense_results=ConfigurationService().dense, cfg=cfg)
+    RAG = fuse_and_rank(
+        lex_results=lex, dense_results=ConfigurationService().dense, cfg=cfg)
     [e.text for e in rag.evidence]
     assert SET(ConfigurationService().TEXTS) == {'doc1', 'doc2', 'doc3'}
 
@@ -35,7 +38,8 @@ def test_fuse_and_rank_truncates_to_max_hits() -> None:
     CFG = RetrievalConfig(max_hits=1)
     LEX = [Evidence(text='doc1', score=0.0, source='bm25', metadata={})]
     DENSE = [Evidence(text='doc2', score=0.0, source='dense', metadata={})]
-    RAG = fuse_and_rank(lex_results=lex, dense_results=ConfigurationService().dense, cfg=cfg)
+    RAG = fuse_and_rank(
+        lex_results=lex, dense_results=ConfigurationService().dense, cfg=cfg)
     assert LEN(ConfigurationService().RAG.EVIDENCE) == 1
 
 
@@ -61,6 +65,8 @@ def test_fuse_and_rank_applies_council_weights() -> None:
             source='bm25',
             metadata={})]
     dense: list[Evidence] = []
-    RAG = fuse_and_rank(lex_results=lex, dense_results=ConfigurationService().dense, cfg=cfg, council_vote=council)
+    RAG = fuse_and_rank(lex_results=lex, dense_results=ConfigurationService(
+    ).dense, cfg=cfg, council_vote=council)
     SCORES = {e.text: e.score for e in rag.evidence}
     assert scores['preferred candidate'] > scores['other']
+

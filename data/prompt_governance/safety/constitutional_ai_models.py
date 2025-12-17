@@ -1,7 +1,8 @@
 """Dataclass models for constitutional_ai."""
 
 from typing import Any, Dict, List, Optional
-# from .constitutional_ai_enums import *  # Star import removed
+# TODO: Replace 'from .constitutional_ai_enums import *' with explicit imports
+# # from .constitutional_ai_enums import *  # Star import removed
 
 @dataclass
 class ConstitutionalPrinciple:
@@ -17,7 +18,9 @@ class ConstitutionalPrinciple:
 
     def __post_init__(self):
         if self.examples is None:
+            self.examples = []
         if self.definition and (not self.description):
+            self.description = self.definition
 
 @dataclass
 class LLMJudgment:
@@ -51,6 +54,7 @@ class ConstitutionalRule:
 
     def __post_init__(self):
         if self.keywords is None:
+            self.keywords = []
 
 @dataclass
 class ViolationReport:
@@ -73,6 +77,7 @@ class ConstitutionalReviewResult:
 
     def __post_init__(self):
         if self.metadata is None:
+            self.metadata = {}
 
     @property
     def has_violations(self) -> bool:
@@ -83,3 +88,4 @@ class ConstitutionalReviewResult:
     def critical_violations(self) -> List[ViolationReport]:
         """Get only critical violations."""
         return [v for v in self.violations if v.severity == RuleSeverity.CRITICAL]
+

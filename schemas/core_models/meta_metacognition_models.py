@@ -1,6 +1,7 @@
 import logging
 from typing import List, Optional
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -20,3 +21,4 @@ class MetacognitionReport(BaseModel):
     _global_confidence: float = 0.0
     _uncertainty_score: float = 0.0
     _issues_detected: List[str] = Field(default_factory=list)
+

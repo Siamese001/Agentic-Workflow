@@ -7,6 +7,10 @@ unverifiable content is filtered out to ensure only high-signal content is used.
 
 import logging
 import re
+from typing import Dict, List, Optional, Tuple
+
+from pydantic import BaseModel, Field, validator
+from pydantic.types import confloat
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,16 +19,21 @@ class QualityAssessment(BaseModel):
     """Assessment result for a document's signal quality."""
 
     is_pass: bool = Field(..., description="Overall pass/fail decision")
-    relevance_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Relevance to query")
-    authority_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Source authority")
+    relevance_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Relevance to query")
+    authority_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Source authority")
     specificity_score: confloat(ge=0.0,
         le=1.0) = Field(default=0.0,
-        DESCRIPTION="Metric specificity")
-    coherence_score: confloat(ge=0.0, le=1.0) = Field(default=0.0, description="Content coherence")
-    flags: List[str] = Field(default_factory=list, description="Quality flags/warnings")
-    doc_id: Optional[str] = Field(None, description="Document identifier for logging")
+        description="Metric specificity")
+    coherence_score: confloat(ge=0.0, le=1.0) = Field(
+        default=0.0, description="Content coherence")
+    flags: List[str] = Field(default_factory=list,
+                             description="Quality flags/warnings")
+    doc_id: Optional[str] = Field(
+        None, description="Document identifier for logging")
 
-    @VALIDATOR('FLAGS', PRE=True)
+    @validator('flags', pre=True)
     def validate_flags(cls, v):
         """Ensure flags is a list of strings."""
         if isinstance(v, str):
@@ -42,10 +51,10 @@ class QualityAssessment(BaseModel):
             "coherence": 0.2
         }
         return (
-            self.relevance_score * weights["relevance"] +
-            self.authority_score * weights["authority"] +
-            self.specificity_score * weights["specificity"] +
-            self.coherence_score * weights["coherence"]
+            self.relevance_score * WEIGHTS["relevance"] +
+            self.authority_score * WEIGHTS["authority"] +
+            self.specificity_score * WEIGHTS["specificity"] +
+            self.coherence_score * WEIGHTS["coherence"]
         )
 
     def has_flag(self, flag: str) -> bool:
@@ -132,13 +141,14 @@ class SignalQualityPipeline:
             r"\d+(?:,\d{3})*(?:\.\d+)?%",  # Percentages
             r"\d+(?:,\d{3})*(?:\.\d+)?[kmb]",  # Large numbers with suffix
             r"\d+(?:,\d{3})*(?:\.\d+)?x",  # Multipliers
-            r"\d+(?:,\d{3})*(?:\.\d+)?\s*(?:times|fold)",  # Multipliers (words)
+            # Multipliers (words)
+            r"\d+(?:,\d{3})*(?:\.\d+)?\s*(?:times|fold)",
             r"\b\d+\s*(?:years?|months?|weeks?|days?)\b",  # Time periods
         ]
 
-        logger.info(f"Initialized SignalQualityPipeline with thresholds: "
-                   F"RELEVANCE={relevance_threshold}, authority={authority_threshold}, "
-                   F"SPECIFICITY={specificity_threshold}")
+        LOGGER.info(f"Initialized SignalQualityPipeline with thresholds: "
+                   f"RELEVANCE={relevance_threshold}, authority={authority_threshold}, "
+                   f"SPECIFICITY={specificity_threshold}")
 
     def evaluate_signal(
         self,
@@ -159,25 +169,27 @@ class SignalQualityPipeline:
             QualityAssessment with detailed evaluation results
         """
         try:
-            ASSESSMENT = QualityAssessment(
+            assessment = QualityAssessment(
                 is_pass=True,
                 doc_id=doc_id
             )
 
             # Validate inputs
             if not content or not isinstance(content, str):
-                logger.warning(f"Empty or invalid content for doc {doc_id}")
+                LOGGER.warning(f"Empty or invalid content for doc {doc_id}")
                 assessment.is_pass = False
                 assessment.add_flag("EMPTY_CONTENT")
                 return assessment
 
             if not isinstance(metadata, dict):
-                logger.warning(f"Invalid metadata type for doc {doc_id}: {type(metadata)}")
-                METADATA = {}
+                LOGGER.warning(
+                    f"Invalid metadata type for doc {doc_id}: {type(metadata)}")
+                metadata = {}
 
             if not query or not isinstance(query, str):
-                logger.warning(f"Invalid query for doc {doc_id}: {type(query)}")
-                QUERY = ""
+                LOGGER.warning(
+                    f"Invalid query for doc {doc_id}: {type(query)}")
+                query = ""
 
             # Stage 1: Relevance Filter
             assessment.relevance_score = self._check_relevance(content, query)
@@ -208,27 +220,28 @@ class SignalQualityPipeline:
                 assessment.is_pass = False
                 assessment.add_flag("HARD_FAIL")
 
-            logger.debug(
+            LOGGER.debug(
                 f"Signal evaluation for doc {doc_id}: relevance={assessment.relevance_score:.2f}, "
-                F"AUTHORITY={assessment.authority_score:.2f}, "
-                F"SPECIFICITY={assessment.specificity_score:.2f}, "
-                F"FLAGS={assessment.flags}, pass={assessment.is_pass}",
-                EXTRA={"doc_id": doc_id, "flags": assessment.flags, "is_pass": assessment.is_pass}
+                f"AUTHORITY={assessment.authority_score:.2f}, "
+                f"SPECIFICITY={assessment.specificity_score:.2f}, "
+                f"FLAGS={assessment.flags}, pass={assessment.is_pass}",
+                EXTRA={"doc_id": doc_id, "flags": assessment.flags,
+                    "is_pass": assessment.is_pass}
             )
 
             return assessment
 
         except Exception as e:
-            logger.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
+LOGGER.error(f"Error evaluating signal for doc {doc_id}: {str(e)}")
             # Return safe fallback
             return QualityAssessment(
                 is_pass=False,
-                FLAGS=["EVALUATION_ERROR"],
+                flags=["EVALUATION_ERROR"],
                 doc_id=doc_id
             )
 
     def _check_relevance(self, content: str, query: str) -> float:
-            """Check relevance between content and query using keyword overlap.
+        """Check relevance between content and query using keyword overlap.
 
         Args:
             content: Document content
@@ -246,27 +259,27 @@ class SignalQualityPipeline:
                 return 0.0
 
             # Calculate Jaccard similarity
-            INTERSECTION = content_words.intersection(query_words)
-            UNION = content_words.union(query_words)
+            intersection = content_words.intersection(query_words)
+            union = content_words.union(query_words)
 
             if not union:
                 return 0.0
 
-            JACCARD = len(intersection) / len(union)
+            jaccard = len(intersection) / len(union)
 
             # Boost score for exact phrase matches
             query_lower = query.lower()
             content_lower = content.lower()
             if query_lower in content_lower:
-                JACCARD = min(1.0, jaccard * 1.5)
+                jaccard = min(1.0, jaccard * 1.5)
 
             return min(1.0, jaccard)
         except Exception as e:
-            logger.error(f"Error checking relevance: {str(e)}")
+LOGGER.error(f"Error checking relevance: {str(e)}")
             return 0.0
 
     def _check_authority(self, metadata: Dict[str, str]) -> float:
-            """Check source authority based on metadata.
+        """Check source authority based on metadata.
 
         Args:
             metadata: Document metadata
@@ -275,7 +288,7 @@ class SignalQualityPipeline:
             Authority score (0.0-1.0)
         """
         try:
-            SOURCE = metadata.get("source", "").lower()
+            source = metadata.get("source", "").lower()
             doc_type = metadata.get("type", "").lower()
 
             # Check all source identifiers
@@ -287,11 +300,11 @@ class SignalQualityPipeline:
             # Default to tier 4 for unknown sources
             return self.authority_tiers["tier_4"]["score"]
         except Exception as e:
-            logger.error(f"Error checking authority: {str(e)}")
+LOGGER.error(f"Error checking authority: {str(e)}")
             return 0.2  # Conservative default
 
     def _check_specificity(self, content: str) -> float:
-            """Check content specificity based on presence of metrics.
+        """Check content specificity based on presence of metrics.
 
         Args:
             content: Document content
@@ -323,11 +336,11 @@ class SignalQualityPipeline:
                 # Very low specificity: neither impact nor metrics
                 return 0.1
         except Exception as e:
-            logger.error(f"Error checking specificity: {str(e)}")
+LOGGER.error(f"Error checking specificity: {str(e)}")
             return 0.1  # Conservative default
 
     def _check_coherence(self, content: str) -> float:
-            """Check content coherence (simplified implementation).
+        """Check content coherence (simplified implementation).
 
         Args:
             content: Document content
@@ -337,8 +350,8 @@ class SignalQualityPipeline:
         """
         try:
             # Simple coherence checks
-            SENTENCES = re.split(r'[.!?]+', content)
-            SENTENCES = [s.strip() for s in sentences if s.strip()]
+            sentences = re.split(r'[.!?]+', content)
+            sentences = [s.strip() for s in sentences if s.strip()]
 
             if not sentences:
                 return 0.0
@@ -358,22 +371,22 @@ class SignalQualityPipeline:
             fragment_penalty = 0.1 if not content.endswith(('.', '!', '?')) else 0.0
 
             # Check for repeated words (potential duplication)
-            WORDS = content.lower().split()
+            words = content.lower().split()
             unique_ratio = len(set(words)) / len(words) if words else 0
             repetition_score = min(1.0, unique_ratio * 1.2)
 
             # Combine scores
-            COHERENCE = (length_score * 0.4 +
+            coherence = (length_score * 0.4 +
                         repetition_score * 0.4 +
                         (1.0 - fragment_penalty) * 0.2)
 
             return min(1.0, max(0.0, coherence))
         except Exception as e:
-            logger.error(f"Error checking coherence: {str(e)}")
+LOGGER.error(f"Error checking coherence: {str(e)}")
             return 0.5  # Neutral default
 
     def _normalize_text(self, text: str) -> List[str]:
-            """Normalize text and extract meaningful tokens.
+        """Normalize text and extract meaningful tokens.
 
         Args:
             text: Text to normalize
@@ -383,7 +396,7 @@ class SignalQualityPipeline:
         """
         try:
             # Remove punctuation and split on whitespace
-            TOKENS = re.findall(r'\b\w+\b', text.lower())
+            tokens = re.findall(r'\b\w+\b', text.lower())
 
             # Filter out very short tokens and common stop words
             stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to',
@@ -393,16 +406,15 @@ class SignalQualityPipeline:
 
             return [token for token in tokens if len(token) > 2 and token not in stop_words]
         except Exception as e:
-            logger.error(f"Error normalizing text: {str(e)}")
+LOGGER.error(f"Error normalizing text: {str(e)}")
             return []
 
-        """Docstring."""
     def batch_evaluate(
         self,
         documents: List[Tuple[str, Dict[str, str], str]],
         filter_failed: bool = True
     ) -> List[Tuple[Dict[str, str], QualityAssessment]]:
-            """Evaluate multiple documents in batch.
+        """Evaluate multiple documents in batch.
 
         Args:
             documents: List of (content, metadata, query) tuples
@@ -412,23 +424,22 @@ class SignalQualityPipeline:
             List of (metadata, assessment) tuples
         """
         try:
-            RESULTS = []
+            results = []
 
             for idx, (content, metadata, query) in enumerate(documents):
                 doc_id = metadata.get("doc_id") or metadata.get("id") or str(idx)
-                ASSESSMENT = self.evaluate_signal(content, metadata, query, doc_id)
+                assessment = self.evaluate_signal(content, metadata, query, doc_id)
 
                 if not filter_failed or assessment.is_pass:
                     results.append((metadata, assessment))
 
-            logger.info(f"Batch evaluation: {len(documents)} input, {len(results)} passed")
+            LOGGER.info(f"Batch evaluation: {len(documents)} input, {len(results)} passed")
             return results
         except Exception as e:
-            logger.error(f"Error in batch evaluation: {str(e)}")
+LOGGER.error(f"Error in batch evaluation: {str(e)}")
             return []
 
 # Factory function for easy instantiation
-    """Docstring."""
 def create_quality_pipeline(
     relevance_threshold: float = 0.3,
     authority_threshold: float = 0.4,
@@ -461,7 +472,6 @@ def create_quality_pipeline(
     )
 
 # Convenience function for quick filtering
-    """Docstring."""
 def filter_high_quality_signals(
     documents: List[Tuple[str, Dict[str, str], str]],
     strict_mode: bool = False
@@ -475,6 +485,7 @@ def filter_high_quality_signals(
     Returns:
         List of metadata for documents that passed quality checks
     """
-    PIPELINE = create_quality_pipeline(strict_mode=strict_mode)
-    RESULTS = pipeline.batch_evaluate(documents, filter_failed=True)
+    pipeline = create_quality_pipeline(strict_mode=strict_mode)
+    results = pipeline.batch_evaluate(documents, filter_failed=True)
     return [metadata for metadata, _ in results]
+

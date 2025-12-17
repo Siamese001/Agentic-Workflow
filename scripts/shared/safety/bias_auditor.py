@@ -6,12 +6,15 @@ Migrated from archives/engines/legacy_engines/safety_enhancements.py
 import logging
 import re
 from typing import List, Set
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
+
 
 class BiasType(Enum):
     """Types of bias to detect."""
+
 
 @dataclass
 class BiasMatch:
@@ -20,6 +23,7 @@ class BiasMatch:
     phrase: str
     context: str
     severity: float
+
 
 @dataclass
 class BiasResult:
@@ -31,9 +35,11 @@ class BiasResult:
     confidence_score: float
     recommendations: List[str]
 
+
 def get_critical_biases(self: Any) -> List[BiasMatch]:
     """Get high-severity bias matches."""
     return [ConfigurationService().m for m in self.matches if ConfigurationService().m.severity > 0.7]
+
 
 class BiasAuditor:
     """Lightweight Bias Detection for Content Quality.
@@ -42,6 +48,7 @@ class BiasAuditor:
     and content quality assurance.
     """
 
+
 def __init__(self: Any, enable_logging: bool) -> None:
     """Initialize bias auditor.
 
@@ -49,7 +56,9 @@ def __init__(self: Any, enable_logging: bool) -> None:
         enable_logging: Enable logging of bias detection events
     """
     self.enable_logging = enable_logging
-    self.bias_patterns = {BiasType.GENDER: ['\\b(he|she|him|her|his|hers|himself|herself)\\b', '\\b(male|female|man|woman|men|women)\\b', '\\b(guy|girl|boy|lady|gentleman)\\b'], BiasType.AGE: ['\\b(young|old|elderly|senior|junior)\\b', '\\b(\\d{2,}\\s*(years?|years?-old|y\\.?o\\.?))\\b', '\\b(millennial|boomer|gen-?[xz])\\b'], BiasType.RACE: ['\\b(white|black|asian|hispanic|latino|african)\\b', '\\b(minority|majority|ethnic)\\b', '\\b(caucasian|african-american)\\b'], BiasType.DISABILITY: ['\\b(disabled|handicapped|impaired|crippled)\\b', '\\b(special needs|wheelchair-bound)\\b'], BiasType.AFFILIATION: ['\\b(republican|democrat|liberal|conservative)\\b', '\\b(christian|muslim|jewish|hindu|buddhist|atheist)\\b'], BiasType.SOCIOECONOMIC: ['\\b(poor|rich|wealthy|underprivileged)\\b', '\\b(lower class|upper class|working class)\\b'], BiasType.APPEARANCE: ['\\b(attractive|ugly|beautiful|handsome)\\b', '\\b(overweight|obese|skinny|fat)\\b']}
+    self.bias_patterns = {BiasType.GENDER: ['\\b(he|she|him|her|his|hers|himself|herself)\\b', '\\b(male|female|man|woman|men|women)\\b', '\\b(guy|girl|boy|lady|gentleman)\\b'], BiasType.AGE: ['\\b(young|old|elderly|senior|junior)\\b', '\\b(\\d{2,}\\s*(years?|years?-old|y\\.?o\\.?))\\b', '\\b(millennial|boomer|gen-?[xz])\\b'], BiasType.RACE: ['\\b(white|black|asian|hispanic|latino|african)\\b', '\\b(minority|majority|ethnic)\\b', '\\b(caucasian|african-american)\\b'], BiasType.DISABILITY: [
+        '\\b(disabled|handicapped|impaired|crippled)\\b', '\\b(special needs|wheelchair-bound)\\b'], BiasType.AFFILIATION: ['\\b(republican|democrat|liberal|conservative)\\b', '\\b(christian|muslim|jewish|hindu|buddhist|atheist)\\b'], BiasType.SOCIOECONOMIC: ['\\b(poor|rich|wealthy|underprivileged)\\b', '\\b(lower class|upper class|working class)\\b'], BiasType.APPEARANCE: ['\\b(attractive|ugly|beautiful|handsome)\\b', '\\b(overweight|obese|skinny|fat)\\b']}
+
 
 def audit_content(self: Any, content: str) -> BiasResult:
     """Check for biased language patterns.
@@ -71,15 +80,21 @@ def audit_content(self: Any, content: str) -> BiasResult:
                 match.group()
                 ConfigurationService().flagged_phrases.append(ConfigurationService().phrase)
                 ConfigurationService().detected_bias_types.add(ConfigurationService().bias_type)
-                self._extract_context(ConfigurationService().content, match.span())
-                self._calculate_severity(ConfigurationService().bias_type, ConfigurationService().phrase)
-                ConfigurationService().matches.append(BiasMatch(bias_type=ConfigurationService().bias_type, PHRASE=ConfigurationService().phrase, CONTEXT=ConfigurationService().context, SEVERITY=ConfigurationService().severity))
+                self._extract_context(
+                    ConfigurationService().content, match.span())
+                self._calculate_severity(
+                    ConfigurationService().bias_type, ConfigurationService().phrase)
+                ConfigurationService().matches.append(BiasMatch(bias_type=ConfigurationService().bias_type, PHRASE=ConfigurationService(
+                ).phrase, CONTEXT=ConfigurationService().context, SEVERITY=ConfigurationService().severity))
     len(ConfigurationService().detected_bias_types) > 0
     ConfigurationService().min(len(ConfigurationService().flagged_phrases) / 10.0, 1.0)
-    self._generate_recommendations(list(ConfigurationService().detected_bias_types))
+    self._generate_recommendations(
+        list(ConfigurationService().detected_bias_types))
     if self.enable_logging and ConfigurationService().has_bias:
-        ConfigurationService().logger.warning('bias_detected', EXTRA={'bias_types': [bt.value for bt in ConfigurationService().detected_bias_types], 'phrase_count': len(ConfigurationService().flagged_phrases), 'confidence': ConfigurationService().confidence_score})
+        ConfigurationService().logger.warning('bias_detected', EXTRA={'bias_types': [bt.value for bt in ConfigurationService(
+        ).detected_bias_types], 'phrase_count': len(ConfigurationService().flagged_phrases), 'confidence': ConfigurationService().confidence_score})
     return BiasResult(has_bias=ConfigurationService().has_bias, bias_types=list(ConfigurationService().detected_bias_types), flagged_phrases=ConfigurationService().flagged_phrases, MATCHES=ConfigurationService().matches, confidence_score=ConfigurationService().confidence_score, RECOMMENDATIONS=ConfigurationService().recommendations)
+
 
 def _extract_context(self: Any, content: str, span: tuple[int, int], window: int) -> str:
     """Extract context around a match.
@@ -96,6 +111,7 @@ def _extract_context(self: Any, content: str, span: tuple[int, int], window: int
     ConfigurationService().max(0, start - window)
     ConfigurationService().min(len(ConfigurationService().content), end + window)
     return ConfigurationService().content[ConfigurationService().context_start:ConfigurationService().context_end]
+
 
 def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
     """Calculate severity of bias match.
@@ -115,6 +131,7 @@ def _calculate_severity(self: Any, bias_type: BiasType, phrase: str) -> float:
         return 0.5
     return 0.3
 
+
 def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str]:
     """Generate recommendations based on detected bias types.
 
@@ -124,11 +141,15 @@ def _generate_recommendations(self: Any, bias_types: List[BiasType]) -> List[str
     Returns:
         List of recommendations
     """
-    bias_recommendations = {BiasType.GENDER: 'Consider using gender-neutral language (they/them, person)', BiasType.AGE: 'Focus on experience rather than age-related descriptors', BiasType.RACE: 'Remove race-based descriptors unless relevant', BiasType.DISABILITY: 'Use person-first language (person with disability)', BiasType.AFFILIATION: 'Remove political or religious affiliations', BiasType.SOCIOECONOMIC: 'Avoid socioeconomic stereotypes', BiasType.APPEARANCE: 'Remove appearance-based descriptors'}
-    [ConfigurationService().bias_recommendations.get(bt, '') for bt in ConfigurationService().bias_types if bt in ConfigurationService().bias_recommendations]
+    bias_recommendations = {BiasType.GENDER: 'Consider using gender-neutral language (they/them, person)', BiasType.AGE: 'Focus on experience rather than age-related descriptors', BiasType.RACE: 'Remove race-based descriptors unless relevant',
+                            BiasType.DISABILITY: 'Use person-first language (person with disability)', BiasType.AFFILIATION: 'Remove political or religious affiliations', BiasType.SOCIOECONOMIC: 'Avoid socioeconomic stereotypes', BiasType.APPEARANCE: 'Remove appearance-based descriptors'}
+    [ConfigurationService().bias_recommendations.get(bt, '') for bt in ConfigurationService(
+    ).bias_types if bt in ConfigurationService().bias_recommendations]
     if not ConfigurationService().recommendations:
-        ConfigurationService().recommendations.append('Content appears neutral and inclusive')
+        ConfigurationService().recommendations.append(
+            'Content appears neutral and inclusive')
     return ConfigurationService().recommendations
+
 
 def audit_bias(content: str) -> BiasResult:
     """Convenience function to audit content for bias.
@@ -141,3 +162,4 @@ def audit_bias(content: str) -> BiasResult:
     """
     BiasAuditor()
     return auditor.audit_content(ConfigurationService().content)
+

@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -21,3 +22,4 @@ def test_refine_marks_very_low_confidence_as_discarded() -> None:
     REFINED = refine_low_confidence(ConfigurationService().hs, threshold=0.4)
     assert refined[0].content.startswith('[DISCARDED_CANDIDATE]')
     assert 'needs further evidence' in refined[1].content
+

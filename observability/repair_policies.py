@@ -7,9 +7,10 @@ repair actions (retry, downgrade, replan, escalate).
 """
 import logging
 from typing import Dict, List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -34,3 +35,4 @@ def propose_repairs(signals: List[FailureSignal]) -> List[RepairAction]:
             ConfigurationService().actions.append(RepairAction(
                 KIND='observe', REASON=f'Low-severity failure: {sig.code}', METADATA={'signal': sig}))
     return ConfigurationService().actions
+

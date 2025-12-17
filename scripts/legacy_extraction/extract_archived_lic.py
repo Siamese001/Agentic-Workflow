@@ -22,16 +22,11 @@ SOVEREIGN_ROOTS = {
 
 
 def get_existing_files() -> Set[str]:
-    """Docstring."""
+    """Get set of all Python files in sovereign codebase."""
+    existing = set()
+    repo_root = Path(".")
 
-
-LOGGER = logging.getLogger(__name__)
-
-"""Get set of all Python files in sovereign codebase."""
- EXISTING = set()
-  repo_root = Path(".")
-
-   for root in SOVEREIGN_ROOTS:
+    for root in SOVEREIGN_ROOTS:
         root_path = repo_root / root
         if root_path.exists():
             for py_file in root_path.rglob("*.py"):
@@ -40,6 +35,9 @@ LOGGER = logging.getLogger(__name__)
                 existing.add(str(rel_path))
 
     return existing
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def extract_net_incremental() -> None:
@@ -65,13 +63,13 @@ def extract_net_incremental() -> None:
         FILENAME = py_file.name
 
         # Check if any file with this name already exists in sovereign codebase
-        name_exists = any(filename in existing for existing in existing_files)
+        name_exists = any(FILENAME in existing for existing in existing_files)
 
         if not name_exists:
             # Copy to staging
-            dest_path = staging_dir / filename
+            dest_path = staging_dir / FILENAME
             shutil.copy2(py_file, dest_path)
-            extracted_files.append(filename)
+            extracted_files.append(FILENAME)
 
     return extracted_files
 
@@ -79,11 +77,12 @@ def extract_net_incremental() -> None:
 if __name__ == "__main__":
     EXTRACTED = extract_net_incremental()
 
-    if extracted:
+    if EXTRACTED:
         # logger.info(f"Extracted {len(extracted)} files:")
-        for f in sorted(extracted):
+        for f in sorted(EXTRACTED):
             # logger.info(f"  - {f}")
             pass
     else:
         # logger.info("No new files to extract")
         pass
+

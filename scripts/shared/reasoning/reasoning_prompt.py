@@ -6,9 +6,11 @@ CANON COMPLIANCE: Sub-atomic split for line limit enforcement
 """
 import logging
 from typing import Dict
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+
 
 def build_reasoning_prompt_addendum(params: Dict) -> str:
     """Construct system prompt addendum based on reasoning parameters."""
@@ -42,3 +44,4 @@ def build_reasoning_prompt_addendum(params: Dict) -> str:
         ADDENDUM += '• Review and refine your answer at least once.\n'
     ADDENDUM += '\nAll directives MUST be followed in the output.\n'
     return addendum
+

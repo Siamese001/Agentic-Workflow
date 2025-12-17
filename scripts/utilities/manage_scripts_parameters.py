@@ -8,6 +8,16 @@ Generated: 2025-12-07T12:07:59.886801
 import logging
 from datetime import datetime
 from typing import Dict, Optional
+from dataclasses import dataclass, field
+
+# Assuming OBJECT is a placeholder for a type, e.g., 'object' or a specific class.
+# If OBJECT is not defined, we'll use 'object' as a general type.
+try:
+    OBJECT
+except NameError:
+    pass
+OBJECT = object
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,7 +45,7 @@ class ManageScriptsParameters:
     """coordinator for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
+        self.CONFIG = config or {}
         self.resources: Dict[str, ManagedResource] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
@@ -43,26 +53,27 @@ class ManageScriptsParameters:
         """Create resource."""
         if resource_id in self.resources:
             return ManagementResult(success=False, operation="create", message="Already exists")
-        RESOURCE = ManagedResource(id=resource_id, type=resource_type, state="created", data=data)
-        self.resources[resource_id] = resource
-        return ManagementResult(success=True, operation="create", resource=resource)
+        RESOURCE = ManagedResource(
+            id=resource_id, type=resource_type, state="created", DATA=data)
+        self.resources[resource_id] = RESOURCE
+        return ManagementResult(success=True, operation="create", resource=RESOURCE)
 
     def update(self, resource_id: str, data: object) -> ManagementResult:
         """# SQL removed: Update resource."""
         if resource_id not in self.resources:
-            return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
-        self.resources[resource_id].data=data
-        self.resources[resource_id].state=# SQL query removed
+            return ManagementResult(success=False, operation="update", message="Not found")
+        self.resources[resource_id].DATA=data
+        self.resources[resource_id].state="updated"
         return ManagementResult(success=True,
-            OPERATION=# SQL query removed,
-            RESOURCE=self.resources[resource_id])
+            operation="update",
+            resource=self.resources[resource_id])
 
     def delete(self, resource_id: str) -> ManagementResult:
         """# SQL removed: Delete resource."""
         if resource_id not in self.resources:
-            return ManagementResult(success=False, operation=# SQL query removed, message="Not fo...
+            return ManagementResult(success=False, operation="delete", message="Not found")
         RESOURCE=self.resources.pop(resource_id)
-        return ManagementResult(success=True, operation=# SQL query removed, resource=resource)
+        return ManagementResult(success=True, operation="delete", resource=RESOURCE)
 
     def get(self, resource_id: str) -> Optional[ManagedResource]:
         """Get resource."""
@@ -72,9 +83,10 @@ def manage(operation: str, resource_id: str, **kwargs: Dict[str, object]) -> Man
     """Convenience function for management."""
     COORDINATOR=ManageScriptsParameters(kwargs.get("config"))
     if operation == "create":
-        return coordinator.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
-    elif OPERATION ==  # SQL query removed:
-        return coordinator.update(resource_id, kwargs.get("data"))
-    elif OPERATION ==  # SQL query removed:
-        return coordinator.delete(resource_id)
+        return COORDINATOR.create(resource_id, kwargs.get("type", "default"), kwargs.get("data"))
+    elif operation == "update":
+        return COORDINATOR.update(resource_id, kwargs.get("data"))
+    elif operation == "delete":
+        return COORDINATOR.delete(resource_id)
     return ManagementResult(success=False, operation=operation, message="Unknown operation")
+

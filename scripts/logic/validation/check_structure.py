@@ -17,6 +17,7 @@ Version: 1.0.0
 
 import logging
 from datetime import datetime
+from typing import Dict, Optional, Any
 
 # Configure module logger
 LOGGER = logging.getLogger(__name__)
@@ -27,11 +28,10 @@ class ProcessingError(Exception):
 
 
 def process_data(data: Dict[str,
-                            """Docstring."""
-                            object],
+                            Any],
                  config: Optional[Dict[str,
-                                       OBJECT]] = None) -> Dict[str,
-                                                                object]:
+                                       Any]] = None) -> Dict[str,
+                                                                Any]:
     """
     Process data with optional configuration.
 
@@ -46,22 +46,22 @@ def process_data(data: Dict[str,
         ProcessingError: If processing fails
     """
     try:
-        logger.info("Processing data at {}".format(datetime.utcnow()))
+        LOGGER.info("Processing data at {}".format(datetime.utcnow()))
         # Placeholder for actual processing logic
         return data
     except Exception as e:
-        logger.error("Processing failed: {}".format(e))
+LOGGER.error("Processing failed: {}".format(e))
         raise ProcessingError("Failed to process data: {}".format(e))
 
 # Additional helper functions
 
 
-def validate_input(input_data: Dict[str, object]) -> bool:
+def validate_input(input_data: Dict[str, Any]) -> bool:
     """Validate input data."""
     return input_data is not None
 
 
-def format_output(output_data: object) -> str:
+def format_output(output_data: Any) -> str:
     """Format output data for display."""
     return str(output_data)
 
@@ -77,3 +77,4 @@ __all__ = [
 # Module metadata
 __version__ = "1.0.0"
 __author__ = "Agentic-Workflow Team"
+

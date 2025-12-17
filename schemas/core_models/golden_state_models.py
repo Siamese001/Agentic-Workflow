@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -55,3 +56,4 @@ class GoldenOutput(BaseModel):
     _safety_decisions: Dict[str, object]
     _metacognition_summary: Dict[str, object]
     _final_verdict: Literal['pass', 'fail', 'borderline']
+

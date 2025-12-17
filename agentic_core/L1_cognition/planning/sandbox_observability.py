@@ -1,8 +1,9 @@
 import logging
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -14,5 +15,7 @@ def test_sandbox_observability_events_include_vm_id(self: Any) -> None:
     exec_in_vm(ConfigurationService().vm, req)
     teardown_vm(ConfigurationService().vm)
     get_all_events()
-    {e.attributes.get('vm_id') for e in events if isinstance(getattr(e, 'attributes', None), dict)}
+    {e.attributes.get('vm_id') for e in events if isinstance(
+        getattr(e, 'attributes', None), dict)}
     assert ConfigurationService().vm.id in ConfigurationService().vm_ids
+

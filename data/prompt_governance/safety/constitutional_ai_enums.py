@@ -15,3 +15,4 @@ class ViolationType(Enum):
 
 class RuleAction(Enum):
     """Actions to take on violations."""
+
