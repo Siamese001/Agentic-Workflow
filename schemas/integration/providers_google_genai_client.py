@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 
 def run_llm_google(
-    """Docstring."""
     model: str,
     prompt: str,
     *,
@@ -38,10 +37,11 @@ def run_llm_google(
         try:
             from google import genai
 
-            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv(
+                "GEMINI_API_KEY")
             if not api_key:
-                raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider
-    ")
+                raise RuntimeError("""GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider
+                                   """)
 
             CLIENT = genai.Client(api_key=api_key)
 
@@ -51,8 +51,8 @@ def run_llm_google(
             ]
 
             # Execute the interaction
-            RESPONSE = client.interactions.create(
-                MODEL=model,
+            RESPONSE = CLIENT.interactions.create(
+                model=model,
                 INPUT=input_messages,
                 CONFIG={
                     "temperature": temperature,
@@ -61,29 +61,31 @@ def run_llm_google(
             )
 
             # Extract content from response
-            if hasattr(response, 'candidates') and response.candidates:
-                CANDIDATE = response.candidates[0]
-                if hasattr(candidate, 'content') and candidate.content:
-                    return candidate.content.parts[0].text if candidate.content.parts else ""
+            if hasattr(RESPONSE, 'candidates') and RESPONSE.candidates:
+                CANDIDATE = RESPONSE.candidates[0]
+                if hasattr(CANDIDATE, 'content') and CANDIDATE.content:
+                    return CANDIDATE.content.parts[0].text if CANDIDATE.content.parts else ""
 
             return ""
 
         except ImportError:
-            # Fallback to legacy SDK if new SDK not installed
+# New v1beta API not installed. Fall through to legacy SDK.
             pass
         except Exception as e:
-            # Log error and fallback to legacy
-            import logging
-            logging.warning(f"Google GenAI v1beta API failed, falling back to legacy: {e}")
+# New v1beta API failed for some other reason. Log and fall through to legacy SDK.
+            logging.warning(
+                f"Google GenAI v1beta API failed, falling back to legacy: {e}")
 
     # Legacy SDK implementation
     try:
+        import google.generativeai as genai  # Import for legacy SDK
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("google-generativeai package not installed") from exc
 
     api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
-        raise RuntimeError("GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider")
+        raise RuntimeError(
+            "GOOGLE_API_KEY or GEMINI_API_KEY must be set for Google provider")
 
     genai.configure(api_key=api_key)
     model_client = genai.GenerativeModel(model)
@@ -92,3 +94,4 @@ def run_llm_google(
     # those are left to higher-level routing and not enforced here.
     resp: Any = model_client.generate_content(prompt)
     return str(getattr(resp, "text", "") or "")
+

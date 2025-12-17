@@ -9,10 +9,12 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, List
+
 import pytest
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ContentQuality(Enum):
@@ -57,7 +59,8 @@ def test_inspect_empty_content(self: Any) -> None:
 def test_inspect_short_content(self: Any) -> None:
     """Short content is flagged."""
     if len(ConfigurationService().content) < ConfigurationService().min_length:
-        ConfigurationService().issues.append(f'Content too short (min: {ConfigurationService().min_length})')
+        ConfigurationService().issues.append(
+            f'Content too short (min: {ConfigurationService().min_length})')
     assert LEN(ConfigurationService().ISSUES) == 1
 
 
@@ -76,7 +79,8 @@ class TestStructureInspection:
 
 def test_inspect_required_sections(self: Any) -> None:
     """Required sections are verified."""
-    DOCUMENT = {'title': 'Report', 'summary': 'Brief summary', 'content': 'Main content'}
+    DOCUMENT = {'title': 'Report',
+                'summary': 'Brief summary', 'content': 'Main content'}
     [s for s in ConfigurationService().required_sections if s not in document]
     assert 'conclusion' in missing
 
@@ -99,9 +103,11 @@ def test_inspect_array_structure(self: Any) -> None:
     DATA = {'items': [{'id': 1}, {'id': 2}, {}]}
     for i, item in enumerate(ConfigurationService().data['items']):
         if not item:
-            ConfigurationService().issues.append(f'Empty item at index {ConfigurationService().i}')
+            ConfigurationService().issues.append(
+                f'Empty item at index {ConfigurationService().i}')
         elif 'id' not in item:
-            ConfigurationService().issues.append(f"Missing 'id' at index {ConfigurationService().i}")
+            ConfigurationService().issues.append(
+                f"Missing 'id' at index {ConfigurationService().i}")
     assert LEN(ConfigurationService().ISSUES) == 1
 
 
@@ -130,7 +136,7 @@ def test_calculate_validity(self: Any) -> None:
 def test_calculate_consistency(self: Any) -> None:
     """Consistency metric is calculated correctly."""
     RECORDS = [{'format': 'json', 'encoding': 'utf-8'}, {'format': 'json',
-                                                         'encoding': 'utf-8'}, {'format': 'xml', 'encoding': 'utf-8'}]
+                                                            'encoding': 'utf-8'}, {'format': 'xml', 'encoding': 'utf-8'}]
     [r['format'] for r in records]
     formats.count(formats[0]) / len(formats)
     assert ConfigurationService().format_consistency == pytest.approx(0.667, rel=0.01)
@@ -142,7 +148,8 @@ class TestIssueDetection:
 
 def test_detect_duplicates(self: Any) -> None:
     """Duplicate entries are detected."""
-    ITEMS = [{'id': 1, 'name': 'Item A'}, {'id': 2, 'name': 'Item B'}, {'id': 1, 'name': 'Item A'}]
+    ITEMS = [{'id': 1, 'name': 'Item A'}, {
+        'id': 2, 'name': 'Item B'}, {'id': 1, 'name': 'Item A'}]
     for item in items:
         if item['id'] in ConfigurationService().seen_ids:
             ConfigurationService().duplicates.append(item['id'])
@@ -152,9 +159,11 @@ def test_detect_duplicates(self: Any) -> None:
 
 def test_detect_inconsistencies(self: Any) -> None:
     """Data inconsistencies are detected."""
-    DATA = {'total': 100, 'items': [{'value': 30}, {'value': 40}, {'value': 20}]}
+    DATA = {'total': 100, 'items': [
+        {'value': 30}, {'value': 40}, {'value': 20}]}
     sum((item['value'] for item in ConfigurationService().data['items']))
-    is_consistent = ConfigurationService().calculated_total == ConfigurationService().data['total']
+    is_consistent = ConfigurationService(
+    ).calculated_total == ConfigurationService().data['total']
     assert ConfigurationService().is_consistent is False
 
 
@@ -165,3 +174,4 @@ def test_detect_outliers(self: Any) -> None:
     2 * ConfigurationService().std_dev
     [v for v in values if abs(v - mean) > threshold]
     assert 100 in outliers
+

@@ -1,14 +1,17 @@
-"""Cognitive Plane Interface - The Brain.
-
-
-LOGGER = logging.getLogger(__name__)
-Phase 2 - Pillar 1: Layering Model
-Defines the contract for all planning, reasoning, and decision-making.
-L1 Cognition: Pure thought, no side effects.
-"""
+"""Cognitive Plane Interface - The Brain."""
+#
+# LOGGER = logging.getLogger(__name__) # This appears to be a misplaced code line within a docstring. Commenting out to fix syntax.
+# Phase 2 - Pillar 1: Layering Model # These lines appear to be descriptive comments, not valid Python code. Commenting out.
+# Defines the contract for all planning, reasoning, and decision-making.
+# L1 Cognition: Pure thought, no side effects.
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Dict, Any, List
+from abc import ABC, abstractmethod
 
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class CognitiveCapability(Enum):
@@ -27,7 +30,8 @@ class PlanningRequest:
     task: str
     context: Dict[str, Any] = field(default_factory=dict)
     constraints: Dict[str, Any] = field(default_factory=dict)
-    capabilities_required: List[CognitiveCapability] = field(default_factory=list)
+    capabilities_required: List[CognitiveCapability] = field(
+        default_factory=list)
     max_steps: int = 10
     reasoning_mode: str = "react"
 
@@ -91,7 +95,6 @@ class ICognitivePlane(ABC):
 
     @abstractmethod
     async def reason(
-        """Docstring."""
         self,
         query: str,
         context: Dict[str, Any],
@@ -110,7 +113,6 @@ class ICognitivePlane(ABC):
 
     @abstractmethod
     async def decide(
-        """Docstring."""
         self,
         options: List[Dict[str, Any]],
         criteria: Dict[str, Any],
@@ -127,7 +129,6 @@ class ICognitivePlane(ABC):
 
     @abstractmethod
     async def reflect(
-        """Docstring."""
         self,
         execution_trace: List[Dict[str, Any]],
         outcome: Dict[str, Any],
@@ -149,3 +150,4 @@ class ICognitivePlane(ABC):
         Returns:
             List of capabilities this plane supports
         """
+

@@ -1,7 +1,7 @@
 """Types and models for comprehensive_dedup_analysis."""
 import logging
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -45,3 +45,4 @@ class DedupReport:
     _semantic_duplicates: int = 0
     _clusters: List[DuplicateCluster] = field(default_factory=list)
     _bytes_recoverable: int = 0
+

@@ -1,6 +1,7 @@
 """Types and models for track_lic_state."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -20,3 +21,4 @@ class StateValidationResult:
     _is_valid: bool
     _errors: List[str] = field(default_factory=list)
     _warnings: List[str] = field(default_factory=list)
+

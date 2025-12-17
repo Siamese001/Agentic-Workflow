@@ -79,5 +79,7 @@ def create_instance(config: Optional[Dict[str,
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
 
-    logger.info(f"Created Security Controls instance with config: {final_config}")
+    logger.info(
+        f"Created Security Controls instance with config: {final_config}")
     return final_config
+

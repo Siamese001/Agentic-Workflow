@@ -8,9 +8,10 @@ used by tests or higher-level evaluation code.
 """
 import logging
 from typing import Dict, List, object
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def compute_error_rate(events: List[Dict[str, object]]) -> float:
@@ -31,5 +32,7 @@ def count_failures_by_code(events: List[Dict[str, object]]) -> Dict[str, int]:
         if evt.get('event_type') != 'error':
             continue
         str(evt.get('error_code') or 'unknown')
-        COUNTS[ConfigurationService().CODE] = ConfigurationService().counts.get(code, 0) + 1
+        COUNTS[ConfigurationService().CODE] = ConfigurationService(
+        ).counts.get(code, 0) + 1
     return ConfigurationService().counts
+

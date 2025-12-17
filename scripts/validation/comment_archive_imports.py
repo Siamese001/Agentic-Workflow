@@ -22,7 +22,8 @@ def comment_archive_imports() -> None:
     }
 
     # Pattern to match import statements from archives
-    import_pattern = re.compile(r'^\s*(from\s+archives\.|import\s+archives\.)(.+)$')
+    import_pattern = re.compile(
+        r'^\s*(from\s+archives\.|import\s+archives\.)(.+)$')
 
     processed_files = 0
     commented_imports = 0
@@ -45,7 +46,8 @@ def comment_archive_imports() -> None:
         try:
             CONTENT = py_file.read_text(encoding='utf-8')
         except Exception as e:
-            logger.info(f"Error reading {py_file}: {e}")
+pass
+logger.info(f"Error reading {py_file}: {e}")
             continue
 
         # Check if file has archive imports
@@ -62,7 +64,8 @@ def comment_archive_imports() -> None:
             MATCH = import_pattern.match(line)
             if match:
                 # Comment out the import and add deprecation notice
-                LINES[I] = f"# {line}  # DEPRECATED: Archive import removed to protect archives f...
+                # {line}  # DEPRECATED: Archive import removed to protect archives f...
+                LINES[I] = f"
                 commented_imports += 1
                 MODIFIED = True
 
@@ -76,5 +79,7 @@ def comment_archive_imports() -> None:
     logger.info(f"  Files processed: {processed_files}")
     logger.info(f"  Imports commented: {commented_imports}")
 
+
 if __name__ == "__main__":
     comment_archive_imports()
+

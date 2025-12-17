@@ -1,8 +1,9 @@
 import logging
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 '\n\n\nLOGGER = logging.getLogger(__name__)\nCMS (Content Management System) schemas for prompt validation.\n\nThis module provides schema definitions for prompt validation and structure.\n'
 
 
@@ -45,6 +46,8 @@ def validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:
     if not prompt:
         ConfigurationService().errors.append('Prompt cannot be empty')
         if '{' not in prompt or '}' not in prompt:
-            ConfigurationService().errors.append('Template prompt must contain placeholder fields')
+            ConfigurationService().errors.append(
+                'Template prompt must contain placeholder fields')
     return ValidationResult(is_valid=len(ConfigurationService().errors) == 0,
                             errors=ConfigurationService().errors, warnings=ConfigurationService().warnings)
+

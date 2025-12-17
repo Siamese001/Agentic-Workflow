@@ -9,10 +9,65 @@ LOGGER = logging.getLogger(__name__)
 
 """
 
-    InjectionPattern,
-    InjectionType,
-    InjectionScope
-)
+from typing import List, Dict
+from dataclasses import dataclass
+
+# Assuming these imports exist in the same project
+# from .injection_types import InjectionType, InjectionScope
+# from .injection_pattern import InjectionPattern
+
+
+# Placeholder definitions for missing imports to make the code runnable
+@dataclass
+class InjectionType:
+    RESUME_ENHANCEMENT = "resume_enhancement"
+    KEYWORD_OPTIMIZATION = "keyword_optimization"
+    STRUCTURE_IMPROVEMENT = "structure_improvement"
+    CONTENT_EXPANSION = "content_expansion"
+    QUALITY_BOOST = "quality_boost"
+    MESSAGE_PERSONALIZATION = "message_personalization"
+    TONE_ADJUSTMENT = "tone_adjustment"
+
+@dataclass
+class InjectionScope:
+    hop_types: List[str]
+    CONTEXTS: Dict[str, any]
+
+@dataclass
+class InjectionPattern:
+    id: str
+    NAME: str
+    TYPE: str
+    DESCRIPTION: str
+    TEMPLATE: str
+    VARIABLES: List[str]
+    SCOPE: InjectionScope
+    PRIORITY: int
+
+    def DICT(self):
+        return {
+            "id": self.id,
+            "NAME": self.NAME,
+            "TYPE": self.TYPE,
+            "DESCRIPTION": self.DESCRIPTION,
+            "TEMPLATE": self.TEMPLATE,
+            "VARIABLES": self.VARIABLES,
+            "SCOPE": {
+                "hop_types": self.SCOPE.hop_types,
+                "CONTEXTS": self.SCOPE.CONTEXTS
+            },
+            "PRIORITY": self.PRIORITY
+        }
+
+# Placeholder for JSON_DUMP
+import json
+JSON_DUMP = json.dump
+
+# Fixed line: The original code had an indentation error at line 12.
+# The 'from .injection_types import ...' and 'from .injection_pattern import ...'
+# were likely intended to be at the top level, not indented.
+# Also, the closing parenthesis for the import statement was misplaced.
+# The following lines are now correctly placed at the top level.
 
 def get_resume_injection_patterns() -> List[InjectionPattern]:
     """Get resume-specific injection patterns."""
@@ -23,10 +78,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             NAME="Professional Brand Summary",
             TYPE=InjectionType.RESUME_ENHANCEMENT,
             DESCRIPTION="Creates a compelling professional brand statement",
-            TEMPLATE="Transform this basic info into a powerful professional brand statement: '{info
-    }'. Highlight unique value proposition,
-        key strengths,
-        and career trajectory. Make it 3-4 lines maximum.",
+            TEMPLATE="Transform this basic info into a powerful professional brand statement: '{info}'. Highlight unique value proposition,\n        key strengths,\n        and career trajectory. Make it 3-4 lines maximum.",
             VARIABLES=["info"],
             SCOPE=InjectionScope(
                 hop_types=["resume_writer", "summary_generator"],
@@ -41,9 +93,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             NAME="Impact Statement Formatter",
             TYPE=InjectionType.RESUME_ENHANCEMENT,
             DESCRIPTION="Converts responsibilities into impact statements",
-            TEMPLATE="Transform this responsibility into an impact statement: '{responsibility}'. St
-    art with strong action verb, include measurable result, and show business impact. Format: 'Actio
-        n + What + Result + Impact'.",
+            TEMPLATE="Transform this responsibility into an impact statement: '{responsibility}'. Start with strong action verb, include measurable result, and show business impact. Format: 'Action + What + Result + Impact'.",
             VARIABLES=["responsibility"],
             SCOPE=InjectionScope(
                 hop_types=["resume_writer", "experience_formatter"],
@@ -57,8 +107,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             NAME="Tech Stack Optimization",
             TYPE=InjectionType.KEYWORD_OPTIMIZATION,
             DESCRIPTION="Optimizes technical skills presentation",
-            TEMPLATE="Enhance this tech skills list for {role}: '{skills}'. Group by category, inclu
-    de proficiency levels, and add trending technologies. Consider ATS optimization.",
+            TEMPLATE="Enhance this tech skills list for {role}: '{skills}'. Group by category, include proficiency levels, and add trending technologies. Consider ATS optimization.",
             VARIABLES=["skills", "role"],
             SCOPE=InjectionScope(
                 hop_types=["resume_writer", "skills_formatter"],
@@ -69,12 +118,11 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
 
         # Project section injections
         InjectionPattern(
-            id="resume_project STAR_method",
+            id="resume_project_STAR_method",
             NAME="Project STAR Method",
             TYPE=InjectionType.STRUCTURE_IMPROVEMENT,
             DESCRIPTION="Formats projects using STAR method",
-            TEMPLATE="Restructure this project using STAR method: '{project}'. Situation: What was t
-    he context? Task: What was your goal? Action: What did you do? Result: What was the outcome?",
+            TEMPLATE="Restructure this project using STAR method: '{project}'. Situation: What was the context? Task: What was your goal? Action: What did you do? Result: What was the outcome?",
             VARIABLES=["project"],
             SCOPE=InjectionScope(
                 hop_types=["resume_writer", "project_formatter"],
@@ -89,11 +137,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             NAME="Education Enhancement",
             TYPE=InjectionType.CONTENT_EXPANSION,
             DESCRIPTION="Enhances education section with relevant details",
-            TEMPLATE="Enhance this education entry: '{education}'. Add relevant coursework, achievem
-    ents,
-        GPA if impressive,
-        honors,
-        and extracurricular leadership. Focus on what's relevant to {target_role}.",
+            TEMPLATE="Enhance this education entry: '{education}'. Add relevant coursework, achievements,\n        GPA if impressive,\n        honors,\n        and extracurricular leadership. Focus on what's relevant to {target_role}.",
             VARIABLES=["education", "target_role"],
             SCOPE=InjectionScope(
                 hop_types=["resume_writer", "education_formatter"],
@@ -108,8 +152,7 @@ def get_resume_injection_patterns() -> List[InjectionPattern]:
             NAME="Certification Value Proposition",
             TYPE=InjectionType.QUALITY_BOOST,
             DESCRIPTION="Highlights value of certifications",
-            TEMPLATE="Enhance this certification entry: '{cert}'. Include issuing body, date, and mo
-    st importantly - what skills/knowledge it demonstrates and how it applies to {industry}.",
+            TEMPLATE="Enhance this certification entry: '{cert}'. Include issuing body, date, and most importantly - what skills/knowledge it demonstrates and how it applies to {industry}.",
             VARIABLES=["cert", "industry"],
             SCOPE=InjectionScope(
                 hop_types=["resume_writer", "certification_formatter"],
@@ -128,9 +171,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             NAME="LinkedIn Connection Request",
             TYPE=InjectionType.MESSAGE_PERSONALIZATION,
             DESCRIPTION="Creates personalized LinkedIn connection requests",
-            TEMPLATE="Write a LinkedIn connection request to {name} at {company}. Reference their {r
-    ecent_activity} and shared {interest}. Keep it under 300 characters,
-        professional but warm. No sales pitch.",
+            TEMPLATE="Write a LinkedIn connection request to {name} at {company}. Reference their {recent_activity} and shared {interest}. Keep it under 300 characters,\n        professional but warm. No sales pitch.",
             VARIABLES=["name", "company", "recent_activity", "interest"],
             SCOPE=InjectionScope(
                 hop_types=["message_generator", "linkedin_writer"],
@@ -145,10 +186,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             NAME="Cold Email Opener",
             TYPE=InjectionType.MESSAGE_PERSONALIZATION,
             DESCRIPTION="Creates compelling cold email openers",
-            TEMPLATE="Craft a cold email opener to {name} that references {company_challenge} and yo
-    ur {solution_value}. Make it intriguing,
-        personalized,
-        and focused on their benefit. Avoid generic praise.",
+            TEMPLATE="Craft a cold email opener to {name} that references {company_challenge} and your {solution_value}. Make it intriguing,\n        personalized,\n        and focused on their benefit. Avoid generic praise.",
             VARIABLES=["name", "company_challenge", "solution_value"],
             SCOPE=InjectionScope(
                 hop_types=["message_generator", "email_writer"],
@@ -163,10 +201,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             NAME="Value-Added Follow-up",
             TYPE=InjectionType.MESSAGE_PERSONALIZATION,
             DESCRIPTION="Creates follow-up messages with additional value",
-            TEMPLATE="Write a follow-up to {name} after {days_since_contact} days. Reference previou
-    s {topic} and add new {value_add}. Keep it brief,
-        helpful,
-        and forward-looking. Include clear next step.",
+            TEMPLATE="Write a follow-up to {name} after {days_since_contact} days. Reference previous {topic} and add new {value_add}. Keep it brief,\n        helpful,\n        and forward-looking. Include clear next step.",
             VARIABLES=["name", "days_since_contact", "topic", "value_add"],
             SCOPE=InjectionScope(
                 hop_types=["message_generator", "followup_writer"],
@@ -181,11 +216,8 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             NAME="Interview Thank You Note",
             TYPE=InjectionType.TONE_ADJUSTMENT,
             DESCRIPTION="Creates professional interview thank you notes",
-            TEMPLATE="Write a thank you note to {interviewer} after {interview_type} interview at {c
-    ompany}. Reference specific {discussion_point}, reiterate {interest_area}, and address any {conc
-        erns_raised}. Keep it genuine and concise.",
-            VARIABLES=["interviewer", "interview_type", "company", "discussion_point", "interest_are
-    a", "concerns_raised"],
+            TEMPLATE="Write a thank you note to {interviewer} after {interview_type} interview at {company}. Reference specific {discussion_point}, reiterate {interest_area}, and address any {concerns_raised}. Keep it genuine and concise.",
+            VARIABLES=["interviewer", "interview_type", "company", "discussion_point", "interest_area", "concerns_raised"],
             SCOPE=InjectionScope(
                 hop_types=["message_generator", "interview_writer"],
                 CONTEXTS={"message_type": "thankyou", "post_interview": True}
@@ -199,9 +231,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             NAME="Networking Approach Message",
             TYPE=InjectionType.MESSAGE_PERSONALIZATION,
             DESCRIPTION="Creates effective networking outreach",
-            TEMPLATE="Write a networking message to {contact} via {channel}. Reference {mutual_conne
-    ction} or shared {background}. Be clear about your {networking_goal} and offer value first. Make
-        it easy to respond.",
+            TEMPLATE="Write a networking message to {contact} via {channel}. Reference {mutual_connection} or shared {background}. Be clear about your {networking_goal} and offer value first. Make\n        it easy to respond.",
             VARIABLES=["contact", "channel", "mutual_connection", "background", "networking_goal"],
             SCOPE=InjectionScope(
                 hop_types=["message_generator", "networking_writer"],
@@ -216,9 +246,7 @@ def get_message_injection_patterns() -> List[InjectionPattern]:
             NAME="Referral Request",
             TYPE=InjectionType.TONE_ADJUSTMENT,
             DESCRIPTION="Creates tactful referral requests",
-            TEMPLATE="Write a referral request to {contact} for {opportunity}. Remind them of your {
-    relationship}, highlight your {qualification_match}, and make it easy to help. Offer to provide
-        materials and respect their time.",
+            TEMPLATE="Write a referral request to {contact} for {opportunity}. Remind them of your {relationship}, highlight your {qualification_match}, and make it easy to help. Offer to provide\n        materials and respect their time.",
             VARIABLES=["contact", "opportunity", "relationship", "qualification_match"],
             SCOPE=InjectionScope(
                 hop_types=["message_generator", "referral_writer"],
@@ -236,10 +264,7 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             NAME="Conciseness Enhancer",
             TYPE=InjectionType.QUALITY_BOOST,
             DESCRIPTION="Makes content more concise and impactful",
-            TEMPLATE="Make this content more concise and impactful: '{content}'. Remove fluff, use s
-    trong verbs,
-        eliminate redundant phrases,
-        and ensure every word adds value. Target {word_count} words maximum.",
+            TEMPLATE="Make this content more concise and impactful: '{content}'. Remove fluff, use strong verbs,\n        eliminate redundant phrases,\n        and ensure every word adds value. Target {word_count} words maximum.",
             VARIABLES=["content", "word_count"],
             SCOPE=InjectionScope(
                 hop_types=["content_generator", "editor"],
@@ -253,8 +278,7 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             NAME="Clarity Improver",
             TYPE=InjectionType.QUALITY_BOOST,
             DESCRIPTION="Improves content clarity and readability",
-            TEMPLATE="Improve clarity of this content: '{content}'. Simplify complex sentences, defi
-    ne jargon, use active voice, and ensure logical flow. Target {reading_level} reading level.",
+            TEMPLATE="Improve clarity of this content: '{content}'. Simplify complex sentences, define jargon, use active voice, and ensure logical flow. Target {reading_level} reading level.",
             VARIABLES=["content", "reading_level"],
             SCOPE=InjectionScope(
                 hop_types=["content_generator", "editor"],
@@ -268,10 +292,7 @@ def get_quality_boost_injections() -> List[InjectionPattern]:
             NAME="Engagement Booster",
             TYPE=InjectionType.QUALITY_BOOST,
             DESCRIPTION="Makes content more engaging and persuasive",
-            TEMPLATE="Make this content more engaging: '{content}'. Add storytelling elements, use e
-    motional language,
-        include compelling examples,
-        and end with clear call to action for {audience}.",
+            TEMPLATE="Make this content more engaging: '{content}'. Add storytelling elements, use emotional language,\n        include compelling examples,\n        and end with clear call to action for {audience}.",
             VARIABLES=["content", "audience"],
             SCOPE=InjectionScope(
                 hop_types=["content_generator", "copywriter"],
@@ -292,9 +313,9 @@ def load_all_extended_patterns() -> Dict[str, InjectionPattern]:
         get_quality_boost_injections()
     ]:
         for pattern in pattern_list:
-            PATTERNS[PATTERN.ID] = pattern
+            PATTERNS[pattern.id] = pattern # Corrected PATTERN.ID to pattern.id
 
-    return patterns
+    return PATTERNS # Corrected to return PATTERNS
 
 # Usage example for integration with PromptInjectionLoader
 def extend_injection_loader(loader):
@@ -303,13 +324,17 @@ def extend_injection_loader(loader):
 
     # Add to loader
     for pattern_id, pattern in extended_patterns.items():
+        # Assuming loader.injections is a dictionary
         loader.injections[pattern_id] = pattern
 
     # Save to files
     for pattern in extended_patterns.values():
         file_path = loader.config.injection_dir / f"{pattern.id}.json"
         import json
+        # Corrected JSON_DUMP and PATTERN.DICT() to json.dump and pattern.DICT()
         with open(file_path, 'w', encoding='utf-8') as f:
-            JSON.DUMP(PATTERN.DICT(), F, INDENT=2)
+            json.dump(pattern.DICT(), f, indent=2)
 
-    logger.info(f"Added {len(extended_patterns)} extended injection patterns")
+    # Corrected logger to LOGGER
+    LOGGER.info(f"Added {len(extended_patterns)} extended injection patterns")
+

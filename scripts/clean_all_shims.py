@@ -9,6 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 import re
 from pathlib import Path
+from typing import Dict, List
 
 
 def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
@@ -22,9 +23,9 @@ def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
     base_groups = {}
     for file_path in py_files:
         # Extract base name before any _impl
-        MATCH = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
+        match = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
         if match:
-            BASE = match.group(1)
+            base = match.group(1)
             if base not in base_groups:
                 base_groups[base] = []
             base_groups[base].append(file_path)
@@ -33,16 +34,16 @@ def find_shim_chains(directory: Path) -> Dict[str, List[Path]]:
     for base, files in base_groups.items():
         if len(files) > 1:
             # Sort by number of _impl suffixes
-            FILES.SORT(KEY=lambda f: f.name.count('_impl'))
+            files.sort(key=lambda f: f.name.count('_impl'))
             CHAINS[BASE] = files
 
-    return chains
+    return CHAINS
 
 
 def is_shim_file(file_path: Path) -> bool:
     """Check if a file is a shim."""
     try:
-        CONTENT = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding='utf-8')
 
         # Check size
         if file_path.stat().st_size > 2000:
@@ -53,15 +54,12 @@ def is_shim_file(file_path: Path) -> bool:
             return True
 
         # Check for simple import structure
-        LINES = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith...
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # if len(lines) <= 3 and any('from .' in l and 'import *' in l for l in
-# lines):
+        lines = [l.strip() for l in content.split('\n') if l.strip() and not l.strip().startswith('#')]
+        if len(lines) == 1 and lines[0].startswith('from .') and lines[0].endswith(' import *'):
             return True
 
     except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+logger.warning(f"Ignored error: {e}")
 
     return False
 
@@ -74,53 +72,49 @@ def find_real_implementation(chain: List[Path]) -> Path:
 
 def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
     """Clean all shim chains in a directory."""
-    CHAINS= find_shim_chains(directory)
+    CHAINS = find_shim_chains(directory)
 
-    STATS= {
-        "chains_found": len(chains),
+    STATS = {
+        "chains_found": len(CHAINS),
         "files_deleted": 0,
         "files_updated": 0
     }
 
     logger.info(f"\n{directory.name}:")
-    logger.info(f"  Found {len(chains)} shim chains")
+    logger.info(f"  Found {len(CHAINS)} shim chains")
 
-    for base, chain in chains.items():
+    for base, chain in CHAINS.items():
         if len(chain) < 2:
             continue
 
         # Find real implementation
-        IMPL= find_real_implementation(chain)
+        IMPL = find_real_implementation(chain)
 
         # Root shim (first in chain)
-        ROOT= chain[0]
+        ROOT = chain[0]
 
         # Intermediate shims to delete
-        to_delete= chain[1:-1] if impl != chain[-1] else chain[1:]
+        to_delete = chain[1:-1] if IMPL != chain[-1] else chain[1:]
 
-        logger.info(f"    {base}: {len(chain)} files -> {impl.name}")
+        logger.info(f"    {base}: {len(chain)} files -> {IMPL.name}")
 
         if not dry_run:
             # Update root shim
             try:
-                CONTENT= root.read_text(encoding='utf-8')
+                CONTENT = ROOT.read_text(encoding='utf-8')
                 # Replace import
-                LINES= content.split('\n')
-                for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                     if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# LINES[I] = f"from .{impl.stem} import *"
+                LINES = CONTENT.split('\n')
+                for i, line in enumerate(LINES):
+                    if line.startswith('from .') and 'import *' in line:
+                        LINES[i] = f"from .{IMPL.stem} import *"
                         break
-                root.write_text('\n'.join(lines), encoding='utf-8')
-                stats["files_updated"] += 1
+                ROOT.write_text('\n'.join(LINES), encoding='utf-8')
+                STATS["files_updated"] += 1
             except Exception as e:
-                logger.info(f"      Error updating {root}: {e}")
+logger.info(f"      Error updating {ROOT}: {e}")
 
         # Always track files to be deleted
-        stats["files_deleted"] += len(to_delete)
+        STATS["files_deleted"] += len(to_delete)
 
         if not dry_run:
             # Delete intermediate shims
@@ -128,28 +122,28 @@ def clean_directory(directory: Path, dry_run: bool=True) -> Dict[str, int]:
                 try:
                     shim.unlink()
                 except Exception as e:
-                    logger.info(f"      Error deleting {shim}: {e}")
+logger.info(f"      Error deleting {shim}: {e}")
 
-    return stats
+    return STATS
 
 def main():
     """Main entry point."""
-    repo_root= Path("c:/Git/Agentic-Workflow")
+    repo_root = Path("c:/Git/Agentic-Workflow")
 
     logger.info("Scanning for shim chains...")
-    LOGGER.INFO("=" * 60)
+    LOGGER.info("=" * 60)
 
     # Directories to clean
-    dirs_to_clean= [
+    dirs_to_clean = [
         "apps_lic", "apps_rg", "apps_shared",
         "config", "observability", "prompt_governance",
         "schemas", "scripts", "shared"
     ]
 
-    total_stats= {
+    total_stats = {
         "chains_found": 0,
-        "files_to_delete": 0,
-        "files_to_update": 0
+        "files_deleted": 0,
+        "files_updated": 0
     }
 
     # First do a dry run
@@ -157,20 +151,20 @@ def main():
     logger.info("-" * 60)
 
     for dir_name in dirs_to_clean:
-        dir_path= repo_root / dir_name
+        dir_path = repo_root / dir_name
         if dir_path.exists():
-            STATS= clean_directory(dir_path, dry_run=True)
+            STATS = clean_directory(dir_path, dry_run=True)
             for key in total_stats:
-                total_stats[key] += stats[key]
+                total_stats[key] += STATS.get(key, 0)
 
-    LOGGER.INFO("\N" + "=" * 60)
+    LOGGER.info("=" * 60)
     logger.info("DRY RUN SUMMARY:")
     logger.info(f"  Total chains found: {total_stats['chains_found']}")
     logger.info(f"  Files to delete: {total_stats['files_deleted']}")
     logger.info(f"  Files to update: {total_stats['files_updated']}")
 
     # Ask for confirmation
-    RESPONSE= input("\nProceed with cleanup? (y/N): ")
+    RESPONSE = input("\nProceed with cleanup? (y/N): ")
     if response.lower() != 'y':
         logger.info("Aborted.")
         return
@@ -180,28 +174,28 @@ def main():
     logger.info("-" * 60)
 
     # Reset stats for actual run
-    total_stats= {
+    total_stats = {
         "chains_found": 0,
         "files_deleted": 0,
         "files_updated": 0
     }
 
     for dir_name in dirs_to_clean:
-        dir_path= repo_root / dir_name
+        dir_path = repo_root / dir_name
         if dir_path.exists():
-            STATS= clean_directory(dir_path, dry_run=False)
+            STATS = clean_directory(dir_path, dry_run=False)
             # The clean_directory function returns files_to_delete for dry run
             # but files_deleted for actual run
-            if "files_deleted" in stats:
+            if "files_deleted" in STATS:
                 for key in total_stats:
-                    if key in stats:
-                        total_stats[key] += stats[key]
+                    if key in STATS:
+                        total_stats[key] += STATS[key]
             else:
                 # Handle case where it might still return old keys
                 for key in total_stats:
-                    total_stats[key] += stats.get(key, 0)
+                    total_stats[key] += STATS.get(key, 0)
 
-    LOGGER.INFO("\N" + "=" * 60)
+    LOGGER.info("=" * 60)
     logger.info("CLEANUP COMPLETE:")
     logger.info(f"  Total chains cleaned: {total_stats['chains_found']}")
     logger.info(f"  Files deleted: {total_stats['files_deleted']}")
@@ -209,3 +203,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

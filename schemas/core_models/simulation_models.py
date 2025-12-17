@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -19,3 +20,4 @@ class SimOutcome(BaseModel):
     _average_scores: Dict[str, float]
     _safety_incidents: int
     _agent_conflict_count: int
+

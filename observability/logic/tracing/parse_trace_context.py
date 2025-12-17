@@ -8,6 +8,8 @@ Generated: 2025-12-07T12:07:59.861451
 import logging
 import time
 import uuid
+from dataclasses import dataclass, field
+from contextlib import contextmanager
 from typing import Dict, Generator, List, Optional
 
 LOGGER = logging.getLogger(__name__)
@@ -37,27 +39,27 @@ class W3cTraceContext:
     """Tracer for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
+        self.CONFIG = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
-        logger.info(f"Initialized {self.__class__.__name__}")
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
     def start_span(self,
-                   """Docstring."""
                    name: str,
                    attributes: Optional[Dict] = None) -> Generator[Span,
                                                                    None,
                                                                    None]:
         """Start a new span."""
-        trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
+        trace_id = self._current_span.trace_id if self._current_span else str(
+            uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
 
-        SPAN = Span(
+        span = Span(
             trace_id=trace_id,
             span_id=str(uuid.uuid4()),
-            NAME=name,
-            ATTRIBUTES=attributes or {},
+            name=name,
+            attributes=attributes or {},
             parent_id=parent_id
         )
 
@@ -94,3 +96,4 @@ def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None,
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span
+

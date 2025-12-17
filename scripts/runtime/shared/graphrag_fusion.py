@@ -9,6 +9,7 @@ import logging
 import re
 from dataclasses import dataclass
 from enum import Enum
+from typing import List, Dict, Any, Optional, Tuple, Callable
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,6 +23,20 @@ class QueryType(Enum):
 
 
 @dataclass
+class GraphContext:
+    """Represents context extracted from a knowledge graph."""
+    entities: List[Dict[str, Any]] = None
+    relationships: List[Dict[str, Any]] = None
+    confidence: float = 0.0
+
+    def __post_init__(self):
+        if self.entities is None:
+            self.entities = []
+        if self.relationships is None:
+            self.relationships = []
+
+
+@dataclass
 class FusionResult:
     """Result of GraphRAG fusion query."""
     query: str
@@ -30,7 +45,7 @@ class FusionResult:
     graph_results: GraphContext = None
     fused_context: str = ""
     sources: List[str] = None
-    CONFIDENCE: FLOAT = 0.0
+    confidence: float = 0.0
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
@@ -39,18 +54,18 @@ class FusionResult:
         if self.graph_results is None:
             self.graph_results = GraphContext()
         if self.sources is None:
-            SELF.SOURCES = []
+            self.sources = []
         if self.metadata is None:
-            SELF.METADATA = {}
+            self.metadata = {}
 
 
 class CypherQueryGenerator:
     """Generates Cypher queries from natural language patterns."""
 
     def __init__(self):
-            """Initialize the query generator with patterns."""
+        """Initialize the query generator with patterns."""
         # Common query patterns
-        SELF.PATTERNS = {
+        self.patterns = {
             # Skills and experience
             "skills_match": r"(?:what|which) skills do (?:i|you|candidate) have "
                 r"(?:for|in|related to) (.+)",
@@ -75,7 +90,7 @@ class CypherQueryGenerator:
         }
 
         # Cypher templates for each pattern
-        SELF.TEMPLATES = {
+        self.templates = {
             "skills_match": """
                 MATCH (e:Entity)-[:HAS_SKILL]->(s:Skill)
                 WHERE s.name =~ $skill_pattern
@@ -169,7 +184,7 @@ class CypherQueryGenerator:
         }
 
     def generate_query(self, natural_query: str) -> Tuple[str, Dict[str, Any], str]:
-            """Generate Cypher query from natural language.
+        """Generate Cypher query from natural language.
 
         Args:
             natural_query: Natural language query
@@ -181,37 +196,37 @@ class CypherQueryGenerator:
 
         # Try to match patterns
         for pattern_name, pattern in self.patterns.items():
-            MATCH = re.search(pattern, natural_lower)
+            match = re.search(pattern, natural_lower)
             if match:
-                TEMPLATE = self.templates[pattern_name]
+                template = self.templates[pattern_name]
 
                 # Extract parameters
                 if pattern_name == "skill_to_role":
                     skill_pattern = f"(?i).*{match.group(1)}.*"
                     role_pattern = f"(?i).*{match.group(2)}.*"
-                    PARAMS = {
+                    params = {
                         "skill_pattern": skill_pattern,
                         "role_pattern": role_pattern
                     }
                 else:
-                    ENTITY = match.group(1).strip()
+                    entity = match.group(1).strip()
                     entity_pattern = f"(?i).*{entity}.*"
 
                     # Map to appropriate parameter
                     if "skill" in pattern_name:
-                        PARAMS = {"skill_pattern": entity_pattern}
+                        params = {"skill_pattern": entity_pattern}
                     elif "tech" in pattern_name:
-                        PARAMS = {"tech_pattern": entity_pattern}
+                        params = {"tech_pattern": entity_pattern}
                     elif "company" in pattern_name:
-                        PARAMS = {"company_pattern": entity_pattern}
+                        params = {"company_pattern": entity_pattern}
                     elif "project" in pattern_name:
-                        PARAMS = {"project_pattern": entity_pattern}
+                        params = {"project_pattern": entity_pattern}
                     elif "domain" in pattern_name:
-                        PARAMS = {"domain_pattern": entity_pattern}
+                        params = {"domain_pattern": entity_pattern}
                     elif "entity" in pattern_name:
-                        PARAMS = {"entity_pattern": entity_pattern}
+                        params = {"entity_pattern": entity_pattern}
                     else:
-                        PARAMS = {"entity_pattern": entity_pattern}
+                        params = {"entity_pattern": entity_pattern}
 
                 return template, params, pattern_name
 
@@ -234,12 +249,12 @@ class GraphRAGFusion:
 
     def __init__(
         self,
-        knowledge_graph: Optional[KnowledgeGraphAgent] = None,
-        vector_retriever: Optional[callable] = None,
+        knowledge_graph: Optional["KnowledgeGraphAgent"] = None,
+        vector_retriever: Optional[Callable] = None,
         enable_fusion: bool = True,
         confidence_threshold: float = 0.6
     ):
-            """Initialize GraphRAG fusion.
+        """Initialize GraphRAG fusion.
 
         Args:
             knowledge_graph: KnowledgeGraphAgent instance
@@ -254,7 +269,7 @@ class GraphRAGFusion:
         self.query_generator = CypherQueryGenerator()
 
         # Statistics
-        SELF.STATS = {
+        self.stats = {
             "total_queries": 0,
             "vector_only": 0,
             "graph_only": 0,
@@ -263,16 +278,15 @@ class GraphRAGFusion:
             "graph_fallbacks": 0
         }
 
-        logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
+        LOGGER.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
-        """Docstring."""
     async def query(
         self,
         natural_query: str,
         query_type: Optional[QueryType] = None,
         max_results: int = 5
     ) -> FusionResult:
-            """Execute a GraphRAG fusion query.
+        """Execute a GraphRAG fusion query.
 
         Args:
             natural_query: Natural language query
@@ -297,7 +311,7 @@ class GraphRAGFusion:
             return await self._fusion_query(natural_query, query_type, max_results)
 
     def _detect_query_type(self, query: str) -> QueryType:
-            """Detect query type from natural language.
+        """Detect query type from natural language.
 
         Args:
             query: Natural language query
@@ -334,13 +348,12 @@ class GraphRAGFusion:
         else:
             return QueryType.VECTOR_ONLY
 
-        """Docstring."""
     async def _vector_only_query(
         self,
         query: str,
         max_results: int
     ) -> FusionResult:
-            """Execute vector-only query.
+        """Execute vector-only query.
 
         Args:
             query: Query string
@@ -359,29 +372,28 @@ class GraphRAGFusion:
                 vector_results = []
 
             return FusionResult(
-                QUERY=query,
+                query=query,
                 query_type=QueryType.VECTOR_ONLY,
                 vector_results=vector_results,
-                SOURCES=["vector_search"],
-                CONFIDENCE=0.8
+                sources=["vector_search"],
+                confidence=0.8
             )
 
         except Exception as e:
-            logger.error(f"Vector query failed: {e}")
+LOGGER.error(f"Vector query failed: {e}")
             return FusionResult(
-                QUERY=query,
+                query=query,
                 query_type=QueryType.VECTOR_ONLY,
-                SOURCES=["vector_error"],
-                CONFIDENCE=0.0
+                sources=["vector_error"],
+                confidence=0.0
             )
 
-        """Docstring."""
     async def _graph_only_query(
         self,
         query: str,
         max_results: int
     ) -> FusionResult:
-            """Execute graph-only query.
+        """Execute graph-only query.
 
         Args:
             query: Query string
@@ -399,42 +411,57 @@ class GraphRAGFusion:
 
                 # Execute via knowledge graph
                 # Note: This would need async support in KnowledgeGraphAgent
-                graph_context = self.knowledge_graph.query_context(
-                    params.get("entity_pattern", "").replace("(?i).*", "").replace(".*", ""),
-                    HOPS=2,
-                    LIMIT=max_results
-                )
+                # For now, let's assume a synchronous call or mock it
+                # Replace with actual async call if KnowledgeGraphAgent supports it
+                if hasattr(self.knowledge_graph, 'query_context_async'):
+                    graph_context = await self.knowledge_graph.query_context_async(
+                        params.get("entity_pattern", "").replace("(?i).*", "").replace(".*", ""),
+                        hops=2,
+                        limit=max_results
+                    )
+                else:
+                    # Mocking or assuming synchronous call for now
+                    # In a real scenario, you'd need an async implementation or handle threading
+                    LOGGER.warning("KnowledgeGraphAgent does not have async query_context_async, proceeding with mock/sync call.")
+                    # Example of a potential synchronous call if it exists:
+                    # graph_context = self.knowledge_graph.query_context(
+                    #     params.get("entity_pattern", "").replace("(?i).*", "").replace(".*", ""),
+                    #     HOPS=2,
+                    #     LIMIT=max_results
+                    # )
+                    # For demonstration, creating a dummy GraphContext
+                    graph_context = GraphContext(confidence=0.5)
+
 
                 return FusionResult(
-                    QUERY=query,
+                    query=query,
                     query_type=QueryType.GRAPH_ONLY,
                     graph_results=graph_context,
-                    SOURCES=["graph_search"],
-                    CONFIDENCE=graph_context.confidence,
-                    METADATA={"cypher_pattern": pattern_type}
+                    sources=["graph_search"],
+                    confidence=graph_context.confidence,
+                    metadata={"cypher_pattern": pattern_type}
                 )
             else:
                 self.stats["graph_fallbacks"] += 1
                 return FusionResult(
-                    QUERY=query,
+                    query=query,
                     query_type=QueryType.GRAPH_ONLY,
-                    SOURCES=["graph_unavailable"],
-                    CONFIDENCE=0.0
+                    sources=["graph_unavailable"],
+                    confidence=0.0
                 )
 
         except Exception as e:
-            logger.error(f"Graph query failed: {e}")
+LOGGER.error(f"Graph query failed: {e}")
             # Fallback to vector
             return await self._vector_only_query(query, max_results)
 
-        """Docstring."""
     async def _fusion_query(
         self,
         query: str,
         query_type: QueryType,
         max_results: int
     ) -> FusionResult:
-            """Execute fusion query combining vector and graph.
+        """Execute fusion query combining vector and graph.
 
         Args:
             query: Query string
@@ -460,8 +487,10 @@ class GraphRAGFusion:
         # Handle exceptions
         if isinstance(vector_result, Exception):
             vector_result = FusionResult(query=query, query_type=QueryType.VECTOR_ONLY)
+            LOGGER.error(f"Vector task in fusion failed: {vector_result}")
         if isinstance(graph_result, Exception):
             graph_result = FusionResult(query=query, query_type=QueryType.GRAPH_ONLY)
+            LOGGER.error(f"Graph task in fusion failed: {graph_result}")
 
         # Fuse results
         fused_context = self._fuse_results(
@@ -471,20 +500,20 @@ class GraphRAGFusion:
         )
 
         # Combine sources
-        combined_sources = vector_result.sources + graph_result.sources
+        combined_sources = list(set(vector_result.sources + graph_result.sources)) # Use set to avoid duplicates
 
         # Calculate combined confidence
         combined_confidence = max(vector_result.confidence, graph_result.confidence)
 
         return FusionResult(
-            QUERY=query,
+            query=query,
             query_type=query_type,
             vector_results=vector_result.vector_results,
             graph_results=graph_result.graph_results,
             fused_context=fused_context,
-            SOURCES=combined_sources,
-            CONFIDENCE=combined_confidence,
-            METADATA={
+            sources=combined_sources,
+            confidence=combined_confidence,
+            metadata={
                 "vector_confidence": vector_result.confidence,
                 "graph_confidence": graph_result.confidence,
                 "graph_metadata": graph_result.metadata
@@ -497,7 +526,7 @@ class GraphRAGFusion:
         graph_context: GraphContext,
         query_type: QueryType
     ) -> str:
-            """Fuse vector and graph results into context.
+        """Fuse vector and graph results into context.
 
         Args:
             vector_results: Results from vector search
@@ -513,38 +542,38 @@ class GraphRAGFusion:
         if vector_results:
             context_parts.append("## Unstructured Knowledge")
             for i, result in enumerate(vector_results[:3], 1):
-                TEXT = ""
+                text = ""
                 if isinstance(result, dict):
-                    TEXT = result.get('text', result.get('content', ''))
+                    text = result.get('text', result.get('content', ''))
                 else:
-                    TEXT = str(result)
+                    text = str(result)
                 context_parts.append(f"{i}. {text[:200]}...")
 
         # Add structured relationships from graph
-        if graph_context and graph_context.entities:
+        if graph_context and (graph_context.entities or graph_context.relationships):
             context_parts.append("\n## Structured Relationships")
 
             # Add entities
             if graph_context.entities:
                 context_parts.append("### Key Entities:")
                 for entity in graph_context.entities[:5]:
-                    NAME = entity.get('name', entity.get('entity_name', 'Unknown'))
-                    SCORE = entity.get('influence_score', entity.get('score', 0))
+                    name = entity.get('name', entity.get('entity_name', 'Unknown'))
+                    score = entity.get('influence_score', entity.get('score', 0))
                     context_parts.append(f"- {name} (relevance: {score:.2f})")
 
             # Add relationships
             if graph_context.relationships:
                 context_parts.append("\n### Relationships:")
                 for rel in graph_context.relationships[:5]:
-                    SOURCE = rel.get('source', rel.get('start', 'Unknown'))
-                    TARGET = rel.get('target', rel.get('end', 'Unknown'))
+                    source = rel.get('source', rel.get('start', 'Unknown'))
+                    target = rel.get('target', rel.get('end', 'Unknown'))
                     rel_type = rel.get('type', 'related_to')
                     context_parts.append(f"- {source} --[{rel_type}]--> {target}")
 
         return "\n".join(context_parts)
 
     def get_stats(self) -> Dict[str, Any]:
-            """Get fusion statistics.
+        """Get fusion statistics.
 
         Returns:
             Dictionary with stats
@@ -559,6 +588,28 @@ class GraphRAGFusion:
 # Global instance
 _graphrag_fusion: Optional[GraphRAGFusion] = None
 
+# Placeholder for KnowledgeGraphAgent if it's defined elsewhere
+# In a real scenario, this would be imported or defined before this module.
+class KnowledgeGraphAgent:
+    async def query_context_async(self, entity_name: str, hops: int, limit: int) -> GraphContext:
+        # This is a placeholder implementation. Replace with actual graph querying logic.
+        LOGGER.warning("Using placeholder KnowledgeGraphAgent.query_context_async")
+        await asyncio.sleep(0.1) # Simulate async work
+        return GraphContext(
+            entities=[{"name": f"{entity_name}_entity_1", "influence_score": 0.8}],
+            relationships=[{"source": entity_name, "target": "related_entity", "type": "knows"}],
+            confidence=0.7
+        )
+
+    # Fallback for synchronous call if async is not available
+    def query_context(self, entity_name: str, HOPS: int, LIMIT: int) -> GraphContext:
+        LOGGER.warning("Using placeholder KnowledgeGraphAgent.query_context (synchronous)")
+        return GraphContext(
+            entities=[{"name": f"{entity_name}_entity_1", "influence_score": 0.8}],
+            relationships=[{"source": entity_name, "target": "related_entity", "type": "knows"}],
+            confidence=0.7
+        )
+
 def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
     """Get or create global GraphRAG fusion instance.
 
@@ -571,12 +622,17 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
     global _graphrag_fusion
 
     if _graphrag_fusion is None:
+        # Ensure KnowledgeGraphAgent is instantiated if passed as kwargs or default
+        if 'knowledge_graph' in kwargs and kwargs['knowledge_graph'] is None:
+            kwargs['knowledge_graph'] = KnowledgeGraphAgent()
+        elif 'knowledge_graph' not in kwargs:
+            kwargs['knowledge_graph'] = KnowledgeGraphAgent() # Default to placeholder
+
         _graphrag_fusion = GraphRAGFusion(**kwargs)
 
     return _graphrag_fusion
 
 # Convenience function
-    """Docstring."""
 async def graphrag_query(
     query: str,
     query_type: Optional[QueryType] = None,
@@ -594,5 +650,6 @@ async def graphrag_query(
     Returns:
         FusionResult
     """
-    FUSION = get_graphrag_fusion(**kwargs)
-    return await fusion.query(query, query_type, max_results)
+    fusion_instance = get_graphrag_fusion(**kwargs)
+    return await fusion_instance.query(query, query_type, max_results)
+

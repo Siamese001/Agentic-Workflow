@@ -1,4 +1,3 @@
-
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 
@@ -49,7 +48,7 @@ async def insert_entity(entity: TemporalEntity) -> None:
                 },
             )
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Log error but don't fail - Neo4j is optional mirror
+# Log error but don't fail - Neo4j is optional mirror
         ...
 
 
@@ -70,14 +69,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 PREDICATE=triplet.predicate,
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
-                invalid_at=triplet.
-                .temporal_range.
-                .invalid_at.
-                .isoformat() if triplet.
-                .temporal_range.
-                .invalid_at else None,
-
-
+                invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None,
                 ATTRS={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
@@ -86,7 +78,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 },
             )
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Log error but don't fail - Neo4j is optional mirror
+# Log error but don't fail - Neo4j is optional mirror
         ...
 
 
@@ -114,12 +106,11 @@ async def insert_event(event: TemporalEvent) -> None:
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):
-        # Log error but don't fail - Neo4j is optional mirror
+# Log error but don't fail - Neo4j is optional mirror
         ...
 
 
 async def batch_process_invalidation(
-    """Docstring."""
     events_to_update: List[TemporalEvent]
 ) -> None:
     """
@@ -135,7 +126,6 @@ async def batch_process_invalidation(
 
 
 async def ingest_transcript(
-    """Docstring."""
     transcript_id: str,
     entities: List[TemporalEntity],
     triplets: List[TemporalTriplet],
@@ -160,3 +150,4 @@ async def ingest_transcript(
     # Insert events (including invalidations)
     for event in events:
         await insert_event(event)
+

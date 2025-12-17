@@ -8,16 +8,12 @@ with strict retry logic and fail-fast behavior.
 import json
 import logging
 import time
-from typing import Dict, Any, Optional, List, Tuple
 from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 
-from core.exceptions import (
-    MemorySyncError,
-    SwarmInitializationError,
-    CANON_EXCEPTIONS
-)
-from core.semantic_gatekeeper import SemanticGatekeeper, get_gatekeeper
+from core.exceptions import MemorySyncError, SwarmInitializationError
 from core.qdrant_cache import QdrantCache
+from core.semantic_gatekeeper import SemanticGatekeeper, get_gatekeeper
 from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)
@@ -26,41 +22,41 @@ logger = logging.getLogger(__name__)
 class SwarmNetwork:
     """
     Singleton connection manager for the Hardened Swarm.
-    
+
     Manages Redis Stack and Qdrant connections with exponential backoff
     retry logic. Fails entire swarm startup if connections cannot be
     established.
     """
-    
+
     _instance: Optional['SwarmNetwork'] = None
     _initialized: bool = False
-    
+
     def __new__(cls) -> 'SwarmNetwork':
         """Implement singleton pattern."""
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
-    
+
     def __init__(self):
         """Initialize the swarm network connections."""
         if SwarmNetwork._initialized:
             return
-        
+
         self.redis_host = "localhost"
         self.redis_port = 6379
         self.qdrant_host = "localhost"
         self.qdrant_port = 6333
-        
+
         # Connection objects
         self.gatekeeper: Optional[SemanticGatekeeper] = None
         self.qdrant_cache: Optional[QdrantCache] = None
-        
+
         # Connection state
         self._connected = False
         self._connection_attempts = 0
         self._max_attempts = 5
         self._backoff_factor = 2
-        
+
         # Performance metrics
         self.metrics = {
             "total_queries": 0,
@@ -69,57 +65,61 @@ class SwarmNetwork:
             "errors": 0,
             "retry_count": 0
         }
-        
+
         SwarmNetwork._initialized = True
         logger.info("SwarmNetwork singleton created")
-    
+
     def connect(self, force_retry: bool = False) -> bool:
         """
         Establish connections to Redis and Qdrant.
-        
+
         Args:
             force_retry: Whether to force reconnection attempts
-            
+
         Returns:
             True if connections successful
-            
+
         Raises:
             SwarmInitializationError: If connections cannot be established
         """
         if self._connected and not force_retry:
             return True
-        
+
         self._connection_attempts = 0
-        
+
         # Try to connect with exponential backoff
         while self._connection_attempts < self._max_attempts:
             try:
                 self._connection_attempts += 1
-                
+
                 # Initialize SemanticGatekeeper (includes Redis)
-                logger.info(f"Connection attempt {self._connection_attempts}/{self._max_attempts}")
+                logger.info(
+                    f"Connection attempt {self._connection_attempts}/{self._max_attempts}")
                 self.gatekeeper = get_gatekeeper()
-                
+
                 # Initialize Qdrant cache
                 self.qdrant_cache = QdrantCache(
                     host=self.qdrant_host,
                     port=self.qdrant_port,
                     index_name="canon-l2"
                 )
-                
+
                 # Verify connections
                 self._verify_connections()
-                
+
                 self._connected = True
-                logger.info(f"SwarmNetwork connected successfully on attempt {self._connection_attempts}")
+                logger.info(
+                    f"SwarmNetwork connected successfully on attempt {self._connection_attempts}")
                 return True
-                
+
             except Exception as e:
-                logger.error(f"Connection attempt {self._connection_attempts} failed: {e}")
-                
+logger.error(
+                    f"Connection attempt {self._connection_attempts} failed: {e}")
+
                 if self._connection_attempts < self._max_attempts:
                     # Exponential backoff
-                    delay = self._backoff_factor ** (self._connection_attempts - 1)
+                    delay = self._backoff_factor ** (
+                        self._connection_attempts - 1)
                     logger.info(f"Retrying in {delay} seconds...")
                     time.sleep(delay)
                     self.metrics["retry_count"] += 1
@@ -129,9 +129,9 @@ class SwarmNetwork:
                         failed_component="SwarmNetwork",
                         context={"last_error": str(e)}
                     )
-        
+
         return False
-    
+
     def _verify_connections(self):
         """Verify that both Redis and Qdrant are accessible."""
         # Test Redis connection
@@ -140,28 +140,28 @@ class SwarmNetwork:
             self.gatekeeper.redis.ping()
             logger.debug("Redis connection verified")
         except Exception as e:
-            raise MemorySyncError(
+raise MemorySyncError(
                 "Redis connection failed",
                 operation="ping",
                 backend="redis",
                 retry_count=self._connection_attempts,
                 context={"error": str(e)}
             )
-        
+
         # Test Qdrant connection
         try:
             # Simple collection check
-            collections = self.qdrant_cache.client.get_collections()
+            self.qdrant_cache.client.get_collections()
             logger.debug("Qdrant connection verified")
         except Exception as e:
-            raise MemorySyncError(
+raise MemorySyncError(
                 "Qdrant connection failed",
                 operation="get_collections",
                 backend="qdrant",
                 retry_count=self._connection_attempts,
                 context={"error": str(e)}
             )
-    
+
     def consult_canon(
         self,
         query_vector: List[float],
@@ -170,15 +170,15 @@ class SwarmNetwork:
     ) -> Tuple[bool, Optional[CanonEntry]]:
         """
         Consult the Canon for a given query.
-        
+
         Args:
             query_vector: Embedding vector to search for
             agent_id: ID of the consulting agent
             context: Additional context for the query
-            
+
         Returns:
             Tuple of (is_safe, matching_pattern)
-            
+
         Raises:
             CanonViolationError: If pattern has failures
             MemorySyncError: If consultation fails
@@ -189,22 +189,23 @@ class SwarmNetwork:
                 operation="consult_canon",
                 backend="both"
             )
-        
+
         self.metrics["total_queries"] += 1
-        
+
         try:
             # Use SemanticGatekeeper for consultation
-            planned_action = context.get("action", f"Agent {agent_id} consultation")
+            planned_action = context.get(
+                "action", f"Agent {agent_id} consultation")
             code = context.get("code")
             policy_key = context.get("policy_key")
-            
+
             is_safe, pattern = self.gatekeeper.consult_canon(
                 planned_action=planned_action,
                 code=code,
                 policy_key=policy_key,
                 context=context
             )
-            
+
             # Check for pattern failures
             if pattern and pattern.failure_count > 0:
                 raise CanonViolationError(
@@ -217,29 +218,29 @@ class SwarmNetwork:
                         "success_count": pattern.success_count
                     }
                 )
-            
+
             # Update metrics
             if pattern:
                 self.metrics["cache_hits"] += 1
             else:
                 self.metrics["cache_misses"] += 1
-            
+
             # Log consultation
             self._log_consultation(agent_id, is_safe, pattern, context)
-            
+
             return is_safe, pattern
-            
+
         except CanonViolationError:
-            raise
+raise
         except Exception as e:
-            self.metrics["errors"] += 1
+self.metrics["errors"] += 1
             raise MemorySyncError(
                 f"Canon consultation failed: {e}",
                 operation="consult_canon",
                 backend="both",
                 context={"agent_id": agent_id}
             )
-    
+
     def record_outcome(
         self,
         pattern_id: str,
@@ -250,7 +251,7 @@ class SwarmNetwork:
     ):
         """
         Record execution outcome for meta-learning.
-        
+
         Args:
             pattern_id: ID of the pattern used
             success: Whether execution was successful
@@ -261,7 +262,7 @@ class SwarmNetwork:
         if not self._connected:
             logger.warning("Cannot record outcome: SwarmNetwork not connected")
             return
-        
+
         try:
             # Use SemanticGatekeeper to record pattern
             self.gatekeeper.record_pattern(
@@ -276,13 +277,14 @@ class SwarmNetwork:
                 project_tag="swarm_execution",
                 error_trace=error_trace
             )
-            
-            logger.debug(f"Recorded outcome for pattern {pattern_id}: {'SUCCESS' if success else 'FAILURE'}")
-            
+
+            logger.debug(
+                f"Recorded outcome for pattern {pattern_id}: {'SUCCESS' if success else 'FAILURE'}")
+
         except Exception as e:
-            logger.error(f"Failed to record outcome: {e}")
+logger.error(f"Failed to record outcome: {e}")
             self.metrics["errors"] += 1
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get connection and performance metrics."""
         if self.gatekeeper:
@@ -290,14 +292,14 @@ class SwarmNetwork:
             self.metrics.update({
                 "latency_stats": latency_stats
             })
-        
+
         return {
             "connected": self._connected,
             "connection_attempts": self._connection_attempts,
             "metrics": self.metrics.copy(),
             "timestamp": datetime.utcnow().isoformat()
         }
-    
+
     def _log_consultation(
         self,
         agent_id: str,
@@ -313,34 +315,34 @@ class SwarmNetwork:
             "pattern_found": pattern is not None,
             "timestamp": datetime.utcnow().isoformat()
         }
-        
+
         if pattern:
             log_entry.update({
                 "pattern_id": str(pattern.id),
                 "failure_count": pattern.failure_count,
                 "success_count": pattern.success_count
             })
-        
+
         if context:
             log_entry["context"] = context
-        
+
         logger.info(json.dumps(log_entry))
-    
+
     def disconnect(self):
         """Disconnect from all services."""
         if self.gatekeeper:
             self.gatekeeper.shutdown()
-        
+
         self._connected = False
         logger.info("SwarmNetwork disconnected")
-    
+
     @classmethod
     def get_instance(cls) -> 'SwarmNetwork':
         """Get the singleton instance."""
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
-    
+
     @classmethod
     def reset(cls):
         """Reset the singleton (for testing)."""
@@ -348,3 +350,4 @@ class SwarmNetwork:
             cls._instance.disconnect()
         cls._instance = None
         cls._initialized = False
+

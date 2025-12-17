@@ -1,7 +1,7 @@
 """Types and models for capability_analyzer."""
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -38,9 +38,8 @@ class CapabilityGap:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'gap_id': self.gap_id, 'gap_type': self.gap_type.value, 'description': self.descript
-    ion, 'affected_scenarios': self.affected_scenarios, 'failure_count': self.failure_count, 'severi
-        ty': self.severity, 'evidence': self.evidence}
+        return {'gap_id': self.gap_id, 'gap_type': self.gap_type.value, 'description': self.description, 'affected_scenarios': self.affected_scenarios, 'failure_count': self.failure_count, 'severity': self.severity, 'evidence': self.evidence}
+
 
 @dataclass
 class Recommendation:
@@ -56,10 +55,8 @@ class Recommendation:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'recommendation_id': self.recommendation_id, 'recommendation_type': self.recommendat
-    ion_type.value, 'title': self.title, 'description': self.description, 'addresses_gaps': self.add
-        resses_gaps, 'priority': self.priority, 'implementation_steps': self.implementation_steps, '
-            estimated_impact': self.estimated_impact}
+        return {'recommendation_id': self.recommendation_id, 'recommendation_type': self.recommendation_type.value, 'title': self.title, 'description': self.description, 'addresses_gaps': self.addresses_gaps, 'priority': self.priority, 'implementation_steps': self.implementation_steps, 'estimated_impact': self.estimated_impact}
+
 
 @dataclass
 class AnalysisReport:
@@ -74,8 +71,9 @@ class AnalysisReport:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'report_id': self.report_id,
-            'agent_id': self.agent_id,
-            'gaps_identified': [g.to_dict() for g in self.gaps_identified],
-            'recommendations': [r.to_dict() for r in self.recommendations],
-            'overall_health_score': self.overall_health_score,
-            'analysis_timestamp': self.analysis_timestamp}
+                'agent_id': self.agent_id,
+                'gaps_identified': [g.to_dict() for g in self.gaps_identified],
+                'recommendations': [r.to_dict() for r in self.recommendations],
+                'overall_health_score': self.overall_health_score,
+                'analysis_timestamp': self.analysis_timestamp}
+

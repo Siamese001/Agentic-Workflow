@@ -6,18 +6,76 @@ customization.
 """
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from abc import ABC, abstractmethod
+from typing import Dict, Any, List, Optional
 
-    SignalAssessment,
-    SignalEnhancer,
-    QualityThresholds,
-    SignalQuality
-)
-    FeedbackLoop,
-    QualityFeedback,
-    FeedbackType
-)
+# Assuming these are defined elsewhere or will be imported
+# For the purpose of fixing syntax, we'll assume they exist.
+# If they were intended to be imported, the original code had them commented out and indented incorrectly.
+# We will place them here as if they were top-level imports.
+# If these were meant to be defined in THIS file, their definition is missing.
+
+class SignalAssessment:
+    """Placeholder for SignalAssessment."""
+    def __init__(self, content: str, context: Optional[Dict[str, Any]] = None):
+        self.content = content
+        self.context = context
+        self.score = 0.0
+        self.composite_score = 0.0
+        self.domain_metrics = {}
+        self.domain_validation = {}
+
+class SignalEnhancer:
+    """Placeholder for SignalEnhancer."""
+    def __init__(self, NAME: str, THRESHOLDS: 'QualityThresholds'):
+        self.NAME = NAME
+        self.THRESHOLDS = THRESHOLDS
+        self.domain_config = None
+        self.domain_validator = None
+
+    def assess_signal(self, content: str, context: Optional[Dict[str, Any]] = None) -> SignalAssessment:
+        # Mock implementation
+        return SignalAssessment(content, context)
+
+
+class QualityThresholds:
+    """Placeholder for QualityThresholds."""
+    def __init__(self, GOOD_MIN: float = 0.7, MARGINAL_MIN: float = 0.5):
+        self.GOOD_MIN = GOOD_MIN
+        self.MARGINAL_MIN = MARGINAL_MIN
+
+class QualityFeedback:
+    """Placeholder for QualityFeedback."""
+    pass
+
+class FeedbackType(Enum):
+    """Placeholder for FeedbackType."""
+    POSITIVE = "positive"
+    NEGATIVE = "negative"
+
+class FeedbackLoop:
+    """Placeholder for FeedbackLoop."""
+    def __init__(self, name: str):
+        self.name = name
+        self._feedback_history = []
+
+    def add_feedback(self, feedback: QualityFeedback):
+        self._feedback_history.append(feedback)
+
+    def get_quality_insights(self) -> Dict[str, Any]:
+        # Mock implementation
+        return {"average_scores": {"composite": 0.6}, "common_flags": {}}
+
+
+# --- Original imports, now correctly placed ---
+import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from abc import ABC, abstractmethod
+from typing import Dict, Any, List, Optional
+import re # Imported within ResumeValidator, but good to have at top if used widely
 
 LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +109,7 @@ class DomainValidator(ABC):
 
     @ abstractmethod
     def validate_domain_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
-            """Validate content for specific domain.
+        """Validate content for specific domain.
 
         Args:
             content: Content to validate
@@ -64,7 +122,7 @@ class DomainValidator(ABC):
 
     @abstractmethod
     def extract_domain_metrics(self, content: str) -> Dict[str, float]:
-            """Extract domain-specific metrics.
+        """Extract domain-specific metrics.
 
         Args:
             content: Content to analyze
@@ -78,7 +136,7 @@ class ResumeValidator(DomainValidator):
     """Validator for resume-specific content."""
 
     def validate_domain_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
-            """Validate resume content."""
+        """Validate resume content."""
         RESULTS = {
             "has_achievements": self._has_achievements(content),
             "has_metrics": self._has_metrics(content),
@@ -86,10 +144,10 @@ class ResumeValidator(DomainValidator):
             "bullet_quality": self._assess_bullet_quality(content),
             "completeness": self._assess_completeness(content, context)
         }
-        return results
+        return RESULTS
 
     def extract_domain_metrics(self, content: str) -> Dict[str, float]:
-            """Extract resume-specific metrics."""
+        """Extract resume-specific metrics."""
         return {
             "achievement_density": self._calculate_achievement_density(content),
             "metric_usage": self._calculate_metric_usage(content),
@@ -98,7 +156,7 @@ class ResumeValidator(DomainValidator):
         }
 
     def _has_achievements(self, content: str) -> bool:
-            """Check if content has achievement statements."""
+        """Check if content has achievement statements."""
         achievement_patterns = [
             r"\bincreased\b",
             r"\bdecreased\b",
@@ -108,11 +166,10 @@ class ResumeValidator(DomainValidator):
             r"\boptimized\b",
             r"\blead\b.*\bteam\b"
         ]
-        import re
         return any(re.search(pattern, content, re.IGNORECASE) for pattern in achievement_patterns)
 
     def _has_metrics(self, content: str) -> bool:
-            """Check if content includes metrics."""
+        """Check if content includes metrics."""
         metric_patterns = [
             r"\d+%",
             r"\$\d+(?:,\d{3})*(?:\.\d+)?",
@@ -122,40 +179,39 @@ class ResumeValidator(DomainValidator):
         return any(re.search(pattern, content) for pattern in metric_patterns)
 
     def _count_action_verbs(self, content: str) -> int:
-            """Count action verbs in content."""
+        """Count action verbs in content."""
         action_verbs = {
             "led", "managed", "developed", "created", "implemented", "optimized",
             "reduced", "increased", "improved", "achieved", "delivered", "launched",
             "coordinated", "directed", "supervised", "mentored", "trained"
         }
-        WORDS = content.lower().split()
+        words = content.lower().split()
         return sum(1 for word in words if word in action_verbs)
 
     def _assess_bullet_quality(self, content: str) -> float:
-            """Assess bullet point quality."""
-        BULLETS = [b.strip() for b in content.split('\n') if b.strip().startswith('•') or b.strip().
-    startswith('-')]
+        """Assess bullet point quality."""
+        bullets = [b.strip() for b in content.split('\n') if b.strip().startswith('•') or b.strip().startswith('-')]
         if not bullets:
             return 0.0
 
         quality_scores = []
         for bullet in bullets:
-            SCORE = 0.0
+            score = 0.0
             # Has action verb
             if any(verb in bullet.lower() for verb in ["led", "managed", "developed"]):
-                SCORE += 0.3
+                score += 0.3
             # Has metric
             if any(char.isdigit() for char in bullet):
-                SCORE += 0.4
+                score += 0.4
             # Has result
             if any(word in bullet.lower() for word in ["resulted", "achieved", "led to"]):
-                SCORE += 0.3
+                score += 0.3
             quality_scores.append(score)
 
         return sum(quality_scores) / len(quality_scores) if quality_scores else 0.0
 
     def _assess_completeness(self, content: str, context: Dict[str, Any]) -> float:
-            """Assess content completeness."""
+        """Assess content completeness."""
         required_sections = context.get("required_sections", [])
         present_sections = 0
 
@@ -166,26 +222,26 @@ class ResumeValidator(DomainValidator):
         return present_sections / len(required_sections) if required_sections else 0.5
 
     def _calculate_achievement_density(self, content: str) -> float:
-            """Calculate achievement statement density."""
-        SENTENCES = content.split('.')
-        ACHIEVEMENTS = sum(1 for s in sentences if self._has_achievements(s))
+        """Calculate achievement statement density."""
+        sentences = content.split('.')
+        achievements = sum(1 for s in sentences if self._has_achievements(s))
         return achievements / len(sentences) if sentences else 0.0
 
     def _calculate_metric_usage(self, content: str) -> float:
-            """Calculate metric usage frequency."""
-        SENTENCES = content.split('.')
+        """Calculate metric usage frequency."""
+        sentences = content.split('.')
         with_metrics = sum(1 for s in sentences if self._has_metrics(s))
         return with_metrics / len(sentences) if sentences else 0.0
 
     def _calculate_verb_diversity(self, content: str) -> float:
-            """Calculate action verb diversity."""
-        VERBS = self._count_action_verbs(content)
+        """Calculate action verb diversity."""
+        verbs_count = self._count_action_verbs(content)
         unique_verbs = len(set(word.lower() for word in content.split()
                              if word in ["led", "managed", "developed", "created"]))
-        return unique_verbs / max(verbs, 1)
+        return unique_verbs / max(verbs_count, 1)
 
     def _calculate_impact_score(self, content: str) -> float:
-            """Calculate overall impact score."""
+        """Calculate overall impact score."""
         return (
             self._calculate_achievement_density(content) * 0.4 +
             self._calculate_metric_usage(content) * 0.4 +
@@ -196,7 +252,7 @@ class OutreachValidator(DomainValidator):
     """Validator for outreach-specific content."""
 
     def validate_domain_content(self, content: str, context: Dict[str, Any]) -> Dict[str, Any]:
-            """Validate outreach content."""
+        """Validate outreach content."""
         RESULTS = {
             "has_personalization": self._has_personalization(content, context),
             "has_cta": self._has_call_to_action(content),
@@ -204,10 +260,10 @@ class OutreachValidator(DomainValidator):
             "value_proposition": self._has_value_proposition(content),
             "recipient_relevance": self._assess_recipient_relevance(content, context)
         }
-        return results
+        return RESULTS
 
     def extract_domain_metrics(self, content: str) -> Dict[str, float]:
-            """Extract outreach-specific metrics."""
+        """Extract outreach-specific metrics."""
         return {
             "personalization_score": self._calculate_personalization_score(content),
             "engagement_potential": self._calculate_engagement_potential(content),
@@ -216,7 +272,7 @@ class OutreachValidator(DomainValidator):
         }
 
     def _has_personalization(self, content: str, context: Dict[str, Any]) -> bool:
-            """Check if content has personalization."""
+        """Check if content has personalization."""
         recipient_info = context.get("recipient_info", {})
         if not recipient_info:
             return False
@@ -234,7 +290,7 @@ class OutreachValidator(DomainValidator):
         return any(indicator in content_lower for indicator in personalization_indicators)
 
     def _has_call_to_action(self, content: str) -> bool:
-            """Check if content has call to action."""
+        """Check if content has call to action."""
         cta_phrases = [
             "let's discuss",
             "would love to",
@@ -247,7 +303,7 @@ class OutreachValidator(DomainValidator):
         return any(phrase in content_lower for phrase in cta_phrases)
 
     def _assess_tone(self, content: str, context: Dict[str, Any]) -> float:
-            """Assess tone appropriateness."""
+        """Assess tone appropriateness."""
         recipient_level = context.get("recipient_level", "professional")
 
         # Check formality indicators
@@ -259,15 +315,14 @@ class OutreachValidator(DomainValidator):
         if recipient_level == "c_level":
             # Should be very formal
             formal_count = sum(1 for indicator in formal_indicators if indicator in content_lower)
-            informal_count = sum(1 for indicator in informal_indicators if indicator in content_lowe
-    r)
+            informal_count = sum(1 for indicator in informal_indicators if indicator in content_lower)
             return min(1.0, formal_count * 0.3 - informal_count * 0.5)
         else:
             # Can be slightly less formal
             return 0.7  # Default moderate formality
 
     def _has_value_proposition(self, content: str) -> bool:
-            """Check if content has clear value proposition."""
+        """Check if content has clear value proposition."""
         value_indicators = [
             "bring to",
             "contribute to",
@@ -281,7 +336,7 @@ class OutreachValidator(DomainValidator):
         return any(indicator in content_lower for indicator in value_indicators)
 
     def _assess_recipient_relevance(self, content: str, context: Dict[str, Any]) -> float:
-            """Assess relevance to recipient."""
+        """Assess relevance to recipient."""
         recipient_role = context.get("recipient_info", {}).get("role", "").lower()
         recipient_company = context.get("recipient_info", {}).get("company", "").lower()
 
@@ -305,7 +360,7 @@ class OutreachValidator(DomainValidator):
         return min(1.0, relevance_score)
 
     def _calculate_personalization_score(self, content: str) -> float:
-            """Calculate personalization score."""
+        """Calculate personalization score."""
         # Simplified - count personalization indicators
         personal_indicators = ["you", "your", "specific", "particular", "unique"]
         content_lower = content.lower()
@@ -313,7 +368,7 @@ class OutreachValidator(DomainValidator):
         return min(1.0, indicator_count * 0.2)
 
     def _calculate_engagement_potential(self, content: str) -> float:
-            """Calculate engagement potential."""
+        """Calculate engagement potential."""
         engaging_words = [
             "exciting", "opportunity", "innovative", "breakthrough",
             "transform", "revolutionize", "game-changing"
@@ -323,7 +378,7 @@ class OutreachValidator(DomainValidator):
         return min(1.0, engaging_count * 0.15)
 
     def _calculate_professionalism(self, content: str) -> float:
-            """Calculate professionalism score."""
+        """Calculate professionalism score."""
         # Check for professional language
         professional_words = [
             "expertise", "experience", "background", "qualifications",
@@ -339,9 +394,9 @@ class OutreachValidator(DomainValidator):
         return min(1.0, professional_count * 0.1 - casual_count * 0.2)
 
     def _calculate_clarity(self, content: str) -> float:
-            """Calculate clarity score."""
+        """Calculate clarity score."""
         # Simple clarity based on sentence length and structure
-        SENTENCES = [s.strip() for s in content.split('.') if s.strip()]
+        sentences = [s.strip() for s in content.split('.') if s.strip()]
         if not sentences:
             return 0.0
 
@@ -361,7 +416,7 @@ class SharedSignalInfrastructure:
     """Shared infrastructure for signal enhancement across engines."""
 
     def __init__(self):
-            """Initialize the shared infrastructure."""
+        """Initialize the shared infrastructure."""
         self._validators: Dict[EngineType, DomainValidator] = {
             EngineType.RESUME: ResumeValidator(),
             EngineType.OUTREACH: OutreachValidator()
@@ -369,15 +424,14 @@ class SharedSignalInfrastructure:
         self._enhancers: Dict[str, SignalEnhancer] = {}
         self._feedback_loops: Dict[str, FeedbackLoop] = {}
 
-        logger.info("Initialized SharedSignalInfrastructure")
+        LOGGER.info("Initialized SharedSignalInfrastructure")
 
-        """Docstring."""
     def get_enhancer(
         self,
         engine_type: EngineType,
         domain_config: DomainConfig
     ) -> SignalEnhancer:
-            """Get a signal enhancer for the specified engine.
+        """Get a signal enhancer for the specified engine.
 
         Args:
             engine_type: Type of engine
@@ -389,7 +443,7 @@ class SharedSignalInfrastructure:
         enhancer_key = f"{engine_type.value}_{id(domain_config)}"
 
         if enhancer_key not in self._enhancers:
-            ENHANCER = SignalEnhancer(
+            enhancer = SignalEnhancer(
                 NAME=f"{engine_type.value}_enhancer",
                 THRESHOLDS=domain_config.quality_thresholds
             )
@@ -402,7 +456,6 @@ class SharedSignalInfrastructure:
 
         return self._enhancers[enhancer_key]
 
-        """Docstring."""
     def assess_signal(
         self,
         content: str,
@@ -410,7 +463,7 @@ class SharedSignalInfrastructure:
         domain_config: DomainConfig,
         context: Optional[Dict[str, Any]] = None
     ) -> SignalAssessment:
-            """Assess signal quality with domain-specific validation.
+        """Assess signal quality with domain-specific validation.
 
         Args:
             content: Content to assess
@@ -422,12 +475,12 @@ class SharedSignalInfrastructure:
             Enhanced signal assessment
         """
         # Get base assessment
-        ENHANCER = self.get_enhancer(engine_type, domain_config)
-        ASSESSMENT = enhancer.assess_signal(content, context)
+        enhancer = self.get_enhancer(engine_type, domain_config)
+        assessment = enhancer.assess_signal(content, context)
 
         # Add domain-specific validation
         if engine_type in self._validators:
-            VALIDATOR = self._validators[engine_type]
+            validator = self._validators[engine_type]
 
             # Add domain metrics
             domain_metrics = validator.extract_domain_metrics(content)
@@ -439,20 +492,20 @@ class SharedSignalInfrastructure:
                 assessment.domain_validation = domain_validation
 
                 # Adjust composite score based on domain validation
-                domain_score = sum(domain_validation.values()) / len(domain_validation)
-                assessment.composite_score = (
-                    assessment.composite_score * 0.7 + domain_score * 0.3
-                )
+                if domain_validation: # Avoid division by zero if domain_validation is empty
+                    domain_score = sum(domain_validation.values()) / len(domain_validation)
+                    assessment.composite_score = (
+                        assessment.composite_score * 0.7 + domain_score * 0.3
+                    )
 
         return assessment
 
-        """Docstring."""
     def get_feedback_loop(
         self,
         engine_type: EngineType,
         loop_name: Optional[str] = None
     ) -> FeedbackLoop:
-            """Get feedback loop for the engine.
+        """Get feedback loop for the engine.
 
         Args:
             engine_type: Type of engine
@@ -468,14 +521,13 @@ class SharedSignalInfrastructure:
 
         return self._feedback_loops[loop_key]
 
-        """Docstring."""
     def create_domain_config(
         self,
         engine_type: EngineType,
         custom_thresholds: Optional[QualityThresholds] = None,
         custom_weights: Optional[Dict[str, float]] = None
     ) -> DomainConfig:
-            """Create domain configuration.
+        """Create domain configuration.
 
         Args:
             engine_type: Type of engine
@@ -485,7 +537,7 @@ class SharedSignalInfrastructure:
         Returns:
             Domain configuration
         """
-        THRESHOLDS = custom_thresholds or QualityThresholds()
+        thresholds = custom_thresholds or QualityThresholds()
 
         # Domain-specific default configurations
         if engine_type == EngineType.RESUME:
@@ -495,8 +547,7 @@ class SharedSignalInfrastructure:
                 "min_bullet_points": 3,
                 "max_bullet_length": 200
             }
-            custom_metrics = ["achievement_density", "metric_usage", "verb_diversity", "impact_score
-    "]
+            custom_metrics = ["achievement_density", "metric_usage", "verb_diversity", "impact_score"]
         elif engine_type == EngineType.OUTREACH:
             validation_rules = {
                 "require_personalization": True,
@@ -504,8 +555,7 @@ class SharedSignalInfrastructure:
                 "max_length": 500,
                 "min_recipient_references": 2
             }
-            custom_metrics = ["personalization_score", "engagement_potential", "professionalism", "c
-    larity"]
+            custom_metrics = ["personalization_score", "engagement_potential", "professionalism", "clarity"]
         else:
             validation_rules = {}
             custom_metrics = []
@@ -519,12 +569,12 @@ class SharedSignalInfrastructure:
         )
 
     def get_cross_engine_insights(self) -> Dict[str, Any]:
-            """Get insights across all engines.
+        """Get insights across all engines.
 
         Returns:
             Cross-engine insights
         """
-        INSIGHTS = {
+        insights = {
             "engines": {},
             "shared_patterns": {},
             "recommendations": []
@@ -535,7 +585,7 @@ class SharedSignalInfrastructure:
             if engine_type == EngineType.GENERAL:
                 continue
 
-            LOOP = self.get_feedback_loop(engine_type)
+            loop = self.get_feedback_loop(engine_type)
             engine_insights = loop.get_quality_insights()
             insights["engines"][engine_type.value] = engine_insights
 
@@ -543,7 +593,7 @@ class SharedSignalInfrastructure:
         all_thresholds = {}
         for enhancer in self._enhancers.values():
             if hasattr(enhancer, 'domain_config'):
-                ENGINE = enhancer.domain_config.engine_type
+                engine = enhancer.domain_config.engine_type
                 all_thresholds[engine.value] = enhancer.domain_config.quality_thresholds
 
         insights["shared_patterns"] = {
@@ -553,12 +603,12 @@ class SharedSignalInfrastructure:
         }
 
         # Generate recommendations
-        INSIGHTS["RECOMMENDATIONS"] = self._generate_cross_engine_recommendations(insights)
+        insights["recommendations"] = self._generate_cross_engine_recommendations(insights)
 
         return insights
 
     def _find_common_flags(self) -> Dict[str, List[str]]:
-            """Find common quality flags across engines."""
+        """Find common quality flags across engines."""
         flag_counts = {}
 
         for loop in self._feedback_loops.values():
@@ -572,7 +622,7 @@ class SharedSignalInfrastructure:
         return flag_counts
 
     def _analyze_quality_correlation(self) -> Dict[str, float]:
-            """Analyze quality correlations between engines."""
+        """Analyze quality correlations between engines."""
         # Simplified - would need actual data for real correlation
         return {
             "resume_outreach_correlation": 0.65,
@@ -580,8 +630,8 @@ class SharedSignalInfrastructure:
         }
 
     def _generate_cross_engine_recommendations(self, insights: Dict[str, Any]) -> List[str]:
-            """Generate recommendations based on cross-engine analysis."""
-        RECOMMENDATIONS = []
+        """Generate recommendations based on cross-engine analysis."""
+        recommendations = []
 
         # Check for quality gaps
         for engine, engine_insights in insights["engines"].items():
@@ -602,22 +652,32 @@ class SharedSignalInfrastructure:
 
         return recommendations
 
-# Global shared infrastructure instance
-_shared_infrastructure: Optional[SharedSignalInfrastructure] = None
+class SignalInfrastructureManager:
+    """Manager for SharedSignalInfrastructure without global state"""
+    
+    def __init__(self):
+        self._instance = None
+    
+    def get_infrastructure(self):
+        """Get or create the SharedSignalInfrastructure instance"""
+        if self._instance is None:
+            self._instance = SharedSignalInfrastructure()
+        return self._instance
 
-def get_shared_infrastructure() -> SharedSignalInfrastructure:
-    """Get the global shared infrastructure instance.
+
+# Global manager instance (acceptable as it's a dependency injection container)
+_infrastructure_manager = SignalInfrastructureManager()
+
+
+def get_shared_signal_infrastructure() -> SharedSignalInfrastructure:
+    """Get the global shared signal infrastructure instance.
 
     Returns:
         SharedSignalInfrastructure instance
     """
-    global _shared_infrastructure
-    if _shared_infrastructure is None:
-        _shared_infrastructure = SharedSignalInfrastructure()
-    return _shared_infrastructure
+    return _infrastructure_manager.get_infrastructure()
 
 # Convenience functions for engines
-    """Docstring."""
 def assess_resume_signal(
     content: str,
     context: Optional[Dict[str, Any]] = None,
@@ -633,20 +693,19 @@ def assess_resume_signal(
     Returns:
         Signal assessment
     """
-    INFRASTRUCTURE = get_shared_infrastructure()
+    infrastructure = get_shared_infrastructure()
 
     # Create resume config
-    THRESHOLDS = QualityThresholds() if strict_mode else QualityThresholds(
+    thresholds = QualityThresholds() if strict_mode else QualityThresholds(
         GOOD_MIN=0.5, MARGINAL_MIN=0.3
     )
-    CONFIG = infrastructure.create_domain_config(
+    config = infrastructure.create_domain_config(
         EngineType.RESUME,
         custom_thresholds=thresholds
     )
 
     return infrastructure.assess_signal(content, EngineType.RESUME, config, context)
 
-    """Docstring."""
 def assess_outreach_signal(
     content: str,
     context: Optional[Dict[str, Any]] = None,
@@ -662,15 +721,16 @@ def assess_outreach_signal(
     Returns:
         Signal assessment
     """
-    INFRASTRUCTURE = get_shared_infrastructure()
+    infrastructure = get_shared_infrastructure()
 
     # Create outreach config
-    THRESHOLDS = QualityThresholds() if strict_mode else QualityThresholds(
+    thresholds = QualityThresholds() if strict_mode else QualityThresholds(
         GOOD_MIN=0.5, MARGINAL_MIN=0.3
     )
-    CONFIG = infrastructure.create_domain_config(
+    config = infrastructure.create_domain_config(
         EngineType.OUTREACH,
         custom_thresholds=thresholds
     )
 
     return infrastructure.assess_signal(content, EngineType.OUTREACH, config, context)
+

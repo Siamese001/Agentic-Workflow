@@ -31,7 +31,7 @@ class CreateExperienceBullets:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            return ExecutionResult(
+return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
@@ -44,9 +44,9 @@ class CreateExperienceBullets:
 
 
 def execute(action: str,
-            """Docstring."""
             params: Dict[str,
                          object],
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return CreateExperienceBullets(config).execute(action, params)
+

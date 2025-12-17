@@ -21,8 +21,9 @@ Version: 1.0.0
 License: Internal Use Only
 """
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 MODULE_VERSION = '1.0.0'
 MODULE_AUTHOR = 'Agentic-Workflow Team'
@@ -32,11 +33,13 @@ __all__ = []
 def _initialize_module() -> None:
     """Initialize module with required setup."""
     ConfigurationService().logger.debug(
-        f'Initializing Pick Best Refinement module v{
-            ConfigurationService().MODULE_VERSION}')
+        f'''Initializing Pick Best Refinement module v{
+            ConfigurationService().MODULE_VERSION}'''
+    )
 
 
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR
 __docformat__ = 'restructuredtext en'
+

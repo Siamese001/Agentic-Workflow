@@ -1,8 +1,9 @@
-from typing import Dict
 import logging
+from typing import Dict
+
 _logger = logging.getLogger(__name__)
 'RAG configuration for resume generation.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -36,3 +37,4 @@ class RAGConfig:
                                                                   'SOURCE_PEER_JD': 0.8,
                                                                   'SOURCE_GENERIC_PROFILE': 0.5,
                                                                   'LOCAL_NLP': 0.2})
+

@@ -1,10 +1,11 @@
-from typing import Dict
 import logging
+from typing import Dict
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 _logger = logging.getLogger(__name__)
 'Filter Inappropriate Content - atomic execution layer.'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:
@@ -15,3 +16,4 @@ def filter_inappropriate_content(data: Dict[str, object]) -> Dict[str, object]:
 def get_filter_inappropriate_content_config() -> Dict[str, object]:
     """Get configuration for filter_inappropriate_content."""
     return {'enabled': True, 'version': '1.0'}
+

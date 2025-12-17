@@ -1,11 +1,13 @@
 """Types and models for error_recovery."""
 import logging
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
+
 
 class RecoveryStrategy(Enum):
     """TODO: Add docstring."""
+
 
 @dataclass
 class ResilienceError:
@@ -14,15 +16,19 @@ class ResilienceError:
     _code: str
     _details: Optional[Dict[str, Any]] = None
 
+
 @dataclass
 class TransientError(ResilienceError):
     """Temporary error that may succeed on retry."""
+
 
 @dataclass
 class PermanentError(ResilienceError):
     """Permanent error that will not succeed on retry."""
 
+
 @dataclass
 class RetryExhaustedError(ResilienceError):
     """Error indicating all retry attempts have been exhausted."""
     _attempts: int = 0
+

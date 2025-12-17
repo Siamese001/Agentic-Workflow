@@ -1,7 +1,12 @@
 """Types and models for firecracker_manager."""
 import logging
+import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, Optional
 
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -39,11 +44,9 @@ class VMConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, '
-    memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 't
-        imeout_seconds': self.timeout_seconds,
-            'auto_teardown': self.auto_teardown,
-            'metadata': self.metadata}
+        return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, ' memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 'timeout_seconds': self.timeout_seconds, 'auto_teardown': self.auto_teardown,
+                'metadata': self.metadata}
+
 
 @dataclass
 class VMInstance:
@@ -57,32 +60,22 @@ class VMInstance:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def is_running(self) -> bool:
-        """Check if VM is running.
+        """Check if VM is running. """
+        return self.status == VMStatus.RUNNING
 
-        Returns:
-            True if running
-        """
-        return SELF.STATUS == VMStatus.RUNNING
-
-    def is_expired(self, current_time: Optional[float]=None) -> bool:
-        """Check if VM has exceeded timeout.
-
-        Args:
-            current_time: Current timestamp
-
-        Returns:
-            True if expired
-        """
+    def is_expired(self, current_time: Optional[float] = None) -> bool:
+        """Check if VM has exceeded timeout. """
         current_time = current_time or time.time()
-        ELAPSED = current_time - self.created_at
+        elapsed = current_time - self.created_at
         return elapsed > self.config.timeout_seconds
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'vm_id': self.vm_id,
-            'config': self.config.to_dict(),
-            'status': self.status.value,
-            'created_at': self.created_at,
-            'process_id': self.process_id,
-            'endpoint': self.endpoint,
-            'metadata': self.metadata}
+                'config': self.config.to_dict(),
+                'status': self.status.value,
+                'created_at': self.created_at,
+                'process_id': self.process_id,
+                'endpoint': self.endpoint,
+                'metadata': self.metadata}
+

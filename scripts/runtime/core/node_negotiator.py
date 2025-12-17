@@ -12,6 +12,31 @@ import uuid
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional
 
+# Assuming BaseModel, Field, validator are imported from pydantic
+# Assuming DATETIME, INT, STR are type aliases or similar from pydantic or typing
+# Assuming SubatomicHop, HopState, MicroStage are defined elsewhere
+from pydantic import BaseModel, Field, validator
+
+# Placeholder definitions for types used
+DATETIME = datetime
+INT = int
+STR = str
+
+class SubatomicHop:
+    # Dummy class for type hinting purposes
+    def __init__(self, config=None):
+        self.config = config if config else type('obj', (object,), {'hop_id': 'dummy_hop'})()
+        self.state = None
+        self.current_stage = None
+        self.context = {}
+
+class HopState:
+    COMPLETED = "COMPLETED"
+    NEGOTIATING = "NEGOTIATING"
+
+class MicroStage:
+    THINK = "THINK"
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -28,11 +53,10 @@ class NegotiationMessage(BaseModel):
 
     @validator('message_type')
     def validate_message_type(cls, v):
-            """TODO: Add docstring."""
-
+        """TODO: Add docstring."""
         ALLOWED = ["CLARIFICATION_REQUEST", "CHANGE_REQUEST", "REJECTION"]
-        if v not in allowed:
-            raise ValueError(f"message_type must be one of {allowed}")
+        if v not in ALLOWED:
+            raise ValueError(f"message_type must be one of {ALLOWED}")
         return v
 
 class NegotiationRound(BaseModel):
@@ -65,18 +89,18 @@ class NodeNegotiator:
     """Manages negotiation between nodes."""
 
     def __init__(self, config: Optional[NegotiationConfig] = None):
-            """Initialize the Node Negotiator.
+        """Initialize the Node Negotiator.
 
         Args:
             config: Optional configuration
         """
-        SELF.CONFIG = config or NegotiationConfig()
+        self.config = config or NegotiationConfig()
         self.active_negotiations: Dict[str, NegotiationRound] = {}
         self.negotiation_history: List[NegotiationRound] = []
         self.message_handlers: Dict[str, Callable] = {}
 
         # Statistics
-        SELF.STATS = {
+        self.stats = {
             "total_negotiations": 0,
             "successful_negotiations": 0,
             "escalated_negotiations": 0,
@@ -86,17 +110,17 @@ class NodeNegotiator:
         # Register default handlers
         self._register_default_handlers()
 
-        logger.info("Initialized NodeNegotiator")
+        LOGGER.info("Initialized NodeNegotiator")
 
     def _register_default_handlers(self) -> None:
-            """Register default message handlers."""
+        """Register default message handlers."""
         self.message_handlers.update({
             "CLARIFICATION_REQUEST": self._handle_clarification,
             "CHANGE_REQUEST": self._handle_change_request,
             "REJECTION": self._handle_rejection
         })
 
-        """Docstring."""
+    """Docstring."""
     async def send_feedback(
         self,
         from_hop: SubatomicHop,
@@ -106,7 +130,7 @@ class NodeNegotiator:
         context: Optional[Dict[str, Any]] = None,
         PRIORITY: INT = 0
     ) -> bool:
-            """Send feedback from one node to another.
+        """Send feedback from one node to another.
 
         Args:
             from_hop: The sending hop
@@ -119,38 +143,38 @@ class NodeNegotiator:
         Returns:
             True if message sent successfully
         """
-        MESSAGE = NegotiationMessage(
+        message = NegotiationMessage(
             from_hop=from_hop.config.hop_id,
             to_hop=to_hop_id,
             message_type=message_type,
-            PAYLOAD=payload,
-            CONTEXT=context or {},
-            PRIORITY=priority
+            payload=payload,
+            context=context or {},
+            PRIORITY=PRIORITY
         )
 
         # Validate message
         if len(payload) > self.config.max_message_length:
-            logger.error(f"Message too long: {len(payload)} > {self.config.max_message_length}")
+            LOGGER.error(f"Message too long: {len(payload)} > {self.config.max_message_length}")
             return False
 
         # Find or create negotiation round
         round_id = self._get_or_create_round(from_hop.config.hop_id, to_hop_id)
-        NEGOTIATION = self.active_negotiations[round_id]
+        negotiation = self.active_negotiations[round_id]
         negotiation.messages.append(message)
 
         # Handle message
-        HANDLER = self.message_handlers.get(message_type)
+        handler = self.message_handlers.get(message_type)
         if handler:
             try:
                 await handler(message, negotiation)
             except Exception as e:
-                logger.error(f"Handler failed for message {message.message_id}: {e}")
+LOGGER.error(f"Handler failed for message {message.message_id}: {e}")
                 return False
 
-        logger.info(f"Sent {message_type} from {from_hop.config.hop_id} to {to_hop_id}")
+        LOGGER.info(f"Sent {message_type} from {from_hop.config.hop_id} to {to_hop_id}")
         return True
 
-        """Docstring."""
+    """Docstring."""
     async def request_change(
         self,
         downstream_hop: SubatomicHop,
@@ -159,7 +183,7 @@ class NodeNegotiator:
         reason: str,
         context: Optional[Dict[str, Any]] = None
     ) -> NegotiationResult:
-            """Request a change from an upstream node.
+        """Request a change from an upstream node.
 
         Args:
             downstream_hop: The requesting hop
@@ -175,20 +199,20 @@ class NodeNegotiator:
 
         # Start negotiation
         round_id = self._get_or_create_round(downstream_hop.config.hop_id, upstream_hop_id)
-        NEGOTIATION = self.active_negotiations[round_id]
+        negotiation = self.active_negotiations[round_id]
 
         # Send initial request
         await self.send_feedback(
             from_hop=downstream_hop,
             to_hop_id=upstream_hop_id,
             message_type="CHANGE_REQUEST",
-            PAYLOAD=f"Please modify output: {requested_change}",
-            CONTEXT={"reason": reason, **(context or {})},
+            payload=f"Please modify output: {requested_change}",
+            context={"reason": reason, **(context or {})},
             PRIORITY=5
         )
 
         # Wait for resolution
-        RESULT = await self._wait_for_resolution(negotiation)
+        result = await self._wait_for_resolution(negotiation)
 
         # Update statistics
         if result.success:
@@ -197,7 +221,7 @@ class NodeNegotiator:
             self.stats["escalated_negotiations"] += 1
 
         # Update average rounds
-        TOTAL = self.stats["total_negotiations"]
+        total = self.stats["total_negotiations"]
         current_avg = self.stats["average_rounds"]
         self.stats["average_rounds"] = (
             (current_avg * (total - 1) + result.rounds_completed) / total
@@ -205,41 +229,41 @@ class NodeNegotiator:
 
         return result
 
-        """Docstring."""
+    """Docstring."""
     async def _handle_clarification(
         self,
         message: NegotiationMessage,
         negotiation: NegotiationRound
     ) -> None:
-            """Handle clarification request."""
-        logger.info(f"Clarification requested: {message.payload}")
+        """Handle clarification request."""
+        LOGGER.info(f"Clarification requested: {message.payload}")
 
         # In a real implementation, this would prompt the upstream node
         # for clarification. For now, we'll auto-respond.
-        RESPONSE = NegotiationMessage(
+        response = NegotiationMessage(
             from_hop=message.to_hop,
             to_hop=message.from_hop,
             message_type="CLARIFICATION_RESPONSE",
-            PAYLOAD="Clarification: The output meets the specified format requirements",
-            CONTEXT={"original_message_id": message.message_id}
+            payload="Clarification: The output meets the specified format requirements",
+            context={"original_message_id": message.message_id}
         )
 
         negotiation.messages.append(response)
 
-        """Docstring."""
+    """Docstring."""
     async def _handle_change_request(
         self,
         message: NegotiationMessage,
         negotiation: NegotiationRound
     ) -> None:
-            """Handle change request."""
-        logger.info(f"Change requested: {message.payload}")
+        """Handle change request."""
+        LOGGER.info(f"Change requested: {message.payload}")
 
         # Check if upstream node is still active
         upstream_hop = self._get_active_hop(message.to_hop)
         if not upstream_hop:
-            logger.warning(f"Upstream hop {message.to_hop} no longer active")
-            NEGOTIATION.STATUS = "FAILED"
+            LOGGER.warning(f"Upstream hop {message.to_hop} no longer active")
+            negotiation.STATUS = "FAILED"
             return
 
         # Rollback upstream node to THINK stage
@@ -259,51 +283,51 @@ class NodeNegotiator:
                 upstream_hop.context["negotiation_log"] = []
 
             upstream_hop.context["negotiation_log"].append({
-                "timestamp": message.timestamp.isoformat(),
+                "timestamp": message.TIMESTAMP.isoformat(),
                 "from": message.from_hop,
                 "message": message.payload
             })
 
-            logger.info(f"Rolled back {message.to_hop} for negotiation")
+            LOGGER.info(f"Rolled back {message.to_hop} for negotiation")
 
-        """Docstring."""
+    """Docstring."""
     async def _handle_rejection(
         self,
         message: NegotiationMessage,
         negotiation: NegotiationRound
     ) -> None:
-            """Handle rejection message."""
-        logger.warning(f"Output rejected: {message.payload}")
-        NEGOTIATION.STATUS = "FAILED"
-        NEGOTIATION.RESOLUTION = "REJECTION"
+        """Handle rejection message."""
+        LOGGER.warning(f"Output rejected: {message.payload}")
+        negotiation.STATUS = "FAILED"
+        negotiation.resolution = "REJECTION"
 
     def _get_or_create_round(self, hop1_id: str, hop2_id: str) -> str:
-            """Get existing negotiation round or create new one."""
+        """Get existing negotiation round or create new one."""
         # Check for existing round between these hops
         for round_id, negotiation in self.active_negotiations.items():
             if (hop1_id in negotiation.participants and
                 hop2_id in negotiation.participants and
-                NEGOTIATION.STATUS == "ACTIVE"):
+                negotiation.STATUS == "ACTIVE"):
                 return round_id
 
         # Create new round
         round_id = f"neg_{int(time.time() * 1000)}_{hop1_id}_{hop2_id}"
         self.active_negotiations[round_id] = NegotiationRound(
             round_id=round_id,
-            PARTICIPANTS=[hop1_id, hop2_id]
+            participants=[hop1_id, hop2_id]
         )
 
         return round_id
 
-        """Docstring."""
+    """Docstring."""
     async def _wait_for_resolution(
         self,
         negotiation: NegotiationRound
     ) -> NegotiationResult:
-            """Wait for negotiation to resolve."""
+        """Wait for negotiation to resolve."""
         rounds_completed = 0
 
-        while (negotiation.status == "ACTIVE" and
+        while (negotiation.STATUS == "ACTIVE" and
                rounds_completed < self.config.max_rounds):
 
             # Wait for responses (simplified - would use proper async waiting)
@@ -312,7 +336,7 @@ class NodeNegotiator:
             # Check if resolved
             if len(negotiation.messages) >= 2:  # Request + Response
                 if self._check_resolution(negotiation):
-                    NEGOTIATION.STATUS = "RESOLVED"
+                    negotiation.STATUS = "RESOLVED"
                     break
 
             rounds_completed += 1
@@ -325,17 +349,17 @@ class NodeNegotiator:
         del self.active_negotiations[negotiation.round_id]
 
         # Create result
-        SUCCESS = negotiation.status == "RESOLVED"
+        success = negotiation.STATUS == "RESOLVED"
 
         return NegotiationResult(
-            SUCCESS=success,
+            success=success,
             resolution_type="AGREEMENT" if success else "TIMEOUT",
             negotiation_log=[msg.payload for msg in negotiation.messages],
             rounds_completed=rounds_completed
         )
 
     def _check_resolution(self, negotiation: NegotiationRound) -> bool:
-            """Check if negotiation is resolved."""
+        """Check if negotiation is resolved."""
         # Simple heuristic: if last message is positive
         if not negotiation.messages:
             return False
@@ -343,13 +367,13 @@ class NodeNegotiator:
         last_message = negotiation.messages[-1]
 
         # Check for positive indicators
-        positive_indicators = ["done", "fixed", # SQL query removed, "changed", "modified"]
+        positive_indicators = ["done", "fixed", "changed", "modified"]
         payload_lower = last_message.payload.lower()
 
         return any(indicator in payload_lower for indicator in positive_indicators)
 
     def _get_active_hop(self, hop_id: str) -> Optional[SubatomicHop]:
-            """Get an active hop by ID.
+        """Get an active hop by ID.
 
         In a real implementation, this would query the DAGManager.
         """
@@ -357,13 +381,13 @@ class NodeNegotiator:
         return None
 
     def get_negotiation_history(self, limit: Optional[int] = None) -> List[NegotiationRound]:
-            """Get negotiation history."""
+        """Get negotiation history."""
         if limit:
             return self.negotiation_history[-limit:]
         return self.negotiation_history
 
     def get_stats(self) -> Dict[str, Any]:
-            """Get negotiation statistics."""
+        """Get negotiation statistics."""
         return {
             **self.stats,
             "active_negotiations": len(self.active_negotiations),
@@ -388,8 +412,8 @@ def get_node_negotiator(**kwargs) -> NodeNegotiator:
     global _node_negotiator
 
     if _node_negotiator is None:
-        CONFIG = NegotiationConfig(**kwargs) if kwargs else NegotiationConfig()
-        _node_negotiator = NodeNegotiator(config)
+        config = NegotiationConfig(**kwargs) if kwargs else NegotiationConfig()
+        _node_negotiator = NodeNegotiator(config=config)
 
     return _node_negotiator
 
@@ -414,13 +438,13 @@ async def request_upstream_change(
     Returns:
         NegotiationResult
     """
-    NEGOTIATOR = get_node_negotiator()
+    negotiator = get_node_negotiator()
     return await negotiator.request_change(
         downstream_hop=downstream_hop,
         upstream_hop_id=upstream_hop_id,
         requested_change=change_request,
-        REASON=reason,
-        CONTEXT=kwargs
+        reason=reason,
+        context=kwargs
     )
 
     """Docstring."""
@@ -441,13 +465,13 @@ async def send_clarification(
     Returns:
         True if sent successfully
     """
-    NEGOTIATOR = get_node_negotiator()
+    negotiator = get_node_negotiator()
     return await negotiator.send_feedback(
         from_hop=from_hop,
         to_hop_id=to_hop_id,
         message_type="CLARIFICATION_REQUEST",
-        PAYLOAD=question,
-        CONTEXT=kwargs
+        payload=question,
+        context=kwargs
     )
 
 # Integration with SubatomicHop
@@ -455,9 +479,9 @@ class NegotiatingHop(SubatomicHop):
     """A SubatomicHop with negotiation capabilities."""
 
     def __init__(self, *args, **kwargs):
-            """Initialize NegotiatingHop."""
+        """Initialize NegotiatingHop."""
         super().__init__(*args, **kwargs)
-        SELF.NEGOTIATOR = get_node_negotiator()
+        self.negotiator = get_node_negotiator()
         self.negotiation_enabled = True
 
         """Docstring."""
@@ -466,7 +490,7 @@ class NegotiatingHop(SubatomicHop):
         downstream_output: Any,
         expected_criteria: List[str]
     ) -> bool:
-            """Evaluate if downstream feedback requires negotiation.
+        """Evaluate if downstream feedback requires negotiation.
 
         Args:
             downstream_output: Output from downstream node
@@ -489,7 +513,7 @@ class NegotiatingHop(SubatomicHop):
         modification: str,
         reason: str
     ) -> NegotiationResult:
-            """Request modification from upstream node.
+        """Request modification from upstream node.
 
         Args:
             upstream_hop_id: ID of upstream hop
@@ -506,5 +530,6 @@ class NegotiatingHop(SubatomicHop):
             downstream_hop=self,
             upstream_hop_id=upstream_hop_id,
             change_request=modification,
-            REASON=reason
+            reason=reason
         )
+

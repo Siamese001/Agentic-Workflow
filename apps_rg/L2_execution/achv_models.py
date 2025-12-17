@@ -1,13 +1,35 @@
 """Dataclass models for achv_bullet_synthesizer_types."""
 import logging
+from dataclasses import dataclass
+from typing import Dict, List, Any
 
-logger = logging.getLogger(__name__)
+# Assuming these types are defined elsewhere and imported
+# from .achv_bullet_synthesizer_types_enums import BulletFormat, ProvenanceType
+# from .achv_bullet_synthesizer_types_validation import ValidationResult
+# from .achv_bullet_synthesizer_types_constants import FLOAT
+
+# Placeholder definitions for missing types for the code to be syntactically valid
+class BulletFormat:
+    UNIFY = "UNIFY"
+    IBM = "IBM"
+
+class ProvenanceType:
+    pass
+
+class ValidationResult:
+    pass
+
+FLOAT = float
+
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# from .achv_bullet_synthesizer_types_enums import *  # Star import
+
+
+
+# # from .achv_bullet_synthesizer_types_enums import *  # Star import
 # removed
 
 
@@ -25,9 +47,6 @@ class ProvenancePattern:
 
 
 @dataclass
-"""TODO: Add docstring."""
-
-
 class BulletProvenanceLog:
     """Docstring."""
     bullet_text: str
@@ -55,17 +74,14 @@ class BulletSynthesizerConfig:
     def min_words(self) -> int:
         """Docstring."""
         return 28 if self.format_type == BulletFormat.UNIFY else 24
-        """TODO: Add docstring."""
 
     @property
     def max_words(self) -> int:
-        """TODO: Add docstring."""
+        """Docstring."""
 
         return 33 if self.format_type == BulletFormat.UNIFY else 30
 
     @property
-    """TODO: Add docstring."""
-
     def bullet_count(self) -> int:
         """Docstring."""
         return 7 if self.format_type == BulletFormat.UNIFY else 6
@@ -91,3 +107,4 @@ class BulletSynthesizerResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
+

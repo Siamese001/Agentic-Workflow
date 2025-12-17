@@ -11,11 +11,10 @@ import logging
 import os
 from typing import Any, List
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 def run_llm_anthropic(
-    """Docstring."""
     model: str,
     prompt: str,
     *,
@@ -26,16 +25,18 @@ def run_llm_anthropic(
     """Run an Anthropic message completion and return the response text."""
 
     try:
+        import anthropic
     except ImportError as exc:  # pragma: no cover - optional dependency
         raise ImportError("anthropic package not installed") from exc
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
-        raise RuntimeError("ANTHROPIC_API_KEY must be set for Anthropic provider")
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY must be set for Anthropic provider")
 
     CLIENT = anthropic.Anthropic(api_key=api_key)
 
-    resp: Any = client.messages.create(
+    resp: Any = CLIENT.messages.create(
         MODEL=model,
         MESSAGES=[{"role": "user", "content": prompt}],
         TEMPERATURE=temperature,
@@ -48,3 +49,4 @@ def run_llm_anthropic(
         if getattr(block, "type", None) == "text":
             parts.append(getattr(block, "text", ""))
     return "\n".join(parts)
+

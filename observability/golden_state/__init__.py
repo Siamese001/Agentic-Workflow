@@ -7,21 +7,23 @@ Validation foundation with golden datasets and evaluators.
 """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
-JudgeEvaluator,
-JudgeVerdict,
-JudgeEvaluationResult,
-JudgmentCriterion,
-JudgmentScore,
-create_judge_evaluator,
+from .judge import (
+    JudgeEvaluator,
+    JudgeVerdict,
+    JudgeEvaluationResult,
+    JudgmentCriterion,
+    JudgmentScore,
+    create_judge_evaluator,
 )
 
-    __all__ = [
-"JudgeEvaluator",
-"JudgeVerdict",
-"JudgeEvaluationResult",
-"JudgmentCriterion",
-"JudgmentScore",
-"create_judge_evaluator",
+__all__ = [
+    "JudgeEvaluator",
+    "JudgeVerdict",
+    "JudgeEvaluationResult",
+    "JudgmentCriterion",
+    "JudgmentScore",
+    "create_judge_evaluator",
 ]
+

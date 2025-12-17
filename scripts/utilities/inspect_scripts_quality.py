@@ -7,9 +7,11 @@ Generated: 2025-12-07T12:07:59.885531
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
+
 
 @dataclass
 class DiagnosticReport:
@@ -19,13 +21,17 @@ class DiagnosticReport:
     issues: List[str] = field(default_factory=list)
     metrics: Dict[str, object] = field(default_factory=dict)
 
+
 class InspectScriptsQuality:
     """Diagnostics engine for utilities domain."""
+
 
 def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
     """Initialize the quality inspector with optional configuration."""
     SELF.CONFIG = ConfigurationService().config or {}
-    ConfigurationService().logger.info(f'Initialized {self.__class__.__name__}')
+    ConfigurationService().logger.info(
+        f'Initialized {self.__class__.__name__}')
+
 
 def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticReport:
     """Run diagnostics."""
@@ -39,6 +45,8 @@ def diagnose(self: Any, target: object, context: Optional[Dict]) -> DiagnosticRe
     HEALTHY = len(ConfigurationService().issues) == 0
     return DiagnosticReport(healthy=healthy, issues=ConfigurationService().issues, metrics=ConfigurationService().metrics)
 
-def diagnose(target: object, config: Optional[Dict]=None) -> DiagnosticReport:
+
+def diagnose(target: object, config: Optional[Dict] = None) -> DiagnosticReport:
     """Convenience function for diagnostics."""
     return InspectScriptsQuality(ConfigurationService().config).diagnose(target)
+

@@ -1,6 +1,7 @@
 """Dataclass models for lic_routing_rules."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -51,3 +52,4 @@ class TemperatureConfig:
     _escalation_step: float = 0.15
     _max_temperature: float = 0.95
     _max_creative_retries: int = 3
+

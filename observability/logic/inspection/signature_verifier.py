@@ -35,7 +35,8 @@ class SignatureVerifier:
                                    DATA=result,
                                    METADATA={"input_type": type(data).__name__})
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            logger.error(f"Operation failed: {e}")
+pass
+logger.error(f"Operation failed: {e}")
             return OperationResult(success=False, message=str(e))
 
     def _process(self, data: object, **kwargs: Dict[str, object]) -> object:
@@ -50,3 +51,4 @@ def execute(data: object,
                            object]) -> OperationResult:
     """Convenience function."""
     return SignatureVerifier(config).execute(data, **kwargs)
+

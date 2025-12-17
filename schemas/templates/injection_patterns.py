@@ -1,13 +1,6 @@
-"""
-injection_patterns.py - Shared Execution Module.
-
-This module provides the core implementation for InjectionPatterns, handling
-standardized execution flows, error management, and context propagation
-within the shared application layer.
-"""
-
 import logging
 from typing import Dict, List, Optional, Union
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -17,7 +10,8 @@ class ExecutionResult:
     """Standardized operation result container."""
     success: bool
     data: Optional[Union[str, int, float, bool, List, Dict]] = None
-    metadata: Dict[str, Union[str, int, float, bool, List, Dict]] = field(default_factory=dict)
+    metadata: Dict[str, Union[str, int, float, bool,
+                              List, Dict]] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 
@@ -37,11 +31,11 @@ class InjectionPatterns:
                                              bool,
                                              List,
                                              Dict]]] = None):
-        SELF.CONFIG = config or {}
-        self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.CONFIG = config or {}
+        self._logger = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
-                """Docstring."""
                 payload: Union[str,
                                int,
                                float,
@@ -62,12 +56,12 @@ class InjectionPatterns:
         try:
             self._logger.info("Starting processing execution")
             RESULT = self._execute_logic(payload, context)
-            return ExecutionResult(success=True, data=result)
+            return ExecutionResult(success=True, data=RESULT)
         except (ValueError, TypeError, KeyError) as e:
-            self._logger.error(f"Validation error during processing: {e}")
+self._logger.error(f"Validation error during processing: {e}")
             return ExecutionResult(success=False, error_message=str(e))
         except Exception as e:
-            self._logger.error(f"Unexpected system error: {e}", exc_info=True)
+self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(self,
@@ -90,4 +84,5 @@ class InjectionPatterns:
 def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResult:
     """Module-level entry point."""
     EXECUTOR = InjectionPatterns()
-    return executor.process(data)
+    return EXECUTOR.process(data)
+

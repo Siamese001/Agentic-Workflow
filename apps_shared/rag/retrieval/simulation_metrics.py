@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -11,9 +11,9 @@ LOGGER = logging.getLogger(__name__)
 class InternalDummyOutcome:
     """TODO: Add docstring."""
 
-
-def __init__(self: Any, score: float, conflicts: int) -> None:
-        SELF.OUTCOME = {"golden_eval_score": score, "correction_iterations": conflicts}
+    def __init__(self: Any, score: float, conflicts: int) -> None:
+        self.OUTCOME = {"golden_eval_score": score,
+            "correction_iterations": conflicts}
         self.agent_conflict_count = conflicts
 
     """TODO: Add docstring."""
@@ -21,12 +21,13 @@ def __init__(self: Any, score: float, conflicts: int) -> None:
 def test_compute_collaboration_score_and_conflict_index() -> None:
     """TODO: Add docstring."""
     OUTPUTS = [
-        _DummyOutcome(1.0, 0),
-        _DummyOutcome(0.0, 2),
+        InternalDummyOutcome(1.0, 0),
+        InternalDummyOutcome(0.0, 2),
     ]
 
-    COLLAB = compute_collaboration_score(outputs)
-    CONFLICT = compute_conflict_index(outputs)
+    COLLAB = compute_collaboration_score(OUTPUTS)
+    CONFLICT = compute_conflict_index(OUTPUTS)
 
-    assert isinstance(collab, float)
-    assert isinstance(conflict, float)
+    assert isinstance(COLLAB, float)
+    assert isinstance(CONFLICT, float)
+

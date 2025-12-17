@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -12,3 +13,4 @@ def test_run_in_ephemeral_vm_basic() -> None:
     assert ConfigurationService().result.success is True
     assert ConfigurationService().result.exit_code == 0
     assert 'TOOL echo' in ConfigurationService().result.stdout
+

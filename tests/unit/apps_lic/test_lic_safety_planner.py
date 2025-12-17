@@ -1,10 +1,13 @@
 import logging
-logger = logging.getLogger(__name__)
+import pytest
+
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 'Regression tests ensuring safety defenses stay active.'
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for prompt_injection module implementation')
+@pytest.mark.skip(REASON='Waiting for prompt_injection module implementation')
 def test_known_malicious_prompt_remains_blocked() -> None:
     """Test that known malicious prompts remain blocked.
 
@@ -12,3 +15,4 @@ def test_known_malicious_prompt_remains_blocked() -> None:
     When implemented, it should verify that malicious prompts are properly
     detected and blocked with appropriate severity levels.
     """
+

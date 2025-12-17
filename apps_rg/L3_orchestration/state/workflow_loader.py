@@ -10,6 +10,12 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+from dataclasses import dataclass
+
+# Define FLOAT and BOOL if they are not imported from elsewhere
+FLOAT = float
+BOOL = bool
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -103,17 +109,17 @@ class WorkflowLoader:
         try:
             with open(self.workflow_path, 'r', encoding='utf-8') as f:
                 self._workflow_data = json.load(f)
-            logger.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
+            LOGGER.info(
+                f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
         except FileNotFoundError:
-            logger.warning(f"Workflow file not found at {self.workflow_path},
-                using fallback defaults")
+LOGGER.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:
-            logger.error(f"Invalid JSON in workflow file: {e}, using fallback defaults")
+LOGGER.error(
+                f"Invalid JSON in workflow file: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except Exception as e:
-            logger.error(f"Failed to load workflow from {self.workflow_path}: {e},
-                using fallback defaults")
+LOGGER.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
 
     def _get_fallback_workflow(self) -> Dict[str, Any]:
@@ -126,7 +132,8 @@ class WorkflowLoader:
             },
             "pre_flight_engine_validation": {
                 "tests": [
-                    {"test_id": "VALIDATE_ITERATION", "description": "Basic iteration check"}
+                    {"test_id": "VALIDATE_ITERATION",
+                        "description": "Basic iteration check"}
                 ]
             },
             "1.role": {
@@ -155,22 +162,18 @@ class WorkflowLoader:
                 "creative_brief": {
                     "headline": {"word_count": [8, 12], "char_count_max": 90},
                     "executive_summary": {"word_count": [120, 140], "voice": "third_person_implied",
-    "forbidden_patterns": []},
-                    "experience_bullets": {"unify_bullet_word_count": [28, 33], "ibm_bullet_word_cou
-    nt": [24, 30]},
-                    "experience_overview": {"unify_word_count": [25, 33], "ibm_word_count": [22, 28]
-    },
+                                          "forbidden_patterns": []},
+                    "experience_bullets": {"unify_bullet_word_count": [28, 33], "ibm_bullet_word_count": [24, 30]},
+                    "experience_overview": {"unify_word_count": [25, 33], "ibm_word_count": [22, 28]},
                     "leadership_competencies": {"word_count_per_desc": [24, 30]},
                     "cover_letter": {"word_count_per_para": [85, 100]},
                     "deduplication_matrix": {"thresholds": {}}
                 },
                 "hardcoded_config": {
                     "K.0": {"description": "Thematic analysis", "temp": 0.3, "rag_total_calls": 50,
-    "rag_hops": 3},
-                    "K.1": {"description": "Executive summary", "temp": 0.9, "rag_total_calls": 4, "
-    rag_hops": 2},
-                    "K.2": {"description": "Competitive analysis", "temp": 0.3, "rag_total_calls": 2
-    4, "rag_hops": 3}
+                            "rag_hops": 3},
+                    "K.1": {"description": "Executive summary", "temp": 0.9, "rag_total_calls": 4, "rag_hops": 2},
+                    "K.2": {"description": "Competitive analysis", "temp": 0.3, "rag_total_calls": 24, "rag_hops": 3}
                 }
             }
         }
@@ -194,19 +197,22 @@ class WorkflowLoader:
     def get_task_pipeline(self) -> List[Dict[str, Any]]:
         """Get the task pipeline phases."""
         if self._cached_task_pipeline is None:
-            self._cached_task_pipeline = self._workflow_data.get("2.task", {}).get("pipeline", [])
+            self._cached_task_pipeline = self._workflow_data.get(
+                "2.task", {}).get("pipeline", [])
         return self._cached_task_pipeline
 
     def get_context_config(self) -> Dict[str, Any]:
         """Get the context management configuration."""
         if self._cached_context_config is None:
-            self._cached_context_config = self._workflow_data.get("3.context", {})
+            self._cached_context_config = self._workflow_data.get(
+                "3.context", {})
         return self._cached_context_config
 
     def get_reasoning_config(self) -> Dict[str, Any]:
         """Get the reasoning configuration."""
         if self._cached_reasoning_config is None:
-            self._cached_reasoning_config = self._workflow_data.get("4.reasoning", {})
+            self._cached_reasoning_config = self._workflow_data.get(
+                "4.reasoning", {})
         return self._cached_reasoning_config
 
     def get_creative_brief(self) -> CreativeBriefConfig:
@@ -216,34 +222,43 @@ class WorkflowLoader:
 
             self._cached_creative_brief = CreativeBriefConfig(
                 headline_word_count=WordCountConstraints.from_list(
-                    brief.get("headline", {}).get("word_count", [8, 12])
+                    BRIEF.get("headline", {}).get("word_count", [8, 12])
                 ),
-                headline_char_max=brief.get("headline", {}).get("char_count_max", 90),
+                headline_char_max=BRIEF.get(
+                    "headline", {}).get("char_count_max", 90),
                 executive_summary_word_count=WordCountConstraints.from_list(
-                    brief.get("executive_summary", {}).get("word_count", [120, 140])
+                    BRIEF.get("executive_summary", {}).get(
+                        "word_count", [120, 140])
                 ),
-                executive_summary_voice=brief.get("executive_summary",
-                    {}).get("voice",
-                    "third_person_implied"),
+                executive_summary_voice=BRIEF.get("executive_summary",
+                                                  {}).get("voice",
+                                                          "third_person_implied"),
 
-                forbidden_patterns=brief.get("executive_summary", {}).get("forbidden_patterns", []),
+                forbidden_patterns=BRIEF.get("executive_summary", {}).get(
+                    "forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33])
+                    BRIEF.get("experience_bullets", {}).get(
+                        "unify_bullet_word_count", [28, 33])
                 ),
                 ibm_bullet_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_bullets", {}).get("ibm_bullet_word_count", [24, 30])
+                    BRIEF.get("experience_bullets", {}).get(
+                        "ibm_bullet_word_count", [24, 30])
                 ),
                 unify_overview_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_overview", {}).get("unify_word_count", [25, 33])
+                    BRIEF.get("experience_overview", {}).get(
+                        "unify_word_count", [25, 33])
                 ),
                 ibm_overview_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_overview", {}).get("ibm_word_count", [22, 28])
+                    BRIEF.get("experience_overview", {}).get(
+                        "ibm_word_count", [22, 28])
                 ),
                 competency_word_count=WordCountConstraints.from_list(
-                    brief.get("leadership_competencies", {}).get("word_count_per_desc", [24, 30])
+                    BRIEF.get("leadership_competencies", {}).get(
+                        "word_count_per_desc", [24, 30])
                 ),
                 cover_letter_para_word_count=WordCountConstraints.from_list(
-                    brief.get("cover_letter", {}).get("word_count_per_para", [85, 100])
+                    BRIEF.get("cover_letter", {}).get(
+                        "word_count_per_para", [85, 100])
                 )
             )
         return self._cached_creative_brief
@@ -251,19 +266,20 @@ class WorkflowLoader:
     def get_knode_configs(self) -> Dict[str, KNodeConfig]:
         """Get all K-node configurations."""
         if self._cached_knode_configs is None:
-            CONFIGS = {}
-            HARDCODED = self.get_reasoning_config().get("hardcoded_config", {})
+            configs = {}
+            hardcoded = self.get_reasoning_config().get("hardcoded_config", {})
 
             for key, value in hardcoded.items():
                 if key.startswith("K.") and isinstance(value, dict):
-                    CONFIGS[KEY] = KNodeConfig(
-                        DESCRIPTION=value.get("description", ""),
+                    configs[key] = KNodeConfig(
+                        description=value.get("description", ""),
                         input_dependencies=value.get("input_dependencies", []),
                         TEMP=value.get("temp", 0.7),
                         rag_type=value.get("rag_type", "Hybrid"),
                         rag_total_calls=value.get("rag_total_calls", 4),
                         rag_hops=value.get("rag_hops", 2),
-                        claim_verification_mode=value.get("claim_verification_mode", "strict"),
+                        claim_verification_mode=value.get(
+                            "claim_verification_mode", "strict"),
                         hybrid_cot_tot=value.get("hybrid_cot_tot", False),
                         cot_min_paths=value.get("cot_min_paths", 2),
                         tot_branches=value.get("tot_branches", 3),
@@ -278,44 +294,44 @@ class WorkflowLoader:
 
     def get_knode_config(self, node_id: str) -> Optional[KNodeConfig]:
         """Get a specific K-node configuration."""
-        CONFIGS = self.get_knode_configs()
+        configs = self.get_knode_configs()
         return configs.get(node_id)
 
     def get_validation_rules(self) -> Dict[str, Any]:
         """Get validation rules and thresholds."""
         if self._cached_validation_rules is None:
-            REASONING = self.get_reasoning_config()
+            reasoning = self.get_reasoning_config()
             # Check creative_brief first (where deduplication_matrix is located)
             creative_brief = reasoning.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix",
-                {}).get("thresholds",
-                {})
+                                                               {}).get("thresholds",
+                                                                       {})
         return self._cached_validation_rules
 
     def get_pre_flight_tests(self) -> List[Dict[str, Any]]:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
             self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation",
-                {}).get("tests",
-                [])
+                                                                    {}).get("tests",
+                                                                            [])
         return self._cached_pre_flight_tests
 
     def get_file_complexity_thresholds(self) -> Dict[str, int]:
         """Get file complexity gate thresholds."""
         if self._cached_file_complexity_thresholds is None:
-            CONTEXT = self.get_context_config()
+            context = self.get_context_config()
             self._cached_file_complexity_thresholds = context.get("pre_flight_file_complexity_gate",
-                {}).get("thresholds",
-                {})
+                                                                  {}).get("thresholds",
+                                                                          {})
         return self._cached_file_complexity_thresholds
 
     def get_required_files(self) -> List[str]:
         """Get list of required files."""
         if self._cached_required_files is None:
-            CONTEXT = self.get_context_config()
+            context = self.get_context_config()
             self._cached_required_files = context.get("pre_flight_file_manifest_check",
-                {}).get("required_file_manifest",
-                [])
+                                                      {}).get("required_file_manifest",
+                                                              [])
         return self._cached_required_files
 
     def get_enforcement_rules(self) -> List[str]:
@@ -342,9 +358,12 @@ class WorkflowLoader:
 
         # Reload from disk
         self._load_workflow()
-        logger.info("Workflow reloaded from disk with cleared caches")
+        LOGGER.info("Workflow reloaded from disk with cleared caches")
 
 # Convenience function for creating a loader
+
+
 def create_workflow_loader(workflow_path: Optional[Union[str, Path]] = None) -> WorkflowLoader:
     """Create a WorkflowLoader instance."""
     return WorkflowLoader(workflow_path)
+

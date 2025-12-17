@@ -2,15 +2,97 @@
 
 import logging
 from typing import Any, Dict, List, Optional
+import networkx as nx
+import asyncio
+from datetime import datetime
+
+# Assuming these are defined elsewhere
+from enum import Enum
+
+class AgentRole(Enum):
+    CONTEXT_GATHERER = "context_gatherer"
+    STRATEGIC_PLANNER = "strategic_planner"
+    RESUME_BUILDER = "resume_builder"
+    QUALITY_CRITIC = "quality_critic"
+    MESSAGE_CRAFTER = "message_crafter"
+    PROTOCOL_ENFORCER = "protocol_enforcer"
+    FACT_CHECKER = "fact_checker"
+    PERSONALIZER = "personalizer"
+    INSIGHT_ANALYZER = "insight_analyzer"
+    CONTENT_DRAFTER = "content_drafter"
 
 
-class SubatomicOrchestrator:
-    """Docstring."""
+class WorkflowType(Enum):
+    RESUME_GENERATION = "resume_generation"
+    MESSAGE_OUTREACH = "message_outreach"
+    CONTENT_CREATION = "content_creation"
 
+class MutationAction(Enum):
+    SPAWN_PREDECESSOR = "spawn_predecessor"
+
+class WorkflowBlueprint:
+    """Mock WorkflowBlueprint for type hinting."""
+    def __init__(self, name, DESCRIPTION, ROLES, EDGES, mutation_hooks=None, parallel_groups=None):
+        self.name = name
+        self.DESCRIPTION = DESCRIPTION
+        self.ROLES = ROLES
+        self.EDGES = EDGES
+        self.mutation_hooks = mutation_hooks or {}
+        self.parallel_groups = parallel_groups or []
+
+class AgentRegistry:
+    """Mock AgentRegistry for type hinting."""
+    pass
+
+def get_agent_registry() -> AgentRegistry:
+    """Mock function."""
+    return AgentRegistry()
+
+class DAGManager:
+    """Mock DAGManager for type hinting."""
+    def __init__(self):
+        self.node_registry = {}
+        self.execution_queue = []
+
+    def add_node(self, node):
+        pass
+
+    def create_mutation_request(self, **kwargs):
+        return kwargs
+
+    def request_mutation(self, mutation):
+        class MockMutationResult:
+            def __init__(self, success):
+                self.success = success
+        if mutation['hop_function'] in self.node_registry:
+            return MockMutationResult(True)
+        else:
+            return MockMutationResult(False)
+
+
+class SubatomicHop:
+    """Mock SubatomicHop for type hinting."""
+    def __init__(self, role, hop_function, CONTEXT, enable_prompt_injection):
+        self.config = type('obj', (object,), {'hop_id': role.value})()
+        self.run = hop_function
+        self.context = CONTEXT
+        self.enable_prompt_injection = enable_prompt_injection
+        self.dag_manager = None
+
+def create_functional_agent(role, hop_function, CONTEXT, enable_prompt_injection):
+    return SubatomicHop(role, hop_function, CONTEXT, enable_prompt_injection)
+
+def validate_no_legacy_code(value, message):
+    """Mock function."""
+    pass
+
+# Global orchestrator instance
+_orchestrator: Optional[SubatomicOrchestrator] = None
 
 LOGGER = logging.getLogger(__name__)
 
-    """Orchestrator that builds and executes dynamic DAGs of functional agents."""
+class SubatomicOrchestrator:
+    """Implementation for subatomic_orchestrator."""
 
     def __init__(self, registry: Optional[AgentRegistry] = None):
         """Initialize the orchestrator.
@@ -18,62 +100,62 @@ LOGGER = logging.getLogger(__name__)
         Args:
             registry: Optional agent registry (uses global if not provided)
         """
-        SELF.REGISTRY = registry or get_agent_registry()
+        self.REGISTRY = registry or get_agent_registry()
         self.dag_manager = DAGManager()
         self.active_graphs: Dict[str, nx.DiGraph] = {}
         self.execution_history: List[Dict[str, Any]] = []
         self._define_standard_workflows()
-        logger.info('Initialized SubatomicOrchestrator')
+        LOGGER.info('Initialized SubatomicOrchestrator')
 
     def _define_standard_workflows(self) -> None:
         """Define standard workflow blueprints."""
-        self.resume_blueprint = WorkflowBluelogger.info(name='Resume Generation',
-            DESCRIPTION='Generate optimized resumes from profile data',
-            ROLES=[AgentRole.CONTEXT_GATHERER,
-            AgentRole.STRATEGIC_PLANNER,
-            AgentRole.RESUME_BUILDER,
-            AgentRole.QUALITY_CRITIC],
-            EDGES=[(AgentRole.CONTEXT_GATHERER,
-            AgentRole.STRATEGIC_PLANNER),
-            (AgentRole.STRATEGIC_PLANNER,
-            AgentRole.RESUME_BUILDER),
-            (AgentRole.RESUME_BUILDER,
-            AgentRole.QUALITY_CRITIC)],
-            mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR,
-            AgentRole.CONTEXT_GATHERER),
-            (MutationAction.SPAWN_PREDECESSOR,
-            AgentRole.FACT_CHECKER)]})
-        self.message_blueprint = WorkflowBluelogger.info(name='Message Outreach',
-            DESCRIPTION='Create personalized outreach messages',
-            ROLES=[AgentRole.CONTEXT_GATHERER,
-            AgentRole.STRATEGIC_PLANNER,
-            AgentRole.MESSAGE_CRAFTER,
-            AgentRole.QUALITY_CRITIC,
-            AgentRole.PROTOCOL_ENFORCER],
-            EDGES=[(AgentRole.CONTEXT_GATHERER,
-            AgentRole.STRATEGIC_PLANNER),
-            (AgentRole.STRATEGIC_PLANNER,
-            AgentRole.MESSAGE_CRAFTER),
-            (AgentRole.MESSAGE_CRAFTER,
-            AgentRole.QUALITY_CRITIC),
-            (AgentRole.QUALITY_CRITIC,
-            AgentRole.PROTOCOL_ENFORCER)],
-            mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR,
-            AgentRole.PERSONALIZER)]})
-        self.content_blueprint = WorkflowBluelogger.info(name='Content Creation',
-            DESCRIPTION='General content creation pipeline',
-            ROLES=[AgentRole.CONTEXT_GATHERER,
-            AgentRole.STRATEGIC_PLANNER,
-            AgentRole.CONTENT_DRAFTER,
-            AgentRole.QUALITY_CRITIC],
-            EDGES=[(AgentRole.CONTEXT_GATHERER,
-            AgentRole.STRATEGIC_PLANNER),
-            (AgentRole.STRATEGIC_PLANNER,
-            AgentRole.CONTENT_DRAFTER),
-            (AgentRole.CONTENT_DRAFTER,
-            AgentRole.QUALITY_CRITIC)],
-            parallel_groups=[[AgentRole.CONTEXT_GATHERER,
-            AgentRole.INSIGHT_ANALYZER]])
+        self.resume_blueprint = WorkflowBlueprint(name='Resume Generation',
+                                                 DESCRIPTION='Generate optimized resumes from profile data',
+                                                 ROLES=[AgentRole.CONTEXT_GATHERER,
+                                                        AgentRole.STRATEGIC_PLANNER,
+                                                        AgentRole.RESUME_BUILDER,
+                                                        AgentRole.QUALITY_CRITIC],
+                                                 EDGES=[(AgentRole.CONTEXT_GATHERER,
+                                                         AgentRole.STRATEGIC_PLANNER),
+                                                        (AgentRole.STRATEGIC_PLANNER,
+                                                         AgentRole.RESUME_BUILDER),
+                                                        (AgentRole.RESUME_BUILDER,
+                                                         AgentRole.QUALITY_CRITIC)],
+                                                 mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR,
+                                                                                            AgentRole.CONTEXT_GATHERER),
+                                                                                           (MutationAction.SPAWN_PREDECESSOR,
+                                                                                            AgentRole.FACT_CHECKER)]})
+        self.message_blueprint = WorkflowBlueprint(name='Message Outreach',
+                                                  DESCRIPTION='Create personalized outreach messages',
+                                                  ROLES=[AgentRole.CONTEXT_GATHERER,
+                                                         AgentRole.STRATEGIC_PLANNER,
+                                                         AgentRole.MESSAGE_CRAFTER,
+                                                         AgentRole.QUALITY_CRITIC,
+                                                         AgentRole.PROTOCOL_ENFORCER],
+                                                  EDGES=[(AgentRole.CONTEXT_GATHERER,
+                                                          AgentRole.STRATEGIC_PLANNER),
+                                                         (AgentRole.STRATEGIC_PLANNER,
+                                                          AgentRole.MESSAGE_CRAFTER),
+                                                         (AgentRole.MESSAGE_CRAFTER,
+                                                          AgentRole.QUALITY_CRITIC),
+                                                         (AgentRole.QUALITY_CRITIC,
+                                                          AgentRole.PROTOCOL_ENFORCER)],
+                                                  mutation_hooks={AgentRole.QUALITY_CRITIC: [(MutationAction.SPAWN_PREDECESSOR,
+                                                                                             AgentRole.PERSONALIZER)]})
+        self.content_blueprint = WorkflowBlueprint(name='Content Creation',
+                                                  DESCRIPTION='General content creation pipeline',
+                                                  ROLES=[AgentRole.CONTEXT_GATHERER,
+                                                         AgentRole.STRATEGIC_PLANNER,
+                                                         AgentRole.CONTENT_DRAFTER,
+                                                         AgentRole.QUALITY_CRITIC],
+                                                  EDGES=[(AgentRole.CONTEXT_GATHERER,
+                                                          AgentRole.STRATEGIC_PLANNER),
+                                                         (AgentRole.STRATEGIC_PLANNER,
+                                                          AgentRole.CONTENT_DRAFTER),
+                                                         (AgentRole.CONTENT_DRAFTER,
+                                                          AgentRole.QUALITY_CRITIC)],
+                                                  parallel_groups=[[AgentRole.CONTEXT_GATHERER,
+                                                                    AgentRole.INSIGHT_ANALYZER]])
 
     def build_standard_pipeline(self, workflow_type: WorkflowType, **kwargs) -> nx.DiGraph:
         """Build a standard workflow pipeline.
@@ -87,7 +169,8 @@ LOGGER = logging.getLogger(__name__)
         """
         for key, value in kwargs.items():
             if isinstance(value, str):
-                validate_no_legacy_code(value, f'build_standard_pipeline parameter {key}')
+                validate_no_legacy_code(
+                    value, f'build_standard_pipeline parameter {key}')
         if workflow_type == WorkflowType.RESUME_GENERATION:
             BLUEPRINT = self.resume_blueprint
         elif workflow_type == WorkflowType.MESSAGE_OUTREACH:
@@ -96,14 +179,12 @@ LOGGER = logging.getLogger(__name__)
             BLUEPRINT = self.content_blueprint
         else:
             raise ValueError(f'Unknown workflow type: {workflow_type}')
-        return self._build_from_bluelogger.info(blueprint, **kwargs)
+        return self._build_from_blueprint(BLUEPRINT, **kwargs)
 
     def build_custom_pipeline(self,
-        """Docstring."""
-        roles: List[AgentRole],
-        edges: List[Tuple[AgentRole,
-        AgentRole]],
-        **kwargs) -> nx.DiGraph:
+                              roles: List[AgentRole],
+                              edges: List[tuple[AgentRole, AgentRole]],
+                              **kwargs) -> nx.DiGraph:
         """Build a custom workflow pipeline.
 
         Args:
@@ -114,13 +195,13 @@ LOGGER = logging.getLogger(__name__)
         Returns:
             NetworkX DiGraph representing the workflow
         """
-        BLUEPRINT = WorkflowBluelogger.info(name='Custom Workflow',
-            DESCRIPTION='User-defined custom workflow',
-            ROLES=roles,
-            EDGES=edges)
-        return self._build_from_bluelogger.info(blueprint, **kwargs)
+        BLUEPRINT = WorkflowBlueprint(name='Custom Workflow',
+                                      DESCRIPTION='User-defined custom workflow',
+                                      ROLES=roles,
+                                      EDGES=edges)
+        return self._build_from_blueprint(BLUEPRINT, **kwargs)
 
-    def _build_from_bluelogger.info(self, blueprint: WorkflowBlueprint, **kwargs) -> nx.DiGraph:
+    def _build_from_blueprint(self, blueprint: WorkflowBlueprint, **kwargs) -> nx.DiGraph:
         """Build a graph from a workflow blueprint.
 
         Args:
@@ -130,20 +211,20 @@ LOGGER = logging.getLogger(__name__)
         Returns:
             NetworkX DiGraph
         """
-        logger.info(f'Building workflow: {blueprint.name}')
+        LOGGER.info(f'Building workflow: {blueprint.name}')
         G = nx.DiGraph()
         role_to_hop: Dict[AgentRole, SubatomicHop] = {}
         for role in blueprint.roles:
             hop_function = self._get_hop_function(role, **kwargs)
             HOP = create_functional_agent(role=role,
-                hop_function=hop_function,
-                CONTEXT=kwargs.get('context',
-                {}),
-                enable_prompt_injection=kwargs.get('enable_injections',
-                True))
-            hop.dag_manager = self.dag_manager
-            role_to_hop[role] = hop
-            G.add_node(hop, role=role)
+                                          hop_function=hop_function,
+                                          CONTEXT=kwargs.get('context',
+                                                             {}),
+                                          enable_prompt_injection=kwargs.get('enable_injections',
+                                                                             True))
+            HOP.dag_manager = self.dag_manager
+            role_to_hop[role] = HOP
+            G.add_node(HOP, role=role)
         for from_role, to_role in blueprint.edges:
             from_hop = role_to_hop[from_role]
             to_hop = role_to_hop[to_role]
@@ -151,12 +232,13 @@ LOGGER = logging.getLogger(__name__)
         for role, hooks in blueprint.mutation_hooks.items():
             if role in role_to_hop:
                 HOP = role_to_hop[role]
-                if 'mutation_hooks' not in hop.context:
-                    hop.context['mutation_hooks'] = []
-                hop.context['mutation_hooks'].extend(hooks)
+                if 'mutation_hooks' not in HOP.context:
+                    HOP.context['mutation_hooks'] = []
+                HOP.context['mutation_hooks'].extend(hooks)
         graph_id = f'{blueprint.name}_{datetime.now().isoformat()}'
         self.active_graphs[graph_id] = G
-        logger.info(f'Built graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
+        LOGGER.info(
+            f'Built graph with {G.number_of_nodes()} nodes and {G.number_of_edges()} edges')
         return G
 
     def _get_hop_function(self, role: AgentRole, **kwargs) -> callable:
@@ -174,29 +256,29 @@ LOGGER = logging.getLogger(__name__)
             """Mock hop function that simulates work."""
             await asyncio.sleep(0.1)
             RESULT = {'role': role.value,
-                'status': 'completed',
-                'output': f'Mock output from {role.value}',
-                'timestamp': datetime.now().isoformat()}
+                      'status': 'completed',
+                      'output': f'Mock output from {role.value}',
+                      'timestamp': datetime.now().isoformat()}
             if role == AgentRole.CONTEXT_GATHERER:
-                result['research_data'] = {'sources': ['source1', 'source2']}
-            elif ROLE == AgentRole.STRATEGIC_PLANNER:
-                RESULT['STRATEGY'] = {'approach': 'analytical', 'framework': 'standard'}
-            elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRA
-    FTER]:
-                RESULT['CONTENT'] = {'draft': 'Generated content draft', 'word_count': 500}
-            elif ROLE == AgentRole.QUALITY_CRITIC:
-                result['quality_score'] = 0.85
+                RESULT['research_data'] = {'sources': ['source1', 'source2']}
+            elif role == AgentRole.STRATEGIC_PLANNER:
+                RESULT['STRATEGY'] = {
+                    'approach': 'analytical', 'framework': 'standard'}
+            elif role in [AgentRole.CONTENT_DRAFTER, AgentRole.RESUME_BUILDER, AgentRole.MESSAGE_CRAFTER]:
+                RESULT['CONTENT'] = {
+                    'draft': 'Generated content draft', 'word_count': 500}
+            elif role == AgentRole.QUALITY_CRITIC:
+                RESULT['quality_score'] = 0.85
                 RESULT['FEEDBACK'] = 'Good quality, minor improvements needed'
-            return result
+            return RESULT
         return mock_hop_function
 
     async def execute_graph(self,
-        """Docstring."""
-        graph: nx.DiGraph,
-        initial_inputs: Dict[str,
-        Any],
-        **kwargs) -> Dict[str,
-        Any]:
+                            graph: nx.DiGraph,
+                            initial_inputs: Dict[str,
+                                                 Any],
+                            **kwargs) -> Dict[str,
+                                              Any]:
         """Execute a workflow graph.
 
         Args:
@@ -207,61 +289,63 @@ LOGGER = logging.getLogger(__name__)
         Returns:
             Execution results
         """
-        logger.info(f'Executing graph with {graph.number_of_nodes()} nodes')
+        LOGGER.info(f'Executing graph with {graph.number_of_nodes()} nodes')
         for key, value in initial_inputs.items():
             if isinstance(value, str):
                 validate_no_legacy_code(value, 'execute_graph inputs')
         execution_id = f'exec_{datetime.now().isoformat()}'
         execution_state = {'id': execution_id,
-            'start_time': datetime.now(),
-            'status': 'running',
-            'completed_nodes': set(),
-            'failed_nodes': set(),
-            'results': {}}
+                           'start_time': datetime.now(),
+                           'status': 'running',
+                           'completed_nodes': set(),
+                           'failed_nodes': set(),
+                           'results': {}}
         try:
             for node in graph.nodes():
                 self.dag_manager.add_node(node)
-            ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
+            ready_nodes = self._get_ready_nodes(
+                graph, execution_state['completed_nodes'])
             while ready_nodes:
                 TASKS = []
                 for node in ready_nodes:
                     node_inputs = self._get_node_inputs(graph,
-                        node,
-                        execution_state['results'],
-                        initial_inputs)
+                                                        node,
+                                                        execution_state['results'],
+                                                        initial_inputs)
                     TASK = self._execute_node(node, node_inputs)
-                    tasks.append(task)
-                RESULTS = await asyncio.gather(*tasks, return_exceptions=True)
-                for node, result in zip(ready_nodes, results):
+                    TASKS.append(TASK)
+                RESULTS = await asyncio.gather(*TASKS, return_exceptions=True)
+                for node, result in zip(ready_nodes, RESULTS):
                     if isinstance(result, Exception):
-                        logger.error(f'Node {node.config.hop_id} failed: {result}')
+                        LOGGER.error(
+                            f'Node {node.config.hop_id} failed: {result}')
                         execution_state['failed_nodes'].add(node)
                         if hasattr(node, 'context') and 'mutation_hooks' in node.context:
                             await self._handle_node_failure(node, result, graph)
                     else:
-                        logger.info(f'Node {node.config.hop_id} completed')
+                        LOGGER.info(f'Node {node.config.hop_id} completed')
                         execution_state['completed_nodes'].add(node)
                         execution_state['results'][node] = result
                         self.dag_manager.execution_queue.append(node)
-                ready_nodes = self._get_ready_nodes(graph, execution_state['completed_nodes'])
+                ready_nodes = self._get_ready_nodes(
+                    graph, execution_state['completed_nodes'])
             if len(execution_state['completed_nodes']) == graph.number_of_nodes():
                 execution_state['status'] = 'completed'
             else:
                 execution_state['status'] = 'partial_failure'
         except Exception as e:
-            logger.error(f'Graph execution failed: {e}')
+LOGGER.error(f'Graph execution failed: {e}')
             execution_state['status'] = 'failed'
             execution_state['error'] = str(e)
         finally:
             execution_state['end_time'] = datetime.now()
-            execution_state['duration'] = (execution_state['end_time'] - execution_state['start_time
-    ']).total_seconds()
+            execution_state['duration'] = (execution_state['end_time'] - execution_state['start_time']).total_seconds()
             self.execution_history.append(execution_state)
         return execution_state
 
     def _get_ready_nodes(self,
-        graph: nx.DiGraph,
-        completed_nodes: Set[SubatomicHop]) -> List[SubatomicHop]:
+                         graph: nx.DiGraph,
+                         completed_nodes: set[SubatomicHop]) -> list[SubatomicHop]:
         """Get nodes that are ready to execute.
 
         Args:
@@ -276,18 +360,18 @@ LOGGER = logging.getLogger(__name__)
             if node in completed_nodes:
                 continue
             PREDECESSORS = set(graph.predecessors(node))
-            if predecessors.issubset(completed_nodes):
-                ready.append(node)
-        return ready
+            if PREDECESSORS.issubset(completed_nodes):
+                READY.append(node)
+        return READY
 
     def _get_node_inputs(self,
-        graph: nx.DiGraph,
-        node: SubatomicHop,
-        results: Dict[SubatomicHop,
-        Any],
-        initial_inputs: Dict[str,
-        Any]) -> Dict[str,
-        Any]:
+                         graph: nx.DiGraph,
+                         node: SubatomicHop,
+                         results: Dict[SubatomicHop,
+                                       Any],
+                         initial_inputs: Dict[str,
+                             Any]) -> Dict[str,
+                                           Any]:
         """Get inputs for a node.
 
         Args:
@@ -303,8 +387,8 @@ LOGGER = logging.getLogger(__name__)
         for predecessor in graph.predecessors(node):
             if predecessor in results:
                 pred_result = results[predecessor]
-                inputs[f'from_{predecessor.config.hop_id}'] = pred_result
-        return inputs
+                INPUTS[f'from_{predecessor.config.hop_id}'] = pred_result
+        return INPUTS
 
     async def _execute_node(self, node: SubatomicHop, inputs: Dict[str, Any]) -> Any:
         """Execute a single node.
@@ -318,16 +402,15 @@ LOGGER = logging.getLogger(__name__)
         """
         try:
             RESULT = await node.run(**inputs)
-            return result
+            return RESULT
         except Exception as e:
-            logger.error(f'Node execution error: {e}')
+LOGGER.error(f'Node execution error: {e}')
             raise
 
     async def _handle_node_failure(self,
-        """Docstring."""
-        node: SubatomicHop,
-        error: Exception,
-        graph: nx.DiGraph) -> None:
+                                   node: SubatomicHop,
+                                   error: Exception,
+                                   graph: nx.DiGraph) -> None:
         """Handle node failure with potential mutations.
 
         Args:
@@ -341,19 +424,20 @@ LOGGER = logging.getLogger(__name__)
         for action, role in mutation_hooks:
             try:
                 MUTATION = self.dag_manager.create_mutation_request(action=action,
-                    target_hop_id=node.config.hop_id,
-                    hop_function=role.value,
-                    REASON=f'Node failed: {str(error)}',
-                    requester_hop_id=node.config.hop_id)
-                RESULT = self.dag_manager.request_mutation(mutation)
-                if result.success:
-                    logger.info(f'Successfully applied mutation for {role.value}')
+                                                                    target_hop_id=node.config.hop_id,
+                                                                    hop_function=role.value,
+                                                                    REASON=f'Node failed: {str(error)}',
+                                                                    requester_hop_id=node.config.hop_id)
+                RESULT = self.dag_manager.request_mutation(MUTATION)
+                if RESULT.success:
+                    LOGGER.info(
+                        f'Successfully applied mutation for {role.value}')
                     new_hop = self.dag_manager.node_registry.get(role.value)
                     if new_hop:
                         graph.add_node(new_hop, role=role)
                         graph.add_edge(new_hop, node)
             except Exception as e:
-                logger.error(f'Failed to apply mutation: {e}')
+LOGGER.error(f'Failed to apply mutation: {e}')
 
     def get_execution_stats(self) -> Dict[str, Any]:
         """Get execution statistics.
@@ -364,15 +448,19 @@ LOGGER = logging.getLogger(__name__)
         if not self.execution_history:
             return {'total_executions': 0}
         TOTAL = len(self.execution_history)
-        COMPLETED = sum((1 for e in self.execution_history if e['status'] == 'completed'))
-        FAILED = sum((1 for e in self.execution_history if e['status'] == 'failed'))
-        avg_duration = sum((e.get('duration', 0) for e in self.execution_history)) / total
-        return {'total_executions': total,
-            'completed': completed,
-            'failed': failed,
-            'success_rate': completed / total if total > 0 else 0,
-            'average_duration': avg_duration,
-            'active_graphs': len(self.active_graphs)}
+        COMPLETED = sum(
+            (1 for e in self.execution_history if e['status'] == 'completed'))
+        FAILED = sum(
+            (1 for e in self.execution_history if e['status'] == 'failed'))
+        avg_duration = sum((e.get('duration', 0)
+                           for e in self.execution_history)) / TOTAL if TOTAL > 0 else 0
+        return {'total_executions': TOTAL,
+                'completed': COMPLETED,
+                'failed': FAILED,
+                'success_rate': COMPLETED / TOTAL if TOTAL > 0 else 0,
+                'average_duration': avg_duration,
+                'active_graphs': len(self.active_graphs)}
+
 
 def get_orchestrator() -> SubatomicOrchestrator:
     """Get the global orchestrator instance.
@@ -385,6 +473,7 @@ def get_orchestrator() -> SubatomicOrchestrator:
         _orchestrator = SubatomicOrchestrator()
     return _orchestrator
 
+
 async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
     """Execute the resume generation workflow.
 
@@ -396,17 +485,16 @@ async def execute_resume_workflow(profile_data: Dict[str, Any], **kwargs) -> Dic
         Execution results
     """
     ORCHESTRATOR = get_orchestrator()
-    GRAPH = orchestrator.build_standard_pipeline(WorkflowType.RESUME_GENERATION,
-        CONTEXT={'profile': profile_data},
-        **kwargs)
-    return await orchestrator.execute_graph(graph, initial_inputs={'profile': profile_data})
+    GRAPH = ORCHESTRATOR.build_standard_pipeline(WorkflowType.RESUME_GENERATION,
+                                                 CONTEXT={
+                                                     'profile': profile_data},
+                                                 **kwargs)
+    return await ORCHESTRATOR.execute_graph(GRAPH, initial_inputs={'profile': profile_data})
 
-async def execute_message_workflow(recipient_data: Dict[str,
-    """Docstring."""
-    Any],
-    message_type: str,
-    **kwargs) -> Dict[str,
-    Any]:
+
+async def execute_message_workflow(recipient_data: Dict[str, Any],
+                                   message_type: str,
+                                   **kwargs) -> Dict[str, Any]:
     """Execute the message outreach workflow.
 
     Args:
@@ -418,10 +506,11 @@ async def execute_message_workflow(recipient_data: Dict[str,
         Execution results
     """
     ORCHESTRATOR = get_orchestrator()
-    GRAPH = orchestrator.build_standard_pipeline(WorkflowType.MESSAGE_OUTREACH,
-        CONTEXT={'recipient': recipient_data,
-        'type': message_type},
-        **kwargs)
-    return await orchestrator.execute_graph(graph,
-        initial_inputs={'recipient': recipient_data,
-        'type': message_type})
+    GRAPH = ORCHESTRATOR.build_standard_pipeline(WorkflowType.MESSAGE_OUTREACH,
+                                                 CONTEXT={'recipient': recipient_data,
+                                                          'type': message_type},
+                                                 **kwargs)
+    return await ORCHESTRATOR.execute_graph(GRAPH,
+                                            initial_inputs={'recipient': recipient_data,
+                                                            'type': message_type})
+

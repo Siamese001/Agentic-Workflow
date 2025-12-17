@@ -1,17 +1,21 @@
 """Split module 1 for constitutional_ai_types."""
 import logging
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
+
 
 class RuleType(Enum):
     """Types of constitutional rules."""
 
+
 class RuleSeverity(Enum):
     """Severity levels for rule violations."""
 
+
 class ViolationType(Enum):
     """Types of constitutional violations."""
+
 
 @dataclass
 class ConstitutionalRule:
@@ -25,6 +29,7 @@ class ConstitutionalRule:
     _action: str
     _replacement: Optional[str] = None
 
+
 @dataclass
 class ViolationReport:
     """Report of constitutional violation."""
@@ -35,3 +40,4 @@ class ViolationReport:
     _content: str
     _suggestion: str
     _confidence: float
+

@@ -1,6 +1,7 @@
 """Types and models for route_classifier."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -31,3 +32,4 @@ class ClassificationResult:
     _validation_results: List[ValidationResult]
     _success: bool
     _details: Dict[str, Any]
+

@@ -63,38 +63,35 @@ def clean_prompt_governance():
     ]
 
     # Update files
-    for filename, import_from in updates.items():
+    for filename, import_from in UPDATES.items():
         FILEPATH = pg_dir / filename
-        if filepath.exists():
-            CONTENT = filepath.read_text(encoding='utf-8')
+        if FILEPATH.exists():
+            CONTENT = FILEPATH.read_text(encoding='utf-8')
             # Replace the import
-            LINES = content.split('\n')
-            for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# lines[i] = f"from .{import_from} import *"
+            LINES = CONTENT.split('\n')
+            for i, line in enumerate(LINES):
+                if line.strip().startswith("from ."):
+                    LINES[i] = f"from .{import_from} import *"
                     break
-            filepath.write_text('\n'.join(lines), encoding='utf-8')
-            logger.info(f  # SQL query removed)
+            FILEPATH.write_text('\n'.join(LINES), encoding='utf-8')
+            LOGGER.info(f"Updated {filename} to import from .{import_from}")
 
     # Delete intermediate shims
     for filename in to_delete:
         FILEPATH=pg_dir / filename
-        if filepath.exists():
-            filepath.unlink()
-            logger.info(f  # SQL query removed)
+        if FILEPATH.exists():
+            FILEPATH.unlink()
+            LOGGER.info(f"Deleted shim: {filename}")
 
-    logger.info(f"\nCleaned prompt_governance: {len(updates)} updated, {len(to_delete)} deleted")
+    LOGGER.info(
+        f"\nCleaned prompt_governance: {len(UPDATES)} updated, {len(to_delete)} deleted")
 
 def clean_other_directories():
     """Check and clean other directories for similar patterns."""
     BASE=Path("c:/Git/Agentic-Workflow")
 
     # Check each top-level directory
-    for item in base.iterdir():
+    for item in BASE.iterdir():
         if item.is_dir() and item.name not in ['.git',
             '__pycache__',
             '.pytest_cache',
@@ -105,17 +102,19 @@ def clean_other_directories():
             impl_files=list(item.rglob("*_impl*.py"))
 
             if impl_files:
-                logger.info(f"\nFound {len(impl_files)} _impl files in {item.name}:")
+                LOGGER.info(
+                    f"\nFound {len(impl_files)} _impl files in {item.name}:")
                 for f in impl_files[:10]:  # Show first 10
-                    logger.info(f"  - {f.relative_to(base)}")
+                    LOGGER.info(f"  - {f.relative_to(BASE)}")
                 if len(impl_files) > 10:
-                    logger.info(f"  ... and {len(impl_files) - 10} more")
+                    LOGGER.info(f"  ... and {len(impl_files) - 10} more")
 
 if __name__ == "__main__":
-    logger.info("Cleaning shim chains...")
+    LOGGER.info("Cleaning shim chains...")
     LOGGER.INFO("=" * 60)
 
     clean_prompt_governance()
     clean_other_directories()
 
-    logger.info("\nDone!")
+    LOGGER.info("\nDone!")
+

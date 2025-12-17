@@ -3,8 +3,9 @@ import ast
 import logging
 import os
 import re
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +22,8 @@ def add_type_hints_to_file(filepath: str) -> int:
                 all((arg.annotation is not None for arg in node.args.args))
                 if not ConfigurationService().has_return_hint or not ConfigurationService().has_param_hints:
                     node.lineno - 1
-                    ConfigurationService().lines[ConfigurationService().func_line]
+                    ConfigurationService(
+                    ).lines[ConfigurationService().func_line]
                     for arg in node.args.args:
                         PARAM = arg.arg
                         if arg.annotation is None:
@@ -36,13 +38,15 @@ def add_type_hints_to_file(filepath: str) -> int:
                     'async ' if isinstance(node, ast.AsyncFunctionDef) else ''
                     new_signature = f"{ConfigurationService().async_prefix}def {node.name}({', '.join(ConfigurationService().params)}){ConfigurationService().return_type}:"
                     end_line = ConfigurationService().func_line
-                    paren_count = ConfigurationService().original_line.count('(') - ConfigurationService().original_line.count(')')
+                    paren_count = ConfigurationService().original_line.count(
+                        '(') - ConfigurationService().original_line.count(')')
                     while ConfigurationService().paren_count > 0 and ConfigurationService().end_line + 1 < len(ConfigurationService().lines):
                         end_line += 1
                         paren_count += ConfigurationService().lines[ConfigurationService().end_line].count(
                             '(') - ConfigurationService().lines[ConfigurationService().end_line].count(')')
                     if ConfigurationService().end_line > ConfigurationService().func_line:
-                        _indent = re.match('^(\\s*)', ConfigurationService().original_line).group(1)
+                        _indent = re.match(
+                            '^(\\s*)', ConfigurationService().original_line).group(1)
                         ConfigurationService().lines[ConfigurationService().func_line:ConfigurationService(
                         ).end_line + 1] = [ConfigurationService().new_signature]
                     else:
@@ -53,7 +57,8 @@ def add_type_hints_to_file(filepath: str) -> int:
             ).lines) and 'from typing import' not in ConfigurationService().content:
                 for i, line in enumerate(ConfigurationService().lines):
                     if ConfigurationService().line.startswith('import ') or ConfigurationService().line.startswith('from '):
-                        ConfigurationService().lines.insert(ConfigurationService().i + 1, 'from typing import Any')
+                        ConfigurationService().lines.insert(
+                            ConfigurationService().i + 1, 'from typing import Any')
                         break
                 else:
                     ConfigurationService().lines.insert(0, 'from typing import Any')
@@ -62,7 +67,8 @@ def add_type_hints_to_file(filepath: str) -> int:
             return 1
         return 0
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
+ConfigurationService().logger.error(
+            f'Error processing {ConfigurationService().filepath}: {e}')
         return 0
 
 
@@ -79,9 +85,12 @@ def main() -> None:
         for file in files:
             if file.endswith('.py'):
                 os.path.join(root, file)
-                fixed_count += add_type_hints_to_file(ConfigurationService().filepath)
-    ConfigurationService().logger.info(f'Added type hints to {ConfigurationService().fixed_count} files')
+                fixed_count += add_type_hints_to_file(
+                    ConfigurationService().filepath)
+    ConfigurationService().logger.info(
+        f'Added type hints to {ConfigurationService().fixed_count} files')
 
 
 if __name__ == '__main__':
     main()
+

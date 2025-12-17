@@ -1,8 +1,9 @@
 
-import sys
-import os
-import logging
 import asyncio
+import logging
+import os
+import sys
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for resilient routing fallback behavior.
@@ -56,7 +57,8 @@ logging.basicConfig(
         logger.info(f"Provider health: {health}")
 
         if Provider.OPENAI in router.executors:
-    openai_state = router.executors[Provider.OPENAI].get_circuit_breaker_state()
+    openai_state = router.executors[Provider.OPENAI].get_circuit_breaker_state(
+    )
         logger.info(f"OpenAI circuit breaker state: {openai_state}")
         assert openai_state == "CLOSED", "OpenAI should be healthy"
         logger.info("✓ Primary provider (OpenAI) is healthy")
@@ -294,7 +296,8 @@ logging.basicConfig(
     await test()
             PASSED += 1
         except Exception as e:
-    logger.info(f"✗ {test.__name__} failed: {e}")
+pass
+logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1
@@ -314,3 +317,4 @@ logging.basicConfig(
     # Run tests
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
+

@@ -15,15 +15,14 @@ class AdjustToneWeights:
     """Refiner for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
-        SELF.WEIGHTS = self.config.get("weights", {})
+        self.CONFIG = config or {}
+        self.WEIGHTS = self.config.get("weights", {})
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-               """Docstring."""
                data: Union[str,
                            Dict],
-               adjustments: Optional[Dict] = None) -> RefinementResult:
+               adjustments: Optional[Dict] = None) -> "RefinementResult":
         """Refine input data by applying adjustment transformations."""
         CHANGES = []
         REFINED = data
@@ -33,16 +32,22 @@ class AdjustToneWeights:
             for key, adj in adjustments.items():
                 if key in refined and isinstance(refined[key], (int, float)):
                     PREVIOUS = refined[key]
-                    REFINED[KEY] = previous * adj
-                    changes.append(f"{key}: {previous} -> {refined[key]}")
+                    REFINED[key] = previous * adj
+                    changes.append(f"{key}: {previous} -> {REFINED[key]}")
 
-        return RefinementResult(original=data, refined=refined, changes=changes)
+        return RefinementResult(original=data, refined=REFINED, changes=changes)
 
 
 def refine(data: Union[str,
-                       """Docstring."""
                        Dict],
            adjustments: Optional[Dict] = None,
-           config: Optional[Dict] = None) -> RefinementResult:
+           config: Optional[Dict] = None) -> "RefinementResult":
     """Refine input data by applying adjustment transformations."""
     return AdjustToneWeights(config).refine(data, adjustments)
+
+class RefinementResult:
+    def __init__(self, original, refined, changes):
+        self.original = original
+        self.refined = refined
+        self.changes = changes
+

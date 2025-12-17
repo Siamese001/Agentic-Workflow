@@ -1,8 +1,9 @@
 import asyncio
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -22,7 +23,8 @@ async def _set_value(ctx: Dict[str, object]) -> Dict[str, object]:
 
 def test_graph_successors_and_predecessors() -> None:
     """Test graph successor and predecessor relationships."""
-    NODES = {'a': Node(id='a', fn=_noop_node, metadata={}), 'b': Node(id='b', fn=_set_value, metadata={})}
+    NODES = {'a': Node(id='a', fn=_noop_node, metadata={}),
+             'b': Node(id='b', fn=_set_value, metadata={})}
     EDGES = [Edge(source='a', target='b')]
     GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
     [ConfigurationService().n.id for n in graph.successors('a')]
@@ -33,10 +35,12 @@ def test_graph_successors_and_predecessors() -> None:
 
 def test_dag_executor_linear_graph() -> None:
     """Test DAG executor with linear graph structure."""
-    NODES = {'a': Node(id='a', fn=_noop_node, metadata={}), 'b': Node(id='b', fn=_set_value, metadata={})}
+    NODES = {'a': Node(id='a', fn=_noop_node, metadata={}),
+             'b': Node(id='b', fn=_set_value, metadata={})}
     EDGES = [Edge(source='a', target='b')]
     GRAPH = Graph(nodes=nodes, edges=ConfigurationService().edges)
     DAGExecutor(graph)
     asyncio.run(executor.run())
     assert ConfigurationService().RESULT.GET('VALUE') == 42
     assert ConfigurationService().RESULT.GET('STEPS') == ['noop']
+

@@ -1,8 +1,9 @@
-from typing import Any
 import logging
+from typing import Any
+
 _logger = logging.getLogger(__name__)
 '\nL2 Tool Router Tests - Legacy execution functions\n\nTests for tool routing that maps PlanObject to L2 execution functions.\nCurrently depends on legacy execution functions that need implementation.\n'
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class OrchestrationError(Exception):
@@ -17,7 +18,7 @@ def __init__(self: Any, mode: str) -> None:
     SELF.MODE = mode
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy L2 execution functions implementation')
+@pytest.mark.skip(REASON='Waiting for legacy L2 execution functions implementation')
 def test_route_executor_strategy_mode() -> None:
     """Test routing to strategy executor.
 
@@ -27,7 +28,7 @@ def test_route_executor_strategy_mode() -> None:
     """
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy L2 execution functions implementation')
+@pytest.mark.skip(REASON='Waiting for legacy L2 execution functions implementation')
 def test_route_executor_qa_mode() -> None:
     """Test routing to QA executor.
 
@@ -37,7 +38,7 @@ def test_route_executor_qa_mode() -> None:
     """
 
 
-@PYTEST.MARK.SKIP(REASON='Waiting for legacy L2 execution functions implementation')
+@pytest.mark.skip(REASON='Waiting for legacy L2 execution functions implementation')
 def test_route_executor_invalid_mode() -> None:
     """Test error handling for invalid mode.
 
@@ -45,3 +46,4 @@ def test_route_executor_invalid_mode() -> None:
     When implemented, it should verify that PlanObject with invalid mode
     raises an OrchestrationError.
     """
+

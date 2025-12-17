@@ -16,7 +16,8 @@ class ExecutionResult:
     """Standardized operation result container."""
     success: bool
     data: Optional[Union[str, int, float, bool, List, Dict]] = None
-    metadata: Dict[str, Union[str, int, float, bool, List, Dict]] = field(default_factory=dict)
+    metadata: Dict[str, Union[str, int, float, bool,
+                              List, Dict]] = field(default_factory=dict)
     error_message: Optional[str] = None
 
 
@@ -36,11 +37,11 @@ class Validation:
                                              bool,
                                              List,
                                              Dict]]] = None):
-        SELF.CONFIG = config or {}
-        self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self.CONFIG = config or {}
+        self._logger = logging.getLogger(
+            f"{__name__}.{self.__class__.__name__}")
 
     def process(self,
-                """Docstring."""
                 payload: Union[str,
                                int,
                                float,
@@ -60,13 +61,13 @@ class Validation:
         """
         try:
             self._logger.info("Starting processing execution")
-            RESULT = self._execute_logic(payload, context)
+            result = self._execute_logic(payload, context)
             return ExecutionResult(success=True, data=result)
         except (ValueError, TypeError, KeyError) as e:
-            self._logger.error(f"Validation error during processing: {e}")
+self._logger.error(f"Validation error during processing: {e}")
             return ExecutionResult(success=False, error_message=str(e))
         except Exception as e:
-            self._logger.error(f"Unexpected system error: {e}", exc_info=True)
+self._logger.error(f"Unexpected system error: {e}", exc_info=True)
             return ExecutionResult(success=False, error_message="Internal System Error")
 
     def _execute_logic(self,
@@ -114,7 +115,7 @@ class Validation:
 
     def _validate_dict(self, data: Dict, result: Dict) -> Dict:
         """Validate dictionary data."""
-        required_fields = self.config.get("required_fields", [])
+        required_fields = self.CONFIG.get("required_fields", [])
 
         # Check required fields
         for field in required_fields:
@@ -123,7 +124,7 @@ class Validation:
                 result["is_valid"] = False
 
         # Check field types
-        field_types = self.config.get("field_types", {})
+        field_types = self.CONFIG.get("field_types", {})
         for field, expected_type in field_types.items():
             if field in data:
                 if not isinstance(data[field], expected_type):
@@ -137,20 +138,22 @@ class Validation:
 
     def _validate_list(self, data: List, result: Dict) -> Dict:
         """Validate list data."""
-        max_length = self.config.get("max_list_length", 100)
-        min_length = self.config.get("min_list_length", 0)
+        max_length = self.CONFIG.get("max_list_length", 100)
+        min_length = self.CONFIG.get("min_list_length", 0)
 
         # Check length constraints
         if len(data) > max_length:
-            result["errors"].append(f"List exceeds maximum length of {max_length}")
+            result["errors"].append(
+                f"List exceeds maximum length of {max_length}")
             result["is_valid"] = False
 
         if len(data) < min_length:
-            result["errors"].append(f"List below minimum length of {min_length}")
+            result["errors"].append(
+                f"List below minimum length of {min_length}")
             result["is_valid"] = False
 
         # Check item types if homogeneous
-        item_type = self.config.get("list_item_type")
+        item_type = self.CONFIG.get("list_item_type")
         if item_type:
             for i, item in enumerate(data):
                 if not isinstance(item, item_type):
@@ -164,40 +167,45 @@ class Validation:
 
     def _validate_string(self, data: str, result: Dict) -> Dict:
         """Validate string data."""
-        max_length = self.config.get("max_string_length", 1000)
-        min_length = self.config.get("min_string_length", 0)
+        max_length = self.CONFIG.get("max_string_length", 1000)
+        min_length = self.CONFIG.get("min_string_length", 0)
 
         # Check length constraints
         if len(data) > max_length:
-            result["errors"].append(f"String exceeds maximum length of {max_length}")
+            result["errors"].append(
+                f"String exceeds maximum length of {max_length}")
             result["is_valid"] = False
 
         if len(data) < min_length:
-            result["errors"].append(f"String below minimum length of {min_length}")
+            result["errors"].append(
+                f"String below minimum length of {min_length}")
             result["is_valid"] = False
 
         # Check pattern if specified
-        PATTERN = self.config.get("string_pattern")
+        pattern = self.CONFIG.get("string_pattern")
         if pattern:
             import re
             if not re.match(pattern, data):
-                result["errors"].append(f"String does not match required pattern: {pattern}")
+                result["errors"].append(
+                    f"String does not match required pattern: {pattern}")
                 result["is_valid"] = False
 
         return result
 
     def _validate_number(self, data: Union[int, float], result: Dict) -> Dict:
         """Validate numeric data."""
-        min_value = self.config.get("min_value")
-        max_value = self.config.get("max_value")
+        min_value = self.CONFIG.get("min_value")
+        max_value = self.CONFIG.get("max_value")
 
         # Check value constraints
         if min_value is not None and data < min_value:
-            result["errors"].append(f"Value {data} is below minimum {min_value}")
+            result["errors"].append(
+                f"Value {data} is below minimum {min_value}")
             result["is_valid"] = False
 
         if max_value is not None and data > max_value:
-            result["errors"].append(f"Value {data} is above maximum {max_value}")
+            result["errors"].append(
+                f"Value {data} is above maximum {max_value}")
             result["is_valid"] = False
 
         return result
@@ -216,5 +224,6 @@ class Validation:
 
 def run_process(data: Union[str, int, float, bool, List, Dict]) -> ExecutionResult:
     """Module-level entry point."""
-    EXECUTOR = Validation()
+    executor = Validation()
     return executor.process(data)
+

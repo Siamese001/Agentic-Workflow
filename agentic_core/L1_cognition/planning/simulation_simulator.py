@@ -1,8 +1,9 @@
 import logging
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -15,3 +16,4 @@ def test_run_scenario_uses_existing_engine(self: Any) -> None:
                            initial_context={}, execution_profile_name='default', run_count=1)
     run_scenario(scenario)
     assert outcome.scenario_id == scenario_id
+

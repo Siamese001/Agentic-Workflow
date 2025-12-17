@@ -10,17 +10,14 @@ from typing import Dict, List, Set, Tuple
 
 def get_file_hash(filepath: Path) -> str:
     """Docstring."""
-
-
-LOGGER = logging.getLogger(__name__)
-
- """Get SHA256 hash of file content."""
-  HASHER = hashlib.sha256()
-   with open(filepath, 'rb') as f:
+    hasher = hashlib.sha256()
+    with open(filepath, 'rb') as f:
         for chunk in iter(lambda: f.read(4096), b''):
             hasher.update(chunk)
     return hasher.hexdigest()
 
+
+LOGGER = logging.getLogger(__name__)
 
 def get_existing_file_hashes() -> Dict[str, str]:
     """Get dict of filename -> content hash for existing sovereign files."""
@@ -39,9 +36,9 @@ def get_existing_file_hashes() -> Dict[str, str]:
             for py_file in root_path.rglob("*.py"):
                 if "__pycache__" in py_file.parts:
                     continue
-                existing[py_file.name] = get_file_hash(py_file)
+                EXISTING[py_file.name] = get_file_hash(py_file)
 
-    return existing
+    return EXISTING
 
 
 def analyze_and_extract() -> None:
@@ -68,22 +65,22 @@ def analyze_and_extract() -> None:
         FILENAME = py_file.name
         legacy_hash = get_file_hash(py_file)
 
-        if filename not in existing_hashes:
+        if FILENAME not in existing_hashes:
             # Truly new filename
-            dest_path = staging_dir / filename
+            dest_path = staging_dir / FILENAME
             shutil.copy2(py_file, dest_path)
-            extracted_files.append(filename)
+            extracted_files.append(FILENAME)
 
-        elif existing_hashes[filename] != legacy_hash:
+        elif existing_hashes[FILENAME] != legacy_hash:
             # Same filename but different content - might be valuable
             # Rename with _LIC suffix to preserve
-            new_name = filename.replace('.py', '_LIC.py')
+            new_name = FILENAME.replace('.py', '_LIC.py')
             dest_path = staging_dir / new_name
             shutil.copy2(py_file, dest_path)
-            unique_content_files.append((filename, new_name))
+            unique_content_files.append((FILENAME, new_name))
 
         else:
-            duplicate_files.append(filename)
+            duplicate_files.append(FILENAME)
 
     return extracted_files, unique_content_files, duplicate_files
 
@@ -106,3 +103,4 @@ if __name__ == "__main__":
     else:
         # logger.info("\nNo duplicate files found")
         pass
+

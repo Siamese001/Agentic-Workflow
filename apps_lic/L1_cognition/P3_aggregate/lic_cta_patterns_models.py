@@ -1,6 +1,7 @@
 """Dataclass models for lic_cta_patterns."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -38,3 +39,4 @@ class DayBufferConfig:
     """Buffer configuration for a specific day."""
     _min_buffer_days: int
     _suggested_pattern: str
+

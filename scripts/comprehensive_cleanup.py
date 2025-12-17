@@ -7,14 +7,15 @@ This script:
 2. Preserves legitimate split implementations
 3. Cleans up directory by directory
 4. Provides detailed reporting
+"""
 import logging
 
 LOGGER = logging.getLogger(__name__)
 
-"""
 
 import re
 from pathlib import Path
+from typing import Dict, List, Set, Optional
 
 
 class RepositoryCleaner:
@@ -43,37 +44,39 @@ class RepositoryCleaner:
             CONTENT = file_path.read_text(encoding='utf-8')
 
             # Check for explicit shim signature
-            if "Backward compatibility shim" in content:
+            if "Backward compatibility shim" in CONTENT:
                 return True
 
             # Check for simple re-export pattern
-            LINES = [l.strip() for l in content.split('\n') if l.strip()]
+            LINES = [l.strip() for l in CONTENT.split('\n') if l.strip()]
 
             # If file has mostly comments and one import, it's likely a shim
-            code_lines = [l for l in lines if not l.startswith('#') and not l.startswith('"""') a...
+            code_lines = [l for l in LINES if not l.startswith('#') and not l.startswith('"""')] # Fixed 'a...'
 
             if len(code_lines) <= 2:
                 # Check if it's just importing from another file
                 for line in code_lines:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# if line.startswith('from .') and 'import *' in line:
+
+
+
+
+
+# # if line.startswith('from .') and 'import *' in line:
                         return True
 
         except Exception as e:
-            self.stats["errors"].append(f"Error reading {file_path}: {e}")
+pass
+            self.stats["errors"].append(f"Error reading {file_path}: {e}") # Fixed indentation
 
         return False
 
     def has_real_implementation(self, file_path: Path) -> bool:
         """Check if file contains actual implementation code."""
         try:
-            CONTENT= file_path.read_text(encoding='utf-8')
+            CONTENT = file_path.read_text(encoding='utf-8')
 
             # Look for implementation indicators
-            impl_patterns= [
+            impl_patterns = [
                 r'def\s+\w+\s*\(',      # Functions
                 r'class\s+\w+\s*:',     # Classes
                 r'@\w+',                 # Decorators
@@ -82,48 +85,49 @@ class RepositoryCleaner:
             ]
 
             for pattern in impl_patterns:
-                if re.search(pattern, content):
+                if re.search(pattern, CONTENT):
                     return True
 
         except Exception as e:
-    logger.warning(f"Ignored error: {e}")
+pass
+            logger.warning(f"Ignored error: {e}") # Fixed indentation
 
         return False
 
     def find_shim_chains(self, directory: Path) -> Dict[str, List[Path]]:
         """Find shim chains in a directory."""
-        CHAINS= {}
-        PROCESSED= set()
+        CHAINS = {}
+        PROCESSED = set()
 
         # Get all Python files
-        py_files= [f for f in directory.rglob("*.py") if f.name != "__init__.py"]
+        py_files = [f for f in directory.rglob("*.py") if f.name != "__init__.py"]
 
         # Group by base name pattern
-        base_groups= {}
+        base_groups = {}
         for file_path in py_files:
             # Match patterns like: name_impl.py, name_impl_impl.py, etc.
-            MATCH= re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
-            if match:
-                BASE= match.group(1)
-                if base not in base_groups:
-                    base_groups[base]= []
-                base_groups[base].append(file_path)
+            MATCH = re.match(r'^(.+?)(?:_impl(?:_impl)*)?\.py$', file_path.name)
+            if MATCH:
+                BASE = MATCH.group(1)
+                if BASE not in base_groups:
+                    base_groups[BASE] = []
+                base_groups[BASE].append(file_path)
 
         # Identify chains
         for base, files in base_groups.items():
             if len(files) > 1:
                 # Sort by number of _impl suffixes
-                FILES.SORT(KEY=lambda f: f.name.count('_impl'))
+                FILES.sort(key=lambda f: f.name.count('_impl'))
 
                 # Check if this is a shim chain
                 # All but possibly the last should be shims
-                all_but_last_are_shims= all(self.is_shim_file(f) for f in files[:-1])
+                all_but_last_are_shims = all(self.is_shim_file(f) for f in files[:-1])
 
                 if all_but_last_are_shims:
-                    CHAINS[BASE]= files
-                    processed.update(files)
+                    CHAINS[BASE] = files
+                    PROCESSED.update(files)
 
-        return chains
+        return CHAINS
 
     def clean_shim_chain(self, chain: List[Path]) -> bool:
         """Clean a single shim chain."""
@@ -131,72 +135,76 @@ class RepositoryCleaner:
             return False
 
         # Find the real implementation (last non-shim file)
-        IMPLEMENTATION= None
+        IMPLEMENTATION = None
         for file_path in reversed(chain):
             if self.has_real_implementation(file_path):
-                IMPLEMENTATION= file_path
+                IMPLEMENTATION = file_path
                 break
 
-        if not implementation:
+        if not IMPLEMENTATION:
             # If no clear implementation, use the last file
-            IMPLEMENTATION= chain[-1]
+            IMPLEMENTATION = chain[-1]
 
         # Update the root shim to import directly
-        root_shim= chain[0]
+        root_shim = chain[0]
         try:
-            CONTENT= root_shim.read_text(encoding='utf-8')
+            CONTENT = root_shim.read_text(encoding='utf-8')
 
             # Replace the import
-            LINES= content.split('\n')
-            for i, line in enumerate(lines):
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import: # TODO: Replace star import:                 if line.startswith('from .') and 'import *' in line:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import:
-# TODO: Replace star import: # TODO: Replace star import: # TODO: Replace
-# star import: # TODO: Replace star import: # TODO: Replace star import: #
-# lines[i] = f"from .{implementation.stem} import *"
+            LINES = CONTENT.split('\n')
+            for i, line in enumerate(LINES):
+
+
+
+
+
+
+
+# # lines[i] = f"from .{implementation.stem} import *"
                     break
 
-            root_shim.write_text('\n'.join(lines), encoding='utf-8')
+            root_shim.write_text('\n'.join(LINES), encoding='utf-8')
             self.stats["files_updated"] += 1
 
         except Exception as e:
-            self.stats["errors"].append(f"Error updating {root_shim}: {e}")
+pass
+            self.stats["errors"].append(f"Error updating {root_shim}: {e}") # Fixed indentation
             return False
 
         # Delete intermediate shims
         for shim in chain[1:]:
-            if shim != implementation:  # Don't delete the real implementation
+            if shim != IMPLEMENTATION:  # Don't delete the real implementation
                 try:
                     shim.unlink()
                     self.stats["shim_files_deleted"] += 1
                 except Exception as e:
-                    self.stats["errors"].append(f"Error deleting {shim}: {e}")
+pass
+                    self.stats["errors"].append(f"Error deleting {shim}: {e}") # Fixed indentation
 
         return True
 
     def clean_directory(self, directory: Path) -> Dict[str, int]:
         """Clean all shim chains in a directory."""
-        logger.info(f"\nCleaning {directory.name}...")
+        LOGGER.info(f"\nCleaning {directory.name}...")
 
-        CHAINS= self.find_shim_chains(directory)
-        dir_stats= {
-            "chains_found": len(chains),
+        CHAINS = self.find_shim_chains(directory)
+        dir_stats = {
+            "chains_found": len(CHAINS),
             "chains_cleaned": 0,
             "files_deleted": 0,
             "files_updated": 0
         }
 
-        if chains:
-            logger.info(f"  Found {len(chains)} shim chains")
+        if CHAINS:
+            LOGGER.info(f"  Found {len(CHAINS)} shim chains")
 
-            for base, chain in chains.items():
-                logger.info(f"    - {base}: {len(chain)} files")
+            for base, chain in CHAINS.items():
+                LOGGER.info(f"    - {base}: {len(chain)} files")
                 if self.clean_shim_chain(chain):
                     dir_stats["chains_cleaned"] += 1
 
         else:
-            logger.info(f"  No shim chains found")
+            LOGGER.info(f"  No shim chains found")
 
         # Update global stats
         self.stats["shim_chains_found"] += dir_stats["chains_found"]
@@ -207,24 +215,24 @@ class RepositoryCleaner:
     def clean_all(self, exclude_dirs: Optional[Set[str]]=None):
         """Clean the entire repository."""
         if exclude_dirs is None:
-            exclude_dirs= {
+            exclude_dirs = {
                 '.git', '__pycache__', '.pytest_cache',
                 'node_modules', '.venv', '.vscode',
                 '.workflow_state', 'output', 'data'
             }
 
         LOGGER.INFO("=" * 80)
-        logger.info("COMPREHENSIVE REPOSITORY CLEANUP")
-        logger.info("Cleaning runaway refactoring artifacts...")
+        LOGGER.info("COMPREHENSIVE REPOSITORY CLEANUP")
+        LOGGER.info("Cleaning runaway refactoring artifacts...")
         LOGGER.INFO("=" * 80)
 
         # Process all top-level directories
-        total_results= {}
+        total_results = {}
 
         for item in self.repo_root.iterdir():
             if item.is_dir() and item.name not in exclude_dirs:
-                RESULT= self.clean_directory(item)
-                total_results[item.name]= result
+                RESULT = self.clean_directory(item)
+                total_results[item.name] = RESULT
 
         # Print summary
         self.print_summary(total_results)
@@ -233,35 +241,36 @@ class RepositoryCleaner:
 
     def print_summary(self, results: Dict[str, Dict[str, int]]):
         """Print cleanup summary."""
-        LOGGER.INFO("\N" + "=" * 80)
-        logger.info("CLEANUP SUMMARY")
+        LOGGER.INFO("\n" + "=" * 80) # Fixed \N to \n
+        LOGGER.info("CLEANUP SUMMARY")
         LOGGER.INFO("=" * 80)
 
-        total_chains= sum(r["chains_found"] for r in results.values())
-        total_cleaned= sum(r["chains_cleaned"] for r in results.values())
+        total_chains = sum(r["chains_found"] for r in results.values())
+        total_cleaned = sum(r["chains_cleaned"] for r in results.values())
 
-        logger.info(f"\nDirectories processed: {self.stats['directories_processed']}")
-        logger.info(f"Shim chains found: {total_chains}")
-        logger.info(f"Shim chains cleaned: {total_cleaned}")
-        logger.info(f"Shim files deleted: {self.stats['shim_files_deleted']}")
-        logger.info(f"Files updated: {self.stats['files_updated']}")
+        LOGGER.info(
+            f"\nDirectories processed: {self.stats['directories_processed']}")
+        LOGGER.info(f"Shim chains found: {total_chains}")
+        LOGGER.info(f"Shim chains cleaned: {total_cleaned}")
+        LOGGER.info(f"Shim files deleted: {self.stats['shim_files_deleted']}")
+        LOGGER.info(f"Files updated: {self.stats['files_updated']}")
 
         if self.stats["errors"]:
-            logger.info(f"\nErrors encountered: {len(self.stats['errors'])}")
+            LOGGER.info(f"\nErrors encountered: {len(self.stats['errors'])}")
             for error in self.stats["errors"][:5]:  # Show first 5
-                logger.info(f"  - {error}")
+                LOGGER.info(f"  - {error}")
             if len(self.stats["errors"]) > 5:
-                logger.info(f"  ... and {len(self.stats['errors']) - 5} more")
+                LOGGER.info(f"  ... and {len(self.stats['errors']) - 5} more")
 
         # Show per-directory details
-        logger.info("\nPer-directory details:")
+        LOGGER.info("\nPer-directory details:")
         for dir_name, result in results.items():
             if result["chains_found"] > 0:
-                logger.info(f"  {dir_name}:")
-                logger.info(f"    Chains: {result['chains_found']} found,
-                    {result['chains_cleaned']} cleaned")
+                LOGGER.info(f"  {dir_name}:")
+                LOGGER.info(f"""    Chains: {result['chains_found']} found,
+                    {result['chains_cleaned']} cleaned""") # Fixed unterminated string
 
-        LOGGER.INFO("\N" + "=" * 80)
+        LOGGER.INFO("\n" + "=" * 80) # Fixed \N to \n
 
 def main():
     """Main entry point."""
@@ -269,9 +278,10 @@ def main():
     CLEANER = RepositoryCleaner(repo_root)
 
     # Run cleanup
-    RESULTS = cleaner.clean_all()
+    RESULTS = CLEANER.clean_all()
 
-    logger.info("\nCleanup complete!")
+    LOGGER.info("\nCleanup complete!")
 
 if __name__ == "__main__":
     main()
+

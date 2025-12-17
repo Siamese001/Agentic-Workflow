@@ -6,8 +6,9 @@ search toward the most relevant content for each recipient type.
 """
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class HyDEDocument:
 
     @property
     def is_valid(self) -> bool:
-            """Check if the generated document meets quality criteria."""
+        """Check if the generated document meets quality criteria."""
         return (
             len(self.content.strip()) > 20 and  # Minimum length
             self.word_count > 10 and  # Minimum word count
@@ -170,7 +171,7 @@ class HyDEProcessor:
         max_retries: int = 2,
         fallback_enabled: bool = True
     ):
-            """Initialize the HyDE processor.
+        """Initialize the HyDE processor.
 
         Args:
             llm_client: LLM client for document generation
@@ -211,16 +212,15 @@ class HyDEProcessor:
             "business development": "Account Executive"
         }
 
-        logger.info(f"Initialized HyDEProcessor with {len(HYDE_TEMPLATES)} templates")
+        LOGGER.info(f"Initialized HyDEProcessor with {len(HYDE_TEMPLATES)} templates")
 
-        """Docstring."""
     def expand_query(
         self,
         original_query: str,
         archetype: str,
         industry: Optional[str] = None
     ) -> HyDEResult:
-            """Expand query using archetype-aware HyDE.
+        """Expand query using archetype-aware HyDE.
 
         Args:
             original_query: Original search query
@@ -244,7 +244,7 @@ class HyDEProcessor:
                     original_query=original_query,
                     expanded_query=expanded_query,
                     hypothetical_doc=hypothetical_doc,
-                    SUCCESS=True,
+                    success=True,
                     fallback_used=False
                 )
             else:
@@ -255,7 +255,7 @@ class HyDEProcessor:
                         original_query=original_query,
                         expanded_query=fallback_query,
                         hypothetical_doc=None,
-                        SUCCESS=False,
+                        success=False,
                         fallback_used=True,
                         error_message="Generated document invalid, used keyword fallback"
                     )
@@ -264,13 +264,13 @@ class HyDEProcessor:
                         original_query=original_query,
                         expanded_query=original_query,
                         hypothetical_doc=None,
-                        SUCCESS=False,
+                        success=False,
                         fallback_used=False,
                         error_message="Generated document invalid and fallback disabled"
                     )
 
         except Exception as e:
-            logger.error(f"HyDE expansion failed: {str(e)}")
+LOGGER.error(f"HyDE expansion failed: {str(e)}")
 
             # Emergency fallback
             fallback_query = self._keyword_fallback(original_query,
@@ -280,19 +280,18 @@ class HyDEProcessor:
                 original_query=original_query,
                 expanded_query=fallback_query,
                 hypothetical_doc=None,
-                SUCCESS=False,
+                success=False,
                 fallback_used=self.fallback_enabled,
                 error_message=str(e)
             )
 
-        """Docstring."""
     def generate_hypothetical_doc(
         self,
         query: str,
         archetype: str,
         industry: str
     ) -> Optional[HyDEDocument]:
-            """Generate a hypothetical document for query expansion.
+        """Generate a hypothetical document for query expansion.
 
         Args:
             query: Original query keywords
@@ -303,45 +302,45 @@ class HyDEProcessor:
             HyDEDocument or None if generation fails
         """
         # Construct the prompt
-        PROMPT = self._construct_prompt(query, archetype, industry)
+        prompt = self._construct_prompt(query, archetype, industry)
 
         # Attempt generation with retries
         for attempt in range(self.max_retries + 1):
             try:
                 if self.llm_client:
                     # Use actual LLM client
-                    CONTENT = self._call_llm(prompt)
+                    content = self._call_llm(prompt)
                 else:
                     # Mock generation for testing
-                    CONTENT = self._mock_generation(query, archetype, industry)
+                    content = self._mock_generation(query, archetype, industry)
 
                 if content:
                     # Create document
-                    DOC = HyDEDocument(
-                        CONTENT=content.strip(),
-                        ARCHETYPE=archetype,
-                        INDUSTRY=industry,
-                        STRATEGY=ExpansionStrategy.ARCHETYPE_SPECIFIC,
+                    doc = HyDEDocument(
+                        content=content.strip(),
+                        archetype=archetype,
+                        industry=industry,
+                        strategy=ExpansionStrategy.ARCHETYPE_SPECIFIC,
                         word_count=len(content.split()),
-                        METADATA={"attempt": attempt + 1}
+                        metadata={"attempt": attempt + 1}
                     )
 
                     if doc.is_valid:
-                        logger.debug(f"Generated valid HyDE document for {archetype}")
+                        LOGGER.debug(f"Generated valid HyDE document for {archetype}")
                         return doc
                     else:
-                        logger.warning(f"Generated invalid document on attempt {attempt + 1}")
+                        LOGGER.warning(f"Generated invalid document on attempt {attempt + 1}")
 
             except Exception as e:
-                logger.warning(f"Generation attempt {attempt + 1} failed: {str(e)}")
+LOGGER.warning(f"Generation attempt {attempt + 1} failed: {str(e)}")
                 if attempt == self.max_retries:
                     break
 
-        logger.error(f"Failed to generate valid document after {self.max_retries + 1} attempts")
+        LOGGER.error(f"Failed to generate valid document after {self.max_retries + 1} attempts")
         return None
 
     def _construct_prompt(self, query: str, archetype: str, industry: str) -> str:
-            """Construct the prompt for hypothetical document generation.
+        """Construct the prompt for hypothetical document generation.
 
         Args:
             query: Original query
@@ -355,10 +354,10 @@ class HyDEProcessor:
         normalized_archetype = self._normalize_archetype(archetype)
 
         # Get template
-        TEMPLATE = HYDE_TEMPLATES.get(normalized_archetype, HYDE_TEMPLATES["DEFAULT"])
+        template = HYDE_TEMPLATES.get(normalized_archetype, HYDE_TEMPLATES["DEFAULT"])
 
         # Fill placeholders
-        PROMPT = template.format(
+        prompt = template.format(
             KEYWORDS=query,
             INDUSTRY=industry
         )
@@ -366,7 +365,7 @@ class HyDEProcessor:
         return prompt
 
     def _normalize_archetype(self, archetype: str) -> str:
-            """Normalize archetype string to match template keys.
+        """Normalize archetype string to match template keys.
 
         Args:
             archetype: Raw archetype string
@@ -393,7 +392,7 @@ class HyDEProcessor:
         return "DEFAULT"
 
     def _call_llm(self, prompt: str) -> Optional[str]:
-            """Call the LLM client for document generation.
+        """Call the LLM client for document generation.
 
         Args:
             prompt: Generation prompt
@@ -407,14 +406,14 @@ class HyDEProcessor:
         try:
             # This would be implemented with actual LLM client
             # For now, return None to trigger fallback
-            logger.info("LLM client not implemented, using fallback")
+            LOGGER.info("LLM client not implemented, using fallback")
             return None
         except Exception as e:
-            logger.error(f"LLM call failed: {str(e)}")
+LOGGER.error(f"LLM call failed: {str(e)}")
             return None
 
     def _mock_generation(self, query: str, archetype: str, industry: str) -> str:
-            """Mock document generation for testing.
+        """Mock document generation for testing.
 
         Args:
             query: Original query
@@ -426,20 +425,16 @@ class HyDEProcessor:
         """
         # Simple mock based on archetype
         if "CTO" in archetype or "VP" in archetype:
-            return f"Architected scalable {query} solution handling 10M+ requests, reducing latency
-    by 60% through distributed systems design and microservices optimization in {industry}."
+            return f"Architected scalable {query} solution handling 10M+ requests, reducing latency by 60% through distributed systems design and microservices optimization in {industry}."
         elif "CEO" in archetype or "Founder" in archetype:
-            return f"Drove {query} strategy resulting in 200% revenue growth and market expansion, s
-    ecuring $50M in funding while building a 100-person team in {industry}."
+            return f"Drove {query} strategy resulting in 200% revenue growth and market expansion, securing $50M in funding while building a 100-person team in {industry}."
         elif "Recruiter" in archetype:
-            return f"5+ years experience in {query} with proven track record of hiring top talent, f
-    ull-cycle recruiting, and building high-performing teams in {industry}."
+            return f"5+ years experience in {query} with proven track record of hiring top talent, full-cycle recruiting, and building high-performing teams in {industry}."
         else:
-            return f"Delivered impactful {query} solutions achieving measurable business outcomes th
-    rough technical excellence and strategic thinking in {industry}."
+            return f"Delivered impactful {query} solutions achieving measurable business outcomes through technical excellence and strategic thinking in {industry}."
 
     def _keyword_fallback(self, query: str, industry: Optional[str] = None) -> str:
-            """Fallback expansion using keyword enhancement.
+        """Fallback expansion using keyword enhancement.
 
         Args:
             query: Original query
@@ -461,7 +456,7 @@ class HyDEProcessor:
         expanded_parts = [query]
 
         if industry and industry.lower() in industry_keywords:
-            KEYWORDS = industry_keywords[industry.lower()]
+            keywords = industry_keywords[industry.lower()]
             expanded_parts.append(" ".join(keywords[:3]))  # Add top 3 keywords
 
         # Add generic professional keywords
@@ -470,7 +465,6 @@ class HyDEProcessor:
         return "\n\n".join(expanded_parts)
 
 # Factory function for easy instantiation
-    """Docstring."""
 def create_hyde_processor(
     llm_client: Optional[Any] = None,
     default_industry: str = "Technology",
@@ -494,7 +488,6 @@ def create_hyde_processor(
     )
 
 # Convenience function for quick expansion
-    """Docstring."""
 def expand_query_with_hyde(
     query: str,
     archetype: str,
@@ -512,6 +505,7 @@ def expand_query_with_hyde(
     Returns:
         Expanded query string
     """
-    PROCESSOR = create_hyde_processor(llm_client=llm_client)
-    RESULT = processor.expand_query(query, archetype, industry)
+    processor = create_hyde_processor(llm_client=llm_client)
+    result = processor.expand_query(query, archetype, industry)
     return result.expanded_query
+

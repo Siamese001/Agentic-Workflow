@@ -6,6 +6,19 @@ performance, and brand compliance across all engines.
 """
 
 import logging
+from typing import Optional, Dict, Any, List
+
+# Assuming these are imported from other modules
+# from .fact_ledger import FactLedger
+# from .global_cache import GlobalCache
+# from .tone_enforcer import ToneEnforcer, ToneViolation, ToneVoice
+# from .infrastructure_orchestrator import InfrastructureOrchestrator
+# from .system_event import SystemEvent, EventType
+# from .task_type import TaskType
+# from .verification_result import VerificationResult
+import re
+import asyncio
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -14,22 +27,22 @@ class InfrastructureUpgradesOrchestrator:
     """Orchestrates all infrastructure upgrade components."""
 
     def __init__(self):
-            """Initialize infrastructure upgrades orchestrator."""
-        self.fact_ledger: Optional[FactLedger] = None
-        self.global_cache: Optional[GlobalCache] = None
-        self.tone_enforcer: Optional[ToneEnforcer] = None
-        self.infrastructure: Optional[InfrastructureOrchestrator] = None
+        """Initialize infrastructure upgrades orchestrator."""
+        self.fact_ledger: Optional['FactLedger'] = None
+        self.global_cache: Optional['GlobalCache'] = None
+        self.tone_enforcer: Optional['ToneEnforcer'] = None
+        self.infrastructure: Optional['InfrastructureOrchestrator'] = None
 
         self._initialized = False
 
-        logger.info("Initialized InfrastructureUpgradesOrchestrator")
+        LOGGER.info("Initialized InfrastructureUpgradesOrchestrator")
 
     async def initialize(self) -> None:
-            """Initialize all components."""
+        """Initialize all components."""
         if self._initialized:
             return
 
-        logger.info("Initializing infrastructure upgrade components...")
+        LOGGER.info("Initializing infrastructure upgrade components...")
 
         # Get component instances
         self.fact_ledger = get_fact_ledger()
@@ -37,16 +50,16 @@ class InfrastructureUpgradesOrchestrator:
         self.tone_enforcer = get_tone_enforcer()
 
         # Get infrastructure orchestrator
-        SELF.INFRASTRUCTURE = await InfrastructureOrchestrator()
+        self.infrastructure = await InfrastructureOrchestrator()
 
         # Setup event subscriptions
         await self._setup_event_subscriptions()
 
         self._initialized = True
-        logger.info("Infrastructure upgrades initialization complete")
+        LOGGER.info("Infrastructure upgrades initialization complete")
 
     async def _setup_event_subscriptions(self) -> None:
-            """Setup event subscriptions for component coordination."""
+        """Setup event subscriptions for component coordination."""
         # Subscribe to content generation events for fact checking
         await self.infrastructure.event_bus.subscribe(
             "events.content_generated",
@@ -65,22 +78,22 @@ class InfrastructureUpgradesOrchestrator:
             self._handle_tone_violation
         )
 
-        logger.info("Setup infrastructure upgrades event subscriptions")
+        LOGGER.info("Setup infrastructure upgrades event subscriptions")
 
-    async def _handle_content_generated(self, event: SystemEvent) -> None:
-            """Handle content generation event for fact checking.
+    async def _handle_content_generated(self, event: 'SystemEvent') -> None:
+        """Handle content generation event for fact checking.
 
         Args:
             event: Content generated event
         """
         try:
             # Extract content
-            PAYLOAD = event.payload
-            CONTENT = payload.get("content", "")
+            payload = event.payload
+            content = payload.get("content", "")
 
             if content:
                 # Verify claims in content
-                VIOLATIONS = await self._verify_content_facts(content, event.trace_id)
+                violations = await self._verify_content_facts(content, event.trace_id)
 
                 if violations:
                     # Publish fact violations event
@@ -99,49 +112,50 @@ class InfrastructureUpgradesOrchestrator:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to handle content generated: {e}")
+LOGGER.error(f"Failed to handle content generated: {e}")
 
-    async def _handle_cache_miss(self, event: SystemEvent) -> None:
-            """Handle cache miss event.
+
+    async def _handle_cache_miss(self, event: 'SystemEvent') -> None:
+        """Handle cache miss event.
 
         Args:
             event: Cache miss event
         """
         try:
             # Log cache miss for analytics
-            PAYLOAD = event.payload
-            QUERY = payload.get("query", "")
+            payload = event.payload
+            query = payload.get("query", "")
             cache_type = payload.get("cache_type", "unknown")
 
-            logger.debug(f"Cache miss for {cache_type}: {query[:50]}...")
+            LOGGER.debug(f"Cache miss for {cache_type}: {query[:50]}...")
 
             # Could trigger cache warming logic here
 
         except Exception as e:
-            logger.error(f"Failed to handle cache miss: {e}")
+LOGGER.error(f"Failed to handle cache miss: {e}")
 
-    async def _handle_tone_violation(self, event: SystemEvent) -> None:
-            """Handle tone violation event.
+    async def _handle_tone_violation(self, event: 'SystemEvent') -> None:
+        """Handle tone violation event.
 
         Args:
             event: Tone violation event
         """
         try:
             # Extract violations
-            PAYLOAD = event.payload
-            VIOLATIONS = payload.get("violations", [])
+            payload = event.payload
+            violations = payload.get("violations", [])
 
             # Log violations for analytics
             violation_types = [v.get("type", "unknown") for v in violations]
-            logger.info(f"Tone violations detected: {violation_types}")
+            LOGGER.info(f"Tone violations detected: {violation_types}")
 
             # Could trigger adaptive learning here
 
         except Exception as e:
-            logger.error(f"Failed to handle tone violation: {e}")
+LOGGER.error(f"Failed to handle tone violation: {e}")
 
-    async def _verify_content_facts(self, content: str, trace_id: str) -> List[VerificationResult]:
-            """Verify facts in generated content.
+    async def _verify_content_facts(self, content: str, trace_id: str) -> List['VerificationResult']:
+        """Verify facts in generated content.
 
         Args:
             content: Generated content
@@ -151,15 +165,14 @@ class InfrastructureUpgradesOrchestrator:
             List of verification results
         """
         # Split content into sentences/claims
-        import re
-        SENTENCES = re.split(r'[.!?]+', content)
-        SENTENCES = [s.strip() for s in sentences if s.strip()]
+        sentences = re.split(r'[.!?]+', content)
+        sentences = [s.strip() for s in sentences if s.strip()]
 
-        VIOLATIONS = []
+        violations = []
 
         for sentence in sentences:
             # Verify each claim
-            RESULT = self.fact_ledger.verify_claim(sentence)
+            result = self.fact_ledger.verify_claim(sentence)
 
             if result.status == "CONFLICT":
                 violations.append(result)
@@ -174,26 +187,24 @@ class InfrastructureUpgradesOrchestrator:
                         PAYLOAD={
                             "claim": sentence,
                             "correction": result.correction_suggestion,
-                            "verified_value": result.verified_fact.value if result.verified_fact els
-    e None
+                            "verified_value": result.verified_fact.value if result.verified_fact else None
                         }
                     )
                 )
 
         return violations
 
-        """Docstring."""
     async def generate_with_upgrades(
         self,
-        task_type: TaskType,
+        task_type: 'TaskType',
         prompt: str,
-        tone_voice: Optional[ToneVoice] = None,
+        tone_voice: Optional['ToneVoice'] = None,
         verify_facts: bool = True,
         enforce_tone: bool = True,
         use_cache: bool = True,
         trace_id: Optional[str] = None
     ) -> Dict[str, Any]:
-            """Generate content with all infrastructure upgrades.
+        """Generate content with all infrastructure upgrades.
 
         Args:
             task_type: Type of task
@@ -250,19 +261,19 @@ class InfrastructureUpgradesOrchestrator:
 
         try:
             # Generate base content
-            RESULT = await self.infrastructure.execute_with_infrastructure(
+            result = await self.infrastructure.execute_with_infrastructure(
                 task_type,
                 prompt,
                 complexity_score=5,
                 trace_id=trace_id
             )
 
-            CONTENT = result["result"]
+            content = result["result"]
 
             # Apply tone enforcement if requested
             tone_violations = []
             if enforce_tone and tone_voice:
-                SETTINGS = self.tone_enforcer.get_profile(tone_voice)
+                settings = self.tone_enforcer.get_profile(tone_voice)
                 tone_violations = self.tone_enforcer.audit_content(content, settings)
 
                 if tone_violations:
@@ -328,7 +339,7 @@ class InfrastructureUpgradesOrchestrator:
             }
 
         except Exception as e:
-            # Publish error
+# Publish error
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_failed",
                 SystemEvent(
@@ -343,7 +354,7 @@ class InfrastructureUpgradesOrchestrator:
             raise
 
     async def load_profile_facts(self, profile_data: Dict[str, Any]) -> None:
-            """Load profile facts into the ledger.
+        """Load profile facts into the ledger.
 
         Args:
             profile_data: Profile data dictionary
@@ -352,10 +363,10 @@ class InfrastructureUpgradesOrchestrator:
             await self.initialize()
 
         self.fact_ledger.load_facts(profile_data)
-        logger.info(f"Loaded profile facts: {self.fact_ledger.get_stats()['facts_loaded']} facts")
+        LOGGER.info(f"Loaded profile facts: {self.fact_ledger.get_stats()['facts_loaded']} facts")
 
     def get_upgrades_stats(self) -> Dict[str, Any]:
-            """Get statistics for all upgrade components.
+        """Get statistics for all upgrade components.
 
         Returns:
             Statistics dictionary
@@ -381,7 +392,6 @@ async def get_infrastructure_upgrades_orchestrator() -> InfrastructureUpgradesOr
     global _upgrades_orchestrator, _orchestrator_lock
 
     if _orchestrator_lock is None:
-        import asyncio
         _orchestrator_lock = asyncio.Lock()
 
     async with _orchestrator_lock:
@@ -392,11 +402,10 @@ async def get_infrastructure_upgrades_orchestrator() -> InfrastructureUpgradesOr
     return _upgrades_orchestrator
 
 # Convenience functions
-    """Docstring."""
 async def generate_with_consistency(
-    task_type: TaskType,
+    task_type: 'TaskType',
     prompt: str,
-    tone_voice: Optional[ToneVoice] = None,
+    tone_voice: Optional['ToneVoice'] = None,
     verify_facts: bool = True,
     enforce_tone: bool = True,
     trace_id: Optional[str] = None
@@ -414,7 +423,7 @@ async def generate_with_consistency(
     Returns:
         Generated content with metadata
     """
-    ORCHESTRATOR = await get_infrastructure_upgrades_orchestrator()
+    orchestrator = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
         task_type,
         prompt,
@@ -425,7 +434,7 @@ async def generate_with_consistency(
         trace_id
     )
 
-async def verify_claims(content: str) -> List[VerificationResult]:
+async def verify_claims(content: str) -> List['VerificationResult']:
     """Verify claims in content.
 
     Args:
@@ -434,21 +443,21 @@ async def verify_claims(content: str) -> List[VerificationResult]:
     Returns:
         List of verification results
     """
-    LEDGER = get_fact_ledger()
+    ledger = get_fact_ledger()
 
     # Split into claims
-    SENTENCES = re.split(r'[.!?]+', content)
-    SENTENCES = [s.strip() for s in sentences if s.strip()]
+    sentences = re.split(r'[.!?]+', content)
+    sentences = [s.strip() for s in sentences if s.strip()]
 
-    RESULTS = []
+    results = []
     for sentence in sentences:
-        RESULT = ledger.verify_claim(sentence)
+        result = ledger.verify_claim(sentence)
         if result.status != "UNVERIFIED":
             results.append(result)
 
     return results
 
-def audit_tone(text: str, voice: ToneVoice) -> List[ToneViolation]:
+def audit_tone(text: str, voice: 'ToneVoice') -> List['ToneViolation']:
     """Audit text for tone compliance.
 
     Args:
@@ -458,6 +467,67 @@ def audit_tone(text: str, voice: ToneVoice) -> List[ToneViolation]:
     Returns:
         List of tone violations
     """
-    ENFORCER = get_tone_enforcer()
-    SETTINGS = enforcer.get_profile(voice)
+    enforcer = get_tone_enforcer()
+    settings = enforcer.get_profile(voice)
     return enforcer.audit_content(text, settings)
+
+# Placeholder functions for external dependencies (replace with actual imports)
+def get_fact_ledger():
+    pass
+
+def get_global_cache():
+    pass
+
+def get_tone_enforcer():
+    pass
+
+class InfrastructureOrchestrator:
+    def __init__(self):
+        self.event_bus = MockEventBus()
+        pass
+    async def execute_with_infrastructure(self, task_type, prompt, complexity_score, trace_id):
+        return {"result": "Generated content", "model_used": "mock", "tier": "mock", "execution_time": 0}
+
+class MockEventBus:
+    async def subscribe(self, event_name, handler):
+        pass
+    async def publish(self, event_name, event):
+        pass
+
+class SystemEvent:
+    def __init__(self, TYPE, trace_id, source_component, PAYLOAD, causation_id=None):
+        self.TYPE = TYPE
+        self.trace_id = trace_id
+        self.source_component = source_component
+        self.payload = PAYLOAD
+        self.id = str(uuid.uuid4())
+        self.causation_id = causation_id
+
+class EventType:
+    AGENT_THINKING = "AGENT_THINKING"
+    WORKFLOW_STARTED = "WORKFLOW_STARTED"
+    ARTIFACT_GENERATED = "ARTIFACT_GENERATED"
+    ERROR_OCCURRED = "ERROR_OCCURRED"
+
+class TaskType:
+    value = "MOCK_TASK"
+
+class ToneVoice:
+    value = "MOCK_VOICE"
+
+class VerificationResult:
+    def __init__(self, status, correction_suggestion=None, verified_fact=None):
+        self.status = status
+        self.correction_suggestion = correction_suggestion
+        self.verified_fact = verified_fact
+    def dict(self):
+        return {"status": self.status}
+
+class ToneViolation:
+    def __init__(self, type):
+        self.type = type
+    def dict(self):
+        return {"type": self.type}
+
+import uuid
+

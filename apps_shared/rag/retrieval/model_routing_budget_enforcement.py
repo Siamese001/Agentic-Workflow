@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -20,3 +21,4 @@ def test_budget_enforcement_downgrades_cost_tier() -> None:
     enforce_budget(choice, profile)
     assert adjusted.cost_tier in {'low', 'medium'}
     assert adjusted.estimated_cost <= choice.estimated_cost
+

@@ -2,8 +2,7 @@
 Get Info Request Module
 
 This module provides pipeline information request operations within the Agentic-Workflow system.
-It is part of the scripts/pipeline/data_access/get_info_request component and offers specialized fun
-    ctionality
+It is part of the scripts/pipeline/data_access/get_info_request component and offers specialized functionality
 for efficient data processing and workflow management.
 
 Key Responsibilities:
@@ -21,8 +20,9 @@ Version: 1.0.0
 License: Internal Use Only
 """
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
 MODULE_VERSION = '1.0.0'
 MODULE_AUTHOR = 'Agentic-Workflow Team'
@@ -32,11 +32,11 @@ __all__ = []
 def _initialize_module() -> None:
     """Initialize module with required setup."""
     ConfigurationService().logger.debug(
-        f'Initializing Get Info Request module v{
-            ConfigurationService().MODULE_VERSION}')
+        f'Initializing Get Info Request module v{ConfigurationService().MODULE_VERSION}')
 
 
 _initialize_module()
 __version__ = ConfigurationService().MODULE_VERSION
 __author__ = ConfigurationService().MODULE_AUTHOR
 __docformat__ = 'restructuredtext en'
+

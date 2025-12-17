@@ -176,3 +176,4 @@ class MockActionPlane(IActionPlane):
     def reset(self) -> None:
             """Reset mock state."""
         self.call_history.clear()
+

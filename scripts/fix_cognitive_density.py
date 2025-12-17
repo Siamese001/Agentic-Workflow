@@ -10,29 +10,30 @@ def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
 
 
-LOGGER = logging.getLogger(__name__)
+    LOGGER = logging.getLogger(__name__)
 
     """Count top-level definitions in a Python file."""
     try:
-        TREE = ast.parse(filepath.read_text(encoding='utf-8'))
+        tree = ast.parse(filepath.read_text(encoding='utf-8'))
         return sum(1 for n in tree.body if isinstance(n,
-            (ast.FunctionDef,
-            ast.ClassDef,
-            ast.AsyncFunctionDef)))
+                                                      (ast.FunctionDef,
+                                                       ast.ClassDef,
+                                                       ast.AsyncFunctionDef)))
     except Exception:
-        return 0
+pass
+    return 0
 
 
 def split_file_by_type(filepath: Path) -> None:
     """Split a file into submodules by grouping enums, dataclasses, classes, and functions."""
-    CONTENT = filepath.read_text(encoding='utf-8')
-    TREE = ast.parse(content)
+    content = filepath.read_text(encoding='utf-8')
+    tree = ast.parse(content)
 
     # Group definitions by type
-    ENUMS = []
-    DATACLASSES = []
-    CLASSES = []
-    FUNCTIONS = []
+    enums = []
+    dataclasses = []
+    classes = []
+    functions = []
 
     for node in tree.body:
         if isinstance(node, ast.ClassDef):
@@ -43,8 +44,8 @@ def split_file_by_type(filepath: Path) -> None:
             elif any(
                 (isinstance(d, ast.Name) and d.id == 'dataclass') or
                 (isinstance(d,
-                    ast.Call) and isinstance(d.func,
-                    ast.Name) and d.func.id == 'dataclass')
+                            ast.Call) and isinstance(d.func,
+                                                     ast.Name) and d.func.id == 'dataclass')
                 for d in node.decorator_list
             ):
                 dataclasses.append(node)
@@ -58,14 +59,13 @@ def split_file_by_type(filepath: Path) -> None:
     if total_defs <= 5:
         return  # No need to split
 
-    logger.info(f"Splitting {filepath.name}: {total_defs} defs ({len(enums)} enums,
-        {len(dataclasses)} dataclasses,
-        {len(classes)} classes,
-        {len(functions)} functions)")
+    LOGGER.info(f"Splitting {filepath.name}: {total_defs} defs({len(enums)} enums, "
+                f"{len(dataclasses)} dataclasses, {len(classes)} classes, "
+                f"{len(functions)} functions)")
 
     # Create submodules
     parent_dir = filepath.parent
-    STEM = filepath.stem
+    stem = filepath.stem
 
     # Create types module (enums + dataclasses), split if >5 defs
     if enums or dataclasses:
@@ -82,7 +82,7 @@ def split_file_by_type(filepath: Path) -> None:
 
             types_file = parent_dir / f"{stem}_types.py"
             types_file.write_text(types_content, encoding='utf-8')
-            logger.info(f"  Created {types_file.name}")
+            LOGGER.info(f"  Created {types_file.name}")
         else:
             # Split into enums and dataclasses separately
             if enums:
@@ -92,13 +92,13 @@ def split_file_by_type(filepath: Path) -> None:
                     enums_content += ast.unparse(node) + "\n\n"
                 enums_file = parent_dir / f"{stem}_enums.py"
                 enums_file.write_text(enums_content, encoding='utf-8')
-                logger.info(f"  Created {enums_file.name}")
+                LOGGER.info(f"  Created {enums_file.name}")
 
             if dataclasses:
                 # Split dataclasses into chunks of 5
                 for i in range(0, len(dataclasses), 5):
-                    CHUNK = dataclasses[i:i+5]
-                    SUFFIX = "" if i == 0 else f"_{i//5 + 1}"
+                    chunk = dataclasses[i:i+5]
+                    suffix = "" if i == 0 else f"_{i//5 + 1}"
                     dc_content = f'"""Dataclass models for {stem}."""\n\n'
                     dc_content += "from dataclasses import dataclass, field\n"
                     dc_content += "from typing import Any, Dict, List, Optional\n"
@@ -109,7 +109,7 @@ def split_file_by_type(filepath: Path) -> None:
                         dc_content += ast.unparse(node) + "\n\n"
                     dc_file = parent_dir / f"{stem}_models{suffix}.py"
                     dc_file.write_text(dc_content, encoding='utf-8')
-                    logger.info(f"  Created {dc_file.name}")
+                    LOGGER.info(f"  Created {dc_file.name}")
 
     # Create implementation module (classes + functions)
     if classes or functions:
@@ -124,7 +124,7 @@ def split_file_by_type(filepath: Path) -> None:
 
         impl_file = parent_dir / f"{stem}_impl.py"
         impl_file.write_text(impl_content, encoding='utf-8')
-        logger.info(f"  Created {impl_file.name}")
+        LOGGER.info(f"  Created {impl_file.name}")
 
     # Update original file to re-export with sufficient content
     shim_content = f"""\"\"\"Backward compatibility shim for {stem}.
@@ -157,7 +157,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
     shim_content += "\n__all__ = ['*']  # Re-export all imported names\n"
 
     filepath.write_text(shim_content, encoding='utf-8')
-    logger.info(f"  Updated {filepath.name} as compatibility shim")
+    LOGGER.info(f"  Updated {filepath.name} as compatibility shim")
+
 
 # Files to fix - continuing agentic_core + prompt_governance + config cognitive density violations
 files_to_fix = [
@@ -176,10 +177,11 @@ files_to_fix = [
 ROOT = Path("c:/Git/Agentic-Workflow")
 
 for file_path in files_to_fix:
-    full_path = root / file_path
+    full_path = ROOT / file_path
     if full_path.exists():
-        DEFS = count_top_level_defs(full_path)
+        defs = count_top_level_defs(full_path)
         if defs > 5:
             split_file_by_type(full_path)
 
-logger.info("\nDone! Re-run canon_validator.py to verify.")
+LOGGER.info("\nDone! Re-run canon_validator.py to verify.")
+

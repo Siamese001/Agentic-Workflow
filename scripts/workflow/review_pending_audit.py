@@ -10,9 +10,11 @@ LOGGER = logging.getLogger(__name__)
 
 import hashlib
 from pathlib import Path
+from typing import Dict, List, Tuple, Any
 
 REPO = Path('c:/Git/Agentic-Workflow')
 REVIEW_PENDING = REPO / 'config/review_pending'
+REPO_ROOT = REPO # Define REPO_ROOT for consistent use
 
 # Approved YAML folders
 APPROVED_FOLDERS = [
@@ -32,17 +34,17 @@ APPROVED_FOLDERS = [
 def get_file_hash(path: Path) -> str:
     """Get MD5 hash of file content."""
     try:
-        CONTENT = path.read_bytes()
+        content = path.read_bytes()
         return hashlib.md5(content).hexdigest()
     except (ValueError, TypeError, KeyError):
-        return ""
+return ""
 
 
 def get_file_signature(path: Path) -> tuple:
     """Get signature: (hash, size, first_line)."""
     try:
-        CONTENT = path.read_text(encoding='utf-8', errors='ignore')
-        LINES = content.strip().split('\n')
+        content = path.read_text(encoding='utf-8', errors='ignore')
+        lines = content.strip().split('\n')
         first_meaningful = ""
         for line in lines:
             if line.strip() and not line.startswith('#') and not line.startswith('"""'):
@@ -50,7 +52,7 @@ def get_file_signature(path: Path) -> tuple:
                 break
         return (get_file_hash(path), path.stat().st_size, first_meaningful)
     except (ValueError, TypeError, KeyError):
-        return ("", 0, "")
+return ("", 0, "")
 
 
 def _build_approved_indexes() -> Tuple[Dict[str, List[Path]], Dict[str, List[Path]]]:
@@ -80,7 +82,7 @@ def _analyze_pending_file(f: Path,
                                                List[Path]]) -> Dict[str,
                                                                     Any]:
     """Analyze a single pending file for duplicates."""
-    RESULT = {
+    result = {
         "file": f,
         "hash_duplicate": False,
         "name_duplicate": False,
@@ -106,7 +108,7 @@ def _process_pending_files(pending_files: List[Path],
                                                           List,
                                                           List]:
     """Process pending files and categorize them."""
-    DUPLICATES = []
+    duplicates = []
     unique_files = []
     name_matches = []
 
@@ -114,7 +116,7 @@ def _process_pending_files(pending_files: List[Path],
         if '__pycache__' in str(f):
             continue
 
-        ANALYSIS = _analyze_pending_file(f, approved_hashes, approved_names)
+        analysis = _analyze_pending_file(f, approved_hashes, approved_names)
 
         if analysis["hash_duplicate"]:
             duplicates.append((f, analysis["approved_matches"][0]))
@@ -128,28 +130,28 @@ def _process_pending_files(pending_files: List[Path],
 
 def _print_file_preview(f: Path) -> None:
     """Print preview of file content."""
-    logger.info(f"\n  {f.relative_to(REVIEW_PENDING)}:")
+    LOGGER.info(f"\n  {f.relative_to(REVIEW_PENDING)}:")
     try:
-        CONTENT = f.read_text(encoding='utf-8', errors='ignore')
-        LINES = content.split('\n')
-        SHOWN = 0
+        content = f.read_text(encoding='utf-8', errors='ignore')
+        lines = content.split('\n')
+        shown = 0
         for line in lines:
             if not line.strip():
                 continue
-            logger.info(f"    {line}")
-            SHOWN += 1
+            LOGGER.info(f"    {line}")
+            shown += 1
             if shown >= 15:
-                logger.info("    ...")
+                LOGGER.info("    ...")
                 break
     except (ValueError, TypeError, KeyError) as e:
-        logger.info(f"    Error reading file: {e}")
+LOGGER.info(f"    Error reading file: {e}")
 
 
 def _print_unique_file_analysis(unique_files: List[Path]) -> None:
     """Print detailed analysis of unique files."""
     if not unique_files:
         return
-    logger.info("\nDetailed analysis of first 10 unique files:")
+    LOGGER.info("\nDetailed analysis of first 10 unique files:")
     for f in unique_files[:10]:
         _print_file_preview(f)
 
@@ -168,38 +170,38 @@ def main() -> None:
     )
 
     # Report
-    logger.info(f"\nFound {len(duplicates)} exact duplicates:")
+    LOGGER.info(f"\nFound {len(duplicates)} exact duplicates:")
     for pending, approved in duplicates[:10]:
-        logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved.relative_to(REPO_ROOT)}")
+        LOGGER.info(
+            f"  {pending.relative_to(REVIEW_PENDING)} -> {approved.relative_to(REPO_ROOT)}")
     if len(duplicates) > 10:
-        logger.info(f"  ... and {len(duplicates) - 10} more")
+        LOGGER.info(f"  ... and {len(duplicates) - 10} more")
 
-    logger.info(f"\nFound {len(name_matches)} name matches:")
+    LOGGER.info(f"\nFound {len(name_matches)} name matches:")
     for pending, approved_list in name_matches[:10]:
         size_pending = pending.stat().st_size
         size_approved = approved_list[0].stat().st_size
-        STATUS = "SAME SIZE" if size_pending == size_approved else f"DIFF ({size_pending} vs {size_a
-                                                                                              pproved})"
-        logger.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_
-                                                                                               ROOT)} ({status})")
+        status = "SAME SIZE" if size_pending == size_approved else f"DIFF({size_pending} vs {size_approved})"
+        LOGGER.info(f"  {pending.relative_to(REVIEW_PENDING)} -> {approved_list[0].relative_to(REPO_ROOT)}({status})")
 
     if len(name_matches) > 10:
-        logger.info(f"  ... and {len(name_matches) - 10} more")
+        LOGGER.info(f"  ... and {len(name_matches) - 10} more")
 
-    logger.info(f"\nFound {len(unique_files)} unique files:")
+    LOGGER.info(f"\nFound {len(unique_files)} unique files:")
     for f in unique_files[:20]:
-        REL = f.relative_to(REVIEW_PENDING)
-        SIZE = f.stat().st_size
-        logger.info(f"  {rel} ({size} bytes)")
+        rel = f.relative_to(REVIEW_PENDING)
+        size = f.stat().st_size
+        LOGGER.info(f"  {rel} ({size} bytes)")
 
     if len(unique_files) > 20:
-        logger.info(f"  ... and {len(unique_files) - 20} more")
+        LOGGER.info(f"  ... and {len(unique_files) - 20} more")
 
     if len(unique_files) > 20:
-        logger.info("\nShowing first 20 unique files only")
+        LOGGER.info("\nShowing first 20 unique files only")
 
     _print_unique_file_analysis(unique_files)
 
 
 if __name__ == '__main__':
     main()
+

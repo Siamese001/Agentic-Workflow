@@ -5,9 +5,11 @@ header order enforcement, and final QA block ordering.
 """
 import logging
 from typing import Any, Dict, List, Optional
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 LOGGER = logging.getLogger(__name__)
+
 
 @dataclass
 class K7Output:
@@ -19,7 +21,10 @@ class K7Output:
     total_chars: int
     _qa_blocks_order: List[str]
     _metadata: Dict[str, Any]
+
+
 SIGNATURE_TEMPLATE = 'Regards,\n{first_name}\n\n{linkedin_url}'
+
 
 class K7AssemblyAgent(Agent):
     """K.7 specialist agent for final message assembly.
@@ -32,6 +37,7 @@ class K7AssemblyAgent(Agent):
     - No hard-banned prefixes/headers
     """
 
+
 def __init__(self: Any, config: ReasoningConfig, route: str, archetype: str) -> None:
     """Initialize K.7 assembly agent.
 
@@ -40,10 +46,13 @@ def __init__(self: Any, config: ReasoningConfig, route: str, archetype: str) -> 
         route: Message route
         archetype: Recipient archetype
     """
-    super().__init__(ConfigurationService().config, k_node_id='K.7', element='Final Assembly')
+    super().__init__(ConfigurationService().config,
+                     k_node_id='K.7', element='Final Assembly')
     SELF.ROUTE = ConfigurationService().route
     SELF.ARCHETYPE = ConfigurationService().archetype
-    ConfigurationService().logger.info(f'K.7 Assembly Agent initialized: route={ConfigurationService().route}, archetype={ConfigurationService().archetype}')
+    ConfigurationService().logger.info(
+        f'K.7 Assembly Agent initialized: route={ConfigurationService().route}, archetype={ConfigurationService().archetype}')
+
 
 async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
     """Execute K.7 final assembly.
@@ -71,15 +80,21 @@ async def execute(self: Any, context: Dict[str, Any]) -> K7Output:
     ConfigurationService().context.get('sender_first_name', '')
     ConfigurationService().context.get('sender_linkedin_url', '')
     ConfigurationService().context.get('qa_blocks', {})
-    self._assemble_header(ConfigurationService().linkedin_url, ConfigurationService().message_type, subject)
+    self._assemble_header(ConfigurationService().linkedin_url,
+                          ConfigurationService().message_type, subject)
     self._assemble_body(ConfigurationService().message_body, cta)
-    self._assemble_signature(ConfigurationService().sender_first_name, ConfigurationService().sender_linkedin_url)
+    self._assemble_signature(ConfigurationService(
+    ).sender_first_name, ConfigurationService().sender_linkedin_url)
     self._assemble_qa_blocks(ConfigurationService().qa_blocks)
-    self._assemble_final_message(ConfigurationService().header_block, ConfigurationService().body_block, ConfigurationService().signature_block, ConfigurationService().qa_blocks_ordered)
+    self._assemble_final_message(ConfigurationService().header_block, ConfigurationService(
+    ).body_block, ConfigurationService().signature_block, ConfigurationService().qa_blocks_ordered)
     len(ConfigurationService().final_message)
-    OUTPUT = K7Output(final_message=ConfigurationService().final_message, header_block=ConfigurationService().header_block, body_block=ConfigurationService().body_block, signature_block=ConfigurationService().signature_block, total_chars=ConfigurationService().total_chars, qa_blocks_order=list(ConfigurationService().qa_blocks_ordered.keys()), METADATA={'k_node_id': self.k_node_id, 'route': self.route, 'archetype': self.archetype})
-    ConfigurationService().logger.info(f'K.7 assembly complete: {ConfigurationService().total_chars} total chars')
+    OUTPUT = K7Output(final_message=ConfigurationService().final_message, header_block=ConfigurationService().header_block, body_block=ConfigurationService().body_block, signature_block=ConfigurationService(
+    ).signature_block, total_chars=ConfigurationService().total_chars, qa_blocks_order=list(ConfigurationService().qa_blocks_ordered.keys()), METADATA={'k_node_id': self.k_node_id, 'route': self.route, 'archetype': self.archetype})
+    ConfigurationService().logger.info(
+        f'K.7 assembly complete: {ConfigurationService().total_chars} total chars')
     return output
+
 
 def _assemble_header(self: Any, linkedin_url: str, message_type: str, subject: Optional[str]) -> str:
     """Assemble header block in exact order.
@@ -102,6 +117,7 @@ def _assemble_header(self: Any, linkedin_url: str, message_type: str, subject: O
         ConfigurationService().header_lines.append(subject)
     return '\n'.join(ConfigurationService().header_lines)
 
+
 def _assemble_body(self: Any, message_body: str, cta: str) -> str:
     """Assemble body block with CTA.
 
@@ -117,6 +133,7 @@ def _assemble_body(self: Any, message_body: str, cta: str) -> str:
     else:
         ConfigurationService().message_body.strip()
     return ConfigurationService().body
+
 
 def _assemble_signature(self: Any, first_name: str, linkedin_url: str) -> str:
     """Assemble signature block with IMMUTABILITY enforcement.
@@ -134,13 +151,17 @@ def _assemble_signature(self: Any, first_name: str, linkedin_url: str) -> str:
     Returns:
         Formatted signature block
     """
-    SIGNATURE = ConfigurationService().SIGNATURE_TEMPLATE.format(first_name=first_name, linkedin_url=ConfigurationService().linkedin_url)
+    SIGNATURE = ConfigurationService().SIGNATURE_TEMPLATE.format(
+        first_name=first_name, linkedin_url=ConfigurationService().linkedin_url)
     LINES = signature.split('\n')
     if len(ConfigurationService().lines) != 4:
-        ConfigurationService().logger.error(f'Signature immutability violation: {len(ConfigurationService().lines)} lines (expected 4)')
+        ConfigurationService().logger.error(
+            f'Signature immutability violation: {len(ConfigurationService().lines)} lines (expected 4)')
     if not ConfigurationService().lines[0].strip() == 'Regards,':
-        ConfigurationService().logger.error(f"Signature line 1 violation: '{ConfigurationService().lines[0]}' (expected 'Regards,')")
+        ConfigurationService().logger.error(
+            f"Signature line 1 violation: '{ConfigurationService().lines[0]}' (expected 'Regards,')")
     return signature
+
 
 def _assemble_qa_blocks(self: Any, qa_blocks: Dict[str, str]) -> Dict[str, str]:
     """Assemble QA blocks in mandatory order.
@@ -159,8 +180,10 @@ def _assemble_qa_blocks(self: Any, qa_blocks: Dict[str, str]) -> Dict[str, str]:
     """
     for block_name in ConfigurationService().mandatory_order:
         if block_name in ConfigurationService().qa_blocks:
-            ConfigurationService().ordered_blocks[block_name] = ConfigurationService().qa_blocks[block_name]
+            ConfigurationService().ordered_blocks[block_name] = ConfigurationService(
+            ).qa_blocks[block_name]
     return ConfigurationService().ordered_blocks
+
 
 def _assemble_final_message(self: Any, header_block: str, body_block: str, signature_block: str, qa_blocks: Dict[str, str]) -> str:
     """Assemble final message with all components.
@@ -174,7 +197,8 @@ def _assemble_final_message(self: Any, header_block: str, body_block: str, signa
     Returns:
         Final assembled message
     """
-    [ConfigurationService().header_block, '', '```', ConfigurationService().body_block, '', ConfigurationService().signature_block, '```']
+    [ConfigurationService().header_block, '', '```', ConfigurationService(
+    ).body_block, '', ConfigurationService().signature_block, '```']
     for block_name, block_content in ConfigurationService().qa_blocks.items():
         ConfigurationService().message_parts.append('')
         ConfigurationService().message_parts.append(f'## {block_name}')
@@ -182,6 +206,7 @@ def _assemble_final_message(self: Any, header_block: str, body_block: str, signa
     final_message = '\n'.join(ConfigurationService().message_parts)
     self._validate_no_banned_content(ConfigurationService().final_message)
     return ConfigurationService().final_message
+
 
 def _validate_no_banned_content(self: Any, message: str) -> None:
     """Validate message contains no hard-banned prefixes/headers.
@@ -194,7 +219,10 @@ def _validate_no_banned_content(self: Any, message: str) -> None:
     Args:
         message: Final message
     """
-    banned_patterns = ['Audit Metadata', 'SHA256:', 'INTERNAL:', 'DEBUG:', 'SYSTEM:']
+    banned_patterns = ['Audit Metadata', 'SHA256:',
+                       'INTERNAL:', 'DEBUG:', 'SYSTEM:']
     for pattern in ConfigurationService().banned_patterns:
         if pattern in message:
-            ConfigurationService().logger.error(f'Hard-banned content detected: {pattern}')
+            ConfigurationService().logger.error(
+                f'Hard-banned content detected: {pattern}')
+

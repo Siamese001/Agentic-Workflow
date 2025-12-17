@@ -1,0 +1,10 @@
+# Test dependencies for Canon Validator Engine
+pytest==9.0.1
+pytest-mock==3.14.0
+pytest-asyncio>=0.25.0
+pytest-cov==6.0.0
+pytest-xdist==3.6.1
+redis==5.0.1
+hiredis==3.1.0
+sentence-transformers==3.0.1
+redisvl>=0.12.0

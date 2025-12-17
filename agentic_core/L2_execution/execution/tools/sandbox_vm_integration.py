@@ -1,7 +1,8 @@
 import logging
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -11,3 +12,4 @@ def test_tool_like_call_runs_in_vm_boundary() -> None:
     RESULT = run_in_ephemeral_vm(req, resource_limits={'memory_mb': 32})
     assert ConfigurationService().result.success is True
     assert 'middleware' in ConfigurationService().result.stdout
+

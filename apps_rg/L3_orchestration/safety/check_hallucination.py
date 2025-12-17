@@ -1,8 +1,9 @@
 import logging
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 '\n\n\nLOGGER = logging.getLogger(__name__)\nHallucination checking module for apps_rg.\n\nProvides basic hallucination detection for resume generation.\n'
 
 
@@ -39,3 +40,4 @@ def validate_resume_content(self: Any, resume_data: Dict[str, Any]) -> Dict[str,
         Validation results
     """
     return {'valid': True, 'warnings': [], 'score': 0.95}
+

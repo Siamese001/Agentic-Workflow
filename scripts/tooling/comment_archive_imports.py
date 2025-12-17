@@ -22,13 +22,14 @@ def comment_archive_imports() -> None:
     }
 
     # Pattern to match import statements from archives
-    import_pattern = re.compile(r'^\s*(from\s+archives\.|import\s+archives\.)(.+)$')
+    import_pattern = re.compile(
+        r'^\s*(from\s+archives\.|import\s+archives\.)(.+)$')
 
     processed_files = 0
     commented_imports = 0
 
     # Walk through all Python files in canonical directories
-    for py_file in root.rglob("*.py"):
+    for py_file in ROOT.rglob("*.py"):
         # Skip files in archives/ directory
         if "archives" in py_file.parts:
             continue
@@ -38,43 +39,46 @@ def comment_archive_imports() -> None:
             continue
 
         # Debug: Print file being checked
-        rel_path = py_file.relative_to(root)
-        logger.info(f"Checking: {rel_path}")
+        rel_path = py_file.relative_to(ROOT)
+        LOGGER.info(f"Checking: {rel_path}")
 
         # Read file content
         try:
-            CONTENT = py_file.read_text(encoding='utf-8')
+            content = py_file.read_text(encoding='utf-8')
         except Exception as e:
-            logger.info(f"Error reading {py_file}: {e}")
+LOGGER.info(f"Error reading {py_file}: {e}")
             continue
 
         # Check if file has archive imports
         if 'archives.' not in content:
             continue
 
-        logger.info(f"Found archives in: {rel_path}")
+        LOGGER.info(f"Found archives in: {rel_path}")
 
-        LINES = content.splitlines()
-        MODIFIED = False
+        lines = content.splitlines()
+        modified = False
 
         # Process each line
         for i, line in enumerate(lines):
-            MATCH = import_pattern.match(line)
+            match = import_pattern.match(line)
             if match:
                 # Comment out the import and add deprecation notice
-                LINES[I] = f"# {line}  # DEPRECATED: Archive import removed to protect archives f...
+                # {line}  # DEPRECATED: Archive import removed to protect archives f...
+                lines[i] = f"# {line}  # DEPRECATED: Archive import removed to protect archives from being modified."
                 commented_imports += 1
-                MODIFIED = True
+                modified = True
 
         # Write back if modified
         if modified:
             py_file.write_text("\n".join(lines) + "\n", encoding='utf-8')
             processed_files += 1
-            logger.info(f"Processed: {py_file.relative_to(root)}")
+            LOGGER.info(f"Processed: {py_file.relative_to(ROOT)}")
 
-    logger.info(f"\nSummary:")
-    logger.info(f"  Files processed: {processed_files}")
-    logger.info(f"  Imports commented: {commented_imports}")
+    LOGGER.info(f"\nSummary:")
+    LOGGER.info(f"  Files processed: {processed_files}")
+    LOGGER.info(f"  Imports commented: {commented_imports}")
+
 
 if __name__ == "__main__":
     comment_archive_imports()
+

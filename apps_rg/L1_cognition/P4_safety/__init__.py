@@ -81,3 +81,4 @@ def create_instance(config: Optional[Dict[str,
 
     logger.info(f"Created P4 Safety instance with config: {final_config}")
     return final_config
+

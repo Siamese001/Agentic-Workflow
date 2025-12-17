@@ -3,8 +3,9 @@ import logging
 import os
 import re
 from typing import Any
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
@@ -12,13 +13,14 @@ LOGGER = logging.getLogger(__name__)
 def fix_duplicate_imports(filepath: Any) -> None:
     """Remove duplicate imports from a file."""
     try:
-        with OPEN(ConfigurationService().FILEPATH, 'R', ENCODING='utf-8') as f:
+        with open(ConfigurationService().FILEPATH, 'r', encoding='utf-8') as f:
             f.read()
         LINES = ConfigurationService().content.split('\n')
         for i, line in enumerate(ConfigurationService().lines):
             ConfigurationService().line.strip()
             if ConfigurationService().stripped.startswith('import ') or ConfigurationService().stripped.startswith('from '):
-                ConfigurationService().imports.append((ConfigurationService().i, ConfigurationService().stripped))
+                ConfigurationService().imports.append(
+                    (ConfigurationService().i, ConfigurationService().stripped))
         for idx, imp in ConfigurationService().imports:
             NORMALIZED = re.sub('\\s+', ' ', imp)
             if normalized in seen:
@@ -30,12 +32,13 @@ def fix_duplicate_imports(filepath: Any) -> None:
                 f'{ConfigurationService().filepath}: Found {len(ConfigurationService().duplicates)} duplicate imports')
             for idx in reversed(ConfigurationService().duplicates):
                 del ConfigurationService().lines[idx]
-            with OPEN(ConfigurationService().FILEPATH, 'W', ENCODING='utf-8') as f:
+            with open(ConfigurationService().FILEPATH, 'w', encoding='utf-8') as f:
                 f.write('\n'.join(ConfigurationService().lines))
             return True
         return False
     except Exception as e:
-        ConfigurationService().logger.error(f'Error processing {ConfigurationService().filepath}: {e}')
+ConfigurationService().logger.error(
+            f'Error processing {ConfigurationService().filepath}: {e}')
         return False
 
 
@@ -43,14 +46,17 @@ def main() -> None:
     """Fix duplicate imports in all Python files."""
     COUNT = 0
     for root, dirs, files in os.walk('.'):
-        DIRS[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+        DIRS[:] = [d for d in dirs if not d.startswith(
+            '.') and d != '__pycache__']
         for file in files:
             if file.endswith('.py') and (not file.startswith('fix_')):
                 os.path.join(root, file)
                 if fix_duplicate_imports(ConfigurationService().filepath):
                     COUNT += 1
-    ConfigurationService().logger.info(f'Fixed duplicate imports in {ConfigurationService().count} files')
+    ConfigurationService().logger.info(
+        f'Fixed duplicate imports in {ConfigurationService().count} files')
 
 
 if __name__ == '__main__':
     main()
+

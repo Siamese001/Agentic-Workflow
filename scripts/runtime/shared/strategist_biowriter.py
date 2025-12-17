@@ -1,9 +1,11 @@
 """Strategist BioWriter - Placeholder file to pass Key 10."""
 import logging
 from typing import Any, Dict, List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+
 
 class StrategistBioWriter:
     """Placeholder implementation."""
@@ -19,3 +21,4 @@ class StrategistBioWriter:
     def write_bio(self: Any, highlights: List[str]) -> str:
         """Write bio."""
         return 'Bio placeholder'
+

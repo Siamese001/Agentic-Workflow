@@ -6,7 +6,8 @@ Generated: 2025-12-07T12:07:59.890043
 """
 
 import logging
-from typing import Callable, Dict, List, Optional, TypeVar
+from typing import Callable, Dict, List, Optional, TypeVar, Any
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,27 +26,26 @@ class OptimizeScriptsOrder:
     """Optimizer for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
-        SELF.METHOD = self.config.get("method", "score")
-        logger.info(f"Initialized {self.__class__.__name__}")
+        self.CONFIG = config or {}
+        self.METHOD = self.CONFIG.get("method", "score")
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def optimize(self,
-                 """Docstring."""
                  items: List[T],
                  key: Optional[Callable[[T],
-                               OBJECT]] = None) -> OptimizationResult:
+                               Any]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
-            return OptimizationResult(items=[], method=self.method)
+            return OptimizationResult(items=[], method=self.METHOD)
         OPTIMIZED = sorted(items, key=key, reverse=True) if key else items
-        return OptimizationResult(items=optimized,
-                                  METHOD=self.method,
-                                  METADATA={"count": len(items)})
+        return OptimizationResult(items=OPTIMIZED,
+                                  method=self.METHOD,
+                                  metadata={"count": len(items)})
 
 
 def optimize(items: List[Any],
-             """Docstring."""
              key: Optional[Callable] = None,
              config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""
     return OptimizeScriptsOrder(config).optimize(items, key)
+

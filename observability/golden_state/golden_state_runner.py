@@ -1,8 +1,9 @@
 import logging
 from typing import List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -44,3 +45,4 @@ def run_golden_suite(execution_profile: ExecutionProfile) -> List[GoldenOutput]:
             final_verdict='borderline')
         ConfigurationService().outputs.append(evaluate_case_output(case, out))
     return ConfigurationService().outputs
+

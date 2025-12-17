@@ -1,8 +1,10 @@
 import logging
+
 import pytest
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -40,3 +42,4 @@ def test_allowed_tools_enforced_by_llm_base_agent_helper() -> None:
     ConfigurationService().agent._check_tool_allowed('tool_b')
     with pytest.raises(PermissionError):
         ConfigurationService().agent._check_tool_allowed('tool_c')
+

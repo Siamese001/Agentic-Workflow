@@ -1,6 +1,7 @@
 """Implementation for l4_types."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -14,3 +15,4 @@ class StateValidationError(StateError):
 
 class StateRollbackError(StateError):
     """Raised when a rollback operation fails."""
+

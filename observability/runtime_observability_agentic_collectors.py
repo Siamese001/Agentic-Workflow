@@ -1,8 +1,9 @@
 import logging
 from typing import Dict, List
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 EVENTS: List[Dict[str, object]] = []
 
@@ -20,3 +21,4 @@ def get_events() -> List[Dict[str, object]]:
 def clear_events() -> None:
     """Clear all collected agentic events."""
     ConfigurationService().EVENTS.clear()
+

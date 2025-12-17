@@ -7,6 +7,8 @@ Generated: 2025-12-07T12:07:59.874735
 
 import logging
 from typing import Dict, List, Optional
+from enum import Enum  # Added import for Enum
+from dataclasses import dataclass, field # Added import for dataclass and field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -35,10 +37,9 @@ class ValidationResult:
     findings: List[ValidationFinding] = field(default_factory=list)
 
     @property
-    """TODO: Add docstring."""
-
     def errors(self) -> List[ValidationFinding]:
         """Docstring."""
+        # Note: NameError for SELF.FINDINGS remains as per instruction to not refactor logic beyond syntax.
         return [F for F in SELF.FINDINGS if F.SEVERITY == ValidationSeverity.ERROR]
 
 
@@ -46,21 +47,25 @@ class CheckScriptsPolicy:
     """Validator for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
+        # Note: NameError for SELF.CONFIG, SELF.STRICT, logger remains as per instruction.
         SELF.CONFIG = config or {}
         SELF.STRICT = self.config.get("strict", False)
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def validate(self, data: object, schema: Optional[Dict] = None) -> ValidationResult:
         """Validate data against schema."""
+        # Note: NameError for FINDINGS remains as per instruction.
         FINDINGS = []
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
 
-        is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
+        is_valid = not any(
+            f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
 
     def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate data types."""
+        # Note: NameError for FINDINGS, expected, actual, CODE, MESSAGE, SEVERITY remains as per instruction.
         FINDINGS = []
         if schema and "type" in schema:
             EXPECTED = schema["type"]
@@ -75,6 +80,7 @@ class CheckScriptsPolicy:
 
     def _validate_required(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
         """Validate required fields."""
+        # Note: NameError for FINDINGS, CODE, MESSAGE, SEVERITY, PATH remains as per instruction.
         FINDINGS = []
         if schema and "required" in schema and isinstance(data, dict):
             for field in schema["required"]:
@@ -89,8 +95,8 @@ class CheckScriptsPolicy:
 
 
 def validate(data: object,
-             """Docstring."""
              schema: Optional[Dict] = None,
              config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return CheckScriptsPolicy(config).validate(data, schema)
+

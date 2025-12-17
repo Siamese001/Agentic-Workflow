@@ -1,9 +1,10 @@
 
-from pathlib import Path
-import tempfile
-import sys
-import os
 import logging
+import os
+import sys
+import tempfile
+from pathlib import Path
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for atomic state persistence with ACID guarantees.
@@ -116,7 +117,8 @@ def test_atomic_checkpoint():
         # Checkpoint State A
         metadata_a = manager.checkpoint("workflow_checkpoint_test", state_a)
         assert metadata_a.success
-        logger.info(f"✓ State A checkpointed (duration: {metadata_a.duration_ms:.2f}ms)")
+        logger.info(
+            f"✓ State A checkpointed (duration: {metadata_a.duration_ms:.2f}ms)")
 
         # Verify State A can be loaded
         loaded_state = manager.resume_workflow("workflow_checkpoint_test")
@@ -149,7 +151,8 @@ def test_atomic_checkpoint():
         # Checkpoint State B
         metadata_b = manager.checkpoint("workflow_checkpoint_test", state_b)
         assert metadata_b.success
-        logger.info(f"✓ State B checkpointed (duration: {metadata_b.duration_ms:.2f}ms)")
+        logger.info(
+            f"✓ State B checkpointed (duration: {metadata_b.duration_ms:.2f}ms)")
 
         # Verify State B replaced State A
         loaded_state = manager.resume_workflow("workflow_checkpoint_test")
@@ -227,7 +230,8 @@ def test_rollback_on_failure():
             manager.checkpoint("workflow_rollback_test", state_b)
             assert False, "Checkpoint should have failed"
         except StatePersistenceError as e:
-            logger.info(f"✓ Checkpoint failed as expected: {e}")
+pass
+logger.info(f"✓ Checkpoint failed as expected: {e}")
 
         # Restore original method
         manager._atomic_swap = original_swap
@@ -455,7 +459,8 @@ def main():
             test()
             PASSED += 1
         except Exception as e:
-            logger.info(f"✗ {test.__name__} failed: {e}")
+pass
+logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1
@@ -481,3 +486,4 @@ if __name__ == "__main__":
     # Run tests
     exit_code = main()
     sys.exit(exit_code)
+

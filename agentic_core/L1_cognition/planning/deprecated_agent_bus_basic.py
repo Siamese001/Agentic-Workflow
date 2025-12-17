@@ -1,5 +1,6 @@
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -19,3 +20,4 @@ def test_agent_bus_send_and_get() -> None:
     assert msg in inbox
     bus.clear()
     assert bus.get_for('qa-1') == []
+

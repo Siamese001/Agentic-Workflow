@@ -1,6 +1,7 @@
 """Types and models for rg_provenance_tracker."""
 import logging
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -43,3 +44,4 @@ class ProvenanceMap:
     _technical_count: int = 0
     _soft_count: int = 0
     _achievement_count: int = 0
+

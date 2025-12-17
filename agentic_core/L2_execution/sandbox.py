@@ -5,35 +5,33 @@ import docker
 
 LOGGER = logging.getLogger(__name__)
 class DockerSandbox:
+    def __init__(self: Any, image: str) -> None:
+        self.client = docker.from_env()
+        self.image = image
 
+    def run_code(self: Any, code: str, timeout: int) -> str:
+        """Runs python code in an ephemeral container."""
+        # Wrap code to print to stdout
+        wrapped = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    LOGGER.info(e)"
 
-def __init__(self: Any, image: str) -> None:
-    SELF.CLIENT = docker.from_env()
-    SELF.IMAGE = image
+        try:
+            container = self.client.containers.run(
+                self.image,
+                command=["python", "-c", wrapped],
+                mem_limit="512m",
+                network_disabled=True,  # L5 Hardening: No Internet
+                detach=True
+            )
 
+            exit_code = container.wait(timeout=timeout)
+            logs = container.logs().decode('utf-8')
+            container.remove()
+            return logs
 
-def run_code(self: Any, code: str, timeout: int) -> str:
-    """Runs python code in an ephemeral container."""
-    # Wrap code to print to stdout
-    WRAPPED = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)"
+        except Exception as e:
+pass
+return f"Sandbox Error: {str(e)}"
 
-    try:
-        CONTAINER = self.client.containers.run(
-            self.image,
-            COMMAND=["python", "-c", wrapped],
-            mem_limit="512m",
-            network_disabled=True,  # L5 Hardening: No Internet
-            DETACH=True
-        )
+    def _indent(self: Any, text: str) -> str:
+        return "\n".join("    " + line for line in text.splitlines())
 
-        exit_code = container.wait(timeout=timeout)
-        LOGS = container.logs().decode('utf-8')
-        container.remove()
-        return logs
-
-    except Exception as e:
-        return f"Sandbox Error: {str(e)}"
-
-
-def _indent(self: Any, text: str) -> str:
-    return "\n".join("    " + line for line in text.splitlines())

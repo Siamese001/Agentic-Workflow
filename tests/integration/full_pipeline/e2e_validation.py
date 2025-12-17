@@ -1,8 +1,9 @@
 
 
-from pathlib import Path
-import logging
 import json
+import logging
+from pathlib import Path
+
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """E2E Validation Script for Subatomic Pipeline"""
@@ -31,7 +32,8 @@ def run_e2e_tests():
 
     # E2E-03: Semantic cache
     CACHE = PROJECT_ROOT / '06_data' / 'semantic_cache'
-    DOMAINS = ['ast', 'golden', 'semantic', 'integrity', 'embeddings', 'diffs', 'graphs', 'meta', 'safety']
+    DOMAINS = ['ast', 'golden', 'semantic', 'integrity',
+               'embeddings', 'diffs', 'graphs', 'meta', 'safety']
     results['E2E-03'] = all((cache / d).exists() for d in domains)
 
     # E2E-04: Freeze reports
@@ -39,21 +41,26 @@ def run_e2e_tests():
     results['E2E-04'] = len(freeze_reports) == 10
 
     # E2E-05: Migration plans
-    PLANS = list((PROJECT_ROOT / 'schemas').glob('*_migration_and_rewrite_plan.json'))
+    PLANS = list(
+        (PROJECT_ROOT / 'schemas').glob('*_migration_and_rewrite_plan.json'))
     results['E2E-05'] = len(plans) == 8
 
     # E2E-06: Phase 3 success
-    REPORTS = list((PROJECT_ROOT / '06_data' / 'meta').glob('phase3_*_report.json'))
-    results['E2E-06'] = len(reports) == 8 and all(json.load(open(r))['success'] for r in reports)
+    REPORTS = list((PROJECT_ROOT / '06_data' /
+                   'meta').glob('phase3_*_report.json'))
+    results['E2E-06'] = len(reports) == 8 and all(json.load(open(r))
+                                                  ['success'] for r in reports)
 
     # E2E-07: No rollbacks
-    results['E2E-07'] = all(not json.load(open(r))['rolled_back'] for r in reports)
+    results['E2E-07'] = all(not json.load(open(r))['rolled_back']
+                            for r in reports)
 
     # E2E-08: Root structure (relaxed for tooling)
     results['E2E-08'] = True  # Tooling files are acceptable
 
     # E2E-09: Determinism (freeze reports have content)
-    results['E2E-09'] = all(len(json.load(open(f)).get('files', {})) > 0 for f in freeze_reports)
+    results['E2E-09'] = all(len(json.load(open(f)).get('files', {}))
+                            > 0 for f in freeze_reports)
 
     # Print results
 
@@ -73,3 +80,4 @@ def run_e2e_tests():
 
     if __name__ == '__main__':
         raise SystemExit(run_e2e_tests())
+

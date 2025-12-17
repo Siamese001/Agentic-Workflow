@@ -1,7 +1,18 @@
 """Split module 1 for config_types."""
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional
 
-logger = logging.getLogger(__name__)
+# Assuming these constants are defined elsewhere, e.g., in another config file.
+# For the purpose of fixing syntax, we'll define placeholders.
+DEFAULT_GENERATION_TEMPERATURE = 0.7
+DEFAULT_MAX_OUTPUT_TOKENS = 1024
+FLOAT = float
+BOOL = bool
+
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -17,9 +28,6 @@ class ModelProvider(Enum):
 
 
 @dataclass
-"""TODO: Add docstring."""
-
-
 class ModelConfig:
     """Docstring."""
     provider: ModelProvider = ModelProvider.OPENAI
@@ -126,3 +134,4 @@ class GlobalConfig:
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
+

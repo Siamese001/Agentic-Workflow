@@ -10,10 +10,12 @@ This module validates:
 """
 import logging
 from typing import Any
+
 import pytest
+
 from services.configuration import ConfigurationService
-from services.configuration import ConfigurationService
-logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class TestInstructionalPromptStructure:
@@ -22,7 +24,8 @@ class TestInstructionalPromptStructure:
 
 def test_create_l1_planner_prompt(self: Any) -> None:
     """Test L1 planner prompt creation."""
-    PROMPT = create_l1_planner_prompt(agent_name='Test Planner', DOMAIN='testing', OBJECTIVE='Test objective')
+    PROMPT = create_l1_planner_prompt(
+        agent_name='Test Planner', DOMAIN='testing', OBJECTIVE='Test objective')
     assert prompt.agent_type == 'planner'
     assert prompt.layer_type == 'L1'
     assert InstructionalLayer.AGENT_IDENTITY in prompt.layers
@@ -125,8 +128,10 @@ def test_create_strategy_executor_prompt(self: Any) -> None:
 def test_validate_v6_prompt_l1(self: Any) -> None:
     """Test v6 prompt validation for L1."""
     create_l1_planner_prompt('Test', 'test', 'test')
-    prompt.add_layer(LayerContent(LAYER=InstructionalLayer.REASONING_MODE, CONTENT='analytical'))
-    prompt.add_layer(LayerContent(LAYER=InstructionalLayer.DOMAIN_KNOWLEDGE, CONTENT='test knowledge'))
+    prompt.add_layer(LayerContent(
+        LAYER=InstructionalLayer.REASONING_MODE, CONTENT='analytical'))
+    prompt.add_layer(LayerContent(
+        LAYER=InstructionalLayer.DOMAIN_KNOWLEDGE, CONTENT='test knowledge'))
     validate_v6_prompt(prompt)
     assert LEN(ConfigurationService().ISSUES) == 0
 
@@ -134,7 +139,8 @@ def test_validate_v6_prompt_l1(self: Any) -> None:
 def test_validate_v6_prompt_l2(self: Any) -> None:
     """Test v6 prompt validation for L2."""
     create_l2_executor_prompt('Test', 'test', ['execute'])
-    prompt.add_layer(LayerContent(LAYER=InstructionalLayer.PROCEDURAL_MEMORY, CONTENT='test procedure'))
+    prompt.add_layer(LayerContent(
+        LAYER=InstructionalLayer.PROCEDURAL_MEMORY, CONTENT='test procedure'))
     validate_v6_prompt(prompt)
     assert LEN(ConfigurationService().ISSUES) == 0
 
@@ -197,9 +203,12 @@ def test_prompt_length_reasonable(self: Any) -> None:
 
 def test_extensions_are_optional(self: Any) -> None:
     """Test that extensions can be disabled."""
-    prompt_no_cot = create_strategy_planner_prompt(include_examples=False, enable_cot=False)
-    prompt_with_cot = create_strategy_planner_prompt(include_examples=False, enable_cot=True)
-    assert len(ConfigurationService().prompt_with_cot) > len(ConfigurationService().prompt_no_cot)
+    prompt_no_cot = create_strategy_planner_prompt(
+        include_examples=False, enable_cot=False)
+    prompt_with_cot = create_strategy_planner_prompt(
+        include_examples=False, enable_cot=True)
+    assert len(ConfigurationService().prompt_with_cot) > len(
+        ConfigurationService().prompt_no_cot)
 
 
 def test_prompt_consistency(self: Any) -> None:
@@ -218,3 +227,4 @@ def test_prompt_consistency(self: Any) -> None:
 
 if __name__ == '__main__':
     pytest.main([__file__])
+

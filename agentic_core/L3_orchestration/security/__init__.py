@@ -1,25 +1,21 @@
-"""Security and Policy Enforcement.
-
-
-LOGGER = logging.getLogger(__name__)
-Phase 3 - Pillar 2: Agent Boundaries (Identity & Discovery)
-Links SPIFFE identity with Control Plane for granular policy enforcement.
-"""
+"""Security and Policy Enforcement. """
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
-AgentPermissionManager,
-Permission,
-PermissionScope,
-PermissionCheck,
-create_permission_manager,
+from .agent_permissions import (
+    AgentPermissionManager,
+    Permission,
+    PermissionScope,
+    PermissionCheck,
+    create_permission_manager,
 )
 
-    __all__ = [
-"AgentPermissionManager",
-"Permission",
-"PermissionScope",
-"PermissionCheck",
-"create_permission_manager",
+__all__ = [
+    "AgentPermissionManager",
+    "Permission",
+    "PermissionScope",
+    "PermissionCheck",
+    "create_permission_manager",
 ]
+

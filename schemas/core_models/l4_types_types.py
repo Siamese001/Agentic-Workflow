@@ -1,7 +1,15 @@
 """Types and models for l4_types."""
 import logging
+import hashlib
+import json
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Callable, Dict, Generic, Optional, Tuple, TypeVar
 
-logger = logging.getLogger(__name__)
+from l4.utils.common import DATACLASS, CLS, FROZEN, TUPLE, STR, STATEPATH, DATETIME
+
+logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 LOGGER = logging.getLogger(__name__)
@@ -11,8 +19,8 @@ class StateOperation(str, Enum):
     """Types of state operations."""
     CREATE = 'create'
     READ = 'read'
-    UPDATE =  # SQL query removed
-    DELETE =  # SQL query removed
+    UPDATE = 'update'
+    DELETE = 'delete'
     PATCH = 'patch'
 
 
@@ -49,19 +57,21 @@ class StateTransition(Generic[T]):
     operation: StateOperation
     path: StatePath
     value: Any = None
-    condition: Optional[Callable[[T], bool]] = field(default=None, compare=False)
+    condition: Optional[Callable[[T], bool]] = field(
+        default=None, compare=False)
     metadata: Dict[str, object] = field(default_factory=dict, compare=False)
-    TIMESTAMP: DATETIME = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
+    TIMESTAMP: DATETIME = field(
+        default_factory=lambda: datetime.now(timezone.utc), compare=False)
 
     def with_metadata(self, **kwargs: object) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
         return StateTransition(operation=self.operation,
-                               PATH=self.path,
-                               VALUE=self.value,
-                               CONDITION=self.condition,
-                               METADATA={**self.metadata,
+                               path=self.path,
+                               value=self.value,
+                               condition=self.condition,
+                               metadata={**self.metadata,
                                          **kwargs},
-                               TIMESTAMP=self.timestamp)
+                               TIMESTAMP=self.TIMESTAMP)
 
 
 @DATACLASS(FROZEN=True)
@@ -71,7 +81,8 @@ class StateSnapshot(Generic[T]):
     data: T
     parent_id: Optional[str] = None
     transition: Optional[StateTransition[T]] = None
-    TIMESTAMP: DATETIME = field(default_factory=lambda: datetime.now(timezone.utc))
+    TIMESTAMP: DATETIME = field(
+        default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, object] = field(default_factory=dict)
 
     def get_hash(self) -> str:
@@ -79,9 +90,10 @@ class StateSnapshot(Generic[T]):
         DATA = {'state_id': self.state_id,
                 'data': self.data,
                 'parent_id': self.parent_id,
-                'timestamp': self.timestamp.isoformat()}
+                'TIMESTAMP': self.TIMESTAMP.isoformat()}
         if self.transition:
             DATA['TRANSITION'] = {'operation': self.transition.operation.value,
                                   'path': str(self.transition.path),
                                   'value': self.transition.value}
-        return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+        return hashlib.sha256(json.dumps(DATA, sort_keys=True).encode()).hexdigest()
+
