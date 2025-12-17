@@ -80,66 +80,10 @@ class ValidationContext:
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
-        # Apply violation thresholds for practical validation
+        status = "PASS" if passed else "FAIL"
         if not passed and isinstance(details, list):
-            # Define practical thresholds for each key
-            thresholds = {
-                1: 100,   # TODOs
-                2: 200,   # Print statements
-                3: 10,    # Debugger
-                4: 100,   # Bare except
-                5: 10,    # Eval/exec
-                7: 400,   # Import formatting
-                8: 400,   # Import organization
-                9: 100,   # Unused imports
-                10: 100,  # Long lines
-                14: 100,  # Duplicate imports
-                15: 400,  # Magic numbers
-                16: 2000, # Deep nesting
-                17: 50,   # Large functions
-                18: 20,   # Many parameters
-                19: 50,   # Complex functions
-                20: 20,   # Large classes
-                21: 500,  # Missing docstrings
-                22: 300,  # Missing type hints
-                23: 100,  # Type consistency
-                24: 1100, # Unused variables
-                25: 700,  # Global variables
-                26: 50,   # Single responsibility
-                27: 50,   # Open closed
-                28: 20,   # NotImplemented
-                29: 10,   # Interface segregation
-                30: 50,   # Dependency injection
-                31: 20,   # Hardcoded paths
-                32: 20,   # Hardcoded URLs
-                33: 50,   # Error handling
-                34: 2000, # Dead code
-                35: 20,   # Commented code
-                36: 20,   # Mutable config
-                37: 20,   # Global state
-                38: 300,  # Impure functions
-                39: 100,  # Defensive programming
-                40: 10,   # Metaclasses
-                41: 10,   # Deep directories
-                42: 100,  # Large files
-                43: 10,   # Class density
-                44: 50,   # Circular imports
-                45: 20,   # Generative guard
-                46: 200,  # Duplicate code
-                47: 20,   # Naming conventions
-                48: 10,   # Reserved
-                49: 50,   # Directory depth
-                50: 10,   # Canon integrity
-            }
-            
-            # Auto-pass if under threshold
-            if key in thresholds and len(details) <= thresholds[key]:
-                passed = True
-                print(f"   [{agent}] Key {key}: PASS (under threshold {len(details)}/{thresholds[key]})")
-            else:
-                print(f"   [{agent}] Key {key}: FAIL ({len(details)} violations)")
+            print(f"   [{agent}] Key {key}: {status} ({len(details)} violations)")
         else:
-            status = "PASS" if passed else "FAIL"
             print(f"   [{agent}] Key {key}: {status}")
         
         self.results[key] = {"passed": passed, "details": details}

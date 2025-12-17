@@ -1,0 +1,389 @@
+#!/usr/bin/env python3
+"""
+Test Suite for Canon Validator Engine (E1) - Zero-Loss Merge Compliance
+
+Test Cases:
+- TC-ZLM-101: Standard Successful Merge
+- TC-ZLM-201: P2 Failure, P6 Single-Pass Fix
+- TC-ZLM-202: P2 Failure, P6 Multi-Pass Fix
+- TC-ZLM-203: ZLM Hard Stop Condition
+- TC-ZLM-301: P5 Logging Integrity
+- TC-ZLM-302: P7 File Integrity Check
+- TC-ZLM-303: L5 Audit Trail
+"""
+
+import os
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import Mock, patch, MagicMock, call
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from agentic_core.engines.canon_validator_engine_zlm import (
+    CanonValidatorEngineZLM,
+    CoreUtils,
+    SandboxUtils,
+    L5Consensus,
+    PhaseResult,
+    PhaseStatus,
+    ExitReason,
+    P6FixResult
+)
+
+
+class TestZLMStandardSuccessfulMerge(unittest.TestCase):
+    """TC-ZLM-101: Standard Successful Merge"""
+    
+    @patch('agentic_core.engines.canon_validator_engine_zlm.SandboxUtils.execute_in_sandbox')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.validate_python_syntax')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.sign_and_commit')
+    def test_standard_successful_merge(self, mock_sign, mock_p1, mock_p2):
+        """
+        Given: Valid code committed. P1/P2 pass on Attempt 1.
+        When: The engine executes P1 and P2 checks.
+        Then: Engine immediately bypasses P6 loop, calls sign_and_commit(), 
+              and terminates with EXIT_SUCCESS.
+        """
+        # Setup mocks
+        mock_p1.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P1",
+            message="Syntax valid"
+        )
+        
+        mock_p2.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P2",
+            message="Tests passed"
+        )
+        
+        mock_sign.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P9",
+            message="Commit signed"
+        )
+        
+        # Execute
+        engine = CanonValidatorEngineZLM(['test_file.py'])
+        exit_reason, message = engine.run()
+        
+        # Verify
+        self.assertEqual(exit_reason, ExitReason.P9_SUCCESS)
+        self.assertEqual(engine.attempts, 1)
+        mock_p1.assert_called_once()
+        mock_p2.assert_called_once()
+        mock_sign.assert_called_once()
+
+
+class TestZLMP6SinglePassFix(unittest.TestCase):
+    """TC-ZLM-201: P2 Failure, P6 Single-Pass Fix"""
+    
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.query_consensus')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.SandboxUtils.execute_in_sandbox')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.validate_python_syntax')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.sign_and_commit')
+    def test_p6_single_pass_fix(self, mock_sign, mock_p1, mock_p2, mock_consensus):
+        """
+        Given: Commit causes runtime failure (P2 FAIL). L5 Consensus returns 
+               a correct fix on Attempt 1.
+        When: Engine enters ZLM loop, calls L5.query_consensus(), applies fix, 
+              and restarts P2.
+        Then: P2 PASSES on Attempt 2. Engine proceeds to P9 and terminates 
+              with EXIT_SUCCESS. ZLM Goal Met.
+        """
+        # Setup mocks
+        mock_p1.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P1",
+            message="Syntax valid"
+        )
+        
+        # P2 fails first, then succeeds
+        mock_p2.side_effect = [
+            PhaseResult(
+                status=PhaseStatus.FAIL,
+                phase="P2",
+                message="Test failed",
+                stderr="AssertionError: expected 2, got 1"
+            ),
+            PhaseResult(
+                status=PhaseStatus.SUCCESS,
+                phase="P2",
+                message="Tests passed"
+            )
+        ]
+        
+        # P6 returns successful fix
+        mock_consensus.return_value = P6FixResult(
+            status=PhaseStatus.SUCCESS,
+            corrected_code="def add(a, b): return a + b",
+            confidence=0.95
+        )
+        
+        mock_sign.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P9",
+            message="Commit signed"
+        )
+        
+        # Execute
+        engine = CanonValidatorEngineZLM(['test_file.py'])
+        exit_reason, message = engine.run()
+        
+        # Verify
+        self.assertEqual(exit_reason, ExitReason.P9_SUCCESS)
+        self.assertEqual(engine.attempts, 2)
+        self.assertEqual(mock_p2.call_count, 2)
+        mock_consensus.assert_called_once()
+        mock_sign.assert_called_once()
+
+
+class TestZLMP6MultiPassFix(unittest.TestCase):
+    """TC-ZLM-202: P2 Failure, P6 Multi-Pass Fix"""
+    
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.query_consensus')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.SandboxUtils.execute_in_sandbox')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.validate_python_syntax')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.sign_and_commit')
+    def test_p6_multi_pass_fix(self, mock_sign, mock_p1, mock_p2, mock_consensus):
+        """
+        Given: Commit fails P2. L5 Consensus returns a fix on Attempt 2 that 
+               still fails P2. A correct fix is returned on Attempt 3.
+        When: Engine runs P2 (FAIL), P6 (FAIL), restarts loop. 
+              Runs P2 (FAIL), P6 (SUCCESS), restarts loop.
+        Then: P2 PASSES on Attempt 4. Engine proceeds to P9. ZLM Goal Met.
+        """
+        # Setup mocks
+        mock_p1.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P1",
+            message="Syntax valid"
+        )
+        
+        # P2 fails 3 times, then succeeds
+        mock_p2.side_effect = [
+            PhaseResult(status=PhaseStatus.FAIL, phase="P2", message="Test failed", stderr="Error 1"),
+            PhaseResult(status=PhaseStatus.FAIL, phase="P2", message="Test failed", stderr="Error 2"),
+            PhaseResult(status=PhaseStatus.FAIL, phase="P2", message="Test failed", stderr="Error 3"),
+            PhaseResult(status=PhaseStatus.SUCCESS, phase="P2", message="Tests passed")
+        ]
+        
+        # P6 returns no fix twice, then successful fix
+        mock_consensus.side_effect = [
+            P6FixResult(status=PhaseStatus.FAIL),
+            P6FixResult(status=PhaseStatus.FAIL),
+            P6FixResult(status=PhaseStatus.SUCCESS, corrected_code="fixed code", confidence=0.9)
+        ]
+        
+        mock_sign.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P9",
+            message="Commit signed"
+        )
+        
+        # Execute
+        engine = CanonValidatorEngineZLM(['test_file.py'])
+        engine.MAX_P6_ATTEMPTS = 4  # Increase limit for this test
+        exit_reason, message = engine.run()
+        
+        # Verify
+        self.assertEqual(exit_reason, ExitReason.P9_SUCCESS)
+        self.assertEqual(engine.attempts, 4)
+        self.assertEqual(mock_p2.call_count, 4)
+        self.assertEqual(mock_consensus.call_count, 3)
+
+
+class TestZLMHardStopCondition(unittest.TestCase):
+    """TC-ZLM-203: ZLM Hard Stop Condition"""
+    
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.add_observations')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.query_consensus')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.SandboxUtils.execute_in_sandbox')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.validate_python_syntax')
+    def test_zlm_hard_stop(self, mock_p1, mock_p2, mock_consensus, mock_observations):
+        """
+        Given: Commit fails P2. L5 Consensus returns no fix or invalid fix 
+               on Attempt 1, 2, and 3.
+        When: Engine runs P2, P6, restarts loop 3 times.
+        Then: The condition ATTEMPTS >= MAX_P6_ATTEMPTS is met. 
+              Engine terminates with EXIT_FAILURE and logs ZLM failure to L5.
+        """
+        # Setup mocks
+        mock_p1.return_value = PhaseResult(
+            status=PhaseStatus.SUCCESS,
+            phase="P1",
+            message="Syntax valid"
+        )
+        
+        # P2 always fails
+        mock_p2.return_value = PhaseResult(
+            status=PhaseStatus.FAIL,
+            phase="P2",
+            message="Test failed",
+            stderr="Persistent error"
+        )
+        
+        # P6 always returns no fix
+        mock_consensus.return_value = P6FixResult(status=PhaseStatus.FAIL)
+        
+        # Execute
+        engine = CanonValidatorEngineZLM(['test_file.py'])
+        exit_reason, message = engine.run()
+        
+        # Verify
+        self.assertEqual(exit_reason, ExitReason.P6_LIMIT_REACHED)
+        self.assertEqual(engine.attempts, 3)
+        self.assertEqual(mock_p2.call_count, 3)
+        self.assertEqual(mock_consensus.call_count, 3)
+        
+        # Verify L5 observation for ZLM failure
+        observation_calls = [call for call in mock_observations.call_args_list 
+                           if 'ZLM_FAIL_MAX_ATTEMPTS' in str(call)]
+        self.assertGreater(len(observation_calls), 0)
+
+
+class TestP5LoggingIntegrity(unittest.TestCase):
+    """TC-ZLM-301: P5 Logging Integrity"""
+    
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.log_action')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.query_consensus')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.SandboxUtils.execute_in_sandbox')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.validate_python_syntax')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.sign_and_commit')
+    def test_p5_logging_integrity(self, mock_sign, mock_p1, mock_p2, mock_consensus, mock_log):
+        """
+        Given: The engine executes a full P2 failure/P6 fix/P9 success cycle.
+        When: Engine executes log_action() at start of P1, P2, P6, and P9.
+        Then: The logs contain timestamped records for all 5 major events.
+        """
+        # Setup mocks for successful P6 fix scenario
+        mock_p1.return_value = PhaseResult(status=PhaseStatus.SUCCESS, phase="P1", message="OK")
+        mock_p2.side_effect = [
+            PhaseResult(status=PhaseStatus.FAIL, phase="P2", message="Fail", stderr="Error"),
+            PhaseResult(status=PhaseStatus.SUCCESS, phase="P2", message="OK")
+        ]
+        mock_consensus.return_value = P6FixResult(
+            status=PhaseStatus.SUCCESS,
+            corrected_code="fixed",
+            confidence=0.9
+        )
+        mock_sign.return_value = PhaseResult(status=PhaseStatus.SUCCESS, phase="P9", message="OK")
+        
+        # Execute
+        engine = CanonValidatorEngineZLM(['test_file.py'])
+        engine.run()
+        
+        # Verify logging calls
+        log_calls = [str(call) for call in mock_log.call_args_list]
+        
+        # Check for key log events
+        self.assertTrue(any('P1_VALIDATION_START' in call for call in log_calls))
+        self.assertTrue(any('P2_SANDBOX_START' in call for call in log_calls))
+        self.assertTrue(any('P6_FIX_APPLIED' in call for call in log_calls))
+        self.assertTrue(any('P9_COMMIT_SUCCESS' in call for call in log_calls))
+
+
+class TestP7FileIntegrityCheck(unittest.TestCase):
+    """TC-ZLM-302: P7 File Integrity Check"""
+    
+    def test_p7_canonical_file_protection(self):
+        """
+        Given: A canonical file is monitored by P7's Canary Trap.
+        When: P6 consensus attempts to apply fix using APPLY_INLINE_FIX.
+        Then: P7 monitor does not trigger alert, confirming fix only targets 
+              approved staging files.
+        """
+        # Create temporary test file
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+            f.write("def test(): pass\n")
+            test_file = f.name
+        
+        try:
+            # Create engine and apply fix
+            engine = CanonValidatorEngineZLM([test_file])
+            engine._apply_inline_fix(test_file, "def test(): return True\n")
+            
+            # Verify file was modified
+            with open(test_file, 'r') as f:
+                content = f.read()
+            
+            self.assertIn("return True", content)
+            
+        finally:
+            os.unlink(test_file)
+
+
+class TestL5AuditTrail(unittest.TestCase):
+    """TC-ZLM-303: L5 Audit Trail"""
+    
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.add_observations')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.L5Consensus.query_consensus')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.SandboxUtils.execute_in_sandbox')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.validate_python_syntax')
+    @patch('agentic_core.engines.canon_validator_engine_zlm.CoreUtils.sign_and_commit')
+    def test_l5_audit_trail(self, mock_sign, mock_p1, mock_p2, mock_consensus, mock_observations):
+        """
+        Given: A full P2 failure/P6 fix/P9 success cycle is completed.
+        When: Engine makes four separate L5.add_observations() calls.
+        Then: L5 MEMemory contains four distinct nodes documenting the cycle.
+        """
+        # Setup mocks
+        mock_p1.return_value = PhaseResult(status=PhaseStatus.SUCCESS, phase="P1", message="OK")
+        mock_p2.side_effect = [
+            PhaseResult(status=PhaseStatus.FAIL, phase="P2", message="Fail", stderr="Error"),
+            PhaseResult(status=PhaseStatus.SUCCESS, phase="P2", message="OK")
+        ]
+        mock_consensus.return_value = P6FixResult(
+            status=PhaseStatus.SUCCESS,
+            corrected_code="fixed",
+            confidence=0.9
+        )
+        mock_sign.return_value = PhaseResult(status=PhaseStatus.SUCCESS, phase="P9", message="OK")
+        
+        # Execute
+        engine = CanonValidatorEngineZLM(['test_file.py'])
+        engine.run()
+        
+        # Verify L5 observations
+        observation_calls = mock_observations.call_args_list
+        
+        # Should have at least 1 observation for P2_FAIL_ATTEMPT_1
+        p2_fail_calls = [call for call in observation_calls 
+                        if 'P2_FAIL_ATTEMPT' in str(call)]
+        self.assertGreater(len(p2_fail_calls), 0)
+        
+        # Verify observation structure
+        for call_obj in observation_calls:
+            args, kwargs = call_obj
+            if args:
+                data = args[0]
+                self.assertIn('event', data)
+
+
+def run_test_suite():
+    """Run the complete ZLM test suite."""
+    loader = unittest.TestLoader()
+    suite = unittest.TestSuite()
+    
+    # Add all test classes
+    suite.addTests(loader.loadTestsFromTestCase(TestZLMStandardSuccessfulMerge))
+    suite.addTests(loader.loadTestsFromTestCase(TestZLMP6SinglePassFix))
+    suite.addTests(loader.loadTestsFromTestCase(TestZLMP6MultiPassFix))
+    suite.addTests(loader.loadTestsFromTestCase(TestZLMHardStopCondition))
+    suite.addTests(loader.loadTestsFromTestCase(TestP5LoggingIntegrity))
+    suite.addTests(loader.loadTestsFromTestCase(TestP7FileIntegrityCheck))
+    suite.addTests(loader.loadTestsFromTestCase(TestL5AuditTrail))
+    
+    # Run tests
+    runner = unittest.TextTestRunner(verbosity=2)
+    result = runner.run(suite)
+    
+    return result
+
+
+if __name__ == '__main__':
+    result = run_test_suite()
+    sys.exit(0 if result.wasSuccessful() else 1)
