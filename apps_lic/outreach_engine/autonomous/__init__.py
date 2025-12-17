@@ -38,10 +38,23 @@ from .learning import (
     OutreachLearningAgent,
 )
 from .observability import (
+    OutreachTraceLevel,
+    OutreachMetricType,
     OutreachExecutionTracer,
     OutreachMetricsCollector,
     OutreachAuditReporter,
     OutreachPhase5Orchestrator,
+)
+from .proactive import (
+    OutreachTaskPriority,
+    OutreachHandoffReason,
+    OutreachProactiveTask,
+    OutreachHandoffRequest,
+    OutreachCapabilityProfile,
+    OutreachProactiveScheduler,
+    OutreachPredictiveHandoff,
+    OutreachCapabilityMonitor,
+    OutreachProactiveAgent,
 )
 
 __all__ = [
@@ -79,4 +92,14 @@ __all__ = [
     "OutreachMetricsCollector",
     "OutreachAuditReporter",
     "OutreachPhase5Orchestrator",
+    # Proactive & Predictive (L4.5 Enhancements)
+    "OutreachTaskPriority",
+    "OutreachHandoffReason",
+    "OutreachProactiveTask",
+    "OutreachHandoffRequest",
+    "OutreachCapabilityProfile",
+    "OutreachProactiveScheduler",
+    "OutreachPredictiveHandoff",
+    "OutreachCapabilityMonitor",
+    "OutreachProactiveAgent",
 ]
