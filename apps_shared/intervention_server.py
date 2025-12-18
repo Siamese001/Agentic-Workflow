@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 
 # Check for FastAPI availability
 try:
+    import uvicorn
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse, JSONResponse
-    import uvicorn
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False

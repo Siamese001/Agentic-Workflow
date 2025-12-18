@@ -5,7 +5,7 @@ KEYS: 26-39 (SOLID Principles, Error Handling, Dead Code, etc.)
 
 import ast
 import re
-from typing import List, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Tuple
 
 if TYPE_CHECKING:
     pass

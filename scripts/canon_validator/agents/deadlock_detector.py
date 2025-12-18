@@ -6,7 +6,7 @@ Detects potential deadlock patterns in lock acquisition.
 import ast
 import asyncio
 from collections import defaultdict
-from typing import Dict, List, Set, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Set
 
 if TYPE_CHECKING:
     pass

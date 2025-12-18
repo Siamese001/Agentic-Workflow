@@ -5,9 +5,9 @@ Enforces PEP 484 type hints for compile-time contracts.
 
 import ast
 import asyncio
-import time
 import datetime
-from typing import Dict, List, TYPE_CHECKING
+import time
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     pass

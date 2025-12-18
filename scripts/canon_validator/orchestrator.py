@@ -9,31 +9,15 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import ValidationContext
 
+from .agents import (ArchitectureGovernor, BenchmarkingAgent,
+                     CodeStyleGuardian, ConcurrencyGuardian, DeadlockDetector,
+                     DependencySentinel, DocEnforcer, Historian,
+                     HygieneGuardian, MemoryLeakDetector, NamingEnforcer,
+                     PatternEnforcer, PerformanceEnforcer, SafetyInspector,
+                     SecurityEnforcer, StructuralEngineer, TestPilot,
+                     TheCartographer, TheOmniContext, TheStrategist,
+                     ToolsmithAgent, TypeEnforcer)
 from .types import ValidationContext
-from .agents import (
-    Historian,
-    ArchitectureGovernor,
-    DependencySentinel,
-    HygieneGuardian,
-    CodeStyleGuardian,
-    SafetyInspector,
-    ConcurrencyGuardian,
-    TestPilot,
-    StructuralEngineer,
-    PatternEnforcer,
-    SecurityEnforcer,
-    PerformanceEnforcer,
-    MemoryLeakDetector,
-    DeadlockDetector,
-    BenchmarkingAgent,
-    ToolsmithAgent,
-    TheStrategist,
-    NamingEnforcer,
-    DocEnforcer,
-    TypeEnforcer,
-    TheCartographer,
-    TheOmniContext,
-)
 
 
 class SwarmScheduler:

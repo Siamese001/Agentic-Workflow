@@ -6,7 +6,7 @@ Enforces: Depth (49), Atomicity (50), Complexity (17,19), System (40,41)
 import ast
 import asyncio
 import os
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     pass

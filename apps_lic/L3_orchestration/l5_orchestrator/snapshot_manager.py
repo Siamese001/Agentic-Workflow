@@ -4,7 +4,7 @@ L5 Autonomous Orchestrator - Snapshot and Rollback Manager (Outreach Engine)
 
 import copy
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 from apps_lic.L3_orchestration.l5_orchestrator.types import OutreachSnapshot
 

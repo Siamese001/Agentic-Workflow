@@ -5,7 +5,7 @@ Identifies code smells and proposes refactors.
 
 import ast
 import asyncio
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     pass

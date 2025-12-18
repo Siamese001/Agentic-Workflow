@@ -9,7 +9,7 @@ import json
 import os
 import sys
 import time
-from typing import Dict, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     pass

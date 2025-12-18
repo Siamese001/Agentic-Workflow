@@ -7,7 +7,7 @@ import os
 import subprocess
 import time
 from datetime import datetime
-from typing import Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     pass
@@ -33,7 +33,7 @@ class GitAgent(SubAtomicAgent):
 
         # Try GitPython first, fallback to subprocess
         try:
-            from git import Repo, GitCommandError
+            from git import GitCommandError, Repo
             await self._execute_gitpython(Repo, GitCommandError)
         except ImportError:
             await self._execute_subprocess()

@@ -18,9 +18,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Re-export from new modular structure
-from apps_lic.L3_orchestration.l5_orchestrator.orchestrator import (
-    L5OutreachOrchestrator,
-)
+from apps_lic.L3_orchestration.l5_orchestrator.orchestrator import \
+    L5OutreachOrchestrator
+
 
 # Factory function for backward compatibility
 def create_l5_outreach_orchestrator(

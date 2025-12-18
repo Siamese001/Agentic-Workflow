@@ -5,9 +5,9 @@ Ensures 100% docstring coverage for subatomic units.
 
 import ast
 import asyncio
-import time
 import datetime
-from typing import Dict, List, TYPE_CHECKING
+import time
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     pass

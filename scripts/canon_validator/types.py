@@ -6,28 +6,29 @@ DependencyGraph and BudgetManager are infrastructure classes.
 
 import ast
 import asyncio
+import hashlib
+import json
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set
 
-from .prompts import (
-    POSITIVE_INSTRUCTIONAL_CONTEXT,
-    FEW_SHOT_GLOBAL_REFACTOR,
-    FEW_SHOT_IMPORT_FIXES,
-    FEW_SHOT_PROPERTY_TESTS,
-    FEW_SHOT_REFLECTION_STRATEGY,
-    FEW_SHOT_CONCURRENCY,
-    FEW_SHOT_SAFETY,
-    FEW_SHOT_STYLE,
-    FEW_SHOT_HYGIENE,
-    FEW_SHOT_HISTORIAN,
-    FEW_SHOT_TESTPILOT,
-    FEW_SHOT_STRATEGIC,
-    FEW_SHOT_REFLECTION_ENHANCED,
-    FEW_SHOT_GITOPS,
-    FEW_SHOT_SHERLOCK,
-)
+ALLOWED_ROOT_FILES = {
+    "README.md", "LICENSE", "pyproject.toml", "setup.py", "setup.cfg",
+    "requirements.txt", "Makefile", ".gitignore", ".pre-commit-config.yaml",
+    "CHANGELOG.md", "CONTRIBUTING.md", "conftest.py", "pytest.ini", "tox.ini",
+    ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml",
+    "canon_memory.json"
+}
+
+from .prompts import (FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS,
+                      FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN,
+                      FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES,
+                      FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED,
+                      FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY,
+                      FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE,
+                      FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT)
 
 
 class DependencyGraph:
@@ -186,14 +187,177 @@ class ValidationContext:
         return self._client
 
     def report(self, agent: str, key: int, passed: bool, details: Any = None):
-        """Report validation result for a specific key to the blackboard.
-        
-        Used by all agents to record pass/fail status.
-        """
+        """Report validation result for a specific key to the blackboard."""
         status = "PASS" if passed else "FAIL"
         if not passed:
             print(f"   [{agent}] Key {key}: {status}")
-        self.results[key] = {
-            "passed": passed,
-            "details": details or {}
-        }
+        self.results[key] = {"passed": passed, "details": details or {}}
+
+    def signal_deps_valid(self):
+        """Signal that dependency checks passed."""
+        self.signals.add("DEPS_VALID")
+        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+
+    def signal_ast_valid(self):
+        """Signal that AST checks passed."""
+        self.signals.add("AST_VALID")
+        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+
+    def signal_secure(self):
+        """Signal that security checks passed."""
+        self.signals.add("SECURE")
+        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+
+    def inject_instruction(self, source_agent: str, instruction: str):
+        """Add a guiding hint to the blackboard for downstream agents."""
+        self.instructions.append(f"[{source_agent}] {instruction}")
+
+    def refresh_graph(self):
+        """Rebuilds graph after mutations."""
+        self.code_graph.build(self.python_files)
+
+    def set_current_agent(self, agent_name: str):
+        """Sets the current agent for broadcast context."""
+        self._current_agent = agent_name
+
+    async def broadcast(self, event: dict):
+        """L5 Live Reasoning Stream: Broadcast event to WebSocket clients."""
+        if not self.websocket_clients:
+            return
+        message = json.dumps(event)
+        disconnected = set()
+        for ws in list(self.websocket_clients):
+            try:
+                await ws.send(message)
+            except Exception:
+                disconnected.add(ws)
+        self.websocket_clients -= disconnected
+
+    def calculate_file_hash(self, file_path: str) -> str:
+        """Calculate SHA-256 hash of a file."""
+        try:
+            with open(file_path, 'rb') as f:
+                return hashlib.sha256(f.read()).hexdigest()
+        except Exception:
+            return ""
+
+    def should_skip_file(self, file_path: str) -> bool:
+        """Check if file should be skipped based on memory."""
+        if file_path in self.skip_files:
+            return True
+        current_hash = self.calculate_file_hash(file_path)
+        if not current_hash:
+            return False
+        saved_hash = self.file_hashes.get(file_path)
+        if saved_hash and saved_hash == current_hash:
+            return self.results.get(self._get_file_key(file_path), {}).get("passed", False)
+        return False
+
+    def _get_file_key(self, file_path: str) -> int:
+        """Get the validation key associated with a file."""
+        return hash(file_path) % 50
+
+    def _path_to_module(self, file_path: str) -> str:
+        """Convert file path to module name."""
+        return file_path.replace(os.sep, ".").replace(".py", "")
+
+    def write_compliant_file(self, path: str, content: str, dry_run: bool = False) -> bool:
+        """Enforces Laws and Syntax Safety before writing to disk."""
+        clean_content = content
+        if "```" in clean_content:
+            clean_content = re.sub(r"```[a-z]*\n", "", clean_content)
+            clean_content = clean_content.replace("```", "")
+        clean_content = clean_content.strip()
+
+        if path.endswith(".py"):
+            try:
+                ast.parse(clean_content)
+            except SyntaxError as e:
+                print(f"   🛑 BLOCKED WRITE: Invalid syntax for {path}: {e}")
+                return False
+
+        parts = path.split(os.sep)
+        if len(parts) == 1 and parts[0] not in ALLOWED_ROOT_FILES:
+            print(f"   🛑 BLOCKED: {path} is an illegal root file.")
+            return False
+
+        if dry_run:
+            print(f"   [GOVERNOR] ✅ Dry run: File would be written compliantly")
+            return True
+
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    self.file_backups[path] = f.read()
+            except Exception:
+                pass
+
+        try:
+            os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(clean_content)
+            self.modified_files.add(path)
+            return True
+        except Exception as e:
+            print(f"   ❌ Write Failed: {e}")
+            return False
+
+    async def recall_memory(self, query: str, top_k: int = 3) -> List[Dict]:
+        """Recall similar memories from embeddings (stub - returns empty if no Pinecone)."""
+        return []
+
+    async def upsert_embedding(self, key: str, text: str, metadata: dict):
+        """Learns from success by saving to Deep Brain (stub if no Pinecone)."""
+        if not self.pinecone_available or not self.intelligence_enabled:
+            return
+
+    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", 
+                                  file_path: str = None, *, max_attempts: int = 4,
+                                  diff_mode: bool = False, min_confidence: float = 0.7) -> str:
+        """Level 6 Mutation with retry logic. Returns original code if intelligence disabled."""
+        if not self.intelligence_enabled:
+            print(f"   [{agent_name}] ⚠️ Intelligence disabled - skipping mutation")
+            return code
+        
+        current_code = code or ""
+        for attempt in range(1, max_attempts + 1):
+            try:
+                if not self.budget.check_budget():
+                    return current_code
+                
+                prompt = f"{self.POSITIVE_INSTRUCTIONAL_CONTEXT}\n\nAgent: {agent_name}\nTask: {task}\nContext:\n{current_code[:4000]}"
+                
+                response = await asyncio.to_thread(
+                    self._client.models.generate_content,
+                    model=self.model_id,
+                    contents=[prompt]
+                )
+                
+                self.budget.track(prompt, response.text)
+                result_text = self._clean_llm_code(response.text)
+                
+                if result_text.strip() and (file_path and file_path.endswith('.py')):
+                    ast.parse(result_text)
+                
+                self.mutation_stats["success"] += 1
+                self.mutation_stats["total"] += 1
+                print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
+                return result_text
+                
+            except Exception as e:
+                print(f"   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}")
+                self.mutation_stats["total"] += 1
+                if "429" in str(e):
+                    await asyncio.sleep(2 ** attempt)
+        
+        return current_code
+
+    def _clean_llm_code(self, raw_code: str) -> str:
+        """Extracts code from Chain-of-Thought responses."""
+        raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
+        code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip()
+        if raw_code.strip().startswith("```"):
+            return raw_code.strip().strip("`").replace("python", "", 1).strip()
+        return raw_code.strip()

@@ -308,7 +308,7 @@ def normalize_output(output: str) -> str:
     - Memory addresses
     """
     import re
-    
+
     # Remove timestamps (various formats)
     output = re.sub(r'\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}', 'TIMESTAMP', output)
     output = re.sub(r'\d{2}:\d{2}:\d{2}', 'TIME', output)
@@ -480,7 +480,7 @@ class TestConfigEquivalence:
         sys.path.insert(0, str(SCRIPTS_DIR))
         try:
             from canon_validator import EXCLUDED_DIRS
-            
+
             # These are the minimum expected excluded directories
             # Note: .mypy_cache may not be in all configs - it's optional
             expected_core = {
@@ -498,7 +498,7 @@ class TestConfigEquivalence:
         """MIN_DEPTH and MAX_DEPTH should be reasonable values."""
         sys.path.insert(0, str(SCRIPTS_DIR))
         try:
-            from canon_validator import MIN_DEPTH, MAX_DEPTH
+            from canon_validator import MAX_DEPTH, MIN_DEPTH
             
             assert MIN_DEPTH >= 0, "MIN_DEPTH should be non-negative"
             assert MAX_DEPTH >= MIN_DEPTH, "MAX_DEPTH should be >= MIN_DEPTH"

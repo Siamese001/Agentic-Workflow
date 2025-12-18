@@ -65,7 +65,7 @@ except ImportError:
 
 # L5 Multi-Repository: GitPython for remote operations
 try:
-    from git import Repo, GitCommandError
+    from git import GitCommandError, Repo
     GITPYTHON_AVAILABLE = True
 except ImportError:
     GITPYTHON_AVAILABLE = False
@@ -82,10 +82,11 @@ except ImportError:
 
 # L5 Human-in-the-Loop: FastAPI for intervention UI
 try:
+    import threading
+
+    import uvicorn
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse
-    import uvicorn
-    import threading
     FASTAPI_AVAILABLE = True
 except ImportError:
     FASTAPI_AVAILABLE = False
