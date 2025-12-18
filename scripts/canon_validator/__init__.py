@@ -36,17 +36,38 @@ from .prompts import (
     FEW_SHOT_PROMPTS,
 )
 
-# Batch 2 agents
+# All agents
 from .agents import (
     Historian,
     ArchitectureGovernor,
     HygieneGuardian,
     CodeStyleGuardian,
     DependencySentinel,
+    SafetyInspector,
+    ConcurrencyGuardian,
+    TestPilot,
+    StructuralEngineer,
+    PatternEnforcer,
+    SecurityEnforcer,
+    PerformanceEnforcer,
+    MemoryLeakDetector,
+    DeadlockDetector,
+    Sherlock,
+    StrategicPlanner,
+    ReflectionAgent,
+    GitAgent,
+    BenchmarkingAgent,
+    ToolsmithAgent,
+    TheStrategist,
+    NamingEnforcer,
+    DocEnforcer,
+    TypeEnforcer,
+    TheCartographer,
+    TheOmniContext,
 )
 
-# Orchestrator import will be added when created
-# from .orchestrator import SwarmScheduler
+# Orchestrator
+from .orchestrator import SwarmScheduler, IntelligentOrchestrator
 
 __all__ = [
     # Config
@@ -71,12 +92,38 @@ __all__ = [
     "POSITIVE_INSTRUCTIONAL_CONTEXT",
     "FEW_SHOT_GLOBAL_REFACTOR",
     "FEW_SHOT_PROMPTS",
-    # Batch 2 Agents
+    # Core Agents
     "Historian",
     "ArchitectureGovernor",
     "HygieneGuardian",
     "CodeStyleGuardian",
     "DependencySentinel",
-    # Orchestrator (to be added)
-    # "SwarmScheduler",
+    # Safety and Testing Agents
+    "SafetyInspector",
+    "ConcurrencyGuardian",
+    "TestPilot",
+    "StructuralEngineer",
+    "PatternEnforcer",
+    # Security and Performance Agents
+    "SecurityEnforcer",
+    "PerformanceEnforcer",
+    "MemoryLeakDetector",
+    "DeadlockDetector",
+    "Sherlock",
+    # Strategic and Operational Agents
+    "StrategicPlanner",
+    "ReflectionAgent",
+    "GitAgent",
+    "BenchmarkingAgent",
+    "ToolsmithAgent",
+    # Refinement and Optimization Agents
+    "TheStrategist",
+    "NamingEnforcer",
+    "DocEnforcer",
+    "TypeEnforcer",
+    "TheCartographer",
+    "TheOmniContext",
+    # Orchestrator
+    "SwarmScheduler",
+    "IntelligentOrchestrator",
 ]
