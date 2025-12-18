@@ -9,14 +9,10 @@ Tests the integration of self-healing components:
 """
 
 import pytest
+
 from ..context import ResumeEngineContext
-from ..healing import (
-    HealingStrategy,
-    SignalRouter,
-    HealingCycle,
-    HealingOrchestrator,
-    ConvergenceDetector,
-)
+from ..healing import (ConvergenceDetector, HealingCycle, HealingOrchestrator,
+                       HealingStrategy, SignalRouter)
 
 
 @pytest.fixture

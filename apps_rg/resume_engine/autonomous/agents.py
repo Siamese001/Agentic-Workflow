@@ -13,8 +13,8 @@ This module contains all specialized agents for autonomous resume generation:
 - ReflectionAgent: Learns from execution
 """
 
-import re
 import json
+import re
 from typing import Any, Dict
 
 from .base_agent import ResumeAgent

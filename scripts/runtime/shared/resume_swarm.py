@@ -9,8 +9,8 @@ import logging
 import multiprocessing
 import os
 import time
-from typing import List, Dict, Any, Optional, Callable
 from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

@@ -9,18 +9,12 @@ Tests agent coordination and signal-based routing:
 """
 
 import pytest
+
+from ..agents import (ATSCompatibilityAgent, BrandComplianceAgent,
+                      ContentQualityAgent, FactCheckAgent, ReflectionAgent,
+                      SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
+                      TestPilot)
 from ..context import ResumeEngineContext
-from ..agents import (
-    ContentQualityAgent,
-    FactCheckAgent,
-    BrandComplianceAgent,
-    TemplateOptimizer,
-    SectionBalanceAgent,
-    ATSCompatibilityAgent,
-    TestPilot,
-    StrategicPlanner,
-    ReflectionAgent,
-)
 
 
 @pytest.fixture

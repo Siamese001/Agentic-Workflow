@@ -7,29 +7,23 @@ Tests integration between components:
 - Full pipeline integration
 """
 
-import pytest
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
+from apps_lic.outreach_engine.autonomous.agents import (ContactValidatorAgent,
+                                                        LeadQualityAgent,
+                                                        MessageComplianceAgent)
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
-from apps_lic.outreach_engine.autonomous.agents import (
-    LeadQualityAgent,
-    ContactValidatorAgent,
-    MessageComplianceAgent,
-)
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingOrchestrator,
-    OutreachSignalRouter,
-)
+    OutreachHealingOrchestrator, OutreachSignalRouter)
 from apps_lic.outreach_engine.autonomous.learning import (
-    OutreachLearningLoop,
-    OutreachLearningAgent,
-)
-from apps_lic.outreach_engine.autonomous.observability import (
-    OutreachPhase5Orchestrator,
-)
+    OutreachLearningAgent, OutreachLearningLoop)
+from apps_lic.outreach_engine.autonomous.observability import \
+    OutreachPhase5Orchestrator
 
 
 @pytest.fixture

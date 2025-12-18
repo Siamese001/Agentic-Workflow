@@ -8,7 +8,7 @@ import logging
 import time
 from typing import Dict
 
-from resume_swarm import create_resume_swarm, ResumeResult
+from resume_swarm import ResumeResult, create_resume_swarm
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

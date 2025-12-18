@@ -7,13 +7,11 @@ for 5-10x performance improvement in resume generation pipeline.
 import asyncio
 import logging
 from typing import List
-import numpy as np
 
+import numpy as np
 from batch_embeddings import create_batch_embedding_service
-from memory_vector_store import (
-    create_memory_vector_cache, 
-    create_tiered_vector_store
-)
+from memory_vector_store import (create_memory_vector_cache,
+                                 create_tiered_vector_store)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

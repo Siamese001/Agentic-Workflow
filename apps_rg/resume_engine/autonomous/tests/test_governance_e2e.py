@@ -7,20 +7,17 @@ Tests the complete governance workflow:
 - Integration with all previous phases
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..governance import (
-    Phase7Orchestrator,
-)
-from ..healing import (
-    run_self_healing_mission,
-    HealingResult,
-)
-from ..learning import ResumeLearningAgent
 from ..gitops import Phase4Orchestrator
-from ..observability import Phase5Orchestrator
+from ..governance import Phase7Orchestrator
+from ..healing import HealingResult, run_self_healing_mission
 from ..intelligence import Phase6Orchestrator
+from ..learning import ResumeLearningAgent
+from ..observability import Phase5Orchestrator
 
 
 @pytest.fixture

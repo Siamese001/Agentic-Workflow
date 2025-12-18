@@ -9,20 +9,14 @@ Tests the core GitOps functionality:
 - Phase4Orchestrator
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..gitops import (
-    MutationMode,
-    FileBackup,
-    MutationResult,
-    RepairProposal,
-    GitOpsManager,
-    ResilientMutator,
-    ImportPatcher,
-    ConversationalRepair,
-    Phase4Orchestrator,
-)
+from ..gitops import (ConversationalRepair, FileBackup, GitOpsManager,
+                      ImportPatcher, MutationMode, MutationResult,
+                      Phase4Orchestrator, RepairProposal, ResilientMutator)
 
 
 @pytest.fixture

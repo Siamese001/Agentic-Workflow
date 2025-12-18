@@ -7,19 +7,16 @@ Tests the complete observability workflow:
 - Integration with all previous phases
 """
 
-import pytest
 import json
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..observability import (
-    Phase5Orchestrator,
-)
-from ..healing import (
-    HealingOrchestrator,
-    run_self_healing_mission,
-    HealingResult,
-)
-from ..learning import ResumeLearningAgent, MemoryPersistence
 from ..gitops import Phase4Orchestrator
+from ..healing import (HealingOrchestrator, HealingResult,
+                       run_self_healing_mission)
+from ..learning import MemoryPersistence, ResumeLearningAgent
+from ..observability import Phase5Orchestrator
 
 
 @pytest.fixture

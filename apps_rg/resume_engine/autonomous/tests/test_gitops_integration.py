@@ -9,19 +9,11 @@ Tests the integration of GitOps components:
 """
 
 import pytest
+
 from ..context import ResumeEngineContext
-from ..gitops import (
-    MutationMode,
-    GitOpsManager,
-    ResilientMutator,
-    ImportPatcher,
-    ConversationalRepair,
-    Phase4Orchestrator,
-)
-from ..healing import (
-    HealingCycle,
-    HealingStrategy,
-)
+from ..gitops import (ConversationalRepair, GitOpsManager, ImportPatcher,
+                      MutationMode, Phase4Orchestrator, ResilientMutator)
+from ..healing import HealingCycle, HealingStrategy
 from ..learning import ResumeLearningAgent
 
 

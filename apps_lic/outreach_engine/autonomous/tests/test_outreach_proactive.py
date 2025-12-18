@@ -8,22 +8,18 @@ Tests L4.5 autonomy enhancements for outreach:
 - OutreachProactiveAgent
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.proactive import (
-    OutreachTaskPriority,
-    OutreachHandoffReason,
-    OutreachCapabilityProfile,
-    OutreachProactiveScheduler,
-    OutreachPredictiveHandoff,
-    OutreachCapabilityMonitor,
-    OutreachProactiveAgent,
-)
+    OutreachCapabilityMonitor, OutreachCapabilityProfile,
+    OutreachHandoffReason, OutreachPredictiveHandoff, OutreachProactiveAgent,
+    OutreachProactiveScheduler, OutreachTaskPriority)
 
 
 @pytest.fixture

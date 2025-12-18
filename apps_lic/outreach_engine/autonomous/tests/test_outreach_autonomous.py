@@ -9,34 +9,27 @@ Tests the core autonomous functionality:
 - Observability
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 # Add parent directories to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
-from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext, OutreachBudgetManager
-from apps_lic.outreach_engine.autonomous.agents import (
-    LeadQualityAgent,
-    ContactValidatorAgent,
-    MessageComplianceAgent,
-)
+from apps_lic.outreach_engine.autonomous.agents import (ContactValidatorAgent,
+                                                        LeadQualityAgent,
+                                                        MessageComplianceAgent)
+from apps_lic.outreach_engine.autonomous.context import (OutreachBudgetManager,
+                                                         OutreachEngineContext)
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingStrategy,
-    OutreachHealingResult,
-    OutreachSignalRouter,
-    OutreachHealingOrchestrator,
-    run_outreach_healing_mission,
-)
+    OutreachHealingOrchestrator, OutreachHealingResult,
+    OutreachHealingStrategy, OutreachSignalRouter,
+    run_outreach_healing_mission)
 from apps_lic.outreach_engine.autonomous.learning import (
-    OutreachLearningLoop,
-    OutreachConfidenceScorer,
-)
+    OutreachConfidenceScorer, OutreachLearningLoop)
 from apps_lic.outreach_engine.autonomous.observability import (
-    OutreachMetricsCollector,
-    OutreachPhase5Orchestrator,
-)
+    OutreachMetricsCollector, OutreachPhase5Orchestrator)
 
 
 @pytest.fixture

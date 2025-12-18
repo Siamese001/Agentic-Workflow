@@ -10,24 +10,16 @@ Tests the core governance functionality:
 - Phase7Orchestrator
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..governance import (
-    DependencyStatus,
-    DocComplianceLevel,
-    PromptRisk,
-    DependencyIssue,
-    DocViolation,
-    PromptIssue,
-    CostPrediction,
-    DependencyArbiter,
-    StrictDocEnforcer,
-    DashboardGenerator,
-    PromptGovernor,
-    PredictiveBudgetManager,
-    Phase7Orchestrator,
-)
+from ..governance import (CostPrediction, DashboardGenerator,
+                          DependencyArbiter, DependencyIssue, DependencyStatus,
+                          DocComplianceLevel, DocViolation, Phase7Orchestrator,
+                          PredictiveBudgetManager, PromptGovernor, PromptIssue,
+                          PromptRisk, StrictDocEnforcer)
 
 
 @pytest.fixture

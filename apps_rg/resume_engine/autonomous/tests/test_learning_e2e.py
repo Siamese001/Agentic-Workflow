@@ -8,21 +8,15 @@ Tests the complete learning workflow:
 - Confidence-based retry in production scenarios
 """
 
-import pytest
 import asyncio
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..learning import (
-    LearningLoop,
-    ConfidenceScorer,
-    InstructionInjector,
-    MemoryPersistence,
-    ResumeLearningAgent,
-)
-from ..healing import (
-    HealingOrchestrator,
-    run_self_healing_mission,
-    HealingResult,
-)
+from ..healing import (HealingOrchestrator, HealingResult,
+                       run_self_healing_mission)
+from ..learning import (ConfidenceScorer, InstructionInjector, LearningLoop,
+                        MemoryPersistence, ResumeLearningAgent)
 
 
 @pytest.fixture

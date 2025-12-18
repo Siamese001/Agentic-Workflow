@@ -13,19 +13,12 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
-from .context import ResumeEngineContext
+from .agents import (ATSCompatibilityAgent, BrandComplianceAgent,
+                     ContentQualityAgent, FactCheckAgent, ReflectionAgent,
+                     SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
+                     TestPilot)
 from .base_agent import ResumeAgent
-from .agents import (
-    ContentQualityAgent,
-    FactCheckAgent,
-    BrandComplianceAgent,
-    TemplateOptimizer,
-    SectionBalanceAgent,
-    ATSCompatibilityAgent,
-    TestPilot,
-    StrategicPlanner,
-    ReflectionAgent,
-)
+from .context import ResumeEngineContext
 
 
 class HealingStrategy(Enum):

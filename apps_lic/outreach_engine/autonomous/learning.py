@@ -7,16 +7,16 @@ Provides learning and memory capabilities:
 - Memory persistence across sessions
 """
 
-import json
 import hashlib
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .context import OutreachEngineContext
 from .base_agent import OutreachAgent
+from .context import OutreachEngineContext
 
 
 class OutreachConfidenceLevel(Enum):

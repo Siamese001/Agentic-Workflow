@@ -8,10 +8,8 @@ Tests the complete self-healing workflow:
 """
 
 import pytest
-from ..healing import (
-    HealingResult,
-    run_self_healing_mission,
-)
+
+from ..healing import HealingResult, run_self_healing_mission
 
 
 @pytest.fixture

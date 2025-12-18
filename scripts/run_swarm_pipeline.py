@@ -11,18 +11,20 @@ Expected speedup: 10-30x end-to-end improvement
 
 import asyncio
 import logging
-import time
-from typing import List, Dict, Any
 import sys
+import time
 from pathlib import Path
+from typing import Any, Dict, List
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
-from scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
 from scripts.runtime.core.subatomic_swarm import create_subatomic_swarm
+from scripts.runtime.shared.batch_embeddings import \
+    create_batch_embedding_service
+from scripts.runtime.shared.memory_vector_store import \
+    create_memory_vector_cache
 from scripts.runtime.shared.resume_swarm import create_resume_swarm
 
 # Configure logging

@@ -12,8 +12,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from .context import ResumeEngineContext
 from .base_agent import ResumeAgent
+from .context import ResumeEngineContext
 
 
 class TaskPriority(Enum):

@@ -8,24 +8,16 @@ Tests the integration of observability components:
 - AuditReporter with full missions
 """
 
-import pytest
 import json
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..observability import (
-    MetricType,
-    ExecutionTracer,
-    MetricsCollector,
-    ValidationAgent,
-    AuditReporter,
-    Phase5Orchestrator,
-)
-from ..healing import (
-    HealingOrchestrator,
-    HealingCycle,
-    HealingStrategy,
-)
-from ..learning import ResumeLearningAgent
 from ..gitops import Phase4Orchestrator
+from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
+from ..learning import ResumeLearningAgent
+from ..observability import (AuditReporter, ExecutionTracer, MetricsCollector,
+                             MetricType, Phase5Orchestrator, ValidationAgent)
 
 
 @pytest.fixture

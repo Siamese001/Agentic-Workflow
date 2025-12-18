@@ -9,21 +9,12 @@ Tests the integration of learning components:
 """
 
 import pytest
-from ..context import ResumeEngineContext
-from ..learning import (
-    LearningLoop,
-    ConfidenceScorer,
-    InstructionInjector,
-    MemoryPersistence,
-    ResumeLearningAgent,
-    ConfidenceLevel,
-)
-from ..healing import (
-    HealingOrchestrator,
-    HealingCycle,
-    HealingStrategy,
-)
+
 from ..agents import ContentQualityAgent
+from ..context import ResumeEngineContext
+from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
+from ..learning import (ConfidenceLevel, ConfidenceScorer, InstructionInjector,
+                        LearningLoop, MemoryPersistence, ResumeLearningAgent)
 
 
 @pytest.fixture
