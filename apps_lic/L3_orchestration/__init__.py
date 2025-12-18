@@ -1,25 +1,46 @@
 """
-L3 Orchestration package initialization.
+L3 Orchestration package initialization for Outreach Engine.
 
-Provides core functionality and exports for the L3 Orchestration module.
+Provides orchestration components including:
+- L5+ Autonomous Outreach Orchestrator with Canon Validator patterns
+- Campaign management with convergence loops
+- Archetype-aware message generation
+
+Updated: 2025-12-17 - Added L5+ autonomy components
 """
-
 
 import logging
 from typing import Dict, List, Optional, Union
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 # Module metadata
-__version__: str = "1.0.0"
+__version__: str = "2.0.0"
 __author__: str = "Agentic Workflow"
-__description__: str = "Core L3 Orchestration functionality"
+__description__: str = "L5+ Autonomous Outreach Orchestration"
+
+# L5+ Autonomous Orchestrator (Canon Validator parity)
+from apps_lic.L3_orchestration.l5_autonomous_orchestrator import (
+    L5OutreachOrchestrator,
+    create_l5_outreach_orchestrator,
+    OutreachExecutionPhase,
+    OutreachCycleState,
+    OutreachSnapshot,
+)
 
 # Core exports
 __all__: List[str] = [
+    # Module metadata
     "__version__",
     "__author__",
     "__description__",
+    # L5+ Autonomous Orchestrator
+    "L5OutreachOrchestrator",
+    "create_l5_outreach_orchestrator",
+    "OutreachExecutionPhase",
+    "OutreachCycleState",
+    "OutreachSnapshot",
+    # Utility functions
     "get_module_info",
     "validate_config",
     "create_instance"
@@ -53,14 +74,9 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     required_keys = ["enabled", "mode"]
     return all(key in config for key in required_keys)
 
-def create_instance(config: Optional[Dict[str,
-    """Docstring."""
-    Union[str,
-    int,
-    BOOL]]] = None) -> Dict[str,
-    Union[str,
-    int,
-    bool]]:
+def create_instance(
+    config: Optional[Dict[str, Union[str, int, bool]]] = None
+) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
 
