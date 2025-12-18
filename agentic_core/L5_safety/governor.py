@@ -4,6 +4,7 @@ Tracks token usage and halts execution if cost exceeds threshold.
 """
 
 import logging
+import os
 import time
 from typing import Dict, Optional
 
@@ -18,19 +19,29 @@ class BudgetExceededError(Exception):
         self.limit = limit
 
 
+class MemoryPressureError(Exception):
+    """Raised when system memory is too low."""
+    def __init__(self, message: str, available_gb: float = None, threshold_gb: float = None):
+        super().__init__(message)
+        self.available_gb = available_gb
+        self.threshold_gb = threshold_gb
+
+
 class CostGovernor:
     """Governor that tracks costs and enforces budget limits."""
     
-    def __init__(self, limit_usd: float = 5.00):
+    def __init__(self, limit_usd: float = 5.00, min_memory_gb: float = 2.0):
         """Initialize the cost governor.
         
         Args:
             limit_usd: Maximum allowed cost in USD
+            min_memory_gb: Minimum required available memory in GB
         """
         self.limit = limit_usd
         self.spend = 0.0
         self.start_time = time.time()
         self.action_count = 0
+        self.min_memory_gb = min_memory_gb
         
         # Estimated cost per 1k tokens (input + output)
         self.rates = {
@@ -47,6 +58,85 @@ class CostGovernor:
         self.usage_by_model: Dict[str, Dict[str, int]] = {}
         
         LOGGER.info(f"CostGovernor initialized with budget limit: ${limit_usd:.2f}")
+        LOGGER.info(f"Memory pressure check enabled - minimum: {min_memory_gb}GB")
+    
+    def check_memory_pressure(self) -> Dict[str, float]:
+        """Check system memory pressure.
+        
+        Returns:
+            Dictionary with memory information
+            
+        Raises:
+            MemoryPressureError: If available memory is below threshold
+        """
+        try:
+            # Try to use psutil if available
+            import psutil
+            memory = psutil.virtual_memory()
+            available_gb = memory.available / (1024**3)
+            total_gb = memory.total / (1024**3)
+            used_percent = memory.percent
+            
+            if available_gb < self.min_memory_gb:
+                LOGGER.error(f"Low memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required")
+                raise MemoryPressureError(
+                    f"Insufficient memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required",
+                    available_gb=available_gb,
+                    threshold_gb=self.min_memory_gb
+                )
+            
+            if used_percent > 90:
+                LOGGER.warning(f"High memory usage: {used_percent:.1f}%")
+            
+            return {
+                "available_gb": available_gb,
+                "total_gb": total_gb,
+                "used_percent": used_percent,
+                "pressure_ok": available_gb >= self.min_memory_gb
+            }
+            
+        except ImportError:
+            # Fallback to basic memory check using os module
+            try:
+                # Unix/Linux/MacOS
+                with open('/proc/meminfo', 'r') as f:
+                    meminfo = f.read()
+                
+                # Parse MemAvailable and MemTotal
+                for line in meminfo.split('\n'):
+                    if 'MemAvailable:' in line:
+                        available_kb = int(line.split()[1])
+                        available_gb = available_kb / (1024**2)
+                    elif 'MemTotal:' in line:
+                        total_kb = int(line.split()[1])
+                        total_gb = total_kb / (1024**2)
+                
+                if available_gb < self.min_memory_gb:
+                    LOGGER.error(f"Low memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required")
+                    raise MemoryPressureError(
+                        f"Insufficient memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required",
+                        available_gb=available_gb,
+                        threshold_gb=self.min_memory_gb
+                    )
+                
+                used_percent = ((total_gb - available_gb) / total_gb) * 100
+                
+                return {
+                    "available_gb": available_gb,
+                    "total_gb": total_gb,
+                    "used_percent": used_percent,
+                    "pressure_ok": available_gb >= self.min_memory_gb
+                }
+                
+            except (FileNotFoundError, Exception):
+                # Windows or fallback - assume OK
+                LOGGER.warning("Memory check not available on this platform")
+                return {
+                    "available_gb": -1,
+                    "total_gb": -1,
+                    "used_percent": -1,
+                    "pressure_ok": True
+                }
     
     def track(self, model: str, input_tokens: int, output_tokens: int) -> float:
         """Track token usage and check budget.

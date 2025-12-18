@@ -61,7 +61,7 @@ async def run_phase1_with_l5():
     # Configure the mission with L5 safety
     config = OrchestratorConfig(
         mission_id="integrity-scan-with-l5",
-        max_phases=1,  # Only run Phase 1 for this test
+        max_phases=None,  # Run all phases to create checkpoints
         enable_tri_brain=True,
         timeout_seconds=60
     )

@@ -29,12 +29,14 @@ class ExecutionContext:
         state: Current execution state (mutable during execution)
         history: List of previous execution steps
         metadata: Additional context metadata
+        previous_phase_signals: Signals from previous phase execution
     """
     mission: str
     scene: Dict[str, Any] = field(default_factory=dict)
     state: Dict[str, Any] = field(default_factory=dict)
     history: List[Dict[str, Any]] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+    previous_phase_signals: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
@@ -44,6 +46,7 @@ class ExecutionContext:
             "state": self.state,
             "history": self.history,
             "metadata": self.metadata,
+            "previous_phase_signals": self.previous_phase_signals,
         }
 
 
