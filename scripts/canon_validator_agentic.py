@@ -637,6 +637,93 @@ with locks[0]:
 Prioritize context managers. Never use time.sleep() for synchronization.
 Use Redis locks when distributed coordination is needed.
 """)
+
+    FEW_SHOT_SAFETY: str = field(default_factory=lambda: """
+FEW-SHOT SAFETY FIXES (SafetyInspector — Follow exactly):
+
+EXAMPLE 1: Dangerous eval/exec
+BAD:
+value = eval(user_input)
+
+GOOD:
+# Remove entirely or replace with safe alternative
+# If dynamic logic needed: use ast.literal_eval with strict allowlist
+import ast
+try:
+    value = ast.literal_eval(user_input)
+except (ValueError, SyntaxError):
+    raise ValueError("Invalid literal")
+
+EXAMPLE 2: subprocess Without Restrictions
+BAD:
+subprocess.run(command)
+subprocess.Popen(user_command, shell=True)
+
+GOOD:
+import shlex
+# Explicit command + args, no shell
+subprocess.run(["git", "pull"], check=True, cwd="/repo")
+# Or if dynamic: validate against allowlist
+ALLOWED_COMMANDS = {"git_pull", "pytest"}
+if cmd not in ALLOWED_COMMANDS:
+    raise PermissionError("Command not allowed")
+
+EXAMPLE 3: Hardcoded Secrets
+BAD:
+API_KEY = "sk-1234567890abcdef"
+PASSWORD = "admin123"
+
+GOOD:
+import os
+API_KEY = os.getenv("API_KEY")
+if not API_KEY:
+    raise RuntimeError("API_KEY environment variable required")
+
+EXAMPLE 4: Insecure Default Arguments
+BAD:
+def connect(host="localhost", port=22, timeout=None):
+    # timeout=None can cause hanging
+
+GOOD:
+def connect(host="localhost", port=22, timeout=30):
+    # Explicit reasonable default
+    ...
+
+EXAMPLE 5: SyntaxError or IndentationError
+BAD:
+def func()
+    pass  # Missing colon
+
+GOOD:
+def func():
+    pass
+
+EXAMPLE 6: assert Used in Production
+BAD:
+assert user.is_admin, "Access denied"
+
+GOOD:
+if not user.is_admin:
+    raise PermissionError("Access denied")
+# Or use explicit validation
+
+EXAMPLE 7: Open Redirect / SSRF Risk
+BAD:
+redirect(request.args.get("next"))
+requests.get(url_from_user)
+
+GOOD:
+from urllib.parse import urlparse
+ALLOWED_HOSTS = {"example.com", "app.example.com"}
+parsed = urlparse(url)
+if parsed.hostname not in ALLOWED_HOSTS:
+    raise ValueError("Invalid redirect")
+
+Never introduce eval/exec/subprocess/shell=True.
+Always require env vars for secrets.
+Never use assert for control flow.
+Prefer explicit checks and allowlists.
+""")
     
     @property
     def client(self):
@@ -2351,9 +2438,10 @@ class SafetyInspector(SubAtomicAgent):
                     if self.ctx.intelligence_enabled:
                         print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
                         
-                        # Build context for the mutation
+                        # Build context for the mutation with L5+ Few-Shot Safety Injection
                         context = "\n".join(self.ctx.instructions)
                         mutation_task = f'''
+{self.ctx.FEW_SHOT_SAFETY}
 {self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
 {self.ctx.FEW_SHOT_IMPORT_FIXES}
 
@@ -2366,7 +2454,16 @@ Rules:
 - Add 'import asyncio' if needed
 - Add 'import httpx' if needed
 
-RETURN ONLY THE RAW PYTHON CODE. NO MARKDOWN. NO BACKTICKS. Ensure indentation matches the provided snippet context.
+Apply the safest pattern from examples above.
+Prioritize:
+- Remove dangerous functions (eval/exec)
+- Use allowlists and env vars for secrets
+- Explicit defaults and validation
+- No assert in control flow
+
+RESPONSE FORMAT:
+Return ONLY the corrected Python code.
+No explanations. No markdown outside code block.
 '''
                         
                         cleaned_code = await self.ctx.resilient_mutation(
@@ -2538,19 +2635,35 @@ class ConcurrencyGuardian(SubAtomicAgent):
         summary = "\n".join([f"- {i['type']} at line {i['line']}" for i in all_issues])
         print(f"   🛡️  Fixing {len(all_issues)} concurrency issue(s) in {os.path.basename(file_path)}")
 
-        # Single Gemini mutation request
-        prompt = (
-            f"CONCURRENCY FIX TASK: Fix races, livelocks, and starvation in Python code.\n"
-            f"File: {file_path}\nIssues Detected:\n{summary}\n\n"
-            "Rules:\n"
-            "1. Use asyncio.Lock/Event for async, threading.Lock for sync.\n"
-            "2. Add timeouts to locks/waits.\n"
-            "3. Replace blocking calls (time.sleep, requests) with async equivalents.\n"
-            "4. Add 'await asyncio.sleep(0)' in tight loops.\n"
-            "5. Add exponential backoff with jitter for retry loops.\n"
-            "6. Use asyncio.Queue for fair task scheduling.\n"
-            "Return ONLY the fixed Python code."
-        )
+        # Single Gemini mutation request with L5+ Few-Shot Injection
+        prompt = f"""
+{self.ctx.FEW_SHOT_CONCURRENCY}
+
+CONCURRENCY FIX TASK: Fix races, livelocks, and starvation in Python code.
+File: {file_path}
+Issues Detected:
+{summary}
+
+Rules:
+1. Use asyncio.Lock/Event for async, threading.Lock for sync.
+2. Add timeouts to locks/waits.
+3. Replace blocking calls (time.sleep, requests) with async equivalents.
+4. Add 'await asyncio.sleep(0)' in tight loops.
+5. Add exponential backoff with jitter for retry loops.
+6. Use asyncio.Queue for fair task scheduling.
+7. For distributed coordination, use Redis locks via ctx.acquire_lock().
+
+Prefer:
+- threading.Lock() or asyncio.Lock() with context managers
+- Redis distributed locks via ctx.acquire_lock()
+- Consistent lock ordering to prevent deadlock
+
+Never suggest time.sleep(), global locks, or ignoring the issue.
+
+RESPONSE FORMAT:
+Return ONLY the fixed Python code with proper locking.
+Do not explain. Do not add commentary.
+"""
 
         fixed_content = await self.ctx.resilient_mutation(
             agent_name=self.name,
