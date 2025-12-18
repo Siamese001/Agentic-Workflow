@@ -10,6 +10,7 @@ Canon Validator Patterns Implemented:
 - Blackboard pattern for shared state
 - Listener registration for reactive behavior
 - Signal history for debugging and reflection
+- Async-safe operations with lock protection (Canon Validator compliance)
 """
 
 import asyncio
@@ -110,12 +111,16 @@ class SignalBus:
     - Listener registration for reactive behavior
     - Signal history for reflection
     - Cycle-aware signal management
+    - Async-safe emit/clear with lock protection
     
     Usage:
         bus = SignalBus()
-        bus.emit(SignalType.TEST_FAILURE, "Unit tests failed", source="TestPilot")
+        await bus.emit(SignalType.TEST_FAILURE, "Unit tests failed", source="TestPilot")
         if bus.has(SignalType.CRITICAL_FAIL):
             break
+    
+    Sync Usage (backward compatible):
+        bus.emit_sync(SignalType.TEST_FAILURE, "Unit tests failed", source="TestPilot")
     """
     
     def __init__(self) -> None:
@@ -129,7 +134,7 @@ class SignalBus:
         
         logger.info("SignalBus initialized - Canon Validator blackboard pattern active")
     
-    def emit(
+    async def emit(
         self,
         signal_type: SignalType,
         message: str = "",
@@ -138,7 +143,61 @@ class SignalBus:
         severity: str = "info"
     ) -> Signal:
         """
-        Emit a signal to the bus.
+        Emit a signal to the bus (async, lock-protected).
+        
+        Args:
+            signal_type: Type of signal to emit
+            message: Human-readable message
+            source: Agent/component emitting the signal
+            payload: Additional data
+            severity: Signal severity level
+            
+        Returns:
+            The emitted Signal object
+        """
+        signal = Signal(
+            signal_type=signal_type,
+            message=message,
+            source=source,
+            payload=payload or {},
+            severity=severity
+        )
+        signal.payload["cycle"] = self.current_cycle
+        
+        async with self._lock:
+            self.signals.add(signal_type)
+            self.active_signals[signal_type] = signal
+            self.history.add(signal)
+        
+        # Log based on severity
+        log_msg = f"[SIGNAL] {signal_type.value}: {message} (source={source})"
+        if severity == "critical":
+            logger.critical(log_msg)
+        elif severity == "error":
+            logger.error(log_msg)
+        elif severity == "warning":
+            logger.warning(log_msg)
+        else:
+            logger.info(log_msg)
+        
+        # Notify listeners (async-aware)
+        await self._notify_listeners_async(signal)
+        
+        return signal
+    
+    def emit_sync(
+        self,
+        signal_type: SignalType,
+        message: str = "",
+        source: str = "",
+        payload: Optional[Dict[str, Any]] = None,
+        severity: str = "info"
+    ) -> Signal:
+        """
+        Emit a signal to the bus (sync version for backward compatibility).
+        
+        WARNING: This method does not use async lock protection.
+        Use `await emit()` in async contexts for full safety.
         
         Args:
             signal_type: Type of signal to emit
@@ -174,13 +233,25 @@ class SignalBus:
         else:
             logger.info(log_msg)
         
-        # Notify listeners
-        self._notify_listeners(signal)
+        # Notify listeners (sync only)
+        self._notify_listeners_sync(signal)
         
         return signal
     
-    def _notify_listeners(self, signal: Signal) -> None:
-        """Notify all registered listeners for this signal type."""
+    async def _notify_listeners_async(self, signal: Signal) -> None:
+        """Notify all registered listeners for this signal type (async-aware)."""
+        listeners = self.listeners.get(signal.signal_type, [])
+        for listener in listeners:
+            try:
+                if asyncio.iscoroutinefunction(listener):
+                    asyncio.create_task(listener(signal))
+                else:
+                    listener(signal)
+            except Exception as e:
+                logger.error(f"Signal listener error: {e}")
+    
+    def _notify_listeners_sync(self, signal: Signal) -> None:
+        """Notify all registered listeners for this signal type (sync only)."""
         listeners = self.listeners.get(signal.signal_type, [])
         for listener in listeners:
             try:
@@ -204,23 +275,38 @@ class SignalBus:
         """Get the active signal of a specific type."""
         return self.active_signals.get(signal_type)
     
-    def discard(self, signal_type: SignalType) -> None:
-        """Remove a signal from active signals."""
-        self.signals.discard(signal_type)
-        self.active_signals.pop(signal_type, None)
-        logger.debug(f"Signal discarded: {signal_type.value}")
+    async def discard(self, signal_type: SignalType) -> None:
+        """Remove a signal from active signals (async, lock-protected)."""
+        async with self._lock:
+            self.signals.discard(signal_type)
+            self.active_signals.pop(signal_type, None)
+            logger.debug(f"Signal discarded: {signal_type.value}")
     
-    def clear(self) -> None:
-        """Clear all active signals (typically at start of new cycle)."""
+    async def clear(self) -> None:
+        """Clear all active signals (async, lock-protected)."""
+        async with self._lock:
+            self.signals.clear()
+            self.active_signals.clear()
+            logger.debug("All signals cleared")
+    
+    def clear_sync(self) -> None:
+        """Clear all active signals (sync version for backward compatibility)."""
         self.signals.clear()
         self.active_signals.clear()
-        logger.debug("All signals cleared")
+        logger.debug("All signals cleared (sync)")
     
-    def clear_cycle(self) -> None:
-        """Clear signals and increment cycle counter."""
-        self.clear()
-        self.current_cycle += 1
+    async def clear_cycle(self) -> None:
+        """Clear signals and increment cycle counter (async, lock-protected)."""
+        await self.clear()
+        async with self._lock:
+            self.current_cycle += 1
         logger.info(f"Cycle {self.current_cycle} started - signals cleared")
+    
+    def clear_cycle_sync(self) -> None:
+        """Clear signals and increment cycle counter (sync version)."""
+        self.clear_sync()
+        self.current_cycle += 1
+        logger.info(f"Cycle {self.current_cycle} started - signals cleared (sync)")
     
     def register_listener(
         self,
@@ -232,7 +318,7 @@ class SignalBus:
         
         Args:
             signal_type: Signal type to listen for
-            callback: Function to call when signal is emitted
+            callback: Function to call when signal is emitted (can be sync or async)
         """
         if signal_type not in self.listeners:
             self.listeners[signal_type] = []
@@ -251,64 +337,64 @@ class SignalBus:
             except ValueError:
                 pass
     
-    # Convenience methods matching Canon Validator API
-    def signal_critical_failure(self, message: str, source: str = "") -> Signal:
-        """Emit a critical failure signal."""
-        return self.emit(
+    # Convenience methods matching Canon Validator API (async)
+    async def signal_critical_failure(self, message: str, source: str = "") -> Signal:
+        """Emit a critical failure signal (async)."""
+        return await self.emit(
             SignalType.CRITICAL_FAIL,
             message,
             source,
             severity="critical"
         )
     
-    def signal_test_failure(self, message: str = "", source: str = "TestPilot") -> Signal:
-        """Emit a test failure signal."""
-        return self.emit(
+    async def signal_test_failure(self, message: str = "", source: str = "TestPilot") -> Signal:
+        """Emit a test failure signal (async)."""
+        return await self.emit(
             SignalType.TEST_FAILURE,
             message,
             source,
             severity="error"
         )
     
-    def signal_high_risk(self, message: str, source: str = "") -> Signal:
-        """Emit a high risk signal (may trigger human intervention)."""
-        return self.emit(
+    async def signal_high_risk(self, message: str, source: str = "") -> Signal:
+        """Emit a high risk signal (async, may trigger human intervention)."""
+        return await self.emit(
             SignalType.HIGH_RISK,
             message,
             source,
             severity="warning"
         )
     
-    def signal_convergence(self, source: str = "") -> Signal:
-        """Emit convergence signal."""
-        return self.emit(
+    async def signal_convergence(self, source: str = "") -> Signal:
+        """Emit convergence signal (async)."""
+        return await self.emit(
             SignalType.CONVERGED,
             "System converged successfully",
             source,
             severity="info"
         )
     
-    def signal_needs_human_review(self, message: str, source: str = "") -> Signal:
-        """Emit signal requesting human review."""
-        return self.emit(
+    async def signal_needs_human_review(self, message: str, source: str = "") -> Signal:
+        """Emit signal requesting human review (async)."""
+        return await self.emit(
             SignalType.NEEDS_HUMAN_REVIEW,
             message,
             source,
             severity="warning"
         )
     
-    def signal_rollback_required(self, message: str, source: str = "") -> Signal:
-        """Emit rollback required signal."""
-        return self.emit(
+    async def signal_rollback_required(self, message: str, source: str = "") -> Signal:
+        """Emit rollback required signal (async)."""
+        return await self.emit(
             SignalType.ROLLBACK_REQUIRED,
             message,
             source,
             severity="error"
         )
     
-    def signal_llm_failure(self, error: str, source: str = "") -> Signal:
-        """Emit LLM failure signal."""
-        return self.emit(
+    async def signal_llm_failure(self, error: str, source: str = "") -> Signal:
+        """Emit LLM failure signal (async)."""
+        return await self.emit(
             SignalType.LLM_FAILURE,
             error,
             source,
