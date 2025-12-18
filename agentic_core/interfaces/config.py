@@ -12,7 +12,10 @@ class OrchestratorConfig:
     """Configuration for the orchestrator (Nervous System).
     
     Attributes:
+        mission_id: Unique identifier for the mission
         max_iterations: Maximum Think-Act-Observe iterations
+        max_phases: Maximum number of phases to execute
+        enable_tri_brain: Whether to enable tri-brain routing
         enable_reflection: Whether to run reflection phase
         enable_state_persistence: Whether to persist state between runs
         timeout_seconds: Overall execution timeout
@@ -21,7 +24,10 @@ class OrchestratorConfig:
         parallel_actions: Whether to execute actions in parallel
         metadata: Additional configuration metadata
     """
+    mission_id: str = "default-mission"
     max_iterations: int = 10
+    max_phases: Optional[int] = None
+    enable_tri_brain: bool = False
     enable_reflection: bool = True
     enable_state_persistence: bool = True
     timeout_seconds: Optional[float] = None
@@ -33,7 +39,10 @@ class OrchestratorConfig:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
+            "mission_id": self.mission_id,
             "max_iterations": self.max_iterations,
+            "max_phases": self.max_phases,
+            "enable_tri_brain": self.enable_tri_brain,
             "enable_reflection": self.enable_reflection,
             "enable_state_persistence": self.enable_state_persistence,
             "timeout_seconds": self.timeout_seconds,

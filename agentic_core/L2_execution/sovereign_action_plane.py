@@ -142,10 +142,15 @@ class SovereignSandbox:
 class SovereignActionPlane(IActionPlane):
     """Sovereign action plane with Toolsmith and Sandbox."""
     
-    def __init__(self):
-        """Initialize the sovereign action plane."""
+    def __init__(self, safety_layer=None):
+        """Initialize the sovereign action plane.
+        
+        Args:
+            safety_layer: L5 safety layer for validation
+        """
         self._toolsmith = SovereignToolsmith()
         self._sandbox = SovereignSandbox()
+        self._safety_layer = safety_layer
     
     def get_capabilities(self) -> List[Any]:
         """Get available action capabilities."""
@@ -156,8 +161,19 @@ class SovereignActionPlane(IActionPlane):
         return ["python", "shell", "diagnostic_tool"]
     
     async def execute(self, request: ActionRequest) -> ActionResult:
-        """Execute an action request."""
+        """Execute an action request with L5 safety validation."""
         start_time = time.time()
+        
+        # L5 Safety Validation
+        if self._safety_layer:
+            is_safe = await self._safety_layer.validate_action(request)
+            if not is_safe:
+                return ActionResult(
+                    success=False,
+                    output="",
+                    error="Action blocked by L5 safety layer",
+                    execution_time=time.time() - start_time
+                )
         
         try:
             if request.action_type == "tool_execution":
@@ -285,6 +301,13 @@ class SovereignActionPlane(IActionPlane):
         await self._sandbox.stop()
 
 
-def create_sovereign_action_plane() -> IActionPlane:
-    """Factory for sovereign action plane."""
-    return SovereignActionPlane()
+def create_sovereign_action_plane(safety_layer=None) -> IActionPlane:
+    """Factory function to create sovereign action plane.
+    
+    Args:
+        safety_layer: L5 safety layer for validation
+        
+    Returns:
+        SovereignActionPlane instance
+    """
+    return SovereignActionPlane(safety_layer=safety_layer)

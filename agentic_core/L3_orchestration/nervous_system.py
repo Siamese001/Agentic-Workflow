@@ -19,8 +19,11 @@ from agentic_core.interfaces import (
     PlanningRequest,
     ActionRequest,
 )
-from agentic_core.L1_cognition.sovereign_cognitive_plane import create_sovereign_cognitive_plane
-from agentic_core.L2_execution.sovereign_action_plane import create_sovereign_action_plane
+from agentic_core.L1_cognition.sovereign_cognitive_plane import SovereignCognitivePlane, create_sovereign_cognitive_plane
+from agentic_core.L2_execution.sovereign_action_plane import SovereignActionPlane, create_sovereign_action_plane
+from agentic_core.L5_safety.safety_layer import create_l5_safety_layer, L5SafetyLayer
+from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
+from agentic_core.L4_state.storage import create_storage_adapter, SignalLedger
 
 LOGGER = logging.getLogger(__name__)
 
@@ -53,9 +56,18 @@ class NervousSystem:
             action_plane: The hands (tool execution)
             config: Orchestrator configuration
         """
+        # Initialize L5 Safety Layer first
+        self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.00)
+        
+        # Initialize L4 State Persistence
+        storage_adapter = create_storage_adapter("local", base_path="./agentic_core/checkpoints")
+        self.checkpoint_manager = VerifiableCheckpointManager(storage_adapter)
+        self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
+        self.signal_ledger = SignalLedger(storage_adapter, self.session_id)
+        
         # Create sovereign implementations if not provided
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
-        self.hands = action_plane or create_sovereign_action_plane()
+        self.hands = action_plane or create_sovereign_action_plane(safety_layer=self.safety_layer)
         self.config = config or OrchestratorConfig()
 
         self._state: Dict[str, Any] = {}
@@ -72,8 +84,8 @@ class NervousSystem:
         LOGGER.info(
             "nervous_system_initialized",
             extra={
-                "cognitive_capabilities": [c.value for c in self.brain.get_capabilities()],
-                "action_capabilities": [c.value for c in self.hands.get_capabilities()],
+                "cognitive_capabilities": [c.value if hasattr(c, 'value') else c for c in self.brain.get_capabilities()],
+                "action_capabilities": [c.value if hasattr(c, 'value') else c for c in self.hands.get_capabilities()],
                 "config": self.config.to_dict(),
                 "phases_populated": len([p for p in self.phases.values() if p])
             }
@@ -127,6 +139,44 @@ class NervousSystem:
         
         return phases
 
+    async def run_mission(self, max_phases: Optional[int] = None) -> ExecutionResult:
+        """Run the full mission with phase-based execution.
+        
+        Args:
+            max_phases: Maximum number of phases to execute (None for all)
+            
+        Returns:
+            ExecutionResult with mission status and report
+        """
+        # Check for existing checkpoint to resume from
+        last_checkpoint = await self._find_last_checkpoint()
+        if last_checkpoint:
+            LOGGER.info(f"Resuming mission from checkpoint: {last_checkpoint['phase']}")
+            await self._restore_from_checkpoint(last_checkpoint)
+        
+        # Create execution context for the mission
+        context = ExecutionContext(
+            mission="Execute 10-phase mission validation",
+            scene={
+                "phases": list(self.phases.keys()),
+                "max_phases": max_phases,
+                "iteration": self._iteration
+            },
+            state=self._state.copy()
+        )
+        
+        # If max_phases is specified, limit the phases
+        if max_phases:
+            phase_names = list(self.phases.keys())
+            limited_phases = {}
+            for i, phase_name in enumerate(phase_names[:max_phases]):
+                limited_phases[phase_name] = self.phases[phase_name]
+            self.phases = limited_phases
+            LOGGER.info(f"Limiting execution to first {max_phases} phases")
+        
+        # Execute the mission
+        return await self.execute(context)
+    
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
         """Execute mission through phase-based execution.
 
@@ -173,7 +223,14 @@ class NervousSystem:
             
             # Generate mission report and calculate success rate
             self._generate_mission_report()
-            return self._create_execution_result(context, execution_trace, errors, start_time)
+            
+            # Create execution result
+            result = self._create_execution_result(context, execution_trace, errors, start_time)
+            
+            # Log result to signal ledger
+            await self.signal_ledger.append_result(result)
+            
+            return result
         except Exception as e:
             return self._handle_execution_error(context, execution_trace, start_time, e)
 
@@ -184,48 +241,151 @@ class NervousSystem:
         if not await self._run_sequential("integrity_seq", context, execution_trace):
             if "CRITICAL_FAIL" in self._signals:
                 return False
+        # Save checkpoint after phase 1
+        await self._save_phase_checkpoint("integrity_seq", context)
         
         # Phase 2: Curation (Sequential)
         LOGGER.info("Phase 2: CURATION (Sequential)")
         await self._run_sequential("curation_seq", context, execution_trace)
+        await self._save_phase_checkpoint("curation_seq", context)
         
         # Phase 3: Testing (Sequential)
         LOGGER.info("Phase 3: TESTING (Sequential)")
         await self._run_sequential("test_seq", context, execution_trace)
+        await self._save_phase_checkpoint("test_seq", context)
         
         # Phase 4: Memory (Parallel)
         LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Parallel)")
         await self._run_parallel("memory_parallel", context, execution_trace)
+        await self._save_phase_checkpoint("memory_parallel", context)
         
         # Phase 5: RESILIENCE (Parallel)
         LOGGER.info("Phase 5: RESILIENCE HARDENING (Parallel)")
         await self._run_parallel("resilience_parallel", context, execution_trace)
+        await self._save_phase_checkpoint("resilience_parallel", context)
         
-        # Phase 6: RESOURCE SAFETY (Parallel)
+        # Phase 6: Resource Safety (Parallel)
         LOGGER.info("Phase 6: RESOURCE SAFETY (Parallel)")
         await self._run_parallel("resource_safety_parallel", context, execution_trace)
+        await self._save_phase_checkpoint("resource_safety_parallel", context)
         
         # Phase 7: ENGINEERING (Parallel)
         LOGGER.info("Phase 7: ENGINEERING (Parallel)")
         await self._run_parallel("engineering_parallel", context, execution_trace)
+        await self._save_phase_checkpoint("engineering_parallel", context)
         
         # Phase 8: Refinement (Parallel)
         LOGGER.info("Phase 8: REFINEMENT (Parallel)")
         await self._run_parallel("refinement_parallel", context, execution_trace)
+        await self._save_phase_checkpoint("refinement_parallel", context)
         
         # Phase 9: Benchmarking (Sequential)
         LOGGER.info("Phase 9: BENCHMARKING (Sequential)")
         await self._run_sequential("benchmarking_seq", context, execution_trace)
+        await self._save_phase_checkpoint("benchmarking_seq", context)
         
         # Phase 10: Optimization (Conditional - Sequential)
         LOGGER.info("Phase 10: OPTIMIZATION (Conditional)")
         if self._is_converged():
             await self._run_sequential("optimization_conditional", context, execution_trace)
+            await self._save_phase_checkpoint("optimization_conditional", context)
         else:
             LOGGER.info("Skipping optimization - not fully converged")
         
         # Return convergence status
         return self._is_converged()
+    
+    async def _save_phase_checkpoint(self, phase_name: str, context: ExecutionContext) -> None:
+        """Save checkpoint after phase completion.
+        
+        Args:
+            phase_name: Name of the completed phase
+            context: Current execution context
+        """
+        import time
+        from datetime import datetime
+        
+        # Prepare checkpoint state
+        checkpoint_state = {
+            "phase": phase_name,
+            "timestamp": datetime.utcnow().isoformat(),
+            "session_id": self.session_id,
+            "iteration": self._iteration,
+            "state": self._state.copy(),
+            "results": self._results.copy(),
+            "signals": list(self._signals),
+            "modified_files": list(self._modified_files),
+            "mission": context.mission,
+            "scene": context.scene
+        }
+        
+        # Save checkpoint
+        try:
+            await self.checkpoint_manager.save_checkpoint(
+                session_id=self.session_id,
+                node_id=phase_name,
+                state=checkpoint_state
+            )
+            LOGGER.info(f"Checkpoint saved for phase: {phase_name}")
+        except Exception as e:
+            LOGGER.error(f"Failed to save checkpoint for phase {phase_name}: {e}")
+    
+    async def _find_last_checkpoint(self) -> Optional[Dict[str, Any]]:
+        """Find the most recent checkpoint for this mission.
+        
+        Returns:
+            Dictionary with checkpoint state or None if not found
+        """
+        # List all checkpoints for this session
+        try:
+            # Get list of phase names in order
+            phase_order = [
+                "integrity_seq",
+                "curation_seq", 
+                "test_seq",
+                "memory_parallel",
+                "resilience_parallel",
+                "resource_safety_parallel",
+                "engineering_parallel",
+                "refinement_parallel",
+                "benchmarking_seq",
+                "optimization_conditional"
+            ]
+            
+            # Check phases in reverse order to find last checkpoint
+            for phase_name in reversed(phase_order):
+                if await self.checkpoint_manager.checkpoint_exists(self.session_id, phase_name):
+                    checkpoint = await self.checkpoint_manager.load_checkpoint(
+                        self.session_id, 
+                        phase_name,
+                        verify=True
+                    )
+                    if checkpoint:
+                        return checkpoint
+            
+            return None
+        except Exception as e:
+            LOGGER.error(f"Error finding checkpoint: {e}")
+            return None
+    
+    async def _restore_from_checkpoint(self, checkpoint: Dict[str, Any]) -> None:
+        """Restore system state from checkpoint.
+        
+        Args:
+            checkpoint: Checkpoint state dictionary
+        """
+        try:
+            # Restore state
+            self._state = checkpoint.get("state", {})
+            self._iteration = checkpoint.get("iteration", 0)
+            self._results = checkpoint.get("results", {})
+            self._signals = set(checkpoint.get("signals", []))
+            self._modified_files = set(checkpoint.get("modified_files", []))
+            
+            LOGGER.info(f"Restored from checkpoint phase: {checkpoint.get('phase')}")
+            LOGGER.info(f"Restored state: {len(self._state)} keys, {len(self._results)} results")
+        except Exception as e:
+            LOGGER.error(f"Error restoring from checkpoint: {e}")
     
     async def _run_sequential(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]) -> bool:
         """Execute a phase sequentially (from SwarmScheduler)."""
