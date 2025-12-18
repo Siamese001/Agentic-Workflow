@@ -14,7 +14,6 @@ This orchestrator achieves parity with canon_validator_agentic.py autonomy level
 """
 
 import logging
-from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 

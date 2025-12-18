@@ -3,7 +3,6 @@ GitAgent - Remote GitOps Manager.
 Manages checkpoints and pushes healing branches.
 """
 
-import asyncio
 import os
 import subprocess
 import time
@@ -11,7 +10,7 @@ from datetime import datetime
 from typing import Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

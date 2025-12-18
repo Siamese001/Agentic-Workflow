@@ -4,7 +4,6 @@ All validation agents inherit from SubAtomicAgent.
 """
 
 import ast
-import asyncio
 import os
 import time
 from typing import TYPE_CHECKING, Dict, List, Any

@@ -9,7 +9,7 @@ import sys
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 
@@ -34,7 +34,6 @@ class TestPilot(SubAtomicAgent):
 
         # Check if pytest is available
         try:
-            import pytest
             has_pytest = True
         except ImportError:
             has_pytest = False

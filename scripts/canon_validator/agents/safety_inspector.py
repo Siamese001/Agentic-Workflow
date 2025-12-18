@@ -5,11 +5,10 @@ KEYS: 2 (Print Statements), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (
 
 import ast
 import asyncio
-import re
 from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

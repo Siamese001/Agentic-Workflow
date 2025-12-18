@@ -7,7 +7,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

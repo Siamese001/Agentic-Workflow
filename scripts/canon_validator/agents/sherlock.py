@@ -4,11 +4,10 @@ Investigates test failures and proposes targeted fixes.
 """
 
 import asyncio
-import os
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 
