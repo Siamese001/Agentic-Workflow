@@ -310,7 +310,7 @@ class L5OutreachOrchestrator:
             
             # Clear signals
             if self.signal_bus:
-                self.signal_bus.clear_cycle()
+                await self.signal_bus.clear_cycle()
             
             # Take snapshot
             self._take_snapshot(recipient_context)
@@ -400,7 +400,7 @@ class L5OutreachOrchestrator:
                 
                 if phase.is_hard_gate and not phase_result.get("success", True):
                     if self.signal_bus:
-                        self.signal_bus.signal_critical_failure(
+                        await self.signal_bus.signal_critical_failure(
                             f"Hard gate {phase.name} failed",
                             source="L5OutreachOrchestrator"
                         )
@@ -601,7 +601,7 @@ class L5OutreachOrchestrator:
         )
         
         if not approved:
-            self.signal_bus.emit(SignalType.VETOED, "Human vetoed", source="Intervention")
+            await self.signal_bus.emit(SignalType.VETOED, "Human vetoed", source="Intervention")
         
         return True
     
