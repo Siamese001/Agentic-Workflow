@@ -9,23 +9,13 @@ Tests the integration of self-healing components:
 """
 
 import pytest
-import asyncio
 from ..context import ResumeEngineContext
 from ..healing import (
     HealingStrategy,
     SignalRouter,
-    AgentFactory,
     HealingCycle,
     HealingOrchestrator,
     ConvergenceDetector,
-    AutomaticRollback,
-    run_self_healing_mission,
-)
-from ..agents import (
-    ContentQualityAgent,
-    FactCheckAgent,
-    BrandComplianceAgent,
-    TestPilot,
 )
 
 
@@ -122,7 +112,7 @@ class TestHealingOrchestratorIntegration:
         ctx.current_resume = valid_resume
         
         orchestrator = HealingOrchestrator(ctx, max_cycles=2, enable_reflection=True)
-        result = await orchestrator.run()
+        await orchestrator.run()
         
         # Reflection should have recorded insights
         assert "reflection" in ctx.results or "ReflectionAgent" in ctx.results
@@ -258,7 +248,7 @@ class TestConvergenceIntegration:
         detector = ConvergenceDetector(ctx)
         
         orchestrator = HealingOrchestrator(ctx, max_cycles=3)
-        result = await orchestrator.run()
+        await orchestrator.run()
         
         # After successful run, should be converged
         assert detector.is_converged() is True

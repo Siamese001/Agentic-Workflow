@@ -10,9 +10,6 @@ Tests the core learning functionality:
 """
 
 import pytest
-import asyncio
-import tempfile
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..learning import (
     ConfidenceLevel,

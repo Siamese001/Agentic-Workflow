@@ -18,8 +18,6 @@ from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.proactive import (
     OutreachTaskPriority,
     OutreachHandoffReason,
-    OutreachProactiveTask,
-    OutreachHandoffRequest,
     OutreachCapabilityProfile,
     OutreachProactiveScheduler,
     OutreachPredictiveHandoff,

@@ -141,7 +141,7 @@ async def test_phase3_swarm():
     # Parallel
     print(f"\n⚡ Parallel ({num_hops} HOPs, max 5 concurrent)...")
     start = time.time()
-    results = await swarm.execute_swarm(hops, inputs)
+    await swarm.execute_swarm(hops, inputs)
     par_time = time.time() - start
     print(f"   Time: {par_time:.2f}s")
     print(f"   Success rate: {swarm.get_success_rate():.1f}%")
@@ -167,7 +167,7 @@ def test_phase4_swarm():
     # Parallel
     print(f"\n⚡ Parallel ({num_jobs} jobs, 6 workers)...")
     start = time.time()
-    results = swarm.generate_batch(jobs)
+    swarm.generate_batch(jobs)
     par_time = time.time() - start
     
     print(f"   Time: {par_time:.2f}s")

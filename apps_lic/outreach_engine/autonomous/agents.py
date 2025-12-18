@@ -14,10 +14,8 @@ Provides domain-specific agents for outreach campaigns:
 """
 
 import re
-from typing import Any, Dict, List, Optional
 
 from .base_agent import OutreachAgent
-from .context import OutreachEngineContext
 
 
 class LeadQualityAgent(OutreachAgent):

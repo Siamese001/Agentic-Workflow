@@ -11,7 +11,6 @@ Tests the core observability functionality:
 """
 
 import pytest
-import asyncio
 import json
 import time
 from pathlib import Path
@@ -24,7 +23,6 @@ from ..observability import (
     ExecutionTrace,
     Metric,
     ValidationIssue,
-    AuditReport,
     ExecutionTracer,
     MetricsCollector,
     ValidationAgent,

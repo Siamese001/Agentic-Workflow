@@ -21,6 +21,12 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 
+# Fix Windows console encoding FIRST (before any print with unicode)
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
     import redis.asyncio as redis
@@ -38,7 +44,7 @@ try:
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
-    print("   ⚠️ Watchdog not found. Install 'watchdog' for L5 Autonomous Mode.")
+    print("   [WARN] Watchdog not found. Install 'watchdog' for L5 Autonomous Mode.")
 
 # AutoGen: Collective Intelligence (Optional)
 try:
@@ -46,7 +52,7 @@ try:
     AUTOGEN_AVAILABLE = True
 except ImportError:
     AUTOGEN_AVAILABLE = False
-    print("   ⚠️ AutoGen not found. Install 'pyautogen' for conversational repair.")
+    print("   [WARN] AutoGen not found. Install 'pyautogen' for conversational repair.")
 
 load_dotenv()  # Auto-load .env
 
@@ -105,12 +111,6 @@ ALLOWED_ROOT_FILES = {
 # ==============================================================================
 # RATE LIMITING & RELIABILITY
 # ==============================================================================
-
-# Fix Windows console encoding
-if sys.platform == "win32":
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # ==============================================================================
 # CONFIGURATION: EXCLUSION ZONES (Strict Subatomic)
@@ -732,7 +732,8 @@ class ValidationContext:
         Level 6 Mutation: Supports Diffs, Confidence Scoring, AST Validation, Self-Improvement, and Pre-Flight Cleaning.
         If diff_mode is True, returns the FULL PATCHED CONTENT (internally applied).
         """
-        import ast, json, asyncio
+        import ast
+        import asyncio
         current_code = code or ""
         
         # LEVEL 6: PRE-FLIGHT CLEANING - Run deterministic formatters before LLM
@@ -1560,7 +1561,7 @@ class SafetyInspector(SubAtomicAgent):
         self.ctx.report(self.name, 6, passed, details)
         
         # Additional: Async blocking issues with injection
-        passed, details = self.check_async_blocking_issues()
+        passed, details = await self.check_async_blocking_issues()
         if not passed:
             print(f"   [{self.name}] Async Issues Found: {len(details)} violations")
 
@@ -1754,7 +1755,7 @@ class SafetyInspector(SubAtomicAgent):
 
         return raw_code.strip()
 
-    def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
+    async def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
         """Check for blocking calls in async functions and patch them with intelligence."""
         violations = []
         blocking_patterns = ['time.sleep', 'requests.get', 'requests.post', 'urllib.request']
@@ -3472,69 +3473,56 @@ class SwarmScheduler:
     def __init__(self):
         self.ctx = ValidationContext()
         
-        # NAMED PHASES
+        # NAMED PHASES - Using only defined agents
         self.phases = {
             # 1. INTEGRITY (Sequential, Safe)
             "integrity_seq": [
-                Historian(self.ctx),        # Skip unchanged
-                VoidEnforcer(self.ctx),      # Law 3 (Root)
-                SystemArchitect(self.ctx),   # Law 1/2 Baseline
-                DepthEnforcer(self.ctx),     # Law 1 (Depth) + Patching
-                AtomicityEnforcer(self.ctx), # Law 2 (Size) + Patching
-                TaxonomyEnforcer(self.ctx)   # Law 4 (Meaning) + Patching
+                Historian(self.ctx),           # Skip unchanged
+                ArchitectureGovernor(self.ctx), # Depth/Atomicity/Complexity
+                DependencySentinel(self.ctx),  # Import management
             ],
             # 2. CURATION (Sequential)
             "curation_seq": [
-                TheCurator(self.ctx),       # File organization
-                # DependencySentinel(self.ctx),  # TODO: Implement
-                # CodeJanitor(self.ctx)       # TODO: Implement
+                HygieneGuardian(self.ctx),     # File hygiene
+                CodeStyleGuardian(self.ctx),   # Style enforcement
             ],
             # 3. TESTING (Sequential)
             "test_seq": [
-                TestPilot(self.ctx)         # Regression testing
+                TestPilot(self.ctx)            # Regression testing
             ],
             # 4. MEMORY (Parallel)
             "memory_parallel": [
-                TheCartographer(self.ctx),  # Vector embeddings
-                TheOmniContext(self.ctx)    # Global context
+                TheCartographer(self.ctx),     # Vector embeddings
+                TheOmniContext(self.ctx)       # Global context
             ],
             # 5. RESILIENCE (Parallel)
             "resilience_parallel": [
-                SafetyInspector(self.ctx),  # Banned patterns
-                SecurityEnforcer(self.ctx),  # Intelligent remediation
+                SafetyInspector(self.ctx),     # Security patterns
+                SecurityEnforcer(self.ctx),    # Intelligent remediation
                 PerformanceEnforcer(self.ctx), # Logic and Efficiency
             ],
             # 6. RESOURCE SAFETY (Parallel)
             "resource_safety_parallel": [
-                MemoryLeakDetector(self.ctx),  # Resource Sustainability
-                DeadlockDetector(self.ctx),        # UPGRADED: Cycle-aware analysis
-                AsyncSafetyEnforcer(self.ctx),  # Async Correctness
-                RaceConditionDetector(self.ctx), # Data Race Prevention
-                LivelockPreventionAgent(self.ctx), # Progress Guarantee
-                StarvationPreventionAgent(self.ctx) # NEW: Fairness & Progress
+                ConcurrencyGuardian(self.ctx), # Concurrency safety (covers races, deadlocks, etc.)
             ],
             # 7. ENGINEERING (Parallel)
             "engineering_parallel": [
-                # BudgetAgent(self.ctx),     # TODO: Implement
-                TypeMechanic(self.ctx),     # Type checking
-                # StructuralEngineer(self.ctx) # TODO: Implement
+                StructuralEngineer(self.ctx),  # Heavy refactoring
+                PatternEnforcer(self.ctx),     # Pattern checks
             ],
             # 8. REFINEMENT (Parallel)
             "refinement_parallel": [
-                # SemanticMapper(self.ctx),  # TODO: Implement
-                NamingEnforcer(self.ctx),   # Semantic naming
-                DocEnforcer(self.ctx),      # Documentation
-                TypeEnforcer(self.ctx),     # Type contracts
-                # RedSentinel(self.ctx),     # TODO: Implement
-                # TruthKeeper(self.ctx)      # TODO: Implement
+                NamingEnforcer(self.ctx),      # Semantic naming
+                DocEnforcer(self.ctx),         # Documentation
+                TypeEnforcer(self.ctx),        # Type contracts
             ],
             # 9. BENCHMARKING (Sequential)
             "benchmarking_seq": [
-                BenchmarkingAgent(self.ctx) # Empirical Validation
+                BenchmarkingAgent(self.ctx)    # Empirical Validation
             ],
             # 10. OPTIMIZATION (Conditional - Sequential)
             "optimization_conditional": [
-                TheStrategist(self.ctx)     # Architectural evolution
+                TheStrategist(self.ctx)        # Architectural evolution
             ]
         }
 
@@ -7019,7 +7007,7 @@ The Watchman (L5 Daemon Mode):
                     agenda.append(StrategicPlanner(ctx))
                     
                     # 2. Map Signals to Agents
-                    signals_str = str(ctx.signals)
+                    str(ctx.signals)
                     
                     if "TEST_FAILURE" in ctx.signals:
                         # Logic: If tests fail, we need Root Cause Analysis (Sherlock) + Verification (TestPilot)

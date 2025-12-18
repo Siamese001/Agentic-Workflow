@@ -10,9 +10,6 @@ Tests the core GitOps functionality:
 """
 
 import pytest
-import asyncio
-import tempfile
-import os
 from pathlib import Path
 from ..context import ResumeEngineContext
 from ..gitops import (

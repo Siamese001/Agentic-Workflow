@@ -11,18 +11,14 @@ Tests the core intelligence functionality:
 """
 
 import pytest
-import asyncio
-import json
 from ..context import ResumeEngineContext
 from ..intelligence import (
     SecurityLevel,
     AnalysisType,
     RefactorType,
-    PhaseType,
     SecurityIssue,
     SemanticMatch,
     RefactorProposal,
-    PhaseResult,
     SecurityHardener,
     SemanticAnalyzer,
     StrategicAdvisor,

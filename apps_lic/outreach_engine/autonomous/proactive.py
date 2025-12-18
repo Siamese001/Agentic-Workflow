@@ -7,11 +7,10 @@ Provides:
 - OutreachCapabilityMonitor: Tracks agent capabilities and limits
 """
 
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 from .context import OutreachEngineContext
 from .base_agent import OutreachAgent
@@ -404,7 +403,7 @@ class OutreachCapabilityMonitor:
     
     def get_capability_profile(self, agent_name: str) -> OutreachCapabilityProfile:
         """Generate a capability profile for an agent."""
-        stats = self._agent_stats.get(agent_name, {})
+        self._agent_stats.get(agent_name, {})
         
         return OutreachCapabilityProfile(
             agent_name=agent_name,

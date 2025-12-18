@@ -9,7 +9,6 @@ Tests agent coordination and signal-based routing:
 """
 
 import pytest
-import asyncio
 from ..context import ResumeEngineContext
 from ..agents import (
     ContentQualityAgent,

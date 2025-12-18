@@ -6,10 +6,9 @@ including signals, results, backups, budget tracking, and learning data.
 """
 
 import os
-import math
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 
 from dotenv import load_dotenv
 

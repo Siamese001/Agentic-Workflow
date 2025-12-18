@@ -12,14 +12,12 @@ This module provides advanced intelligence capabilities:
 import asyncio
 import hashlib
 import json
-import os
 import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from .context import ResumeEngineContext
 

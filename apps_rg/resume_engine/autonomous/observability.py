@@ -9,17 +9,15 @@ This module provides advanced observability capabilities:
 - ValidationAgent: Pattern enforcement and code quality checks
 """
 
-import asyncio
 import hashlib
 import json
-import os
 import re
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 from .context import ResumeEngineContext
 

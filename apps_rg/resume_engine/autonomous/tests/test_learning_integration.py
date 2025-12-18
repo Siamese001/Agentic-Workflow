@@ -9,9 +9,6 @@ Tests the integration of learning components:
 """
 
 import pytest
-import asyncio
-import tempfile
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..learning import (
     LearningLoop,
@@ -19,7 +16,6 @@ from ..learning import (
     InstructionInjector,
     MemoryPersistence,
     ResumeLearningAgent,
-    ConfidenceResult,
     ConfidenceLevel,
 )
 from ..healing import (
@@ -27,7 +23,7 @@ from ..healing import (
     HealingCycle,
     HealingStrategy,
 )
-from ..agents import ContentQualityAgent, TestPilot
+from ..agents import ContentQualityAgent
 
 
 @pytest.fixture

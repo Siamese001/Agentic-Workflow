@@ -14,7 +14,6 @@ Tests each specialized agent's functionality:
 """
 
 import pytest
-import asyncio
 from ..context import ResumeEngineContext
 from ..agents import (
     ContentQualityAgent,

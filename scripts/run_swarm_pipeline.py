@@ -20,10 +20,10 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from scripts.runtime.shared.batch_embeddings import BatchEmbeddingService, create_batch_embedding_service
-from scripts.runtime.shared.memory_vector_store import InMemoryVectorCache, create_memory_vector_cache
-from scripts.runtime.core.subatomic_swarm import SubatomicSwarm, create_subatomic_swarm
-from scripts.runtime.shared.resume_swarm import ResumeSwarm, create_resume_swarm
+from scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
+from scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
+from scripts.runtime.core.subatomic_swarm import create_subatomic_swarm
+from scripts.runtime.shared.resume_swarm import create_resume_swarm
 
 # Configure logging
 logging.basicConfig(
@@ -264,7 +264,7 @@ async def demo_full_pipeline():
     step3_start = time.time()
     hops = [MockSubatomicHop(f"content_hop_{i}") for i in range(num_jobs)]
     inputs = [{"data": desc} for desc in job_descriptions]
-    content_results = await llm_swarm.execute_swarm(hops, inputs)
+    await llm_swarm.execute_swarm(hops, inputs)
     step3_time = time.time() - step3_start
     print(f"   ✓ Completed in {step3_time:.2f}s")
     print(f"   ✓ Success rate: {llm_swarm.get_success_rate():.1f}%")
@@ -276,7 +276,7 @@ async def demo_full_pipeline():
         {"job_id": f"pdf_{i}", "content": "resume content"}
         for i in range(num_jobs)
     ]
-    pdf_results = cpu_swarm.generate_batch(pdf_jobs)
+    cpu_swarm.generate_batch(pdf_jobs)
     step4_time = time.time() - step4_start
     print(f"   ✓ Completed in {step4_time:.2f}s")
     print(f"   ✓ Success rate: {cpu_swarm.get_success_rate():.1f}%")

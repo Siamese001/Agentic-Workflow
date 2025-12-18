@@ -10,7 +10,6 @@ Tests the core autonomous functionality:
 """
 
 import pytest
-import asyncio
 import sys
 from pathlib import Path
 
@@ -18,41 +17,24 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext, OutreachBudgetManager
-from apps_lic.outreach_engine.autonomous.base_agent import OutreachAgent
 from apps_lic.outreach_engine.autonomous.agents import (
     LeadQualityAgent,
     ContactValidatorAgent,
     MessageComplianceAgent,
-    TemplateOptimizer,
-    CampaignBalanceAgent,
-    DeliverabilityAgent,
-    OutreachTestPilot,
-    CampaignPlanner,
-    OutreachReflectionAgent,
 )
 from apps_lic.outreach_engine.autonomous.healing import (
     OutreachHealingStrategy,
-    OutreachCycleResult,
     OutreachHealingResult,
     OutreachSignalRouter,
-    OutreachAgentFactory,
-    OutreachHealingCycle,
     OutreachHealingOrchestrator,
     run_outreach_healing_mission,
 )
 from apps_lic.outreach_engine.autonomous.learning import (
-    OutreachConfidenceLevel,
     OutreachLearningLoop,
     OutreachConfidenceScorer,
-    OutreachMemoryPersistence,
-    OutreachLearningAgent,
 )
 from apps_lic.outreach_engine.autonomous.observability import (
-    OutreachTraceLevel,
-    OutreachMetricType,
-    OutreachExecutionTracer,
     OutreachMetricsCollector,
-    OutreachAuditReporter,
     OutreachPhase5Orchestrator,
 )
 

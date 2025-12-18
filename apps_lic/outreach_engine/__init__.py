@@ -8,7 +8,6 @@ Provides outreach automation capabilities including:
 - Autonomous self-healing
 """
 
-from typing import Dict, List, Optional, Union
 
 __version__ = "1.0.0"
 __author__ = "Agentic Workflow"

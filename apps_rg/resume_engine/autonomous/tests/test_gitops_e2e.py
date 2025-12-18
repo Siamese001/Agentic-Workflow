@@ -9,15 +9,10 @@ Tests the complete GitOps workflow:
 """
 
 import pytest
-import asyncio
-import tempfile
 from pathlib import Path
 from ..context import ResumeEngineContext
 from ..gitops import (
-    MutationMode,
-    MutationResult,
     GitOpsManager,
-    ResilientMutator,
     ImportPatcher,
     ConversationalRepair,
     Phase4Orchestrator,
@@ -412,7 +407,7 @@ class TestComprehensiveWorkflow:
         
         # 7. Verify all components have state
         phase4_stats = phase4.get_comprehensive_stats()
-        learning_stats = learning_agent.get_comprehensive_stats()
+        learning_agent.get_comprehensive_stats()
         memory_stats = memory.get_stats()
         
         assert result.success is True

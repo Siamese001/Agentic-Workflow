@@ -10,10 +10,8 @@ Tests the integration of intelligence components:
 """
 
 import pytest
-import asyncio
 from ..context import ResumeEngineContext
 from ..intelligence import (
-    SecurityLevel,
     SecurityHardener,
     SemanticAnalyzer,
     StrategicAdvisor,
@@ -76,7 +74,7 @@ class TestSecurityWithResumeProcessing:
         hardener = SecurityHardener(ctx)
         
         # Scan resume
-        issues = hardener.scan_resume(valid_resume)
+        hardener.scan_resume(valid_resume)
         
         # Valid resume should have minimal issues
         high_issues = hardener.get_issues_by_severity("high")
@@ -141,7 +139,7 @@ class TestStrategicWithOptimization:
         advisor = StrategicAdvisor(ctx)
         
         # Get proposals
-        proposals = advisor.analyze_structure(valid_resume)
+        advisor.analyze_structure(valid_resume)
         
         # Get ATS recommendations
         recs = advisor.get_ats_recommendations(valid_resume)

@@ -11,24 +11,15 @@ Tests the core self-healing functionality:
 """
 
 import pytest
-import asyncio
 from ..context import ResumeEngineContext
 from ..healing import (
     HealingStrategy,
     CycleResult,
-    HealingResult,
     SignalRouter,
     AgentFactory,
     HealingCycle,
-    HealingOrchestrator,
     ConvergenceDetector,
     AutomaticRollback,
-)
-from ..agents import (
-    ContentQualityAgent,
-    FactCheckAgent,
-    BrandComplianceAgent,
-    TestPilot,
 )
 
 
