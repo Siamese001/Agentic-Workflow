@@ -24,6 +24,9 @@ from agentic_core.L2_execution.sovereign_action_plane import SovereignActionPlan
 from agentic_core.L5_safety.safety_layer import create_l5_safety_layer, L5SafetyLayer
 from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
 from agentic_core.L4_state.storage import create_storage_adapter, SignalLedger
+from agentic_core.L5_safety.intervention_server import InterventionServer, InterventionContext, check_intervention_required
+from agentic_core.interfaces.governance import ArchitectureGovernor
+from agentic_core.L3_orchestration.telepathy import process_telepathy_instructions, get_telepathy_interface
 
 LOGGER = logging.getLogger(__name__)
 
@@ -84,6 +87,12 @@ class NervousSystem:
         self._signals: set = set()
         self._modified_files: set = set()
         self._phase_failure_counts: Dict[str, int] = {}  # Track consecutive failures per phase
+        
+        # L5 Intervention Server
+        self.intervention_server = InterventionServer()
+        
+        # L6 Architecture Governor
+        self.architecture_governor = ArchitectureGovernor()
 
         LOGGER.info(
             "nervous_system_initialized",
@@ -171,6 +180,9 @@ class NervousSystem:
             state=self._state.copy()
         )
         
+        # Add forced agents support for telepathy
+        context.forced_agents = []
+        
         # If max_phases is specified, limit the phases
         if max_phases:
             phase_names = list(self.phases.keys())
@@ -179,6 +191,58 @@ class NervousSystem:
                 limited_phases[phase_name] = self.phases[phase_name]
             self.phases = limited_phases
             LOGGER.info(f"Limiting execution to first {max_phases} phases")
+        
+        # Check for high-risk states that require intervention
+        cycle = self._iteration
+        modified_count = len(self._modified_files)
+        signals_list = list(self._signals)
+        
+        # Process telepathic instructions (L6 Codebase Telepathy)
+        context = await process_telepathy_instructions(context, cycle)
+        
+        # Check for immediate telepathic stop
+        if "TELEPATHY_STOP" in context.signals:
+            LOGGER.warning("Mission stopped by telepathic instruction")
+            return ExecutionResult(
+                success=False,
+                report="Mission stopped by telepathic instruction",
+                signals=["TELEPATHY_STOP"]
+            )
+        
+        intervention_required, risk_factors = check_intervention_required(
+            cycle=cycle,
+            modified_count=modified_count,
+            signals_list=signals_list
+        )
+        
+        if intervention_required:
+            LOGGER.warning(f"High-risk state detected: {risk_factors}")
+            # Start intervention server
+            await self.intervention_server.start_server()
+            
+            # Request human approval
+            approved = await self.intervention_server.request_approval(
+                risk_factors=risk_factors,
+                cycle=cycle,
+                modified_files=list(self._modified_files),
+                timeout=300  # 5 minutes timeout
+            )
+            
+            if not approved:
+                LOGGER.error("Human intervention vetoed - aborting mission")
+                self._signals.add("VETOED")
+                # Stop intervention server
+                await self.intervention_server.stop_server()
+                return ExecutionResult(
+                    success=False,
+                    output="",
+                    error="Mission vetoed by human intervention",
+                    execution_time=time.time() - start_time
+                )
+            
+            # Stop intervention server after approval
+            await self.intervention_server.stop_server()
+            LOGGER.info("Human intervention approved - continuing mission")
         
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
@@ -228,6 +292,10 @@ class NervousSystem:
                     else:
                         # On subsequent cycles, run without skipping
                         converged = await self._execute_all_phases(context, execution_trace, resume_phase=None)
+                    
+                    # Execute any forced agents from telepathy
+                    if hasattr(context, 'forced_agents') and context.forced_agents:
+                        await self._execute_forced_agents(context, execution_trace)
                     
                     # Check for convergence
                     if converged:
@@ -931,3 +999,107 @@ class NervousSystem:
                 actions.append(action)
 
         return actions
+    
+    async def _execute_forced_agents(self, context: ExecutionContext, execution_trace: List[Dict[str, Any]]):
+        """
+        Execute agents forced by telepathic instructions.
+        
+        Args:
+            context: Current execution context
+            execution_trace: Trace to record execution results
+        """
+        if not hasattr(context, 'forced_agents') or not context.forced_agents:
+            return
+        
+        LOGGER.info(f"🎯 Executing forced agents from telepathy: {', '.join(context.forced_agents)}")
+        
+        for agent_name in context.forced_agents:
+            try:
+                # Find the agent in our phases
+                agent_found = False
+                for phase_name, phase_agents in self.phases.items():
+                    for agent in phase_agents:
+                        if hasattr(agent, 'name') and agent.name == agent_name:
+                            LOGGER.info(f"  → Executing forced agent: {agent_name} (from {phase_name})")
+                            
+                            # Execute the agent
+                            result = await agent.execute()
+                            
+                            # Record in execution trace
+                            execution_trace.append({
+                                "agent": agent_name,
+                                "phase": phase_name,
+                                "forced": True,
+                                "result": result,
+                                "timestamp": time.time()
+                            })
+                            
+                            # Update signals based on result
+                            if isinstance(result, dict):
+                                if result.get("passed", False):
+                                    self._signals.add(f"{agent_name.upper()}_FORCED_SUCCESS")
+                                else:
+                                    self._signals.add(f"{agent_name.upper()}_FORCED_FAILED")
+                            
+                            agent_found = True
+                            break
+                
+                if not agent_found:
+                    LOGGER.warning(f"  ⚠️  Forced agent not found: {agent_name}")
+                    
+            except Exception as e:
+                LOGGER.error(f"  ❌ Error executing forced agent {agent_name}: {e}")
+                self._signals.add(f"{agent_name.upper()}_FORCED_ERROR")
+        
+        # Clear forced agents after execution
+        context.forced_agents.clear()
+        LOGGER.info("Forced agents execution complete")
+    
+    async def get_impact_radius(self, modified_files: List[str] = None) -> Dict[str, Any]:
+        """
+        Calculate the blast radius for modified files.
+        
+        Args:
+            modified_files: List of modified file paths (uses tracked files if None)
+            
+        Returns:
+            Dictionary with impact analysis
+        """
+        if modified_files is None:
+            modified_files = list(self._modified_files)
+        
+        if not modified_files:
+            return {
+                "modified_count": 0,
+                "total_impacted": 0,
+                "blast_radius": [],
+                "message": "No modified files to analyze"
+            }
+        
+        # Build dependency graph if needed
+        if not self.architecture_governor.dependency_graph._built:
+            self.architecture_governor.build_graph()
+        
+        # Calculate blast radius
+        impact_analysis = self.architecture_governor.get_blast_radius(modified_files)
+        
+        # Log blast radius
+        LOGGER.info(f"☢️ BLAST RADIUS: {impact_analysis['total_impacted']} files in scope")
+        
+        # Add impacted files to modified set for verification
+        for file_path in impact_analysis["blast_radius"]:
+            self._modified_files.add(file_path)
+        
+        return impact_analysis
+    
+    def validate_architecture(self, file_paths: List[str] = None) -> Dict[str, Any]:
+        """
+        Validate architecture compliance.
+        
+        Args:
+            file_paths: Specific files to validate
+            
+        Returns:
+            Validation report
+        """
+        return self.architecture_governor.validate_architecture(file_paths)
