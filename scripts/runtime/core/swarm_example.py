@@ -6,9 +6,9 @@ in resume generation and other agentic workflows.
 
 import asyncio
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
-from subatomic_swarm import create_subatomic_swarm, SwarmResult
+from subatomic_swarm import SwarmResult, create_subatomic_swarm
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -235,7 +235,8 @@ async def example_with_real_subatomic_hop():
     
     try:
         # Try to import real SubatomicHop
-        from scripts.runtime.core.subatomic_hop import SubatomicHop, SubatomicHopConfig
+        from scripts.runtime.core.subatomic_hop import (SubatomicHop,
+                                                        SubatomicHopConfig)
         
         logger.info("Real SubatomicHop found - creating swarm...")
         

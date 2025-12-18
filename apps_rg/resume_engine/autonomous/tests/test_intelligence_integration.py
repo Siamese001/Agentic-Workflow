@@ -10,22 +10,14 @@ Tests the integration of intelligence components:
 """
 
 import pytest
+
 from ..context import ResumeEngineContext
-from ..intelligence import (
-    SecurityHardener,
-    SemanticAnalyzer,
-    StrategicAdvisor,
-    OmniContext,
-    UnifiedOrchestrator,
-    Phase6Orchestrator,
-)
-from ..healing import (
-    HealingOrchestrator,
-    HealingCycle,
-    HealingStrategy,
-)
-from ..learning import ResumeLearningAgent
 from ..gitops import Phase4Orchestrator
+from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
+from ..intelligence import (OmniContext, Phase6Orchestrator, SecurityHardener,
+                            SemanticAnalyzer, StrategicAdvisor,
+                            UnifiedOrchestrator)
+from ..learning import ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 
 

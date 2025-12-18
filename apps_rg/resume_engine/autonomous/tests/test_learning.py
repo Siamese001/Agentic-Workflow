@@ -10,19 +10,12 @@ Tests the core learning functionality:
 """
 
 import pytest
+
 from ..context import ResumeEngineContext
-from ..learning import (
-    ConfidenceLevel,
-    LearningExample,
-    ConfidenceResult,
-    Instruction,
-    MemoryState,
-    LearningLoop,
-    ConfidenceScorer,
-    InstructionInjector,
-    MemoryPersistence,
-    ResumeLearningAgent,
-)
+from ..learning import (ConfidenceLevel, ConfidenceResult, ConfidenceScorer,
+                        Instruction, InstructionInjector, LearningExample,
+                        LearningLoop, MemoryPersistence, MemoryState,
+                        ResumeLearningAgent)
 
 
 @pytest.fixture

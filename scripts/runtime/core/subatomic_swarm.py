@@ -7,8 +7,8 @@ to prevent API throttling and rate limiting. Optimized for 32GB/8-core WSL2 envi
 import asyncio
 import logging
 import time
-from typing import List, Any, Dict, Optional, Callable
 from dataclasses import dataclass, field
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

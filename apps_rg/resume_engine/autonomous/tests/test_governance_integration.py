@@ -9,26 +9,18 @@ Tests the integration of governance components:
 - PredictiveBudgetManager with mission planning
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..governance import (
-    DocComplianceLevel,
-    PromptRisk,
-    DependencyArbiter,
-    StrictDocEnforcer,
-    DashboardGenerator,
-    PromptGovernor,
-    PredictiveBudgetManager,
-    Phase7Orchestrator,
-)
-from ..healing import (
-    HealingOrchestrator,
-    HealingCycle,
-    HealingStrategy,
-)
-from ..observability import Phase5Orchestrator
+from ..governance import (DashboardGenerator, DependencyArbiter,
+                          DocComplianceLevel, Phase7Orchestrator,
+                          PredictiveBudgetManager, PromptGovernor, PromptRisk,
+                          StrictDocEnforcer)
+from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
 from ..intelligence import Phase6Orchestrator
+from ..observability import Phase5Orchestrator
 
 
 @pytest.fixture

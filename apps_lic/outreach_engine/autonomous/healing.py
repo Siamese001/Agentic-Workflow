@@ -12,19 +12,13 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
-from .context import OutreachEngineContext
+from .agents import (CampaignBalanceAgent, CampaignPlanner,
+                     ContactValidatorAgent, DeliverabilityAgent,
+                     LeadQualityAgent, MessageComplianceAgent,
+                     OutreachReflectionAgent, OutreachTestPilot,
+                     TemplateOptimizer)
 from .base_agent import OutreachAgent
-from .agents import (
-    LeadQualityAgent,
-    ContactValidatorAgent,
-    MessageComplianceAgent,
-    TemplateOptimizer,
-    CampaignBalanceAgent,
-    DeliverabilityAgent,
-    OutreachTestPilot,
-    CampaignPlanner,
-    OutreachReflectionAgent,
-)
+from .context import OutreachEngineContext
 
 
 class OutreachHealingStrategy(Enum):

@@ -8,16 +8,12 @@ Tests the complete intelligence workflow:
 """
 
 import pytest
+
 from ..context import ResumeEngineContext
-from ..intelligence import (
-    Phase6Orchestrator,
-)
-from ..healing import (
-    run_self_healing_mission,
-    HealingResult,
-)
-from ..learning import ResumeLearningAgent, MemoryPersistence
 from ..gitops import Phase4Orchestrator
+from ..healing import HealingResult, run_self_healing_mission
+from ..intelligence import Phase6Orchestrator
+from ..learning import MemoryPersistence, ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 
 

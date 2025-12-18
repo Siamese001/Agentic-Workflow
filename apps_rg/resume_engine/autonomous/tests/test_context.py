@@ -10,7 +10,9 @@ Tests the core context class including:
 """
 
 import pytest
-from ..context import ResumeEngineContext, BudgetManager, SectionDependencyGraph
+
+from ..context import (BudgetManager, ResumeEngineContext,
+                       SectionDependencyGraph)
 
 
 class TestBudgetManager:

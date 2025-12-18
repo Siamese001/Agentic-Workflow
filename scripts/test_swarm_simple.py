@@ -5,8 +5,8 @@ Tests all 4 phases with minimal dependencies to verify the optimization works.
 
 import asyncio
 import logging
-import time
 import sys
+import time
 from pathlib import Path
 
 # Add project root to path
@@ -15,6 +15,7 @@ sys.path.insert(0, str(project_root))
 
 # Direct imports to avoid __init__.py issues
 import importlib.util
+
 
 def load_module(name, path):
     """Load a module directly from file path."""

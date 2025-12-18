@@ -8,22 +8,21 @@ Tests L4.5 autonomy enhancements:
 - ProactiveAgent
 """
 
-import pytest
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_rg.resume_engine.autonomous.context import ResumeEngineContext
-from apps_rg.resume_engine.autonomous.proactive import (
-    TaskPriority,
-    HandoffReason,
-    CapabilityProfile,
-    ProactiveScheduler,
-    PredictiveHandoff,
-    CapabilityMonitor,
-    ProactiveAgent,
-)
+from apps_rg.resume_engine.autonomous.proactive import (CapabilityMonitor,
+                                                        CapabilityProfile,
+                                                        HandoffReason,
+                                                        PredictiveHandoff,
+                                                        ProactiveAgent,
+                                                        ProactiveScheduler,
+                                                        TaskPriority)
 
 
 @pytest.fixture

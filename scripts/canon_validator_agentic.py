@@ -39,8 +39,8 @@ except ImportError as e:
 
 # L5 Watchman: File System Monitoring
 try:
-    from watchdog.observers import Observer
     from watchdog.events import FileSystemEventHandler
+    from watchdog.observers import Observer
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
@@ -48,11 +48,38 @@ except ImportError:
 
 # AutoGen: Collective Intelligence (Optional)
 try:
-    from autogen import AssistantAgent, GroupChat, GroupChatManager, UserProxyAgent
+    from autogen import (AssistantAgent, GroupChat, GroupChatManager,
+                         UserProxyAgent)
     AUTOGEN_AVAILABLE = True
 except ImportError:
     AUTOGEN_AVAILABLE = False
     print("   [WARN] AutoGen not found. Install 'pyautogen' for conversational repair.")
+
+# L5 Streamer: Async File I/O for non-blocking broadcast
+try:
+    import aiofiles
+    AIOFILES_AVAILABLE = True
+except ImportError:
+    AIOFILES_AVAILABLE = False
+    print("   [WARN] aiofiles not found. Install 'aiofiles' for L5 Streamer.")
+
+# L5 Multi-Repository: GitPython for remote operations
+try:
+    from git import Repo, GitCommandError
+    GITPYTHON_AVAILABLE = True
+except ImportError:
+    GITPYTHON_AVAILABLE = False
+    Repo = None
+    GitCommandError = Exception
+    print("   [WARN] GitPython not found. Install 'GitPython' for L5 Remote GitOps.")
+
+# L5 Property-Based Testing: Hypothesis for formal verification
+try:
+    from hypothesis import given, strategies as st, settings
+    HYPOTHESIS_AVAILABLE = True
+except ImportError:
+    HYPOTHESIS_AVAILABLE = False
+    print("   [WARN] Hypothesis not found. Install 'hypothesis' for L5 Property-Based Testing.")
 
 load_dotenv()  # Auto-load .env
 
@@ -326,9 +353,29 @@ class ValidationContext:
         # Level 5+: Safety Net (Automatic Rollback)
         self.file_backups = {}  # Store original content before mutations
         
+        # Level 5: The Streamer - Live Reasoning Broadcast
+        self.stream_queue: asyncio.Queue = asyncio.Queue()
+        self.stream_task: asyncio.Task = None
+        self._current_agent: str = "System"
+        self._streamer_initialized: bool = False
+        
         # Level 6: Sovereign Architecture
         self.code_graph = DependencyGraph()
         self.budget = BudgetManager(limit_usd=2.0)
+        
+        # L5 Multi-Repository: Scan additional repo roots
+        extra_roots = os.getenv("ADDITIONAL_REPO_ROOTS", "")
+        if extra_roots:
+            for root in extra_roots.split(","):
+                root = root.strip()
+                if os.path.exists(root):
+                    print(f"   [CTX] 🌍 Scanning additional root: {root}")
+                    for r, _, files in os.walk(root):
+                        if any(x in r for x in EXCLUDED_DIRS):
+                            continue
+                        for file in files:
+                            if file.endswith(".py"):
+                                self.python_files.append(os.path.join(r, file))
         
         print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
         print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
@@ -567,6 +614,86 @@ class ValidationContext:
                 pass
         return impacted
     
+    # ==========================================================================
+    # L5 STREAMER: Live Reasoning Broadcast (Non-Blocking)
+    # ==========================================================================
+    async def start_streamer(self):
+        """Initializes the non-blocking stream worker task."""
+        if self._streamer_initialized:
+            return
+        
+        # Ensure observability directory exists
+        os.makedirs("observability/audit", exist_ok=True)
+        
+        if not self.stream_task or self.stream_task.done():
+            self.stream_task = asyncio.create_task(self._stream_worker())
+            self._streamer_initialized = True
+        
+        await self.broadcast("Streamer initialized and operational.", level="SYSTEM")
+    
+    async def _stream_worker(self):
+        """Background worker to drain the queue to JSONL without blocking execution."""
+        log_path = "observability/audit/live_stream.jsonl"
+        
+        while True:
+            try:
+                payload = await self.stream_queue.get()
+                try:
+                    if AIOFILES_AVAILABLE:
+                        async with aiofiles.open(log_path, mode="a", encoding="utf-8") as f:
+                            await f.write(json.dumps(payload) + "\n")
+                    else:
+                        # Fallback to sync write in thread
+                        await asyncio.to_thread(self._sync_write_stream, log_path, payload)
+                finally:
+                    self.stream_queue.task_done()
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                print(f"   [STREAMER] Error writing to stream: {e}")
+    
+    def _sync_write_stream(self, log_path: str, payload: dict):
+        """Synchronous fallback for stream writing."""
+        with open(log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload) + "\n")
+    
+    async def broadcast(self, message: str, agent: str = None, level: str = "INFO"):
+        """Queues a message for the live stream in a non-blocking manner."""
+        payload = {
+            "timestamp": datetime.datetime.now().isoformat(),
+            "agent": agent or self._current_agent,
+            "level": level,
+            "content": message,
+            "signals": list(self.signals)
+        }
+        await self.stream_queue.put(payload)
+    
+    def set_current_agent(self, agent_name: str):
+        """Sets the current agent for broadcast context."""
+        self._current_agent = agent_name
+    
+    async def broadcast_reasoning(self, response_text: str, agent: str = None):
+        """Extracts and broadcasts reasoning blocks from LLM responses."""
+        reasoning_match = re.search(r"<reasoning>(.*?)</reasoning>", response_text, re.DOTALL)
+        if reasoning_match:
+            reasoning = reasoning_match.group(1).strip()
+            await self.broadcast(f"REASONING: {reasoning}", agent=agent, level="THOUGHT")
+            return reasoning
+        return None
+    
+    async def stop_streamer(self):
+        """Gracefully stops the stream worker."""
+        if self.stream_task and not self.stream_task.done():
+            # Wait for queue to drain
+            await self.stream_queue.join()
+            self.stream_task.cancel()
+            try:
+                await self.stream_task
+            except asyncio.CancelledError:
+                pass
+            self._streamer_initialized = False
+            print("   [STREAMER] Stopped gracefully.")
+    
     def rollback_changes(self):
         """Reverts all changes made in the current cycle."""
         if not self.file_backups:
@@ -585,6 +712,15 @@ class ValidationContext:
     def inject_instruction(self, source_agent: str, instruction: str):
         """Add a guiding hint to the blackboard for downstream agents."""
         self.instructions.append(f"[{source_agent}] {instruction}")
+    
+    def report_property_failure(self, func_name: str, counter_example: str):
+        """
+        L5 Property-Based Testing: Reports a Hypothesis property violation.
+        Adds signal and injects high-priority instruction for immediate fix.
+        """
+        self.signals.add("PROPERTY_VIOLATION")
+        self.inject_instruction("Sherlock", f"Property invariant failed in {func_name}. Hypothesis found edge case: {counter_example}. Fix logic immediately.")
+        print(f"   🚨 PROPERTY VIOLATION: {func_name}")
 
     def write_compliant_file(self, path: str, content: str, dry_run: bool = False) -> bool:
         """Enforces Laws and Syntax Safety before writing to disk."""
@@ -659,6 +795,7 @@ class ValidationContext:
     def _clean_llm_code(self, raw_code: str) -> str:
         """Extracts code from Chain-of-Thought responses."""
         import re
+
         # 1. Remove reasoning blocks to isolate code
         raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
 
@@ -800,6 +937,10 @@ class ValidationContext:
                     print(f"   [{agent_name}] ⚠️ Confidence too low ({confidence:.2f}). Retrying...")
                     continue
 
+                # L5 STREAMER: Broadcast reasoning before cleaning
+                if self._streamer_initialized:
+                    await self.broadcast_reasoning(response.text, agent=agent_name)
+                
                 result_text = self._clean_llm_code(response.text)
                 final_content = result_text
 
@@ -1073,6 +1214,28 @@ class SubAtomicAgent:
     async def execute(self):
         """Execute agent's validation logic asynchronously."""
         raise NotImplementedError
+    
+    async def run_with_broadcast(self):
+        """Wrapper that broadcasts agent lifecycle events to the L5 Streamer."""
+        # Set current agent context
+        self.ctx.set_current_agent(self.name)
+        
+        # Broadcast activation
+        if self.ctx._streamer_initialized:
+            await self.ctx.broadcast(f"ACTIVATED: Starting validation phase", agent=self.name, level="AGENT_START")
+        
+        try:
+            # Execute the actual agent logic
+            await self.execute()
+            
+            # Broadcast completion
+            if self.ctx._streamer_initialized:
+                await self.ctx.broadcast(f"COMPLETED: Validation phase finished", agent=self.name, level="AGENT_END")
+        except Exception as e:
+            # Broadcast error
+            if self.ctx._streamer_initialized:
+                await self.ctx.broadcast(f"ERROR: {str(e)[:200]}", agent=self.name, level="AGENT_ERROR")
+            raise
 
 class ImportPatcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""
@@ -1741,6 +1904,7 @@ class SafetyInspector(SubAtomicAgent):
     def _clean_llm_code(self, raw_code: str) -> str:
         """Extracts code from Chain-of-Thought responses."""
         import re
+
         # 1. Remove reasoning blocks to isolate code
         raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
 
@@ -3301,36 +3465,41 @@ class TestPilot(SubAtomicAgent):
         
         if not test_files_to_run:
             print(f"   ⚠️  No test files found for modified code")
-            return
-        
-        # Run pytest on affected test files
-        for test_file in test_files_to_run:
-            success = await self._run_test_file(test_file)
-            if not success:
-                print(f"   🚨 TEST FAILURE: {test_file}")
-                
-                # Trigger Sherlock for root cause analysis
-                # Get the scheduler's Sherlock instance
-                scheduler = getattr(self.ctx, '_scheduler_ref', None)
-                if scheduler and hasattr(scheduler, 'sherlock'):
-                    # Get traceback from the failed test
-                    traceback = await self._get_test_traceback(test_file)
+        else:
+            # Run pytest on affected test files
+            for test_file in test_files_to_run:
+                success = await self._run_test_file(test_file)
+                if not success:
+                    print(f"   🚨 TEST FAILURE: {test_file}")
                     
-                    # Trigger Sherlock investigation
-                    for modified_file in self.ctx.modified_files:
-                        scheduler.sherlock.trigger_investigation(
-                            modified_file, test_file, traceback
-                        )
+                    # Trigger Sherlock for root cause analysis
+                    # Get the scheduler's Sherlock instance
+                    scheduler = getattr(self.ctx, '_scheduler_ref', None)
+                    if scheduler and hasattr(scheduler, 'sherlock'):
+                        # Get traceback from the failed test
+                        traceback = await self._get_test_traceback(test_file)
                         
-                        # Run Sherlock analysis
-                        if scheduler.sherlock.can_run():
-                            await scheduler.sherlock.execute()
-                            break  # Only investigate first failure
-                
-                # Mark as failed
-                self.ctx.report(self.name, 99, False, [f"Tests failed for {test_file}"])
-            else:
-                print(f"   ✅ Tests passed: {test_file}")
+                        # Trigger Sherlock investigation
+                        for modified_file in self.ctx.modified_files:
+                            scheduler.sherlock.trigger_investigation(
+                                modified_file, test_file, traceback
+                            )
+                            
+                            # Run Sherlock analysis
+                            if scheduler.sherlock.can_run():
+                                await scheduler.sherlock.execute()
+                                break  # Only investigate first failure
+                    
+                    # Mark as failed
+                    self.ctx.report(self.name, 99, False, [f"Tests failed for {test_file}"])
+                else:
+                    print(f"   ✅ Tests passed: {test_file}")
+        
+        # L5 Property-Based Testing: Run Hypothesis verification on modified files
+        if self.ctx.modified_files and HYPOTHESIS_AVAILABLE:
+            print(f"   🧬 TestPilot: Initiating Property-Based Verification...")
+            for file_path in self.ctx.modified_files:
+                await self._run_property_check(file_path)
     
     def _find_test_file(self, source_file: str) -> str:
         """Find the corresponding test file for a source file."""
@@ -3467,6 +3636,70 @@ class TestPilot(SubAtomicAgent):
             return f"Failed to capture traceback: {e}"
 
 # ==============================================================================
+# THE TOOLSMITH (L5 Dynamic Agency)
+# ==============================================================================
+class ToolsmithAgent(SubAtomicAgent):
+    """
+    ROLE: Dynamic Agency. Creates diagnostic scripts to probe systemic failures.
+    When TEST_FAILURE signals persist and standard mutations can't fix them,
+    The Toolsmith forges new diagnostic tools to investigate the environment.
+    """
+    
+    async def execute(self):
+        # Only activate if tests are failing and standard fixes aren't working
+        if "TEST_FAILURE" not in self.ctx.signals:
+            return
+
+        print(f"\n[>>>] {self.name} ACTIVATED: Forging new diagnostic tools...")
+        
+        # Retrieve the failure context from the blackboard
+        # TestPilot reports to key 99
+        failure_data = self.ctx.results.get(99, {}).get("details", ["Unknown failure"])
+        if isinstance(failure_data, list):
+            failure_data = "\n".join(str(f) for f in failure_data)
+        
+        prompt = f"""
+Role: Systems Engineer
+Task: Create a targeted Python diagnostic script to investigate this failure:
+{failure_data}
+
+Requirements:
+1. Probe the environment (check DBs, APIs, or Ports).
+2. Output findings in JSON format to stdout.
+3. Do not modify source code, only probe the state.
+4. Keep imports standard or rely on project requirements.
+5. Include proper error handling.
+
+Return ONLY the raw Python code. NO MARKDOWN.
+"""
+        
+        # Request the tool from Gemini
+        tool_code = await self.ctx.resilient_mutation(self.name, prompt)
+        
+        if not tool_code or tool_code.strip() == "":
+            print(f"   [{self.name}] ⚠️ Failed to generate diagnostic tool")
+            return
+        
+        # Use existing governor to write to scripts/ folder
+        tool_name = f"diag_tool_{int(time.time())}.py"
+        tool_path = os.path.join("scripts", tool_name)
+        
+        # Ensure scripts dir exists
+        os.makedirs("scripts", exist_ok=True)
+        
+        if self.ctx.write_compliant_file(tool_path, tool_code):
+            print(f"   🛠️  Tool Forged: {tool_path}")
+            # Inject instruction for the next cycle so other agents know about it
+            self.ctx.inject_instruction(self.name, f"New diagnostic tool available at {tool_path}. Run it to gather intel.")
+            
+            # Broadcast to streamer if available
+            if self.ctx._streamer_initialized:
+                await self.ctx.broadcast(f"Forged diagnostic tool: {tool_path}", agent=self.name, level="TOOL_CREATED")
+        else:
+            print(f"   [{self.name}] ❌ Failed to write diagnostic tool (blocked by governor)")
+
+
+# ==============================================================================
 # 4. THE SWARM SCHEDULER (Async Orchestrator)
 # ==============================================================================
 class SwarmScheduler:
@@ -3509,6 +3742,7 @@ class SwarmScheduler:
             "engineering_parallel": [
                 StructuralEngineer(self.ctx),  # Heavy refactoring
                 PatternEnforcer(self.ctx),     # Pattern checks
+                ToolsmithAgent(self.ctx),      # L5 Dynamic Agency - creates diagnostic tools
             ],
             # 8. REFINEMENT (Parallel)
             "refinement_parallel": [
@@ -5542,12 +5776,16 @@ class ReflectionAgent(SubAtomicAgent):
             print(f"   🧠 Learned {count} new patterns from this session.")
 
 class GitAgent(SubAtomicAgent):
-    """Manages Git checkpoints for ultimate safety."""
+    """
+    ROLE: Remote GitOps. Manages checkpoints and pushes healing branches.
+    L5 Enhancement: Uses GitPython for robust remote operations.
+    """
     def __init__(self, ctx):
         super().__init__(ctx)
         self.name = "GitOps"
     
     def run_cmd(self, cmd: list) -> bool:
+        """Fallback subprocess command runner."""
         try:
             subprocess.run(cmd, check=True, capture_output=True, cwd=os.getcwd())
             return True
@@ -5555,13 +5793,77 @@ class GitAgent(SubAtomicAgent):
             return False
 
     async def execute(self):
-        # 1. Checkpoint Current State
+        # Try GitPython first, fallback to subprocess
+        if GITPYTHON_AVAILABLE:
+            await self._execute_gitpython()
+        else:
+            await self._execute_subprocess()
+    
+    async def _execute_gitpython(self):
+        """L5 GitPython-based execution with remote support."""
+        try:
+            repo = Repo('.')
+        except Exception:
+            print("   ⚠️  GitOps: Not a valid git repository.")
+            return
+
+        # Handle critical failure - revert to HEAD
+        if "CRITICAL_FAILURE" in self.ctx.signals:
+            print(f"   ⏪ GitOps: Critical Failure. Reverting to HEAD...")
+            try:
+                repo.git.reset('--hard', 'HEAD')
+                self.ctx.signals.discard("CRITICAL_FAILURE")
+            except GitCommandError as e:
+                print(f"   ⚠️  GitOps Reset Error: {e}")
+            return
+
+        # Create healing branch and commit changes
+        if self.ctx.modified_files:
+            try:
+                # Create unique branch
+                branch_name = f"healing/auto_{int(time.time())}"
+                
+                # Store current branch to return to later
+                original_branch = repo.active_branch.name
+                
+                # Create and checkout new branch
+                new_branch = repo.create_head(branch_name)
+                new_branch.checkout()
+                
+                # Add and Commit
+                repo.index.add(list(self.ctx.modified_files))
+                commit_msg = f"L5 Auto-fix cycle {len(self.ctx.successful_traces)}"
+                repo.index.commit(commit_msg)
+                print(f"   💾 GitOps: Checkpoint saved to branch '{branch_name}'.")
+                
+                # Remote Push (if configured)
+                remote_url = os.getenv("GIT_REMOTE_URL")
+                if remote_url:
+                    try:
+                        # Check if origin exists, create if not
+                        if 'origin' not in [r.name for r in repo.remotes]:
+                            repo.create_remote('origin', remote_url)
+                        
+                        origin = repo.remotes.origin
+                        origin.push(branch_name)
+                        print(f"   🌐 GitOps: Pushed healing branch to remote.")
+                    except GitCommandError as e:
+                        print(f"   ⚠️  GitOps Push Error: {e}")
+                
+                # Broadcast to streamer if available
+                if self.ctx._streamer_initialized:
+                    await self.ctx.broadcast(f"Created healing branch: {branch_name}", agent=self.name, level="GIT_CHECKPOINT")
+                    
+            except GitCommandError as e:
+                print(f"   ⚠️  GitOps Error: {e}")
+    
+    async def _execute_subprocess(self):
+        """Fallback subprocess-based execution."""
         if "CRITICAL_FAILURE" in self.ctx.signals:
             print(f"   ⏪ GitOps: Critical Failure detected. REVERTING to last safe commit...")
             self.run_cmd(["git", "reset", "--hard", "HEAD"])
             self.ctx.signals.discard("CRITICAL_FAILURE")
         else:
-            # Commit Progress
             if self.ctx.modified_files:
                 print(f"   💾 GitOps: Committing {len(self.ctx.modified_files)} changes...")
                 self.run_cmd(["git", "add"] + list(self.ctx.modified_files))

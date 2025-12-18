@@ -9,7 +9,8 @@ Tests the complete mission workflow:
 """
 
 import pytest
-from ..orchestrator import run_resume_mission, quick_validate
+
+from ..orchestrator import quick_validate, run_resume_mission
 
 
 @pytest.fixture

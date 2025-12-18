@@ -10,26 +10,18 @@ Tests the core observability functionality:
 - Phase5Orchestrator
 """
 
-import pytest
 import json
 import time
 from pathlib import Path
+
+import pytest
+
 from ..context import ResumeEngineContext
-from ..observability import (
-    TraceLevel,
-    MetricType,
-    ValidationSeverity,
-    TraceStep,
-    ExecutionTrace,
-    Metric,
-    ValidationIssue,
-    ExecutionTracer,
-    MetricsCollector,
-    ValidationAgent,
-    AuditReporter,
-    TelemetryExporter,
-    Phase5Orchestrator,
-)
+from ..observability import (AuditReporter, ExecutionTrace, ExecutionTracer,
+                             Metric, MetricsCollector, MetricType,
+                             Phase5Orchestrator, TelemetryExporter, TraceLevel,
+                             TraceStep, ValidationAgent, ValidationIssue,
+                             ValidationSeverity)
 
 
 @pytest.fixture

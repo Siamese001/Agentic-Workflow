@@ -5,14 +5,15 @@ Tests WatchmanHandler, DependencyGraph blast radius, and CLI argument parsing.
 These tests are standalone and don't import the full canon_validator_agentic.py
 to avoid stdout wrapper issues on Windows.
 """
-import asyncio
 import ast
+import asyncio
 import os
-import sys
-import pytest
-from pathlib import Path
 import subprocess
+import sys
 import tempfile
+from pathlib import Path
+
+import pytest
 
 # Constants matching canon_validator_agentic.py
 EXCLUDED_DIRS = {
@@ -239,8 +240,8 @@ class TestWatchdogIntegration:
     
     def test_watchdog_imports(self):
         """Test watchdog library imports correctly."""
-        from watchdog.observers import Observer
         from watchdog.events import FileSystemEventHandler
+        from watchdog.observers import Observer
         
         assert Observer is not None
         assert FileSystemEventHandler is not None
