@@ -5,14 +5,13 @@ Detects and remediates resource leaks and unbounded containers.
 
 import ast
 import asyncio
-import os
 import re
 import time
 import datetime
 from typing import Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

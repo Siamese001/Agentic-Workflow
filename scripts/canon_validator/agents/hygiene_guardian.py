@@ -9,7 +9,7 @@ import re
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 from ..config import EXCLUDED_DIRS

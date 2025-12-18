@@ -6,23 +6,11 @@ DependencyGraph and BudgetManager are infrastructure classes.
 
 import ast
 import asyncio
-import datetime
-import hashlib
-import json
 import os
-import re
-import shutil
-import subprocess
-import sys
-import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set
 
-from .config import (
-    EXCLUDED_DIRS, ALLOWED_ROOT_FILES, MIN_DEPTH, MAX_DEPTH,
-    get_python_files
-)
 from .prompts import (
     POSITIVE_INSTRUCTIONAL_CONTEXT,
     FEW_SHOT_GLOBAL_REFACTOR,

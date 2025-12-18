@@ -5,13 +5,12 @@ Enforces intention-revealing names and PEP 8 compliance.
 
 import ast
 import asyncio
-import os
 import time
 import datetime
 from typing import Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

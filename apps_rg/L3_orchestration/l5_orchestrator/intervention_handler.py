@@ -3,7 +3,7 @@ L5 Autonomous Orchestrator - Intervention Handler
 """
 
 import logging
-from typing import Any, Dict, List
+from typing import List
 
 from apps_shared.signal_bus import SignalType
 from apps_shared.intervention_server import InterventionContext, check_intervention_required

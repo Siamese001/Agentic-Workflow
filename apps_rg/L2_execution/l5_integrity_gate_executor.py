@@ -14,13 +14,13 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
 # Import signal bus for L5+ integration
 try:
-    from apps_shared.signal_bus import SignalBus, SignalType, get_signal_bus
+    from apps_shared.signal_bus import SignalType, get_signal_bus
     SIGNAL_BUS_AVAILABLE = True
 except ImportError:
     SIGNAL_BUS_AVAILABLE = False
@@ -488,7 +488,7 @@ class L5IntegrityGateExecutor:
     def _check_citation_coverage_deep(self, content: Dict[str, Any], result: ValidationResult) -> None:
         """Deep check for citation coverage."""
         
-        citations = content.get("citations", [])
+        content.get("citations", [])
         claims = content.get("claims", [])
         
         if isinstance(claims, list) and len(claims) > 0:
@@ -527,7 +527,7 @@ class L5IntegrityGateExecutor:
         """Deep check for orphaned claims."""
         
         claims = content.get("claims", [])
-        evidence = content.get("evidence", {})
+        content.get("evidence", {})
         
         if isinstance(claims, list):
             for claim in claims:

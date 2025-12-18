@@ -242,10 +242,9 @@ async def verify_resume_engine() -> VerificationResults:
     try:
         # Import orchestrator
         from apps_rg.L3_orchestration.l5_autonomous_orchestrator import (
-            L5AutonomousOrchestrator,
             create_l5_orchestrator,
         )
-        from apps_shared.signal_bus import get_signal_bus, reset_signal_bus, SignalType
+        from apps_shared.signal_bus import reset_signal_bus
         
         results.record("Import", True, "L5AutonomousOrchestrator imported successfully")
         
@@ -380,10 +379,9 @@ async def verify_outreach_engine() -> VerificationResults:
     try:
         # Import orchestrator
         from apps_lic.L3_orchestration.l5_autonomous_orchestrator import (
-            L5OutreachOrchestrator,
             create_l5_outreach_orchestrator,
         )
-        from apps_shared.signal_bus import get_signal_bus, reset_signal_bus, SignalType
+        from apps_shared.signal_bus import reset_signal_bus
         
         results.record("Import", True, "L5OutreachOrchestrator imported successfully")
         

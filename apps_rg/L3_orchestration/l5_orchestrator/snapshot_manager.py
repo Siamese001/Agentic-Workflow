@@ -4,7 +4,6 @@ L5 Autonomous Orchestrator - Snapshot and Rollback Manager
 
 import copy
 import logging
-from typing import Dict, Any
 
 from apps_rg.L3_orchestration.l5_orchestrator.types import WorkflowSnapshot
 

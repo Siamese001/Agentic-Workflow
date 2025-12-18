@@ -8,7 +8,6 @@ This is the glue that connects all L5+ autonomy components.
 All signal methods are async to match Canon Validator async safety patterns.
 """
 
-import copy
 import json
 import logging
 from dataclasses import dataclass, field
@@ -19,8 +18,8 @@ from typing import Any, Callable, Dict, List, Optional, Set
 logger = logging.getLogger(__name__)
 
 # Import L5+ components
-from apps_shared.signal_bus import SignalBus, SignalType, get_signal_bus
-from apps_shared.reflection_agent import ReflectionAgent, create_reflection_agent
+from apps_shared.signal_bus import SignalType, get_signal_bus
+from apps_shared.reflection_agent import create_reflection_agent
 from apps_shared.few_shot_library import FewShotLibrary
 
 

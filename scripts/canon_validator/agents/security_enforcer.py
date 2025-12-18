@@ -3,16 +3,14 @@ SecurityEnforcer Agent - Security Guardian.
 Detects and remediates high-risk security patterns.
 """
 
-import ast
 import asyncio
-import os
 import re
 import time
 import datetime
 from typing import Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

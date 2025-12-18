@@ -4,16 +4,10 @@ Tests diagnostic script creation when TEST_FAILURE signals occur.
 
 These tests verify the "All Tests Pass" provision for L5 Full Autonomy.
 """
-import asyncio
-import json
 import os
-import sys
 import pytest
 import time
-import shutil
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
-import tempfile
+from unittest.mock import AsyncMock
 
 
 # ==============================================================================
@@ -270,7 +264,7 @@ class TestToolsmithScriptCreation:
         await agent.execute()
         
         # Should not create any script
-        scripts = [f for f in os.listdir("scripts") if f.startswith("diag_tool_")]
+        [f for f in os.listdir("scripts") if f.startswith("diag_tool_")]
         # May have scripts from other tests, but this run shouldn't add one
         # We verify by checking instructions weren't injected
         assert not any("New diagnostic tool available" in instr for instr in ctx.instructions)

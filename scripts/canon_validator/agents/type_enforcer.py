@@ -5,13 +5,12 @@ Enforces PEP 484 type hints for compile-time contracts.
 
 import ast
 import asyncio
-import os
 import time
 import datetime
 from typing import Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

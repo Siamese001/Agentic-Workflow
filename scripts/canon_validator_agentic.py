@@ -75,7 +75,6 @@ except ImportError:
 
 # L5 Property-Based Testing: Hypothesis for formal verification
 try:
-    from hypothesis import given, strategies as st, settings
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
@@ -7120,7 +7119,7 @@ class GitAgent(SubAtomicAgent):
                     branch_name = f"healing/auto_{int(time.time())}"
                 
                 # Store current branch to return to later
-                original_branch = repo.active_branch.name
+                repo.active_branch.name
                 
                 # Create and checkout new branch
                 new_branch = repo.create_head(branch_name)

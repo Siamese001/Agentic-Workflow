@@ -4,13 +4,10 @@ Tests GitPython integration for branching, commits, and remote push operations.
 
 These tests verify the "All Tests Pass" provision for L5 Full Autonomy.
 """
-import asyncio
 import os
-import sys
 import pytest
 import time
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch, PropertyMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 
 # ==============================================================================
@@ -42,7 +39,6 @@ class MockValidationContext:
 
 class MockGitCommandError(Exception):
     """Mock GitCommandError for testing."""
-    pass
 
 
 class GitAgent:

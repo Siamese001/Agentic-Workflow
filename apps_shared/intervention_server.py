@@ -14,17 +14,16 @@ Canon Validator Patterns Implemented:
 
 import asyncio
 import logging
-import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
 # Check for FastAPI availability
 try:
-    from fastapi import FastAPI, HTTPException
+    from fastapi import FastAPI
     from fastapi.responses import HTMLResponse, JSONResponse
     import uvicorn
     FASTAPI_AVAILABLE = True

@@ -10,7 +10,7 @@ import hashlib
 from typing import List, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 from ..config import MAX_LINES

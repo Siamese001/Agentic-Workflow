@@ -8,7 +8,6 @@ Audits the codebase for compliance with the Three Laws:
 - Law 3 (The Void): No .py files in root
 """
 
-import os
 from pathlib import Path
 from collections import defaultdict
 

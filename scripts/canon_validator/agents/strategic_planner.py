@@ -3,14 +3,13 @@ StrategicPlanner Agent - High-Level Strategist.
 Analyzes aggregated signals and generates multi-step refactor plans.
 """
 
-import asyncio
 import json
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..types import ValidationContext
+    pass
 
 from ..base import SubAtomicAgent
 

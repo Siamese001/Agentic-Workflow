@@ -2,8 +2,6 @@
 L5 Autonomous Orchestrator - Main Class and Convergence Loop (Outreach Engine)
 """
 
-import asyncio
-import copy
 import logging
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
@@ -14,17 +12,14 @@ logger = logging.getLogger(__name__)
 # Import L5+ autonomy components
 try:
     from apps_shared.signal_bus import (
-        SignalBus,
         SignalType,
         get_signal_bus,
     )
     from apps_shared.reflection_agent import (
-        ReflectionAgent,
         ReflectionDecision,
         create_reflection_agent,
     )
     from apps_shared.intervention_server import (
-        InterventionServer,
         get_intervention_server,
     )
     AUTONOMY_COMPONENTS_AVAILABLE = True
