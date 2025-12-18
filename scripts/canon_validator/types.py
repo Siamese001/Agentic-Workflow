@@ -184,3 +184,16 @@ class ValidationContext:
     def client(self):
         """Access to Gemini client for backward compatibility."""
         return self._client
+
+    def report(self, agent: str, key: int, passed: bool, details: Any = None):
+        """Report validation result for a specific key to the blackboard.
+        
+        Used by all agents to record pass/fail status.
+        """
+        status = "PASS" if passed else "FAIL"
+        if not passed:
+            print(f"   [{agent}] Key {key}: {status}")
+        self.results[key] = {
+            "passed": passed,
+            "details": details or {}
+        }
