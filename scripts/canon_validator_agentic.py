@@ -724,6 +724,109 @@ Always require env vars for secrets.
 Never use assert for control flow.
 Prefer explicit checks and allowlists.
 """)
+
+    FEW_SHOT_STYLE: str = field(default_factory=lambda: """
+FEW-SHOT CODE STYLE FIXES (CodeStyleGuardian — Follow exactly):
+
+EXAMPLE 1: Import Ordering (isort)
+BAD:
+import os
+import pandas as pd
+from pathlib import Path
+import sys
+from myapp.models import User
+
+GOOD (isort sections):
+import os
+import sys
+
+from pathlib import Path
+
+import pandas as pd
+
+from myapp.models import User
+
+EXAMPLE 2: Black Line Length & Formatting
+BAD:
+result = very_long_function_name(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+
+GOOD (black wraps):
+result = very_long_function_name(
+    arg1,
+    arg2,
+    arg3,
+    arg4,
+    arg5,
+    arg6,
+    arg7,
+)
+
+EXAMPLE 3: Type Hints (Modern Python)
+BAD:
+def process(data):
+    return data.upper()
+
+GOOD:
+def process(data: str) -> str:
+    return data.upper()
+
+EXAMPLE 4: f-strings Over .format() or %
+BAD:
+name = "Alice"
+message = "Hello {}".format(name)
+old = "Value: %s" % value
+
+GOOD:
+name: str = "Alice"
+message: str = f"Hello {name}"
+value_msg: str = f"Value: {value}"
+
+EXAMPLE 5: Walrus Operator Where Helpful
+BAD:
+data = get_data()
+if data:
+    process(data)
+
+GOOD:
+if data := get_data():
+    process(data)
+
+EXAMPLE 6: Docstrings (Google/Numpy style preferred)
+BAD:
+def func(a, b):
+    "Adds two numbers"
+    return a + b
+
+GOOD:
+def add_numbers(a: int, b: int) -> int:
+    \"\"\"Return the sum of two integers.
+    
+    Args:
+        a: First integer.
+        b: Second integer.
+    
+    Returns:
+        Sum of a and b.
+    \"\"\"
+    return a + b
+
+EXAMPLE 7: Naming Conventions
+BAD:
+UserData = dict
+myVar = 42
+HTTPClient = ...
+
+GOOD:
+UserData = dict[str, Any]
+user_count: int = 42
+http_client: HttpClient = ...
+
+Always follow black formatting.
+Always use type hints.
+Always use f-strings.
+Always use Google-style docstrings for public functions.
+Never remove useful type hints.
+""")
     
     @property
     def client(self):
