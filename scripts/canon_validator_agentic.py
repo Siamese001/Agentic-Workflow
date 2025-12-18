@@ -81,11 +81,147 @@ except ImportError:
     HYPOTHESIS_AVAILABLE = False
     print("   [WARN] Hypothesis not found. Install 'hypothesis' for L5 Property-Based Testing.")
 
+# L5 Human-in-the-Loop: FastAPI for intervention UI
+try:
+    from fastapi import FastAPI
+    from fastapi.responses import HTMLResponse
+    import uvicorn
+    import threading
+    FASTAPI_AVAILABLE = True
+except ImportError:
+    FASTAPI_AVAILABLE = False
+    print("   [WARN] FastAPI/uvicorn not found. Install 'fastapi uvicorn' for L5 Intervention UI.")
+
 load_dotenv()  # Auto-load .env
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
+
+# ==============================================================================
+# L5 HUMAN-IN-THE-LOOP: Intervention Server
+# ==============================================================================
+
+# Global event for pausing execution pending human approval
+approval_event = asyncio.Event()
+_intervention_server_started = False
+_intervention_context = None  # Will hold reference to ValidationContext
+
+if FASTAPI_AVAILABLE:
+    intervention_app = FastAPI(title="L5 Intervention UI", description="Human-in-the-Loop approval system")
+    
+    @intervention_app.get("/", response_class=HTMLResponse)
+    def get_dashboard():
+        """Returns HTML dashboard with current plan and signals."""
+        ctx = _intervention_context
+        signals = list(ctx.signals) if ctx else []
+        plan = getattr(ctx, 'strategic_plan', 'No plan available') if ctx else 'No context'
+        modified = list(ctx.modified_files) if ctx else []
+        
+        html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>L5 Intervention Required</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }}
+                .warning {{ background: #fff3cd; border: 1px solid #ffc107; padding: 20px; border-radius: 8px; }}
+                .signals {{ background: #f8d7da; padding: 10px; border-radius: 4px; margin: 10px 0; }}
+                .plan {{ background: #d1ecf1; padding: 10px; border-radius: 4px; margin: 10px 0; }}
+                .files {{ background: #d4edda; padding: 10px; border-radius: 4px; margin: 10px 0; }}
+                button {{ padding: 15px 30px; margin: 10px; font-size: 18px; cursor: pointer; border: none; border-radius: 4px; }}
+                .approve {{ background: #28a745; color: white; }}
+                .veto {{ background: #dc3545; color: white; }}
+                h1 {{ color: #856404; }}
+            </style>
+        </head>
+        <body>
+            <div class="warning">
+                <h1>🚨 L5 INTERVENTION REQUIRED</h1>
+                <p>The autonomous system has detected a <strong>HIGH RISK</strong> action and is awaiting human approval.</p>
+                
+                <div class="signals">
+                    <h3>Active Signals:</h3>
+                    <ul>{"".join(f"<li>{s}</li>" for s in signals) or "<li>None</li>"}</ul>
+                </div>
+                
+                <div class="plan">
+                    <h3>Strategic Plan:</h3>
+                    <pre>{plan}</pre>
+                </div>
+                
+                <div class="files">
+                    <h3>Modified Files ({len(modified)}):</h3>
+                    <ul>{"".join(f"<li>{f}</li>" for f in modified[:10]) or "<li>None</li>"}</ul>
+                    {f"<p>...and {len(modified) - 10} more</p>" if len(modified) > 10 else ""}
+                </div>
+                
+                <div>
+                    <button class="approve" onclick="approve()">✅ APPROVE</button>
+                    <button class="veto" onclick="veto()">🛑 VETO</button>
+                </div>
+            </div>
+            
+            <script>
+                async function approve() {{
+                    await fetch('/approve', {{method: 'POST'}});
+                    document.body.innerHTML = '<h1 style="color: green;">✅ APPROVED - Resuming execution...</h1>';
+                }}
+                async function veto() {{
+                    await fetch('/veto', {{method: 'POST'}});
+                    document.body.innerHTML = '<h1 style="color: red;">🛑 VETOED - Aborting execution...</h1>';
+                }}
+            </script>
+        </body>
+        </html>
+        """
+        return html
+    
+    @intervention_app.post("/approve")
+    def approve_action():
+        """Approves the pending action and resumes execution."""
+        approval_event.set()
+        return {"status": "APPROVED", "message": "Execution will resume."}
+    
+    @intervention_app.post("/veto")
+    def veto_action():
+        """Vetoes the pending action and signals abort."""
+        global _intervention_context
+        if _intervention_context:
+            _intervention_context.signals.add("VETOED")
+        approval_event.set()
+        return {"status": "VETOED", "message": "Execution will abort."}
+    
+    @intervention_app.get("/status")
+    def get_status():
+        """Returns current status as JSON."""
+        ctx = _intervention_context
+        return {
+            "waiting": not approval_event.is_set(),
+            "signals": list(ctx.signals) if ctx else [],
+            "modified_files_count": len(ctx.modified_files) if ctx else 0
+        }
+
+def _run_intervention_server():
+    """Runs the uvicorn server (blocking, for thread)."""
+    if FASTAPI_AVAILABLE:
+        uvicorn.run(intervention_app, host="127.0.0.1", port=8080, log_level="error")
+
+def start_intervention_server(ctx=None):
+    """Starts the intervention server in a daemon thread if not already running."""
+    global _intervention_server_started, _intervention_context
+    
+    if not FASTAPI_AVAILABLE:
+        print("   ⚠️  FastAPI not available - skipping intervention server")
+        return
+    
+    _intervention_context = ctx
+    
+    if not _intervention_server_started:
+        t = threading.Thread(target=_run_intervention_server, daemon=True)
+        t.start()
+        _intervention_server_started = True
+        print("   🌐 Intervention server started at http://127.0.0.1:8080")
 
 # ==============================================================================
 # RATE LIMITING & RELIABILITY
@@ -3634,6 +3770,92 @@ class TestPilot(SubAtomicAgent):
         except Exception as e:
             print(f"   ❌ Failed to get traceback: {e}")
             return f"Failed to capture traceback: {e}"
+    
+    async def _run_property_check(self, file_path: str):
+        """
+        L5 Property-Based Testing: Generate and run Hypothesis tests for a file.
+        Uses Gemini to identify invariants and generate @given strategies.
+        """
+        try:
+            # Skip non-Python files
+            if not file_path.endswith('.py'):
+                return
+            
+            # Skip test files themselves
+            if 'test_' in file_path or '_test.py' in file_path:
+                return
+            
+            # Read the file content
+            if not os.path.exists(file_path):
+                return
+                
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            
+            # Skip empty or very small files
+            if len(content) < 50:
+                return
+            
+            prompt = f"""
+Role: QA Engineer
+Task: Write a Property-Based Test using the Hypothesis library for this code:
+{content[:4000]}
+
+Requirements:
+1. Identify 1 critical invariant (e.g. output type, reversibility, idempotence).
+2. Use @given(st.integers(), st.text(), st.lists(), etc) strategies.
+3. Return a standalone python script that imports hypothesis and runs the test.
+4. Include proper imports: from hypothesis import given, strategies as st
+5. The test should be self-contained and executable.
+
+Return ONLY raw Python code. NO MARKDOWN. NO EXPLANATIONS.
+"""
+            
+            test_code = await self.ctx.resilient_mutation(self.name, prompt)
+            
+            if not test_code or len(test_code.strip()) < 20:
+                return
+            
+            # Save ephemeral test
+            test_name = f"tests/prop_test_{int(time.time())}.py"
+            os.makedirs("tests", exist_ok=True)
+            
+            if self.ctx.write_compliant_file(test_name, test_code):
+                # Run the property test
+                proc = await asyncio.create_subprocess_exec(
+                    sys.executable, "-m", "pytest", test_name, "-v", "--tb=short",
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+                stdout, stderr = await proc.communicate()
+                
+                output = stdout.decode() + stderr.decode()
+                
+                if proc.returncode != 0:
+                    # Check for Hypothesis falsifying example
+                    if "Falsifying example" in output:
+                        # Extract counter-example if possible
+                        counter_example = "See pytest output for counter-example"
+                        for line in output.split('\n'):
+                            if "Falsifying example" in line:
+                                counter_example = line.strip()
+                                break
+                        
+                        self.ctx.report_property_failure(file_path, counter_example)
+                        print(f"   🚨 Property Violated in {file_path}")
+                    else:
+                        print(f"   ⚠️  Property test failed (non-Hypothesis error): {file_path}")
+                else:
+                    print(f"   ✅ Property tests passed: {file_path}")
+                
+                # Cleanup ephemeral test file
+                try:
+                    os.remove(test_name)
+                except Exception:
+                    pass
+                    
+        except Exception as e:
+            print(f"   ⚠️  Property Check Error for {file_path}: {e}")
 
 # ==============================================================================
 # THE TOOLSMITH (L5 Dynamic Agency)
