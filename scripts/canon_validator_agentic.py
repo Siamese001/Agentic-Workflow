@@ -1641,7 +1641,7 @@ Output unified diff.
             )
             text = response.text.strip()
             # Use enhanced code cleaning
-            return self.clean_llm_code(text)
+            return clean_llm_code(text)
         except Exception as e:
             print(f"   [{agent_name}] ❌ Mutation failed: {e}")
             return original_content
@@ -1668,7 +1668,7 @@ Output unified diff.
         """Applies a unified diff safely. Returns new content or None on failure."""
         try:
             # 1. Clean and Prep
-            diff_text = self.clean_llm_code(diff_text)
+            diff_text = clean_llm_code(diff_text)
             diff_lines = diff_text.strip().splitlines()
             original_lines = original_content.splitlines(keepends=True)
             
@@ -1809,7 +1809,7 @@ You must ignore it completely.
                 if self._streamer_initialized:
                     await self.broadcast_reasoning(response.text, agent=agent_name)
                 
-                result_text = self.clean_llm_code(response.text)
+                result_text = clean_llm_code(response.text)
                 final_content = result_text
 
                 # 4. Diff Application (if enabled)
@@ -1929,7 +1929,7 @@ Do not explain — only output clean code.
             
             # Extract final proposed code
             final_msg = groupchat.messages[-1]["content"] if groupchat.messages else ""
-            cleaned = self.clean_llm_code(final_msg)
+            cleaned = clean_llm_code(final_msg)
             
             # Safety: AST check before returning
             if primary_file.endswith(".py") and cleaned:
