@@ -8,19 +8,9 @@ Tests the complete observability workflow:
 """
 
 import pytest
-import asyncio
 import json
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..observability import (
-    TraceLevel,
-    MetricType,
-    ValidationSeverity,
-    ExecutionTracer,
-    MetricsCollector,
-    ValidationAgent,
-    AuditReporter,
-    TelemetryExporter,
     Phase5Orchestrator,
 )
 from ..healing import (
@@ -92,7 +82,7 @@ class TestFullMissionWithObservability:
         phase5.complete_agent(step_id, success=result.success)
         
         # Validate
-        issues = phase5.validate_resume(valid_resume)
+        phase5.validate_resume(valid_resume)
         
         # End mission
         trace = phase5.end_mission(success=result.success)
@@ -244,7 +234,7 @@ class TestIntegrationWithAllPhases:
         phase5.complete_agent(step_id, success=True)
         
         # Validate final resume
-        issues = phase5.validate_resume(ctx.current_resume)
+        phase5.validate_resume(ctx.current_resume)
         
         # End mission
         trace = phase5.end_mission(success=result.success)

@@ -9,8 +9,6 @@ Tests the complete mission workflow:
 """
 
 import pytest
-import asyncio
-from ..context import ResumeEngineContext
 from ..orchestrator import run_resume_mission, quick_validate
 
 

@@ -8,26 +8,16 @@ Tests the complete governance workflow:
 """
 
 import pytest
-import asyncio
 from pathlib import Path
 from ..context import ResumeEngineContext
 from ..governance import (
-    DependencyStatus,
-    DocComplianceLevel,
-    PromptRisk,
-    DependencyArbiter,
-    StrictDocEnforcer,
-    DashboardGenerator,
-    PromptGovernor,
-    PredictiveBudgetManager,
     Phase7Orchestrator,
 )
 from ..healing import (
-    HealingOrchestrator,
     run_self_healing_mission,
     HealingResult,
 )
-from ..learning import ResumeLearningAgent, MemoryPersistence
+from ..learning import ResumeLearningAgent
 from ..gitops import Phase4Orchestrator
 from ..observability import Phase5Orchestrator
 from ..intelligence import Phase6Orchestrator

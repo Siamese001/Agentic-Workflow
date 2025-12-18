@@ -15,15 +15,13 @@ import os
 import re
 import subprocess
 import sys
-import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 from .context import ResumeEngineContext
-from .learning import ConfidenceScorer, ConfidenceResult, ConfidenceLevel
+from .learning import ConfidenceScorer
 
 
 class MutationMode(Enum):

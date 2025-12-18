@@ -11,7 +11,6 @@ import os
 import time
 from typing import List, Dict, Any, Optional, Callable
 from dataclasses import dataclass, field
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +66,7 @@ def _worker_generate_resume(payload: Dict) -> ResumeResult:
         
         # Extract payload data
         job_description = payload.get('job_description', '')
-        user_profile = payload.get('user_profile', {})
+        payload.get('user_profile', {})
         output_format = payload.get('output_format', 'pdf')
         
         # Simulate or call actual heavy generation logic

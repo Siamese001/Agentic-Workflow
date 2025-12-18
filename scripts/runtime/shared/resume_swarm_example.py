@@ -6,9 +6,9 @@ including PDF generation, heavy parsing, and document formatting.
 
 import logging
 import time
-from typing import Dict, Any, List
+from typing import Dict
 
-from resume_swarm import ResumeSwarm, create_resume_swarm, ResumeResult, _worker_generate_resume
+from resume_swarm import create_resume_swarm, ResumeResult
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -160,7 +160,7 @@ def example_performance_comparison():
     logger.info(f"\nSequential processing ({num_jobs} jobs)...")
     swarm_seq = create_resume_swarm(num_workers=1)
     start_seq = time.time()
-    results_seq = swarm_seq.generate_batch(jobs)
+    swarm_seq.generate_batch(jobs)
     time_seq = time.time() - start_seq
     
     logger.info(f"  Time: {time_seq:.2f}s")
@@ -170,7 +170,7 @@ def example_performance_comparison():
     logger.info(f"\nParallel processing ({num_jobs} jobs, 6 workers)...")
     swarm_par = create_resume_swarm(num_workers=6)
     start_par = time.time()
-    results_par = swarm_par.generate_batch(jobs)
+    swarm_par.generate_batch(jobs)
     time_par = time.time() - start_par
     
     logger.info(f"  Time: {time_par:.2f}s")

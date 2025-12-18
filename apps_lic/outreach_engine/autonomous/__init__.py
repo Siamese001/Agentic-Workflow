@@ -38,8 +38,6 @@ from .learning import (
     OutreachLearningAgent,
 )
 from .observability import (
-    OutreachTraceLevel,
-    OutreachMetricType,
     OutreachExecutionTracer,
     OutreachMetricsCollector,
     OutreachAuditReporter,

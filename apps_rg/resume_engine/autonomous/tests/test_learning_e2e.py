@@ -10,8 +10,6 @@ Tests the complete learning workflow:
 
 import pytest
 import asyncio
-import tempfile
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..learning import (
     LearningLoop,
@@ -19,7 +17,6 @@ from ..learning import (
     InstructionInjector,
     MemoryPersistence,
     ResumeLearningAgent,
-    ConfidenceLevel,
 )
 from ..healing import (
     HealingOrchestrator,
@@ -431,7 +428,7 @@ class TestComprehensiveWorkflow:
             )
         
         # 6. Verify all components have state
-        learning_stats = learning_agent.get_comprehensive_stats()
+        learning_agent.get_comprehensive_stats()
         memory_stats = memory.get_stats()
         
         assert result.success is True

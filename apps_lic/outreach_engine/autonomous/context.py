@@ -6,8 +6,7 @@ outreach engine, including campaign state, signals, and budget tracking.
 """
 
 import os
-import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
 

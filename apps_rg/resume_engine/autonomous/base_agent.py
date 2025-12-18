@@ -7,7 +7,7 @@ the execute() method for their specific functionality.
 
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from .context import ResumeEngineContext
 

@@ -9,11 +9,9 @@ import logging
 from typing import List
 import numpy as np
 
-from batch_embeddings import BatchEmbeddingService, create_batch_embedding_service
+from batch_embeddings import create_batch_embedding_service
 from memory_vector_store import (
-    InMemoryVectorCache, 
-    TieredVectorStore,
-    create_memory_vector_cache,
+    create_memory_vector_cache, 
     create_tiered_vector_store
 )
 

@@ -9,9 +9,6 @@ Tests the integration of GitOps components:
 """
 
 import pytest
-import asyncio
-import tempfile
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..gitops import (
     MutationMode,
@@ -22,7 +19,6 @@ from ..gitops import (
     Phase4Orchestrator,
 )
 from ..healing import (
-    HealingOrchestrator,
     HealingCycle,
     HealingStrategy,
 )
@@ -76,7 +72,7 @@ class TestGitOpsWithHealingCycles:
         
         # Run healing cycle
         cycle = HealingCycle(ctx, cycle_number=1)
-        result = await cycle.execute(HealingStrategy.VERIFICATION_ONLY)
+        await cycle.execute(HealingStrategy.VERIFICATION_ONLY)
         
         # Verify backup exists
         assert str(test_file) in gitops._backups
@@ -292,7 +288,7 @@ class TestCrossComponentIntegration:
     async def test_gitops_mutator_integration(self, ctx, temp_dir):
         """Test GitOps and Mutator working together."""
         gitops = GitOpsManager(ctx, enable_git=False)
-        mutator = ResilientMutator(ctx)
+        ResilientMutator(ctx)
         
         # Create file
         test_file = temp_dir / "module.py"

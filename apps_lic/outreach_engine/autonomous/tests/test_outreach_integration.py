@@ -18,13 +18,10 @@ from apps_lic.outreach_engine.autonomous.agents import (
     LeadQualityAgent,
     ContactValidatorAgent,
     MessageComplianceAgent,
-    OutreachTestPilot,
-    CampaignPlanner,
 )
 from apps_lic.outreach_engine.autonomous.healing import (
     OutreachHealingOrchestrator,
     OutreachSignalRouter,
-    run_outreach_healing_mission,
 )
 from apps_lic.outreach_engine.autonomous.learning import (
     OutreachLearningLoop,
@@ -284,7 +281,7 @@ class TestBudgetIntegration:
         ctx.leads = valid_leads
         ctx.messages = valid_messages
         
-        initial_cost = ctx.budget.current_cost
+        ctx.budget.current_cost
         
         orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=2)
         await orchestrator.run()

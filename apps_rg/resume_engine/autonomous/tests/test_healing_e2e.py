@@ -8,12 +8,9 @@ Tests the complete self-healing workflow:
 """
 
 import pytest
-import asyncio
-from ..context import ResumeEngineContext
 from ..healing import (
     HealingResult,
     run_self_healing_mission,
-    HealingOrchestrator,
 )
 
 

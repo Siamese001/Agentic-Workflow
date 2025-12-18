@@ -11,7 +11,6 @@ This module provides advanced learning and intelligence capabilities:
 import asyncio
 import hashlib
 import json
-import os
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -256,7 +255,6 @@ class LearningLoop:
     async def _upsert_pinecone(self, example: LearningExample):
         """Upsert example to Pinecone."""
         # Would use actual Pinecone client
-        pass
     
     def get_stats(self) -> Dict[str, Any]:
         """Get learning statistics."""

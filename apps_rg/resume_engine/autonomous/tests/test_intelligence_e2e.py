@@ -8,20 +8,11 @@ Tests the complete intelligence workflow:
 """
 
 import pytest
-import asyncio
-import json
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..intelligence import (
-    SecurityHardener,
-    SemanticAnalyzer,
-    StrategicAdvisor,
-    OmniContext,
-    UnifiedOrchestrator,
     Phase6Orchestrator,
 )
 from ..healing import (
-    HealingOrchestrator,
     run_self_healing_mission,
     HealingResult,
 )

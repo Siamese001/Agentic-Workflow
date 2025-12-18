@@ -9,19 +9,14 @@ Tests the integration of observability components:
 """
 
 import pytest
-import asyncio
 import json
-from pathlib import Path
 from ..context import ResumeEngineContext
 from ..observability import (
-    TraceLevel,
     MetricType,
-    ValidationSeverity,
     ExecutionTracer,
     MetricsCollector,
     ValidationAgent,
     AuditReporter,
-    TelemetryExporter,
     Phase5Orchestrator,
 )
 from ..healing import (
@@ -64,7 +59,7 @@ class TestTracerWithHealingCycles:
         ctx.current_resume = valid_resume
         
         tracer = ExecutionTracer(ctx)
-        trace_id = tracer.start_trace("healing_mission_1")
+        tracer.start_trace("healing_mission_1")
         
         # Run healing cycle
         cycle = HealingCycle(ctx, cycle_number=1)
@@ -172,7 +167,7 @@ class TestValidatorWithResumeProcessing:
         issues = validator.validate_resume(valid_resume)
         
         # Check that validator examined multiple sections
-        sections_checked = set(i.file_path for i in issues)
+        set(i.file_path for i in issues)
         # Even valid resumes may have some info-level issues
         assert validator.get_stats()["total_issues"] >= 0
 
@@ -251,7 +246,7 @@ class TestPhase5WithPreviousPhases:
         phase5.metrics.increment("instructions.injected")
         
         # Validate
-        issues = phase5.validate_resume(valid_resume)
+        phase5.validate_resume(valid_resume)
         
         # End mission
         phase5.end_mission(success=True)
@@ -301,12 +296,12 @@ class TestPhase5WithPreviousPhases:
         # Track healing
         step_id = phase5.track_agent("HealingOrchestrator", "run")
         healing = HealingOrchestrator(ctx, max_cycles=2)
-        result = await healing.run()
+        await healing.run()
         # Mark step as successful if healing ran (even if not fully converged)
         phase5.complete_agent(step_id, success=True)
         
         # Validate result
-        issues = phase5.validate_resume(ctx.current_resume)
+        phase5.validate_resume(ctx.current_resume)
         
         # End mission - success if healing ran without errors
         trace = phase5.end_mission(success=True)

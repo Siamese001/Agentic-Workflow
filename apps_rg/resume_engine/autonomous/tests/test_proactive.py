@@ -18,8 +18,6 @@ from apps_rg.resume_engine.autonomous.context import ResumeEngineContext
 from apps_rg.resume_engine.autonomous.proactive import (
     TaskPriority,
     HandoffReason,
-    ProactiveTask,
-    HandoffRequest,
     CapabilityProfile,
     ProactiveScheduler,
     PredictiveHandoff,

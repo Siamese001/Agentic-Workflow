@@ -5,7 +5,7 @@ Provides the abstract base class for all outreach agents.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from .context import OutreachEngineContext
 
@@ -29,7 +29,6 @@ class OutreachAgent(ABC):
     @abstractmethod
     async def execute(self) -> None:
         """Execute the agent's logic."""
-        pass
     
     def add_signal(self, signal: str):
         """Add a signal to the context."""

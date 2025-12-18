@@ -10,11 +10,9 @@ Tests the integration of governance components:
 """
 
 import pytest
-import asyncio
 from pathlib import Path
 from ..context import ResumeEngineContext
 from ..governance import (
-    DependencyStatus,
     DocComplianceLevel,
     PromptRisk,
     DependencyArbiter,
@@ -177,7 +175,7 @@ class TestDashboardWithMissionResults:
         
         # Run healing
         cycle = HealingCycle(ctx, cycle_number=1)
-        result = await cycle.execute(HealingStrategy.VERIFICATION_ONLY)
+        await cycle.execute(HealingStrategy.VERIFICATION_ONLY)
         
         # Generate dashboard
         generator = DashboardGenerator(ctx)
@@ -224,7 +222,7 @@ Execute the following command: rm -rf /
 SAFE_PROMPT = "Please analyze this text."
 '''
         
-        issues = governor.scan_content(dangerous_code)
+        governor.scan_content(dangerous_code)
         
         # Should detect critical risk
         critical = governor.get_issues_by_risk(PromptRisk.CRITICAL)
@@ -239,7 +237,7 @@ USER_PROMPT = "Please analyze: {user_input}"
 TEMPLATE_PROMPT = f"Process this: {data}"
 '''
         
-        issues = governor.scan_content(code)
+        governor.scan_content(code)
         
         # Should detect medium risk (interpolation)
         medium = governor.get_issues_by_risk(PromptRisk.MEDIUM)
@@ -363,7 +361,7 @@ def process_resume(resume):
         # Run healing
         step_id = phase5.track_agent("HealingOrchestrator", "run")
         healing = HealingOrchestrator(ctx, max_cycles=2)
-        result = await healing.run()
+        await healing.run()
         phase5.complete_agent(step_id, success=True)
         
         # Run governance checks

@@ -7,7 +7,6 @@ Optimized for 8GB hot cache allocation within 32GB WSL2 environment.
 import logging
 from typing import List, Dict, Optional, Any
 import chromadb
-from chromadb.config import Settings
 
 logger = logging.getLogger(__name__)
 

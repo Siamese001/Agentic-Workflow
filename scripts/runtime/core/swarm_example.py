@@ -6,9 +6,9 @@ in resume generation and other agentic workflows.
 
 import asyncio
 import logging
-from typing import Dict, Any, List
+from typing import Dict, Any
 
-from subatomic_swarm import SubatomicSwarm, create_subatomic_swarm, SwarmResult
+from subatomic_swarm import create_subatomic_swarm, SwarmResult
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

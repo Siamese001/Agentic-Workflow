@@ -8,11 +8,10 @@ This module provides the core self-healing capabilities:
 - AutomaticRollback: Handles rollback on critical failures
 """
 
-import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 from .context import ResumeEngineContext
 from .base_agent import ResumeAgent

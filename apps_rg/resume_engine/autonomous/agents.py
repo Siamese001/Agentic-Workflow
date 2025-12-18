@@ -15,10 +15,9 @@ This module contains all specialized agents for autonomous resume generation:
 
 import re
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 from .base_agent import ResumeAgent
-from .context import ResumeEngineContext
 
 
 class ContentQualityAgent(ResumeAgent):
@@ -586,8 +585,8 @@ class StrategicPlanner(ResumeAgent):
         
         # Analyze current state
         signals = list(self.ctx.signals)
-        failed = list(self.ctx.get_failed_results().keys())
-        modified = list(self.ctx.modified_sections)
+        list(self.ctx.get_failed_results().keys())
+        list(self.ctx.modified_sections)
         impact = list(self.ctx.impact_zone)
         
         plan = {
