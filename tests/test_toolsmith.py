@@ -5,10 +5,10 @@ Tests diagnostic script creation when TEST_FAILURE signals occur.
 These tests verify the "All Tests Pass" provision for L5 Full Autonomy.
 """
 import os
-import pytest
 import time
 from unittest.mock import AsyncMock
 
+import pytest
 
 # ==============================================================================
 # STANDALONE TOOLSMITH IMPLEMENTATION FOR TESTING

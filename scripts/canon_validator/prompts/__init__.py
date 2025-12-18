@@ -3,33 +3,15 @@ Canon Validator Prompts Package.
 All few-shot prompting constants re-exported for backward compatibility.
 """
 
-from .core import (
-    POSITIVE_INSTRUCTIONAL_CONTEXT,
-    FEW_SHOT_GITOPS,
-    FEW_SHOT_SHERLOCK,
-)
-from .refactoring import (
-    FEW_SHOT_GLOBAL_REFACTOR,
-    FEW_SHOT_IMPORT_FIXES,
-)
-from .testing import (
-    FEW_SHOT_PROPERTY_TESTS,
-    FEW_SHOT_TESTPILOT,
-)
-from .safety import (
-    FEW_SHOT_SAFETY,
-    FEW_SHOT_CONCURRENCY,
-)
-from .style import (
-    FEW_SHOT_STYLE,
-    FEW_SHOT_HYGIENE,
-)
-from .reflection import (
-    FEW_SHOT_REFLECTION_STRATEGY,
-    FEW_SHOT_STRATEGIC,
-    FEW_SHOT_REFLECTION_ENHANCED,
-)
+from .core import (FEW_SHOT_GITOPS, FEW_SHOT_SHERLOCK,
+                   POSITIVE_INSTRUCTIONAL_CONTEXT)
 from .historian import FEW_SHOT_HISTORIAN
+from .refactoring import FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_IMPORT_FIXES
+from .reflection import (FEW_SHOT_REFLECTION_ENHANCED,
+                         FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_STRATEGIC)
+from .safety import FEW_SHOT_CONCURRENCY, FEW_SHOT_SAFETY
+from .style import FEW_SHOT_HYGIENE, FEW_SHOT_STYLE
+from .testing import FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_TESTPILOT
 
 # Aggregate all prompts for easy access
 FEW_SHOT_PROMPTS = {

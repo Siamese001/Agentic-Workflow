@@ -4,7 +4,7 @@ Investigates test failures and proposes targeted fixes.
 """
 
 import asyncio
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     pass

@@ -3,40 +3,36 @@ Canon Validator Agents Package.
 All validation agents are exported from this module.
 """
 
+from .architecture_governor import ArchitectureGovernor
+from .benchmarking_agent import BenchmarkingAgent
+from .code_style_guardian import CodeStyleGuardian
+from .concurrency_guardian import ConcurrencyGuardian
+from .deadlock_detector import DeadlockDetector
+from .dependency_sentinel import DependencySentinel
+from .doc_enforcer import DocEnforcer
+from .git_agent import GitAgent
 # Batch 2: Core agents
 from .historian import Historian
-from .architecture_governor import ArchitectureGovernor
 from .hygiene_guardian import HygieneGuardian
-from .code_style_guardian import CodeStyleGuardian
-from .dependency_sentinel import DependencySentinel
-
+from .memory_leak_detector import MemoryLeakDetector
+from .naming_enforcer import NamingEnforcer
+from .pattern_enforcer import PatternEnforcer
+from .performance_enforcer import PerformanceEnforcer
+from .reflection_agent import ReflectionAgent
 # Batch 3: Safety and testing agents
 from .safety_inspector import SafetyInspector
-from .concurrency_guardian import ConcurrencyGuardian
-from .test_pilot import TestPilot
-from .structural_engineer import StructuralEngineer
-from .pattern_enforcer import PatternEnforcer
-
 # Batch 4: Security and performance agents
 from .security_enforcer import SecurityEnforcer
-from .performance_enforcer import PerformanceEnforcer
-from .memory_leak_detector import MemoryLeakDetector
-from .deadlock_detector import DeadlockDetector
 from .sherlock import Sherlock
-
 # Batch 5: Strategic and operational agents
 from .strategic_planner import StrategicPlanner
-from .reflection_agent import ReflectionAgent
-from .git_agent import GitAgent
-from .benchmarking_agent import BenchmarkingAgent
-from .toolsmith_agent import ToolsmithAgent
-
+from .structural_engineer import StructuralEngineer
+from .test_pilot import TestPilot
+from .the_cartographer import TheCartographer, TheOmniContext
 # Batch 6: Refinement and optimization agents
 from .the_strategist import TheStrategist
-from .naming_enforcer import NamingEnforcer
-from .doc_enforcer import DocEnforcer
+from .toolsmith_agent import ToolsmithAgent
 from .type_enforcer import TypeEnforcer
-from .the_cartographer import TheCartographer, TheOmniContext
 
 __all__ = [
     # Core agents

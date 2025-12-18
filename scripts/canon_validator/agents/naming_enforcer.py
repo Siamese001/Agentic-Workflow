@@ -5,9 +5,9 @@ Enforces intention-revealing names and PEP 8 compliance.
 
 import ast
 import asyncio
-import time
 import datetime
-from typing import Dict, List, TYPE_CHECKING
+import time
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     pass

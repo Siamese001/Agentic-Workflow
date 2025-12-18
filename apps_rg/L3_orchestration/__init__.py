@@ -16,12 +16,8 @@ logger = logging.getLogger(__name__)
 
 # L5+ Autonomous Orchestrator (Canon Validator parity)
 from apps_rg.L3_orchestration.l5_autonomous_orchestrator import (
-    L5AutonomousOrchestrator,
-    create_l5_orchestrator,
-    ExecutionPhase,
-    CycleState,
-    WorkflowSnapshot,
-)
+    CycleState, ExecutionPhase, L5AutonomousOrchestrator, WorkflowSnapshot,
+    create_l5_orchestrator)
 
 __all__: list[str] = [
     # L5+ Autonomous Orchestrator

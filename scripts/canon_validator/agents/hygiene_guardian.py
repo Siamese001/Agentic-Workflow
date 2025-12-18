@@ -6,7 +6,7 @@ Merges GenerativeGuard (Key 45) and TheCurator (File Taxonomy).
 import asyncio
 import os
 import re
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     pass

@@ -9,65 +9,25 @@ This package provides the complete Canon Validator infrastructure:
 - Individual agents for each validation domain
 """
 
-from .config import (
-    EXCLUDED_DIRS,
-    EXCLUDED_FILES,
-    ALLOWED_ROOT_FOLDERS,
-    ALLOWED_ROOT_FILES,
-    MIN_DEPTH,
-    MAX_DEPTH,
-    MAX_LINES,
-    MIN_LINES,
-    get_python_files,
-    is_excluded,
-)
-from .types import (
-    ValidationContext,
-    DependencyGraph,
-    BudgetManager,
-)
-from .base import (
-    SubAtomicAgent,
-    ImportPatcher,
-)
-from .prompts import (
-    POSITIVE_INSTRUCTIONAL_CONTEXT,
-    FEW_SHOT_GLOBAL_REFACTOR,
-    FEW_SHOT_PROMPTS,
-)
-
 # All agents
-from .agents import (
-    Historian,
-    ArchitectureGovernor,
-    HygieneGuardian,
-    CodeStyleGuardian,
-    DependencySentinel,
-    SafetyInspector,
-    ConcurrencyGuardian,
-    TestPilot,
-    StructuralEngineer,
-    PatternEnforcer,
-    SecurityEnforcer,
-    PerformanceEnforcer,
-    MemoryLeakDetector,
-    DeadlockDetector,
-    Sherlock,
-    StrategicPlanner,
-    ReflectionAgent,
-    GitAgent,
-    BenchmarkingAgent,
-    ToolsmithAgent,
-    TheStrategist,
-    NamingEnforcer,
-    DocEnforcer,
-    TypeEnforcer,
-    TheCartographer,
-    TheOmniContext,
-)
-
+from .agents import (ArchitectureGovernor, BenchmarkingAgent,
+                     CodeStyleGuardian, ConcurrencyGuardian, DeadlockDetector,
+                     DependencySentinel, DocEnforcer, GitAgent, Historian,
+                     HygieneGuardian, MemoryLeakDetector, NamingEnforcer,
+                     PatternEnforcer, PerformanceEnforcer, ReflectionAgent,
+                     SafetyInspector, SecurityEnforcer, Sherlock,
+                     StrategicPlanner, StructuralEngineer, TestPilot,
+                     TheCartographer, TheOmniContext, TheStrategist,
+                     ToolsmithAgent, TypeEnforcer)
+from .base import ImportPatcher, SubAtomicAgent
+from .config import (ALLOWED_ROOT_FILES, ALLOWED_ROOT_FOLDERS, EXCLUDED_DIRS,
+                     EXCLUDED_FILES, MAX_DEPTH, MAX_LINES, MIN_DEPTH,
+                     MIN_LINES, get_python_files, is_excluded)
 # Orchestrator
-from .orchestrator import SwarmScheduler, IntelligentOrchestrator
+from .orchestrator import IntelligentOrchestrator, SwarmScheduler
+from .prompts import (FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_PROMPTS,
+                      POSITIVE_INSTRUCTIONAL_CONTEXT)
+from .types import BudgetManager, DependencyGraph, ValidationContext
 
 __all__ = [
     # Config

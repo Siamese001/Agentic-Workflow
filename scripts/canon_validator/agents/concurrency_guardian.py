@@ -5,7 +5,7 @@ KEYS: 61 (Race Conditions), 63 (Livelock), 64 (Starvation)
 
 import asyncio
 import re
-from typing import Dict, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     pass

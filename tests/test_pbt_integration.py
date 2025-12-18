@@ -7,10 +7,10 @@ These tests verify the "All Tests Pass" provision for L5 Full Autonomy.
 import asyncio
 import os
 import sys
-import pytest
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 
 # ==============================================================================
 # STANDALONE IMPLEMENTATIONS FOR TESTING

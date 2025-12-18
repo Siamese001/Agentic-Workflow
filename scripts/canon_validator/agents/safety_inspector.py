@@ -5,7 +5,7 @@ KEYS: 2 (Print Statements), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (
 
 import ast
 import asyncio
-from typing import List, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Tuple
 
 if TYPE_CHECKING:
     pass

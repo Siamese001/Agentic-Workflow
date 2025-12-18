@@ -5,10 +5,10 @@ Tests GitPython integration for branching, commits, and remote push operations.
 These tests verify the "All Tests Pass" provision for L5 Full Autonomy.
 """
 import os
-import pytest
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 
 # ==============================================================================
 # STANDALONE IMPLEMENTATIONS FOR TESTING
@@ -59,7 +59,7 @@ class GitAgent:
     
     async def _execute_gitpython(self):
         """L5 GitPython-based execution with remote support."""
-        from git import Repo, GitCommandError
+        from git import GitCommandError, Repo
         
         try:
             repo = Repo('.')

@@ -25,63 +25,19 @@ if sys.platform == "win32":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Re-export everything from the modularized package
-from canon_validator import (
-    # Config
-    EXCLUDED_DIRS,
-    EXCLUDED_FILES,
-    ALLOWED_ROOT_FOLDERS,
-    ALLOWED_ROOT_FILES,
-    MIN_DEPTH,
-    MAX_DEPTH,
-    MAX_LINES,
-    is_excluded,
-    get_python_files,
-    # Types
-    ValidationContext,
-    DependencyGraph,
-    BudgetManager,
-    # Base
-    SubAtomicAgent,
-    ImportPatcher,
-    # Prompts
-    POSITIVE_INSTRUCTIONAL_CONTEXT,
-    FEW_SHOT_GLOBAL_REFACTOR,
-    FEW_SHOT_PROMPTS,
-    # Core Agents
-    Historian,
-    ArchitectureGovernor,
-    HygieneGuardian,
-    CodeStyleGuardian,
-    DependencySentinel,
-    # Safety and Testing Agents
-    SafetyInspector,
-    ConcurrencyGuardian,
-    TestPilot,
-    StructuralEngineer,
-    PatternEnforcer,
-    # Security and Performance Agents
-    SecurityEnforcer,
-    PerformanceEnforcer,
-    MemoryLeakDetector,
-    DeadlockDetector,
-    Sherlock,
-    # Strategic and Operational Agents
-    StrategicPlanner,
-    ReflectionAgent,
-    GitAgent,
-    BenchmarkingAgent,
-    ToolsmithAgent,
-    # Refinement and Optimization Agents
-    TheStrategist,
-    NamingEnforcer,
-    DocEnforcer,
-    TypeEnforcer,
-    TheCartographer,
-    TheOmniContext,
-    # Orchestrator
-    SwarmScheduler,
-    IntelligentOrchestrator,
-)
+from canon_validator import (  # Config; Types; Base; Prompts; Core Agents; Safety and Testing Agents; Security and Performance Agents; Strategic and Operational Agents; Refinement and Optimization Agents; Orchestrator
+    ALLOWED_ROOT_FILES, ALLOWED_ROOT_FOLDERS, EXCLUDED_DIRS, EXCLUDED_FILES,
+    FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_PROMPTS, MAX_DEPTH, MAX_LINES,
+    MIN_DEPTH, POSITIVE_INSTRUCTIONAL_CONTEXT, ArchitectureGovernor,
+    BenchmarkingAgent, BudgetManager, CodeStyleGuardian, ConcurrencyGuardian,
+    DeadlockDetector, DependencyGraph, DependencySentinel, DocEnforcer,
+    GitAgent, Historian, HygieneGuardian, ImportPatcher,
+    IntelligentOrchestrator, MemoryLeakDetector, NamingEnforcer,
+    PatternEnforcer, PerformanceEnforcer, ReflectionAgent, SafetyInspector,
+    SecurityEnforcer, Sherlock, StrategicPlanner, StructuralEngineer,
+    SubAtomicAgent, SwarmScheduler, TestPilot, TheCartographer, TheOmniContext,
+    TheStrategist, ToolsmithAgent, TypeEnforcer, ValidationContext,
+    get_python_files, is_excluded)
 
 # Legacy alias for backward compatibility
 IntelligentOrchestrator = SwarmScheduler

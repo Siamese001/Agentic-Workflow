@@ -7,8 +7,9 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, Dict
 
+from apps_lic.L3_orchestration.l5_orchestrator.types import (
+    OutreachCycleState, OutreachExecutionPhase)
 from apps_shared.signal_bus import SignalType
-from apps_lic.L3_orchestration.l5_orchestrator.types import OutreachExecutionPhase, OutreachCycleState
 
 logger = logging.getLogger(__name__)
 

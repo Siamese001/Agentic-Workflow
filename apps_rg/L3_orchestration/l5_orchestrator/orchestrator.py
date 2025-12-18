@@ -4,36 +4,29 @@ L5 Autonomous Orchestrator - Main Class and Convergence Loop
 
 import copy
 import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
 # Import L5+ autonomy components
 try:
-    from apps_shared.signal_bus import (
-        SignalType,
-        get_signal_bus,
-    )
-    from apps_shared.reflection_agent import (
-        ReflectionDecision,
-        create_reflection_agent,
-    )
-    from apps_shared.intervention_server import (
-        get_intervention_server,
-    )
+    from apps_shared.intervention_server import get_intervention_server
+    from apps_shared.reflection_agent import (ReflectionDecision,
+                                              create_reflection_agent)
+    from apps_shared.signal_bus import SignalType, get_signal_bus
     AUTONOMY_COMPONENTS_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"L5+ autonomy components not available: {e}")
     AUTONOMY_COMPONENTS_AVAILABLE = False
 
-from apps_rg.L3_orchestration.l5_orchestrator.types import (
-    ExecutionPhase,
-    CycleState,
-    WorkflowSnapshot,
-)
-from . import phase_executor, intervention_handler, reflection_handler, snapshot_manager
+from apps_rg.L3_orchestration.l5_orchestrator.types import (CycleState,
+                                                            ExecutionPhase,
+                                                            WorkflowSnapshot)
+
+from . import (intervention_handler, phase_executor, reflection_handler,
+               snapshot_manager)
 
 
 class L5AutonomousOrchestrator:

@@ -244,9 +244,8 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
     results = VerificationResults("Resume Engine")
     
     try:
-        from apps_rg.L3_orchestration.l5_autonomous_orchestrator import (
-            create_l5_orchestrator,
-        )
+        from apps_rg.L3_orchestration.l5_autonomous_orchestrator import \
+            create_l5_orchestrator
         from apps_shared.signal_bus import reset_signal_bus
         
         results.record("Import", True, "Components imported successfully")
@@ -391,9 +390,8 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
     results = VerificationResults("Outreach Engine")
     
     try:
-        from apps_lic.L3_orchestration.l5_autonomous_orchestrator import (
-            create_l5_outreach_orchestrator,
-        )
+        from apps_lic.L3_orchestration.l5_autonomous_orchestrator import \
+            create_l5_outreach_orchestrator
         from apps_shared.signal_bus import reset_signal_bus
         
         results.record("Import", True, "Components imported successfully")
@@ -539,8 +537,8 @@ async def verify_direct_signal_emission() -> VerificationResults:
     results = VerificationResults("Direct Signal Test")
     
     try:
-        from apps_shared.signal_bus import reset_signal_bus, SignalType
-        
+        from apps_shared.signal_bus import SignalType, reset_signal_bus
+
         # Reset for clean state
         signal_bus = reset_signal_bus()
         

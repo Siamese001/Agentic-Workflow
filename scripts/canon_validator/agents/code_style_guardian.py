@@ -7,7 +7,7 @@ import ast
 import asyncio
 import os
 import re
-from typing import List, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Tuple
 
 if TYPE_CHECKING:
     pass
