@@ -56,7 +56,7 @@ class LocalDiskAdapter:
 
     def _get_path(self: Any, key: str) -> Path:
         """
-        Get safe path for a key, preventing directory traversal attacks.
+        Convert storage key to filesystem path.
 
         Args:
             key: Storage key
@@ -64,7 +64,10 @@ class LocalDiskAdapter:
         Returns:
             Safe path within base directory
         """
-        safe_key = Path(key).name
+        # Normalize path to prevent directory traversal
+        key = key.replace('\\', '/')
+        parts = [p for p in key.split('/') if p and p != '..']
+        safe_key = Path(*parts)
         full_path = self.base_path / safe_key
 
         if not str(full_path).startswith(str(self.base_path)):
@@ -398,7 +401,6 @@ class SignalLedger:
         try:
             data = await self.storage.read_blob(self.ledger_key)
             lines = data.decode('utf-8').strip().split('\n')
-            
             results = []
             for line in lines:
                 if line.strip():
@@ -407,3 +409,74 @@ class SignalLedger:
             return results
         except FileNotFoundError:
             return []
+    
+    async def get_phase_summary(self, phase_name: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get a summary of signals from a specific phase or the most recent phase.
+        
+        Args:
+            phase_name: Specific phase to get summary for, or None for most recent
+            
+        Returns:
+            Dictionary with phase summary including signals, results, and recommendations
+        """
+        results = await self.get_results()
+        
+        if not results:
+            return {}
+        
+        # Filter results by phase if specified
+        if phase_name:
+            phase_results = [r for r in results if r.get('phase') == phase_name]
+        else:
+            # Get most recent phase
+            phase_results = []
+            if results:
+                # Sort by timestamp and get the latest phase
+                latest_result = max(results, key=lambda x: x.get('timestamp', ''))
+                latest_phase = latest_result.get('phase')
+                if latest_phase:
+                    phase_results = [r for r in results if r.get('phase') == latest_phase]
+        
+        if not phase_results:
+            return {}
+        
+        # Extract signals and key information
+        summary = {
+            'phase': phase_results[0].get('phase', 'unknown'),
+            'timestamp': phase_results[0].get('timestamp'),
+            'total_results': len(phase_results),
+            'passed_count': sum(1 for r in phase_results if r.get('passed', False)),
+            'failed_count': sum(1 for r in phase_results if not r.get('passed', False)),
+            'signals': [],
+            'failed_agents': [],
+            'recommendations': []
+        }
+        
+        # Extract detailed information
+        for result in phase_results:
+            # Extract signals from the result
+            if 'result' in result and isinstance(result['result'], dict):
+                signals = result['result'].get('signals', [])
+                if signals:
+                    summary['signals'].extend(signals)
+            
+            # Track failed agents
+            if not result.get('passed', False):
+                agent_name = result.get('agent', 'unknown')
+                summary['failed_agents'].append({
+                    'agent': agent_name,
+                    'error': result.get('error', 'Unknown error'),
+                    'details': result.get('details', '')
+                })
+        
+        # Generate recommendations based on failures
+        if summary['failed_count'] > 0:
+            summary['recommendations'].append(f"Phase {summary['phase']} had {summary['failed_count']} failures")
+            summary['recommendations'].append("Consider re-running failed agents before proceeding")
+        
+        # Add specific recommendations for critical phases
+        if summary['phase'] == 'integrity_seq' and summary['failed_count'] > 0:
+            summary['recommendations'].append("CRITICAL: Integrity failures must be resolved before continuing")
+        
+        return summary

@@ -104,31 +104,51 @@ class SovereignSandbox:
         if not self._is_running:
             await self.start()
         
+        process = None
         try:
             cmd = [tool_path] + (args or [])
-            result = subprocess.run(
+            # Use Popen for better process control
+            process = subprocess.Popen(
                 cmd,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                timeout=30,
                 cwd=os.getcwd()
             )
             
-            return {
-                "success": result.returncode == 0,
-                "stdout": result.stdout,
-                "stderr": result.stderr,
-                "return_code": result.returncode,
-                "execution_time": time.time()
-            }
-        except subprocess.TimeoutExpired:
-            return {
-                "success": False,
-                "stdout": "",
-                "stderr": "Tool execution timed out",
-                "return_code": -1,
-                "execution_time": time.time()
-            }
+            # Wait with timeout
+            try:
+                stdout, stderr = process.communicate(timeout=30)
+                return {
+                    "success": process.returncode == 0,
+                    "stdout": stdout,
+                    "stderr": stderr,
+                    "return_code": process.returncode,
+                    "execution_time": time.time()
+                }
+            except subprocess.TimeoutExpired:
+                # Kill zombie process on timeout
+                LOGGER.warning(f"Tool {tool_path} timed out, cleaning up process {process.pid}")
+                try:
+                    process.terminate()
+                    # Give it a moment to terminate gracefully
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        # Force kill if it doesn't terminate
+                        process.kill()
+                        process.wait()
+                        LOGGER.warning(f"Force killed process {process.pid}")
+                except Exception as cleanup_error:
+                    LOGGER.error(f"Error cleaning up process {process.pid}: {cleanup_error}")
+                
+                return {
+                    "success": False,
+                    "stdout": "",
+                    "stderr": "Tool execution timed out and process was terminated",
+                    "return_code": -1,
+                    "execution_time": time.time()
+                }
         except Exception as e:
             return {
                 "success": False,
@@ -137,20 +157,34 @@ class SovereignSandbox:
                 "return_code": -1,
                 "execution_time": time.time()
             }
+        finally:
+            # Ensure process is cleaned up
+            if process and process.poll() is None:
+                try:
+                    process.terminate()
+                    process.wait(timeout=5)
+                except:
+                    try:
+                        process.kill()
+                        process.wait()
+                    except:
+                        pass
 
 
 class SovereignActionPlane(IActionPlane):
     """Sovereign action plane with Toolsmith and Sandbox."""
     
-    def __init__(self, safety_layer=None):
+    def __init__(self, safety_layer=None, signal_ledger=None):
         """Initialize the sovereign action plane.
         
         Args:
             safety_layer: L5 safety layer for validation
+            signal_ledger: L4 signal ledger for logging ExecutionResults
         """
         self._toolsmith = SovereignToolsmith()
         self._sandbox = SovereignSandbox()
         self._safety_layer = safety_layer
+        self._signal_ledger = signal_ledger
     
     def get_capabilities(self) -> List[Any]:
         """Get available action capabilities."""
@@ -168,34 +202,68 @@ class SovereignActionPlane(IActionPlane):
         if self._safety_layer:
             is_safe = await self._safety_layer.validate_action(request)
             if not is_safe:
-                return ActionResult(
+                result = ActionResult(
                     success=False,
                     output="",
                     error="Action blocked by L5 safety layer",
                     execution_time=time.time() - start_time
                 )
+                await self._log_to_signal_ledger(request, result)
+                return result
         
         try:
             if request.action_type == "tool_execution":
-                return await self._execute_tool(request, start_time)
+                result = await self._execute_tool(request, start_time)
             elif request.action_type == "diagnostic_tool_creation":
-                return await self._create_diagnostic_tool(request, start_time)
+                result = await self._create_diagnostic_tool(request, start_time)
             elif request.action_type == "file_operations":
-                return await self._execute_file_operation(request, start_time)
+                result = await self._execute_file_operation(request, start_time)
             else:
-                return ActionResult(
+                result = ActionResult(
                     success=False,
                     output="",
                     error=f"Unknown action type: {request.action_type}",
                     execution_time=time.time() - start_time
                 )
+            
+            # Log to signal ledger if available
+            await self._log_to_signal_ledger(request, result)
+            return result
+            
         except Exception as e:
-            return ActionResult(
+            result = ActionResult(
                 success=False,
                 output="",
                 error=str(e),
                 execution_time=time.time() - start_time
             )
+            await self._log_to_signal_ledger(request, result)
+            return result
+    
+    async def _log_to_signal_ledger(self, request: ActionRequest, result: ActionResult) -> None:
+        """Log the execution result to the signal ledger.
+        
+        Args:
+            request: The action request that was executed
+            result: The execution result
+        """
+        if self._signal_ledger:
+            # Create a combined execution result for logging
+            execution_result = {
+                "request": {
+                    "action_type": request.action_type,
+                    "parameters": request.parameters,
+                    "timestamp": time.time()
+                },
+                "result": {
+                    "success": result.success,
+                    "output": result.output,
+                    "error": result.error,
+                    "execution_time": result.execution_time,
+                    "metadata": getattr(result, 'metadata', {})
+                }
+            }
+            await self._signal_ledger.append_result(execution_result)
     
     async def execute_batch(self, requests: List[ActionRequest], parallel: bool = True) -> List[ActionResult]:
         """Execute multiple action requests."""
@@ -232,13 +300,82 @@ class SovereignActionPlane(IActionPlane):
         
         result = await self._sandbox.execute_tool(tool_path, args)
         
+        # Check for syntax error and attempt self-correction
+        if not result["success"] and "SyntaxError" in result["stderr"]:
+            LOGGER.warning(f"SyntaxError detected in {tool_path}, attempting self-correction")
+            repair_result = await self._attempt_tool_repair(tool_path, result["stderr"])
+            
+            if repair_result["success"]:
+                LOGGER.info(f"Successfully repaired tool {tool_path}, retrying execution")
+                # Retry execution with repaired tool
+                result = await self._sandbox.execute_tool(tool_path, args)
+        
         return ActionResult(
             success=result["success"],
             output=result["stdout"],
             error=result["stderr"] if not result["success"] else "",
             execution_time=time.time() - start_time,
-            metadata={"return_code": result["return_code"]}
+            metadata={
+                "return_code": result["return_code"],
+                "self_repaired": not result["success"] and "SyntaxError" in result.get("stderr", "")
+            }
         )
+    
+    async def _attempt_tool_repair(self, tool_path: str, error_message: str) -> Dict[str, Any]:
+        """Attempt to repair a tool that has a syntax error.
+        
+        Args:
+            tool_path: Path to the tool file
+            error_message: The error message from the failed execution
+            
+        Returns:
+            Dictionary with repair result
+        """
+        try:
+            # Read the problematic tool code
+            with open(tool_path, 'r') as f:
+                tool_code = f.read()
+            
+            # Simple syntax error fixes
+            fixed_code = tool_code
+            
+            # Fix common syntax errors
+            if "invalid syntax" in error_message:
+                # Try to fix missing colons, unmatched brackets, etc.
+                lines = tool_code.split('\n')
+                fixed_lines = []
+                
+                for i, line in enumerate(lines):
+                    # Fix missing colons after if/for/while/def/class
+                    if any(keyword in line for keyword in ['if ', 'for ', 'while ', 'def ', 'class ']) and not line.strip().endswith(':'):
+                        if not line.strip().startswith('#'):
+                            line = line.rstrip() + ':'
+                    
+                    # Fix unmatched parentheses (simple check)
+                    if line.count('(') != line.count(')'):
+                        # Add missing closing parenthesis
+                        if line.count('(') > line.count(')'):
+                            line = line.rstrip() + ')'
+                    
+                    fixed_lines.append(line)
+                
+                fixed_code = '\n'.join(fixed_lines)
+            
+            # Write the fixed code back
+            with open(tool_path, 'w') as f:
+                f.write(fixed_code)
+            
+            # Validate the fixed code with Python's compile
+            try:
+                compile(fixed_code, tool_path, 'exec')
+                return {"success": True, "message": "Syntax error fixed"}
+            except SyntaxError as e:
+                LOGGER.error(f"Failed to fix syntax error: {e}")
+                return {"success": False, "error": str(e)}
+                
+        except Exception as e:
+            LOGGER.error(f"Error during tool repair: {e}")
+            return {"success": False, "error": str(e)}
     
     async def _create_diagnostic_tool(self, request: ActionRequest, start_time: float) -> ActionResult:
         """Create a diagnostic tool using Toolsmith."""
@@ -301,13 +438,14 @@ class SovereignActionPlane(IActionPlane):
         await self._sandbox.stop()
 
 
-def create_sovereign_action_plane(safety_layer=None) -> IActionPlane:
+def create_sovereign_action_plane(safety_layer=None, signal_ledger=None) -> IActionPlane:
     """Factory function to create sovereign action plane.
     
     Args:
         safety_layer: L5 safety layer for validation
+        signal_ledger: L4 signal ledger for logging ExecutionResults
         
     Returns:
         SovereignActionPlane instance
     """
-    return SovereignActionPlane(safety_layer=safety_layer)
+    return SovereignActionPlane(safety_layer=safety_layer, signal_ledger=signal_ledger)

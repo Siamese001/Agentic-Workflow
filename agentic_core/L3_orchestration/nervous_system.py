@@ -60,14 +60,17 @@ class NervousSystem:
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.00)
         
         # Initialize L4 State Persistence
-        storage_adapter = create_storage_adapter("local", base_path="./agentic_core/checkpoints")
+        storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.checkpoint_manager = VerifiableCheckpointManager(storage_adapter)
         self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
         self.signal_ledger = SignalLedger(storage_adapter, self.session_id)
         
         # Create sovereign implementations if not provided
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
-        self.hands = action_plane or create_sovereign_action_plane(safety_layer=self.safety_layer)
+        self.hands = action_plane or create_sovereign_action_plane(
+            safety_layer=self.safety_layer,
+            signal_ledger=self.signal_ledger
+        )
         self.config = config or OrchestratorConfig()
 
         self._state: Dict[str, Any] = {}
@@ -80,6 +83,7 @@ class NervousSystem:
         self._results: Dict[str, Dict[str, Any]] = {}
         self._signals: set = set()
         self._modified_files: set = set()
+        self._phase_failure_counts: Dict[str, int] = {}  # Track consecutive failures per phase
 
         LOGGER.info(
             "nervous_system_initialized",
@@ -150,9 +154,11 @@ class NervousSystem:
         """
         # Check for existing checkpoint to resume from
         last_checkpoint = await self._find_last_checkpoint()
+        resume_phase = None
         if last_checkpoint:
-            LOGGER.info(f"Resuming mission from checkpoint: {last_checkpoint['phase']}")
+            LOGGER.info(f"L4: Checkpoint found. Resuming from Phase 2.")
             await self._restore_from_checkpoint(last_checkpoint)
+            resume_phase = last_checkpoint['phase']
         
         # Create execution context for the mission
         context = ExecutionContext(
@@ -175,13 +181,14 @@ class NervousSystem:
             LOGGER.info(f"Limiting execution to first {max_phases} phases")
         
         # Execute the mission
-        return await self.execute(context)
+        return await self.execute(context, resume_phase=resume_phase)
     
-    async def execute(self, context: ExecutionContext) -> ExecutionResult:
+    async def execute(self, context: ExecutionContext, resume_phase: Optional[str] = None) -> ExecutionResult:
         """Execute mission through phase-based execution.
 
         Args:
             context: Execution context with mission and scene
+            resume_phase: Phase to resume from (skip phases up to and including this)
 
         Returns:
             ExecutionResult with output and trace
@@ -190,36 +197,47 @@ class NervousSystem:
         execution_trace: List[Dict[str, Any]] = []
         errors: List[str] = []
 
-        self._iteration = 0
-        self._state = context.state.copy()
-        
-        # Reset cycle state
-        self._results.clear()
-        self._signals.clear()
-        self._modified_files.clear()
+        # Only reset cycle state if not resuming from checkpoint
+        if not resume_phase:
+            self._iteration = 0
+            self._state = context.state.copy()
+            self._results = {}
+        self._signals = set()
+        self._modified_files = set()
+        self._phase_failure_counts = {}  # Track consecutive failures per phase when resuming
+        self._state.update(context.state)
 
         LOGGER.info("execution_started",
             extra={"mission": context.mission,
             "scene_keys": list(context.scene.keys())})
 
         try:
-            # Main execution loop with convergence check (from SwarmScheduler)
-            max_cycles = self.config.max_iterations or 10
-            for cycle in range(max_cycles):
-                LOGGER.info(f"Cycle {cycle + 1}/{max_cycles}")
-                
-                # Execute all phases
-                converged = await self._execute_all_phases(context, execution_trace)
-                
-                # Check for convergence
-                if converged:
-                    LOGGER.info("Convergence achieved - all checks passed!")
-                    break
-                
-                # Check for critical failures
-                if "CRITICAL_FAIL" in self._signals:
-                    errors.append("Critical failure detected")
-                    break
+            # If resuming from final checkpoint, check convergence immediately
+            if resume_phase == "optimization_conditional" and self._is_converged():
+                LOGGER.info("Resuming from final checkpoint - already converged")
+                converged = True
+            else:
+                # Main execution loop with convergence check (from SwarmScheduler)
+                max_cycles = self.config.max_iterations or 10
+                for cycle in range(max_cycles):
+                    LOGGER.info(f"Cycle {cycle + 1}/{max_cycles}")
+                    
+                    # Execute all phases (only on first cycle when resuming)
+                    if cycle == 0 or not resume_phase:
+                        converged = await self._execute_all_phases(context, execution_trace, resume_phase=resume_phase)
+                    else:
+                        # On subsequent cycles, run without skipping
+                        converged = await self._execute_all_phases(context, execution_trace, resume_phase=None)
+                    
+                    # Check for convergence
+                    if converged:
+                        LOGGER.info("Convergence achieved - all checks passed!")
+                        break
+                    
+                    # Check for critical failures
+                    if "CRITICAL_FAIL" in self._signals:
+                        errors.append("Critical failure detected")
+                        break
             
             # Generate mission report and calculate success rate
             self._generate_mission_report()
@@ -234,63 +252,242 @@ class NervousSystem:
         except Exception as e:
             return self._handle_execution_error(context, execution_trace, start_time, e)
 
-    async def _execute_all_phases(self, context: ExecutionContext, execution_trace: List[Dict]) -> bool:
-        """Execute all phases in order with early abort logic (from SwarmScheduler)."""
-        # Phase 1: Integrity (Sequential - Hard Gate)
-        LOGGER.info("Phase 1: INTEGRITY CHECK (Sequential)")
-        if not await self._run_sequential("integrity_seq", context, execution_trace):
-            if "CRITICAL_FAIL" in self._signals:
+    async def _get_previous_phase_signals(self, current_phase: str) -> Dict[str, Any]:
+        """Get signals from the previous phase for blackboard communication.
+        
+        Args:
+            current_phase: Name of the current phase
+            
+        Returns:
+            Dictionary with signals from previous phase
+        """
+        phase_order = [
+            "integrity_seq",
+            "curation_seq", 
+            "test_seq",
+            "memory_parallel",
+            "resilience_parallel",
+            "resource_safety_parallel",
+            "engineering_parallel",
+            "refinement_parallel",
+            "benchmarking_seq",
+            "optimization_conditional"
+        ]
+        
+        try:
+            current_index = phase_order.index(current_phase)
+            if current_index > 0:
+                previous_phase = phase_order[current_index - 1]
+                return await self.signal_ledger.get_phase_summary(previous_phase)
+        except ValueError:
+            pass
+        
+        return {}
+    
+    async def _reconcile_signals(self, results: Dict[str, Any]) -> Dict[str, Any]:
+        """Reconcile conflicting signals from different agents.
+        
+        Args:
+            results: Dictionary of agent results with potential conflicts
+            
+        Returns:
+            Dictionary with reconciled signals and conflicts flagged
+        """
+        conflicts = []
+        reconciled = {}
+        file_results = {}  # Track results by file path
+        
+        # Organize results by file path
+        for agent_name, result in results.items():
+            if isinstance(result, dict):
+                # Check for file modifications
+                modified_files = result.get('modified_files', [])
+                for file_path in modified_files:
+                    if file_path not in file_results:
+                        file_results[file_path] = []
+                    file_results[file_path].append({
+                        'agent': agent_name,
+                        'result': result,
+                        'action': result.get('action', 'unknown')
+                    })
+        
+        # Detect conflicts
+        for file_path, file_agents in file_results.items():
+            if len(file_agents) > 1:
+                # Multiple agents modified the same file
+                actions = [a['action'] for a in file_agents]
+                if len(set(actions)) > 1:
+                    # Conflicting actions
+                    conflicts.append({
+                        'file': file_path,
+                        'agents': file_agents,
+                        'conflict_type': 'action_conflict',
+                        'description': f"Multiple agents performed different actions on {file_path}: {actions}"
+                    })
+                else:
+                    # Same action, potentially okay but flag for review
+                    conflicts.append({
+                        'file': file_path,
+                        'agents': file_agents,
+                        'conflict_type': 'duplicate_modification',
+                        'description': f"Multiple agents performed the same action on {file_path}: {actions[0]}"
+                    })
+        
+        # Generate reconciliation recommendations
+        if conflicts:
+            reconciled['has_conflicts'] = True
+            reconciled['conflicts'] = conflicts
+            reconciled['recommendations'] = []
+            
+            for conflict in conflicts:
+                if conflict['conflict_type'] == 'action_conflict':
+                    reconciled['recommendations'].append(
+                        f"CRITICAL: Action conflict on {conflict['file']}. "
+                        f"Requires tie-breaker agent review."
+                    )
+                    # Add signal for tie-breaker
+                    reconciled[f'tie_breaker_needed_{conflict["file"].replace("/", "_")}'] = True
+                else:
+                    reconciled['recommendations'].append(
+                        f"Review duplicate modification on {conflict['file']}"
+                    )
+            
+            # Add global signal
+            reconciled['signal'] = 'CONFLICTS_DETECTED'
+        else:
+            reconciled['has_conflicts'] = False
+            reconciled['signal'] = 'NO_CONFLICTS'
+        
+        return reconciled
+    
+    async def _execute_all_phases(self, context: ExecutionContext, execution_trace: List[Dict], resume_phase: Optional[str] = None) -> bool:
+        """Execute all phases in order with early abort logic (from SwarmScheduler).
+        
+        Args:
+            context: Execution context
+            execution_trace: List to track execution
+            resume_phase: Phase to resume from (skip phases up to and including this)
+        """
+        # Helper function to check if phase should be skipped
+        def should_skip_phase(phase_name: str) -> bool:
+            if not resume_phase:
                 return False
-        # Save checkpoint after phase 1
-        await self._save_phase_checkpoint("integrity_seq", context)
+            phase_order = [
+                "integrity_seq",
+                "curation_seq", 
+                "test_seq",
+                "memory_parallel",
+                "resilience_parallel",
+                "resource_safety_parallel",
+                "engineering_parallel",
+                "refinement_parallel",
+                "benchmarking_seq",
+                "optimization_conditional"
+            ]
+            try:
+                resume_index = phase_order.index(resume_phase)
+                phase_index = phase_order.index(phase_name)
+                return phase_index <= resume_index
+            except ValueError:
+                return False
+        
+        # Phase 1: Integrity (Sequential - Hard Gate)
+        if not should_skip_phase("integrity_seq"):
+            LOGGER.info("Phase 1: INTEGRITY CHECK (Sequential)")
+            # Populate previous phase signals (none for first phase)
+            context.previous_phase_signals = await self._get_previous_phase_signals("integrity_seq")
+            if not await self._run_sequential("integrity_seq", context, execution_trace):
+                if "CRITICAL_FAIL" in self._signals:
+                    return False
+            # Save checkpoint after phase 1
+            await self._save_phase_checkpoint("integrity_seq", context)
+        else:
+            LOGGER.info("Phase 1: INTEGRITY CHECK (Skipping - already completed)")
         
         # Phase 2: Curation (Sequential)
-        LOGGER.info("Phase 2: CURATION (Sequential)")
-        await self._run_sequential("curation_seq", context, execution_trace)
-        await self._save_phase_checkpoint("curation_seq", context)
+        if not should_skip_phase("curation_seq"):
+            LOGGER.info("Phase 2: CURATION (Sequential)")
+            # Populate signals from Phase 1
+            context.previous_phase_signals = await self._get_previous_phase_signals("curation_seq")
+            await self._run_sequential("curation_seq", context, execution_trace)
+            await self._save_phase_checkpoint("curation_seq", context)
+        else:
+            LOGGER.info("Phase 2: CURATION (Skipping - already completed)")
         
         # Phase 3: Testing (Sequential)
-        LOGGER.info("Phase 3: TESTING (Sequential)")
-        await self._run_sequential("test_seq", context, execution_trace)
-        await self._save_phase_checkpoint("test_seq", context)
+        if not should_skip_phase("test_seq"):
+            LOGGER.info("Phase 3: TESTING (Sequential)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("test_seq")
+            await self._run_sequential("test_seq", context, execution_trace)
+            await self._save_phase_checkpoint("test_seq", context)
+        else:
+            LOGGER.info("Phase 3: TESTING (Skipping - already completed)")
         
         # Phase 4: Memory (Parallel)
-        LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Parallel)")
-        await self._run_parallel("memory_parallel", context, execution_trace)
-        await self._save_phase_checkpoint("memory_parallel", context)
+        if not should_skip_phase("memory_parallel"):
+            LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Parallel)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("memory_parallel")
+            await self._run_parallel("memory_parallel", context, execution_trace)
+            await self._save_phase_checkpoint("memory_parallel", context)
+        else:
+            LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Skipping - already completed)")
         
         # Phase 5: RESILIENCE (Parallel)
-        LOGGER.info("Phase 5: RESILIENCE HARDENING (Parallel)")
-        await self._run_parallel("resilience_parallel", context, execution_trace)
-        await self._save_phase_checkpoint("resilience_parallel", context)
+        if not should_skip_phase("resilience_parallel"):
+            LOGGER.info("Phase 5: RESILIENCE HARDENING (Parallel)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("resilience_parallel")
+            await self._run_parallel("resilience_parallel", context, execution_trace)
+            await self._save_phase_checkpoint("resilience_parallel", context)
+        else:
+            LOGGER.info("Phase 5: RESILIENCE HARDENING (Skipping - already completed)")
         
         # Phase 6: Resource Safety (Parallel)
-        LOGGER.info("Phase 6: RESOURCE SAFETY (Parallel)")
-        await self._run_parallel("resource_safety_parallel", context, execution_trace)
-        await self._save_phase_checkpoint("resource_safety_parallel", context)
+        if not should_skip_phase("resource_safety_parallel"):
+            LOGGER.info("Phase 6: RESOURCE SAFETY (Parallel)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("resource_safety_parallel")
+            await self._run_parallel("resource_safety_parallel", context, execution_trace)
+            await self._save_phase_checkpoint("resource_safety_parallel", context)
+        else:
+            LOGGER.info("Phase 6: RESOURCE SAFETY (Skipping - already completed)")
         
         # Phase 7: ENGINEERING (Parallel)
-        LOGGER.info("Phase 7: ENGINEERING (Parallel)")
-        await self._run_parallel("engineering_parallel", context, execution_trace)
-        await self._save_phase_checkpoint("engineering_parallel", context)
+        if not should_skip_phase("engineering_parallel"):
+            LOGGER.info("Phase 7: ENGINEERING (Parallel)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("engineering_parallel")
+            await self._run_parallel("engineering_parallel", context, execution_trace)
+            await self._save_phase_checkpoint("engineering_parallel", context)
+        else:
+            LOGGER.info("Phase 7: ENGINEERING (Skipping - already completed)")
         
         # Phase 8: Refinement (Parallel)
-        LOGGER.info("Phase 8: REFINEMENT (Parallel)")
-        await self._run_parallel("refinement_parallel", context, execution_trace)
-        await self._save_phase_checkpoint("refinement_parallel", context)
+        if not should_skip_phase("refinement_parallel"):
+            LOGGER.info("Phase 8: REFINEMENT (Parallel)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("refinement_parallel")
+            await self._run_parallel("refinement_parallel", context, execution_trace)
+            await self._save_phase_checkpoint("refinement_parallel", context)
+        else:
+            LOGGER.info("Phase 8: REFINEMENT (Skipping - already completed)")
         
         # Phase 9: Benchmarking (Sequential)
-        LOGGER.info("Phase 9: BENCHMARKING (Sequential)")
-        await self._run_sequential("benchmarking_seq", context, execution_trace)
-        await self._save_phase_checkpoint("benchmarking_seq", context)
+        if not should_skip_phase("benchmarking_seq"):
+            LOGGER.info("Phase 9: BENCHMARKING (Sequential)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("benchmarking_seq")
+            await self._run_sequential("benchmarking_seq", context, execution_trace)
+            await self._save_phase_checkpoint("benchmarking_seq", context)
+        else:
+            LOGGER.info("Phase 9: BENCHMARKING (Skipping - already completed)")
         
         # Phase 10: Optimization (Conditional - Sequential)
-        LOGGER.info("Phase 10: OPTIMIZATION (Conditional)")
-        if self._is_converged():
-            await self._run_sequential("optimization_conditional", context, execution_trace)
-            await self._save_phase_checkpoint("optimization_conditional", context)
+        if not should_skip_phase("optimization_conditional"):
+            LOGGER.info("Phase 10: OPTIMIZATION (Conditional)")
+            context.previous_phase_signals = await self._get_previous_phase_signals("optimization_conditional")
+            if self._is_converged():
+                await self._run_sequential("optimization_conditional", context, execution_trace)
+                await self._save_phase_checkpoint("optimization_conditional", context)
+            else:
+                LOGGER.info("Skipping optimization - not fully converged")
         else:
-            LOGGER.info("Skipping optimization - not fully converged")
+            LOGGER.info("Phase 10: OPTIMIZATION (Skipping - already completed)")
         
         # Return convergence status
         return self._is_converged()
@@ -306,6 +503,7 @@ class NervousSystem:
         from datetime import datetime
         
         # Prepare checkpoint state
+        success_rate = self._calculate_success_rate()
         checkpoint_state = {
             "phase": phase_name,
             "timestamp": datetime.utcnow().isoformat(),
@@ -316,7 +514,8 @@ class NervousSystem:
             "signals": list(self._signals),
             "modified_files": list(self._modified_files),
             "mission": context.mission,
-            "scene": context.scene
+            "scene": context.scene,
+            "success_rate": success_rate
         }
         
         # Save checkpoint
@@ -389,24 +588,90 @@ class NervousSystem:
     
     async def _run_sequential(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]) -> bool:
         """Execute a phase sequentially (from SwarmScheduler)."""
+        # Check circuit breaker before executing phase
+        if self._phase_failure_counts.get(phase_name, 0) >= 3:
+            LOGGER.error(f"Circuit breaker OPEN for {phase_name} - 3 consecutive failures detected")
+            LOGGER.error("Entering SAFE MODE - Phase 0")
+            self._signals.add("CIRCUIT_BREAKER_TRIPPED")
+            return False
+        
         agents = self.phases.get(phase_name, [])
+        phase_passed = True
+        
         for agent in agents:
             # Map agent execution to cognitive plane
             if hasattr(agent, 'execute'):
-                result = await agent.execute()
+                # Check prerequisite conditions if agent supports it
+                if hasattr(agent, 'check_prerequisites'):
+                    prereq_result = await agent.check_prerequisites(context)
+                    if not prereq_result.get('satisfied', True):
+                        LOGGER.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
+                        # Create a PlanningResult recommending re-run
+                        if hasattr(agent, 'create_prereq_failure_result'):
+                            result = await agent.create_prereq_failure_result(prereq_result)
+                        else:
+                            result = {
+                                'passed': False,
+                                'error': 'Prerequisites not satisfied',
+                                'details': prereq_result.get('message', 'Unknown'),
+                                'recommendation': prereq_result.get('recommendation', 'Re-run prerequisite phase')
+                            }
+                        self._results[agent.name] = result
+                        # Add signal for prerequisite failure
+                        self._signals.add("PREREQ_FAIL")
+                        phase_passed = False
+                        continue
+                
+                # Execute agent with context
+                if hasattr(agent, 'execute_with_context'):
+                    result = await agent.execute_with_context(context)
+                else:
+                    result = await agent.execute()
+                
                 self._results[agent.name] = result
                 if not result.get("passed", True):
                     self._signals.add("CRITICAL_FAIL")
+                    phase_passed = False
             
             # Early abort for critical failures in integrity phase
-            if phase_name == "integrity_seq" and "CRITICAL_FAIL" in self._signals:
-                LOGGER.error(f"CRITICAL FAIL in {phase_name} - Aborting")
+            if phase_name == "integrity_seq" and ("CRITICAL_FAIL" in self._signals or "PREREQ_FAIL" in self._signals):
+                LOGGER.error(f"Critical failure in {phase_name} - Aborting")
+                # Update failure count
+                self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
                 return False
         
-        return True
+        # Update failure count based on phase result
+        if not phase_passed:
+            self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
+            LOGGER.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
+        else:
+            # Reset failure count on success
+            if phase_name in self._phase_failure_counts:
+                del self._phase_failure_counts[phase_name]
+                LOGGER.info(f"Phase {phase_name} succeeded - Resetting failure count")
+        
+        return phase_passed
     
     async def _run_parallel(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]):
         """Execute a phase in parallel (from SwarmScheduler)."""
+        # Check circuit breaker before executing phase
+        if self._phase_failure_counts.get(phase_name, 0) >= 3:
+            LOGGER.error(f"Circuit breaker OPEN for {phase_name} - 3 consecutive failures detected")
+            LOGGER.error("Entering SAFE MODE - Phase 0")
+            self._signals.add("CIRCUIT_BREAKER_TRIPPED")
+            return
+        
+        # Check memory pressure before parallel execution
+        if hasattr(self.safety_layer, 'cost_governor'):
+            try:
+                memory_info = self.safety_layer.cost_governor.check_memory_pressure()
+                if not memory_info.get("pressure_ok", True):
+                    LOGGER.error(f"Memory pressure too high: {memory_info.get('available_gb', -1):.2f}GB available")
+                    self._signals.add("MEMORY_PRESSURE")
+                    return
+            except Exception as e:
+                LOGGER.warning(f"Could not check memory pressure: {e}")
+        
         agents = self.phases.get(phase_name, [])
         if not agents:
             return
@@ -415,12 +680,64 @@ class NervousSystem:
         tasks = []
         for agent in agents:
             if hasattr(agent, 'execute'):
-                task = self._rate_limited_retry(agent.execute)
+                # Create wrapper for each agent to handle context and prerequisites
+                async def execute_agent_with_context(agent):
+                    # Check prerequisite conditions if agent supports it
+                    if hasattr(agent, 'check_prerequisites'):
+                        prereq_result = await agent.check_prerequisites(context)
+                        if not prereq_result.get('satisfied', True):
+                            LOGGER.warning(f"Agent {agent.name} prerequisites not satisfied: {prereq_result.get('message', 'Unknown')}")
+                            result = {
+                                'passed': False,
+                                'error': 'Prerequisites not satisfied',
+                                'details': prereq_result.get('message', 'Unknown'),
+                                'recommendation': prereq_result.get('recommendation', 'Re-run prerequisite phase')
+                            }
+                            self._results[agent.name] = result
+                            self._signals.add("PREREQ_FAIL")
+                            return result
+                    
+                    # Execute agent with context
+                    if hasattr(agent, 'execute_with_context'):
+                        result = await agent.execute_with_context(context)
+                    else:
+                        result = await agent.execute()
+                    
+                    self._results[agent.name] = result
+                    if not result.get("passed", True):
+                        self._signals.add("CRITICAL_FAIL")
+                    return result
+                
+                task = self._rate_limited_retry(lambda a=agent: execute_agent_with_context(a))
                 tasks.append(task)
         
         # Execute all agents in parallel
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
+            
+            # Check if phase passed and update failure count
+            phase_passed = all(
+                self._results.get(agent.name, {}).get("passed", True) 
+                for agent in agents if hasattr(agent, 'name')
+            )
+            
+            if not phase_passed:
+                self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
+                LOGGER.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
+            else:
+                # Reset failure count on success
+                if phase_name in self._phase_failure_counts:
+                    del self._phase_failure_counts[phase_name]
+                    LOGGER.info(f"Phase {phase_name} succeeded - Resetting failure count")
+            
+            # Reconcile signals to detect conflicts
+            conflicts = await self._reconcile_signals(self._results)
+            if conflicts.get('has_conflicts'):
+                LOGGER.warning(f"Phase {phase_name} conflicts detected: {len(conflicts['conflicts'])}")
+                for conflict in conflicts['conflicts']:
+                    LOGGER.warning(f"  {conflict['description']}")
+                # Add conflict signal
+                self._signals.add("CONFLICTS_DETECTED")
     
     async def _rate_limited_retry(self, func, max_retries: int = 5, base_delay: float = 2.0):
         """Decorator to handle rate limiting with exponential backoff (from SwarmScheduler)."""
@@ -468,6 +785,19 @@ class NervousSystem:
         for key, result in sorted(self._results.items()):
             status = "PASS" if result.get("passed", False) else "FAIL"
             LOGGER.info(f"Key {key}: {status} - {result.get('agent', 'Unknown')}")
+    
+    def _calculate_success_rate(self) -> float:
+        """Calculate current success rate based on results.
+        
+        Returns:
+            Success rate as percentage (0-100)
+        """
+        total_keys = len(self._results)
+        if total_keys == 0:
+            return 0.0
+        
+        passed_keys = sum(1 for r in self._results.values() if r.get("passed", False))
+        return (passed_keys / total_keys) * 100
     
     def _create_execution_result(self,
         context: ExecutionContext,
