@@ -915,6 +915,218 @@ Rules:
 - Remove obsolete comments
 - Never remove docstrings
 """)
+
+    FEW_SHOT_HISTORIAN: str = field(default_factory=lambda: """
+FEW-SHOT MEMORY RECALL USAGE (Historian):
+
+EXAMPLE 1: Past Fix Recall
+MEMORY: File apps/utils.py had SYNTAX_ERROR fixed by adding missing colon
+Current: Same file, same error
+GOOD: Apply exact same fix — do not reinvent
+
+EXAMPLE 2: Failed Strategy
+MEMORY: Inline extraction caused TEST_FAILURE → rolled back
+Current: Similar monolith
+GOOD: Try split-into-files instead
+
+EXAMPLE 3: Successful Pattern
+MEMORY: Moving to apps_shared/ resolved import cycle
+Current: New import cycle
+GOOD: Propose same move to apps_shared/
+
+EXAMPLE 4: Flapping File
+MEMORY: File flapped 4 cycles → skipped
+Current: Same file failing again
+GOOD: Recommend skip or human escalation
+
+Always check recalled memories first.
+If similar past success → reuse exactly
+If past failure → avoid that strategy
+Output: "APPLY_MEMORY: <description>" or propose new
+""")
+
+    FEW_SHOT_TESTPILOT: str = field(default_factory=lambda: """
+FEW-SHOT TEST GENERATION (TestPilot):
+
+EXAMPLE 1: Unit Test Structure
+GOOD:
+def test_process_valid_order():
+    order = OrderFactory(status="pending")
+    result = process_order(order)
+    assert result.status == "processed"
+    assert mock_notify.called
+
+EXAMPLE 2: Edge Case Coverage
+GOOD:
+def test_process_invalid_payment():
+    order = OrderFactory(payment_status="failed")
+    with pytest.raises(PaymentError):
+        process_order(order)
+
+EXAMPLE 3: Mocking Pattern
+GOOD:
+@patch("module.send_email")
+def test_notification_sent(mock_send):
+    process_order(valid_order)
+    mock_send.assert_called_once_with(valid_order.user.email)
+
+Use pytest style.
+Use factories or fixtures when possible.
+Cover happy path + one error case.
+Never use real external calls.
+""")
+
+    FEW_SHOT_STRATEGIC: str = field(default_factory=lambda: """
+FEW-SHOT AGENDA PLANNING (StrategicPlanner):
+
+PRIORITY RULES:
+1. TEST_FAILURE → Sherlock + TestPilot
+2. IMPORT_ERROR → DependencySentinel first
+3. SYNTAX_ERROR → SafetyInspector
+4. Many modified files → Safety + Style recheck
+5. Flapping file → Skip or escalate
+6. Convergence → Stop
+
+EXAMPLE 1:
+Signals: TEST_FAILURE, modified 3 files
+→ Agenda: Historian, Sherlock, TestPilot, Reflection
+
+EXAMPLE 2:
+Signals: IMPORT_ERROR, depth violation
+→ Agenda: DependencySentinel, ArchitectureGovernor
+
+EXAMPLE 3:
+No modifications, tests pass
+→ Agenda: Reflection → CONVERGE
+
+Output ordered list of agents to run.
+""")
+
+    FEW_SHOT_REFLECTION_ENHANCED: str = field(default_factory=lambda: """
+FEW-SHOT SELF-REFLECTION (ReflectionAgent):
+
+SUCCESS CRITERIA:
+- Signals → 0
+- No new signals introduced
+- All files subatomic and correct depth
+- Tests pass
+- Budget under limit
+
+EXAMPLE OUTCOMES:
+GOOD: Signals 12 → 0, tests pass → CONVERGE_AND_COMMIT
+BAD: New TEST_FAILURE → REGRESSION → ROLLBACK
+BAD: Same error 3 cycles → FLAPPING → SKIP_OR_ESCALATE
+BAD: Budget >90% → STOP_AND_ESCALATE
+
+Always ask:
+1. Are we closer to zero signals?
+2. Any regression?
+3. What worked/didn't?
+4. Next best strategy?
+""")
+
+    FEW_SHOT_GITOPS: str = field(default_factory=lambda: """
+FEW-SHOT GIT OPERATIONS (GitAgent — Follow exactly):
+
+BRANCH NAMING CONVENTION:
+healing/<category>-<short-description>-YYYYMMDD
+
+EXAMPLE 1: Branch Names
+healing/fix-import-cycle-20251217
+healing/refactor-order-processing-20251217
+healing/security-remove-eval-20251217
+healing/chore-clean-unused-imports-20251217
+
+COMMIT MESSAGE CONVENTION (Conventional Commits):
+<type>: <short description>
+
+Types:
+- fix: Bug fixes
+- refactor: Code restructuring
+- security: Security improvements
+- style: Formatting/style
+- test: Test additions
+- chore: Maintenance
+
+EXAMPLE 2: Good Commit Messages
+fix: resolve ModuleNotFoundError in payments module
+
+refactor: extract payment validation to shared schema
+
+security: replace eval() with ast.literal_eval
+
+style: apply black formatting to apps_rg/
+
+chore: remove unused imports and variables
+
+EXAMPLE 3: Commit with Body (When Needed)
+fix: add Redis lock to shared cache access
+
+Prevents race condition in concurrent order processing.
+Detected by ConcurrencyGuardian.
+Verified by TestPilot — all tests pass.
+Blast radius: 3 files.
+
+EXAMPLE 4: Atomic Commits
+GOOD: One logical change per commit
+BAD: 20 unrelated files in one commit
+
+EXAMPLE 5: Safe Remote Operations
+GOOD:
+- Only push healing branch
+- Never force push to main/master
+- Use --force-with-lease only if rebase needed
+- Include [HEALING] tag if automated
+
+EXAMPLE:
+git push origin healing/fix-race-20251217
+
+Never commit secrets, large files, or .env
+Never modify .git history on shared branches
+Always create new healing branch per session
+""")
+
+    FEW_SHOT_SHERLOCK: str = field(default_factory=lambda: """
+FEW-SHOT ROOT CAUSE ANALYSIS (Sherlock — Follow exactly):
+
+EXAMPLE 1: Test Failure Traceback
+Traceback: AssertionError in test_order_process
+Modified: orders/service.py
+GOOD:
+Root cause: status check uses == "processed" instead of "completed"
+Fix: change string literal
+Blast radius: 2 test files
+
+EXAMPLE 2: Cross-File Regression
+Modified: payments/utils.py → changed return type
+Failure in: orders/service.py import
+GOOD:
+Root cause: utils.now() returns aware datetime, was naive
+Fix: make consistent or add timezone
+
+EXAMPLE 3: Import-Related Failure
+Traceback: ModuleNotFoundError
+GOOD:
+Root cause: File moved without updating imports
+Fix: Update import path or add __init__.py
+
+EXAMPLE 4: Concurrency Bug
+Intermittent test failure
+GOOD:
+Root cause: Shared cache mutated without lock
+Fix: Add with cache_lock:
+
+METHOD:
+1. Read traceback bottom-up
+2. Find modified file in stack
+3. Compare old vs new behavior
+4. Check blast radius (DependencyGraph)
+5. Propose one-line fix if possible
+
+Always minimal.
+Always verify with memory (past similar fixes).
+Output unified diff.
+""")
     
     @property
     def client(self):
@@ -2112,6 +2324,37 @@ class Historian(SubAtomicAgent):
                     self.name,
                     f"FLAPPING FILE: {file_path} toggles Pass/Fail. Consider rewrite."
                 )
+    
+    async def recommend_from_memory(self, file_path: str, current_signals: List[str]) -> str:
+        """L5+ Use LLM with few-shot to recommend actions based on recalled memories."""
+        if not self.ctx.intelligence_enabled:
+            return ""
+        
+        # Recall relevant memories from Pinecone/local
+        memories = []
+        if hasattr(self.ctx, 'recall_memory'):
+            memories = self.ctx.recall_memory(file_path, limit=5)
+        
+        memories_summary = "\n".join([f"- {m}" for m in memories[:5]]) if memories else "No relevant memories found."
+        
+        prompt = f"""
+{self.ctx.FEW_SHOT_HISTORIAN}
+
+Current issue in {file_path}
+Signals: {current_signals[:10]}
+
+Recalled memories:
+{memories_summary}
+
+Recommend action based on history.
+If similar past success → output "APPLY_MEMORY: <description>"
+If past failure → output "AVOID_STRATEGY: <description>"
+If no relevant memory → output "PROPOSE_NEW: <description>"
+"""
+        
+        return await self.ctx.resilient_mutation(
+            self.name, prompt, max_attempts=1
+        )
 
 # ==============================================================================
 # 3. THE SPECIALIST AGENTS (100% Coverage of All 50 Keys)
@@ -4318,6 +4561,7 @@ class TestPilot(SubAtomicAgent):
                     # L5+ TestPilot Positive Instructional Injection for property generation
                     prompt = f"""
 {self.ctx.FEW_SHOT_PROPERTY_TESTS}
+{self.ctx.FEW_SHOT_TESTPILOT}
 
 <positive_instructional_context>
 You are an expert in property-based testing.
@@ -6721,18 +6965,23 @@ class StrategicPlanner(SubAtomicAgent):
                 # Store for TestPilot to use
                 self.ctx.impact_zone = all_impacted
         
-        # 2. Generate Plan
+        # 2. Generate Plan with L5+ Few-Shot Strategic Injection
         prompt = f"""
+{self.ctx.FEW_SHOT_STRATEGIC}
+
 You are a Codebase Architect.
 Current State:
 - Signals: {signals}
 - Violations: {json.dumps(violations[:10])}
+- Modified files: {len(self.ctx.modified_files)}
+- Cycle: {getattr(self.ctx, 'current_cycle', 1)}
 
 Task: Generate a strategic refactor plan.
 - If tests are failing, prioritize root cause analysis.
 - If architecture is messy, prioritize modularization.
 - Output "NO_PLAN_NEEDED" if system is stable.
 
+Propose optimal agent agenda based on priority rules above.
 Output ONLY the plan in Markdown.
 """
         
@@ -6765,6 +7014,7 @@ class ReflectionAgent(SubAtomicAgent):
             
             reflection_prompt = f"""
 {self.ctx.FEW_SHOT_REFLECTION_STRATEGY}
+{self.ctx.FEW_SHOT_REFLECTION_ENHANCED}
 
 <self_critique_guidance>
 You are reflecting on healing cycle {cycle}.
@@ -6861,11 +7111,13 @@ class GitAgent(SubAtomicAgent):
                 print(f"   ⚠️  GitOps Reset Error: {e}")
             return
 
-        # Create healing branch and commit changes
+        # Create healing branch and commit changes with L5+ Few-Shot GitOps
         if self.ctx.modified_files:
             try:
-                # Create unique branch
-                branch_name = f"healing/auto_{int(time.time())}"
+                # Generate intelligent branch name and commit message
+                branch_name, commit_msg = await self._generate_git_metadata()
+                if not branch_name:
+                    branch_name = f"healing/auto_{int(time.time())}"
                 
                 # Store current branch to return to later
                 original_branch = repo.active_branch.name
@@ -6876,7 +7128,8 @@ class GitAgent(SubAtomicAgent):
                 
                 # Add and Commit
                 repo.index.add(list(self.ctx.modified_files))
-                commit_msg = f"L5 Auto-fix cycle {len(self.ctx.successful_traces)}"
+                if not commit_msg:
+                    commit_msg = f"[HEALING] fix: auto-fix cycle {len(self.ctx.successful_traces)}"
                 repo.index.commit(commit_msg)
                 print(f"   💾 GitOps: Checkpoint saved to branch '{branch_name}'.")
                 
@@ -6911,8 +7164,65 @@ class GitAgent(SubAtomicAgent):
             if self.ctx.modified_files:
                 print(f"   💾 GitOps: Committing {len(self.ctx.modified_files)} changes...")
                 self.run_cmd(["git", "add"] + list(self.ctx.modified_files))
-                self.run_cmd(["git", "commit", "-m", f"Auto-fix cycle {len(self.ctx.successful_traces)}"])
+                self.run_cmd(["git", "commit", "-m", f"[HEALING] fix: auto-fix cycle {len(self.ctx.successful_traces)}"])
                 print(f"   ✅ GitOps: Checkpoint saved.")
+    
+    async def _generate_git_metadata(self) -> tuple:
+        """L5+ Use LLM with few-shot to generate intelligent branch name and commit message."""
+        if not self.ctx.intelligence_enabled:
+            return None, None
+        
+        from datetime import datetime
+        date_str = datetime.now().strftime("%Y%m%d")
+        
+        # Summarize signals and modifications
+        signals_summary = list(self.ctx.signals)[:5]
+        modified_summary = [os.path.basename(f) for f in list(self.ctx.modified_files)[:5]]
+        
+        prompt = f"""
+{self.ctx.FEW_SHOT_GITOPS}
+
+Current healing state:
+Modified files: {modified_summary}
+Signals resolved: {signals_summary}
+Cycle: {len(self.ctx.successful_traces)}
+Date: {date_str}
+
+Propose:
+- Branch name (healing/<type>-<desc>-YYYYMMDD)
+- Commit title (conventional: fix/refactor/security/chore)
+
+RESPONSE FORMAT:
+BRANCH: healing/<type>-<short-desc>-{date_str}
+COMMIT: <type>: <description>
+"""
+        
+        try:
+            response = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=1)
+            if response:
+                branch_name = None
+                commit_msg = None
+                for line in response.strip().split('\n'):
+                    if line.startswith('BRANCH:'):
+                        branch_name = line.replace('BRANCH:', '').strip()
+                    elif line.startswith('COMMIT:'):
+                        commit_msg = f"[HEALING] {line.replace('COMMIT:', '').strip()}"
+                
+                # L5+ Safety validation guard
+                if branch_name:
+                    # Validate branch format
+                    if not branch_name.startswith("healing/"):
+                        print("   ⚠️ GitAgent: Invalid branch format, using fallback")
+                        branch_name = None
+                    # Block unsafe operations
+                    if "force" in response.lower() and ("main" in response.lower() or "master" in response.lower()):
+                        print("   🛡️ GitAgent: BLOCKED unsafe force push to main/master")
+                        return None, None
+                
+                return branch_name, commit_msg
+        except Exception:
+            pass
+        return None, None
 
 class BenchmarkingAgent(SubAtomicAgent):
     """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
@@ -8145,6 +8455,7 @@ class Sherlock(SubAtomicAgent):
         
         # L5+ Sherlock Positive Instructional Injection (structured reasoning template)
         positive_guide = f"""
+{self.ctx.FEW_SHOT_SHERLOCK}
 {self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
 
 <healing_context>
