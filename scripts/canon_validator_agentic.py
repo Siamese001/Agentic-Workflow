@@ -894,213 +894,213 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 # GOOD: Apply exact same fix — do not reinvent
 
 # EXAMPLE 2: Failed Strategy
-MEMORY: Inline extraction caused TEST_FAILURE → rolled back
-Current: Similar monolith
-GOOD: Try split-into-files instead
+# MEMORY: Inline extraction caused TEST_FAILURE → rolled back
+# Current: Similar monolith
+# GOOD: Try split-into-files instead
 
-EXAMPLE 3: Successful Pattern
-MEMORY: Moving to apps_shared/ resolved import cycle
-Current: New import cycle
-GOOD: Propose same move to apps_shared/
+# EXAMPLE 3: Successful Pattern
+# MEMORY: Moving to apps_shared/ resolved import cycle
+# Current: New import cycle
+# GOOD: Propose same move to apps_shared/
 
-EXAMPLE 4: Flapping File
-MEMORY: File flapped 4 cycles → skipped
-Current: Same file failing again
-GOOD: Recommend skip or human escalation
+# EXAMPLE 4: Flapping File
+# MEMORY: File flapped 4 cycles → skipped
+# Current: Same file failing again
+# GOOD: Recommend skip or human escalation
 
-Always check recalled memories first.
-If similar past success → reuse exactly
-If past failure → avoid that strategy
-Output: "APPLY_MEMORY: <description>" or propose new
-""")
+# Always check recalled memories first.
+# If similar past success → reuse exactly
+# If past failure → avoid that strategy
+# Output: "APPLY_MEMORY: <description>" or propose new
+# """)
 
-    FEW_SHOT_TESTPILOT: str = field(default_factory=lambda: """
-FEW-SHOT TEST GENERATION (TestPilot):
+#     FEW_SHOT_TESTPILOT: str = field(default_factory=lambda: """
+# FEW-SHOT TEST GENERATION (TestPilot):
 
-EXAMPLE 1: Unit Test Structure
-GOOD:
-def test_process_valid_order():
-    order = OrderFactory(status="pending")
-    result = process_order(order)
-    assert result.status == "processed"
-    assert mock_notify.called
+# EXAMPLE 1: Unit Test Structure
+# GOOD:
+# def test_process_valid_order():
+#     order = OrderFactory(status="pending")
+#     result = process_order(order)
+#     assert result.status == "processed"
+#     assert mock_notify.called
 
-EXAMPLE 2: Edge Case Coverage
-GOOD:
-def test_process_invalid_payment():
-    order = OrderFactory(payment_status="failed")
-    with pytest.raises(PaymentError):
-        process_order(order)
+# EXAMPLE 2: Edge Case Coverage
+# GOOD:
+# def test_process_invalid_payment():
+#     order = OrderFactory(payment_status="failed")
+#     with pytest.raises(PaymentError):
+#         process_order(order)
 
-EXAMPLE 3: Mocking Pattern
-GOOD:
-@patch("module.send_email")
-def test_notification_sent(mock_send):
-    process_order(valid_order)
-    mock_send.assert_called_once_with(valid_order.user.email)
+# EXAMPLE 3: Mocking Pattern
+# GOOD:
+# @patch("module.send_email")
+# def test_notification_sent(mock_send):
+#     process_order(valid_order)
+#     mock_send.assert_called_once_with(valid_order.user.email)
 
-Use pytest style.
-Use factories or fixtures when possible.
-Cover happy path + one error case.
-Never use real external calls.
-""")
+# Use pytest style.
+# Use factories or fixtures when possible.
+# Cover happy path + one error case.
+# Never use real external calls.
+# """)
 
-    FEW_SHOT_STRATEGIC: str = field(default_factory=lambda: """
-FEW-SHOT AGENDA PLANNING (StrategicPlanner):
+#     FEW_SHOT_STRATEGIC: str = field(default_factory=lambda: """
+# FEW-SHOT AGENDA PLANNING (StrategicPlanner):
 
-PRIORITY RULES:
-1. TEST_FAILURE → Sherlock + TestPilot
-2. IMPORT_ERROR → DependencySentinel first
-3. SYNTAX_ERROR → SafetyInspector
-4. Many modified files → Safety + Style recheck
-5. Flapping file → Skip or escalate
-6. Convergence → Stop
+# PRIORITY RULES:
+# 1. TEST_FAILURE → Sherlock + TestPilot
+# 2. IMPORT_ERROR → DependencySentinel first
+# 3. SYNTAX_ERROR → SafetyInspector
+# 4. Many modified files → Safety + Style recheck
+# 5. Flapping file → Skip or escalate
+# 6. Convergence → Stop
 
-EXAMPLE 1:
-Signals: TEST_FAILURE, modified 3 files
-→ Agenda: Historian, Sherlock, TestPilot, Reflection
+# EXAMPLE 1:
+# Signals: TEST_FAILURE, modified 3 files
+# → Agenda: Historian, Sherlock, TestPilot, Reflection
 
-EXAMPLE 2:
-Signals: IMPORT_ERROR, depth violation
-→ Agenda: DependencySentinel, ArchitectureGovernor
+# EXAMPLE 2:
+# Signals: IMPORT_ERROR, depth violation
+# → Agenda: DependencySentinel, ArchitectureGovernor
 
-EXAMPLE 3:
-No modifications, tests pass
-→ Agenda: Reflection → CONVERGE
+# EXAMPLE 3:
+# No modifications, tests pass
+# → Agenda: Reflection → CONVERGE
 
-Output ordered list of agents to run.
-""")
+# Output ordered list of agents to run.
+# """)
 
-    FEW_SHOT_REFLECTION_ENHANCED: str = field(default_factory=lambda: """
-FEW-SHOT SELF-REFLECTION (ReflectionAgent):
+#     FEW_SHOT_REFLECTION_ENHANCED: str = field(default_factory=lambda: """
+# FEW-SHOT SELF-REFLECTION (ReflectionAgent):
 
-SUCCESS CRITERIA:
-- Signals → 0
-- No new signals introduced
-- All files subatomic and correct depth
-- Tests pass
-- Budget under limit
+# SUCCESS CRITERIA:
+# - Signals → 0
+# - No new signals introduced
+# - All files subatomic and correct depth
+# - Tests pass
+# - Budget under limit
 
-EXAMPLE OUTCOMES:
-GOOD: Signals 12 → 0, tests pass → CONVERGE_AND_COMMIT
-BAD: New TEST_FAILURE → REGRESSION → ROLLBACK
-BAD: Same error 3 cycles → FLAPPING → SKIP_OR_ESCALATE
-BAD: Budget >90% → STOP_AND_ESCALATE
+# EXAMPLE OUTCOMES:
+# GOOD: Signals 12 → 0, tests pass → CONVERGE_AND_COMMIT
+# BAD: New TEST_FAILURE → REGRESSION → ROLLBACK
+# BAD: Same error 3 cycles → FLAPPING → SKIP_OR_ESCALATE
+# BAD: Budget >90% → STOP_AND_ESCALATE
 
-Always ask:
-1. Are we closer to zero signals?
-2. Any regression?
-3. What worked/didn't?
-4. Next best strategy?
-""")
+# Always ask:
+# 1. Are we closer to zero signals?
+# 2. Any regression?
+# 3. What worked/didn't?
+# 4. Next best strategy?
+# """)
 
-    FEW_SHOT_GITOPS: str = field(default_factory=lambda: """
-FEW-SHOT GIT OPERATIONS (GitAgent — Follow exactly):
+#     FEW_SHOT_GITOPS: str = field(default_factory=lambda: """
+# FEW-SHOT GIT OPERATIONS (GitAgent — Follow exactly):
 
-BRANCH NAMING CONVENTION:
-healing/<category>-<short-description>-YYYYMMDD
+# BRANCH NAMING CONVENTION:
+# healing/<category>-<short-description>-YYYYMMDD
 
-EXAMPLE 1: Branch Names
-healing/fix-import-cycle-20251217
-healing/refactor-order-processing-20251217
-healing/security-remove-eval-20251217
-healing/chore-clean-unused-imports-20251217
+# EXAMPLE 1: Branch Names
+# healing/fix-import-cycle-20251217
+# healing/refactor-order-processing-20251217
+# healing/security-remove-eval-20251217
+# healing/chore-clean-unused-imports-20251217
 
-COMMIT MESSAGE CONVENTION (Conventional Commits):
-<type>: <short description>
+# COMMIT MESSAGE CONVENTION (Conventional Commits):
+# <type>: <short description>
 
-Types:
-- fix: Bug fixes
-- refactor: Code restructuring
-- security: Security improvements
-- style: Formatting/style
-- test: Test additions
-- chore: Maintenance
+# Types:
+# - fix: Bug fixes
+# - refactor: Code restructuring
+# - security: Security improvements
+# - style: Formatting/style
+# - test: Test additions
+# - chore: Maintenance
 
-EXAMPLE 2: Good Commit Messages
-fix: resolve ModuleNotFoundError in payments module
+# EXAMPLE 2: Good Commit Messages
+# fix: resolve ModuleNotFoundError in payments module
 
-refactor: extract payment validation to shared schema
+# refactor: extract payment validation to shared schema
 
-security: replace eval() with ast.literal_eval
+# security: replace eval() with ast.literal_eval
 
-style: apply black formatting to apps_rg/
+# style: apply black formatting to apps_rg/
 
-chore: remove unused imports and variables
+# chore: remove unused imports and variables
 
-EXAMPLE 3: Commit with Body (When Needed)
-fix: add Redis lock to shared cache access
+# EXAMPLE 3: Commit with Body (When Needed)
+# fix: add Redis lock to shared cache access
 
-Prevents race condition in concurrent order processing.
-Detected by ConcurrencyGuardian.
-Verified by TestPilot — all tests pass.
-Blast radius: 3 files.
+# Prevents race condition in concurrent order processing.
+# Detected by ConcurrencyGuardian.
+# Verified by TestPilot — all tests pass.
+# Blast radius: 3 files.
 
-EXAMPLE 4: Atomic Commits
-GOOD: One logical change per commit
-BAD: 20 unrelated files in one commit
+# EXAMPLE 4: Atomic Commits
+# GOOD: One logical change per commit
+# BAD: 20 unrelated files in one commit
 
-EXAMPLE 5: Safe Remote Operations
-GOOD:
-- Only push healing branch
-- Never force push to main/master
-- Use --force-with-lease only if rebase needed
-- Include [HEALING] tag if automated
+# EXAMPLE 5: Safe Remote Operations
+# GOOD:
+# - Only push healing branch
+# - Never force push to main/master
+# - Use --force-with-lease only if rebase needed
+# - Include [HEALING] tag if automated
 
-EXAMPLE:
-git push origin healing/fix-race-20251217
+# EXAMPLE:
+# git push origin healing/fix-race-20251217
 
-Never commit secrets, large files, or .env
-Never modify .git history on shared branches
-Always create new healing branch per session
-""")
+# Never commit secrets, large files, or .env
+# Never modify .git history on shared branches
+# Always create new healing branch per session
+# """)
 
-    FEW_SHOT_SHERLOCK: str = field(default_factory=lambda: """
-FEW-SHOT ROOT CAUSE ANALYSIS (Sherlock — Follow exactly):
+#     FEW_SHOT_SHERLOCK: str = field(default_factory=lambda: """
+# FEW-SHOT ROOT CAUSE ANALYSIS (Sherlock — Follow exactly):
 
-EXAMPLE 1: Test Failure Traceback
-Traceback: AssertionError in test_order_process
-Modified: orders/service.py
-GOOD:
-Root cause: status check uses == "processed" instead of "completed"
-Fix: change string literal
-Blast radius: 2 test files
+# EXAMPLE 1: Test Failure Traceback
+# Traceback: AssertionError in test_order_process
+# Modified: orders/service.py
+# GOOD:
+# Root cause: status check uses == "processed" instead of "completed"
+# Fix: change string literal
+# Blast radius: 2 test files
 
-EXAMPLE 2: Cross-File Regression
-Modified: payments/utils.py → changed return type
-Failure in: orders/service.py import
-GOOD:
-Root cause: utils.now() returns aware datetime, was naive
-Fix: make consistent or add timezone
+# EXAMPLE 2: Cross-File Regression
+# Modified: payments/utils.py → changed return type
+# Failure in: orders/service.py import
+# GOOD:
+# Root cause: utils.now() returns aware datetime, was naive
+# Fix: make consistent or add timezone
 
-EXAMPLE 3: Import-Related Failure
-Traceback: ModuleNotFoundError
-GOOD:
-Root cause: File moved without updating imports
-Fix: Update import path or add __init__.py
+# EXAMPLE 3: Import-Related Failure
+# Traceback: ModuleNotFoundError
+# GOOD:
+# Root cause: File moved without updating imports
+# Fix: Update import path or add __init__.py
 
-EXAMPLE 4: Concurrency Bug
-Intermittent test failure
-GOOD:
-Root cause: Shared cache mutated without lock
-Fix: Add with cache_lock:
+# EXAMPLE 4: Concurrency Bug
+# Intermittent test failure
+# GOOD:
+# Root cause: Shared cache mutated without lock
+# Fix: Add with cache_lock:
 
-METHOD:
-1. Read traceback bottom-up
-2. Find modified file in stack
-3. Compare old vs new behavior
-4. Check blast radius (DependencyGraph)
-5. Propose one-line fix if possible
+# METHOD:
+# 1. Read traceback bottom-up
+# 2. Find modified file in stack
+# 3. Compare old vs new behavior
+# 4. Check blast radius (DependencyGraph)
+# 5. Propose one-line fix if possible
 
-Always minimal.
-Always verify with memory (past similar fixes).
-Output unified diff.
-""")
+# Always minimal.
+# Always verify with memory (past similar fixes).
+# Output unified diff.
+# """)
     
-    @property
-    def client(self):
-        """Access to Gemini client for backward compatibility."""
-        return self._client
+#     @property
+#     def client(self):
+#         """Access to Gemini client for backward compatibility."""
+#         return self._client
 
     # def __post_init__(self):
     #     print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
@@ -1158,187 +1158,187 @@ Output unified diff.
     #                 self.flapping_files = set(data.get('flapping', []))
     #         except Exception:
     #             pass # Level 5: The Streamer - Live Reasoning Broadcast
-        self.stream_queue: asyncio.Queue = asyncio.Queue()
-        self.stream_task: asyncio.Task = None
-        self._current_agent: str = "System"
-        self._streamer_initialized: bool = False
+    #     self.stream_queue: asyncio.Queue = asyncio.Queue()
+    #     self.stream_task: asyncio.Task = None
+    #     self._current_agent: str = "System"
+    #     self._streamer_initialized: bool = False
         
-    # ... rest of the code remains the same ...
-        # L5 Live Reasoning Stream via WebSockets
-        self.websocket_clients: Set[Any] = set()
+    # # ... rest of the code remains the same ...
+    #     # L5 Live Reasoning Stream via WebSockets
+    #     self.websocket_clients: Set[Any] = set()
         
-        # Level 6: Sovereign Architecture
-        self.code_graph = DependencyGraph()
-        self.budget = BudgetManager(limit_usd=2.0)
+    #     # Level 6: Sovereign Architecture
+    #     self.code_graph = DependencyGraph()
+    #     self.budget = BudgetManager(limit_usd=2.0)
         
-        # L5 Multi-Repository: Scan additional repo roots
-        extra_roots = os.getenv("ADDITIONAL_REPO_ROOTS", "")
-        if extra_roots:
-            for root in extra_roots.split(","):
-                root = root.strip()
-                if os.path.exists(root):
-                    print(f"   [CTX] 🌍 Scanning additional root: {root}")
-                    for r, _, files in os.walk(root):
-                        if any(x in r for x in EXCLUDED_DIRS):
-                            continue
-                        for file in files:
-                            if file.endswith(".py"):
-                                self.python_files.append(os.path.join(r, file))
+    #     # L5 Multi-Repository: Scan additional repo roots
+    #     extra_roots = os.getenv("ADDITIONAL_REPO_ROOTS", "")
+    #     if extra_roots:
+    #         for root in extra_roots.split(","):
+    #             root = root.strip()
+    #             if os.path.exists(root):
+    #                 print(f"   [CTX] 🌍 Scanning additional root: {root}")
+    #                 for r, _, files in os.walk(root):
+    #                     if any(x in r for x in EXCLUDED_DIRS):
+    #                         continue
+    #                     for file in files:
+    #                         if file.endswith(".py"):
+    #                             self.python_files.append(os.path.join(r, file))
         
-        print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
-        print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
-        print(f"   [CTX] 💸 Budget Manager: ${self.budget.limit} limit enforced.")
+    #     print(f"   [CTX] 🚀 TRI-BRAIN ONLINE. System Integrity Verified.")
+    #     print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
+    #     print(f"   [CTX] 💸 Budget Manager: ${self.budget.limit} limit enforced.")
     
-    async def broadcast(self, event: dict):
-        """L5 Live Reasoning Stream: Broadcast event to all connected WebSocket clients."""
-        if not WEBSOCKETS_AVAILABLE or not self.websocket_clients:
-            return
-        message = json.dumps(event)
-        disconnected = set()
-        for ws in list(self.websocket_clients):
-            try:
-                await ws.send(message)
-            except Exception:
-                disconnected.add(ws)
-        self.websocket_clients -= disconnected
+    # async def broadcast(self, event: dict):
+    #     """L5 Live Reasoning Stream: Broadcast event to all connected WebSocket clients."""
+    #     if not WEBSOCKETS_AVAILABLE or not self.websocket_clients:
+    #         return
+    #     message = json.dumps(event)
+    #     disconnected = set()
+    #     for ws in list(self.websocket_clients):
+    #         try:
+    #             await ws.send(message)
+    #         except Exception:
+    #             disconnected.add(ws)
+    #     self.websocket_clients -= disconnected
     
-    async def _test_redis(self):
-        """Test Redis connection."""
-        try:
-            await self.redis_client.ping()
-        except Exception as e:
-            print(f"   [CTX] ⚠️ Redis connection failed: {e}")
-            self.redis_available = False
+    # async def _test_redis(self):
+    #     """Test Redis connection."""
+    #     try:
+    #         await self.redis_client.ping()
+    #     except Exception as e:
+    #         print(f"   [CTX] ⚠️ Redis connection failed: {e}")
+    #         self.redis_available = False
     
-    # Hot Brain (Redis) Operations
-    async def acquire_lock(self, resource: str, timeout: int = 30) -> bool:
-        """Acquire distributed lock using Redis."""
-        if not self.redis_available:
-            # Fallback to local lock (always succeeds)
-            self._local_cache[f"lock:{resource}"] = True
-            return True
+    # # Hot Brain (Redis) Operations
+    # async def acquire_lock(self, resource: str, timeout: int = 30) -> bool:
+    #     """Acquire distributed lock using Redis."""
+    #     if not self.redis_available:
+    #         # Fallback to local lock (always succeeds)
+    #         self._local_cache[f"lock:{resource}"] = True
+    #         return True
         
-        lock_key = f"lock:{resource}"
-        try:
-            # Set with NX and expiration
-            result = await self.redis_client.set(lock_key, "locked", ex=timeout, nx=True)
-            return result is not None
-        except Exception:
-            return False
+    #     lock_key = f"lock:{resource}"
+    #     try:
+    #         # Set with NX and expiration
+    #         result = await self.redis_client.set(lock_key, "locked", ex=timeout, nx=True)
+    #         return result is not None
+    #     except Exception:
+    #         return False
     
-    async def release_lock(self, resource: str):
-        """Release distributed lock."""
-        if not self.redis_available:
-            # Fallback to local lock
-            self._local_cache.pop(f"lock:{resource}", None)
-            return
+    # async def release_lock(self, resource: str):
+    #     """Release distributed lock."""
+    #     if not self.redis_available:
+    #         # Fallback to local lock
+    #         self._local_cache.pop(f"lock:{resource}", None)
+    #         return
         
-        lock_key = f"lock:{resource}"
-        try:
-            await self.redis_client.delete(lock_key)
-        except Exception:
-            pass
+    #     lock_key = f"lock:{resource}"
+    #     try:
+    #         await self.redis_client.delete(lock_key)
+    #     except Exception:
+    #         pass
     
-    async def get_cache(self, key: str) -> Any:
-        """Get value from Redis cache or local fallback."""
-        if not self.redis_available:
-            return self._local_cache.get(key)
+    # async def get_cache(self, key: str) -> Any:
+    #     """Get value from Redis cache or local fallback."""
+    #     if not self.redis_available:
+    #         return self._local_cache.get(key)
         
-        try:
-            value = await self.redis_client.get(key)
-            if value:
-                return json.loads(value)
-            return None
-        except Exception:
-            return self._local_cache.get(key)
+    #     try:
+    #         value = await self.redis_client.get(key)
+    #         if value:
+    #             return json.loads(value)
+    #         return None
+    #     except Exception:
+    #         return self._local_cache.get(key)
     
-    async def set_cache(self, key: str, value: Any, ttl: int = 3600):
-        """Set value in Redis cache and local fallback."""
-        if not self.redis_available:
-            self._local_cache[key] = value
-            return
+    # async def set_cache(self, key: str, value: Any, ttl: int = 3600):
+    #     """Set value in Redis cache and local fallback."""
+    #     if not self.redis_available:
+    #         self._local_cache[key] = value
+    #         return
         
-        try:
-            await self.redis_client.setex(key, ttl, json.dumps(value))
-            self._local_cache[key] = value  # Keep local copy
-        except Exception:
-            self._local_cache[key] = value
+    #     try:
+    #         await self.redis_client.setex(key, ttl, json.dumps(value))
+    #         self._local_cache[key] = value  # Keep local copy
+    #     except Exception:
+    #         self._local_cache[key] = value
     
-    # Deep Brain (Pinecone) Operations - Level 5 Learning
-    async def search_embeddings(self, query: str, top_k: int = 2) -> List[Dict]:
-        """Recalls past successful fixes from Deep Brain."""
-        if not self.pinecone_available or not self.intelligence_enabled:
-            return []
+    # # Deep Brain (Pinecone) Operations - Level 5 Learning
+    # async def search_embeddings(self, query: str, top_k: int = 2) -> List[Dict]:
+    #     """Recalls past successful fixes from Deep Brain."""
+    #     if not self.pinecone_available or not self.intelligence_enabled:
+    #         return []
         
-        try:
-            # Generate embedding using Gemini
-            emb = await asyncio.to_thread(
-                self._client.models.embed_content,
-                model="models/text-embedding-004",
-                contents=query
-            )
+    #     try:
+    #         # Generate embedding using Gemini
+    #         emb = await asyncio.to_thread(
+    #             self._client.models.embed_content,
+    #             model="models/text-embedding-004",
+    #             contents=query
+    #         )
             
-            # Search Pinecone
-            results = self.pinecone_index.query(
-                vector=emb.embeddings[0].values,
-                top_k=top_k,
-                include_metadata=True
-            )
+    #         # Search Pinecone
+    #         results = self.pinecone_index.query(
+    #             vector=emb.embeddings[0].values,
+    #             top_k=top_k,
+    #             include_metadata=True
+    #         )
             
-            return results.matches
-        except Exception as e:
-            print(f"   [CTX] ⚠️ Memory recall failed: {e}")
-            return []
+    #         return results.matches
+    #     except Exception as e:
+    #         print(f"   [CTX] ⚠️ Memory recall failed: {e}")
+    #         return []
     
-    async def upsert_embedding(self, key: str, text: str, metadata: dict):
-        """Learns from success by saving to Deep Brain."""
-        if not self.pinecone_available or not self.intelligence_enabled:
-            return
+    # async def upsert_embedding(self, key: str, text: str, metadata: dict):
+    #     """Learns from success by saving to Deep Brain."""
+    #     if not self.pinecone_available or not self.intelligence_enabled:
+    #         return
         
-        try:
-            # Generate embedding via Gemini
-            emb = await asyncio.to_thread(
-                self._client.models.embed_content,
-                model="models/text-embedding-004",
-                contents=text
-            )
+    #     try:
+    #         # Generate embedding via Gemini
+    #         emb = await asyncio.to_thread(
+    #             self._client.models.embed_content,
+    #             model="models/text-embedding-004",
+    #             contents=text
+    #         )
             
-            # Upsert to Pinecone
-            self.pinecone_index.upsert(
-                vectors=[(
-                    key,
-                    emb.embeddings[0].values,
-                    metadata
-                )]
-            )
-        except Exception as e:
-            print(f"   [CTX] ⚠️ Memory upsert failed: {e}")
+    #         # Upsert to Pinecone
+    #         self.pinecone_index.upsert(
+    #             vectors=[(
+    #                 key,
+    #                 emb.embeddings[0].values,
+    #                 metadata
+    #             )]
+    #         )
+    #     except Exception as e:
+    #         print(f"   [CTX] ⚠️ Memory upsert failed: {e}")
     
-    def _load_memory(self):
-        """Load file hashes and skip logic from persistent storage."""
-        if self.memory_file.exists():
-            try:
-                with open(self.memory_file, 'r') as f:
-                    data = json.load(f)
-                    self.file_hashes = data.get('hashes', {})
-                    self.skip_files = set(data.get('skip', []))
-                    self.flapping_files = set(data.get('flapping', []))
-                print(f"   [CTX] 📚 Loaded memory: {len(self.file_hashes)} hashes, {len(self.skip_files)} skips")
-            except Exception as e:
-                print(f"   [CTX] ⚠️ Failed to load memory: {e}")
+    # def _load_memory(self):
+    #     """Load file hashes and skip logic from persistent storage."""
+    #     if self.memory_file.exists():
+    #         try:
+    #             with open(self.memory_file, 'r') as f:
+    #                 data = json.load(f)
+    #                 self.file_hashes = data.get('hashes', {})
+    #                 self.skip_files = set(data.get('skip', []))
+    #                 self.flapping_files = set(data.get('flapping', []))
+    #             print(f"   [CTX] 📚 Loaded memory: {len(self.file_hashes)} hashes, {len(self.skip_files)} skips")
+    #         except Exception as e:
+    #             print(f"   [CTX] ⚠️ Failed to load memory: {e}")
     
-    def _save_memory(self):
-        """Save file hashes and skip logic to persistent storage."""
-        try:
-            data = {
-                'hashes': self.file_hashes,
-                'skip': list(self.skip_files),
-                'flapping': list(self.flapping_files)
-            }
-            with open(self.memory_file, 'w') as f:
-                json.dump(data, f, indent=2)
-        except Exception as e:
-            print(f"   [CTX] ⚠️ Failed to save memory: {e}")
+    # def _save_memory(self):
+    #     """Save file hashes and skip logic to persistent storage."""
+    #     try:
+    #         data = {
+    #             'hashes': self.file_hashes,
+    #             'skip': list(self.skip_files),
+    #             'flapping': list(self.flapping_files)
+    #         }
+    #         with open(self.memory_file, 'w') as f:
+    #             json.dump(data, f, indent=2)
+    #     except Exception as e:
+    #         print(f"   [CTX] ⚠️ Failed to save memory: {e}")
     
     # def calculate_file_hash(self, file_path: str) -> str:
     #     """Calculate SHA-256 hash of a file."""
@@ -1767,265 +1767,254 @@ Output unified diff.
 #                     print(f"   [{agent_name}] ⚠️ Confidence too low ({confidence:.2f}). Retrying...")
 #                     continue
 
-                # L5 STREAMER: Broadcast reasoning before cleaning
-                if self._streamer_initialized:
-                    await self.broadcast_reasoning(response.text, agent=agent_name)
+#                 # L5 STREAMER: Broadcast reasoning before cleaning
+#                 if self._streamer_initialized:
+#                     await self.broadcast_reasoning(response.text, agent=agent_name)
                 
-                result_text = clean_llm_code(response.text)
-                final_content = result_text
+#                 result_text = clean_llm_code(response.text)
+#                 final_content = result_text
 
-                # 4. Diff Application (if enabled)
-                if diff_mode:
-                    patched = self.apply_unified_diff(file_path, result_text, current_code)
-                    if patched is None:
-                        print(f"   [{agent_name}] ⚠️ Patch failed to apply. Retrying...")
-                        continue
-                    final_content = patched
+#                 # 4. Diff Application (if enabled)
+#                 if diff_mode:
+#                     patched = self.apply_unified_diff(file_path, result_text, current_code)
+#                     if patched is None:
+#                         print(f"   [{agent_name}] ⚠️ Patch failed to apply. Retrying...")
+#                         continue
+#                     final_content = patched
 
-                # 5. Validation (AST)
-                if final_content.strip() and (file_path and file_path.endswith('.py')):
-                    ast.parse(final_content) # Syntax Check
+#                 # 5. Validation (AST)
+#                 if final_content.strip() and (file_path and file_path.endswith('.py')):
+#                     ast.parse(final_content) # Syntax Check
 
-                # LEVEL 5: ON SUCCESS - Record Learning
-                self.mutation_stats["success"] += 1
-                self.mutation_stats["total"] += 1
-                self.successful_traces.append({
-                    "task": task[:200],
-                    "code_before": current_code[:200],
-                    "code_after": final_content[:200],
-                    "agent": agent_name
-                })
+#                 # LEVEL 5: ON SUCCESS - Record Learning
+#                 self.mutation_stats["success"] += 1
+#                 self.mutation_stats["total"] += 1
+#                 self.successful_traces.append({
+#                     "task": task[:200],
+#                     "code_before": current_code[:200],
+#                     "code_after": final_content[:200],
+#                     "agent": agent_name
+#                 })
                 
-                print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
-                return final_content
+#                 print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
+#                 return final_content
 
-            except Exception as e:
-                print(f"   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}")
-                if "429" in str(e): await asyncio.sleep(2 ** attempt)
-                # LEVEL 5: ON FAILURE - Track stats
-                self.mutation_stats["total"] += 1
-
-        return current_code # Fallback
+#             except Exception as e:
     
-    async def conversational_repair(self, failure_traceback: str, primary_file: str, dependent_files: List[str]) -> str:
-        """
-        Level 6+ Collective Intelligence: Uses AutoGen GroupChat to debate root cause and generate a high-quality fix.
-        Only runs if AUTOGEN_AVAILABLE and intelligence enabled.
-        Returns cleaned proposed code or empty string on failure.
-        """
-        if not AUTOGEN_AVAILABLE:
-            print("   ⚠️ AutoGen unavailable - falling back to single-agent mutation")
-            return ""
+#     async def conversational_repair(self, failure_traceback: str, primary_file: str, dependent_files: List[str]) -> str:
+#         """
+#         Level 6+ Collective Intelligence: Uses AutoGen GroupChat to debate root cause and generate a high-quality fix.
+#         Only runs if AUTOGEN_AVAILABLE and intelligence enabled.
+#         Returns cleaned proposed code or empty string on failure.
+#         """
+#         if not AUTOGEN_AVAILABLE:
+#             return ""
         
-        if not self.intelligence_enabled:
-            return ""
+#         config_list = self.autogen_config_list
         
-        print(f"   🗣️ Initiating CONVERSATIONAL REPAIR for {primary_file}")
+#         # Define debating agents (tuned to existing roles)
+#         sherlock = AssistantAgent(
+#             name="Sherlock",
+#             system_message="You are a root-cause detective. Analyze tracebacks and cross-file interactions.",
+#             llm_config={"config_list": config_list, "temperature": 0.5}
+#         )
         
-        config_list = self.autogen_config_list
+#         safety = AssistantAgent(
+#             name="SafetyInspector",
+#             system_message="You enforce security: no eval/exec, no hardcoded secrets, no dangerous calls.",
+#             llm_config={"config_list": config_list}
+#         )
         
-        # Define debating agents (tuned to existing roles)
-        sherlock = AssistantAgent(
-            name="Sherlock",
-            system_message="You are a root-cause detective. Analyze tracebacks and cross-file interactions.",
-            llm_config={"config_list": config_list, "temperature": 0.5}
-        )
+#         dependency = AssistantAgent(
+#             name="DependencySentinel",
+#             system_message="You fix import paths, circular dependencies, and module resolution.",
+#             llm_config={"config_list": config_list}
+#         )
         
-        safety = AssistantAgent(
-            name="SafetyInspector",
-            system_message="You enforce security: no eval/exec, no hardcoded secrets, no dangerous calls.",
-            llm_config={"config_list": config_list}
-        )
+#         governor = AssistantAgent(
+#             name="ArchitectureGovernor",
+#             system_message="You enforce Subatomic Laws: depth 3-5, file size limits, root sanctity.",
+#             llm_config={"config_list": config_list}
+#         )
         
-        dependency = AssistantAgent(
-            name="DependencySentinel",
-            system_message="You fix import paths, circular dependencies, and module resolution.",
-            llm_config={"config_list": config_list}
-        )
+#         # Coordinator (acts as UserProxy but never asks human)
+#         coordinator = UserProxyAgent(
+#             name="Coordinator",
+#             system_message="You initiate debate with failure context. Terminate when a final fix is proposed.",
+#             human_input_mode="NEVER",
+#             code_execution_config=False,
+#             llm_config={"config_list": config_list}
+#         )
         
-        governor = AssistantAgent(
-            name="ArchitectureGovernor",
-            system_message="You enforce Subatomic Laws: depth 3-5, file size limits, root sanctity.",
-            llm_config={"config_list": config_list}
-        )
+#         groupchat = GroupChat(
+#             agents=[coordinator, sherlock, safety, dependency, governor],
+#             messages=[],
+#             max_round=10  # Prevents runaway debates
+#         )
         
-        # Coordinator (acts as UserProxy but never asks human)
-        coordinator = UserProxyAgent(
-            name="Coordinator",
-            system_message="You initiate debate with failure context. Terminate when a final fix is proposed.",
-            human_input_mode="NEVER",
-            code_execution_config=False,
-            llm_config={"config_list": config_list}
-        )
+#         manager = GroupChatManager(groupchat=groupchat, llm_config={"config_list": config_list})
         
-        groupchat = GroupChat(
-            agents=[coordinator, sherlock, safety, dependency, governor],
-            messages=[],
-            max_round=10  # Prevents runaway debates
-        )
-        
-        manager = GroupChatManager(groupchat=groupchat, llm_config={"config_list": config_list})
-        
-        # Build initiation message
-        files_summary = f"Primary: {primary_file}\nDependents: {dependent_files}"
-        init_msg = f"""
-CRITICAL TEST FAILURE DETECTED
+#         # Build initiation message
+#         files_summary = f"Primary: {primary_file}\nDependents: {dependent_files}"
+#         init_msg = f"""
+# CRITICAL TEST FAILURE DETECTED
 
-Traceback:
-{failure_traceback[:3000]}
+# Traceback:
+# {failure_traceback[:3000]}
 
-Affected Files:
-{files_summary}
+# Affected Files:
+# Primary: {primary_file}
+# Dependents: {dependent_files}
 
-Task: Debate the root cause and propose a MINIMAL, SAFE fix.
-Final response must be ONLY the complete corrected Python code for the primary file.
-Do not explain — only output clean code.
-"""
+# Task: Debate the root cause and propose a MINIMAL, SAFE fix.
+# Final response must be ONLY the complete corrected Python code for the primary file.
+# Do not explain — only output clean code.
+# """
         
-        try:
-            await asyncio.to_thread(
-                coordinator.initiate_chat,
-                manager,
-                message=init_msg
-            )
+#         try:
+#             await asyncio.to_thread(
+#                 coordinator.initiate_chat,
+#                 manager,
+#                 message=init_msg
+#             )
             
-            # Extract final proposed code
-            final_msg = groupchat.messages[-1]["content"] if groupchat.messages else ""
-            cleaned = clean_llm_code(final_msg)
+#             # Extract final proposed code
+#             final_msg = groupchat.messages[-1]["content"] if groupchat.messages else ""
+#             cleaned = clean_llm_code(final_msg)
             
-            # Safety: AST check before returning
-            if primary_file.endswith(".py") and cleaned:
-                try:
-                    ast.parse(cleaned)
-                    print("   🗣️ Conversational repair produced AST-valid code")
-                except SyntaxError as e:
-                    print(f"   🛑 Conversational repair produced invalid syntax: {e}")
-                    return ""
+#             # Safety: AST check before returning
+#             if primary_file.endswith(".py") and cleaned:
+#                 try:
+#                     ast.parse(cleaned)
+#                     print("   🗣️ Conversational repair produced AST-valid code")
+#                 except SyntaxError as e:
+#                     print(f"   🛑 Conversational repair produced invalid syntax: {e}")
+#                     return ""
             
-            # Track success for learning
-            if cleaned:
-                self.mutation_stats["success"] += 1
-                self.successful_traces.append({
-                    "type": "conversational",
-                    "task": init_msg[:200],
-                    "result": cleaned[:200]
-                })
+#             # Track success for learning
+#             if cleaned:
+#                 self.mutation_stats["success"] += 1
+#                 self.successful_traces.append({
+#                     "type": "conversational",
+#                     "task": init_msg[:200],
+#                     "result": cleaned[:200]
+#                 })
             
-            return cleaned
+#             return cleaned
             
-        except Exception as e:
-            print(f"   ❌ Conversational repair failed: {e}")
-            self.mutation_stats["total"] += 1
-            return ""
+#         except Exception as e:
+#             print(f"   ❌ Conversational repair failed: {e}")
+#             self.mutation_stats["total"] += 1
+#             return ""
     
-    def move_file(self, src: str, dst: str) -> bool:
-        """Smart Move: Handles files (with compliance check) and directories."""
-        try:
-            # 1. Directory Move
-            if os.path.isdir(src):
-                # Simple depth check for the destination folder itself
-                parts = dst.split(os.sep)
-                if len(parts) < MIN_DEPTH or len(parts) > MAX_DEPTH:
-                    print(f"   🛑 Directory Move Blocked: {dst} violates Depth Law.")
-                    return False
+#     def move_file(self, src: str, dst: str) -> bool:
+#         """Smart Move: Handles files (with compliance check) and directories."""
+#         try:
+#             # 1. Directory Move
+#             if os.path.isdir(src):
+#                 # Simple depth check for the destination folder itself
+#                 parts = dst.split(os.sep)
+#                 if len(parts) < MIN_DEPTH or len(parts) > MAX_DEPTH:
+#                     print(f"   🛑 Directory Move Blocked: {dst} violates Depth Law.")
+#                     return False
                 
-                shutil.move(src, dst)
-                print(f"   🚚 Directory Moved: {src} -> {dst}")
-                return True
+#                 shutil.move(src, dst)
+#                 print(f"   🚚 Directory Moved: {src} -> {dst}")
+#                 return True
 
-            # 2. File Move (Governed)
-            with open(src, 'r', encoding='utf-8') as f:
-                content = f.read()
+#             # 2. File Move (Governed)
+#             with open(src, 'r', encoding='utf-8') as f:
+#                 content = f.read()
             
-            if self.write_compliant_file(dst, content):
-                os.remove(src)
-                print(f"   🚚 File Moved: {src} -> {dst}")
-                # Cleanup empty parents
-                try:
-                    os.removedirs(os.path.dirname(src))
-                except OSError: pass
-                return True
-            return False
+#             if self.write_compliant_file(dst, content):
+#                 os.remove(src)
+#                 print(f"   🚚 File Moved: {src} -> {dst}")
+#                 # Cleanup empty parents
+#                 try:
+#                     os.removedirs(os.path.dirname(src))
+#                 except OSError: pass
+#                 return True
+#             return False
 
-        except Exception as e:
-            print(f"   ❌ Move Failed: {e}")
-            return False
+#         except Exception as e:
+#             print(f"   ❌ Move Failed: {e}")
+#             return False
 
-    # --- INTELLIGENCE BRIDGE ---
-    @rate_limited_retry()
-    async def request_mutation(self, agent_name: str, task: str, code: str, reasoning_mode: bool = False) -> str:
-        if not self.intelligence_enabled: return ""
+#     # --- INTELLIGENCE BRIDGE ---
+#     @rate_limited_retry()
+#     async def request_mutation(self, agent_name: str, task: str, code: str, reasoning_mode: bool = False) -> str:
+#         if not self.intelligence_enabled: return ""
         
-        # Log reasoning if requested
-        if reasoning_mode:
-            task += "\nProvide a detailed step-by-step reasoning before generating the code/JSON."
+#         # Log reasoning if requested
+#         if reasoning_mode:
+#             task += "\nProvide a detailed step-by-step reasoning before generating the code/JSON."
             
-        response = await self.client.aio.models.generate_content(
-            model=os.environ.get("GEMINI_MODEL", "gemini-2.5-flash"),
-            contents=[f"Agent: {agent_name}\nTask: {task}\nCode:\n{code}"]
-        )
+#         response = await self.client.aio.models.generate_content(
+#             model=os.environ.get("GEMINI_MODEL", "gemini-2.5-flash"),
+#             contents=[f"Agent: {agent_name}\nTask: {task}\nCode:\n{code}"]
+#         )
         
-        result = response.text
-        if reasoning_mode:
-            self._log_reasoning(agent_name, task, result)
+#         result = response.text
+#         if reasoning_mode:
+#             self._log_reasoning(agent_name, task, result)
             
-        return result
+#         return result
 
-    def _log_reasoning(self, agent: str, task: str, content: str):
-        path = f"observability/audit/reasoning_{agent}_{int(time.time())}.md"
-        self.write_compliant_file(path, f"# Task: {task}\n\n{content}")
+#     def _log_reasoning(self, agent: str, task: str, content: str):
+#         path = f"observability/audit/reasoning_{agent}_{int(time.time())}.md"
+#         self.write_compliant_file(path, f"# Task: {task}\n\n{content}")
 
-    def _path_to_module(self, file_path: str) -> str:
-        """Convert file path to Python module notation."""
-        # Remove .py extension
-        module_path = file_path[:-3] if file_path.endswith('.py') else file_path
-        # Convert path separators to dots
-        module_path = module_path.replace('\\', '.').replace('/', '.')
-        # Remove leading './'
-        if module_path.startswith('.'):
-            module_path = module_path[1:]
-        # Remove __init__ from module paths
-        if module_path.endswith('.__init__'):
-            module_path = module_path[:-9]
-        return module_path
+#     def _path_to_module(self, file_path: str) -> str:
+#         """Convert file path to Python module notation."""
+#         # Remove .py extension
+#         module_path = file_path[:-3] if file_path.endswith('.py') else file_path
+#         # Convert path separators to dots
+#         module_path = module_path.replace('\\', '.').replace('/', '.')
+#         # Remove leading './'
+#         if module_path.startswith('.'):
+#             module_path = module_path[1:]
+#         # Remove __init__ from module paths
+#         if module_path.endswith('.__init__'):
+#             module_path = module_path[:-9]
+#         return module_path
 
-    def report(self, agent: str, key: int, passed: bool, details: Any):
-        """Report validation result to blackboard."""
-        status = "PASS" if passed else "FAIL"
-        if not passed and isinstance(details, list):
-            print(f"   [{agent}] Key {key}: {status} ({len(details)} violations)")
-        else:
-            print(f"   [{agent}] Key {key}: {status}")
+#     def report(self, agent: str, key: int, passed: bool, details: Any):
+#         """Report validation result to blackboard."""
+#         status = "PASS" if passed else "FAIL"
+#         if not passed and isinstance(details, list):
+#             print(f"   [{agent}] Key {key}: {status} ({len(details)} violations)")
+#         else:
+#             print(f"   [{agent}] Key {key}: {status}")
 
-        self.results[key] = {"passed": passed, "details": details}
+#         self.results[key] = {"passed": passed, "details": details}
 
-    def signal_critical_failure(self):
-        self.signals.add("CRITICAL_FAIL")
-        print("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
+#     def signal_critical_failure(self):
+#         self.signals.add("CRITICAL_FAIL")
+#         print("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
 
-    def signal_ast_valid(self):
-        self.signals.add("AST_VALID")
-        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+#     def signal_ast_valid(self):
+#         self.signals.add("AST_VALID")
+#         print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
 
-    def signal_deps_valid(self):
-        self.signals.add("DEPS_VALID")
-        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+#     def signal_deps_valid(self):
+#         self.signals.add("DEPS_VALID")
+#         print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
 
-    def signal_secure(self):
-        self.signals.add("SECURE")
-        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+#     def signal_secure(self):
+#         self.signals.add("SECURE")
+#         print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
     
-    def signal_healing_cycle(self, cycle: int):
-        self.signals.add(f"HEALING_CYCLE_{cycle}")
-        print(f"   🔄 SIGNAL: HEALING_CYCLE_{cycle} initiated")
+#     def signal_healing_cycle(self, cycle: int):
+#         self.signals.add(f"HEALING_CYCLE_{cycle}")
+#         print(f"   🔄 SIGNAL: HEALING_CYCLE_{cycle} initiated")
 
-    def signal_llm_failure(self, agent: str, error_type: str):
-        self.signals.add(f"LLM_FAIL_{agent}_{error_type}")
-        print(f"   ⚠️  SIGNAL: LLM failure in {agent} ({error_type})")
+#     def signal_llm_failure(self, agent: str, error_type: str):
+#         self.signals.add(f"LLM_FAIL_{agent}_{error_type}")
+#         print(f"   ⚠️  SIGNAL: LLM failure in {agent} ({error_type})")
 
-    def signal_convergence(self):
-        self.signals.add("CONVERGED")
-        print(f"   🎉 SIGNAL: SYSTEM CONVERGED - Self-healing complete")
+#     def signal_convergence(self):
+#         self.signals.add("CONVERGED")
+#         print(f"   🎉 SIGNAL: SYSTEM CONVERGED - Self-healing complete")
 
 # ==============================================================================
 # 2. THE ATOMIC AGENT (Base Class) (NOW IMPORTED FROM agentic_core)
@@ -2045,40 +2034,40 @@ Do not explain — only output clean code.
 #         """Execute agent's validation logic asynchronously."""
 #         raise NotImplementedError
     
-    async def run_with_broadcast(self):
-        """Wrapper that broadcasts agent lifecycle events to the L5 Streamer and WebSocket clients."""
-        # Set current agent context
-        self.ctx.set_current_agent(self.name)
+#     async def run_with_broadcast(self):
+#         """Wrapper that broadcasts agent lifecycle events to the L5 Streamer and WebSocket clients."""
+#         # Set current agent context
+#         self.ctx.set_current_agent(self.name)
         
-        # L5 WebSocket broadcast: agent_start event
-        await self.ctx.broadcast({
-            "type": "agent_start",
-            "agent": self.name,
-            "cycle": getattr(self.ctx, 'current_cycle', 1),
-            "timestamp": time.time()
-        })
+#         # L5 WebSocket broadcast: agent_start event
+#         await self.ctx.broadcast({
+#             "type": "agent_start",
+#             "agent": self.name,
+#             "cycle": getattr(self.ctx, 'current_cycle', 1),
+#             "timestamp": time.time()
+#         })
         
-        try:
-            # Execute the actual agent logic
-            await self.execute()
+#         try:
+#             # Execute the actual agent logic
+#             await self.execute()
             
-            # L5 WebSocket broadcast: agent_complete event
-            await self.ctx.broadcast({
-                "type": "agent_complete",
-                "agent": self.name,
-                "modified": list(self.ctx.modified_files),
-                "signals": list(self.ctx.signals),
-                "timestamp": time.time()
-            })
-        except Exception as e:
-            # L5 WebSocket broadcast: agent_error event
-            await self.ctx.broadcast({
-                "type": "agent_error",
-                "agent": self.name,
-                "error": str(e)[:200],
-                "timestamp": time.time()
-            })
-            raise
+#             # L5 WebSocket broadcast: agent_complete event
+#             await self.ctx.broadcast({
+#                 "type": "agent_complete",
+#                 "agent": self.name,
+#                 "modified": list(self.ctx.modified_files),
+#                 "signals": list(self.ctx.signals),
+#                 "timestamp": time.time()
+#             })
+#         except Exception as e:
+#             # L5 WebSocket broadcast: agent_error event
+#             await self.ctx.broadcast({
+#                 "type": "agent_error",
+#                 "agent": self.name,
+#                 "error": str(e)[:200],
+#                 "timestamp": time.time()
+#             })
+#             raise
 
 class ImportPatcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""
