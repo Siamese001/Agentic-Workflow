@@ -4027,6 +4027,12 @@ class SwarmScheduler:
             # Execute all phases
             converged = await self._execute_all_phases()
             
+            # L5 Human-in-the-Loop: Check for HIGH_RISK actions requiring approval
+            if await self._check_intervention_required():
+                if "VETOED" in self.ctx.signals:
+                    print("\n🛑 ACTION VETOED BY HUMAN - Mission aborted!")
+                    break
+            
             # Check for convergence
             if converged:
                 print("\n✅ CONVERGENCE ACHIEVED - All checks passed!")
@@ -4043,6 +4049,34 @@ class SwarmScheduler:
         # Restore original file list if we were in surgical mode
         if target_scope and 'original_files' in locals():
             self.ctx.python_files = original_files
+    
+    async def _check_intervention_required(self) -> bool:
+        """
+        L5 Human-in-the-Loop: Check if intervention is required and wait for approval.
+        Returns True if intervention was triggered (approval received or vetoed).
+        """
+        # Check for HIGH_RISK conditions
+        high_risk = "HIGH_RISK" in self.ctx.signals
+        many_modifications = len(self.ctx.modified_files) > 3
+        strategic_plan = getattr(self.ctx, 'strategic_plan', None)
+        
+        if high_risk or (many_modifications and strategic_plan):
+            print(f"\n🚨 INTERVENTION REQUIRED")
+            print(f"   Risk Level: {'HIGH' if high_risk else 'ELEVATED'}")
+            print(f"   Modified Files: {len(self.ctx.modified_files)}")
+            print(f"   Approval URL: http://127.0.0.1:8080")
+            
+            # Start intervention server if available
+            start_intervention_server(self.ctx)
+            
+            # Wait for human approval
+            print("   ⏳ Waiting for human approval...")
+            await approval_event.wait()
+            approval_event.clear()
+            
+            return True
+        
+        return False
     
     async def _execute_all_phases(self):
         """Execute all phases in order with early abort logic."""
