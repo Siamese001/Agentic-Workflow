@@ -557,6 +557,86 @@ CASE 3: New TEST_FAILURE after modification
 CASE 4: >15 files modified or budget near limit
 → RECOMMEND: ESCALATE_TO_HUMAN_WITH_REPORT
 """)
+
+    FEW_SHOT_CONCURRENCY: str = field(default_factory=lambda: """
+FEW-SHOT CONCURRENCY FIXES (ConcurrencyGuardian — Follow exactly):
+
+EXAMPLE 1: Shared Mutable Dict Without Lock
+BAD (race condition):
+shared_cache = {}
+def update_cache(key, value):
+    shared_cache[key] = value  # Not thread-safe
+
+GOOD (safe):
+from threading import Lock
+shared_cache = {}
+cache_lock = Lock()
+
+def update_cache(key, value):
+    with cache_lock:
+        shared_cache[key] = value
+
+EXAMPLE 2: Class Attribute Mutation Without Protection
+BAD:
+class OrderProcessor:
+    processed_count = 0
+    
+    def process(self):
+        self.processed_count += 1  # Non-atomic
+
+GOOD:
+class OrderProcessor:
+    processed_count = 0
+    _count_lock = Lock()
+    
+    def process(self):
+        with self._count_lock:
+            self.processed_count += 1
+
+EXAMPLE 3: Compound Assignment (+=) on Shared State
+BAD:
+    total += amount  # Reads, modifies, writes — race!
+
+GOOD:
+    with total_lock:
+        total += amount
+
+EXAMPLE 4: Async Shared State Without AsyncLock
+BAD:
+shared_counter = 0
+async def increment():
+    shared_counter += 1  # Not safe in asyncio
+
+GOOD:
+from asyncio import Lock
+shared_counter = 0
+counter_lock = Lock()
+
+async def increment():
+    async with counter_lock:
+        shared_counter += 1
+
+EXAMPLE 5: Redis as Natural Lock (Preferred for distributed)
+GOOD:
+async with ctx.acquire_lock("order_processing"):
+    # Critical section
+    await process_order()
+
+EXAMPLE 6: Deadlock Risk — Wrong Lock Order
+BAD:
+with lock_a:
+    with lock_b: ...
+with lock_b:
+    with lock_a: ...  # Potential deadlock
+
+GOOD: Always acquire in consistent order (e.g., by resource name hash)
+locks = sorted([lock_a, lock_b], key=id)
+with locks[0]:
+    with locks[1]: ...
+
+Prioritize context managers. Never use time.sleep() for synchronization.
+Use Redis locks when distributed coordination is needed.
+""")
     
     @property
     def client(self):
@@ -1834,6 +1914,37 @@ class ArchitectureGovernor(SubAtomicAgent):
 
     def _check_system(self, file_path):
         return []
+    
+    async def propose_fix(self, file_path: str, violation_type: str, details: str) -> str:
+        """L5+ Use LLM with few-shot to propose architectural fixes."""
+        if not self.ctx.intelligence_enabled:
+            return ""
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception:
+            return ""
+        
+        prompt = f"""
+{self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
+
+File {file_path} violates {violation_type} law.
+Details: {details}
+
+Current content (first 2000 chars):
+{content[:2000]}
+
+Propose minimal compliance action:
+- MOVE: old_path → new_path
+- SPLIT: file.py → [new_file1.py, new_file2.py]
+- DELETE (if noise)
+Output one operation per line.
+"""
+        
+        return await self.ctx.resilient_mutation(
+            self.name, prompt, max_attempts=1
+        )
 
 class DependencySentinel(SubAtomicAgent):
     """
@@ -2243,6 +2354,9 @@ class SafetyInspector(SubAtomicAgent):
                         # Build context for the mutation
                         context = "\n".join(self.ctx.instructions)
                         mutation_task = f'''
+{self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
+{self.ctx.FEW_SHOT_IMPORT_FIXES}
+
 Replace blocking calls with async alternatives.
 Context: {context}
 Rules:
@@ -3806,6 +3920,8 @@ class TestPilot(SubAtomicAgent):
                 try:
                     # L5+ TestPilot Positive Instructional Injection for property generation
                     prompt = f"""
+{self.ctx.FEW_SHOT_PROPERTY_TESTS}
+
 <positive_instructional_context>
 You are an expert in property-based testing.
 Good properties are:
@@ -3813,17 +3929,12 @@ Good properties are:
 - Discover edge cases
 - Simple and readable
 - Use minimal strategies
-
-Examples of strong properties:
-- Reversing a list twice returns original
-- JSON encode → decode is idempotent
-- Sorted list remains sorted after insert if using correct algorithm
 </positive_instructional_context>
 
-Generate 3 Hypothesis properties for function `{func_name}` in file `{func_file}`.
-Focus on invariants and post-conditions.
-Return only executable @given decorators and test functions.
-Include: from hypothesis import given, strategies as st
+Generate exactly 3 property tests for function `{func_name}` in file `{func_file}`.
+Focus on invariants, edge cases, post-conditions.
+Use only valid Hypothesis syntax.
+Return complete @given functions — no explanation.
 """
                     prop_code = await self.ctx.request_gemini(prompt)
                     if prop_code:
@@ -6256,6 +6367,8 @@ class ReflectionAgent(SubAtomicAgent):
             convergence_reached = getattr(self.ctx.signal_convergence, 'reached', False) if hasattr(self.ctx, 'signal_convergence') else False
             
             reflection_prompt = f"""
+{self.ctx.FEW_SHOT_REFLECTION_STRATEGY}
+
 <self_critique_guidance>
 You are reflecting on healing cycle {cycle}.
 Ask:
@@ -6264,9 +6377,6 @@ Ask:
 3. Are files still subatomic and at correct depth?
 4. What strategy failed/succeeded?
 5. What should change next cycle?
-
-If converging: suggest stopping.
-If flapping: suggest human escalation or skip.
 </self_critique_guidance>
 
 Current state:
@@ -6274,8 +6384,11 @@ Signals: {list(self.ctx.signals)[:10]}
 Modified: {list(self.ctx.modified_files)[:10]}
 Convergence: {convergence_reached}
 Success Rate: {self.ctx.mutation_stats.get('success', 0)}/{self.ctx.mutation_stats.get('total', 0)}
+Budget spent: {self.ctx.budget.get_status() if hasattr(self.ctx.budget, 'get_status') else 'unknown'}
 
-Provide strategic recommendation in 2-3 sentences.
+Based on examples above, recommend next action.
+Respond with one keyword only:
+CONVERGE_AND_COMMIT | MARK_FLAPPING_SKIP_FILE | ROLLBACK_LAST_CHANGE_AND_RETRY | ESCALATE_TO_HUMAN_WITH_REPORT
 """
             try:
                 advice = await self.ctx.resilient_mutation(
@@ -7634,7 +7747,14 @@ class Sherlock(SubAtomicAgent):
         error_file = self._extract_error_file(failure_info['traceback'])
         
         # L5+ Sherlock Positive Instructional Injection (structured reasoning template)
-        positive_guide = """
+        positive_guide = f"""
+{self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
+
+<healing_context>
+Cycle: {getattr(self.ctx, 'current_cycle', 'unknown')}
+Previous signals: {list(self.ctx.signals)[:5]}
+</healing_context>
+
 <reasoning_template>
 Step 1: Identify the exact exception type and line.
 Step 2: Trace which modified file likely introduced it.
@@ -7643,7 +7763,7 @@ Step 4: Recall similar past fixes from memory.
 Step 5: Propose one minimal change that resolves root cause.
 </reasoning_template>
 
-Use chain-of-thought above. Be surgical.
+Apply minimal, atomic fix following examples. Use chain-of-thought above. Be surgical.
 """
         
         # Build structured context for better analysis
