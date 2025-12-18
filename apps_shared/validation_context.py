@@ -5,6 +5,7 @@ Implements the Canon Validator ValidationContext pattern that serves as
 the central blackboard for all agents to share state, signals, and memory.
 
 This is the glue that connects all L5+ autonomy components.
+All signal methods are async to match Canon Validator async safety patterns.
 """
 
 import copy
@@ -119,38 +120,38 @@ class ValidationContext:
         """Get active signals (Canon Validator compatibility)."""
         return self.signal_bus.signals
     
-    def signal_critical_failure(self, message: str, source: str = "") -> None:
-        """Emit critical failure signal."""
-        self.signal_bus.signal_critical_failure(message, source)
+    async def signal_critical_failure(self, message: str, source: str = "") -> None:
+        """Emit critical failure signal (async)."""
+        await self.signal_bus.signal_critical_failure(message, source)
         self._notify_signal_callbacks(SignalType.CRITICAL_FAIL, message)
     
-    def signal_test_failure(self, message: str = "", source: str = "") -> None:
-        """Emit test failure signal."""
-        self.signal_bus.signal_test_failure(message, source)
+    async def signal_test_failure(self, message: str = "", source: str = "") -> None:
+        """Emit test failure signal (async)."""
+        await self.signal_bus.signal_test_failure(message, source)
         self._notify_signal_callbacks(SignalType.TEST_FAILURE, message)
     
-    def signal_high_risk(self, message: str, source: str = "") -> None:
-        """Emit high risk signal."""
-        self.signal_bus.signal_high_risk(message, source)
+    async def signal_high_risk(self, message: str, source: str = "") -> None:
+        """Emit high risk signal (async)."""
+        await self.signal_bus.signal_high_risk(message, source)
         self._notify_signal_callbacks(SignalType.HIGH_RISK, message)
     
-    def signal_convergence(self, source: str = "") -> None:
-        """Emit convergence signal."""
-        self.signal_bus.signal_convergence(source)
+    async def signal_convergence(self, source: str = "") -> None:
+        """Emit convergence signal (async)."""
+        await self.signal_bus.signal_convergence(source)
         self._notify_signal_callbacks(SignalType.CONVERGED, "")
     
-    def signal_needs_human_review(self, message: str, source: str = "") -> None:
-        """Emit human review needed signal."""
-        self.signal_bus.signal_needs_human_review(message, source)
+    async def signal_needs_human_review(self, message: str, source: str = "") -> None:
+        """Emit human review needed signal (async)."""
+        await self.signal_bus.signal_needs_human_review(message, source)
         self._notify_signal_callbacks(SignalType.NEEDS_HUMAN_REVIEW, message)
     
     def has_signal(self, signal_type: SignalType) -> bool:
         """Check if a signal is active."""
         return self.signal_bus.has(signal_type)
     
-    def clear_signals(self) -> None:
-        """Clear all signals (typically at start of new cycle)."""
-        self.signal_bus.clear()
+    async def clear_signals(self) -> None:
+        """Clear all signals (async, typically at start of new cycle)."""
+        await self.signal_bus.clear()
     
     def _notify_signal_callbacks(self, signal_type: SignalType, message: str) -> None:
         """Notify registered signal callbacks."""
@@ -268,14 +269,14 @@ class ValidationContext:
     # Quality Tracking
     # =========================================================================
     
-    def set_quality_score(self, component: str, score: float) -> None:
-        """Set quality score for a component."""
+    async def set_quality_score(self, component: str, score: float) -> None:
+        """Set quality score for a component (async due to signal emission)."""
         self.quality_scores[component] = score
         
         # Emit signal if below threshold
         threshold = self.config.get("quality_threshold", 0.7)
         if score < threshold:
-            self.signal_bus.emit(
+            await self.signal_bus.emit(
                 SignalType.QUALITY_BELOW_THRESHOLD,
                 f"{component} quality {score:.2f} below threshold {threshold}",
                 source=component,
@@ -316,10 +317,10 @@ class ValidationContext:
     # Cycle Management
     # =========================================================================
     
-    def start_new_cycle(self) -> int:
-        """Start a new convergence cycle."""
+    async def start_new_cycle(self) -> int:
+        """Start a new convergence cycle (async due to signal clearing)."""
         self.current_cycle += 1
-        self.clear_signals()
+        await self.clear_signals()
         self.clear_modifications()
         
         logger.info(f"Started cycle {self.current_cycle}")

@@ -251,7 +251,7 @@ class L5AutonomousOrchestrator:
                 
                 # Clear signals for new cycle
                 if self.signal_bus:
-                    self.signal_bus.clear_cycle()
+                    await self.signal_bus.clear_cycle()
                 
                 # Take snapshot for potential rollback
                 self._take_snapshot()
@@ -287,7 +287,7 @@ class L5AutonomousOrchestrator:
                         logger.warning("Rolling back to previous state")
                         self._rollback_to_snapshot()
                         if self.signal_bus:
-                            self.signal_bus.emit(
+                            await self.signal_bus.emit(
                                 SignalType.ROLLBACK_EXECUTED,
                                 "Rolled back due to regression",
                                 source="L5Orchestrator"
@@ -359,7 +359,7 @@ class L5AutonomousOrchestrator:
                 if phase.is_hard_gate and not phase_result.get("success", True):
                     logger.error(f"Hard gate {phase.name} failed - aborting")
                     if self.signal_bus:
-                        self.signal_bus.signal_critical_failure(
+                        await self.signal_bus.signal_critical_failure(
                             f"Hard gate {phase.name} failed",
                             source="L5Orchestrator"
                         )
@@ -368,7 +368,7 @@ class L5AutonomousOrchestrator:
             except Exception as e:
                 logger.error(f"Phase {phase.name} failed: {e}")
                 if self.signal_bus:
-                    self.signal_bus.emit(
+                    await self.signal_bus.emit(
                         SignalType.VALIDATION_FAILURE,
                         f"Phase {phase.name} error: {e}",
                         source="L5Orchestrator",
@@ -481,7 +481,7 @@ class L5AutonomousOrchestrator:
             
             # Emit signals based on result
             if self.signal_bus and not result.get("success", True):
-                self.signal_bus.emit(
+                await self.signal_bus.emit(
                     SignalType.VALIDATION_FAILURE,
                     f"Agent {agent_name} reported failure",
                     source=agent_name
@@ -575,7 +575,7 @@ class L5AutonomousOrchestrator:
         )
         
         if not approved:
-            self.signal_bus.emit(
+            await self.signal_bus.emit(
                 SignalType.VETOED,
                 "Human vetoed continuation",
                 source="InterventionServer"
