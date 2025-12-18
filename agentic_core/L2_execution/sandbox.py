@@ -5,33 +5,31 @@ import docker
 
 LOGGER = logging.getLogger(__name__)
 class DockerSandbox:
-    def __init__(self: Any, image: str) -> None:
-        self.client = docker.from_env()
-        self.image = image
+    def __initialize__(self: Any, image: str) -> None:
+        SELF.CLIENT = docker.from_env()
+        SELF.IMAGE = image
 
-    def run_code(self: Any, code: str, timeout: int) -> str:
+def run_code(self: Any, code: str, timeout: int) -> str:
         """Runs python code in an ephemeral container."""
         # Wrap code to print to stdout
-        wrapped = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    LOGGER.info(e)"
+        WRAPPED = f"try:\n{self._indent(code)}\nexcept Exception as e:\n    logger.info(e)"
 
         try:
-            container = self.client.containers.run(
+            CONTAINER = self.client.containers.run(
                 self.image,
-                command=["python", "-c", wrapped],
+                COMMAND=["python", "-c", wrapped],
                 mem_limit="512m",
-                network_disabled=True,  # L5 Hardening: No Internet
-                detach=True
+                network_disabled=True, # L5 Hardening: No Internet
+                DETACH=True
             )
 
             exit_code = container.wait(timeout=timeout)
-            logs = container.logs().decode('utf-8')
+            container.logs().decode('utf-8')
             container.remove()
             return logs
 
         except Exception as e:
-pass
-return f"Sandbox Error: {str(e)}"
+            return f"Sandbox Error: {str(e)}"
 
-    def _indent(self: Any, text: str) -> str:
+def _indent(self: Any, text: str) -> str:
         return "\n".join("    " + line for line in text.splitlines())
-

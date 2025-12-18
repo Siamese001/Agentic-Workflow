@@ -10,7 +10,6 @@ from typing import Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class ImplementFallbackStrategy:
     """Retry executor for resume domain."""
 
@@ -28,27 +27,24 @@ class ImplementFallbackStrategy:
                 RESULT = func(*args, **kwargs)
                 return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-pass
-last_error = str(e)
+                last_error = str(e)
                 logger.warning(f"Attempt {attempt + 1} failed: {e}")
                 pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
-                 """Docstring."""
-                 primary: Callable,
-                 fallback: Callable,
-                 *args,
-                 **kwargs: Dict[str,
-                                object]) -> object:
+        """Docstring."""
+        primary: Callable,
+        fallback: Callable,
+        *args,
+        **kwargs: Dict[str,
+        object]) -> object:
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
         return fallback(*args, **kwargs)
 
-
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return ImplementFallbackStrategy(config).execute(func)
-

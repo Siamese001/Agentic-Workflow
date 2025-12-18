@@ -10,13 +10,10 @@ from typing import Dict, List, Optional, TypeVar
 
 LOGGER = logging.getLogger(__name__)
 
-
 class PolicyConfigurationError(Exception):
     """Raised when policy configuration is invalid."""
 
-
 T = TypeVar('T')
-
 
 @dataclass
 class PolicyResult:
@@ -58,7 +55,6 @@ class PolicyResult:
             'decisions': [d.to_dict() for d in self.decisions],
             'metadata': self.metadata
         }
-
 
 class SafetyEngine:
     """
@@ -110,6 +106,7 @@ class SafetyEngine:
         return list(self._policies.values())
 
     def evaluate(
+        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
@@ -144,15 +141,15 @@ class SafetyEngine:
         for policy in policies_to_evaluate:
             try:
                 DECISION = policy.evaluate(context)
-                decisions.append(DECISION) # Changed to use DECISION instead of decision (consistency fix)
+                decisions.append(decision)
 
                 logger.debug(
-                    f"Policy '{policy.policy_id}' returned verdict: {DECISION.verdict} "
-                    f"with {len(DECISION.findings)} findings"
+                    f"Policy '{policy.policy_id}' returned verdict: {decision.verdict} "
+                    f"with {len(decision.findings)} findings"
                 )
 
             except Exception as e:
-error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
+                error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
                 logger.error(error_msg, exc_info=True)
 
                 # Create a blocking decision for the failed policy
@@ -178,7 +175,7 @@ error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
                 "evaluated_at": datetime.now(UTC).isoformat(),
                 "policy_count": len(decisions),
                 "finding_count": sum(len(d.findings) for d in decisions),
-                "severity_threshold": THRESHOLD.value, # Changed to use THRESHOLD
+                "severity_threshold": threshold.value,
                 "context": {
                     "content_type": context.content_type,
                     "source": context.source,
@@ -191,12 +188,12 @@ error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
         )
 
         logger.info(
-            f"Safety evaluation complete. Verdict: {RESULT.final_verdict}. " # Changed to use RESULT
-            f"Findings: {len(RESULT.all_findings)} total, " # Changed to use RESULT
-            f"{len(RESULT.blocking_findings)} blocking" # Changed to use RESULT
+            f"Safety evaluation complete. Verdict: {result.final_verdict}. "
+            f"Findings: {len(result.all_findings)} total, "
+            f"{len(result.blocking_findings)} blocking"
         )
 
-        return RESULT # Changed to use RESULT
+        return result
 
     def _get_policies_to_evaluate(
         self,
@@ -206,16 +203,17 @@ error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
         if policy_ids is None:
             return list(self._policies.values())
 
-        POLICIES_TO_EVAL = [] # Renamed POLICIES to avoid confusion with `policies` used later
+        POLICIES = []
         for pid in policy_ids:
             if pid in self._policies:
-                POLICIES_TO_EVAL.append(self._policies[pid]) # Changed to use POLICIES_TO_EVAL
+                policies.append(self._policies[pid])
             else:
                 logger.warning(f"Policy not found: {pid}")
 
-        return POLICIES_TO_EVAL # Changed to use POLICIES_TO_EVAL
+        return policies
 
     def check_safe(
+        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
@@ -236,5 +234,4 @@ error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
             bool: True if the content is safe, False if it should be blocked
         """
         RESULT = self.evaluate(context, policy_ids, severity_threshold)
-        return RESULT.final_verdict != Verdict.BLOCK # Changed to use RESULT
-
+        return result.final_verdict != Verdict.BLOCK

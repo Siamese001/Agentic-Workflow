@@ -1,7 +1,7 @@
 """Types and models for rg_validation_gates."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -16,6 +16,7 @@ class GateSeverity(Enum):
 @dataclass
 class GateResult:
     """Result from a validation gate."""
+
     _gate_id: str
     _decision: GateDecision
     _severity: GateSeverity
@@ -27,9 +28,9 @@ class GateResult:
 @dataclass
 class ValidationGate:
     """Definition of a validation gate."""
+
     gate_id: str
     _name: str
     _description: str
     severity: GateSeverity
     _validator: Callable[[object, Dict[str, object]], GateResult]
-

@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field
 
 LOGGER = logging.getLogger(__name__)
 
-
 class RiskCategory(str, Enum):
     """Categories of risks for onboarding plans."""
     CULTURAL_INERTIA = "Cultural Inertia"
@@ -25,7 +24,6 @@ class RiskCategory(str, Enum):
     EXECUTION_RISK = "Execution Risk"
     EXTERNAL_DEPENDENCIES = "External Dependencies"
 
-
 class ImpactLevel(str, Enum):
     """Impact levels for identified risks."""
     LOW = "Low"
@@ -33,19 +31,16 @@ class ImpactLevel(str, Enum):
     HIGH = "High"
     CRITICAL = "Critical"
 
-
 class FailureMode(BaseModel):
     """A potential failure mode with risk assessment."""
 
-    RISK: str = Field(..., description="Description of the risk")
+    RISK: STR = Field(..., description="Description of the risk")
     category: RiskCategory = Field(..., description="Risk category")
-    PROBABILITY: float = Field(..., ge=0.0, le=1.0,
-                               description="Probability of occurrence (0-1)")
+    PROBABILITY: FLOAT = Field(..., ge=0.0, le=1.0, description="Probability of occurrence (0-1)")
     impact: ImpactLevel = Field(..., description="Impact if risk materializes")
-    mitigation_strategy: str = Field(...,
-                                     description="Specific mitigation approach")
+    mitigation_strategy: str = Field(..., description="Specific mitigation approach")
     early_warning_signs: List[str] = Field(default_factory=list,
-                                           DESCRIPTION="Early warning indicators")
+        DESCRIPTION="Early warning indicators")
     owner: Optional[str] = Field(None, description="Who owns this risk")
 
     @property
@@ -59,24 +54,18 @@ class FailureMode(BaseModel):
         }
         return self.probability * impact_weights[self.impact]
 
-
 class PreMortemReport(BaseModel):
     """Complete pre-mortem analysis report."""
 
-    plan_summary: str = Field(...,
-                              description="Summary of the plan being analyzed")
-    top_risks: List[FailureMode] = Field(...,
-                                         description="Top identified risks")
-    overall_risk_score: float = Field(..., ge=0.0,
-                                      le=1.0, description="Overall plan risk score")
-    go_no_go_recommendation: str = Field(...,
-                                         description="Go/No-Go recommendation")
+    plan_summary: str = Field(..., description="Summary of the plan being analyzed")
+    top_risks: List[FailureMode] = Field(..., description="Top identified risks")
+    overall_risk_score: float = Field(..., ge=0.0, le=1.0, description="Overall plan risk score")
+    go_no_go_recommendation: str = Field(..., description="Go/No-Go recommendation")
     critical_success_factors: List[str] = Field(default_factory=list,
-                                                DESCRIPTION="Critical success factors")
+        DESCRIPTION="Critical success factors")
     monitoring_plan: Dict[str,
-                          str] = Field(default_factory=dict,
-                                       DESCRIPTION="Risk monitoring plan")
-
+        STR] = Field(default_factory=dict,
+        DESCRIPTION="Risk monitoring plan")
 
 class SimpleAgentBase:
     """Simple base class for standalone agents."""
@@ -88,11 +77,9 @@ class SimpleAgentBase:
             name: Agent name for logging
             model_name: LLM model to use
         """
-        self.NAME = name
+        SELF.NAME = name
         self.model_name = model_name
-        logger.info(
-            f"Initialized {self.__class__.__name__}: model={model_name}")
-
+        logger.info(f"Initialized {self.__class__.__name__}: model={model_name}")
 
 class PreMortemAgent(SimpleAgentBase):
     """Agent that performs pre-mortem analysis on plans."""
@@ -168,25 +155,23 @@ class PreMortemAgent(SimpleAgentBase):
 
         # Generate mitigations for each failure mode
         for failure in failure_modes:
-            failure.mitigation_strategy = self._generate_mitigation(
-                failure, plan_text)
+            failure.mitigation_strategy = self._generate_mitigation(failure, plan_text)
             failure.early_warning_signs = self._identify_warning_signs(failure)
 
         # Select top risks
-        top_risks = sorted(
-            failure_modes, key=lambda x: x.risk_score, reverse=True)[:5]
+        top_risks = sorted(failure_modes, key=lambda x: x.risk_score, reverse=True)[:5]
 
         # Calculate overall risk score
         overall_risk = self._calculate_overall_risk(top_risks)
 
         # Generate recommendation
-        recommendation = self._generate_recommendation(overall_risk, top_risks)
+        RECOMMENDATION = self._generate_recommendation(overall_risk, top_risks)
 
         # Identify critical success factors
         success_factors = self._identify_success_factors(plan_text, top_risks)
 
         # Create monitoring plan
-        monitoring = self._create_monitoring_plan(top_risks)
+        MONITORING = self._create_monitoring_plan(top_risks)
 
         return PreMortemReport(
             plan_summary=self._summarize_plan(plan_text),
@@ -207,7 +192,7 @@ class PreMortemAgent(SimpleAgentBase):
         Returns:
             List of identified failure modes
         """
-        prompt = f"""
+        PROMPT = f"""
         You are a cynical Chief Risk Officer reviewing a {plan_type} plan.
         Assume this plan FAILS in 6 months. List the top 7 reasons why it might fail.
 
@@ -237,13 +222,13 @@ class PreMortemAgent(SimpleAgentBase):
         """
 
         try:
-            response = await self._call_llm(prompt, temperature=0.2)
-            result = json.loads(response.content.strip())
+            RESPONSE = await self._call_llm(prompt, temperature=0.2)
+            RESULT = json.loads(response.content.strip())
 
             failure_modes = []
             for fm in result.get("failure_modes", []):
                 try:
-                    failure = FailureMode(
+                    FAILURE = FailureMode(
                         RISK=fm["risk"],
                         CATEGORY=RiskCategory(fm["category"]),
                         PROBABILITY=fm["probability"],
@@ -252,13 +237,13 @@ class PreMortemAgent(SimpleAgentBase):
                     )
                     failure_modes.append(failure)
                 except (KeyError, ValueError) as e:
-logger.warning(f"Skipping invalid failure mode: {e}")
+                    logger.warning(f"Skipping invalid failure mode: {e}")
                     continue
 
             return failure_modes
 
         except Exception as e:
-logger.error(f"Failed to identify failure modes: {e}")
+            logger.error(f"Failed to identify failure modes: {e}")
             # Return generic failure modes
             return [
                 FailureMode(
@@ -280,7 +265,7 @@ logger.error(f"Failed to identify failure modes: {e}")
         Returns:
             Mitigation strategy
         """
-        prompt = f"""
+        PROMPT = f"""
         For this risk, provide a specific, actionable mitigation strategy:
 
         Risk: {failure.risk}
@@ -300,10 +285,10 @@ logger.error(f"Failed to identify failure modes: {e}")
         """
 
         try:
-            response = await self._call_llm(prompt, temperature=0.3)
+            RESPONSE = await self._call_llm(prompt, temperature=0.3)
             return response.content.strip()
         except Exception as e:
-logger.error(f"Failed to generate mitigation: {e}")
+            logger.error(f"Failed to generate mitigation: {e}")
             return "Implement regular check-ins and monitoring to address early signs of this risk."
 
     def _identify_warning_signs(self, failure: FailureMode) -> List[str]:
@@ -369,13 +354,10 @@ logger.error(f"Failed to generate mitigation: {e}")
             return 0.0
 
         # Weighted average of top risks
-        total_weight = sum(2 ** i for i in range(len(risks))
-                           )  # Exponential weighting
-        weighted_score = sum(risk.risk_score * (2 ** i)
-                             for i, risk in enumerate(risks))
+        total_weight = sum(2 ** i for i in range(len(risks)))  # Exponential weighting
+        weighted_score = sum(risk.risk_score * (2 ** i) for i, risk in enumerate(risks))
 
-        # Normalize and amplify
-        return min(1.0, weighted_score / total_weight * 2)
+        return min(1.0, weighted_score / total_weight * 2)  # Normalize and amplify
 
     def _generate_recommendation(self, risk_score: float, risks: List[FailureMode]) -> str:
         """Generate go/no-go recommendation.
@@ -388,7 +370,7 @@ logger.error(f"Failed to generate mitigation: {e}")
             Recommendation string
         """
         critical_risks = [r for r in risks if r.impact == ImpactLevel.CRITICAL and
-                          r.probability > 0.5]
+            r.probability > 0.5]
 
         if critical_risks:
             return "NO-GO: Address critical risks before proceeding"
@@ -409,7 +391,7 @@ logger.error(f"Failed to generate mitigation: {e}")
         Returns:
             List of critical success factors
         """
-        factors = []
+        FACTORS = []
 
         # Based on risks, identify corresponding success factors
         risk_categories = set(r.category for r in risks)
@@ -418,16 +400,13 @@ logger.error(f"Failed to generate mitigation: {e}")
             factors.append("Strong change management and team buy-in")
 
         if RiskCategory.STAKEHOLDER_ALIGNMENT in risk_categories:
-            factors.append(
-                "Clear executive sponsorship and aligned expectations")
+            factors.append("Clear executive sponsorship and aligned expectations")
 
         if RiskCategory.TECHNICAL_DEBT in risk_categories:
-            factors.append(
-                "Thorough technical assessment and phased migration")
+            factors.append("Thorough technical assessment and phased migration")
 
         if RiskCategory.RESOURCE_CONSTRAINTS in risk_categories:
-            factors.append(
-                "Adequate resource allocation and realistic timeline")
+            factors.append("Adequate resource allocation and realistic timeline")
 
         # Add generic factors
         factors.extend([
@@ -447,10 +426,11 @@ logger.error(f"Failed to generate mitigation: {e}")
         Returns:
             Monitoring plan mapping risks to monitoring actions
         """
-        monitoring = {}
+        MONITORING = {}
 
         for risk in risks[:3]:  # Top 3 risks
-            monitoring[risk.RISK] = f"Weekly check-ins, track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
+            MONITORING[RISK.RISK] = f"Weekly check-ins,
+                track {risk.early_warning_signs[0] if risk.early_warning_signs else 'key metrics'}"
 
         return monitoring
 
@@ -475,7 +455,7 @@ logger.error(f"Failed to generate mitigation: {e}")
         Returns:
             Formatted Markdown string
         """
-        lines = [
+        LINES = [
             "## Strategic Risk Assessment (Pre-Mortem)",
             "",
             f"**Overall Risk Score:** {report.overall_risk_score:.1%}",
@@ -488,9 +468,23 @@ logger.error(f"Failed to generate mitigation: {e}")
         ]
 
         for risk in report.top_risks:
-            mitigation = risk.mitigation_strategy[:50] + "..." if len(risk.mitigation_strategy) > 50 else risk.mitigation_strategy
+            MITIGATION = risk.
+                .mitigation_strategy[:50] + ".
+                ..
+                ..
+                ." if len(risk.
+                .mitigation_strategy) > 50 else risk.
+                .mitigation_strategy
             lines.append(
-                f"| {risk.RISK[:40]}... | {risk.category} | {risk.probability:.0%} | {risk.impact} | {mitigation} |"
+                f"| {risk.
+                    .risk[:40]}.
+                    ..
+                    ..
+                    . | {risk.
+                    .category} | {risk.
+                    .probability:.
+                    .0%} | {risk.
+                    .impact} | {mitigation} |"
             )
 
         lines.extend([
@@ -526,15 +520,13 @@ logger.error(f"Failed to generate mitigation: {e}")
         try:
             # Import here to avoid circular imports
             from scripts.runtime.shared.multi_provider_clients import (
-                Provider,
-                get_client,
-            )
+                Provider, get_client)
 
             # Get Anthropic client
-            client = get_client(Provider.ANTHROPIC)
+            CLIENT = get_client(Provider.ANTHROPIC)
 
             # Call LLM
-            response = await client.messages.create(
+            RESPONSE = await client.messages.create(
                 MODEL="claude-3-5-sonnet-20241022",
                 max_tokens=2000,
                 TEMPERATURE=temperature,
@@ -543,21 +535,17 @@ logger.error(f"Failed to generate mitigation: {e}")
 
             class LLMResponseImpl:
                 """TODO: Add docstring."""
-
-                def __init__(self, content: str):
-                    self.CONTENT = content
+            def __init__(self, content: str):
+                SELF.CONTENT = content
 
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-logger.error(f"LLM call failed: {e}")
+            logger.error(f"LLM call failed: {e}")
             # Return fallback response
-
             class LLMResponseImpl:
                 """Docstring."""
-
-                def __init__(self, content: str):
-                    self.CONTENT = content
+            def __init__(self, content: str):
+                SELF.CONTENT = content
 
             return LLMResponseImpl('{"failure_modes": []}')
-

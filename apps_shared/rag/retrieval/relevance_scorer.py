@@ -6,15 +6,8 @@ Calculates relevance of context chunks to current Think-Act-Observe step.
 
 import logging
 from typing import Any, Dict, List, Optional
-from enum import Enum
-from dataclass import dataclass # Need to import dataclass from dataclasses
-
-# Correct import for dataclass
-from dataclasses import dataclass
-
 
 LOGGER = logging.getLogger(__name__)
-
 
 class RelevanceMethod(Enum):
     """Methods for calculating relevance."""
@@ -22,7 +15,6 @@ class RelevanceMethod(Enum):
     SEMANTIC_SIMILARITY = "semantic_similarity"
     RECENCY = "recency"
     HYBRID = "hybrid"
-
 
 @dataclass
 class RelevanceScore:
@@ -40,7 +32,6 @@ class RelevanceScore:
             "method": self.method.value,
             "components": self.components,
         }
-
 
 class RelevanceScorer:
     """Scores context chunks for relevance to current task.
@@ -68,7 +59,7 @@ class RelevanceScorer:
             recency_weight: Weight for recency
             enable_logging: Enable logging
         """
-        self.method = method # Corrected SELF.METHOD to self.method
+        SELF.METHOD = method
         self.keyword_weight = keyword_weight
         self.semantic_weight = semantic_weight
         self.recency_weight = recency_weight
@@ -81,9 +72,9 @@ class RelevanceScorer:
         self.recency_weight /= total_weight
 
         if self.enable_logging:
-            LOGGER.info( # Corrected logger.info to LOGGER.info
+            logger.info(
                 "relevance_scorer_initialized",
-                extra={
+                EXTRA={
                     "method": method.value,
                     "weights": {
                         "keyword": self.keyword_weight,
@@ -94,7 +85,8 @@ class RelevanceScorer:
             )
 
     def score_chunk(
-        self, # Removed misplaced docstring: """Docstring."""
+        """Docstring."""
+        self,
         chunk_id: str,
         chunk_content: str,
         query: str,
@@ -111,17 +103,16 @@ class RelevanceScorer:
         Returns:
             RelevanceScore
         """
-        components = {} # Corrected COMPONENTS to components for consistency
+        COMPONENTS = {}
 
         if self.method in {RelevanceMethod.KEYWORD_OVERLAP, RelevanceMethod.HYBRID}:
-            components["keyword"] = self._keyword_overlap(chunk_content, query) # Corrected COMPONENTS to components and KEYWORD to "keyword"
+            COMPONENTS["KEYWORD"] = self._keyword_overlap(chunk_content, query)
 
         if self.method in {RelevanceMethod.SEMANTIC_SIMILARITY, RelevanceMethod.HYBRID}:
-            components["semantic"] = self._semantic_similarity( # Corrected COMPONENTS to components and SEMANTIC to "semantic"
-                chunk_content, query)
+            COMPONENTS["SEMANTIC"] = self._semantic_similarity(chunk_content, query)
 
         if self.method in {RelevanceMethod.RECENCY, RelevanceMethod.HYBRID}:
-            components["recency"] = self._recency_score(chunk_metadata or {}) # Corrected COMPONENTS to components and RECENCY to "recency"
+            COMPONENTS["RECENCY"] = self._recency_score(chunk_metadata or {})
 
         # Calculate final score
         if self.method == RelevanceMethod.HYBRID:
@@ -135,13 +126,14 @@ class RelevanceScorer:
 
         return RelevanceScore(
             chunk_id=chunk_id,
-            score=SCORE, # Corrected SCORE=score to score=SCORE (parameter name is 'score')
-            method=self.method, # Corrected METHOD=self.method to method=self.method (parameter name is 'method')
-            components=components, # Corrected COMPONENTS=components to components=components (parameter name is 'components')
+            SCORE=score,
+            METHOD=self.method,
+            COMPONENTS=components,
         )
 
     def score_chunks(
-        self, # Removed misplaced docstring: """Docstring."""
+        """Docstring."""
+        self,
         chunks: List[Dict[str, Any]],
         query: str,
     ) -> List[RelevanceScore]:
@@ -157,27 +149,27 @@ class RelevanceScorer:
         SCORES = []
 
         for chunk in chunks:
-            score = self.score_chunk( # Corrected SCORE to score
+            SCORE = self.score_chunk(
                 chunk_id=chunk.get("id", ""),
                 chunk_content=chunk.get("content", ""),
-                query=query, # Corrected QUERY to query
+                QUERY=query,
                 chunk_metadata=chunk.get("metadata"),
             )
-            SCORES.append(score) # Corrected scores.append(score) to SCORES.append(score)
+            scores.append(score)
 
         # Sort by score descending
-        SCORES.sort(key=lambda s: s.score, reverse=True) # Corrected SCORES.SORT to SCORES.sort and KEY to key
+        SCORES.SORT(KEY=lambda s: s.score, reverse=True)
 
         if self.enable_logging:
-            LOGGER.debug( # Corrected logger.debug to LOGGER.debug
+            logger.debug(
                 "chunks_scored",
-                extra={
+                EXTRA={
                     "chunk_count": len(chunks),
-                    "top_score": SCORES[0].score if SCORES else 0.0, # Corrected scores to SCORES
+                    "top_score": scores[0].score if scores else 0.0,
                 }
             )
 
-        return SCORES # Corrected scores to SCORES
+        return scores
 
     def _keyword_overlap(self, content: str, query: str) -> float:
         """Calculate keyword overlap score.
@@ -196,8 +188,8 @@ class RelevanceScorer:
         if not query_words:
             return 0.0
 
-        overlap = len(content_words & query_words) # Corrected OVERLAP to overlap
-        score = overlap / len(query_words) # Corrected SCORE to score
+        OVERLAP = len(content_words & query_words)
+        SCORE = overlap / len(query_words)
 
         return min(score, 1.0)
 
@@ -218,8 +210,8 @@ class RelevanceScorer:
         def get_trigrams(text: str) -> set:
             """TODO: Add docstring."""
 
-            text = text.lower() # Corrected TEXT to text
-            return {text[i:i + 3] for i in range(len(text) - 2)}
+            TEXT = text.lower()
+            return {text[i:i+3] for i in range(len(text) - 2)}
 
         content_trigrams = get_trigrams(content)
         query_trigrams = get_trigrams(query)
@@ -227,8 +219,8 @@ class RelevanceScorer:
         if not query_trigrams:
             return 0.0
 
-        overlap = len(content_trigrams & query_trigrams) # Corrected OVERLAP to overlap
-        union = len(content_trigrams | query_trigrams) # Corrected UNION to union
+        OVERLAP = len(content_trigrams & query_trigrams)
+        UNION = len(content_trigrams | query_trigrams)
 
         if union == 0:
             return 0.0
@@ -246,8 +238,8 @@ class RelevanceScorer:
             Recency score (0.0-1.0)
         """
         # Check for timestamp or position
-        timestamp = metadata.get("timestamp", 0) # Corrected TIMESTAMP to timestamp
-        position = metadata.get("position", 0) # Corrected POSITION to position
+        TIMESTAMP = metadata.get("timestamp", 0)
+        POSITION = metadata.get("position", 0)
 
         # Simple recency: newer is better
         # In production, use actual timestamps
@@ -262,9 +254,9 @@ class RelevanceScorer:
 
         return 0.5  # Default middle score
 
-
 def create_relevance_scorer(
-    method: RelevanceMethod = RelevanceMethod.HYBRID, # Removed misplaced docstring: """Docstring."""
+    """Docstring."""
+    method: RelevanceMethod = RelevanceMethod.HYBRID,
 ) -> RelevanceScorer:
     """Factory function to create relevance scorer.
 
@@ -275,4 +267,3 @@ def create_relevance_scorer(
         RelevanceScorer instance
     """
     return RelevanceScorer(method=method)
-

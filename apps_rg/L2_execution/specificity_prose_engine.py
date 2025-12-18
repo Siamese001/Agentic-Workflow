@@ -22,8 +22,6 @@ Non-responsibilities:
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
 
 @dataclass
 class SpecificityProseConfig:
@@ -32,9 +30,8 @@ class SpecificityProseConfig:
     min_words_per_paragraph: int = 85
     max_words_per_paragraph: int = 100
     min_company_specifics: int = 4
-    TEMPERATURE: float = 0.65
+    TEMPERATURE: FLOAT = 0.65
     max_attempts: int = 3
-
 
 @dataclass
 class CompanySpecificDetail:
@@ -42,7 +39,6 @@ class CompanySpecificDetail:
     detail: str
     category: str
     source: str
-
 
 @dataclass
 class SpecificityProseResult:
@@ -55,7 +51,6 @@ class SpecificityProseResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
-
 
 class SpecificityProseEngine:
     """
@@ -81,13 +76,14 @@ class SpecificityProseEngine:
         gate_executor: Optional[IntegrityGateExecutor] = None,
         recovery_loop: Optional[AdaptiveRecoveryLoop] = None
     ):
-        self.config = config or SpecificityProseConfig()
+        SELF.CONFIG = config or SpecificityProseConfig()
         self.gate_executor = gate_executor or IntegrityGateExecutor()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.TEMPERATURE
+            initial_temperature=self.config.temperature
         )
 
     def generate_cover_letter(
+        """Docstring."""
         self,
         company_research: Dict[str, Any],
         resume_highlights: List[str],
@@ -104,33 +100,32 @@ class SpecificityProseEngine:
         Returns:
             SpecificityProseResult with cover letter and validation details
         """
-        self.recovery_loop.reset(self.config.TEMPERATURE)
+        self.recovery_loop.reset(self.config.temperature)
         validation_results = []
 
         for attempt in range(1, self.config.max_attempts + 1):
             cover_letter = self._generate_content(
                 company_research=company_research,
                 resume_highlights=resume_highlights,
-                context=context,
-                temperature=self.recovery_loop.current_temperature,
-                attempt=attempt
+                CONTEXT=context,
+                TEMPERATURE=self.recovery_loop.current_temperature,
+                ATTEMPT=attempt
             )
 
-            hygiene_result = self.gate_executor.execute_hygiene_scan(
-                cover_letter)
+            hygiene_result = self.gate_executor.execute_hygiene_scan(cover_letter)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
                 RECOVERY = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
-                    message=hygiene_result.message,
-                    details=hygiene_result.details
+                    MESSAGE=hygiene_result.message,
+                    DETAILS=hygiene_result.details
                 )
-                if not RECOVERY.should_retry:
+                if not recovery.should_retry:
                     break
                 continue
 
-            paragraphs = self._split_paragraphs(cover_letter)
+            PARAGRAPHS = self._split_paragraphs(cover_letter)
 
             paragraph_result = self._validate_paragraph_structure(paragraphs)
             validation_results.append(paragraph_result)
@@ -138,10 +133,10 @@ class SpecificityProseEngine:
             if not paragraph_result.passed:
                 RECOVERY = self.recovery_loop.record_failure(
                     gate_id=paragraph_result.gate_id,
-                    message=paragraph_result.message,
-                    details=paragraph_result.details
+                    MESSAGE=paragraph_result.message,
+                    DETAILS=paragraph_result.details
                 )
-                if not RECOVERY.should_retry:
+                if not recovery.should_retry:
                     break
                 continue
 
@@ -150,17 +145,16 @@ class SpecificityProseEngine:
                 company_research
             )
 
-            specificity_result = self._validate_company_specifics(
-                company_specifics)
+            specificity_result = self._validate_company_specifics(company_specifics)
             validation_results.append(specificity_result)
 
             if not specificity_result.passed:
                 RECOVERY = self.recovery_loop.record_failure(
                     gate_id=specificity_result.gate_id,
-                    message=specificity_result.message,
-                    details=specificity_result.details
+                    MESSAGE=specificity_result.message,
+                    DETAILS=specificity_result.details
                 )
-                if not RECOVERY.should_retry:
+                if not recovery.should_retry:
                     break
                 continue
 
@@ -171,20 +165,20 @@ class SpecificityProseEngine:
 
             find_replace_result = ValidationResult(
                 gate_id='VG_FIND_REPLACE_TEST',
-                passed=find_replace_test_passed,
-                severity='BLOCK' if not find_replace_test_passed else 'INFO',
-                message=f"Find-replace test {'passed' if find_replace_test_passed else 'FAILED'}",
-                signature=f"FINDREPLACE:{'OK' if find_replace_test_passed else 'FAIL'}"
+                PASSED=find_replace_test_passed,
+                SEVERITY='BLOCK' if not find_replace_test_passed else 'INFO',
+                MESSAGE=f"Find-replace test {'passed' if find_replace_test_passed else 'FAILED'}",
+                SIGNATURE=f"FINDREPLACE:{'OK' if find_replace_test_passed else 'FAIL'}"
             )
             validation_results.append(find_replace_result)
 
             if not find_replace_test_passed:
                 RECOVERY = self.recovery_loop.record_failure(
                     gate_id=find_replace_result.gate_id,
-                    message=find_replace_result.message,
-                    details={'company_specifics_count': len(company_specifics)}
+                    MESSAGE=find_replace_result.message,
+                    DETAILS={'company_specifics_count': len(company_specifics)}
                 )
-                if not RECOVERY.should_retry:
+                if not recovery.should_retry:
                     break
                 continue
 
@@ -192,24 +186,24 @@ class SpecificityProseEngine:
 
             return SpecificityProseResult(
                 cover_letter=cover_letter,
-                paragraphs=paragraphs,
+                PARAGRAPHS=paragraphs,
                 company_specifics=company_specifics,
                 find_replace_test_passed=find_replace_test_passed,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                success=True,
-                attempts=attempt
+                SUCCESS=True,
+                ATTEMPTS=attempt
             )
 
         return SpecificityProseResult(
             cover_letter="",
-            paragraphs=[],
+            PARAGRAPHS=[],
             company_specifics=[],
             find_replace_test_passed=False,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            success=False,
-            attempts=self.config.max_attempts
+            SUCCESS=False,
+            ATTEMPTS=self.config.max_attempts
         )
 
     def _generate_content(
@@ -225,8 +219,8 @@ class SpecificityProseEngine:
         Placeholder for actual LLM integration.
         """
         company_name = company_research.get('name', 'Your Company')
-        product = company_research.get('product', 'innovative platform')
-        mission = company_research.get('mission', 'transform the industry')
+        PRODUCT = company_research.get('product', 'innovative platform')
+        MISSION = company_research.get('mission', 'transform the industry')
 
         return f"""I am writing to express my strong interest in the Chief Technology Officer positi
     on at {company_name}. Your company's {product} represents a compelling opportunity to drive tech
@@ -247,7 +241,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
 
     def _split_paragraphs(self, text: str) -> List[str]:
         """Split text into paragraphs"""
-        paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
+        PARAGRAPHS = [p.strip() for p in text.split('\n\n') if p.strip()]
         return paragraphs
 
     def _validate_paragraph_structure(self, paragraphs: List[str]) -> ValidationResult:
@@ -258,42 +252,44 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         if len(paragraphs) != self.config.paragraph_count:
             return ValidationResult(
                 gate_id='VG_PARAGRAPH_STRUCTURE',
-                passed=False,
-                severity='BLOCK',
-                message=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs, got {len(paragraphs)}",
+                PASSED=False,
+                SEVERITY='BLOCK',
+                MESSAGE=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs,
+                    got {len(paragraphs)}",
 
-                details={'expected': self.config.paragraph_count,
-                         'actual': len(paragraphs)}
+                DETAILS={'expected': self.config.paragraph_count, 'actual': len(paragraphs)}
             )
 
-        violations = []
+        VIOLATIONS = []
         for i, para in enumerate(paragraphs, 1):
             word_count = len(para.split())
             if word_count < self.config.min_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words(min {self.config.min_words_per_paragraph})")
+                violations.append(f"Paragraph {i}: {word_count} words (min {self.config.min_words_pe
+    r_paragraph})")
             elif word_count > self.config.max_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words(max {self.config.max_words_per_paragraph})")
+                violations.append(f"Paragraph {i}: {word_count} words (max {self.config.max_words_pe
+    r_paragraph})")
 
         if violations:
             return ValidationResult(
                 gate_id='VG_PARAGRAPH_STRUCTURE',
-                passed=False,
-                severity='BLOCK',
-                message=f"BLOCKED: {len(violations)} paragraph word count violations",
-                details={'violations': violations}
+                PASSED=False,
+                SEVERITY='BLOCK',
+                MESSAGE=f"BLOCKED: {len(violations)} paragraph word count violations",
+                DETAILS={'violations': violations}
             )
 
         return ValidationResult(
             gate_id='VG_PARAGRAPH_STRUCTURE',
-            passed=True,
-            severity='INFO',
-            message=(
+            PASSED=True,
+            SEVERITY='INFO',
+            MESSAGE=(
                 f"Paragraph structure valid: {len(paragraphs)} paragraphs "
                 f"with correct word counts"
             ),
 
 
-            signature=f"PARA:OK:{len(paragraphs)}"
+            SIGNATURE=f"PARA:OK:{len(paragraphs)}"
         )
 
     def _extract_company_specifics(
@@ -302,16 +298,16 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         company_research: Dict[str, Any]
     ) -> List[CompanySpecificDetail]:
         """Extract company-specific details from cover letter"""
-        specifics = []
+        SPECIFICS = []
 
         company_name = company_research.get('name', '')
         if company_name and company_name in cover_letter:
-            count = cover_letter.count(company_name)
+            COUNT = cover_letter.count(company_name)
             for i in range(count):
                 specifics.append(CompanySpecificDetail(
-                    detail=company_name,
-                    category='COMPANY_NAME',
-                    source='company_research'
+                    DETAIL=company_name,
+                    CATEGORY='COMPANY_NAME',
+                    SOURCE='company_research'
                 ))
 
         for category, keywords in self.COMPANY_SPECIFIC_CATEGORIES.items():
@@ -320,9 +316,9 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                     if isinstance(value, str) and keyword in value.lower():
                         if value in cover_letter:
                             specifics.append(CompanySpecificDetail(
-                                detail=value,
-                                category=category,
-                                source=f'company_research.{key}'
+                                DETAIL=value,
+                                CATEGORY=category,
+                                SOURCE=f'company_research.{key}'
                             ))
 
         return specifics[:10]
@@ -338,13 +334,14 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         if len(company_specifics) >= self.config.min_company_specifics:
             return ValidationResult(
                 gate_id='VG_COMPANY_SPECIFICS',
-                passed=True,
-                severity='INFO',
-                message=f"Company specifics satisfied: {len(company_specifics)} details(min {self.config.min_company_specifics})",
+                PASSED=True,
+                SEVERITY='INFO',
+                MESSAGE=f"Company specifics satisfied: {len(company_specifics)} details (min {self.c
+                    onfig.min_company_specifics})",
 
 
-                signature=f"SPECIFICS:OK:{len(company_specifics)}",
-                details={
+                SIGNATURE=f"SPECIFICS:OK:{len(company_specifics)}",
+                DETAILS={
                     'count': len(company_specifics),
                     'categories': list(set(s.category for s in company_specifics))
                 }
@@ -352,13 +349,14 @@ I would welcome the opportunity to discuss how my experience in building high-pe
 
         return ValidationResult(
             gate_id='VG_COMPANY_SPECIFICS',
-            passed=False,
-            severity='BLOCK',
-            message=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details(min {self.config.min_company_specifics})",
+            PASSED=False,
+            SEVERITY='BLOCK',
+            MESSAGE=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (mi
+                n {self.config.min_company_specifics})",
 
 
-            details={'count': len(company_specifics),
-                     'min_required': self.config.min_company_specifics}
+            DETAILS={'count': len(company_specifics),
+                'min_required': self.config.min_company_specifics}
         )
 
     def _execute_find_replace_test(
@@ -377,15 +375,13 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         for specific in company_specifics:
             test_letter = test_letter.replace(specific.detail, '[COMPANY]')
 
-        generic_ratio = test_letter.count(
-            '[COMPANY]') / max(len(cover_letter.split()), 1)
+        generic_ratio = test_letter.count('[COMPANY]') / max(len(cover_letter.split()), 1)
 
         return generic_ratio > 0.02
 
-
 def create_specificity_prose_engine(
+    """Docstring."""
     config: Optional[SpecificityProseConfig] = None
 ) -> SpecificityProseEngine:
     """Factory function to create SpecificityProseEngine instance"""
     return SpecificityProseEngine(config=config)
-

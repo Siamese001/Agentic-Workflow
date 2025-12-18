@@ -6,22 +6,18 @@ Generated: 2025-12-07T13:28:54.092345
 """
 
 import logging
-from typing import Dict, Optional, Callable
-from collections import namedtuple
-
-RetryResult = namedtuple("RetryResult", ["success", "attempts", "result", "error"])
+from typing import Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
-
 
 class RetryGenerationFailures:
     """Retry executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.CONFIG = config or {}
-        self.max_retries = self.CONFIG.get("max_retries", 3)
-        self.BACKOFF = self.CONFIG.get("backoff", 1.0)
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+        SELF.CONFIG = config or {}
+        self.max_retries = self.config.get("max_retries", 3)
+        SELF.BACKOFF = self.config.get("backoff", 1.0)
+        logger.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
         """Execute with retry."""
@@ -29,28 +25,26 @@ class RetryGenerationFailures:
         for attempt in range(self.max_retries):
             try:
                 RESULT = func(*args, **kwargs)
-                return RetryResult(success=True, attempts=attempt + 1, result=RESULT)
+                return RetryResult(success=True, attempts=attempt + 1, result=result)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-pass
-last_error = str(e)
-                LOGGER.warning(f"Attempt {attempt + 1} failed: {e}")
+                last_error = str(e)
+                logger.warning(f"Attempt {attempt + 1} failed: {e}")
                 pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
-                 primary: Callable,
-                 fallback: Callable,
-                 *args,
-                 **kwargs: Dict[str,
-                                object]) -> object:
+        """Docstring."""
+        primary: Callable,
+        fallback: Callable,
+        *args,
+        **kwargs: Dict[str,
+        object]) -> object:
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
-        if RESULT.success:
-            return RESULT.result
+        if result.success:
+            return result.result
         return fallback(*args, **kwargs)
-
 
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return RetryGenerationFailures(config).execute(func)
-

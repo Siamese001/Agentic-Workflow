@@ -8,72 +8,32 @@ Enhanced with Titanium RAG Pipeline for SOTA company research and insights.
 """
 
 import logging
-import re
 from datetime import datetime
-from typing import Dict, Any, Optional
-
-from pydantic import BaseModel, Field, validator
-
-# Assume these are defined elsewhere or mock them for demonstration
-# from your_orm_library import Base  # Example
-# from your_llm_library import create_tone_model, ToneType  # Example
-
-# Mocking BaseModel, Field, validator for now if not provided
-class BaseModel:
-    pass
-
-class Field:
-    def __init__(self, *args, **kwargs):
-        pass
-
-def validator(*args, **kwargs):
-    def decorator(func):
-        return func
-    return decorator
-
-# Mocking ToneType for now if not provided
-class ToneType:
-    DIRECT = "direct"
-
-# Mocking get_titanium_search_tool for now if not provided
-async def get_titanium_search_tool(**kwargs):
-    return "Mock search results"
-
-# Mocking create_tone_model for now if not provided
-def create_tone_model():
-    return None
-
 
 LOGGER = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-    # Assuming TITANIUM_AVAILABLE is defined elsewhere or should be managed
-    # For now, we'll set it based on the initial try-except block logic
     TITANIUM_AVAILABLE = True
-    LOGGER.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
-    # In a real scenario, you'd import the tool here
-    # from titanium_rag import get_titanium_search_tool
+    logger.info("ExecutiveBriefAgent: Titanium RAG Pipeline available")
 except ImportError as e:
-    pass
-TITANIUM_AVAILABLE = False
-    LOGGER.warning(f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
-
+    TITANIUM_AVAILABLE = False
+    logger.warning(f"ExecutiveBriefAgent: Titanium RAG Pipeline not available: {e}")
 
 class BriefSection(BaseModel):
     """A single section of an executive brief."""
 
-    HEADING: str = Field(...,
-        description="Section heading (e.g., 'Observation: High Inference Costs')")
-    CONTENT: str = Field(..., description="Section content (2-3 sentences)")
-    CONFIDENCE: float = Field(..., ge=0.0, le=1.0,
-                              description="Confidence in this section")
+    HEADING: STR = Field(...,
+        DESCRIPTION="Section heading (e.g.,
+        'Observation: High Inference Costs')")
+    CONTENT: STR = Field(..., description="Section content (2-3 sentences)")
+    CONFIDENCE: FLOAT = Field(..., ge=0.0, le=1.0, description="Confidence in this section")
 
-    @validator('CONTENT')
+    @validator('content')
     def validate_content_length(cls, v):
-        """Ensure content is concise."""
+            """Ensure content is concise."""
         if len(v.split()) > 50:
-            LOGGER.warning("BriefSection content too long, should be 2-3 sentences")
+            logger.warning("BriefSection content too long, should be 2-3 sentences")
         return v
 
 class ExecutiveBrief(BaseModel):
@@ -88,10 +48,10 @@ class ExecutiveBrief(BaseModel):
 
     @property
     def is_high_confidence(self) -> bool:
-        """Check if brief has high overall confidence."""
-        avg_confidence = (self.observation.CONFIDENCE +
-                         self.insight.CONFIDENCE +
-                         self.proposition.CONFIDENCE) / 3
+            """Check if brief has high overall confidence."""
+        avg_confidence = (self.observation.confidence +
+                         self.insight.confidence +
+                         self.proposition.confidence) / 3
         return avg_confidence >= 0.7
 
 class ExecutiveBriefAgent:
@@ -101,7 +61,7 @@ class ExecutiveBriefAgent:
     """
 
     def __init__(self, candidate_name: str, candidate_background: Dict[str, Any]):
-        """Initialize the executive brief agent.
+            """Initialize the executive brief agent.
 
         Args:
             candidate_name: Name of the job candidate
@@ -113,16 +73,16 @@ class ExecutiveBriefAgent:
         # Initialize Titanium search if available
         self.titanium_enabled = TITANIUM_AVAILABLE
         if self.titanium_enabled:
-            LOGGER.info("ExecutiveBriefAgent initialized with Titanium RAG Pipeline")
+            logger.info("ExecutiveBriefAgent initialized with Titanium RAG Pipeline")
         else:
-            LOGGER.warning("ExecutiveBriefAgent using fallback research mode")
+            logger.warning("ExecutiveBriefAgent using fallback research mode")
 
         # Import tone model for enforcement
         try:
             self.tone_model = create_tone_model()
             self.target_tone = ToneType.DIRECT  # Executive briefs should be direct
         except ImportError:
-LOGGER.warning("Tone model not available, using default tone")
+            logger.warning("Tone model not available, using default tone")
             self.tone_model = None
             self.target_tone = None
 
@@ -171,12 +131,12 @@ LOGGER.warning("Tone model not available, using default tone")
             }
         }
 
-    async def _research_company_with_titanium(
-        self,
+        """Docstring."""
+    async def _research_company_with_titanium(self,
         company_name: str,
-        industry: str
-    ) -> Dict[str, Any]:
-        """Research company using Titanium RAG Pipeline for enhanced insights.
+        industry: str) -> Dict[str,
+        Any]:
+            """Research company using Titanium RAG Pipeline for enhanced insights.
 
         Args:
             company_name: Name of the target company
@@ -186,7 +146,7 @@ LOGGER.warning("Tone model not available, using default tone")
             Enhanced company research data
         """
         if not self.titanium_enabled:
-            LOGGER.warning("Titanium not available, using fallback research")
+            logger.warning("Titanium not available, using fallback research")
             return {"name": company_name, "industry": industry}
 
         try:
@@ -210,7 +170,7 @@ LOGGER.warning("Tone model not available, using default tone")
 
             # Execute searches using Titanium
             for query in search_queries:
-                results = await get_titanium_search_tool(
+                RESULTS = await get_titanium_search_tool(
                     QUERY=query,
                     max_results=5,
                     include_metadata=True
@@ -226,13 +186,14 @@ LOGGER.warning("Tone model not available, using default tone")
                     elif "strategy" in query.lower():
                         research_data["strategic_priorities"].append(results[:200])
 
-            LOGGER.info(f"Titanium research completed for {company_name}")
+            logger.info(f"Titanium research completed for {company_name}")
             return research_data
 
         except Exception as e:
-LOGGER.error(f"Error in Titanium research: {e}")
+            logger.error(f"Error in Titanium research: {e}")
             return {"name": company_name, "industry": industry}
 
+        """Docstring."""
     async def generate_brief_with_titanium(
         self,
         company_name: str,
@@ -240,7 +201,7 @@ LOGGER.error(f"Error in Titanium research: {e}")
         job_description: str,
         recipient_name: Optional[str] = None
     ) -> ExecutiveBrief:
-        """Generate executive brief using Titanium RAG for enhanced research.
+            """Generate executive brief using Titanium RAG for enhanced research.
 
         Args:
             company_name: Target company name
@@ -259,7 +220,7 @@ LOGGER.error(f"Error in Titanium research: {e}")
             return self.generate_brief(company_data, job_description, recipient_name)
 
         except Exception as e:
-LOGGER.error(f"Error generating brief with Titanium: {e}")
+            logger.error(f"Error generating brief with Titanium: {e}")
             # Fallback to basic brief
             return self.generate_brief(
                 {"name": company_name, "industry": industry},
@@ -267,13 +228,14 @@ LOGGER.error(f"Error generating brief with Titanium: {e}")
                 recipient_name
             )
 
+        """Docstring."""
     def generate_brief(
         self,
         company_data: Dict[str, Any],
         job_description: str,
         recipient_name: Optional[str] = None
     ) -> ExecutiveBrief:
-        """Generate a complete executive brief.
+            """Generate a complete executive brief.
 
         Args:
             company_data: Company information (news, 10-K, etc.)
@@ -288,34 +250,34 @@ LOGGER.error(f"Error generating brief with Titanium: {e}")
             CONTEXT = self._assemble_context(company_data, job_description)
 
             # Generate the three sections
-            OBSERVATION = self._generate_observation(CONTEXT)
-            INSIGHT = self._generate_insight(CONTEXT, OBSERVATION)
-            PROPOSITION = self._generate_proposition(CONTEXT, INSIGHT)
+            OBSERVATION = self._generate_observation(context)
+            INSIGHT = self._generate_insight(context, observation)
+            PROPOSITION = self._generate_proposition(context, insight)
 
             # Create the brief
             BRIEF = ExecutiveBrief(
                 recipient_name=recipient_name or "Hiring Manager",
-                company_name=CONTEXT["company_name"],
-                observation=OBSERVATION,
-                insight=INSIGHT,
-                proposition=PROPOSITION
+                company_name=context["company_name"],
+                OBSERVATION=observation,
+                INSIGHT=insight,
+                PROPOSITION=proposition
             )
 
-            LOGGER.info(f"Generated executive brief for {CONTEXT['company_name']}")
+            logger.info(f"Generated executive brief for {context['company_name']}")
 
-            return BRIEF
+            return brief
 
         except Exception as e:
-LOGGER.error(f"Error generating executive brief: {str(e)}")
+            logger.error(f"Error generating executive brief: {str(e)}")
             # Return safe fallback
             return self._generate_fallback_brief(company_data)
 
-    def _assemble_context(
-        self,
-        company_data: Dict[str, Any],
-        job_description: str
-    ) -> Dict[str, Any]:
-        """Assemble strategic context from company data and JD.
+    def _assemble_context(self,
+        company_data: Dict[str,
+        Any],
+        job_description: str) -> Dict[str,
+        Any]:
+            """Assemble strategic context from company data and JD.
 
         Args:
             company_data: Company information
@@ -348,10 +310,11 @@ LOGGER.error(f"Error generating executive brief: {str(e)}")
                 "throughput": r"(\d+) (?:req\/s|rps)"
             }
 
+            import re
             for metric, pattern in metric_patterns.items():
-                matches = re.findall(pattern, jd_lower)
+                MATCHES = re.findall(pattern, jd_lower)
                 if matches:
-                    CONTEXT["jd_metrics"].append(f"{metric}: {matches[0]}")
+                    context["jd_metrics"].append(f"{metric}: {matches[0]}")
 
             # Look for specific challenges
             challenge_keywords = {
@@ -364,22 +327,22 @@ LOGGER.error(f"Error generating executive brief: {str(e)}")
 
             for challenge, keywords in challenge_keywords.items():
                 if any(keyword in jd_lower for keyword in keywords):
-                    CONTEXT["jd_challenges"].append(challenge)
+                    context["jd_challenges"].append(challenge)
 
             # Extract strategic angle from JD
             for keyword, angle in self.strategic_angles.items():
                 if keyword in jd_lower:
-                    CONTEXT["strategic_angle"] = angle
+                    context["strategic_angle"] = angle
                     break
 
             # Identify specific pain points from JD and company data
-            all_text = f"{jd_lower} {' '.join(n.lower() for n in CONTEXT['recent_news'])}"
+            all_text = f"{jd_lower} {' '.join(n.lower() for n in context['recent_news'])}"
             for pain_point in self.pain_point_solutions.keys():
                 if pain_point in all_text:
-                    CONTEXT["pain_points"].append(pain_point)
+                    context["pain_points"].append(pain_point)
 
             # If no specific pain points found, use JD challenges
-            if not CONTEXT["pain_points"] and CONTEXT["jd_challenges"]:
+            if not context["pain_points"] and context["jd_challenges"]:
                 # Map challenges to pain points
                 challenge_to_pain = {
                     "scalability": "inference costs",
@@ -388,23 +351,23 @@ LOGGER.error(f"Error generating executive brief: {str(e)}")
                     "talent": "talent retention",
                     "innovation": "rag limitations"
                 }
-                for challenge in CONTEXT["jd_challenges"]:
+                for challenge in context["jd_challenges"]:
                     if challenge in challenge_to_pain:
                         pain_point = challenge_to_pain[challenge]
-                        if pain_point not in CONTEXT["pain_points"]:
-                            CONTEXT["pain_points"].append(pain_point)
+                        if pain_point not in context["pain_points"]:
+                            context["pain_points"].append(pain_point)
 
             # Final fallback
-            if not CONTEXT["pain_points"]:
-                if CONTEXT["industry"] in ["healthcare", "finance"]:
-                    CONTEXT["pain_points"] = ["model drift", "inference costs"]
+            if not context["pain_points"]:
+                if context["industry"] in ["healthcare", "finance"]:
+                    context["pain_points"] = ["model drift", "inference costs"]
                 else:
-                    CONTEXT["pain_points"] = ["rag limitations", "talent retention"]
+                    context["pain_points"] = ["rag limitations", "talent retention"]
 
-            return CONTEXT
+            return context
 
         except Exception as e:
-LOGGER.error(f"Error assembling context: {str(e)}")
+            logger.error(f"Error assembling context: {str(e)}")
             return {
                 "company_name": "the company",
                 "industry": "technology",
@@ -417,7 +380,7 @@ LOGGER.error(f"Error assembling context: {str(e)}")
             }
 
     def _generate_observation(self, context: Dict[str, Any]) -> BriefSection:
-        """Generate the observation section.
+            """Generate the observation section.
 
         Args:
             context: Strategic context
@@ -436,38 +399,42 @@ LOGGER.error(f"Error assembling context: {str(e)}")
                 if context["recent_news"] or context["risk_factors"] or context["jd_metrics"]:
                     if context["jd_metrics"]:
                         metrics_str = ", ".join(context["jd_metrics"][:2])  # Use first 2 metrics
-                        CONTENT = f"{company_name} is facing {PROBLEM}, with current metrics showing {metrics_str}. This is impacting operational efficiency."
+                        CONTENT = f"{company_name} is facing {problem}, with current metrics showing
+    {metrics_str}. This is impacting operational efficiency."
                     else:
-                        CONTENT = f"{company_name} is facing {PROBLEM}, which is impacting operational efficiency and competitive positioning."
+                        CONTENT = f"{company_name} is facing {problem}, which is impacting operation
+    al efficiency and competitive positioning."
                     CONFIDENCE = 0.9
                 else:
                     # Use general industry observation
-                    CONTENT = f"Like many leaders in {context['industry']}, {company_name} is likely navigating {PROBLEM} as AI systems scale."
+                    CONTENT = f"Like many leaders in {context['industry']}, {company_name} is likely
+    navigating {problem} as AI systems scale."
                     CONFIDENCE = 0.6
 
                 # Apply tone enforcement
                 if self.tone_model and self.target_tone:
-                    CONTENT = self._apply_tone_enforcement(CONTENT)
+                    CONTENT = self._apply_tone_enforcement(content)
 
                 return BriefSection(
                     HEADING=f"Observation: {pain_point.title()} Challenges",
-                    CONTENT=CONTENT,
-                    CONFIDENCE=CONFIDENCE
+                    CONTENT=content,
+                    CONFIDENCE=confidence
                 )
             else:
                 # Generic observation
-                CONTENT = f"{company_name} is at a critical inflection point in scaling AI capabilities from prototype to production."
+                CONTENT = f"{company_name} is at a critical inflection point in scaling AI capabilit
+    ies from prototype to production."
                 if self.tone_model and self.target_tone:
-                    CONTENT = self._apply_tone_enforcement(CONTENT)
+                    CONTENT = self._apply_tone_enforcement(content)
 
                 return BriefSection(
                     HEADING="Observation: AI Scaling Challenges",
-                    CONTENT=CONTENT,
+                    CONTENT=content,
                     CONFIDENCE=0.5
                 )
 
         except Exception as e:
-LOGGER.error(f"Error generating observation: {str(e)}")
+            logger.error(f"Error generating observation: {str(e)}")
             return BriefSection(
                 HEADING="Observation: Strategic AI Opportunity",
                 CONTENT="The company is positioned to leverage AI for competitive advantage.",
@@ -475,7 +442,7 @@ LOGGER.error(f"Error generating observation: {str(e)}")
             )
 
     def _apply_tone_enforcement(self, content: str) -> str:
-        """Apply tone enforcement to remove fluff and be direct.
+            """Apply tone enforcement to remove fluff and be direct.
 
         Args:
             content: Original content
@@ -494,19 +461,19 @@ LOGGER.error(f"Error generating observation: {str(e)}")
 
             ADJUSTED = content
             for phrase in fluff_phrases:
-                ADJUSTED = ADJUSTED.replace(phrase, "")
+                ADJUSTED = adjusted.replace(phrase, "")
 
             # Clean up extra spaces
-            ADJUSTED = re.sub(r'\s+', ' ', ADJUSTED).strip()
+            ADJUSTED = re.sub(r'\s+', ' ', adjusted).strip()
 
-            return ADJUSTED
+            return adjusted
 
         except Exception as e:
-LOGGER.error(f"Error applying tone enforcement: {str(e)}")
+            logger.error(f"Error applying tone enforcement: {str(e)}")
             return content
 
     def _generate_insight(self, context: Dict[str, Any], observation: BriefSection) -> BriefSection:
-        """Generate the insight section.
+            """Generate the insight section.
 
         Args:
             context: Strategic context
@@ -523,23 +490,26 @@ LOGGER.error(f"Error applying tone enforcement: {str(e)}")
                 METRIC = self.pain_point_solutions[pain_point]["metric"]
 
                 # Generate peer-to-peer insight
-                CONTENT = f"Industry leaders are solving this through {SOLUTION}, achieving {METRIC} while maintaining model performance. This requires both technical expertise and change management experience."
+                CONTENT = f"Industry leaders are solving this through {solution}, achieving {metric}
+    while maintaining model performance. This requires both technical expertise and
+        change management experience."
 
                 return BriefSection(
                     HEADING="Insight: Proven Solution Patterns",
-                    CONTENT=CONTENT,
+                    CONTENT=content,
                     CONFIDENCE=0.8
                 )
             else:
                 # Generic insight
                 return BriefSection(
                     HEADING="Insight: Strategic Imperative",
-                    CONTENT="Successful AI transformation requires balancing rapid innovation with sustainable operations, focusing on measurable business outcomes.",
+                    CONTENT="Successful AI transformation requires balancing rapid innovation with s
+    ustainable operations, focusing on measurable business outcomes.",
                     CONFIDENCE=0.6
                 )
 
         except Exception as e:
-LOGGER.error(f"Error generating insight: {str(e)}")
+            logger.error(f"Error generating insight: {str(e)}")
             return BriefSection(
                 HEADING="Insight: Strategic Approach",
                 CONTENT="A systematic approach to AI scaling is essential for long-term success.",
@@ -547,7 +517,7 @@ LOGGER.error(f"Error generating insight: {str(e)}")
             )
 
     def _generate_proposition(self, context: Dict[str, Any], insight: BriefSection) -> BriefSection:
-        """Generate the proposition section.
+            """Generate the proposition section.
 
         Args:
             context: Strategic context
@@ -563,21 +533,23 @@ LOGGER.error(f"Error generating insight: {str(e)}")
 
             if relevant_exp and len(relevant_exp) > 0:
                 EXP = relevant_exp[0]  # Use most relevant experience
-                CONTENT = f"I led this exact transformation at {previous_role}, {EXP}. I have a 90-day roadmap tailored to {context['company_name']}'s context. Worth a brief chat?"
+                CONTENT = f"I led this exact transformation at {previous_role}, {exp}. I have a 90-d
+    ay roadmap tailored to {context['company_name']}'s context. Worth a brief chat?"
                 CONFIDENCE = 0.9
             else:
                 # Generic proposition
-                CONTENT = f"I have direct experience scaling AI systems and can provide a 90-day roadmap for {context['company_name']}. Available to discuss specific implementation strategies."
+                CONTENT = f"I have direct experience scaling AI systems and can provide a 90-day roa
+    dmap for {context['company_name']}. Available to discuss specific implementation strategies."
                 CONFIDENCE = 0.6
 
             return BriefSection(
                 HEADING="Proposition: 90-Day Strategic Plan",
-                CONTENT=CONTENT,
-                CONFIDENCE=CONFIDENCE
+                CONTENT=content,
+                CONFIDENCE=confidence
             )
 
         except Exception as e:
-LOGGER.error(f"Error generating proposition: {str(e)}")
+            logger.error(f"Error generating proposition: {str(e)}")
             return BriefSection(
                 HEADING="Proposition: Strategic Partnership",
                 CONTENT="I can help accelerate your AI initiatives with proven methodologies.",
@@ -585,7 +557,7 @@ LOGGER.error(f"Error generating proposition: {str(e)}")
             )
 
     def _generate_fallback_brief(self, company_data: Dict[str, Any]) -> ExecutiveBrief:
-        """Generate a safe fallback brief when errors occur.
+            """Generate a safe fallback brief when errors occur.
 
         Args:
             company_data: Partial company data
@@ -598,25 +570,27 @@ LOGGER.error(f"Error generating proposition: {str(e)}")
         return ExecutiveBrief(
             recipient_name="Hiring Manager",
             company_name=company_name,
-            observation=BriefSection(
+            OBSERVATION=BriefSection(
                 HEADING="Observation: AI Transformation Opportunity",
                 CONTENT=f"{company_name} is positioned to leverage AI for strategic advantage.",
                 CONFIDENCE=0.4
             ),
-            insight=BriefSection(
+            INSIGHT=BriefSection(
                 HEADING="Insight: Strategic Approach",
-                CONTENT="Successful AI transformation requires technical excellence and business acumen.",
+                CONTENT="Successful AI transformation requires technical excellence and business acu
+    men.",
                 CONFIDENCE=0.4
             ),
-            proposition=BriefSection(
+            PROPOSITION=BriefSection(
                 HEADING="Proposition: Strategic Discussion",
-                CONTENT="I would welcome the opportunity to discuss how my experience aligns with your goals.",
+                CONTENT="I would welcome the opportunity to discuss how my experience aligns with yo
+    ur goals.",
                 CONFIDENCE=0.4
             )
         )
 
     def render_markdown(self, brief: ExecutiveBrief) -> str:
-        """Render the brief as a professional Markdown memo.
+            """Render the brief as a professional Markdown memo.
 
         Args:
             brief: ExecutiveBrief to render
@@ -639,36 +613,36 @@ LOGGER.error(f"Error generating proposition: {str(e)}")
             ]
 
             # Observation section
-            LINES.extend([
-                f"## {brief.observation.HEADING}",
+            lines.extend([
+                f"## {brief.observation.heading}",
                 "",
-                brief.observation.CONTENT,
+                brief.observation.content,
                 ""
             ])
 
             # Insight section
-            LINES.extend([
-                f"## {brief.insight.HEADING}",
+            lines.extend([
+                f"## {brief.insight.heading}",
                 "",
-                brief.insight.CONTENT,
+                brief.insight.content,
                 ""
             ])
 
             # Proposition section
-            LINES.extend([
-                f"## {brief.proposition.HEADING}",
+            lines.extend([
+                f"## {brief.proposition.heading}",
                 "",
-                brief.proposition.CONTENT,
+                brief.proposition.content,
                 "",
                 "---",
                 "",
                 f"*Confidence: High* | *Generated: {brief.generated_at}*"
             ])
 
-            return "\n".join(LINES)
+            return "\n".join(lines)
 
         except Exception as e:
-LOGGER.error(f"Error rendering markdown: {str(e)}")
+            logger.error(f"Error rendering markdown: {str(e)}")
             # Return basic format
             return f"""
 # Executive Brief
@@ -677,17 +651,18 @@ To: {brief.recipient_name}
 Company: {brief.company_name}
 From: {self.candidate_name}
 
-{brief.observation.HEADING}
-{brief.observation.CONTENT}
+{brief.observation.heading}
+{brief.observation.content}
 
-{brief.insight.HEADING}
-{brief.insight.CONTENT}
+{brief.insight.heading}
+{brief.insight.content}
 
-{brief.proposition.HEADING}
-{brief.proposition.CONTENT}
+{brief.proposition.heading}
+{brief.proposition.content}
 """
 
 # Factory function for easy instantiation
+    """Docstring."""
 def create_executive_brief_agent(
     candidate_name: str,
     candidate_background: Dict[str, Any]
@@ -704,6 +679,7 @@ def create_executive_brief_agent(
     return ExecutiveBriefAgent(candidate_name, candidate_background)
 
 # Convenience function for quick brief generation
+    """Docstring."""
 def generate_executive_brief(
     candidate_name: str,
     candidate_background: Dict[str, Any],
@@ -722,6 +698,5 @@ def generate_executive_brief(
         Rendered Markdown brief
     """
     AGENT = create_executive_brief_agent(candidate_name, candidate_background)
-    BRIEF = AGENT.generate_brief(company_data, job_description)
-    return AGENT.render_markdown(BRIEF)
-
+    BRIEF = agent.generate_brief(company_data, job_description)
+    return agent.render_markdown(brief)

@@ -1,17 +1,32 @@
-import logging
+_logger = logging.getLogger(__name__)
+# -*- coding: utf-8 -*-
+"""Unit tests for scripts module.
+
+This package contains unit tests for the scripts module, including:
+- Logic operations tests
+- Data access functionality tests
+- Synthesis and validation tests
+- Pipeline orchestration tests
+- Runtime execution tests
+
+Test Structure:
+- Each test module corresponds to a specific scripts submodule
+- Tests follow the standard pytest conventions
+- Mock objects and fixtures are provided for complex dependencies
+"""
+
 
 import pytest
 
-_logger = logging.getLogger(__name__)
-'Unit tests for scripts module.\n\nThis package contains unit tests for the scripts module, including:\n- Logic operations tests\n- Data access functionality tests\n- Synthesis and validation tests\n- Pipeline orchestration tests\n- Runtime execution tests\n\nTest Structure:\n- Each test module corresponds to a specific scripts submodule\n- Tests follow the standard pytest conventions\n- Mock objects and fixtures are provided for complex dependencies\n'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
-
+# Common test fixtures
 @pytest.fixture
 def mock_script_context() -> None:
     """Provide a mock script context for testing."""
-    return {'runtime': 'test', 'environment': 'unit_test', 'debug': True}
+    return {"runtime": "test", "environment": "unit_test", "debug": True}
 
 
-__all__ = ['mock_script_context']
-
+# Export test utilities
+__all__ = [
+    "mock_script_context",
+]

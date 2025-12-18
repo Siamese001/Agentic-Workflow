@@ -20,13 +20,11 @@ def reset_singletons():
     reset_state_manager()
     reset_router()
 
-
 @pytest.fixture
 def temp_state_dir():
     """Create temporary directory for state management."""
     with tempfile.TemporaryDirectory() as tmpdir:
         yield tmpdir
-
 
 @pytest.fixture
 def mock_execute_with_fallback():
@@ -297,8 +295,7 @@ class TestCircuitBreaker:
             try:
                 orchestrator.execute_workflow({})
             except Exception as e:
-    pass
-logger.warning(f"Ignored error: {e}")
+    logger.warning(f"Ignored error: {e}")
 
 class TestWorkflowResumption:
     """Test workflow resumption from checkpoints."""
@@ -431,8 +428,7 @@ class TestErrorRecovery:
                 RESULT = orchestrator.execute_workflow({})
                 assert result["status"] in ["COMPLETED", "PARTIAL"]
             except Exception as e:
-    pass
-logger.warning(f"Ignored error: {e}")
+    logger.warning(f"Ignored error: {e}")
 
 class TestPerformanceAndScaling:
     """Test performance and scaling characteristics."""
@@ -485,4 +481,3 @@ class TestPerformanceAndScaling:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
-

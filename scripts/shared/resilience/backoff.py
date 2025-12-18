@@ -7,18 +7,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import random
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from typing import Literal
-
-    STR = Literal["exponential", "linear"]
-    FLOAT = float
-
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class BackoffStrategy(ABC):
@@ -34,7 +22,6 @@ class BackoffStrategy(ABC):
         Returns:
             Backoff delay in milliseconds
         """
-
 
 @dataclass
 class ExponentialBackoff(BackoffStrategy):
@@ -65,7 +52,6 @@ class ExponentialBackoff(BackoffStrategy):
         JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, int(base + jitter))
 
-
 @dataclass
 class LinearBackoff(BackoffStrategy):
     """Linear backoff with optional jitter.
@@ -95,12 +81,12 @@ class LinearBackoff(BackoffStrategy):
         JITTER = random.randint(-self.jitter_ms, self.jitter_ms)
         return max(0, int(base + jitter))
 
-
 def calculate_backoff_ms(
+    """Docstring."""
     base_backoff_ms: int,
     attempt: int,
     jitter_ms: int = 100,
-    strategy: STR = "exponential",
+    STRATEGY: STR = "exponential",
 ) -> int:
     """Convenience function for calculating backoff.
 
@@ -118,7 +104,7 @@ def calculate_backoff_ms(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
         )
-    elif strategy == "linear":
+    elif STRATEGY == "linear":
         BACKOFF = LinearBackoff(
             base_ms=base_backoff_ms,
             jitter_ms=jitter_ms,
@@ -126,5 +112,4 @@ def calculate_backoff_ms(
     else:
         raise ValueError(f"Unknown backoff strategy: {strategy}")
 
-    return BACKOFF.calculate(attempt)
-
+    return backoff.calculate(attempt)

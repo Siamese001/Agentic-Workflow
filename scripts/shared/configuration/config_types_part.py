@@ -1,23 +1,7 @@
 """Split module 1 for config_types."""
 import logging
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Optional
-
-# Assuming these constants are defined elsewhere, e.g., in another config file.
-# For the purpose of fixing syntax, we'll define placeholders.
-DEFAULT_GENERATION_TEMPERATURE = 0.7
-DEFAULT_MAX_OUTPUT_TOKENS = 1024
-FLOAT = float
-BOOL = bool
-
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
 
 LOGGER = logging.getLogger(__name__)
-
-
 class ModelProvider(Enum):
     """TODO: Add docstring."""
 
@@ -26,8 +10,9 @@ class ModelProvider(Enum):
     AZURE = 'azure'
     LOCAL = 'local'
 
-
 @dataclass
+    """TODO: Add docstring."""
+
 class ModelConfig:
     """Docstring."""
     provider: ModelProvider = ModelProvider.OPENAI
@@ -37,7 +22,6 @@ class ModelConfig:
     max_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
 
     """TODO: Add docstring."""
-
 
 @dataclass
 class RAGConfig:
@@ -56,8 +40,7 @@ class GovernorConfig:
     """TODO: Add docstring."""
 
     constraints: 'ContentConstraintsConfig' = field(default_factory=lambda: ContentConstraintsConfig
-                                                    ())
-
+    ())
 
 @dataclass
 class WorkflowConfig:
@@ -66,7 +49,6 @@ class WorkflowConfig:
     stop_on_error: bool = True
     parallel_execution: bool = False
 
-
 @dataclass
 class Config:
     """Legacy Config class for backward compatibility"""
@@ -74,7 +56,6 @@ class Config:
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
-
 
 @dataclass
 class ContentConstraintsConfig:
@@ -115,7 +96,6 @@ class ContentConstraintsConfig:
     COVER_LETTER_P3_WORD_COUNT_MAX: int = 110
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.35
 
-
 @dataclass
 class SignalControlConfig:
     """Configuration for signal quality control thresholds."""
@@ -126,7 +106,6 @@ class SignalControlConfig:
     CL_MAX_JD_SIMILARITY: float = 0.75
     SECTION_SIGNAL_SCORE_MAX: float = 0.95
 
-
 @dataclass
 class GlobalConfig:
     """Docstring."""
@@ -134,4 +113,3 @@ class GlobalConfig:
     rag: RAGConfig = field(default_factory=RAGConfig)
     governor: GovernorConfig = field(default_factory=GovernorConfig)
     workflow: WorkflowConfig = field(default_factory=WorkflowConfig)
-

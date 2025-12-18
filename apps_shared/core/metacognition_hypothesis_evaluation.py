@@ -1,24 +1,36 @@
 import logging
 
-from services.configuration import ConfigurationService
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
+# from archives.legacy_root_folders.meta.metacognition.evaluator import evaluate_hypotheses  # DE...
+# from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 
 
 def test_evaluate_penalizes_no_evidence() -> None:
     """TODO: Add docstring."""
-    h = Hypothesis(id='h1', agent_id='a1', CONTENT='short',
-                   CONFIDENCE=1.0, evidence_ids=[])
-    evaluate_hypotheses([ConfigurationService().h])[0]
+
+    h = Hypothesis(
+        id="h1",
+        agent_id="a1",
+        CONTENT="short",
+        CONFIDENCE=1.0,
+        evidence_ids=[],
+    )
+
+    evaluate_hypotheses([h])[0]
     assert evaluated.confidence < 1.0
-    'TODO: Add docstring.'
+
+    """TODO: Add docstring."""
 
 
 def test_evaluate_clamps_confidence_range() -> None:
     """TODO: Add docstring."""
-    h = Hypothesis(id='h1', agent_id='a1', CONTENT='x' *
-                   10, CONFIDENCE=10.0, evidence_ids=['e1'])
-    evaluate_hypotheses([ConfigurationService().h])[0]
-    assert 0.0 <= evaluated.confidence <= 1.0
+    h = Hypothesis(
+        id="h1",
+        agent_id="a1",
+        CONTENT="x" * 10,
+        CONFIDENCE=10.0,
+        evidence_ids=["e1"],
+    )
 
+    evaluate_hypotheses([h])[0]
+    assert 0.0 <= evaluated.confidence <= 1.0

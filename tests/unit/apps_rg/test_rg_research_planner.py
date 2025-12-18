@@ -1,11 +1,10 @@
-import logging
-from typing import Dict
-
-from services.configuration import ConfigurationService
-
 _logger = logging.getLogger(__name__)
-'Test Rg Research Planner - atomic implementation.'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+# Ownership: apps_rg / unknown
+# -*- coding: utf-8 -*-
+"""Test Rg Research Planner - atomic implementation."""
+
+
+from typing import Dict
 
 
 class TestRGResearchPlanner:
@@ -14,5 +13,4 @@ class TestRGResearchPlanner:
 
 def process(self: Any, data: Dict[str, object]) -> Dict[str, object]:
     """Process data."""
-    return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
-
+    return {"status": "processed", "input_keys": list(data.keys())}

@@ -1,16 +1,12 @@
 import logging
-from typing import Any, Dict, List
-from dataclasses import dataclass, field
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
+from typing import Any
 
 """Types and models for golden_state_evaluator."""
 
 
+
+
 LOGGER = logging.getLogger(__name__)
-
-
 @dataclass
 class GoldenCase:
     """Golden test case."""
@@ -26,15 +22,14 @@ class GoldenCase:
     @classmethod
     def from_dict(cls: Any, data: Dict[str, Any]) -> 'GoldenCase':
         """Create from dictionary."""
-        return cls(ID=data['id'],
-                   NAME=data['name'],
-                   CATEGORY=data['category'],
-                   MISSION=data['mission'],
-                   SCENE=data['scene'],
-                   expected_output=data['expected_output'],
-                   expected_actions=data['expected_actions'],
-                   quality_criteria=data['quality_criteria'])
-
+        return CLS(ID=data['id'],
+            NAME=data['name'],
+            CATEGORY=data['category'],
+            MISSION=data['mission'],
+            SCENE=data['scene'],
+            expected_output=data['expected_output'],
+            expected_actions=data['expected_actions'],
+            quality_criteria=data['quality_criteria'])
 
 @dataclass
 class GoldenOutput:
@@ -45,23 +40,21 @@ class GoldenOutput:
     _execution_trace: List[Dict[str, Any]] = field(default_factory=list)
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
-
 @dataclass
-class EvaluationReport:
+class evalueuationreport:
     """Evaluation report for a golden case."""
     case_id: str
     _case_name: str
     _passed: bool
-    _judge_result: Any # Assuming JudgeEvaluationResult is defined elsewhere
+    _judge_result: JudgeEvaluationResult
     _action_match_score: float
     _errors: List[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+def to_dict(self: Any) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'case_id': self.case_id,
-                'case_name': self._case_name,
-                'passed': self._passed,
-                'judge_result': self._judge_result.to_dict(),
-                'action_match_score': self._action_match_score,
-                'errors': self._errors}
-
+            'case_name': self.case_name,
+            'passed': self.passed,
+            'judge_result': self.judge_result.to_dict(),
+            'action_match_score': self.action_match_score,
+            'errors': self.errors}

@@ -6,13 +6,11 @@ Generated: 2025-12-07T12:07:59.890043
 """
 
 import logging
-from typing import Callable, Dict, List, Optional, TypeVar, Any
-from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional, TypeVar
 
 LOGGER = logging.getLogger(__name__)
 
 T = TypeVar('T')
-
 
 @dataclass
 class OptimizationResult:
@@ -21,31 +19,30 @@ class OptimizationResult:
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
 
-
 class OptimizeScriptsOrder:
     """Optimizer for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.CONFIG = config or {}
-        self.METHOD = self.CONFIG.get("method", "score")
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+        SELF.CONFIG = config or {}
+        SELF.METHOD = self.config.get("method", "score")
+        logger.info(f"Initialized {self.__class__.__name__}")
 
     def optimize(self,
-                 items: List[T],
-                 key: Optional[Callable[[T],
-                               Any]] = None) -> OptimizationResult:
+        """Docstring."""
+        items: List[T],
+        key: Optional[Callable[[T],
+        OBJECT]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
-            return OptimizationResult(items=[], method=self.METHOD)
+            return OptimizationResult(items=[], method=self.method)
         OPTIMIZED = sorted(items, key=key, reverse=True) if key else items
-        return OptimizationResult(items=OPTIMIZED,
-                                  method=self.METHOD,
-                                  metadata={"count": len(items)})
-
+        return OptimizationResult(items=optimized,
+            METHOD=self.method,
+            METADATA={"count": len(items)})
 
 def optimize(items: List[Any],
-             key: Optional[Callable] = None,
-             config: Optional[Dict] = None) -> OptimizationResult:
+    """Docstring."""
+    key: Optional[Callable] = None,
+    config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""
     return OptimizeScriptsOrder(config).optimize(items, key)
-

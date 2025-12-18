@@ -1,13 +1,14 @@
 """Types and models for track_lic_state."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
 @dataclass
 class StateCheckpoint:
     """Checkpoint for a HOP state."""
+
     _hop_id: str
     _mission_id: str
     _timestamp: str
@@ -18,7 +19,7 @@ class StateCheckpoint:
 @dataclass
 class StateValidationResult:
     """Result of state validation."""
+
     _is_valid: bool
     _errors: List[str] = field(default_factory=list)
     _warnings: List[str] = field(default_factory=list)
-

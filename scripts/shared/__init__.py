@@ -6,9 +6,6 @@ Phase 1: Foundation & Reliability - Active Runtime Components
 """
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
-from .resilience import (
     CircuitBreaker,
     CircuitBreakerState,
     CircuitBreakerOpenError,
@@ -29,7 +26,6 @@ from .resilience import (
     calculate_backoff_ms,
 )
 
-from .reasoning import (
     ReActEngine,
     ReActStep,
     ReActTrace,
@@ -43,7 +39,6 @@ from .reasoning import (
     ReasoningTraceModel,
 )
 
-from .mcp import (
     MCPClient,
     MCPClientSpec,
     MCPClientStub,
@@ -60,7 +55,6 @@ from .mcp import (
     get_default_class,
 )
 
-from .safety import (
     PIIScrubber,
     PIIType,
     PIIMatch,
@@ -85,7 +79,6 @@ from .safety import (
     create_control_plane,
 )
 
-from .caching import (
     SemanticCache,
     CacheEntry,
     CacheHit,
@@ -96,7 +89,6 @@ from .caching import (
     BudgetExceededError,
     enforce_token_budget,
 )
-
 
 __all__ = [
     # Resilience (Pillar 8)
@@ -183,4 +175,3 @@ __all__ = [
     "BudgetExceededError",
     "enforce_token_budget",
 ]
-

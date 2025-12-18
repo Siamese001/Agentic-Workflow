@@ -1,10 +1,16 @@
-import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-'\n\n\nLOGGER = logging.getLogger(__name__)\nSafety module stub for apps_rg.\n\nThis module provides safety checking functionality for resume generation.\n'
+"""
 
 
+LOGGER = logging.getLogger(__name__)
+Safety module stub for apps_rg.
+
+This module provides safety checking functionality for resume generation.
+"""
+
+
+# Stub classes to prevent import errors
 class HallucinationDetector:
     """Stub hallucination detector."""
 
@@ -15,7 +21,8 @@ def __init__(self: Any) -> None:
 
 def check(self: Any) -> None:
     """TODO: Add docstring."""
-    return {'safe': True, 'confidence': 0.95}
+
+    return {"safe": True, "confidence": 0.95}
 
 
 class SafetyValidator:
@@ -23,12 +30,14 @@ class SafetyValidator:
 
 
 def __init__(self: Any) -> None:
+    pass
+
     """TODO: Add docstring."""
 
 
 def validate(self: Any) -> None:
     """TODO: Add docstring."""
-    return {'valid': True}
+    return {"valid": True}
 
 
 class ContentFilter:
@@ -41,5 +50,4 @@ def __init__(self: Any) -> None:
 
 def filter(self: Any) -> None:
     """TODO: Add docstring."""
-    return {'filtered': False, 'content': args[0] if args else ''}
-
+    return {"filtered": False, "content": args[0] if args else ""}

@@ -14,7 +14,6 @@ from typing import Any, Dict, List, Optional
 # Version for cache key format to ensure compatibility
 CACHE_KEY_VERSION = "v1.0"
 
-
 def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
     """Generate a cache key for LLM requests.
 
@@ -38,11 +37,9 @@ def generate_llm_cache_key(model: str, messages: List[Dict[str, Any]]) -> str:
     return hashlib.sha256(serialized.encode()).hexdigest()
 
     """Docstring."""
-
-
-def generate_llm_cache_key_with_fingerprint(model: str,
-                                            messages: List[Dict[str, Any]],
-                                            fingerprint: str) -> str:
+def generate_llm_cache_key_with_fingerlogger.info(model: str,
+    messages: List[Dict[str, Any]],
+    fingerprint: str) -> str:
     """Generate a cache key with additional fingerprint.
 
     Args:
@@ -67,8 +64,6 @@ def generate_llm_cache_key_with_fingerprint(model: str,
     return hashlib.sha256(serialized.encode()).hexdigest()
 
     """Docstring."""
-
-
 def should_invalidate_cache(
     cache_key: str,
     current_version: Optional[str] = None,
@@ -95,4 +90,3 @@ def should_invalidate_cache(
     # In a real implementation, this would check timestamps,
     # model versions, or other invalidation criteria
     return False
-

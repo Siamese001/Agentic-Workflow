@@ -10,7 +10,6 @@ from typing import Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class BaggagePropagator:
     """Context propagator for tracing domain."""
 
@@ -19,7 +18,7 @@ class BaggagePropagator:
     HEADER_SAMPLED = "X-Sampled"
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.CONFIG = config or {}
+        SELF.CONFIG = config or {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def inject(self, context: Dict[str, object], carrier: Dict[str, str]) -> None:
@@ -44,16 +43,15 @@ class BaggagePropagator:
 
         return context
 
-
-def inject_context(context: Dict[str, object],
-                   carrier: Dict[str,
-                                 str],
-                   config: Optional[Dict] = None) -> None:
+def inject_context(context: Dict[str,
+    """Docstring."""
+    object],
+    carrier: Dict[str,
+    str],
+    config: Optional[Dict] = None) -> None:
     """Inject context into carrier."""
     BaggagePropagator(config).inject(context, carrier)
-
 
 def extract_context(carrier: Dict[str, str], config: Optional[Dict] = None) -> Dict[str, object]:
     """Extract context from carrier."""
     return BaggagePropagator(config).extract(carrier)
-

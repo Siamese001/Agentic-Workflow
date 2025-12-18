@@ -1,6 +1,12 @@
-import logging
+"""Mock implementations for testing.
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-'Mock implementations for testing.\n\n\nLOGGER = logging.getLogger(__name__)\nPhase 2 - Pillar 1: Layering Model\nProvides simple mock implementations of core interfaces for unit testing.\n'
-__all__ = ['MockCognitivePlane', 'MockActionPlane']
 
+LOGGER = logging.getLogger(__name__)
+Phase 2 - Pillar 1: Layering Model
+Provides simple mock implementations of core interfaces for unit testing.
+"""
+
+__all__ = [
+    "MockCognitivePlane",
+    "MockActionPlane",
+]

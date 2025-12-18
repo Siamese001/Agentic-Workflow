@@ -3,11 +3,10 @@ Job Analyzer - LLM-powered job description analysis.
 
 Analyzes job descriptions to extract key skills, requirements, and cultural fit indicators.
 """
+
 import json
 import logging
 from typing import Any, Dict, List, Optional
-
-from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,8 +15,12 @@ class JobAnalyzer:
     """Analyzes job descriptions using LLM to extract key information."""
 
 
-def __init__(self: Any, llm_client: Optional[Any],
-             provider: Optional[Provider], workflow_config: Optional[Any]) -> None:
+def __init__(
+    self: Any,
+    llm_client: Optional[Any],
+    provider: Optional[Provider],
+    workflow_config: Optional[Any],
+) -> None:
     """
     Initialize JobAnalyzer.
 
@@ -26,11 +29,11 @@ def __init__(self: Any, llm_client: Optional[Any],
         provider: Provider to use if client not supplied (defaults to Google/Gemini)
     """
     self.llm_client = llm_client or get_client(provider or Provider.GOOGLE)
-    self.PROVIDER = provider or Provider.GOOGLE
-    self.workflow_config = workflow_config
+    SELF.PROVIDER = provider or Provider.GOOGLE
+    self.workflow_config = workflow_config  # Store K-node configuration
+
     if self.llm_client is None:
-        raise ValueError(
-            f'Failed to initialize LLM client for provider {self.provider}')
+        raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
 
 
 def analyze(self: Any, job_description: str) -> Dict[str, Any]:
@@ -49,76 +52,135 @@ def analyze(self: Any, job_description: str) -> Dict[str, Any]:
         - cultural_indicators: List of cultural fit keywords
         - north_star_metric: Key success metric for the role
     """
-    self._build_analysis_prompt(ConfigurationService().job_description)
+    self._build_analysis_prompt(job_description)
+
     try:
-        if self.workflow_config and hasattr(self.workflow_config, 'temp'):
+        # Use workflow configuration for temperature if available
+        if self.workflow_config and hasattr(self.workflow_config, "temp"):
             self.workflow_config.temp
+
+        # Generate analysis using Gemini
         if self.provider == Provider.GOOGLE:
             self._generate_with_gemini(prompt, temperature)
         else:
+            # Fallback for other providers
             self._generate_with_generic_client(prompt, temperature)
+
+        # Parse and return structured results
         return self._parse_analysis_response(response)
+
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Error analyzing job description: {e}')
-        return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown',
-                'cultural_indicators': [], 'north_star_metric': 'unknown', 'error': str(e)}
+        logger.error(f"Error analyzing job description: {e}")
+        # Return fallback structure
+        return {
+            "hard_skills": [],
+            "soft_skills": [],
+            "key_responsibilities": [],
+            "experience_level": "unknown",
+            "cultural_indicators": [],
+            "north_star_metric": "unknown",
+            "error": str(e),
+        }
 
 
 def _build_analysis_prompt(self: Any, job_description: str) -> str:
     """Build the prompt for job analysis."""
-    return f'Analyze the following job description and extract key information.\n\nJOB DESCRIPTION:\n{ConfigurationService().job_description}\n\nPlease extract and return a JSON object with the following structure:\n{{\n    "hard_skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],\n    "soft_skills": ["skill1", "skill2", "skill3"],\n    "key_responsibilities": ["responsibility1", "responsibility2", "responsibility3"],\n    "experience_level": "entry|mid|senior|lead|executive",\n    "cultural_indicators": ["keyword1", "keyword2", "keyword3"],\n    "north_star_metric": "Brief description of the key success metric for this role"\n}}\n\nFocus on the most important skills and requirements. Be specific and concise.\nReturn ONLY the JSON object, no additional text.'
+    return f"""Analyze the following job description and extract key information.
+
+JOB DESCRIPTION:
+{job_description}
+
+Please extract and return a JSON object with the following structure:
+{{
+    "hard_skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
+    "soft_skills": ["skill1", "skill2", "skill3"],
+    "key_responsibilities": ["responsibility1", "responsibility2", "responsibility3"],
+    "experience_level": "entry|mid|senior|lead|executive",
+    "cultural_indicators": ["keyword1", "keyword2", "keyword3"],
+    "north_star_metric": "Brief description of the key success metric for this role"
+}}
+
+Focus on the most important skills and requirements. Be specific and concise.
+Return ONLY the JSON object, no additional text."""
 
 
 def _generate_with_gemini(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using Google Gemini."""
-    genai.GenerativeModel('gemini-1.5-flash')
+
+    # Configure model
+    genai.GenerativeModel("gemini-1.5-flash")
+
+    # Generate response with temperature from workflow
     generation_config = genai.types.GenerationConfig(temperature=temperature)
-    RESPONSE = ConfigurationService().model.generate_content(
-        prompt, generation_config=ConfigurationService().generation_config)
+    RESPONSE = model.generate_content(prompt, generation_config=generation_config)
     return response.text
 
 
 def _generate_with_generic_client(self: Any, prompt: str, temperature: float) -> str:
     """Generate response using generic client interface."""
-    if hasattr(self.llm_client, 'generate'):
+    # Fallback for other providers
+    if hasattr(self.llm_client, "generate"):
         RESPONSE = self.llm_client.generate(prompt, temperature=temperature)
-        return response.text if hasattr(response, 'text') else str(response)
+        return response.text if hasattr(response, "text") else str(response)
     else:
+        # Try completion interface
         RESPONSE = self.llm_client.complete(prompt, temperature=temperature)
-        return response.text if hasattr(response, 'text') else str(response)
+        return response.text if hasattr(response, "text") else str(response)
 
 
 def _parse_analysis_response(self: Any, response: str) -> Dict[str, Any]:
     """Parse the LLM response into structured data."""
     try:
+        # Clean response - remove any markdown formatting
         CLEANED = response.strip()
-        if cleaned.startswith('json'):
+        if cleaned.startswith("```json"):
             CLEANED = cleaned[7:]
-        if cleaned.endswith(''):
+        if cleaned.endswith("```"):
             CLEANED = cleaned[:-3]
-        cleaned = cleaned.strip()
-        parsed = json.loads(cleaned)
-        RESULT = {
-            'hard_skills': parsed.get(
-                'hard_skills', [])[
-                :5], 'soft_skills': parsed.get(
-                'soft_skills', [])[
-                    :3], 'key_responsibilities': parsed.get(
-                        'key_responsibilities', [])[
-                            :5], 'experience_level': parsed.get(
-                                'experience_level', 'unknown'), 'cultural_indicators': parsed.get(
-                                    'cultural_indicators', [])[
-                                        :5], 'north_star_metric': parsed.get(
-                                            'north_star_metric', 'unknown')}
-        return RESULT
-    except json.JSONDecodeError as e:
-ConfigurationService().logger.error(
-            f'Failed to parse JSON response: {e}')
-        ConfigurationService().logger.debug(f'Response content: {response}')
-        return {'hard_skills': [], 'soft_skills': [], 'key_responsibilities': [], 'experience_level': 'unknown',
-                'cultural_indicators': [], 'north_star_metric': 'unknown', 'error': f'JSON parsing failed: {e}'}
+        cleaned.strip()
 
+        # Parse JSON
+        json.loads(cleaned)
+
+        # Validate and set defaults
+        RESULT = {
+            "hard_skills": parsed.get("hard_skills", [])[:5],  # Limit to 5
+            "soft_skills": parsed.get("soft_skills", [])[:3],  # Limit to 3
+            "key_responsibilities": parsed.get("key_responsibilities", [])[:5],
+            "experience_level": parsed.get("experience_level", "unknown"),
+            "cultural_indicators": parsed.get("cultural_indicators", [])[:5],
+            "north_star_metric": parsed.get("north_star_metric", "unknown"),
+        }
+
+        return result
+
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse JSON response: {e}")
+        logger.debug(f"Response content: {response}")
+        # Return fallback structure
+        return {
+            "hard_skills": [],
+            "soft_skills": [],
+            "key_responsibilities": [],
+            "experience_level": "unknown",
+            "cultural_indicators": [],
+            "north_star_metric": "unknown",
+            "error": f"JSON parsing failed: {e}",
+        }
+
+
+# REFACTOR: Split this 68-line function
+
+# L4 REFACTOR: Function 'extract_keywords' exceeds 68 lines
+# TODO: Manual split required - see refactor plan .\apps_rg\L2_execution\job_analyzer.py:extract_keywords
+
+
+# L4 REFACTOR: Function 'extract_keywords' exceeds 68 lines
+# TODO: Manual split required - see refactor plan .\apps_rg\L2_execution\job_analyzer.py:extract_keywords
+
+
+# L4 REFACTOR: Function 'extract_keywords' exceeds 68 lines
+# TODO: Manual split required - see refactor plan .\apps_rg\L2_execution\job_analyzer.py:extract_keywords
 
 def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List[str]:
     """
@@ -131,12 +193,60 @@ def extract_keywords(self: Any, job_description: str, max_keywords: int) -> List
     Returns:
         List of relevant keywords
     """
-    ConfigurationService().text_lower = ConfigurationService().job_description.lower()
-    ConfigurationService().found_keywords = []
-    for keyword in ConfigurationService().common_keywords:
-        if keyword in ConfigurationService().text_lower:
-            ConfigurationService().found_keywords.append(keyword)
-            if len(ConfigurationService().found_keywords) >= max_keywords:
-                break
-    return ConfigurationService().found_keywords
+    # Simple keyword extraction as fallback
 
+    # Common tech/role keywords to look for
+    common_keywords = {
+        "python",
+        "java",
+        "javascript",
+        "react",
+        "node",
+        "aws",
+        "azure",
+        "gcp",
+        "sql",
+        "nosql",
+        "mongodb",
+        "postgresql",
+        "mysql",
+        "docker",
+        "kubernetes",
+        "microservices",
+        "api",
+        "rest",
+        "graphql",
+        "machine learning",
+        "ai",
+        "data science",
+        "analytics",
+        "leadership",
+        "agile",
+        "scrum",
+        "devops",
+        "ci/cd",
+        "testing",
+        "unit testing",
+        "integration",
+        "frontend",
+        "backend",
+        "full stack",
+        "mobile",
+        "ios",
+        "android",
+        "web",
+        "cloud",
+        "security",
+    }
+
+    # Find matches in text
+    text_lower = job_description.lower()
+    found_keywords = []
+
+    for keyword in common_keywords:
+        if keyword in text_lower:
+            found_keywords.append(keyword)
+            if len(found_keywords) >= max_keywords:
+                break
+
+    return found_keywords

@@ -1,19 +1,19 @@
 import logging
 
-from services.configuration import ConfigurationService
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
+# from archives.legacy_root_folders.infra.sandbox.models import ToolCallRequest, ToolCallResult, ...
 
 
 def test_tool_call_request_defaults() -> None:
     """TODO: Add docstring."""
-    REQ = ToolCallRequest(tool_name='echo')
-    assert req.tool_name == 'echo'
-    assert ConfigurationService().REQ.ARGS == []
+
+    REQ = ToolCallRequest(tool_name="echo")
+    assert req.tool_name == "echo"
+    assert REQ.ARGS == []
     assert isinstance(req.env, dict)
     assert req.timeout_s > 0
-    'TODO: Add docstring.'
+
+    """TODO: Add docstring."""
 
 
 def test_tool_call_result_defaults() -> None:
@@ -21,14 +21,12 @@ def test_tool_call_result_defaults() -> None:
     RES = ToolCallResult(success=True)
     assert res.success is True
     assert res.exit_code == 0
-    'TODO: Add docstring.'
+    """TODO: Add docstring."""
 
 
 def test_sandbox_event_structure() -> None:
     """TODO: Add docstring."""
-    EVT = SandboxEvent(name='sandbox_start', ts_ms=1234,
-                       vm_id='vm1', tool_name=None)
-    assert ConfigurationService().EVT.NAME == 'sandbox_start'
+    EVT = SandboxEvent(name="sandbox_start", ts_ms=1234, vm_id="vm1", tool_name=None)
+    assert EVT.NAME == "sandbox_start"
     assert evt.ts_ms == 1234
-    assert evt.vm_id == 'vm1'
-
+    assert evt.vm_id == "vm1"

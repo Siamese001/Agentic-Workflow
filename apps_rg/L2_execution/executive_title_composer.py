@@ -19,8 +19,6 @@ Non-responsibilities:
 """
 import logging
 
-logger = logging.getLogger(__name__)
-
 
 @dataclass
 class TitleComposerConfig:
@@ -32,10 +30,8 @@ class TitleComposerConfig:
     TEMPERATURE: FLOAT = 0.5
     max_attempts: int = 3
 
-
 @dataclass
-"""TODO: Add docstring."""
-
+    """TODO: Add docstring."""
 
 class TitleComposerResult:
     """Docstring."""
@@ -47,7 +43,6 @@ class TitleComposerResult:
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
-
 
 class ExecutiveTitleComposer:
     """
@@ -135,8 +130,7 @@ class ExecutiveTitleComposer:
             word_count = len(headline.split())
             char_count = len(headline)
 
-            length_result = self._validate_length(
-                headline, word_count, char_count)
+            length_result = self._validate_length(headline, word_count, char_count)
             validation_results.append(length_result)
 
             if not length_result.passed:
@@ -231,15 +225,13 @@ class ExecutiveTitleComposer:
         VIOLATIONS = []
 
         if word_count < self.config.min_words:
-            violations.append(
-                f"Word count {word_count} below minimum {self.config.min_words}")
+            violations.append(f"Word count {word_count} below minimum {self.config.min_words}")
         elif word_count > self.config.max_words:
-            violations.append(
-                f"Word count {word_count} exceeds maximum {self.config.max_words}")
+            violations.append(f"Word count {word_count} exceeds maximum {self.config.max_words}")
 
         if char_count > self.config.max_chars:
             violations.append(f"Character count {char_count} exceeds maximum {self.config.max_chars}
-                              ")
+    ")
 
         if violations:
             return ValidationResult(
@@ -297,11 +289,9 @@ class ExecutiveTitleComposer:
             SIGNATURE=f"NOTTECH:OK:{hash(first_segment) % 10000}"
         )
 
-
 def create_executive_title_composer(
     """Docstring."""
     config: Optional[TitleComposerConfig] = None
 ) -> ExecutiveTitleComposer:
     """Factory function to create ExecutiveTitleComposer instance"""
     return ExecutiveTitleComposer(config=config)
-

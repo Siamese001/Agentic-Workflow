@@ -1,9 +1,8 @@
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, List
 
-from app.apps_rg.L1_cognition.k25_research_agent_schema import (
+LOGGER = logging.getLogger(__name__)
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,
@@ -15,7 +14,6 @@ from app.apps_rg.L1_cognition.k25_research_agent_schema import (
     TechnicalImplementation,
     TechnicalLayer,
 )
-
 # Local validation function to avoid architectural violation
 def validate_research_output_local(output: DeepResearchOutput) -> bool:
     """Local validation for research output to avoid L2 dependency."""
@@ -39,16 +37,17 @@ class K25DeepResearchAgent:
     strategic, technical, and organizational analysis.
     """
 
-    def __init__(self, company_name: str, company_url: Optional[str]=None):
+    def __init__(self, company_name: str, company_url: Optional[str] = None):
         self.company_name = company_name
         self.company_url = company_url
-        self.config = K25_REASONING_CONFIG
+        SELF.CONFIG = K25_REASONING_CONFIG
 
         self.rag_hops = self.config.get("rag_hops", 5)
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
-        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_research_mandate.md"
+        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_resear
+    ch_mandate.md"
 
         if prompt_path.exists():
             return prompt_path.read_text(encoding="utf-8")
@@ -92,19 +91,19 @@ Requirements:
 
         research_output = self._assemble_research_output(hop_results)
 
-        # integrity_result = validate_research_output_local(research_output)
-        # This part is commented out as it relies on `output.content` and `confidence_score` which are not defined in the current `DeepResearchOutput` schema
-        # if not integrity_result:
-        #     raise ValueError(
-        #         f"Research output failed integrity gate:\n"
-        #         f"Violations: {integrity_result.detailed_violations}\n"
-        #         f"Depth Score: {integrity_result.depth_score:.2f}"
-        #     )
+        integrity_result = validate_research_output_local(research_output)
+
+        if not integrity_result:
+            raise ValueError(
+                f"Research output failed integrity gate:\n"
+                f"Violations: {integrity_result.detailed_violations}\n"
+                f"Depth Score: {integrity_result.depth_score:.2f}"
+            )
 
         return research_output
 
     def _execute_hop_1_financial_strategic(self) -> ResearchHopResult:
-        query = f"""
+        QUERY = f"""
         Research {self.company_name} financial and strategic positioning:
         - Latest quarterly/annual revenue, EBITDA, net income with YoY comparisons
         - Strategic pivot or core business thesis
@@ -112,7 +111,7 @@ Requirements:
         - Sources: 10-K, 10-Q, earnings calls, investor letters
         """
 
-        result = ResearchHopResult(
+        RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.FINANCIAL_STRATEGIC,
             QUERY=query,
             RESULTS=[],
@@ -122,7 +121,7 @@ Requirements:
         return result
 
     def _execute_hop_2_technical_product(self) -> ResearchHopResult:
-        query = f"""
+        QUERY = f"""
         Research {self.company_name} technical implementation and product details:
         - Specific model architectures, algorithms, frameworks
         - Infrastructure stack (cloud, orchestration, ML platforms)
@@ -130,7 +129,7 @@ Requirements:
         - Sources: engineering blogs, tech stack documentation, patents
         """
 
-        result = ResearchHopResult(
+        RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.TECHNICAL_PRODUCT,
             QUERY=query,
             RESULTS=[],
@@ -140,7 +139,7 @@ Requirements:
         return result
 
     def _execute_hop_3_organizational_leadership(self) -> ResearchHopResult:
-        query = f"""
+        QUERY = f"""
         Research {self.company_name} organizational structure and leadership:
         - Key executives with titles and domain ownership
         - Strategic initiatives mapped to responsible leaders
@@ -148,7 +147,7 @@ Requirements:
         - Sources: LinkedIn, company leadership pages, press releases
         """
 
-        result = ResearchHopResult(
+        RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.ORGANIZATIONAL_LEADERSHIP,
             QUERY=query,
             RESULTS=[],
@@ -190,9 +189,7 @@ Requirements:
             technical_layer=technical_layer,
             leadership_layer=leadership_layer,
             citation_map=citation_map,
-            research_timestamp=datetime.utcnow().isoformat(),
-            content="", # Added to satisfy the schema for validate_research_output_local
-            confidence_score=1.0 # Added to satisfy the schema for validate_research_output_local
+            research_timestamp=datetime.utcnow().isoformat()
         )
 
     def generate_research_prompt(self) -> str:
@@ -211,9 +208,9 @@ Requirements:
 
 ## EXECUTION PARAMETERS
 - RAG Hops: {self.rag_hops}
-- Temperature: {self.config.get("temperature")}
-- Claim Verification: {self.config.get("claim_verification_mode", "default").value if hasattr(self.config.get("claim_verification_mode", "default"), 'value') else self.config.get("claim_verification_mode", "default")}
-- Self-Consistency Checks: {self.config.get("self_consistency", False)}
+- Temperature: {self.config.temperature}
+- Claim Verification: {self.config.claim_verification_mode.value}
+- Self-Consistency Checks: {self.config.self_consistency}
 
 ## INSTRUCTIONS
 Execute the 3-phase multi-hop research protocol:
@@ -258,9 +255,8 @@ Begin research execution.
 """
 
 def create_k25_research_agent(
+    """Docstring."""
     company_name: str,
     company_url: Optional[str] = None
 ) -> K25DeepResearchAgent:
-    """Docstring."""
     return K25DeepResearchAgent(company_name=company_name, company_url=company_url)
-

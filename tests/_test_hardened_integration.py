@@ -1,10 +1,4 @@
 
-import asyncio
-import logging
-import os
-import sys
-import tempfile
-
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """End-to-end test for hardened orchestrator integration.
@@ -19,6 +13,11 @@ Usage:
     python test_hardened_integration.py
 """
 
+import asyncio
+import logging
+import os
+import sys
+import tempfile
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -88,8 +87,8 @@ async def test_hardened_orchestrator_integration():
         mock_responses = {
             "K.1": "Executive summary with strategic positioning and quantified achievements.",
             "K.4": "Senior Software Engineer | Cloud Architecture | Team Leadership",
-            "K.5": "• Led migration of 50 + services to cloud infrastructure, reducing costs by 30 %\n
-    • Developed microservices architecture serving 1M + requests daily",
+            "K.5": "• Led migration of 50+ services to cloud infrastructure, reducing costs by 30%\n
+    • Developed microservices architecture serving 1M+ requests daily",
         }
 
         async def mock_execute_with_fallback(tier, prompt, temperature=None, **kwargs):
@@ -132,13 +131,10 @@ async def test_hardened_orchestrator_integration():
             assert results["final_state"]["progress_percentage"] == 100.0
             logger.info("* New workflow completed successfully")
         except AssertionError as e:
-pass
-logger.info(f"X Assertion failed in Test 1:")
+            logger.info(f"X Assertion failed in Test 1:")
             logger.info(f"  Status: {results.get('status', 'MISSING')}")
-            logger.info(
-                f"  Resumed: {results.get('resumed_from_checkpoint', 'MISSING')}")
-            logger.info(
-                f"  Hops completed: {len(results.get('hops_completed', []))}")
+            logger.info(f"  Resumed: {results.get('resumed_from_checkpoint', 'MISSING')}")
+            logger.info(f"  Hops completed: {len(results.get('hops_completed', []))}")
             logger.info(f"  Final state: {results.get('final_state', {})}")
             raise
 
@@ -166,7 +162,7 @@ logger.info(f"X Assertion failed in Test 1:")
 
         # Verify the state was saved
         saved_state = state_manager.resume_workflow(workflow_id)
-        logger.info(f"  Debug: Saved state current_k_node={saved_state.current_k_node if saved_sta
+        logger.info(f"  Debug: Saved state current_k_node = {saved_state.current_k_node if saved_sta
     te else 'None'}")
 
         # Resume workflow
@@ -187,11 +183,9 @@ logger.info(f"X Assertion failed in Test 1:")
         final_state = state_manager.resume_workflow(workflow_id)
         assert final_state is not None
         assert final_state.current_k_node == 3
-        logger.info(
-            f"  Debug: execution_log length = {len(final_state.execution_log)}")
+        logger.info(f"  Debug: execution_log length = {len(final_state.execution_log)}")
         for i, exec_log in enumerate(final_state.execution_log):
-            logger.info(
-                f"    Log {i}: {exec_log.k_node_name} - success={exec_log.success}")
+            logger.info(f"    Log {i}: {exec_log.k_node_name} - success={exec_log.success}")
         # After resume, the execution log contains both original and resumed executions
         # This is expected behavior as the log tracks all executions
         assert len(final_state.execution_log) == 5  # 3 original + 2 resumed
@@ -357,8 +351,7 @@ async def test_circuit_breaker_integration():
         # Verify workflow completed
         assert RESULTS["STATUS"] == "COMPLETED"
         assert len(results["hops_completed"]) == 1
-        logger.info(
-            "* Circuit breaker integration working (provider selection successful)")
+        logger.info("* Circuit breaker integration working (provider selection successful)")
 
     logger.info("Circuit breaker integration test passed!\n")
 
@@ -382,8 +375,7 @@ async def main():
             await test()
             PASSED += 1
         except Exception as e:
-pass
-logger.info(f"X {test.__name__} failed: {e}")
+            logger.info(f"X {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1
@@ -400,8 +392,7 @@ logger.info(f"X {test.__name__} failed: {e}")
         logger.info("   - Resume capability from checkpoints")
         logger.info("   - Failure recovery and rollback")
         logger.info("   - Circuit breaker integration")
-        logger.info(
-            "\nThe system is now production-ready with enterprise-grade resilience!")
+        logger.info("\nThe system is now production-ready with enterprise-grade resilience!")
         return 0
     else:
         logger.info("\n❌ Some tests failed. Check the output above.")
@@ -411,4 +402,3 @@ if __name__ == "__main__":
     # Run async tests
     exit_code = asyncio.run(main())
     sys.exit(exit_code)
-

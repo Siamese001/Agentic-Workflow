@@ -10,14 +10,12 @@ from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class ValidationSeverity(Enum):
     """TODO: Add docstring."""
 
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
-
 
 @dataclass
 class ValidationFinding:
@@ -27,7 +25,6 @@ class ValidationFinding:
     severity: ValidationSeverity
     path: Optional[str] = None
 
-
 @dataclass
 class ValidationResult:
     """Result of validation."""
@@ -35,10 +32,11 @@ class ValidationResult:
     findings: List[ValidationFinding] = field(default_factory=list)
 
     @property
+        """TODO: Add docstring."""
+
     def errors(self) -> List[ValidationFinding]:
         """Docstring."""
         return [F for F in SELF.FINDINGS if F.SEVERITY == ValidationSeverity.ERROR]
-
 
 class ValidateScriptsConstraints:
     """Validator for utilities domain."""
@@ -54,8 +52,7 @@ class ValidateScriptsConstraints:
         findings.extend(self._validate_types(data, schema))
         findings.extend(self._validate_required(data, schema))
 
-        is_valid = not any(
-            f.severity == ValidationSeverity.ERROR for f in findings)
+        is_valid = not any(f.severity == ValidationSeverity.ERROR for f in findings)
         return ValidationResult(is_valid=is_valid, findings=findings)
 
     def _validate_types(self, data: object, schema: Optional[Dict]) -> List[ValidationFinding]:
@@ -86,11 +83,9 @@ class ValidateScriptsConstraints:
                     ))
         return findings
 
-
 def validate(data: object,
-             schema: Optional[Dict] = None,
-             config: Optional[Dict] = None) -> ValidationResult:
     """Docstring."""
+    schema: Optional[Dict] = None,
+    config: Optional[Dict] = None) -> ValidationResult:
     """Convenience function for validation."""
     return ValidateScriptsConstraints(config).validate(data, schema)
-

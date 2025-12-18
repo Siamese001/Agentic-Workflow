@@ -19,14 +19,12 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
-
 class ConstraintFailureType(str, Enum):
     """Types of constraint failures for adaptive retry."""
     MECHANICAL = "MECHANICAL"      # Word count, char count, structural
     CREATIVE = "CREATIVE"          # Placeholders, generic content, redundancy
     SEMANTIC = "SEMANTIC"          # Forbidden words, tone violations
     CONFLICT = "CONFLICT"          # Impossible constraint combinations
-
 
 @dataclass
 class RegenerationCheckpoint:
@@ -37,10 +35,10 @@ class RegenerationCheckpoint:
     validation_result: Any  # ValidationResult
     temperature: float
     failure_type: Optional[ConstraintFailureType] = None
-    score: float = 0.0
+    SCORE: FLOAT = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for logging."""
+            """Convert to dictionary for logging."""
         return {
             "attempt": self.attempt,
             "timestamp": self.timestamp.isoformat(),
@@ -59,11 +57,11 @@ class RegenerationResult:
     attempts: int
     checkpoints: List[RegenerationCheckpoint]
     final_validation: Any  # ValidationResult
-    reverted: bool = False
-    exhausted: bool = False
+    REVERTED: BOOL = False
+    EXHAUSTED: BOOL = False
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for logging."""
+            """Convert to dictionary for logging."""
         return {
             "success": self.success,
             "attempts": self.attempts,
@@ -88,7 +86,7 @@ class FeedbackLoopOrchestrator:
         adaptive_temperature_config: Optional[Dict[str, Any]] = None,
         message_type_transitions: Optional[Dict[str, Any]] = None,
     ):
-        """Initialize feedback loop orchestrator.
+            """Initialize feedback loop orchestrator.
 
         Args:
             max_attempts: Maximum regeneration attempts (default 5)
@@ -113,12 +111,12 @@ class FeedbackLoopOrchestrator:
         }
         self.message_type_transitions = message_type_transitions or {}
 
-        LOGGER.info(
+        logger.info(
             f"Initialized FeedbackLoopOrchestrator: "
             f"max_attempts={max_attempts}, reversion={reversion_enabled}"
         )
 
-    """Docstring."""
+        """Docstring."""
     async def execute_with_feedback(
         self,
         generator: Callable,
@@ -126,7 +124,7 @@ class FeedbackLoopOrchestrator:
         initial_context: Dict[str, Any],
         k_node_id: str,
     ) -> RegenerationResult:
-        """Execute generation with feedback loop.
+            """Execute generation with feedback loop.
 
         Args:
             generator: Async function that generates content
@@ -139,31 +137,32 @@ class FeedbackLoopOrchestrator:
         Returns:
             RegenerationResult with final content and metadata
         """
-        checkpoints = []
-        temperature = self.adaptive_temperature_config["initial_temperature"]
-        context = initial_context.copy()
+        CHECKPOINTS = []
+        TEMPERATURE = self.adaptive_temperature_config["initial_temperature"]
+        CONTEXT = initial_context.copy()
 
         for attempt in range(1, self.max_attempts + 1):
-            LOGGER.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})")
+            logger.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.
+    2f})")
 
             # Generate content
             try:
-                content = await generator(context, temperature)
+                CONTENT = await generator(context, temperature)
             except Exception as e:
-LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
+                logger.error(f"Generation failed on attempt {attempt}: {e}")
                 continue
 
             # Validate content
             validation_result = await validator(content, context)
 
             # Create checkpoint
-            checkpoint = RegenerationCheckpoint(
-                attempt=attempt,
-                timestamp=datetime.now(),
-                content=content,
+            CHECKPOINT = RegenerationCheckpoint(
+                ATTEMPT=attempt,
+                TIMESTAMP=datetime.now(),
+                CONTENT=content,
                 validation_result=validation_result,
-                temperature=temperature,
-                score=validation_result.score if hasattr(validation_result, 'score') else 0.0,
+                TEMPERATURE=temperature,
+                SCORE=validation_result.score if hasattr(validation_result, 'score') else 0.0,
             )
 
             if self.checkpoint_saving:
@@ -171,12 +170,12 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
 
             # Check if validation passed
             if validation_result.passed:
-                LOGGER.info(f"Validation passed on attempt {attempt}")
+                logger.info(f"Validation passed on attempt {attempt}")
                 return RegenerationResult(
-                    success=True,
+                    SUCCESS=True,
                     final_content=content,
-                    attempts=attempt,
-                    checkpoints=checkpoints,
+                    ATTEMPTS=attempt,
+                    CHECKPOINTS=checkpoints,
                     final_validation=validation_result,
                 )
 
@@ -184,35 +183,35 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
             failure_type = self._classify_failure(validation_result)
             checkpoint.failure_type = failure_type
 
-            LOGGER.warning(
+            logger.warning(
                 f"Validation failed on attempt {attempt}: "
-                f"TYPE={failure_type.value}, score={checkpoint.score:.2f}"
+                F"TYPE={failure_type.value}, score={checkpoint.score:.2f}"
             )
 
             # Check reversion policy
             if self.reversion_enabled and attempt > 1:
                 prev_checkpoint = checkpoints[-2]
                 if checkpoint.score < prev_checkpoint.score:
-                    LOGGER.info(
+                    logger.info(
                         f"Reverting to attempt {attempt-1} "
                         f"(score {prev_checkpoint.score:.2f} > {checkpoint.score:.2f})"
                     )
                     return RegenerationResult(
-                        success=True,
+                        SUCCESS=True,
                         final_content=prev_checkpoint.content,
-                        attempts=attempt,
-                        checkpoints=checkpoints,
+                        ATTEMPTS=attempt,
+                        CHECKPOINTS=checkpoints,
                         final_validation=prev_checkpoint.validation_result,
-                        reverted=True,
+                        REVERTED=True,
                     )
 
             # Prepare for next attempt
             if attempt < self.max_attempts:
                 # Adjust temperature based on failure type
-                temperature = self._adjust_temperature(temperature, failure_type)
+                TEMPERATURE = self._adjust_temperature(temperature, failure_type)
 
                 # Build regeneration context with exact failures
-                context = self._build_regeneration_context(
+                CONTEXT = self._build_regeneration_context(
                     initial_context,
                     validation_result,
                     content,
@@ -220,34 +219,35 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
                 )
 
         # Exhausted all attempts
-        LOGGER.error(f"Exhausted all {self.max_attempts} attempts for {k_node_id}")
+        logger.error(f"Exhausted all {self.max_attempts} attempts for {k_node_id}")
 
         # Return best attempt if reversion enabled
         if self.reversion_enabled and checkpoints:
             best_checkpoint = max(checkpoints, key=lambda cp: cp.score)
-            LOGGER.info(f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.score:.2f})")
+            logger.info(f"Returning best attempt {best_checkpoint.attempt} (score={best_checkpoint.s
+    core:.2f})")
             return RegenerationResult(
-                success=False,
+                SUCCESS=False,
                 final_content=best_checkpoint.content,
-                attempts=self.max_attempts,
-                checkpoints=checkpoints,
+                ATTEMPTS=self.max_attempts,
+                CHECKPOINTS=checkpoints,
                 final_validation=best_checkpoint.validation_result,
-                exhausted=True,
+                EXHAUSTED=True,
             )
 
         # Return last attempt
         last_checkpoint = checkpoints[-1] if checkpoints else None
         return RegenerationResult(
-            success=False,
+            SUCCESS=False,
             final_content=last_checkpoint.content if last_checkpoint else "",
-            attempts=self.max_attempts,
-            checkpoints=checkpoints,
+            ATTEMPTS=self.max_attempts,
+            CHECKPOINTS=checkpoints,
             final_validation=last_checkpoint.validation_result if last_checkpoint else None,
-            exhausted=True,
+            EXHAUSTED=True,
         )
 
     def _classify_failure(self, validation_result: Any) -> ConstraintFailureType:
-        """Classify failure type based on validation result.
+            """Classify failure type based on validation result.
 
         Args:
             validation_result: ValidationResult from validator
@@ -291,7 +291,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
         current_temp: float,
         failure_type: ConstraintFailureType,
     ) -> float:
-        """Adjust temperature based on failure type.
+            """Adjust temperature based on failure type.
 
         Args:
             current_temp: Current temperature
@@ -300,7 +300,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
         Returns:
             Adjusted temperature
         """
-        escalation = self.adaptive_temperature_config["constraint_failure_types"].get(
+        ESCALATION = self.adaptive_temperature_config["constraint_failure_types"].get(
             failure_type.value,
             self.adaptive_temperature_config["escalation_per_retry"],
         )
@@ -310,7 +310,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
 
         adjusted_temp = min(new_temp, max_temp)
 
-        LOGGER.info(
+        logger.info(
             f"Temperature adjustment: {current_temp:.2f} -> {adjusted_temp:.2f} "
             f"(failure_type={failure_type.value}, escalation={escalation})"
         )
@@ -324,7 +324,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
         previous_content: str,
         attempt: int,
     ) -> Dict[str, Any]:
-        """Build context for regeneration with exact failure details.
+            """Build context for regeneration with exact failure details.
 
         Args:
             initial_context: Original context
@@ -335,7 +335,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
         Returns:
             Enhanced context with failure feedback
         """
-        context = initial_context.copy()
+        CONTEXT = initial_context.copy()
 
         # Add regeneration metadata
         context["regeneration_attempt"] = attempt
@@ -346,7 +346,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
             failure_details = []
 
             for failure in validation_result.failures:
-                detail = {
+                DETAIL = {
                     "rule_id": failure.rule_id,
                     "rule_name": failure.rule_name,
                     "message": failure.message,
@@ -364,7 +364,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
         return context
 
     def _build_failure_summary(self, failures: List[Any]) -> str:
-        """Build human-readable failure summary for regeneration prompt.
+            """Build human-readable failure summary for regeneration prompt.
 
         Args:
             failures: List of RuleFailure objects
@@ -390,7 +390,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
 
         return "\n".join(summary_lines)
 
-    """Docstring."""
+        """Docstring."""
     def apply_message_transition(
         self,
         current_route: str,
@@ -398,7 +398,7 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
         content: str,
         context: Dict[str, Any],
     ) -> Tuple[str, Dict[str, Any]]:
-        """Apply message type transition logic.
+            """Apply message type transition logic.
 
         Args:
             current_route: Current message route
@@ -410,17 +410,17 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
             Tuple of (modified_content, modified_context)
         """
         transition_key = f"{current_route}_to_{target_route}"
-        transition = self.message_type_transitions.get(transition_key)
+        TRANSITION = self.message_type_transitions.get(transition_key)
 
         if not transition:
-            LOGGER.warning(f"No transition defined for {transition_key}")
+            logger.warning(f"No transition defined for {transition_key}")
             return content, context
 
-        LOGGER.info(f"Applying transition: {transition_key}")
+        logger.info(f"Applying transition: {transition_key}")
 
         # Apply transition adjustments
         if "action" in transition:
-            action = transition["action"]
+            ACTION = transition["action"]
 
             if "Regenerate K.3" in action:
                 # Add continuity references for FOLLOW_UP
@@ -441,13 +441,13 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
 
         return content, context
 
-    """Docstring."""
+        """Docstring."""
     def generate_failure_report(
         self,
         result: RegenerationResult,
         k_node_id: str,
     ) -> str:
-        """Generate detailed failure report for exhausted attempts.
+            """Generate detailed failure report for exhausted attempts.
 
         Args:
             result: RegenerationResult from execute_with_feedback
@@ -472,7 +472,8 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
             )
             report_lines.append(f"  Temperature: {checkpoint.temperature:.2f}")
             report_lines.append(f"  Score: {checkpoint.score:.2f}")
-            report_lines.append(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failure_type else 'N/A'}")
+            report_lines.append(f"  Failure Type: {checkpoint.failure_type.value if checkpoint.failu
+    re_type else 'N/A'}")
 
             if hasattr(checkpoint.validation_result, 'failures'):
                 report_lines.append(f"  Failures: {len(checkpoint.validation_result.failures)}")
@@ -489,4 +490,3 @@ LOGGER.error(f"Generation failed on attempt {attempt}: {e}")
             report_lines.append("- Verify input data quality")
 
         return "\n".join(report_lines)
-

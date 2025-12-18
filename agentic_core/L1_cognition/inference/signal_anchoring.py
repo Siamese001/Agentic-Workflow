@@ -1,4 +1,10 @@
-""" """
+"""
+Signal Anchoring System - Structural Anchors for High-Temperature RAG.
+
+The signal anchoring system transforms raw RAG content into signed claims with
+source attribution and confidence scores, preventing hallucinations while
+allowing maximum creativity in narrative construction.
+"""
 
 
 import hashlib
@@ -6,11 +12,8 @@ import logging
 import re
 from datetime import datetime
 from enum import Enum
-from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
 
 LOGGER = logging.getLogger(__name__)
-
 
 class ClaimType(str, Enum):
     """Types of claims that can be extracted from content."""
@@ -23,7 +26,6 @@ class ClaimType(str, Enum):
     FACT = "fact"
     PREFERENCE = "preference"
 
-
 class SourceType(str, Enum):
     """Types of sources for claims."""
     RESUME = "resume"
@@ -33,7 +35,6 @@ class SourceType(str, Enum):
     ASSESSMENT = "assessment"
     REFERENCE = "reference"
     SELF_REPORTED = "self_reported"
-
 
 @dataclass
 class SourceMetadata:
@@ -46,7 +47,6 @@ class SourceMetadata:
     reliability_score: float = 0.8  # Base reliability of source
     verification_status: str = "unverified"  # unverified, verified, disputed
 
-
 @dataclass
 class ExtractedClaim:
     """A claim extracted from source content."""
@@ -58,12 +58,20 @@ class ExtractedClaim:
     extraction_method: str = "pattern_match"
     context_window: str = ""  # Text around the claim for context
 
-
 class ClaimExtractor:
-    """ """
+    """
+    Extracts structured claims from unstructured source content.
+
+    The extractor uses pattern matching and heuristics to identify
+    factual claims and assign confidence scores based on source reliability.
+    """
 
     def __init__(self, enable_logging: bool = True):
-        """Initialize claim extractor. """
+        """Initialize claim extractor.
+
+        Args:
+            enable_logging: Enable extraction logging
+        """
         self.enable_logging = enable_logging
         self._extraction_patterns = self._load_extraction_patterns()
         self._source_weights = {
@@ -76,21 +84,29 @@ class ClaimExtractor:
             SourceType.SELF_REPORTED: 0.6
         }
 
-        LOGGER.info("claim_extractor_initialized")
+        logger.info("claim_extractor_initialized")
 
     def extract_claims(
+        """Docstring."""
         self,
         content: str,
         source_metadata: SourceMetadata
     ) -> List[ExtractedClaim]:
-        """Extract claims from source content. """
-        claims = []
+        """Extract claims from source content.
+
+        Args:
+            content: Raw source content
+            source_metadata: Metadata about the source
+
+        Returns:
+            List of extracted claims
+        """
+        CLAIMS = []
 
         # Extract claims based on patterns
         for claim_type, patterns in self._extraction_patterns.items():
             for pattern in patterns:
-                matches = re.finditer(
-                    pattern, content, re.IGNORECASE | re.MULTILINE)
+                MATCHES = re.finditer(pattern, content, re.IGNORECASE | re.MULTILINE)
 
                 for match in matches:
                     claim_text = self._clean_claim_text(match.group(1))
@@ -102,28 +118,28 @@ class ClaimExtractor:
                         source_metadata.source_type, 0.5
                     )
                     pattern_confidence = self._get_pattern_confidence(pattern)
-                    confidence = min(base_confidence * pattern_confidence, 1.0)
+                    CONFIDENCE = min(base_confidence * pattern_confidence, 1.0)
 
                     # Extract context window
-                    start = max(0, match.start() - 100)
-                    end = min(len(content), match.end() + 100)
+                    START = max(0, match.start() - 100)
+                    END = min(len(content), match.end() + 100)
                     context_window = content[start:end].strip()
 
-                    claim = ExtractedClaim(
+                    CLAIM = ExtractedClaim(
                         claim_text=claim_text,
                         claim_type=ClaimType(claim_type),
                         source_metadata=source_metadata,
-                        confidence=confidence,
+                        CONFIDENCE=confidence,
                         evidence_snippet=match.group(0),
                         context_window=context_window
                     )
                     claims.append(claim)
 
         # Deduplicate claims
-        claims = self._deduplicate_claims(claims)
+        CLAIMS = self._deduplicate_claims(claims)
 
         if self.enable_logging:
-            LOGGER.info(
+            logger.info(
                 "claims_extracted",
                 EXTRA={
                     "source_id": source_metadata.source_id,
@@ -135,12 +151,16 @@ class ClaimExtractor:
         return claims
 
     def _load_extraction_patterns(self) -> Dict[str, List[str]]:
-        """Load regex patterns for claim extraction. """
+        """Load regex patterns for claim extraction.
+
+        Returns:
+            Dictionary of claim type to pattern list
+        """
         return {
             "skill": [
                 r"(?:skilled in|proficient in|expertise in|experience with)\s+([^.\n]+)",
                 r"(?:python|java|javascript|sql|aws|docker|kubernetes)"
-                r"\s+(?:developer|engineer|specialist)",
+                    r"\s+(?:developer|engineer|specialist)",
                 r"(\d+)\+?\s*years?\s+(?:of\s+)?experience\s+(?:in|with|as)\s+([^.\n]+)",
                 r"(?:certified in|certification:\s*)([^.\n]+)",
                 r"(?:fluent in|languages?:)\s+([^.\n]+)",
@@ -180,20 +200,34 @@ class ClaimExtractor:
         }
 
     def _clean_claim_text(self, text: str) -> str:
-        """Clean and normalize claim text. """
+        """Clean and normalize claim text.
+
+        Args:
+            text: Raw claim text
+
+        Returns:
+            Cleaned claim text
+        """
         # Remove extra whitespace
-        text = re.sub(r'\s+', ' ', text.strip())
+        TEXT = re.sub(r'\s+', ' ', text.strip())
 
         # Remove trailing punctuation
-        text = text.rstrip('.,;:!?"\'')
+        TEXT = text.rstrip('.,;:!?"\'')
 
         # Normalize quotes
-        text = text.replace('"', '').replace("'", "")
+        TEXT = text.replace('"', '').replace("'", "")
 
         return text
 
     def _get_pattern_confidence(self, pattern: str) -> float:
-        """Get confidence score for a specific pattern. """
+        """Get confidence score for a specific pattern.
+
+        Args:
+            pattern: Regex pattern
+
+        Returns:
+            Confidence multiplier (0-1)
+        """
         # More specific patterns have higher confidence
         if "years" in pattern:
             return 0.95
@@ -207,13 +241,20 @@ class ClaimExtractor:
             return 0.7
 
     def _deduplicate_claims(self, claims: List[ExtractedClaim]) -> List[ExtractedClaim]:
-        """Remove duplicate claims based on text similarity. """
-        seen = set()
-        deduplicated = []
+        """Remove duplicate claims based on text similarity.
+
+        Args:
+            claims: List of claims to deduplicate
+
+        Returns:
+            Deduplicated claim list
+        """
+        SEEN = set()
+        DEDUPLICATED = []
 
         for claim in claims:
             # Create a normalized key for comparison
-            key = self._normalize_claim_key(claim.claim_text)
+            KEY = self._normalize_claim_key(claim.claim_text)
 
             if key not in seen:
                 seen.add(key)
@@ -223,20 +264,31 @@ class ClaimExtractor:
                 for i, existing in enumerate(deduplicated):
                     if self._normalize_claim_key(existing.claim_text) == key:
                         if claim.confidence > existing.confidence:
-                            deduplicated[i] = claim
+                            DEDUPLICATED[I] = claim
                         break
 
         return deduplicated
 
     def _normalize_claim_key(self, text: str) -> str:
-        """Create a normalized key for claim comparison. """
+        """Create a normalized key for claim comparison.
+
+        Args:
+            text: Claim text
+
+        Returns:
+            Normalized key
+        """
         # Lowercase and remove non-alphanumeric
-        normalized = re.sub(r'[^a-z0-9]', '', text.lower())
+        NORMALIZED = re.sub(r'[^a-z0-9]', '', text.lower())
         return normalized
 
-
 class SignalAnchor:
-    """ """
+    """
+    Anchors RAG signals with signed claims to prevent hallucinations.
+
+    The anchor transforms raw documents into structured, attributed claims
+    that the LLM can reference without hallucinating facts.
+    """
 
     def __init__(
         self,
@@ -244,12 +296,18 @@ class SignalAnchor:
         min_confidence: float = 0.6,
         max_claims_per_source: int = 50
     ):
-        """Initialize signal anchor. """
+        """Initialize signal anchor.
+
+        Args:
+            claim_extractor: Optional claim extractor
+            min_confidence: Minimum confidence threshold for claims
+            max_claims_per_source: Maximum claims to extract per source
+        """
         self.claim_extractor = claim_extractor or ClaimExtractor()
         self.min_confidence = min_confidence
         self.max_claims_per_source = max_claims_per_source
 
-        LOGGER.info(
+        logger.info(
             "signal_anchor_initialized",
             EXTRA={
                 "min_confidence": min_confidence,
@@ -258,11 +316,21 @@ class SignalAnchor:
         )
 
     def anchor_rag_content(
+        """Docstring."""
         self,
-        context: 'SignalContext',
+        context: SignalContext,
         rag_content: List[Dict[str, Any]]
-    ) -> 'SignalContext':
-        """ """
+    ) -> SignalContext:
+        """
+        Anchor RAG content with signed claims.
+
+        Args:
+            context: Signal context to update
+            rag_content: List of RAG content items
+
+        Returns:
+            Updated context with anchored claims
+        """
         total_claims = 0
 
         for item in rag_content:
@@ -270,7 +338,7 @@ class SignalAnchor:
             source_metadata = self._extract_source_metadata(item)
 
             # Extract claims from content
-            content = item.get("content", item.get("text", ""))
+            CONTENT = item.get("content", item.get("text", ""))
             if not content:
                 continue
 
@@ -287,10 +355,10 @@ class SignalAnchor:
             # Convert to signed claims and add to context
             for claim in valid_claims:
                 signed_claim = SignedClaim(
-                    claim=claim.claim_text,
-                    source=f"{source_metadata.source_type.value}:{source_metadata.source_id}",
-                    confidence=claim.confidence,
-                    evidence=claim.evidence_snippet
+                    CLAIM=claim.claim_text,
+                    SOURCE=f"{source_metadata.source_type.value}:{source_metadata.source_id}",
+                    CONFIDENCE=claim.confidence,
+                    EVIDENCE=claim.evidence_snippet
                 )
                 context.add_signed_claim(
                     claim.claim_text,
@@ -301,7 +369,7 @@ class SignalAnchor:
 
             total_claims += len(valid_claims)
 
-        LOGGER.info(
+        logger.info(
             "rag_content_anchored",
             EXTRA={
                 "execution_id": context.hard_state.execution_id,
@@ -313,7 +381,14 @@ class SignalAnchor:
         return context
 
     def _extract_source_metadata(self, item: Dict[str, Any]) -> SourceMetadata:
-        """Extract source metadata from RAG item. """
+        """Extract source metadata from RAG item.
+
+        Args:
+            item: RAG content item
+
+        Returns:
+            Source metadata
+        """
         # Determine source type
         source_type_str = item.get("source_type", "document").lower()
         source_type = SourceType.RESUME  # Default
@@ -330,20 +405,27 @@ class SignalAnchor:
             source_type = SourceType.REFERENCE
 
         # Create source ID from content hash
-        content = item.get("content", item.get("text", ""))
+        CONTENT = item.get("content", item.get("text", ""))
         source_id = hashlib.md5(content.encode()).hexdigest()[:8]
 
         return SourceMetadata(
             source_type=source_type,
             source_id=source_id,
-            title=item.get("title"),
-            author=item.get("author"),
-            date=item.get("date"),
+            TITLE=item.get("title"),
+            AUTHOR=item.get("author"),
+            DATE=item.get("date"),
             reliability_score=item.get("reliability", 0.8)
         )
 
-    def get_claim_summary(self, context: 'SignalContext') -> Dict[str, Any]:
-        """Get a summary of anchored claims. """
+    def get_claim_summary(self, context: SignalContext) -> Dict[str, Any]:
+        """Get a summary of anchored claims.
+
+        Args:
+            context: Signal context with claims
+
+        Returns:
+            Summary statistics
+        """
         if not context.signed_claims:
             return {"total_claims": 0}
 
@@ -374,14 +456,12 @@ class SignalAnchor:
 
 # Factory functions for common anchoring patterns
 
-
 def create_resume_anchor() -> SignalAnchor:
     """Create a SignalAnchor optimized for resume content."""
     return SignalAnchor(
         min_confidence=0.7,  # Higher threshold for resume claims
         max_claims_per_source=30
     )
-
 
 def create_job_description_anchor() -> SignalAnchor:
     """Create a SignalAnchor optimized for job descriptions."""
@@ -390,14 +470,24 @@ def create_job_description_anchor() -> SignalAnchor:
         max_claims_per_source=20
     )
 
-
 def anchor_resume_content(
-    context: 'SignalContext',
+    """Docstring."""
+    context: SignalContext,
     resume_text: str,
     metadata: Optional[Dict[str, Any]] = None
-) -> 'SignalContext':
-    """ """
-    anchor = create_resume_anchor()
+) -> SignalContext:
+    """
+    Convenience function to anchor resume content.
+
+    Args:
+        context: Signal context to update
+        resume_text: Raw resume text
+        metadata: Optional metadata
+
+    Returns:
+        Updated context with anchored claims
+    """
+    ANCHOR = create_resume_anchor()
 
     rag_content = [{
         "content": resume_text,
@@ -407,22 +497,3 @@ def anchor_resume_content(
     }]
 
     return anchor.anchor_rag_content(context, rag_content)
-
-# Placeholder for SignalContext and SignedClaim classes, assuming they exist elsewhere.
-# In a real scenario, these would be imported or defined.
-
-class SignalContext:
-    def __init__(self):
-        self.signed_claims = []
-        self.hard_state = self # Placeholder for hard_state, replace with actual if available
-
-    def add_signed_claim(self, claim_text, source, confidence, evidence):
-        pass # Replace with actual implementation
-
-class SignedClaim:
-    def __init__(self, claim, source, confidence, evidence):
-        self.claim = claim
-        self.source = source
-        self.confidence = confidence
-        self.evidence = evidence
-

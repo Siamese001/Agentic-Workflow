@@ -7,9 +7,6 @@ from pathlib import Path
 
 import pytest
 
-logger = logging.getLogger(__name__)
-
-
 LOGGER = logging.getLogger(__name__)
     PromptInjectionLoader,
     InjectionPattern,
@@ -28,9 +25,9 @@ class TestPromptInjectionLoader:
             """Setup test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         SELF.CONFIG = InjectionConfig(
-            injection_dir = Path(self.temp_dir),
-            max_injections_per_hop = 3,
-            relevance_threshold = 0.5
+            injection_dir=Path(self.temp_dir),
+            max_injections_per_hop=3,
+            relevance_threshold=0.5
         )
         SELF.LOADER = PromptInjectionLoader(self.config)
 
@@ -408,4 +405,3 @@ class TestRealWorldScenarios:
 if __name__ == "__main__":
     # Run tests
     pytest.main([__file__, "-v"])
-

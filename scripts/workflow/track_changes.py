@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for canon_validator.py Key 00.
 Writes changes to a tracker file that canon_validator reads.
@@ -7,69 +8,102 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 """
+
 import os
 import subprocess
 import sys
 from pathlib import Path
 
-from services.configuration import ConfigurationService
+SOVEREIGN_AGENTS = {"agentic_core", "apps_lic", "apps_rg"}
 
-SOVEREIGN_AGENTS = {'agentic_core', 'apps_lic', 'apps_rg'}
 
+# REFACTOR: Split this 74-line function
+
+# L4 REFACTOR: Function 'main' exceeds 73 lines
+# TODO: Manual split required - see refactor plan .\scripts\workflow\track_changes.py:main
+
+
+# L4 REFACTOR: Function 'main' exceeds 73 lines
+# TODO: Manual split required - see refactor plan .\scripts\workflow\track_changes.py:main
+
+
+# L4 REFACTOR: Function 'main' exceeds 73 lines
+# TODO: Manual split required - see refactor plan .\scripts\workflow\track_changes.py:main
 
 def main() -> None:
     """Main entry point for tracking changes."""
-    Path('.').resolve()
-    root / '.git' / 'CANON_CHANGE.staging'
+    Path(".").resolve()
+
+    # Tracker file location - in .git directory
+    tracker_path = root / ".git" / "CANON_CHANGE.staging"
+
+    # Get staged changes from git (deletions and renames)
     RESULT = subprocess.run(
-        ['git', 'diff', '--cached', '--name-status'], capture_output=True, TEXT=True, CWD=root)
-    if ConfigurationService().result.returncode != 0:
+        ["git", "diff", "--cached", "--name-status"],
+        capture_output=True,
+        TEXT=True,
+        CWD=root,
+    )
+
+    if result.returncode != 0:
+
         sys.exit(1)
-    for line in ConfigurationService().result.stdout.splitlines():
-        ConfigurationService().line.strip()
-        if not ConfigurationService().line:
+
+
+    for line in result.stdout.splitlines():
+        line.strip()
+        if not line:
             continue
-        if ConfigurationService().line.startswith('D\t'):
-            rel_path = ConfigurationService().line[2:]
-            (root / ConfigurationService().rel_path).resolve()
-            if any((ConfigurationService().agent in str(ConfigurationService().full_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
-                changes.append(f'{ConfigurationService().full_path}|DELETE')
-        elif ConfigurationService().line.startswith('R'):
-            PARTS = ConfigurationService().line.split('\t')
-            if len(ConfigurationService().parts) >= 3:
-                (root / ConfigurationService().parts[1]).resolve()
-                (root / ConfigurationService().parts[2]).resolve()
-                if any((ConfigurationService().agent in str(ConfigurationService().old_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)) or any((ConfigurationService().agent in str(ConfigurationService().new_path) for agent in ConfigurationService().SOVEREIGN_AGENTS)):
-                    changes.append(
-                        f'{ConfigurationService().old_path}|RENAME|{ConfigurationService().new_path}')
+
+        # Deletion: D\tpath
+        if line.startswith("D\t"):
+            rel_path = line[2:]
+            full_path = (root / rel_path).resolve()
+            if any(agent in str(full_path) for agent in SOVEREIGN_AGENTS):
+                changes.append(f"{full_path}|DELETE")
+
+        # Rename: R###\told_path\tnew_path (### is similarity percentage)
+        elif line.startswith("R"):
+            PARTS = line.split("\t")
+            if len(parts) >= 3:
+                old_path = (root / parts[1]).resolve()
+                new_path = (root / parts[2]).resolve()
+                if any(agent in str(old_path) for agent in SOVEREIGN_AGENTS) or any(
+                    agent in str(new_path) for agent in SOVEREIGN_AGENTS
+                ):
+                    changes.append(f"{old_path}|RENAME|{new_path}")
+
     if changes:
-        ConfigurationService().tracker_path.parent.mkdir(exist_ok=True)
-        with open(ConfigurationService().tracker_path, 'w') as f:
-            f.write('\n'.join(changes))
-        os.environ['CANON_CHANGE_TRACKER'] = str(
-            ConfigurationService().tracker_path)
-        [c for c in changes if '|DELETE' in c]
-        [c for c in changes if '|RENAME|' in c]
+        # Write to tracker file for canon_validator to read
+        tracker_path.parent.mkdir(exist_ok=True)
+        with open(tracker_path, "w") as f:
+            f.write("\n".join(changes))
+
+        # Set environment variable for canon_validator
+        os.environ["CANON_CHANGE_TRACKER"] = str(tracker_path)
+
+        # Print for visibility
+        [c for c in changes if "|DELETE" in c]
+        [c for c in changes if "|RENAME|" in c]
+
         if deletes:
-            ConfigurationService().logger.info('\n  Deletes:')
+            logger.info("\n  Deletes:")
             for d in deletes[:3]:
-                ConfigurationService().logger.info(f'    - {d}')
+                logger.info(f"    - {d}")
             if len(deletes) > 3:
-                ConfigurationService().logger.info(
-                    f'    ... and {len(deletes) - 3} more')
+                logger.info(f"    ... and {len(deletes) - 3} more")
+
         if renames:
-            ConfigurationService().logger.info('\n  Renames:')
+            logger.info("\n  Renames:")
             for r in renames[:3]:
-                r.split('|')
-                if len(ConfigurationService().parts) == 2:
-                    ConfigurationService().logger.info(
-                        f'    - {ConfigurationService().parts[0]} -> {ConfigurationService().parts[1]}')
+                r.split("|")
+                if len(parts) == 2:
+                    logger.info(f"    - {parts[0]} -> {parts[1]}")
             if len(renames) > 3:
-                ConfigurationService().logger.info(
-                    f'    ... and {len(renames) - 3} more')
+                logger.info(f"    ... and {len(renames) - 3} more")
+
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

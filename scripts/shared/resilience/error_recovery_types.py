@@ -1,7 +1,7 @@
 """Types and models for error_recovery."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -12,6 +12,7 @@ class RecoveryStrategy(Enum):
 @dataclass
 class ResilienceError:
     """Base descriptor for resilience errors."""
+
     _message: str
     _code: str
     _details: Optional[Dict[str, Any]] = None
@@ -30,5 +31,5 @@ class PermanentError(ResilienceError):
 @dataclass
 class RetryExhaustedError(ResilienceError):
     """Error indicating all retry attempts have been exhausted."""
-    _attempts: int = 0
 
+    _attempts: int = 0

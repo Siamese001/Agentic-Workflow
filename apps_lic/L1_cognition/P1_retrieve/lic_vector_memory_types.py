@@ -1,13 +1,14 @@
 """Types and models for lic_vector_memory."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
 @dataclass
 class VectorDocument:
     """Document stored in vector memory."""
+
     _id: str
     _text: str
     _metadata: Dict[str, object]
@@ -18,6 +19,7 @@ class VectorDocument:
 @dataclass
 class QueryResult:
     """Result from a vector memory query."""
+
     _documents: List[VectorDocument]
     _total_count: int
     _query_text: str
@@ -27,7 +29,7 @@ class QueryResult:
 @dataclass
 class MemoryStats:
     """Statistics about the vector memory store."""
+
     _collection_name: str
     _document_count: int
     _persist_directory: str
-

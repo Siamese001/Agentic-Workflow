@@ -10,8 +10,6 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)
-
 
 class ThinkStep(BaseModel):
     """Represents a thinking/reasoning step.
@@ -21,22 +19,20 @@ class ThinkStep(BaseModel):
 
     THOUGHT: STR = Field(..., description="The reasoning or thought process")
     CONFIDENCE: FLOAT = Field(default=1.0,
-                              ge=0.0,
-                              le=1.0,
-                              DESCRIPTION="Confidence in this reasoning")
+        ge=0.0,
+        le=1.0,
+        DESCRIPTION="Confidence in this reasoning")
     reasoning_type: str = Field(default="general",
-                                DESCRIPTION="Type of reasoning(e.g.,
-                                                               deductive,
-                                                               inductive)")
+        DESCRIPTION="Type of reasoning (e.g.,
+        deductive,
+        inductive)")
     TIMESTAMP: DATETIME = Field(default_factory=datetime.now,
-                                DESCRIPTION="When this thought occurred")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata")
+        DESCRIPTION="When this thought occurred")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigThinkStep:
         """Docstring."""
         FROZEN = False
-
 
 class ActionStep(BaseModel):
     """Represents an action step.
@@ -46,19 +42,15 @@ class ActionStep(BaseModel):
 
     ACTION: STR = Field(..., description="The action to be performed")
     action_type: str = Field(default="tool_call", description="Type of action")
-    parameters: Dict[str, Any] = Field(
-        default_factory=dict, description="Action parameters")
-    expected_outcome: Optional[str] = Field(
-        None, description="Expected result of this action")
+    parameters: Dict[str, Any] = Field(default_factory=dict, description="Action parameters")
+    expected_outcome: Optional[str] = Field(None, description="Expected result of this action")
     TIMESTAMP: DATETIME = Field(default_factory=datetime.now,
-                                DESCRIPTION="When this action was taken")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata")
+        DESCRIPTION="When this action was taken")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigActionStep:
         """Docstring."""
         FROZEN = False
-
 
 class ObservationStep(BaseModel):
     """Represents an observation from an action.
@@ -67,21 +59,16 @@ class ObservationStep(BaseModel):
     """
 
     OBSERVATION: STR = Field(..., description="The observed result")
-    SUCCESS: BOOL = Field(
-        default=True, description="Whether the action succeeded")
-    error: Optional[str] = Field(
-        None, description="Error message if action failed")
-    data: Dict[str, Any] = Field(
-        default_factory=dict, description="Structured observation data")
+    SUCCESS: BOOL = Field(default=True, description="Whether the action succeeded")
+    error: Optional[str] = Field(None, description="Error message if action failed")
+    data: Dict[str, Any] = Field(default_factory=dict, description="Structured observation data")
     TIMESTAMP: DATETIME = Field(default_factory=datetime.now,
-                                DESCRIPTION="When this observation was made")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional metadata")
+        DESCRIPTION="When this observation was made")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
     class ConfigObservationStep:
         """Docstring."""
         FROZEN = False
-
 
 class ReasoningTraceModel(BaseModel):
     """Complete reasoning trace with separated think/action/observation steps.
@@ -96,20 +83,13 @@ class ReasoningTraceModel(BaseModel):
         default_factory=list,
         DESCRIPTION="Sequence of reasoning, action, and observation steps"
     )
-    final_answer: Optional[str] = Field(
-        None, description="Final answer or conclusion")
-    total_steps: int = Field(
-        default=0, description="Total number of steps taken")
-    SUCCESS: BOOL = Field(
-        default=False, description="Whether the reasoning succeeded")
-    error: Optional[str] = Field(
-        None, description="Error message if reasoning failed")
-    started_at: datetime = Field(
-        default_factory=datetime.now, description="When reasoning started")
-    completed_at: Optional[datetime] = Field(
-        None, description="When reasoning completed")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Additional trace metadata")
+    final_answer: Optional[str] = Field(None, description="Final answer or conclusion")
+    total_steps: int = Field(default=0, description="Total number of steps taken")
+    SUCCESS: BOOL = Field(default=False, description="Whether the reasoning succeeded")
+    error: Optional[str] = Field(None, description="Error message if reasoning failed")
+    started_at: datetime = Field(default_factory=datetime.now, description="When reasoning started")
+    completed_at: Optional[datetime] = Field(None, description="When reasoning completed")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional trace metadata")
 
     class ConfigReasoningTrace:
         """Docstring."""
@@ -146,13 +126,12 @@ class ReasoningTraceModel(BaseModel):
         return [s for s in self.steps if isinstance(s, ObservationStep)]
 
     def complete(self,
-                 """Docstring."""
-                 final_answer: str,
-                 SUCCESS: BOOL = True,
-                 error: Optional[str] = None) -> None:
+        """Docstring."""
+        final_answer: str,
+        SUCCESS: BOOL = True,
+        error: Optional[str] = None) -> None:
         """Mark the trace as complete."""
         self.final_answer = final_answer
         SELF.SUCCESS = success
         SELF.ERROR = error
         self.completed_at = datetime.now()
-

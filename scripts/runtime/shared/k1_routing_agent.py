@@ -9,7 +9,6 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-
 @dataclass
 class ArchetypeClassificationResult:
     """Result of archetype classification."""
@@ -19,7 +18,6 @@ class ArchetypeClassificationResult:
     cxo_precedence_triggered: bool
     manual_override_required: bool
 
-
 @dataclass
 class RouteSelectionResult:
     """Result of route selection."""
@@ -28,7 +26,6 @@ class RouteSelectionResult:
     premium_routing_mismatch: bool
     blocking_reason: Optional[str] = None
 
-
 @dataclass
 class K1Output:
     """K.1 routing agent output."""
@@ -36,7 +33,6 @@ class K1Output:
     route: RouteSelectionResult
     entrance_gates_passed: List[str]
     metadata: Dict[str, Any]
-
 
 class K1RoutingAgent(Agent):
     """K.1 specialist agent for routing and archetype classification.
@@ -98,7 +94,7 @@ class K1RoutingAgent(Agent):
         # Gate 1: Lifecycle determination
         LIFECYCLE = context.get("lifecycle", "NEW")
         entrance_gates_passed.append("GATE_1_LIFECYCLE_DETERMINED")
-        logger.info(f"Gate 1: Lifecycle = {LIFECYCLE}")
+        logger.info(f"Gate 1: Lifecycle = {lifecycle}")
 
         # Gate 2: Contact block validation
         contact_name = context.get("contact_name")
@@ -106,12 +102,10 @@ class K1RoutingAgent(Agent):
         contact_about = context.get("contact_about", "")
 
         if not contact_name or not contact_title:
-            raise ValueError(
-                "GATE_2_FAILED: Contact name and title are required")
+            raise ValueError("GATE_2_FAILED: Contact name and title are required")
 
         entrance_gates_passed.append("GATE_2_CONTACT_BLOCK_VALIDATED")
-        logger.info(
-            f"Gate 2: Contact validated - {contact_name}, {contact_title}")
+        logger.info(f"Gate 2: Contact validated - {contact_name}, {contact_title}")
 
         # Gate 3A: Premium InMail availability check
         premium_available = context.get("premium_available", False)
@@ -125,21 +119,20 @@ class K1RoutingAgent(Agent):
             logger.info(f"Gate 3B: Route override = {route_override}")
 
         # Gate 4: Archetype classification with CXO precedence
-        archetype_result = self._classify_archetype(
-            contact_title, contact_about)
+        archetype_result = self._classify_archetype(contact_title, contact_about)
         entrance_gates_passed.append("GATE_4_ARCHETYPE_CLASSIFIED")
         logger.info(
             f"Gate 4: Archetype = {archetype_result.archetype} "
-            f"(CONFIDENCE={archetype_result.confidence:.2f}, "
+            F"(CONFIDENCE={archetype_result.confidence:.2f}, "
             f"CXO_precedence={archetype_result.cxo_precedence_triggered})"
         )
 
         # Gate 5: Route selection
         route_result = self._select_route(
-            lifecycle=LIFECYCLE,
+            LIFECYCLE=lifecycle,
             premium_available=premium_available,
             route_override=route_override,
-            archetype=archetype_result.archetype,
+            ARCHETYPE=archetype_result.archetype,
         )
         entrance_gates_passed.append("GATE_5_ROUTE_SELECTED")
         logger.info(f"Gate 5: Route = {route_result.route}")
@@ -161,12 +154,12 @@ class K1RoutingAgent(Agent):
 
         # Build output
         OUTPUT = K1Output(
-            archetype=archetype_result,
-            route=route_result,
+            ARCHETYPE=archetype_result,
+            ROUTE=route_result,
             entrance_gates_passed=entrance_gates_passed,
-            metadata={
+            METADATA={
                 "k_node_id": self.k_node_id,
-                "lifecycle": LIFECYCLE,
+                "lifecycle": lifecycle,
                 "contact_name": contact_name,
                 "contact_title": contact_title,
             },
@@ -176,12 +169,12 @@ class K1RoutingAgent(Agent):
             f"K.1 routing complete: {archetype_result.archetype} → {route_result.route}"
         )
 
-        return OUTPUT
+        return output
 
     def _classify_archetype(
         self,
         title: str,
-        about: str = "",
+        ABOUT: STR = "",
     ) -> ArchetypeClassificationResult:
         """Classify recipient archetype with CXO precedence rule.
 
@@ -207,8 +200,8 @@ class K1RoutingAgent(Agent):
                 matched_tokens.append(token)
                 logger.info(f"CXO precedence triggered: {token}")
                 return ArchetypeClassificationResult(
-                    archetype="C_LEVEL",
-                    confidence=1.0,  # CXO precedence = 100% confidence
+                    ARCHETYPE="C_LEVEL",
+                    CONFIDENCE=1.0,  # CXO precedence = 100% confidence
                     matched_tokens=matched_tokens,
                     cxo_precedence_triggered=True,
                     manual_override_required=False,
@@ -221,8 +214,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="C_LEVEL",
-                confidence=0.95,
+                ARCHETYPE="C_LEVEL",
+                CONFIDENCE=0.95,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -236,8 +229,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="EXECUTIVE",
-                confidence=0.90,
+                ARCHETYPE="EXECUTIVE",
+                CONFIDENCE=0.90,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -251,8 +244,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="SENIOR_TA",
-                confidence=0.90,
+                ARCHETYPE="SENIOR_TA",
+                CONFIDENCE=0.90,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -266,8 +259,8 @@ class K1RoutingAgent(Agent):
 
         if matched_tokens:
             return ArchetypeClassificationResult(
-                archetype="RECRUITER",
-                confidence=0.85,
+                ARCHETYPE="RECRUITER",
+                CONFIDENCE=0.85,
                 matched_tokens=matched_tokens,
                 cxo_precedence_triggered=False,
                 manual_override_required=False,
@@ -276,8 +269,8 @@ class K1RoutingAgent(Agent):
         # Default: EXECUTIVE with low confidence (manual override required)
         logger.warning("No archetype tokens matched - defaulting to EXECUTIVE")
         return ArchetypeClassificationResult(
-            archetype="EXECUTIVE",
-            confidence=0.50,
+            ARCHETYPE="EXECUTIVE",
+            CONFIDENCE=0.50,
             matched_tokens=[],
             cxo_precedence_triggered=False,
             manual_override_required=True,  # Confidence < 0.85
@@ -301,39 +294,33 @@ class K1RoutingAgent(Agent):
         Returns:
             RouteSelectionResult with mismatch detection
         """
-        # Determine the selected route first, then check for mismatches.
-        selected_route = "CONNECTION_REQ"  # Default route
-
+        # Check for route override
         if route_override:
-            selected_route = route_override
-        elif lifecycle == "EXISTING":
-            if archetype == "C_LEVEL" or archetype == "EXECUTIVE":
-                selected_route = "INMAIL"
-            else:
-                selected_route = "CONNECTION_REQ"
-        elif premium_available:
-            if archetype == "C_LEVEL" or archetype == "EXECUTIVE":
-                selected_route = "INMAIL"
-            else:
-                selected_route = "SHORT_NEW"
-        else: # NEW, no premium
-            selected_route = "SHORT_NEW"
 
-        # Check for premium routing mismatch
-        if selected_route == "INMAIL" and not premium_available:
+            # CRITICAL: Premium routing mismatch detection
+                return RouteSelectionResult(
+                    ROUTE=selected_route,
+                    premium_available=premium_available,
+                    premium_routing_mismatch=True,
+                    blocking_reason=(
+                        "INMAIL route selected but Premium InMail not available. "
+                        "Operator response to Gate 3A conflicts with route selection."
+                    ),
+                )
+
             return RouteSelectionResult(
-                route=selected_route,
+                ROUTE=selected_route,
                 premium_available=premium_available,
-                premium_routing_mismatch=True,
-                blocking_reason=(
-                    "INMAIL route selected but Premium InMail not available. "
-                    "Operator response to Gate 3A conflicts with route selection."
-                ),
+                premium_routing_mismatch=False,
             )
 
+        # Default routing logic
+        if lifecycle == "EXISTING":
+        elif premium_available:
+        else:
+
         return RouteSelectionResult(
-            route=selected_route,
+            ROUTE=selected_route,
             premium_available=premium_available,
             premium_routing_mismatch=False,
         )
-

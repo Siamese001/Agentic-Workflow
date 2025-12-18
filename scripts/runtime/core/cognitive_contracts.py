@@ -8,22 +8,18 @@ to ensure adherence to constraints and consistency between plan and output.
 import json
 import logging
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
-
 
 class PlanQualityError(Exception):
     """Raised when the plan fails quality checks."""
     pass
 
-
 class ConsistencyError(Exception):
     """Raised when content doesn't match the plan."""
     pass
-
 
 class ContractStage(Enum):
     """Stages of cognitive contract execution."""
@@ -32,16 +28,14 @@ class ContractStage(Enum):
     CONTENT_GENERATED = "content_generated"
     CONTRACT_FULFILLED = "contract_fulfilled"
 
-
 @dataclass
 class Constraint:
     """A constraint that must be acknowledged in the plan."""
     id: str
     description: str
     type: str  # "requirement", "prohibition", "format"
-    priority: int = 5
-    verified: bool = False
-
+    PRIORITY: INT = 5
+    VERIFIED: BOOL = False
 
 @dataclass
 class Plan:
@@ -51,7 +45,6 @@ class Plan:
     key_metrics: List[str]
     pre_computation: Dict[str, Any]
     raw_text: str
-
 
 @dataclass
 class CognitiveContract:
@@ -63,12 +56,11 @@ class CognitiveContract:
     content: Optional[str] = None
     validation_errors: List[str] = field(default_factory=list)
 
-
 class CognitiveContractValidator:
     """Validates cognitive contracts and ensures compliance."""
 
     def __init__(self):
-        """Initialize the validator."""
+            """Initialize the validator."""
         self.required_plan_elements = [
             "constraints_acknowledged",
             "strategy",
@@ -76,7 +68,7 @@ class CognitiveContractValidator:
         ]
 
     def parse_plan(self, response: str) -> Optional[Plan]:
-        """Parse a PLAN block from agent response.
+            """Parse a PLAN block from agent response.
 
         Args:
             response: The agent's response
@@ -93,9 +85,9 @@ class CognitiveContractValidator:
         plan_text = plan_match.group(1).strip()
 
         # Parse plan components
-        plan = Plan(
+        PLAN = Plan(
             constraints_acknowledged=[],
-            strategy="",
+            STRATEGY="",
             key_metrics=[],
             pre_computation={},
             raw_text=plan_text
@@ -103,7 +95,7 @@ class CognitiveContractValidator:
 
         # Extract constraints
         constraints_match = re.search(
-            r'CONSTRAINTS?[:\s]*\n?(.*?)(?=\n\n|\n[A-Z]|\Z)',
+            R'CONSTRAINTS?[:\S]*\N?(.*?)(?=\n\n|\n[A-Z]|\Z)',
             plan_text,
             re.IGNORECASE | re.DOTALL
         )
@@ -111,31 +103,33 @@ class CognitiveContractValidator:
             constraints_text = constraints_match.group(1)
             # Extract bullet points or numbered items
             constraint_items = re.findall(r'[-*]\s*(.+)|\d+\.\s*(.+)', constraints_text)
-            plan.constraints_acknowledged = [item[0] or item[1] for item in constraint_items if item[0] or item[1]]
+            plan.constraints_acknowledged = [item[0] or item[1] for item in constraint_items if item
+    [0] or item[1]]
 
         # Extract strategy
         strategy_match = re.search(
-            r'STRATEGY[:\s]*\n?(.*?)(?=\n\n|\n[A-Z]|\Z)',
+            R'STRATEGY[:\S]*\N?(.*?)(?=\n\n|\n[A-Z]|\Z)',
             plan_text,
             re.IGNORECASE | re.DOTALL
         )
         if strategy_match:
-            plan.strategy = strategy_match.group(1).strip()
+            PLAN.STRATEGY = strategy_match.group(1).strip()
 
         # Extract key metrics
         metrics_match = re.search(
-            r'KEY METRICS?[:\s]*\n?(.*?)(?=\n\n|\n[A-Z]|\Z)',
+            R'KEY METRICS?[:\S]*\N?(.*?)(?=\n\n|\n[A-Z]|\Z)',
             plan_text,
             re.IGNORECASE | re.DOTALL
         )
         if metrics_match:
             metrics_text = metrics_match.group(1)
             plan.key_metrics = re.findall(r'[-*]\s*(.+)|\d+\.\s*(.+)', metrics_text)
-            plan.key_metrics = [item[0] or item[1] for item in plan.key_metrics if item[0] or item[1]]
+            plan.key_metrics = [item[0] or item[1] for item in plan.key_metrics if item[0] or item[1
+    ]]
 
         # Extract pre-computation
         precomp_match = re.search(
-            r'PRE[-]?COMPUTATION[:\s]*\n?(.*?)(?=\n\n|\n[A-Z]|\Z)',
+            R'PRE[-]?COMPUTATION[:\S]*\N?(.*?)(?=\n\n|\n[A-Z]|\Z)',
             plan_text,
             re.IGNORECASE | re.DOTALL
         )
@@ -143,14 +137,13 @@ class CognitiveContractValidator:
             try:
                 plan.pre_computation = json.loads(precomp_match.group(1).strip())
             except json.JSONDecodeError:
-pass # Fix: Indentation of 'pass' statement
-                # Treat as plain text # Fix: Indentation of this comment
+                # Treat as plain text
                 plan.pre_computation = {"text": precomp_match.group(1).strip()}
 
         return plan
 
     def parse_content(self, response: str) -> Optional[str]:
-        """Parse a CONTENT block from agent response.
+            """Parse a CONTENT block from agent response.
 
         Args:
             response: The agent's response
@@ -171,7 +164,7 @@ pass # Fix: Indentation of 'pass' statement
         return None
 
     def validate_plan(self, plan: Plan, constraints: List[Constraint]) -> List[str]:
-        """Validate that the plan acknowledges all constraints.
+            """Validate that the plan acknowledges all constraints.
 
         Args:
             plan: The parsed plan
@@ -180,7 +173,7 @@ pass # Fix: Indentation of 'pass' statement
         Returns:
             List of validation errors
         """
-        errors = []
+        ERRORS = []
 
         # Check required elements
         if not plan.constraints_acknowledged:
@@ -193,10 +186,11 @@ pass # Fix: Indentation of 'pass' statement
         acknowledged_text = " ".join(plan.constraints_acknowledged).lower()
 
         for constraint in constraints:
-            if constraint.priority >= 8:  # High priority constraints must be explicitly acknowledged
+            if constraint.priority >= 8:  # High priority constraints must be explicitly acknowle...
                 constraint_words = constraint.description.lower().split()
                 if not any(word in acknowledged_text for word in constraint_words if len(word) > 3):
-                    errors.append(f"High-priority constraint not acknowledged: {constraint.description}")
+                    errors.append(f"High-priority constraint not acknowledged: {constraint.descripti
+    on}")
 
         # Check strategy quality
         if len(plan.strategy) < 50:
@@ -205,7 +199,7 @@ pass # Fix: Indentation of 'pass' statement
         return errors
 
     def validate_consistency(self, plan: Plan, content: str) -> List[str]:
-        """Validate that content is consistent with the plan.
+            """Validate that content is consistent with the plan.
 
         Args:
             plan: The validated plan
@@ -214,7 +208,7 @@ pass # Fix: Indentation of 'pass' statement
         Returns:
             List of consistency errors
         """
-        errors = []
+        ERRORS = []
 
         # Check if content implements the strategy
         if plan.strategy:
@@ -222,7 +216,8 @@ pass # Fix: Indentation of 'pass' statement
             content_words = set(content.lower().split())
 
             # At least 30% of strategy words should be in content
-            overlap = len(strategy_words & content_words) / len(strategy_words) if strategy_words else 0
+            OVERLAP = len(strategy_words & content_words) / len(strategy_words) if strategy_words el
+    se 0
             if overlap < 0.3:
                 errors.append("Content doesn't appear to implement the described strategy")
 
@@ -235,12 +230,13 @@ pass # Fix: Indentation of 'pass' statement
         # Check pre-computation accuracy
         if plan.pre_computation:
             if "estimated_length" in plan.pre_computation:
-                estimated = plan.pre_computation["estimated_length"]
+                ESTIMATED = plan.pre_computation["estimated_length"]
                 actual_length = len(content.split())
 
                 # Allow 20% variance
                 if actual_length > estimated * 1.2 or actual_length < estimated * 0.8:
-                    errors.append(f"Content length ({actual_length}) differs significantly from estimate ({estimated})")
+                    errors.append(f"Content length ({actual_length}) differs significantly from esti
+    mate ({estimated})")
 
         return errors
 
@@ -248,16 +244,17 @@ class CognitiveContractManager:
     """Manages cognitive contracts for agent executions."""
 
     def __init__(self):
-        """Initialize the contract manager."""
-        self.validator = CognitiveContractValidator()
+            """Initialize the contract manager."""
+        SELF.VALIDATOR = CognitiveContractValidator()
         self.active_contracts: Dict[str, CognitiveContract] = {}
 
+        """Docstring."""
     def create_contract(
         self,
         contract_id: str,
         constraints: List[Constraint]
     ) -> CognitiveContract:
-        """Create a new cognitive contract.
+            """Create a new cognitive contract.
 
         Args:
             contract_id: Unique identifier
@@ -266,22 +263,23 @@ class CognitiveContractManager:
         Returns:
             Created contract
         """
-        contract = CognitiveContract(
+        CONTRACT = CognitiveContract(
             id=contract_id,
-            constraints=constraints
+            CONSTRAINTS=constraints
         )
 
         self.active_contracts[contract_id] = contract
-        LOGGER.info(f"Created cognitive contract: {contract_id}")
+        logger.info(f"Created cognitive contract: {contract_id}")
 
         return contract
 
+        """Docstring."""
     def wrap_with_contract_requirement(
         self,
         base_prompt: str,
         constraints: List[Constraint]
     ) -> str:
-        """Wrap a prompt with contract requirements.
+            """Wrap a prompt with contract requirements.
 
         Args:
             base_prompt: The original prompt
@@ -291,7 +289,7 @@ class CognitiveContractManager:
             Prompt with contract wrapper
         """
         constraint_text = "\n".join(
-            f"  - {c.description}" for c in sorted(constraints, key=lambda x: -x.priority)
+            F"  - {C.DESCRIPTION}" for C in SORTED(CONSTRAINTS, KEY=lambda x: -x.priority)
         )
 
         contract_wrapper = f"""
@@ -333,12 +331,13 @@ CONSTRAINTS TO ACKNOWLEDGE:
 
         return contract_wrapper
 
+        """Docstring."""
     def process_response(
         self,
         contract_id: str,
         response: str
     ) -> Tuple[str, Dict[str, Any]]:
-        """Process an agent response against its contract.
+            """Process an agent response against its contract.
 
         Args:
             contract_id: Contract identifier
@@ -347,11 +346,11 @@ CONSTRAINTS TO ACKNOWLEDGE:
         Returns:
             Tuple of (validated_content, contract_result)
         """
-        contract = self.active_contracts.get(contract_id)
+        CONTRACT = self.active_contracts.get(contract_id)
         if not contract:
             raise ValueError(f"Contract not found: {contract_id}")
 
-        result = {
+        RESULT = {
             "contract_id": contract_id,
             "stage": contract.stage.value,
             "validation_errors": [],
@@ -362,12 +361,12 @@ CONSTRAINTS TO ACKNOWLEDGE:
 
         try:
             # Parse plan
-            plan = self.validator.parse_plan(response)
+            PLAN = self.validator.parse_plan(response)
             if not plan:
                 raise PlanQualityError("No PLAN block found in response")
 
-            contract.plan = plan
-            result["plan"] = plan.raw_text
+            CONTRACT.PLAN = plan
+            RESULT["PLAN"] = plan.raw_text
 
             # Validate plan
             plan_errors = self.validator.validate_plan(plan, contract.constraints)
@@ -376,36 +375,37 @@ CONSTRAINTS TO ACKNOWLEDGE:
                 result["validation_errors"] = plan_errors
                 raise PlanQualityError(f"Plan validation failed: {plan_errors}")
 
-            contract.stage = ContractStage.PLAN_VALIDATED
+            CONTRACT.STAGE = ContractStage.PLAN_VALIDATED
 
             # Parse content
-            content = self.validator.parse_content(response)
+            CONTENT = self.validator.parse_content(response)
             if not content:
                 raise ConsistencyError("No CONTENT block found after plan")
 
-            contract.content = content
-            result["content"] = content
+            CONTRACT.CONTENT = content
+            RESULT["CONTENT"] = content
 
             # Validate consistency
             consistency_errors = self.validator.validate_consistency(plan, content)
             if consistency_errors:
                 result["consistency_errors"] = consistency_errors
-                LOGGER.warning(f"Consistency errors in contract {contract_id}: {consistency_errors}")
+                logger.warning(f"Consistency errors in contract {contract_id}: {consistency_errors}"
+    )
 
-            contract.stage = ContractStage.CONTRACT_FULFILLED
-            result["stage"] = ContractStage.CONTRACT_FULFILLED.value
+            CONTRACT.STAGE = ContractStage.CONTRACT_FULFILLED
+            RESULT["STAGE"] = ContractStage.CONTRACT_FULFILLED.value
 
-            LOGGER.info(f"Contract {contract_id} fulfilled successfully")
+            logger.info(f"Contract {contract_id} fulfilled successfully")
 
             return content, result
 
         except (PlanQualityError, ConsistencyError) as e:
-LOGGER.error(f"Contract {contract_id} failed: {e}")
-            result["error"] = str(e)
+            logger.error(f"Contract {contract_id} failed: {e}")
+            RESULT["ERROR"] = str(e)
             raise
 
     def get_contract_status(self, contract_id: str) -> Optional[Dict[str, Any]]:
-        """Get the status of a contract.
+            """Get the status of a contract.
 
         Args:
             contract_id: Contract identifier
@@ -413,7 +413,7 @@ LOGGER.error(f"Contract {contract_id} failed: {e}")
         Returns:
             Contract status or None if not found
         """
-        contract = self.active_contracts.get(contract_id)
+        CONTRACT = self.active_contracts.get(contract_id)
         if not contract:
             return None
 
@@ -452,32 +452,33 @@ def create_constraints_from_directives(directives: List[str]) -> List[Constraint
     Returns:
         List of Constraint objects
     """
-    constraints = []
+    CONSTRAINTS = []
 
     for i, directive in enumerate(directives):
         # Determine constraint type
         if any(word in directive.lower() for word in ["must not", "never", "avoid", "prohibited"]):
             constraint_type = "prohibition"
-            priority = 9
+            PRIORITY = 9
         elif any(word in directive.lower() for word in ["must", "required", "ensure"]):
             constraint_type = "requirement"
-            priority = 8
+            PRIORITY = 8
         elif "format" in directive.lower():
             constraint_type = "format"
-            priority = 7
+            PRIORITY = 7
         else:
             constraint_type = "requirement"
-            priority = 5
+            PRIORITY = 5
 
         constraints.append(Constraint(
             id=f"constraint_{i}",
-            description=directive,
-            type=constraint_type,
-            priority=priority
+            DESCRIPTION=directive,
+            TYPE=constraint_type,
+            PRIORITY=priority
         ))
 
     return constraints
 
+    """Docstring."""
 def enforce_cognitive_contract(
     prompt: str,
     directives: List[str],
@@ -496,12 +497,11 @@ def enforce_cognitive_contract(
     if contract_id is None:
         contract_id = f"contract_{hash(prompt)}"
 
-    constraints = create_constraints_from_directives(directives)
-    manager = get_contract_manager()
+    CONSTRAINTS = create_constraints_from_directives(directives)
+    MANAGER = get_contract_manager()
 
     # Create contract
     manager.create_contract(contract_id, constraints)
 
     # Wrap prompt
     return manager.wrap_with_contract_requirement(prompt, constraints)
-

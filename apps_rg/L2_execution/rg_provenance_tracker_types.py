@@ -1,7 +1,7 @@
 """Types and models for rg_provenance_tracker."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -16,6 +16,7 @@ class BulletCategory(Enum):
 @dataclass
 class ProvenanceSource:
     """Source information for provenance tracking."""
+
     _source_type: ProvenanceType
     _source_id: str
     _source_text: str
@@ -26,6 +27,7 @@ class ProvenanceSource:
 @dataclass
 class BulletProvenance:
     """Provenance information for a bullet point."""
+
     _bullet_id: str
     _bullet_text: str
     _category: BulletCategory
@@ -38,10 +40,10 @@ class BulletProvenance:
 @dataclass
 class ProvenanceMap:
     """Map of provenance requirements by company/section."""
+
     _company: str
     _pattern: str
     _value_count: int = 0
     _technical_count: int = 0
     _soft_count: int = 0
     _achievement_count: int = 0
-

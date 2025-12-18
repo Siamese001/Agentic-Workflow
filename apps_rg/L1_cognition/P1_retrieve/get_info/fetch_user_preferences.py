@@ -10,19 +10,19 @@ from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class FetchUserPreferences:
     """Retrieval engine for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.CONFIG = config or {}
+        SELF.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-                 query: str,
-                 filters: Optional[Dict] = None,
-                 limit: int = 10) -> RetrievalResult:
+        """Docstring."""
+        query: str,
+        filters: Optional[Dict] = None,
+        LIMIT: INT = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
@@ -36,11 +36,10 @@ class FetchUserPreferences:
         """Execute query."""
         return []
 
-
 def retrieve(query: str,
-             config: Optional[Dict] = None,
-             **kwargs: Dict[str,
-                            object]) -> RetrievalResult:
+    """Docstring."""
+    config: Optional[Dict] = None,
+    **kwargs: Dict[str,
+    object]) -> RetrievalResult:
     """Retrieve items."""
     return FetchUserPreferences(config).retrieve(query, **kwargs)
-

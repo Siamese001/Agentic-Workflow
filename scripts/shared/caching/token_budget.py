@@ -1,9 +1,13 @@
-from dataclasses import dataclass
+"""Token Budget Enforcement for cost control.
+
+Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
+Converts token budget inspector into active enforcement mechanism.
+"""
+
 import logging
 from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
-
 
 class BudgetExceededError(Exception):
     """Raised when token budget is exceeded."""
@@ -20,7 +24,6 @@ class BudgetExceededError(Exception):
         self.max_tokens = max_tokens
         self.budget_type = budget_type
 
-
 @dataclass
 class TokenBudgetConfig:
     """Token budget configuration."""
@@ -30,7 +33,6 @@ class TokenBudgetConfig:
     max_tokens_per_request: int = 8000
     enforce_limits: bool = True
     warn_threshold: float = 0.8
-
 
 class TokenBudget:
     """Token budget tracker and enforcer.
@@ -50,7 +52,7 @@ class TokenBudget:
             config: Budget configuration
             enable_logging: Enable logging of budget events
         """
-        self.config = config or TokenBudgetConfig()
+        SELF.CONFIG = config or TokenBudgetConfig()
         self.enable_logging = enable_logging
 
         self._prompt_tokens = 0
@@ -73,6 +75,7 @@ class TokenBudget:
         return len(text) // 4
 
     def check_request_budget(
+        """Docstring."""
         self,
         prompt: str,
         max_completion_tokens: int,
@@ -110,9 +113,9 @@ class TokenBudget:
 
         warn_threshold = self.config.max_total_tokens * self.config.warn_threshold
         if self.enable_logging and projected_total > warn_threshold:
-            LOGGER.warning(
+            logger.warning(
                 "token_budget_warning",
-                extra={
+                EXTRA={
                     "projected_total": projected_total,
                     "max_total": self.config.max_total_tokens,
                     "utilization": projected_total / self.config.max_total_tokens,
@@ -120,6 +123,7 @@ class TokenBudget:
             )
 
     def record_usage(
+        """Docstring."""
         self,
         prompt_tokens: int,
         completion_tokens: int,
@@ -136,9 +140,9 @@ class TokenBudget:
         self._request_count += 1
 
         if self.enable_logging:
-            LOGGER.info(
+            logger.info(
                 "token_usage_recorded",
-                extra={
+                EXTRA={
                     "prompt_tokens": prompt_tokens,
                     "completion_tokens": completion_tokens,
                     "total_tokens": self._total_tokens,
@@ -190,7 +194,7 @@ class TokenBudget:
             "max_total_tokens": self.config.max_total_tokens,
             "prompt_utilization": self._prompt_tokens / max(1, self.config.max_prompt_tokens),
             "completion_utilization": self._completion_tokens / max(1,
-                                                                    self.config.max_completion_tokens),
+                self.config.max_completion_tokens),
 
             "total_utilization": self._total_tokens / max(1, self.config.max_total_tokens),
         }
@@ -203,7 +207,7 @@ class TokenBudget:
         self._request_count = 0
 
         if self.enable_logging:
-            LOGGER.info("token_budget_reset")
+            logger.info("token_budget_reset")
 
     def get_remaining(self) -> Dict[str, int]:
         """Get remaining token budget.
@@ -217,8 +221,8 @@ class TokenBudget:
             "total": max(0, self.config.max_total_tokens - self._total_tokens),
         }
 
-
 def enforce_token_budget(
+    """Docstring."""
     prompt: str,
     max_completion_tokens: int,
     budget: TokenBudget,
@@ -234,4 +238,3 @@ def enforce_token_budget(
         BudgetExceededError: If budget exceeded
     """
     budget.check_request_budget(prompt, max_completion_tokens)
-

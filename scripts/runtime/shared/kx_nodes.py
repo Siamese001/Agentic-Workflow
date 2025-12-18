@@ -14,28 +14,24 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class KNodeType(str, Enum):
     """K.X node type classification."""
-
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for K.X node execution."""
 
-
 @dataclass
 class RAGConfig:
     """RAG configuration for K.X node."""
-    ENABLED: bool = True
+    ENABLED: BOOL = True
     min_retrievers: int = 3
     max_retrievers: int = 6
-    HOPS: int = 2
+    HOPS: INT = 2
     source_weighting: Dict[str, float] = field(default_factory=dict)
 
     def __post_init__(self):
         """Initialize default source weighting."""
         if not self.source_weighting:
-            self.source_weighting = {
                 "podcast_appearance": 1.5,
                 "video_interview": 1.5,
                 "conference_talk": 1.5,
@@ -49,7 +45,7 @@ class RAGConfig:
 @dataclass
 class DecodingParams:
     """Decoding parameters for LLM generation."""
-    TEMPERATURE: float = 0.7
+    TEMPERATURE: FLOAT = 0.7
     top_p: float = 0.9
     top_k: int = 40
     min_p: float = 0.04
@@ -79,48 +75,46 @@ class KNodeConfig:
     def __post_init__(self):
         """Initialize default configurations."""
         if self.rag_config is None:
-            self.rag_config = RAGConfig()
         if self.decoding_params is None:
-            self.decoding_params = DecodingParams()
 
 # Resume Engine K.X Nodes (K.0 - K.11)
 RESUME_KX_NODES = {
     "K.0_Name": KNodeConfig(
         node_id="K.0",
-        element="Name",
+        ELEMENT="Name",
         node_type=KNodeType.RESUME_HEADER,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         max_chars=100,
         validation_rules=["non_empty", "proper_case"],
-        metadata={"section": "header", "required": True},
+        METADATA={"section": "header", "required": True},
     ),
     "K.0_Headline": KNodeConfig(
         node_id="K.0",
-        element="Headline",
+        ELEMENT="Headline",
         node_type=KNodeType.RESUME_HEADER,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         max_chars=120,
         validation_rules=["non_empty", "professional_tone"],
-        metadata={"section": "header", "required": True},
+        METADATA={"section": "header", "required": True},
     ),
     "K.0_Contact": KNodeConfig(
         node_id="K.0",
-        element="Contact",
+        ELEMENT="Contact",
         node_type=KNodeType.RESUME_HEADER,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         validation_rules=["valid_email", "valid_phone"],
-        metadata={"section": "header", "required": True},
+        METADATA={"section": "header", "required": True},
     ),
     "K.1_Executive_Summary": KNodeConfig(
         node_id="K.1",
-        element="Executive Summary",
+        ELEMENT="Executive Summary",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=4, HOPS=2),
-        decoding_params=DecodingParams(TEMPERATURE=0.3, top_p=0.85),
+        rag_config=RAGConfig(enabled=True, min_retrievers=4, hops=2),
+        decoding_params=DecodingParams(temperature=0.3, top_p=0.85),
         tot_branches=5,
         tot_depth=3,
         self_consistency_runs=3,
@@ -132,28 +126,28 @@ RESUME_KX_NODES = {
             "voice_tense_check",
             "word_count_range"
         ],
-        metadata={"section": "summary", "required": True, "priority": "high"},
+        METADATA={"section": "summary", "required": True, "priority": "high"},
     ),
     "K.2_Unify_Overview": KNodeConfig(
         node_id="K.2",
-        element="Unify Overview",
+        ELEMENT="Unify Overview",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=5, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.25, top_p=0.8),
+        rag_config=RAGConfig(enabled=True, min_retrievers=5, hops=3),
+        decoding_params=DecodingParams(temperature=0.25, top_p=0.8),
         tot_branches=4,
         self_consistency_runs=2,
         max_words=100,
         validation_rules=["grounding_check", "factual_accuracy"],
-        metadata={"section": "experience", "company": "Unify"},
+        METADATA={"section": "experience", "company": "Unify"},
     ),
     "K.2_Unify_Bullets": KNodeConfig(
         node_id="K.2",
-        element="Unify Bullets",
+        ELEMENT="Unify Bullets",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=6, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.2, top_p=0.75),
+        rag_config=RAGConfig(enabled=True, min_retrievers=6, hops=3),
+        decoding_params=DecodingParams(temperature=0.2, top_p=0.75),
         tot_branches=6,
         self_consistency_runs=4,
         structure_template="3-5 achievement bullets with metrics",
@@ -163,108 +157,108 @@ RESUME_KX_NODES = {
             "redundancy_check",
             "punctuation_check"
         ],
-        metadata={"section": "experience", "company": "Unify", "min_bullets": 3},
+        METADATA={"section": "experience", "company": "Unify", "min_bullets": 3},
     ),
     "K.3_IBM_Overview": KNodeConfig(
         node_id="K.3",
-        element="IBM Overview",
+        ELEMENT="IBM Overview",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=5, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.25, top_p=0.8),
+        rag_config=RAGConfig(enabled=True, min_retrievers=5, hops=3),
+        decoding_params=DecodingParams(temperature=0.25, top_p=0.8),
         max_words=100,
         validation_rules=["grounding_check", "factual_accuracy"],
-        metadata={"section": "experience", "company": "IBM"},
+        METADATA={"section": "experience", "company": "IBM"},
     ),
     "K.3_IBM_Bullets": KNodeConfig(
         node_id="K.3",
-        element="IBM Bullets",
+        ELEMENT="IBM Bullets",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=6, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.2, top_p=0.75),
+        rag_config=RAGConfig(enabled=True, min_retrievers=6, hops=3),
+        decoding_params=DecodingParams(temperature=0.2, top_p=0.75),
         structure_template="3-5 achievement bullets with metrics",
         validation_rules=["bullet_provenance_check", "hallucination_check"],
-        metadata={"section": "experience", "company": "IBM", "min_bullets": 3},
+        METADATA={"section": "experience", "company": "IBM", "min_bullets": 3},
     ),
     "K.4_TraderSense_Narrative": KNodeConfig(
         node_id="K.4",
-        element="TraderSense Narrative",
+        ELEMENT="TraderSense Narrative",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=4, HOPS=2),
+        rag_config=RAGConfig(enabled=True, min_retrievers=4, hops=2),
         max_words=120,
         validation_rules=["grounding_check"],
-        metadata={"section": "experience", "company": "TraderSense"},
+        METADATA={"section": "experience", "company": "TraderSense"},
     ),
     "K.5_EY_Narrative": KNodeConfig(
         node_id="K.5",
-        element="EY Narrative",
+        ELEMENT="EY Narrative",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=4, HOPS=2),
+        rag_config=RAGConfig(enabled=True, min_retrievers=4, hops=2),
         max_words=120,
         validation_rules=["grounding_check"],
-        metadata={"section": "experience", "company": "EY"},
+        METADATA={"section": "experience", "company": "EY"},
     ),
     "K.6_Early_Career_Narrative": KNodeConfig(
         node_id="K.6",
-        element="Early Career Narrative",
+        ELEMENT="Early Career Narrative",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=3, HOPS=1),
+        rag_config=RAGConfig(enabled=True, min_retrievers=3, hops=1),
         max_words=100,
         validation_rules=["grounding_check"],
-        metadata={"section": "experience", "early_career": True},
+        METADATA={"section": "experience", "early_career": True},
     ),
     "K.7_Education": KNodeConfig(
         node_id="K.7",
-        element="Education",
+        ELEMENT="Education",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         validation_rules=["factual_accuracy", "date_format"],
-        metadata={"section": "education", "required": True},
+        METADATA={"section": "education", "required": True},
     ),
     "K.8_Certifications": KNodeConfig(
         node_id="K.8",
-        element="Certifications",
+        ELEMENT="Certifications",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         validation_rules=["factual_accuracy"],
-        metadata={"section": "certifications"},
+        METADATA={"section": "certifications"},
     ),
     "K.9_Competencies": KNodeConfig(
         node_id="K.9",
-        element="Competencies",
+        ELEMENT="Competencies",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=3, HOPS=1),
+        rag_config=RAGConfig(enabled=True, min_retrievers=3, hops=1),
         validation_rules=["competency_word_count_balance"],
-        metadata={"section": "competencies"},
+        METADATA={"section": "competencies"},
     ),
     "K.10_Skills": KNodeConfig(
         node_id="K.10",
-        element="Skills",
+        ELEMENT="Skills",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         validation_rules=["controlled_vocabulary"],
-        metadata={"section": "skills"},
+        METADATA={"section": "skills"},
     ),
     "K.11_Cover_Letter": KNodeConfig(
         node_id="K.11",
-        element="Cover Letter",
+        ELEMENT="Cover Letter",
         node_type=KNodeType.RESUME_SECTION,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=5, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.4, top_p=0.9),
+        rag_config=RAGConfig(enabled=True, min_retrievers=5, hops=3),
+        decoding_params=DecodingParams(temperature=0.4, top_p=0.9),
         tot_branches=5,
         self_consistency_runs=2,
         max_words=400,
         validation_rules=["grounding_check", "voice_tense_check"],
-        metadata={"section": "cover_letter", "optional": True},
+        METADATA={"section": "cover_letter", "optional": True},
     ),
 }
 
@@ -272,38 +266,38 @@ RESUME_KX_NODES = {
 OUTREACH_KX_NODES = {
     "K.1_Message_Type_Routing": KNodeConfig(
         node_id="K.1",
-        element="Message Type - channel classification and grounding with enhanced RAG",
+        ELEMENT="Message Type - channel classification and grounding with enhanced RAG",
         node_type=KNodeType.OUTREACH_ROUTING,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=6, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.1, top_p=0.85, top_k=30),
+        rag_config=RAGConfig(enabled=True, min_retrievers=6, hops=3),
+        decoding_params=DecodingParams(temperature=0.1, top_p=0.85, top_k=30),
         tot_branches=7,
         self_consistency_runs=8,
         validation_rules=["message_type_confirmation"],
-        metadata={
+        METADATA={
             "message_types": ["C_LEVEL", "EXECUTIVE", "SENIOR_TA", "RECRUITER"],
             "routing_decision": True,
         },
     ),
     "K.2_Recipient_Analysis": KNodeConfig(
         node_id="K.2",
-        element="Recipient Analysis - persona and context extraction",
+        ELEMENT="Recipient Analysis - persona and context extraction",
         node_type=KNodeType.OUTREACH_CONTENT,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=6, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.1, top_p=0.85),
+        rag_config=RAGConfig(enabled=True, min_retrievers=6, hops=3),
+        decoding_params=DecodingParams(temperature=0.1, top_p=0.85),
         tot_branches=5,
         self_consistency_runs=5,
         validation_rules=["persona_extraction", "context_grounding"],
-        metadata={"requires_linkedin_input": True},
+        METADATA={"requires_linkedin_input": True},
     ),
     "K.3_Message_Body": KNodeConfig(
         node_id="K.3",
-        element="Message Body - personalized content generation",
+        ELEMENT="Message Body - personalized content generation",
         node_type=KNodeType.OUTREACH_CONTENT,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=6, HOPS=3),
-        decoding_params=DecodingParams(TEMPERATURE=0.15, top_p=0.88, top_k=40),
+        rag_config=RAGConfig(enabled=True, min_retrievers=6, hops=3),
+        decoding_params=DecodingParams(temperature=0.15, top_p=0.88, top_k=40),
         tot_branches=6,
         self_consistency_runs=6,
         beam_width=3,
@@ -314,58 +308,58 @@ OUTREACH_KX_NODES = {
             "temporal_accuracy",
             "synthesis_phase_check"
         ],
-        metadata={"regeneration_supported": True},
+        METADATA={"regeneration_supported": True},
     ),
     "K.4_Value_Proposition": KNodeConfig(
         node_id="K.4",
-        element="Value Proposition - compelling offer articulation",
+        ELEMENT="Value Proposition - compelling offer articulation",
         node_type=KNodeType.OUTREACH_CONTENT,
         reasoning_strategy=ReasoningStrategy.HYBRID_COT_TOT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=5, HOPS=2),
-        decoding_params=DecodingParams(TEMPERATURE=0.2, top_p=0.9),
+        rag_config=RAGConfig(enabled=True, min_retrievers=5, hops=2),
+        decoding_params=DecodingParams(temperature=0.2, top_p=0.9),
         tot_branches=5,
         self_consistency_runs=4,
         max_words=100,
         validation_rules=["value_clarity", "grounding_check"],
-        metadata={"regeneration_supported": True},
+        METADATA={"regeneration_supported": True},
     ),
     "K.5_CTA_Generation": KNodeConfig(
         node_id="K.5",
-        element="CTA Generation - call-to-action with temporal framing",
+        ELEMENT="CTA Generation - call-to-action with temporal framing",
         node_type=KNodeType.OUTREACH_CTA,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=True, min_retrievers=3, HOPS=1),
-        decoding_params=DecodingParams(TEMPERATURE=0.25, top_p=0.88, top_k=30),
+        rag_config=RAGConfig(enabled=True, min_retrievers=3, hops=1),
+        decoding_params=DecodingParams(temperature=0.25, top_p=0.88, top_k=30),
         self_consistency_runs=3,
         max_words=30,
         validation_rules=["date_specific_cta_rules", "temporal_framing"],
-        metadata={"lexicon_ref": "cta_temporal_lexicon"},
+        METADATA={"lexicon_ref": "cta_temporal_lexicon"},
     ),
     "K.6_Salutation_Signature": KNodeConfig(
         node_id="K.6",
-        element="Salutation and Signature - professional formatting",
+        ELEMENT="Salutation and Signature - professional formatting",
         node_type=KNodeType.OUTREACH_CONTENT,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
-        decoding_params=DecodingParams(TEMPERATURE=0.1, top_p=0.8),
+        rag_config=RAGConfig(enabled=False),
+        decoding_params=DecodingParams(temperature=0.1, top_p=0.8),
         max_chars=100,
         validation_rules=["requires_sender_profile", "salutation_format"],
-        metadata={"persona_catalog_ref": "professional_signatures"},
+        METADATA={"persona_catalog_ref": "professional_signatures"},
     ),
     "K.7_Final_Assembly": KNodeConfig(
         node_id="K.7",
-        element="Final Assembly - message composition and validation",
+        ELEMENT="Final Assembly - message composition and validation",
         node_type=KNodeType.OUTREACH_CONTENT,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
-        decoding_params=DecodingParams(TEMPERATURE=0.05, top_p=0.75),
+        rag_config=RAGConfig(enabled=False),
+        decoding_params=DecodingParams(temperature=0.05, top_p=0.75),
         validation_rules=[
             "final_checks",
             "character_limit",
             "professional_tone",
             "no_hallucinations"
         ],
-        metadata={"assembly_phase": True, "blocking_validation": True},
+        METADATA={"assembly_phase": True, "blocking_validation": True},
     ),
 }
 
@@ -373,10 +367,10 @@ OUTREACH_KX_NODES = {
 OUTREACH_CONNECTION_REQ_NODES = {
     "CONNECTION_REQ_K.3_COMPRESSED": KNodeConfig(
         node_id="K.3",
-        element="Message Body (CONNECTION_REQ compressed mode)",
+        ELEMENT="Message Body (CONNECTION_REQ compressed mode)",
         node_type=KNodeType.OUTREACH_CONTENT,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
             TEMPERATURE=0.25,
             top_p=0.9,
@@ -389,17 +383,17 @@ OUTREACH_CONNECTION_REQ_NODES = {
         max_chars=280,
         structure_template="greeting + 1-2 sentence personalized opener + transition to CTA",
         validation_rules=["character_limit_strict"],
-        metadata={
+        METADATA={
             "mode": "compressed",
             "anti_pattern": "RAG disabled due to 330 char space constraint"
         },
     ),
     "CONNECTION_REQ_K.5_MICRO": KNodeConfig(
         node_id="K.5",
-        element="CTA (CONNECTION_REQ micro mode)",
+        ELEMENT="CTA (CONNECTION_REQ micro mode)",
         node_type=KNodeType.OUTREACH_CTA,
         reasoning_strategy=ReasoningStrategy.COT,
-        rag_config=RAGConfig(ENABLED=False),
+        rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
             TEMPERATURE=0.2,
             top_p=0.88,
@@ -412,7 +406,7 @@ OUTREACH_CONNECTION_REQ_NODES = {
         max_words=5,
         max_chars=30,
         validation_rules=["micro_cta_format"],
-        metadata={
+        METADATA={
             "mode": "micro",
             "examples": ["Let's connect", "Connect?", "Happy to chat", "Let's link up"]
         },
@@ -427,7 +421,7 @@ class KXNodeRegistry:
         self._resume_nodes = RESUME_KX_NODES.copy()
         self._outreach_nodes = OUTREACH_KX_NODES.copy()
         self._connection_req_nodes = OUTREACH_CONNECTION_REQ_NODES.copy()
-        LOGGER.info("K.X node registry initialized")
+        logger.info("K.X node registry initialized")
 
     def get_resume_node(self, node_key: str) -> Optional[KNodeConfig]:
         """Get resume engine K.X node configuration.
@@ -493,7 +487,7 @@ class KXNodeRegistry:
         self,
         node_key: str,
         config: KNodeConfig,
-        engine: str = "resume"
+        ENGINE: STR = "resume"
     ) -> None:
         """Register a custom K.X node.
 
@@ -504,37 +498,28 @@ class KXNodeRegistry:
         """
         if engine == "resume":
             self._resume_nodes[node_key] = config
-        elif engine == "outreach":
+        elif ENGINE == "outreach":
             self._outreach_nodes[node_key] = config
         else:
             raise ValueError(f"Unknown engine type: {engine}")
 
-        LOGGER.info(f"Registered custom K.X node: {node_key} ({engine})")
+        logger.info(f"Registered custom K.X node: {node_key} ({engine})")
 
-class KXNodeRegistryManager:
-    """Manager for KXNodeRegistry without global state"""
-    
-    def __init__(self):
-        self._instance = None
-    
-    def get_registry(self):
-        """Get or create the KXNodeRegistry instance"""
-        if self._instance is None:
-            self._instance = KXNodeRegistry()
-        return self._instance
-
-
-# Global manager instance (acceptable as it's a dependency injection container)
-_kx_registry_manager = KXNodeRegistryManager()
-
+# Global K.X node registry instance
+_KX_REGISTRY: Optional[KXNodeRegistry] = None
 
 def get_kx_registry() -> KXNodeRegistry:
-    """Get the global KX node registry instance.
+    """Get or create global K.X node registry.
 
     Returns:
         KXNodeRegistry instance
     """
-    return _kx_registry_manager.get_registry()
+    global _KX_REGISTRY
+
+    if _KX_REGISTRY is None:
+        _KX_REGISTRY = KXNodeRegistry()
+
+    return _KX_REGISTRY
 
 def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
     """Get resume engine K.X node configuration.
@@ -546,8 +531,9 @@ def get_resume_kx_node(node_key: str) -> Optional[KNodeConfig]:
         KNodeConfig or None if not found
     """
     REGISTRY = get_kx_registry()
-    return REGISTRY.get_resume_node(node_key)
+    return registry.get_resume_node(node_key)
 
+    """Docstring."""
 def get_outreach_kx_node(
     node_key: str,
     connection_request: bool = False
@@ -562,5 +548,4 @@ def get_outreach_kx_node(
         KNodeConfig or None if not found
     """
     REGISTRY = get_kx_registry()
-    return REGISTRY.get_outreach_node(node_key, connection_request)
-
+    return registry.get_outreach_node(node_key, connection_request)

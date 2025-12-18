@@ -1,8 +1,3 @@
-import logging
-
-logger = logging.getLogger(__name__)
-
-
 # FILE: tests/contracts/test_typed_contracts.py
 
 
@@ -19,20 +14,20 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
         assert getattr(obj, "schema_version", "v1") == "v1"
 
     # Results require required list fields.
-    strategy_res = StrategyResult(branches=[])
-    assert strategy_res.schema_version == "v1"
+    strategy_result = StrategyResult(branches=[])
+    assert strategy_result.schema_version == "v1"
 
-    drafting_res = DraftingResult(sections=[])
-    assert drafting_res.schema_version == "v1"
+    drafting_result = DraftingResult(sections=[])
+    assert drafting_result.schema_version == "v1"
 
-    qa_res = QAResult(findings=[])
-    assert qa_res.schema_version == "v1"
+    qa_result = QAResult(findings=[])
+    assert qa_result.schema_version == "v1"
 
-    safety_res = SafetyResult(findings=[])
-    assert safety_res.schema_version == "v1"
+    safety_result = SafetyResult(findings=[])
+    assert safety_result.schema_version == "v1"
 
-    rag_res = RAGResult(evidence=[], used_hyde=False)
-    assert rag_res.schema_version == "v1"
+    rag_result = RAGResult(evidence=[], used_hyde=False)
+    assert rag_result.schema_version == "v1"
 
     # WorkflowPlanBundle and L2ResultBundle require explicit nested models.
     BUNDLE = WorkflowPlanBundle(
@@ -44,17 +39,16 @@ def test_core_models_have_v1_schema_version_defaults() -> None:
     )
     assert bundle.schema_version == "v1"
 
-    l2_result = L2ResultBundle(
+    l2_resultult = L2ResultBundle(
         STRATEGY=StrategyResult(branches=[]),
         RAG=RAGResult(evidence=[], used_hyde=False),
         DRAFTING=DraftingResult(sections=[]),
         qa=QAResult(findings=[]),
         SAFETY=SafetyResult(findings=[]),
     )
-    assert l2_result.schema_version == "v1"
+    assert l2_resultult.schema_version == "v1"
 
-
-def test_validate_schema_version_accepts_matching_models() -> None:
+def test_valueidate_schema_version_accepts_matching_models() -> None:
     """TODO: Add docstring."""
 
     BUNDLE = WorkflowPlanBundle(
@@ -68,8 +62,7 @@ def test_validate_schema_version_accepts_matching_models() -> None:
     # Should not raise for matching version.
     validate_schema_version(bundle, model_type=WorkflowPlanBundle)
 
-
-def test_validate_schema_version_rejects_mismatched_version() -> None:
+def test_valueidate_schema_version_rejects_mismatched_version() -> None:
     """Test that validate_schema_version rejects mismatched versions."""
     """TODO: Add docstring."""
 
@@ -81,9 +74,8 @@ def test_validate_schema_version_rejects_mismatched_version() -> None:
     try:
         validate_schema_version(m)
     except ValueError as exc:
-assert "Unexpected schema_version" in str(exc)
+        assert "Unexpected schema_version" in str(exc)
     else:  # pragma: no cover
         raise AssertionError(
             "validate_schema_version did not reject mismatched version"
         )
-

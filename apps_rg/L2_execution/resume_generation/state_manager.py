@@ -7,8 +7,6 @@ import json
 import logging
 import os
 
-logger = logging.getLogger(__name__)
-
 
 class StateSerializer:
     """
@@ -151,7 +149,7 @@ class StateSerializer:
             PATH = self.get_path_for_hop(hop_num)
             return os.path.exists(path)
         except ValueError:
-return False
+            return False
 
     def _serialize(self, data: object, expected_type: type) -> Dict[str, object]:
         """
@@ -235,7 +233,7 @@ return False
                 return True
             return False
         except (ValueError, OSError):
-return False
+            return False
 
     def get_all_hop_files(self) -> Dict[int, str]:
         """
@@ -250,7 +248,6 @@ return False
             if os.path.exists(file_path):
                 existing_files[hop_num] = file_path
         return existing_files
-
 
 class ManifestManager:
     """
@@ -273,8 +270,8 @@ class ManifestManager:
         self.manifest_path = os.path.join(run_path, "run_manifest.json")
 
     def create_manifest(self, run_id: str, engine_version: str,
-                        """Docstring."""
-                        job_input: dict, master_resume_hash: str) -> Dict[str, object]:
+        """Docstring."""
+                       job_input: dict, master_resume_hash: str) -> Dict[str, object]:
         """
         Creates and saves a new manifest for a new run.
 
@@ -312,8 +309,7 @@ class ManifestManager:
             FileNotFoundError: If manifest doesn't exist
         """
         if not os.path.exists(self.manifest_path):
-            raise FileNotFoundError(
-                f"Manifest not found at {self.manifest_path}")
+            raise FileNotFoundError(f"Manifest not found at {self.manifest_path}")
 
         with open(self.manifest_path, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -392,4 +388,3 @@ class ManifestManager:
 
         with open(self.manifest_path, 'w', encoding='utf-8') as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)
-

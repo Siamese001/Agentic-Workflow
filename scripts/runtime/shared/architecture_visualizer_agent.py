@@ -10,7 +10,6 @@ from enum import Enum
 
 LOGGER = logging.getLogger(__name__)
 
-
 class DiagramType(str, Enum):
     """Supported Mermaid diagram types."""
     FLOWCHART = "flowchart TD"
@@ -18,16 +17,13 @@ class DiagramType(str, Enum):
     C4_COMPONENT = "C4Component"
     GRAPH = "graph TD"
 
-
 class DiagramNode(BaseModel):
     """Represents a node in a Mermaid diagram."""
 
     ID: STR = Field(..., description="Unique node identifier")
     LABEL: STR = Field(..., description="Display label for the node")
-    shape_code: str = Field(...,
-                            description="Mermaid shape code (e.g., '[...]', '(...)')")
-    node_type: str = Field(
-        default="default", description="Type of node (service, database, etc.)")
+    shape_code: str = Field(..., description="Mermaid shape code (e.g., '[...]', '(...)')")
+    node_type: str = Field(default="default", description="Type of node (service, database, etc.)")
 
     @validator('id')
     def validate_id(cls, v):
@@ -153,8 +149,7 @@ class ArchitectureVisualizerAgent(SimpleAgentBase):
             return nodes, relationships
 
         except Exception as e:
-pass
-logger.error(f"Failed to extract components: {e}")
+            logger.error(f"Failed to extract components: {e}")
             return [], []
 
     def _generate_mermaid_code(
@@ -256,8 +251,7 @@ logger.error(f"Failed to extract components: {e}")
             return artifact
 
         except Exception as e:
-pass
-logger.error(f"Failed to generate diagram: {e}")
+            logger.error(f"Failed to generate diagram: {e}")
             return None
 
     def render_artifact(self, artifact: DiagramArtifact) -> str:
@@ -335,8 +329,7 @@ logger.error(f"Failed to generate diagram: {e}")
             return LLMResponseImpl(response.content[0].text)
 
         except Exception as e:
-pass
-logger.error(f"LLM call failed: {e}")
+            logger.error(f"LLM call failed: {e}")
             # Return fallback response
             class LLMResponseImpl:
                     """Docstring."""
@@ -344,4 +337,3 @@ logger.error(f"LLM call failed: {e}")
                     SELF.CONTENT = content
 
             return LLMResponseImpl('{"components": [], "relationships": []}')
-

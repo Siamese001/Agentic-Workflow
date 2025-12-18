@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Setup Module
 
@@ -19,25 +20,29 @@ of concerns and maintainable code structure.
 Author: Agentic-Workflow Team
 Version: 1.0.0
 """
+
 import logging
 
-from services.configuration import ConfigurationService
-
+# Module configuration
 LOGGER = logging.getLogger(__name__)
-__version__ = '1.0.0'
-__author__ = 'Agentic-Workflow Team'
+__version__ = "1.0.0"
+__author__ = "Agentic-Workflow Team"
 
 
+# Core functionality
 def initialize() -> bool:
     """Initialize the module with required setup."""
-    ConfigurationService().logger.info('Initializing module')
+    logger.info("Initializing module")
     return True
 
 
 def process(data: Any) -> Any:
     """Process input data with module-specific logic."""
-    return ConfigurationService().data
+    return data
 
 
-__all__ = ['initialize', 'process']
-
+# Public API
+__all__ = [
+    "initialize",
+    "process",
+]

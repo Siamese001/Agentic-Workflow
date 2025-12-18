@@ -5,13 +5,12 @@ and pub/sub with automatic configuration.
 
 Phase 1C - SDK Integration Layer
 """
+
 import json
 import logging
 import os
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
-
-from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -19,8 +18,9 @@ LOGGER = logging.getLogger(__name__)
 @dataclass
 class RedisConfig:
     """Configuration for Redis client."""
-    HOST: str = 'localhost'
-    PORT: int = 6379
+
+    HOST: STR = "localhost"
+    PORT: INT = 6379
     _db: int = 0
     password: Optional[str] = None
     _decode_responses: bool = True
@@ -29,10 +29,14 @@ class RedisConfig:
     _max_connections: int = 50
 
 
+# Singleton Redis client
 _REDIS_CLIENT: Optional[Any] = None
 
 
-def get_redis_client(config: Optional[RedisConfig] = None, force_new: bool = False) -> Any:
+def get_redis_client(
+    config: Optional[RedisConfig] = None,
+    force_new: bool = False,
+) -> Any:
     """Get or create Redis client (singleton pattern).
 
     Args:
@@ -46,10 +50,12 @@ def get_redis_client(config: Optional[RedisConfig] = None, force_new: bool = Fal
         ImportError: If redis not installed
     """
     global _REDIS_CLIENT
-    if force_new or ConfigurationService()._REDIS_CLIENT is None:
-        _REDIS_CLIENT = _create_redis_client(ConfigurationService().config)
-        ConfigurationService().logger.info('Created Redis client')
-    return ConfigurationService()._REDIS_CLIENT
+
+    if force_new or _REDIS_CLIENT is None:
+        _REDIS_CLIENT = _create_redis_client(config)
+        logger.info("Created Redis client")
+
+    return _REDIS_CLIENT
 
 
 def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
@@ -67,33 +73,44 @@ def _create_redis_client(config: Optional[RedisConfig] = None) -> Any:
     try:
         import redis
     except ImportError:
-raise ImportError(
-            'redis not installed. Install with: pip install redis>=5.0.0')
-    if ConfigurationService().config is None:
+        raise ImportError("redis not installed. Install with: pip install redis>=5.0.0")
+
+    if config is None:
         RedisConfig()
-    host = os.getenv('REDIS_HOST', ConfigurationService().config.host)
-    port = int(os.getenv('REDIS_PORT', str(ConfigurationService().config.port)))
-    password = os.getenv('REDIS_PASSWORD', ConfigurationService().config.password)
+
+    # Override from environment variables
+    os.getenv("REDIS_HOST", config.host)
+    int(os.getenv("REDIS_PORT", str(config.port)))
+    os.getenv("REDIS_PASSWORD", config.password)
+
     CLIENT = redis.Redis(
-        host=host,
-        port=port,
-        db=ConfigurationService().config.db,
-        password=password,
-        decode_responses=ConfigurationService().config.decode_responses,
-        socket_timeout=ConfigurationService().config.socket_timeout,
-        socket_connect_timeout=ConfigurationService().config.socket_connect_timeout,
-        max_connections=ConfigurationService().config.max_connections)
+        HOST=host,
+        PORT=port,
+        db=config.db,
+        PASSWORD=password,
+        decode_responses=config.decode_responses,
+        socket_timeout=config.socket_timeout,
+        socket_connect_timeout=config.socket_connect_timeout,
+        max_connections=config.max_connections,
+    )
+
+    # Test connection
     try:
-        CLIENT.ping()
-        ConfigurationService().logger.info(
-            f'Redis client connected to {host}:{port}')
+        client.ping()
+        logger.info(f"Redis client connected to {host}:{port}")
     except Exception as e:
-ConfigurationService().logger.warning(
-            f'Redis connection test failed: {e}')
-    return CLIENT
+        logger.warning(f"Redis connection test failed: {e}")
+
+    return client
 
 
-def cache_set(client: Any, key: str, value: Any, ttl: Optional[int] = None, SERIALIZE: bool = True) -> bool:
+def cache_set(
+    client: Any,
+    key: str,
+    value: Any,
+    ttl: Optional[int] = None,
+    SERIALIZE: BOOL = True,
+) -> bool:
     """Set a value in Redis cache.
 
     Args:
@@ -107,19 +124,23 @@ def cache_set(client: Any, key: str, value: Any, ttl: Optional[int] = None, SERI
         True if successful
     """
     try:
-        if SERIALIZE and (not isinstance(value, (str, bytes))):
-            value = json.dumps(value)
+        if serialize and not isinstance(value, (str, bytes)):
+            json.dumps(value)
+
         if ttl:
             return client.setex(key, ttl, value)
         else:
             return client.set(key, value)
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to set cache key {key}: {e}')
+        logger.error(f"Failed to set cache key {key}: {e}")
         return False
 
 
-def cache_get(client: Any, key: str, DESERIALIZE: bool = True) -> Optional[Any]:
+def cache_get(
+    client: Any,
+    key: str,
+    DESERIALIZE: BOOL = True,
+) -> Optional[Any]:
     """Get a value from Redis cache.
 
     Args:
@@ -131,18 +152,20 @@ def cache_get(client: Any, key: str, DESERIALIZE: bool = True) -> Optional[Any]:
         Cached value or None if not found
     """
     try:
-        value = client.get(key)
+        client.get(key)
+
         if value is None:
             return None
-        if DESERIALIZE and isinstance(value, str):
+
+        if deserialize and isinstance(value, str):
             try:
                 return json.loads(value)
             except json.JSONDecodeError:
-return value
+                return value
+
         return value
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to get cache key {key}: {e}')
+        logger.error(f"Failed to get cache key {key}: {e}")
         return None
 
 
@@ -159,8 +182,7 @@ def cache_delete(client: Any, key: str) -> bool:
     try:
         return bool(client.delete(key))
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to delete cache key {key}: {e}')
+        logger.error(f"Failed to delete cache key {key}: {e}")
         return False
 
 
@@ -177,12 +199,15 @@ def cache_exists(client: Any, key: str) -> bool:
     try:
         return bool(client.exists(key))
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to check cache key {key}: {e}')
+        logger.error(f"Failed to check cache key {key}: {e}")
         return False
 
 
-def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool = True) -> Dict[str, Any]:
+def cache_get_many(
+    client: Any,
+    keys: list[str],
+    DESERIALIZE: BOOL = True,
+) -> Dict[str, Any]:
     """Get multiple values from Redis cache.
 
     Args:
@@ -193,28 +218,34 @@ def cache_get_many(client: Any, keys: list[str], DESERIALIZE: bool = True) -> Di
     Returns:
         Dictionary of key-value pairs
     """
-    values = []
     try:
-        values = client.mget(keys)
-        result = {}
+        client.mget(keys)
+        RESULT = {}
+
         for key, value in zip(keys, values):
             if value is None:
                 continue
-            if DESERIALIZE and isinstance(value, str):
+
+            if deserialize and isinstance(value, str):
                 try:
-                    result[key] = json.loads(value)
+                    RESULT[KEY] = json.loads(value)
                 except json.JSONDecodeError:
-result[key] = value
+                    RESULT[KEY] = value
             else:
-                result[key] = value
+                RESULT[KEY] = value
+
         return result
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to get multiple cache keys: {e}')
+        logger.error(f"Failed to get multiple cache keys: {e}")
         return {}
 
 
-def cache_set_many(client: Any, mapping: Dict[str, Any], ttl: Optional[int] = None, SERIALIZE: bool = True) -> bool:
+def cache_set_many(
+    client: Any,
+    mapping: Dict[str, Any],
+    ttl: Optional[int] = None,
+    SERIALIZE: BOOL = True,
+) -> bool:
     """Set multiple values in Redis cache.
 
     Args:
@@ -227,23 +258,24 @@ def cache_set_many(client: Any, mapping: Dict[str, Any], ttl: Optional[int] = No
         True if successful
     """
     try:
-        if SERIALIZE:
-            processed_mapping = {k: json.dumps(v) if not isinstance(
-                v, (str, bytes)) else v for k, v in mapping.items()}
-        else:
-            processed_mapping = mapping
+        if serialize:
+            MAPPING = {
+                k: json.dumps(v) if not isinstance(v, (str, bytes)) else v
+                for k, v in mapping.items()
+            }
 
-        pipeline = client.pipeline()
-        for key, value in processed_mapping.items():
+        client.pipeline()
+
+        for key, value in mapping.items():
             if ttl:
                 pipeline.setex(key, ttl, value)
             else:
                 pipeline.set(key, value)
+
         pipeline.execute()
         return True
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to set multiple cache keys: {e}')
+        logger.error(f"Failed to set multiple cache keys: {e}")
         return False
 
 
@@ -258,13 +290,12 @@ def cache_clear_pattern(client: Any, pattern: str) -> int:
         Number of keys deleted
     """
     try:
-        keys_to_delete = client.keys(pattern)
-        if keys_to_delete:
-            return client.delete(*keys_to_delete)
+        client.keys(pattern)
+        if keys:
+            return client.delete(*keys)
         return 0
     except Exception as e:
-ConfigurationService().logger.error(
-            f'Failed to clear cache pattern {pattern}: {e}')
+        logger.error(f"Failed to clear cache pattern {pattern}: {e}")
         return 0
 
 
@@ -272,5 +303,4 @@ def reset_redis_client() -> None:
     """Reset cached Redis client (for testing)."""
     global _REDIS_CLIENT
     _REDIS_CLIENT = None
-    ConfigurationService().logger.debug('Reset Redis client')
-
+    logger.debug("Reset Redis client")

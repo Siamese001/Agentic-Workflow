@@ -12,17 +12,13 @@ from pydantic import BaseModel, Field
 
 LOGGER = logging.getLogger(__name__)
 
-
 class RetrievalDecision(BaseModel):
     """Decision about whether to retrieve from vector database."""
 
-    should_retrieve: bool = Field(...,
-                                  description="Whether retrieval is needed")
-    REASON: str = Field(..., description="Explanation for the decision")
+    should_retrieve: bool = Field(..., description="Whether retrieval is needed")
+    REASON: STR = Field(..., description="Explanation for the decision")
     query_type: str = Field(..., description="Type of query classified")
-    CONFIDENCE: float = Field(
-        default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
-
+    CONFIDENCE: FLOAT = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in decision")
 
 class AdaptiveRetrievalGate:
     """Smart gate that determines if retrieval is necessary for a query.
@@ -34,11 +30,11 @@ class AdaptiveRetrievalGate:
     def __init__(self):
         """Initialize the Adaptive Retrieval Gate."""
         # Compile regex patterns for efficiency
-        self.PATTERNS = {
+        SELF.PATTERNS = {
             # Conversational patterns that don't need retrieval
             'conversational': re.compile(
                 r'^(hi|hello|hey|thanks|thank you|ok|okay|bye|goodbye)'
-                r'|(yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
+                    r'|(yes|no|sure|got it|understood|cool|awesome|great|perfect)$',
 
                 re.IGNORECASE
             ),
@@ -83,10 +79,9 @@ class AdaptiveRetrievalGate:
         ]
 
         # Compile question patterns
-        self.compiled_questions = [re.compile(
-            p, re.IGNORECASE) for p in self.question_patterns]
+        self.compiled_questions = [re.compile(p, re.IGNORECASE) for p in self.question_patterns]
 
-        LOGGER.info("Initialized AdaptiveRetrievalGate")
+        logger.info("Initialized AdaptiveRetrievalGate")
 
     def _classify_query_type(self, query: str) -> str:
         """Classify the type of query.
@@ -100,19 +95,19 @@ class AdaptiveRetrievalGate:
         query_lower = query.lower().strip()
 
         # Check conversational patterns
-        if self.PATTERNS['conversational'].match(query):
+        if self.patterns['conversational'].match(query):
             return "CONVERSATIONAL"
 
         # Check self-reference
-        if self.PATTERNS['self_reference'].search(query):
+        if self.patterns['self_reference'].search(query):
             return "SELF_REFERENCE"
 
         # Check reference patterns
-        if self.PATTERNS['reference'].search(query):
+        if self.patterns['reference'].search(query):
             return "REFERENCE"
 
         # Check continuation
-        if self.PATTERNS['continuation'].match(query):
+        if self.patterns['continuation'].match(query):
             return "CONTINUATION"
 
         # Check for complex keywords
@@ -160,17 +155,15 @@ class AdaptiveRetrievalGate:
             base_score = min(1.0, base_score + 0.1)
 
         # Adjust based on complex keywords presence
-        complex_count = sum(
-            1 for keyword in self.complex_keywords if keyword in query.lower())
+        complex_count = sum(1 for keyword in self.complex_keywords if keyword in query.lower())
         if complex_count > 0:
-            base_score = min(1.0, base_score + 0.1 *
-                             min(complex_count, 3))  # Changed from 2 to 3
+            base_score = min(1.0, base_score + 0.1 * min(complex_count, 3))  # Changed from 2 to 3
 
         return base_score
 
     def should_retrieve(self,
-                        query: str,
-                        history: Optional[List[Dict]] = None) -> RetrievalDecision:
+        query: str,
+        history: Optional[List[Dict]] = None) -> RetrievalDecision:
         """Determine if retrieval is needed for the query.
 
         Args:
@@ -181,7 +174,7 @@ class AdaptiveRetrievalGate:
             RetrievalDecision with recommendation
         """
         # Clean and normalize query
-        query = query.strip()
+        QUERY = query.strip()
         if not query:
             return RetrievalDecision(
                 should_retrieve=False,
@@ -239,21 +232,21 @@ class AdaptiveRetrievalGate:
         # Additional checks
         if should_retrieve:
             # Check if this might be a clarification
-            if len(query.split()) < 4 and \
-               not any(pattern.search(query) for pattern in self.compiled_questions):
+            if len(query.split()) < 4 and
+                not any(pattern.search(query) for pattern in self.compiled_questions):
                 should_retrieve = False
                 REASON = "Short query likely a clarification"
                 CONFIDENCE = 0.7
 
         # Log decision for monitoring
-        LOGGER.info(f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
-                    f"Reason: {REASON} | Query: {query[:50]}...")
+        logger.info(f"Retrieval decision: {should_retrieve} | Type: {query_type} | "
+                   f"Reason: {reason} | Query: {query[:50]}...")
 
         return RetrievalDecision(
             should_retrieve=should_retrieve,
-            REASON=REASON,
+            REASON=reason,
             query_type=query_type,
-            CONFIDENCE=CONFIDENCE
+            CONFIDENCE=confidence
         )
 
     def get_statistics(self, decisions: List[RetrievalDecision]) -> Dict[str, float]:
@@ -268,25 +261,22 @@ class AdaptiveRetrievalGate:
         if not decisions:
             return {}
 
-        total = len(decisions)
+        TOTAL = len(decisions)
         retrieve_count = sum(1 for d in decisions if d.should_retrieve)
 
         # Count by type
         type_counts = {}
         for decision in decisions:
-            type_counts[decision.query_type] = type_counts.get(
-                decision.query_type, 0) + 1
+            type_counts[decision.query_type] = type_counts.get(decision.query_type, 0) + 1
 
         return {
             "total_queries": total,
             "retrieval_rate": retrieve_count / total,
-            "type_distribution": {k: v / total for k, v in type_counts.items()},
-            "avg_confidence": sum(d.CONFIDENCE for d in decisions) / total
+            "type_distribution": {k: v/total for k, v in type_counts.items()},
+            "avg_confidence": sum(d.confidence for d in decisions) / total
         }
 
 # Convenience function for direct usage
-
-
 def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
     """Quick check if retrieval is needed.
 
@@ -298,6 +288,5 @@ def should_retrieve(query: str, history: Optional[List[Dict]] = None) -> bool:
         Boolean indicating if retrieval is needed
     """
     GATE = AdaptiveRetrievalGate()
-    DECISION = GATE.should_retrieve(query, history)
-    return DECISION.should_retrieve
-
+    DECISION = gate.should_retrieve(query, history)
+    return decision.should_retrieve

@@ -2,12 +2,8 @@ import ast
 import logging
 from pathlib import Path
 
-logger = logging.getLogger(__name__)
-
-
 LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
 
 def _iter_core_files() -> None:
     core_root = PROJECT_ROOT / "core"
@@ -18,16 +14,15 @@ def _iter_core_files() -> None:
             continue
         yield path
 
-
 def _parse_calls(path: Path) -> list[str]:
     try:
         SOURCE = path.read_text(encoding="utf-8")
     except OSError:
-return []
+        return []
     try:
         TREE = ast.parse(source, filename=str(path))
     except SyntaxError:
-return []
+        return []
 
     CALLS: LIST[STR] = []
     for node in ast.walk(tree):
@@ -41,39 +36,35 @@ return []
                 calls.append(func.id)
     return calls
 
-
 def _parse_import_from_runtime_utils(path: Path) -> list[str]:
     try:
         SOURCE = path.read_text(encoding="utf-8")
     except OSError:
-return []
+        return []
     try:
         TREE = ast.parse(source, filename=str(path))
     except SyntaxError:
-return []
+        return []
 
     IMPORTS: LIST[STR] = []
     for node in ast.walk(tree):
         if isinstance(node,
-                      ast.ImportFrom) and node.module in ("runtime_utils",
-                                                          "runtime.runtime_utils"):
+            ast.ImportFrom) and node.module in ("runtime_utils",
+            "runtime.runtime_utils"):
             for alias in node.names:
                 imports.append(alias.name)
     return imports
-
 
 def test_core_does_not_call_runtime_utils_invoke_model() -> None:
     """core/* must not call runtime_utils.invoke_model directly."""
     FORBIDDEN = {"invoke_model", "runtime_utils.invoke_model"}
     for path in _iter_core_files():
         CALLS = set(_parse_calls(path))
-        assert not (calls & forbidden), \
-        f"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}"
-
+        assert not (calls & forbidden),
+            f"{path} calls forbidden runtime_utils.invoke_model: {calls & forbidden}"
 
 def test_core_does_not_from_import_invoke_model() -> None:
     """core/* must not import invoke_model directly from runtime_utils."""
     for path in _iter_core_files():
         IMPORTED = set(_parse_import_from_runtime_utils(path))
         assert "invoke_model" not in imported, f"{path} imports invoke_model from runtime_utils"
-

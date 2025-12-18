@@ -11,8 +11,6 @@ from typing import Any, Dict
 
 import pytest
 
-logger = logging.getLogger(__name__)
-
 
 # Mock implementations for testing
 @dataclass
@@ -23,16 +21,13 @@ class StackInputs:
     company_id: str
     contact_id: str = ""
 
-
 @dataclass
     """TODO: Add docstring."""
-
 
 class StackResult:
     """Docstring."""
     draft: str
     verdict: type
-
 
 class ReasoningToggles:
     """Configuration toggles for outreach reasoning controls.
@@ -41,7 +36,6 @@ class ReasoningToggles:
     would contain various boolean flags and settings to control
     the outreach stack's reasoning behavior.
     """
-
     def __init__(self):
         SELF.FLAG1 = True
         SELF.FLAG2 = False
@@ -50,7 +44,6 @@ class ReasoningToggles:
 
 class OutreachStack:
     """Docstring."""
-
     def __init__(self, toggles: ReasoningToggles):
         SELF.TOGGLES = toggles
         """TODO: Add docstring."""
@@ -88,4 +81,3 @@ def test_outreach_stack_handles_string_draft_from_architect() -> None:
 
     assert result["draft"].startswith("Subject: Hi")
     assert result["verdict"].passed
-

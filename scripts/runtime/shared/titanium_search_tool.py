@@ -1,9 +1,12 @@
+"""Titanium Search Tool - Universal Search Interface for All Agents.
+
+This module provides a singleton wrapper around the TitaniumRAGPipeline
+to ensure all agents benefit from the SOTA retrieval system.
+"""
+
 import asyncio
 import logging
-import concurrent.futures
-from typing import Optional, Dict, Any
 
-from titanium_rag_pipeline import (
     TitaniumRAGPipeline,
     create_titanium_pipeline
 )
@@ -28,27 +31,30 @@ async def _initialize_pipeline() -> TitaniumRAGPipeline:
             return _TITANIUM_PIPELINE
 
         try:
-            LOGGER.info("Initializing Titanium RAG Pipeline...")
+            logger.info("Initializing Titanium RAG Pipeline...")
             _TITANIUM_PIPELINE = create_titanium_pipeline(
-                enable_all = True,
-                max_retrieved_docs = 20,
-                top_k_final = 5
+                enable_all=True,
+                max_retrieved_docs=20,
+                top_k_final=5
             )
 
             # Test availability
             component_info = _TITANIUM_PIPELINE.get_component_info()
-            LOGGER.info("Pipeline initialized successfully:")
-            LOGGER.info("  - Phase 1 (Precision): Available")
-            LOGGER.info("  - Phase 2 (Reasoning): Available")
-            LOGGER.info(f"  - Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},"
-                        f" Cache={component_info['phase_3_sota']['cache_available']}")
+            logger.info(f"Pipeline initialized successfully:")
+            logger.info(f"  - Phase 1 (Precision): Available")
+            logger.info(f"  - Phase 2 (Reasoning): Available")
+            logger.info(f"  -
+                Phase 3 (SOTA): Reranker={component_info['phase_3_sota']['reranker_available']},
+
+                "
+                       f"Cache={component_info['phase_3_sota']['cache_available']}")
 
             return _TITANIUM_PIPELINE
 
         except Exception as e:
-LOGGER.error(f"Failed to initialize Titanium pipeline: {e}")
+            logger.error(f"Failed to initialize Titanium pipeline: {e}")
             if _LEGACY_FALLBACK_ENABLED:
-                LOGGER.warning("Falling back to legacy search mode")
+                logger.warning("Falling back to legacy search mode")
                 _TITANIUM_PIPELINE = await _create_fallback_pipeline()
             else:
                 raise RuntimeError("Titanium pipeline initialization failed and fallback disabled")
@@ -69,7 +75,7 @@ async def _create_fallback_pipeline() -> TitaniumRAGPipeline:
         enable_caching=False
     )
 
-"""Docstring."""
+    """Docstring."""
 async def get_titanium_search_tool(
     query: str,
     context: Optional[str] = None,
@@ -101,11 +107,9 @@ async def get_titanium_search_tool(
         # Connect to actual vector stores
         # In production, this would connect to your configured vector stores
         async def actual_retrieval(query: str, max_docs: int = 10):
-            """Actual retrieval function that connects to vector stores."""
+                """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
-                # Assuming get_vector_store() is defined elsewhere or will be provided
-                from .vector_store_utils import get_vector_store
 
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
@@ -120,35 +124,35 @@ async def get_titanium_search_tool(
                 DOCUMENTS = []
                 METADATAS = []
 
-                for i, doc in enumerate(RESULTS): # Changed results to RESULTS
-                    DOCUMENTS.append(doc.page_content if hasattr(doc, 'page_content') else str(doc)) # Changed documents to DOCUMENTS
-                    METADATAS.append({ # Changed metadatas to METADATAS
-                        'text': DOCUMENTS[-1], # Changed documents to DOCUMENTS
+                for i, doc in enumerate(results):
+                    documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
+                    metadatas.append({
+                        'text': documents[-1],
                         'source': getattr(doc, 'metadata', {}).get('source', f'doc_{i}'),
                         'doc_id': f'doc_{i}'
                     })
 
-                return DOCUMENTS, METADATAS
+                return documents, metadatas
 
             except Exception as e:
-LOGGER.warning(f"Vector store retrieval failed: {e}")
+                logger.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
 
         # Execute the full pipeline (Gate -> Decompose -> Search -> Rerank)
-        RESULTS = await PIPELINE.query( # Changed pipeline to PIPELINE
+        RESULTS = await pipeline.query(
             QUERY=query,
             retrieval_function=actual_retrieval
         )
 
         # Format results for LLM consumption
-        if not RESULTS or not RESULTS.get('documents'): # Changed results to RESULTS
+        if not results or not results.get('documents'):
             return f"No relevant information found for: {query}"
 
         formatted_results = []
-        DOCS = RESULTS['documents'][:max_results] # Changed results to RESULTS
+        DOCS = results['documents'][:max_results]
 
-        for i, doc in enumerate(DOCS, 1): # Changed docs to DOCS
+        for i, doc in enumerate(docs, 1):
             # Extract text content
             text_content = ""
             if hasattr(doc, 'metadata') and 'text' in doc.metadata:
@@ -163,30 +167,30 @@ LOGGER.warning(f"Vector store retrieval failed: {e}")
 
             # Add metadata if requested
             if include_metadata and hasattr(doc, 'metadata'):
-                METADATA = doc.metadata # Changed metadata to METADATA
-                if 'source' in METADATA: # Changed metadata to METADATA
-                    RESULT += f"\n  Source: {METADATA['source']}" # Changed metadata to METADATA
-                if 'date' in METADATA: # Changed metadata to METADATA
-                    RESULT += f"\n  Date: {METADATA['date']}" # Changed metadata to METADATA
+                METADATA = doc.metadata
+                if 'source' in metadata:
+                    RESULT += f"\n  Source: {metadata['source']}"
+                if 'date' in metadata:
+                    RESULT += f"\n  Date: {metadata['date']}"
 
-            formatted_results.append(RESULT) # Changed result to RESULT
+            formatted_results.append(result)
 
         # Add pipeline metadata
-        METADATA = RESULTS.get('metadata', {}) # Changed metadata to METADATA, results to RESULTS
-        if METADATA.get('cached'): # Changed metadata to METADATA
+        METADATA = results.get('metadata', {})
+        if metadata.get('cached'):
             formatted_results.append("\n[Results retrieved from semantic cache]")
-        if METADATA.get('decomposed'): # Changed metadata to METADATA
+        if metadata.get('decomposed'):
             formatted_results.append("\n[Query was decomposed for better results]")
-        if METADATA.get('reranked'): # Changed metadata to METADATA
+        if metadata.get('reranked'):
             formatted_results.append("\n[Results reranked for precision]")
 
         return "\n\n".join(formatted_results)
 
     except Exception as e:
-LOGGER.error(f"Search failed for query '{query}': {e}")
+        logger.error(f"Search failed for query '{query}': {e}")
         return f"Search encountered an error. Please try rephrasing your query."
 
-"""Docstring."""
+    """Docstring."""
 async def get_titanium_search_with_sources(
     query: str,
     context: Optional[str] = None
@@ -208,10 +212,9 @@ async def get_titanium_search_with_sources(
 
         # Use the same actual_retrieval function as get_titanium_search_tool
         async def actual_retrieval(query: str, max_docs: int = 10):
-            """Actual retrieval function that connects to vector stores."""
+                """Actual retrieval function that connects to vector stores."""
             try:
                 # Import vector store clients
-                from .vector_store_utils import get_vector_store
 
                 # Get primary vector store (e.g., Chroma)
                 vector_store = get_vector_store()
@@ -226,29 +229,29 @@ async def get_titanium_search_with_sources(
                 DOCUMENTS = []
                 METADATAS = []
 
-                for i, doc in enumerate(RESULTS): # Changed results to RESULTS
-                    DOCUMENTS.append(doc.page_content if hasattr(doc, 'page_content') else str(doc)) # Changed documents to DOCUMENTS
-                    METADATAS.append({ # Changed metadatas to METADATAS
-                        'text': DOCUMENTS[-1], # Changed documents to DOCUMENTS
+                for i, doc in enumerate(results):
+                    documents.append(doc.page_content if hasattr(doc, 'page_content') else str(doc))
+                    metadatas.append({
+                        'text': documents[-1],
                         'source': getattr(doc, 'metadata', {}).get('source', f'doc_{i}'),
                         'doc_id': f'doc_{i}'
                     })
 
-                return DOCUMENTS, METADATAS
+                return documents, metadatas
 
             except Exception as e:
-LOGGER.warning(f"Vector store retrieval failed: {e}")
+                logger.warning(f"Vector store retrieval failed: {e}")
                 # Fallback to empty results
                 return [], []
 
-        RESULTS = await PIPELINE.query( # Changed pipeline to PIPELINE
+        RESULTS = await pipeline.query(
             QUERY=query,
             retrieval_function=actual_retrieval
         )
 
         # Extract sources
         SOURCES = []
-        for doc in RESULTS.get('documents', []): # Changed results to RESULTS
+        for doc in results.get('documents', []):
             source_info = {
                 'content': '',
                 'metadata': {}
@@ -262,17 +265,17 @@ LOGGER.warning(f"Vector store retrieval failed: {e}")
             elif hasattr(doc, 'content'):
                 source_info['content'] = doc.content
 
-            SOURCES.append(source_info) # Changed sources to SOURCES
+            sources.append(source_info)
 
         return {
             'query': query,
-            'sources': SOURCES, # Changed sources to SOURCES
-            'metadata': RESULTS.get('metadata', {}), # Changed results to RESULTS
-            'response': RESULTS.get('response') # Changed results to RESULTS
+            'sources': sources,
+            'metadata': results.get('metadata', {}),
+            'response': results.get('response')
         }
 
     except Exception as e:
-LOGGER.error(f"Search with sources failed: {e}")
+        logger.error(f"Search with sources failed: {e}")
         return {
             'query': query,
             'sources': [],
@@ -297,11 +300,11 @@ def get_pipeline_stats() -> Dict[str, Any]:
 
         return {
             'status': 'active',
-            'statistics': STATS, # Changed stats to STATS
+            'statistics': stats,
             'components': component_info
         }
     except Exception as e:
-return {'status': 'error', 'error': str(e)}
+        return {'status': 'error', 'error': str(e)}
 
 async def clear_cache():
     """Clear the semantic cache.
@@ -309,9 +312,9 @@ async def clear_cache():
     Useful for testing or when fresh results are needed.
     """
     PIPELINE = await _initialize_pipeline()
-    if hasattr(PIPELINE, 'cache') and PIPELINE.cache: # Changed pipeline to PIPELINE
-        PIPELINE.cache.clear() # Changed pipeline to PIPELINE
-        LOGGER.info("Semantic cache cleared")
+    if hasattr(pipeline, 'cache') and pipeline.cache:
+        pipeline.cache.clear()
+        logger.info("Semantic cache cleared")
 
 # Convenience function for synchronous contexts
 def sync_search(query: str, context: Optional[str] = None) -> str:
@@ -331,7 +334,7 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
         # Use run_coroutine_threadsafe instead
 
         def run_in_thread():
-            """Docstring."""
+                """Docstring."""
             new_loop = asyncio.new_event_loop()
             asyncio.set_event_loop(new_loop)
             try:
@@ -341,10 +344,10 @@ def sync_search(query: str, context: Optional[str] = None) -> str:
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             FUTURE = executor.submit(run_in_thread)
-            return FUTURE.result(timeout=30) # Changed RESULT and TIMEOUT to .result(timeout=30)
+            return FUTURE.RESULT(TIMEOUT=30)
 
     except RuntimeError:
-# No running loop, safe to create new one
+        # No running loop, safe to create new one
         return asyncio.run(get_titanium_search_tool(query, context))
 
 # Legacy compatibility
@@ -363,7 +366,8 @@ async def legacy_search(query: str) -> str:
 TOOL_REGISTRY = {
     "titanium_search": {
         "function": get_titanium_search_tool,
-        "description": "Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA ranking", # Fixed broken string literal
+        "description": "Search using the Titanium RAG Pipeline with precision, reasoning, and SOTA r
+    anking",
         "parameters": {
             "query": {"type": "string", "required": True},
             "context": {"type": "string", "required": False},
@@ -380,4 +384,3 @@ TOOL_REGISTRY = {
         }
     }
 }
-

@@ -9,11 +9,8 @@ import logging
 import time
 import uuid
 from typing import Dict, Generator, List, Optional
-from dataclasses import dataclass, field
-from contextlib import contextmanager
 
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class Span:
@@ -34,32 +31,31 @@ class Span:
             return (self.end_time - self.start_time) * 1000
         return 0.0
 
-
 class ConsoleTraceExporter:
     """Tracer for tracing domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.CONFIG = config or {}
+        SELF.CONFIG = config or {}
         self.spans: List[Span] = []
         self._current_span: Optional[Span] = None
         logger.info(f"Initialized {self.__class__.__name__}")
 
     @contextmanager
     def start_span(self,
-                   name: str,
-                   attributes: Optional[Dict] = None) -> Generator[Span,
-                                                                   None,
-                                                                   None]:
+        """Docstring."""
+        name: str,
+        attributes: Optional[Dict] = None) -> Generator[Span,
+        None,
+        None]:
         """Start a new span."""
-        trace_id = self._current_span.trace_id if self._current_span else str(
-            uuid.uuid4())
+        trace_id = self._current_span.trace_id if self._current_span else str(uuid.uuid4())
         parent_id = self._current_span.span_id if self._current_span else None
 
-        span = Span(
+        SPAN = Span(
             trace_id=trace_id,
             span_id=str(uuid.uuid4()),
-            name=name,
-            attributes=attributes or {},
+            NAME=name,
+            ATTRIBUTES=attributes or {},
             parent_id=parent_id
         )
 
@@ -86,14 +82,11 @@ class ConsoleTraceExporter:
         """Get all recorded spans."""
         return self.spans
 
-
 # Global tracer
 _tracer = ConsoleTraceExporter()
-
 
 @contextmanager
 def trace(name: str, attributes: Optional[Dict] = None) -> Generator[Span, None, None]:
     """Create a trace span."""
     with _tracer.start_span(name, attributes) as span:
         yield span
-

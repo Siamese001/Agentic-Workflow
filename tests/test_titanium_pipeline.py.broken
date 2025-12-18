@@ -26,9 +26,9 @@ class TitaniumPipelineIntegrationTest:
             """Initialize the test suite."""
         # Create pipeline with all features enabled
         SELF.PIPELINE = create_titanium_pipeline(
-            enable_all = True,
-            max_retrieved_docs = 20,
-            top_k_final = 5
+            enable_all=True,
+            max_retrieved_docs=20,
+            top_k_final=5
         )
 
         # Mock document database
@@ -460,4 +460,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

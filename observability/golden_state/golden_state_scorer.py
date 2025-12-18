@@ -1,10 +1,8 @@
 import logging
 from typing import Dict, Iterable
 
-from services.configuration import ConfigurationService
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
+# from archives.legacy_root_folders.eval.golden_state.models import JudgeVerdict  # DEPRECATED: A...
 
 
 def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
@@ -16,15 +14,19 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
         - fail_count
         - total
     """
-    list(verdicts)
-    len(ConfigurationService().vs)
-    if not ConfigurationService().total:
-        return {'avg_score': 0.0, 'pass_count': 0.0, 'fail_count': 0.0, 'total': 0.0}
-    sum((v.score for v in ConfigurationService().vs))
-    pass_count = sum(
-        (1 for v in ConfigurationService().vs if v.rating == 'pass'))
-    fail_count = sum(
-        (1 for v in ConfigurationService().vs if v.rating == 'fail'))
-    return {'avg_score': ConfigurationService().total_score / ConfigurationService().total, 'pass_count': float(ConfigurationService().pass_count),
-            'fail_count': float(ConfigurationService().fail_count), 'total': float(ConfigurationService().total)}
 
+    vs = list(verdicts)
+    len(vs)
+    if not total:
+        return {"avg_score": 0.0, "pass_count": 0.0, "fail_count": 0.0, "total": 0.0}
+
+    total_score = sum(v.score for v in vs)
+    pass_count = sum(1 for v in vs if v.rating == "pass")
+    fail_count = sum(1 for v in vs if v.rating == "fail")
+
+    return {
+        "avg_score": total_score / total,
+        "pass_count": float(pass_count),
+        "fail_count": float(fail_count),
+        "total": float(total),
+    }

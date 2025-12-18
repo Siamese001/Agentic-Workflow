@@ -1,18 +1,17 @@
-""" """
+"""
+Inference Engine with Thermostat Middleware for High-Temperature/High-Signal Architecture.
+
+The inference engine reads thermal configuration from the SignalContext and dynamically
+adjusts LLM parameters to maximize creativity while maintaining structural integrity.
+"""
 
 
 import logging
 import time
-from typing import Optional, Dict, Any, List
-from enum import Enum
-from dataclasses import dataclass
 
-# Assuming these imports come from shared utility modules based on context
-from agentic_core.shared.llm_utils import (
     Provider, get_client, ProviderConfig, get_api_key
 )
-from agentic_core.shared.types import (
-    SignalContext, ThermalProfile, HardState, SoftState, BOOL
+    SignalContext, ThermalProfile, HardState, SoftState
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -51,15 +50,32 @@ class InferenceResult:
     context_updated: bool = False
 
 class ThermostatMiddleware:
-    """ """
+    """
+    Middleware that dynamically adjusts LLM parameters based on thermal configuration.
 
-    def __init__(self, enable_logging: bool=True):
-        """Initialize thermostat middleware. """
+    This middleware reads the thermal profile from the SignalContext and applies
+    appropriate temperature, top_p, and other parameters to maximize signal
+    quality for the specific operation type.
+    """
+
+    def __init__(self, enable_logging: bool = True):
+        """Initialize thermostat middleware.
+
+        Args:
+            enable_logging: Enable thermal parameter logging
+        """
         self.enable_logging = enable_logging
         self._thermal_history: List[Dict[str, Any]] = []
 
     def get_thermal_params(self, request: InferenceRequest) -> Dict[str, float]:
-        """Get thermal parameters for the inference request. """
+        """Get thermal parameters for the inference request.
+
+        Args:
+            request: Inference request with context
+
+        Returns:
+            Dictionary of thermal parameters
+        """
         # Use explicit overrides if provided
         if request.temperature_override is not None:
             PARAMS = {
@@ -82,20 +98,25 @@ class ThermostatMiddleware:
 
             if request.mode in mode_adjustments:
                 # Blend context thermal with mode-specific thermal
-                base_temp = PARAMS.get("temperature", 0.7) # Corrected params to PARAMS
+                base_temp = params.get("temperature", 0.7)
                 mode_temp = mode_adjustments[request.mode]["temperature"]
                 # Weight towards mode-specific thermal
-                PARAMS["temperature"] = (base_temp * 0.3) + (mode_temp * 0.7) # Corrected TEMPERATURE to temperature for consistency
-                PARAMS["top_p"] = mode_adjustments[request.mode]["top_p"] # Corrected params to PARAMS
+                PARAMS["TEMPERATURE"] = (base_temp * 0.3) + (mode_temp * 0.7)
+                params["top_p"] = mode_adjustments[request.mode]["top_p"]
 
         # Log thermal parameters if enabled
         if self.enable_logging:
-            self._log_thermal_usage(request, PARAMS) # Corrected params to PARAMS
+            self._log_thermal_usage(request, params)
 
-        return PARAMS # Corrected params to PARAMS
+        return params
 
     def _log_thermal_usage(self, request: InferenceRequest, params: Dict[str, float]) -> None:
-        """Log thermal parameter usage for analysis. """
+        """Log thermal parameter usage for analysis.
+
+        Args:
+            request: The inference request
+            params: Thermal parameters applied
+        """
         log_entry = {
             "timestamp": time.time(),
             "execution_id": request.context.hard_state.execution_id,
@@ -110,9 +131,9 @@ class ThermostatMiddleware:
         if len(self._thermal_history) > 1000:
             self._thermal_history = self._thermal_history[-1000:]
 
-        LOGGER.info( # Corrected logger to LOGGER
+        logger.info(
             "thermal_params_applied",
-            extra={ # Corrected EXTRA to extra
+            EXTRA={
                 "execution_id": log_entry["execution_id"],
                 "node_id": log_entry["node_id"],
                 "mode": log_entry["mode"],
@@ -121,45 +142,70 @@ class ThermostatMiddleware:
             }
         )
 
-    def get_thermal_history(self, execution_id: Optional[str]=None) -> List[Dict[str, Any]]:
-        """Get thermal parameter history. """
+    def get_thermal_history(self, execution_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Get thermal parameter history.
+
+        Args:
+            execution_id: Optional execution ID to filter by
+
+        Returns:
+            List of thermal parameter usage history
+        """
         if execution_id:
             return [h for h in self._thermal_history if h["execution_id"] == execution_id]
         return self._thermal_history.copy()
 
 class InferenceEngine:
-    """ """
+    """
+    Main inference engine with thermostat middleware for dynamic thermal control.
+
+    This engine provides a unified interface for LLM inference while automatically
+    adjusting thermal parameters based on the context and operation type.
+    """
 
     def __init__(
         self,
-        thermostat: Optional[ThermostatMiddleware]=None,
-        default_provider: Provider=Provider.OPENAI,
-        enable_logging: bool=True
+        thermostat: Optional[ThermostatMiddleware] = None,
+        default_provider: Provider = Provider.OPENAI,
+        enable_logging: bool = True
     ):
-        """Initialize inference engine. """
-        self.thermostat = thermostat or ThermostatMiddleware( # Corrected SELF.THERMOSTAT to self.thermostat
-            enable_logging)
+        """Initialize inference engine.
+
+        Args:
+            thermostat: Optional thermostat middleware
+            default_provider: Default LLM provider
+            enable_logging: Enable inference logging
+        """
+        SELF.THERMOSTAT = thermostat or ThermostatMiddleware(enable_logging)
         self.default_provider = default_provider
         self.enable_logging = enable_logging
         self._client_cache: Dict[Provider, Any] = {}
 
-        LOGGER.info( # Corrected logger to LOGGER
+        logger.info(
             "inference_engine_initialized",
-            extra={ # Corrected EXTRA to extra
+            EXTRA={
                 "default_provider": default_provider.value,
                 "thermostat_enabled": thermostat is not None
             }
         )
 
     async def infer(self, request: InferenceRequest) -> InferenceResult:
-        """ """
+        """
+        Perform inference with dynamic thermal adjustment.
+
+        Args:
+            request: Inference request with context
+
+        Returns:
+            Inference result with content and metadata
+        """
         start_time = time.time()
 
         # Get thermal parameters
         thermal_params = self.thermostat.get_thermal_params(request)
 
         # Get client for provider
-        client_instance = self._get_client(request.provider) # Corrected CLIENT to client_instance for consistency
+        CLIENT = self._get_client(request.provider)
 
         # Prepare API parameters
         api_params = {
@@ -169,7 +215,7 @@ class InferenceEngine:
             "top_p": thermal_params["top_p"],
             "frequency_penalty": thermal_params["frequency_penalty"],
             "presence_penalty": thermal_params["presence_penalty"],
-            "stream": request.STREAM # Corrected request.stream to request.STREAM
+            "stream": request.stream
         }
 
         if request.max_tokens:
@@ -177,69 +223,75 @@ class InferenceEngine:
 
         try:
             # Make the API call
-            response_obj = await client_instance.chat.completions.create(**api_params) # Corrected RESPONSE to response_obj, client to client_instance
+            RESPONSE = await client.chat.completions.create(**api_params)
 
             # Extract content and usage
-            content_result = response_obj.choices[0].message.content # Corrected CONTENT to content_result, response to response_obj
-            usage_data = response_obj.usage.model_dump() if response_obj.usage else {} # Corrected USAGE to usage_data, response to response_obj
+            CONTENT = response.choices[0].message.content
+            USAGE = response.usage.model_dump() if response.usage else {}
 
             # Calculate execution time
             execution_time = (time.time() - start_time) * 1000
 
             # Update context with inference trace
             request.context.hard_state = request.context.hard_state.add_trace(
-                event="inference_completed", # Corrected EVENT to event
-                data={ # Corrected DATA to data
+                EVENT="inference_completed",
+                DATA={
                     "provider": request.provider.value,
                     "model": api_params["model"],
                     "thermal_params": thermal_params,
-                    "usage": usage_data, # Corrected usage to usage_data
+                    "usage": usage,
                     "execution_time_ms": execution_time
                 }
             )
             request.context.update_timestamp()
 
             # Create result
-            result_obj = InferenceResult( # Corrected RESULT to result_obj
-                content=content_result, # Corrected CONTENT to content
-                usage=usage_data, # Corrected USAGE to usage
+            RESULT = InferenceResult(
+                CONTENT=content,
+                USAGE=usage,
                 thermal_params_used=thermal_params,
                 execution_time_ms=execution_time,
-                provider=request.provider, # Corrected PROVIDER to provider
-                model=api_params["model"], # Corrected MODEL to model
+                PROVIDER=request.provider,
+                MODEL=api_params["model"],
                 context_updated=True
             )
 
             if self.enable_logging:
-                LOGGER.info( # Corrected logger to LOGGER
+                logger.info(
                     "inference_completed",
-                    extra={ # Corrected EXTRA to extra
+                    EXTRA={
                         "execution_id": request.context.hard_state.execution_id,
                         "provider": request.provider.value,
                         "model": api_params["model"],
                         "temperature": thermal_params["temperature"],
-                        "tokens_used": usage_data.get("total_tokens", 0), # Corrected usage to usage_data
+                        "tokens_used": usage.get("total_tokens", 0),
                         "execution_time_ms": execution_time
                     }
                 )
 
-            return result_obj # Corrected result to result_obj
+            return result
 
         except Exception as e:
-pass
-LOGGER.error( # Corrected logger to LOGGER
+            logger.error(
                 "inference_failed",
-                extra={ # Corrected EXTRA to extra
+                EXTRA={
                     "execution_id": request.context.hard_state.execution_id,
                     "provider": request.provider.value,
                     "error": str(e)
                 },
-                exc_info = True
+                exc_info=True
             )
             raise
 
     def _prepare_prompt(self, request: InferenceRequest) -> str:
-        """Prepare the prompt with context anchoring. """
+        """Prepare the prompt with context anchoring.
+
+        Args:
+            request: Inference request
+
+        Returns:
+            Formatted prompt with anchored claims
+        """
         # Get anchored context if available
         anchored_context = request.context.get_anchored_context()
 
@@ -250,13 +302,27 @@ LOGGER.error( # Corrected logger to LOGGER
         return request.prompt
 
     def _get_client(self, provider: Provider) -> Any:
-        """Get cached client for provider. """
+        """Get cached client for provider.
+
+        Args:
+            provider: LLM provider
+
+        Returns:
+            Client instance
+        """
         if provider not in self._client_cache:
             self._client_cache[provider] = get_client(provider)
         return self._client_cache[provider]
 
     def _get_default_model(self, provider: Provider) -> str:
-        """Get default model for provider. """
+        """Get default model for provider.
+
+        Args:
+            provider: LLM provider
+
+        Returns:
+            Default model name
+        """
         DEFAULTS = {
             Provider.OPENAI: "gpt-4",
             Provider.ANTHROPIC: "claude-3-sonnet-20240229",
@@ -266,56 +332,95 @@ LOGGER.error( # Corrected logger to LOGGER
             Provider.TOGETHER: "meta-llama/Llama-2-70b-chat-hf",
             Provider.FIREWORKS: "accounts/fireworks/models/llama-v2-70b-chat"
         }
-        return DEFAULTS.get(provider, "gpt-4") # Corrected defaults to DEFAULTS
+        return defaults.get(provider, "gpt-4")
 
-    def get_thermal_history(self, execution_id: Optional[str]=None) -> List[Dict[str, Any]]:
-        """Get thermal parameter usage history. """
+    def get_thermal_history(self, execution_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Get thermal parameter usage history.
+
+        Args:
+            execution_id: Optional execution ID to filter by
+
+        Returns:
+            List of thermal parameter usage history
+        """
         return self.thermostat.get_thermal_history(execution_id)
 
 # Factory functions for common inference patterns
 
 async def creative_inference(
-    prompt: str, # Removed """Docstring."""
+    """Docstring."""
+    prompt: str,
     context: SignalContext,
-    provider: Provider=Provider.OPENAI
+    provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
-    """ """
-    engine_instance = InferenceEngine() # Corrected ENGINE to engine_instance
-    request_obj = InferenceRequest( # Corrected REQUEST to request_obj
-        prompt=prompt, # Corrected PROMPT to prompt
-        context=context, # Corrected CONTEXT to context
-        mode=InferenceMode.CREATIVE, # Corrected MODE to mode
-        provider=provider # Corrected PROVIDER to provider
+    """
+    Perform creative inference with maximum temperature.
+
+    Args:
+        prompt: The prompt to send
+        context: Signal context with thermal configuration
+        provider: LLM provider to use
+
+    Returns:
+        Inference result
+    """
+    ENGINE = InferenceEngine()
+    REQUEST = InferenceRequest(
+        PROMPT=prompt,
+        CONTEXT=context,
+        MODE=InferenceMode.CREATIVE,
+        PROVIDER=provider
     )
-    return await engine_instance.infer(request_obj) # Corrected engine to engine_instance, request to request_obj
+    return await engine.infer(request)
 
 async def validation_inference(
-    prompt: str, # Removed """Docstring."""
+    """Docstring."""
+    prompt: str,
     context: SignalContext,
-    provider: Provider=Provider.OPENAI
+    provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
-    """ """
-    engine_instance = InferenceEngine() # Corrected ENGINE to engine_instance
-    request_obj = InferenceRequest( # Corrected REQUEST to request_obj
-        prompt=prompt, # Corrected PROMPT to prompt
-        context=context, # Corrected CONTEXT to context
-        mode=InferenceMode.VALIDATION, # Corrected MODE to mode
-        provider=provider # Corrected PROVIDER to provider
+    """
+    Perform validation inference with minimum temperature.
+
+    Args:
+        prompt: The prompt to send
+        context: Signal context with thermal configuration
+        provider: LLM provider to use
+
+    Returns:
+        Inference result
+    """
+    ENGINE = InferenceEngine()
+    REQUEST = InferenceRequest(
+        PROMPT=prompt,
+        CONTEXT=context,
+        MODE=InferenceMode.VALIDATION,
+        PROVIDER=provider
     )
-    return await engine_instance.infer(request_obj) # Corrected engine to engine_instance, request to request_obj
+    return await engine.infer(request)
 
 async def analytical_inference(
-    prompt: str, # Removed """Docstring."""
+    """Docstring."""
+    prompt: str,
     context: SignalContext,
-    provider: Provider=Provider.OPENAI
+    provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
-    """ """
-    engine_instance = InferenceEngine() # Corrected ENGINE to engine_instance
-    request_obj = InferenceRequest( # Corrected REQUEST to request_obj
-        prompt=prompt, # Corrected PROMPT to prompt
-        context=context, # Corrected CONTEXT to context
-        mode=InferenceMode.ANALYTICAL, # Corrected MODE to mode
-        provider=provider # Corrected PROVIDER to provider
-    )
-    return await engine_instance.infer(request_obj) # Corrected engine to engine_instance, request to request_obj
+    """
+    Perform analytical inference with balanced temperature.
 
+    Args:
+        prompt: The prompt to send
+        context: Signal context with thermal configuration
+        provider: LLM provider to use
+
+    Returns:
+        Inference result
+    """
+    ENGINE = InferenceEngine()
+    REQUEST = InferenceRequest(
+        PROMPT=prompt,
+        CONTEXT=context,
+        MODE=InferenceMode.ANALYTICAL,
+        PROVIDER=provider
+    )
+    return await engine.infer(request)
