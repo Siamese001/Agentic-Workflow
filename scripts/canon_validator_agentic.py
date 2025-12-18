@@ -116,6 +116,7 @@ from apps_shared.utils.file_io import calculate_file_hash, is_excluded, get_pyth
 from agentic_core.domain.context import ValidationContext, DependencyGraph, BudgetManager
 from agentic_core.agents.base import SubAtomicAgent
 from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
 
 # ==============================================================================
 # L5 HUMAN-IN-THE-LOOP: Intervention Server
@@ -2582,590 +2583,592 @@ If no relevant memory → output "PROPOSE_NEW: <description>"
 #
 #         return (len(violations) == 0, violations)
 
-class SafetyInspector(SubAtomicAgent):
-    """
-    KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
-    ROLE: Security Compliance. Emits SECURE signal.
-    """
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
-        await asyncio.sleep(0)
-
-        # Key 0: No hardcoded secrets
-        passed, details = self.check_key_00_no_hardcoded_secrets()
-        self.ctx.report(self.name, 0, passed, details)
-
-        # Key 1: No TODO/FIXME
-        passed, details = self.check_key_01_no_todo_fixme()
-        self.ctx.report(self.name, 1, passed, details)
-
-        # Key 2: No print statements
-        passed, details = self.check_key_02_no_print_statements()
-        self.ctx.report(self.name, 2, passed, details)
-
-        # Key 3: No debugger statements
-        passed, details = self.check_key_03_no_debugger_statements()
-        self.ctx.report(self.name, 3, passed, details)
-
-        # Key 4: No empty except blocks
-        passed, details = self.check_key_04_no_empty_except_blocks()
-        self.ctx.report(self.name, 4, passed, details)
-
-        # Key 5: No bare except
-        passed, details = self.check_key_05_no_bare_except()
-        self.ctx.report(self.name, 5, passed, details)
-
-        # Key 6: No eval/exec
-        passed, details = self.check_key_06_no_eval_exec()
-        self.ctx.report(self.name, 6, passed, details)
-        
-        # Additional: Async blocking issues with injection
-        passed, details = await self.check_async_blocking_issues()
-        if not passed:
-            print(f"   [{self.name}] Async Issues Found: {len(details)} violations")
-
-        all_passed = all(self.ctx.results.get(i, {}).get("passed", False) for i in range(7))
-        if all_passed:
-            self.ctx.signal_secure()
-
-    def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
-        """Check for hardcoded secrets with LLM verification for false positives."""
-        violations = []
-        secret_patterns = [
-            r"password\s*=\s*['\"].*['\"]",
-            r"api_key\s*=\s*['\"].*['\"]",
-            r"secret\s*=\s*['\"].*['\"]",
-            r"token\s*=\s*['\"].*['\"]",
-        ]
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    for pattern in secret_patterns:
-                        if re.search(pattern, content, re.IGNORECASE):
-                            # Use Socratic Judge to verify if it's actually a secret
-                            if self.ctx.intelligence_enabled:
-                                verification = self._socratic_verify(
-                                    file_path, 
-                                    f"Potential secret matching pattern: {pattern}",
-                                    "Is this actually a hardcoded secret or a false positive (test data, example, placeholder)?"
-                                )
-                                if verification == "YES":
-                                    violations.append(file_path)
-                            else:
-                                violations.append(file_path)
-                            break
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-    
-    def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
-        """Ask Gemini to verify if an issue is actually a violation."""
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                code_snippet = f.read()
-            
-            prompt = f"""
-            Role: Socratic Judge - Expert Code Reviewer
-            Context: Analyzing potential code violation in {file_path}
-            Issue: {issue}
-            Question: {question}
-            
-            Code:
-            {code_snippet[:2000]}  # Limit context
-            
-            Answer with ONLY "YES" if it's a real violation or "NO" if it's a false positive.
-            """
-            
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            return response.text.strip().upper()
-        except Exception:
-            return "YES"  # Default to treating as violation
-
-    def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
-        """Check for TODO/FIXME comments."""
-        violations = []
-        todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    for pattern in todo_patterns:
-                        matches = re.finditer(pattern, content, re.IGNORECASE)
-                        for match in matches:
-                            line_num = content[:match.start()].count("\n") + 1
-                            violations.append(f"{file_path}:{line_num}")
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
-        """Check for print statements."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                    for i, line in enumerate(lines, 1):
-                        stripped = line.strip()
-                        if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
-                            continue
-                        if "print(" in line:
-                            violations.append(f"{file_path}:{i}")
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_03_no_debugger_statements(self) -> Tuple[bool, List[str]]:
-        """Check for debugger statements."""
-        violations = []
-        debug_patterns = ["breakpoint()", "pdb.set_trace()", "import pdb", "import ipdb", "import pudb"]
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    for pattern in debug_patterns:
-                        if pattern in content:
-                            violations.append(file_path)
-                            break
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
-        """Check for empty except blocks."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ExceptHandler):
-                        if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
-                            violations.append(file_path)
-                            break
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_05_no_bare_except(self) -> Tuple[bool, List[str]]:
-        """Check for bare except clauses."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ExceptHandler):
-                        if node.type is None:
-                            violations.append(file_path)
-                            break
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_06_no_eval_exec(self) -> Tuple[bool, List[str]]:
-        """Check for eval/exec usage."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Call):
-                        if isinstance(node.func, ast.Name):
-                            if node.func.id in ('eval', 'exec'):
-                                violations.append(file_path)
-                                break
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    # _clean_llm_code(self, raw_code: str) -> str:
-    #     """Extracts code from Chain-of-Thought responses."""
-    #     import re
-
-    #     # 1. Remove reasoning blocks to isolate code
-    #     raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
-
-    #     # 2. Strip Markdown code blocks
-    #     code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
-    #     if code_match:
-    #         return code_match.group(1).strip()
-
-    #     # 3. Strip generic backticks
-    #     if raw_code.strip().startswith("```"):
-    #         return raw_code.strip().strip("`").replace("python", "", 1).strip()
-
-    #     return raw_code.strip()
-
-    async def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
-        """Check for blocking calls in async functions and patch them with intelligence."""
-        violations = []
-        blocking_patterns = ['time.sleep', 'requests.get', 'requests.post', 'urllib.request']
-        
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    tree = ast.parse(content)
-                    
-                # Check if file contains async functions
-                has_async = any(isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.AsyncWith)) 
-                              for node in ast.walk(tree))
-                
-                if has_async:
-                    for pattern in blocking_patterns:
-                        if pattern in content:
-                            violations.append(f"{file_path}: {pattern} in async context")
-                    
-                    # Use intelligence to patch the file
-                    if self.ctx.intelligence_enabled:
-                        print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
-                        
-                        # Build context for the mutation with L5+ Few-Shot Safety Injection
-                        context = "\n".join(self.ctx.instructions)
-                        mutation_task = f'''
-{self.ctx.FEW_SHOT_SAFETY}
-{self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
-{self.ctx.FEW_SHOT_IMPORT_FIXES}
-
-Replace blocking calls with async alternatives.
-Context: {context}
-Rules:
-- Replace time.sleep with asyncio.sleep
-- Replace requests.get/http with httpx.get
-- Replace requests.post/http with httpx.post
-- Add 'import asyncio' if needed
-- Add 'import httpx' if needed
-
-Apply the safest pattern from examples above.
-Prioritize:
-- Remove dangerous functions (eval/exec)
-- Use allowlists and env vars for secrets
-- Explicit defaults and validation
-- No assert in control flow
-
-RESPONSE FORMAT:
-Return ONLY the corrected Python code.
-No explanations. No markdown outside code block.
-'''
-                        
-                        cleaned_code = await self.ctx.resilient_mutation(
-                            agent_name="SafetyInspector",
-                            task=mutation_task,
-                            code=content,
-                            file_path=file_path,
-                            diff_mode=True,
-                            min_confidence=0.6
-                        )
-                        
-                        # Write back if different using Compliance Governor
-                        if cleaned_code != content:
-                            if self.ctx.write_compliant_file(file_path, cleaned_code):
-                                self.ctx.modified_files.add(file_path)
-                                print(f"   ✅ Patched {file_path}")
-                            else:
-                                print(f"   ⚠️ Failed to patch {file_path} - syntax validation failed")
-                        
-                        # Inject migration advice for manual review
-                        self.ctx.inject_instruction(
-                            self.name,
-                            f"MIGRATION ADVICE: Async blocking calls patched in {file_path}. Review imports and error handling."
-                        )
-            except Exception as e:
-                print(f"   ❌ Failed to patch {file_path}: {e}")
-                continue
-                
-        return (len(violations) == 0, violations)
-
-class ConcurrencyGuardian(SubAtomicAgent):
-    """
-    Unified concurrency safety agent.
-    Covers:
-      - Data races on shared mutable state (Key 61)
-      - Livelock / busy-wait / infinite retry patterns (Key 63)
-      - Async starvation, greedy loops, long critical sections (Key 64)
-      - Blocking sync calls in async functions (Async Safety)
-    """
-
-    # Consolidated patterns from all three agents
-    LIVELOCK_PATTERNS = {
-        'tight_loop': re.compile(
-            r'while\s+True\s*:\s*.*?(?:pass|continue|break)',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'busy_wait': re.compile(
-            r'while\s+.*:\s*.*?time\.sleep\s*\(\s*[0-9.]+\s*\)',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'infinite_retry': re.compile(
-            r'while\s+.*:\s*.*?try\s*:.*?except.*?:\s*.*?continue',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'polite_oscillation': re.compile(
-            r'if\s+.*lock.*:\s*.*?release.*?\s*.*?try.*?acquire',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'spin_wait': re.compile(
-            r'while\s+not\s+.*:\s*pass',
-            re.IGNORECASE
-        )
-    }
-    
-    STARVATION_PATTERNS = {
-        'greedy_loop': re.compile(
-            r'async\s+def\s+\w+.*?:\s*.*?(?:for|while).*:(?!.*await)',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'long_lock': re.compile(
-            r'with\s+.*lock.*:\s*.{400,}',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'cpu_bound_async': re.compile(
-            r'async\s+def.*?:\s*.*?(?:heavy|compute|intensive|process).*:(?!.*await\s+asyncio)',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        ),
-        'priority_inversion': re.compile(
-            r'queue\.Queue\s*\(\s*\)',
-            re.IGNORECASE
-        ),
-        'no_yield': re.compile(
-            r'for\s+\w+\s+in.*range.*:\s*.{200,}',
-            re.IGNORECASE | re.MULTILINE | re.DOTALL
-        )
-    }
-    
-    BLOCKING_PATTERNS = {
-        'time_sleep': re.compile(
-            r'time\.sleep\s*\(',
-            re.IGNORECASE
-        ),
-        'requests_calls': re.compile(
-            r'requests\.(get|post|put|delete|patch|head|options)\s*\(',
-            re.IGNORECASE
-        ),
-        'subprocess_blocking': re.compile(
-            r'subprocess\.(run|call|check_call|check_output)\s*\(',
-            re.IGNORECASE
-        ),
-        'sync_file_ops': re.compile(
-            r'(open\s*\([^)]+\)\s*\.read|\.write|\.readlines|\.writelines)',
-            re.IGNORECASE
-        ),
-        'urllib_blocking': re.compile(
-            r'urllib\.request\.(urlopen|request)\s*\(',
-            re.IGNORECASE
-        )
-    }
-
-    def can_run(self) -> bool:
-        # Require AST and Security validity before running complex logic
-        return ("AST_VALID" in self.ctx.signals and 
-                "DEPS_VALID" in self.ctx.signals and
-                "SECURE" in self.ctx.signals)
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing comprehensive concurrency safety...")
-        await asyncio.sleep(0)
-
-        # Priority: modified files first, fallback to all
-        target_files = list(self.ctx.modified_files) if self.ctx.modified_files else self.ctx.python_files
-        if not target_files:
-            print("   ✅ No files to scan for concurrency issues")
-            self._report_all_pass()
-            return
-
-        print(f"   🔍 Scanning {len(target_files)} files for concurrency anti-patterns...")
-
-        issues_log = []
-        fixed_count = 0
-
-        for file_path in target_files:
-            # Skip non-py files
-            if not file_path.endswith('.py'): continue
-            
-            result = await self._analyze_and_fix_file(file_path)
-            if result:
-                issues_log.append(result)
-                if result.get("fixed"):
-                    fixed_count += 1
-
-        self._generate_unified_report(issues_log, fixed_count)
-
-        if fixed_count:
-            print(f"   🛡️  Concurrency issues resolved in {fixed_count} files")
-        else:
-            print("   ✅ No concurrency anti-patterns detected")
-            self._report_all_pass()
-
-    async def _analyze_and_fix_file(self, file_path: str) -> Dict | None:
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-        except Exception:
-            return None
-
-        # Collect ALL issues in one pass using logic ported from old agents
-        all_issues = []
-        all_issues.extend(self._detect_race_issues(content)) 
-        all_issues.extend(self._detect_livelock_issues(content))
-        all_issues.extend(self._detect_starvation_issues(content))
-        all_issues.extend(self._detect_async_blocking_issues(content))
-
-        if not all_issues:
-            return None
-
-        # Summarize for Gemini prompt
-        summary = "\n".join([f"- {i['type']} at line {i['line']}" for i in all_issues])
-        print(f"   🛡️  Fixing {len(all_issues)} concurrency issue(s) in {os.path.basename(file_path)}")
-
-        # Single Gemini mutation request with L5+ Few-Shot Injection
-        prompt = f"""
-{self.ctx.FEW_SHOT_CONCURRENCY}
-
-CONCURRENCY FIX TASK: Fix races, livelocks, and starvation in Python code.
-File: {file_path}
-Issues Detected:
-{summary}
-
-Rules:
-1. Use asyncio.Lock/Event for async, threading.Lock for sync.
-2. Add timeouts to locks/waits.
-3. Replace blocking calls (time.sleep, requests) with async equivalents.
-4. Add 'await asyncio.sleep(0)' in tight loops.
-5. Add exponential backoff with jitter for retry loops.
-6. Use asyncio.Queue for fair task scheduling.
-7. For distributed coordination, use Redis locks via ctx.acquire_lock().
-
-Prefer:
-- threading.Lock() or asyncio.Lock() with context managers
-- Redis distributed locks via ctx.acquire_lock()
-- Consistent lock ordering to prevent deadlock
-
-Never suggest time.sleep(), global locks, or ignoring the issue.
-
-RESPONSE FORMAT:
-Return ONLY the fixed Python code with proper locking.
-Do not explain. Do not add commentary.
-"""
-
-        fixed_content = await self.ctx.resilient_mutation(
-            agent_name=self.name,
-            task=prompt,
-            code=content,
-            file_path=file_path,
-            diff_mode=True,
-            min_confidence=0.6
-        )
-
-        if fixed_content and fixed_content.strip() != content.strip():
-            if self.ctx.write_compliant_file(file_path, fixed_content):
-                self.ctx.modified_files.add(file_path)
-                return {"file": file_path, "fixed": True, "issues": all_issues}
-        return None
-
-    def _detect_race_issues(self, content):
-        """Ported from RaceConditionDetector"""
-        issues = []
-        try:
-            tree = ast.parse(content)
-            analyzer = RaceAnalyzer()
-            analyzer.visit(tree)
-            
-            for race in analyzer.races:
-                issues.append({
-                    'type': 'race_condition',
-                    'line': race['line'],
-                    'variable': race['variable'],
-                    'context': race['context']
-                })
-        except Exception:
-            pass
-        return issues
-
-    def _detect_livelock_issues(self, content):
-        """Ported from LivelockPreventionAgent"""
-        issues = []
-        for issue_name, pattern in self.LIVELOCK_PATTERNS.items():
-            matches = pattern.finditer(content)
-            for match in matches:
-                issues.append({
-                    'type': f'livelock_{issue_name}',
-                    'line': content[:match.start()].count('\n') + 1,
-                    'snippet': match.group()[:50]
-                })
-        return issues
-
-    def _detect_starvation_issues(self, content):
-        """Ported from StarvationPreventionAgent"""
-        issues = []
-        for issue_name, pattern in self.STARVATION_PATTERNS.items():
-            matches = pattern.finditer(content)
-            for match in matches:
-                issues.append({
-                    'type': f'starvation_{issue_name}',
-                    'line': content[:match.start()].count('\n') + 1,
-                    'snippet': match.group()[:50]
-                })
-        return issues
-
-    def _detect_async_blocking_issues(self, content):
-        """Ported from AsyncSafetyEnforcer"""
-        issues = []
-        for issue_name, pattern in self.BLOCKING_PATTERNS.items():
-            matches = pattern.finditer(content)
-            for match in matches:
-                issues.append({
-                    'type': f'blocking_{issue_name}',
-                    'line': content[:match.start()].count('\n') + 1,
-                    'snippet': match.group()[:50]
-                })
-        return issues
-
-    def _generate_unified_report(self, log, fixed_count):
-        """Generate unified concurrency report"""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/concurrency_guardian_{timestamp}.md"
-        
-        report_content = f"# Concurrency Guardian Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
-        report_content += f"- Files scanned: {len(log)}\n"
-        report_content += f"- Files fixed: {fixed_count}\n\n"
-        
-        if log:
-            report_content += f"## Issues Fixed\n\n"
-            for entry in log:
-                report_content += f"### ✅ {entry['file']}\n\n"
-                for issue in entry['issues']:
-                    report_content += f"- {issue['type']} at line {issue['line']}\n"
-                report_content += "\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
-
-    def _report_all_pass(self):
-        """Report all keys as passed"""
-        self.ctx.report(self.name, 61, True, ["No race conditions"])
-        self.ctx.report(self.name, 63, True, ["No livelock patterns"])
-        self.ctx.report(self.name, 64, True, ["No starvation risks"])
+# SafetyInspector, ConcurrencyGuardian, and SecurityEnforcer are now imported from agentic_core.agents.security
+
+# class SafetyInspector(SubAtomicAgent):
+#     """
+#     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
+#     ROLE: Security Compliance. Emits SECURE signal.
+#     """
+#
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
+#         await asyncio.sleep(0)
+#
+#         # Key 0: No hardcoded secrets
+#         passed, details = self.check_key_00_no_hardcoded_secrets()
+#         self.ctx.report(self.name, 0, passed, details)
+#
+#         # Key 1: No TODO/FIXME
+#         passed, details = self.check_key_01_no_todo_fixme()
+#         self.ctx.report(self.name, 1, passed, details)
+#
+#         # Key 2: No print statements
+#         passed, details = self.check_key_02_no_print_statements()
+#         self.ctx.report(self.name, 2, passed, details)
+#
+#         # Key 3: No debugger statements
+#         passed, details = self.check_key_03_no_debugger_statements()
+#         self.ctx.report(self.name, 3, passed, details)
+#
+#         # Key 4: No empty except blocks
+#         passed, details = self.check_key_04_no_empty_except_blocks()
+#         self.ctx.report(self.name, 4, passed, details)
+#
+#         # Key 5: No bare except
+#         passed, details = self.check_key_05_no_bare_except()
+#         self.ctx.report(self.name, 5, passed, details)
+#
+#         # Key 6: No eval/exec
+#         passed, details = self.check_key_06_no_eval_exec()
+#         self.ctx.report(self.name, 6, passed, details)
+#         
+#         # Additional: Async blocking issues with injection
+#         passed, details = await self.check_async_blocking_issues()
+#         if not passed:
+#             print(f"   [{self.name}] Async Issues Found: {len(details)} violations")
+#
+#         all_passed = all(self.ctx.results.get(i, {}).get("passed", False) for i in range(7))
+#         if all_passed:
+#             self.ctx.signal_secure()
+#
+#     def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
+#         """Check for hardcoded secrets with LLM verification for false positives."""
+#         violations = []
+#         secret_patterns = [
+#             r"password\s*=\s*['\"].*['\"]",
+#             r"api_key\s*=\s*['\"].*['\"]",
+#             r"secret\s*=\s*['\"].*['\"]",
+#             r"token\s*=\s*['\"].*['\"]",
+#         ]
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     content = f.read()
+#                     for pattern in secret_patterns:
+#                         if re.search(pattern, content, re.IGNORECASE):
+#                             # Use Socratic Judge to verify if it's actually a secret
+#                             if self.ctx.intelligence_enabled:
+#                                 verification = self._socratic_verify(
+#                                     file_path, 
+#                                     f"Potential secret matching pattern: {pattern}",
+#                                     "Is this actually a hardcoded secret or a false positive (test data, example, placeholder)?"
+#                                 )
+#                                 if verification == "YES":
+#                                     violations.append(file_path)
+#                             else:
+#                                 violations.append(file_path)
+#                             break
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#     
+#     def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
+#         """Ask Gemini to verify if an issue is actually a violation."""
+#         try:
+#             with open(file_path, "r", encoding="utf-8") as f:
+#                 code_snippet = f.read()
+#             
+#             prompt = f"""
+#             Role: Socratic Judge - Expert Code Reviewer
+#             Context: Analyzing potential code violation in {file_path}
+#             Issue: {issue}
+#             Question: {question}
+#             
+#             Code:
+#             {code_snippet[:2000]}  # Limit context
+#             
+#             Answer with ONLY "YES" if it's a real violation or "NO" if it's a false positive.
+#             """
+#             
+#             response = self.ctx.client.models.generate_content(
+#                 model=self.ctx.model_id,
+#                 contents=prompt
+#             )
+#             return response.text.strip().upper()
+#         except Exception:
+#             return "YES"  # Default to treating as violation
+#
+#     def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
+#         """Check for TODO/FIXME comments."""
+#         violations = []
+#         todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     content = f.read()
+#                     for pattern in todo_patterns:
+#                         matches = re.finditer(pattern, content, re.IGNORECASE)
+#                         for match in matches:
+#                             line_num = content[:match.start()].count("\n") + 1
+#                             violations.append(f"{file_path}:{line_num}")
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
+#         """Check for print statements."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     lines = f.readlines()
+#                     for i, line in enumerate(lines, 1):
+#                         stripped = line.strip()
+#                         if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
+#                             continue
+#                         if "print(" in line:
+#                             violations.append(f"{file_path}:{i}")
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_03_no_debugger_statements(self) -> Tuple[bool, List[str]]:
+#         """Check for debugger statements."""
+#         violations = []
+#         debug_patterns = ["breakpoint()", "pdb.set_trace()", "import pdb", "import ipdb", "import pudb"]
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     content = f.read()
+#                     for pattern in debug_patterns:
+#                         if pattern in content:
+#                             violations.append(file_path)
+#                             break
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
+#         """Check for empty except blocks."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ExceptHandler):
+#                         if len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+#                             violations.append(file_path)
+#                             break
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_05_no_bare_except(self) -> Tuple[bool, List[str]]:
+#         """Check for bare except clauses."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ExceptHandler):
+#                         if node.type is None:
+#                             violations.append(file_path)
+#                             break
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_06_no_eval_exec(self) -> Tuple[bool, List[str]]:
+#         """Check for eval/exec usage."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.Call):
+#                         if isinstance(node.func, ast.Name):
+#                             if node.func.id in ('eval', 'exec'):
+#                                 violations.append(file_path)
+#                                 break
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     # _clean_llm_code(self, raw_code: str) -> str:
+#     #     """Extracts code from Chain-of-Thought responses."""
+#     #     import re
+#
+#     #     # 1. Remove reasoning blocks to isolate code
+#     #     raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
+#
+#     #     # 2. Strip Markdown code blocks
+#     #     code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
+#     #     if code_match:
+#     #         return code_match.group(1).strip()
+#
+#     #     # 3. Strip generic backticks
+#     #     if raw_code.strip().startswith("```"):
+#     #         return raw_code.strip().strip("`").replace("python", "", 1).strip()
+#
+#     #     return raw_code.strip()
+#
+#     async def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
+#         """Check for blocking calls in async functions and patch them with intelligence."""
+#         violations = []
+#         blocking_patterns = ['time.sleep', 'requests.get', 'requests.post', 'urllib.request']
+#         
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     content = f.read()
+#                     tree = ast.parse(content)
+#                     
+#                 # Check if file contains async functions
+#                 has_async = any(isinstance(node, (ast.AsyncFunctionDef, ast.AsyncFor, ast.AsyncWith)) 
+#                               for node in ast.walk(tree))
+#                 
+#                 if has_async:
+#                     for pattern in blocking_patterns:
+#                         if pattern in content:
+#                             violations.append(f"{file_path}: {pattern} in async context")
+#                     
+#                     # Use intelligence to patch the file
+#                     if self.ctx.intelligence_enabled:
+#                         print(f"   🔧 SafetyInspector patching blocking I/O in {file_path}")
+#                         
+#                         # Build context for the mutation with L5+ Few-Shot Safety Injection
+#                         context = "\n".join(self.ctx.instructions)
+#                         mutation_task = f'''
+# {self.ctx.FEW_SHOT_SAFETY}
+# {self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
+# {self.ctx.FEW_SHOT_IMPORT_FIXES}
+#
+# Replace blocking calls with async alternatives.
+# Context: {context}
+# Rules:
+# - Replace time.sleep with asyncio.sleep
+# - Replace requests.get/http with httpx.get
+# - Replace requests.post/http with httpx.post
+# - Add 'import asyncio' if needed
+# - Add 'import httpx' if needed
+#
+# Apply the safest pattern from examples above.
+# Prioritize:
+# - Remove dangerous functions (eval/exec)
+# - Use allowlists and env vars for secrets
+# - Explicit defaults and validation
+# - No assert in control flow
+#
+# RESPONSE FORMAT:
+# Return ONLY the corrected Python code.
+# No explanations. No markdown outside code block.
+# '''
+#                         
+#                         cleaned_code = await self.ctx.resilient_mutation(
+#                             agent_name="SafetyInspector",
+#                             task=mutation_task,
+#                             code=content,
+#                             file_path=file_path,
+#                             diff_mode=True,
+#                             min_confidence=0.6
+#                         )
+#                         
+#                         # Write back if different using Compliance Governor
+#                         if cleaned_code != content:
+#                             if self.ctx.write_compliant_file(file_path, cleaned_code):
+#                                 self.ctx.modified_files.add(file_path)
+#                                 print(f"   ✅ Patched {file_path}")
+#                             else:
+#                                 print(f"   ⚠️ Failed to patch {file_path} - syntax validation failed")
+#                         
+#                         # Inject migration advice for manual review
+#                         self.ctx.inject_instruction(
+#                             self.name,
+#                             f"MIGRATION ADVICE: Async blocking calls patched in {file_path}. Review imports and error handling."
+#                         )
+#             except Exception as e:
+#                 print(f"   ❌ Failed to patch {file_path}: {e}")
+#                 continue
+#                 
+#         return (len(violations) == 0, violations)
+
+# class ConcurrencyGuardian(SubAtomicAgent):
+#     """
+#     Unified concurrency safety agent.
+#     Covers:
+#       - Data races on shared mutable state (Key 61)
+#       - Livelock / busy-wait / infinite retry patterns (Key 63)
+#       - Async starvation, greedy loops, long critical sections (Key 64)
+#       - Blocking sync calls in async functions (Async Safety)
+#     """
+#
+#     # Consolidated patterns from all three agents
+#     LIVELOCK_PATTERNS = {
+#         'tight_loop': re.compile(
+#             r'while\s+True\s*:\s*.*?(?:pass|continue|break)',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'busy_wait': re.compile(
+#             r'while\s+.*:\s*.*?time\.sleep\s*\(\s*[0-9.]+\s*\)',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'infinite_retry': re.compile(
+#             r'while\s+.*:\s*.*?try\s*:.*?except.*?:\s*.*?continue',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'polite_oscillation': re.compile(
+#             r'if\s+.*lock.*:\s*.*?release.*?\s*.*?try.*?acquire',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'spin_wait': re.compile(
+#             r'while\s+not\s+.*:\s*pass',
+#             re.IGNORECASE
+#         )
+#     }
+#     
+#     STARVATION_PATTERNS = {
+#         'greedy_loop': re.compile(
+#             r'async\s+def\s+\w+.*?:\s*.*?(?:for|while).*:(?!.*await)',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'long_lock': re.compile(
+#             r'with\s+.*lock.*:\s*.{400,}',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'cpu_bound_async': re.compile(
+#             r'async\s+def.*?:\s*.*?(?:heavy|compute|intensive|process).*:(?!.*await\s+asyncio)',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         ),
+#         'priority_inversion': re.compile(
+#             r'queue\.Queue\s*\(\s*\)',
+#             re.IGNORECASE
+#         ),
+#         'no_yield': re.compile(
+#             r'for\s+\w+\s+in.*range.*:\s*.{200,}',
+#             re.IGNORECASE | re.MULTILINE | re.DOTALL
+#         )
+#     }
+#     
+#     BLOCKING_PATTERNS = {
+#         'time_sleep': re.compile(
+#             r'time\.sleep\s*\(',
+#             re.IGNORECASE
+#         ),
+#         'requests_calls': re.compile(
+#             r'requests\.(get|post|put|delete|patch|head|options)\s*\(',
+#             re.IGNORECASE
+#         ),
+#         'subprocess_blocking': re.compile(
+#             r'subprocess\.(run|call|check_call|check_output)\s*\(',
+#             re.IGNORECASE
+#         ),
+#         'sync_file_ops': re.compile(
+#             r'(open\s*\([^)]+\)\s*\.read|\.write|\.readlines|\.writelines)',
+#             re.IGNORECASE
+#         ),
+#         'urllib_blocking': re.compile(
+#             r'urllib\.request\.(urlopen|request)\s*\(',
+#             re.IGNORECASE
+#         )
+#     }
+#
+#     def can_run(self) -> bool:
+#         # Require AST and Security validity before running complex logic
+#         return ("AST_VALID" in self.ctx.signals and 
+#                 "DEPS_VALID" in self.ctx.signals and
+#                 "SECURE" in self.ctx.signals)
+#
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing comprehensive concurrency safety...")
+#         await asyncio.sleep(0)
+#
+#         # Priority: modified files first, fallback to all
+#         target_files = list(self.ctx.modified_files) if self.ctx.modified_files else self.ctx.python_files
+#         if not target_files:
+#             print("   ✅ No files to scan for concurrency issues")
+#             self._report_all_pass()
+#             return
+#
+#         print(f"   🔍 Scanning {len(target_files)} files for concurrency anti-patterns...")
+#
+#         issues_log = []
+#         fixed_count = 0
+#
+#         for file_path in target_files:
+#             # Skip non-py files
+#             if not file_path.endswith('.py'): continue
+#             
+#             result = await self._analyze_and_fix_file(file_path)
+#             if result:
+#                 issues_log.append(result)
+#                 if result.get("fixed"):
+#                     fixed_count += 1
+#
+#         self._generate_unified_report(issues_log, fixed_count)
+#
+#         if fixed_count:
+#             print(f"   🛡️  Concurrency issues resolved in {fixed_count} files")
+#         else:
+#             print("   ✅ No concurrency anti-patterns detected")
+#             self._report_all_pass()
+#
+#     async def _analyze_and_fix_file(self, file_path: str) -> Dict | None:
+#         try:
+#             with open(file_path, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#         except Exception:
+#             return None
+#
+#         # Collect ALL issues in one pass using logic ported from old agents
+#         all_issues = []
+#         all_issues.extend(self._detect_race_issues(content)) 
+#         all_issues.extend(self._detect_livelock_issues(content))
+#         all_issues.extend(self._detect_starvation_issues(content))
+#         all_issues.extend(self._detect_async_blocking_issues(content))
+#
+#         if not all_issues:
+#             return None
+#
+#         # Summarize for Gemini prompt
+#         summary = "\n".join([f"- {i['type']} at line {i['line']}" for i in all_issues])
+#         print(f"   🛡️  Fixing {len(all_issues)} concurrency issue(s) in {os.path.basename(file_path)}")
+#
+#         # Single Gemini mutation request with L5+ Few-Shot Injection
+#         prompt = f"""
+# {self.ctx.FEW_SHOT_CONCURRENCY}
+#
+# CONCURRENCY FIX TASK: Fix races, livelocks, and starvation in Python code.
+# File: {file_path}
+# Issues Detected:
+# {summary}
+#
+# Rules:
+# 1. Use asyncio.Lock/Event for async, threading.Lock for sync.
+# 2. Add timeouts to locks/waits.
+# 3. Replace blocking calls (time.sleep, requests) with async equivalents.
+# 4. Add 'await asyncio.sleep(0)' in tight loops.
+# 5. Add exponential backoff with jitter for retry loops.
+# 6. Use asyncio.Queue for fair task scheduling.
+# 7. For distributed coordination, use Redis locks via ctx.acquire_lock().
+#
+# Prefer:
+# - threading.Lock() or asyncio.Lock() with context managers
+# - Redis distributed locks via ctx.acquire_lock()
+# - Consistent lock ordering to prevent deadlock
+#
+# Never suggest time.sleep(), global locks, or ignoring the issue.
+#
+# RESPONSE FORMAT:
+# Return ONLY the fixed Python code with proper locking.
+# Do not explain. Do not add commentary.
+# """
+#
+#         fixed_content = await self.ctx.resilient_mutation(
+#             agent_name=self.name,
+#             task=prompt,
+#             code=content,
+#             file_path=file_path,
+#             diff_mode=True,
+#             min_confidence=0.6
+#         )
+#
+#         if fixed_content and fixed_content.strip() != content.strip():
+#             if self.ctx.write_compliant_file(file_path, fixed_content):
+#                 self.ctx.modified_files.add(file_path)
+#                 return {"file": file_path, "fixed": True, "issues": all_issues}
+#         return None
+#
+#     def _detect_race_issues(self, content):
+#         """Ported from RaceConditionDetector"""
+#         issues = []
+#         try:
+#             tree = ast.parse(content)
+#             analyzer = RaceAnalyzer()
+#             analyzer.visit(tree)
+#             
+#             for race in analyzer.races:
+#                 issues.append({
+#                     'type': 'race_condition',
+#                     'line': race['line'],
+#                     'variable': race['variable'],
+#                     'context': race['context']
+#                 })
+#         except Exception:
+#             pass
+#         return issues
+#
+#     def _detect_livelock_issues(self, content):
+#         """Ported from LivelockPreventionAgent"""
+#         issues = []
+#         for issue_name, pattern in self.LIVELOCK_PATTERNS.items():
+#             matches = pattern.finditer(content)
+#             for match in matches:
+#                 issues.append({
+#                     'type': f'livelock_{issue_name}',
+#                     'line': content[:match.start()].count('\n') + 1,
+#                     'snippet': match.group()[:50]
+#                 })
+#         return issues
+#
+#     def _detect_starvation_issues(self, content):
+#         """Ported from StarvationPreventionAgent"""
+#         issues = []
+#         for issue_name, pattern in self.STARVATION_PATTERNS.items():
+#             matches = pattern.finditer(content)
+#             for match in matches:
+#                 issues.append({
+#                     'type': f'starvation_{issue_name}',
+#                     'line': content[:match.start()].count('\n') + 1,
+#                     'snippet': match.group()[:50]
+#                 })
+#         return issues
+#
+#     def _detect_async_blocking_issues(self, content):
+#         """Ported from AsyncSafetyEnforcer"""
+#         issues = []
+#         for issue_name, pattern in self.BLOCKING_PATTERNS.items():
+#             matches = pattern.finditer(content)
+#             for match in matches:
+#                 issues.append({
+#                     'type': f'blocking_{issue_name}',
+#                     'line': content[:match.start()].count('\n') + 1,
+#                     'snippet': match.group()[:50]
+#                 })
+#         return issues
+#
+#     def _generate_unified_report(self, log, fixed_count):
+#         """Generate unified concurrency report"""
+#         timestamp = int(time.time())
+#         report_path = f"observability/audit/concurrency_guardian_{timestamp}.md"
+#         
+#         report_content = f"# Concurrency Guardian Report\n\n"
+#         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+#         report_content += f"## Summary\n\n"
+#         report_content += f"- Files scanned: {len(log)}\n"
+#         report_content += f"- Files fixed: {fixed_count}\n\n"
+#         
+#         if log:
+#             report_content += f"## Issues Fixed\n\n"
+#             for entry in log:
+#                 report_content += f"### ✅ {entry['file']}\n\n"
+#                 for issue in entry['issues']:
+#                     report_content += f"- {issue['type']} at line {issue['line']}\n"
+#                 report_content += "\n"
+#         
+#         self.ctx.write_compliant_file(report_path, report_content)
+#
+#     def _report_all_pass(self):
+#         """Report all keys as passed"""
+#         self.ctx.report(self.name, 61, True, ["No race conditions"])
+#         self.ctx.report(self.name, 63, True, ["No livelock patterns"])
+#         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
 
 class HygieneGuardian(SubAtomicAgent):
