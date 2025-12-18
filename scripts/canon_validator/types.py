@@ -14,6 +14,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set
 
+from dotenv import load_dotenv
+
+# Load .env file from repo root
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
+
 ALLOWED_ROOT_FILES = {
     "README.md", "LICENSE", "pyproject.toml", "setup.py", "setup.cfg",
     "requirements.txt", "Makefile", ".gitignore", ".pre-commit-config.yaml",
@@ -187,52 +192,49 @@ class ValidationContext:
         return self._client
 
     def __post_init__(self):
-        """Initialize Tri-Brain infrastructure (graceful degradation mode)."""
+        """Initialize Tri-Brain infrastructure (MANDATORY MODE - fail if keys missing)."""
         from .config import get_python_files
         
-        print("   [CTX] 🧠 INITIALIZING TRI-BRAIN (GRACEFUL MODE)...")
+        print("   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
         self.python_files = get_python_files()
         self._load_memory()
 
-        # Gemini (optional - graceful degradation)
+        # Hard-Gate: Gemini (REQUIRED)
         api_key = os.environ.get("GOOGLE_API_KEY")
-        if api_key:
-            try:
-                import google.genai as genai
-                self._client = genai.Client(api_key=api_key)
-                self.intelligence_enabled = True
-                print("      ✅ Gemini Connected")
-            except Exception as e:
-                print(f"      ⚠️  Gemini unavailable: {e}")
-        else:
-            print("      ⚠️  GOOGLE_API_KEY not set - Intelligence disabled")
+        if not api_key:
+            raise RuntimeError("CRITICAL: GOOGLE_API_KEY environment variable is missing.")
+        try:
+            import google.genai as genai
+            self._client = genai.Client(api_key=api_key)
+            self.intelligence_enabled = True
+            print("      ✅ Gemini Connected")
+        except Exception as e:
+            raise RuntimeError(f"CRITICAL: Gemini connection failed: {e}")
 
-        # Redis (optional)
+        # Hard-Gate: Redis (REQUIRED)
         redis_url = os.environ.get("REDIS_URL")
-        if redis_url:
-            try:
-                import redis as redis_lib
-                self.redis_client = redis_lib.from_url(redis_url, decode_responses=True)
-                self.redis_available = True
-                print("      ✅ Redis Connected")
-            except Exception as e:
-                print(f"      ⚠️  Redis unavailable: {e}")
-        else:
-            print("      ⚠️  REDIS_URL not set - Hot Brain disabled")
+        if not redis_url:
+            raise RuntimeError("CRITICAL: REDIS_URL environment variable is missing.")
+        try:
+            import redis as redis_lib
+            self.redis_client = redis_lib.from_url(redis_url, decode_responses=True)
+            self.redis_available = True
+            print("      ✅ Redis Connected")
+        except Exception as e:
+            raise RuntimeError(f"CRITICAL: Redis connection failed: {e}")
 
-        # Pinecone (optional)
+        # Hard-Gate: Pinecone (REQUIRED)
         pine_key = os.environ.get("PINECONE_API_KEY")
-        if pine_key:
-            try:
-                from pinecone import Pinecone
-                pc = Pinecone(api_key=pine_key)
-                self.pinecone_index = pc.Index("canon-memory-l2")
-                self.pinecone_available = True
-                print("      ✅ Pinecone Connected")
-            except Exception as e:
-                print(f"      ⚠️  Pinecone unavailable: {e}")
-        else:
-            print("      ⚠️  PINECONE_API_KEY not set - Deep Brain disabled")
+        if not pine_key:
+            raise RuntimeError("CRITICAL: PINECONE_API_KEY environment variable is missing.")
+        try:
+            from pinecone import Pinecone
+            pc = Pinecone(api_key=pine_key)
+            self.pinecone_index = pc.Index("canon-memory-l2")
+            self.pinecone_available = True
+            print("      ✅ Pinecone Connected")
+        except Exception as e:
+            raise RuntimeError(f"CRITICAL: Pinecone connection failed: {e}")
 
     def _load_memory(self):
         """Load canon memory from disk."""
@@ -337,7 +339,10 @@ class ValidationContext:
                 print(f"   🛑 BLOCKED WRITE: Invalid syntax for {path}: {e}")
                 return False
 
-        parts = path.split(os.sep)
+        # Normalize path separators for cross-platform compatibility using pathlib
+        normalized_path = os.path.normpath(path)
+        parts = Path(normalized_path).parts
+        # Check for root level files (single component path)
         if len(parts) == 1 and parts[0] not in ALLOWED_ROOT_FILES:
             print(f"   🛑 BLOCKED: {path} is an illegal root file.")
             return False
