@@ -1,11 +1,13 @@
 """Constitutional Overseer for validating ActionRequests.
 
 Validates actions against forbidden commands and safety rules.
+Includes SafetyInspector with Socratic Judge for false positive mitigation.
 """
 
 import logging
+import os
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from agentic_core.interfaces import ActionRequest
 
@@ -171,6 +173,254 @@ class ConstitutionalOverseer:
         return self._forbidden_commands.copy()
 
 
+class SafetyInspector:
+    """
+    L5 Safety Inspector with Socratic Judge for false positive mitigation.
+    
+    KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
+    ROLE: Security Compliance with intelligent violation verification.
+    """
+    
+    def __init__(self, enable_socratic_judge: bool = True):
+        """
+        Initialize the SafetyInspector.
+        
+        Args:
+            enable_socratic_judge: Whether to use LLM verification for false positives
+        """
+        self.enable_socratic_judge = enable_socratic_judge
+        self._false_positive_cache = set()  # Cache to avoid re-checking
+        
+        # Security patterns to check
+        self.secret_patterns = [
+            r'api[_-]?key\s*=\s*["\'][^"\']+["\']',
+            r'secret[_-]?key\s*=\s*["\'][^"\']+["\']',
+            r'password\s*=\s*["\'][^"\']+["\']',
+            r'token\s*=\s*["\'][^"\']+["\']',
+            r'aws[_-]?access[_-]?key\s*=\s*["\'][^"\']+["\']',
+            r'aws[_-]?secret[_-]?key\s*=\s*["\'][^"\']+["\']',
+            r'private[_-]?key\s*=\s*["\'][^"\']+["\']',
+            r'auth[_-]?token\s*=\s*["\'][^"\']+["\']',
+            r'client[_-]?secret\s*=\s*["\'][^"\']+["\']',
+            r'database[_-]?url\s*=\s*["\'][^"\']+["\']',
+        ]
+        
+        self.todo_patterns = [
+            r'#\s*TODO',
+            r'#\s*FIXME',
+            r'#\s*HACK',
+            r'#\s*XXX',
+        ]
+        
+        self.print_patterns = [
+            r'print\s*\(',
+            r'sys\.stdout\.write',
+        ]
+        
+        self.debugger_patterns = [
+            r'import pdb',
+            r'pdb\.set_trace',
+            r'import ipdb',
+            r'ipdb\.set_trace',
+            r'breakpoint\(\)',
+        ]
+        
+        self.eval_patterns = [
+            r'eval\s*\(',
+            r'exec\s*\(',
+            r'__import__\s*\(',
+            r'compile\s*\(',
+        ]
+        
+        LOGGER.info(f"SafetyInspector initialized (Socratic Judge: {enable_socratic_judge})")
+    
+    async def scan_file(self, file_path: str) -> Dict[str, List[str]]:
+        """
+        Scan a file for security violations.
+        
+        Args:
+            file_path: Path to the file to scan
+            
+        Returns:
+            Dictionary mapping violation types to list of violations
+        """
+        violations = {
+            "secrets": [],
+            "todos": [],
+            "prints": [],
+            "debuggers": [],
+            "empty_except": [],
+            "bare_except": [],
+            "evals": [],
+        }
+        
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                lines = content.split('\n')
+            
+            # Key 0: Check for hardcoded secrets
+            for pattern in self.secret_patterns:
+                if re.search(pattern, content, re.IGNORECASE):
+                    # Use Socratic Judge to verify if it's actually a secret
+                    if self.enable_socratic_judge and file_path not in self._false_positive_cache:
+                        verification = await self._socratic_verify(
+                            file_path,
+                            f"Potential secret matching pattern: {pattern}",
+                            "Is this actually a hardcoded secret or a false positive (test data, example, placeholder)?"
+                        )
+                        if verification == "YES":
+                            violations["secrets"].append(f"Line with potential secret: {pattern}")
+                        else:
+                            # Cache as false positive
+                            self._false_positive_cache.add(file_path)
+                            LOGGER.info(f"Socratic Judge marked as false positive: {file_path}")
+                    else:
+                        violations["secrets"].append(f"Line with potential secret: {pattern}")
+                    break
+            
+            # Key 1: Check for TODO/FIXME comments
+            for i, line in enumerate(lines, 1):
+                for pattern in self.todo_patterns:
+                    if re.search(pattern, line, re.IGNORECASE):
+                        violations["todos"].append(f"Line {i}: {line.strip()}")
+            
+            # Key 2: Check for print statements
+            for i, line in enumerate(lines, 1):
+                for pattern in self.print_patterns:
+                    if re.search(pattern, line):
+                        violations["prints"].append(f"Line {i}: {line.strip()}")
+            
+            # Key 3: Check for debugger statements
+            for i, line in enumerate(lines, 1):
+                for pattern in self.debugger_patterns:
+                    if re.search(pattern, line):
+                        violations["debuggers"].append(f"Line {i}: {line.strip()}")
+            
+            # Key 4 & 5: Check for except blocks
+            for i, line in enumerate(lines, 1):
+                if re.search(r'except\s*:', line):
+                    violations["bare_except"].append(f"Line {i}: {line.strip()}")
+                elif re.search(r'except\s+pass\s*:', line) or re.search(r'except\s*\n\s*pass', content):
+                    violations["empty_except"].append(f"Line {i}: {line.strip()}")
+            
+            # Key 6: Check for eval/exec
+            for i, line in enumerate(lines, 1):
+                for pattern in self.eval_patterns:
+                    if re.search(pattern, line):
+                        # Use Socratic Judge for eval/exec as well
+                        if self.enable_socratic_judge and file_path not in self._false_positive_cache:
+                            verification = await self._socratic_verify(
+                                file_path,
+                                f"Dangerous eval/exec usage: {line.strip()}",
+                                "Is this actually dangerous dynamic execution or a safe usage (e.g., JSON parsing, AST manipulation)?"
+                            )
+                            if verification == "YES":
+                                violations["evals"].append(f"Line {i}: {line.strip()}")
+                            else:
+                                self._false_positive_cache.add(file_path)
+                                LOGGER.info(f"Socratic Judge marked eval as false positive: {file_path}")
+                        else:
+                            violations["evals"].append(f"Line {i}: {line.strip()}")
+            
+        except Exception as e:
+            LOGGER.error(f"Error scanning file {file_path}: {e}")
+        
+        return violations
+    
+    async def _socratic_verify(self, file_path: str, issue: str, question: str) -> str:
+        """
+        Ask Gemini to verify if an issue is actually a violation.
+        
+        Args:
+            file_path: Path to the file being checked
+            issue: Description of the potential issue
+            question: Specific question about the issue
+            
+        Returns:
+            "YES" if it's a real violation, "NO" if it's a false positive
+        """
+        try:
+            # Try to import google.generativeai
+            import google.generativeai as genai
+            
+            # Check for API key
+            api_key = os.getenv("GOOGLE_API_KEY")
+            if not api_key:
+                LOGGER.warning("GOOGLE_API_KEY not found - Socratic Judge disabled")
+                return "YES"  # Default to treating as violation
+            
+            # Read the code snippet
+            with open(file_path, "r", encoding="utf-8") as f:
+                code_snippet = f.read()
+            
+            # Configure Gemini
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel('gemini-pro')
+            
+            # Build the Socratic Judge prompt
+            prompt = f"""
+Role: Socratic Judge - Expert Code Security Reviewer
+
+Context: Analyzing potential code violation in {file_path}
+Issue: {issue}
+Question: {question}
+
+Code Snippet:
+```python
+{code_snippet[:2000]}  # Limit to first 2000 chars
+```
+
+Instructions:
+1. Analyze the code context carefully
+2. Determine if this is a REAL security violation or just:
+   - Test data/example code
+   - Placeholder/mock value
+   - Documentation comment
+   - Safe usage of a potentially dangerous function
+
+3. Consider:
+   - Is the code in a test file?
+   - Is the value obviously fake (e.g., "xxx", "test", "example")?
+   - Is this a demonstration or documentation?
+   - Is the usage actually safe in this context?
+
+Answer with ONLY "YES" if it's a real violation or "NO" if it's a false positive.
+"""
+            
+            # Get response from Gemini
+            response = model.generate_content(prompt)
+            result = response.text.strip().upper()
+            
+            # Extract YES/NO from response
+            if "YES" in result[:10]:
+                LOGGER.info(f"Socratic Judge: REAL violation in {file_path}")
+                return "YES"
+            elif "NO" in result[:10]:
+                LOGGER.info(f"Socratic Judge: False positive in {file_path}")
+                return "NO"
+            else:
+                LOGGER.warning(f"Socratic Judge ambiguous response: {result}")
+                return "YES"  # Default to safe
+            
+        except ImportError:
+            LOGGER.warning("google.generativeai not installed - Socratic Judge disabled")
+            return "YES"
+        except Exception as e:
+            LOGGER.error(f"Socratic Judge error: {e}")
+            return "YES"  # Default to treating as violation
+    
+    def clear_false_positive_cache(self):
+        """Clear the false positive cache."""
+        self._false_positive_cache.clear()
+        LOGGER.info("False positive cache cleared")
+
+
 def create_overseer() -> ConstitutionalOverseer:
     """Factory function to create overseer instance."""
     return ConstitutionalOverseer()
+
+
+def create_safety_inspector(enable_socratic_judge: bool = True) -> SafetyInspector:
+    """Factory function to create SafetyInspector instance."""
+    return SafetyInspector(enable_socratic_judge)

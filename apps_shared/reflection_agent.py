@@ -490,6 +490,108 @@ KEYWORD: explanation
             "quality_trend": self.reflection_history[-1].quality_trend
         }
     
+    async def store_successful_trace(self, execution_log: List[Dict[str, Any]], cycle: int) -> bool:
+        """
+        Store a successful execution trace as embedding for learning.
+        
+        Args:
+            execution_log: List of execution steps
+            cycle: Current cycle number
+            
+        Returns:
+            True if stored successfully
+        """
+        try:
+            # Import deep brain
+            from agentic_core.L4_state.checkpointing import get_deep_brain
+            deep_brain = get_deep_brain()
+            
+            # Create learning record from successful trace
+            successful_steps = [e for e in execution_log if e.get('success', False)]
+            
+            if not successful_steps:
+                return False
+            
+            # Extract patterns from successful execution
+            pattern_text = self._extract_pattern_text(successful_steps)
+            
+            # Store with metadata
+            metadata = {
+                "cycle": cycle,
+                "success_rate": len(successful_steps) / len(execution_log),
+                "total_steps": len(execution_log),
+                "pattern_type": "successful_trace",
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+            # Generate embedding ID
+            import hashlib
+            embedding_id = hashlib.md5(pattern_text.encode()).hexdigest()
+            
+            # Store in deep brain
+            result = await deep_brain.upsert_embedding(
+                text=pattern_text,
+                metadata=metadata,
+                embedding_id=embedding_id
+            )
+            
+            if result:
+                logger.info(f"Stored successful trace embedding: {embedding_id[:8]}...")
+                self.successful_patterns.append({
+                    "id": embedding_id,
+                    "cycle": cycle,
+                    "pattern": pattern_text[:200] + "..."
+                })
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Failed to store successful trace: {e}")
+            return False
+    
+    def _extract_pattern_text(self, successful_steps: List[Dict[str, Any]]) -> str:
+        """Extract learning pattern text from successful steps."""
+        patterns = []
+        
+        for step in successful_steps:
+            pattern = f"Action: {step.get('action', 'unknown')}\n"
+            pattern += f"Result: {step.get('result', 'unknown')}\n"
+            if 'strategy' in step:
+                pattern += f"Strategy: {step['strategy']}\n"
+            pattern += "---\n"
+            patterns.append(pattern)
+        
+        return "\n".join(patterns)
+    
+    async def recall_similar_patterns(self, current_context: str, limit: int = 3) -> List[Dict[str, Any]]:
+        """
+        Recall similar successful patterns from memory.
+        
+        Args:
+            current_context: Description of current situation
+            limit: Maximum number of patterns to recall
+            
+        Returns:
+            List of similar patterns with metadata
+        """
+        try:
+            from agentic_core.L4_state.checkpointing import get_deep_brain
+            deep_brain = get_deep_brain()
+            
+            # Search for similar patterns
+            results = await deep_brain.search_embeddings(
+                query=current_context,
+                top_k=limit,
+                filter_dict={"pattern_type": "successful_trace"}
+            )
+            
+            logger.info(f"Recalled {len(results)} similar patterns")
+            return results
+            
+        except Exception as e:
+            logger.error(f"Failed to recall patterns: {e}")
+            return []
+    
     def reset(self) -> None:
         """Reset reflection state for new workflow."""
         self.execution_history.clear()
