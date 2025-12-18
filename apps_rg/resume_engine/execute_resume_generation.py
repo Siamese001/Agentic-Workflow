@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural violation."""
 
-    def __init__(self):
+    def __initialize__(self):
         self.workflows = {}
 
     def load_workflow(self, workflow_id: str):
@@ -30,10 +30,10 @@ def create_local_workflow_loader() -> LocalWorkflowLoader:
 LOGGER = logging.getLogger(__name__)
 
 
-class ExecuteResumeGeneration:
+class executeresultumegeneration:
     """Executor for resume domain."""
 
-    def __init__(self,
+    def __initialize__(self,
                  config: Optional[Dict[str,
                                        Any]] = None,
                  workflow_loader: Optional[LocalWorkflowLoader] = None):
@@ -74,7 +74,7 @@ class ExecuteResumeGeneration:
                 total_steps=1
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-duration_ms = (time.time() - start) * 1000
+            duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
                 status=ResultStatus.FAILURE,
                 error=str(e),
@@ -91,9 +91,9 @@ duration_ms = (time.time() - start) * 1000
         if action == "analyze_job":
             return self._analyze_job(params)
         elif action == "generate_resume":
-            return self._generate_resume(params)
+            return self._generate_resultume(params)
         elif action == "tailor_resume":
-            return self._tailor_resume(params)
+            return self._tailor_resultume(params)
         else:
             return {"action": action, "params": params, "status": "completed"}
 
@@ -110,23 +110,23 @@ duration_ms = (time.time() - start) * 1000
             "status": "completed"
         }
 
-    def _generate_resume(self, params: Dict[str, object]) -> Dict[str, Any]:
+    def _generate_resultume(self, params: Dict[str, object]) -> Dict[str, Any]:
         """Generate a new resume from scratch."""
         # For now, this is a placeholder - would need more complex prompts for full generation
-        resume_data = params.get("resume_data", {})
+        resultume_data = params.get("resultume_data", {})
         return {
             "action": "generate_resume",
-            "resume": resume_data,
+            "resume": resultume_data,
             "status": "completed"
         }
 
-    def _tailor_resume(self, params: Dict[str, object]) -> Dict[str, Any]:
+    def _tailor_resultume(self, params: Dict[str, object]) -> Dict[str, Any]:
         """Tailor an existing resume to a job description."""
-        resume_data = params.get("resume_data", {})
+        resultume_data = params.get("resultume_data", {})
         job_description = params.get("job_description", "")
 
-        if not resume_data:
-            raise ValueError("resume_data is required")
+        if not resultume_data:
+            raise ValueError("resultume_data is required")
         if not job_description:
             raise ValueError("job_description is required")
 
@@ -134,17 +134,17 @@ duration_ms = (time.time() - start) * 1000
         analysis = self.job_analyzer.analyze(job_description)
 
         # Then tailor the resume
-        tailored_resume = self.resume_generator.generate(resume_data, analysis)
+        tailored_resultume = self.resume_generator.generate(resultume_data, analysis)
 
         # Optimize for ATS
-        optimized_resume = self.resume_generator.optimize_for_ats(
-            tailored_resume, analysis)
+        optimized_resultume = self.resume_generator.optimize_for_ats(
+            tailored_resultume, analysis)
 
         return {
             "action": "tailor_resume",
-            "original_resume": resume_data,
+            "original_resume": resultume_data,
             "job_analysis": analysis,
-            "tailored_resume": optimized_resume,
+            "tailored_resultume": optimized_resultume,
             "status": "completed"
         }
 
@@ -154,5 +154,4 @@ def execute(action: str,
                          object],
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
-    return ExecuteResumeGeneration(config).execute(action, params)
-
+    return executeresultumegeneration(config).execute(action, params)

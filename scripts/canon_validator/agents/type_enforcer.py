@@ -18,6 +18,9 @@ from ..base import SubAtomicAgent
 class TypeEnforcer(SubAtomicAgent):
     """ROLE: Type Guardian. Enforces PEP 484 type hints."""
 
+    # Mutation mode flag - when True, actively fix files instead of just reporting
+    mutation_mode: bool = False
+
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
         await asyncio.sleep(0)
@@ -41,7 +44,12 @@ class TypeEnforcer(SubAtomicAgent):
 
         if type_log:
             print(f"   ⚠️  Type issues in {len(type_log)} files")
-            self._save_type_report(type_log)
+            # Check if mutation mode is active (from targeted remediation)
+            if self.mutation_mode or any('MUTATION MODE' in i for i in self.ctx.instructions):
+                print("   🔧 MUTATION MODE: Injecting missing typing imports...")
+                await self._inject_typing_imports(type_log)
+            else:
+                self._save_type_report(type_log)
         else:
             print("   ✅ All functions properly typed")
 
@@ -120,3 +128,57 @@ class TypeEnforcer(SubAtomicAgent):
             report_content += "\n"
 
         self.ctx.write_compliant_file(report_path, report_content)
+
+    async def _inject_typing_imports(self, type_log: List[Dict]):
+        """Inject missing typing imports (Any, Dict, List) into files."""
+        TYPING_IMPORTS = "from typing import Any, Dict, List, Optional, Set, Tuple"
+        
+        for entry in type_log:
+            file_path = entry['file']
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Check if typing imports already exist
+                if 'from typing import' in content:
+                    # Enhance existing import
+                    lines = content.split('\n')
+                    new_lines = []
+                    typing_enhanced = False
+                    for line in lines:
+                        if line.strip().startswith('from typing import') and not typing_enhanced:
+                            # Replace with comprehensive typing import
+                            new_lines.append(TYPING_IMPORTS)
+                            typing_enhanced = True
+                        else:
+                            new_lines.append(line)
+                    content = '\n'.join(new_lines)
+                elif 'import ' in content:
+                    # Add typing import after first import
+                    lines = content.split('\n')
+                    new_lines = []
+                    typing_added = False
+                    for line in lines:
+                        new_lines.append(line)
+                        if line.strip().startswith('import ') and not typing_added:
+                            new_lines.append(TYPING_IMPORTS)
+                            typing_added = True
+                    content = '\n'.join(new_lines)
+                else:
+                    # Add at top of file (after docstring if present)
+                    if content.startswith('"""') or content.startswith("'''"):
+                        # Find end of docstring
+                        quote = content[:3]
+                        end_idx = content.find(quote, 3)
+                        if end_idx != -1:
+                            end_idx += 3
+                            content = content[:end_idx] + '\n\n' + TYPING_IMPORTS + '\n' + content[end_idx:]
+                    else:
+                        content = TYPING_IMPORTS + '\n\n' + content
+                
+                # Write the updated file
+                if self.ctx.write_compliant_file(file_path, content):
+                    print(f"   ✅ Injected typing imports: {file_path}")
+                    
+            except Exception as e:
+                print(f"   ❌ Failed to inject typing in {file_path}: {e}")

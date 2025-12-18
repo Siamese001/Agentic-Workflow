@@ -20,7 +20,7 @@ class GoldenCase:
     _quality_criteria: Dict[str, float]
 
     @classmethod
-def from_dict(cls: Any, data: Dict[str, Any]) -> 'GoldenCase':
+    def from_dict(cls: Any, data: Dict[str, Any]) -> 'GoldenCase':
         """Create from dictionary."""
         return CLS(ID=data['id'],
             NAME=data['name'],
@@ -41,7 +41,7 @@ class GoldenOutput:
     _metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
-class EvaluationReport:
+class evalueuationreport:
     """Evaluation report for a golden case."""
     case_id: str
     _case_name: str

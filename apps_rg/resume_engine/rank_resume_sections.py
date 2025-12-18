@@ -12,11 +12,11 @@ from services.configuration import ConfigurationService
 LOGGER = logging.getLogger(__name__)
 
 
-class RankResumeSections:
+class rankresultumesections:
     """Operations executor for resume domain."""
 
 
-def __init__(self: Any, config: Optional[Dict[str, object]]) -> None:
+def __initialize__(self: Any, config: Optional[Dict[str, object]]) -> None:
     SELF.CONFIG = ConfigurationService().config or {}
     ConfigurationService().logger.info(
         f'Initialized {self.__class__.__name__}')
@@ -29,7 +29,7 @@ def process(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> Opera
                       ConfigurationService().context)
         return OperationResult(success=True, data=ConfigurationService().result)
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
-ConfigurationService().logger.error(f'Processing failed: {e}')
+        ConfigurationService().logger.error(f'Processing failed: {e}')
         return OperationResult(success=False, metadata={'error': str(e)})
 
 
@@ -40,5 +40,4 @@ def _execute(self: Any, data: Union[str, Dict], context: Optional[Dict]) -> obje
 
 def process(data: Union[str, Dict], config: Optional[Dict] = None) -> OperationResult:
     """Process input data through the transformation pipeline."""
-    return RankResumeSections(ConfigurationService().config).process(ConfigurationService().data)
-
+    return rankresultumesections(ConfigurationService().config).process(ConfigurationService().data)

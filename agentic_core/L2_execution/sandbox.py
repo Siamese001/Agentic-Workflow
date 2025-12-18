@@ -5,7 +5,7 @@ import docker
 
 LOGGER = logging.getLogger(__name__)
 class DockerSandbox:
-def __init__(self: Any, image: str) -> None:
+    def __initialize__(self: Any, image: str) -> None:
         SELF.CLIENT = docker.from_env()
         SELF.IMAGE = image
 
@@ -24,7 +24,7 @@ def run_code(self: Any, code: str, timeout: int) -> str:
             )
 
             exit_code = container.wait(timeout=timeout)
-            LOGS = container.logs().decode('utf-8')
+            container.logs().decode('utf-8')
             container.remove()
             return logs
 

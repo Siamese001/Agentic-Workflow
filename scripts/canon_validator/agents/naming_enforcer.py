@@ -18,6 +18,9 @@ from ..base import SubAtomicAgent
 class NamingEnforcer(SubAtomicAgent):
     """ROLE: Semantic Naming Guardian. Enforces intention-revealing names."""
 
+    # Mutation mode flag - when True, actively fix files instead of just reporting
+    mutation_mode: bool = False
+
     ABBREVIATION_MAP = {
         'mgr': 'manager', 'cfg': 'config', 'val': 'value', 'var': 'variable',
         'param': 'parameter', 'temp': 'temporary', 'calc': 'calculate',
@@ -49,7 +52,12 @@ class NamingEnforcer(SubAtomicAgent):
 
         if naming_log:
             print(f"   ⚠️  Naming issues found in {len(naming_log)} files")
-            self._save_naming_report(naming_log)
+            # Check if mutation mode is active (from targeted remediation)
+            if self.mutation_mode or any('MUTATION MODE' in i for i in self.ctx.instructions):
+                print("   🔧 MUTATION MODE: Fixing naming issues...")
+                await self._fix_naming_issues(naming_log)
+            else:
+                self._save_naming_report(naming_log)
         else:
             print("   ✅ All names comply with semantic standards")
 
@@ -132,3 +140,54 @@ class NamingEnforcer(SubAtomicAgent):
             report_content += "\n"
 
         self.ctx.write_compliant_file(report_path, report_content)
+
+    async def _fix_naming_issues(self, naming_log: List[Dict]):
+        """Fix naming issues by expanding abbreviations and converting camelCase."""
+        for entry in naming_log:
+            file_path = entry['file']
+            symbols = entry['symbols']
+            
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                modified = False
+                
+                # Fix abbreviations
+                for abbrev_info in symbols.get('abbreviations', []):
+                    old_name = abbrev_info['name']
+                    new_name = abbrev_info['suggestion']
+                    if old_name in content and old_name != new_name:
+                        # Only replace if it's a complete word (not part of another word)
+                        import re
+                        pattern = r'\b' + re.escape(old_name) + r'\b'
+                        if re.search(pattern, content):
+                            content = re.sub(pattern, new_name, content)
+                            modified = True
+                            print(f"      Renamed: {old_name} -> {new_name}")
+                
+                # Fix camelCase to snake_case for functions/variables
+                for name in symbols.get('functions', []) + symbols.get('variables', []):
+                    if self._is_camel_case(name):
+                        snake_name = self._to_snake_case(name)
+                        import re
+                        pattern = r'\b' + re.escape(name) + r'\b'
+                        if re.search(pattern, content):
+                            content = re.sub(pattern, snake_name, content)
+                            modified = True
+                            print(f"      Converted: {name} -> {snake_name}")
+                
+                if modified:
+                    if self.ctx.write_compliant_file(file_path, content):
+                        print(f"   ✅ Fixed naming in: {file_path}")
+                        
+            except Exception as e:
+                print(f"   ❌ Failed to fix naming in {file_path}: {e}")
+
+    def _to_snake_case(self, name: str) -> str:
+        """Convert camelCase to snake_case."""
+        import re
+
+        # Insert underscore before uppercase letters and convert to lowercase
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
