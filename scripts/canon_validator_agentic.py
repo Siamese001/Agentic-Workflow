@@ -827,6 +827,94 @@ Always use f-strings.
 Always use Google-style docstrings for public functions.
 Never remove useful type hints.
 """)
+
+    FEW_SHOT_HYGIENE: str = field(default_factory=lambda: """
+FEW-SHOT HYGIENE FIXES (HygieneGuardian — Follow exactly):
+
+EXAMPLE 1: Unused Import
+BAD:
+import pandas as pd
+from datetime import timedelta
+# pandas and timedelta never used
+
+GOOD:
+# Remove both lines entirely
+
+EXAMPLE 2: Unused Variable
+BAD:
+result = compute()
+final = process(result)
+# result is used → keep
+
+GOOD:
+final = process(compute())  # Inline if safe
+
+BAD:
+temp = setup()
+# temp never read
+
+GOOD:
+setup()  # Or remove if side-effect free
+
+EXAMPLE 3: Shadowed Variable (Keep Latest)
+BAD:
+user = get_user()
+for user in users:
+    process(user)
+# First user shadowed
+
+GOOD:
+user_obj = get_user()
+for user in users:
+    process(user)
+
+EXAMPLE 4: Intentional Unused (Preserve)
+GOOD — DO NOT REMOVE:
+__all__ = ["public_func"]  # Defines module exports
+from abc import ABC, abstractmethod  # For inheritance only
+class BaseClass(ABC):
+    @abstractmethod
+    def method(self): pass
+
+EXAMPLE 5: Redundant Code
+BAD:
+if condition:
+    return True
+else:
+    return False
+
+GOOD:
+return bool(condition)
+
+EXAMPLE 6: Obsolete Comment
+BAD:
+# TODO: remove after v2
+# NOTE: deprecated
+
+GOOD:
+# Remove comment if no action needed
+
+EXAMPLE 7: Unused Function (Only if not in __all__ or dunder)
+BAD:
+def _private_helper():
+    ...
+# Never called
+
+GOOD:
+# Remove entire function
+
+PRESERVE:
+def public_api(): ...  # In __all__
+def __init__(): ...    # Special method
+
+Rules:
+- Remove unused imports ALWAYS
+- Remove unused variables ONLY if not in loop/setup
+- Never remove __all__, abstract methods, dunder
+- Inline simple unused intermediates
+- Remove obsolete comments
+- Never remove docstrings
+""")
     
     @property
     def client(self):
@@ -2922,6 +3010,54 @@ class HygieneGuardian(SubAtomicAgent):
                     print(f"      Failed: {e}")
         else:
             self.ctx.report(self.name, 45, True, [])
+    
+    async def propose_hygiene_fix(self, file_path: str, issues: List[str]) -> str:
+        """L5+ Use LLM with few-shot to propose hygiene fixes."""
+        if not self.ctx.intelligence_enabled:
+            return ""
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception:
+            return ""
+        
+        issues_summary = "\n".join([f"- {i}" for i in issues[:10]])
+        
+        prompt = f"""
+{self.ctx.FEW_SHOT_HYGIENE}
+
+<primary_issues>
+{issues_summary}
+</primary_issues>
+
+<preserve_keywords>__all__, abstractmethod, @override, __init__, __new__, __del__</preserve_keywords>
+
+<code_to_clean>
+{content[:4000]}
+</code_to_clean>
+
+Apply the most relevant example above.
+Prioritize:
+- Remove unused imports
+- Inline or remove unused variables
+- Preserve __all__, abstract methods, dunder
+- Simplify redundant boolean logic
+- Remove obsolete comments only
+
+Never remove docstrings, type hints, or intentional placeholders.
+Be conservative: when in doubt, preserve.
+
+RESPONSE FORMAT:
+Return ONLY the cleaned Python code.
+No unused imports. No dead variables.
+Preserve __all__ and docstrings.
+No trailing whitespace.
+"""
+        
+        return await self.ctx.resilient_mutation(
+            self.name, prompt, code=content, file_path=file_path, max_attempts=2
+        )
 
 class CodeStyleGuardian(SubAtomicAgent):
     """
@@ -3052,6 +3188,51 @@ class CodeStyleGuardian(SubAtomicAgent):
                             violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
             except: pass
         return violations
+    
+    async def propose_style_fix(self, file_path: str, violations: List[str]) -> str:
+        """L5+ Use LLM with few-shot to propose style fixes."""
+        if not self.ctx.intelligence_enabled:
+            return ""
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception:
+            return ""
+        
+        violations_summary = "\n".join([f"- {v}" for v in violations[:10]])
+        
+        prompt = f"""
+{self.ctx.FEW_SHOT_STYLE}
+
+<primary_issues>
+{violations_summary}
+</primary_issues>
+
+<code_to_fix>
+{content[:4000]}
+</code_to_fix>
+
+Apply the most relevant example above.
+Prioritize:
+- Correct isort sections
+- Black-compatible line wrapping
+- Full type hints
+- f-strings
+- Google-style docstrings
+- PEP8 naming
+
+Preserve all logic and comments.
+
+RESPONSE FORMAT:
+Return ONLY the reformatted Python code.
+Exact black formatting. No trailing whitespace.
+No explanations. No markdown outside code block.
+"""
+        
+        return await self.ctx.resilient_mutation(
+            self.name, prompt, code=content, file_path=file_path, max_attempts=2
+        )
 
 class StructuralEngineer(SubAtomicAgent):
     """
