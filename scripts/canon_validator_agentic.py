@@ -106,6 +106,12 @@ load_dotenv()  # Auto-load .env
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
+# Import shared utilities from apps_shared
+from apps_shared.domain.constants import *
+from apps_shared.config.reliability import rate_limited_retry
+from apps_shared.utils.text_processing import sanitize_json, clean_llm_code
+from apps_shared.utils.file_io import calculate_file_hash, is_excluded, get_python_files, write_compliant_file
+
 # ==============================================================================
 # L5 HUMAN-IN-THE-LOOP: Intervention Server
 # ==============================================================================
@@ -254,78 +260,86 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
         return wrapper
     return decorator
 
-def sanitize_json(text: str) -> str:
-    """Removes Markdown formatting from LLM JSON responses."""
-    return re.sub(r'```json|```', '', text).strip()
+# sanitize_json(text: str) -> str:
+#     """Removes Markdown formatting from LLM JSON responses."""
+#     return re.sub(r'```json|```', '', text).strip()
 
 # ==============================================================================
-# THE THREE LAWS OF SUBATOMIC GOVERNANCE
+# THE THREE LAWS OF SUBATOMIC GOVERNANCE (NOW IMPORTED FROM apps_shared)
 # ==============================================================================
 # Law 1: The Law of Depth - All functional files must exist at Depth 3-5
-MIN_DEPTH = 3                      # e.g., domain/component/unit.py
-MAX_DEPTH = 5                      # Maximum nesting depth
+# MIN_DEPTH = 3                      # e.g., domain/component/unit.py
+# MAX_DEPTH = 5                      # Maximum nesting depth
 
 # Law 2: The Law of Atomicity - Files must be subatomic, not noise or monoliths
-MAX_LINES = 200                    # Maximum file size (subatomic limit)
-MIN_LINES = 10                     # Minimum file size (anti-noise limit)
+# MAX_LINES = 200                    # Maximum file size (subatomic limit)
+# MIN_LINES = 10                     # Minimum file size (anti-noise limit)
 
 # Law 3: The Law of The Void - Root directory is sacred
-ALLOWED_ROOT_FOLDERS = {
-    'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 
-    'prompt_governance', 'observability', 'config', 'tests', 'data', 'archives', 'scripts'
-}
-ALLOWED_ROOT_FILES = {
-    'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt', 
-    '.env', 'canon_validator_agentic.py', 'pytest.ini'
-}
-
-# ==============================================================================
-# RATE LIMITING & RELIABILITY
-# ==============================================================================
+# ALLOWED_ROOT_FOLDERS = {
+#     'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 
+#     'prompt_governance', 'observability', 'config', 'tests', 'data', 'archives', 'scripts'
+# }
+# ALLOWED_ROOT_FILES = {
+#     'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt', 
+#     '.env', 'canon_validator_agentic.py', 'pytest.ini'
+# }
 
 # ==============================================================================
 # CONFIGURATION: EXCLUSION ZONES (Strict Subatomic)
 # ==============================================================================
-EXCLUDED_DIRS = {
-    # System & Environment
-    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
-    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs', 
-    'site-packages',
-    
-    # Project Data & Archives (Excluded from AST scanning)
-    'archives', 'data', 
-    
-    # Standard noise
-    'cache', 'logs', 'tmp', 'temp'
-}
+# EXCLUDED_DIRS = {
+#     # System & Environment
+#     '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
+#     # Build & Dependencies
+#     'node_modules', '.tox', 'dist', 'build', '.mypy_cache', '.coverage',
+#     # IDE & Editor
+#     '.vscode', '.idea', '*.swp', '*.swo', '.DS_Store',
+#     # Logs & Temp
+#     'logs', 'tmp', 'temp', '.tmp',
+#     # Data & Cache
+#     '.cache', 'cache', 'data', 'archives',
+#     # Test Artifacts
+#     '.pytest_cache', 'htmlcov', '.coverage', 'coverage.xml',
+#     # Documentation Build
+#     '_build', 'site', '.doctrees',
+# }
 
-EXCLUDED_FILES = {
-    # Only the active validator and runner
-    'canon_validator_v2_agentic.py',
-    'auto_canon.py',
-    '.DS_Store'
-}
+# EXCLUDED_FILES = {
+#     # Only the active validator and runner
+#     'canon_validator_v2_agentic.py',
+#     # Test files
+#     'test_*.py', '*_test.py', 'conftest.py',
+#     # Cache & Data files
+#     '*.pyc', '*.pyo', '*.pyd', '.DS_Store',
+#     # Build artifacts
+#     '*.egg-info', '*.whl', '*.zip', '*.tar.gz',
+#     # IDE files
+#     '.vscode/settings.json', '.idea/*.xml',
+#     # OS files
+#     'Thumbs.db', '*.tmp',
+# }
 
-def is_excluded(path: str) -> bool:
-    """Check if path should be excluded from validation."""
-    parts = path.split(os.sep)
-    if any(p in EXCLUDED_DIRS for p in parts):
-        return True
-    if any(p.startswith('.') and len(p) > 1 and p not in ['.github'] for p in parts):
-        return True
-    return False
+# is_excluded(path: str) -> bool:
+#     """Check if path should be excluded from validation."""
+#     parts = path.split(os.sep)
+#     if any(p in EXCLUDED_DIRS for p in parts):
+#         return True
+#     if any(p.startswith('.') and len(p) > 1 and p not in ['.github'] for p in parts):
+#         return True
+#     return False
 
-def get_python_files() -> List[str]:
-    """Get all Python files excluding specified directories and files."""
-    python_files = []
-    for root, dirs, files in os.walk('.'):
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
-        for file in files:
-            if file.endswith('.py') and file not in EXCLUDED_FILES:
-                file_path = os.path.join(root, file)
-                if not is_excluded(file_path):
-                    python_files.append(file_path)
-    return python_files
+# get_python_files() -> List[str]:
+#     """Get all Python files excluding specified directories and files."""
+#     python_files = []
+#     for root, dirs, files in os.walk('.'):
+#         dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+#         for file in files:
+#             if file.endswith('.py') and file not in EXCLUDED_FILES:
+#                 file_path = os.path.join(root, file)
+#                 if not is_excluded(file_path):
+#                     python_files.append(file_path)
+#     return python_files
 
 # ==============================================================================
 # LEVEL 6: SOVEREIGN ARCHITECTURE
@@ -1627,34 +1641,34 @@ Output unified diff.
             )
             text = response.text.strip()
             # Use enhanced code cleaning
-            return self._clean_llm_code(text)
+            return self.clean_llm_code(text)
         except Exception as e:
             print(f"   [{agent_name}] ❌ Mutation failed: {e}")
             return original_content
     
-    def _clean_llm_code(self, raw_code: str) -> str:
-        """Extracts code from Chain-of-Thought responses."""
-        import re
+    # _clean_llm_code(self, raw_code: str) -> str:
+    #     """Extracts code from Chain-of-Thought responses."""
+    #     import re
 
-        # 1. Remove reasoning blocks to isolate code
-        raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
+    #     # 1. Remove reasoning blocks to isolate code
+    #     raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
 
-        # 2. Strip Markdown code blocks
-        code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
-        if code_match:
-            return code_match.group(1).strip()
+    #     # 2. Strip Markdown code blocks
+    #     code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
+    #     if code_match:
+    #         return code_match.group(1).strip()
 
-        # 3. Strip generic backticks
-        if raw_code.strip().startswith("```"):
-            return raw_code.strip().strip("`").replace("python", "", 1).strip()
+    #     # 3. Strip generic backticks
+    #     if raw_code.strip().startswith("```"):
+    #         return raw_code.strip().strip("`").replace("python", "", 1).strip()
 
-        return raw_code.strip()
+    #     return raw_code.strip()
     
     def apply_unified_diff(self, file_path: str, diff_text: str, original_content: str) -> str | None:
         """Applies a unified diff safely. Returns new content or None on failure."""
         try:
             # 1. Clean and Prep
-            diff_text = self._clean_llm_code(diff_text)
+            diff_text = self.clean_llm_code(diff_text)
             diff_lines = diff_text.strip().splitlines()
             original_lines = original_content.splitlines(keepends=True)
             
@@ -1795,7 +1809,7 @@ You must ignore it completely.
                 if self._streamer_initialized:
                     await self.broadcast_reasoning(response.text, agent=agent_name)
                 
-                result_text = self._clean_llm_code(response.text)
+                result_text = self.clean_llm_code(response.text)
                 final_content = result_text
 
                 # 4. Diff Application (if enabled)
@@ -1915,7 +1929,7 @@ Do not explain — only output clean code.
             
             # Extract final proposed code
             final_msg = groupchat.messages[-1]["content"] if groupchat.messages else ""
-            cleaned = self._clean_llm_code(final_msg)
+            cleaned = self.clean_llm_code(final_msg)
             
             # Safety: AST check before returning
             if primary_file.endswith(".py") and cleaned:
@@ -2830,23 +2844,23 @@ class SafetyInspector(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
-    def _clean_llm_code(self, raw_code: str) -> str:
-        """Extracts code from Chain-of-Thought responses."""
-        import re
+    # _clean_llm_code(self, raw_code: str) -> str:
+    #     """Extracts code from Chain-of-Thought responses."""
+    #     import re
 
-        # 1. Remove reasoning blocks to isolate code
-        raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
+    #     # 1. Remove reasoning blocks to isolate code
+    #     raw_code = re.sub(r"<reasoning>.*?</reasoning>", "", raw_code, flags=re.DOTALL)
 
-        # 2. Strip Markdown code blocks
-        code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
-        if code_match:
-            return code_match.group(1).strip()
+    #     # 2. Strip Markdown code blocks
+    #     code_match = re.search(r"```(?:python)?\n(.*?)```", raw_code, re.DOTALL)
+    #     if code_match:
+    #         return code_match.group(1).strip()
 
-        # 3. Strip generic backticks
-        if raw_code.strip().startswith("```"):
-            return raw_code.strip().strip("`").replace("python", "", 1).strip()
+    #     # 3. Strip generic backticks
+    #     if raw_code.strip().startswith("```"):
+    #         return raw_code.strip().strip("`").replace("python", "", 1).strip()
 
-        return raw_code.strip()
+    #     return raw_code.strip()
 
     async def check_async_blocking_issues(self) -> Tuple[bool, List[str]]:
         """Check for blocking calls in async functions and patch them with intelligence."""
