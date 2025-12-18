@@ -36,12 +36,14 @@ from .prompts import (
     FEW_SHOT_PROMPTS,
 )
 
-# Agent imports will be added as agents are created
-# from .agents import (
-#     Historian,
-#     ArchitectureGovernor,
-#     ...
-# )
+# Batch 2 agents
+from .agents import (
+    Historian,
+    ArchitectureGovernor,
+    HygieneGuardian,
+    CodeStyleGuardian,
+    DependencySentinel,
+)
 
 # Orchestrator import will be added when created
 # from .orchestrator import SwarmScheduler
@@ -69,6 +71,12 @@ __all__ = [
     "POSITIVE_INSTRUCTIONAL_CONTEXT",
     "FEW_SHOT_GLOBAL_REFACTOR",
     "FEW_SHOT_PROMPTS",
+    # Batch 2 Agents
+    "Historian",
+    "ArchitectureGovernor",
+    "HygieneGuardian",
+    "CodeStyleGuardian",
+    "DependencySentinel",
     # Orchestrator (to be added)
     # "SwarmScheduler",
 ]
