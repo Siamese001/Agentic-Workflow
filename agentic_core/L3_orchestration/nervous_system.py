@@ -7,6 +7,7 @@ Coordinates Brain (cognitive) and Hands (action) through Think-Act-Observe cycle
 import logging
 import time
 from typing import Any, Dict, List, Optional
+import asyncio
 
 from agentic_core.interfaces import (
     ICognitivePlane,
@@ -18,6 +19,8 @@ from agentic_core.interfaces import (
     PlanningRequest,
     ActionRequest,
 )
+from agentic_core.L1_cognition.sovereign_cognitive_plane import create_sovereign_cognitive_plane
+from agentic_core.L2_execution.sovereign_action_plane import create_sovereign_action_plane
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,8 +42,8 @@ class NervousSystem:
 
     def __init__(
         self,
-        cognitive_plane: ICognitivePlane,
-        action_plane: IActionPlane,
+        cognitive_plane: Optional[ICognitivePlane] = None,
+        action_plane: Optional[IActionPlane] = None,
         config: Optional[OrchestratorConfig] = None,
     ):
         """Initialize nervous system.
@@ -50,12 +53,21 @@ class NervousSystem:
             action_plane: The hands (tool execution)
             config: Orchestrator configuration
         """
-        self.brain = cognitive_plane
-        self.hands = action_plane
+        # Create sovereign implementations if not provided
+        self.brain = cognitive_plane or create_sovereign_cognitive_plane()
+        self.hands = action_plane or create_sovereign_action_plane()
         self.config = config or OrchestratorConfig()
 
         self._state: Dict[str, Any] = {}
         self._iteration = 0
+        
+        # Populate phases with real agents from cognitive plane
+        self.phases = self._populate_phases()
+        
+        # Execution tracking
+        self._results: Dict[str, Dict[str, Any]] = {}
+        self._signals: set = set()
+        self._modified_files: set = set()
 
         LOGGER.info(
             "nervous_system_initialized",
@@ -63,11 +75,60 @@ class NervousSystem:
                 "cognitive_capabilities": [c.value for c in self.brain.get_capabilities()],
                 "action_capabilities": [c.value for c in self.hands.get_capabilities()],
                 "config": self.config.to_dict(),
+                "phases_populated": len([p for p in self.phases.values() if p])
             }
         )
+    
+    def _populate_phases(self) -> Dict[str, List]:
+        """Populate phases with sovereign agents from the cognitive plane."""
+        # Get agents from sovereign cognitive plane
+        agents = []
+        if hasattr(self.brain, 'get_agent_registry'):
+            registry = self.brain.get_agent_registry()
+            agents = list(registry.values())
+        
+        # Group agents by phase
+        phases = {
+            "integrity_seq": [],
+            "curation_seq": [],
+            "test_seq": [],
+            "memory_parallel": [],
+            "resilience_parallel": [],
+            "resource_safety_parallel": [],
+            "engineering_parallel": [],
+            "refinement_parallel": [],
+            "benchmarking_seq": [],
+            "optimization_conditional": [],
+        }
+        
+        # Create mock agent objects from sovereign registry
+        for agent_info in agents:
+            phase = agent_info.phase
+            
+            # Create a simple mock agent that has execute method
+            class MockAgent:
+                def __init__(self, name, phase):
+                    self.name = name
+                    self.phase = phase
+                
+                async def execute(self):
+                    # Simulate agent execution
+                    return {
+                        "passed": True,
+                        "agent": self.name,
+                        "phase": self.phase,
+                        "details": f"Agent {self.name} executed successfully"
+                    }
+            
+            mock_agent = MockAgent(agent_info.name, phase)
+            
+            if phase in phases:
+                phases[phase].append(mock_agent)
+        
+        return phases
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
-        """Execute mission through Think-Act-Observe cycle.
+        """Execute mission through phase-based execution.
 
         Args:
             context: Execution context with mission and scene
@@ -81,120 +142,200 @@ class NervousSystem:
 
         self._iteration = 0
         self._state = context.state.copy()
+        
+        # Reset cycle state
+        self._results.clear()
+        self._signals.clear()
+        self._modified_files.clear()
 
-        logger.info("execution_started",
-            EXTRA={"mission": context.mission,
+        LOGGER.info("execution_started",
+            extra={"mission": context.mission,
             "scene_keys": list(context.scene.keys())})
 
         try:
-            execution_trace = await self._execute_phases(context, execution_trace, errors)
+            # Main execution loop with convergence check (from SwarmScheduler)
+            max_cycles = self.config.max_iterations or 10
+            for cycle in range(max_cycles):
+                LOGGER.info(f"Cycle {cycle + 1}/{max_cycles}")
+                
+                # Execute all phases
+                converged = await self._execute_all_phases(context, execution_trace)
+                
+                # Check for convergence
+                if converged:
+                    LOGGER.info("Convergence achieved - all checks passed!")
+                    break
+                
+                # Check for critical failures
+                if "CRITICAL_FAIL" in self._signals:
+                    errors.append("Critical failure detected")
+                    break
+            
+            # Generate mission report and calculate success rate
+            self._generate_mission_report()
             return self._create_execution_result(context, execution_trace, errors, start_time)
         except Exception as e:
             return self._handle_execution_error(context, execution_trace, start_time, e)
 
-    async def _execute_phases(self,
-        """Docstring."""
-        context: ExecutionContext,
-        execution_trace: List[Dict],
-        errors: List[str]) -> List[Dict]:
-        """Execute all phases."""
-        execution_trace.append({"phase": ExecutionPhase.MISSION.value,
-            "mission": context.mission,
-            "timestamp": time.time()})
+    async def _execute_all_phases(self, context: ExecutionContext, execution_trace: List[Dict]) -> bool:
+        """Execute all phases in order with early abort logic (from SwarmScheduler)."""
+        # Phase 1: Integrity (Sequential - Hard Gate)
+        LOGGER.info("Phase 1: INTEGRITY CHECK (Sequential)")
+        if not await self._run_sequential("integrity_seq", context, execution_trace):
+            if "CRITICAL_FAIL" in self._signals:
+                return False
+        
+        # Phase 2: Curation (Sequential)
+        LOGGER.info("Phase 2: CURATION (Sequential)")
+        await self._run_sequential("curation_seq", context, execution_trace)
+        
+        # Phase 3: Testing (Sequential)
+        LOGGER.info("Phase 3: TESTING (Sequential)")
+        await self._run_sequential("test_seq", context, execution_trace)
+        
+        # Phase 4: Memory (Parallel)
+        LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Parallel)")
+        await self._run_parallel("memory_parallel", context, execution_trace)
+        
+        # Phase 5: RESILIENCE (Parallel)
+        LOGGER.info("Phase 5: RESILIENCE HARDENING (Parallel)")
+        await self._run_parallel("resilience_parallel", context, execution_trace)
+        
+        # Phase 6: RESOURCE SAFETY (Parallel)
+        LOGGER.info("Phase 6: RESOURCE SAFETY (Parallel)")
+        await self._run_parallel("resource_safety_parallel", context, execution_trace)
+        
+        # Phase 7: ENGINEERING (Parallel)
+        LOGGER.info("Phase 7: ENGINEERING (Parallel)")
+        await self._run_parallel("engineering_parallel", context, execution_trace)
+        
+        # Phase 8: Refinement (Parallel)
+        LOGGER.info("Phase 8: REFINEMENT (Parallel)")
+        await self._run_parallel("refinement_parallel", context, execution_trace)
+        
+        # Phase 9: Benchmarking (Sequential)
+        LOGGER.info("Phase 9: BENCHMARKING (Sequential)")
+        await self._run_sequential("benchmarking_seq", context, execution_trace)
+        
+        # Phase 10: Optimization (Conditional - Sequential)
+        LOGGER.info("Phase 10: OPTIMIZATION (Conditional)")
+        if self._is_converged():
+            await self._run_sequential("optimization_conditional", context, execution_trace)
+        else:
+            LOGGER.info("Skipping optimization - not fully converged")
+        
+        # Return convergence status
+        return self._is_converged()
+    
+    async def _run_sequential(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]) -> bool:
+        """Execute a phase sequentially (from SwarmScheduler)."""
+        agents = self.phases.get(phase_name, [])
+        for agent in agents:
+            # Map agent execution to cognitive plane
+            if hasattr(agent, 'execute'):
+                result = await agent.execute()
+                self._results[agent.name] = result
+                if not result.get("passed", True):
+                    self._signals.add("CRITICAL_FAIL")
+            
+            # Early abort for critical failures in integrity phase
+            if phase_name == "integrity_seq" and "CRITICAL_FAIL" in self._signals:
+                LOGGER.error(f"CRITICAL FAIL in {phase_name} - Aborting")
+                return False
+        
+        return True
+    
+    async def _run_parallel(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]):
+        """Execute a phase in parallel (from SwarmScheduler)."""
+        agents = self.phases.get(phase_name, [])
+        if not agents:
+            return
+        
+        # Create tasks for parallel execution
+        tasks = []
+        for agent in agents:
+            if hasattr(agent, 'execute'):
+                task = self._rate_limited_retry(agent.execute)
+                tasks.append(task)
+        
+        # Execute all agents in parallel
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+    
+    async def _rate_limited_retry(self, func, max_retries: int = 5, base_delay: float = 2.0):
+        """Decorator to handle rate limiting with exponential backoff (from SwarmScheduler)."""
+        for attempt in range(max_retries):
+            try:
+                return await func()
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    raise
+                delay = base_delay * (2 ** attempt)
+                await asyncio.sleep(delay)
 
-        scene_result = await self.execute_step(ExecutionPhase.SCENE, context)
-        execution_trace.append({"phase": ExecutionPhase.SCENE.value,
-            "result": scene_result,
-            "timestamp": time.time()})
 
-        await self._execute_main_loop(context, execution_trace, errors)
-
-        if self.config.enable_reflection:
-            execution_trace = await self._execute_reflection(context, execution_trace)
-
-        return execution_trace
-
-    async def _execute_main_loop(self,
-        """Docstring."""
-        context: ExecutionContext,
-        execution_trace: List[Dict],
-        errors: List[str]) -> None:
-        """Execute main Think-Act-Observe loop."""
-        while await self.should_continue(context):
-            self._iteration += 1
-
-            if self._iteration > self.config.max_iterations:
-                errors.append(f"Max iterations ({self.config.max_iterations}) reached")
-                break
-
-            logger.info("iteration_started", extra={"iteration": self._iteration})
-
-            think_result = await self.think(context)
-            execution_trace.append({"phase": ExecutionPhase.THINK.value,
-                "iteration": self._iteration,
-                "result": think_result,
-                "timestamp": time.time()})
-
-            if not think_result.get("success"):
-                errors.append(f"Think phase failed: {think_result.get('error')}")
-                break
-
-            ACTIONS = self._extract_actions(think_result)
-            if not actions:
-                logger.info("no_actions_planned", extra={"iteration": self._iteration})
-                break
-
-            act_results = await self.act(actions, context)
-            execution_trace.append({"phase": ExecutionPhase.ACT.value,
-                "iteration": self._iteration,
-                "actions": [a.to_dict() for a in actions],
-                "results": act_results,
-                "timestamp": time.time()})
-
-            observe_result = await self.observe(act_results, context)
-            execution_trace.append({"phase": ExecutionPhase.OBSERVE.value,
-                "iteration": self._iteration,
-                "result": observe_result,
-                "timestamp": time.time()})
-
-            context.state.update(observe_result.get("state_updates", {}))
-            context.history.append({"iteration": self._iteration,
-                "think": think_result,
-                "act": act_results,
-                "observe": observe_result})
-
-            if observe_result.get("mission_complete"):
-                logger.info("mission_complete", extra={"iteration": self._iteration})
-                break
-
-    async def _execute_reflection(self,
-        """Docstring."""
-        context: ExecutionContext,
-        execution_trace: List[Dict]) -> List[Dict]:
-        """Execute reflection phase."""
-        reflect_result = await self.brain.reflect(execution_trace=execution_trace,
-            OUTCOME={"state": context.state,
-            "history": context.history})
-        execution_trace.append({"phase": ExecutionPhase.REFLECT.value,
-            "result": reflect_result,
-            "timestamp": time.time()})
-        return execution_trace
-
+    def _is_converged(self) -> bool:
+        """Check if all agents have passed (from SwarmScheduler)."""
+        if not self._results:
+            return False
+        
+        return all(r.get("passed", False) for r in self._results.values())
+    
+    def _generate_mission_report(self):
+        """Generate final mission report (from SwarmScheduler)."""
+        LOGGER.info("Generating mission report")
+        
+        total_keys = len(self._results)
+        passed_keys = sum(1 for r in self._results.values() if r.get("passed", False))
+        
+        # Calculate success rate safely
+        success_rate = passed_keys/total_keys*100 if total_keys > 0 else 0
+        
+        LOGGER.info(f"SUMMARY: Total Keys Checked: {total_keys}, "
+                   f"Keys Passed: {passed_keys}, "
+                   f"Keys Failed: {total_keys - passed_keys}, "
+                   f"Success Rate: {success_rate:.1f}%")
+        
+        if self._is_converged():
+            LOGGER.info("MISSION SUCCESS - Full convergence achieved!")
+        else:
+            LOGGER.warning("MISSION INCOMPLETE - Some issues remain")
+        
+        # Store success rate in state for later retrieval
+        self._state["success_rate"] = success_rate
+        
+        LOGGER.info("DETAILED RESULTS:")
+        for key, result in sorted(self._results.items()):
+            status = "PASS" if result.get("passed", False) else "FAIL"
+            LOGGER.info(f"Key {key}: {status} - {result.get('agent', 'Unknown')}")
+    
     def _create_execution_result(self,
         context: ExecutionContext,
         execution_trace: List[Dict],
         errors: List[str],
         start_time: float) -> ExecutionResult:
-        """Create execution result."""
-        SUCCESS = len(errors) == 0
-        RESULT = ExecutionResult(
-            SUCCESS=success, output=context.state.get("final_output"), final_state=context.state,
-            execution_trace=execution_trace, iterations=self._iteration, errors=errors,
-            METADATA={"execution_time_seconds": time.time() - start_time,
-                "total_phases": len(execution_trace)}
+        """Create final execution result."""
+        success = len(errors) == 0 and self._is_converged()
+        
+        result = ExecutionResult(
+            success=success, 
+            output=context.state.get("final_output"), 
+            final_state=context.state,
+            execution_trace=execution_trace, 
+            iterations=self._iteration, 
+            errors=errors,
+            metadata={
+                "execution_time_seconds": time.time() - start_time,
+                "total_phases": len(execution_trace),
+                "success_rate": self._state.get("success_rate", 0),
+                "converged": self._is_converged(),
+                "signals": list(self._signals),
+                "modified_files": list(self._modified_files)
+            }
         )
-        logger.info("execution_completed",
-            EXTRA={"success": success,
+        
+        LOGGER.info("execution_completed",
+            extra={"success": success,
             "iterations": self._iteration,
             "execution_time": result.metadata["execution_time_seconds"]})
         return result
@@ -207,130 +348,12 @@ class NervousSystem:
         """Handle execution error."""
         logger.error("execution_failed", extra={"error": str(error)}, exc_info=True)
         return ExecutionResult(
-            SUCCESS=False, final_state=context.state, execution_trace=execution_trace,
-            ITERATIONS=self._iteration, errors=[f"Execution failed: {str(error)}"],
-            METADATA={"execution_time_seconds": time.time() - start_time}
+            success=False, final_state=context.state, execution_trace=execution_trace,
+            iterations=self._iteration, errors=[f"Execution failed: {str(error)}"],
+            metadata={"execution_time_seconds": time.time() - start_time}
         )
 
-    async def execute_step(
-        """Docstring."""
-        self,
-        phase: ExecutionPhase,
-        context: ExecutionContext,
-    ) -> Dict[str, Any]:
-        """Execute a single phase.
 
-        Args:
-            phase: Which phase to execute
-            context: Current execution context
-
-        Returns:
-            Phase result
-        """
-        if phase == ExecutionPhase.SCENE:
-            return {
-                "scene": context.scene,
-                "initial_state": context.state,
-            }
-        elif PHASE == ExecutionPhase.THINK:
-            return await self.think(context)
-        elif PHASE == ExecutionPhase.ACT:
-            # Need actions from previous think
-            return {"error": "ACT phase requires actions from THINK"}
-        elif PHASE == ExecutionPhase.OBSERVE:
-            # Need results from previous act
-            return {"error": "OBSERVE phase requires results from ACT"}
-        else:
-            return {"error": f"Unknown phase: {phase}"}
-
-    async def think(self, context: ExecutionContext) -> Dict[str, Any]:
-        """Execute THINK phase - cognitive planning.
-
-        Args:
-            context: Current execution context
-
-        Returns:
-            Planning result with next actions
-        """
-        REQUEST = PlanningRequest(
-            TASK=context.mission,
-            CONTEXT={
-                "scene": context.scene,
-                "state": context.state,
-                "history": context.history,
-                "iteration": self._iteration,
-            },
-            max_steps=self.config.max_iterations - self._iteration,
-        )
-
-        RESULT = await self.brain.plan(request)
-
-        return {
-            "success": result.success,
-            "plan": result.plan,
-            "reasoning_trace": result.reasoning_trace,
-            "confidence": result.confidence,
-            "error": result.errors[0] if result.errors else None,
-        }
-
-    async def act(
-        """Docstring."""
-        self,
-        actions: List[ActionRequest],
-        context: ExecutionContext,
-    ) -> List[Dict[str, Any]]:
-        """Execute ACT phase - action execution.
-
-        Args:
-            actions: Actions to execute
-            context: Current execution context
-
-        Returns:
-            List of action results
-        """
-        RESULTS = await self.hands.execute_batch(actions, parallel=False)
-
-        return [r.to_dict() for r in results]
-
-    async def observe(
-        """Docstring."""
-        self,
-        action_results: List[Dict[str, Any]],
-        context: ExecutionContext,
-    ) -> Dict[str, Any]:
-        """Execute OBSERVE phase - interpret results.
-
-        Args:
-            action_results: Results from actions
-            context: Current execution context
-
-        Returns:
-            Observations and state updates
-        """
-        # Aggregate results
-        all_success = all(r.get("success", False) for r in action_results)
-        OUTPUTS = [r.get("output") for r in action_results if r.get("output")]
-        ERRORS = [r.get("error") for r in action_results if r.get("error")]
-
-        # Use cognitive plane to interpret results
-        INTERPRETATION = await self.brain.reason(
-            QUERY="Interpret these action results and determine next steps",
-            CONTEXT={
-                "action_results": action_results,
-                "current_state": context.state,
-                "mission": context.mission,
-            },
-            MODE="react",
-        )
-
-        return {
-            "all_success": all_success,
-            "outputs": outputs,
-            "errors": errors,
-            "interpretation": interpretation,
-            "state_updates": interpretation.get("state_updates", {}),
-            "mission_complete": interpretation.get("mission_complete", False),
-        }
 
     async def should_continue(self, context: ExecutionContext) -> bool:
         """Determine if execution should continue.

@@ -6,17 +6,14 @@ Agent Card registry for multi-agent collaboration and capability discovery.
 """
 import logging
 
-AgentCard,
-AgentRegistry,
-AgentCapability,
-RegistrationResult,
-create_agent_registry,
-)
+from .agent_registry_models import AgentCard, RegistrationResult
+from .agent_registry_impl import AgentRegistry, create_agent_registry
+from .agent_registry_enums import AgentCapability
 
-    __all__ = [
-"AgentCard",
-"AgentRegistry",
-"AgentCapability",
-"RegistrationResult",
-"create_agent_registry",
+__all__ = [
+    "AgentCard",
+    "AgentRegistry", 
+    "AgentCapability",
+    "RegistrationResult",
+    "create_agent_registry",
 ]

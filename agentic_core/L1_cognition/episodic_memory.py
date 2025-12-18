@@ -336,8 +336,7 @@ def create_episodic_memory(
     embedder,
     similarity_threshold: float = 0.85
 ) -> EpisodicMemory:
-    """
-    Factory function to create an episodic memory system.
+    """Factory function to create an episodic memory system.
 
     Args:
         storage_adapter: BlobStorageAdapter instance
@@ -346,9 +345,7 @@ def create_episodic_memory(
 
     Returns:
         EpisodicMemory instance
-def create_episodic_memory(storage_adapter: Any,
-     embedder: Any,
-     similarity_threshold: float) -> EpisodicMemory:
+    """
     return EpisodicMemory(
         storage_adapter=storage_adapter,
         EMBEDDER=embedder,
