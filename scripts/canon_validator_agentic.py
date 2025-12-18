@@ -118,6 +118,10 @@ from agentic_core.agents.base import SubAtomicAgent
 from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
 from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
 from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
+from agentic_core.agents.engineering import StructuralEngineer, PatternEnforcer
+from agentic_core.agents.repair import Sherlock, TestPilot, ToolsmithAgent
+from agentic_core.agents.infrastructure import Historian, GitAgent, BenchmarkingAgent, WatchmanHandler
+from agentic_core.agents.specialized import TheCartographer, TheOmniContext, TheStrategist, NamingEnforcer, DocEnforcer, TypeEnforcer
 
 # ==============================================================================
 # L5 HUMAN-IN-THE-LOOP: Intervention Server
@@ -2190,139 +2194,145 @@ class ImportPatcher:
 # ==============================================================================
 # 3. THE TEST PILOT (Integration Guardian & Healing Orchestrator)
 # ==============================================================================
-class TestPilot(SubAtomicAgent):
-    """
-    ROLE: Integration Guardian & Healing Orchestrator.
-    CAPABILITIES: Runs pytest, analyzes tracebacks, and USES TOOLS (pip) to fix environment issues.
-    """
-    def __init__(self, ctx: ValidationContext):
-        super().__init__(ctx)
-        self.name = "TestPilot"
 
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Verifying System Integrity...")
-        await asyncio.sleep(0)
+# TestPilot (Occurrence 1) is now imported from agentic_core.agents.repair
 
-        # Tool Definition: Pytest Runner
-        def run_tests():
-            return subprocess.run(
-                ["pytest", "-q", "--tb=short", "tests/"],
-                capture_output=True,
-                text=True,
-                timeout=300
-            )
-
-        try:
-            result = run_tests()
-
-            # --- TOOL USE: Self-Repairing Environment ---
-            if result.returncode != 0 and "ModuleNotFoundError" in result.stderr:
-                print("   🔧 TOOL USE: Missing module detected. Attempting auto-install...")
-                import re
-                match = re.search(r"No module named '(.*?)'", result.stderr)
-                if match:
-                    module = match.group(1)
-                    print(f"      -> EXEC: pip install {module}")
-                    
-                    # Execute Tool: PIP
-                    install_result = subprocess.run(
-                        [sys.executable, "-m", "pip", "install", module],
-                        capture_output=True,
-                        text=True
-                    )
-                    
-                    if install_result.returncode == 0:
-                        print("      ✅ Install successful. Retrying tests immediately...")
-                        result = run_tests() # RECURSIVE CHECK
-                    else:
-                        print(f"      ❌ Install failed: {install_result.stderr}")
-
-            # --- Analysis ---
-            if result.returncode == 0:
-                print("   ✅ All tests passed - system healthy")
-                self.ctx.results["TestPilot"] = {"passed": True}
-                # Clear failure signals if they existed
-                self.ctx.signals.discard("TEST_FAILURE")
-            else:
-                print(f"   ❌ Tests failed ({result.returncode})")
-                self.ctx.results["TestPilot"] = {"passed": False, "output": result.stderr}
-                self.ctx.signals.add("TEST_FAILURE")
-                
-                # Signal Sherlock with context
-                self.ctx.results["Sherlock_Request"] = {
-                    "traceback": result.stderr[:3000]
-                }
-
-        except subprocess.TimeoutExpired:
-            print("   ⏰ Test suite timed out - potential infinite loop or deadlock")
-            self.ctx.signals.add("TEST_FAILURE")
-        except Exception as e:
-            print(f"   ❌ Test execution failed: {e}")
+# class TestPilot(SubAtomicAgent):
+#     """
+#     ROLE: Integration Guardian & Healing Orchestrator.
+#     CAPABILITIES: Runs pytest, analyzes tracebacks, and USES TOOLS (pip) to fix environment issues.
+#     """
+#     def __init__(self, ctx: ValidationContext):
+#         super().__init__(ctx)
+#         self.name = "TestPilot"
+#
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Verifying System Integrity...")
+#         await asyncio.sleep(0)
+#
+#         # Tool Definition: Pytest Runner
+#         def run_tests():
+#             return subprocess.run(
+#                 ["pytest", "-q", "--tb=short", "tests/"],
+#                 capture_output=True,
+#                 text=True,
+#                 timeout=300
+#             )
+#
+#         try:
+#             result = run_tests()
+#
+#             # --- TOOL USE: Self-Repairing Environment ---
+#             if result.returncode != 0 and "ModuleNotFoundError" in result.stderr:
+#                 print("   🔧 TOOL USE: Missing module detected. Attempting auto-install...")
+#                 import re
+#                 match = re.search(r"No module named '(.*?)'", result.stderr)
+#                 if match:
+#                     module = match.group(1)
+#                     print(f"      -> EXEC: pip install {module}")
+#                     
+#                     # Execute Tool: PIP
+#                     install_result = subprocess.run(
+#                         [sys.executable, "-m", "pip", "install", module],
+#                         capture_output=True,
+#                         text=True
+#                     )
+#                     
+#                     if install_result.returncode == 0:
+#                         print("      ✅ Install successful. Retrying tests immediately...")
+#                         result = run_tests() # RECURSIVE CHECK
+#                     else:
+#                         print(f"      ❌ Install failed: {install_result.stderr}")
+#
+#             # --- Analysis ---
+#             if result.returncode == 0:
+#                 print("   ✅ All tests passed - system healthy")
+#                 self.ctx.results["TestPilot"] = {"passed": True}
+#                 # Clear failure signals if they existed
+#                 self.ctx.signals.discard("TEST_FAILURE")
+#             else:
+#                 print(f"   ❌ Tests failed ({result.returncode})")
+#                 self.ctx.results["TestPilot"] = {"passed": False, "output": result.stderr}
+#                 self.ctx.signals.add("TEST_FAILURE")
+#                 
+#                 # Signal Sherlock with context
+#                 self.ctx.results["Sherlock_Request"] = {
+#                     "traceback": result.stderr[:3000]
+#                 }
+#
+#         except subprocess.TimeoutExpired:
+#             print("   ⏰ Test suite timed out - potential infinite loop or deadlock")
+#             self.ctx.signals.add("TEST_FAILURE")
+#         except Exception as e:
+#             print(f"   ❌ Test execution failed: {e}")
 
 # ==============================================================================
 # 4. THE MAGNIFICENT SEVEN (Validation Agents)
 # ==============================================================================
-class Historian(SubAtomicAgent):
-    """
-    ROLE: Memory Keeper. Tracks file changes and skips unchanged files.
-    Runs early to save tokens on unchanged code.
-    """
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing file history...")
-        await asyncio.sleep(0)
-        
-        skipped_count = 0
-        for file_path in self.ctx.python_files:
-            if self.ctx.should_skip_file(file_path):
-                self.ctx.skip_files.add(file_path)
-                skipped_count += 1
-                # Mark as passed in results to maintain consistency
-                key = self.ctx._get_file_key(file_path)
-                self.ctx.results[key] = {"passed": True, "details": [], "skipped": True}
-        
-        if skipped_count > 0:
-            print(f"   📚 {self.name}: Skipping {skipped_count} unchanged files (saved tokens)")
-        
-        # Flag flapping files for special attention
-        if self.ctx.flapping_files:
-            print(f"   🔄 {self.name}: {len(self.ctx.flapping_files)} flapping files detected")
-            for file_path in self.ctx.flapping_files:
-                self.ctx.inject_instruction(
-                    self.name,
-                    f"FLAPPING FILE: {file_path} toggles Pass/Fail. Consider rewrite."
-                )
-    
-    async def recommend_from_memory(self, file_path: str, current_signals: List[str]) -> str:
-        """L5+ Use LLM with few-shot to recommend actions based on recalled memories."""
-        if not self.ctx.intelligence_enabled:
-            return ""
-        
-        # Recall relevant memories from Pinecone/local
-        memories = []
-        if hasattr(self.ctx, 'recall_memory'):
-            memories = self.ctx.recall_memory(file_path, limit=5)
-        
-        memories_summary = "\n".join([f"- {m}" for m in memories[:5]]) if memories else "No relevant memories found."
-        
-        prompt = f"""
-{self.ctx.FEW_SHOT_HISTORIAN}
 
-Current issue in {file_path}
-Signals: {current_signals[:10]}
+# Historian is now imported from agentic_core.agents.infrastructure
 
-Recalled memories:
-{memories_summary}
-
-Recommend action based on history.
-If similar past success → output "APPLY_MEMORY: <description>"
-If past failure → output "AVOID_STRATEGY: <description>"
-If no relevant memory → output "PROPOSE_NEW: <description>"
-"""
-        
-        return await self.ctx.resilient_mutation(
-            self.name, prompt, max_attempts=1
-        )
+# class Historian(SubAtomicAgent):
+#     """
+#     ROLE: Memory Keeper. Tracks file changes and skips unchanged files.
+#     Runs early to save tokens on unchanged code.
+#     """
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing file history...")
+#         await asyncio.sleep(0)
+#         
+#         skipped_count = 0
+#         for file_path in self.ctx.python_files:
+#             if self.ctx.should_skip_file(file_path):
+#                 self.ctx.skip_files.add(file_path)
+#                 skipped_count += 1
+#                 # Mark as passed in results to maintain consistency
+#                 key = self.ctx._get_file_key(file_path)
+#                 self.ctx.results[key] = {"passed": True, "details": [], "skipped": True}
+#         
+#         if skipped_count > 0:
+#             print(f"   📚 {self.name}: Skipping {skipped_count} unchanged files (saved tokens)")
+#         
+#         # Flag flapping files for special attention
+#         if self.ctx.flapping_files:
+#             print(f"   🔄 {self.name}: {len(self.ctx.flapping_files)} flapping files detected")
+#             for file_path in self.ctx.flapping_files:
+#                 self.ctx.inject_instruction(
+#                     self.name,
+#                     f"FLAPPING FILE: {file_path} toggles Pass/Fail. Consider rewrite."
+#                 )
+#     
+#     async def recommend_from_memory(self, file_path: str, current_signals: List[str]) -> str:
+#         """L5+ Use LLM with few-shot to recommend actions based on recalled memories."""
+#         if not self.ctx.intelligence_enabled:
+#             return ""
+#         
+#         # Recall relevant memories from Pinecone/local
+#         memories = []
+#         if hasattr(self.ctx, 'recall_memory'):
+#             memories = self.ctx.recall_memory(file_path, limit=5)
+#         
+#         memories_summary = "\n".join([f"- {m}" for m in memories[:5]]) if memories else "No relevant memories found."
+#         
+#         prompt = f"""
+# {self.ctx.FEW_SHOT_HISTORIAN}
+# 
+# Current issue in {file_path}
+# Signals: {current_signals[:10]}
+# 
+# Recalled memories:
+# {memories_summary}
+# 
+# Recommend action based on history.
+# If similar past success → output "APPLY_MEMORY: <description>"
+# If past failure → output "AVOID_STRATEGY: <description>"
+# If no relevant memory → output "PROPOSE_NEW: <description>"
+# """
+#         
+#         return await self.ctx.resilient_mutation(
+#             self.name, prompt, max_attempts=1
+#         )
 
 # ==============================================================================
 # 3. THE SPECIALIST AGENTS (100% Coverage of All 50 Keys)
@@ -3450,589 +3460,593 @@ If no relevant memory → output "PROPOSE_NEW: <description>"
 #             self.name, prompt, code=content, file_path=file_path, max_attempts=2
 #         )
 
-class StructuralEngineer(SubAtomicAgent):
-    """
-    KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
-    ROLE: Heavy Refactoring with Semantic Intelligence.
-    """
-
-    def can_run(self) -> bool:
-        return "GENERATIVE_CLEAN" in self.ctx.signals
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
-        await asyncio.sleep(0)
-
-        # Key 17: Large functions (duplicate check from BudgetAgent)
-        passed, details = self.check_key_17_no_large_functions()
-        self.ctx.report(self.name, 17, passed, details)
-
-        # Key 18: Many parameters (>5 params)
-        passed, details = self.check_key_18_no_many_parameters()
-        self.ctx.report(self.name, 18, passed, details)
-
-        # Key 19: Complexity (already checked above)
-        # Key 20: Large classes (>200 lines)
-        passed, details = self.check_key_20_no_large_classes()
-        self.ctx.report(self.name, 20, passed, details)
-
-        # Key 25: Global variables
-        passed, details = self.check_key_25_no_global_variables()
-        self.ctx.report(self.name, 25, passed, details)
-
-        # Key 42: Large files (>500 lines)
-        passed, details = self.check_key_42_no_large_files()
-        self.ctx.report(self.name, 42, passed, details)
-
-        # Key 43: Class density (>10 classes per file)
-        passed, details = self.check_key_43_no_class_density()
-        self.ctx.report(self.name, 43, passed, details)
-
-        # Key 46: Duplicate code
-        passed, details = self.check_key_46_no_duplicate_code()
-        self.ctx.report(self.name, 46, passed, details)
-
-        print("   ✅ No structural changes pending.")
-
-    def check_key_18_no_many_parameters(self) -> Tuple[bool, List[str]]:
-        """Check for functions with too many parameters (>5)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        args = node.args
-                        total_params = len(args.args) + len(args.kwonlyargs)
-                        if args.vararg:
-                            total_params += 1
-                        if args.kwarg:
-                            total_params += 1
-                        if total_params > 5:
-                            violations.append(f"{file_path}:{node.lineno} {node.name}() ({total_params} params)")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
-        """Check for large classes (>200 lines)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
-                            class_lines = node.end_lineno - node.lineno + 1
-                            if class_lines > 200:
-                                violations.append(f"{file_path}:{node.lineno} {node.name} ({class_lines} lines)")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_42_no_large_files(self) -> Tuple[bool, List[str]]:
-        """Check for large files (>MAX_LINES)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-                    if len(lines) > MAX_LINES:
-                        violations.append(f"{file_path} ({len(lines)} lines > {MAX_LINES})")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_43_no_class_density(self) -> Tuple[bool, List[str]]:
-        """Check for too many classes in one file (>10)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                class_count = sum(1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef))
-                if class_count > 10:
-                    violations.append(f"{file_path} ({class_count} classes)")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions (>50 lines)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
-                            func_lines = node.end_lineno - node.lineno + 1
-                            if func_lines > 50:
-                                violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_25_no_global_variables(self) -> Tuple[bool, List[str]]:
-        """Check for global variables."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in tree.body:
-                    if isinstance(node, ast.Assign):
-                        for target in node.targets:
-                            if isinstance(target, ast.Name):
-                                if not target.id.isupper():
-                                    violations.append(f"{file_path}:{node.lineno}")
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-    def check_key_46_no_duplicate_code(self) -> Tuple[bool, List[str]]:
-        """Check for duplicate code."""
-        violations = []
-        file_hashes = {}
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "rb") as f:
-                    content_hash = hashlib.md5(f.read()).hexdigest()
-
-                if content_hash in file_hashes:
-                    violations.append(f"Duplicate: {file_path} (same as {file_hashes[content_hash]})")
-                else:
-                    file_hashes[content_hash] = file_path
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
-
-class PatternEnforcer(SubAtomicAgent):
-    """
-    KEYS: 26-39 (Pattern Checks)
-    ROLE: Enforces coding patterns and best practices.
-    """
-
-    def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
-
-        # Pattern checks (keys 26-39)
-        pattern_checks = [
-            (26, self.check_key_26_single_responsibility),
-            (27, self.check_key_27_open_closed),
-            (28, self.check_key_28_liskov_substitution),
-            (29, self.check_key_29_interface_segregation),
-            (30, self.check_key_30_dependency_injection),
-            (31, self.check_key_31_no_hardcoded_paths),
-            (32, self.check_key_32_no_hardcoded_urls),
-            (33, self.check_key_33_error_handling),
-            (34, self.check_key_34_no_dead_code),
-            (35, self.check_key_35_no_commented_code),
-            (36, self.check_key_36_immutable_config),
-            (37, self.check_key_37_no_global_state),
-            (38, self.check_key_38_pure_functions),
-            (39, self.check_key_39_defensive_programming),
-        ]
-
-        for key, check_func in pattern_checks:
-            try:
-                passed, details = check_func()
-                self.ctx.report(self.name, key, passed, details)
-            except Exception as e:
-                self.ctx.report(self.name, key, False, [str(e)])
-
-    # Pattern check methods (keys 26-39)
-    def check_key_26_single_responsibility(self) -> Tuple[bool, List[str]]:
-        """Check for classes violating single responsibility principle."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        # Count different types of methods
-                        method_types = set()
-                        for item in node.body:
-                            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                                if item.name.startswith('get_') or item.name.startswith('set_'):
-                                    method_types.add('property')
-                                elif item.name.startswith('save_') or item.name.startswith('load_'):
-                                    method_types.add('persistence')
-                                elif item.name.startswith('validate_') or item.name.startswith('check_'):
-                                    method_types.add('validation')
-                                else:
-                                    method_types.add('business')
-
-                        if len(method_types) > 2:
-                            violations.append(f"{file_path}:{node.lineno} {node.name} has {len(method_types)} responsibility types")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_27_open_closed(self) -> Tuple[bool, List[str]]:
-        """Check for classes that are not open for extension."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        # Check for final/sealed patterns
-                        for item in node.body:
-                            if isinstance(item, ast.FunctionDef):
-                                # Look for methods that prevent override
-                                if item.name == '__init__' and any(
-                                    isinstance(stmt, ast.Raise) for stmt in item.body
-                                ):
-                                    violations.append(f"{file_path}:{node.lineno} {node.name} prevents extension")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_28_liskov_substitution(self) -> Tuple[bool, List[str]]:
-        """Check for Liskov Substitution Principle violations."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                # Skip test files and abstract base classes
-                if 'test' in file_path.lower() or 'abc' in file_path.lower():
-                    continue
-
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        # Only check concrete classes (not abstract)
-                        if any('ABC' in base.id for base in node.bases if hasattr(base, 'id')):
-                            continue
-
-                        # Check for methods that raise NotImplementedError (limit to 5 per file)
-                        not_impl_count = 0
-                        for item in node.body:
-                            if isinstance(item, ast.FunctionDef):
-                                for stmt in ast.walk(item):
-                                    if isinstance(stmt, ast.Raise):
-                                        if isinstance(stmt.exc, ast.Name) and stmt.exc.id == 'NotImplementedError':
-                                            not_impl_count += 1
-                                            if not_impl_count <= 5:  # Limit violations
-                                                violations.append(f"{file_path}:{item.lineno} {node.name}.{item.name} not implemented")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_29_interface_segregation(self) -> Tuple[bool, List[str]]:
-        """Check for fat interfaces."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        # Count abstract methods
-                        method_count = sum(1 for item in node.body
-                                         if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)))
-                        if method_count > 10:
-                            violations.append(f"{file_path}:{node.lineno} {node.name} has {method_count} methods")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_30_dependency_injection(self) -> Tuple[bool, List[str]]:
-        """Check for hardcoded dependencies (with practical exceptions)."""
-        violations = []
-        # Allow common direct instantiations
-        allowed_instantiations = {
-            'list', 'dict', 'set', 'tuple', 'str', 'int', 'float', 'bool',
-            'datetime', 'date', 'time', 'timedelta', 'uuid', 'Path',
-            'logging', 'Logger', 'ConfigParser', 'json', 'yaml', 'csv'
-        }
-
-        for file_path in self.ctx.python_files:
-            try:
-                # Skip test files and simple scripts
-                if 'test' in file_path.lower() or 'script' in file_path.lower():
-                    continue
-
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        # Check for direct instantiation in __init__ (limit violations)
-                        if node.name == '__init__':
-                            violation_count = 0
-                            for stmt in ast.walk(node):
-                                if isinstance(stmt, ast.Call):
-                                    if isinstance(stmt.func, ast.Name):
-                                        if stmt.func.id not in allowed_instantiations:
-                                            violation_count += 1
-                                            if violation_count <= 3:  # Limit to 3 per class
-                                                violations.append(f"{file_path}:{stmt.lineno} Direct instantiation of {stmt.func.id}")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_31_no_hardcoded_paths(self) -> Tuple[bool, List[str]]:
-        """Check for hardcoded file paths."""
-        violations = []
-        path_patterns = [
-            r"['\"]\.\.\/",
-            r"['\"]\/home\/",
-            r"['\"]C:\\",
-            r"['\"]\/tmp\/",
-            r"['\"]\/var\/",
-        ]
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    lines = content.split('\n')
-
-                    for i, line in enumerate(lines, 1):
-                        for pattern in path_patterns:
-                            if re.search(pattern, line):
-                                violations.append(f"{file_path}:{i}")
-                                break
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_32_no_hardcoded_urls(self) -> Tuple[bool, List[str]]:
-        """Check for hardcoded URLs."""
-        violations = []
-        url_patterns = [
-            r"http://localhost",
-            r"https://localhost",
-            r"http://127\.0\.0\.1",
-            r"https://127\.0\.0\.1",
-        ]
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    lines = content.split('\n')
-
-                    for i, line in enumerate(lines, 1):
-                        for pattern in url_patterns:
-                            if re.search(pattern, line):
-                                violations.append(f"{file_path}:{i}")
-                                break
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_33_error_handling(self) -> Tuple[bool, List[str]]:
-        """Check for proper error handling."""
-        violations = []
-        # In relaxed mode, only check critical operations
-        critical_operations = ['open', 'json.loads', 'requests.get', 'subprocess.run']
-
-        for file_path in self.ctx.python_files:
-            try:
-                # Skip test files in relaxed mode
-                if not hasattr(self, 'strict_mode') or not self.strict_mode:
-                    if 'test' in file_path.lower():
-                        continue
-
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        # Check for try/except blocks
-                        has_try = any(isinstance(stmt, ast.Try) for stmt in ast.walk(node))
-
-                        # In strict mode, check all calls; in relaxed, only critical
-                        if hasattr(self, 'strict_mode') and self.strict_mode:
-                            risky_ops = any(isinstance(stmt, ast.Call) for stmt in ast.walk(node))
-                            if risky_ops and not has_try and not node.name.startswith('_'):
-                                violations.append(f"{file_path}:{node.lineno} {node.name} lacks error handling")
-                        else:
-                            # Relaxed mode - only check critical operations
-                            for stmt in ast.walk(node):
-                                if isinstance(stmt, ast.Call) and isinstance(stmt.func, ast.Name):
-                                    if stmt.func.id in critical_operations and not has_try:
-                                        violations.append(f"{file_path}:{stmt.lineno} {node.name} lacks error handling for {stmt.func.id}")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_34_no_dead_code(self) -> Tuple[bool, List[str]]:
-        """Check for dead code."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-
-                    for i, line in enumerate(lines, 1):
-                        stripped = line.strip()
-                        # Check for unreachable code after return
-                        if 'return' in stripped and i < len(lines):
-                            next_line = lines[i].strip()
-                            if next_line and not next_line.startswith('#') and not next_line.startswith('"""'):
-                                violations.append(f"{file_path}:{i+1} Potential dead code")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_35_no_commented_code(self) -> Tuple[bool, List[str]]:
-        """Check for commented out code."""
-        violations = []
-        code_patterns = [
-            r"#\s*def\s+\w+\(",
-            r"#\s*class\s+\w+",
-            r"#\s*if\s+",
-            r"#\s*for\s+",
-            r"#\s*while\s+",
-        ]
-
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    lines = f.readlines()
-
-                    for i, line in enumerate(lines, 1):
-                        if line.strip().startswith('#'):
-                            for pattern in code_patterns:
-                                if re.search(pattern, line):
-                                    violations.append(f"{file_path}:{i}")
-                                    break
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_36_immutable_config(self) -> Tuple[bool, List[str]]:
-        """Check for mutable configuration objects."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Assign):
-                        for target in node.targets:
-                            if isinstance(target, ast.Name):
-                                if 'config' in target.id.lower():
-                                    # Check if assigned a dict or list
-                                    if isinstance(node.value, (ast.Dict, ast.List)):
-                                        violations.append(f"{file_path}:{node.lineno} Mutable config: {target.id}")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_37_no_global_state(self) -> Tuple[bool, List[str]]:
-        """Check for global state variables."""
-        violations = []
-        # Allow common global patterns
-        allowed_globals = {
-            'logger', 'logging', 'CONFIG', 'settings', 'ENV', 'VERSION',
-            'DEBUG', 'TEST_MODE', 'DEFAULT_TIMEOUT', 'MAX_RETRIES'
-        }
-
-        for file_path in self.ctx.python_files:
-            try:
-                # Skip config files and __init__ files
-                if 'config' in file_path.lower() or file_path.endswith('__init__.py'):
-                    continue
-
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in tree.body:
-                    if isinstance(node, ast.Assign):
-                        for target in node.targets:
-                            if isinstance(target, ast.Name):
-                                # Skip constants and allowed globals
-                                if (target.id.isupper() or
-                                    target.id.startswith('_') or
-                                    target.id in allowed_globals):
-                                    continue
-                                violations.append(f"{file_path}:{node.lineno} Global variable: {target.id}")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_38_pure_functions(self) -> Tuple[bool, List[str]]:
-        """Check for impure functions (functions that modify external state)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        for stmt in ast.walk(node):
-                            # Check for external state modification
-                            if isinstance(stmt, ast.Attribute) and isinstance(stmt.attr, str):
-                                if stmt.attr in ['append', 'extend', 'insert', 'remove', 'pop']:
-                                    violations.append(f"{file_path}:{stmt.lineno} {node.name} modifies external state")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
-
-    def check_key_39_defensive_programming(self) -> Tuple[bool, List[str]]:
-        """Check for defensive programming practices."""
-        violations = []
-
-        for file_path in self.ctx.python_files:
-            try:
-                # Skip test files, simple getters, and private methods
-                if ('test' in file_path.lower() or
-                    'utils' in file_path.lower() or
-                    'helpers' in file_path.lower()):
-                    continue
-
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        # Skip private methods, getters, setters, and simple methods
-                        if (node.name.startswith('_') or
-                            node.name.startswith(('get_', 'set_', 'is_', 'has_')) or
-                            len(node.args.args) <= 1):
-                            continue
-
-                        # Check for input validation
-                        has_validation = False
-                        for stmt in node.body:
-                            if isinstance(stmt, ast.If):
-                                # Look for None checks, type checks
-                                for test in ast.walk(stmt.test):
-                                    if isinstance(test, ast.Compare) or isinstance(test, ast.Is):
-                                        has_validation = True
-                                        break
-
-                        # Only flag complex functions with 3+ parameters and no validation
-                        if len(node.args.args) >= 3 and not has_validation:
-                            violations.append(f"{file_path}:{node.lineno} {node.name} lacks input validation")
-            except Exception:
-                continue
-        return (len(violations) == 0, violations)
+# StructuralEngineer is now imported from agentic_core.agents.engineering
+
+# class StructuralEngineer(SubAtomicAgent):
+#     """
+#     KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
+#     ROLE: Heavy Refactoring with Semantic Intelligence.
+#     """
+#
+#     def can_run(self) -> bool:
+#         return "GENERATIVE_CLEAN" in self.ctx.signals
+#
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
+#         await asyncio.sleep(0)
+#
+#         # Key 17: Large functions (duplicate check from BudgetAgent)
+#         passed, details = self.check_key_17_no_large_functions()
+#         self.ctx.report(self.name, 17, passed, details)
+#
+#         # Key 18: Many parameters (>5 params)
+#         passed, details = self.check_key_18_no_many_parameters()
+#         self.ctx.report(self.name, 18, passed, details)
+#
+#         # Key 19: Complexity (already checked above)
+#         # Key 20: Large classes (>200 lines)
+#         passed, details = self.check_key_20_no_large_classes()
+#         self.ctx.report(self.name, 20, passed, details)
+#
+#         # Key 25: Global variables
+#         passed, details = self.check_key_25_no_global_variables()
+#         self.ctx.report(self.name, 25, passed, details)
+#
+#         # Key 42: Large files (>500 lines)
+#         passed, details = self.check_key_42_no_large_files()
+#         self.ctx.report(self.name, 42, passed, details)
+#
+#         # Key 43: Class density (>10 classes per file)
+#         passed, details = self.check_key_43_no_class_density()
+#         self.ctx.report(self.name, 43, passed, details)
+#
+#         # Key 46: Duplicate code
+#         passed, details = self.check_key_46_no_duplicate_code()
+#         self.ctx.report(self.name, 46, passed, details)
+#
+#         print("   ✅ No structural changes pending.")
+#
+#     def check_key_18_no_many_parameters(self) -> Tuple[bool, List[str]]:
+#         """Check for functions with too many parameters (>5)."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+#                         args = node.args
+#                         total_params = len(args.args) + len(args.kwonlyargs)
+#                         if args.vararg:
+#                             total_params += 1
+#                         if args.kwarg:
+#                             total_params += 1
+#                         if total_params > 5:
+#                             violations.append(f"{file_path}:{node.lineno} {node.name}() ({total_params} params)")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
+#         """Check for large classes (>200 lines)."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ClassDef):
+#                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
+#                             class_lines = node.end_lineno - node.lineno + 1
+#                             if class_lines > 200:
+#                                 violations.append(f"{file_path}:{node.lineno} {node.name} ({class_lines} lines)")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_42_no_large_files(self) -> Tuple[bool, List[str]]:
+#         """Check for large files (>MAX_LINES)."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     lines = f.readlines()
+#                     if len(lines) > MAX_LINES:
+#                         violations.append(f"{file_path} ({len(lines)} lines > {MAX_LINES})")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_43_no_class_density(self) -> Tuple[bool, List[str]]:
+#         """Check for too many classes in one file (>10)."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 class_count = sum(1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef))
+#                 if class_count > 10:
+#                     violations.append(f"{file_path} ({class_count} classes)")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
+#         """Check for large functions (>50 lines)."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+#                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
+#                             func_lines = node.end_lineno - node.lineno + 1
+#                             if func_lines > 50:
+#                                 violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_25_no_global_variables(self) -> Tuple[bool, List[str]]:
+#         """Check for global variables."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in tree.body:
+#                     if isinstance(node, ast.Assign):
+#                         for target in node.targets:
+#                             if isinstance(target, ast.Name):
+#                                 if not target.id.isupper():
+#                                     violations.append(f"{file_path}:{node.lineno}")
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_46_no_duplicate_code(self) -> Tuple[bool, List[str]]:
+#         """Check for duplicate code."""
+#         violations = []
+#         file_hashes = {}
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "rb") as f:
+#                     content_hash = hashlib.md5(f.read()).hexdigest()
+#
+#                 if content_hash in file_hashes:
+#                     violations.append(f"Duplicate: {file_path} (same as {file_hashes[content_hash]})")
+#                 else:
+#                     file_hashes[content_hash] = file_path
+#             except Exception:
+#                 continue
+#
+#         return (len(violations) == 0, violations)
+
+# PatternEnforcer is now imported from agentic_core.agents.engineering
+
+# class PatternEnforcer(SubAtomicAgent):
+#     """
+#     KEYS: 26-39 (Pattern Checks)
+#     ROLE: Enforces coding patterns and best practices.
+#     """
+#
+#     def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
+#
+#         # Pattern checks (keys 26-39)
+#         pattern_checks = [
+#             (26, self.check_key_26_single_responsibility),
+#             (27, self.check_key_27_open_closed),
+#             (28, self.check_key_28_liskov_substitution),
+#             (29, self.check_key_29_interface_segregation),
+#             (30, self.check_key_30_dependency_injection),
+#             (31, self.check_key_31_no_hardcoded_paths),
+#             (32, self.check_key_32_no_hardcoded_urls),
+#             (33, self.check_key_33_error_handling),
+#             (34, self.check_key_34_no_dead_code),
+#             (35, self.check_key_35_no_commented_code),
+#             (36, self.check_key_36_immutable_config),
+#             (37, self.check_key_37_no_global_state),
+#             (38, self.check_key_38_pure_functions),
+#             (39, self.check_key_39_defensive_programming),
+#         ]
+#
+#         for key, check_func in pattern_checks:
+#             try:
+#                 passed, details = check_func()
+#                 self.ctx.report(self.name, key, passed, details)
+#             except Exception as e:
+#                 self.ctx.report(self.name, key, False, [str(e)])
+#
+#     # Pattern check methods (keys 26-39)
+#     def check_key_26_single_responsibility(self) -> Tuple[bool, List[str]]:
+#         """Check for classes violating single responsibility principle."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ClassDef):
+#                         # Count different types of methods
+#                         method_types = set()
+#                         for item in node.body:
+#                             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+#                                 if item.name.startswith('get_') or item.name.startswith('set_'):
+#                                     method_types.add('property')
+#                                 elif item.name.startswith('save_') or item.name.startswith('load_'):
+#                                     method_types.add('persistence')
+#                                 elif item.name.startswith('validate_') or item.name.startswith('check_'):
+#                                     method_types.add('validation')
+#                                 else:
+#                                     method_types.add('business')
+#
+#                         if len(method_types) > 2:
+#                             violations.append(f"{file_path}:{node.lineno} {node.name} has {len(method_types)} responsibility types")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_27_open_closed(self) -> Tuple[bool, List[str]]:
+#         """Check for classes that are not open for extension."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ClassDef):
+#                         # Check for final/sealed patterns
+#                         for item in node.body:
+#                             if isinstance(item, ast.FunctionDef):
+#                                 # Look for methods that prevent override
+#                                 if item.name == '__init__' and any(
+#                                     isinstance(stmt, ast.Raise) for stmt in item.body
+#                                 ):
+#                                     violations.append(f"{file_path}:{node.lineno} {node.name} prevents extension")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_28_liskov_substitution(self) -> Tuple[bool, List[str]]:
+#         """Check for Liskov Substitution Principle violations."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 # Skip test files and abstract base classes
+#                 if 'test' in file_path.lower() or 'abc' in file_path.lower():
+#                     continue
+#
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ClassDef):
+#                         # Only check concrete classes (not abstract)
+#                         if any('ABC' in base.id for base in node.bases if hasattr(base, 'id')):
+#                             continue
+#
+#                         # Check for methods that raise NotImplementedError (limit to 5 per file)
+#                         not_impl_count = 0
+#                         for item in node.body:
+#                             if isinstance(item, ast.FunctionDef):
+#                                 for stmt in ast.walk(item):
+#                                     if isinstance(stmt, ast.Raise):
+#                                         if isinstance(stmt.exc, ast.Name) and stmt.exc.id == 'NotImplementedError':
+#                                             not_impl_count += 1
+#                                             if not_impl_count <= 5:  # Limit violations
+#                                                 violations.append(f"{file_path}:{item.lineno} {node.name}.{item.name} not implemented")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_29_interface_segregation(self) -> Tuple[bool, List[str]]:
+#         """Check for fat interfaces."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ClassDef):
+#                         # Count abstract methods
+#                         method_count = sum(1 for item in node.body
+#                                          if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)))
+#                         if method_count > 10:
+#                             violations.append(f"{file_path}:{node.lineno} {node.name} has {method_count} methods")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_30_dependency_injection(self) -> Tuple[bool, List[str]]:
+#         """Check for hardcoded dependencies (with practical exceptions)."""
+#         violations = []
+#         # Allow common direct instantiations
+#         allowed_instantiations = {
+#             'list', 'dict', 'set', 'tuple', 'str', 'int', 'float', 'bool',
+#             'datetime', 'date', 'time', 'timedelta', 'uuid', 'Path',
+#             'logging', 'Logger', 'ConfigParser', 'json', 'yaml', 'csv'
+#         }
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 # Skip test files and simple scripts
+#                 if 'test' in file_path.lower() or 'script' in file_path.lower():
+#                     continue
+#
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.FunctionDef):
+#                         # Check for direct instantiation in __init__ (limit violations)
+#                         if node.name == '__init__':
+#                             violation_count = 0
+#                             for stmt in ast.walk(node):
+#                                 if isinstance(stmt, ast.Call):
+#                                     if isinstance(stmt.func, ast.Name):
+#                                         if stmt.func.id not in allowed_instantiations:
+#                                             violation_count += 1
+#                                             if violation_count <= 3:  # Limit to 3 per class
+#                                                 violations.append(f"{file_path}:{stmt.lineno} Direct instantiation of {stmt.func.id}")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_31_no_hardcoded_paths(self) -> Tuple[bool, List[str]]:
+#         """Check for hardcoded file paths."""
+#         violations = []
+#         path_patterns = [
+#             r"['\"]\.\.\/",
+#             r"['\"]\/home\/",
+#             r"['\"]C:\\",
+#             r"['\"]\/tmp\/",
+#             r"['\"]\/var\/",
+#         ]
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     content = f.read()
+#                     lines = content.split('\n')
+#
+#                     for i, line in enumerate(lines, 1):
+#                         for pattern in path_patterns:
+#                             if re.search(pattern, line):
+#                                 violations.append(f"{file_path}:{i}")
+#                                 break
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_32_no_hardcoded_urls(self) -> Tuple[bool, List[str]]:
+#         """Check for hardcoded URLs."""
+#         violations = []
+#         url_patterns = [
+#             r"http://localhost",
+#             r"https://localhost",
+#             r"http://127\.0\.0\.1",
+#             r"https://127\.0\.0\.1",
+#         ]
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     content = f.read()
+#                     lines = content.split('\n')
+#
+#                     for i, line in enumerate(lines, 1):
+#                         for pattern in url_patterns:
+#                             if re.search(pattern, line):
+#                                 violations.append(f"{file_path}:{i}")
+#                                 break
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_33_error_handling(self) -> Tuple[bool, List[str]]:
+#         """Check for proper error handling."""
+#         violations = []
+#         # In relaxed mode, only check critical operations
+#         critical_operations = ['open', 'json.loads', 'requests.get', 'subprocess.run']
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 # Skip test files in relaxed mode
+#                 if not hasattr(self, 'strict_mode') or not self.strict_mode:
+#                     if 'test' in file_path.lower():
+#                         continue
+#
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.FunctionDef):
+#                         # Check for try/except blocks
+#                         has_try = any(isinstance(stmt, ast.Try) for stmt in ast.walk(node))
+#
+#                         # In strict mode, check all calls; in relaxed, only critical
+#                         if hasattr(self, 'strict_mode') and self.strict_mode:
+#                             risky_ops = any(isinstance(stmt, ast.Call) for stmt in ast.walk(node))
+#                             if risky_ops and not has_try and not node.name.startswith('_'):
+#                                 violations.append(f"{file_path}:{node.lineno} {node.name} lacks error handling")
+#                         else:
+#                             # Relaxed mode - only check critical operations
+#                             for stmt in ast.walk(node):
+#                                 if isinstance(stmt, ast.Call) and isinstance(stmt.func, ast.Name):
+#                                     if stmt.func.id in critical_operations and not has_try:
+#                                         violations.append(f"{file_path}:{stmt.lineno} {node.name} lacks error handling for {stmt.func.id}")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_34_no_dead_code(self) -> Tuple[bool, List[str]]:
+#         """Check for dead code."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     lines = f.readlines()
+#
+#                     for i, line in enumerate(lines, 1):
+#                         stripped = line.strip()
+#                         # Check for unreachable code after return
+#                         if 'return' in stripped and i < len(lines):
+#                             next_line = lines[i].strip()
+#                             if next_line and not next_line.startswith('#') and not next_line.startswith('"""'):
+#                                 violations.append(f"{file_path}:{i+1} Potential dead code")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_35_no_commented_code(self) -> Tuple[bool, List[str]]:
+#         """Check for commented out code."""
+#         violations = []
+#         code_patterns = [
+#             r"#\s*def\s+\w+\(",
+#             r"#\s*class\s+\w+",
+#             r"#\s*if\s+",
+#             r"#\s*for\s+",
+#             r"#\s*while\s+",
+#         ]
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     lines = f.readlines()
+#
+#                     for i, line in enumerate(lines, 1):
+#                         if line.strip().startswith('#'):
+#                             for pattern in code_patterns:
+#                                 if re.search(pattern, line):
+#                                     violations.append(f"{file_path}:{i}")
+#                                     break
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_36_immutable_config(self) -> Tuple[bool, List[str]]:
+#         """Check for mutable configuration objects."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.Assign):
+#                         for target in node.targets:
+#                             if isinstance(target, ast.Name):
+#                                 if 'config' in target.id.lower():
+#                                     # Check if assigned a dict or list
+#                                     if isinstance(node.value, (ast.Dict, ast.List)):
+#                                         violations.append(f"{file_path}:{node.lineno} Mutable config: {target.id}")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_37_no_global_state(self) -> Tuple[bool, List[str]]:
+#         """Check for global state variables."""
+#         violations = []
+#         # Allow common global patterns
+#         allowed_globals = {
+#             'logger', 'logging', 'CONFIG', 'settings', 'ENV', 'VERSION',
+#             'DEBUG', 'TEST_MODE', 'DEFAULT_TIMEOUT', 'MAX_RETRIES'
+#         }
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 # Skip config files and __init__ files
+#                 if 'config' in file_path.lower() or file_path.endswith('__init__.py'):
+#                     continue
+#
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in tree.body:
+#                     if isinstance(node, ast.Assign):
+#                         for target in node.targets:
+#                             if isinstance(target, ast.Name):
+#                                 # Skip constants and allowed globals
+#                                 if (target.id.isupper() or
+#                                     target.id.startswith('_') or
+#                                     target.id in allowed_globals):
+#                                     continue
+#                                 violations.append(f"{file_path}:{node.lineno} Global variable: {target.id}")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_38_pure_functions(self) -> Tuple[bool, List[str]]:
+#         """Check for impure functions (functions that modify external state)."""
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.FunctionDef):
+#                         for stmt in ast.walk(node):
+#                             # Check for external state modification
+#                             if isinstance(stmt, ast.Attribute) and isinstance(stmt.attr, str):
+#                                 if stmt.attr in ['append', 'extend', 'insert', 'remove', 'pop']:
+#                                     violations.append(f"{file_path}:{stmt.lineno} {node.name} modifies external state")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
+#
+#     def check_key_39_defensive_programming(self) -> Tuple[bool, List[str]]:
+#         """Check for defensive programming practices."""
+#         violations = []
+#
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 # Skip test files, simple getters, and private methods
+#                 if ('test' in file_path.lower() or
+#                     'utils' in file_path.lower() or
+#                     'helpers' in file_path.lower()):
+#                     continue
+#
+#                 with open(file_path, "r", encoding="utf-8") as f:
+#                     tree = ast.parse(f.read())
+#
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.FunctionDef):
+#                         # Skip private methods, getters, setters, and simple methods
+#                         if (node.name.startswith('_') or
+#                             node.name.startswith(('get_', 'set_', 'is_', 'has_')) or
+#                             len(node.args.args) <= 1):
+#                             continue
+#
+#                         # Check for input validation
+#                         has_validation = False
+#                         for stmt in node.body:
+#                             if isinstance(stmt, ast.If):
+#                                 # Look for None checks, type checks
+#                                 for test in ast.walk(stmt.test):
+#                                     if isinstance(test, ast.Compare) or isinstance(test, ast.Is):
+#                                         has_validation = True
+#                                         break
+#
+#                         # Only flag complex functions with 3+ parameters and no validation
+#                         if len(node.args.args) >= 3 and not has_validation:
+#                             violations.append(f"{file_path}:{node.lineno} {node.name} lacks input validation")
+#             except Exception:
+#                 continue
+#         return (len(violations) == 0, violations)
 
 class SemanticMapper(SubAtomicAgent):
     """
@@ -4234,152 +4248,156 @@ class TruthKeeper(SubAtomicAgent):
         except Exception as e:
             print(f"   ❌ Failed to fix docstring: {e}")
 
-class TheCartographer(SubAtomicAgent):
-    """
-    ROLE: Memory & Embedding. Maps the codebase into semantic space.
-    
-    The Cartographer generates embeddings for changed files
-    and maintains the Pinecone index for semantic retrieval.
-    """
-    
-    def can_run(self) -> bool:
-        """Run when files are modified."""
-        return len(self.ctx.modified_files) > 0 and self.ctx.pinecone_available
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
-        await asyncio.sleep(0)
-        
-        if not self.ctx.pinecone_available:
-            print(f"   🧊 Deep Brain unavailable - skipping mapping")
-            return
-        
-        # Process modified files
-        for file_path in self.ctx.modified_files:
-            await self._map_file(file_path)
-        
-        print(f"   ✅ Mapped {len(self.ctx.modified_files)} files to semantic space")
-    
-    async def _map_file(self, file_path: str):
-        """Generate and store embedding for a file."""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Generate summary for metadata
-            summary = await self._generate_summary(file_path, content)
-            
-            # Upsert embedding with metadata
-            await self.ctx.upsert_embedding(
-                file_path, 
-                content,
-                metadata={
-                    "summary": summary,
-                    "modified": str(datetime.datetime.now())
-                }
-            )
-            
-            print(f"      📍 Mapped: {file_path}")
-            
-        except Exception as e:
-            print(f"   ❌ Failed to map {file_path}: {e}")
-    
-    async def _generate_summary(self, file_path: str, content: str) -> str:
-        """Generate a brief summary for the file."""
-        if not self.ctx.intelligence_enabled:
-            return "No summary available"
-        
-        prompt = f"""
-        Role: Code Cartographer
-        Context: Creating a semantic map of the codebase.
-        
-        File: {file_path}
-        Content preview:
-        {content[:800]}...
-        
-        Task: Provide a ONE-SENTENCE summary of this file's purpose.
-        Focus on what it does, not how it does it.
-        """
-        
-        try:
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            return response.text.strip()
-        except Exception:
-            return "Summary generation failed"
+# TheCartographer is now imported from agentic_core.agents.specialized
 
-class TheOmniContext(SubAtomicAgent):
-    """
-    ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
-    
-    The OmniContext uses Pinecone to find relevant code snippets
-    and Gemini to provide intelligent answers about the codebase.
-    """
-    
-    def can_run(self) -> bool:
-        """Always available for consultation."""
-        return True
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Initializing semantic wisdom...")
-        await asyncio.sleep(0)
-        
-        # Store consult method on context for other agents
-        self.ctx.omni_context = self
-        print(f"   🧠 Semantic wisdom initialized")
-    
-    async def consult(self, query: str) -> str:
-        """Consult the semantic codebase for answers."""
-        if not self.ctx.pinecone_available or not self.ctx.intelligence_enabled:
-            return f"[OMNI] Semantic search unavailable: {query}"
-        
-        try:
-            # Search for relevant code
-            matches = await self.ctx.search_embeddings(query, top_k=3)
-            
-            if not matches:
-                return f"[OMNI] No relevant code found for: {query}"
-            
-            # Build context from matches
-            context_snippets = []
-            for match in matches:
-                metadata = match.get('metadata', {})
-                path = metadata.get('path', 'Unknown')
-                preview = metadata.get('preview', '')
-                score = match.get('score', 0)
-                
-                context_snippets.append(
-                    f"File: {path} (similarity: {score:.2f})\n{preview}..."
-                )
-            
-            context = "\n\n".join(context_snippets)
-            
-            # Ask Gemini to answer based on context
-            prompt = f"""
-            Role: Codebase Expert
-            Context: You are answering questions about a Python codebase.
-            
-            Question: {query}
-            
-            Relevant code snippets:
-            {context}
-            
-            Provide a concise answer based on the code snippets above.
-            If the snippets don't contain the answer, say "I don't have enough information".
-            """
-            
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            
-            answer = response.text.strip()
-            return f"[OMNI] {answer}"
-            
-        except Exception as e:
-            return f"[OMNI] Error during consultation: {e}"
+# class TheCartographer(SubAtomicAgent):
+#     """
+#     ROLE: Memory & Embedding. Maps the codebase into semantic space.
+#     
+#     The Cartographer generates embeddings for changed files
+#     and maintains the Pinecone index for semantic retrieval.
+#     """
+#     
+#     def can_run(self) -> bool:
+#         """Run when files are modified."""
+#         return len(self.ctx.modified_files) > 0 and self.ctx.pinecone_available
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
+#         await asyncio.sleep(0)
+#         
+#         if not self.ctx.pinecone_available:
+#             print(f"   🧊 Deep Brain unavailable - skipping mapping")
+#             return
+#         
+#         # Process modified files
+#         for file_path in self.ctx.modified_files:
+#             await self._map_file(file_path)
+#         
+#         print(f"   ✅ Mapped {len(self.ctx.modified_files)} files to semantic space")
+#     
+#     async def _map_file(self, file_path: str):
+#         """Generate and store embedding for a file."""
+#         try:
+#             with open(file_path, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#             
+#             # Generate summary for metadata
+#             summary = await self._generate_summary(file_path, content)
+#             
+#             # Upsert embedding with metadata
+#             await self.ctx.upsert_embedding(
+#                 file_path, 
+#                 content,
+#                 metadata={
+#                     "summary": summary,
+#                     "modified": str(datetime.datetime.now())
+#                 }
+#             )
+#             
+#             print(f"      📍 Mapped: {file_path}")
+#             
+#         except Exception as e:
+#             print(f"   ❌ Failed to map {file_path}: {e}")
+#     
+#     async def _generate_summary(self, file_path: str, content: str) -> str:
+#         """Generate a brief summary for the file."""
+#         if not self.ctx.intelligence_enabled:
+#             return "No summary available"
+#         
+#         prompt = f"""
+#         Role: Code Cartographer
+#         Context: Creating a semantic map of the codebase.
+#         
+#         File: {file_path}
+#         Content preview:
+#         {content[:800]}...
+#         
+#         Task: Provide a ONE-SENTENCE summary of this file's purpose.
+#         Focus on what it does, not how it does it.
+#         """
+#         
+#         try:
+#             response = self.ctx.client.models.generate_content(
+#                 model=self.ctx.model_id,
+#                 contents=prompt
+#             )
+#             return response.text.strip()
+#         except Exception:
+#             return "Summary generation failed"
+
+# TheOmniContext is now imported from agentic_core.agents.specialized
+
+# class TheOmniContext(SubAtomicAgent):
+#     """
+#     ROLE: Wisdom & Semantic Retrieval. Provides context-aware answers.
+#     
+#     The OmniContext uses Pinecone to find relevant code snippets
+#     and Gemini to provide intelligent answers about the codebase.
+#     """
+#     
+#     def can_run(self) -> bool:
+#         """Always available for consultation."""
+#         return True
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Initializing semantic wisdom...")
+#         await asyncio.sleep(0)
+#         
+#         # Store consult method on context for other agents
+#         self.ctx.omni_context = self
+#         print(f"   🧠 Semantic wisdom initialized")
+#     
+#     async def consult(self, query: str) -> str:
+#         """Consult the semantic codebase for answers."""
+#         if not self.ctx.pinecone_available or not self.ctx.intelligence_enabled:
+#             return f"[OMNI] Semantic search unavailable: {query}"
+#         
+#         try:
+#             # Search for relevant code
+#             matches = await self.ctx.search_embeddings(query, top_k=3)
+#             
+#             if not matches:
+#                 return f"[OMNI] No relevant code found for: {query}"
+#             
+#             # Build context from matches
+#             context_snippets = []
+#             for match in matches:
+#                 metadata = match.get('metadata', {})
+#                 path = metadata.get('path', 'Unknown')
+#                 preview = metadata.get('preview', '')
+#                 score = match.get('score', 0)
+#                 
+#                 context_snippets.append(
+#                     f"File: {path} (similarity: {score:.2f})\n{preview}..."
+#                 )
+#             
+#             context = "\n\n".join(context_snippets)
+#             
+#             # Ask Gemini to answer based on context
+#             prompt = f"""
+#             Role: Codebase Expert
+#             Context: You are answering questions about a Python codebase.
+#             
+#             Question: {query}
+#             
+#             Relevant code snippets:
+#             {context}
+#             
+#             Provide a concise answer based on the code snippets above.
+#             If the snippets don't contain the answer, say "I don't have enough information".
+#             """
+#             
+#             response = self.ctx.client.models.generate_content(
+#                 model=self.ctx.model_id,
+#                 contents=prompt
+#             )
+#             
+#             answer = response.text.strip()
+#             return f"[OMNI] {answer}"
+#             
+#         except Exception as e:
+#             return f"[OMNI] Error during consultation: {e}"
 
 class OmniContext(SubAtomicAgent):
     """
@@ -4456,425 +4474,430 @@ class OmniContext(SubAtomicAgent):
         
         return '\n'.join(results[:3])  # Return top 3 results
 
-class TestPilot(SubAtomicAgent):
-    """
-    ROLE: Test Execution. Runs pytest after mutations and rolls back if tests fail.
-    Runs after any mutation phase to ensure code stability.
-    """
-    
-    def __init__(self, ctx):
-        super().__init__(ctx)
-        self.scheduler = None
-    
-    def set_scheduler(self, scheduler):
-        """Set scheduler reference for Sherlock integration."""
-        self.scheduler = scheduler
-        self.ctx._scheduler_ref = scheduler
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Running Test Suite...")
-        await asyncio.sleep(0)
-        
-        if not self.ctx.modified_files:
-            print(f"   ✅ No files modified - skipping tests")
-            return
-        
-        # Find test files for modified source files
-        test_files_to_run = set()
-        for modified_file in self.ctx.modified_files:
-            # Map source file to test file
-            test_file = self._find_test_file(modified_file)
-            if test_file and os.path.exists(test_file):
-                test_files_to_run.add(test_file)
-        
-        if not test_files_to_run:
-            print(f"   ⚠️  No test files found for modified code")
-        else:
-            # Run pytest on affected test files
-            for test_file in test_files_to_run:
-                success = await self._run_test_file(test_file)
-                if not success:
-                    print(f"   🚨 TEST FAILURE: {test_file}")
-                    
-                    # Trigger Sherlock for root cause analysis
-                    # Get the scheduler's Sherlock instance
-                    scheduler = getattr(self.ctx, '_scheduler_ref', None)
-                    if scheduler and hasattr(scheduler, 'sherlock'):
-                        # Get traceback from the failed test
-                        traceback = await self._get_test_traceback(test_file)
-                        
-                        # Trigger Sherlock investigation
-                        for modified_file in self.ctx.modified_files:
-                            scheduler.sherlock.trigger_investigation(
-                                modified_file, test_file, traceback
-                            )
-                            
-                            # Run Sherlock analysis
-                            if scheduler.sherlock.can_run():
-                                await scheduler.sherlock.execute()
-                                break  # Only investigate first failure
-                    
-                    # Mark as failed
-                    self.ctx.report(self.name, 99, False, [f"Tests failed for {test_file}"])
-                else:
-                    print(f"   ✅ Tests passed: {test_file}")
-        
-        # L5 Property-Based Testing: Run Hypothesis verification on modified files
-        if self.ctx.modified_files and HYPOTHESIS_AVAILABLE:
-            print(f"   🧬 TestPilot: Initiating Property-Based Verification...")
-            for file_path in self.ctx.modified_files:
-                await self._run_property_check(file_path)
-        
-        # L5: Enhanced Property-Based Testing with Hypothesis (function-level)
-        if HYPOTHESIS_AVAILABLE and self.ctx.intelligence_enabled:
-            print("   🧪 L5: Running function-level property-based tests with Hypothesis...")
-            modified_funcs = self._extract_modified_functions()
-            for func_file, func_name in modified_funcs[:5]:  # Limit scope
-                try:
-                    # L5+ TestPilot Positive Instructional Injection for property generation
-                    prompt = f"""
-{self.ctx.FEW_SHOT_PROPERTY_TESTS}
-{self.ctx.FEW_SHOT_TESTPILOT}
+# TestPilot (Occurrence 2) is now imported from agentic_core.agents.repair
 
-<positive_instructional_context>
-You are an expert in property-based testing.
-Good properties are:
-- Universal (hold for all inputs)
-- Discover edge cases
-- Simple and readable
-- Use minimal strategies
-</positive_instructional_context>
-
-Generate exactly 3 property tests for function `{func_name}` in file `{func_file}`.
-Focus on invariants, edge cases, post-conditions.
-Use only valid Hypothesis syntax.
-Return complete @given functions — no explanation.
-"""
-                    prop_code = await self.ctx.request_gemini(prompt)
-                    if prop_code:
-                        # Write to temporary test file (governed)
-                        temp_test = f"tests/generated_prop_{func_name}_{int(time.time())}.py"
-                        os.makedirs("tests", exist_ok=True)
-                        if self.ctx.write_compliant_file(temp_test, prop_code):
-                            print(f"      Generated properties → {temp_test}")
-                            # Run with pytest
-                            result = subprocess.run(
-                                [sys.executable, "-m", "pytest", "-q", temp_test],
-                                capture_output=True, text=True
-                            )
-                            if result.returncode != 0:
-                                print(f"      ❌ Property test failed: {func_name}")
-                                self.ctx.signals.add("PROPERTY_VIOLATION")
-                            else:
-                                print(f"      ✅ Property test passed: {func_name}")
-                            # Cleanup
-                            try:
-                                os.remove(temp_test)
-                            except Exception:
-                                pass
-                except Exception as e:
-                    print(f"   ⚠️ Property generation failed for {func_name}: {e}")
-    
-    def _extract_modified_functions(self) -> List[Tuple[str, str]]:
-        """Simple AST scan of modified files for function names."""
-        funcs = []
-        for file_path in self.ctx.modified_files:
-            if not os.path.exists(file_path):
-                continue
-            if not file_path.endswith('.py'):
-                continue
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        funcs.append((file_path, node.name))
-            except Exception:
-                pass
-        return funcs
-    
-    def _find_test_file(self, source_file: str) -> str:
-        """Find the corresponding test file for a source file."""
-        # Remove .py extension and normalize path
-        module_path = source_file.replace('.py', '').replace('\\', '/').lstrip('./')
-        
-        # Common test directory patterns
-        test_patterns = [
-            f"tests/test_{module_path.split('/')[-1]}.py",
-            f"tests/{module_path.replace('/', '_')}_test.py",
-            f"test_{module_path.split('/')[-1]}.py",
-        ]
-        
-        for pattern in test_patterns:
-            if os.path.exists(pattern):
-                return pattern
-        
-        return None
-    
-    async def _run_test_file(self, test_file: str) -> bool:
-        """Run pytest on a specific test file with auto-install for missing modules."""
-        try:
-            # Run pytest in async way
-            process = await asyncio.create_subprocess_exec(
-                sys.executable, "-m", "pytest", test_file, "-v",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            
-            stdout, stderr = await process.communicate()
-            stderr_text = stderr.decode()
-            
-            # TOOL USE: Auto-Install missing modules
-            if process.returncode != 0 and "ModuleNotFoundError" in stderr_text:
-                import re
-                match = re.search(r"No module named '(.*?)'", stderr_text)
-                if match:
-                    module = match.group(1)
-                    print(f"   🔧 TOOL USE: Auto-installing '{module}'...")
-                    
-                    # Install the missing module
-                    install_process = await asyncio.create_subprocess_exec(
-                        sys.executable, "-m", "pip", "install", module,
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE
-                    )
-                    await install_process.communicate()
-                    
-                    if install_process.returncode == 0:
-                        print(f"   ✅ Successfully installed '{module}'. Retrying tests...")
-                        
-                        # Retry the test immediately
-                        retry_process = await asyncio.create_subprocess_exec(
-                            sys.executable, "-m", "pytest", test_file, "-v",
-                            stdout=asyncio.subprocess.PIPE,
-                            stderr=asyncio.subprocess.PIPE
-                        )
-                        stdout, stderr = await retry_process.communicate()
-                        
-                        if retry_process.returncode == 0:
-                            return True
-                        else:
-                            stderr_text = stderr.decode()
-                            print(f"   Test output after install: {stderr_text}")
-                            # Fall through to AutoGen debate below
-                    else:
-                        print(f"   ⚠️ Failed to install '{module}'")
-                        return False
-            
-            if process.returncode == 0:
-                return True
-            else:
-                # AUTOGEN: Escalate complex failures to multi-agent debate
-                self.ctx.signals.add("TEST_FAILURE")
-                print(f"   ❌ Tests failed. Initiating COLLECTIVE REPAIR...")
-                
-                # Determine primary file (simplified: last modified, or parse traceback)
-                primary_file = list(self.ctx.modified_files)[0] if self.ctx.modified_files else None
-                
-                if not primary_file:
-                    print(f"   Test output: {stderr_text}")
-                    return False
-                
-                # Use blast radius from Level 6
-                dependents = list(getattr(self.ctx, "impact_zone", set()))
-                
-                # Run conversational repair
-                proposed_fix = await self.ctx.conversational_repair(
-                    failure_traceback=stderr_text,
-                    primary_file=primary_file,
-                    dependent_files=dependents
-                )
-                
-                if proposed_fix:
-                    print(f"   🛠️ Applying collective fix to {primary_file}")
-                    if self.ctx.write_compliant_file(primary_file, proposed_fix):
-                        self.ctx.modified_files.add(primary_file)
-                        print(f"   ✅ Fix Applied. Re-running tests...")
-                        # Re-run tests to verify fix
-                        verify_process = await asyncio.create_subprocess_exec(
-                            sys.executable, "-m", "pytest", test_file, "-v",
-                            stdout=asyncio.subprocess.PIPE,
-                            stderr=asyncio.subprocess.PIPE
-                        )
-                        await verify_process.communicate()
-                        return verify_process.returncode == 0
-                    else:
-                        print("   🛑 Fix blocked by governor")
-                else:
-                    print("   ⚠️ No valid fix from collective intelligence")
-                
-                print(f"   Test output: {stderr_text}")
-                return False
-        except Exception as e:
-            print(f"   ❌ Failed to run tests: {e}")
-            return False
-    
-    async def _get_test_traceback(self, test_file: str) -> str:
-        """Get the traceback from a failed test run."""
-        try:
-            # Run pytest with traceback output
-            process = await asyncio.create_subprocess_exec(
-                sys.executable, "-m", "pytest", test_file, "-v", "--tb=short",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            
-            stdout, stderr = await process.communicate()
-            
-            # Combine stdout and stderr for full traceback
-            return f"{stdout.decode()}\n{stderr.decode()}"
-        except Exception as e:
-            print(f"   ❌ Failed to get traceback: {e}")
-            return f"Failed to capture traceback: {e}"
-    
-    async def _run_property_check(self, file_path: str):
-        """
-        L5 Property-Based Testing: Generate and run Hypothesis tests for a file.
-        Uses Gemini to identify invariants and generate @given strategies.
-        """
-        try:
-            # Skip non-Python files
-            if not file_path.endswith('.py'):
-                return
-            
-            # Skip test files themselves
-            if 'test_' in file_path or '_test.py' in file_path:
-                return
-            
-            # Read the file content
-            if not os.path.exists(file_path):
-                return
-                
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-            
-            # Skip empty or very small files
-            if len(content) < 50:
-                return
-            
-            prompt = f"""
-Role: QA Engineer
-Task: Write a Property-Based Test using the Hypothesis library for this code:
-{content[:4000]}
-
-Requirements:
-1. Identify 1 critical invariant (e.g. output type, reversibility, idempotence).
-2. Use @given(st.integers(), st.text(), st.lists(), etc) strategies.
-3. Return a standalone python script that imports hypothesis and runs the test.
-4. Include proper imports: from hypothesis import given, strategies as st
-5. The test should be self-contained and executable.
-
-Return ONLY raw Python code. NO MARKDOWN. NO EXPLANATIONS.
-"""
-            
-            test_code = await self.ctx.resilient_mutation(self.name, prompt)
-            
-            if not test_code or len(test_code.strip()) < 20:
-                return
-            
-            # Save ephemeral test
-            test_name = f"tests/prop_test_{int(time.time())}.py"
-            os.makedirs("tests", exist_ok=True)
-            
-            if self.ctx.write_compliant_file(test_name, test_code):
-                # Run the property test
-                proc = await asyncio.create_subprocess_exec(
-                    sys.executable, "-m", "pytest", test_name, "-v", "--tb=short",
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE
-                )
-                stdout, stderr = await proc.communicate()
-                
-                output = stdout.decode() + stderr.decode()
-                
-                if proc.returncode != 0:
-                    # Check for Hypothesis falsifying example
-                    if "Falsifying example" in output:
-                        # Extract counter-example if possible
-                        counter_example = "See pytest output for counter-example"
-                        for line in output.split('\n'):
-                            if "Falsifying example" in line:
-                                counter_example = line.strip()
-                                break
-                        
-                        self.ctx.report_property_failure(file_path, counter_example)
-                        print(f"   🚨 Property Violated in {file_path}")
-                    else:
-                        print(f"   ⚠️  Property test failed (non-Hypothesis error): {file_path}")
-                else:
-                    print(f"   ✅ Property tests passed: {file_path}")
-                
-                # Cleanup ephemeral test file
-                try:
-                    os.remove(test_name)
-                except Exception:
-                    pass
-                    
-        except Exception as e:
-            print(f"   ⚠️  Property Check Error for {file_path}: {e}")
+# class TestPilot(SubAtomicAgent):
+#     """
+#     ROLE: Test Execution. Runs pytest after mutations and rolls back if tests fail.
+#     Runs after any mutation phase to ensure code stability.
+#     """
+#     
+#     def __init__(self, ctx):
+#         super().__init__(ctx)
+#         self.scheduler = None
+#     
+#     def set_scheduler(self, scheduler):
+#         """Set scheduler reference for Sherlock integration."""
+#         self.scheduler = scheduler
+#         self.ctx._scheduler_ref = scheduler
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Running Test Suite...")
+#         await asyncio.sleep(0)
+#         
+#         if not self.ctx.modified_files:
+#             print(f"   ✅ No files modified - skipping tests")
+#             return
+#         
+#         # Find test files for modified source files
+#         test_files_to_run = set()
+#         for modified_file in self.ctx.modified_files:
+#             # Map source file to test file
+#             test_file = self._find_test_file(modified_file)
+#             if test_file and os.path.exists(test_file):
+#                 test_files_to_run.add(test_file)
+#         
+#         if not test_files_to_run:
+#             print(f"   ⚠️  No test files found for modified code")
+#         else:
+#             # Run pytest on affected test files
+#             for test_file in test_files_to_run:
+#                 success = await self._run_test_file(test_file)
+#                 if not success:
+#                     print(f"   🚨 TEST FAILURE: {test_file}")
+#                     
+#                     # Trigger Sherlock for root cause analysis
+#                     # Get the scheduler's Sherlock instance
+#                     scheduler = getattr(self.ctx, '_scheduler_ref', None)
+#                     if scheduler and hasattr(scheduler, 'sherlock'):
+#                         # Get traceback from the failed test
+#                         traceback = await self._get_test_traceback(test_file)
+#                         
+#                         # Trigger Sherlock investigation
+#                         for modified_file in self.ctx.modified_files:
+#                             scheduler.sherlock.trigger_investigation(
+#                                 modified_file, test_file, traceback
+#                             )
+#                             
+#                             # Run Sherlock analysis
+#                             if scheduler.sherlock.can_run():
+#                                 await scheduler.sherlock.execute()
+#                                 break  # Only investigate first failure
+#                     
+#                     # Mark as failed
+#                     self.ctx.report(self.name, 99, False, [f"Tests failed for {test_file}"])
+#                 else:
+#                     print(f"   ✅ Tests passed: {test_file}")
+#         
+#         # L5 Property-Based Testing: Run Hypothesis verification on modified files
+#         if self.ctx.modified_files and HYPOTHESIS_AVAILABLE:
+#             print(f"   🧬 TestPilot: Initiating Property-Based Verification...")
+#             for file_path in self.ctx.modified_files:
+#                 await self._run_property_check(file_path)
+#         
+#         # L5: Enhanced Property-Based Testing with Hypothesis (function-level)
+#         if HYPOTHESIS_AVAILABLE and self.ctx.intelligence_enabled:
+#             print("   🧪 L5: Running function-level property-based tests with Hypothesis...")
+#             modified_funcs = self._extract_modified_functions()
+#             for func_file, func_name in modified_funcs[:5]:  # Limit scope
+#                 try:
+#                     # L5+ TestPilot Positive Instructional Injection for property generation
+#                     prompt = f"""
+# {self.ctx.FEW_SHOT_PROPERTY_TESTS}
+# {self.ctx.FEW_SHOT_TESTPILOT}
+# 
+# <positive_instructional_context>
+# You are an expert in property-based testing.
+# Good properties are:
+# - Universal (hold for all inputs)
+# - Discover edge cases
+# - Simple and readable
+# - Use minimal strategies
+# </positive_instructional_context>
+# 
+# Generate exactly 3 property tests for function `{func_name}` in file `{func_file}`.
+# Focus on invariants, edge cases, post-conditions.
+# Use only valid Hypothesis syntax.
+# Return complete @given functions — no explanation.
+# """
+#                     prop_code = await self.ctx.request_gemini(prompt)
+#                     if prop_code:
+#                         # Write to temporary test file (governed)
+#                         temp_test = f"tests/generated_prop_{func_name}_{int(time.time())}.py"
+#                         os.makedirs("tests", exist_ok=True)
+#                         if self.ctx.write_compliant_file(temp_test, prop_code):
+#                             print(f"      Generated properties → {temp_test}")
+#                             # Run with pytest
+#                             result = subprocess.run(
+#                                 [sys.executable, "-m", "pytest", "-q", temp_test],
+#                                 capture_output=True, text=True
+#                             )
+#                             if result.returncode != 0:
+#                                 print(f"      ❌ Property test failed: {func_name}")
+#                                 self.ctx.signals.add("PROPERTY_VIOLATION")
+#                             else:
+#                                 print(f"      ✅ Property test passed: {func_name}")
+#                             # Cleanup
+#                             try:
+#                                 os.remove(temp_test)
+#                             except Exception:
+#                                 pass
+#                 except Exception as e:
+#                     print(f"   ⚠️ Property generation failed for {func_name}: {e}")
+#     
+#     def _extract_modified_functions(self) -> List[Tuple[str, str]]:
+#         """Simple AST scan of modified files for function names."""
+#         funcs = []
+#         for file_path in self.ctx.modified_files:
+#             if not os.path.exists(file_path):
+#                 continue
+#             if not file_path.endswith('.py'):
+#                 continue
+#             try:
+#                 with open(file_path, 'r', encoding='utf-8') as f:
+#                     tree = ast.parse(f.read())
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.FunctionDef):
+#                         funcs.append((file_path, node.name))
+#             except Exception:
+#                 pass
+#         return funcs
+#     
+#     def _find_test_file(self, source_file: str) -> str:
+#         """Find the corresponding test file for a source file."""
+#         # Remove .py extension and normalize path
+#         module_path = source_file.replace('.py', '').replace('\\', '/').lstrip('./')
+#         
+#         # Common test directory patterns
+#         test_patterns = [
+#             f"tests/test_{module_path.split('/')[-1]}.py",
+#             f"tests/{module_path.replace('/', '_')}_test.py",
+#             f"test_{module_path.split('/')[-1]}.py",
+#         ]
+#         
+#         for pattern in test_patterns:
+#             if os.path.exists(pattern):
+#                 return pattern
+#         
+#         return None
+#     
+#     async def _run_test_file(self, test_file: str) -> bool:
+#         """Run pytest on a specific test file with auto-install for missing modules."""
+#         try:
+#             # Run pytest in async way
+#             process = await asyncio.create_subprocess_exec(
+#                 sys.executable, "-m", "pytest", test_file, "-v",
+#                 stdout=asyncio.subprocess.PIPE,
+#                 stderr=asyncio.subprocess.PIPE
+#             )
+#             
+#             stdout, stderr = await process.communicate()
+#             stderr_text = stderr.decode()
+#             
+#             # TOOL USE: Auto-Install missing modules
+#             if process.returncode != 0 and "ModuleNotFoundError" in stderr_text:
+#                 import re
+#                 match = re.search(r"No module named '(.*?)'", stderr_text)
+#                 if match:
+#                     module = match.group(1)
+#                     print(f"   🔧 TOOL USE: Auto-installing '{module}'...")
+#                     
+#                     # Install the missing module
+#                     install_process = await asyncio.create_subprocess_exec(
+#                         sys.executable, "-m", "pip", "install", module,
+#                         stdout=asyncio.subprocess.PIPE,
+#                         stderr=asyncio.subprocess.PIPE
+#                     )
+#                     await install_process.communicate()
+#                     
+#                     if install_process.returncode == 0:
+#                         print(f"   ✅ Successfully installed '{module}'. Retrying tests...")
+#                         
+#                         # Retry the test immediately
+#                         retry_process = await asyncio.create_subprocess_exec(
+#                             sys.executable, "-m", "pytest", test_file, "-v",
+#                             stdout=asyncio.subprocess.PIPE,
+#                             stderr=asyncio.subprocess.PIPE
+#                         )
+#                         stdout, stderr = await retry_process.communicate()
+#                         
+#                         if retry_process.returncode == 0:
+#                             return True
+#                         else:
+#                             stderr_text = stderr.decode()
+#                             print(f"   Test output after install: {stderr_text}")
+#                             # Fall through to AutoGen debate below
+#                     else:
+#                         print(f"   ⚠️ Failed to install '{module}'")
+#                         return False
+#             
+#             if process.returncode == 0:
+#                 return True
+#             else:
+#                 # AUTOGEN: Escalate complex failures to multi-agent debate
+#                 self.ctx.signals.add("TEST_FAILURE")
+#                 print(f"   ❌ Tests failed. Initiating COLLECTIVE REPAIR...")
+#                 
+#                 # Determine primary file (simplified: last modified, or parse traceback)
+#                 primary_file = list(self.ctx.modified_files)[0] if self.ctx.modified_files else None
+#                 
+#                 if not primary_file:
+#                     print(f"   Test output: {stderr_text}")
+#                     return False
+#                 
+#                 # Use blast radius from Level 6
+#                 dependents = list(getattr(self.ctx, "impact_zone", set()))
+#                 
+#                 # Run conversational repair
+#                 proposed_fix = await self.ctx.conversational_repair(
+#                     failure_traceback=stderr_text,
+#                     primary_file=primary_file,
+#                     dependent_files=dependents
+#                 )
+#                 
+#                 if proposed_fix:
+#                     print(f"   🛠️ Applying collective fix to {primary_file}")
+#                     if self.ctx.write_compliant_file(primary_file, proposed_fix):
+#                         self.ctx.modified_files.add(primary_file)
+#                         print(f"   ✅ Fix Applied. Re-running tests...")
+#                         # Re-run tests to verify fix
+#                         verify_process = await asyncio.create_subprocess_exec(
+#                             sys.executable, "-m", "pytest", test_file, "-v",
+#                             stdout=asyncio.subprocess.PIPE,
+#                             stderr=asyncio.subprocess.PIPE
+#                         )
+#                         await verify_process.communicate()
+#                         return verify_process.returncode == 0
+#                     else:
+#                         print("   🛑 Fix blocked by governor")
+#                 else:
+#                     print("   ⚠️ No valid fix from collective intelligence")
+#                 
+#                 print(f"   Test output: {stderr_text}")
+#                 return False
+#         except Exception as e:
+#             print(f"   ❌ Failed to run tests: {e}")
+#             return False
+#     
+#     async def _get_test_traceback(self, test_file: str) -> str:
+#         """Get the traceback from a failed test run."""
+#         try:
+#             # Run pytest with traceback output
+#             process = await asyncio.create_subprocess_exec(
+#                 sys.executable, "-m", "pytest", test_file, "-v", "--tb=short",
+#                 stdout=asyncio.subprocess.PIPE,
+#                 stderr=asyncio.subprocess.PIPE
+#             )
+#             
+#             stdout, stderr = await process.communicate()
+#             
+#             # Combine stdout and stderr for full traceback
+#             return f"{stdout.decode()}\n{stderr.decode()}"
+#         except Exception as e:
+#             print(f"   ❌ Failed to get traceback: {e}")
+#             return f"Failed to capture traceback: {e}"
+#     
+#     async def _run_property_check(self, file_path: str):
+#         """
+#         L5 Property-Based Testing: Generate and run Hypothesis tests for a file.
+#         Uses Gemini to identify invariants and generate @given strategies.
+#         """
+#         try:
+#             # Skip non-Python files
+#             if not file_path.endswith('.py'):
+#                 return
+#             
+#             # Skip test files themselves
+#             if 'test_' in file_path or '_test.py' in file_path:
+#                 return
+#             
+#             # Read the file content
+#             if not os.path.exists(file_path):
+#                 return
+#                 
+#             with open(file_path, "r", encoding="utf-8") as f:
+#                 content = f.read()
+#             
+#             # Skip empty or very small files
+#             if len(content) < 50:
+#                 return
+#             
+#             prompt = f"""
+# Role: QA Engineer
+# Task: Write a Property-Based Test using the Hypothesis library for this code:
+# {content[:4000]}
+# 
+# Requirements:
+# 1. Identify 1 critical invariant (e.g. output type, reversibility, idempotence).
+# 2. Use @given(st.integers(), st.text(), st.lists(), etc) strategies.
+# 3. Return a standalone python script that imports hypothesis and runs the test.
+# 4. Include proper imports: from hypothesis import given, strategies as st
+# 5. The test should be self-contained and executable.
+# 
+# Return ONLY raw Python code. NO MARKDOWN. NO EXPLANATIONS.
+# """
+#             
+#             test_code = await self.ctx.resilient_mutation(self.name, prompt)
+#             
+#             if not test_code or len(test_code.strip()) < 20:
+#                 return
+#             
+#             # Save ephemeral test
+#             test_name = f"tests/prop_test_{int(time.time())}.py"
+#             os.makedirs("tests", exist_ok=True)
+#             
+#             if self.ctx.write_compliant_file(test_name, test_code):
+#                 # Run the property test
+#                 proc = await asyncio.create_subprocess_exec(
+#                     sys.executable, "-m", "pytest", test_name, "-v", "--tb=short",
+#                     stdout=asyncio.subprocess.PIPE,
+#                     stderr=asyncio.subprocess.PIPE
+#                 )
+#                 stdout, stderr = await proc.communicate()
+#                 
+#                 output = stdout.decode() + stderr.decode()
+#                 
+#                 if proc.returncode != 0:
+#                     # Check for Hypothesis falsifying example
+#                     if "Falsifying example" in output:
+#                         # Extract counter-example if possible
+#                         counter_example = "See pytest output for counter-example"
+#                         for line in output.split('\n'):
+#                             if "Falsifying example" in line:
+#                                 counter_example = line.strip()
+#                                 break
+#                         
+#                         self.ctx.report_property_failure(file_path, counter_example)
+#                         print(f"   🚨 Property Violated in {file_path}")
+#                     else:
+#                         print(f"   ⚠️  Property test failed (non-Hypothesis error): {file_path}")
+#                 else:
+#                     print(f"   ✅ Property tests passed: {file_path}")
+#                 
+#                 # Cleanup ephemeral test file
+#                 try:
+#                     os.remove(test_name)
+#                 except Exception:
+#                     pass
+#                     
+#         except Exception as e:
+#             print(f"   ⚠️  Property Check Error for {file_path}: {e}")
 
 # ==============================================================================
 # THE TOOLSMITH (L5 Dynamic Agency)
 # ==============================================================================
-class ToolsmithAgent(SubAtomicAgent):
-    """
-    ROLE: Dynamic Agency. Creates diagnostic scripts to probe systemic failures.
-    When TEST_FAILURE signals persist and standard mutations can't fix them,
-    The Toolsmith forges new diagnostic tools to investigate the environment.
-    """
-    
-    async def execute(self):
-        # Only activate if tests are failing and standard fixes aren't working
-        if "TEST_FAILURE" not in self.ctx.signals:
-            return
 
-        print(f"\n[>>>] {self.name} ACTIVATED: Forging new diagnostic tools...")
-        
-        # Retrieve the failure context from the blackboard
-        # TestPilot reports to key 99
-        failure_data = self.ctx.results.get(99, {}).get("details", ["Unknown failure"])
-        if isinstance(failure_data, list):
-            failure_data = "\n".join(str(f) for f in failure_data)
-        
-        prompt = f"""
-Role: Systems Engineer
-Task: Create a targeted Python diagnostic script to investigate this failure:
-{failure_data}
+# ToolsmithAgent is now imported from agentic_core.agents.repair
 
-Requirements:
-1. Probe the environment (check DBs, APIs, or Ports).
-2. Output findings in JSON format to stdout.
-3. Do not modify source code, only probe the state.
-4. Keep imports standard or rely on project requirements.
-5. Include proper error handling.
-
-Return ONLY the raw Python code. NO MARKDOWN.
-"""
-        
-        # Request the tool from Gemini
-        tool_code = await self.ctx.resilient_mutation(self.name, prompt)
-        
-        if not tool_code or tool_code.strip() == "":
-            print(f"   [{self.name}] ⚠️ Failed to generate diagnostic tool")
-            return
-        
-        # Use existing governor to write to scripts/ folder
-        tool_name = f"diag_tool_{int(time.time())}.py"
-        tool_path = os.path.join("scripts", tool_name)
-        
-        # Ensure scripts dir exists
-        os.makedirs("scripts", exist_ok=True)
-        
-        if self.ctx.write_compliant_file(tool_path, tool_code):
-            print(f"   🛠️  Tool Forged: {tool_path}")
-            # Inject instruction for the next cycle so other agents know about it
-            self.ctx.inject_instruction(self.name, f"New diagnostic tool available at {tool_path}. Run it to gather intel.")
-            
-            # Broadcast to streamer if available
-            if self.ctx._streamer_initialized:
-                await self.ctx.broadcast(f"Forged diagnostic tool: {tool_path}", agent=self.name, level="TOOL_CREATED")
-        else:
-            print(f"   [{self.name}] ❌ Failed to write diagnostic tool (blocked by governor)")
+# class ToolsmithAgent(SubAtomicAgent):
+#     """
+#     ROLE: Dynamic Agency. Creates diagnostic scripts to probe systemic failures.
+#     When TEST_FAILURE signals persist and standard mutations can't fix them,
+#     The Toolsmith forges new diagnostic tools to investigate the environment.
+#     """
+#     
+#     async def execute(self):
+#         # Only activate if tests are failing and standard fixes aren't working
+#         if "TEST_FAILURE" not in self.ctx.signals:
+#             return
+#
+#         print(f"\n[>>>] {self.name} ACTIVATED: Forging new diagnostic tools...")
+#         
+#         # Retrieve the failure context from the blackboard
+#         # TestPilot reports to key 99
+#         failure_data = self.ctx.results.get(99, {}).get("details", ["Unknown failure"])
+#         if isinstance(failure_data, list):
+#             failure_data = "\n".join(str(f) for f in failure_data)
+#         
+#         prompt = f"""
+# Role: Systems Engineer
+# Task: Create a targeted Python diagnostic script to investigate this failure:
+# {failure_data}
+# 
+# Requirements:
+# 1. Probe the environment (check DBs, APIs, or Ports).
+# 2. Output findings in JSON format to stdout.
+# 3. Do not modify source code, only probe the state.
+# 4. Keep imports standard or rely on project requirements.
+# 5. Include proper error handling.
+# 
+# Return ONLY the raw Python code. NO MARKDOWN.
+# """
+#         
+#         # Request the tool from Gemini
+#         tool_code = await self.ctx.resilient_mutation(self.name, prompt)
+#         
+#         if not tool_code or tool_code.strip() == "":
+#             print(f"   [{self.name}] ⚠️ Failed to generate diagnostic tool")
+#             return
+#         
+#         # Use existing governor to write to scripts/ folder
+#         tool_name = f"diag_tool_{int(time.time())}.py"
+#         tool_path = os.path.join("scripts", tool_name)
+#         
+#         # Ensure scripts dir exists
+#         os.makedirs("scripts", exist_ok=True)
+#         
+#         if self.ctx.write_compliant_file(tool_path, tool_code):
+#             print(f"   🛠️  Tool Forged: {tool_path}")
+#             # Inject instruction for the next cycle so other agents know about it
+#             self.ctx.inject_instruction(self.name, f"New diagnostic tool available at {tool_path}. Run it to gather intel.")
+#             
+#             # Broadcast to streamer if available
+#             if self.ctx._streamer_initialized:
+#                 await self.ctx.broadcast(f"Forged diagnostic tool: {tool_path}", agent=self.name, level="TOOL_CREATED")
+#         else:
+#             print(f"   [{self.name}] ❌ Failed to write diagnostic tool (blocked by governor)")
 
 
 # ==============================================================================
@@ -5166,1112 +5189,168 @@ IntelligentOrchestrator = SwarmScheduler
 # 5. ADVANCED INTELLIGENCE AGENTS (Level 2)
 # ==============================================================================
 
-class TheStrategist(SubAtomicAgent):
-    """
-    ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
-    Runs only if all other validation phases pass (Phase 6: Optimization).
-    """
-    
-    def can_run(self) -> bool:
-        """Only run if all validations passed."""
-        if not self.ctx.results:
-            return False
-        return all(r.get("passed", False) for r in self.ctx.results.values())
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Analyzing architectural patterns...")
-        await asyncio.sleep(0)
-        
-        if not self.ctx.omni_context:
-            print(f"   ⚠️  No global context available - skipping")
-            return
-        
-        # Analyze code smells in the global context
-        await self._analyze_code_smells()
-    
-    async def _analyze_code_smells(self):
-        """Identify and propose fixes for code smells."""
-        if not self.ctx.intelligence_enabled:
-            print(f"   🧠 Intelligence disabled - skipping code smell analysis")
-            return
-        
-        print(f"   🔍 Scanning for code smells...")
-        
-        for file_path in self.ctx.python_files:
-            if 'test' in file_path.lower():
-                continue
-            
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                # Check for common code smells
-                smells = self._detect_code_smells(file_path, content)
-                
-                if smells:
-                    await self._propose_refactor(file_path, content, smells)
-            
-            except Exception as e:
-                print(f"   ❌ Failed to analyze {file_path}: {e}")
-    
-    def _detect_code_smells(self, file_path: str, content: str) -> List[str]:
-        """Detect various code smells in the content."""
-        smells = []
-        
-        try:
-            tree = ast.parse(content)
-            
-            for node in ast.walk(tree):
-                # God Class detection
-                if isinstance(node, ast.ClassDef):
-                    methods = [n for n in node.body if isinstance(n, ast.FunctionDef)]
-                    if len(methods) > 15:
-                        smells.append(f"God Class: {node.name} has {len(methods)} methods")
-                    
-                    # Large Class detection
-                    lines = node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
-                    if lines > 500:
-                        smells.append(f"Large Class: {node.name} is {lines} lines")
-                
-                # Long Parameter List
-                elif isinstance(node, ast.FunctionDef):
-                    args = len(node.args.args)
-                    if args > 10:
-                        smells.append(f"Long Parameter List: {node.name} has {args} parameters")
-                    
-                    # Long Method
-                    lines = node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
-                    if lines > 100:
-                        smells.append(f"Long Method: {node.name} is {lines} lines")
-        
-        except Exception:
-            pass
-        
-        return smells
-    
-    async def _propose_refactor(self, file_path: str, content: str, smells: List[str]):
-        """Propose a refactoring solution for detected smells."""
-        print(f"   📝 Proposing refactor for {file_path}:")
-        for smell in smells:
-            print(f"      - {smell}")
-        
-        # Ask Gemini for refactoring suggestions
-        prompt = f"""
-        Role: Senior Architect
-        Context: Analyzing code for architectural improvements.
-        
-        File: {file_path}
-        Code Smells Detected:
-        {chr(10).join(f"- {s}" for s in smells)}
-        
-        Task: Propose a refactoring to address these code smells.
-        Consider design patterns like Strategy, Repository, or Command patterns.
-        
-        Provide the refactored code in a single Python code block.
-        """
-        
-        try:
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
-            
-            # Save proposal to .refactor_proposal file using Compliance Governor
-            proposal_file = f"{file_path}.refactor_proposal"
-            proposal_content = f"# Refactoring Proposal for {file_path}\n\n"
-            proposal_content += f"## Code Smells Detected:\n\n"
-            proposal_content += f"{chr(10).join(f'- {s}' for s in smells)}\n\n"
-            proposal_content += f"## Proposed Solution:\n\n"
-            proposal_content += response.text
-            
-            # Note: .refactor_proposal files are exempt from atomicity check
-            if self.ctx.write_compliant_file(proposal_file, proposal_content):
-                print(f"   ✅ Refactor proposal saved to: {proposal_file}")
-            else:
-                print(f"   ❌ Failed to save refactor proposal")
-        
-        except Exception as e:
-            print(f"   ❌ Failed to generate refactor proposal: {e}")
+# TheStrategist is now imported from agentic_core.agents.specialized
 
-class NamingEnforcer(SubAtomicAgent):
-    """ROLE: Semantic Naming Guardian. Enforces intention-revealing names and PEP 8 compliance."""
-    
-    # Common abbreviations to expand
-    ABBREVIATION_MAP = {
-        'mgr': 'manager',
-        'cfg': 'config',
-        'conf': 'configuration',
-        'val': 'value',
-        'var': 'variable',
-        'param': 'parameter',
-        'params': 'parameters',
-        'temp': 'temporary',
-        'tmp': 'temporary',
-        'calc': 'calculate',
-        'eval': 'evaluate',
-        'exec': 'execute',
-        'init': 'initialize',
-        'proc': 'process',
-        'msg': 'message',
-        'info': 'information',
-        'data': 'data',
-        'obj': 'object',
-        'str': 'string',
-        'num': 'number',
-        'idx': 'index',
-        'len': 'length',
-        'cnt': 'count',
-        'req': 'request',
-        'resp': 'response',
-        'auth': 'authenticate',
-        'sync': 'synchronize',
-        'async': 'asynchronous',
-        'spec': 'specification',
-        'impl': 'implementation',
-        'util': 'utility',
-        'utils': 'utilities',
-        'lib': 'library',
-        'libs': 'libraries',
-        'pkg': 'package',
-        'mod': 'module',
-        'mods': 'modules',
-        'func': 'function',
-        'funcs': 'functions',
-        'meth': 'method',
-        'meths': 'methods',
-        'attr': 'attribute',
-        'attrs': 'attributes',
-        'prop': 'property',
-        'props': 'properties',
-        'const': 'constant',
-        'consts': 'constants',
-        'var': 'variable',
-        'vars': 'variables',
-        'arg': 'argument',
-        'args': 'arguments',
-        'kwargs': 'keyword_arguments',
-        'kw': 'keyword',
-        'kws': 'keywords',
-        'dict': 'dictionary',
-        'dicts': 'dictionaries',
-        'list': 'list',
-        'lists': 'lists',
-        'set': 'set',
-        'sets': 'sets',
-        'tuple': 'tuple',
-        'tuples': 'tuples',
-        'iter': 'iterator',
-        'iters': 'iterators',
-        'gen': 'generator',
-        'gens': 'generators',
-        'decor': 'decorator',
-        'decors': 'decorators',
-        'context': 'context',
-        'ctx': 'context',
-        'handler': 'handler',
-        'hdlr': 'handler',
-        'except': 'exception',
-        'exc': 'exception',
-        'ex': 'exception',
-        'err': 'error',
-        'errs': 'errors',
-        'result': 'result',
-        'res': 'result',
-        'ret': 'return',
-        'retval': 'return_value',
-        'out': 'output',
-        'inp': 'input',
-        'io': 'input_output',
-        'ref': 'reference',
-        'refs': 'references',
-        'ptr': 'pointer',
-        'ptrs': 'pointers',
-        'addr': 'address',
-        'addrs': 'addresses',
-        'buf': 'buffer',
-        'bufs': 'buffers',
-        'cache': 'cache',
-        'cch': 'cache',
-        'queue': 'queue',
-        'q': 'queue',
-        'stack': 'stack',
-        'stk': 'stack',
-        'heap': 'heap',
-        'hp': 'heap',
-        'tree': 'tree',
-        'trie': 'trie',
-        'graph': 'graph',
-        'node': 'node',
-        'nodes': 'nodes',
-        'edge': 'edge',
-        'edges': 'edges',
-        'vert': 'vertex',
-        'verts': 'vertices',
-        'path': 'path',
-        'paths': 'paths',
-        'route': 'route',
-        'routes': 'routes',
-        'url': 'url',
-        'urls': 'urls',
-        'uri': 'uri',
-        'uris': 'uris',
-        'json': 'json',
-        'xml': 'xml',
-        'html': 'html',
-        'css': 'css',
-        'js': 'javascript',
-        'ts': 'typescript',
-        'sql': 'sql',
-        'db': 'database',
-        'dbs': 'databases',
-        'tbl': 'table',
-        'tbls': 'tables',
-        'col': 'column',
-        'cols': 'columns',
-        'row': 'row',
-        'rows': 'rows',
-        'rec': 'record',
-        'recs': 'records',
-        'fld': 'field',
-        'flds': 'fields',
-        'key': 'key',
-        'keys': 'keys',
-        'val': 'value',
-        'vals': 'values',
-        'pair': 'pair',
-        'pairs': 'pairs',
-        'map': 'map',
-        'maps': 'maps',
-        'hash': 'hash',
-        'hashes': 'hashes',
-        'tbl': 'table',
-        'tbls': 'tables',
-        'vw': 'view',
-        'vws': 'views',
-        'sp': 'stored_procedure',
-        'sps': 'stored_procedures',
-        'fn': 'function',
-        'fns': 'functions',
-        'trg': 'trigger',
-        'trgs': 'triggers',
-        'idx': 'index',
-        'idxs': 'indexes',
-        'seq': 'sequence',
-        'seqs': 'sequences',
-        'syn': 'synonym',
-        'syns': 'synonyms',
-        'type': 'type',
-        'types': 'types',
-        'cls': 'class',
-        'intf': 'interface',
-        'intfs': 'interfaces',
-        'abs': 'abstract',
-        'base': 'base',
-        'derived': 'derived',
-        'super': 'super',
-        'sub': 'sub',
-        'parent': 'parent',
-        'child': 'child',
-        'sib': 'sibling',
-        'sibs': 'siblings',
-        'cous': 'cousin',
-        'cousins': 'cousins',
-        'anc': 'ancestor',
-        'ancs': 'ancestors',
-        'desc': 'descendant',
-        'descs': 'descendants',
-        'root': 'root',
-        'roots': 'roots',
-        'leaf': 'leaf',
-        'leaves': 'leaves',
-        'branch': 'branch',
-        'branches': 'branches',
-        'trunk': 'trunk',
-        'trunks': 'trunks',
-        'stem': 'stem',
-        'stems': 'stems',
-        'bark': 'bark',
-        'barks': 'barks',
-        'wood': 'wood',
-        'woods': 'woods',
-        'forest': 'forest',
-        'forests': 'forests',
-        'tree': 'tree',
-        'trees': 'trees',
-        'plant': 'plant',
-        'plants': 'plants',
-        'seed': 'seed',
-        'seeds': 'seeds',
-        'fruit': 'fruit',
-        'fruits': 'fruits',
-        'flower': 'flower',
-        'flowers': 'flowers',
-        'petal': 'petal',
-        'petals': 'petals',
-        'pollen': 'pollen',
-        'nectar': 'nectar',
-        'thorn': 'thorn',
-        'thorns': 'thorns',
-        'leaf': 'leaf',
-        'leaves': 'leaves',
-        'root': 'root',
-        'roots': 'roots',
-        'trunk': 'trunk',
-        'trunks': 'trunks',
-        'branch': 'branch',
-        'branches': 'branches',
-        'tree': 'tree',
-        'trees': 'trees',
-        'forest': 'forest',
-        'forests': 'forests',
-        'wood': 'wood',
-        'woods': 'woods',
-        'plant': 'plant',
-        'plants': 'plants',
-        'seed': 'seed',
-        'seeds': 'seeds',
-        'fruit': 'fruit',
-        'fruits': 'fruits',
-        'flower': 'flower',
-        'flowers': 'flowers',
-        'petal': 'petal',
-        'petals': 'petals',
-        'pollen': 'pollen',
-        'nectar': 'nectar',
-        'thorn': 'thorn',
-        'thorns': 'thorns',
-        'leaf': 'leaf',
-        'leaves': 'leaves',
-        'root': 'root',
-        'roots': 'roots',
-        'trunk': 'trunk',
-        'trunks': 'trunks',
-        'branch': 'branch',
-        'branches': 'branches',
-        'tree': 'tree',
-        'trees': 'trees',
-        'forest': 'forest',
-        'forests': 'forests',
-        'wood': 'wood',
-        'woods': 'woods',
-        'plant': 'plant',
-        'plants': 'plants',
-        'seed': 'seed',
-        'seeds': 'seeds',
-        'fruit': 'fruit',
-        'fruits': 'fruits',
-        'flower': 'flower',
-        'flowers': 'flowers',
-        'petal': 'petal',
-        'petals': 'petals',
-        'pollen': 'pollen',
-        'nectar': 'nectar',
-        'thorn': 'thorn',
-        'thorns': 'thorns'
-    }
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Semantic Naming Standards...")
-        await asyncio.sleep(0)
-        
-        # Focus on modified files or all Python files if none tracked
-        target_files = getattr(self.ctx, 'modified_files', self.ctx.python_files)
-        
-        if not target_files:
-            print("   ✅ No files to check for naming")
-            return
-        
-        print(f"   🔍 Analyzing naming in {len(target_files)} files...")
-        
-        # Process files in batches of 5 for cross-module context
-        batch_size = 5
-        batches = [target_files[i:i + batch_size] for i in range(0, len(target_files), batch_size)]
-        
-        refactored_files = []
-        naming_log = []
-        
-        for i, batch in enumerate(batches, 1):
-            print(f"   📦 Processing batch {i}/{len(batches)} ({len(batch)} files)...")
-            
-            # Analyze and refactor batch
-            batch_results = await self._refactor_batch(batch)
-            refactored_files.extend(batch_results['refactored'])
-            naming_log.extend(batch_results['log'])
-        
-        # Save naming refactor report
-        self._save_naming_report(naming_log, refactored_files)
-        
-        if refactored_files:
-            print(f"   ✅ Naming refactored in {len(refactored_files)} files")
-        else:
-            print("   ✅ All names comply with semantic standards")
-    
-    async def _refactor_batch(self, file_batch):
-        """Refactor a batch of files for better naming."""
-        batch_content = {}
-        symbol_analysis = {}
-        
-        # Extract symbols from each file
-        for file_path in file_batch:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    batch_content[file_path] = content
-                    
-                    # Extract symbols using AST
-                    symbols = self._extract_symbols(content)
-                    symbol_analysis[file_path] = symbols
-            except Exception as e:
-                print(f"   ❌ Failed to read {file_path}: {e}")
-        
-        # Check if any files need refactoring
-        needs_refactor = any(
-            self._has_poor_naming(symbols) 
-            for symbols in symbol_analysis.values()
-        )
-        
-        if not needs_refactor:
-            return {'refactored': [], 'log': []}
-        
-        # Generate refactored code using Gemini
-        refactored = []
-        log_entries = []
-        
-        for file_path, content in batch_content.items():
-            symbols = symbol_analysis[file_path]
-            
-            # Create refactoring task
-            task = self._create_refactoring_task(file_path, content, symbols)
-            
-            # Request refactoring
-            refactored_content = await self.ctx.request_mutation(
-                self.name, task, content, reasoning_mode=True
-            )
-            
-            # Apply if changed
-            if refactored_content and refactored_content != content:
-                if self.ctx.write_compliant_file(file_path, refactored_content):
-                    refactored.append(file_path)
-                    log_entries.append({
-                        'file': file_path,
-                        'symbols': symbols,
-                        'reasoning': 'Poor naming detected and refactored'
-                    })
-                    print(f"   ✅ Refactored naming: {os.path.basename(file_path)}")
-        
-        return {'refactored': refactored, 'log': log_entries}
-    
-    def _extract_symbols(self, content):
-        """Extract all symbols from Python code using AST."""
-        symbols = {
-            'classes': [],
-            'functions': [],
-            'variables': [],
-            'abbreviations': []
-        }
-        
-        try:
-            tree = ast.parse(content)
-            
-            for node in ast.walk(tree):
-                # Class names
-                if isinstance(node, ast.ClassDef):
-                    symbols['classes'].append(node.name)
-                    self._check_abbreviations(node.name, symbols['abbreviations'])
-                
-                # Function names
-                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    symbols['functions'].append(node.name)
-                    self._check_abbreviations(node.name, symbols['abbreviations'])
-                    
-                    # Function arguments
-                    for arg in node.args.args:
-                        symbols['variables'].append(arg.arg)
-                        self._check_abbreviations(arg.arg, symbols['abbreviations'])
-                
-                # Variable assignments
-                elif isinstance(node, ast.Assign):
-                    for target in node.targets:
-                        if isinstance(target, ast.Name):
-                            symbols['variables'].append(target.id)
-                            self._check_abbreviations(target.id, symbols['abbreviations'])
-                
-                # Import aliases
-                elif isinstance(node, ast.Import):
-                    for alias in node.names:
-                        if alias.asname:
-                            symbols['variables'].append(alias.asname)
-                            self._check_abbreviations(alias.asname, symbols['abbreviations'])
-                
-                elif isinstance(node, ast.ImportFrom):
-                    for alias in node.names:
-                        if alias.asname:
-                            symbols['variables'].append(alias.asname)
-                            self._check_abbreviations(alias.asname, symbols['abbreviations'])
-        
-        except Exception as e:
-            print(f"   ⚠️  AST parsing failed: {e}")
-        
-        return symbols
-    
-    def _check_abbreviations(self, name, abbreviations):
-        """Check if a name contains common abbreviations."""
-        name_lower = name.lower()
-        
-        for abbrev, full_word in self.ABBREVIATION_MAP.items():
-            if abbrev in name_lower and name_lower != full_word:
-                abbreviations.append({
-                    'name': name,
-                    'abbreviation': abbrev,
-                    'suggestion': name_lower.replace(abbrev, full_word)
-                })
-    
-    def _has_poor_naming(self, symbols):
-        """Check if symbols contain poor naming patterns."""
-        # Check for abbreviations
-        if symbols['abbreviations']:
-            return True
-        
-        # Check for short names
-        for name in symbols['classes'] + symbols['functions']:
-            if len(name) < 3 and name not in ['i', 'j', 'k', 'x', 'y', 'z']:
-                return True
-        
-        # Check for camelCase (should be snake_case)
-        for name in symbols['functions'] + symbols['variables']:
-            if self._is_camel_case(name):
-                return True
-        
-        return False
-    
-    def _is_camel_case(self, name):
-        """Check if a name uses camelCase instead of snake_case."""
-        return name != name.lower() and '_' not in name and name[0].islower()
-    
-    def _create_refactoring_task(self, file_path, content, symbols):
-        """Create a refactoring task for Gemini."""
-        issues = []
-        
-        # Document naming issues
-        if symbols['abbreviations']:
-            issues.append("Contains abbreviations that should be expanded")
-        
-        for name in symbols['classes'] + symbols['functions']:
-            if len(name) < 3 and name not in ['i', 'j', 'k', 'x', 'y', 'z']:
-                issues.append(f"Name '{name}' is too short")
-        
-        for name in symbols['functions'] + symbols['variables']:
-            if self._is_camel_case(name):
-                issues.append(f"Name '{name}' uses camelCase instead of snake_case")
-        
-        task = (
-            f"NAMING REFACTOR TASK for {file_path}\n\n"
-            f"Issues detected:\n"
-            + "\n".join(f"- {issue}" for issue in issues) + "\n\n"
-            "Requirements:\n"
-            "1. Expand all abbreviations to full words\n"
-            "2. Convert camelCase to snake_case\n"
-            "3. Ensure all names are descriptive and intention-revealing\n"
-            "4. Preserve all functionality and logic\n"
-            "5. Update all references consistently within the file\n"
-            "6. Follow PEP 8 naming conventions\n\n"
-            f"Code to refactor:\n{content}\n\n"
-            "Return ONLY the complete refactored Python code."
-        )
-        
-        return task
-    
-    def _save_naming_report(self, log_entries, refactored_files):
-        """Save the naming refactor report."""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/naming_refactor_{timestamp}.md"
-        
-        report_content = f"# Naming Refactor Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
-        report_content += f"- Files analyzed: {len(log_entries)}\n"
-        report_content += f"- Files refactored: {len(refactored_files)}\n\n"
-        
-        if log_entries:
-            report_content += f"## Refactored Files\n\n"
-            for entry in log_entries:
-                report_content += f"### {entry['file']}\n\n"
-                
-                if entry['symbols']['abbreviations']:
-                    report_content += "**Abbreviations Found:**\n"
-                    for abbrev in entry['symbols']['abbreviations']:
-                        report_content += f"- `{abbrev['name']}` → `{abbrev['suggestion']}`\n"
-                    report_content += "\n"
-                
-                report_content += f"**Reasoning:** {entry['reasoning']}\n\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
+# class TheStrategist(SubAtomicAgent):
+#     """
+#     ROLE: Proactive Architecture. Identifies code smells and proposes refactors.
+#     Runs only if all other validation phases pass (Phase 6: Optimization).
+#     """
+#     
+#     def can_run(self) -> bool:
+#         """Only run if all validations passed."""
+#         if not self.ctx.results:
+#             return False
+#         return all(r.get("passed", False) for r in self.ctx.results.values())
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing architectural patterns...")
+#         await asyncio.sleep(0)
+#         
+#         if not self.ctx.omni_context:
+#             print(f"   ⚠️  No global context available - skipping")
+#             return
+#         
+#         # Analyze code smells in the global context
+#         await self._analyze_code_smells()
+#     
+#     async def _analyze_code_smells(self):
+#         """Identify and propose fixes for code smells."""
+#         if not self.ctx.intelligence_enabled:
+#             print(f"   🧠 Intelligence disabled - skipping code smell analysis")
+#             return
+#         
+#         print(f"   🔍 Scanning for code smells...")
+#         
+#         for file_path in self.ctx.python_files:
+#             if 'test' in file_path.lower():
+#                 continue
+#             
+#             try:
+#                 with open(file_path, 'r', encoding='utf-8') as f:
+#                     content = f.read()
+#                 
+#                 # Check for common code smells
+#                 smells = self._detect_code_smells(file_path, content)
+#                 
+#                 if smells:
+#                     await self._propose_refactor(file_path, content, smells)
+#             
+#             except Exception as e:
+#                 print(f"   ❌ Failed to analyze {file_path}: {e}")
+#     
+#     def _detect_code_smells(self, file_path: str, content: str) -> List[str]:
+#         """Detect various code smells in the content."""
+#         smells = []
+#         
+#         try:
+#             tree = ast.parse(content)
+#             
+#             for node in ast.walk(tree):
+#                 # God Class detection
+#                 if isinstance(node, ast.ClassDef):
+#                     methods = [n for n in node.body if isinstance(n, ast.FunctionDef)]
+#                     if len(methods) > 15:
+#                         smells.append(f"God Class: {node.name} has {len(methods)} methods")
+#                     
+#                     # Large Class detection
+#                     lines = node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
+#                     if lines > 500:
+#                         smells.append(f"Large Class: {node.name} is {lines} lines")
+#                 
+#                 # Long Parameter List
+#                 elif isinstance(node, ast.FunctionDef):
+#                     args = len(node.args.args)
+#                     if args > 10:
+#                         smells.append(f"Long Parameter List: {node.name} has {args} parameters")
+#                     
+#                     # Long Method
+#                     lines = node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0
+#                     if lines > 100:
+#                         smells.append(f"Long Method: {node.name} is {lines} lines")
+#         
+#         except Exception:
+#             pass
+#         
+#         return smells
+#     
+#     async def _propose_refactor(self, file_path: str, content: str, smells: List[str]):
+#         """Propose a refactoring solution for detected smells."""
+#         print(f"   📝 Proposing refactor for {file_path}:")
+#         for smell in smells:
+#             print(f"      - {smell}")
+#         
+#         # Ask Gemini for refactoring suggestions
+#         prompt = f"""
+#         Role: Senior Architect
+#         Context: Analyzing code for architectural improvements.
+#         
+#         File: {file_path}
+#         Code Smells Detected:
+#         {chr(10).join(f"- {s}" for s in smells)}
+#         
+#         Task: Propose a refactoring to address these code smells.
+#         Consider design patterns like Strategy, Repository, or Command patterns.
+#         
+#         Provide the refactored code in a single Python code block.
+#         """
+#         
+#         try:
+#             response = self.ctx.client.models.generate_content(
+#                 model=self.ctx.model_id,
+#                 contents=prompt
+#             )
+#             
+#             # Save proposal to .refactor_proposal file using Compliance Governor
+#             proposal_file = f"{file_path}.refactor_proposal"
+#             proposal_content = f"# Refactoring Proposal for {file_path}\n\n"
+#             proposal_content += f"## Code Smells Detected:\n\n"
+#             proposal_content += f"{chr(10).join(f'- {s}' for s in smells)}\n\n"
+#             proposal_content += f"## Proposed Solution:\n\n"
+#             proposal_content += response.text
+#             
+#             # Note: .refactor_proposal files are exempt from atomicity check
+#             if self.ctx.write_compliant_file(proposal_file, proposal_content):
+#                 print(f"   ✅ Refactor proposal saved to: {proposal_file}")
+#             else:
+#                 print(f"   ❌ Failed to save refactor proposal")
+#         
+#         except Exception as e:
+#             print(f"   ❌ Failed to generate refactor proposal: {e}")
 
-class DocEnforcer(SubAtomicAgent):
-    """ROLE: Documentation Surgeon. Ensures 100% docstring coverage for subatomic units."""
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Documentation Standards...")
-        await asyncio.sleep(0)
-        
-        # Priority 1: Process modified files
-        modified_files = getattr(self.ctx, 'modified_files', set())
-        
-        # Priority 2: Fall back to all Python files if no tracking
-        target_files = list(modified_files) if modified_files else self.ctx.python_files
-        
-        if not target_files:
-            print("   ✅ No files to check for documentation")
-            return
-        
-        print(f"   📝 Checking documentation for {len(target_files)} files...")
-        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
-        
-        # Track documentation improvements
-        doc_log = []
-        improved_files = []
-        
-        # Process each file
-        for file_path in target_files:
-            if not file_path.endswith('.py'):
-                continue
-            
-            result = await self._ensure_documentation(file_path)
-            if result:
-                improved_files.append(file_path)
-                doc_log.append(result)
-        
-        # Save documentation refinement report
-        self._save_doc_report(doc_log, improved_files)
-        
-        if improved_files:
-            print(f"   ✅ Documentation improved in {len(improved_files)} files")
-        else:
-            print("   ✅ All documentation meets standards")
-    
-    async def _ensure_documentation(self, file_path):
-        """Ensure file has proper docstrings reflecting its subatomic context."""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Analyze current documentation state
-            doc_analysis = self._analyze_documentation(content)
-            
-            # Skip if already has good documentation
-            if doc_analysis['is_complete']:
-                print(f"   ✅ Already documented: {os.path.basename(file_path)}")
-                return None
-            
-            # Generate documentation
-            print(f"   📝 Generating documentation: {os.path.basename(file_path)}")
-            
-            # Extract domain context from path
-            domain_context = self._extract_domain_context(file_path)
-            
-            # Generate docstrings using Gemini
-            updated_content = await self._generate_documentation(
-                file_path, content, domain_context, doc_analysis
-            )
-            
-            # Apply updates
-            if updated_content and updated_content != content:
-                if self.ctx.write_compliant_file(file_path, updated_content):
-                    return {
-                        'file': file_path,
-                        'domain': domain_context,
-                        'before': doc_analysis,
-                        'reasoning': 'Missing or incomplete docstrings detected and generated'
-                    }
-            
-        except Exception as e:
-            print(f"   ❌ Failed to update documentation for {file_path}: {e}")
-            return {
-                'file': file_path,
-                'error': str(e),
-                'reasoning': 'Failed to process file'
-            }
-        
-        return None
-    
-    def _analyze_documentation(self, content):
-        """Analyze current documentation state."""
-        analysis = {
-            'is_complete': False,
-            'has_module_doc': False,
-            'missing_class_docs': [],
-            'missing_function_docs': [],
-            'placeholder_docs': []
-        }
-        
-        try:
-            tree = ast.parse(content)
-            
-            # Check module docstring
-            if ast.get_docstring(tree):
-                analysis['has_module_doc'] = True
-                doc = ast.get_docstring(tree)
-                if any(placeholder in doc.lower() for placeholder in ['todo', 'fixme', 'placeholder', 'tbd']):
-                    analysis['placeholder_docs'].append('module')
-            
-            # Check classes and functions
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ClassDef):
-                    if not ast.get_docstring(node):
-                        analysis['missing_class_docs'].append(node.name)
-                    else:
-                        doc = ast.get_docstring(node)
-                        if any(placeholder in doc.lower() for placeholder in ['todo', 'fixme', 'placeholder', 'tbd']):
-                            analysis['placeholder_docs'].append(f"class {node.name}")
-                
-                elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    # Skip private methods
-                    if node.name.startswith('_'):
-                        continue
-                    
-                    if not ast.get_docstring(node):
-                        analysis['missing_function_docs'].append(node.name)
-                    else:
-                        doc = ast.get_docstring(node)
-                        if any(placeholder in doc.lower() for placeholder in ['todo', 'fixme', 'placeholder', 'tbd']):
-                            analysis['placeholder_docs'].append(f"function {node.name}")
-            
-            # Determine if documentation is complete
-            analysis['is_complete'] = (
-                analysis['has_module_doc'] and
-                not analysis['missing_class_docs'] and
-                not analysis['missing_function_docs'] and
-                not analysis['placeholder_docs']
-            )
-            
-        except Exception as e:
-            print(f"   ⚠️  AST parsing failed: {e}")
-        
-        return analysis
-    
-    def _has_proper_documentation(self, content: str) -> bool:
-        """Check if file already has proper docstrings."""
-        analysis = self._analyze_documentation(content)
-        return analysis['is_complete']
-    
-    def _extract_domain_context(self, file_path: str) -> str:
-        """Extract domain context from file path."""
-        parts = file_path.replace('\\', '/').split('/')
-        
-        # Skip root and focus on meaningful parts
-        domain_parts = []
-        for part in parts:
-            if part and part not in ['.', '__pycache__', 'tests']:
-                # Clean up common patterns
-                clean_part = part.replace('.py', '').replace('_', ' ').title()
-                domain_parts.append(clean_part)
-        
-        return ' → '.join(domain_parts[-3:])  # Last 3 parts for context
-    
-    async def _generate_documentation(self, file_path: str, content: str, domain: str, analysis: dict):
-        """Generate proper docstrings for the file."""
-        # Build specific requirements based on analysis
-        requirements = []
-        
-        if not analysis['has_module_doc']:
-            requirements.append("Add module-level docstring explaining the file's purpose")
-        
-        if analysis['missing_class_docs']:
-            requirements.append(f"Add docstrings for classes: {', '.join(analysis['missing_class_docs'])}")
-        
-        if analysis['missing_function_docs']:
-            requirements.append(f"Add docstrings for functions: {', '.join(analysis['missing_function_docs'])}")
-        
-        if analysis['placeholder_docs']:
-            requirements.append(f"Replace placeholder docs in: {', '.join(analysis['placeholder_docs'])}")
-        
-        prompt = (
-            f"DOCUMENTATION TASK: Generate PEP 257 compliant Google-style docstrings.\n\n"
-            f"Domain Context: {domain}\n"
-            f"File: {file_path}\n\n"
-            f"Requirements:\n"
-            + "\n".join(f"- {req}" for req in requirements) + "\n"
-            "Additional Rules:\n"
-            "1. Include Args, Returns, and Raises where applicable\n"
-            "2. Reference the domain context in descriptions\n"
-            "3. Use clear, professional language\n"
-            "4. Preserve all existing code, only add/update docstrings\n"
-            "5. Follow Google-style format consistently\n\n"
-            f"Code:\n{content}\n\n"
-            "Return ONLY the complete updated Python code with proper docstrings."
-        )
-        
-        return await self.ctx.request_mutation(
-            self.name, prompt, content, reasoning_mode=True
-        )
-    
-    def _save_doc_report(self, log_entries, improved_files):
-        """Save the documentation refinement report."""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/doc_refinement_{timestamp}.md"
-        
-        report_content = f"# Documentation Refinement Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
-        report_content += f"- Files analyzed: {len(log_entries)}\n"
-        report_content += f"- Files improved: {len(improved_files)}\n\n"
-        
-        if log_entries:
-            report_content += f"## Documentation Improvements\n\n"
-            for entry in log_entries:
-                if 'error' in entry:
-                    report_content += f"### ❌ {entry['file']}\n\n"
-                    report_content += f"**Error:** {entry['error']}\n\n"
-                else:
-                    report_content += f"### ✅ {entry['file']}\n\n"
-                    report_content += f"**Domain:** {entry['domain']}\n\n"
-                    
-                    before = entry['before']
-                    report_content += f"**Before State:**\n"
-                    report_content += f"- Module doc: {'✅' if before['has_module_doc'] else '❌'}\n"
-                    
-                    if before['missing_class_docs']:
-                        report_content += f"- Missing classes: {', '.join(before['missing_class_docs'])}\n"
-                    
-                    if before['missing_function_docs']:
-                        report_content += f"- Missing functions: {', '.join(before['missing_function_docs'])}\n"
-                    
-                    if before['placeholder_docs']:
-                        report_content += f"- Placeholder docs: {', '.join(before['placeholder_docs'])}\n"
-                    
-                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
+# NamingEnforcer, DocEnforcer, and TypeEnforcer are now imported from agentic_core.agents.specialized
+# Original implementations removed - see agentic_core/agents/specialized.py for full code
 
-class TypeEnforcer(SubAtomicAgent):
-    """ROLE: Type Guardian. Enforces PEP 484 type hints for compile-time contracts."""
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Contracts...")
-        await asyncio.sleep(0)
-        
-        # Priority 1: Process modified files
-        modified_files = getattr(self.ctx, 'modified_files', set())
-        
-        # Priority 2: Fall back to all Python files if no tracking
-        target_files = list(modified_files) if modified_files else self.ctx.python_files
-        
-        if not target_files:
-            print("   ✅ No files to check for typing")
-            return
-        
-        print(f"   🔍 Analyzing types in {len(target_files)} files...")
-        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
-        
-        # Track typing improvements
-        type_log = []
-        improved_files = []
-        
-        # Process each file
-        for file_path in target_files:
-            if not file_path.endswith('.py'):
-                continue
-            
-            result = await self._ensure_typing(file_path)
-            if result:
-                improved_files.append(file_path)
-                type_log.append(result)
-        
-        # Save type refinement report
-        self._save_type_report(type_log, improved_files)
-        
-        if improved_files:
-            print(f"   ✅ Type contracts added to {len(improved_files)} files")
-        else:
-            print("   ✅ All functions properly typed")
-    
-    async def _ensure_typing(self, file_path):
-        """Ensure file has proper type hints for all public functions."""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Analyze current typing state
-            type_analysis = self._analyze_typing(content)
-            
-            # Skip if already fully typed
-            if type_analysis['is_fully_typed']:
-                print(f"   ✅ Already typed: {os.path.basename(file_path)}")
-                return None
-            
-            # Generate type hints
-            print(f"   🔧 Adding type hints: {os.path.basename(file_path)}")
-            
-            # Generate typed code using Gemini
-            updated_content = await self._generate_typed_code(
-                file_path, content, type_analysis
-            )
-            
-            # Apply updates
-            if updated_content and updated_content != content:
-                if self.ctx.write_compliant_file(file_path, updated_content):
-                    return {
-                        'file': file_path,
-                        'before': type_analysis,
-                        'reasoning': 'Missing type hints detected and inferred'
-                    }
-            
-        except Exception as e:
-            print(f"   ❌ Failed to add types to {file_path}: {e}")
-            return {
-                'file': file_path,
-                'error': str(e),
-                'reasoning': 'Failed to process file'
-            }
-        
-        return None
-    
-    def _analyze_typing(self, content):
-        """Analyze current typing state in the file."""
-        analysis = {
-            'is_fully_typed': False,
-            'needs_future_import': False,
-            'untyped_functions': [],
-            'partially_typed': []
-        }
-        
-        try:
-            tree = ast.parse(content)
-            
-            # Check if __future__ import is needed
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ImportFrom) and node.module == '__future__':
-                    for alias in node.names:
-                        if alias.name == 'annotations':
-                            analysis['needs_future_import'] = True
-                            break
-            
-            # Analyze functions
-            for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    # Skip private methods and dunder methods
-                    if node.name.startswith('_') and not node.name.startswith('__'):
-                        continue
-                    
-                    # Skip test methods
-                    if 'test' in node.name.lower():
-                        continue
-                    
-                    func_info = {
-                        'name': node.name,
-                        'line': node.lineno,
-                        'args': [],
-                        'return_annotated': node.returns is not None
-                    }
-                    
-                    # Check parameter annotations
-                    all_args_typed = True
-                    for arg in node.args.args:
-                        is_typed = arg.annotation is not None
-                        func_info['args'].append({
-                            'name': arg.arg,
-                            'typed': is_typed
-                        })
-                        if not is_typed:
-                            all_args_typed = False
-                    
-                    # Check if function needs typing
-                    if not all_args_typed or not func_info['return_annotated']:
-                        if all_args_typed or func_info['return_annotated']:
-                            analysis['partially_typed'].append(func_info)
-                        else:
-                            analysis['untyped_functions'].append(func_info)
-            
-            # Determine if file is fully typed
-            analysis['is_fully_typed'] = (
-                not analysis['untyped_functions'] and
-                not analysis['partially_typed']
-            )
-            
-        except Exception as e:
-            print(f"   ⚠️  AST parsing failed: {e}")
-        
-        return analysis
-    
-    async def _generate_typed_code(self, file_path: str, content: str, analysis: dict):
-        """Generate fully typed code using Gemini."""
-        # Build specific requirements based on analysis
-        requirements = []
-        
-        if analysis['untyped_functions']:
-            func_names = [f['name'] for f in analysis['untyped_functions']]
-            requirements.append(f"Add type hints to functions: {', '.join(func_names)}")
-        
-        if analysis['partially_typed']:
-            func_names = [f['name'] for f in analysis['partially_typed']]
-            requirements.append(f"Complete type hints for functions: {', '.join(func_names)}")
-        
-        if analysis['needs_future_import']:
-            requirements.append("Add 'from __future__ import annotations' at the top")
-        
-        prompt = (
-            f"TYPE ENFORCEMENT TASK: Add PEP 484 type hints to Python code.\n\n"
-            f"File: {file_path}\n\n"
-            f"Requirements:\n"
-            + "\n".join(f"- {req}" for req in requirements) + "\n"
-            "Typing Rules:\n"
-            "1. Use modern syntax (list[str] instead of List[str])\n"
-            "2. Add 'from __future__ import annotations' if needed\n"
-            "3. Infer types from context and usage patterns\n"
-            "4. Use Optional[T] for nullable parameters\n"
-            "5. Use Union[T, None] for return types that may be None\n"
-            "6. Use Callable[[args], return] for function parameters\n"
-            "7. Use Dict[str, Any] for generic dictionaries\n"
-            "8. Use List[str] or List[int] for typed lists\n"
-            "9. Preserve all existing logic and functionality\n"
-            "10. Add type hints to all public functions and methods\n\n"
-            f"Code:\n{content}\n\n"
-            "Return ONLY the complete updated Python code with type hints."
-        )
-        
-        return await self.ctx.request_mutation(
-            self.name, prompt, content, reasoning_mode=True
-        )
-    
-    def _save_type_report(self, log_entries, improved_files):
-        """Save the type refinement report."""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/type_refinement_{timestamp}.md"
-        
-        report_content = f"# Type Refinement Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
-        report_content += f"- Files analyzed: {len(log_entries)}\n"
-        report_content += f"- Files improved: {len(improved_files)}\n\n"
-        
-        if log_entries:
-            report_content += f"## Type Improvements\n\n"
-            for entry in log_entries:
-                if 'error' in entry:
-                    report_content += f"### ❌ {entry['file']}\n\n"
-                    report_content += f"**Error:** {entry['error']}\n\n"
-                else:
-                    report_content += f"### ✅ {entry['file']}\n\n"
-                    
-                    before = entry['before']
-                    report_content += f"**Analysis:**\n"
-                    
-                    if before['untyped_functions']:
-                        report_content += f"- Untyped functions: {len(before['untyped_functions'])}\n"
-                        for func in before['untyped_functions'][:5]:  # Show first 5
-                            report_content += f"  - {func['name']} (line {func['line']})\n"
-                    
-                    if before['partially_typed']:
-                        report_content += f"- Partially typed functions: {len(before['partially_typed'])}\n"
-                        for func in before['partially_typed'][:5]:  # Show first 5
-                            report_content += f"  - {func['name']} (line {func['line']})\n"
-                    
-                    if before['needs_future_import']:
-                        report_content += f"- Added __future__ import\n"
-                    
-                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
+# NOTE: The following large class blocks have been removed to reduce file size:
+# - NamingEnforcer (was ~500 lines)
+# - DocEnforcer (was ~230 lines)  
+# - TypeEnforcer (was ~230 lines)
+
+# Placeholder to maintain file structure
+_SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in agentic_core
+
+# SecurityEnforcer is now imported from agentic_core.agents.security
+
+# class SecurityEnforcer(SubAtomicAgent):
+#     """ROLE: Security Guardian. Detects and intelligently remediates high-risk security patterns."""
+#     
+#     # High-risk security patterns for fast scanning
+#     RISK_PATTERNS = {
+#         'hardcoded_secret': re.compile(
+#             r'(password\s*=\s*["\'][^"\']+["\']|'
+#             r'api_key\s*=\s*["\'][^"\']+["\']|'
+#             r'secret_key\s*=\s*["\'][^"\']+["\']|'
+#             r'token\s*=\s*["\'][^"\']+["\']|'
+#             r'auth\s*=\s*["\'][^"\']+["\'])',
+#             re.IGNORECASE
+#         ),
+#         ... (rest of SecurityEnforcer commented out - see agentic_core.agents.security)
+
+# NOTE: NamingEnforcer, DocEnforcer, and TypeEnforcer classes have been moved to
+# agentic_core/agents/specialized.py - the original ~1000 lines of code have been
+# removed from this file to reduce size. Import them from agentic_core.agents.specialized.
+
+# (NamingEnforcer, DocEnforcer, TypeEnforcer removed - see agentic_core/agents/specialized.py)
 
 # SecurityEnforcer is now imported from agentic_core.agents.security
 
@@ -6573,317 +5652,319 @@ class TypeEnforcer(SubAtomicAgent):
 #         
 #         self.ctx.write_compliant_file(report_path, report_content)
 
-class PerformanceEnforcer(SubAtomicAgent):
-    """ROLE: Performance Guardian. Identifies and remediates computational inefficiencies."""
-    
-    # Performance anti-patterns for fast scanning
-    PERFORMANCE_PATTERNS = {
-        'n_plus_one_query': re.compile(
-            r'for\s+\w+\s+in.*:\s*.*query\(|'
-            r'\.query\(.*\).*\s+for\s+|'
-            r'for.*in.*:\s*.*\.get\(',
-            re.IGNORECASE | re.MULTILINE
-        ),
-        'string_concat_loop': re.compile(
-            r'for\s+\w+\s+in.*:\s*.*\w+\s*\+=\s*["\']',
-            re.IGNORECASE | re.MULTILINE
-        ),
-        'blocking_sleep': re.compile(
-            r'time\.sleep\(',
-            re.IGNORECASE
-        ),
-        'blocking_requests': re.compile(
-            r'requests\.(get|post|put|delete|patch)\(',
-            re.IGNORECASE
-        ),
-        'inefficient_list_build': re.compile(
-            r'\[\]\s*;\s*for\s+\w+\s+in.*:\s*.*\.append\(',
-            re.IGNORECASE | re.MULTILINE
-        ),
-        'nested_loops_deep': re.compile(
-            r'for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in',
-            re.IGNORECASE | re.MULTILINE
-        ),
-        'regex_compile_each_time': re.compile(
-            r're\.(match|search|findall)\(["\'].*["\']',
-            re.IGNORECASE
-        )
-    }
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Optimizing Performance...")
-        await asyncio.sleep(0)
-        
-        # Priority 1: Process modified files
-        modified_files = getattr(self.ctx, 'modified_files', set())
-        
-        # Priority 2: Fall back to all Python files if no tracking
-        target_files = list(modified_files) if modified_files else self.ctx.python_files
-        
-        if not target_files:
-            print("   ✅ No files to check for performance")
-            return
-        
-        print(f"   ⚡ Analyzing performance in {len(target_files)} files...")
-        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
-        
-        # Track performance optimizations
-        perf_log = []
-        optimized_files = []
-        
-        # Scan and optimize files
-        for file_path in target_files:
-            if not file_path.endswith('.py'):
-                continue
-            
-            result = await self._scan_and_optimize(file_path)
-            if result:
-                optimized_files.append(file_path)
-                perf_log.append(result)
-        
-        # Save performance report
-        self._save_performance_report(perf_log, optimized_files)
-        
-        if optimized_files:
-            print(f"   ⚡ Performance optimized in {len(optimized_files)} files")
-        else:
-            print("   ✅ No performance issues detected")
-    
-    async def _scan_and_optimize(self, file_path):
-        """Scan file for performance issues and apply optimizations."""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Pass 1: Fast regex scanning
-            detected_issues = self._detect_performance_issues(content)
-            
-            if not detected_issues:
-                return None
-            
-            # Pass 2: AST context analysis
-            perf_context = self._analyze_performance_context(content, detected_issues)
-            
-            # Filter by confidence
-            high_confidence_issues = self._filter_by_confidence(perf_context)
-            
-            if not high_confidence_issues:
-                print(f"   ℹ️  Low-confidence patterns in {os.path.basename(file_path)} - skipping")
-                return None
-            
-            print(f"   ⚡ Optimizing performance: {os.path.basename(file_path)}")
-            
-            # Generate optimized code using Gemini
-            optimized_content = await self._generate_optimized_code(
-                file_path, content, high_confidence_issues
-            )
-            
-            # Apply optimizations
-            if optimized_content and optimized_content != content:
-                if self.ctx.write_compliant_file(file_path, optimized_content):
-                    return {
-                        'file': file_path,
-                        'issues': high_confidence_issues,
-                        'context': perf_context,
-                        'reasoning': 'Performance anti-patterns detected and optimized'
-                    }
-            
-        except Exception as e:
-            print(f"   ❌ Failed to optimize {file_path}: {e}")
-            return {
-                'file': file_path,
-                'error': str(e),
-                'reasoning': 'Failed to process file'
-            }
-        
-        return None
-    
-    def _detect_performance_issues(self, content):
-        """Fast regex-based performance issue detection."""
-        issues = {}
-        
-        for issue_name, pattern in self.PERFORMANCE_PATTERNS.items():
-            matches = pattern.finditer(content)
-            if matches:
-                issues[issue_name] = [
-                    {
-                        'line': content[:match.start()].count('\n') + 1,
-                        'snippet': content[match.start():match.end()][:50],
-                        'full_match': match.group()
-                    }
-                    for match in matches
-                ]
-        
-        return issues
-    
-    def _analyze_performance_context(self, content, issues):
-        """Analyze AST to understand performance context."""
-        context = {
-            'functions_with_issues': [],
-            'async_functions': set(),
-            'long_functions': [],
-            'string_concats_in_loops': [],
-            'blocking_io_in_async': []
-        }
-        
-        try:
-            tree = ast.parse(content)
-            
-            # Find async functions
-            for node in ast.walk(tree):
-                if isinstance(node, ast.AsyncFunctionDef):
-                    context['async_functions'].add(node.name)
-                    
-                    # Check for blocking I/O in async functions
-                    func_start = node.lineno
-                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
-                    
-                    for issue_name, issue_list in issues.items():
-                        if issue_name in ['blocking_sleep', 'blocking_requests']:
-                            for issue in issue_list:
-                                if func_start <= issue['line'] <= func_end:
-                                    context['blocking_io_in_async'].append({
-                                        'function': node.name,
-                                        'issue': issue_name,
-                                        'line': issue['line']
-                                    })
-                
-                # Find functions with performance issues
-                elif isinstance(node, ast.FunctionDef):
-                    func_start = node.lineno
-                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
-                    func_length = func_end - func_start
-                    
-                    # Check for long functions (>50 lines)
-                    if func_length > 50:
-                        context['long_functions'].append({
-                            'function': node.name,
-                            'length': func_length
-                        })
-                    
-                    # Check for issues in this function
-                    for issue_name, issue_list in issues.items():
-                        for issue in issue_list:
-                            if func_start <= issue['line'] <= func_end:
-                                context['functions_with_issues'].append({
-                                    'function': node.name,
-                                    'issue': issue_name,
-                                    'line': issue['line']
-                                })
-                                
-                                # Special check for string concat in loops
-                                if issue_name == 'string_concat_loop':
-                                    context['string_concats_in_loops'].append({
-                                        'function': node.name,
-                                        'line': issue['line']
-                                    })
-        
-        except Exception as e:
-            print(f"   ⚠️  AST analysis failed: {e}")
-        
-        return context
-    
-    def _filter_by_confidence(self, context):
-        """Filter issues by confidence level."""
-        high_confidence = {
-            'string_concat_loop': [],
-            'blocking_sleep': [],
-            'blocking_requests': [],
-            'inefficient_list_build': []
-        }
-        
-        # High confidence: String concatenation in loops
-        for concat in context.get('string_concats_in_loops', []):
-            high_confidence['string_concat_loop'].append(concat)
-        
-        # High confidence: Blocking sleep in async functions
-        for blocking in context.get('blocking_io_in_async', []):
-            if blocking['issue'] in ['blocking_sleep', 'blocking_requests']:
-                high_confidence[blocking['issue']].append(blocking)
-        
-        # High confidence: Inefficient list building pattern
-        # (This is always safe to optimize)
-        if any('inefficient_list_build' in f.get('issue', '') for f in context.get('functions_with_issues', [])):
-            high_confidence['inefficient_list_build'] = [
-                f for f in context.get('functions_with_issues', [])
-                if 'inefficient_list_build' in f.get('issue', '')
-            ]
-        
-        return {k: v for k, v in high_confidence.items() if v}
-    
-    async def _generate_optimized_code(self, file_path: str, content: str, issues: dict):
-        """Generate optimized code using Gemini."""
-        # Build optimization summary
-        opt_summary = []
-        for issue_name, issue_list in issues.items():
-            opt_summary.append(f"- {issue_name}: {len(issue_list)} occurrences")
-        
-        prompt = (
-            f"PERFORMANCE OPTIMIZATION TASK: Optimize Python code for better performance.\n\n"
-            f"File: {file_path}\n\n"
-            f"Performance Issues:\n"
-            + "\n".join(opt_summary) + "\n\n"
-            "Optimization Rules:\n"
-            "1. Replace string concatenation in loops with ''.join() or list comprehension\n"
-            "2. Replace time.sleep() with asyncio.sleep() in async functions\n"
-            "3. Replace requests.get() with aiohttp or async equivalent in async functions\n"
-            "4. Convert inefficient list building to list comprehensions where appropriate\n"
-            "5. Pre-compile regex patterns outside loops\n"
-            "6. Maintain readability and the subatomic philosophy (<200 lines per file)\n"
-            "7. Add comments explaining performance improvements\n"
-            "8. Preserve all existing functionality\n\n"
-            "Requirements:\n"
-            "1. Do not sacrifice readability for micro-optimizations\n"
-            "2. Only apply optimizations that are semantically equivalent\n"
-            "3. Import required modules (asyncio, aiohttp) if needed\n"
-            "4. Keep functions focused and atomic\n\n"
-            f"Code:\n{content}\n\n"
-            "Return ONLY the complete optimized Python code."
-        )
-        
-        return await self.ctx.request_mutation(
-            self.name, prompt, content, reasoning_mode=True
-        )
-    
-    def _save_performance_report(self, log_entries, optimized_files):
-        """Save the performance optimization report."""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/performance_gains_{timestamp}.md"
-        
-        report_content = f"# Performance Gains Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
-        report_content += f"- Files analyzed: {len(log_entries)}\n"
-        report_content += f"- Files optimized: {len(optimized_files)}\n\n"
-        
-        if log_entries:
-            report_content += f"## Performance Optimizations\n\n"
-            for entry in log_entries:
-                if 'error' in entry:
-                    report_content += f"### ❌ {entry['file']}\n\n"
-                    report_content += f"**Error:** {entry['error']}\n\n"
-                else:
-                    report_content += f"### ⚡ {entry['file']}\n\n"
-                    
-                    issues = entry['issues']
-                    report_content += f"**Optimizations Applied:**\n"
-                    for issue_name, issue_list in issues.items():
-                        report_content += f"- {issue_name}: {len(issue_list)} fixes\n"
-                    
-                    context = entry['context']
-                    if context.get('blocking_io_in_async'):
-                        report_content += f"\n**Async I/O Fixes:**\n"
-                        for fix in context['blocking_io_in_async']:
-                            report_content += f"- {fix['function']} (line {fix['line']})\n"
-                    
-                    if context.get('string_concats_in_loops'):
-                        report_content += f"\n**String Concat Optimizations:**\n"
-                        for concat in context['string_concats_in_loops']:
-                            report_content += f"- {concat['function']} (line {concat['line']})\n"
-                    
-                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
+# PerformanceEnforcer is now imported from agentic_core.agents.quality
+
+# class PerformanceEnforcer(SubAtomicAgent):
+#     """ROLE: Performance Guardian. Identifies and remediates computational inefficiencies."""
+#     
+#     # Performance anti-patterns for fast scanning
+#     PERFORMANCE_PATTERNS = {
+#         'n_plus_one_query': re.compile(
+#             r'for\s+\w+\s+in.*:\s*.*query\(|'
+#             r'\.query\(.*\).*\s+for\s+|'
+#             r'for.*in.*:\s*.*\.get\(',
+#             re.IGNORECASE | re.MULTILINE
+#         ),
+#         'string_concat_loop': re.compile(
+#             r'for\s+\w+\s+in.*:\s*.*\w+\s*\+=\s*["\']',
+#             re.IGNORECASE | re.MULTILINE
+#         ),
+#         'blocking_sleep': re.compile(
+#             r'time\.sleep\(',
+#             re.IGNORECASE
+#         ),
+#         'blocking_requests': re.compile(
+#             r'requests\.(get|post|put|delete|patch)\(',
+#             re.IGNORECASE
+#         ),
+#         'inefficient_list_build': re.compile(
+#             r'\[\]\s*;\s*for\s+\w+\s+in.*:\s*.*\.append\(',
+#             re.IGNORECASE | re.MULTILINE
+#         ),
+#         'nested_loops_deep': re.compile(
+#             r'for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in',
+#             re.IGNORECASE | re.MULTILINE
+#         ),
+#         'regex_compile_each_time': re.compile(
+#             r're\.(match|search|findall)\(["\'].*["\']',
+#             re.IGNORECASE
+#         )
+#     }
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Optimizing Performance...")
+#         await asyncio.sleep(0)
+#         
+#         # Priority 1: Process modified files
+#         modified_files = getattr(self.ctx, 'modified_files', set())
+#         
+#         # Priority 2: Fall back to all Python files if no tracking
+#         target_files = list(modified_files) if modified_files else self.ctx.python_files
+#         
+#         if not target_files:
+#             print("   ✅ No files to check for performance")
+#             return
+#         
+#         print(f"   ⚡ Analyzing performance in {len(target_files)} files...")
+#         print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+#         
+#         # Track performance optimizations
+#         perf_log = []
+#         optimized_files = []
+#         
+#         # Scan and optimize files
+#         for file_path in target_files:
+#             if not file_path.endswith('.py'):
+#                 continue
+#             
+#             result = await self._scan_and_optimize(file_path)
+#             if result:
+#                 optimized_files.append(file_path)
+#                 perf_log.append(result)
+#         
+#         # Save performance report
+#         self._save_performance_report(perf_log, optimized_files)
+#         
+#         if optimized_files:
+#             print(f"   ⚡ Performance optimized in {len(optimized_files)} files")
+#         else:
+#             print("   ✅ No performance issues detected")
+#     
+#     async def _scan_and_optimize(self, file_path):
+#         """Scan file for performance issues and apply optimizations."""
+#         try:
+#             with open(file_path, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#             
+#             # Pass 1: Fast regex scanning
+#             detected_issues = self._detect_performance_issues(content)
+#             
+#             if not detected_issues:
+#                 return None
+#             
+#             # Pass 2: AST context analysis
+#             perf_context = self._analyze_performance_context(content, detected_issues)
+#             
+#             # Filter by confidence
+#             high_confidence_issues = self._filter_by_confidence(perf_context)
+#             
+#             if not high_confidence_issues:
+#                 print(f"   ℹ️  Low-confidence patterns in {os.path.basename(file_path)} - skipping")
+#                 return None
+#             
+#             print(f"   ⚡ Optimizing performance: {os.path.basename(file_path)}")
+#             
+#             # Generate optimized code using Gemini
+#             optimized_content = await self._generate_optimized_code(
+#                 file_path, content, high_confidence_issues
+#             )
+#             
+#             # Apply optimizations
+#             if optimized_content and optimized_content != content:
+#                 if self.ctx.write_compliant_file(file_path, optimized_content):
+#                     return {
+#                         'file': file_path,
+#                         'issues': high_confidence_issues,
+#                         'context': perf_context,
+#                         'reasoning': 'Performance anti-patterns detected and optimized'
+#                     }
+#             
+#         except Exception as e:
+#             print(f"   ❌ Failed to optimize {file_path}: {e}")
+#             return {
+#                 'file': file_path,
+#                 'error': str(e),
+#                 'reasoning': 'Failed to process file'
+#             }
+#         
+#         return None
+#     
+#     def _detect_performance_issues(self, content):
+#         """Fast regex-based performance issue detection."""
+#         issues = {}
+#         
+#         for issue_name, pattern in self.PERFORMANCE_PATTERNS.items():
+#             matches = pattern.finditer(content)
+#             if matches:
+#                 issues[issue_name] = [
+#                     {
+#                         'line': content[:match.start()].count('\n') + 1,
+#                         'snippet': content[match.start():match.end()][:50],
+#                         'full_match': match.group()
+#                     }
+#                     for match in matches
+#                 ]
+#         
+#         return issues
+#     
+#     def _analyze_performance_context(self, content, issues):
+#         """Analyze AST to understand performance context."""
+#         context = {
+#             'functions_with_issues': [],
+#             'async_functions': set(),
+#             'long_functions': [],
+#             'string_concats_in_loops': [],
+#             'blocking_io_in_async': []
+#         }
+#         
+#         try:
+#             tree = ast.parse(content)
+#             
+#             # Find async functions
+#             for node in ast.walk(tree):
+#                 if isinstance(node, ast.AsyncFunctionDef):
+#                     context['async_functions'].add(node.name)
+#                     
+#                     # Check for blocking I/O in async functions
+#                     func_start = node.lineno
+#                     func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+#                     
+#                     for issue_name, issue_list in issues.items():
+#                         if issue_name in ['blocking_sleep', 'blocking_requests']:
+#                             for issue in issue_list:
+#                                 if func_start <= issue['line'] <= func_end:
+#                                     context['blocking_io_in_async'].append({
+#                                         'function': node.name,
+#                                         'issue': issue_name,
+#                                         'line': issue['line']
+#                                     })
+#                 
+#                 # Find functions with performance issues
+#                 elif isinstance(node, ast.FunctionDef):
+#                     func_start = node.lineno
+#                     func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+#                     func_length = func_end - func_start
+#                     
+#                     # Check for long functions (>50 lines)
+#                     if func_length > 50:
+#                         context['long_functions'].append({
+#                             'function': node.name,
+#                             'length': func_length
+#                         })
+#                     
+#                     # Check for issues in this function
+#                     for issue_name, issue_list in issues.items():
+#                         for issue in issue_list:
+#                             if func_start <= issue['line'] <= func_end:
+#                                 context['functions_with_issues'].append({
+#                                     'function': node.name,
+#                                     'issue': issue_name,
+#                                     'line': issue['line']
+#                                 })
+#                                 
+#                                 # Special check for string concat in loops
+#                                 if issue_name == 'string_concat_loop':
+#                                     context['string_concats_in_loops'].append({
+#                                         'function': node.name,
+#                                         'line': issue['line']
+#                                     })
+#         
+#         except Exception as e:
+#             print(f"   ⚠️  AST analysis failed: {e}")
+#         
+#         return context
+#     
+#     def _filter_by_confidence(self, context):
+#         """Filter issues by confidence level."""
+#         high_confidence = {
+#             'string_concat_loop': [],
+#             'blocking_sleep': [],
+#             'blocking_requests': [],
+#             'inefficient_list_build': []
+#         }
+#         
+#         # High confidence: String concatenation in loops
+#         for concat in context.get('string_concats_in_loops', []):
+#             high_confidence['string_concat_loop'].append(concat)
+#         
+#         # High confidence: Blocking sleep in async functions
+#         for blocking in context.get('blocking_io_in_async', []):
+#             if blocking['issue'] in ['blocking_sleep', 'blocking_requests']:
+#                 high_confidence[blocking['issue']].append(blocking)
+#         
+#         # High confidence: Inefficient list building pattern
+#         # (This is always safe to optimize)
+#         if any('inefficient_list_build' in f.get('issue', '') for f in context.get('functions_with_issues', [])):
+#             high_confidence['inefficient_list_build'] = [
+#                 f for f in context.get('functions_with_issues', [])
+#                 if 'inefficient_list_build' in f.get('issue', '')
+#             ]
+#         
+#         return {k: v for k, v in high_confidence.items() if v}
+#     
+#     async def _generate_optimized_code(self, file_path: str, content: str, issues: dict):
+#         """Generate optimized code using Gemini."""
+#         # Build optimization summary
+#         opt_summary = []
+#         for issue_name, issue_list in issues.items():
+#             opt_summary.append(f"- {issue_name}: {len(issue_list)} occurrences")
+#         
+#         prompt = (
+#             f"PERFORMANCE OPTIMIZATION TASK: Optimize Python code for better performance.\n\n"
+#             f"File: {file_path}\n\n"
+#             f"Performance Issues:\n"
+#             + "\n".join(opt_summary) + "\n\n"
+#             "Optimization Rules:\n"
+#             "1. Replace string concatenation in loops with ''.join() or list comprehension\n"
+#             "2. Replace time.sleep() with asyncio.sleep() in async functions\n"
+#             "3. Replace requests.get() with aiohttp or async equivalent in async functions\n"
+#             "4. Convert inefficient list building to list comprehensions where appropriate\n"
+#             "5. Pre-compile regex patterns outside loops\n"
+#             "6. Maintain readability and the subatomic philosophy (<200 lines per file)\n"
+#             "7. Add comments explaining performance improvements\n"
+#             "8. Preserve all existing functionality\n\n"
+#             "Requirements:\n"
+#             "1. Do not sacrifice readability for micro-optimizations\n"
+#             "2. Only apply optimizations that are semantically equivalent\n"
+#             "3. Import required modules (asyncio, aiohttp) if needed\n"
+#             "4. Keep functions focused and atomic\n\n"
+#             f"Code:\n{content}\n\n"
+#             "Return ONLY the complete optimized Python code."
+#         )
+#         
+#         return await self.ctx.request_mutation(
+#             self.name, prompt, content, reasoning_mode=True
+#         )
+#     
+#     def _save_performance_report(self, log_entries, optimized_files):
+#         """Save the performance optimization report."""
+#         timestamp = int(time.time())
+#         report_path = f"observability/audit/performance_gains_{timestamp}.md"
+#         
+#         report_content = f"# Performance Gains Report\n\n"
+#         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+#         report_content += f"## Summary\n\n"
+#         report_content += f"- Files analyzed: {len(log_entries)}\n"
+#         report_content += f"- Files optimized: {len(optimized_files)}\n\n"
+#         
+#         if log_entries:
+#             report_content += f"## Performance Optimizations\n\n"
+#             for entry in log_entries:
+#                 if 'error' in entry:
+#                     report_content += f"### ❌ {entry['file']}\n\n"
+#                     report_content += f"**Error:** {entry['error']}\n\n"
+#                 else:
+#                     report_content += f"### ⚡ {entry['file']}\n\n"
+#                     
+#                     issues = entry['issues']
+#                     report_content += f"**Optimizations Applied:**\n"
+#                     for issue_name, issue_list in issues.items():
+#                         report_content += f"- {issue_name}: {len(issue_list)} fixes\n"
+#                     
+#                     context = entry['context']
+#                     if context.get('blocking_io_in_async'):
+#                         report_content += f"\n**Async I/O Fixes:**\n"
+#                         for fix in context['blocking_io_in_async']:
+#                             report_content += f"- {fix['function']} (line {fix['line']})\n"
+#                     
+#                     if context.get('string_concats_in_loops'):
+#                         report_content += f"\n**String Concat Optimizations:**\n"
+#                         for concat in context['string_concats_in_loops']:
+#                             report_content += f"- {concat['function']} (line {concat['line']})\n"
+#                     
+#                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+#         
+#         self.ctx.write_compliant_file(report_path, report_content)
 
 class StrategicPlanner(SubAtomicAgent):
     """
@@ -7044,439 +6125,443 @@ CONVERGE_AND_COMMIT | MARK_FLAPPING_SKIP_FILE | ROLLBACK_LAST_CHANGE_AND_RETRY |
         if count > 0:
             print(f"   🧠 Learned {count} new patterns from this session.")
 
-class GitAgent(SubAtomicAgent):
-    """
-    ROLE: Remote GitOps. Manages checkpoints and pushes healing branches.
-    L5 Enhancement: Uses GitPython for robust remote operations.
-    """
-    def __init__(self, ctx):
-        super().__init__(ctx)
-        self.name = "GitOps"
-    
-    def run_cmd(self, cmd: list) -> bool:
-        """Fallback subprocess command runner."""
-        try:
-            subprocess.run(cmd, check=True, capture_output=True, cwd=os.getcwd())
-            return True
-        except subprocess.CalledProcessError:
-            return False
+# GitAgent is now imported from agentic_core.agents.infrastructure
 
-    async def execute(self):
-        # Try GitPython first, fallback to subprocess
-        if GITPYTHON_AVAILABLE:
-            await self._execute_gitpython()
-        else:
-            await self._execute_subprocess()
-    
-    async def _execute_gitpython(self):
-        """L5 GitPython-based execution with remote support."""
-        try:
-            repo = Repo('.')
-        except Exception:
-            print("   ⚠️  GitOps: Not a valid git repository.")
-            return
+# class GitAgent(SubAtomicAgent):
+#     """
+#     ROLE: Remote GitOps. Manages checkpoints and pushes healing branches.
+#     L5 Enhancement: Uses GitPython for robust remote operations.
+#     """
+#     def __init__(self, ctx):
+#         super().__init__(ctx)
+#         self.name = "GitOps"
+#     
+#     def run_cmd(self, cmd: list) -> bool:
+#         """Fallback subprocess command runner."""
+#         try:
+#             subprocess.run(cmd, check=True, capture_output=True, cwd=os.getcwd())
+#             return True
+#         except subprocess.CalledProcessError:
+#             return False
+# 
+#     async def execute(self):
+#         # Try GitPython first, fallback to subprocess
+#         if GITPYTHON_AVAILABLE:
+#             await self._execute_gitpython()
+#         else:
+#             await self._execute_subprocess()
+#     
+#     async def _execute_gitpython(self):
+#         """L5 GitPython-based execution with remote support."""
+#         try:
+#             repo = Repo('.')
+#         except Exception:
+#             print("   ⚠️  GitOps: Not a valid git repository.")
+#             return
+# 
+#         # Handle critical failure - revert to HEAD
+#         if "CRITICAL_FAILURE" in self.ctx.signals:
+#             print(f"   ⏪ GitOps: Critical Failure. Reverting to HEAD...")
+#             try:
+#                 repo.git.reset('--hard', 'HEAD')
+#                 self.ctx.signals.discard("CRITICAL_FAILURE")
+#             except GitCommandError as e:
+#                 print(f"   ⚠️  GitOps Reset Error: {e}")
+#             return
+# 
+#         # Create healing branch and commit changes with L5+ Few-Shot GitOps
+#         if self.ctx.modified_files:
+#             try:
+#                 # Generate intelligent branch name and commit message
+#                 branch_name, commit_msg = await self._generate_git_metadata()
+#                 if not branch_name:
+#                     branch_name = f"healing/auto_{int(time.time())}"
+#                 
+#                 # Store current branch to return to later
+#                 repo.active_branch.name
+#                 
+#                 # Create and checkout new branch
+#                 new_branch = repo.create_head(branch_name)
+#                 new_branch.checkout()
+#                 
+#                 # Add and Commit
+#                 repo.index.add(list(self.ctx.modified_files))
+#                 if not commit_msg:
+#                     commit_msg = f"[HEALING] fix: auto-fix cycle {len(self.ctx.successful_traces)}"
+#                 repo.index.commit(commit_msg)
+#                 print(f"   💾 GitOps: Checkpoint saved to branch '{branch_name}'.")
+#                 
+#                 # Remote Push (if configured)
+#                 remote_url = os.getenv("GIT_REMOTE_URL")
+#                 if remote_url:
+#                     try:
+#                         # Check if origin exists, create if not
+#                         if 'origin' not in [r.name for r in repo.remotes]:
+#                             repo.create_remote('origin', remote_url)
+#                         
+#                         origin = repo.remotes.origin
+#                         origin.push(branch_name)
+#                         print(f"   🌐 GitOps: Pushed healing branch to remote.")
+#                     except GitCommandError as e:
+#                         print(f"   ⚠️  GitOps Push Error: {e}")
+#                 
+#                 # Broadcast to streamer if available
+#                 if self.ctx._streamer_initialized:
+#                     await self.ctx.broadcast(f"Created healing branch: {branch_name}", agent=self.name, level="GIT_CHECKPOINT")
+#                     
+#             except GitCommandError as e:
+#                 print(f"   ⚠️  GitOps Error: {e}")
+#     
+#     async def _execute_subprocess(self):
+#         """Fallback subprocess-based execution."""
+#         if "CRITICAL_FAILURE" in self.ctx.signals:
+#             print(f"   ⏪ GitOps: Critical Failure detected. REVERTING to last safe commit...")
+#             self.run_cmd(["git", "reset", "--hard", "HEAD"])
+#             self.ctx.signals.discard("CRITICAL_FAILURE")
+#         else:
+#             if self.ctx.modified_files:
+#                 print(f"   💾 GitOps: Committing {len(self.ctx.modified_files)} changes...")
+#                 self.run_cmd(["git", "add"] + list(self.ctx.modified_files))
+#                 self.run_cmd(["git", "commit", "-m", f"[HEALING] fix: auto-fix cycle {len(self.ctx.successful_traces)}"])
+#                 print(f"   ✅ GitOps: Checkpoint saved.")
+#     
+#     async def _generate_git_metadata(self) -> tuple:
+#         """L5+ Use LLM with few-shot to generate intelligent branch name and commit message."""
+#         if not self.ctx.intelligence_enabled:
+#             return None, None
+#         
+#         from datetime import datetime
+#         date_str = datetime.now().strftime("%Y%m%d")
+#         
+#         # Summarize signals and modifications
+#         signals_summary = list(self.ctx.signals)[:5]
+#         modified_summary = [os.path.basename(f) for f in list(self.ctx.modified_files)[:5]]
+#         
+#         prompt = f"""
+# {self.ctx.FEW_SHOT_GITOPS}
+# 
+# Current healing state:
+# Modified files: {modified_summary}
+# Signals resolved: {signals_summary}
+# Cycle: {len(self.ctx.successful_traces)}
+# Date: {date_str}
+# 
+# Propose:
+# - Branch name (healing/<type>-<desc>-YYYYMMDD)
+# - Commit title (conventional: fix/refactor/security/chore)
+# 
+# RESPONSE FORMAT:
+# BRANCH: healing/<type>-<short-desc>-{date_str}
+# COMMIT: <type>: <description>
+# """
+#         
+#         try:
+#             response = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=1)
+#             if response:
+#                 branch_name = None
+#                 commit_msg = None
+#                 for line in response.strip().split('\n'):
+#                     if line.startswith('BRANCH:'):
+#                         branch_name = line.replace('BRANCH:', '').strip()
+#                     elif line.startswith('COMMIT:'):
+#                         commit_msg = f"[HEALING] {line.replace('COMMIT:', '').strip()}"
+#                 
+#                 # L5+ Safety validation guard
+#                 if branch_name:
+#                     # Validate branch format
+#                     if not branch_name.startswith("healing/"):
+#                         print("   ⚠️ GitAgent: Invalid branch format, using fallback")
+#                         branch_name = None
+#                     # Block unsafe operations
+#                     if "force" in response.lower() and ("main" in response.lower() or "master" in response.lower()):
+#                         print("   🛡️ GitAgent: BLOCKED unsafe force push to main/master")
+#                         return None, None
+#                 
+#                 return branch_name, commit_msg
+#         except Exception:
+#             pass
+#         return None, None
 
-        # Handle critical failure - revert to HEAD
-        if "CRITICAL_FAILURE" in self.ctx.signals:
-            print(f"   ⏪ GitOps: Critical Failure. Reverting to HEAD...")
-            try:
-                repo.git.reset('--hard', 'HEAD')
-                self.ctx.signals.discard("CRITICAL_FAILURE")
-            except GitCommandError as e:
-                print(f"   ⚠️  GitOps Reset Error: {e}")
-            return
+# BenchmarkingAgent is now imported from agentic_core.agents.infrastructure
 
-        # Create healing branch and commit changes with L5+ Few-Shot GitOps
-        if self.ctx.modified_files:
-            try:
-                # Generate intelligent branch name and commit message
-                branch_name, commit_msg = await self._generate_git_metadata()
-                if not branch_name:
-                    branch_name = f"healing/auto_{int(time.time())}"
-                
-                # Store current branch to return to later
-                repo.active_branch.name
-                
-                # Create and checkout new branch
-                new_branch = repo.create_head(branch_name)
-                new_branch.checkout()
-                
-                # Add and Commit
-                repo.index.add(list(self.ctx.modified_files))
-                if not commit_msg:
-                    commit_msg = f"[HEALING] fix: auto-fix cycle {len(self.ctx.successful_traces)}"
-                repo.index.commit(commit_msg)
-                print(f"   💾 GitOps: Checkpoint saved to branch '{branch_name}'.")
-                
-                # Remote Push (if configured)
-                remote_url = os.getenv("GIT_REMOTE_URL")
-                if remote_url:
-                    try:
-                        # Check if origin exists, create if not
-                        if 'origin' not in [r.name for r in repo.remotes]:
-                            repo.create_remote('origin', remote_url)
-                        
-                        origin = repo.remotes.origin
-                        origin.push(branch_name)
-                        print(f"   🌐 GitOps: Pushed healing branch to remote.")
-                    except GitCommandError as e:
-                        print(f"   ⚠️  GitOps Push Error: {e}")
-                
-                # Broadcast to streamer if available
-                if self.ctx._streamer_initialized:
-                    await self.ctx.broadcast(f"Created healing branch: {branch_name}", agent=self.name, level="GIT_CHECKPOINT")
-                    
-            except GitCommandError as e:
-                print(f"   ⚠️  GitOps Error: {e}")
-    
-    async def _execute_subprocess(self):
-        """Fallback subprocess-based execution."""
-        if "CRITICAL_FAILURE" in self.ctx.signals:
-            print(f"   ⏪ GitOps: Critical Failure detected. REVERTING to last safe commit...")
-            self.run_cmd(["git", "reset", "--hard", "HEAD"])
-            self.ctx.signals.discard("CRITICAL_FAILURE")
-        else:
-            if self.ctx.modified_files:
-                print(f"   💾 GitOps: Committing {len(self.ctx.modified_files)} changes...")
-                self.run_cmd(["git", "add"] + list(self.ctx.modified_files))
-                self.run_cmd(["git", "commit", "-m", f"[HEALING] fix: auto-fix cycle {len(self.ctx.successful_traces)}"])
-                print(f"   ✅ GitOps: Checkpoint saved.")
-    
-    async def _generate_git_metadata(self) -> tuple:
-        """L5+ Use LLM with few-shot to generate intelligent branch name and commit message."""
-        if not self.ctx.intelligence_enabled:
-            return None, None
-        
-        from datetime import datetime
-        date_str = datetime.now().strftime("%Y%m%d")
-        
-        # Summarize signals and modifications
-        signals_summary = list(self.ctx.signals)[:5]
-        modified_summary = [os.path.basename(f) for f in list(self.ctx.modified_files)[:5]]
-        
-        prompt = f"""
-{self.ctx.FEW_SHOT_GITOPS}
-
-Current healing state:
-Modified files: {modified_summary}
-Signals resolved: {signals_summary}
-Cycle: {len(self.ctx.successful_traces)}
-Date: {date_str}
-
-Propose:
-- Branch name (healing/<type>-<desc>-YYYYMMDD)
-- Commit title (conventional: fix/refactor/security/chore)
-
-RESPONSE FORMAT:
-BRANCH: healing/<type>-<short-desc>-{date_str}
-COMMIT: <type>: <description>
-"""
-        
-        try:
-            response = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=1)
-            if response:
-                branch_name = None
-                commit_msg = None
-                for line in response.strip().split('\n'):
-                    if line.startswith('BRANCH:'):
-                        branch_name = line.replace('BRANCH:', '').strip()
-                    elif line.startswith('COMMIT:'):
-                        commit_msg = f"[HEALING] {line.replace('COMMIT:', '').strip()}"
-                
-                # L5+ Safety validation guard
-                if branch_name:
-                    # Validate branch format
-                    if not branch_name.startswith("healing/"):
-                        print("   ⚠️ GitAgent: Invalid branch format, using fallback")
-                        branch_name = None
-                    # Block unsafe operations
-                    if "force" in response.lower() and ("main" in response.lower() or "master" in response.lower()):
-                        print("   🛡️ GitAgent: BLOCKED unsafe force push to main/master")
-                        return None, None
-                
-                return branch_name, commit_msg
-        except Exception:
-            pass
-        return None, None
-
-class BenchmarkingAgent(SubAtomicAgent):
-    """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
-    
-    def __init__(self, ctx):
-        super().__init__(ctx)
-        self.benchmark_dir = "data/benchmarks"
-        self.history_file = os.path.join(self.benchmark_dir, "history.json")
-        self.regression_threshold = 0.10  # 10% performance regression threshold
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Running Performance Benchmarks...")
-        await asyncio.sleep(0)
-        
-        # Ensure benchmark directory exists
-        os.makedirs(self.benchmark_dir, exist_ok=True)
-        
-        # Find benchmark test files
-        benchmark_files = self._find_benchmark_files()
-        
-        if not benchmark_files:
-            print("   ✅ No benchmark files found - skipping")
-            return
-        
-        print(f"   📊 Found {len(benchmark_files)} benchmark suite(s)")
-        
-        # Load historical data
-        history = self._load_history()
-        
-        # Run benchmarks
-        current_results = await self._run_benchmarks(benchmark_files)
-        
-        if not current_results:
-            print("   ⚠️  Benchmark execution failed")
-            return
-        
-        # Analyze results for regressions
-        regressions = self._detect_regressions(history, current_results)
-        
-        # Store current results in history
-        self._save_results(current_results, history)
-        
-        # Generate trend report
-        self._generate_trend_report(history, current_results, regressions)
-        
-        # Signal regressions if detected
-        if regressions:
-            print(f"   🚨 PERFORMANCE REGRESSION DETECTED: {len(regressions)} benchmarks degraded")
-            self.ctx.signals.append("PERFORMANCE_REGRESSION")
-            for regression in regressions:
-                print(f"      - {regression['name']}: {regression['change']:.1f}% slower")
-        else:
-            print(f"   ✅ All benchmarks stable (±{self.regression_threshold*100:.0f}% threshold)")
-    
-    def _find_benchmark_files(self):
-        """Find benchmark test files in the repository."""
-        benchmark_files = []
-        
-        # Look for tests/benchmark_*.py pattern
-        for root, dirs, files in os.walk("."):
-            # Skip hidden directories and common non-test directories
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['__pycache__', 'node_modules', '.git']]
-            
-            for file in files:
-                if file.startswith("benchmark_") and file.endswith(".py"):
-                    benchmark_files.append(os.path.join(root, file))
-        
-        return benchmark_files
-    
-    def _load_history(self):
-        """Load historical benchmark data."""
-        try:
-            if os.path.exists(self.history_file):
-                with open(self.history_file, 'r') as f:
-                    return json.load(f)
-        except Exception as e:
-            print(f"   ⚠️  Failed to load history: {e}")
-        
-        return []
-    
-    async def _run_benchmarks(self, benchmark_files):
-        """Run pytest-benchmark on the benchmark files."""
-        # Create temporary file for benchmark JSON output
-        temp_json = os.path.join(self.benchmark_dir, "current_run.json")
-        
-        try:
-            # Try with pytest-benchmark first
-            cmd = [
-                sys.executable, "-m", "pytest",
-                "--benchmark-json", temp_json,
-                "--benchmark-only",
-                "--quiet"
-            ] + benchmark_files
-            
-            process = await asyncio.create_subprocess_exec(
-                *cmd,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            
-            stdout, stderr = await process.communicate()
-            
-            # Check if pytest-benchmark is available
-            if process.returncode != 0:
-                if "benchmark" in stderr.decode().lower():
-                    print("   ℹ️  pytest-benchmark not installed, falling back to pytest")
-                    return await self._run_simple_pytest(benchmark_files)
-                else:
-                    print(f"   ❌ Benchmark failed: {stderr.decode()}")
-                    return None
-            
-            # Parse benchmark results
-            if os.path.exists(temp_json):
-                with open(temp_json, 'r') as f:
-                    return json.load(f)
-            
-        except Exception as e:
-            print(f"   ❌ Failed to run benchmarks: {e}")
-        finally:
-            # Clean up temporary file
-            if os.path.exists(temp_json):
-                os.remove(temp_json)
-        
-        return None
-    
-    async def _run_simple_pytest(self, benchmark_files):
-        """Fallback: Run simple pytest without benchmarking."""
-        print("   📊 Running simple pytest (no timing data)")
-        
-        cmd = [sys.executable, "-m", "pytest", "--quiet"] + benchmark_files
-        
-        process = await asyncio.create_subprocess_exec(
-            *cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
-        
-        stdout, stderr = await process.communicate()
-        
-        if process.returncode == 0:
-            # Return a minimal structure indicating tests passed
-            return {
-                "benchmarks": [],
-                "machine_info": {"node": "unknown"},
-                "datetime": datetime.datetime.now().isoformat(),
-                "pytest_fallback": True
-            }
-        else:
-            print(f"   ❌ Tests failed: {stderr.decode()}")
-            return None
-    
-    def _detect_regressions(self, history, current_results):
-        """Detect performance regressions compared to historical data."""
-        regressions = []
-        
-        if not history or "benchmarks" not in current_results:
-            return regressions
-        
-        # Get the most recent historical run
-        last_run = history[-1] if history else None
-        
-        if not last_run or "benchmarks" not in last_run:
-            return regressions
-        
-        # Create lookup table for current benchmarks
-        current_lookup = {
-            bench["name"]: bench["stats"]["mean"]
-            for bench in current_results["benchmarks"]
-            if "stats" in bench and "mean" in bench["stats"]
-        }
-        
-        # Create lookup table for historical benchmarks
-        historical_lookup = {
-            bench["name"]: bench["stats"]["mean"]
-            for bench in last_run["benchmarks"]
-            if "stats" in bench and "mean" in bench["stats"]
-        }
-        
-        # Compare each benchmark
-        for name, current_mean in current_lookup.items():
-            if name in historical_lookup:
-                historical_mean = historical_lookup[name]
-                
-                # Calculate percentage change
-                change = (current_mean - historical_mean) / historical_mean
-                
-                # Check for regression (positive change = slower)
-                if change > self.regression_threshold:
-                    regressions.append({
-                        "name": name,
-                        "current": current_mean,
-                        "historical": historical_mean,
-                        "change": change * 100  # Convert to percentage
-                    })
-        
-        return regressions
-    
-    def _save_results(self, results, history):
-        """Save current results to history, keeping only last 20 runs."""
-        # Add timestamp to results
-        results["timestamp"] = int(time.time())
-        results["datetime"] = datetime.datetime.now().isoformat()
-        
-        # Append to history
-        history.append(results)
-        
-        # Keep only last 20 runs
-        if len(history) > 20:
-            history = history[-20:]
-        
-        # Save to file
-        try:
-            with open(self.history_file, 'w') as f:
-                json.dump(history, f, indent=2)
-        except Exception as e:
-            print(f"   ❌ Failed to save history: {e}")
-    
-    def _generate_trend_report(self, history, current_results, regressions):
-        """Generate a benchmark trend report."""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/benchmark_trends_{timestamp}.md"
-        
-        report_content = f"# Benchmark Trends Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        
-        # Summary
-        report_content += f"## Summary\n\n"
-        report_content += f"- Historical runs: {len(history)}\n"
-        report_content += f"- Current benchmarks: {len(current_results.get('benchmarks', []))}\n"
-        report_content += f"- Regressions detected: {len(regressions)}\n\n"
-        
-        # Machine info
-        if "machine_info" in current_results:
-            report_content += f"## Machine Info\n\n"
-            machine = current_results["machine_info"]
-            report_content += f"- Node: {machine.get('node', 'unknown')}\n"
-            report_content += f"- Processor: {machine.get('processor', 'unknown')}\n"
-            report_content += f"- Python Version: {machine.get('python_version', 'unknown')}\n\n"
-        
-        # Benchmark results
-        if "benchmarks" in current_results:
-            report_content += f"## Benchmark Results\n\n"
-            
-            for bench in current_results["benchmarks"][:10]:  # Show first 10
-                name = bench.get("name", "unknown")
-                if "stats" in bench:
-                    stats = bench["stats"]
-                    mean = stats.get("mean", 0)
-                    std = stats.get("stddev", 0)
-                    report_content += f"### {name}\n"
-                    report_content += f"- Mean: {mean:.6f}s ± {std:.6f}s\n"
-                    
-                    # Check if this benchmark has history
-                    if len(history) > 1:
-                        # Find trend over last 5 runs
-                        recent_means = []
-                        for run in history[-5:]:
-                            for b in run.get("benchmarks", []):
-                                if b.get("name") == name and "stats" in b:
-                                    recent_means.append(b["stats"]["mean"])
-                                    break
-                        
-                        if len(recent_means) > 1:
-                            trend = (recent_means[-1] - recent_means[0]) / recent_means[0] * 100
-                            trend_icon = "📈" if trend > 0 else "📉"
-                            report_content += f"- Trend (5 runs): {trend_icon} {trend:+.1f}%\n"
-                
-                report_content += "\n"
-        
-        # Regressions
-        if regressions:
-            report_content += f"## 🚨 Performance Regressions\n\n"
-            for regression in regressions:
-                report_content += f"### {regression['name']}\n"
-                report_content += f"- Current: {regression['current']:.6f}s\n"
-                report_content += f"- Previous: {regression['historical']:.6f}s\n"
-                report_content += f"- Change: +{regression['change']:.1f}%\n\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
+# class BenchmarkingAgent(SubAtomicAgent):
+#     """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
+#     
+#     def __init__(self, ctx):
+#         super().__init__(ctx)
+#         self.benchmark_dir = "data/benchmarks"
+#         self.history_file = os.path.join(self.benchmark_dir, "history.json")
+#         self.regression_threshold = 0.10  # 10% performance regression threshold
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Running Performance Benchmarks...")
+#         await asyncio.sleep(0)
+#         
+#         # Ensure benchmark directory exists
+#         os.makedirs(self.benchmark_dir, exist_ok=True)
+#         
+#         # Find benchmark test files
+#         benchmark_files = self._find_benchmark_files()
+#         
+#         if not benchmark_files:
+#             print("   ✅ No benchmark files found - skipping")
+#             return
+#         
+#         print(f"   📊 Found {len(benchmark_files)} benchmark suite(s)")
+#         
+#         # Load historical data
+#         history = self._load_history()
+#         
+#         # Run benchmarks
+#         current_results = await self._run_benchmarks(benchmark_files)
+#         
+#         if not current_results:
+#             print("   ⚠️  Benchmark execution failed")
+#             return
+#         
+#         # Analyze results for regressions
+#         regressions = self._detect_regressions(history, current_results)
+#         
+#         # Store current results in history
+#         self._save_results(current_results, history)
+#         
+#         # Generate trend report
+#         self._generate_trend_report(history, current_results, regressions)
+#         
+#         # Signal regressions if detected
+#         if regressions:
+#             print(f"   🚨 PERFORMANCE REGRESSION DETECTED: {len(regressions)} benchmarks degraded")
+#             self.ctx.signals.append("PERFORMANCE_REGRESSION")
+#             for regression in regressions:
+#                 print(f"      - {regression['name']}: {regression['change']:.1f}% slower")
+#         else:
+#             print(f"   ✅ All benchmarks stable (±{self.regression_threshold*100:.0f}% threshold)")
+#     
+#     def _find_benchmark_files(self):
+#         """Find benchmark test files in the repository."""
+#         benchmark_files = []
+#         
+#         # Look for tests/benchmark_*.py pattern
+#         for root, dirs, files in os.walk("."):
+#             # Skip hidden directories and common non-test directories
+#             dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['__pycache__', 'node_modules', '.git']]
+#             
+#             for file in files:
+#                 if file.startswith("benchmark_") and file.endswith(".py"):
+#                     benchmark_files.append(os.path.join(root, file))
+#         
+#         return benchmark_files
+#     
+#     def _load_history(self):
+#         """Load historical benchmark data."""
+#         try:
+#             if os.path.exists(self.history_file):
+#                 with open(self.history_file, 'r') as f:
+#                     return json.load(f)
+#         except Exception as e:
+#             print(f"   ⚠️  Failed to load history: {e}")
+#         
+#         return []
+#     
+#     async def _run_benchmarks(self, benchmark_files):
+#         """Run pytest-benchmark on the benchmark files."""
+#         # Create temporary file for benchmark JSON output
+#         temp_json = os.path.join(self.benchmark_dir, "current_run.json")
+#         
+#         try:
+#             # Try with pytest-benchmark first
+#             cmd = [
+#                 sys.executable, "-m", "pytest",
+#                 "--benchmark-json", temp_json,
+#                 "--benchmark-only",
+#                 "--quiet"
+#             ] + benchmark_files
+#             
+#             process = await asyncio.create_subprocess_exec(
+#                 *cmd,
+#                 stdout=asyncio.subprocess.PIPE,
+#                 stderr=asyncio.subprocess.PIPE
+#             )
+#             
+#             stdout, stderr = await process.communicate()
+#             
+#             # Check if pytest-benchmark is available
+#             if process.returncode != 0:
+#                 if "benchmark" in stderr.decode().lower():
+#                     print("   ℹ️  pytest-benchmark not installed, falling back to pytest")
+#                     return await self._run_simple_pytest(benchmark_files)
+#                 else:
+#                     print(f"   ❌ Benchmark failed: {stderr.decode()}")
+#                     return None
+#             
+#             # Parse benchmark results
+#             if os.path.exists(temp_json):
+#                 with open(temp_json, 'r') as f:
+#                     return json.load(f)
+#             
+#         except Exception as e:
+#             print(f"   ❌ Failed to run benchmarks: {e}")
+#         finally:
+#             # Clean up temporary file
+#             if os.path.exists(temp_json):
+#                 os.remove(temp_json)
+#         
+#         return None
+#     
+#     async def _run_simple_pytest(self, benchmark_files):
+#         """Fallback: Run simple pytest without benchmarking."""
+#         print("   📊 Running simple pytest (no timing data)")
+#         
+#         cmd = [sys.executable, "-m", "pytest", "--quiet"] + benchmark_files
+#         
+#         process = await asyncio.create_subprocess_exec(
+#             *cmd,
+#             stdout=asyncio.subprocess.PIPE,
+#             stderr=asyncio.subprocess.PIPE
+#         )
+#         
+#         stdout, stderr = await process.communicate()
+#         
+#         if process.returncode == 0:
+#             # Return a minimal structure indicating tests passed
+#             return {
+#                 "benchmarks": [],
+#                 "machine_info": {"node": "unknown"},
+#                 "datetime": datetime.datetime.now().isoformat(),
+#                 "pytest_fallback": True
+#             }
+#         else:
+#             print(f"   ❌ Tests failed: {stderr.decode()}")
+#             return None
+#     
+#     def _detect_regressions(self, history, current_results):
+#         """Detect performance regressions compared to historical data."""
+#         regressions = []
+#         
+#         if not history or "benchmarks" not in current_results:
+#             return regressions
+#         
+#         # Get the most recent historical run
+#         last_run = history[-1] if history else None
+#         
+#         if not last_run or "benchmarks" not in last_run:
+#             return regressions
+#         
+#         # Create lookup table for current benchmarks
+#         current_lookup = {
+#             bench["name"]: bench["stats"]["mean"]
+#             for bench in current_results["benchmarks"]
+#             if "stats" in bench and "mean" in bench["stats"]
+#         }
+#         
+#         # Create lookup table for historical benchmarks
+#         historical_lookup = {
+#             bench["name"]: bench["stats"]["mean"]
+#             for bench in last_run["benchmarks"]
+#             if "stats" in bench and "mean" in bench["stats"]
+#         }
+#         
+#         # Compare each benchmark
+#         for name, current_mean in current_lookup.items():
+#             if name in historical_lookup:
+#                 historical_mean = historical_lookup[name]
+#                 
+#                 # Calculate percentage change
+#                 change = (current_mean - historical_mean) / historical_mean
+#                 
+#                 # Check for regression (positive change = slower)
+#                 if change > self.regression_threshold:
+#                     regressions.append({
+#                         "name": name,
+#                         "current": current_mean,
+#                         "historical": historical_mean,
+#                         "change": change * 100  # Convert to percentage
+#                     })
+#         
+#         return regressions
+#     
+#     def _save_results(self, results, history):
+#         """Save current results to history, keeping only last 20 runs."""
+#         # Add timestamp to results
+#         results["timestamp"] = int(time.time())
+#         results["datetime"] = datetime.datetime.now().isoformat()
+#         
+#         # Append to history
+#         history.append(results)
+#         
+#         # Keep only last 20 runs
+#         if len(history) > 20:
+#             history = history[-20:]
+#         
+#         # Save to file
+#         try:
+#             with open(self.history_file, 'w') as f:
+#                 json.dump(history, f, indent=2)
+#         except Exception as e:
+#             print(f"   ❌ Failed to save history: {e}")
+#     
+#     def _generate_trend_report(self, history, current_results, regressions):
+#         """Generate a benchmark trend report."""
+#         timestamp = int(time.time())
+#         report_path = f"observability/audit/benchmark_trends_{timestamp}.md"
+#         
+#         report_content = f"# Benchmark Trends Report\n\n"
+#         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+#         
+#         # Summary
+#         report_content += f"## Summary\n\n"
+#         report_content += f"- Historical runs: {len(history)}\n"
+#         report_content += f"- Current benchmarks: {len(current_results.get('benchmarks', []))}\n"
+#         report_content += f"- Regressions detected: {len(regressions)}\n\n"
+#         
+#         # Machine info
+#         if "machine_info" in current_results:
+#             report_content += f"## Machine Info\n\n"
+#             machine = current_results["machine_info"]
+#             report_content += f"- Node: {machine.get('node', 'unknown')}\n"
+#             report_content += f"- Processor: {machine.get('processor', 'unknown')}\n"
+#             report_content += f"- Python Version: {machine.get('python_version', 'unknown')}\n\n"
+#         
+#         # Benchmark results
+#         if "benchmarks" in current_results:
+#             report_content += f"## Benchmark Results\n\n"
+#             
+#             for bench in current_results["benchmarks"][:10]:  # Show first 10
+#                 name = bench.get("name", "unknown")
+#                 if "stats" in bench:
+#                     stats = bench["stats"]
+#                     mean = stats.get("mean", 0)
+#                     std = stats.get("stddev", 0)
+#                     report_content += f"### {name}\n"
+#                     report_content += f"- Mean: {mean:.6f}s ± {std:.6f}s\n"
+#                     
+#                     # Check if this benchmark has history
+#                     if len(history) > 1:
+#                         # Find trend over last 5 runs
+#                         recent_means = []
+#                         for run in history[-5:]:
+#                             for b in run.get("benchmarks", []):
+#                                 if b.get("name") == name and "stats" in b:
+#                                     recent_means.append(b["stats"]["mean"])
+#                                     break
+#                         
+#                         if len(recent_means) > 1:
+#                             trend = (recent_means[-1] - recent_means[0]) / recent_means[0] * 100
+#                             trend_icon = "📈" if trend > 0 else "📉"
+#                             report_content += f"- Trend (5 runs): {trend_icon} {trend:+.1f}%\n"
+#                 
+#                 report_content += "\n"
+#         
+#         # Regressions
+#         if regressions:
+#             report_content += f"## 🚨 Performance Regressions\n\n"
+#             for regression in regressions:
+#                 report_content += f"### {regression['name']}\n"
+#                 report_content += f"- Current: {regression['current']:.6f}s\n"
+#                 report_content += f"- Previous: {regression['historical']:.6f}s\n"
+#                 report_content += f"- Change: +{regression['change']:.1f}%\n\n"
+#         
+#         self.ctx.write_compliant_file(report_path, report_content)
 
 class MemoryLeakDetector(SubAtomicAgent):
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
@@ -8346,200 +7431,205 @@ class RaceAnalyzer(ast.NodeVisitor):
         """Check if current node is inside a 'with lock:' context."""
         return any(context[0] == 'lock' for context in self.in_with_context)
 
-class Sherlock(SubAtomicAgent):
-    """
-    ROLE: Root Cause Analysis. Triggered when TestPilot fails.
-    Analyzes cross-file dependencies and fixes interaction bugs.
-    """
-    
-    def __init__(self, context: ValidationContext):
-        super().__init__(context)
-        self.triggered = False
-        self.last_failure = None
-    
-    def can_run(self) -> bool:
-        """Only run when triggered by TestPilot failure."""
-        return self.triggered and self.last_failure is not None
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
-        await asyncio.sleep(0)
-        
-        if not self.last_failure:
-            print(f"   ⚠️  No failure context available")
-            return
-        
-        await self._analyze_failure(self.last_failure)
-    
-    def trigger_investigation(self, modified_file: str, test_file: str, traceback: str):
-        """Trigger Sherlock investigation with failure context."""
-        self.triggered = True
-        self.last_failure = {
-            'modified_file': modified_file,
-            'test_file': test_file,
-            'traceback': traceback
-        }
-    
-    async def _analyze_failure(self, failure_info: dict):
-        """Analyze the test failure and find root cause."""
-        if not self.ctx.intelligence_enabled:
-            print(f"   🧠 Intelligence disabled - cannot perform root cause analysis")
-            return
-        
-        print(f"   🔍 Analyzing failure in {failure_info['test_file']}")
-        
-        # Parse traceback to find the actual error location
-        error_file = self._extract_error_file(failure_info['traceback'])
-        
-        if not error_file:
-            print(f"   ⚠️  Could not extract error file from traceback")
-            return
-        
-        # Load both the modified file and the error file
-        files_content = {}
-        for file_path in [failure_info['modified_file'], error_file]:
-            if os.path.exists(file_path):
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        files_content[file_path] = f.read()
-                except Exception as e:
-                    print(f"   ❌ Failed to read {file_path}: {e}")
-                    return
-        
-        # Ask Gemini to analyze the cross-file interaction
-        await self._request_cross_file_fix(files_content, failure_info)
-    
-    def _extract_error_file(self, traceback: str) -> str:
-        """Extract the actual error file from pytest traceback."""
-        import re
+# Sherlock is now imported from agentic_core.agents.repair
 
-        # Look for file paths in the traceback
-        pattern = r'File "([^"]+)", line \d+'
-        matches = re.findall(pattern, traceback)
-        
-        # Return the last match (usually where the error occurred)
-        if matches:
-            return matches[-1]
-        
-        return None
-    
-    async def _request_cross_file_fix(self, files_content: dict, failure_info: dict):
-        """Request a fix for the cross-file interaction issue using collective repair."""
-        primary = failure_info['modified_file']
-        error_file = self._extract_error_file(failure_info['traceback'])
-        
-        # L5+ Sherlock Positive Instructional Injection (structured reasoning template)
-        positive_guide = f"""
-{self.ctx.FEW_SHOT_SHERLOCK}
-{self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
-
-<healing_context>
-Cycle: {getattr(self.ctx, 'current_cycle', 'unknown')}
-Previous signals: {list(self.ctx.signals)[:5]}
-</healing_context>
-
-<reasoning_template>
-Step 1: Identify the exact exception type and line.
-Step 2: Trace which modified file likely introduced it.
-Step 3: Check if it's a dependency mismatch, race condition, or logic bug.
-Step 4: Recall similar past fixes from memory.
-Step 5: Propose one minimal change that resolves root cause.
-</reasoning_template>
-
-Apply minimal, atomic fix following examples. Use chain-of-thought above. Be surgical.
-"""
-        
-        # Build structured context for better analysis
-        structured_traceback = f"""
-{positive_guide}
-
-<modified_file path="{primary}">
-{files_content.get(primary, "")[:3000]}
-</modified_file>
-
-<error_context path="{error_file or 'unknown'}">
-{files_content.get(error_file, "")[:2000] if error_file else ""}
-</error_context>
-
-<traceback>
-{failure_info['traceback'][:2000]}
-</traceback>
-
-Fix the root cause with a precise code patch.
-"""
-        
-        # Use collective repair with enhanced context
-        proposed = await self.ctx.conversational_repair(
-            structured_traceback,
-            primary_file=primary,
-            dependent_files=list(files_content.keys())
-        )
-        
-        if proposed:
-            print(f"   🕵️ Sherlock collective fix applied to {primary}")
-            if self.ctx.write_compliant_file(primary, proposed):
-                self.ctx.modified_files.add(primary)
-                print(f"   ✅ Cross-file fix successfully applied")
-            else:
-                print(f"   🛑 Fix blocked by governor")
-        else:
-            print(f"   ⚠️ No valid fix from collective intelligence")
+# class Sherlock(SubAtomicAgent):
+#     """
+#     ROLE: Root Cause Analysis. Triggered when TestPilot fails.
+#     Analyzes cross-file dependencies and fixes interaction bugs.
+#     """
+#     
+#     def __init__(self, context: ValidationContext):
+#         super().__init__(context)
+#         self.triggered = False
+#         self.last_failure = None
+#     
+#     def can_run(self) -> bool:
+#         """Only run when triggered by TestPilot failure."""
+#         return self.triggered and self.last_failure is not None
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
+#         await asyncio.sleep(0)
+#         
+#         if not self.last_failure:
+#             print(f"   ⚠️  No failure context available")
+#             return
+#         
+#         await self._analyze_failure(self.last_failure)
+#     
+#     def trigger_investigation(self, modified_file: str, test_file: str, traceback: str):
+#         """Trigger Sherlock investigation with failure context."""
+#         self.triggered = True
+#         self.last_failure = {
+#             'modified_file': modified_file,
+#             'test_file': test_file,
+#             'traceback': traceback
+#         }
+#     
+#     async def _analyze_failure(self, failure_info: dict):
+#         """Analyze the test failure and find root cause."""
+#         if not self.ctx.intelligence_enabled:
+#             print(f"   🧠 Intelligence disabled - cannot perform root cause analysis")
+#             return
+#         
+#         print(f"   🔍 Analyzing failure in {failure_info['test_file']}")
+#         
+#         # Parse traceback to find the actual error location
+#         error_file = self._extract_error_file(failure_info['traceback'])
+#         
+#         if not error_file:
+#             print(f"   ⚠️  Could not extract error file from traceback")
+#             return
+#         
+#         # Load both the modified file and the error file
+#         files_content = {}
+#         for file_path in [failure_info['modified_file'], error_file]:
+#             if os.path.exists(file_path):
+#                 try:
+#                     with open(file_path, 'r', encoding='utf-8') as f:
+#                         files_content[file_path] = f.read()
+#                 except Exception as e:
+#                     print(f"   ❌ Failed to read {file_path}: {e}")
+#                     return
+#         
+#         # Ask Gemini to analyze the cross-file interaction
+#         await self._request_cross_file_fix(files_content, failure_info)
+#     
+#     def _extract_error_file(self, traceback: str) -> str:
+#         """Extract the actual error file from pytest traceback."""
+#         import re
+# 
+#         # Look for file paths in the traceback
+#         pattern = r'File "([^"]+)", line \d+'
+#         matches = re.findall(pattern, traceback)
+#         
+#         # Return the last match (usually where the error occurred)
+#         if matches:
+#             return matches[-1]
+#         
+#         return None
+#     
+#     async def _request_cross_file_fix(self, files_content: dict, failure_info: dict):
+#         """Request a fix for the cross-file interaction issue using collective repair."""
+#         primary = failure_info['modified_file']
+#         error_file = self._extract_error_file(failure_info['traceback'])
+#         
+#         # L5+ Sherlock Positive Instructional Injection (structured reasoning template)
+#         positive_guide = f"""
+# {self.ctx.FEW_SHOT_SHERLOCK}
+# {self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
+# 
+# <healing_context>
+# Cycle: {getattr(self.ctx, 'current_cycle', 'unknown')}
+# Previous signals: {list(self.ctx.signals)[:5]}
+# </healing_context>
+# 
+# <reasoning_template>
+# Step 1: Identify the exact exception type and line.
+# Step 2: Trace which modified file likely introduced it.
+# Step 3: Check if it's a dependency mismatch, race condition, or logic bug.
+# Step 4: Recall similar past fixes from memory.
+# Step 5: Propose one minimal change that resolves root cause.
+# </reasoning_template>
+# 
+# Apply minimal, atomic fix following examples. Use chain-of-thought above. Be surgical.
+# """
+#         
+#         # Build structured context for better analysis
+#         structured_traceback = f"""
+# {positive_guide}
+# 
+# <modified_file path="{primary}">
+# {files_content.get(primary, "")[:3000]}
+# </modified_file>
+# 
+# <error_context path="{error_file or 'unknown'}">
+# {files_content.get(error_file, "")[:2000] if error_file else ""}
+# </error_context>
+# 
+# <traceback>
+# {failure_info['traceback'][:2000]}
+# </traceback>
+# 
+# Fix the root cause with a precise code patch.
+# """
+#         
+#         # Use collective repair with enhanced context
+#         proposed = await self.ctx.conversational_repair(
+#             structured_traceback,
+#             primary_file=primary,
+#             dependent_files=list(files_content.keys())
+#         )
+#         
+#         if proposed:
+#             print(f"   🕵️ Sherlock collective fix applied to {primary}")
+#             if self.ctx.write_compliant_file(primary, proposed):
+#                 self.ctx.modified_files.add(primary)
+#                 print(f"   ✅ Cross-file fix successfully applied")
+#             else:
+#                 print(f"   🛑 Fix blocked by governor")
+#         else:
+#             print(f"   ⚠️ No valid fix from collective intelligence")
 
 # ==============================================================================
 # --- L5 WATCHMAN: PROACTIVE MONITORING ---
 # ==============================================================================
-class WatchmanHandler:
-    """
-    L5 Autonomous Mode: File system event handler for proactive validation.
-    Monitors repository for changes and triggers surgical validation missions.
-    """
-    def __init__(self, loop):
-        self.loop = loop
-        self._debounce_tasks = {}  # Prevent rapid re-triggers
-        self._debounce_delay = 1.0  # seconds
-    
-    def on_modified(self, event):
-        """Handle file modification events."""
-        # Ignore directories and non-python files
-        if event.is_directory or not event.src_path.endswith('.py'):
-            return
-        
-        # Avoid self-triggering from excluded directories
-        if any(excluded in event.src_path for excluded in EXCLUDED_DIRS):
-            return
-        
-        # Normalize path
-        file_path = os.path.normpath(event.src_path)
-        
-        # Debounce: Cancel previous task for this file if still pending
-        if file_path in self._debounce_tasks:
-            self._debounce_tasks[file_path].cancel()
-        
-        print(f"\n[WATCHMAN] 👁️ Change detected: {file_path}")
-        
-        # Schedule the mission in the existing event loop with debounce
-        task = asyncio.run_coroutine_threadsafe(
-            self._debounced_trigger(file_path), 
-            self.loop
-        )
-        self._debounce_tasks[file_path] = task
-    
-    async def _debounced_trigger(self, file_path: str):
-        """Debounced trigger to avoid rapid re-validation."""
-        await asyncio.sleep(self._debounce_delay)
-        await self.trigger_mission(file_path)
-    
-    async def trigger_mission(self, file_path: str):
-        """Trigger a surgical validation mission for the modified file."""
-        print(f"\n[WATCHMAN] 🎯 Triggering surgical mission for: {file_path}")
-        try:
-            scheduler = SwarmScheduler()
-            await scheduler.run_mission(target_scope=file_path)
-        except Exception as e:
-            print(f"[WATCHMAN] ❌ Mission failed: {e}")
-        finally:
-            # Clean up debounce tracking
-            self._debounce_tasks.pop(file_path, None)
+
+# WatchmanHandler is now imported from agentic_core.agents.infrastructure
+
+# class WatchmanHandler:
+#     """
+#     L5 Autonomous Mode: File system event handler for proactive validation.
+#     Monitors repository for changes and triggers surgical validation missions.
+#     """
+#     def __init__(self, loop):
+#         self.loop = loop
+#         self._debounce_tasks = {}  # Prevent rapid re-triggers
+#         self._debounce_delay = 1.0  # seconds
+#     
+#     def on_modified(self, event):
+#         """Handle file modification events."""
+#         # Ignore directories and non-python files
+#         if event.is_directory or not event.src_path.endswith('.py'):
+#             return
+#         
+#         # Avoid self-triggering from excluded directories
+#         if any(excluded in event.src_path for excluded in EXCLUDED_DIRS):
+#             return
+#         
+#         # Normalize path
+#         file_path = os.path.normpath(event.src_path)
+#         
+#         # Debounce: Cancel previous task for this file if still pending
+#         if file_path in self._debounce_tasks:
+#             self._debounce_tasks[file_path].cancel()
+#         
+#         print(f"\n[WATCHMAN] 👁️ Change detected: {file_path}")
+#         
+#         # Schedule the mission in the existing event loop with debounce
+#         task = asyncio.run_coroutine_threadsafe(
+#             self._debounced_trigger(file_path), 
+#             self.loop
+#         )
+#         self._debounce_tasks[file_path] = task
+#     
+#     async def _debounced_trigger(self, file_path: str):
+#         """Debounced trigger to avoid rapid re-validation."""
+#         await asyncio.sleep(self._debounce_delay)
+#         await self.trigger_mission(file_path)
+#     
+#     async def trigger_mission(self, file_path: str):
+#         """Trigger a surgical validation mission for the modified file."""
+#         print(f"\n[WATCHMAN] 🎯 Triggering surgical mission for: {file_path}")
+#         try:
+#             scheduler = SwarmScheduler()
+#             await scheduler.run_mission(target_scope=file_path)
+#         except Exception as e:
+#             print(f"[WATCHMAN] ❌ Mission failed: {e}")
+#         finally:
+#             # Clean up debounce tracking
+#             self._debounce_tasks.pop(file_path, None)
 
 
 # ==============================================================================
