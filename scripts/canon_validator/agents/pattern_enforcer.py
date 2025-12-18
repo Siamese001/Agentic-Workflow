@@ -19,7 +19,7 @@ class PatternEnforcer(SubAtomicAgent):
     ROLE: Enforces coding patterns and best practices.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
 
         pattern_checks = [
