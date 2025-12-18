@@ -1,3 +1,4 @@
+
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 
@@ -12,17 +13,13 @@ import logging
 from datetime import datetime
 from typing import List, Optional
 
-logger = logging.getLogger(__name__)
-
-
 try:
-    #     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...
+#     from archives.legacy_root_folders.database.graph_store_neo4j import Neo4jGraphStore  # DEPR...
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
-
 
 async def insert_entity(entity: TemporalEntity) -> None:
     """
@@ -48,9 +45,8 @@ async def insert_entity(entity: TemporalEntity) -> None:
                 },
             )
     except (ValueError, TypeError, RuntimeError, KeyError):
-# Log error but don't fail - Neo4j is optional mirror
+        # Log error but don't fail - Neo4j is optional mirror
         ...
-
 
 async def insert_triplet(triplet: TemporalTriplet) -> None:
     """
@@ -69,7 +65,14 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 PREDICATE=triplet.predicate,
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
-                invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None,
+                invalid_at=triplet.
+                    .temporal_range.
+                    .invalid_at.
+                    .isoformat() if triplet.
+                    .temporal_range.
+                    .invalid_at else None,
+
+
                 ATTRS={
                     "confidence": triplet.confidence,
                     "source": triplet.source,
@@ -78,9 +81,8 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 },
             )
     except (ValueError, TypeError, RuntimeError, KeyError):
-# Log error but don't fail - Neo4j is optional mirror
+        # Log error but don't fail - Neo4j is optional mirror
         ...
-
 
 async def insert_event(event: TemporalEvent) -> None:
     """
@@ -101,16 +103,16 @@ async def insert_event(event: TemporalEvent) -> None:
                 _neo4j_graph.update_relation_invalidity(
                     rel_id=event.triplet_id,
                     invalid_at=invalid_at.isoformat() if isinstance(invalid_at,
-                                                                    datetime) else invalid_at,
+                        datetime) else invalid_at,
 
                     invalidated_by=invalidated_by,
                 )
     except (ValueError, TypeError, RuntimeError, KeyError):
-# Log error but don't fail - Neo4j is optional mirror
+        # Log error but don't fail - Neo4j is optional mirror
         ...
 
-
 async def batch_process_invalidation(
+    """Docstring."""
     events_to_update: List[TemporalEvent]
 ) -> None:
     """
@@ -124,8 +126,8 @@ async def batch_process_invalidation(
     for event in events_to_update:
         await insert_event(event)
 
-
 async def ingest_transcript(
+    """Docstring."""
     transcript_id: str,
     entities: List[TemporalEntity],
     triplets: List[TemporalTriplet],
@@ -150,4 +152,3 @@ async def ingest_transcript(
     # Insert events (including invalidations)
     for event in events:
         await insert_event(event)
-

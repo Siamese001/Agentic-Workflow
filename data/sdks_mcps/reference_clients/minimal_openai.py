@@ -67,4 +67,3 @@ if __name__ == "__main__":
             "key_points": {"type": "array", "items": {"type": "string"}},
         },
     }
-

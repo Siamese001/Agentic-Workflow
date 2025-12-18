@@ -2,14 +2,13 @@
 """Direct SDK validation without imports through __init__.py."""
 
 import importlib
-import logging
 import os
 import sys
 
 
 def check_sdk_import(sdk_name, module_path):
     """Docstring."""
-
+import logging
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,14 +17,11 @@ LOGGER = logging.getLogger(__name__)
         importlib.import_module(module_path)
         return True, None
     except ImportError as e:
-pass
-return False, str(e)
-
+        return False, str(e)
 
 def check_env_var(env_var):
     """Check if environment variable is set."""
     return os.getenv(env_var) is not None
-
 
 def main():
     """Docstring."""
@@ -147,8 +143,7 @@ def main():
         logger.info(f"✅ Tool Execution: OK (21 * 2 = {result.result})")
 
     except Exception as e:
-pass
-logger.info(f"❌ MCP Server: Failed - {e}")
+        logger.info(f"❌ MCP Server: Failed - {e}")
 
     # Check multi-provider clients
     logger.info("\nCHECKING MULTI-PROVIDER CLIENTS...")
@@ -164,8 +159,7 @@ logger.info(f"❌ MCP Server: Failed - {e}")
             logger.info(f"  - {provider.value}")
 
     except Exception as e:
-pass
-logger.info(f"❌ Multi-Provider Client: Failed - {e}")
+        logger.info(f"❌ Multi-Provider Client: Failed - {e}")
 
     # Final verdict
     LOGGER.INFO("\N" + "=" * 60)
@@ -185,4 +179,3 @@ logger.info(f"❌ Multi-Provider Client: Failed - {e}")
 
 if __name__ == "__main__":
     sys.exit(main())
-

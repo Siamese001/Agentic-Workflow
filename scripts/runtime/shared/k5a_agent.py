@@ -7,15 +7,9 @@ constraints (28-33 words per bullet).
 
 import logging
 import re
-from typing import Any, Dict, List
-
-from dataclasses import dataclass
-from .base.agent import Agent
-from .base.config import ReasoningConfig
-
+from typing import Any
 
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class ProvenanceRule:
@@ -25,14 +19,14 @@ class ProvenanceRule:
     _synthetic: int  # Number of _synthetic bullets
 
     @property
-    def total(self: Any) -> int:
+def total(self: Any) -> int:
         """Total bullet count."""
-        return self._verbatim + self._transformed + self._synthetic
+        return self.verbatim + self.transformed + self.synthetic
 
     @property
-    def pattern(self: Any) -> str:
+def pattern(self: Any) -> str:
         """Provenance pattern string."""
-        return f"{self._verbatim}V-{self._transformed}T-{self._synthetic}S"
+        return f"{self.verbatim}V-{self.transformed}T-{self.synthetic}S"
 
 @dataclass
 class K5AOutput:
@@ -52,11 +46,11 @@ class K5AGenerationAgent(Agent):
     - Differentiator integration: Must include required differentiators
     """
 
-    def __init__(self: Any,
-                 config: ReasoningConfig,
-                 provenance_rule: ProvenanceRule,
-                 word_count_min: int,
-                 word_count_max: int) -> None:
+def __init__(self: Any,
+     config: ReasoningConfig,
+     provenance_rule: ProvenanceRule,
+     word_count_min: int,
+     word_count_max: int) -> None:
         """Initialize K.5A agent.
 
         Args:
@@ -71,13 +65,13 @@ class K5AGenerationAgent(Agent):
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
 
-        LOGGER.info(
+        logger.info(
             f"K.5A Agent initialized: "
-            f"PROVENANCE={provenance_rule.pattern}, "
+            F"PROVENANCE={provenance_rule.pattern}, "
             f"word_count={word_count_min}-{word_count_max}"
         )
 
-    async def execute(self: Any, context: Dict[str, Any]) -> K5AOutput:
+async def execute(self: Any, context: Dict[str, Any]) -> K5AOutput:
         """Execute K.5A bullet generation.
 
         Args:
@@ -90,7 +84,7 @@ class K5AGenerationAgent(Agent):
         Returns:
             K5AOutput with 7 bullets and metadata
         """
-        LOGGER.info("Executing K.5A bullet generation")
+        logger.info("Executing K.5A bullet generation")
 
         # Extract context
         master_bullets = context.get("master_bullets", [])
@@ -103,7 +97,7 @@ class K5AGenerationAgent(Agent):
             PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
             PROMPT = self._build_initial_prompt(
-                master_bullets, DIFFERENTIATORS, job_description
+                master_bullets, differentiators, job_description
             )
 
         # Generate with self-consistency if configured
@@ -111,36 +105,36 @@ class K5AGenerationAgent(Agent):
             CANDIDATES = await self._call_llm_with_self_consistency(
                 PROMPT, K=self.config.self_consistency
             )
-            RESPONSE = self._select_best_candidate(CANDIDATES, "length")
+            RESPONSE = self._select_best_candidate(candidates, "length")
         else:
-            RESPONSE = await self._call_llm(PROMPT) # Use PROMPT instead of prompt
+            RESPONSE = await self._call_llm(prompt)
 
         # Parse bullets from response
-        BULLETS = self._parse_bullets(RESPONSE)
+        BULLETS = self._parse_bullets(response)
 
         # Validate bullet count
-        if len(BULLETS) != self.provenance_rule.total:
-            LOGGER.warning(
-                f"Generated {len(BULLETS)} bullets, expected {self.provenance_rule.total}"
+        if len(bullets) != self.provenance_rule.total:
+            logger.warning(
+                f"Generated {len(bullets)} bullets, expected {self.provenance_rule.total}"
             )
             # Pad or trim to exact count
-            if len(BULLETS) < self.provenance_rule.total:
-                BULLETS.extend(["[PLACEHOLDER]"] * (self.provenance_rule.total - len(BULLETS)))
+            if len(bullets) < self.provenance_rule.total:
+                bullets.extend(["[PLACEHOLDER]"] * (self.provenance_rule.total - len(bullets)))
             else:
-                BULLETS = BULLETS[:self.provenance_rule.total]
+                BULLETS = bullets[:self.provenance_rule.total]
 
         # Calculate word counts
-        word_counts = [len(b.split()) for b in BULLETS]
+        word_counts = [len(b.split()) for b in bullets]
 
         # Assign provenance (simplified - would need actual matching logic)
-        PROVENANCE = self._assign_provenance(BULLETS, master_bullets)
+        PROVENANCE = self._assign_provenance(bullets, master_bullets)
 
         # Build output
         OUTPUT = K5AOutput(
-            bullets=BULLETS,
-            provenance=PROVENANCE,
+            BULLETS=bullets,
+            PROVENANCE=provenance,
             word_counts=word_counts,
-            _metadata={
+            METADATA={
                 "k_node_id": self.k_node_id,
                 "temperature": self.config.temperature,
                 "self_consistency_runs": self.config.self_consistency,
@@ -148,17 +142,17 @@ class K5AGenerationAgent(Agent):
             },
         )
 
-        LOGGER.info(
-            f"K.5A generation complete: {len(BULLETS)} bullets, "
+        logger.info(
+            f"K.5A generation complete: {len(bullets)} bullets, "
             f"word_counts={word_counts}"
         )
 
-        return OUTPUT
+        return output
 
-    def _build_initial_prompt(self: Any,
-                              master_bullets: List[str],
-                              differentiators: List[str],
-                              job_description: str) -> str:
+def _build_initial_prompt(self: Any,
+     master_bullets: List[str],
+     differentiators: List[str],
+     job_description: str) -> str:
         """Build initial generation prompt.
 
         Args:
@@ -170,15 +164,15 @@ class K5AGenerationAgent(Agent):
             Formatted prompt
         """
         PROMPT = f"""Generate exactly {self.provenance_rule.total} professional achievement bullets
-for the Unify Consulting section of a resume.
+    for the Unify Consulting section of a resume.
 
 CRITICAL CONSTRAINTS (ZERO TOLERANCE):
 1. Exactly {self.provenance_rule.total} bullets
 2. Each bullet: {self.word_count_min}-{self.word_count_max} words (STRICT)
 3. Provenance distribution: {self.provenance_rule.pattern}
-   - {self.provenance_rule._verbatim} bullets: Verbatim from master resume
-   - {self.provenance_rule._transformed} bullets: Transformed/adapted from master
-   - {self.provenance_rule._synthetic} bullets: Newly synthesized for target role
+   - {self.provenance_rule.verbatim} bullets: Verbatim from master resume
+   - {self.provenance_rule.transformed} bullets: Transformed/adapted from master
+   - {self.provenance_rule.synthetic} bullets: Newly synthesized for target role
 
 REQUIRED DIFFERENTIATORS (must include {len(differentiators)} of these):
 {chr(10).join(f'- {d}' for d in differentiators[:5])}
@@ -197,9 +191,9 @@ FORMAT:
 Generate the {self.provenance_rule.total} bullets now:
 """
 
-        return PROMPT
+        return prompt
 
-    def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
+def _build_regeneration_prompt(self: Any, context: Dict[str, Any], feedback: str) -> str:
         """Build regeneration prompt with validation feedback.
 
         Args:
@@ -231,9 +225,9 @@ INSTRUCTIONS:
 Generate the corrected bullets:
 """
 
-        return PROMPT
+        return prompt
 
-    def _parse_bullets(self: Any, response: str) -> List[str]:
+def _parse_bullets(self: Any, response: str) -> List[str]:
         """Parse bullets from LLM response.
 
         Args:
@@ -248,13 +242,13 @@ Generate the corrected bullets:
         # Clean and filter
         BULLETS = [
             b.strip()
-            for b in BULLETS
+            for b in bullets
             if b.strip() and len(b.split()) > 5  # Minimum 5 words
         ]
 
-        return BULLETS
+        return bullets
 
-    def _assign_provenance(self: Any, bullets: List[str], master_bullets: List[str]) -> List[str]:
+def _assign_provenance(self: Any, bullets: List[str], master_bullets: List[str]) -> List[str]:
         """Assign provenance to bullets.
 
         This is a simplified implementation. A production version would use
@@ -268,19 +262,8 @@ Generate the corrected bullets:
         Returns:
             List of provenance labels ("V", "T", "S")
         """
-        try:
-            from sklearn.feature_extraction.text import TfidfVectorizer
-            from sklearn.metrics.pairwise import cosine_similarity
-        except ImportError:
-LOGGER.warning("scikit-learn not installed. Falling back to rule-based provenance assignment.")
-            # Fallback: assign based on provenance rule
-            PROVENANCE = (
-                ["V"] * self.provenance_rule._verbatim +
-                ["T"] * self.provenance_rule._transformed +
-                ["S"] * self.provenance_rule._synthetic
-            )
-            return PROVENANCE[:len(bullets)]
-
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
 
         if not master_bullets:
             # No master bullets - all synthetic
@@ -292,7 +275,7 @@ LOGGER.warning("scikit-learn not installed. Falling back to rule-based provenanc
             # Calculate similarity to master bullets
             VECTORIZER = TfidfVectorizer()
             all_bullets = master_bullets + bullets
-            tfidf_matrix = VECTORIZER.fit_transform(all_bullets)
+            tfidf_matrix = vectorizer.fit_transform(all_bullets)
 
             master_vectors = tfidf_matrix[:len(master_bullets)]
             generated_vectors = tfidf_matrix[len(master_bullets):]
@@ -303,23 +286,22 @@ LOGGER.warning("scikit-learn not installed. Falling back to rule-based provenanc
                     master_vectors
                 )[0]
 
-                max_similarity = max(SIMILARITIES) if len(SIMILARITIES) > 0 else 0.0
+                max_similarity = max(similarities) if len(similarities) > 0 else 0.0
 
                 if max_similarity > 0.9:
-                    PROVENANCE.append("V")  # Verbatim
+                    provenance.append("V")  # Verbatim
                 elif max_similarity > 0.6:
-                    PROVENANCE.append("T")  # Transformed
+                    provenance.append("T")  # Transformed
                 else:
-                    PROVENANCE.append("S")  # Synthetic
+                    provenance.append("S")  # Synthetic
 
         except Exception as e:
-LOGGER.error(f"Error assigning provenance: {e}")
+            logger.error(f"Error assigning provenance: {e}")
             # Fallback: assign based on provenance rule
             PROVENANCE = (
-                ["V"] * self.provenance_rule._verbatim +
-                ["T"] * self.provenance_rule._transformed +
-                ["S"] * self.provenance_rule._synthetic
+                ["V"] * self.provenance_rule.verbatim +
+                ["T"] * self.provenance_rule.transformed +
+                ["S"] * self.provenance_rule.synthetic
             )
 
-        return PROVENANCE[:len(bullets)]
-
+        return provenance[:len(bullets)]

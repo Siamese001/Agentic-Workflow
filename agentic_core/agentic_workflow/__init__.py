@@ -1,7 +1,15 @@
-import logging
+"""
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-'\n\n\nLOGGER = logging.getLogger(__name__)\nAgentic Workflow - Main package entry point.\n\nThis package provides a unified interface to all agentic workflow components,\nincluding runtime logic, shared utilities, and agent frameworks.\n'
-__version__ = '1.0.0'
-__all__ = ['runtime', 'shared']
 
+LOGGER = logging.getLogger(__name__)
+Agentic Workflow - Main package entry point.
+
+This package provides a unified interface to all agentic workflow components,
+including runtime logic, shared utilities, and agent frameworks.
+"""
+
+__version__ = "1.0.0"
+
+# Import key components for easy access
+
+__all__ = ["runtime", "shared"]

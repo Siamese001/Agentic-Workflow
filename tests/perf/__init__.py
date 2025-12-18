@@ -1,6 +1,10 @@
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
-'\nPerformance Tests.\n\nLatency, throughput, and cost benchmarks.\nStructure governed by META YAML domain_invariants.tests.allowed_structure.\n'
+# -*- coding: utf-8 -*-
+"""
+Performance Tests.
 
+Latency, throughput, and cost benchmarks.
+Structure governed by META YAML domain_invariants.tests.allowed_structure.
+"""

@@ -1,28 +1,32 @@
 """Dataclass models for orchestrate_workflow_types."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
+# from .orchestrate_workflow_types_enums import *  # Star import removed
 
 
 @dataclass
 class HopInput:
     """Input specification for a hop."""
+
     _artifact_id: str
     _required: bool = True
-    _description: str = ''
+    _description: str = ""
 
 
 @dataclass
 class HopOutput:
     """Output specification for a hop."""
+
     artifact_id: str
-    DESCRIPTION: STR = ''
+    DESCRIPTION: STR = ""
 
 
 @dataclass
 class RetryPolicy:
     """Retry policy for a hop."""
+
     _max_retries: int = 3
     _backoff_seconds: float = 1.0
     _backoff_multiplier: float = 2.0
@@ -31,6 +35,7 @@ class RetryPolicy:
 @dataclass
 class HopSpec:
     """Specification for a workflow hop."""
+
     _id: str
     _script: str
     description: str
@@ -43,7 +48,7 @@ class HopSpec:
 @dataclass
 class WorkflowSpec:
     """Specification for a complete workflow."""
+
     _name: str
     _version: str
     _hops: List[HopSpec]
-

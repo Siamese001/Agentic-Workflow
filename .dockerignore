@@ -1,27 +1,86 @@
-# .dockerignore - RECOVERY VERSION
-.git/
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv
 venv/
-.venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cache and temp
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+*.tmp
+*.temp
+
+# Data directories (exclude most but allow semantic cache for validation)
+data/
+!data/semantic_cache/
 logs/
 
-# BLOCK ALL FIRST, THEN WHITELIST
-*
+# Documentation (not needed for container)
+*.md
+docs/
 
-# WHITELIST CORE FILES
-!/main.py
-!/orchestrator.py
-!/connection_manager.py
-!/main_connectivity.py
-!/agent_logic_connectivity.py
-!/etl_pipeline_connectivity.py
-!/requirements.txt
-!/requirements-test.txt
-!/pyproject.toml
-!/entrypoint.sh
+# Test files
+tests/
+*.test
+.pytest_cache/
 
-# WHITELIST CORE DIRECTORIES (Essential for 50 Keys)
-!/app/
-!/mcp/
-!/apps_rg/
+# Phase 0.5 artifacts (not needed for Phase 1A)
+data/semantic_cache/
+
+# Config directories (not needed for validation)
+config/
+prompt_governance/
+
+# Apps directory (not needed for validation)
+apps/
+observability/
+scripts/
+
+# Keep essential files for Phase 1A validation
+!unified_structure_subatomic.yaml
+!schemas/

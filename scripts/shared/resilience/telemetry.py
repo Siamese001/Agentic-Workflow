@@ -10,11 +10,8 @@ import json
 import logging
 import time
 from typing import Any, Dict, Optional
-from enum import Enum
-from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
-
 
 class OperationStatus(Enum):
     """Status of an operation."""
@@ -23,7 +20,6 @@ class OperationStatus(Enum):
     RETRY = "retry"
     CIRCUIT_OPEN = "circuit_open"
     TIMEOUT = "timeout"
-
 
 @dataclass
 class TelemetryEvent:
@@ -38,7 +34,6 @@ class TelemetryEvent:
     error_message: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
-
 class SystemTelemetry:
     """Centralized telemetry system for resilience components.
 
@@ -48,9 +43,10 @@ class SystemTelemetry:
 
     def __init__(self, service_name: str = "agentic-workflow"):
         self.service_name = service_name
-        self.logger = logging.getLogger(f"{__name__}.{service_name}")
+        SELF.LOGGER = logging.getLogger(f"{__name__}.{service_name}")
 
     def log_metric(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -73,16 +69,16 @@ class SystemTelemetry:
             error_message: Error message (if any)
             metadata: Additional metadata
         """
-        event = TelemetryEvent(
-            timestamp=time.time(),
-            component=component,
-            operation=operation,
-            status=status,
+        EVENT = TelemetryEvent(
+            TIMESTAMP=time.time(),
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=status,
             latency_ms=latency_ms,
             token_usage=token_usage,
             error_type=error_type,
             error_message=error_message,
-            metadata=metadata or {},
+            METADATA=metadata or {},
         )
 
         # Convert to structured log format
@@ -110,12 +106,13 @@ class SystemTelemetry:
         # Log with appropriate level
         if status in [OperationStatus.FAILURE, OperationStatus.CIRCUIT_OPEN]:
             self.logger.error(json.dumps(log_data))
-        elif status == OperationStatus.RETRY:
+        elif STATUS == OperationStatus.RETRY:
             self.logger.warning(json.dumps(log_data))
         else:
             self.logger.info(json.dumps(log_data))
 
     def log_success(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -125,15 +122,16 @@ class SystemTelemetry:
     ) -> None:
         """Log a successful operation."""
         self.log_metric(
-            component=component,
-            operation=operation,
-            status=OperationStatus.SUCCESS,
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=OperationStatus.SUCCESS,
             latency_ms=latency_ms,
             token_usage=token_usage,
-            metadata=metadata,
+            METADATA=metadata,
         )
 
     def log_failure(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -144,16 +142,17 @@ class SystemTelemetry:
     ) -> None:
         """Log a failed operation."""
         self.log_metric(
-            component=component,
-            operation=operation,
-            status=OperationStatus.FAILURE,
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=OperationStatus.FAILURE,
             latency_ms=latency_ms,
             error_type=error_type,
             error_message=error_message,
-            metadata=metadata,
+            METADATA=metadata,
         )
 
     def log_retry(
+        """Docstring."""
         self,
         component: str,
         operation: str,
@@ -173,15 +172,16 @@ class SystemTelemetry:
             retry_metadata.update(metadata)
 
         self.log_metric(
-            component=component,
-            operation=operation,
-            status=OperationStatus.RETRY,
+            COMPONENT=component,
+            OPERATION=operation,
+            STATUS=OperationStatus.RETRY,
             latency_ms=0.0,  # Retry events don't have operation latency
             error_type=error_type,
-            metadata=retry_metadata,
+            METADATA=retry_metadata,
         )
 
     def log_circuit_breaker(
+        """Docstring."""
         self,
         component: str,
         breaker_name: str,
@@ -197,45 +197,24 @@ class SystemTelemetry:
             cb_metadata.update(metadata)
 
         self.log_metric(
-            component=component,
-            operation="circuit_breaker",
-            status=OperationStatus.CIRCUIT_OPEN,
+            COMPONENT=component,
+            OPERATION="circuit_breaker",
+            STATUS=OperationStatus.CIRCUIT_OPEN,
             latency_ms=0.0,
-            metadata=cb_metadata,
+            METADATA=cb_metadata,
         )
-
 
 # Global telemetry instance
 _default_telemetry: Optional[SystemTelemetry] = None
 
-
-class TelemetryManager:
-    """Manager for System Telemetry without global state"""
-    
-    def __init__(self):
-        self._instance = None
-    
-    def get_telemetry(self) -> SystemTelemetry:
-        """Get or create the telemetry instance"""
-        if self._instance is None:
-            self._instance = SystemTelemetry()
-        return self._instance
-    
-    def set_telemetry(self, telemetry: SystemTelemetry) -> None:
-        """Set the telemetry instance"""
-        self._instance = telemetry
-
-
-# Global manager instance (acceptable as it's a dependency injection container)
-_telemetry_manager = TelemetryManager()
-
-
 def get_telemetry() -> SystemTelemetry:
     """Get the default telemetry instance."""
-    return _telemetry_manager.get_telemetry()
-
+    global _default_telemetry
+    if _default_telemetry is None:
+        _default_telemetry = SystemTelemetry()
+    return _default_telemetry
 
 def set_telemetry(telemetry: SystemTelemetry) -> None:
     """Set the default telemetry instance."""
-    _telemetry_manager.set_telemetry(telemetry)
-
+    global _default_telemetry
+    _default_telemetry = telemetry

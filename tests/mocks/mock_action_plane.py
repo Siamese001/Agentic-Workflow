@@ -9,8 +9,6 @@ Simple mock implementation that returns predefined results.
 import logging
 from typing import Any, Dict, List
 
-logger = logging.getLogger(__name__)
-
     IActionPlane,
     ActionRequest,
     ActionResult,
@@ -176,4 +174,3 @@ class MockActionPlane(IActionPlane):
     def reset(self) -> None:
             """Reset mock state."""
         self.call_history.clear()
-

@@ -6,16 +6,12 @@ Phase 1 - Pillar 11: Cost & Optimization (Semantic Caching)
 """
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
-from .semantic_cache import (
     SemanticCache,
     CacheEntry,
     CacheHit,
     CacheMiss,
     create_semantic_cache,
 )
-from .token_budget import (
     TokenBudget,
     TokenBudgetConfig,
     BudgetExceededError,
@@ -33,4 +29,3 @@ __all__ = [
     "BudgetExceededError",
     "enforce_token_budget",
 ]
-

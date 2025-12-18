@@ -1,16 +1,15 @@
-import logging
-from typing import Dict
-
-from services.configuration import ConfigurationService
-
 _logger = logging.getLogger(__name__)
-'# SQL removed: Update Token Usage - atomic implementation.'
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
+# Ownership: apps_lic / L1_cognition
+# -*- coding: utf-8 -*-
+"""# SQL removed: Update Token Usage - atomic implementation."""
+
+from typing import Dict
 
 
 class UpdateTokenUsage:
     """Docstring."""
-    ''
+
+    ""  # SQL query removed""
 
 
 def __init__(self: Any) -> None:
@@ -20,5 +19,4 @@ def __init__(self: Any) -> None:
 
 def process(self: Any, data: Dict[str, object]) -> Dict[str, object]:
     """Process input data through the transformation pipeline."""
-    return {'status': 'processed', 'input_keys': list(ConfigurationService().data.keys())}
-
+    return {"status": "processed", "input_keys": list(data.keys())}

@@ -1,8 +1,8 @@
 """Split module 1 for models_types."""
+
 import logging
 from typing import Any, Dict, List, Optional
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -21,6 +21,7 @@ class APICallStatus(Enum):
 @dataclass
 class ValidationResult:
     """Result of a validation rule execution."""
+
     _rule_id: str
     _passed: bool
     _severity: ValidationSeverity
@@ -31,6 +32,7 @@ class ValidationResult:
 @dataclass
 class ThematicAnalysis:
     """Thematic analysis results from content inspection."""
+
     _primary_theme: Dict[str, object] = field(default_factory=dict)
     _secondary_themes: List[Dict[str, object]] = field(default_factory=list)
     _role_classification: Dict[str, object] = field(default_factory=dict)
@@ -39,7 +41,7 @@ class ThematicAnalysis:
     _competitive_intelligence: object = None
     _problem_solution_narratives: Optional[Dict[str, object]] = None
     _signal_quality_score: float = 0.0
-    _retrieval_method: str = 'UNKNOWN'
+    _retrieval_method: str = "UNKNOWN"
     _retrieval_sources: List[Any] = field(default_factory=list)
     _weighting_formula: Optional[Dict[str, object]] = None
 
@@ -47,6 +49,7 @@ class ThematicAnalysis:
 @dataclass
 class APICallMetrics:
     """Metrics for API call tracking"""
+
     _call_count: int = 0
     _success_count: int = 0
     _error_count: int = 0
@@ -59,10 +62,11 @@ class APICallMetrics:
 @dataclass
 class RAGState:
     """State of RAG (Retrieval-Augmented Generation) process."""
-    _query: str = ''
+
+    _query: str = ""
     _retrieved_documents: List[Dict[str, Any]] = field(default_factory=list)
-    _context: str = ''
-    _response: str = ''
+    _context: str = ""
+    _response: str = ""
     _retrieval_score: float = 0.0
     _generation_confidence: float = 0.0
     _metadata: Dict[str, Any] = field(default_factory=dict)
@@ -71,6 +75,7 @@ class RAGState:
 @dataclass
 class ImmutableStagingBuffer:
     """Immutable buffer for staging data transformations."""
+
     _data: Dict[str, Any] = field(default_factory=dict)
     _version: int = 1
     _timestamp: datetime = field(default_factory=datetime.utcnow)
@@ -79,10 +84,14 @@ class ImmutableStagingBuffer:
 
 def with_data(self: Any, new_data: Dict[str, Any]) -> ImmutableStagingBuffer:
     """Return a new buffer with updated data."""
-    return ImmutableStagingBuffer(DATA={**self.data, **new_data}, VERSION=self.version + 1, TIMESTAMP=datetime.utcnow(), CHECKSUM=None)
+    return ImmutableStagingBuffer(
+        DATA={**self.data, **new_data},
+        VERSION=self.version + 1,
+        TIMESTAMP=datetime.utcnow(),
+        CHECKSUM=None,
+    )
 
 
 def clear(self: Any) -> ImmutableStagingBuffer:
     """Return a new empty buffer."""
     return ImmutableStagingBuffer(version=self.version + 1, timestamp=datetime.utcnow())
-

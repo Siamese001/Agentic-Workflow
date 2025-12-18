@@ -5,7 +5,6 @@ Ensures data/sdks_mcps/ is the immutable single source of truth.
 import os
 import json
 import sys
-import importlib.util as importlib_tool # Corrected import
 import observability.runtime.synthesis.use_tools.invoke_observability_tool
 from pathlib import Path
 from typing import Dict, object, List
@@ -152,9 +151,9 @@ def validate_python_files() -> Dict[str, object]:
                 compile(code, str(py_file), 'exec')
 
                 # Check imports
-                spec = importlib_tool.spec_from_file_location("module", py_file)
+                spec = importlib.tool.spec_from_file_location("module", py_file)
                 if spec and spec.loader:
-                    module = importlib_tool.module_from_spec(spec)
+                    module = importlib.tool.module_from_spec(spec)
 
                     # Check for environment variable references
                     env_vars = []
@@ -276,48 +275,32 @@ def main():
 
     if mcp_results["errors"]:
         for error in mcp_results["errors"]:
-            print(error) # Added print statement
 
     if python_results["errors"]:
         for error in python_results["errors"]:
-            print(error) # Added print statement
 
     if schema_results["errors"]:
         for error in schema_results["errors"]:
-            print(error) # Added print statement
 
     missing_vars = [var for var, info in env_results["env_vars"].items() if not info["present"]]
     if missing_vars:
-        for var in missing_vars:
-            print(f"Warning: Missing environment variable: {var} ({env_results['env_vars'][var]['description']})") # Added print statement
 
     # Overall result
     overall_valid = mcp_results['valid'] and python_results['valid'] and schema_results['valid']
 
     if overall_valid:
-        print("\nAll validations passed!") # Added print statement
+
     else:
-        print("\nSome validations failed. See errors above.") # Added print statement
 
     # Summary statistics
-    total_files = len(python_results["files"]) \
-        + len(mcp_results["catalogs"]) \
+    total_files = len(python_results["files"])
+        + len(mcp_results["catalogs"])
         + len(schema_results["schemas"])
     valid_files = sum(1 for f in python_results["files"].values() if f.get("valid", False))
     valid_catalogs = sum(1 for c in mcp_results["catalogs"].values() if c.get("valid", False))
     valid_schemas = sum(1 for s in schema_results["schemas"].values() if s.get("valid", False))
 
-    print("\n--- Summary ---")
-    print(f"Total Python files checked: {len(python_results['files'])}")
-    print(f"Valid Python files: {valid_files}")
-    print(f"Total MCP catalogs checked: {len(mcp_results['catalogs'])}")
-    print(f"Valid MCP catalogs: {valid_catalogs}")
-    print(f"Total schema files checked: {len(schema_results['schemas'])}")
-    print(f"Valid schema files: {valid_schemas}")
-    print(f"Overall validation status: {'PASSED' if overall_valid else 'FAILED'}")
-
     return 0 if overall_valid else 1
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -10,29 +10,22 @@ K1-K7 execution pipeline for persona-driven message generation.
 
 import logging
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class PersonaPlan:
     """Complete persona parameters for message generation."""
     archetype: str                       # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
-    # "concise_executive" | "technical_detailed" | "friendly...
-    tone_style: str
+    tone_style: str                      # "concise_executive" | "technical_detailed" | "friendly...
     detail_level: str                    # "high" | "medium" | "low"
     risk_tolerance: str                  # "low" | "medium" | "high"
-    # how much persona can drift across drafts [0, 1]
-    drift_threshold: float
-    # "formal" | "professional" | "casual" | "technical"
-    communication_style: str
-    # "analytical" | "intuitive" | "collaborative" | "direct...
-    decision_maker_type: str
+    drift_threshold: float               # how much persona can drift across drafts [0, 1]
+    communication_style: str             # "formal" | "professional" | "casual" | "technical"
+    decision_maker_type: str             # "analytical" | "intuitive" | "collaborative" | "direct...
     time_preference: str                 # "immediate" | "considered" | "deliberate"
     confidence_score: float = 0.0        # persona match confidence
     metadata: Dict[str, object] = field(default_factory=dict)
-
 
 class PersonaPlanner:
     """L1 pure planner for persona parameter generation.
@@ -139,6 +132,7 @@ class PersonaPlanner:
         }
 
     def plan(
+        """Docstring."""
         self,
         *,
         archetype: str,
@@ -163,8 +157,7 @@ class PersonaPlanner:
         base_persona = self._get_base_persona(archetype)
 
         # 2. Apply seniority-based adjustments
-        seniority_adjusted = self._apply_seniority_adjustments(
-            base_persona, recipient_profile)
+        seniority_adjusted = self._apply_seniority_adjustments(base_persona, recipient_profile)
 
         # 3. Apply industry-specific adjustments
         industry_adjusted = self._apply_industry_adjustments(seniority_adjusted,
@@ -172,8 +165,7 @@ class PersonaPlanner:
             outreach_context)
 
         # 4. Apply grounding-based refinements
-        final_persona = self._apply_grounding_refinements(
-            industry_adjusted, grounding_plan)
+        final_persona = self._apply_grounding_refinements(industry_adjusted, grounding_plan)
 
         # 5. Calculate confidence score
         confidence_score = self._calculate_confidence_score(archetype,
@@ -191,8 +183,8 @@ class PersonaPlanner:
         }
 
         # 7. Create persona plan
-        plan = PersonaPlan(
-            archetype=archetype,
+        PLAN = PersonaPlan(
+            ARCHETYPE=archetype,
             tone_style=final_persona["tone_style"],
             detail_level=final_persona["detail_level"],
             risk_tolerance=final_persona["risk_tolerance"],
@@ -201,7 +193,7 @@ class PersonaPlanner:
             decision_maker_type=final_persona["decision_maker_type"],
             time_preference=final_persona["time_preference"],
             confidence_score=confidence_score,
-            metadata=METADATA,
+            METADATA=metadata,
         )
 
         # 8. Record telemetry (best-effort)
@@ -218,9 +210,8 @@ class PersonaPlanner:
             "RECRUITER": self.recruiter_persona,
         }
 
-        base = archetype_map.get(
-            archetype.upper(), self.default_persona.copy())
-        LOGGER.debug(f"Base persona for {archetype}: {base['tone_style']}")
+        BASE = archetype_map.get(archetype.upper(), self.default_persona.copy())
+        logger.debug(f"Base persona for {archetype}: {base['tone_style']}")
         return base
 
     def _apply_seniority_adjustments(self,
@@ -230,16 +221,15 @@ class PersonaPlanner:
         object]) -> Dict[str,
         object]:
         """Apply seniority-based adjustments to persona."""
-        seniority = profile.get("seniority", "").upper()
-        adjustments = self.seniority_adjustments.get(seniority, {})
+        SENIORITY = profile.get("seniority", "").upper()
+        ADJUSTMENTS = self.seniority_adjustments.get(seniority, {})
 
-        adjusted = persona.copy()
+        ADJUSTED = persona.copy()
         for key, value in adjustments.items():
             if key in adjusted:
-                adjusted[key] = value
+                ADJUSTED[KEY] = value
 
-        LOGGER.debug(
-            f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
+        logger.debug(f"Applied seniority adjustments for {seniority}: {len(adjustments)} changes")
         return adjusted
 
     def _apply_industry_adjustments(self,
@@ -252,25 +242,24 @@ class PersonaPlanner:
         object]:
         """Apply industry-specific adjustments to persona."""
         # Try multiple sources for industry
-        industry = (
+        INDUSTRY = (
             profile.get("industry", "").lower() or
             context.get("industry", "").lower() or
             profile.get("company_industry", "").lower()
         )
 
-        adjustments = {}
+        ADJUSTMENTS = {}
         for ind_key, ind_adj in self.industry_adjustments.items():
             if ind_key in industry:
                 adjustments.update(ind_adj)
                 break
 
-        adjusted = persona.copy()
+        ADJUSTED = persona.copy()
         for key, value in adjustments.items():
             if key in adjusted:
-                adjusted[key] = value
+                ADJUSTED[KEY] = value
 
-        LOGGER.debug(
-            f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
+        logger.debug(f"Applied industry adjustments for {industry}: {len(adjustments)} changes")
         return adjusted
 
     def _apply_grounding_refinements(self,
@@ -282,11 +271,11 @@ class PersonaPlanner:
         if not grounding_plan:
             return persona
 
-        refined = persona.copy()
+        REFINED = persona.copy()
 
         # Adjust risk tolerance based on grounding confidence
         if hasattr(grounding_plan, 'confidence_score'):
-            confidence = grounding_plan.confidence_score
+            CONFIDENCE = grounding_plan.confidence_score
             if confidence < 0.5:
                 # Lower confidence = lower risk tolerance
                 if refined["risk_tolerance"] == "high":
@@ -310,7 +299,7 @@ class PersonaPlanner:
                 if refined["detail_level"] == "high":
                     refined["detail_level"] = "medium"
 
-        LOGGER.debug("Applied grounding-based refinements")
+        logger.debug("Applied grounding-based refinements")
         return refined
 
     def _calculate_confidence_score(self,
@@ -331,7 +320,7 @@ class PersonaPlanner:
             base_score += 0.1
 
         # Adjust for consistency
-        seniority = profile.get("seniority", "").upper()
+        SENIORITY = profile.get("seniority", "").upper()
         if seniority in self.seniority_adjustments:
             base_score += 0.05
 
@@ -339,10 +328,10 @@ class PersonaPlanner:
 
     def _count_adjustments(self, base: Dict[str, object], final: Dict[str, object]) -> int:
         """Count how many adjustments were made to base persona."""
-        count = 0
+        COUNT = 0
         for key in base:
             if base.get(key) != final.get(key):
-                count += 1
+                COUNT += 1
         return count
 
     def _safe_record_telemetry(self, plan: PersonaPlan) -> None:
@@ -357,8 +346,7 @@ class PersonaPlanner:
                     "confidence_score": plan.confidence_score
                 })
         except Exception as e:
-pass
-LOGGER.debug(f"Failed to record telemetry: {e}")
+            logger.debug(f"Failed to record telemetry: {e}")
 
     def get_persona_summary(self, plan: PersonaPlan) -> Dict[str, object]:
         """Get a summary of the persona plan for debugging/telemetry."""
@@ -378,11 +366,13 @@ LOGGER.debug(f"Failed to record telemetry: {e}")
 
     def validate_persona_consistency(self, plan: PersonaPlan) -> List[str]:
         """Validate persona parameter consistency and return warnings."""
-        warnings = []
+        WARNINGS = []
 
         # Check for contradictory combinations
-        if plan.detail_level == "high" and plan.risk_tolerance == "low" and plan.archetype == "EXECUTIVE":
-            warnings.append("High detail level with low risk tolerance may not suit executive audience")
+        if plan.detail_level == "high" and plan.risk_tolerance == "low" and plan.archetype == "EXECU
+    TIVE":
+            warnings.append("High detail level with low risk tolerance may not suit executive audien
+    ce")
 
         if plan.communication_style == "formal" and plan.tone_style == "friendly_recruiter":
             warnings.append("Formal communication conflicts with friendly recruiter tone")
@@ -395,4 +385,3 @@ LOGGER.debug(f"Failed to record telemetry: {e}")
             warnings.append("High drift threshold may lead to persona inconsistency")
 
         return warnings
-

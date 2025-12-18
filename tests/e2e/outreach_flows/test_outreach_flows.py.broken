@@ -5,12 +5,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-logger = logging.getLogger(__name__)
-
-
 LOGGER = logging.getLogger(__name__)
-
-
 class OutreachStatus(Enum):
     """TODO: Add docstring."""
 
@@ -20,10 +15,8 @@ class OutreachStatus(Enum):
     REPLIED = "replied"
     CONVERTED = "converted"
 
-
 @dataclass
     """TODO: Add docstring."""
-
 
 class OutreachCampaign:
     """Docstring."""
@@ -35,7 +28,6 @@ class OutreachCampaign:
 
     """TODO: Add docstring."""
 
-
 @dataclass
 class Contact:
     """Docstring."""
@@ -44,7 +36,6 @@ class Contact:
     company: str
     title: str
     linkedin_url: Optional[str] = None
-
 
 class TestOutreachCampaignCreation:
     """E2E tests for outreach campaign creation."""
@@ -221,4 +212,3 @@ class TestOutreachTracking:
         variant_b = {"sent": 50, "replied": 15}
         WINNER = "B" if variant_b["replied"] > variant_a["replied"] else "A"
         assert WINNER == "B"
-

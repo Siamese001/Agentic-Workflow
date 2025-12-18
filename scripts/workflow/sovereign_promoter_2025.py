@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # scripts/sovereign_promoter_2025.py — FINAL PERMISSIVE VERSION (Dec 2025)
 # Supports .py, .json, .md
@@ -10,10 +11,6 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Tuple
-
-logger = logging.getLogger(__name__)
-
 
 SOVEREIGN_ROOTS = {
     "agentic_core",
@@ -29,28 +26,27 @@ SOVEREIGN_ROOTS = {
 
 # Files that ALWAYS promote regardless of score
 FORCE_PROMOTE_PATTERN = re.compile(
-    r"""signal_quality_pipeline | validation_gates | preflight | creative_brief | transaction_manager | schema_t
-    ransform""",
+    r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|schema_t
+    ransform",
     re.I,
 )
 
 # Destination map — highest priority first
 DESTINATION_RULES = [
     (
-        r"""signal_quality_pipeline | validation_gates | preflight | creative_brief | transaction_manager | sche
-        ma_transform""",
+        r"signal_quality_pipeline|validation_gates|preflight|creative_brief|transaction_manager|sche
+    ma_transform",
         "apps_shared/rag/hardening",
     ),
     (
-        r"""rag.*pipeline | rag.*hardening | signal.*quality | self.?critique | fact.?check | claim.*verif | hyde |
-        reranker | guardrail | citation | provenance""",
+        r"rag.*pipeline|rag.*hardening|signal.*quality|self.?critique|fact.?check|claim.*verif|hyde|
+    reranker|guardrail|citation|provenance",
         "apps_shared/rag/hardening",
     ),
-    (r"retriev|embed|vector|index|search|lookup|chunk|passage",
-     "apps_shared/rag/retrieval"),
+    (r"retriev|embed|vector|index|search|lookup|chunk|passage", "apps_shared/rag/retrieval"),
     (
-        r"""planner | orchestrator | route | delegate | schedule | coordinate | workflow | loop | agent.*loop | synthesi
-        s""",
+        r"planner|orchestrator|route|delegate|schedule|coordinate|workflow|loop|agent.*loop|synthesi
+    s",
         "agentic_core/planning",
     ),
     (r"tool.*call|invoke.*tool|execute.*action|dispatch|perform|use.*tool",
@@ -65,8 +61,7 @@ DESTINATION_RULES = [
     (r"readme|guide|doc|manual|setup|install", "docs"),
 ]
 
-
-def analyze_file_content(content: str, filename: str) -> Tuple[int, List[str], bool]:
+def analyze_file_content(content: str, filename: str) -> tuple[int, list, bool]:
     """
     Returns: (score, reasons, is_dirty)
     """
@@ -86,53 +81,54 @@ def analyze_file_content(content: str, filename: str) -> Tuple[int, List[str], b
             json.loads(content)
             return 10, ["valid-json"], False
         except json.JSONDecodeError:
-return 0, ["invalid-json-syntax"], False
+            return 0, ["invalid-json-syntax"], False
 
     # --- PYTHON HANDLING ---
     if "from __future__ import annotations" in content:
         SCORE += 4
-        REASONS.append("annotations")
+        reasons.append("annotations")
     if re.search(r"@dataclass\s*\(.*frozen=True", content, re.DOTALL):
         SCORE += 4
-        REASONS.append("frozen")
+        reasons.append("frozen")
     if "class " in content and "Protocol" in content:
         SCORE += 5
-        REASONS.append("Protocol")
+        reasons.append("Protocol")
     if "Enum(" in content and "auto()" in content:
         SCORE += 3
-        REASONS.append("Enum")
+        reasons.append("Enum")
     if "Literal[" in content:
         SCORE += 3
-        REASONS.append("Literal")
+        reasons.append("Literal")
     if content.count("->") > content.count("\n") * 0.4:
         SCORE += 3
-        REASONS.append("dense-types")
+        reasons.append("dense-types")
 
     core_terms = len(
         re.findall(
-            r"""\b(RAG | HyDE | reranker | guardrail | self.?critique | fact.?check | claim | source.?tier | orchestra
-                 tor | planner | mcp | sdk | signal.?quality)\b""",
+            r"\b(RAG|HyDE|reranker|guardrail|self.?critique|fact.?check|claim|source.?tier|orchestra
+                tor|planner|mcp|sdk|signal.?quality)\b",
+
+
             content,
             re.I,
         )
     )
     if core_terms >= 2:
         SCORE += 4
-        REASONS.append(f"{core_terms}-core")
+        reasons.append(f"{core_terms}-core")
 
     # Check for dirty code
     if re.search(r"\bprint\(|pdb\. |breakpoint\(|PENDING|ATTENTION|XXX", content):
         is_dirty = True
-        REASONS.append("dirty")
+        reasons.append("dirty")
 
-    return SCORE, REASONS, is_dirty
-
+    return score, reasons, is_dirty
 
 def choose_destination(content: str, filename: str) -> Path:
     """Choose destination directory based on content and filename patterns."""
     LOWER = (content + "\n" + filename).lower()
     for pattern, dest in DESTINATION_RULES:
-        if re.search(pattern, LOWER):
+        if re.search(pattern, lower):
             return Path(dest)
 
     # Defaults
@@ -143,20 +139,19 @@ def choose_destination(content: str, filename: str) -> Path:
     # Default fallback for unclassified Python
     return Path("apps_shared/core")
 
-
 def _should_promote_file(src: Path,
-                         score: int,
-                         reasons: List[str],
-                         is_dirty: bool,
-                         is_staged_file: bool) -> Tuple[bool,
-                                                        str]:
+    score: int,
+    reasons: List[str],
+    is_dirty: bool,
+    is_staged_file: bool) -> Tuple[bool,
+    str]:
     """Determine if a file should be promoted and why."""
     # Rule 1: Force Promote Pattern
     if FORCE_PROMOTE_PATTERN.search(src.name):
         return True, "force-promote:historical"
 
     # Rule 2: High Score (Standard Sovereign Grade)
-    elif score >= 7 and not is_dirty:
+    elif SCORE >= 7 and not is_dirty:
         return True, f"sovereign-grade:score={score}"
 
     # Rule 3: Structural Pass (Core Terms)
@@ -173,7 +168,6 @@ def _should_promote_file(src: Path,
 
     return False, ""
 
-
 def _should_skip_file(src: Path) -> bool:
     """Check if a file should be skipped."""
     if not src.is_file() or src.suffix not in {".py", ".json", ".md"}:
@@ -182,14 +176,13 @@ def _should_skip_file(src: Path) -> bool:
     # Skip sovereign roots and system folders
     if "scripts" in src.parts or src.parent.name == "scripts":
         return True
-    if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", """archive_cod
-                                                                         e"""}:
+    if src.parts[0] in {"runtime", "shared"} and src.parent.name not in {"apps_shared", "archive_cod
+    e"}:
         return True
     if any(root in src.parts for root in SOVEREIGN_ROOTS):
         return True
 
     return False
-
 
 def main() -> None:
     """Main function to promote files from archive or CLI args to sovereign directories."""
@@ -200,7 +193,7 @@ def main() -> None:
 
     # 2. Staged Files (Archive Code)
     archive_dir = Path("archive_code")
-    # is_archive_mode = False # This variable was declared but unused, removed for clarity.
+    is_archive_mode = False
 
     # If explicitly running on archive_code content
     if archive_dir.is_dir():
@@ -219,29 +212,30 @@ def main() -> None:
             continue
 
         # Determine if this file is from the staging area
-        is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == """ar
-                                                                              chive_code""")
+        is_staged_file = (archive_dir.resolve() in src.resolve().parents) or (src.parent.name == "ar
+    chive_code")
 
         CONTENT = src.read_text(errors="ignore")
-        score, reasons, is_dirty = analyze_file_content(CONTENT, src.name) # Pass CONTENT instead of content
+        score, reasons, is_dirty = analyze_file_content(content, src.name)
 
         # --- PROMOTION LOGIC ---
-        should_promote, \
-        promotion_reason = _should_promote_file(src,
-                                                score,
-                                                reasons,
-                                                is_dirty,
-                                                is_staged_file)
+        should_promote,
+            promotion_reason = _should_promote_file(src,
+            score,
+            reasons,
+            is_dirty,
+            is_staged_file)
 
         if not should_promote:
             if is_staged_file:
                 # This branch technically shouldn't be reached due to Rule 4,
                 # unless the file is empty/unreadable.
+
                 src.unlink()
             continue
 
         # Execute Move
-        dest_dir = choose_destination(CONTENT, src.name) # Pass CONTENT instead of content
+        dest_dir = choose_destination(content, src.name)
         dest_dir.mkdir(parents=True, exist_ok=True)
         dest_path = dest_dir / src.name
 
@@ -249,15 +243,14 @@ def main() -> None:
         for parent in [dest_dir] + list(dest_dir.parents):
             if parent.name in SOVEREIGN_ROOTS:
                 break
-            init = parent / "__init__.py" # Corrected variable name from INIT to init for style consistency
+            INIT = parent / "__init__.py"
             if not init.exists() and dest_path.suffix == ".py":
                 init.touch()
 
         shutil.move(str(src), str(dest_path))
 
         subprocess.run(["git", "add", str(dest_path)], capture_output=True)
-        subprocess.run(["git", "rm", "--cached", str(src)],
-                       capture_output=True)
+        subprocess.run(["git", "rm", "--cached", str(src)], capture_output=True)
 
     # Cleanup staging if empty
     if archive_dir.is_dir() and not list(archive_dir.iterdir()):
@@ -265,7 +258,5 @@ def main() -> None:
 
     sys.exit(0)
 
-
 if __name__ == "__main__":
     main()
-

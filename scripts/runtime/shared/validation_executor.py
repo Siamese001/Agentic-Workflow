@@ -21,13 +21,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 LOGGER = logging.getLogger(__name__)
 
-
 class ValidationStatus(str, Enum):
     """Validation result status."""
     pass = "pass"
     FAIL = "FAIL"
     BLOCK = "BLOCK"  # Critical failure - halt immediately
-
 
 class ValidationAction(str, Enum):
     """Action to take on validation failure."""
@@ -36,7 +34,6 @@ class ValidationAction(str, Enum):
     SOFT_REJECT = "SOFT_REJECT"
     WARN = "WARN"
     PROCEED = "PROCEED"
-
 
 @dataclass
 class RuleFailure:
@@ -48,7 +45,6 @@ class RuleFailure:
     actual: Any
     expected: Any
     context: Dict[str, Any] = field(default_factory=dict)
-
 
 @dataclass
 class ValidationResult:
@@ -696,8 +692,7 @@ class ValidationGateExecutor:
             SIMILARITY = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
         except Exception as e:
-pass
-logger.error(f"Error calculating similarity: {e}")
+            logger.error(f"Error calculating similarity: {e}")
             return 0.0
 
     def _extract_covered_keywords(self, content: str, keywords: List[str]) -> Set[str]:
@@ -710,4 +705,3 @@ logger.error(f"Error calculating similarity: {e}")
                 covered.add(keyword)
 
         return covered
-

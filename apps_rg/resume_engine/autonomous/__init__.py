@@ -1,0 +1,152 @@
+"""
+Autonomous Resume Engine - Phase 1 & 2: Foundation + Self-Healing
+
+This module provides the autonomous agent architecture for resume generation,
+bringing it to Level 4+ autonomy with multi-agent coordination, self-diagnosis,
+and self-healing capabilities.
+"""
+
+from .agents import (ATSCompatibilityAgent, BrandComplianceAgent,
+                     ContentQualityAgent, FactCheckAgent, ReflectionAgent,
+                     SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
+                     TestPilot)
+from .base_agent import ResumeAgent
+from .context import BudgetManager, ResumeEngineContext, SectionDependencyGraph
+from .gitops import (ConversationalRepair, FileBackup, GitOpsManager,
+                     ImportPatcher, MutationMode, MutationResult,
+                     Phase4Orchestrator, RepairProposal, ResilientMutator)
+from .governance import (CostPrediction, DashboardGenerator, DependencyArbiter,
+                         DependencyIssue, DependencyStatus, DocComplianceLevel,
+                         DocViolation, Phase7Orchestrator,
+                         PredictiveBudgetManager, PromptGovernor, PromptIssue,
+                         PromptRisk, StrictDocEnforcer)
+from .healing import (AgentFactory, AutomaticRollback, ConvergenceDetector,
+                      CycleResult, HealingCycle, HealingOrchestrator,
+                      HealingResult, HealingStrategy, SignalRouter,
+                      run_self_healing_mission)
+from .intelligence import (AnalysisType, OmniContext, Phase6Orchestrator,
+                           PhaseResult, PhaseType, RefactorProposal,
+                           RefactorType, SecurityHardener, SecurityIssue,
+                           SecurityLevel, SemanticAnalyzer, SemanticMatch,
+                           StrategicAdvisor, UnifiedOrchestrator)
+from .learning import (ConfidenceLevel, ConfidenceResult, ConfidenceScorer,
+                       Instruction, InstructionInjector, LearningExample,
+                       LearningLoop, MemoryPersistence, MemoryState,
+                       ResumeLearningAgent)
+from .observability import (AuditReport, AuditReporter, ExecutionTrace,
+                            ExecutionTracer, Metric, MetricsCollector,
+                            MetricType, Phase5Orchestrator, TelemetryExporter,
+                            TraceLevel, TraceStep, ValidationAgent,
+                            ValidationIssue, ValidationSeverity)
+from .orchestrator import quick_validate, run_resume_mission
+from .proactive import (CapabilityMonitor, CapabilityProfile, HandoffReason,
+                        HandoffRequest, PredictiveHandoff, ProactiveAgent,
+                        ProactiveScheduler, ProactiveTask, TaskPriority)
+
+__all__ = [
+    # Context
+    "ResumeEngineContext",
+    "BudgetManager",
+    "SectionDependencyGraph",
+    # Base
+    "ResumeAgent",
+    # Agents
+    "ContentQualityAgent",
+    "FactCheckAgent",
+    "BrandComplianceAgent",
+    "TemplateOptimizer",
+    "SectionBalanceAgent",
+    "ATSCompatibilityAgent",
+    "TestPilot",
+    "StrategicPlanner",
+    "ReflectionAgent",
+    # Orchestration (Phase 1)
+    "run_resume_mission",
+    "quick_validate",
+    # Self-Healing (Phase 2)
+    "HealingStrategy",
+    "CycleResult",
+    "HealingResult",
+    "SignalRouter",
+    "AgentFactory",
+    "HealingCycle",
+    "HealingOrchestrator",
+    "run_self_healing_mission",
+    "ConvergenceDetector",
+    "AutomaticRollback",
+    # Learning & Intelligence (Phase 3)
+    "ConfidenceLevel",
+    "LearningExample",
+    "ConfidenceResult",
+    "Instruction",
+    "MemoryState",
+    "LearningLoop",
+    "ConfidenceScorer",
+    "InstructionInjector",
+    "MemoryPersistence",
+    "ResumeLearningAgent",
+    # GitOps & Advanced Mutation (Phase 4)
+    "MutationMode",
+    "FileBackup",
+    "MutationResult",
+    "RepairProposal",
+    "GitOpsManager",
+    "ResilientMutator",
+    "ImportPatcher",
+    "ConversationalRepair",
+    "Phase4Orchestrator",
+    # Observability & Telemetry (Phase 5)
+    "TraceLevel",
+    "MetricType",
+    "ValidationSeverity",
+    "TraceStep",
+    "ExecutionTrace",
+    "Metric",
+    "ValidationIssue",
+    "AuditReport",
+    "ExecutionTracer",
+    "MetricsCollector",
+    "ValidationAgent",
+    "AuditReporter",
+    "TelemetryExporter",
+    "Phase5Orchestrator",
+    # Intelligence & Strategic Analysis (Phase 6)
+    "SecurityLevel",
+    "AnalysisType",
+    "RefactorType",
+    "PhaseType",
+    "SecurityIssue",
+    "SemanticMatch",
+    "RefactorProposal",
+    "PhaseResult",
+    "SecurityHardener",
+    "SemanticAnalyzer",
+    "StrategicAdvisor",
+    "OmniContext",
+    "UnifiedOrchestrator",
+    "Phase6Orchestrator",
+    # Governance & Meta-Optimization (Phase 7)
+    "DependencyStatus",
+    "DocComplianceLevel",
+    "PromptRisk",
+    "DependencyIssue",
+    "DocViolation",
+    "PromptIssue",
+    "CostPrediction",
+    "DependencyArbiter",
+    "StrictDocEnforcer",
+    "DashboardGenerator",
+    "PromptGovernor",
+    "PredictiveBudgetManager",
+    "Phase7Orchestrator",
+    # Proactive & Predictive (L4.5 Enhancements)
+    "TaskPriority",
+    "HandoffReason",
+    "ProactiveTask",
+    "HandoffRequest",
+    "CapabilityProfile",
+    "ProactiveScheduler",
+    "PredictiveHandoff",
+    "CapabilityMonitor",
+    "ProactiveAgent",
+]

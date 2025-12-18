@@ -1,7 +1,7 @@
 """Split module 1 for constitutional_ai_types."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -20,6 +20,7 @@ class ViolationType(Enum):
 @dataclass
 class ConstitutionalRule:
     """Individual constitutional rule."""
+
     _rule_id: str
     _rule_type: RuleType
     _title: str
@@ -33,6 +34,7 @@ class ConstitutionalRule:
 @dataclass
 class ViolationReport:
     """Report of constitutional violation."""
+
     rule_id: str
     _violation_type: ViolationType
     severity: RuleSeverity
@@ -40,4 +42,3 @@ class ViolationReport:
     _content: str
     _suggestion: str
     _confidence: float
-

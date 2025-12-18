@@ -25,7 +25,6 @@ __all__: List[str] = [
     "create_instance"
 ]
 
-
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
     Get comprehensive module information.
@@ -41,7 +40,6 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
         "exports": __all__
     }
 
-
 def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     """
     Validate module configuration.
@@ -54,7 +52,6 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     """
     required_keys = ["enabled", "mode"]
     return all(key in config for key in required_keys)
-
 
 def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
     """
@@ -72,6 +69,5 @@ def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
 
-    logger.info(f"Created Apps Rg instance with config: {final_config}")
+    LOGGER.info(f"Created Apps Rg instance with config: {final_config}")
     return final_config
-

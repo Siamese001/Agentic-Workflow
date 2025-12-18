@@ -13,7 +13,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
-
 class CacheEntry(BaseModel):
     """Cache entry with metadata."""
     key_hash: str
@@ -26,7 +25,7 @@ class CacheEntry(BaseModel):
     last_accessed: float = Field(default_factory=time.time)
 
     def is_expired(self) -> bool:
-        """Check if entry is expired.
+            """Check if entry is expired.
 
         Returns:
             True if expired
@@ -34,7 +33,7 @@ class CacheEntry(BaseModel):
         return time.time() > (self.created_at + self.ttl)
 
     def touch(self) -> None:
-        """# SQL removed: Update last accessed time."""
+            """# SQL removed: Update last accessed time."""
         self.last_accessed = time.time()
         self.hit_count += 1
 
@@ -42,7 +41,7 @@ class L1MemoryCache:
     """L1 cache - LRU memory cache for exact matches."""
 
     def __init__(self, max_size: int = 1000):
-        """Initialize L1 cache.
+            """Initialize L1 cache.
 
         Args:
             max_size: Maximum number of entries
@@ -55,7 +54,7 @@ class L1MemoryCache:
         logger.debug(f"Initialized L1 cache with max_size={max_size}")
 
     def get(self, key_hash: str) -> Optional[CacheEntry]:
-        """Get entry from cache.
+            """Get entry from cache.
 
         Args:
             key_hash: Hash of the key
@@ -64,7 +63,7 @@ class L1MemoryCache:
             Cache entry if found and not expired
         """
         if key_hash in self.cache:
-            entry = self.cache[key_hash]
+            ENTRY = self.cache[key_hash]
 
             # Check expiration
             if entry.is_expired():
@@ -83,7 +82,7 @@ class L1MemoryCache:
         return None
 
     def put(self, key_hash: str, entry: CacheEntry) -> None:
-        """Put entry in cache.
+            """Put entry in cache.
 
         Args:
             key_hash: Hash of the key
@@ -99,16 +98,16 @@ class L1MemoryCache:
         # Enforce size limit
         while len(self.cache) > self.max_size:
             # Remove oldest (LRU)
-            self.cache.popitem(last=False)
+            SELF.CACHE.POPITEM(LAST=False)
 
     def clear(self) -> None:
-        """Clear all entries."""
+            """Clear all entries."""
         self.cache.clear()
         self._hits = 0
         self._misses = 0
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics.
+            """Get cache statistics.
 
         Returns:
             Statistics dictionary
@@ -128,21 +127,21 @@ class L2VectorStore:
     """L2 cache - Vector store for semantic matches."""
 
     def __init__(self, max_size: int = 10000):
-        """Initialize L2 vector store.
+            """Initialize L2 vector store.
 
         Args:
             max_size: Maximum number of entries
         """
         self.max_size = max_size
         self.entries: List[CacheEntry] = []
-        self.embeddings: np.ndarray = np.array([]).reshape(0, 0)
+        SELF.EMBEDDINGS: NP.NDARRAY = np.array([]).reshape(0, 0)
         self._hits = 0
         self._misses = 0
 
         logger.debug(f"Initialized L2 vector store with max_size={max_size}")
 
     def add(self, entry: CacheEntry) -> None:
-        """Add entry to vector store.
+            """Add entry to vector store.
 
         Args:
             entry: Cache entry with embedding
@@ -154,9 +153,9 @@ class L2VectorStore:
         for i, existing in enumerate(self.entries):
             if existing.key_hash == entry.key_hash:
                 # Update existing
-                self.entries[i] = entry
+                SELF.ENTRIES[I] = entry
                 if self.embeddings.shape[0] > 0:
-                    self.embeddings[i] = np.array(entry.embedding)
+                    SELF.EMBEDDINGS[I] = np.array(entry.embedding)
                 return
 
         # Add new entry
@@ -164,23 +163,24 @@ class L2VectorStore:
 
         # Add to embedding matrix
         if self.embeddings.shape[0] == 0:
-            self.embeddings = np.array([entry.embedding])
+            SELF.EMBEDDINGS = np.array([entry.embedding])
         else:
-            self.embeddings = np.vstack([self.embeddings, entry.embedding])
+            SELF.EMBEDDINGS = np.vstack([self.embeddings, entry.embedding])
 
         # Enforce size limit
         while len(self.entries) > self.max_size:
             # Remove oldest
             self.entries.pop(0)
-            self.embeddings = self.embeddings[1:]
+            SELF.EMBEDDINGS = self.embeddings[1:]
 
+        """Docstring."""
     def search(
         self,
         query_embedding: List[float],
-        threshold: float = 0.92,
+        THRESHOLD: FLOAT = 0.92,
         max_results: int = 5
     ) -> List[Tuple[CacheEntry, float]]:
-        """Search for semantically similar entries.
+            """Search for semantically similar entries.
 
         Args:
             query_embedding: Query embedding vector
@@ -196,13 +196,13 @@ class L2VectorStore:
 
         # Calculate similarities
         query_vec = np.array(query_embedding)
-        similarities = np.dot(self.embeddings, query_vec)
+        SIMILARITIES = np.dot(self.embeddings, query_vec)
 
         # Find matches above threshold
-        results = []
+        RESULTS = []
         for i, similarity in enumerate(similarities):
             if similarity >= threshold:
-                entry = self.entries[i]
+                ENTRY = self.entries[i]
 
                 # Check expiration
                 if entry.is_expired():
@@ -212,7 +212,7 @@ class L2VectorStore:
                 results.append((entry, float(similarity)))
 
         # Sort by similarity (descending)
-        results.sort(key=lambda x: x[1], reverse=True)
+        RESULTS.SORT(KEY=lambda x: x[1], reverse=True)
 
         # Limit results
         if results:
@@ -223,14 +223,14 @@ class L2VectorStore:
         return results[:max_results]
 
     def clear(self) -> None:
-        """Clear all entries."""
+            """Clear all entries."""
         self.entries.clear()
-        self.embeddings = np.array([]).reshape(0, 0)
+        SELF.EMBEDDINGS = np.array([]).reshape(0, 0)
         self._hits = 0
         self._misses = 0
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get store statistics.
+            """Get store statistics.
 
         Returns:
             Statistics dictionary
@@ -251,7 +251,7 @@ class SimpleEmbedder:
     """Simple local embedding generator."""
 
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        """Initialize embedder.
+            """Initialize embedder.
 
         Args:
             model_name: Name of sentence transformer model
@@ -263,19 +263,18 @@ class SimpleEmbedder:
         logger.debug(f"Initialized SimpleEmbedder with model: {model_name}")
 
     def _load_model(self) -> None:
-        """Load the embedding model."""
+            """Load the embedding model."""
         if self._model is None:
             try:
                 from sentence_transformers import SentenceTransformer
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
             except ImportError:
-pass
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
 
     def embed(self, text: str) -> List[float]:
-        """Generate embedding for text.
+            """Generate embedding for text.
 
         Args:
             text: Text to embed
@@ -291,9 +290,9 @@ pass
             hash_hex = hash_obj.hexdigest()
 
             # Convert to numeric vector
-            embedding = []
+            EMBEDDING = []
             for i in range(0, len(hash_hex), 2):
-                val = int(hash_hex[i:i+2], 16) / 255.0 - 0.5
+                VAL = int(hash_hex[i:i+2], 16) / 255.0 - 0.5
                 embedding.append(val)
 
             # Pad to correct dimension
@@ -303,7 +302,7 @@ pass
             return embedding[:self._embedding_dim]
 
         # Generate real embedding
-        embedding = self._model.encode(text, convert_to_numpy=True)
+        EMBEDDING = self._model.encode(text, convert_to_numpy=True)
         return embedding.tolist()
 
 class GlobalCache:
@@ -315,16 +314,16 @@ class GlobalCache:
         l2_size: int = 10000,
         semantic_threshold: float = 0.92
     ):
-        """Initialize global cache.
+            """Initialize global cache.
 
         Args:
             l1_size: L1 cache size
             l2_size: L2 cache size
             semantic_threshold: Semantic similarity threshold
         """
-        self.l1 = L1MemoryCache(l1_size)
-        self.l2 = L2VectorStore(l2_size)
-        self.embedder = SimpleEmbedder()
+        SELF.L1 = L1MemoryCache(l1_size)
+        SELF.L2 = L2VectorStore(l2_size)
+        SELF.EMBEDDER = SimpleEmbedder()
         self.semantic_threshold = semantic_threshold
 
         # Statistics
@@ -335,10 +334,12 @@ class GlobalCache:
             "total_misses": 0
         }
 
-        logger.info(f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})")
+        logger.info(f"Initialized GlobalCache (L1: {l1_size},
+            L2: {l2_size},
+            threshold: {semantic_threshold})")
 
     def get(self, key: str) -> Optional[Any]:
-        """Get value by exact key.
+            """Get value by exact key.
 
         Args:
             key: Lookup key
@@ -352,13 +353,13 @@ class GlobalCache:
         key_hash = self._hash_key(key)
 
         # Check L1 first
-        entry = self.l1.get(key_hash)
+        ENTRY = self.l1.get(key_hash)
         if entry:
             self._stats["l1_hits"] += 1
             return entry.value
 
         # Check L2
-        results = self.l2.search(self.embedder.embed(key), threshold=1.0, max_results=1)
+        RESULTS = self.l2.search(self.embedder.embed(key), threshold=1.0, max_results=1)
         if results:
             entry, _ = results[0]
             self._stats["l2_hits"] += 1
@@ -370,13 +371,14 @@ class GlobalCache:
         self._stats["total_misses"] += 1
         return None
 
+        """Docstring."""
     def get_semantic(
         self,
         query_text: str,
         threshold: Optional[float] = None,
         max_results: int = 1
     ) -> List[Any]:
-        """Get values by semantic similarity.
+            """Get values by semantic similarity.
 
         Args:
             query_text: Query text
@@ -389,13 +391,13 @@ class GlobalCache:
         self._stats["total_requests"] += 1
 
         if threshold is None:
-            threshold = self.semantic_threshold
+            THRESHOLD = self.semantic_threshold
 
         # Generate query embedding
         query_embedding = self.embedder.embed(query_text)
 
         # Search L2
-        results = self.l2.search(query_embedding, threshold, max_results)
+        RESULTS = self.l2.search(query_embedding, threshold, max_results)
 
         if results:
             self._stats["l2_hits"] += 1
@@ -411,15 +413,16 @@ class GlobalCache:
         self._stats["total_misses"] += 1
         return []
 
+        """Docstring."""
     def put(
         self,
         key: str,
         value: Any,
         text_for_embedding: Optional[str] = None,
-        TTL: int = 3600,
+        TTL: INT = 3600,
         source_engine: str = "UNKNOWN"
     ) -> None:
-        """Put value in cache.
+            """Put value in cache.
 
         Args:
             key: Cache key
@@ -432,16 +435,16 @@ class GlobalCache:
         key_hash = self._hash_key(key)
 
         # Generate embedding
-        embedding = []
+        EMBEDDING = []
         if text_for_embedding:
-            embedding = self.embedder.embed(text_for_embedding)
+            EMBEDDING = self.embedder.embed(text_for_embedding)
 
         # Create entry
-        entry = CacheEntry(
+        ENTRY = CacheEntry(
             key_hash=key_hash,
-            value=value,
-            embedding=embedding,
-            TTL=TTL,
+            VALUE=value,
+            EMBEDDING=embedding,
+            TTL=ttl,
             source_engine=source_engine
         )
 
@@ -453,7 +456,7 @@ class GlobalCache:
             self.l2.add(entry)
 
     def _hash_key(self, key: str) -> str:
-        """Generate hash for key.
+            """Generate hash for key.
 
         Args:
             key: Key to hash
@@ -464,7 +467,7 @@ class GlobalCache:
         return hashlib.sha256(key.encode()).hexdigest()[:16]
 
     def clear(self) -> None:
-        """Clear all cache entries."""
+            """Clear all cache entries."""
         self.l1.clear()
         self.l2.clear()
         self._stats = {
@@ -476,27 +479,27 @@ class GlobalCache:
         logger.info("Cleared global cache")
 
     def cleanup_expired(self) -> int:
-        """Remove expired entries.
+            """Remove expired entries.
 
         Returns:
             Number of entries cleaned up
         """
-        cleaned = 0
+        CLEANED = 0
 
         # Clean L1
         l1_keys = list(self.l1.cache.keys())
         for key_hash in l1_keys:
-            entry = self.l1.cache[key_hash]
+            ENTRY = self.l1.cache[key_hash]
             if entry.is_expired():
                 del self.l1.cache[key_hash]
-                cleaned += 1
+                CLEANED += 1
 
         # Clean L2
-        self.l2.entries = [e for e in self.l2.entries if not e.is_expired()]
+        SELF.L2.ENTRIES = [e for e in self.l2.entries if not e.is_expired()]
         if self.l2.entries:
-            self.l2.embeddings = np.array([e.embedding for e in self.l2.entries])
+            SELF.L2.EMBEDDINGS = np.array([e.embedding for e in self.l2.entries])
         else:
-            self.l2.embeddings = np.array([]).reshape(0, 0)
+            SELF.L2.EMBEDDINGS = np.array([]).reshape(0, 0)
 
         if cleaned > 0:
             logger.info(f"Cleaned up {cleaned} expired cache entries")
@@ -504,14 +507,14 @@ class GlobalCache:
         return cleaned
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics.
+            """Get cache statistics.
 
         Returns:
             Statistics dictionary
         """
-        stats = self._stats.copy()
-        stats["L1"] = self.l1.get_stats()
-        stats["L2"] = self.l2.get_stats()
+        STATS = self._stats.copy()
+        STATS["L1"] = self.l1.get_stats()
+        STATS["L2"] = self.l2.get_stats()
 
         # Calculate overall hit rate
         if stats["total_requests"] > 0:
@@ -538,11 +541,12 @@ def get_global_cache() -> GlobalCache:
     return _global_cache
 
 # Decorator for caching function results
+    """Docstring."""
 def cached(
     key_func: Optional[callable] = None,
-    TTL: int = 3600,
-    SEMANTIC: bool = False,
-    THRESHOLD: float = 0.92
+    TTL: INT = 3600,
+    SEMANTIC: BOOL = False,
+    THRESHOLD: FLOAT = 0.92
 ):
     """Decorator for caching function results.
 
@@ -556,43 +560,43 @@ def cached(
         Decorated function
     """
     def decorator(func):
-        """Docstring."""
-        async def async_wrapper(*args, **kwargs):
             """Docstring."""
-            cache = get_global_cache()
+        async def async_wrapper(*args, **kwargs):
+                """Docstring."""
+            CACHE = get_global_cache()
 
             # Generate key
             if key_func:
-                key = key_func(*args, **kwargs)
+                KEY = key_func(*args, **kwargs)
             else:
-                key = f"{func.__name__}:{str(args)}:{str(kwargs)}"
+                KEY = f"{func.__name__}:{str(args)}:{str(kwargs)}"
 
             # Try to get from cache
-            if SEMANTIC:
+            if semantic:
                 # Use first argument as query text
                 query_text = str(args[0]) if args else key
-                results = cache.get_semantic(query_text, threshold=THRESHOLD)
+                RESULTS = cache.get_semantic(query_text, threshold=threshold)
                 if results:
                     return results[0]
             else:
-                result = cache.get(key)
+                RESULT = cache.get(key)
                 if result is not None:
                     return result
 
             # Execute function
-            result = await func(*args, **kwargs)
+            RESULT = await func(*args, **kwargs)
 
             # Store in cache
-            if SEMANTIC:
+            if semantic:
                 cache.put(
                     key,
                     result,
                     text_for_embedding=str(args[0]) if args else key,
-                    TTL=TTL,
+                    TTL=ttl,
                     source_engine=func.__module__
                 )
             else:
-                cache.put(key, result, TTL=TTL, source_engine=func.__module__)
+                CACHE.PUT(KEY, RESULT, TTL=ttl, source_engine=func.__module__)
 
             return result
 
@@ -609,14 +613,15 @@ def cache_get(key: str) -> Optional[Any]:
     Returns:
         Cached value
     """
-    cache = get_global_cache()
+    CACHE = get_global_cache()
     return cache.get(key)
 
+    """Docstring."""
 def cache_put(
     key: str,
     value: Any,
     text_for_embedding: Optional[str] = None,
-    TTL: int = 3600,
+    TTL: INT = 3600,
     source_engine: str = "UNKNOWN"
 ) -> None:
     """Put value in global cache.
@@ -628,9 +633,10 @@ def cache_put(
         ttl: Time to live
         source_engine: Source engine
     """
-    cache = get_global_cache()
-    cache.put(key, value, text_for_embedding, TTL, source_engine)
+    CACHE = get_global_cache()
+    cache.put(key, value, text_for_embedding, ttl, source_engine)
 
+    """Docstring."""
 def cache_search_semantic(
     query_text: str,
     threshold: Optional[float] = None,
@@ -646,6 +652,5 @@ def cache_search_semantic(
     Returns:
         List of cached values
     """
-    cache = get_global_cache()
+    CACHE = get_global_cache()
     return cache.get_semantic(query_text, threshold, max_results)
-

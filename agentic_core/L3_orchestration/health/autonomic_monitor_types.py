@@ -1,16 +1,7 @@
 """Types and models for autonomic_monitor."""
 import logging
-import time
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, List
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
 
 LOGGER = logging.getLogger(__name__)
-
-
 class HealthStatus(Enum):
     """Agent health status."""
     HEALTHY = 'healthy'
@@ -18,14 +9,12 @@ class HealthStatus(Enum):
     CRITICAL = 'critical'
     OFFLINE = 'offline'
 
-
 class AlertSeverity(Enum):
     """Alert severity levels."""
     INFO = 'info'
     WARNING = 'warning'
     ERROR = 'error'
     CRITICAL = 'critical'
-
 
 @dataclass
 class HealthMetrics:
@@ -36,12 +25,13 @@ class HealthMetrics:
     error_rate: float
     circuit_breaker_trips: int
     total_requests: int
-    TIMESTAMP: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms': self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circuit_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.TIMESTAMP}
-
+        return {'agent_id': self.agent_id, 'success_rate': self.success_rate, 'avg_response_time_ms'
+    : self.avg_response_time_ms, 'error_rate': self.error_rate, 'circuit_breaker_trips': self.circui
+        t_breaker_trips, 'total_requests': self.total_requests, 'timestamp': self.timestamp}
 
 @dataclass
 class HealthAlert:
@@ -52,15 +42,14 @@ class HealthAlert:
     message: str
     metrics: HealthMetrics
     recommended_actions: List[str] = field(default_factory=list)
-    TIMESTAMP: float = field(default_factory=time.time)
+    TIMESTAMP: FLOAT = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'alert_id': self.alert_id,
-                'agent_id': self.agent_id,
-                'severity': self.severity.value,
-                'message': self.message,
-                'metrics': self.metrics.to_dict(),
-                'recommended_actions': self.recommended_actions,
-                'timestamp': self.TIMESTAMP}
-
+            'agent_id': self.agent_id,
+            'severity': self.severity.value,
+            'message': self.message,
+            'metrics': self.metrics.to_dict(),
+            'recommended_actions': self.recommended_actions,
+            'timestamp': self.timestamp}

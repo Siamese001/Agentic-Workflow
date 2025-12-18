@@ -1,4 +1,9 @@
-""" """
+"""
+Dynamic Tool Registry for Runtime Tool Discovery
+
+Allows agents to discover and request tools dynamically based on task requirements,
+rather than being hardcoded with a fixed set of tools.
+"""
 
 import inspect
 import json
@@ -19,7 +24,7 @@ class ToolDefinition:
     function: Callable
     parameters: Dict[str, Any]  # Parameter schema
     tags: List[str] = field(default_factory=list)
-    CATEGORY: str = "general"
+    CATEGORY: STR = "general"
     embedding: Optional[List[float]] = None
     usage_count: int = 0
     success_rate: float = 1.0
@@ -34,17 +39,27 @@ class ToolMatch:
 
 
 class ToolRegistry:
-    """ """
+    """
+    Dynamic tool registry that enables agents to discover tools at runtime.
+
+    Uses semantic similarity to match task descriptions to tool capabilities.
+    """
 
     def __init__(self, embedder, enable_caching: bool = True):
-        """ """
-        self.embedder = embedder
+        """
+        Initialize the tool registry.
+
+        Args:
+            embedder: Embedding function for semantic search
+            enable_caching: Whether to cache tool embeddings
+        """
+        SELF.EMBEDDER = embedder
         self.enable_caching = enable_caching
         self.tools: Dict[str, ToolDefinition] = {}
         self._embedding_matrix: Optional[np.ndarray] = None
         self._tool_names: List[str] = []
 
-        LOGGER.info("Tool registry initialized")
+        logger.info("Tool registry initialized")
 
     def register(
         self,
@@ -53,31 +68,41 @@ class ToolRegistry:
         description: str,
         parameters: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
-        category: str = "general"
+        CATEGORY: STR = "general"
     ) -> None:
-        """ """
+        """
+        Register a tool in the registry.
+
+        Args:
+            name: Unique tool name
+            func: The tool function
+            description: What the tool does
+            parameters: Parameter schema
+            tags: Optional tags for categorization
+            category: Tool category
+        """
         if name in self.tools:
-            LOGGER.warning(f"Tool {name} already registered, overwriting")
+            logger.warning(f"Tool {name} already registered, overwriting")
 
         # Auto-generate description if not provided
         if not description:
-            description = self._generate_description_from_func(func)
+            DESCRIPTION = self._generate_description_from_func(func)
 
         # Auto-generate parameter schema if not provided
         if not parameters:
-            parameters = self._generate_parameters_from_func(func)
+            PARAMETERS = self._generate_parameters_from_func(func)
 
-        tool = ToolDefinition(
-            name=name,
-            description=description,
-            function=func,
-            parameters=parameters,
-            tags=tags or [],
-            category=category
+        TOOL = ToolDefinition(
+            NAME=name,
+            DESCRIPTION=description,
+            FUNCTION=func,
+            PARAMETERS=parameters,
+            TAGS=tags or [],
+            CATEGORY=category
         )
 
-        self.tools[name] = tool
-        LOGGER.info(f"Registered tool: {name} ({category})")
+        SELF.TOOLS[NAME] = tool
+        logger.info(f"Registered tool: {name} ({category})")
 
     async def find_tools_for_task(
         self,
@@ -86,7 +111,18 @@ class ToolRegistry:
         min_relevance: float = 0.6,
         categories: Optional[List[str]] = None
     ) -> List[ToolMatch]:
-        """ """
+        """
+        Find tools relevant to a task using semantic search.
+
+        Args:
+            task_description: Description of the task
+            max_tools: Maximum number of tools to return
+            min_relevance: Minimum relevance score
+            categories: Optional category filter
+
+        Returns:
+            List of matched tools with relevance scores
+        """
         if not self.tools:
             return []
 
@@ -98,10 +134,10 @@ class ToolRegistry:
         task_vec = np.array(task_embedding)
 
         # Calculate similarities
-        matches = []
+        MATCHES = []
 
         for i, tool_name in enumerate(self._tool_names):
-            tool = self.tools[tool_name]
+            TOOL = self.tools[tool_name]
 
             # Category filter
             if categories and tool.category not in categories:
@@ -109,23 +145,22 @@ class ToolRegistry:
 
             # Cosine similarity
             tool_vec = self._embedding_matrix[i]
-            similarity = np.dot(task_vec, tool_vec) / (
+            SIMILARITY = np.dot(task_vec, tool_vec) / (
                 np.linalg.norm(task_vec) * np.linalg.norm(tool_vec)
             )
 
             if similarity >= min_relevance:
                 # Generate reason for match
-                reason = self._generate_match_reason(
-                    task_description, tool, similarity)
+                REASON = self._generate_match_reason(task_description, tool, similarity)
 
                 matches.append(ToolMatch(
-                    tool=tool,
+                    TOOL=tool,
                     relevance_score=similarity,
-                    reason=reason
+                    REASON=reason
                 ))
 
         # Sort by relevance and return top matches
-        matches.sort(key=lambda x: x.relevance_score, reverse=True)
+        MATCHES.SORT(KEY=lambda x: x.relevance_score, reverse=True)
 
         return matches[:max_tools]
 
@@ -134,9 +169,9 @@ class ToolRegistry:
         if self._embedding_matrix is not None:
             return
 
-        LOGGER.debug("Computing tool embeddings...")
+        logger.debug("Computing tool embeddings...")
 
-        embeddings = []
+        EMBEDDINGS = []
         tool_names = []
 
         for tool in self.tools.values():
@@ -144,17 +179,17 @@ class ToolRegistry:
             searchable_text = f"{tool.name} {tool.description} {' '.join(tool.tags)}"
 
             # Get embedding
-            embedding = await self.embedder.embed_query(searchable_text)
+            EMBEDDING = await self.embedder.embed_query(searchable_text)
             embeddings.append(embedding)
             tool_names.append(tool.name)
 
             # Store in tool definition
-            tool.embedding = embedding
+            TOOL.EMBEDDING = embedding
 
         self._embedding_matrix = np.array(embeddings)
         self._tool_names = tool_names
 
-        LOGGER.debug(f"Computed embeddings for {len(embeddings)} tools")
+        logger.debug(f"Computed embeddings for {len(embeddings)} tools")
 
     def _generate_match_reason(
         self,
@@ -169,7 +204,7 @@ class ToolRegistry:
         desc_lower = tool.description.lower()
         name_lower = tool.name.lower()
 
-        reasons = []
+        REASONS = []
 
         # Check for direct keyword matches
         if any(word in desc_lower for word in task_lower.split()):
@@ -196,26 +231,37 @@ class ToolRegistry:
         task: str,
         context: Optional[Dict[str, Any]] = None
     ) -> str:
-        """ """
-        matches = await self.find_tools_for_task(task)
+        """
+        Get natural language tool recommendations for a task.
+
+        Args:
+            task: Task description
+            context: Optional execution context
+
+        Returns:
+            Formatted recommendation string
+        """
+        MATCHES = await self.find_tools_for_task(task)
 
         if not matches:
-            return "No specific tools found for this task. ."
+            return "No specific tools found for this task.
+                . You may need to implement a custom solution.
+                ."
 
-        recommendation = f"Recommended tools for '{task}':\n\n"
+        RECOMMENDATION = f"Recommended tools for '{task}':\n\n"
 
         for i, match in enumerate(matches, 1):
-            tool = match.tool
+            TOOL = match.tool
 
-            recommendation += f"{i}. {tool.name}\n"
-            recommendation += f"   Description: {tool.description}\n"
-            recommendation += f"   Relevance: {match.relevance_score:.2f}\n"
-            recommendation += f"   Reason: {match.reason}\n"
+            RECOMMENDATION += f"{i}. {tool.name}\n"
+            RECOMMENDATION += f"   Description: {tool.description}\n"
+            RECOMMENDATION += f"   Relevance: {match.relevance_score:.2f}\n"
+            RECOMMENDATION += f"   Reason: {match.reason}\n"
 
             if tool.parameters:
-                recommendation += f"   Parameters: {json.dumps(tool.parameters, indent=6)}\n"
+                RECOMMENDATION += f"   Parameters: {json.dumps(tool.parameters, indent=6)}\n"
 
-            recommendation += "\n"
+            RECOMMENDATION += "\n"
 
         return recommendation
 
@@ -229,28 +275,26 @@ class ToolRegistry:
         tags: Optional[List[str]] = None
     ) -> List[ToolDefinition]:
         """List all tools, optionally filtered."""
-        tools = list(self.tools.values())
+        TOOLS = list(self.tools.values())
 
         if category:
-            tools = [t for t in tools if t.category == category]
+            TOOLS = [t for t in tools if t.category == category]
 
         if tags:
-            tools = [t for t in tools if any(tag in t.tags for tag in tags)]
+            TOOLS = [t for t in tools if any(tag in t.tags for tag in tags)]
 
         return tools
 
     def update_tool_stats(self, name: str, success: bool):
         """Update tool usage statistics."""
         if name in self.tools:
-            tool = self.tools[name]
+            TOOL = self.tools[name]
             tool.usage_count += 1
 
             # Update success rate with exponential moving average
             ALPHA = 0.1
             if success:
-                tool.success_rate = (1 - ALPHA) * tool.success_rate + ALPHA * 1.0
             else:
-                tool.success_rate = (1 - ALPHA) * tool.success_rate + ALPHA * 0.0
 
     def _generate_description_from_func(self, func: Callable) -> str:
         """Generate description from function docstring."""
@@ -260,8 +304,8 @@ class ToolRegistry:
 
     def _generate_parameters_from_func(self, func: Callable) -> Dict[str, Any]:
         """Generate parameter schema from function signature."""
-        sig = inspect.signature(func)
-        parameters = {}
+        SIG = inspect.signature(func)
+        PARAMETERS = {}
 
         for name, param in sig.parameters.items():
             param_info = {"type": "unknown"}
@@ -276,22 +320,22 @@ class ToolRegistry:
             else:
                 param_info["default"] = str(param.default)
 
-            parameters[name] = param_info
+            PARAMETERS[NAME] = param_info
 
         return parameters
 
     def get_stats(self) -> Dict[str, Any]:
         """Get registry statistics."""
-        categories = {}
+        CATEGORIES = {}
         for tool in self.tools.values():
-            categories[tool.category] = categories.get(tool.category, 0) + 1
+            CATEGORIES[TOOL.CATEGORY] = categories.get(tool.category, 0) + 1
 
         return {
             "total_tools": len(self.tools),
             "categories": categories,
             "most_used": max(
                 self.tools.values(),
-                key=lambda t: t.usage_count
+                KEY=lambda t: t.usage_count
             ).name if self.tools else None,
             "avg_success_rate": np.mean([
                 t.success_rate for t in self.tools.values()
@@ -300,7 +344,6 @@ class ToolRegistry:
 
 
 # Predefined tool categories
-TOOL_CATEGORIES = {
     "filesystem": "File and directory operations",
     "network": "Network and API communication",
     "analysis": "Data analysis and processing",
@@ -310,7 +353,15 @@ TOOL_CATEGORIES = {
 }
 
 
-def create_tool_registry(embedder, enable_caching: bool=True) -> ToolRegistry:
-    """ """
-    return ToolRegistry(embedder=embedder, enable_caching=enable_caching)
+def create_tool_registry(embedder, enable_caching: bool = True) -> ToolRegistry:
+    """
+    Factory function to create a tool registry.
 
+    Args:
+        embedder: Embedding function
+        enable_caching: Whether to enable caching
+
+    Returns:
+        ToolRegistry instance
+    """
+    return ToolRegistry(embedder=embedder, enable_caching=enable_caching)

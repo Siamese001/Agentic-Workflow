@@ -1,0 +1,357 @@
+# Compliance Mapping v1.0
+# Comprehensive regulatory compliance mapping matrix for prompt governance
+
+compliance_mapping:
+  version: "1.0"
+  last_updated: "2024-01-01T00:00:00Z"
+  
+  # Regulatory frameworks
+  regulatory_frameworks:
+    gdpr:
+      name: "General Data Protection Regulation"
+      jurisdiction: "European Union"
+      applicability: "All EU personal data processing"
+      
+      article_mappings:
+        article_5_data_protection_principles:
+          governance_components:
+            - "ownership.yaml - Data classification and handling"
+            - "access_control.yaml - Data access controls"
+            - "approval_workflow.yaml - Data processing approvals"
+          compliance_evidence:
+            - "Data protection impact assessments"
+            - "Lawful basis documentation"
+            - "Data minimization procedures"
+            
+        article_25_data_protection_by_design:
+          governance_components:
+            - "semantic_versioning.yaml - Secure development lifecycle"
+            - "change_history.yaml - Change management procedures"
+            - "evaluations/style_checks.yaml - Quality assurance processes"
+          compliance_evidence:
+            - "Privacy by design documentation"
+            - "Security architecture reviews"
+            - "Data protection impact assessments"
+            
+        article_32_security_of_processing:
+          governance_components:
+            - "access_control.yaml - Security measures"
+            - "approval_workflow.yaml - Security approvals"
+            - "change_history.yaml - Security incident tracking"
+          compliance_evidence:
+            - "Security policies and procedures"
+            - "Encryption documentation"
+            - "Incident response plans"
+            
+        article_33_notification_of_data_breach:
+          governance_components:
+            - "change_history.yaml - Incident tracking"
+            - "approval_workflow.yaml - Emergency procedures"
+            - "ownership.yaml - Incident response responsibilities"
+          compliance_evidence:
+            - "Breach notification procedures"
+            - "Incident response logs"
+            - "Communication templates"
+            
+    soc2:
+      name: "Service Organization Control 2"
+      jurisdiction: "United States"
+      applicability: "Service organizations handling customer data"
+      
+      trust_services_criteria:
+        security_common_criteria_6:
+          governance_components:
+            - "access_control.yaml - Logical access controls"
+            - "ownership.yaml - Security responsibilities"
+            - "approval_workflow.yaml - Security change management"
+          compliance_evidence:
+            - "Access control policies"
+            - "Security awareness training"
+            - "System monitoring logs"
+            
+        availability_common_criteria_1:
+          governance_components:
+            - "change_history.yaml - Change management"
+            - "semantic_versioning.yaml - Version control"
+            - "approval_workflow.yaml - Availability procedures"
+          compliance_evidence:
+            - "Availability monitoring"
+            - "Disaster recovery plans"
+            - "Performance metrics"
+            
+        processing_integrity_common_criteria_8:
+          governance_components:
+            - "evaluations/rubric.yaml - Quality criteria"
+            - "evaluations/regression_tests.yaml - Testing procedures"
+            - "change_history.yaml - Change validation"
+          compliance_evidence:
+            - "Processing accuracy logs"
+            - "Quality control procedures"
+            - "Error handling documentation"
+            
+        confidentiality_common_criteria_6:
+          governance_components:
+            - "access_control.yaml - Data confidentiality"
+            - "ownership.yaml - Confidential data handling"
+            - "approval_workflow.yaml - Confidentiality approvals"
+          compliance_evidence:
+            - "Confidentiality agreements"
+            - "Data classification procedures"
+            - "Encryption documentation"
+            
+        privacy_common_criteria_6:
+          governance_components:
+            - "ownership.yaml - Privacy responsibilities"
+            - "access_control.yaml - Privacy access controls"
+            - "change_history.yaml - Privacy impact assessments"
+          compliance_evidence:
+            - "Privacy policies"
+            - "Consent management procedures"
+            - "Data subject request processes"
+            
+    hipaa:
+      name: "Health Insurance Portability and Accountability Act"
+      jurisdiction: "United States"
+      applicability: "Protected health information processing"
+      
+      hipaa_rules:
+        administrative_safeguards:
+          governance_components:
+            - "ownership.yaml - Security officer responsibilities"
+            - "access_control.yaml - Workforce security"
+            - "approval_workflow.yaml - Security management procedures"
+          compliance_evidence:
+            - "Security officer documentation"
+            - "Workforce training records"
+            - "Security management policies"
+            
+        physical_safeguards:
+          governance_components:
+            - "access_control.yaml - Facility access controls"
+            - "ownership.yaml - Physical security responsibilities"
+            - "change_history.yaml - Physical access logging"
+          compliance_evidence:
+            - "Facility access logs"
+            - "Physical security policies"
+            - "Device and media controls"
+            
+        technical_safeguards:
+          governance_components:
+            - "access_control.yaml - Access controls and audit controls"
+            - "semantic_versioning.yaml - Transmission security"
+            - "change_history.yaml - Integrity controls"
+          compliance_evidence:
+            - "Access control logs"
+            - "Encryption documentation"
+            - "Audit control procedures"
+            
+  # Industry standards
+  industry_standards:
+    iso27001:
+      name: "ISO/IEC 27001 Information Security Management"
+      applicability: "Information security management systems"
+      
+      clause_mappings:
+        clause_a_9_access_control:
+          governance_components:
+            - "access_control.yaml - Complete access control framework"
+            - "ownership.yaml - Access control responsibilities"
+            - "approval_workflow.yaml - Access approval procedures"
+          compliance_evidence:
+            - "Access control policy"
+            - "User access reviews"
+            - "Privileged access management"
+            
+        clause_a_12_operations_security:
+          governance_components:
+            - "change_history.yaml - Change management"
+            - "semantic_versioning.yaml - Version control"
+            - "evaluations/regression_tests.yaml - Vulnerability management"
+          compliance_evidence:
+            - "Change management procedures"
+            - "Vulnerability scan reports"
+            - "Malware protection logs"
+            
+        clause_a_14_system_acquisition:
+          governance_components:
+            - "approval_workflow.yaml - Security requirements"
+            - "evaluations/rubric.yaml - Security evaluation"
+            - "change_history.yaml - Development security"
+          compliance_evidence:
+            - "Security requirements documentation"
+            - "Development security procedures"
+            - "Acceptance testing reports"
+            
+    nist_csf:
+      name: "NIST Cybersecurity Framework"
+      applicability: "Critical infrastructure cybersecurity"
+      
+      function_mappings:
+        identify:
+          governance_components:
+            - "ownership.yaml - Asset management"
+            - "access_control.yaml - Risk assessment"
+            - "change_history.yaml - Risk management"
+          compliance_evidence:
+            - "Asset inventory"
+            - "Risk assessment reports"
+            - "Supply chain risk management"
+            
+        protect:
+          governance_components:
+            - "access_control.yaml - Identity management and access control"
+            - "semantic_versioning.yaml - Data security"
+            - "approval_workflow.yaml - Protective technology"
+          compliance_evidence:
+            - "Identity management policies"
+            - "Data security procedures"
+            - "Protective technology documentation"
+            
+        detect:
+          governance_components:
+            - "change_history.yaml - Anomalous activity detection"
+            - "evaluations/regression_tests.yaml - Security monitoring"
+            - "ownership.yaml - Detection processes"
+          compliance_evidence:
+            - "Detection procedures"
+            - "Monitoring logs"
+            - "Analysis capabilities"
+            
+        respond:
+          governance_components:
+            - "approval_workflow.yaml - Response planning"
+            - "change_history.yaml - Incident response"
+            - "ownership.yaml - Response coordination"
+          compliance_evidence:
+            - "Response plan documentation"
+            - "Incident response logs"
+            - "Communication procedures"
+            
+        recover:
+          governance_components:
+            - "semantic_versioning.yaml - Recovery planning"
+            - "change_history.yaml - Recovery procedures"
+            - "ownership.yaml - Recovery coordination"
+          compliance_evidence:
+            - "Recovery plan documentation"
+            - "Recovery testing results"
+            - "Improvement procedures"
+            
+  # Compliance monitoring
+  compliance_monitoring:
+    continuous_monitoring:
+      automated_checks:
+        - "Access control compliance validation"
+        - "Data protection measure verification"
+        - "Security control effectiveness monitoring"
+        - "Privacy requirement compliance checking"
+        
+      manual_reviews:
+        - "Quarterly compliance assessments"
+        - "Annual regulatory compliance audits"
+        - "Bi-annual policy reviews"
+        - "Monthly control effectiveness reviews"
+        
+    reporting_framework:
+      compliance_dashboards:
+        - "Real-time compliance status overview"
+        - "Regulatory requirement tracking"
+        - "Control effectiveness metrics"
+        - "Exception and violation tracking"
+        
+      compliance_reports:
+        - "Monthly compliance status reports"
+        - "Quarterly regulatory compliance summaries"
+        - "Annual compliance certification reports"
+        - "Ad-hoc compliance investigation reports"
+        
+  # Gap analysis
+  compliance_gaps:
+    identified_gaps:
+      data_protection_officer:
+        description: "Formal DPO role designation"
+        current_state: "Responsibilities distributed across roles"
+        required_action: "Formal DPO appointment and documentation"
+        priority: "high"
+        
+      data_protection_impact_assessments:
+        description: "Formal DPIA procedures"
+        current_state: "Ad-hoc impact assessments"
+        required_action: "Implement formal DPIA framework"
+        priority: "medium"
+        
+      breach_notification_procedures:
+        description: "Formal 72-hour breach notification procedures"
+        current_state: "Basic incident response procedures"
+        required_action: "Enhance breach notification procedures"
+        priority: "high"
+        
+    remediation_plans:
+      gap_1_dpo_appointment:
+        timeline: "30 days"
+        responsible_party: "governance_committee"
+        success_criteria: "Formal DPO appointment documented"
+        
+      gap_2_dpia_framework:
+        timeline: "60 days"
+        responsible_party: "compliance_officer"
+        success_criteria: "Formal DPIA procedures implemented"
+        
+      gap_3_breach_notification:
+        timeline: "45 days"
+        responsible_party: "compliance_officer"
+        success_criteria: "72-hour notification procedures operational"
+        
+  # Compliance evidence
+  evidence_management:
+    evidence_types:
+      documentary_evidence:
+        - "Policies and procedures"
+        - "Training materials and records"
+        - "Agendas and minutes of meetings"
+        - "Risk assessment reports"
+        
+      technical_evidence:
+        - "System configuration documentation"
+        - "Access control logs"
+        - "Security monitoring logs"
+        - "Audit trail documentation"
+        
+      testimonial_evidence:
+        - "Management attestations"
+        - "Staff interviews and statements"
+        - "Third-party assessments"
+        - "Customer testimonials"
+        
+    evidence_retention:
+      retention_periods:
+        regulatory_evidence: "7 years"
+        audit_evidence: "5 years"
+        operational_evidence: "3 years"
+        training_evidence: "2 years"
+        
+      storage_requirements:
+        - "Immutable storage for audit evidence"
+        - "Encrypted storage for sensitive evidence"
+        - "Access-controlled evidence repositories"
+        - "Regular evidence integrity verification"
+        
+  # Compliance automation
+  automation_tools:
+    compliance_monitoring:
+      - "Automated policy compliance checking"
+      - "Real-time control effectiveness monitoring"
+      - "Automated evidence collection"
+      - "Compliance violation detection"
+      
+    reporting_automation:
+      - "Automated compliance report generation"
+      - "Dashboard updates and alerts"
+      - "Exception reporting and escalation"
+      - "Trend analysis and insights"
+      
+    evidence_management:
+      - "Automated evidence collection and tagging"
+      - "Evidence retention and disposition"
+      - "Evidence integrity verification"
+      - "Audit trail maintenance"

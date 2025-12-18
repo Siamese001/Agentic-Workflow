@@ -8,11 +8,8 @@ voice to match, preventing the "Generic AI" voice.
 import logging
 import re
 from enum import Enum
-from typing import List, Optional, Dict, Tuple
-from pydantic import BaseModel, Field, confloat, validator # Assuming BaseModel, Field, confloat, validator are from pydantic
 
 LOGGER = logging.getLogger(__name__)
-
 
 class ToneType(str, Enum):
     """Primary tone types for communication style analysis."""
@@ -23,31 +20,30 @@ class ToneType(str, Enum):
     ENTHUSIASTIC = "enthusiastic"    # High energy, positive, engaging
     DIRECT = "direct"                # Concise, action-oriented, no-fluff
 
-
 class StyleProfile(BaseModel):
     """Profile defining a communication style."""
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: confloat(ge=0.0,
         le=1.0) = Field(default=0.7,
-        description="""Formality level(0=Casual,
-        1=Academic)""")
+        DESCRIPTION="Formality level (0=Casual,
+        1=Academic)")
     emoji_frequency: confloat(ge=0.0,
         le=1.0) = Field(default=0.2,
-        description="Emoji usage frequency")
+        DESCRIPTION="Emoji usage frequency")
     sentence_length_avg: int = Field(default=15,
         ge=5,
         le=50,
-        description="Target words per sentence")
+        DESCRIPTION="Target words per sentence")
     vocabulary_complexity: confloat(ge=0.0,
         le=1.0) = Field(default=0.5,
-        description="Vocabulary complexity")
+        DESCRIPTION="Vocabulary complexity")
     confidence_level: confloat(ge=0.0,
         le=1.0) = Field(default=0.8,
-        description="Confidence in analysis")
+        DESCRIPTION="Confidence in analysis")
 
     class Config:
-        """Pydantic configuration."""
+            """Pydantic configuration."""
         validate_assignment = True
 
 class GenerationConfig(BaseModel):
@@ -57,19 +53,19 @@ class GenerationConfig(BaseModel):
     temperature_setting: confloat(ge=0.1, le=1.0) = Field(..., description="LLM temperature")
     banned_phrases: List[str] = Field(default_factory=list, description="Phrases to avoid")
     preferred_transitions: List[str] = Field(default_factory=list,
-        description="Preferred transition words")
+        DESCRIPTION="Preferred transition words")
     max_sentence_length: int = Field(default=25, ge=5, le=100, description="Max words per sentence")
 
     @validator('temperature_setting')
     def clamp_temperature(cls, v):
-        """Ensure temperature is within valid range."""
+            """Ensure temperature is within valid range."""
         return max(0.1, min(1.0, v))
 
 class ToneAnalyzer:
     """Analyzes communication style from content samples."""
 
     def __init__(self, min_sample_length: int = 50):
-        """Initialize the tone analyzer.
+            """Initialize the tone analyzer.
 
         Args:
             min_sample_length: Minimum characters for valid analysis
@@ -104,10 +100,10 @@ class ToneAnalyzer:
         self.formal_indicators = ["furthermore", "moreover", "consequently", "therefore"]
         self.casual_indicators = ["hey", "yeah", "cool", "awesome", "btw"]
 
-        LOGGER.info(f"Initialized ToneAnalyzer with min_sample_length={min_sample_length}")
+        logger.info(f"Initialized ToneAnalyzer with min_sample_length={min_sample_length}")
 
     def analyze_style(self, content_samples: List[str]) -> StyleProfile:
-        """Analyze communication style from content samples.
+            """Analyze communication style from content samples.
 
         Args:
             content_samples: List of text samples to analyze
@@ -118,7 +114,7 @@ class ToneAnalyzer:
         try:
             # Validate input
             if not content_samples or not isinstance(content_samples, list):
-                LOGGER.warning("Empty or invalid content samples, returning neutral profile")
+                logger.warning("Empty or invalid content samples, returning neutral profile")
                 return self._get_neutral_profile()
 
             # Combine and clean samples
@@ -126,18 +122,18 @@ class ToneAnalyzer:
             combined_text = combined_text.strip()
 
             if len(combined_text) < self.min_sample_length:
-                LOGGER.warning(f"""Insufficient content length ({len(combined_text)}),
-                    returning neutral profile""")
+                logger.warning(f"Insufficient content length ({len(combined_text)}),
+                    returning neutral profile")
                 return self._get_neutral_profile()
 
             # Calculate metrics
-            metrics = self._calculate_metrics(combined_text)
+            METRICS = self._calculate_metrics(combined_text)
 
             # Detect primary tone
             primary_tone = self._detect_primary_tone(combined_text, metrics)
 
             # Calculate formality level
-            formality = self._calculate_formality(combined_text, metrics)
+            FORMALITY = self._calculate_formality(combined_text, metrics)
 
             # Calculate emoji frequency
             emoji_freq = self._calculate_emoji_frequency(combined_text)
@@ -146,7 +142,7 @@ class ToneAnalyzer:
             vocab_complexity = self._calculate_vocabulary_complexity(combined_text)
 
             # Create profile
-            profile = StyleProfile(
+            PROFILE = StyleProfile(
                 primary_tone=primary_tone,
                 formality_level=formality,
                 emoji_frequency=emoji_freq,
@@ -155,19 +151,19 @@ class ToneAnalyzer:
                 confidence_level=metrics["confidence"]
             )
 
-            LOGGER.info(
+            logger.info(
                 f"Analyzed tone: {primary_tone.value} (confidence: {metrics['confidence']:.2f})",
-                extra={"tone": primary_tone.value, "confidence": metrics["confidence"]}
+                EXTRA={"tone": primary_tone.value, "confidence": metrics["confidence"]}
             )
 
             return profile
 
         except Exception as e:
-LOGGER.error(f"Error analyzing style: {str(e)}")
+            logger.error(f"Error analyzing style: {str(e)}")
             return self._get_neutral_profile()
 
     def _get_neutral_profile(self) -> StyleProfile:
-        """Get a neutral/default style profile."""
+            """Get a neutral/default style profile."""
         return StyleProfile(
             primary_tone=ToneType.AUTHORITATIVE,
             formality_level=0.7,
@@ -178,7 +174,7 @@ LOGGER.error(f"Error analyzing style: {str(e)}")
         )
 
     def _calculate_metrics(self, text: str) -> Dict[str, float]:
-        """Calculate basic text metrics.
+            """Calculate basic text metrics.
 
         Args:
             text: Text to analyze
@@ -188,11 +184,12 @@ LOGGER.error(f"Error analyzing style: {str(e)}")
         """
         try:
             # Sentence analysis
-            sentences = re.split(r'[.!?]+', text)
-            sentences = [s.strip() for s in sentences if s.strip()]
+            SENTENCES = re.split(r'[.!?]+', text)
+            SENTENCES = [s.strip() for s in sentences if s.strip()]
 
             if not sentences:
-                return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, """confidence""": 0.0}
+                return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "con
+    fidence": 0.0}
 
             # Average sentence length
             word_counts = [len(s.split()) for s in sentences]
@@ -207,7 +204,7 @@ LOGGER.error(f"Error analyzing style: {str(e)}")
             question_ratio = question_count / max(total_sentences, 1)
 
             # Confidence based on sample size and consistency
-            confidence = min(1.0, len(text) / 1000)  # More text = higher confidence
+            CONFIDENCE = min(1.0, len(text) / 1000)  # More text = higher confidence
 
             return {
                 "avg_sentence_length": avg_sentence_length,
@@ -216,11 +213,12 @@ LOGGER.error(f"Error analyzing style: {str(e)}")
                 "confidence": confidence
             }
         except Exception as e:
-LOGGER.error(f"Error calculating metrics: {str(e)}")
-            return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, """confidence""": 0.0}
+            logger.error(f"Error calculating metrics: {str(e)}")
+            return {"avg_sentence_length": 15, "exclamation_ratio": 0, "question_ratio": 0, "confide
+    nce": 0.0}
 
     def _detect_primary_tone(self, text: str, metrics: Dict[str, float]) -> ToneType:
-        """Detect the primary tone from text and metrics.
+            """Detect the primary tone from text and metrics.
 
         Args:
             text: Text to analyze
@@ -235,7 +233,7 @@ LOGGER.error(f"Error calculating metrics: {str(e)}")
 
             # Score each tone based on keyword presence
             for tone, keywords in self.tone_keywords.items():
-                score = sum(1 for keyword in keywords if keyword in text_lower)
+                SCORE = sum(1 for keyword in keywords if keyword in text_lower)
                 tone_scores[tone] = score
 
             # Apply heuristic adjustments
@@ -257,11 +255,11 @@ LOGGER.error(f"Error calculating metrics: {str(e)}")
             return max(tone_scores, key=tone_scores.get)
 
         except Exception as e:
-LOGGER.error(f"Error detecting primary tone: {str(e)}")
+            logger.error(f"Error detecting primary tone: {str(e)}")
             return ToneType.AUTHORITATIVE
 
     def _calculate_formality(self, text: str, metrics: Dict[str, float]) -> float:
-        """Calculate formality level (0.0 = casual, 1.0 = academic).
+            """Calculate formality level (0.0 = casual, 1.0 = academic).
 
         Args:
             text: Text to analyze
@@ -289,16 +287,16 @@ LOGGER.error(f"Error detecting primary tone: {str(e)}")
                 indicator_factor = 0.5
 
             # Combine factors
-            formality = (length_factor * 0.6) + (indicator_factor * 0.4)
+            FORMALITY = (length_factor * 0.6) + (indicator_factor * 0.4)
 
             return max(0.0, min(1.0, formality))
 
         except Exception as e:
-LOGGER.error(f"Error calculating formality: {str(e)}")
+            logger.error(f"Error calculating formality: {str(e)}")
             return 0.7  # Default to semi-formal
 
     def _calculate_emoji_frequency(self, text: str) -> float:
-        """Calculate emoji usage frequency.
+            """Calculate emoji usage frequency.
 
         Args:
             text: Text to analyze
@@ -326,15 +324,15 @@ LOGGER.error(f"Error calculating formality: {str(e)}")
                 return 0.0
 
             # Normalize to 0-1 scale
-            frequency = emoji_count / sentence_count
+            FREQUENCY = emoji_count / sentence_count
             return min(1.0, frequency)
 
         except Exception as e:
-LOGGER.error(f"Error calculating emoji frequency: {str(e)}")
+            logger.error(f"Error calculating emoji frequency: {str(e)}")
             return 0.1
 
     def _calculate_vocabulary_complexity(self, text: str) -> float:
-        """Calculate vocabulary complexity.
+            """Calculate vocabulary complexity.
 
         Args:
             text: Text to analyze
@@ -343,7 +341,7 @@ LOGGER.error(f"Error calculating emoji frequency: {str(e)}")
             Complexity score (0.0 = simple, 1.0 = jargon-heavy)
         """
         try:
-            words = text.lower().split()
+            WORDS = text.lower().split()
             if not words:
                 return 0.5
 
@@ -355,19 +353,19 @@ LOGGER.error(f"Error calculating emoji frequency: {str(e)}")
             complex_ratio = complex_words / len(words)
 
             # Combine metrics
-            complexity = (avg_word_length / 10 * 0.4) + (complex_ratio * 0.6)
+            COMPLEXITY = (avg_word_length / 10 * 0.4) + (complex_ratio * 0.6)
 
             return max(0.0, min(1.0, complexity))
 
         except Exception as e:
-LOGGER.error(f"Error calculating vocabulary complexity: {str(e)}")
+            logger.error(f"Error calculating vocabulary complexity: {str(e)}")
             return 0.5
 
 class ToneAdapter:
     """Adapts messages to match target tone profile."""
 
     def __init__(self):
-        """Initialize the tone adapter."""
+            """Initialize the tone adapter."""
         # Adaptation rules for different tones
         self.adaptation_rules = {
             ToneType.DIRECT: {
@@ -390,7 +388,8 @@ class ToneAdapter:
                 "emoji_places": ["greeting", "closing"]
             },
             ToneType.ANALYTICAL: {
-                "add_transitions": ["Based on the data,", "The evidence suggests,", """Analysis indicates,"""],
+                "add_transitions": ["Based on the data,", "The evidence suggests,", "Analysis indica
+    tes,"],
                 "require_evidence": True
             },
             ToneType.EMPATHETIC: {
@@ -399,10 +398,10 @@ class ToneAdapter:
             }
         }
 
-        LOGGER.info("Initialized ToneAdapter with adaptation rules")
+        logger.info("Initialized ToneAdapter with adaptation rules")
 
     def adapt_message(self, draft: str, target_profile: StyleProfile) -> str:
-        """Adapt a draft message to match the target tone profile.
+            """Adapt a draft message to match the target tone profile.
 
         Args:
             draft: Original draft message
@@ -413,133 +412,139 @@ class ToneAdapter:
         """
         try:
             if not draft or not isinstance(draft, str):
-                LOGGER.warning("Invalid draft message")
+                logger.warning("Invalid draft message")
                 return draft or ""
 
-            adapted = draft
-            tone = target_profile.primary_tone
+            ADAPTED = draft
+            TONE = target_profile.primary_tone
 
             # Apply tone-specific adaptations
             if tone in self.adaptation_rules:
-                rules = self.adaptation_rules[tone]
+                RULES = self.adaptation_rules[tone]
 
                 # Remove unwanted patterns
                 if "remove_patterns" in rules:
                     for pattern in rules["remove_patterns"]:
-                        adapted = re.sub(pattern, "", adapted, flags=re.IGNORECASE)
+                        ADAPTED = re.sub(pattern, "", adapted, flags=re.IGNORECASE)
 
                 # Apply word replacements
                 if "replacements" in rules:
                     for old, new in rules["replacements"].items():
-                        adapted = re.sub(rf"\b{old}\b", new, adapted, flags=re.IGNORECASE)
+                        ADAPTED = re.sub(rf"\b{old}\b", new, adapted, flags=re.IGNORECASE)
 
                 # Add transitions
                 if "add_transitions" in rules and adapted.count('.') > 1:
-                    sentences = adapted.split('.')
+                    SENTENCES = adapted.split('.')
                     if len(sentences) > 1:
                         # Add transition to first sentence
-                        transition = rules["add_transitions"][0]
-                        sentences[0] = f"{transition} {sentences[0].strip()}"
-                        adapted = '. '.join(sentences)
+                        TRANSITION = rules["add_transitions"][0]
+                        SENTENCES[0] = f"{transition} {sentences[0].strip()}"
+                        ADAPTED = '. '.join(sentences)
 
                 # Adjust sentence length
                 if target_profile.sentence_length_avg < 15:
-                    adapted = self._shorten_sentences(adapted)
+                    ADAPTED = self._shorten_sentences(adapted)
                 elif target_profile.sentence_length_avg > 20:
-                    adapted = self._lengthen_sentences(adapted)
+                    ADAPTED = self._lengthen_sentences(adapted)
 
             # Clean up extra whitespace
-            adapted = re.sub(r'\s+', ' ', adapted).strip()
+            ADAPTED = re.sub(r'\s+', ' ', adapted).strip()
 
-            LOGGER.debug(f"Adapted message for tone: {tone.value}")
+            logger.debug(f"Adapted message for tone: {tone.value}")
             return adapted
 
         except Exception as e:
-LOGGER.error(f"Error adapting message: {str(e)}")
+            logger.error(f"Error adapting message: {str(e)}")
             return draft
 
     def _shorten_sentences(self, text: str) -> str:
-        """Shorten sentences for more direct communication."""
+            """Shorten sentences for more direct communication."""
         try:
-            sentences = re.split(r'[.!?]+', text)
-            shortened = []
+            SENTENCES = re.split(r'[.!?]+', text)
+            SHORTENED = []
 
             for sentence in sentences:
-                sentence_strip = sentence.strip()
-                if not sentence_strip:
+                SENTENCE = sentence.strip()
+                if not sentence:
                     continue
 
-                words = sentence_strip.split()
+                WORDS = sentence.split()
                 if len(words) > 12:
                     # Split long sentences
-                    mid = len(words) // 2
+                    MID = len(words) // 2
                     shortened.append(' '.join(words[:mid]))
                     shortened.append(' '.join(words[mid:]))
                 else:
-                    shortened.append(sentence_strip)
+                    shortened.append(sentence)
 
             return '. '.join(shortened)
         except Exception as e:
-LOGGER.error(f"Error shortening sentences: {str(e)}")
+            logger.error(f"Error shortening sentences: {str(e)}")
             return text
 
     def _lengthen_sentences(self, text: str) -> str:
-        """Lengthen sentences for more analytical communication."""
+            """Lengthen sentences for more analytical communication."""
         try:
             # Add connecting phrases between short sentences
-            connectors = ["which means that", "indicating that", "suggesting that"]
-            sentences = text.split('.')
+            CONNECTORS = ["which means that", "indicating that", "suggesting that"]
+            SENTENCES = text.split('.')
 
             for i in range(len(sentences) - 1):
                 if len(sentences[i].split()) < 8 and len(sentences[i+1].split()) < 8:
-                    connector = connectors[i % len(connectors)]
-                    sentences[i] = f"{sentences[i].strip()} {connector}"
+                    CONNECTOR = connectors[i % len(connectors)]
+                    SENTENCES[I] = f"{sentences[i].strip()} {connector}"
 
             return '. '.join(sentences)
         except Exception as e:
-LOGGER.error(f"Error lengthening sentences: {str(e)}")
+            logger.error(f"Error lengthening sentences: {str(e)}")
             return text
 
 class ToneModel:
     """Main tone model that combines analysis and configuration."""
 
     def __init__(self):
-        """Initialize the tone model."""
-        self.analyzer = ToneAnalyzer()
-        self.adapter = ToneAdapter()
+            """Initialize the tone model."""
+        SELF.ANALYZER = ToneAnalyzer()
+        SELF.ADAPTER = ToneAdapter()
 
         # Predefined configurations for each tone
         self.config_templates = {
             ToneType.AUTHORITATIVE: GenerationConfig(
-                system_prompt_fragment="""Use confident, expert language. Lead with insights. Be decisive and clear.""",
+                system_prompt_fragment="Use confident, expert language. Lead with insights. Be decis
+    ive and clear.",
                 temperature_setting=0.4,
                 banned_phrases=["maybe", "perhaps", "might", "could", "I think"],
                 preferred_transitions=["Therefore", "Consequently", "Based on"],
                 max_sentence_length=20
             ),
             ToneType.EMPATHETIC: GenerationConfig(
-                system_prompt_fragment="""Use supportive, understanding language. Focus on people and values. Show genuine care.""",
+                system_prompt_fragment="Use supportive, understanding language. Focus on people and
+    values. Show genuine care.",
                 temperature_setting=0.6,
                 banned_phrases=["must", "require", "mandatory", "failure"],
-                preferred_transitions=["Understanding that", "Recognizing that", """Appreciating that"""],
+                preferred_transitions=["Understanding that", "Recognizing that", "Appreciating that"
+    ],
                 max_sentence_length=18
             ),
             ToneType.ANALYTICAL: GenerationConfig(
-                system_prompt_fragment="""Use data-driven, logical language. Provide evidence and reasoning. Be thorough.""",
+                system_prompt_fragment="Use data-driven, logical language. Provide evidence and reas
+    oning. Be thorough.",
                 temperature_setting=0.3,
                 banned_phrases=["feel", "believe", "intuition", "gut"],
                 preferred_transitions=["According to", "Based on", "Analysis shows"],
                 max_sentence_length=25
             ),
             ToneType.ENTHUSIASTIC: GenerationConfig(
-                system_prompt_fragment="""Use energetic, positive language. Express excitement and possibility. Be engaging.""",
+                system_prompt_fragment="Use energetic, positive language. Express excitement and pos
+    sibility. Be engaging.",
                 temperature_setting=0.7,
                 banned_phrases=["problem", "issue", "challenge", "difficult"],
                 preferred_transitions=["Excited to", "Thrilled about", "What's great is"],
                 max_sentence_length=15
             ),
             ToneType.DIRECT: GenerationConfig(
-                system_prompt_fragment="""Use concise, action-oriented language. Be clear and specific. No fluff.""",
+                system_prompt_fragment="Use concise, action-oriented language. Be clear and specific
+    . No fluff.",
                 temperature_setting=0.3,
                 banned_phrases=["delve", "tapestry", "journey", "utilize", "facilitate"],
                 preferred_transitions=["Next", "Then", "After that"],
@@ -547,13 +552,14 @@ class ToneModel:
             )
         }
 
-        LOGGER.info("Initialized ToneModel with all components")
+        logger.info("Initialized ToneModel with all components")
 
+        """Docstring."""
     def analyze_and_configure(self,
         content_samples: List[str],
         archetype: Optional[str] = None) -> Tuple[StyleProfile,
         GenerationConfig]:
-        """Analyze content and generate configuration.
+            """Analyze content and generate configuration.
 
         Args:
             content_samples: Content samples to analyze
@@ -564,10 +570,10 @@ class ToneModel:
         """
         try:
             # Analyze style
-            profile = self.analyzer.analyze_style(content_samples)
+            PROFILE = self.analyzer.analyze_style(content_samples)
 
             # Get base configuration
-            config = self.config_templates.get(profile.primary_tone,
+            CONFIG = self.config_templates.get(profile.primary_tone,
                 self.config_templates[ToneType.AUTHORITATIVE])
 
             # Adjust based on formality
@@ -578,20 +584,21 @@ class ToneModel:
 
             # Adjust for archetype if provided
             if archetype:
-                config = self._adjust_for_archetype(config, archetype)
+                CONFIG = self._adjust_for_archetype(config, archetype)
 
-            LOGGER.info(f"Generated config for tone {profile.primary_tone.value} with temperature {config.temperature_setting}")
+            logger.info(f"Generated config for tone {profile.primary_tone.value} with temperature {c
+    onfig.temperature_setting}")
 
             return profile, config
 
         except Exception as e:
-LOGGER.error(f"Error in analyze_and_configure: {str(e)}")
+            logger.error(f"Error in analyze_and_configure: {str(e)}")
             # Return safe defaults
-            return self.analyzer._get_neutral_profile(), \
+            return self.analyzer._get_neutral_profile(),
                 self.config_templates[ToneType.AUTHORITATIVE]
 
     def _adjust_for_archetype(self, config: GenerationConfig, archetype: str) -> GenerationConfig:
-        """Adjust configuration based on recipient archetype.
+            """Adjust configuration based on recipient archetype.
 
         Args:
             config: Base configuration
@@ -621,7 +628,7 @@ LOGGER.error(f"Error in analyze_and_configure: {str(e)}")
             return config
 
         except Exception as e:
-LOGGER.error(f"Error adjusting for archetype: {str(e)}")
+            logger.error(f"Error adjusting for archetype: {str(e)}")
             return config
 
 # Factory functions for easy instantiation
@@ -631,11 +638,10 @@ def create_tone_model() -> ToneModel:
 
 def analyze_tone(content_samples: List[str]) -> StyleProfile:
     """Quickly analyze tone from content samples."""
-    analyzer = ToneAnalyzer()
+    ANALYZER = ToneAnalyzer()
     return analyzer.analyze_style(content_samples)
 
 def adapt_to_tone(draft: str, target_profile: StyleProfile) -> str:
     """Quickly adapt a message to a target tone."""
-    adapter = ToneAdapter()
+    ADAPTER = ToneAdapter()
     return adapter.adapt_message(draft, target_profile)
-

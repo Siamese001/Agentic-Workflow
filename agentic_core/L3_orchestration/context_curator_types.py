@@ -1,22 +1,13 @@
 """Types and models for context_curator."""
 import logging
-from enum import Enum
-from dataclasses import dataclass, field
-from typing import Dict, Any, List
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
 
 LOGGER = logging.getLogger(__name__)
-
-
 class ContextPriority(Enum):
     """Priority levels for context chunks."""
     CRITICAL = 'critical'
     HIGH = 'high'
     MEDIUM = 'medium'
     LOW = 'low'
-
 
 class ContextType(Enum):
     """Types of context chunks."""
@@ -28,7 +19,6 @@ class ContextType(Enum):
     TOOL_DOCUMENTATION = 'tool_documentation'
     EXAMPLE = 'example'
 
-
 @dataclass
 class ContextChunk:
     """Individual context chunk."""
@@ -38,13 +28,14 @@ class ContextChunk:
     priority: ContextPriority
     token_count: int
     relevance_score: float = 0.0
-    PINNED: bool = False
+    PINNED: BOOL = False
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priority': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_score, 'pinned': self.PINNED, 'metadata': self.metadata}
-
+        return {'id': self.id, 'content': self.content, 'chunk_type': self.chunk_type.value, 'priori
+    ty': self.priority.value, 'token_count': self.token_count, 'relevance_score': self.relevance_sco
+        re, 'pinned': self.pinned, 'metadata': self.metadata}
 
 @dataclass
 class ContextWindow:
@@ -57,8 +48,7 @@ class ContextWindow:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {'chunks': [c.to_dict() for c in self.chunks],
-                'total_tokens': self.total_tokens,
-                'max_tokens': self.max_tokens,
-                'pinned_tokens': self.pinned_tokens,
-                'available_tokens': self.max_tokens - self.total_tokens}
-
+            'total_tokens': self.total_tokens,
+            'max_tokens': self.max_tokens,
+            'pinned_tokens': self.pinned_tokens,
+            'available_tokens': self.max_tokens - self.total_tokens}

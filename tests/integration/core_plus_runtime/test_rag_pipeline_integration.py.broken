@@ -7,15 +7,10 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
-
-
 # Import actual RAG components when available
 try:
 except ImportError:
-    pass
-RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
-
+    RAGProvider = ProviderRegistry = CompanyResearchExecutor = Mock
 
 class TestRAGPipelineIntegration:
     """Test RAG pipeline integration contracts"""
@@ -294,8 +289,7 @@ class TestRAGPipelineIntegration:
                     assert result["error"]["type"] in ["invalid_query", "empty_query", "too_long"]
 
             except (ValueError, TypeError):
-    pass
-# Expected for invalid inputs
+                # Expected for invalid inputs
                 ...
 
     def test_rag_deterministic_behavior_contract(self):
@@ -324,4 +318,3 @@ class TestRAGPipelineIntegration:
             for i, (doc1, doc2) in enumerate(zip(result1["results"], result2["results"])):
                 assert doc1["doc_id"] == doc2["doc_id"]
                 assert abs(doc1["score"] - doc2["score"]) < 0.01  # Allow small floating point di...
-

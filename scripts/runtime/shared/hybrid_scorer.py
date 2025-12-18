@@ -7,43 +7,34 @@ alignment and hero content prioritization.
 
 import logging
 import re
-from typing import Dict, Any, Optional, List
-
-from pydantic import BaseModel, Field, validator # Added pydantic imports
 
 LOGGER = logging.getLogger(__name__)
-
 
 class HybridScoreResult(BaseModel):
     """Result of hybrid scoring with component scores."""
 
     doc_id: str = Field(..., description="Document identifier")
-    final_score: float = Field(..., ge=0.0, le=1.0,
-                               description="Final combined score")
-    dense_score: float = Field(..., ge=0.0, le=1.0,
-                               description="Dense (vector) score")
-    sparse_score: float = Field(..., ge=0.0, le=1.0,
-                                description="Sparse (BM25) score, normalized")
-    metadata_boost: float = Field(..., ge=0.0, le=1.0,
-                                  description="Context/industry boost applied")
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict, description="Document metadata")
+    final_score: float = Field(..., ge=0.0, le=1.0, description="Final combined score")
+    dense_score: float = Field(..., ge=0.0, le=1.0, description="Dense (vector) score")
+    sparse_score: float = Field(..., ge=0.0, le=1.0, description="Sparse (BM25) score, normalized")
+    metadata_boost: float = Field(..., ge=0.0, le=1.0, description="Context/industry boost applied")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Document metadata")
 
     @validator('sparse_score', pre=True)
     def validate_sparse_score(cls, v):
-        """Ensure sparse score is properly normalized."""
+            """Ensure sparse score is properly normalized."""
         if isinstance(v, (int, float)):
             return max(0.0, min(1.0, v))
         return v
 
     @property
     def is_boosted(self) -> bool:
-        """Check if result received a boost."""
+            """Check if result received a boost."""
         return self.metadata_boost > 0
 
     @property
     def score_breakdown(self) -> Dict[str, float]:
-        """Get breakdown of score components."""
+            """Get breakdown of score components."""
         return {
             "dense": self.dense_score,
             "sparse": self.sparse_score,
@@ -66,7 +57,7 @@ class HybridScorer:
         max_score: float = 1.0,
         dynamic_alpha: bool = True
     ):
-        """Initialize the hybrid scorer.
+            """Initialize the hybrid scorer.
 
         Args:
             alpha: Weight for dense (vector) scores vs sparse (0.0-1.0)
@@ -77,7 +68,7 @@ class HybridScorer:
             dynamic_alpha: Whether to dynamically adjust alpha based on query
         """
         # Set alpha (will be dynamic if None and dynamic_alpha=True)
-        self.alpha = max(0.0, min(1.0, alpha)) if alpha is not None else 0.6
+        SELF.ALPHA = max(0.0, min(1.0, alpha)) if alpha is not None else 0.6
         self.default_alpha = self.alpha
         self.industry_boost = max(0.0, industry_boost)
         self.hero_boost = max(0.0, hero_boost)
@@ -87,11 +78,11 @@ class HybridScorer:
         # Compile regex patterns for entity/technical/concept detection
         self._compile_alpha_patterns()
 
-        LOGGER.info(f"Initialized HybridScorer: alpha={self.alpha} (dynamic={dynamic_alpha}), "
+        logger.info(f"Initialized HybridScorer: alpha={self.alpha} (dynamic={dynamic_alpha}), "
                    f"industry_boost={self.industry_boost}, hero_boost={self.hero_boost}")
 
     def _compile_alpha_patterns(self):
-        """Compile regex patterns for dynamic alpha determination."""
+            """Compile regex patterns for dynamic alpha determination."""
         # Entity Heavy patterns (alpha -> 0.3, more keyword weight)
         self.entity_patterns = [
             re.compile(r'[A-Z0-9]{3,}-[0-9]+'),  # Ticket IDs like ABC-123
@@ -103,7 +94,9 @@ class HybridScorer:
 
         # Technical Specific patterns (alpha -> 0.4, moderate keyword weight)
         self.technical_patterns = [
-            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Redis|Kafka|RabbitMQ)\b',
+            re.compile(r'\b(Python|Java|JavaScript|TypeScript|SQL|NoSQL|MongoDB|PostgreSQL|MySQL|Red
+                is|Kafka|RabbitMQ)\b',
+
                 re.IGNORECASE),
 
             re.compile(r'\b(API|REST|GraphQL|gRPC|SOAP)\b', re.IGNORECASE),
@@ -125,7 +118,7 @@ class HybridScorer:
         ]
 
     def _determine_dynamic_alpha(self, query: str) -> float:
-        """Determine alpha value dynamically based on query characteristics.
+            """Determine alpha value dynamically based on query characteristics.
 
         Args:
             query: Query string to analyze
@@ -139,25 +132,26 @@ class HybridScorer:
         # Check for entity-heavy patterns (favor keyword search)
         for pattern in self.entity_patterns:
             if pattern.search(query):
-                LOGGER.debug(f"Entity pattern detected, using alpha=0.3 for: {query[:50]}...")
+                logger.debug(f"Entity pattern detected, using alpha=0.3 for: {query[:50]}...")
                 return 0.3
 
         # Check for technical-specific patterns (moderate keyword preference)
         for pattern in self.technical_patterns:
             if pattern.search(query):
-                LOGGER.debug(f"Technical pattern detected, using alpha=0.4 for: {query[:50]}...")
+                logger.debug(f"Technical pattern detected, using alpha=0.4 for: {query[:50]}...")
                 return 0.4
 
         # Check for concept/strategy patterns (favor semantic search)
         for pattern in self.concept_patterns:
             if pattern.search(query):
-                LOGGER.debug(f"Concept pattern detected, using alpha=0.8 for: {query[:50]}...")
+                logger.debug(f"Concept pattern detected, using alpha=0.8 for: {query[:50]}...")
                 return 0.8
 
         # Default: slightly vector-biased
-        LOGGER.debug(f"No specific pattern detected, using default alpha=0.6 for: {query[:50]}...")
+        logger.debug(f"No specific pattern detected, using default alpha=0.6 for: {query[:50]}...")
         return 0.6
 
+        """Docstring."""
     def score_documents(
         self,
         dense_results: List[Dict[str, Any]],
@@ -165,7 +159,7 @@ class HybridScorer:
         target_industry: Optional[str] = None,
         query: Optional[str] = None
     ) -> List[HybridScoreResult]:
-        """Score documents using hybrid approach.
+            """Score documents using hybrid approach.
 
         Args:
             dense_results: List of dense (vector) search results
@@ -179,18 +173,18 @@ class HybridScorer:
         try:
             # Determine alpha dynamically if query provided
             if query is not None and self.dynamic_alpha:
-                self.alpha = self._determine_dynamic_alpha(query)
-                LOGGER.info(f"Using dynamic alpha={self.alpha} for query: {query[:50]}...")
+                SELF.ALPHA = self._determine_dynamic_alpha(query)
+                logger.info(f"Using dynamic alpha={self.alpha} for query: {query[:50]}...")
             else:
-                self.alpha = self.default_alpha
+                SELF.ALPHA = self.default_alpha
 
             # Validate inputs
             if not isinstance(dense_results, list):
-                LOGGER.warning("Invalid dense_results type, using empty list")
+                logger.warning("Invalid dense_results type, using empty list")
                 dense_results = []
 
             if not isinstance(sparse_results, list):
-                LOGGER.warning("Invalid sparse_results type, using empty list")
+                logger.warning("Invalid sparse_results type, using empty list")
                 sparse_results = []
 
             # Normalize sparse scores
@@ -205,17 +199,17 @@ class HybridScorer:
             # Sort by final score
             boosted_results.sort(key=lambda x: x.final_score, reverse=True)
 
-            LOGGER.info(f"Hybrid scoring: {len(dense_results)} dense, "
+            logger.info(f"Hybrid scoring: {len(dense_results)} dense, "
                        f"{len(sparse_results)} sparse, {len(boosted_results)} final")
 
             return boosted_results
 
         except Exception as e:
-LOGGER.error(f"Error in score_documents: {str(e)}")
+            logger.error(f"Error in score_documents: {str(e)}")
             return []
 
     def _normalize_scores(self, sparse_results: List[Dict[str, Any]]) -> Dict[str, float]:
-        """Normalize sparse scores using Min-Max normalization.
+            """Normalize sparse scores using Min-Max normalization.
 
         Args:
             sparse_results: List of sparse results with unnormalized scores
@@ -228,19 +222,19 @@ LOGGER.error(f"Error in score_documents: {str(e)}")
                 return {}
 
             # Extract scores with validation
-            scores = []
+            SCORES = []
             valid_results = []
 
             for result in sparse_results:
                 try:
                     doc_id = result.get("doc_id")
-                    score = float(result.get("score", 0.0))
+                    SCORE = float(result.get("score", 0.0))
 
                     if doc_id is not None:
                         scores.append(score)
                         valid_results.append((doc_id, score))
                 except (ValueError, TypeError) as e:
-LOGGER.warning(f"Invalid score in sparse results: {e}")
+                    logger.warning(f"Invalid score in sparse results: {e}")
                     continue
 
             if not scores:
@@ -255,7 +249,7 @@ LOGGER.warning(f"Invalid score in sparse results: {e}")
                 return {doc_id: 1.0 for doc_id, _ in valid_results}
 
             # Apply Min-Max normalization
-            normalized = {}
+            NORMALIZED = {}
             score_range = max_score - min_score
 
             for doc_id, raw_score in valid_results:
@@ -263,21 +257,22 @@ LOGGER.warning(f"Invalid score in sparse results: {e}")
                 normalized_score = (raw_score - min_score) / score_range
                 normalized[doc_id] = max(0.0, min(1.0, normalized_score))
 
-            LOGGER.debug(f"Normalized sparse scores: min={min_score:.3f}, "
-                        f"max={max_score:.3f}, range={score_range:.3f}")
+            logger.debug(f"Normalized sparse scores: min={min_score:.3f}, "
+                        F"MAX={max_score:.3f}, range={score_range:.3f}")
 
             return normalized
 
         except Exception as e:
-LOGGER.error(f"Error normalizing scores: {str(e)}")
+            logger.error(f"Error normalizing scores: {str(e)}")
             return {}
 
+        """Docstring."""
     def compute_hybrid(
         self,
         dense_results: List[Dict[str, Any]],
         normalized_sparse: Dict[str, float]
     ) -> List[HybridScoreResult]:
-        """Combine dense and sparse scores using weighted sum.
+            """Combine dense and sparse scores using weighted sum.
 
         Args:
             dense_results: List of dense results
@@ -298,7 +293,7 @@ LOGGER.error(f"Error normalizing scores: {str(e)}")
                     # Extract and validate data
                     doc_id = dense_result.get("doc_id")
                     if doc_id is None:
-                        LOGGER.warning(f"Dense result at index {idx} missing doc_id")
+                        logger.warning(f"Dense result at index {idx} missing doc_id")
                         continue
 
                     dense_score = float(dense_result.get("score", 0.0))
@@ -312,19 +307,19 @@ LOGGER.error(f"Error normalizing scores: {str(e)}")
                     base_score = max(0.0, min(1.0, base_score))  # Clamp to [0,1]
 
                     # Create hybrid result
-                    hybrid = HybridScoreResult(
+                    HYBRID = HybridScoreResult(
                         doc_id=doc_id,
                         final_score=base_score,
                         dense_score=dense_score,
                         sparse_score=sparse_score,
                         metadata_boost=0.0,
-                        metadata=dense_result.get("metadata", {})
+                        METADATA=dense_result.get("metadata", {})
                     )
 
                     hybrid_results.append(hybrid)
 
                 except (ValueError, TypeError) as e:
-LOGGER.warning(f"Error processing dense result at index {idx}: {e}")
+                    logger.warning(f"Error processing dense result at index {idx}: {e}")
                     continue
 
             # Also include documents that only appear in sparse results
@@ -338,27 +333,27 @@ LOGGER.warning(f"Error processing dense result at index {idx}: {e}")
                     base_score = sparse_score * (1 - self.alpha)
                     base_score = max(0.0, min(1.0, base_score))
 
-                    hybrid = HybridScoreResult(
+                    HYBRID = HybridScoreResult(
                         doc_id=doc_id,
                         final_score=base_score,
                         dense_score=0.0,
                         sparse_score=sparse_score,
                         metadata_boost=0.0,
-                        metadata={}
+                        METADATA={}
                     )
 
                     hybrid_results.append(hybrid)
 
                 except Exception as e:
-LOGGER.warning(f"Error processing sparse-only doc {doc_id}: {e}")
+                    logger.warning(f"Error processing sparse-only doc {doc_id}: {e}")
                     continue
 
-            LOGGER.debug(f"Combined scores: {len(hybrid_results)} total documents")
+            logger.debug(f"Combined scores: {len(hybrid_results)} total documents")
 
             return hybrid_results
 
         except Exception as e:
-LOGGER.error(f"Error computing hybrid scores: {str(e)}")
+            logger.error(f"Error computing hybrid scores: {str(e)}")
             return []
 
     def _apply_boosts(
@@ -366,7 +361,7 @@ LOGGER.error(f"Error computing hybrid scores: {str(e)}")
         hybrid_results: List[HybridScoreResult],
         target_industry: Optional[str] = None
     ) -> List[HybridScoreResult]:
-        """Apply context boosts to hybrid scores.
+            """Apply context boosts to hybrid scores.
 
         Args:
             hybrid_results: List of hybrid score results
@@ -381,21 +376,22 @@ LOGGER.error(f"Error computing hybrid scores: {str(e)}")
 
             for result in hybrid_results:
                 boost_amount = 0.0
-                metadata = result.metadata
+                METADATA = result.metadata
 
                 # Ensure metadata is a dictionary
                 if not isinstance(metadata, dict):
-                    metadata = {}
+                    METADATA = {}
 
                 # Industry match boost
                 if target_industry and self._matches_industry(metadata, target_industry):
                     boost_amount += self.industry_boost
-                    LOGGER.debug(f"Applied industry boost to {result.doc_id}: +{self.industry_boost}")
+                    logger.debug(f"Applied industry boost to {result.doc_id}: +{self.industry_boost}
+    ")
 
                 # Hero content boost
                 if metadata.get("is_hero_content", False):
                     boost_amount += self.hero_boost
-                    LOGGER.debug(f"Applied hero boost to {result.doc_id}: +{self.hero_boost}")
+                    logger.debug(f"Applied hero boost to {result.doc_id}: +{self.hero_boost}")
 
                 # Apply boost with cap
                 if boost_amount > 0:
@@ -405,16 +401,16 @@ LOGGER.error(f"Error computing hybrid scores: {str(e)}")
 
                 boosted_results.append(result)
 
-            LOGGER.info(f"Applied boosts to {boosted_count}/{len(hybrid_results)} documents")
+            logger.info(f"Applied boosts to {boosted_count}/{len(hybrid_results)} documents")
 
             return boosted_results
 
         except Exception as e:
-LOGGER.error(f"Error applying boosts: {str(e)}")
+            logger.error(f"Error applying boosts: {str(e)}")
             return hybrid_results
 
     def _matches_industry(self, metadata: Dict[str, Any], target_industry: str) -> bool:
-        """Check if document matches target industry.
+            """Check if document matches target industry.
 
         Args:
             metadata: Document metadata
@@ -451,9 +447,9 @@ LOGGER.error(f"Error applying boosts: {str(e)}")
 
             # Check tags for industry mentions
             if "tags" in metadata:
-                tags = metadata["tags"]
+                TAGS = metadata["tags"]
                 if isinstance(tags, str):
-                    tags = [tags]
+                    TAGS = [tags]
 
                 for tag in tags:
                     if isinstance(tag, str) and target_lower in tag.lower():
@@ -461,7 +457,7 @@ LOGGER.error(f"Error applying boosts: {str(e)}")
 
             # Check content for industry keywords
             if "content" in metadata:
-                content = str(metadata["content"]).lower()
+                CONTENT = str(metadata["content"]).lower()
 
                 # Simple keyword matching
                 industry_keywords = {
@@ -480,11 +476,11 @@ LOGGER.error(f"Error applying boosts: {str(e)}")
             return False
 
         except Exception as e:
-LOGGER.error(f"Error checking industry match: {str(e)}")
+            logger.error(f"Error checking industry match: {str(e)}")
             return False
 
     def get_scoring_summary(self, results: List[HybridScoreResult]) -> Dict[str, Any]:
-        """Get summary statistics for scoring results.
+            """Get summary statistics for scoring results.
 
         Args:
             results: List of hybrid score results
@@ -509,12 +505,13 @@ LOGGER.error(f"Error checking industry match: {str(e)}")
                 "score_range": results[0].final_score - results[-1].final_score
             }
         except Exception as e:
-LOGGER.error(f"Error getting scoring summary: {str(e)}")
+            logger.error(f"Error getting scoring summary: {str(e)}")
             return {"error": str(e)}
 
 # Factory function for easy instantiation
+    """Docstring."""
 def create_hybrid_scorer(
-    alpha: float = 0.7,
+    ALPHA: FLOAT = 0.7,
     industry_boost: float = 0.15,
     hero_boost: float = 0.1,
     semantic_weighted: bool = True
@@ -537,6 +534,7 @@ def create_hybrid_scorer(
         return HybridScorer(alpha=0.3, industry_boost=industry_boost, hero_boost=hero_boost)
 
 # Convenience function for quick scoring
+    """Docstring."""
 def score_documents(
     dense_results: List[Dict[str, Any]],
     sparse_results: List[Dict[str, Any]],
@@ -554,10 +552,9 @@ def score_documents(
     Returns:
         List of scored and ranked documents
     """
-    scorer = create_hybrid_scorer(
-        alpha=0.7 if semantic_priority else 0.3,
+    SCORER = create_hybrid_scorer(
+        ALPHA=0.7 if semantic_priority else 0.3,
         semantic_weighted=semantic_priority
     )
 
     return scorer.score_documents(dense_results, sparse_results, target_industry)
-

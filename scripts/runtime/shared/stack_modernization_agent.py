@@ -6,26 +6,19 @@ systems to modern AI architectures.
 """
 
 import logging
-from typing import Any, Dict, List
-
-from pydantic import BaseModel, Field
 
 LOGGER = logging.getLogger(__name__)
-
 
 class LegacyDiagnostic(BaseModel):
     """Diagnostic of legacy technology stack."""
 
-    detected_legacy_tech: List[str] = Field(...,
-                                            description="Legacy technologies detected")
-    implied_pain_points: List[str] = Field(...,
-                                           description="Inferred pain points")
-    modernization_score: float = Field(..., ge=0.0,
-                                       le=1.0, description="Legacy severity score")
+    detected_legacy_tech: List[str] = Field(..., description="Legacy technologies detected")
+    implied_pain_points: List[str] = Field(..., description="Inferred pain points")
+    modernization_score: float = Field(..., ge=0.0, le=1.0, description="Legacy severity score")
 
     @property
     def is_highly_legacy(self) -> bool:
-        """Check if stack is highly legacy."""
+            """Check if stack is highly legacy."""
         return self.modernization_score >= 0.7
 
 class MigrationThesis(BaseModel):
@@ -37,14 +30,14 @@ class MigrationThesis(BaseModel):
 
     @property
     def is_transformative(self) -> bool:
-        """Check if thesis represents significant transformation."""
+            """Check if thesis represents significant transformation."""
         return len(self.bridge_strategy) > 100
 
 class StackModernizationAgent:
     """Diagnoses legacy stacks and prescribes modernization strategies."""
 
     def __init__(self):
-        """Initialize the stack modernization agent."""
+            """Initialize the stack modernization agent."""
         # Legacy technology markers
         self.legacy_markers = {
             "infrastructure": {
@@ -109,33 +102,40 @@ class StackModernizationAgent:
             "search_migration": {
                 "legacy": ["elasticsearch", "solr", "keyword search"],
                 "modern": "Vector-based Semantic RAG",
-                "thesis": "Moving from keyword matching to Semantic RAG to improve retrieval accuracy by 40%",
-                "strategy": "Implement Strangler Fig Pattern: gradually replace keyword endpoints with vector search while maintaining 100% uptime"
+                "thesis": "Moving from keyword matching to Semantic RAG to improve retrieval accurac
+    y by 40%",
+                "strategy": "Implement Strangler Fig Pattern: gradually replace keyword endpoints wi
+    th vector search while maintaining 100% uptime"
             },
             "monolith_decomposition": {
                 "legacy": ["monolith", "java 8", "soap"],
                 "modern": "Event-Driven Agentic Architecture",
-                "thesis": "Decoupling complex workflows into an Event-Driven Agentic Architecture for scalability",
-                "strategy": "Apply Parallel Run pattern: run new agent system alongside monolith, gradually migrating workflows"
+                "thesis": "Decoupling complex workflows into an Event-Driven Agentic Architecture fo
+    r scalability",
+                "strategy": "Apply Parallel Run pattern: run new agent system alongside monolith, gr
+    adually migrating workflows"
             },
             "data_modernization": {
                 "legacy": ["oracle", "data warehouse", "etl"],
                 "modern": "Knowledge Graph + Lakehouse",
                 "thesis": "Unlocking siloed data by overlaying a Knowledge Graph for AI context",
-                "strategy": "Implement CDC (Change Data Capture) for real-time sync while maintaining warehouse for reporting"
+                "strategy": "Implement CDC (Change Data Capture) for real-time sync while maintainin
+    g warehouse for reporting"
             },
             "cloud_migration": {
                 "legacy": ["on-prem", "data center", "physical servers"],
                 "modern": "Cloud-Native Microservices",
-                "thesis": "Transitioning to cloud-native architecture for elastic scalability and reduced TCO",
-                "strategy": "Use Lift-and-Shift followed by modernization, with parallel environments to ensure zero downtime"
+                "thesis": "Transitioning to cloud-native architecture for elastic scalability and re
+    duced TCO",
+                "strategy": "Use Lift-and-Shift followed by modernization, with parallel environment
+    s to ensure zero downtime"
             }
         }
 
-        LOGGER.info("Initialized StackModernizationAgent")
+        logger.info("Initialized StackModernizationAgent")
 
     def diagnose_stack(self, job_description: str) -> LegacyDiagnostic:
-        """Diagnose legacy technology signals in job description.
+            """Diagnose legacy technology signals in job description.
 
         Args:
             job_description: Job description text
@@ -156,24 +156,24 @@ class StackModernizationAgent:
                         all_pain_points.extend(self.pain_point_mappings.get(category, []))
 
             # Calculate modernization score
-            score = min(1.0, len(detected_tech) * 0.2)
+            SCORE = min(1.0, len(detected_tech) * 0.2)
 
             # Remove duplicates while preserving order
             unique_tech = list(dict.fromkeys(detected_tech))
             unique_pain = list(dict.fromkeys(all_pain_points))
 
-            diagnostic = LegacyDiagnostic(
+            DIAGNOSTIC = LegacyDiagnostic(
                 detected_legacy_tech=unique_tech,
                 implied_pain_points=unique_pain[:5],  # Limit to top 5
                 modernization_score=score
             )
 
-            LOGGER.info(f"Diagnosed legacy stack with score {score:.2f}")
+            logger.info(f"Diagnosed legacy stack with score {score:.2f}")
 
             return diagnostic
 
         except Exception as e:
-LOGGER.error(f"Error diagnosing stack: {str(e)}")
+            logger.error(f"Error diagnosing stack: {str(e)}")
             return LegacyDiagnostic(
                 detected_legacy_tech=[],
                 implied_pain_points=[],
@@ -181,7 +181,7 @@ LOGGER.error(f"Error diagnosing stack: {str(e)}")
             )
 
     def generate_thesis(self, diagnostic: LegacyDiagnostic) -> MigrationThesis:
-        """Generate migration thesis based on diagnostic.
+            """Generate migration thesis based on diagnostic.
 
         Args:
             diagnostic: Legacy diagnostic
@@ -193,7 +193,8 @@ LOGGER.error(f"Error diagnosing stack: {str(e)}")
             if not diagnostic.detected_legacy_tech:
                 # No legacy detected, return general thesis
                 return MigrationThesis(
-                    current_state_diagnosis="Modern technology stack with opportunities for optimization",
+                    current_state_diagnosis="Modern technology stack with opportunities for optimiza
+    tion",
                     target_state_vision="Enhanced AI capabilities with advanced architectures",
                     bridge_strategy="Incremental improvements and strategic AI integration"
                 )
@@ -207,13 +208,16 @@ LOGGER.error(f"Error diagnosing stack: {str(e)}")
 
             # Default to general modernization
             return MigrationThesis(
-                current_state_diagnosis=f"Mature infrastructure with {', '.join(diagnostic.detected_legacy_tech[:2])}",
+                current_state_diagnosis=f"Mature infrastructure with {',
+                    '.join(diagnostic.detected_legacy_tech[:2])}",
+
                 target_state_vision="Modern, cloud-native AI architecture",
-                bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business continuity"
+                bridge_strategy="Gradual migration using Strangler Fig Pattern to ensure business co
+    ntinuity"
             )
 
         except Exception as e:
-LOGGER.error(f"Error generating thesis: {str(e)}")
+            logger.error(f"Error generating thesis: {str(e)}")
             return MigrationThesis(
                 current_state_diagnosis="Legacy technology stack",
                 target_state_vision="Modern architecture",
@@ -221,7 +225,7 @@ LOGGER.error(f"Error generating thesis: {str(e)}")
             )
 
     def generate_migration_hook(self, thesis: MigrationThesis, legacy_tech: str) -> str:
-        """Generate targeted opening hook for applications.
+            """Generate targeted opening hook for applications.
 
         Args:
             thesis: Migration thesis
@@ -232,23 +236,25 @@ LOGGER.error(f"Error generating thesis: {str(e)}")
         """
         try:
             # Extract modern tech from thesis
-            modern_tech = thesis.target_state_vision.split(",")[0] if thesis.target_state_vision else "modern architecture"
+            modern_tech = thesis.target_state_vision.split(",
+                ")[0] if thesis.target_state_vision else "modern architecture"
 
-            hook = (
+            HOOK = (
                 f"I noticed you are transitioning from {legacy_tech}. "
                 f"At [Previous Role], I led the architecture de-risking for this exact migration, "
                 f"ensuring zero downtime while modernizing to {modern_tech} "
-                f"using {thesis.bridge_strategy.split(',')[0] if thesis.bridge_strategy else 'industry best practices'}."
+                f"using {thesis.bridge_strategy.split(',
+                    ')[0] if thesis.bridge_strategy else 'industry best practices'}."
             )
 
             return hook
 
         except Exception as e:
-LOGGER.error(f"Error generating migration hook: {str(e)}")
+            logger.error(f"Error generating migration hook: {str(e)}")
             return "I have experience leading successful technology modernizations."
 
     def rewrite_resume_summary(self, thesis: MigrationThesis) -> str:
-        """Rewrite resume summary to highlight transformation expertise.
+            """Rewrite resume summary to highlight transformation expertise.
 
         Args:
             thesis: Migration thesis to incorporate
@@ -258,14 +264,16 @@ LOGGER.error(f"Error generating migration hook: {str(e)}")
         """
         try:
             if thesis.is_transformative:
-                summary = (
+                SUMMARY = (
                     f"Transformation Architect specializing in legacy-to-modern migrations. "
-                    f"Proven track record of {thesis.bridge_strategy.split('.')[0] if thesis.bridge_strategy else 'safe modernization'} "
-                    f"while maintaining 100% business continuity. Expert in bridging established systems "
+                    f"Proven track record of {thesis.bridge_strategy.split('.')[0] if thesis.bridge_
+    strategy else 'safe modernization'} "
+                    f"while maintaining 100% business continuity. Expert in bridging established sys
+    tems "
                     f"to cutting-edge AI architectures."
                 )
             else:
-                summary = (
+                SUMMARY = (
                     "Senior AI Engineer with experience in system optimization and "
                     "strategic technology improvements."
                 )
@@ -273,7 +281,7 @@ LOGGER.error(f"Error generating migration hook: {str(e)}")
             return summary
 
         except Exception as e:
-LOGGER.error(f"Error rewriting resume summary: {str(e)}")
+            logger.error(f"Error rewriting resume summary: {str(e)}")
             return "Senior AI Engineer with modernization experience"
 
     def _create_thesis_from_playbook(
@@ -281,7 +289,7 @@ LOGGER.error(f"Error rewriting resume summary: {str(e)}")
         playbook: Dict[str, str],
         diagnostic: LegacyDiagnostic
     ) -> MigrationThesis:
-        """Create thesis from transformation playbook.
+            """Create thesis from transformation playbook.
 
         Args:
             playbook: Transformation playbook
@@ -292,16 +300,17 @@ LOGGER.error(f"Error rewriting resume summary: {str(e)}")
         """
         try:
             # Respectful current state diagnosis
-            current = (
-                f"Mature infrastructure with established {', '.join(diagnostic.detected_legacy_tech[:2])}. "
+            CURRENT = (
+                f"Mature infrastructure with established {',
+                    '.join(diagnostic.detected_legacy_tech[:2])}. "
                 f"Experiencing {', '.join(diagnostic.implied_pain_points[:2])}."
             )
 
             # Target vision from playbook
-            target = f"Modern {playbook['modern']} architecture"
+            TARGET = f"Modern {playbook['modern']} architecture"
 
             # Strategy with safety-first approach
-            strategy = playbook["strategy"]
+            STRATEGY = playbook["strategy"]
 
             return MigrationThesis(
                 current_state_diagnosis=current,
@@ -310,7 +319,7 @@ LOGGER.error(f"Error rewriting resume summary: {str(e)}")
             )
 
         except Exception as e:
-LOGGER.error(f"Error creating thesis from playbook: {str(e)}")
+            logger.error(f"Error creating thesis from playbook: {str(e)}")
             raise
 
 # Factory function for easy instantiation
@@ -332,9 +341,9 @@ def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
     Returns:
         Analysis results
     """
-    agent = create_stack_modernization_agent()
-    diagnostic = agent.diagnose_stack(job_description)
-    thesis = agent.generate_thesis(diagnostic)
+    AGENT = create_stack_modernization_agent()
+    DIAGNOSTIC = agent.diagnose_stack(job_description)
+    THESIS = agent.generate_thesis(diagnostic)
 
     return {
         "legacy_score": diagnostic.modernization_score,
@@ -342,4 +351,3 @@ def analyze_modernization_opportunity(job_description: str) -> Dict[str, Any]:
         "thesis": thesis.dict(),
         "has_opportunity": diagnostic.is_highly_legacy
     }
-

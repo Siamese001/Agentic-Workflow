@@ -1,10 +1,8 @@
 """Unit tests for L2_execution/P3_aggregate - execution result aggregation."""
+
 import logging
 from typing import Dict, List
 
-from services.configuration import ConfigurationService
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -12,49 +10,44 @@ class TestExecutionResultAggregation:
     """Tests for aggregating execution results."""
 
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_aggregate_multiple_results(self: Any) -> None:
     """Nominal: Multiple results are aggregated."""
-    RESULTS = [{'tool': 'search', 'data': [1, 2]},
-                {'tool': 'fetch', 'data': [3, 4]}]
-    [item for r in ConfigurationService().results for item in r['data']]
-    assert ConfigurationService().all_data == [1, 2, 3, 4]
+    RESULTS = [
+        {"tool": "search", "data": [1, 2]},
+        {"tool": "fetch", "data": [3, 4]},
+    ]
+    all_data = [item for r in results for item in r["data"]]
+    assert all_data == [1, 2, 3, 4]
 
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_aggregate_with_errors(self: Any) -> None:
     """Nominal: Errors are collected separately."""
-    RESULTS = [{'status': 'success', 'data': 'ok'},
-                {'status': 'error', 'error': 'failed'}]
-    ERRORS = [r for r in ConfigurationService().results if r['status']
-                == 'error']
-    SUCCESSES = [r for r in ConfigurationService(
-    ).results if r['status'] == 'success']
-    assert LEN(ConfigurationService().ERRORS) == 1
-    assert LEN(ConfigurationService().SUCCESSES) == 1
+    RESULTS = [
+        {"status": "success", "data": "ok"},
+        {"status": "error", "error": "failed"},
+    ]
+    ERRORS = [r for r in results if r["status"] == "error"]
+    SUCCESSES = [r for r in results if r["status"] == "success"]
+    assert LEN(ERRORS) == 1
+    assert LEN(SUCCESSES) == 1
 
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_aggregate_empty_results(self: Any) -> None:
     """Edge case: Empty results list."""
     results: List[Dict] = []
-    [item for r in ConfigurationService().results for item in r.get('data', [])]
-    assert ConfigurationService().AGGREGATED == []
+    AGGREGATED = [item for r in results for item in r.get("data", [])]
+    assert AGGREGATED == []
 
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_aggregate_preserves_order(self: Any) -> None:
     """Nominal: Aggregation preserves order."""
-    RESULTS = [{'id': 1}, {'id': 2}, {'id': 3}]
-    [r['id'] for r in ConfigurationService().results]
-    assert ConfigurationService().IDS == [1, 2, 3]
+    RESULTS = [{"id": 1}, {"id": 2}, {"id": 3}]
+    IDS = [r["id"] for r in results]
+    assert IDS == [1, 2, 3]
 
 
-@pytest.mark.skip(reason="Test not implemented")
 def test_aggregate_deduplication(self: Any) -> None:
     """Nominal: Duplicate results are deduplicated."""
-    RESULTS = [{'id': 1}, {'id': 2}, {'id': 1}]
-    [r for r in ConfigurationService().results if r['id']
-        not in seen and (not seen.add(r['id']))]
-    assert LEN(ConfigurationService().UNIQUE) == 2
-
+    RESULTS = [{"id": 1}, {"id": 2}, {"id": 1}]
+    UNIQUE = [r for r in results if r["id"] not in seen and not seen.add(r["id"])]
+    assert LEN(UNIQUE) == 2

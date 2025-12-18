@@ -22,13 +22,9 @@ import sys
 import time
 import traceback
 from typing import Any, Dict, List, Optional, Union
-from enum import Enum
-from dataclasses import dataclass, field
-
 
 # Configure module-specific logger
 LOGGER = logging.getLogger(__name__)
-
 
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
@@ -37,7 +33,6 @@ class ExecutionStatus(Enum):
     SUCCESS = "success"
     FAILED = "failed"
     CANCELLED = "cancelled"
-
 
 @dataclass
 class ExecutionContext:
@@ -52,14 +47,14 @@ class ExecutionContext:
 
     def start(self) -> None:
         """Mark execution as started."""
-        self.status = ExecutionStatus.RUNNING
+        SELF.STATUS = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        LOGGER.info(f"Execution started for operation: {self.operation_id}")
+        logger.info(f"Execution started for operation: {self.operation_id}")
 
     def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
-        self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
+        SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
 
         if error:
             self.error_details = {
@@ -67,11 +62,10 @@ class ExecutionContext:
                 "message": str(error),
                 "traceback": traceback.format_exc()
             }
-            LOGGER.error(f"Execution failed: {error}")
+            logger.error(f"Execution failed: {error}")
         else:
-            LOGGER.info(f"""Execution completed successfully in {self.end_time - self.start_time: .2f}s
-                        """)
-
+            logger.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s
+    ")
 
 @dataclass
 class ProcessingResult:
@@ -81,7 +75,6 @@ class ProcessingResult:
     error_message: Optional[str] = None
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
-
 
 class ContentEmbeddingCompareMeaning:
     """
@@ -93,17 +86,16 @@ class ContentEmbeddingCompareMeaning:
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """Initialize with optional configuration."""
-        self.config = config or {}
+        SELF.CONFIG = config or {}
         self._setup_logging()
         self._validate_config()
 
     def _setup_logging(self) -> None:
         """Configure module-specific logging."""
-        self.logger = logging.getLogger(
-            f"{__name__}.{self.__class__.__name__}")
+        SELF.LOGGER = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         if not self.logger.handlers:
-            executor = logging.StreamHandler(sys.stdout)
-            formatter = logging.Formatter(
+            EXECUTOR = logging.StreamHandler(sys.stdout)
+            FORMATTER = logging.Formatter(
                 '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
             )
             executor.setFormatter(formatter)
@@ -113,11 +105,12 @@ class ContentEmbeddingCompareMeaning:
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ["enabled", "mode", "timeout"]
-        missing = [key for key in required_keys if key not in self.config]
+        MISSING = [key for key in required_keys if key not in self.config]
         if missing:
             raise ValueError(f"Missing required config keys: {missing}")
 
     def process(self,
+        """Docstring."""
                 payload: Union[str, int, float, bool, List, Dict],
                 context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
         """
@@ -132,7 +125,7 @@ class ContentEmbeddingCompareMeaning:
         """
         exec_ctx = ExecutionContext(
             operation_id=self.config.get("operation_id", "default"),
-            metadata=context or {}
+            METADATA=context or {}
         )
 
         try:
@@ -143,13 +136,13 @@ class ContentEmbeddingCompareMeaning:
                 raise ValueError("Payload cannot be None")
 
             # Execute main logic
-            result = self._execute_core(payload, context)
+            RESULT = self._execute_core(payload, context)
 
             exec_ctx.complete(success=True)
 
             return ProcessingResult(
-                success=True,
-                data=result,
+                SUCCESS=True,
+                DATA=result,
                 execution_context=exec_ctx,
                 additional_info={
                     "processed_at": time.time(),
@@ -158,21 +151,20 @@ class ContentEmbeddingCompareMeaning:
             )
 
         except Exception as e:
-exec_ctx.complete(success=False, error=e)
+            exec_ctx.complete(success=False, error=e)
 
             return ProcessingResult(
-                success=False,
+                SUCCESS=False,
                 error_message=str(e),
                 execution_context=exec_ctx
             )
 
     def _execute_core(self,
-                      data: Union[str, int, float, bool, List, Dict],
-                      context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
+                     data: Union[str, int, float, bool, List, Dict],
+                     context: Optional[Dict[str, Any]]) -> Union[str, int, float, bool, List, Dict]:
         """Core execution logic to be overridden by subclasses."""
         # Default implementation just returns the data
         return data
-
 
 # Module-level exports and utilities
 __all__ = [
@@ -184,21 +176,17 @@ __all__ = [
     "validate_module_config"
 ]
 
-
 def create_processor(config: Optional[Dict[str, Any]] = None) -> ContentEmbeddingCompareMeaning:
     """module function to create configured executor instance."""
     return ContentEmbeddingCompareMeaning(config or {})
 
-
 def validate_module_config(config: Dict[str, Any]) -> bool:
     """Validate module configuration dictionary."""
     try:
-        executor = create_processor(config)
+        EXECUTOR = create_processor(config)
         return True
     except Exception:
-return False
-
+        return False
 
 # Module initialization
-LOGGER.info(f"{__name__} module loaded successfully")
-
+logger.info(f"{__name__} module loaded successfully")

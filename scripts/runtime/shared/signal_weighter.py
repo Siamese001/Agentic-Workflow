@@ -6,35 +6,29 @@ outreach and resume generation.
 """
 
 import logging
-from typing import Dict, List, Optional, Union
-
-from pydantic import BaseModel, Field, confloat
 
 LOGGER = logging.getLogger(__name__)
-
 
 class SignalWeights(BaseModel):
     """Weight coefficients for different signal types (0.0-1.0)."""
 
     technical_depth: confloat(ge=0.0,
-                             le=1.0) = 0.5  # Weight for code samples,
-                             # stack details,
-                             # architecture
-    # Weight for revenue, % growth, cost savings
-    business_impact: confloat(ge=0.0, le=1.0) = 0.5
+        le=1.0) = 0.5  # Weight for code samples,
+        stack details,
+        architecture
+    business_impact: confloat(ge=0.0, le=1.0) = 0.5  # Weight for revenue, % growth, cost savings
     leadership_scope: confloat(ge=0.0,
-                              le=1.0) = 0.5  # Weight for team size,
-                              # mentorship,
-                              # strategic initiatives
-    # Weight for soft skills, mission alignment
-    cultural_fit: confloat(ge=0.0, le=1.0) = 0.5
+        le=1.0) = 0.5  # Weight for team size,
+        mentorship,
+        strategic initiatives
+    cultural_fit: confloat(ge=0.0, le=1.0) = 0.5  # Weight for soft skills, mission alignment
 
     class Config:
-        """Pydantic configuration."""
+            """Pydantic configuration."""
         validate_assignment = True
 
     def as_dict(self) -> Dict[str, float]:
-        """Convert weights to dictionary."""
+            """Convert weights to dictionary."""
         return {
             "technical_depth": self.technical_depth,
             "business_impact": self.business_impact,
@@ -47,8 +41,8 @@ class WeightingResult(BaseModel):
 
     original_score: confloat(ge=0.0, le=1.0) = Field(..., description="Original relevance score")
     adjusted_score: confloat(ge=0.0,
-                             le=1.0) = Field(...,
-                                             description="Adjusted score after weighting") # Fixed DESCRIPTION typo
+        le=1.0) = Field(...,
+        DESCRIPTION="Adjusted score after weighting")
     weights_applied: SignalWeights = Field(..., description="Weights that were applied")
     signal_type: str = Field(..., description="Type of signal detected")
     adjustment_factor: confloat(ge=0.0, le=1.0) = Field(..., description="Weight factor applied")
@@ -56,12 +50,12 @@ class WeightingResult(BaseModel):
 
     @property
     def score_change(self) -> float:
-        """Calculate the change in score."""
+            """Calculate the change in score."""
         return self.adjusted_score - self.original_score
 
     @property
     def percent_change(self) -> float:
-        """Calculate percentage change."""
+            """Calculate percentage change."""
         if self.original_score == 0:
             return 0.0
         return (self.score_change / self.original_score) * 100
@@ -77,7 +71,7 @@ class SignalWeighter:
         self,
         default_weights: Optional[SignalWeights] = None
     ):
-        """Initialize the signal weighter.
+            """Initialize the signal weighter.
 
         Args:
             default_weights: Default weights to use when no specific mapping exists
@@ -227,11 +221,11 @@ class SignalWeighter:
             }
         }
 
-        # Corrected indentation, logger to LOGGER, and fixed incomplete f-string
-        LOGGER.info(f"Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mappings")
+        logger.info(f"Initialized SignalWeighter with {len(self._archetype_mappings)} archetype mapp
+    ings")
 
     def get_weights(self, archetype: str, industry: Optional[str] = None) -> SignalWeights:
-        """Get weights for a specific archetype and industry.
+            """Get weights for a specific archetype and industry.
 
         Args:
             archetype: Target recipient archetype (e.g., "CTO", "Recruiter")
@@ -253,7 +247,7 @@ class SignalWeighter:
 
             # Fallback to default if archetype not found
             if base_weights is None:
-                LOGGER.warning(f"Unknown archetype '{archetype}', using balanced weights")
+                logger.warning(f"Unknown archetype '{archetype}', using balanced weights")
                 base_weights = self.default_weights
 
             # Apply industry modifiers if provided
@@ -266,37 +260,35 @@ class SignalWeighter:
                         # Create adjusted weights
                         adjusted_weights = SignalWeights(
                             technical_depth=min(1.0,
-                                base_weights.technical_depth * MODIFIERS["technical_depth"]),
+                                base_weights.technical_depth * modifiers["technical_depth"]),
 
                             business_impact=min(1.0,
-                                base_weights.business_impact * MODIFIERS["business_impact"]),
+                                base_weights.business_impact * modifiers["business_impact"]),
 
                             leadership_scope=min(1.0,
-                                base_weights.leadership_scope * MODIFIERS["leadership_scope"]),
+                                base_weights.leadership_scope * modifiers["leadership_scope"]),
 
                             cultural_fit=min(1.0,
-                                base_weights.cultural_fit * MODIFIERS["cultural_fit"])
+                                base_weights.cultural_fit * modifiers["cultural_fit"])
                         )
 
-                        LOGGER.debug(
-                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} -> "
-                            f"{adjusted_weights.as_dict()}" # Fixed string split
+                        logger.debug(
+                            f"Applied industry modifiers for {industry}: {base_weights.as_dict()} ->
+    {adjusted_weights.as_dict()}"
                         )
                         return adjusted_weights
                     except Exception as e:
-pass # Fixed indentation
-                        LOGGER.error(f"Failed to apply industry modifiers: {str(e)}") # Fixed indentation and logger
+                        logger.error(f"Failed to apply industry modifiers: {str(e)}")
                         return base_weights
 
-            LOGGER.debug(f"Using base weights for archetype {archetype}: {base_weights.as_dict()}") # Fixed logger
+            logger.debug(f"Using base weights for archetype {archetype}: {base_weights.as_dict()}")
             return base_weights
 
         except Exception as e:
-pass # Fixed indentation
-            LOGGER.error(f"Error getting weights for archetype '{archetype}': {str(e)}") # Fixed indentation and logger
+            logger.error(f"Error getting weights for archetype '{archetype}': {str(e)}")
             return self.default_weights
 
-    # Removed extraneous """Docstring."""
+        """Docstring."""
     def reweight_score(
         self,
         original_score: float,
@@ -304,7 +296,7 @@ pass # Fixed indentation
         weights: SignalWeights,
         doc_id: Optional[str] = None
     ) -> WeightingResult:
-        """Apply dynamic weighting to a document score.
+            """Apply dynamic weighting to a document score.
 
         Args:
             original_score: Original relevance score (0.0-1.0)
@@ -318,17 +310,18 @@ pass # Fixed indentation
         try:
             # Validate input score
             if not isinstance(original_score, (int, float)):
-                LOGGER.error(f"Invalid score type: {type(original_score)} for doc {doc_id}") # Fixed logger
+                logger.error(f"Invalid score type: {type(original_score)} for doc {doc_id}")
                 original_score = 0.0
 
             if not 0.0 <= original_score <= 1.0:
-                LOGGER.warning(f"Score out of bounds: {original_score} for doc {doc_id}, " # Fixed logger and string split
-                               "clamping to [0, 1]")
+                logger.warning(f"Score out of bounds: {original_score} for doc {doc_id},
+                    clamping to [0,
+                    1]")
                 original_score = max(0.0, min(1.0, original_score))
 
             # Ensure metadata is a dictionary
             if not isinstance(doc_metadata, dict):
-                LOGGER.warning(f"Invalid metadata type for doc {doc_id}: {type(doc_metadata)}") # Fixed logger
+                logger.warning(f"Invalid metadata type for doc {doc_id}: {type(doc_metadata)}")
                 doc_metadata = {}
 
             # Determine signal type from metadata
@@ -338,7 +331,7 @@ pass # Fixed indentation
             WEIGHT = self._get_weight_for_signal_type(signal_type, weights)
 
             # Apply weight to score
-            adjusted_score = original_score * WEIGHT
+            adjusted_score = original_score * weight
 
             # Ensure score stays within bounds
             adjusted_score = max(0.0, min(1.0, adjusted_score))
@@ -348,21 +341,20 @@ pass # Fixed indentation
                 adjusted_score=adjusted_score,
                 weights_applied=weights,
                 signal_type=signal_type,
-                adjustment_factor=WEIGHT,
+                adjustment_factor=weight,
                 doc_id=doc_id
             )
 
-            LOGGER.debug( # Fixed logger
+            logger.debug(
                 f"Reweighted score: {original_score:.3f} -> {adjusted_score:.3f} "
-                f"(signal: {signal_type}, weight: {WEIGHT:.2f})",
-                EXTRA={"doc_id": doc_id, "signal_type": signal_type, "weight": WEIGHT}
+                f"(signal: {signal_type}, weight: {weight:.2f})",
+                EXTRA={"doc_id": doc_id, "signal_type": signal_type, "weight": weight}
             )
 
-            return RESULT
+            return result
 
         except Exception as e:
-pass # Fixed indentation
-            LOGGER.error(f"Error reweighting score for doc {doc_id}: {str(e)}") # Fixed indentation and logger
+            logger.error(f"Error reweighting score for doc {doc_id}: {str(e)}")
             # Return safe fallback
             return WeightingResult(
                 original_score=original_score if isinstance(original_score, (int, float)) else 0.0,
@@ -374,7 +366,7 @@ pass # Fixed indentation
             )
 
     def _extract_signal_type(self, metadata: Dict[str, Union[str, float]]) -> str:
-        """Extract signal type from document metadata.
+            """Extract signal type from document metadata.
 
         Args:
             metadata: Document metadata
@@ -403,30 +395,29 @@ pass # Fixed indentation
             if any(keyword in content_lower for keyword in ["revenue", "growth", "savings", "roi"]):
                 return "business_impact"
             elif any(keyword in content_lower for keyword in ["team",
-                                                              "managed",
-                                                              "led",
-                                                              "mentorship"]):
+                "managed",
+                "led",
+                "mentorship"]):
                 return "leadership_scope"
             elif any(keyword in content_lower for keyword in ["python",
-                                                              "java",
-                                                              "architecture",
-                                                              "algorithm"]):
+                "java",
+                "architecture",
+                "algorithm"]):
                 return "technical_depth"
             elif any(keyword in content_lower for keyword in ["culture",
-                                                              "mission",
-                                                              "values",
-                                                              "collaboration"]):
+                "mission",
+                "values",
+                "collaboration"]):
                 return "cultural_fit"
 
             # Default to balanced weighting
             return "balanced"
         except Exception as e:
-pass # Fixed indentation
-            LOGGER.error(f"Error extracting signal type: {str(e)}") # Fixed indentation and logger
+            logger.error(f"Error extracting signal type: {str(e)}")
             return "balanced"
 
     def _get_weight_for_signal_type(self, signal_type: str, weights: SignalWeights) -> float:
-        """Get the appropriate weight for a signal type.
+            """Get the appropriate weight for a signal type.
 
         Args:
             signal_type: Type of signal
@@ -450,18 +441,17 @@ pass # Fixed indentation
 
             return weight_map.get(signal_type.lower(), 0.5)
         except Exception as e:
-pass # Fixed indentation
-            LOGGER.error(f"Error getting weight for signal type '{signal_type}': {str(e)}") # Fixed indentation and logger
+            logger.error(f"Error getting weight for signal type '{signal_type}': {str(e)}")
             return 0.5
 
-    # Removed extraneous """Docstring."""
+        """Docstring."""
     def batch_reweight(
         self,
         documents: List[Dict[str, Union[str, float]]],
         archetype: str,
         industry: Optional[str] = None
     ) -> List[WeightingResult]:
-        """Apply dynamic weighting to a batch of documents.
+            """Apply dynamic weighting to a batch of documents.
 
         Args:
             documents: List of documents with scores and metadata
@@ -480,13 +470,12 @@ pass # Fixed indentation
                 METADATA = {k: v for k, v in doc.items() if k != "score"}
                 doc_id = doc.get("doc_id") or doc.get("id")
 
-                RESULT = self.reweight_score(SCORE, METADATA, WEIGHTS, doc_id)
-                RESULTS.append(RESULT)
+                RESULT = self.reweight_score(score, metadata, weights, doc_id)
+                results.append(result)
 
-            return RESULTS
+            return results
         except Exception as e:
-pass # Fixed indentation
-            LOGGER.error(f"Error in batch reweighting: {str(e)}") # Fixed indentation and logger
+            logger.error(f"Error in batch reweighting: {str(e)}")
             return []
 
 # Factory function for easy instantiation
@@ -502,7 +491,7 @@ def create_signal_weighter(default_weights: Optional[SignalWeights] = None) -> S
     return SignalWeighter(default_weights=default_weights)
 
 # Convenience function for quick reweighting
-# Removed extraneous """Docstring."""
+    """Docstring."""
 def weight_results(
     documents: List[Dict[str, Union[str, float]]],
     archetype: str,
@@ -519,5 +508,4 @@ def weight_results(
         List of WeightingResult objects
     """
     WEIGHTER = create_signal_weighter()
-    return WEIGHHTER.batch_reweight(documents, archetype, industry)
-
+    return weighter.batch_reweight(documents, archetype, industry)

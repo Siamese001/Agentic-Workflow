@@ -1,9 +1,6 @@
 """Unit Tests for Dependency Injection System
 
 import os
-import logging
-logger = logging.getLogger(__name__)
-
 
 LOGGER = logging.getLogger(__name__)
 Tests DI container functionality and proper service injection
@@ -17,13 +14,12 @@ import pytest
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import PineconeAdapt...
 # from archives.legacy_resume_gen.Agentic_Workflow-10_10.l5.policy import SafetyEngine  # Archive...
 
-
 class TestSimpleDIContainer:
     """Test cases for dependency injection container."""
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
-        self.CONTAINER = SimpleDIContainer()
+        SELF.CONTAINER = SimpleDIContainer()
 
     def test_register_and_get_service(self) -> None:
         """Test registering and retrieving services."""
@@ -32,13 +28,13 @@ class TestSimpleDIContainer:
         self.container.register(Mock, mock_service)
 
         # Retrieve the service
-        retrieved = self.container.get(Mock)
+        RETRIEVED = self.container.get(Mock)
 
         assert retrieved is mock_service
 
     def test_get_nonexistent_service(self) -> None:
         """Test getting a service that doesn't exist."""
-        result = self.container.get(Mock)
+        RESULT = self.container.get(Mock)
         assert result is None
 
     def test_clear_services(self) -> None:
@@ -61,14 +57,13 @@ class TestSimpleDIContainer:
         with pytest.raises(Exception):  # Should raise some error
             self.container.register(Mock, Mock())
 
-
 class TestGlobalDIContainer:
     """Test cases for global DI container functions."""
 
     def setup_method(self) -> None:
         """Set up test fixtures."""
         # Clear global container before each test
-        container = get_container()
+        CONTAINER = get_container()
         container.clear()
 
     def test_global_register_and_get(self) -> None:
@@ -79,7 +74,7 @@ class TestGlobalDIContainer:
         register_service(Mock, mock_service)
 
         # Get globally
-        retrieved = get_service(Mock)
+        RETRIEVED = get_service(Mock)
 
         assert retrieved is mock_service
 
@@ -87,12 +82,11 @@ class TestGlobalDIContainer:
         """Test initialization of default services."""
         initialize_default_services()
 
-        container = get_container()
+        CONTAINER = get_container()
 
         # Should have PineconeAdapter and SafetyEngine
         assert container.get(PineconeAdapter) is not None
         assert container.get(SafetyEngine) is not None
-
 
 class TestDependencyInjection:
     """Test cases for dependency injection in execution contexts."""
@@ -103,7 +97,7 @@ class TestDependencyInjection:
         initialize_default_services()
 
         # Create clean mock context
-        self.ctx = Mock()
+        SELF.CTX = Mock()
         self.ctx.user_id = "test_user"
         self.ctx.session_id = "test_session"
         # Remove any existing attributes that might interfere
@@ -139,7 +133,6 @@ class TestDependencyInjection:
         assert updated_ctx.pinecone_adapter is existing_adapter
         assert hasattr(updated_ctx, 'safety_engine')
 
-
 class TestLayerDIIntegration:
     """Test DI integration across all layers - simplified."""
 
@@ -152,7 +145,7 @@ class TestLayerDIIntegration:
 #         from archives.legacy_resume_gen.Agentic_Workflow-10_10.l4.pinecone_adapter import Pinec...
 
         CONFIG = PineconeConfig(
-            api_key=os.getenv("API_KEY"),
+            api_key = os.getenv("API_KEY"),
             index_name="test_index"
         )
         ADAPTER = PineconeAdapter(config)
@@ -169,7 +162,6 @@ class TestLayerDIIntegration:
         assert hasattr(engine, 'evaluate')
         assert callable(getattr(engine, 'evaluate'))
 
-
 class TestDIAtomicityCompliance:
     """Test that DI maintains L1-L5 atomicity constraints."""
 
@@ -183,13 +175,13 @@ class TestDIAtomicityCompliance:
             with open('l2/execution.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-pass  # Skip if file not found in test environment
+            # Skip if file not found in test environment
             return
 
         SOURCE = ''.join(source_lines)
 
         # Should contain DI imports
-        assert 'from infra.di_container import' in SOURCE
+        assert 'from infra.di_container import' in source
 
         # Should not contain direct Pinecone imports for business logic
         # (except for type hints)
@@ -200,7 +192,7 @@ pass  # Skip if file not found in test environment
 
         for imp in business_logic_imports:
             # Allow in comments or type hints only
-            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().startswith('#') and not 'typing.' in line]
+            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().s...
             assert len(lines_with_imp) == 0, f"Found direct import: {imp}"
 
     def test_no_direct_imports_in_l3(self) -> None:
@@ -213,12 +205,10 @@ pass  # Skip if file not found in test environment
             with open('l3/__init__.py', 'r') as f:
                 source_lines = f.readlines()
         except FileNotFoundError:
-pass
             return
 
         SOURCE = ''.join(source_lines)
-        assert 'from infra.di_container import' in SOURCE
+        assert 'from infra.di_container import' in source
 
 if __name__ == "__main__":
     pytest.main([__file__])
-

@@ -9,22 +9,19 @@ import json
 import logging
 import time
 import uuid
-from typing import Callable, Dict, Any, List, Optional
-from dataclasses import dataclass, field
-import asyncio
-import shutil
-from datetime import datetime
-from pathlib import Path
 
-# Inferred project-specific imports based on usage and common patterns
-from .types import ( # Assuming runtime/core/types.py
     MicroStage,
     HopState,
     RetryPolicy,
     MicroCheckpoint,
     StageTransition
 )
-from ..reflection import ( # Assuming runtime/reflection.py
+import asyncio
+import shutil
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+
     ReflectionEngine,
     ReflectionConfig,
     CritiqueResult,
@@ -32,27 +29,20 @@ from ..reflection import ( # Assuming runtime/reflection.py
     get_reflection_engine,
     STANDARD_CRITERIA
 )
-from ..circuit_breaker import ( # Assuming runtime/circuit_breaker.py
     CircuitBreakerFactory,
     CircuitOpenError,
     CircuitBreakerConfig,
     CriticalServiceFailure
 )
-from ..checkpoint import ( # Assuming runtime/checkpoint.py
     SecureCheckpointManager,
     CheckpointManagerFactory,
     CheckpointIntegrityError
 )
-from ..signal_enhancer import ( # Assuming runtime/signal_enhancer.py
     SignalEnhancer,
     SignalQuality,
     QualityThresholds,
     get_signal_enhancer
 )
-from ..container import get_default_container, ServiceContainer # Used in __init__
-from ..dag import DAGManager # Used for dag_manager in __init__
-from ..prompt_injection import get_injection_loader, enhance_prompt # Used in _think, _apply_stage_injections
-from ..negotiation import get_node_negotiator, request_upstream_change # Used in request_upstream_change, send_negotiation_message
 
 LOGGER = logging.getLogger(__name__)
 
@@ -84,8 +74,7 @@ class SubatomicHopConfig:
     enable_observability: bool = True
     max_execution_time: float = 300.0  # 5 minutes default
     reflection_config: Optional[ReflectionConfig] = None
-    critique_criteria: List[str] = field(
-        default_factory=lambda: STANDARD_CRITERIA)
+    critique_criteria: List[str] = field(default_factory=lambda: STANDARD_CRITERIA)
 
 class SubatomicHop:
     """A hop broken into 5 atomic micro-stages with state management."""
@@ -93,11 +82,11 @@ class SubatomicHop:
     def __init__(
         self,
         hop_function: Callable,
-        config: Optional[SubatomicHopConfig]=None,
-        initial_context: Optional[Dict[str, Any]]=None,
-        container: Optional[ServiceContainer]=None
+        config: Optional[SubatomicHopConfig] = None,
+        initial_context: Optional[Dict[str, Any]] = None,
+        container: Optional[ServiceContainer] = None
     ):
-        """Initialize the Subatomic Hop.
+            """Initialize the Subatomic Hop.
 
         Args:
             hop_function: The original function to execute
@@ -106,9 +95,9 @@ class SubatomicHop:
             container: Optional service container for dependency injection
         """
         self.hop_function = hop_function
-        self.config = config or SubatomicHopConfig()
-        self.context = initial_context or {}
-        self.container = container or get_default_container()
+        SELF.CONFIG = config or SubatomicHopConfig()
+        SELF.CONTEXT = initial_context or {}
+        SELF.CONTAINER = container or get_default_container()
 
         # Initialize reflection engine from container or create new one
         if self.container.is_registered(ReflectionEngine):
@@ -126,7 +115,7 @@ class SubatomicHop:
             CircuitBreakerConfig(
                 failure_threshold=3,
                 recovery_timeout=60.0,
-                timeout=30.0  # 30 second timeout for generation
+                TIMEOUT=30.0  # 30 second timeout for generation
             )
         )
 
@@ -175,10 +164,10 @@ class SubatomicHop:
         # Ensure checkpoint directory exists
         self.config.checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
-        LOGGER.info(f"Initialized SubatomicHop {self.config.hop_id}")
+        logger.info(f"Initialized SubatomicHop {self.config.hop_id}")
 
     async def run(self, **kwargs) -> Dict[str, Any]:
-        """Execute the hop through all micro-stages.
+            """Execute the hop through all micro-stages.
 
         Args:
             **kwargs: Arguments to pass to the hop function
@@ -187,14 +176,14 @@ class SubatomicHop:
             Final result from the COMMIT stage
         """
         self.start_time = time.time()
-        self.state = HopState.RUNNING
+        SELF.STATE = HopState.RUNNING
 
         try:
             # Check for existing checkpoint to resume from
             await self._load_checkpoint()
 
             # Execute stages in order
-            stages = [
+            STAGES = [
                 MicroStage.PRE_CHECK,
                 MicroStage.THINK,
                 MicroStage.ACT,
@@ -213,9 +202,10 @@ class SubatomicHop:
 
                 # Check for timeout
                 if time.time() - self.start_time > self.config.max_execution_time:
-                    raise StageExecutionError(f"Hop timeout after {self.config.max_execution_time}s")
+                    raise StageExecutionError(f"Hop timeout after {self.config.max_execution_time}s"
+    )
 
-            self.state = HopState.COMPLETED
+            SELF.STATE = HopState.COMPLETED
             self.end_time = time.time()
 
             # Return final result
@@ -223,14 +213,13 @@ class SubatomicHop:
             return final_checkpoint.partial_result or {}
 
         except Exception as e:
-pass
-            self.state = HopState.FAILED
+            SELF.STATE = HopState.FAILED
             self.end_time = time.time()
-            LOGGER.error(f"Hop {self.config.hop_id} failed: {e}")
+            logger.error(f"Hop {self.config.hop_id} failed: {e}")
             raise
 
     async def _execute_stage(self, stage: MicroStage, **kwargs) -> None:
-        """Execute a specific micro-stage.
+            """Execute a specific micro-stage.
 
         Args:
             stage: The stage to execute
@@ -245,58 +234,56 @@ pass
             try:
                 # Apply instructional injections for this stage
                 if self.enable_prompt_injection:
-                    kwargs = await self._apply_stage_injections(stage, kwargs)
+                    KWARGS = await self._apply_stage_injections(stage, kwargs)
 
                 # Execute stage logic
                 if stage == MicroStage.PRE_CHECK:
-                    result = await self._pre_check(**kwargs)
-                elif stage == MicroStage.THINK:
-                    result = await self._think(**kwargs)
-                elif stage == MicroStage.ACT:
-                    result = await self._act(**kwargs)
-                elif stage == MicroStage.CRITIQUE:
-                    result = await self._critique(**kwargs)
-                elif stage == MicroStage.COMMIT:
-                    result = await self._commit(**kwargs)
+                    RESULT = await self._pre_check(**kwargs)
+                elif STAGE == MicroStage.THINK:
+                    RESULT = await self._think(**kwargs)
+                elif STAGE == MicroStage.ACT:
+                    RESULT = await self._act(**kwargs)
+                elif STAGE == MicroStage.CRITIQUE:
+                    RESULT = await self._critique(**kwargs)
+                elif STAGE == MicroStage.COMMIT:
+                    RESULT = await self._commit(**kwargs)
                 else:
                     raise ValueError(f"Unknown stage: {stage}")
 
                 # Create checkpoint
-                checkpoint = MicroCheckpoint(
-                    stage=stage,
+                CHECKPOINT = MicroCheckpoint(
+                    STAGE=stage,
                     partial_result=result,
-                    metadata=self.context.copy(),
-                    timestamp=time.time()
+                    METADATA=self.context.copy(),
+                    TIMESTAMP=time.time()
                 )
 
                 await self._save_checkpoint(checkpoint)
-                self.checkpoints[stage] = checkpoint
+                SELF.CHECKPOINTS[STAGE] = checkpoint
 
                 # Stage completed successfully
                 break
 
             except Exception as e:
-pass
                 retry_count += 1
                 self.stage_retry_counts[stage] = retry_count
 
                 if retry_count > max_retries:
-                    LOGGER.error(
-                        f"Stage {stage} failed after {max_retries} retries: {e}")
-                    raise StageExecutionError(
-                        f"Stage {stage} failed: {e}") from e
+                    logger.error(f"Stage {stage} failed after {max_retries} retries: {e}")
+                    raise StageExecutionError(f"Stage {stage} failed: {e}") from e
 
                 # Apply retry delay
-                delay = self.config.retry_policy.retry_delay
+                DELAY = self.config.retry_policy.retry_delay
                 if self.config.retry_policy.exponential_backoff:
-                    delay *= (2 ** (retry_count - 1))
+                    DELAY *= (2 ** (retry_count - 1))
 
-                LOGGER.warning(f"Stage {stage} failed, retry {retry_count}/{max_retries} in {delay}s: {e}")
+                logger.warning(f"Stage {stage} failed,
+                    retry {retry_count}/{max_retries} in {delay}s: {e}")
                 await asyncio.sleep(delay)
 
     async def _pre_check(self, **kwargs) -> Dict[str, Any]:
-        """Validate inputs and context."""
-        LOGGER.debug(f"Pre-check for hop {self.config.hop_id}")
+            """Validate inputs and context."""
+        logger.debug(f"Pre-check for hop {self.config.hop_id}")
 
         # Check required inputs
         if not kwargs:
@@ -304,18 +291,18 @@ pass
 
         # Validate context
         if self.context is None:
-            self.context = {}
+            SELF.CONTEXT = {}
 
         # Check for required context keys
         # This can be customized per hop type
         return {"valid": True, "inputs": list(kwargs.keys())}
 
     async def _think(self, **kwargs) -> Dict[str, Any]:
-        """Plan the execution (Chain of Thought) with prompt injections."""
-        LOGGER.debug(f"Think stage for hop {self.config.hop_id}")
+            """Plan the execution (Chain of Thought) with prompt injections."""
+        logger.debug(f"Think stage for hop {self.config.hop_id}")
 
         # Create base plan
-        plan = {
+        PLAN = {
             "action": "execute_hop_function",
             "parameters": kwargs,
             "expected_output_type": "dict"
@@ -323,19 +310,17 @@ pass
 
         # Check if we have critique feedback to incorporate
         if "critique_feedback" in self.context:
-            plan["feedback"] = self.context["critique_feedback"]
+            PLAN["FEEDBACK"] = self.context["critique_feedback"]
             plan["retry_attempt"] = self.critique_loop_count
-            LOGGER.info(
-                f"Incorporating critique feedback: {self.context['critique_feedback']}")
+            logger.info(f"Incorporating critique feedback: {self.context['critique_feedback']}")
 
         # Apply prompt injections if enabled
         if self.enable_prompt_injection:
             try:
-                # Lazy import to avoid circular dependency (already done at top)
+                # Lazy import to avoid circular dependency
 
                 # Determine hop type from function name or context
-                hop_type = self.context.get(
-                    "hop_type", self.hop_function.__name__)
+                hop_type = self.context.get("hop_type", self.hop_function.__name__)
 
                 # Create injection context
                 injection_context = {
@@ -346,56 +331,52 @@ pass
                 }
 
                 # Extract content if available
-                content = None
+                CONTENT = None
                 if "input" in kwargs:
-                    content = str(kwargs["input"])
+                    CONTENT = str(kwargs["input"])
                 elif "data" in kwargs:
-                    content = str(kwargs["data"])
+                    CONTENT = str(kwargs["data"])
 
                 # Enhance plan with injections
                 plan_str = json.dumps(plan, indent=2)
                 enhanced_plan_str = enhance_prompt(
                     base_prompt=plan_str,
                     hop_type=hop_type,
-                    stage="THINK",
-                    context=injection_context,
-                    content=content
+                    STAGE="THINK",
+                    CONTEXT=injection_context,
+                    CONTENT=content
                 )
 
                 # Parse back to dict (keeping original structure)
                 try:
                     # Extract just the plan part (before injection metadata)
-                    enhanced_plan_str = enhanced_plan_str.split(
-                        "\n\n[INJECTIONS_APPLIED:")[0]
-                    plan = json.loads(enhanced_plan_str)
+                    enhanced_plan_str = enhanced_plan_str.split("\n\n[INJECTIONS_APPLIED:")[0]
+                    PLAN = json.loads(enhanced_plan_str)
 
                     # Store injection info for logging
                     plan["prompt_injections_applied"] = True
 
                 except json.JSONDecodeError:
-pass
                     # Fallback to original plan if parsing fails
-                    LOGGER.warning(
-                        "Failed to parse enhanced plan, using original")
+                    logger.warning("Failed to parse enhanced plan, using original")
 
-                LOGGER.debug(
-                    f"Applied prompt injections for hop type: {hop_type}")
+                logger.debug(f"Applied prompt injections for hop type: {hop_type}")
 
             except Exception as e:
-pass
-                LOGGER.error(f"Failed to apply prompt injections: {e}")
+                logger.error(f"Failed to apply prompt injections: {e}")
 
         # Store plan in context for ACT stage
         self.context["execution_plan"] = plan
 
         return plan
 
+        """Docstring."""
     async def _apply_stage_injections(self,
         stage: MicroStage,
         kwargs: Dict[str,
         Any]) -> Dict[str,
         Any]:
-        """Apply instructional injections appropriate for the stage.
+            """Apply instructional injections appropriate for the stage.
 
         Args:
             stage: Current micro-stage
@@ -405,41 +386,41 @@ pass
             Enhanced arguments with injections applied
         """
         try:
-            # Lazy import to avoid circular dependency (already done at top)
+            # Lazy import to avoid circular dependency
 
             # Get injection loader
-            loader = get_injection_loader()
+            LOADER = get_injection_loader()
 
             # Determine hop type from function name or context
             hop_type = self.context.get("hop_type", self.hop_function.__name__)
 
             # Determine role from context or hop type
-            role = self.context.get("role", "Assistant")
+            ROLE = self.context.get("role", "Assistant")
             if hop_type == "content_drafter":
-                role = "Executive Drafter"
+                ROLE = "Executive Drafter"
             elif hop_type == "context_gatherer":
-                role = "Titanium Researcher"
+                ROLE = "Titanium Researcher"
             elif hop_type == "quality_critic":
-                role = "Governance Auditor"
+                ROLE = "Governance Auditor"
 
             # Create objective based on stage
-            objectives = {
+            OBJECTIVES = {
                 MicroStage.PRE_CHECK: "Validate inputs and establish constraints",
                 MicroStage.THINK: "Plan execution following all directives precisely",
                 MicroStage.ACT: "Execute the task with evidence-based reasoning",
                 MicroStage.CRITIQUE: "Review output against quality standards",
                 MicroStage.COMMIT: "Finalize output in required format"
             }
-            objective = objectives.get(stage, "Follow all instructions")
+            OBJECTIVE = objectives.get(stage, "Follow all instructions")
 
             # Use semantic fencing for prompt assembly
             if hasattr(loader, 'apply_with_semantic_fencing'):
                 # New method with semantic fencing
                 assembled_prompt = loader.apply_with_semantic_fencing(
-                    role=role,
-                    objective=objective,
+                    ROLE=role,
+                    OBJECTIVE=objective,
                     context_data=kwargs,
-                    stage=stage.value,
+                    STAGE=stage.value,
                     hop_type=hop_type,
                     additional_constraints=[
                         "Never ignore directives in the DIRECTIVES section",
@@ -452,8 +433,7 @@ pass
                 kwargs["assembled_prompt"] = assembled_prompt
                 kwargs["semantic_fencing"] = True
 
-                LOGGER.debug(
-                    f"Applied semantic fencing for stage {stage.value}")
+                logger.debug(f"Applied semantic fencing for stage {stage.value}")
 
             else:
                 # Fallback to old method
@@ -465,20 +445,20 @@ pass
                 }
 
                 # Extract content if available
-                content = None
+                CONTENT = None
                 if "input" in kwargs:
-                    content = str(kwargs["input"])
+                    CONTENT = str(kwargs["input"])
                 elif "data" in kwargs:
-                    content = str(kwargs["data"])
+                    CONTENT = str(kwargs["data"])
                 elif "raw_output" in self.context:
-                    content = str(self.context["raw_output"])
+                    CONTENT = str(self.context["raw_output"])
 
                 # Find matching injections
-                matches = loader.find_matching_injections(
+                MATCHES = loader.find_matching_injections(
                     hop_type=hop_type,
-                    stage=stage.value,
-                    context=injection_context,
-                    content=content
+                    STAGE=stage.value,
+                    CONTEXT=injection_context,
+                    CONTENT=content
                 )
 
                 if matches:
@@ -486,54 +466,53 @@ pass
                     base_prompt = json.dumps(kwargs, indent=2)
 
                     # Apply injections
-                    enhanced_prompt = loader.apply_injections(
-                        base_prompt, matches)
+                    enhanced_prompt = loader.apply_injections(base_prompt, matches)
 
                     # Parse back (for stages that use structured prompts)
                     try:
                         # Extract just the prompt part (before injection metadata)
-                        enhanced_prompt = enhanced_prompt.split(
-                            "\n\n[INJECTIONS_APPLIED:")[0]
+                        enhanced_prompt = enhanced_prompt.split("\n\n[INJECTIONS_APPLIED:")[0]
                         enhanced_kwargs = json.loads(enhanced_prompt)
 
                         # Store injection info
-                        enhanced_kwargs["instructional_injections"] = [m.injection.id for m in matches]
+                        enhanced_kwargs["instructional_injections"] = [m.injection.id for m in match
+    es]
 
-                        LOGGER.debug(f"Applied {len(matches)} instructional injections for stage {stage.value}")
+                        logger.debug(f"Applied {len(matches)} instructional injections for stage {st
+    age.value}")
 
                         return enhanced_kwargs
 
                     except json.JSONDecodeError:
-pass
                         # If parsing fails, add injections as context
                         kwargs["instructional_injections"] = {
                             "applied": True,
                             "count": len(matches),
                             "types": [m.injection.type for m in matches]
                         }
-                        LOGGER.warning("Failed to parse enhanced kwargs, keeping original with injection metadata")
+                        logger.warning("Failed to parse enhanced kwargs,
+                            keeping original with injection metadata")
 
             return kwargs
 
         except Exception as e:
-pass
-            LOGGER.error(f"Failed to apply stage injections: {e}")
+            logger.error(f"Failed to apply stage injections: {e}")
             return kwargs
 
     async def _act(self, **kwargs) -> Dict[str, Any]:
-        """Execute the actual hop function with circuit breaker protection."""
-        LOGGER.debug(f"Act stage for hop {self.config.hop_id}")
+            """Execute the actual hop function with circuit breaker protection."""
+        logger.debug(f"Act stage for hop {self.config.hop_id}")
 
         try:
             # Execute the hop function with circuit breaker protection
             if asyncio.iscoroutinefunction(self.hop_function):
-                result = await self.generation_breaker.call(self.hop_function, **kwargs)
+                RESULT = await self.generation_breaker.call(self.hop_function, **kwargs)
             else:
                 # For sync functions, wrap in async
                 async def sync_wrapper():
-                    """A synchronous function wrapper for async execution."""
+                        """Docstring."""
                     return self.hop_function(**kwargs)
-                result = await self.generation_breaker.call(sync_wrapper)
+                RESULT = await self.generation_breaker.call(sync_wrapper)
 
             # Store result in context
             self.context["raw_output"] = result
@@ -541,22 +520,19 @@ pass
             return {"output": result}
 
         except CircuitOpenError:
-pass
             # Circuit is open - generation is failing
-            LOGGER.critical("Generation Circuit OPEN. Node failed.")
+            logger.critical("Generation Circuit OPEN. Node failed.")
             # No fallback possible for generation - raise critical failure
-            raise CriticalServiceFailure(
-                "LLM Service Unreachable - circuit breaker open")
+            raise CriticalServiceFailure("LLM Service Unreachable - circuit breaker open")
 
         except Exception as e:
-pass
             # Other execution errors
-            LOGGER.error(f"Hop execution failed: {e}")
+            logger.error(f"Hop execution failed: {e}")
             raise StageExecutionError(f"Failed to execute hop: {e}")
 
     async def _critique(self, **kwargs) -> Dict[str, Any]:
-        """Review and validate the output using Reflection Engine and Signal Enhancer."""
-        LOGGER.debug(f"Critique stage for hop {self.config.hop_id}")
+            """Review and validate the output using Reflection Engine and Signal Enhancer."""
+        logger.debug(f"Critique stage for hop {self.config.hop_id}")
 
         raw_output = self.context.get("raw_output")
 
@@ -567,7 +543,7 @@ pass
         # First, assess signal quality
         signal_assessment = self.signal_enhancer.assess_signal(
             raw_output,
-            context={
+            CONTEXT={
                 "hop_id": self.config.hop_id,
                 "stage": "CRITIQUE",
                 "retry_count": self.critique_loop_count,
@@ -580,7 +556,7 @@ pass
         min_quality = SignalQuality.GOOD  # Require at least GOOD quality
         if not signal_assessment.is_acceptable(min_quality):
             self.critique_loop_count += 1
-            LOGGER.warning(
+            logger.warning(
                 f"Signal quality too low: {signal_assessment.quality_level.value} "
                 f"(score: {signal_assessment.composite_score:.2f}) "
                 f"Flags: {', '.join(signal_assessment.flags)}"
@@ -591,10 +567,11 @@ pass
 
             # Request mutation with quality feedback
             mutation_request = MutationRequest(
-                reason=f"Signal quality {signal_assessment.quality_level.value}. "
+                REASON=f"Signal quality {signal_assessment.quality_level.value}. "
                        f"Recommendations: {'; '.join(signal_assessment.recommendations[:3])}",
-                priority="high" if signal_assessment.quality_level == SignalQuality.POOR else "medium",
-                context={
+                PRIORITY="high" if signal_assessment.quality_level == SignalQuality.POOR else "mediu
+    m",
+                CONTEXT={
                     "quality_score": signal_assessment.composite_score,
                     "flags": signal_assessment.flags,
                     "hallucination_risk": signal_assessment.hallucination_risk
@@ -608,9 +585,9 @@ pass
             # Hard limit: 15 seconds for self-reflection
             critique_result = await asyncio.wait_for(
                 self.reflection_engine.evaluate(
-                    content=raw_output,
-                    criteria=self.config.critique_criteria,
-                    context={
+                    CONTENT=raw_output,
+                    CRITERIA=self.config.critique_criteria,
+                    CONTEXT={
                         "hop_id": self.config.hop_id,
                         "stage": "CRITIQUE",
                         "retry_count": self.critique_loop_count,
@@ -618,17 +595,17 @@ pass
                         "signal_score": signal_assessment.composite_score
                     }
                 ),
-                timeout=15.0
+                TIMEOUT=15.0
             )
         except asyncio.TimeoutError:
-pass
-            LOGGER.warning(f"Reflection timed out for hop {self.config.hop_id}. Using signal assessment.")
+            logger.warning(f"Reflection timed out for hop {self.config.hop_id}. Using signal assessm
+    ent.")
             # Create a result based on signal assessment
             critique_result = CritiqueResult(
-                is_valid=signal_assessment.is_acceptable(
-                    SignalQuality.MARGINAL),
+                is_valid=signal_assessment.is_acceptable(SignalQuality.MARGINAL),
                 confidence_score=signal_assessment.composite_score,
-                critique_reasoning=f"Reflection timed out. Signal quality: {signal_assessment.quality_level.value}",
+                critique_reasoning=f"Reflection timed out. Signal quality: {signal_assessment.qualit
+    y_level.value}",
                 validation_type="signal_assessment_fallback"
             )
 
@@ -641,21 +618,20 @@ pass
 
             # Check if a mutation is requested
             if critique_result.mutation_request:
-                LOGGER.info(
-                    f"Mutation requested: {critique_result.mutation_request.reason}")
+                logger.info(f"Mutation requested: {critique_result.mutation_request.reason}")
 
                 # Enhance mutation request with signal feedback
                 if signal_assessment.hallucination_risk > 0.3:
                     critique_result.mutation_request.reason += " [HIGH HALLUCINATION RISK]"
 
                 # Pause current hop
-                self.state = HopState.PAUSED
+                SELF.STATE = HopState.PAUSED
                 self.stage_history.append(
                     StageTransition(
                         from_stage=MicroStage.CRITIQUE,
                         to_stage=MicroStage.MUTATE,
-                        timestamp=time.time(),
-                        metadata={
+                        TIMESTAMP=time.time(),
+                        METADATA={
                             "mutation_reason": critique_result.mutation_request.reason,
                             "signal_quality": signal_assessment.quality_level.value,
                             "signal_score": signal_assessment.composite_score
@@ -667,9 +643,9 @@ pass
 
             # No mutation requested, but validation failed - retry
             if self.critique_loop_count >= self.config.max_critique_retries:
-                LOGGER.error(
-                    f"Max critique retries exceeded for hop {self.config.hop_id}")
-                raise QualityGateFailure(f"Validation failed after {self.config.max_critique_retries} attempts")
+                logger.error(f"Max critique retries exceeded for hop {self.config.hop_id}")
+                raise QualityGateFailure(f"Validation failed after {self.config.max_critique_retries
+    } attempts")
 
             return {"retry": True}
 
@@ -678,7 +654,7 @@ pass
         self.context["validated_output"] = validated_output
 
         # Log quality metrics
-        LOGGER.info(
+        logger.info(
             f"Hop {self.config.hop_id} passed validation: "
             f"Signal={signal_assessment.quality_level.value} "
             f"(SNR={signal_assessment.signal_to_noise_ratio:.1f}:1, "
@@ -688,8 +664,8 @@ pass
         return {"validated_output": validated_output}
 
     async def _commit(self, **kwargs) -> Dict[str, Any]:
-        """Write to state/memory with atomic write pattern."""
-        LOGGER.debug(f"Commit stage for hop {self.config.hop_id}")
+            """Write to state/memory with atomic write pattern."""
+        logger.debug(f"Commit stage for hop {self.config.hop_id}")
 
         validated_output = self.context.get("validated_output")
 
@@ -699,10 +675,8 @@ pass
         # Atomic write pattern
         if self.config.enable_checkpoints:
             # Write to temporary file first
-            temp_file = self.config.checkpoint_dir / \
-                f"{self.config.hop_id}_final.tmp"
-            final_file = self.config.checkpoint_dir / \
-                f"{self.config.hop_id}_final.json"
+            temp_file = self.config.checkpoint_dir / f"{self.config.hop_id}_final.tmp"
+            final_file = self.config.checkpoint_dir / f"{self.config.hop_id}_final.json"
 
             try:
                 with open(temp_file, 'w') as f:
@@ -710,17 +684,16 @@ pass
 
                 # Verify file was written correctly
                 with open(temp_file, 'r') as f:
-                    loaded = json.load(f)
+                    LOADED = json.load(f)
                     if loaded != validated_output:
                         raise IOError("Verification failed")
 
                 # Atomic rename
                 shutil.move(str(temp_file), str(final_file))
 
-                LOGGER.debug(f"Committed result to {final_file}")
+                logger.debug(f"Committed result to {final_file}")
 
             except Exception as e:
-pass
                 # Clean up temp file if it exists
                 if temp_file.exists():
                     temp_file.unlink()
@@ -729,22 +702,22 @@ pass
         return {"committed": True, "result": validated_output}
 
     def _transition_to(self, stage: MicroStage) -> None:
-        """Transition to a new stage and log the event."""
+            """Transition to a new stage and log the event."""
         from_stage = self.current_stage
         self.current_stage = stage
 
         # Log structured event
         if self.config.enable_observability:
-            transition = StageTransition(
+            TRANSITION = StageTransition(
                 hop_id=self.config.hop_id,
                 from_stage=from_stage,
                 to_stage=stage
             )
             self.stage_history.append(transition)
 
-            LOGGER.info(
+            logger.info(
                 "STAGE_TRANSITION",
-                extra={
+                EXTRA={
                     "event": "STAGE_TRANSITION",
                     "hop_id": self.config.hop_id,
                     "from": from_stage.value if from_stage else None,
@@ -754,22 +727,20 @@ pass
             )
 
     async def _save_checkpoint(self, checkpoint: MicroCheckpoint) -> None:
-        """Save a checkpoint using the secure checkpoint manager."""
+            """Save a checkpoint using the secure checkpoint manager."""
         if not self.config.enable_checkpoints or not self.checkpoint_manager:
             return
 
         try:
             await self.checkpoint_manager.save_checkpoint(checkpoint)
-            self.checkpoints[checkpoint.stage] = checkpoint
-            LOGGER.debug(
-                f"Saved secure checkpoint for stage {checkpoint.stage.value}")
+            SELF.CHECKPOINTS[CHECKPOINT.STAGE] = checkpoint
+            logger.debug(f"Saved secure checkpoint for stage {checkpoint.stage.value}")
         except Exception as e:
-pass
-            LOGGER.error(f"Failed to save secure checkpoint: {e}")
+            logger.error(f"Failed to save secure checkpoint: {e}")
             # Continue execution - checkpoint failure shouldn't stop the hop
 
     async def _load_checkpoint(self) -> None:
-        """Load the most recent checkpoint using the secure checkpoint manager."""
+            """Load the most recent checkpoint using the secure checkpoint manager."""
         if not self.config.enable_checkpoints or not self.checkpoint_manager:
             return
 
@@ -778,25 +749,23 @@ pass
 
             if latest_checkpoint:
                 self.current_stage = latest_checkpoint.stage
-                self.context = latest_checkpoint.context
+                SELF.CONTEXT = latest_checkpoint.context
                 self.stage_retry_counts[latest_checkpoint.stage] = latest_checkpoint.retry_count
                 self.checkpoints[latest_checkpoint.stage] = latest_checkpoint
 
-                LOGGER.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}")
+                logger.info(f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.v
+    alue}")
         except CheckpointIntegrityError as e:
-pass
-            LOGGER.error(f"Checkpoint integrity validation failed: {e}")
+            logger.error(f"Checkpoint integrity validation failed: {e}")
             # Quarantine all checkpoints and start fresh
             self.checkpoint_manager.quarantine_all_checkpoints()
-            LOGGER.warning(
-                "Quarantined all checkpoints due to integrity failure")
+            logger.warning("Quarantined all checkpoints due to integrity failure")
         except Exception as e:
-pass
-            LOGGER.warning(f"Failed to load secure checkpoint: {e}")
+            logger.warning(f"Failed to load secure checkpoint: {e}")
             # Continue without checkpoint - start fresh
 
     def get_status(self) -> Dict[str, Any]:
-        """Get current status of the hop."""
+            """Get current status of the hop."""
         return {
             "hop_id": self.config.hop_id,
             "state": self.state.value,
@@ -816,7 +785,7 @@ pass
         }
 
     def cleanup(self) -> None:
-        """Clean up checkpoints and temporary files."""
+            """Clean up checkpoints and temporary files."""
         if not self.config.enable_checkpoints:
             return
 
@@ -825,11 +794,11 @@ pass
             try:
                 checkpoint_file.unlink()
             except Exception as e:
-pass
-                LOGGER.warning(f"Failed to cleanup {checkpoint_file}: {e}")
+                logger.warning(f"Failed to cleanup {checkpoint_file}: {e}")
 
-        LOGGER.debug(f"Cleaned up hop {self.config.hop_id}")
+        logger.debug(f"Cleaned up hop {self.config.hop_id}")
 
+        """Docstring."""
     async def request_upstream_change(
         self,
         upstream_hop_id: str,
@@ -837,7 +806,7 @@ pass
         reason: str,
         **kwargs
     ):
-        """Request a change from an upstream node.
+            """Request a change from an upstream node.
 
         Args:
             upstream_hop_id: ID of upstream hop
@@ -851,7 +820,7 @@ pass
         if not self.negotiation_enabled:
             raise RuntimeError("Negotiation not enabled for this hop")
 
-        # Lazy import to avoid circular dependency (already done at top)
+        # Lazy import to avoid circular dependency
 
         if not self.node_negotiator:
             self.node_negotiator = get_node_negotiator()
@@ -860,10 +829,11 @@ pass
             downstream_hop=self,
             upstream_hop_id=upstream_hop_id,
             change_request=change_request,
-            reason=reason,
+            REASON=reason,
             **kwargs
         )
 
+        """Docstring."""
     async def send_negotiation_message(
         self,
         to_hop_id: str,
@@ -871,7 +841,7 @@ pass
         payload: str,
         **kwargs
     ) -> bool:
-        """Send a negotiation message to another hop.
+            """Send a negotiation message to another hop.
 
         Args:
             to_hop_id: ID of target hop
@@ -885,7 +855,7 @@ pass
         if not self.negotiation_enabled:
             return False
 
-        # Lazy import to avoid circular dependency (already done at top)
+        # Lazy import to avoid circular dependency
 
         if not self.node_negotiator:
             self.node_negotiator = get_node_negotiator()
@@ -894,19 +864,18 @@ pass
             from_hop=self,
             to_hop_id=to_hop_id,
             message_type=message_type,
-            payload=payload,
-            context=kwargs
+            PAYLOAD=payload,
+            CONTEXT=kwargs
         )
 
     def handle_negotiation_request(self, request: Dict[str, Any]) -> None:
-        """Handle a negotiation request from downstream.
+            """Handle a negotiation request from downstream.
 
         Args:
             request: Negotiation request details
         """
         if not self.negotiation_enabled:
-            LOGGER.warning(
-                f"Ignoring negotiation request on {self.config.hop_id}")
+            logger.warning(f"Ignoring negotiation request on {self.config.hop_id}")
             return
 
         # Store request in context
@@ -923,12 +892,13 @@ pass
             "message": request.get("request")
         })
 
-        LOGGER.info(f"Hop {self.config.hop_id} received negotiation request")
+        logger.info(f"Hop {self.config.hop_id} received negotiation request")
 
 # Factory function for creating subatomic hops
+    """Docstring."""
 def create_subatomic_hop(
     hop_function: Callable,
-    config: Optional[SubatomicHopConfig]=None,
+    config: Optional[SubatomicHopConfig] = None,
     **kwargs
 ) -> SubatomicHop:
     """Create a SubatomicHop from a regular function.
@@ -943,12 +913,12 @@ def create_subatomic_hop(
     """
     return SubatomicHop(
         hop_function=hop_function,
-        config=config,
+        CONFIG=config,
         initial_context=kwargs
     )
 
 # Decorator for converting functions to subatomic hops
-def subatomic_hop(config: Optional[SubatomicHopConfig]=None):
+def subatomic_hop(config: Optional[SubatomicHopConfig] = None):
     """Decorator to convert a function into a SubatomicHop.
 
     Args:
@@ -958,14 +928,13 @@ def subatomic_hop(config: Optional[SubatomicHopConfig]=None):
         Decorated function that returns a SubatomicHop
     """
     def decorator(func: Callable) -> Callable:
-        """Inner decorator function."""
+            """Docstring."""
         def wrapper(*args, **kwargs) -> SubatomicHop:
-            """Wrapper function to create a SubatomicHop instance."""
+                """Docstring."""
             return create_subatomic_hop(
                 hop_function=func,
-                config=config,
+                CONFIG=config,
                 **kwargs
             )
         return wrapper
     return decorator
-

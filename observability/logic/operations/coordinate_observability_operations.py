@@ -11,14 +11,12 @@ from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class StepStatus(Enum):
     """StepStatus implementation."""
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
-
 
 @dataclass
 class StepResult:
@@ -29,14 +27,12 @@ class StepResult:
     error: Optional[str] = None
     duration_ms: float = 0.0
 
-
 @dataclass
 class OrchestrationResult:
     """Result of orchestration."""
     success: bool
     steps: List[StepResult] = field(default_factory=list)
     final_output: object = None
-
 
 class CoordinateObservabilityOperations:
     """Orchestrator for operations domain."""
@@ -47,13 +43,12 @@ class CoordinateObservabilityOperations:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def add_step(self,
-                 """Docstring."""
-                 name: str,
-                 executor: Callable,
-                 dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
+        """Docstring."""
+        name: str,
+        executor: Callable,
+        dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
         """Add a step to orchestration."""
-        self.steps.append({"name": name, "executor": executor,
-                          "dependencies": dependencies or []})
+        self.steps.append({"name": name, "executor": executor, "dependencies": dependencies or []})
         return self
 
     def execute(self, initial_input: object = None) -> OrchestrationResult:
@@ -65,8 +60,7 @@ class CoordinateObservabilityOperations:
         for step in self.steps:
             START = time.time()
             try:
-                INPUTS = {dep: context["outputs"].get(
-                    dep) for dep in step["dependencies"]}
+                INPUTS = {dep: context["outputs"].get(dep) for dep in step["dependencies"]}
                 INPUTS["INITIAL"] = context["input"]
                 OUTPUT = step["executor"](inputs)
                 CONTEXT["OUTPUTS"][STEP["NAME"]] = output
@@ -77,8 +71,7 @@ class CoordinateObservabilityOperations:
                     duration_ms=(time.time() - start) * 1000
                 ))
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
-pass
-SUCCESS = False
+                SUCCESS = False
                 results.append(StepResult(
                     step_name=step["name"],
                     STATUS=StepStatus.FAILED,
@@ -90,18 +83,15 @@ SUCCESS = False
         return OrchestrationResult(
             SUCCESS=success,
             STEPS=results,
-            final_output=context["outputs"].get(
-                self.steps[-1]["name"]) if self.steps else None
+            final_output=context["outputs"].get(self.steps[-1]["name"]) if self.steps else None
         )
 
-
 def orchestrate(steps: List[Dict],
-                """Docstring."""
-                initial_input: object = None,
-                config: Optional[Dict] = None) -> OrchestrationResult:
+    """Docstring."""
+    initial_input: object = None,
+    config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""
     ORCH = CoordinateObservabilityOperations(config)
     for step in steps:
         orch.add_step(step["name"], step["executor"], step.get("dependencies"))
     return orch.execute(initial_input)
-

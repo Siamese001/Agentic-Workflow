@@ -1,15 +1,7 @@
 """Types and models for message_assembler."""
 import logging
-from enum import Enum
-from dataclasses import dataclass
-from typing import List, Dict, Any
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
 
 LOGGER = logging.getLogger(__name__)
-
-
 class QABlockType(Enum):
     """TODO: Add docstring."""
 
@@ -18,17 +10,17 @@ class QABlockType(Enum):
     MESSAGE_SPECIFIC_RAG_QA = 'MESSAGE_SPECIFIC_RAG_QA'
     EVIDENCE_PACK = 'EVIDENCE_PACK'
 
-
 @dataclass
-class QABlock:
     """TODO: Add docstring."""
+
+class QABlock:
+    """Docstring."""
     block_type: QABlockType
     title: str
     content: str
     order: int
 
     """TODO: Add docstring."""
-
 
 @dataclass
 class MessageAssemblerConfig:
@@ -47,4 +39,3 @@ class MessageAssemblerResult:
     validation_results: List[ValidationResult]
     success: bool
     metadata: Dict[str, Any]
-

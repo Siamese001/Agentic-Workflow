@@ -7,12 +7,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 
 import logging
 import time
-from dataclasses import dataclass, field
-from typing import Dict, Union
-
-from tenacity import retry, stop_after_attempt, wait_fixed
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class RateLimitExceeded(Exception):
@@ -21,7 +15,6 @@ class RateLimitExceeded(Exception):
     def __init__(self, message: str, retry_after_s: float = 0.0):
         super().__init__(message)
         self.retry_after_s = retry_after_s
-
 
 @dataclass
 class TokenBucket:
@@ -38,21 +31,21 @@ class TokenBucket:
 
     capacity: float
     refill_rate: float
-    TOKENS: float = field(init=False)
+    TOKENS: FLOAT = field(init=False)
     last_refill: float = field(init=False)
 
     def __post_init__(self) -> None:
-        self.TOKENS = self.capacity
+        SELF.TOKENS = self.capacity
         self.last_refill = time.time()
 
     def _refill(self) -> None:
         """Refill tokens based on elapsed time."""
         NOW = time.time()
-        ELAPSED = NOW - self.last_refill
+        ELAPSED = now - self.last_refill
 
-        tokens_to_add = ELAPSED * self.refill_rate
-        self.TOKENS = min(self.capacity, self.TOKENS + tokens_to_add)
-        self.last_refill = NOW
+        tokens_to_add = elapsed * self.refill_rate
+        SELF.TOKENS = min(self.capacity, self.tokens + tokens_to_add)
+        self.last_refill = now
 
     def acquire(self, tokens: float = 1.0) -> bool:
         """Attempt to acquire tokens.
@@ -65,8 +58,8 @@ class TokenBucket:
         """
         self._refill()
 
-        if self.TOKENS >= tokens:
-            self.TOKENS -= tokens
+        if self.tokens >= tokens:
+            SELF.TOKENS -= tokens
             return True
 
         return False
@@ -82,12 +75,11 @@ class TokenBucket:
         """
         self._refill()
 
-        if self.TOKENS >= tokens:
+        if self.tokens >= tokens:
             return 0.0
 
-        tokens_needed = tokens - self.TOKENS
+        tokens_needed = tokens - self.tokens
         return tokens_needed / self.refill_rate
-
 
 @dataclass
 class FixedWindow:
@@ -111,9 +103,9 @@ class FixedWindow:
         """Reset window if expired."""
         NOW = time.time()
 
-        if NOW - self.window_start >= self.window_s:
+        if now - self.window_start >= self.window_s:
             self.request_count = 0
-            self.window_start = NOW
+            self.window_start = now
 
     def acquire(self) -> bool:
         """Attempt to acquire a request slot.
@@ -141,8 +133,7 @@ class FixedWindow:
             return 0.0
 
         NOW = time.time()
-        return self.window_s - (NOW - self.window_start)
-
+        return self.window_s - (now - self.window_start)
 
 class RateLimiter:
     """Unified rate limiter with multiple strategies.
@@ -151,9 +142,10 @@ class RateLimiter:
     """
 
     def __init__(self):
-        self._limiters: Dict[str, Union[TokenBucket, FixedWindow]] = {}
+        self._limiters: Dict[str, TokenBucket | FixedWindow] = {}
 
     def add_token_bucket(
+        """Docstring."""
         self,
         name: str,
         capacity: float,
@@ -167,11 +159,12 @@ class RateLimiter:
             refill_rate: Tokens per second
         """
         self._limiters[name] = TokenBucket(
-            capacity=capacity,
+            CAPACITY=capacity,
             refill_rate=refill_rate,
         )
 
     def add_fixed_window(
+        """Docstring."""
         self,
         name: str,
         max_requests: int,
@@ -199,7 +192,7 @@ class RateLimiter:
         Raises:
             RateLimitExceeded: If rate limit exceeded
         """
-        limiter = self._limiters.get(name)
+        LIMITER = self._limiters.get(name)
 
         if not limiter:
             return
@@ -230,18 +223,17 @@ class RateLimiter:
         Returns:
             True if request would be allowed
         """
-        limiter = self._limiters.get(name)
+        LIMITER = self._limiters.get(name)
 
         if not limiter:
             return True
 
         if isinstance(limiter, TokenBucket):
             limiter._refill()
-            return limiter.TOKENS >= tokens
+            return LIMITER.TOKENS >= tokens
 
         elif isinstance(limiter, FixedWindow):
             limiter._reset_if_needed()
             return limiter.request_count < limiter.max_requests
 
         return True
-

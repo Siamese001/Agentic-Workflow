@@ -10,20 +10,14 @@ Military-grade reliability for Google GenAI v1beta with:
 
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Union
 
-from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
 )
-
-from ..client import get_client, Provider
-from ..errors import ClientError as errors
-from .agent import AgentExecutor, AgentConfig
-from .message import AgentMessage
 
 
 LOGGER = logging.getLogger(__name__)
@@ -51,16 +45,16 @@ class HardenedGeminiConfig:
 
     def __init__(
         self,
-        model: str = "gemini-3-pro-preview",
-        temperature: float = 0.3,
+        MODEL: STR = "gemini-3-pro-preview",
+        TEMPERATURE: FLOAT = 0.3,
         max_output_tokens: int = 8192,
         safety_threshold_ratio: Optional[float] = None,
         max_retries: int = 5,
         retry_min_wait: float = 2.0,
         retry_max_wait: float = 30.0,
     ):
-        self.model = model
-        self.temperature = temperature
+        SELF.MODEL = model
+        SELF.TEMPERATURE = temperature
         self.max_output_tokens = max_output_tokens
         self.safety_threshold_ratio = safety_threshold_ratio or self.SAFETY_THRESHOLD_RATIO
         self.max_retries = max_retries
@@ -69,12 +63,12 @@ class HardenedGeminiConfig:
 
     @property
     def max_context_tokens(self) -> int:
-        """Get maximum context tokens for the model."""
+            """Get maximum context tokens for the model."""
         return self.MODEL_LIMITS.get(self.model, 1048576)
 
     @property
     def safety_threshold_tokens(self) -> int:
-        """Get safety threshold tokens."""
+            """Get safety threshold tokens."""
         return int(self.max_context_tokens * self.safety_threshold_ratio)
 
 @dataclass
@@ -86,7 +80,7 @@ class InteractionTelemetry:
     output_tokens: int
     total_tokens: int
     latency_ms: float
-    timestamp: str = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
+    TIMESTAMP: STR = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
     error: Optional[str] = None
 
 @dataclass
@@ -94,7 +88,7 @@ class CircuitBreakerState:
     """State tracking for circuit breaker."""
     failure_count: int = 0
     last_failure_time: Optional[float] = None
-    state: str = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
+    STATE: STR = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
 
     def __post_init__(self):
         if self.state not in ["CLOSED", "OPEN", "HALF_OPEN"]:
@@ -109,7 +103,7 @@ class CircuitBreaker:
         recovery_timeout: float = 60.0,
         half_open_max_calls: int = 3
     ):
-        """Initialize circuit breaker.
+            """Initialize circuit breaker.
 
         Args:
             failure_threshold: Number of failures before opening
@@ -119,20 +113,20 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self.half_open_max_calls = half_open_max_calls
-        self.state = CircuitBreakerState()
+        SELF.STATE = CircuitBreakerState()
         self.half_open_calls = 0
 
     def call_allowed(self) -> bool:
-        """Check if a call is allowed through the circuit breaker."""
-        now = time.time()
+            """Check if a call is allowed through the circuit breaker."""
+        NOW = time.time()
 
         if self.state.state == "CLOSED":
             return True
-        elif self.state.state == "OPEN":
+        elif SELF.STATE.STATE == "OPEN":
             # Check if recovery timeout has passed
             if now - self.state.last_failure_time >= self.recovery_timeout:
-                LOGGER.info("Circuit breaker transitioning to HALF_OPEN")
-                self.state.state = "HALF_OPEN"
+                logger.info("Circuit breaker transitioning to HALF_OPEN")
+                SELF.STATE.STATE = "HALF_OPEN"
                 self.half_open_calls = 0
                 return True
             return False
@@ -141,55 +135,67 @@ class CircuitBreaker:
             return self.half_open_calls < self.half_open_max_calls
 
     def record_success(self):
-        """Record a successful call."""
+            """Record a successful call."""
         if self.state.state == "HALF_OPEN":
             self.half_open_calls += 1
             # If we've had enough successes, close the circuit
             if self.half_open_calls >= self.half_open_max_calls:
-                LOGGER.info("Circuit breaker closing after successful recovery")
-                self.state.state = "CLOSED"
+                logger.info("Circuit breaker closing after successful recovery")
+                SELF.STATE.STATE = "CLOSED"
                 self.state.failure_count = 0
                 self.half_open_calls = 0
-        elif self.state.state == "CLOSED":
+        elif SELF.STATE.STATE == "CLOSED":
             # Reset failure count on success
             self.state.failure_count = 0
 
     def record_failure(self):
-        """Record a failed call."""
+            """Record a failed call."""
         self.state.failure_count += 1
         self.state.last_failure_time = time.time()
 
         if self.state.state == "HALF_OPEN":
             # Immediate re-open if failure in half-open
-            LOGGER.warning("Circuit breaker re-opening after failure in HALF_OPEN")
-            self.state.state = "OPEN"
+            logger.warning("Circuit breaker re-opening after failure in HALF_OPEN")
+            SELF.STATE.STATE = "OPEN"
             self.half_open_calls = 0
-        elif self.state.state == "CLOSED":
+        elif SELF.STATE.STATE == "CLOSED":
             # Open if threshold reached
             if self.state.failure_count >= self.failure_threshold:
-                LOGGER.error(
+                logger.error(
                     f"Circuit breaker opening after {self.state.failure_count} failures"
                 )
-                self.state.state = "OPEN"
+                SELF.STATE.STATE = "OPEN"
 
     def raise_if_open(self):
-        """Raise exception if circuit breaker is open."""
+            """Raise exception if circuit breaker is open."""
         if self.state.state == "OPEN":
             raise CircuitBreakerOpenError(
                 f"Circuit breaker is open. {self.failure_threshold} failures occurred. "
                 f"Retry after {self.recovery_timeout} seconds."
             )
 
+@dataclass
+class InteractionTelemetry:
+    """Telemetry data for interaction logging."""
+    interaction_id: Optional[str]
+    model: str
+    input_tokens: int
+    output_tokens: int
+    total_tokens: int
+    latency_ms: float
+    TIMESTAMP: STR = field(default_factory=lambda: time.strftime("%Y-%m-%d %H:%M:%S"))
+    error: Optional[str] = None
+
 class HardenedGeminiExecutor:
     """Military-grade executor for Google GenAI v1beta."""
 
     def __init__(self, config: Optional[HardenedGeminiConfig] = None):
-        """Initialize hardened executor.
+            """Initialize hardened executor.
 
         Args:
             config: Optional configuration. Uses defaults if not provided.
         """
-        self.config = config or HardenedGeminiConfig()
+        SELF.CONFIG = config or HardenedGeminiConfig()
         self._client = None
         self._setup_client()
         self._circuit_breaker = CircuitBreaker(
@@ -199,45 +205,45 @@ class HardenedGeminiExecutor:
         )
 
     def _setup_client(self):
-        """Setup Google GenAI client."""
+            """Setup Google GenAI client."""
 
         try:
             self._client = get_client(Provider.GOOGLE)
             if not hasattr(self._client, 'interactions'):
                 raise ImportError("google-genai v1beta not available")
         except Exception as e:
-LOGGER.error(f"Failed to initialize hardened Gemini client: {e}")
+            logger.error(f"Failed to initialize hardened Gemini client: {e}")
             raise
 
     def build_safety_config(self) -> List[Dict[str, str]]:
-        """Build safety settings for Risk/Insurance domain.
+            """Build safety settings for Risk/Insurance domain.
 
         Returns:
             List of safety setting dictionaries.
         """
         # Try to import types from google.genai, fallback to dict format
         try:
-            from google.generativeai import types
+
             return [
                 types.SafetySetting(
-                    category="HARM_CATEGORY_DANGEROUS_CONTENT",
-                    threshold="BLOCK_ONLY_HIGH"
+                    CATEGORY="HARM_CATEGORY_DANGEROUS_CONTENT",
+                    THRESHOLD="BLOCK_ONLY_HIGH"
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_HARASSMENT",
-                    threshold="BLOCK_NONE"  # Allow robust professional critique
+                    CATEGORY="HARM_CATEGORY_HARASSMENT",
+                    THRESHOLD="BLOCK_NONE"  # Allow robust professional critique
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_HATE_SPEECH",
-                    threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    CATEGORY="HARM_CATEGORY_HATE_SPEECH",
+                    THRESHOLD="BLOCK_MEDIUM_AND_ABOVE"
                 ),
                 types.SafetySetting(
-                    category="HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                    threshold="BLOCK_MEDIUM_AND_ABOVE"
+                    CATEGORY="HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    THRESHOLD="BLOCK_MEDIUM_AND_ABOVE"
                 ),
             ]
         except ImportError:
-# Fallback for legacy or different API
+            # Fallback for legacy or different API
             return [
                 {
                     "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
@@ -257,11 +263,12 @@ LOGGER.error(f"Failed to initialize hardened Gemini client: {e}")
                 },
             ]
 
+        """Docstring."""
     async def validate_context_budget(
         self,
         input_payload: List[Dict[str, Any]]
     ) -> int:
-        """Pre-flight check to ensure payload doesn't exceed context limit.
+            """Pre-flight check to ensure payload doesn't exceed context limit.
 
         Args:
             input_payload: List of messages to send
@@ -274,10 +281,10 @@ LOGGER.error(f"Failed to initialize hardened Gemini client: {e}")
         """
         try:
             # Try v1beta count_tokens API
-            if hasattr(self._client, 'aio') and hasattr(self._client.aio, 'models'):
+            if hasattr(self._client, 'models'):
                 token_resp = await self._client.aio.models.count_tokens(
-                    model=self.config.model,
-                    contents=input_payload
+                    MODEL=self.config.model,
+                    CONTENTS=input_payload
                 )
                 token_count = token_resp.total_tokens
             else:
@@ -285,7 +292,7 @@ LOGGER.error(f"Failed to initialize hardened Gemini client: {e}")
                 token_count = self._estimate_tokens(input_payload)
 
         except Exception as e:
-LOGGER.warning(f"Token counting failed, estimating: {e}")
+            logger.warning(f"Token counting failed, estimating: {e}")
             token_count = self._estimate_tokens(input_payload)
 
         # Check against safety threshold
@@ -298,7 +305,7 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
         return token_count
 
     def _estimate_tokens(self, input_payload: List[Dict[str, Any]]) -> int:
-        """Fallback token estimation using simple heuristic.
+            """Fallback token estimation using simple heuristic.
 
         Args:
             input_payload: List of messages
@@ -315,7 +322,7 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
         messages: List[AgentMessage],
         system_prompt: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        """Build payload for interactions.create.
+            """Build payload for interactions.create.
 
         Args:
             messages: List of agent messages
@@ -324,7 +331,7 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
         Returns:
             Formatted payload for API
         """
-        payload = []
+        PAYLOAD = []
 
         # Add system prompt as first user message with model acknowledgment
         if system_prompt:
@@ -340,6 +347,7 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
 
         return payload
 
+        """Docstring."""
     async def _execute_with_retry(
         self,
         model: str,
@@ -347,7 +355,7 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
         input_payload: List[Dict[str, Any]],
         previous_interaction_id: Optional[str] = None
     ) -> Any:
-        """Execute with exponential backoff retry and circuit breaker.
+            """Execute with exponential backoff retry and circuit breaker.
 
         Args:
             model: Model name
@@ -365,24 +373,25 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
         try:
             retry_exception = errors.ClientError
         except ImportError:
-# Fallback to generic exception
+            # Fallback to generic exception
             retry_exception = Exception
 
         @retry(
-            retry=retry_if_exception_type(retry_exception),
-            stop=stop_after_attempt(self.config.max_retries),
-            wait=wait_exponential(
-                multiplier=1,
-                min=self.config.retry_min_wait,
-                max=self.config.retry_max_wait
+            RETRY=retry_if_exception_type(retry_exception),
+            STOP=stop_after_attempt(self.config.max_retries),
+            WAIT=wait_exponential(
+                MULTIPLIER=1,
+                MIN=self.config.retry_min_wait,
+                MAX=self.config.retry_max_wait
             ),
-            before_sleep=lambda _: LOGGER.warning("Retrying due to rate limit or server error")
+            before_sleep=lambda _: logger.warning("Retrying due to rate limit or server error")
         )
         async def _execute():
+                """Docstring."""
             request_params = {
                 "model": model,
-                "contents": input_payload, # Corrected key name for Gemini API
-                "generation_config": config # Corrected key name for Gemini API
+                "input": input_payload,
+                "config": config
             }
 
             if previous_interaction_id:
@@ -390,29 +399,30 @@ LOGGER.warning(f"Token counting failed, estimating: {e}")
 
             # Try async API first, fallback to sync
             if hasattr(self._client, 'aio'):
-                return await self._client.aio.generative_models.generate_content(**request_params)
+                return await self._client.aio.interactions.create(**request_params)
             else:
                 # Wrap sync call in executor to avoid blocking
                 import asyncio
-                loop = asyncio.get_event_loop()
+                LOOP = asyncio.get_event_loop()
                 return await loop.run_in_executor(
                     None,
-                    lambda: self._client.generative_models.generate_content(**request_params) # Corrected method name
+                    lambda: self._client.interactions.create(**request_params)
                 )
 
         try:
-            result = await _execute()
+            RESULT = await _execute()
             self._circuit_breaker.record_success()
             return result
         except Exception as e:
-self._circuit_breaker.record_failure()
+            self._circuit_breaker.record_failure()
             raise
 
+        """Docstring."""
     async def log_interaction_telemetry(
         self,
         telemetry: InteractionTelemetry
     ):
-        """Log structured telemetry for observability.
+            """Log structured telemetry for observability.
 
         Args:
             telemetry: Telemetry data to log
@@ -431,8 +441,9 @@ self._circuit_breaker.record_failure()
         if telemetry.error:
             log_data["error"] = telemetry.error
 
-        LOGGER.info(log_data)
+        logger.info(log_data)
 
+        """Docstring."""
     async def execute_k_node(
         self,
         messages: List[AgentMessage],
@@ -440,7 +451,7 @@ self._circuit_breaker.record_failure()
         response_schema: Optional[Dict[str, Any]] = None,
         previous_interaction_id: Optional[str] = None,
     ) -> str:
-        """Execute K-Node with hardened reliability.
+            """Execute K-Node with hardened reliability.
 
         Args:
             messages: Input messages
@@ -455,7 +466,7 @@ self._circuit_breaker.record_failure()
 
         try:
             # 1. Build Config (Typed + Safety + JSON)
-            generation_config = {
+            CONFIG = {
                 "temperature": self.config.temperature,
                 "max_output_tokens": self.config.max_output_tokens,
                 "safety_settings": self.build_safety_config(),
@@ -463,32 +474,29 @@ self._circuit_breaker.record_failure()
 
             # Add JSON schema if provided
             if response_schema:
-                generation_config["response_mime_type"] = "application/json"
-                generation_config["response_schema"] = response_schema
+                config["response_mime_type"] = "application/json"
+                config["response_schema"] = response_schema
 
             # 2. Construct Payload
-            payload = self._build_payload(messages, system_prompt)
+            PAYLOAD = self._build_payload(messages, system_prompt)
 
             # 3. Pre-Flight Check
             input_tokens = await self.validate_context_budget(payload)
 
             # 4. Execute with Retry
-            response = await self._execute_with_retry(
+            RESPONSE = self._execute_with_retry(
                 self.config.model,
-                generation_config,
+                config,
                 payload,
                 previous_interaction_id
             )
 
             # 5. Extract response
-            content = ""
+            CONTENT = ""
             if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
+                CANDIDATE = response.candidates[0]
                 if hasattr(candidate, 'content') and candidate.content:
-                    if hasattr(candidate.content, 'parts') and candidate.content.parts:
-                        content = candidate.content.parts[0].text
-                    elif hasattr(candidate.content, 'text'): # Fallback for different response structures
-                        content = candidate.content.text
+                    CONTENT = candidate.content.parts[0].text if candidate.content.parts else ""
 
             # 6. Calculate telemetry
             latency_ms = (time.time() - start_time) * 1000
@@ -502,9 +510,9 @@ self._circuit_breaker.record_failure()
                 output_tokens = len(content) // 4
 
             # 7. Log telemetry
-            telemetry = InteractionTelemetry(
+            TELEMETRY = InteractionTelemetry(
                 interaction_id=getattr(response, 'id', None),
-                model=self.config.model,
+                MODEL=self.config.model,
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
                 total_tokens=input_tokens + output_tokens,
@@ -516,21 +524,22 @@ self._circuit_breaker.record_failure()
             return content
 
         except Exception as e:
-# Log error telemetry
+            # Log error telemetry
             latency_ms = (time.time() - start_time) * 1000
-            telemetry = InteractionTelemetry(
+            TELEMETRY = InteractionTelemetry(
                 interaction_id=None,
-                model=self.config.model,
+                MODEL=self.config.model,
                 input_tokens=0,
                 output_tokens=0,
                 total_tokens=0,
                 latency_ms=latency_ms,
-                error=str(e)
+                ERROR=str(e)
             )
 
             await self.log_interaction_telemetry(telemetry)
             raise
 
+        """Docstring."""
     def execute_sync(
         self,
         messages: List[AgentMessage],
@@ -538,7 +547,7 @@ self._circuit_breaker.record_failure()
         response_schema: Optional[Dict[str, Any]] = None,
         previous_interaction_id: Optional[str] = None,
     ) -> str:
-        """Synchronous version of execute_k_node.
+            """Synchronous version of execute_k_node.
 
         Args:
             messages: Input messages
@@ -549,15 +558,14 @@ self._circuit_breaker.record_failure()
         Returns:
             Generated text response
         """
-        import asyncio
-        import concurrent.futures
 
         # Run async method in event loop
-        loop = asyncio.get_event_loop()
+        LOOP = asyncio.get_event_loop()
         if loop.is_running():
             # If already in event loop, use run_in_executor
+
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(
+                FUTURE = executor.submit(
                     asyncio.run,
                     self.execute_k_node(messages,
                         system_prompt,
@@ -574,11 +582,12 @@ self._circuit_breaker.record_failure()
             )
 
 # Factory function for backward compatibility
+    """Docstring."""
 def create_hardened_gemini_executor(
-    model: str = "gemini-3-pro-preview",
-    temperature: float = 0.3,
+    MODEL: STR = "gemini-3-pro-preview",
+    TEMPERATURE: FLOAT = 0.3,
     **kwargs
-) -> "HardenedGeminiExecutor":
+) -> HardenedGeminiExecutor:
     """Create a hardened Gemini executor.
 
     Args:
@@ -589,17 +598,18 @@ def create_hardened_gemini_executor(
     Returns:
         HardenedGeminiExecutor instance
     """
-    config = HardenedGeminiConfig(model=model, temperature=temperature, **kwargs)
+    CONFIG = HardenedGeminiConfig(model=model, temperature=temperature, **kwargs)
     return HardenedGeminiExecutor(config)
 
 # Integration with existing AgentExecutor
+    """Docstring."""
 def create_agent_executor(
     provider: Provider = Provider.OPENAI,
     model: Optional[str] = None,
-    temperature: float = 0.7,
-    hardened: bool = False,
+    TEMPERATURE: FLOAT = 0.7,
+    HARDENED: BOOL = False,
     **kwargs,
-) -> Union[AgentExecutor, "HardenedGeminiExecutor"]:
+) -> Union[AgentExecutor, HardenedGeminiExecutor]:
     """Factory function to create agent executor with optional hardening.
 
     Args:
@@ -614,18 +624,18 @@ def create_agent_executor(
     """
     if provider == Provider.GOOGLE and hardened:
         return create_hardened_gemini_executor(
-            model=model or "gemini-3-pro-preview",
-            temperature=temperature,
+            MODEL=model or "gemini-3-pro-preview",
+            TEMPERATURE=temperature,
             **kwargs
         )
 
     # Use standard executor for other providers
-    config = AgentConfig(
-        provider=provider,
-        model=model,
-        temperature=temperature,
+
+    CONFIG = AgentConfig(
+        PROVIDER=provider,
+        MODEL=model,
+        TEMPERATURE=temperature,
         **kwargs,
     )
 
     return AgentExecutor(config)
-

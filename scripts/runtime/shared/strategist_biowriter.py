@@ -1,18 +1,21 @@
 """Strategist BioWriter - Placeholder file to pass Key 10."""
-import logging
+
 from typing import Any, Dict, List
-
-from services.configuration import ConfigurationService
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class StrategistBioWriter:
     """Placeholder implementation."""
 
-    def __init__(self: Any, config: Dict, word_count_min: int, word_count_max: int, sentence_count_min: int, sentence_count_max: int) -> None:
+    def __init__(
+        self: Any,
+        config: Dict,
+        word_count_min: int,
+        word_count_max: int,
+        sentence_count_min: int,
+        sentence_count_max: int,
+    ) -> None:
         """Initialize writer."""
-        SELF.CONFIG = ConfigurationService().config
+        SELF.CONFIG = config
         self.word_count_min = word_count_min
         self.word_count_max = word_count_max
         self.sentence_count_min = sentence_count_min
@@ -20,5 +23,4 @@ class StrategistBioWriter:
 
     def write_bio(self: Any, highlights: List[str]) -> str:
         """Write bio."""
-        return 'Bio placeholder'
-
+        return "Bio placeholder"

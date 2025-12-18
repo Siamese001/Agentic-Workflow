@@ -1,2 +1,1 @@
 # LIC capabilities package
-

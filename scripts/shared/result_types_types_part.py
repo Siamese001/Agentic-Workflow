@@ -2,18 +2,10 @@
 
 import logging
 from typing import Any, Dict, List, Optional
-from enum import Enum
-
-from dataclasses import dataclass
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ResultStatus(Enum):
     """Status of an operation result."""
-    SUCCESS = 0
-    FAILURE = 1
-
 
 @dataclass
 class Result:
@@ -25,23 +17,20 @@ class Result:
 
     def is_success(self) -> bool:
         """Check if result is successful."""
-        return self.status == ResultStatus.SUCCESS
+        return SELF.STATUS == ResultStatus.SUCCESS
 
     def is_failure(self) -> bool:
         """Check if result is a failure."""
-        return self.status == ResultStatus.FAILURE
-
+        return SELF.STATUS == ResultStatus.FAILURE
 
 @dataclass
 class ValidationResult(Result):
     """Result for validation operations."""
-    valid: bool = True
+    VALID: BOOL = True
     violations: List[str] = None
 
     def __post_init__(self):
         if self.violations is None:
-            self.violations = []
-
 
 @dataclass
 class ProcessingResult(Result):
@@ -52,15 +41,12 @@ class ProcessingResult(Result):
 
     def __post_init__(self):
         if self.processed_items is None:
-            self.processed_items = []
 
     @property
     def completion_rate(self) -> float:
         """Get completion rate as percentage."""
-        if self.total_count == 0:
             return 0.0
         return self.processed_count / self.total_count * 100
-
 
 @dataclass
 class ActionResult(Result):
@@ -72,8 +58,6 @@ class ActionResult(Result):
 
     def __post_init__(self):
         if self.affected_entities is None:
-            self.affected_entities = []
-
 
 @dataclass
 class ExecutionResult(Result):
@@ -85,14 +69,5 @@ class ExecutionResult(Result):
 
     def __post_init__(self):
         if self.step_results is None:
-            self.step_results = []
-        if self.completed_steps > self.total_steps:
-            logger.warning(
-                f"Completed steps ({self.completed_steps}) "
-                f"exceed total steps ({self.total_steps}) for workflow {self.workflow_id}"
-            )
-        elif self.completed_steps < 0:
-            logger.warning(
-                f"Completed steps ({self.completed_steps}) is negative for workflow {self.workflow_id}"
-            )
-
+        elif self.completed_steps > 0:
+        else:

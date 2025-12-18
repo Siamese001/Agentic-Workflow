@@ -23,73 +23,6 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 
 # Import our production SDKs
-# Assuming these are defined elsewhere or placeholders for an actual SDK
-class Provider(Enum):
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
-    VERTEX = "vertex"
-
-@dataclass
-class RouterConfig:
-    providers: List[Provider]
-    primary_provider: Provider
-    fallback_enabled: bool
-    circuit_breaker_enabled: bool
-
-class LLMClient:
-    async def generate(self, message: str, temperature: float, max_tokens: int) -> 'Response':
-        # Simulate LLM response
-        await asyncio.sleep(0.1) # Simulate network latency
-        if "planning_prompt" in message:
-            return Response(content=json.dumps({
-                "strategy": "Identify top candidates and market trends",
-                "information_needed": ["candidate skills", "experience", "location", "salary", "market demand"],
-                "data_sources": ["resume_database", "job_postings", "market_data"],
-                "analysis_steps": ["filter candidates", "compare to market", "identify gaps"],
-                "success_criteria": ["20+ qualified candidates", "market report generated"],
-                "risks": ["outdated data", "LLM hallucination"]
-            }))
-        elif "inspection_prompt" in message:
-            return Response(content=json.dumps({
-                "data_quality_assessment": "Good, but resume data is 1 month old.",
-                "key_insights": ["High demand for Python/AWS skills", "Competitive salary range in SF"],
-                "information_gaps": ["Specific candidate availability"],
-                "confidence_levels": "High",
-                "recommendations_for_action": ["Generate report on market trends", "Contact top 5 candidates"]
-            }))
-        elif "action_prompt" in message:
-            return Response(content=json.dumps([
-                {"action_type": "generate_report", "target": "hiring_manager", "content": "Talent market analysis report", "priority_level": "High", "success_metrics": "Report delivered"},
-                {"action_type": "send_email", "target": ["john.smith@example.com"], "content": "Interview invitation", "priority_level": "Medium", "success_metrics": "Email sent"},
-            ]))
-        return Response(content="{}") # Default empty response
-
-@dataclass
-class Response:
-    content: str
-
-class MultiProviderRouter:
-    def __init__(self, config: RouterConfig):
-        self.config = config
-
-    async def get_primary_client(self) -> LLMClient:
-        return LLMClient() # Return a simulated client
-
-def setup_tracing(service_name: str):
-    # Simulate a tracer setup
-    class Tracer:
-        def start_as_current_span(self, name: str):
-            logger.info(f"Tracing span '{name}' started.")
-            return self
-
-        def __enter__(self):
-            pass
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            logger.info(f"Tracing span finished.")
-
-    return Tracer()
-
 
 # Setup logging and tracing
 logging.basicConfig(level=logging.INFO)
@@ -230,7 +163,10 @@ class TalentIntelligenceAgent:
                 Information Needed: {json.dumps(plan["information_needed"], indent=2)}
 
                 Retrieved Data Summary:
-                {json.dumps({k: f"{len(v) if isinstance(v, list) else 'summary'} items" for k, v in retrieved_data.items()}, indent=2)}
+                {json.dumps({k: f"{len(v) if isinstance(v,
+                     list) else 'summary'} items" for k,
+                     v in retrieved_data.items()},
+                     indent=2)}
 
                 Provide analysis including:
                 1. Data quality assessment
@@ -268,7 +204,7 @@ class TalentIntelligenceAgent:
         with tracer.start_as_current_span("action_stage"):
             try:
                 analysis = context.data["analysis"]
-                plan = context.data["plan"] # Corrected to use context.data["plan"]
+                plan = context["plan"]
 
                 # Generate action plan
                 action_prompt = f"""
@@ -461,31 +397,19 @@ async def main():
     orchestrator = WorkflowOrchestrator()
 
     for objective in objectives:
-        logger.info(f"\n--- Starting workflow for objective: {objective} ---")
+
         context = await orchestrator.execute_full_cycle(objective)
 
         # Print results summary
-        logger.info(f"--- Workflow Summary for {objective} ---")
-        logger.info(f"Final Stage: {context.stage.value}")
-        logger.info(f"Insights: {len(context.insights)} total")
+
         if context.insights:
-            logger.info("  Top 3 Insights:")
+
             for insight in context.insights[:3]:  # Show top 3
-                logger.info(f"    - {insight}")
 
-        logger.info(f"Actions Taken: {len(context.actions_taken)} total")
         if context.actions_taken:
-            logger.info("  Top 3 Actions:")
-            for action in context.actions_taken[:3]:  # Show top 3
-                logger.info(f"    - {action}")
 
-        if context.errors:
-            logger.error(f"Errors encountered: {len(context.errors)}")
-            for error in context.errors:
-                logger.error(f"  - {error}")
-        logger.info(f"----------------------------------------------------\n")
+            for action in context.actions_taken[:3]:  # Show top 3
 
 if __name__ == "__main__":
     # Run the complete agentic workflow
     asyncio.run(main())
-

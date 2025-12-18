@@ -10,25 +10,19 @@ from typing import Dict, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 
-class RefinementResult:
-    """Placeholder for RefinementResult."""
-    def __init__(self, original, refined, changes):
-        self.original = original
-        self.refined = refined
-        self.changes = changes
-
 class RefineMessageRanking:
     """Refiner for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.CONFIG = config or {}
-        self.WEIGHTS = self.CONFIG.get("weights", {})
-        LOGGER.info(f"Initialized {self.__class__.__name__}")
+        SELF.CONFIG = config or {}
+        SELF.WEIGHTS = self.config.get("weights", {})
+        logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-               data: Union[str,
-                           Dict],
-               adjustments: Optional[Dict] = None) -> RefinementResult:
+        """Docstring."""
+        data: Union[str,
+        Dict],
+        adjustments: Optional[Dict] = None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
         CHANGES = []
         REFINED = data
@@ -36,18 +30,17 @@ class RefineMessageRanking:
         if adjustments and isinstance(data, dict):
             REFINED = {**data}
             for key, adj in adjustments.items():
-                if key in REFINED and isinstance(REFINED[key], (int, float)):
-                    PREVIOUS = REFINED[key]
-                    REFINED[key] = PREVIOUS * adj
-                    CHANGES.append(f"{key}: {PREVIOUS} -> {REFINED[key]}")
+                if key in refined and isinstance(refined[key], (int, float)):
+                    PREVIOUS = refined[key]
+                    REFINED[KEY] = previous * adj
+                    changes.append(f"{key}: {previous} -> {refined[key]}")
 
-        return RefinementResult(original=data, refined=REFINED, changes=CHANGES)
-
+        return RefinementResult(original=data, refined=refined, changes=changes)
 
 def refine(data: Union[str,
-                       Dict],
-           adjustments: Optional[Dict] = None,
-           config: Optional[Dict] = None) -> RefinementResult:
+    """Docstring."""
+    Dict],
+    adjustments: Optional[Dict] = None,
+    config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return RefineMessageRanking(config).refine(data, adjustments)
-

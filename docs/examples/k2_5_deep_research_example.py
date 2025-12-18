@@ -2,7 +2,6 @@ import logging
 
 LOGGER = logging.getLogger(__name__)
 
-from k2_5_deep_research_example import (
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,
@@ -16,7 +15,8 @@ from k2_5_deep_research_example import (
 def create_doordash_benchmark_example() -> DeepResearchOutput:
     """Docstring."""
     strategic_layer = StrategicLayer(
-        core_thesis ="Transition from food delivery to local commerce platform achieving GAAP profitability through efficient growth",
+        core_thesis="Transition from food delivery to local commerce platform achieving GAAP profita
+    bility through efficient growth",
         financial_proof_points=[
             FinancialMetric(
                 metric_name="Q2 2025 Revenue",
@@ -51,20 +51,27 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
         key_technologies=[
             TechnicalImplementation(
                 technology_name="Gated Mixture-of-Experts (MoE) Architecture",
-                implementation_details="Deep learning models for ETA predictions with dynamic model\n                    selection based on delivery context (urban vs suburban,\n\n                    weather,\n                    traffic)",
+                implementation_details="Deep learning models for ETA predictions with dynamic model
+                    selection based on delivery context (urban vs suburban,
+
+                    weather,
+                    traffic)",
 
                 performance_gain="20% improvement in delivery time accuracy",
                 source_citation="cite_65"
             ),
             TechnicalImplementation(
                 technology_name="Dot Autonomous Delivery Robot",
-                implementation_details="Sidewalk-compatible autonomous vehicle with Level 4 autonomy\n    integrating LiDAR, computer vision, and path planning algorithms",
+                implementation_details="Sidewalk-compatible autonomous vehicle with Level 4 autonomy
+    integrating LiDAR, computer vision, and path planning algorithms",
                 performance_gain="Last-mile delivery cost reduction",
                 source_citation="cite_72"
             ),
         ],
         infrastructure_stack=["Kubernetes", "PyTorch", "Real-time routing engine"],
-        implementation_summary="The MoE architecture enables dynamic model selection reducing computational overhead while maintaining prediction accuracy. Dot robot navigates complex urban environments autonomously."
+        implementation_summary="The MoE architecture enables dynamic model selection reducing comput
+    ational overhead while maintaining prediction accuracy. Dot robot navigates complex urban enviro
+        nments autonomously."
     )
 
     leadership_layer = LeadershipLayer(
@@ -88,7 +95,8 @@ def create_doordash_benchmark_example() -> DeepResearchOutput:
                 strategic_focus="Grocery, retail, and convenience store ML models"
             ),
         ],
-        organizational_structure="Labs division under Stanley Tang, Risk function under CFO Ravi Inukonda, ML verticals under Sudeep Das"
+        organizational_structure="Labs division under Stanley Tang, Risk function under CFO Ravi Inu
+    konda, ML verticals under Sudeep Das"
     )
 
     citation_map = CitationMap()
@@ -124,37 +132,38 @@ def example_usage():
 
     logger.info("\n[1] Generated Research Prompt:")
     logger.info("-" * 80)
-    PROMPT = AGENT.generate_research_prompt()
-    logger.info(PROMPT[:500] + "...\n")
+    PROMPT = agent.generate_research_prompt()
+    logger.info(prompt[:500] + "...\n")
 
     logger.info("\n[2] DoorDash Benchmark Example:")
     logger.info("-" * 80)
     BENCHMARK = create_doordash_benchmark_example()
 
-    logger.info(f"\nCompany: {BENCHMARK.company_name}")
-    logger.info(f"\nStrategic Thesis: {BENCHMARK.strategic_layer.core_thesis}")
-    logger.info(f"\nFinancial Metrics ({len(BENCHMARK.strategic_layer.financial_proof_points)}):")
-    for metric in BENCHMARK.strategic_layer.financial_proof_points:
-        logger.info(f"  - {metric.metric_name}: {metric.VALUE} ({metric.yoy_change}) [{metric.source_citation}]")
+    logger.info(f"\nCompany: {benchmark.company_name}")
+    logger.info(f"\nStrategic Thesis: {benchmark.strategic_layer.core_thesis}")
+    logger.info(f"\nFinancial Metrics ({len(benchmark.strategic_layer.financial_proof_points)}):")
+    for metric in benchmark.strategic_layer.financial_proof_points:
+        logger.info(f"  - {metric.metric_name}: {metric.value} ({metric.yoy_change}) [{metric.source
+    _citation}]")
 
-    logger.info(f"\nKey Technologies ({len(BENCHMARK.technical_layer.key_technologies)}):")
-    for tech in BENCHMARK.technical_layer.key_technologies:
+    logger.info(f"\nKey Technologies ({len(benchmark.technical_layer.key_technologies)}):")
+    for tech in benchmark.technical_layer.key_technologies:
         logger.info(f"  - {tech.technology_name}")
         logger.info(f"    Performance: {tech.performance_gain}")
         logger.info(f"    Citation: {tech.source_citation}")
 
-    logger.info(f"\nKey Executives ({len(BENCHMARK.leadership_layer.key_executives)}):")
-    for exec in BENCHMARK.leadership_layer.key_executives:
-        logger.info(f"  - {exec.NAME} ({exec.TITLE})")
-        logger.info(f"    Ownership: {exec.OWNERSHIP}")
+    logger.info(f"\nKey Executives ({len(benchmark.leadership_layer.key_executives)}):")
+    for exec in benchmark.leadership_layer.key_executives:
+        logger.info(f"  - {exec.name} ({exec.title})")
+        logger.info(f"    Ownership: {exec.ownership}")
 
-    logger.info(f"\nCitations ({len(BENCHMARK.citation_map.citations)}):")
-    for cite_id, url in BENCHMARK.citation_map.citations.items():
+    logger.info(f"\nCitations ({len(benchmark.citation_map.citations)}):")
+    for cite_id, url in benchmark.citation_map.citations.items():
         logger.info(f"  [{cite_id}]: {url}")
 
     logger.info("\n[3] Integrity Gate Validation:")
     logger.info("-" * 80)
-    integrity_result = validate_research_output(BENCHMARK)
+    integrity_result = validate_research_output(benchmark)
 
     logger.info(f"Passed: {integrity_result.passed}")
     logger.info(f"Depth Score: {integrity_result.depth_score:.2f}")
@@ -173,7 +182,7 @@ def example_usage():
     logger.info("\n[4] JSON Output:")
     logger.info("-" * 80)
     import json
-    output_dict = BENCHMARK.to_dict()
+    output_dict = benchmark.to_dict()
     logger.info(json.dumps(output_dict, indent=2)[:1000] + "...\n")
 
     LOGGER.INFO("=" * 80)
@@ -182,4 +191,3 @@ def example_usage():
 
 if __name__ == "__main__":
     example_usage()
-

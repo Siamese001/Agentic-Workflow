@@ -8,15 +8,8 @@ import logging
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from abc import ABC, abstractmethod
-
-# Assuming these are defined elsewhere or need to be imported
-# from some_module import FLOAT, BOOL, get_client, Provider, CLIENT
-FLOAT = float
-BOOL = bool
 
 LOGGER = logging.getLogger(__name__)
-
 
 class ReasoningStrategy(str, Enum):
     """Reasoning strategy for agent execution."""
@@ -25,7 +18,6 @@ class ReasoningStrategy(str, Enum):
     SELF_CONSISTENCY = "SELF_CONSISTENCY"
     REFLEXION = "REFLEXION"
     HYBRID_COT_TOT = "HYBRID_COT_TOT"
-
 
 @dataclass
 class ReasoningConfig:
@@ -44,7 +36,6 @@ class ReasoningConfig:
     max_tokens: int = 2000
     top_p: float = 0.9
 
-
 class Agent(ABC):
     """Abstract base class for all K-node agents.
 
@@ -58,25 +49,25 @@ class Agent(ABC):
         k_node_id: str,
         element: str,
     ):
-        """Initialize agent with reasoning configuration.
+            """Initialize agent with reasoning configuration.
 
         Args:
             config: Reasoning configuration from orchestration config
             k_node_id: K-node identifier (e.g., "K.5A")
             element: Element name (e.g., "Unify Bullets")
         """
-        self.CONFIG = config
+        SELF.CONFIG = config
         self.k_node_id = k_node_id
-        self.ELEMENT = element
+        SELF.ELEMENT = element
 
-        LOGGER.info(
+        logger.info(
             f"Initialized {self.__class__.__name__}: "
-            f"k_node_id={k_node_id}, temp={config.TEMPERATURE}"
+            f"k_node_id={k_node_id}, temp={config.temperature}"
         )
 
     @abstractmethod
     async def execute(self, context: Dict[str, Any]) -> Any:
-        """Execute agent with given context.
+            """Execute agent with given context.
 
         This method must be implemented by specialist agents (e.g., K5A_GenerationAgent).
 
@@ -88,13 +79,14 @@ class Agent(ABC):
         """
         pass
 
+        """Docstring."""
     async def _call_llm(
         self,
         prompt: str,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
     ) -> str:
-        """Call LLM with configured parameters.
+            """Call LLM with configured parameters.
 
         Args:
             prompt: Prompt to send to LLM
@@ -105,55 +97,39 @@ class Agent(ABC):
             LLM response text
         """
 
-        TEMP = temperature if temperature is not None else self.CONFIG.TEMPERATURE
-        TOKENS = max_tokens if max_tokens is not None else self.CONFIG.max_tokens
+        TEMP = temperature if temperature is not None else self.config.temperature
+        TOKENS = max_tokens if max_tokens is not None else self.config.max_tokens
 
-        LOGGER.debug(
-            f"Calling LLM for {self.k_node_id}: temp={TEMP:.2f}, max_tokens={TOKENS}"
+        logger.debug(
+            f"Calling LLM for {self.k_node_id}: temp={temp:.2f}, max_tokens={tokens}"
         )
 
         try:
             # Get Anthropic client (can be made configurable)
-            # Mock implementations for demonstration
-            class MockAnthropicClient:
-                async def messages_create(self, **kwargs):
-                    class MockResponse:
-                        class ContentItem:
-                            text = "Mock LLM response."
-                        content = [ContentItem()]
-                    return MockResponse()
-
-            def get_client(provider):
-                if provider == "ANTHROPIC":
-                    return MockAnthropicClient()
-                raise ValueError("Unsupported provider")
-
-            class Provider:
-                ANTHROPIC = "ANTHROPIC"
-
             CLIENT = get_client(Provider.ANTHROPIC)
 
             # Call LLM
-            RESPONSE = await CLIENT.messages_create(
+            RESPONSE = await client.messages.create(
                 MODEL="claude-3-5-sonnet-20241022",
-                max_tokens=TOKENS,
-                temperature=TEMP,
-                top_p=self.CONFIG.top_p,
+                max_tokens=tokens,
+                TEMPERATURE=temp,
+                top_p=self.config.top_p,
                 MESSAGES=[{"role": "user", "content": prompt}]
             )
 
-            return RESPONSE.content[0].text
+            return response.content[0].text
 
         except Exception as e:
-LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
+            logger.error(f"LLM call failed for {self.k_node_id}: {e}")
             raise
 
+        """Docstring."""
     async def _call_llm_with_self_consistency(
         self,
         prompt: str,
         k: Optional[int] = None,
     ) -> List[str]:
-        """Call LLM multiple times for self-consistency.
+            """Call LLM multiple times for self-consistency.
 
         Args:
             prompt: Prompt to send to LLM
@@ -162,25 +138,26 @@ LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
         Returns:
             List of k candidate responses
         """
-        k = k if k is not None else self.CONFIG.self_consistency
+        k = k if k is not None else self.config.self_consistency
 
-        LOGGER.info(f"Generating {k} candidates for self-consistency")
+        logger.info(f"Generating {k} candidates for self-consistency")
 
         CANDIDATES = []
         for i in range(k):
-            LOGGER.debug(f"Generating candidate {i+1}/{k}")
-            response = await self._call_llm(prompt)
-            CANDIDATES.append(response)
+            logger.debug(f"Generating candidate {i+1}/{k}")
+            RESPONSE = await self._call_llm(prompt)
+            candidates.append(response)
 
-        return CANDIDATES
+        return candidates
 
+        """Docstring."""
     async def _call_llm_with_tot(
         self,
         prompt: str,
         branches: Optional[int] = None,
         depth: Optional[int] = None,
     ) -> List[str]:
-        """Call LLM with Tree of Thoughts reasoning.
+            """Call LLM with Tree of Thoughts reasoning.
 
         Args:
             prompt: Base prompt
@@ -190,30 +167,30 @@ LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
         Returns:
             List of candidate responses from tree exploration
         """
-        BRANCHES = branches if branches is not None else self.CONFIG.tot_branches
-        DEPTH = depth if depth is not None else self.CONFIG.min_tot_depth
+        BRANCHES = branches if branches is not None else self.config.tot_branches
+        DEPTH = depth if depth is not None else self.config.min_tot_depth
 
-        LOGGER.info(f"Generating ToT with {BRANCHES} branches, depth {DEPTH}")
+        logger.info(f"Generating ToT with {branches} branches, depth {depth}")
 
         # Simplified ToT: generate multiple branches at each level
         CANDIDATES = []
 
-        for level in range(DEPTH):
-            level_prompt = f"{prompt}\n\nExploration level {level+1}/{DEPTH}"
+        for level in range(depth):
+            level_prompt = f"{prompt}\n\nExploration level {level+1}/{depth}"
 
-            for branch in range(BRANCHES):
-                LOGGER.debug(f"ToT level {level+1}, branch {branch+1}")
-                response = await self._call_llm(level_prompt)
-                CANDIDATES.append(response)
+            for branch in range(branches):
+                logger.debug(f"ToT level {level+1}, branch {branch+1}")
+                RESPONSE = await self._call_llm(level_prompt)
+                candidates.append(response)
 
-        return CANDIDATES
+        return candidates
 
     def _select_best_candidate(
         self,
         candidates: List[str],
         selection_criteria: str = "length",
     ) -> str:
-        """Select best candidate from multiple responses.
+            """# SQL removed: Select best candidate from multiple responses.
 
         Args:
             candidates: List of candidate responses
@@ -234,15 +211,16 @@ LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
         elif selection_criteria == "last":
             return candidates[-1]
         else:
-            LOGGER.warning(f"Unknown selection criteria: {selection_criteria}, using first")
+            logger.warning(f"Unknown selection criteria: {selection_criteria}, using first")
             return candidates[0]
 
+        """Docstring."""
     async def _execute_with_rag(
         self,
         prompt: str,
         context: Dict[str, Any],
     ) -> str:
-        """Execute with RAG integration.
+            """Execute with RAG integration.
 
         Args:
             prompt: Base prompt
@@ -252,6 +230,5 @@ LOGGER.error(f"LLM call failed for {self.k_node_id}: {e}")
             LLM response with RAG-enhanced context
         """
         # RAG integration pending - requires vector store and retrieval infrastructure
-        LOGGER.warning(f"RAG not yet implemented for {self.k_node_id}, calling LLM directly")
+        logger.warning(f"RAG not yet implemented for {self.k_node_id}, calling LLM directly")
         return await self._call_llm(prompt)
-

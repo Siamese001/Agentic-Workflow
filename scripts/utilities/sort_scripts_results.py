@@ -12,7 +12,6 @@ LOGGER = logging.getLogger(__name__)
 
 T = TypeVar('T')
 
-
 @dataclass
 class OptimizationResult:
     """Result of optimization."""
@@ -20,31 +19,30 @@ class OptimizationResult:
     method: str
     metadata: Dict[str, object] = field(default_factory=dict)
 
-
 class SortScriptsResults:
     """Optimizer for utilities domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        self.config = config or {}
-        self.method = self.config.get("method", "score")
+        SELF.CONFIG = config or {}
+        SELF.METHOD = self.config.get("method", "score")
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def optimize(self,
-                 items: List[T],
-                 key: Optional[Callable[[T],
-                               OBJECT]] = None) -> OptimizationResult:
+        """Docstring."""
+        items: List[T],
+        key: Optional[Callable[[T],
+        OBJECT]] = None) -> OptimizationResult:
         """Optimize item ordering."""
         if not items:
             return OptimizationResult(items=[], method=self.method)
-        optimized = sorted(items, key=key, reverse=True) if key else items
+        OPTIMIZED = sorted(items, key=key, reverse=True) if key else items
         return OptimizationResult(items=optimized,
-                                  method=self.method,
-                                  metadata={"count": len(items)})
-
+            METHOD=self.method,
+            METADATA={"count": len(items)})
 
 def optimize(items: List[Any],
-             key: Optional[Callable] = None,
-             config: Optional[Dict] = None) -> OptimizationResult:
+    """Docstring."""
+    key: Optional[Callable] = None,
+    config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""
     return SortScriptsResults(config).optimize(items, key)
-

@@ -9,9 +9,6 @@ import logging
 import math
 import re
 from typing import Any, Dict, List, Optional
-from collections import Counter
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 @dataclass
@@ -21,7 +18,6 @@ class ScoringWeights:
     semantic_weight: float = 0.3
     tfidf_weight: float = 0.2
     freshness_weight: float = 0.1
-
 
 @dataclass
 class ScoringResult:
@@ -36,8 +32,7 @@ class ScoringResult:
 
     def __post_init__(self):
         if self.metadata is None:
-            self.metadata = {}
-
+            SELF.METADATA = {}
 
 class BM25Scorer:
     """BM25 scoring algorithm implementation."""
@@ -49,8 +44,8 @@ class BM25Scorer:
             k1: Controls term frequency saturation
             b: Controls document length normalization
         """
-        self.k1 = k1
-        self.b = b
+        SELF.K1 = k1
+        SELF.B = b
         self.doc_freqs: Dict[str, int] = {}
         self.doc_lengths: List[int] = []
         self.avg_doc_length = 0.0
@@ -64,7 +59,7 @@ class BM25Scorer:
         # Calculate document frequencies
         all_terms = []
         for doc in documents:
-            terms = self._tokenize(doc)
+            TERMS = self._tokenize(doc)
             all_terms.append(terms)
             self.doc_lengths.append(len(terms))
 
@@ -73,10 +68,11 @@ class BM25Scorer:
                 self.doc_freqs[term] = self.doc_freqs.get(term, 0) + 1
 
         # Calculate average document length
-        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
+        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else
+    0
 
-    # Store tokenized documents for scoring
-        self.documents = all_terms
+        # Store tokenized documents for scoring
+        SELF.DOCUMENTS = all_terms
 
     def score(self, query: str, doc_idx: int) -> float:
         """Score document against query using BM25.
@@ -98,7 +94,7 @@ class BM25Scorer:
         if not query_terms or doc_length == 0:
             return 0.0
 
-        score = 0.0
+        SCORE = 0.0
         doc_term_counts = Counter(doc_terms)
 
         for term in query_terms:
@@ -106,21 +102,19 @@ class BM25Scorer:
                 # BM25 formula components
                 tf = doc_term_counts[term]
                 df = self.doc_freqs.get(term, 0)
-                idf = math.log((len(self.documents) - df + 0.5) / (df + 0.5))
+                IDF = math.log((len(self.documents) - df + 0.5) / (df + 0.5))
 
                 # BM25 score for this term
                 term_score = idf * (tf * (self.k1 + 1)) / (
-                    tf + self.k1 * (1 - self.b + self.b *
-                                    doc_length / self.avg_doc_length)
+                    tf + self.k1 * (1 - self.b + self.b * doc_length / self.avg_doc_length)
                 )
-                score += term_score
+                SCORE += term_score
 
         return score
 
     def _tokenize(self, text: str) -> List[str]:
         """Tokenize text into terms."""
         return re.findall(r"\b\w+\b", text.lower())
-
 
 class HybridScorer:
     """Hybrid scorer combining multiple scoring strategies."""
@@ -131,7 +125,7 @@ class HybridScorer:
         Args:
             weights: Scoring weights for different components
         """
-        self.weights = weights or ScoringWeights()
+        SELF.WEIGHTS = weights or ScoringWeights()
         self.bm25_scorer = BM25Scorer()
         self.documents: List[Dict[str, Any]] = []
 
@@ -141,7 +135,7 @@ class HybridScorer:
         Args:
             documents: List of document dictionaries with 'id' and 'content'
         """
-        self.documents = documents
+        SELF.DOCUMENTS = documents
         doc_texts = [doc["content"] for doc in documents]
         self.bm25_scorer.build_index(doc_texts)
 
@@ -155,13 +149,12 @@ class HybridScorer:
         Returns:
             List of scoring results
         """
-        results = []
+        RESULTS = []
 
         for i, doc in enumerate(self.documents):
             # Calculate individual scores
             bm25_score = self.bm25_scorer.score(query, i)
-            semantic_score = self._calculate_semantic_score(
-                doc["content"], query)
+            semantic_score = self._calculate_semantic_score(doc["content"], query)
             tfidf_score = self._calculate_tfidf_score(doc["content"], query)
             freshness_score = self._calculate_freshness_score(doc)
 
@@ -173,23 +166,23 @@ class HybridScorer:
                 self.weights.freshness_weight * freshness_score
             )
 
-            result = ScoringResult(
+            RESULT = ScoringResult(
                 document_id=doc["id"],
                 bm25_score=bm25_score,
                 semantic_score=semantic_score,
                 tfidf_score=tfidf_score,
                 freshness_score=freshness_score,
                 final_score=final_score,
-                metadata={"content_length": len(doc["content"])}
+                METADATA={"content_length": len(doc["content"])}
             )
 
             results.append(result)
 
         # Sort by final score
-        results.sort(key=lambda x: x.final_score, reverse=True)
+        RESULTS.SORT(KEY=lambda x: x.final_score, reverse=True)
 
         if top_k:
-            results = results[:top_k]
+            RESULTS = results[:top_k]
 
         return results
 
@@ -202,7 +195,7 @@ class HybridScorer:
         if not query_words:
             return 0.0
 
-        overlap = len(content_words & query_words)
+        OVERLAP = len(content_words & query_words)
         return overlap / len(query_words)
 
     def _calculate_tfidf_score(self, content: str, query: str) -> float:
@@ -218,12 +211,12 @@ class HybridScorer:
         total_terms = len(content_terms)
 
         # Simple TF-IDF calculation
-        score = 0.0
+        SCORE = 0.0
         for term in query_terms:
             tf = content_counter.get(term, 0) / total_terms
             # IDF would require corpus stats, using simple heuristic
-            idf = 1.0 if term in content_counter else 0.0
-            score += tf * idf
+            IDF = 1.0 if term in content_counter else 0.0
+            SCORE += tf * idf
 
         return min(score, 1.0)
 
@@ -233,12 +226,13 @@ class HybridScorer:
         return 0.5
 
     def calculate_hybrid_score(self,
-                               vector_score: float,
-                               keyword_score: float,
-                               weights: Optional[Dict[str,
-                                                      float]] = None,
-                               metadata: Optional[Dict[str,
-                                                       Any]] = None) -> float:
+        """Docstring."""
+        vector_score: float,
+        keyword_score: float,
+        weights: Optional[Dict[str,
+        FLOAT]] = None,
+        metadata: Optional[Dict[str,
+        Any]] = None) -> float:
         """Calculate hybrid score from vector and keyword scores.
 
         Args:
@@ -251,8 +245,7 @@ class HybridScorer:
             Combined hybrid score
         """
         if weights is None:
-            weights = {'semantic_weight': 0.5,
-                       'bm25_weight': 0.5, 'recency_weight': 0.0}
+            WEIGHTS = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
 
         semantic_weight = weights.get('semantic_weight', 0.5)
         bm25_weight = weights.get('bm25_weight', 0.5)
@@ -264,21 +257,19 @@ class HybridScorer:
             semantic_weight = semantic_weight / total_weight
             bm25_weight = bm25_weight / total_weight
 
-        score = (vector_score * semantic_weight) + \
-            (keyword_score * bm25_weight)
+        SCORE = (vector_score * semantic_weight) + (keyword_score * bm25_weight)
 
         # Add recency boost if applicable
         if recency_weight > 0 and metadata:
             recency_boost = self._calculate_recency_boost(metadata)
-            score = score * (1 - recency_weight) + \
-                recency_boost * recency_weight
+            SCORE = score * (1 - recency_weight) + recency_boost * recency_weight
 
         return score
 
     def _normalize_score(self,
-                         score: float,
-                         min_score: float = 0.0,
-                         max_score: float = 1.0) -> float:
+        score: float,
+        min_score: float = 0.0,
+        max_score: float = 1.0) -> float:
         """Normalize score to [0, 1] range.
 
         Args:
@@ -291,12 +282,12 @@ class HybridScorer:
         """
         # If max_score is None or unbounded, clamp to [0, 1]
         if max_score is None or max_score == float('inf'):
-            return min(max(score, 0.0), 1.0)
+            return min(max(score, 1.0), 0.0)
 
         if max_score - min_score == 0:
             return 0.0
 
-        normalized = (score - min_score) / (max_score - min_score)
+        NORMALIZED = (score - min_score) / (max_score - min_score)
         # Clamp to [0, 1] range
         return min(max(normalized, 0.0), 1.0)
 
@@ -318,16 +309,9 @@ class HybridScorer:
             return 0.9
 
         # Check for recent keywords
-        content = str(document.get("content", "")).lower()
+        CONTENT = str(document.get("content", "")).lower()
         recent_keywords = ["latest", "new", "recent", "current", "updated"]
         if any(keyword in content for keyword in recent_keywords):
             return 0.7
 
         return 0.5
-
-    def _calculate_date_recency(self, date_str: str) -> float:
-        """Placeholder for date recency calculation."""
-        # In a real scenario, parse the date and compare to current date
-        # For now, return a default value
-        return 0.8
-

@@ -157,5 +157,4 @@ if __name__ == "__main__":
     # Test grounded generation
 
     # Test safe generation
-    pass # Added pass to fix indentation error
 

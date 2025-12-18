@@ -44,4 +44,3 @@ __all__ = [
 # Version information
 __version__ = "1.0.0"
 __description__ = "Production SDK wrappers for OpenAI, Anthropic, and Google Vertex AI"
-

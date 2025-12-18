@@ -1,10 +1,4 @@
 
-import logging
-import os
-import sys
-import tempfile
-from pathlib import Path
-
 LOGGER = logging.getLogger(__name__)
 #!/usr/bin/env python3
 """Test script for atomic state persistence with ACID guarantees.
@@ -20,6 +14,11 @@ Usage:
     python test_atomic_state.py
 """
 
+import logging
+import os
+import sys
+import tempfile
+from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -45,9 +44,9 @@ def test_workflow_state_schema():
 
     # Create a workflow state
     STATE = WorkflowState(
-        workflow_id = "test_workflow_001",
-        workflow_type = "resume_generation",
-        total_k_nodes = 5,
+        workflow_id="test_workflow_001",
+        workflow_type="resume_generation",
+        total_k_nodes=5,
     )
 
     assert state.workflow_id == "test_workflow_001"
@@ -58,12 +57,12 @@ def test_workflow_state_schema():
 
     # Add an execution
     state.add_execution(
-        k_node_index = 0,
-        k_node_name = "extract_experience",
-        input_prompt = "Extract experience from resume",
-        OUTPUT = "Experience extracted successfully",
-        duration_ms = 150.5,
-        SUCCESS = True,
+        k_node_index=0,
+        k_node_name="extract_experience",
+        input_prompt="Extract experience from resume",
+        OUTPUT="Experience extracted successfully",
+        duration_ms=150.5,
+        SUCCESS=True,
     )
 
     assert state.current_k_node == 1
@@ -96,29 +95,28 @@ def test_atomic_checkpoint():
     # Create temporary storage
     with tempfile.TemporaryDirectory() as temp_dir:
         MANAGER = AtomicStateManager(
-            BACKEND = BackendType.FILE,
-            storage_path = temp_dir,
+            BACKEND=BackendType.FILE,
+            storage_path=temp_dir,
         )
 
         # Create initial state
         state_a = WorkflowState(
-            workflow_id = "workflow_checkpoint_test",
-            workflow_type = "test",
-            total_k_nodes = 3,
+            workflow_id="workflow_checkpoint_test",
+            workflow_type="test",
+            total_k_nodes=3,
         )
         state_a.add_execution(
-            k_node_index = 0,
-            k_node_name = "step_1",
-            input_prompt = "Input 1",
-            OUTPUT = "Output 1",
-            duration_ms = 100.0,
+            k_node_index=0,
+            k_node_name="step_1",
+            input_prompt="Input 1",
+            OUTPUT="Output 1",
+            duration_ms=100.0,
         )
 
         # Checkpoint State A
         metadata_a = manager.checkpoint("workflow_checkpoint_test", state_a)
         assert metadata_a.success
-        logger.info(
-            f"✓ State A checkpointed (duration: {metadata_a.duration_ms:.2f}ms)")
+        logger.info(f"✓ State A checkpointed (duration: {metadata_a.duration_ms:.2f}ms)")
 
         # Verify State A can be loaded
         loaded_state = manager.resume_workflow("workflow_checkpoint_test")
@@ -129,30 +127,29 @@ def test_atomic_checkpoint():
 
         # Create State B
         state_b = WorkflowState(
-            workflow_id = "workflow_checkpoint_test",
-            workflow_type = "test",
-            total_k_nodes = 3,
+            workflow_id="workflow_checkpoint_test",
+            workflow_type="test",
+            total_k_nodes=3,
         )
         state_b.add_execution(
-            k_node_index = 0,
-            k_node_name = "step_1",
-            input_prompt = "Input 1",
-            OUTPUT = "Output 1",
-            duration_ms = 100.0,
+            k_node_index=0,
+            k_node_name="step_1",
+            input_prompt="Input 1",
+            OUTPUT="Output 1",
+            duration_ms=100.0,
         )
         state_b.add_execution(
-            k_node_index = 1,
-            k_node_name = "step_2",
-            input_prompt = "Input 2",
-            OUTPUT = "Output 2",
-            duration_ms = 150.0,
+            k_node_index=1,
+            k_node_name="step_2",
+            input_prompt="Input 2",
+            OUTPUT="Output 2",
+            duration_ms=150.0,
         )
 
         # Checkpoint State B
         metadata_b = manager.checkpoint("workflow_checkpoint_test", state_b)
         assert metadata_b.success
-        logger.info(
-            f"✓ State B checkpointed (duration: {metadata_b.duration_ms:.2f}ms)")
+        logger.info(f"✓ State B checkpointed (duration: {metadata_b.duration_ms:.2f}ms)")
 
         # Verify State B replaced State A
         loaded_state = manager.resume_workflow("workflow_checkpoint_test")
@@ -168,22 +165,22 @@ def test_rollback_on_failure():
 
     with tempfile.TemporaryDirectory() as temp_dir:
         MANAGER = AtomicStateManager(
-            BACKEND = BackendType.FILE,
-            storage_path = temp_dir,
+            BACKEND=BackendType.FILE,
+            storage_path=temp_dir,
         )
 
         # Create and checkpoint State A (valid state)
         state_a = WorkflowState(
-            workflow_id = "workflow_rollback_test",
-            workflow_type = "test",
-            total_k_nodes = 3,
+            workflow_id="workflow_rollback_test",
+            workflow_type="test",
+            total_k_nodes=3,
         )
         state_a.add_execution(
-            k_node_index = 0,
-            k_node_name = "step_1",
-            input_prompt = "Input 1",
-            OUTPUT = "Output 1 - VALID STATE",
-            duration_ms = 100.0,
+            k_node_index=0,
+            k_node_name="step_1",
+            input_prompt="Input 1",
+            OUTPUT="Output 1 - VALID STATE",
+            duration_ms=100.0,
         )
 
         manager.checkpoint("workflow_rollback_test", state_a)
@@ -197,29 +194,29 @@ def test_rollback_on_failure():
         # Simulate failure during checkpoint of State B
         # We'll mock the _atomic_swap method to raise an exception
         state_b = WorkflowState(
-            workflow_id = "workflow_rollback_test",
-            workflow_type = "test",
-            total_k_nodes = 3,
+            workflow_id="workflow_rollback_test",
+            workflow_type="test",
+            total_k_nodes=3,
         )
         state_b.add_execution(
-            k_node_index = 0,
-            k_node_name = "step_1",
-            input_prompt = "Input 1",
-            OUTPUT = "Output 1",
-            duration_ms = 100.0,
+            k_node_index=0,
+            k_node_name="step_1",
+            input_prompt="Input 1",
+            OUTPUT="Output 1",
+            duration_ms=100.0,
         )
         state_b.add_execution(
-            k_node_index = 1,
-            k_node_name = "step_2",
-            input_prompt = "Input 2",
-            OUTPUT = "Output 2 - CORRUPTED STATE (should not persist)",
-            duration_ms = 150.0,
+            k_node_index=1,
+            k_node_name="step_2",
+            input_prompt="Input 2",
+            OUTPUT="Output 2 - CORRUPTED STATE (should not persist)",
+            duration_ms=150.0,
         )
 
         # Mock atomic_swap to simulate failure
         original_swap = manager._atomic_swap
         def failing_swap(shadow_key, active_key):
-                """Placeholder for future documentation."""
+                """TODO: Add docstring."""
 
             raise IOError("Simulated disk failure during atomic swap")
 
@@ -230,8 +227,7 @@ def test_rollback_on_failure():
             manager.checkpoint("workflow_rollback_test", state_b)
             assert False, "Checkpoint should have failed"
         except StatePersistenceError as e:
-pass
-logger.info(f"✓ Checkpoint failed as expected: {e}")
+            logger.info(f"✓ Checkpoint failed as expected: {e}")
 
         # Restore original method
         manager._atomic_swap = original_swap
@@ -437,11 +433,11 @@ def test_fsync_durability():
 
 def main():
     """Run all tests."""
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
     logger.info("ATOMIC STATE PERSISTENCE TEST SUITE (ACID GUARANTEES)")
-    logger.info("=" * 60)
+    LOGGER.INFO("=" * 60)
 
-    tests = [
+    TESTS = [
         test_workflow_state_schema,
         test_atomic_checkpoint,
         test_rollback_on_failure,
@@ -459,8 +455,7 @@ def main():
             test()
             PASSED += 1
         except Exception as e:
-pass
-logger.info(f"✗ {test.__name__} failed: {e}")
+            logger.info(f"✗ {test.__name__} failed: {e}")
             import traceback
             traceback.print_exc()
             FAILED += 1
@@ -486,4 +481,3 @@ if __name__ == "__main__":
     # Run tests
     exit_code = main()
     sys.exit(exit_code)
-

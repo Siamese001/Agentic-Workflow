@@ -13,8 +13,6 @@ import os
 
 import pytest
 
-logger = logging.getLogger(__name__)
-
     KNodeType,
     ReasoningStrategy,
     get_kx_registry,
@@ -351,4 +349,3 @@ class TestKXNodeCustomization:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])
-

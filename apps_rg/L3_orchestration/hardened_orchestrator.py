@@ -12,41 +12,18 @@ Phase 4: Titanium RAG Integration - Brain transplant complete
 """
 
 import logging
-import os
-from pathlib import Path
-import sys
 from datetime import datetime
-from typing import Any, Dict, Optional
 
-# Define errors that indicate the code itself is fundamentally broken
-# These cannot be fixed by a retry or a restart.
-TERMINAL_ERRORS = (
-    SyntaxError,
-    ImportError,
-    NameError,
-    TypeError,
-    AttributeError,
-    IndentationError
-)
-
-# Add parent directories to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from runtime.state.state_management import (
     get_state_manager,
     WorkflowState,
     StatePersistenceError,
 )
-from runtime.routing.resilient_router import (
     get_resilient_router,
     RoutingTier,
 )
-from runtime.models import (
     AgentMessage,
     AgentResponse,
 )
-from apps_rg.L3_orchestration.workflow_orchestrator import (
     RGWorkflowOrchestrator,
     WorkflowSpec,
     HopSpec,
@@ -54,13 +31,9 @@ from apps_rg.L3_orchestration.workflow_orchestrator import (
     HopStatus,
     HopExecutionError,
 )
-from runtime.shared.models import (
     ReasoningConfig,
     get_reasoning_config,
 )
-from pathlib import Path
-
-from runtime.pipeline.titanium_rag_pipeline import (
     inject_titanium_tools,
     prepare_titanium_context,
     log_titanium_usage,
@@ -82,9 +55,9 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
 
     def __init__(
         self,
-        workflow_spec: Optional[WorkflowSpec]=None,
-        run_base_dir: str="./pipeline_runs",
-        storage_path: Optional[str]=None,
+        workflow_spec: Optional[WorkflowSpec] = None,
+        run_base_dir: str = "./pipeline_runs",
+        storage_path: Optional[str] = None,
     ) -> None:
         """Initialize the hardened orchestrator.
 
@@ -103,10 +76,10 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         self.workflow_state: Optional[WorkflowState] = None
         self.resumed_from_checkpoint = False
 
-        logger.info(
-            "Hardened orchestrator initialized with atomic state management")
+        logger.info("Hardened orchestrator initialized with atomic state management")
 
     def initialize_or_resume_workflow(
+        """Docstring."""
         self,
         workflow_id: str,
         total_k_nodes: int,
@@ -131,7 +104,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 f"Resumed workflow {workflow_id} from K-Node "
                 f"{self.workflow_state.current_k_node}/{total_k_nodes} "
                 f"({self.workflow_state.get_progress_percentage():.1f}% complete)"
-    )
+            )
 
             # Update context with resumed state
             context["resumed_from_checkpoint"] = True
@@ -144,7 +117,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 workflow_type="resume_generation",
                 total_k_nodes=total_k_nodes,
                 METADATA=context.copy(),
-    )
+            )
             self.resumed_from_checkpoint = False
             logger.info(f"Starting new workflow: {workflow_id}")
 
@@ -156,11 +129,12 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
         return context
 
     async def execute_hop_with_hardening(
+        """Docstring."""
         self,
         hop_id: str,
         context: Dict[str, Any],
         prompt: str,
-        temperature: Optional[float]=None,
+        temperature: Optional[float] = None,
     ) -> HopCheckpoint:
         """Execute a hop with hardened routing and atomic checkpointing.
 
@@ -177,7 +151,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             hop_id=hop_id,
             STATUS=HopStatus.RUNNING,
             start_time=datetime.now(),
-    )
+        )
 
         try:
             # Get reasoning config for this hop
@@ -206,7 +180,7 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                 TIER=tier,
                 PROMPT=prompt,
                 TEMPERATURE=temperature,
-    )
+            )
 
             # Update workflow state
             if self.workflow_state:
@@ -218,13 +192,13 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
                     duration_ms=response.metadata.get("duration_ms", 0),
                     SUCCESS=True,
                     METADATA=response.metadata,
-    )
+                )
 
                 # Atomic checkpoint after successful execution
                 self.state_manager.checkpoint(
                     self.workflow_state.workflow_id,
                     self.workflow_state,
-    )
+                )
                 logger.info(f"Checkpointed after hop {hop_id}")
 
             # Update checkpoint
@@ -242,78 +216,33 @@ class HardenedWorkflowOrchestrator(RGWorkflowOrchestrator):
             logger.info(f"Hop {hop_id} completed successfully")
 
         except Exception as e:
-# [CRITICAL] Distinguish between "Bad Code" (Terminal) and "Bad Infra" (Transient)
+            # Handle failure
+            CHECKPOINT.STATUS = HopStatus.FAILED
+            checkpoint.end_time = datetime.now()
+            checkpoint.error_message = str(e)
 
-            if isinstance(e, TERMINAL_ERRORS):
-                self.logger.critical(f"☠️ TERMINAL ERROR in {hop_id}: {e}")
-                self.logger.critical("Logic is broken. Retrying will not help. Workflow ABORTED.")
+            logger.error(f"Hop {hop_id} failed: {e}")
 
-                # Mark state as FAILED (dead) so it cannot be mistakenly resumed
-                if self.workflow_state:
-                    self.workflow_state.mark_failed(
-                        failed_at_step=hop_id,
-                        reason=str(e)
+            # Update workflow state with failure
+            if self.workflow_state:
+                self.workflow_state.add_execution(
+                    k_node_index=self.workflow_state.current_k_node,
+                    k_node_name=hop_id,
+                    input_prompt=prompt,
+                    OUTPUT=None,
+                    duration_ms=0,
+                    SUCCESS=False,
+                    ERROR=str(e),
+                )
+
+                # Still checkpoint on failure for transparency
+                try:
+                    self.state_manager.checkpoint(
+                        self.workflow_state.workflow_id,
+                        self.workflow_state,
                     )
-                    self.state_manager.checkpoint(self.workflow_id, self.workflow_state)
-
-                # Update checkpoint
-                CHECKPOINT.STATUS = HopStatus.FAILED
-                checkpoint.end_time = datetime.now()
-                checkpoint.error_message = f"TERMINAL: {str(e)}"
-
-                # Crash the program to force human intervention
-                sys.exit(1)
-
-            elif isinstance(e, (InfrastructureError, TimeoutError, StatePersistenceError)):
-                self.logger.warning(f"⚠️ TRANSIENT ERROR in {hop_id}: {e}")
-                self.logger.warning("Infrastructure is unstable. Pausing workflow for resume.")
-
-                # Checkpoint as "PAUSED" (recoverable)
-                if self.workflow_state:
-                    self.workflow_state.mark_paused(
-                        paused_at_step=hop_id,
-                        reason=str(e)
-                    )
-                    self.state_manager.checkpoint(self.workflow_id, self.workflow_state)
-
-                # Update checkpoint
-                CHECKPOINT.STATUS = HopStatus.PAUSED
-                checkpoint.end_time = datetime.now()
-                checkpoint.error_message = f"TRANSIENT: {str(e)}"
-
-                # Exit cleanly so the watchdog can restart or wait
-                sys.exit(0)
-
-            else:
-                # Unknown edge cases - Default to Pause
-                self.logger.error(f"🛑 UNHANDLED EXCEPTION: {e}")
-
-                # Update checkpoint
-                CHECKPOINT.STATUS = HopStatus.FAILED
-                checkpoint.end_time = datetime.now()
-                checkpoint.error_message = str(e)
-
-                # Update workflow state with failure
-                if self.workflow_state:
-                    self.workflow_state.add_execution(
-                        k_node_index=self.workflow_state.current_k_node,
-                        k_node_name=hop_id,
-                        input_prompt=prompt,
-                        OUTPUT=None,
-                        duration_ms=0,
-                        SUCCESS=False,
-                        ERROR=str(e),
-                    )
-
-                    # Still checkpoint on failure for transparency
-                    try:
-                        self.state_manager.checkpoint(
-                            self.workflow_state.workflow_id,
-                            self.workflow_state,
-                        )
-                    except StatePersistenceError as checkpoint_error:
-logger.error(
-                            f"Failed to checkpoint failure state: {checkpoint_error}")
+                except StatePersistenceError as checkpoint_error:
+                    logger.error(f"Failed to checkpoint failure state: {checkpoint_error}")
 
         self.hop_checkpoints.append(checkpoint)
         return checkpoint
@@ -346,6 +275,7 @@ logger.error(
             return RoutingTier.BALANCED
 
     async def execute_workflow_with_resilience(
+        """Docstring."""
         self,
         workflow_id: str,
         context: Dict[str, Any],
@@ -363,8 +293,7 @@ logger.error(
 
         # Initialize or resume workflow
         total_hops = len(self.spec.hops) if self.spec else 0
-        CONTEXT = self.initialize_or_resume_workflow(
-            workflow_id, total_hops, context)
+        CONTEXT = self.initialize_or_resume_workflow(workflow_id, total_hops, context)
 
         # Get execution order
         execution_order = self.get_execution_order()
@@ -376,7 +305,7 @@ logger.error(
             execution_order = [
                 hop for i, hop in enumerate(execution_order)
                 if i >= current_k_node
-    ]
+            ]
             logger.info(f"Skipping {current_k_node} already completed hops")
 
         # Execute remaining hops
@@ -387,15 +316,13 @@ logger.error(
             "hops_completed": [],
             "hops_failed": [],
             "checkpoints": [],
-    }
+        }
 
         for i, hop_id in enumerate(execution_order):
-            logger.info(
-                f"Executing hop {hop_id} ({i + 1}/{len(execution_order)})")
+            logger.info(f"Executing hop {hop_id} ({i+1}/{len(execution_order)})")
 
             # Get hop specification
-            hop_spec = next(
-                (h for h in self.spec.hops if h.id == hop_id), None)
+            hop_spec = next((h for h in self.spec.hops if h.id == hop_id), None)
             if not hop_spec:
                 raise HopExecutionError(f"Hop spec not found: {hop_id}")
 
@@ -405,7 +332,7 @@ logger.error(
                 context,
                 PROMPT=context.get("prompt", f"Execute {hop_id}"),
                 TEMPERATURE=context.get("temperature"),
-    )
+            )
 
             # Update results
             if checkpoint.status == HopStatus.COMPLETED:
@@ -435,44 +362,53 @@ logger.error(
                     self.state_manager.checkpoint(
                         self.workflow_state.workflow_id,
                         self.workflow_state,
-    )
+                    )
                 except StatePersistenceError as e:
-logger.error(f"Failed to save final checkpoint: {e}")
+                    logger.error(f"Failed to save final checkpoint: {e}")
 
         # Add state information to results
         results["final_state"] = {
             "current_k_node": self.workflow_state.current_k_node if self.workflow_state else 0,
             "total_k_nodes": self.workflow_state.total_k_nodes if self.workflow_state else 0,
-            "progress_percentage": self.workflow_state.get_progress_percentage() if self.workflow_state else 0,
+            "progress_percentage": self.
+                .workflow_state.
+                .get_progress_percentage() if self.
+                .workflow_state else 0,
 
-            "execution_log_count": len(self.workflow_state.execution_log) if self.workflow_state else 0,
+
+            "execution_log_count": len(self.
+                .workflow_state.
+                .execution_log) if self.
+                .workflow_state else 0,
+
+
         }
 
         logger.info(
             f"Hardened workflow completed with status: {results['status']} "
             f"(Progress: {results['final_state']['progress_percentage']:.1f}%)"
-    )
+        )
 
         return results
 
-    def create_hardened_orchestrator(
-        workflow_spec: Optional[WorkflowSpec]=None,
-        run_base_dir: str="./pipeline_runs",
-        storage_path: Optional[str]=None,
-    ) -> HardenedWorkflowOrchestrator:
-        """Create a hardened orchestrator with atomic state management.
+def create_hardened_orchestrator(
+    """Docstring."""
+    workflow_spec: Optional[WorkflowSpec] = None,
+    run_base_dir: str = "./pipeline_runs",
+    storage_path: Optional[str] = None,
+) -> HardenedWorkflowOrchestrator:
+    """Create a hardened orchestrator with atomic state management.
 
-        Args:
-            workflow_spec: Workflow specification
-            run_base_dir: Base directory for run outputs
-            storage_path: Path for atomic state storage
+    Args:
+        workflow_spec: Workflow specification
+        run_base_dir: Base directory for run outputs
+        storage_path: Path for atomic state storage
 
-        Returns:
-            HardenedWorkflowOrchestrator instance
-        """
-        return HardenedWorkflowOrchestrator(
-            workflow_spec=workflow_spec,
-            run_base_dir=run_base_dir,
-            storage_path=storage_path,
-        )
-
+    Returns:
+        HardenedWorkflowOrchestrator instance
+    """
+    return HardenedWorkflowOrchestrator(
+        workflow_spec=workflow_spec,
+        run_base_dir=run_base_dir,
+        storage_path=storage_path,
+    )

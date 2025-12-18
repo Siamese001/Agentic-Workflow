@@ -1,6 +1,11 @@
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
-__all__ = ['SimScenario', 'SimOutcome', 'run_scenario', 'metrics']
+# from archives.legacy_root_folders.eval.simulation.simulator import run_scenario  # DEPRECATED: ...
 
+__all__ = [
+    "SimScenario",
+    "SimOutcome",
+    "run_scenario",
+    "metrics",
+]

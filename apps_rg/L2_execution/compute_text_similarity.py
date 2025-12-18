@@ -1,3 +1,4 @@
+
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -12,31 +13,24 @@ import logging
 import math
 from typing import List, Tuple
 
-logger = logging.getLogger(__name__)
-
-
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.metrics.pairwise import cosine_similarity
 
     SKLEARN_AVAILABLE = True
 except ImportError:
-    pass
-SKLEARN_AVAILABLE = False
-
+    SKLEARN_AVAILABLE = False
 
 class TextSimilarityCalculator:
     """Calculate TF-IDF cosine similarity between texts."""
 
     def __init__(self) -> None:
         """Initialize the similarity calculator."""
-        self.vectorizer = None
         if SKLEARN_AVAILABLE:
-            self.vectorizer = TfidfVectorizer(stop_words="english", norm="l2")
+            SELF.VECTORIZER = TfidfVectorizer(stop_words="english", norm="l2")
 
     def calculate(self, text1: str, text2: str) -> float:
         """Calculate cosine similarity between two texts."""
-        if SKLEARN_AVAILABLE and self.vectorizer:
+        if SKLEARN_AVAILABLE:
             return self._calculate_sklearn(text1, text2)
         return self._calculate_fallback(text1, text2)
 
@@ -48,25 +42,25 @@ class TextSimilarityCalculator:
             tfidf_matrix = self.vectorizer.fit_transform([text1, text2])
             return cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
         except (ValueError, TypeError, RuntimeError):
-return 0.0
+            return 0.0
 
     def _calculate_fallback(self, text1: str, text2: str) -> float:
         """Basic fallback implementation without sklearn."""
         if not text1 or not text2:
             return 0.0
 
-        words1 = set(text1.lower().split())
-        words2 = set(text2.lower().split())
+        WORDS1 = set(text1.lower().split())
+        WORDS2 = set(text2.lower().split())
 
         if not words1 or not words2:
             return 0.0
 
-        intersection = words1.intersection(words2)
+        INTERSECTION = words1.intersection(words2)
         if not intersection:
             return 0.0
 
-        numerator = len(intersection)
-        denominator = math.sqrt(len(words1) * len(words2))
+        NUMERATOR = len(intersection)
+        DENOMINATOR = math.sqrt(len(words1) * len(words2))
 
         if denominator == 0:
             return 0.0
@@ -74,14 +68,14 @@ return 0.0
         return numerator / denominator
 
     def find_duplicates(
+        """Docstring."""
         self, texts: List[str], threshold: float = 0.9
     ) -> List[Tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""
-        duplicates = []
+        DUPLICATES = []
         for i in range(len(texts)):
             for j in range(i + 1, len(texts)):
-                similarity = self.calculate(texts[i], texts[j])
+                SIMILARITY = self.calculate(texts[i], texts[j])
                 if similarity >= threshold:
                     duplicates.append((i, j, similarity))
         return duplicates
-

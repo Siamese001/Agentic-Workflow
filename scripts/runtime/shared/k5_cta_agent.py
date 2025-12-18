@@ -6,12 +6,8 @@ and archetype-appropriate phrasing.
 
 import logging
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
-from agent import Agent
-from config import ReasoningConfig
 
 LOGGER = logging.getLogger(__name__)
-
 
 @dataclass
 class K5Output:
@@ -22,7 +18,6 @@ class K5Output:
     word_count: int
     char_count: int
     metadata: Dict[str, Any]
-
 
 # Route-specific CTA templates (from outreach_orchestration_config.py)
 CTA_TEMPLATES = {
@@ -64,7 +59,6 @@ CTA_TEMPLATES = {
     },
 }
 
-
 class K5CTAAgent(Agent):
     """K.5 specialist agent for CTA generation.
 
@@ -81,7 +75,7 @@ class K5CTAAgent(Agent):
         route: str,
         archetype: str,
     ):
-        """Initialize K.5 CTA agent.
+            """Initialize K.5 CTA agent.
 
         Args:
             config: Reasoning configuration
@@ -90,17 +84,17 @@ class K5CTAAgent(Agent):
         """
         super().__init__(config, k_node_id="K.5", element="CTA")
 
-        self.route = route
-        self.archetype = archetype
-        self.template = CTA_TEMPLATES.get(route, CTA_TEMPLATES["INMAIL"])
+        SELF.ROUTE = route
+        SELF.ARCHETYPE = archetype
+        SELF.TEMPLATE = CTA_TEMPLATES.get(route, CTA_TEMPLATES["INMAIL"])
 
-        LOGGER.info(
+        logger.info(
             f"K.5 CTA Agent initialized: route={route}, "
             f"word_limit={self.template['word_limit']}"
         )
 
     async def execute(self, context: Dict[str, Any]) -> K5Output:
-        """Execute K.5 CTA generation.
+            """Execute K.5 CTA generation.
 
         Args:
             context: Execution context with:
@@ -113,37 +107,37 @@ class K5CTAAgent(Agent):
         Returns:
             K5Output with CTA
         """
-        LOGGER.info(f"Executing K.5 CTA generation for {self.route}")
+        logger.info(f"Executing K.5 CTA generation for {self.route}")
 
         # Extract context
-        topic = context.get("topic", "your work")
-        duration = context.get("duration", "15-minute")
-        timeframe = context.get("timeframe", "this week")
+        TOPIC = context.get("topic", "your work")
+        DURATION = context.get("duration", "15-minute")
+        TIMEFRAME = context.get("timeframe", "this week")
         prior_topic = context.get("prior_topic", "our previous discussion")
         regeneration_feedback = context.get("regeneration_feedback")
 
         # Build prompt
         if regeneration_feedback:
-            prompt = self._build_regeneration_prompt(context, regeneration_feedback)
+            PROMPT = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
-            prompt = self._build_initial_prompt(topic, duration, timeframe, prior_topic)
+            PROMPT = self._build_initial_prompt(topic, duration, timeframe, prior_topic)
 
         # Generate CTA
-        response = await self._call_llm(prompt)
-        cta = response.strip()
+        RESPONSE = await self._call_llm(prompt)
+        CTA = response.strip()
 
         # Calculate metrics
         word_count = len(cta.split())
         char_count = len(cta)
 
         # Build output
-        output = K5Output(
-            cta=cta,
-            route=self.route,
-            archetype=self.archetype,
+        OUTPUT = K5Output(
+            CTA=cta,
+            ROUTE=self.route,
+            ARCHETYPE=self.archetype,
             word_count=word_count,
             char_count=char_count,
-            metadata={
+            METADATA={
                 "k_node_id": self.k_node_id,
                 "word_limit": self.template["word_limit"],
                 "char_limit": self.template["char_limit"],
@@ -151,7 +145,7 @@ class K5CTAAgent(Agent):
             },
         )
 
-        LOGGER.info(
+        logger.info(
             f"K.5 CTA generation complete: {word_count} words, {char_count} chars"
         )
 
@@ -164,7 +158,7 @@ class K5CTAAgent(Agent):
         timeframe: str,
         prior_topic: str,
     ) -> str:
-        """Build initial CTA generation prompt.
+            """Build initial CTA generation prompt.
 
         Args:
             topic: Discussion topic
@@ -186,7 +180,7 @@ CRITICAL: CONNECTION_REQ CTAs must be connection-only (no meeting ask).
 - Part of overall 300 character limit
 - Examples: "Open to connecting?", "Interested in a brief chat?"
 """
-        elif self.route == "INMAIL":
+        elif SELF.ROUTE == "INMAIL":
             route_instructions = f"""
 INMAIL CTAs must include:
 - Specific duration ({duration})
@@ -194,7 +188,7 @@ INMAIL CTAs must include:
 - Explicit topic ({topic})
 - Max 20 words
 """
-        elif self.route == "SHORT_NEW":
+        elif SELF.ROUTE == "SHORT_NEW":
             route_instructions = """
 SHORT_NEW CTAs must be:
 - Connection-only (no meeting ask)
@@ -209,7 +203,8 @@ FOLLOW_UP CTAs must:
 - Max 20 words
 """
 
-        prompt = f"""Generate a professional CTA for a LinkedIn {self.route} message to a {self.archetype}.
+        PROMPT = f"""Generate a professional CTA for a LinkedIn {self.route} message to a {self.arch
+    etype}.
 
 CRITICAL CONSTRAINTS:
 - Word limit: {word_limit} words (STRICT)
@@ -233,7 +228,7 @@ Generate the CTA now (single sentence, {word_limit} words max):
         context: Dict[str, Any],
         feedback: str,
     ) -> str:
-        """Build regeneration prompt with validation feedback.
+            """Build regeneration prompt with validation feedback.
 
         Args:
             context: Original context
@@ -244,7 +239,7 @@ Generate the CTA now (single sentence, {word_limit} words max):
         """
         previous_cta = context.get("previous_cta", "")
 
-        prompt = f"""REGENERATION REQUIRED
+        PROMPT = f"""REGENERATION REQUIRED
 
 {feedback}
 
@@ -261,4 +256,3 @@ Generate the corrected CTA:
 """
 
         return prompt
-

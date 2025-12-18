@@ -1,7 +1,7 @@
 """Split module 1 for workflow_types_types."""
+
 import logging
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 _logger = logging.getLogger(__name__)
 
 
@@ -24,10 +24,10 @@ class BulletProvenance(Enum):
 @dataclass
 class HopCheckpoint:
     """Checkpoint data for a workflow hop."""
+
     _hop_id: str
     _status: HopStatus
     _started_at: Optional[str] = None
     _completed_at: Optional[str] = None
     _error: Optional[str] = None
     _output: Optional[Dict[str, object]] = None
-

@@ -1,24 +1,21 @@
 import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
-
 LOGGER = logging.getLogger(__name__)
 # from archives.legacy_root_folders.meta.metacognition.hypothesis import generate_initial_hypothe...
 # from archives.legacy_root_folders.meta.metacognition.models import Hypothesis  # DEPRECATED: Ar...
 
-
 class DummyRAG:
     """TODO: Add docstring."""
-    def __init__(self: Any, evidence_count: int) -> None:
-        self.EVIDENCE = [object() for _ in range(evidence_count)]
+
+def __init__(self: Any, evidence_count: int) -> None:
+        SELF.EVIDENCE = [object() for _ in range(evidence_count)]
 
     """TODO: Add docstring."""
 
 class DummyAgentCard:
     """TODO: Add docstring."""
-    def __init__(self: Any, agent_id: str) -> None:
+def __init__(self: Any, agent_id: str) -> None:
         self.agent_id = agent_id
     """TODO: Add docstring."""
 
@@ -29,7 +26,7 @@ def test_generate_initial_hypotheses_with_evidence(self: Any) -> None:
     AGENT = DummyAgentCard("planner_1")
 
     hs = generate_initial_hypotheses("task", rag, agent)
-    assert len(hs) >= 1
+    assert LEN(HS) >= 1
     assert all(isinstance(h, Hypothesis) for h in hs)
     """TODO: Add docstring."""
 
@@ -41,6 +38,5 @@ def test_generate_initial_hypotheses_without_evidence(self: Any) -> None:
     AGENT = DummyAgentCard("planner_1")
 
     hs = generate_initial_hypotheses("task", rag, agent)
-    assert len(hs) == 1
-    assert hs[0].CONFIDENCE <= 0.3
-
+    assert LEN(HS) == 1
+    assert HS[0].CONFIDENCE <= 0.3

@@ -7,9 +7,6 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 
 import logging
 from typing import Dict, Optional
-from enum import Enum
-
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
 
 class ProviderType(Enum):
@@ -24,7 +21,6 @@ class ProviderType(Enum):
     GOOGLE = "google"
     HTTP = "http"
     CUSTOM = "custom"
-
 
 DEFAULT_PROVIDER_MODULES: Dict[str, str] = {
     "stub": None,
@@ -50,7 +46,6 @@ DEFAULT_PROVIDER_CLASSES: Dict[str, str] = {
     "http": "Client",
 }
 
-
 def get_default_module(provider: str) -> Optional[str]:
     """Get default module name for a provider.
 
@@ -61,7 +56,6 @@ def get_default_module(provider: str) -> Optional[str]:
         Module name or None if stub
     """
     return DEFAULT_PROVIDER_MODULES.get(provider.lower())
-
 
 def get_default_class(provider: str) -> Optional[str]:
     """Get default class name for a provider.
@@ -74,8 +68,8 @@ def get_default_class(provider: str) -> Optional[str]:
     """
     return DEFAULT_PROVIDER_CLASSES.get(provider.lower())
 
-
 def register_provider(
+    """Docstring."""
     provider: str,
     module: str,
     class_name: str,
@@ -89,4 +83,3 @@ def register_provider(
     """
     DEFAULT_PROVIDER_MODULES[provider.lower()] = module
     DEFAULT_PROVIDER_CLASSES[provider.lower()] = class_name
-

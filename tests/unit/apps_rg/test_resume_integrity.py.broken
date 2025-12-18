@@ -9,17 +9,12 @@ import logging
 
 import pytest
 
-logger = logging.getLogger(__name__)
-
-
 # Test imports from apps_rg module
 try:
-    from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
+    from apps_rg.L2_execution.execute_resume_generation import \
+        ExecuteResumeGeneration
 except ImportError as e:
-    pass
-pytest.skip(
-        f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
-
+    pytest.skip(f"Cannot import Resume Engine classes: {e}", allow_module_level=True)
 
 class TestResumeEngineIntegrity:
     """Test Resume Engine instantiation and basic functionality."""
@@ -91,8 +86,7 @@ class TestResumeEngineIntegrity:
             ORCHESTRATOR = OrchestrateResume()
             assert orchestrator is not None
         except Exception as e:
-    pass
-pytest.skip(f"Cannot instantiate OrchestrateResume: {e}")
+            pytest.skip(f"Cannot instantiate OrchestrateResume: {e}")
 
     def test_orchestrate_resume_basic_functionality(self):
             """Test basic orchestration functionality."""
@@ -117,8 +111,7 @@ pytest.skip(f"Cannot instantiate OrchestrateResume: {e}")
                 assert orchestrator is not None
 
         except Exception as e:
-    pass
-pytest.skip(f"Cannot test OrchestrateResume functionality: {e}")
+            pytest.skip(f"Cannot test OrchestrateResume functionality: {e}")
 
     def test_workflow_enums(self):
             """Test workflow enum values."""
@@ -184,4 +177,3 @@ pytest.skip(f"Cannot test OrchestrateResume functionality: {e}")
         # Verify it processes without crashing
         assert result is not None
         assert result.success is True  # Mock implementation should succeed
-

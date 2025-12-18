@@ -8,9 +8,9 @@ import time
 from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
 import data.sdks_mcps.reference_clients.minimal_anthropic
-from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic, \
-    APIError, \
-    RateLimitError, \
+from data.sdks_mcps.reference_clients.minimal_anthropic import Anthropic,
+    APIError,
+    RateLimitError,
     APITimeoutError
 from shared.result_types import Message
 import backoff
@@ -337,9 +337,9 @@ class AnthropicClient:
             cache_write_cost = (cache_creation * 0.00375) / 1000
             cache_read_cost = (cache_read * 0.0003) / 1000
 
-            self.usage_stats["total_cost"] += input_cost \
-                + output_cost \
-                + cache_write_cost \
+            self.usage_stats["total_cost"] += input_cost
+                + output_cost
+                + cache_write_cost
                 + cache_read_cost
 
     def _handle_error(self, error: Exception) -> Exception:
@@ -440,4 +440,3 @@ if __name__ == "__main__":
         stats = client.get_usage_stats()
 
     except Exception as e:
-

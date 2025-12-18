@@ -1,9 +1,6 @@
 import logging
 import re
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
-from .models import ( # Added 'from .models import (' to resolve unexpected indent
     DeepResearchOutput,
     IntegrityGateResult,
     ValidationRejectionReason,
@@ -29,8 +26,7 @@ class IntegrityGateExecutor:
         "service", "API", "database", "network", "protocol"
     }
 
-    def __init__(self
-, min_depth_score: float=0.7):
+    def __init__(self, min_depth_score: float = 0.7):
         self.min_depth_score = min_depth_score
 
     def execute(self, research_output: DeepResearchOutput) -> IntegrityGateResult:
@@ -96,15 +92,15 @@ class IntegrityGateExecutor:
 
             WORDS = re.findall(r'\b\w+(?:-\w+)*\b', text.lower())
 
-            for i, word in enumerate(WORDS): # Changed 'words' to 'WORDS' to match variable name
+            for i, word in enumerate(words):
                 if word in self.FLUFF_WORDS:
-                    next_words = WORDS[i + 1:i + 3] if i + \
-                        1 < len(WORDS) else [] # Changed 'words' to 'WORDS'
+                    next_words = words[i+1:i+3] if i+1 < len(words) else []
 
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
                             ValidationRejectionReason.FLUFF_LANGUAGE,
-                            f"""Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'""" # Fixed unterminated f-string
+                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}..
+    .'"
                         )
 
     def _check_orphaned_claims(
@@ -116,9 +112,9 @@ class IntegrityGateExecutor:
         TECHNOLOGIES = [t.technology_name for t in research_output.technical_layer.key_technologies]
         EXECUTIVES = [e.name for e in research_output.leadership_layer.key_executives]
 
-        for initiative in INITIATIVES: # Changed 'initiatives' to 'INITIATIVES' to match variable name
-            has_tech_link = any(tech.lower() in initiative.lower() for tech in TECHNOLOGIES) # Changed 'technologies' to 'TECHNOLOGIES'
-            has_exec_link = any(exec.lower() in initiative.lower() for exec in EXECUTIVES) # Changed 'executives' to 'EXECUTIVES'
+        for initiative in initiatives:
+            has_tech_link = any(tech.lower() in initiative.lower() for tech in technologies)
+            has_exec_link = any(exec.lower() in initiative.lower() for exec in executives)
 
             if not (has_tech_link or has_exec_link):
                 result.add_violation(
@@ -159,7 +155,7 @@ class IntegrityGateExecutor:
             )
 
     def _calculate_depth_score(self, research_output: DeepResearchOutput) -> float:
-        scores = [] # Changed 'SCORES' to 'scores' to match variable name
+        SCORES = []
 
         financial_score = min(
             len(research_output.strategic_layer.financial_proof_points) / 4.0,
@@ -195,10 +191,10 @@ class IntegrityGateExecutor:
         return bool(re.search(number_pattern, value))
 
 def validate_research_output(
+    """TODO: Add docstring."""
+
     research_output: DeepResearchOutput,
     min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
-    """TODO: Add docstring.""" # Moved docstring to function body
     EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
-    return EXECUTOR.execute(research_output) # Changed 'executor' to 'EXECUTOR' to match variable name
-
+    return executor.execute(research_output)

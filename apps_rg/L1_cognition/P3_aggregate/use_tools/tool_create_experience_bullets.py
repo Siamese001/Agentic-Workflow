@@ -11,7 +11,6 @@ from typing import Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-
 class CreateExperienceBullets:
     """Executor for resume domain."""
 
@@ -31,7 +30,7 @@ class CreateExperienceBullets:
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-return ExecutionResult(
+            return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - start) * 1000
@@ -42,12 +41,10 @@ return ExecutionResult(
         logger.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
 
-
 def execute(action: str,
-            """Docstring."""
-            params: Dict[str,
-                         object],
-            config: Optional[Dict] = None) -> ExecutionResult:
+    """Docstring."""
+    params: Dict[str,
+    object],
+    config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return CreateExperienceBullets(config).execute(action, params)
-

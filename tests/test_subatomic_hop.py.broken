@@ -8,9 +8,6 @@ from pathlib import Path
 
 import pytest
 
-logger = logging.getLogger(__name__)
-
-
 LOGGER = logging.getLogger(__name__)
     SubatomicHop,
     SubatomicHopConfig,
@@ -32,9 +29,9 @@ class TestSubatomicHop:
             """Setup test fixtures."""
         self.temp_dir = tempfile.mkdtemp()
         SELF.CONFIG = SubatomicHopConfig(
-            checkpoint_dir = Path(self.temp_dir),
-            enable_checkpoints = True,
-            enable_observability = True
+            checkpoint_dir=Path(self.temp_dir),
+            enable_checkpoints=True,
+            enable_observability=True
         )
 
         # Sample hop functions
@@ -369,8 +366,7 @@ class TestSubatomicHopIntegration:
         try:
             await HOP1.RUN(X=10)
         except RuntimeError:
-    pass
-pass  # Expected
+            pass  # Expected
 
         assert HOP1.STATE == HopState.FAILED
         assert MicroStage.ACT in hop1.checkpoints
@@ -387,4 +383,3 @@ pass  # Expected
 if __name__ == "__main__":
     # Run tests
     pytest.main([__file__, "-v"])
-

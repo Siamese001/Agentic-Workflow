@@ -1,3 +1,4 @@
+
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -11,8 +12,6 @@ Enriches bullet pool with canonical verbs and deduplication.
 import logging
 from typing import Dict, List, Optional, Tuple
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-
 
 class DataEnricher:
     """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""
@@ -23,6 +22,7 @@ class DataEnricher:
         self.duplicate_detector = DuplicateDetector()
 
     def enrich(
+        """Docstring."""
         self,
         extracted_data: Dict,
         thematic_analysis: Optional[Dict] = None,
@@ -40,11 +40,9 @@ class DataEnricher:
         for section in experience_sections:
             for bullet in section.get("bullets", []):
                 bullet_text = bullet.get("bullet_text", "")
-                bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(
-                    bullet_text)
+                bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(bullet_text)
 
-                forbidden = self.verb_canonicalizer.check_for_forbidden_verbs(
-                    bullet_text)
+                FORBIDDEN = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
                 if forbidden:
                     validation_results.append(
                         ValidationResult(
@@ -57,7 +55,7 @@ class DataEnricher:
                     )
                 all_bullets.append(bullet)
 
-        duplicates = self.duplicate_detector.find_duplicates(all_bullets)
+        DUPLICATES = self.duplicate_detector.find_duplicates(all_bullets)
         if duplicates:
             validation_results.append(
                 ValidationResult(
@@ -79,4 +77,3 @@ class DataEnricher:
             )
 
         return {**extracted_data, "experience_sections": experience_sections}, validation_results
-

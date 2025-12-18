@@ -1,15 +1,7 @@
 """Types and models for get_info_understand_request."""
 import logging
-import time
-import traceback
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, Optional, Union
-
 
 LOGGER = logging.getLogger(__name__)
-
-
 class ExecutionStatus(Enum):
     """Enumeration for execution status states."""
     PENDING = 'pending'
@@ -17,7 +9,6 @@ class ExecutionStatus(Enum):
     SUCCESS = 'success'
     FAILED = 'failed'
     CANCELLED = 'cancelled'
-
 
 @dataclass
 class ExecutionContext:
@@ -32,23 +23,22 @@ class ExecutionContext:
 
     def start(self) -> None:
         """Mark execution as started."""
-        self.status = ExecutionStatus.RUNNING
+        SELF.STATUS = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        LOGGER.info(f'Execution started for operation: {self.operation_id}')
+        logger.info(f'Execution started for operation: {self.operation_id}')
 
-    def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
+    def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
-        self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
+        SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
         if error:
             self.error_details = {'type': type(error).__name__,
-                                  'message': str(error),
-                                  'traceback': traceback.format_exc()}
-            LOGGER.error(f'Execution failed: {error}')
+                'message': str(error),
+                'traceback': traceback.format_exc()}
+            logger.error(f'Execution failed: {error}')
         else:
-            LOGGER.info(f"""Execution completed successfully in {self.end_time - self.start_time: .2f}s
-                        """)
-
+            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
+    ')
 
 @dataclass
 class ProcessingResult:
@@ -58,4 +48,3 @@ class ProcessingResult:
     error_message: Optional[str] = None
     execution_context: Optional[ExecutionContext] = None
     additional_info: Dict[str, Any] = field(default_factory=dict)
-

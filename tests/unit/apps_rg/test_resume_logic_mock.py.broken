@@ -8,14 +8,11 @@ Tests the Resume Engine functionality with mocked LLM responses to avoid API cal
 
 import logging
 
-from apps_rg.L2_execution.execute_resume_generation import ExecuteResumeGeneration
+from apps_rg.L2_execution.execute_resume_generation import \
+    ExecuteResumeGeneration
+# Import the classes we're testing
 from apps_rg.L2_execution.job_analyzer import JobAnalyzer
 from apps_rg.L2_execution.resume_generator import ResumeGenerator
-
-logger = logging.getLogger(__name__)
-
-
-# Import the classes we're testing
 
 
 class TestJobAnalyzerMocked:
@@ -400,4 +397,3 @@ class TestResumeEngineIntegration:
             TAILORED = output["tailored_resume"]
             assert "_tailoring_metadata" in tailored
             assert "ats_keywords" in tailored
-

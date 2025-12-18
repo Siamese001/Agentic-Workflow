@@ -1,8 +1,12 @@
-import logging
 from typing import Any
 
-logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
-'MCP-specific exceptions.\n\n\n\nLOGGER = logging.getLogger(__name__)\nPhase 1 - Pillar 3: Typed Contracts (Strict Schemas)\n'
+"""MCP-specific exceptions.
+
+
+
+LOGGER = logging.getLogger(__name__)
+Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
+"""
 
 
 class MCPError(Exception):
@@ -38,4 +42,3 @@ def __init__(self: Any, message: str, provider: str) -> None:
     """Initialize MCP provider error."""
     super().__init__(message)
     SELF.PROVIDER = provider
-

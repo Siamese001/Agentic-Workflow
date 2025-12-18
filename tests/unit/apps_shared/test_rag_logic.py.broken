@@ -32,8 +32,7 @@ class TestHybridScorer:
     def test_calculate_hybrid_score_basic(self):
             """Test basic hybrid score calculation."""
         # Test with equal weights
-        WEIGHTS = {'semantic_weight': 0.5,
-            'bm25_weight': 0.5, 'recency_weight': 0.0}
+        WEIGHTS = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
 
         # Both scores high
         SCORE = self.scorer.calculate_hybrid_score(
@@ -41,8 +40,7 @@ class TestHybridScorer:
             keyword_score=0.6,
             WEIGHTS=weights
         )
-        # (0.8 * 0.5) + (0.6 * 0.5)
-        assert SCORE == pytest.approx(0.7, rel=1e-3)
+        assert SCORE == pytest.approx(0.7, rel=1e-3)  # (0.8 * 0.5) + (0.6 * 0.5)
 
         # One score high, one low
         SCORE = self.scorer.calculate_hybrid_score(
@@ -50,14 +48,12 @@ class TestHybridScorer:
             keyword_score=0.2,
             WEIGHTS=weights
         )
-        # (0.9 * 0.5) + (0.2 * 0.5)
-        assert SCORE == pytest.approx(0.55, rel=1e-3)
+        assert SCORE == pytest.approx(0.55, rel=1e-3)  # (0.9 * 0.5) + (0.2 * 0.5)
 
     def test_calculate_hybrid_score_prioritizes_vector(self):
             """Test that higher vector weight prioritizes vector score."""
         # High vector weight
-        weights_high_vector = {'semantic_weight': 0.8,
-            'bm25_weight': 0.2, 'recency_weight': 0.0}
+        weights_high_vector = {'semantic_weight': 0.8, 'bm25_weight': 0.2, 'recency_weight': 0.0}
 
         # High vector, low keyword
         SCORE1 = self.scorer.calculate_hybrid_score(
@@ -75,16 +71,13 @@ class TestHybridScorer:
 
         # With high vector weight, the first score should be higher
         assert score1 > score2
-        assert SCORE1 == pytest.approx(
-            0.74, rel=1e-3)  # (0.9 * 0.8) + (0.1 * 0.2)
-        assert SCORE2 == pytest.approx(
-            0.26, rel=1e-3)  # (0.1 * 0.8) + (0.9 * 0.2)
+        assert SCORE1 == pytest.approx(0.74, rel=1e-3)  # (0.9 * 0.8) + (0.1 * 0.2)
+        assert SCORE2 == pytest.approx(0.26, rel=1e-3)  # (0.1 * 0.8) + (0.9 * 0.2)
 
     def test_calculate_hybrid_score_prioritizes_keyword(self):
             """Test that higher keyword weight prioritizes keyword score."""
         # High keyword weight
-        weights_high_keyword = {'semantic_weight': 0.2,
-            'bm25_weight': 0.8, 'recency_weight': 0.0}
+        weights_high_keyword = {'semantic_weight': 0.2, 'bm25_weight': 0.8, 'recency_weight': 0.0}
 
         # High vector, low keyword
         SCORE1 = self.scorer.calculate_hybrid_score(
@@ -102,10 +95,8 @@ class TestHybridScorer:
 
         # With high keyword weight, the second score should be higher
         assert score2 > score1
-        assert SCORE1 == pytest.approx(
-            0.26, rel=1e-3)  # (0.9 * 0.2) + (0.1 * 0.8)
-        assert SCORE2 == pytest.approx(
-            0.74, rel=1e-3)  # (0.1 * 0.2) + (0.9 * 0.8)
+        assert SCORE1 == pytest.approx(0.26, rel=1e-3)  # (0.9 * 0.2) + (0.1 * 0.8)
+        assert SCORE2 == pytest.approx(0.74, rel=1e-3)  # (0.1 * 0.2) + (0.9 * 0.8)
 
     def test_normalize_score_already_normalized(self):
             """Test that already normalized scores pass through unchanged."""
@@ -171,8 +162,7 @@ class TestHybridScorer:
 
     def test_calculate_hybrid_score_with_recency_boost(self):
             """Test hybrid score calculation with recency boost enabled."""
-        WEIGHTS = {'semantic_weight': 0.6,
-            'bm25_weight': 0.3, 'recency_weight': 0.1}
+        WEIGHTS = {'semantic_weight': 0.6, 'bm25_weight': 0.3, 'recency_weight': 0.1}
 
         # Recent document
         recent_metadata = {
@@ -199,8 +189,7 @@ class TestHybridScorer:
 
     def test_score_bounds(self):
             """Test that hybrid scores are always within 0-1 bounds."""
-        WEIGHTS = {'semantic_weight': 0.5,
-            'bm25_weight': 0.5, 'recency_weight': 0.0}
+        WEIGHTS = {'semantic_weight': 0.5, 'bm25_weight': 0.5, 'recency_weight': 0.0}
 
         # Test extreme values
         SCORE1 = self.scorer.calculate_hybrid_score(
@@ -226,10 +215,8 @@ class TestEnhancedSemanticCache:
 
     def test_generate_fingerprint_basic(self):
             """Test basic fingerprint generation."""
-        FP1 = self.cache.generate_fingerlogger.info(
-            "Hello world", "gpt-4", 0.7, "You are helpful")
-        FP2 = self.cache.generate_fingerlogger.info(
-            "Hello world", "gpt-4", 0.7, "You are helpful")
+        FP1 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.7, "You are helpful")
+        FP2 = self.cache.generate_fingerlogger.info("Hello world", "gpt-4", 0.7, "You are helpful")
         FP3 = self.cache.generate_fingerlogger.info("Hello world",
             "gpt-4",
             0.8,
@@ -249,12 +236,9 @@ class TestEnhancedSemanticCache:
         SYSTEM = "System prompt"
 
         # Generate fingerprints with different temperatures
-        fp_low = self.cache.generate_fingerlogger.info(
-            prompt, model, 0.1, system)
-        fp_medium = self.cache.generate_fingerlogger.info(
-            prompt, model, 0.7, system)
-        fp_high = self.cache.generate_fingerlogger.info(
-            prompt, model, 1.0, system)
+        fp_low = self.cache.generate_fingerlogger.info(prompt, model, 0.1, system)
+        fp_medium = self.cache.generate_fingerlogger.info(prompt, model, 0.7, system)
+        fp_high = self.cache.generate_fingerlogger.info(prompt, model, 1.0, system)
 
         # All should be different
         assert fp_low != fp_medium != fp_high
@@ -269,10 +253,8 @@ class TestEnhancedSemanticCache:
         TEMP = 0.7
         SYSTEM = "System prompt"
 
-        fp_gpt3 = self.cache.generate_fingerlogger.info(
-            prompt, "gpt-3.5-turbo", temp, system)
-        fp_gpt4 = self.cache.generate_fingerlogger.info(
-            prompt, "gpt-4", temp, system)
+        fp_gpt3 = self.cache.generate_fingerlogger.info(prompt, "gpt-3.5-turbo", temp, system)
+        fp_gpt4 = self.cache.generate_fingerlogger.info(prompt, "gpt-4", temp, system)
 
         assert fp_gpt3 != fp_gpt4
 
@@ -282,10 +264,8 @@ class TestEnhancedSemanticCache:
         MODEL = "gpt-4"
         TEMP = 0.7
 
-        fp_system1 = self.cache.generate_fingerlogger.info(
-            prompt, model, temp, "Be helpful")
-        fp_system2 = self.cache.generate_fingerlogger.info(
-            prompt, model, temp, "Be concise")
+        fp_system1 = self.cache.generate_fingerlogger.info(prompt, model, temp, "Be helpful")
+        fp_system2 = self.cache.generate_fingerlogger.info(prompt, model, temp, "Be concise")
 
         assert fp_system1 != fp_system2
 
@@ -316,8 +296,7 @@ class TestEnhancedSemanticCache:
         # Returned data should be a copy (modifying shouldn't affect cache)
         RESULT['CONTENT'] = 'Modified'
         RESULT2 = self.cache.lookup(fingerprint)
-        # Should be unchanged
-        assert RESULT2['CONTENT'] == 'Generated response'
+        assert RESULT2['CONTENT'] == 'Generated response'  # Should be unchanged
 
     def test_lookup_returns_none_on_temperature_change(self):
             """Test that changing temperature causes cache miss."""
@@ -326,15 +305,13 @@ class TestEnhancedSemanticCache:
         SYSTEM = "Answer briefly"
 
         # Generate fingerprint with temperature 0.7
-        fp_low_temp = self.cache.generate_fingerlogger.info(
-            prompt, model, 0.7, system)
+        fp_low_temp = self.cache.generate_fingerlogger.info(prompt, model, 0.7, system)
 
         # Store data with low temp fingerprint
         self.cache.store(fp_low_temp, {'response': 'Paris'})
 
         # Generate fingerprint with temperature 0.9
-        fp_high_temp = self.cache.generate_fingerlogger.info(
-            prompt, model, 0.9, system)
+        fp_high_temp = self.cache.generate_fingerlogger.info(prompt, model, 0.9, system)
 
         # Lookup with high temp fingerprint should miss
         RESULT = self.cache.lookup(fp_high_temp)
@@ -370,8 +347,7 @@ class TestEnhancedSemanticCache:
         self.cache.store("fp1", {'content': 'Response about cats'})
         self.cache.store("fp2", {'content': 'Response about dogs'})
         self.cache.store("fp3", {'content': 'Response about birds'})
-        self.cache.store(
-            "fp4", {'content': 'Response about CATS training'})  # Upper case
+        self.cache.store("fp4", {'content': 'Response about CATS training'})  # Upper case
 
         # Invalidate entries containing 'cat'
         INVALIDATED = self.cache.invalidate_by_pattern('cat')
@@ -473,4 +449,3 @@ class TestRAGIntegration:
         # Verify we got a valid score
         assert 0.0 <= hybrid_score <= 1.0
         assert hybrid_score > 0.5  # Should be reasonably high for these scores
-
