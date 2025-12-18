@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 class DispatchOutreachTools:
     """Executor for outreach domain."""
 
-    def __init__(self, config: Optional[Dict[str, object]] = None):
+    def __initialize__(self, config: Optional[Dict[str, object]] = None):
         self.CONFIG = config or {}
         self.TIMEOUT = self.CONFIG.get("timeout", 30.0)
         LOGGER.info(f"Initialized {self.__class__.__name__}")
@@ -33,7 +33,7 @@ class DispatchOutreachTools:
                 duration_ms=(time.time() - START) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-return ExecutionResult(
+            return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - START) * 1000
@@ -51,4 +51,3 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchOutreachTools(config).execute(action, params)
-

@@ -12,7 +12,7 @@ class ViolationCheck(BaseModel):
     reason: str
 
 class ConstitutionalOverseer:
-def __init__(self: Any, client: AsyncOpenAI, config_path: str) -> None:
+    def __initialize__(self: Any, client: AsyncOpenAI, config_path: str) -> None:
         SELF.CLIENT = instructor.patch(client)
         with open(config_path, 'r') as f:
             SELF.RULES = yaml.safe_load(f).get('safety_rules', [])
@@ -20,7 +20,7 @@ def __init__(self: Any, client: AsyncOpenAI, config_path: str) -> None:
 async def verify(self: Any, content: str) -> None:
         """Raises ValueError if content violates the constitution."""
         rule_text = "\n".join(self.rules)
-        RESP = await self.client.chat.completions.create(
+        response = await self.client.chat.completions.create(
             MODEL="gpt-3.5-turbo", # Use cheap model for policing
             response_model=ViolationCheck,
             MESSAGES=[

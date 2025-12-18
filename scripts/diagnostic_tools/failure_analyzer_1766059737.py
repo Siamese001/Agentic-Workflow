@@ -5,6 +5,7 @@ Usage: Instantiate FailureAnalyzer with a list of failure keys and execute .anal
 """
 import collections
 
+
 class FailureAnalyzer:
     def __init__(self, keys):
         """Initialize with a list of failure event identifiers."""

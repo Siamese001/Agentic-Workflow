@@ -148,11 +148,14 @@ class SwarmScheduler:
         print("\n[PHASE 9] BENCHMARKING (Sequential)")
         await self._run_sequential("benchmarking_seq")
 
-        print("\n[PHASE 10] OPTIMIZATION (Conditional)")
-        if self._is_converged():
-            await self._run_sequential("optimization_conditional")
-        else:
-            print("   ⏭️  Skipping optimization - not fully converged")
+        print("\n[PHASE 10] OPTIMIZATION (Always Run)")
+        # Phase 10 now runs unconditionally - removed convergence gate
+        # If success rate < 30%, trigger targeted remediation first
+        success_rate = self._get_success_rate()
+        if success_rate < 30.0:
+            print(f"   ⚠️  Success rate {success_rate:.1f}% < 30% - triggering targeted remediation")
+            await self._targeted_remediation()
+        await self._run_sequential("optimization_conditional")
 
         return self._is_converged()
 
@@ -190,6 +193,32 @@ class SwarmScheduler:
         if not self.ctx.results:
             return False
         return all(r.get("passed", False) for r in self.ctx.results.values())
+
+    def _get_success_rate(self) -> float:
+        """Calculate current success rate as percentage."""
+        if not self.ctx.results:
+            return 0.0
+        passed = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
+        return (passed / len(self.ctx.results)) * 100.0
+
+    async def _targeted_remediation(self):
+        """Trigger targeted remediation for Phase 8 agents (Naming, Docs, Types)."""
+        print("   🔧 TARGETED REMEDIATION: Activating mutation mode for refinement agents...")
+        
+        # Get the refinement agents and force mutation mode
+        refinement_agents = self.phases.get("refinement_parallel", [])
+        for agent in refinement_agents:
+            if hasattr(agent, 'mutation_mode'):
+                agent.mutation_mode = True
+            # Inject mutation instruction
+            self.ctx.inject_instruction(
+                "SwarmScheduler",
+                f"{agent.name}: MUTATION MODE ACTIVE - fix issues immediately, do not just report"
+            )
+        
+        # Re-run refinement phase in mutation mode
+        print("   🔄 Re-running REFINEMENT phase in mutation mode...")
+        await self._run_parallel("refinement_parallel")
 
     def _generate_mission_report(self):
         """Generate final mission report."""

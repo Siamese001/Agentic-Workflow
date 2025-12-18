@@ -1,12 +1,9 @@
-
-
 LOGGER = logging.getLogger(__name__)
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Immutable staging buffer for HOP-4."""
 
 import copy
-import logging
 from datetime import datetime
 from typing import Dict, Optional
 
@@ -14,7 +11,7 @@ from typing import Dict, Optional
 class ImmutableStagingBuffer:
     """HOP-4: Immutable staging buffer. Once locked, cannot be modified."""
 
-def __init__(self: Any) -> None:
+def __initialize__(self: Any) -> None:
         """Initialize the staging buffer."""
         self._data: Dict[str, object] = {}
         self._locked: bool = False
@@ -40,7 +37,7 @@ def is_locked(self: Any) -> bool:
         """Check if buffer is locked."""
         return self._locked
 
-    @property
+@property
 def data(self: Any) -> Dict[str, object]:
         """Read-only access to data."""
         return copy.deepcopy(self._data)
