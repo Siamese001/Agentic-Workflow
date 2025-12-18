@@ -8,7 +8,7 @@ import logging
 import time
 from typing import Any, Dict, List, Optional
 
-    IOrchestrator,
+from agentic_core.interfaces import (
     ICognitivePlane,
     IActionPlane,
     OrchestratorConfig,
@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
-class NervousSystem(IOrchestrator):
+class NervousSystem:
     """Core orchestrator that coordinates cognitive and action planes.
 
     Implements the 5-step agentic cycle:
@@ -50,16 +50,16 @@ class NervousSystem(IOrchestrator):
             action_plane: The hands (tool execution)
             config: Orchestrator configuration
         """
-        SELF.BRAIN = cognitive_plane
-        SELF.HANDS = action_plane
-        SELF.CONFIG = config or OrchestratorConfig()
+        self.brain = cognitive_plane
+        self.hands = action_plane
+        self.config = config or OrchestratorConfig()
 
         self._state: Dict[str, Any] = {}
         self._iteration = 0
 
-        logger.info(
+        LOGGER.info(
             "nervous_system_initialized",
-            EXTRA={
+            extra={
                 "cognitive_capabilities": [c.value for c in self.brain.get_capabilities()],
                 "action_capabilities": [c.value for c in self.hands.get_capabilities()],
                 "config": self.config.to_dict(),

@@ -1,0 +1,97 @@
+"""Configuration types for the agentic framework.
+
+Defines OrchestratorConfig and related configuration dataclasses.
+"""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional
+
+
+@dataclass
+class OrchestratorConfig:
+    """Configuration for the orchestrator (Nervous System).
+    
+    Attributes:
+        max_iterations: Maximum Think-Act-Observe iterations
+        enable_reflection: Whether to run reflection phase
+        enable_state_persistence: Whether to persist state between runs
+        timeout_seconds: Overall execution timeout
+        retry_on_failure: Whether to retry failed actions
+        max_retries: Maximum retry attempts
+        parallel_actions: Whether to execute actions in parallel
+        metadata: Additional configuration metadata
+    """
+    max_iterations: int = 10
+    enable_reflection: bool = True
+    enable_state_persistence: bool = True
+    timeout_seconds: Optional[float] = None
+    retry_on_failure: bool = True
+    max_retries: int = 3
+    parallel_actions: bool = False
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary representation."""
+        return {
+            "max_iterations": self.max_iterations,
+            "enable_reflection": self.enable_reflection,
+            "enable_state_persistence": self.enable_state_persistence,
+            "timeout_seconds": self.timeout_seconds,
+            "retry_on_failure": self.retry_on_failure,
+            "max_retries": self.max_retries,
+            "parallel_actions": self.parallel_actions,
+            "metadata": self.metadata,
+        }
+
+
+@dataclass
+class CognitiveConfig:
+    """Configuration for the cognitive plane.
+    
+    Attributes:
+        model: LLM model to use for reasoning
+        temperature: Sampling temperature
+        max_tokens: Maximum tokens for generation
+        enable_cot: Enable chain-of-thought reasoning
+        enable_self_critique: Enable self-critique loop
+    """
+    model: str = "gpt-4"
+    temperature: float = 0.7
+    max_tokens: int = 4096
+    enable_cot: bool = True
+    enable_self_critique: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary representation."""
+        return {
+            "model": self.model,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
+            "enable_cot": self.enable_cot,
+            "enable_self_critique": self.enable_self_critique,
+        }
+
+
+@dataclass
+class ActionConfig:
+    """Configuration for the action plane.
+    
+    Attributes:
+        sandbox_enabled: Whether to run actions in sandbox
+        timeout_per_action: Timeout per action in seconds
+        max_concurrent: Maximum concurrent actions
+        enable_fallback: Enable fallback providers
+    """
+    sandbox_enabled: bool = True
+    timeout_per_action: float = 30.0
+    max_concurrent: int = 5
+    enable_fallback: bool = True
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary representation."""
+        return {
+            "sandbox_enabled": self.sandbox_enabled,
+            "timeout_per_action": self.timeout_per_action,
+            "max_concurrent": self.max_concurrent,
+            "enable_fallback": self.enable_fallback,
+        }

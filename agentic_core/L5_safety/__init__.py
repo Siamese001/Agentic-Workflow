@@ -1,7 +1,4 @@
-"""
-
-LOGGER = logging.getLogger(__name__)
-L5 Safety Shield - Enterprise-grade security components for agentic systems.
+"""L5 Safety Shield - Enterprise-grade security components for agentic systems.
 
 This package provides comprehensive safety mechanisms:
 - PII Vault: Holographic privacy protection with tokenized anonymization
@@ -11,19 +8,41 @@ This package provides comprehensive safety mechanisms:
 """
 import logging
 
+LOGGER = logging.getLogger(__name__)
+
+# Lazy imports to avoid hard dependency failures
+try:
+    from agentic_core.L5_safety.pii_vault import PIIVault
+except Exception as e:
+    LOGGER.debug(f"PIIVault not available: {e}")
+    PIIVault = None
+
+try:
+    from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+except Exception as e:
+    LOGGER.debug(f"ConstitutionalOverseer not available: {e}")
+    ConstitutionalOverseer = None
+
+try:
+    from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
+except Exception as e:
+    LOGGER.debug(f"CanaryDefense not available: {e}")
+    CanaryDefense = None
+    CanaryToken = None
+
+try:
+    from agentic_core.L5_safety.governor import CostGovernor
+except Exception as e:
+    LOGGER.debug(f"CostGovernor not available: {e}")
+    CostGovernor = None
+
+__all__ = [
+    'PIIVault',
     'ConstitutionalOverseer',
     'CanaryDefense',
     'CostGovernor',
-
-    # Supporting Classes
     'CanaryToken',
-    'ViolationCheck',
-    'UsageRecord',
-
-    # Exceptions
-    'BudgetExceededError',
 ]
 
-# Version info
 __version__ = '1.0.0'
 __description__ = 'L5 Safety Shield - Enterprise-grade agentic security'
