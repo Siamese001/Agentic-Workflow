@@ -15,7 +15,4 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from .kx_nodes_resume_impl import *  # Star import removed
-# from .kx_nodes_resume_impl import *  # Star import removed
-
 __all__ = ["*"]  # Re-export all imported names
