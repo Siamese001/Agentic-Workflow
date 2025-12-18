@@ -186,6 +186,67 @@ class ValidationContext:
         """Access to Gemini client for backward compatibility."""
         return self._client
 
+    def __post_init__(self):
+        """Initialize Tri-Brain infrastructure (graceful degradation mode)."""
+        from .config import get_python_files
+        
+        print("   [CTX] 🧠 INITIALIZING TRI-BRAIN (GRACEFUL MODE)...")
+        self.python_files = get_python_files()
+        self._load_memory()
+
+        # Gemini (optional - graceful degradation)
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if api_key:
+            try:
+                import google.genai as genai
+                self._client = genai.Client(api_key=api_key)
+                self.intelligence_enabled = True
+                print("      ✅ Gemini Connected")
+            except Exception as e:
+                print(f"      ⚠️  Gemini unavailable: {e}")
+        else:
+            print("      ⚠️  GOOGLE_API_KEY not set - Intelligence disabled")
+
+        # Redis (optional)
+        redis_url = os.environ.get("REDIS_URL")
+        if redis_url:
+            try:
+                import redis as redis_lib
+                self.redis_client = redis_lib.from_url(redis_url, decode_responses=True)
+                self.redis_available = True
+                print("      ✅ Redis Connected")
+            except Exception as e:
+                print(f"      ⚠️  Redis unavailable: {e}")
+        else:
+            print("      ⚠️  REDIS_URL not set - Hot Brain disabled")
+
+        # Pinecone (optional)
+        pine_key = os.environ.get("PINECONE_API_KEY")
+        if pine_key:
+            try:
+                from pinecone import Pinecone
+                pc = Pinecone(api_key=pine_key)
+                self.pinecone_index = pc.Index("canon-memory-l2")
+                self.pinecone_available = True
+                print("      ✅ Pinecone Connected")
+            except Exception as e:
+                print(f"      ⚠️  Pinecone unavailable: {e}")
+        else:
+            print("      ⚠️  PINECONE_API_KEY not set - Deep Brain disabled")
+
+    def _load_memory(self):
+        """Load canon memory from disk."""
+        memory_file = Path("canon_memory.json")
+        if memory_file.exists():
+            try:
+                with open(memory_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.file_hashes = data.get("file_hashes", {})
+                    self.skip_files = set(data.get("skip_files", []))
+                print("      ✅ Memory loaded from canon_memory.json")
+            except Exception as e:
+                print(f"      ⚠️  Memory load failed: {e}")
+
     def report(self, agent: str, key: int, passed: bool, details: Any = None):
         """Report validation result for a specific key to the blackboard."""
         status = "PASS" if passed else "FAIL"
