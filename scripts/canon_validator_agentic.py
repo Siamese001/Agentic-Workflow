@@ -117,6 +117,7 @@ from agentic_core.domain.context import ValidationContext, DependencyGraph, Budg
 from agentic_core.agents.base import SubAtomicAgent
 from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
 from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
+from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
 
 # ==============================================================================
 # L5 HUMAN-IN-THE-LOOP: Intervention Server
@@ -3170,283 +3171,284 @@ If no relevant memory → output "PROPOSE_NEW: <description>"
 #         self.ctx.report(self.name, 63, True, ["No livelock patterns"])
 #         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
+# HygieneGuardian, CodeStyleGuardian, and PerformanceEnforcer are now imported from agentic_core.agents.quality
 
-class HygieneGuardian(SubAtomicAgent):
-    """
-    Unified Hygiene Agent.
-    Merges GenerativeGuard (Key 45) and TheCurator (File Taxonomy).
-    """
-    
-    GENERATIVE_PATTERNS = [
-        r"_impl_impl_",
-        r"generated_\d+",
-        r"auto_\w+_\d+",
-        r"temp_\w+_\d+"
-    ]
+# class HygieneGuardian(SubAtomicAgent):
+#     """
+#     Unified Hygiene Agent.
+#     Merges GenerativeGuard (Key 45) and TheCurator (File Taxonomy).
+#     """
+#     
+#     GENERATIVE_PATTERNS = [
+#         r"_impl_impl_",
+#         r"generated_\d+",
+#         r"auto_\w+_\d+",
+#         r"temp_\w+_\d+"
+#     ]
+#
+#     SCRIPT_CATEGORIES = {
+#         'maintenance', 'setup', 'migration', 'testing', 'archive'
+#     }
+#     
+#     IMMUTABLE_FILES = {
+#         'canon_validator_v2_agentic.py',
+#         'auto_canon.py',
+#         'setup.py',
+#         'README.md',
+#         'canon_validator_agentic.py' 
+#     }
+#
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Project Hygiene...")
+#         await asyncio.sleep(0)
+#         await self._purge_generative_artifacts()
+#         self.ctx.signals.add("GENERATIVE_CLEAN")
+#
+#     async def _purge_generative_artifacts(self):
+#         violations = []
+#         for root, dirs, files in os.walk("."):
+#             if any(x in root for x in EXCLUDED_DIRS): continue
+#             for file in files:
+#                 file_path = os.path.join(root, file)
+#                 if os.path.isfile(file_path) and file.endswith('.py'):
+#                     for pattern in self.GENERATIVE_PATTERNS:
+#                         if re.search(pattern, file):
+#                             violations.append(file_path)
+#                             break
+#         
+#         if violations:
+#             print(f"   🧹 Found {len(violations)} generative artifacts")
+#             for file_path in violations:
+#                 try:
+#                     os.remove(file_path)
+#                     print(f"      DELETED: {file_path}")
+#                 except Exception as e:
+#                     print(f"      Failed: {e}")
+#         else:
+#             self.ctx.report(self.name, 45, True, [])
+#     
+#     async def propose_hygiene_fix(self, file_path: str, issues: List[str]) -> str:
+#         """L5+ Use LLM with few-shot to propose hygiene fixes."""
+#         if not self.ctx.intelligence_enabled:
+#             return ""
+#         
+#         try:
+#             with open(file_path, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#         except Exception:
+#             return ""
+#         
+#         issues_summary = "\n".join([f"- {i}" for i in issues[:10]])
+#         
+#         prompt = f"""
+# {self.ctx.FEW_SHOT_HYGIENE}
+#
+# <primary_issues>
+# {issues_summary}
+# </primary_issues>
+#
+# <preserve_keywords>__all__, abstractmethod, @override, __init__, __new__, __del__</preserve_keywords>
+#
+# <code_to_clean>
+# {content[:4000]}
+# </code_to_clean>
+#
+# Apply the most relevant example above.
+# Prioritize:
+# - Remove unused imports
+# - Inline or remove unused variables
+# - Preserve __all__, abstract methods, dunder
+# - Simplify redundant boolean logic
+# - Remove obsolete comments only
+#
+# Never remove docstrings, type hints, or intentional placeholders.
+# Be conservative: when in doubt, preserve.
+#
+# RESPONSE FORMAT:
+# Return ONLY the cleaned Python code.
+# No unused imports. No dead variables.
+# Preserve __all__ and docstrings.
+# No trailing whitespace.
+# """
+#         
+#         return await self.ctx.resilient_mutation(
+#             self.name, prompt, code=content, file_path=file_path, max_attempts=2
+#         )
 
-    SCRIPT_CATEGORIES = {
-        'maintenance', 'setup', 'migration', 'testing', 'archive'
-    }
-    
-    IMMUTABLE_FILES = {
-        'canon_validator_v2_agentic.py',
-        'auto_canon.py',
-        'setup.py',
-        'README.md',
-        'canon_validator_agentic.py' 
-    }
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Project Hygiene...")
-        await asyncio.sleep(0)
-        await self._purge_generative_artifacts()
-        self.ctx.signals.add("GENERATIVE_CLEAN")
-
-    async def _purge_generative_artifacts(self):
-        violations = []
-        for root, dirs, files in os.walk("."):
-            if any(x in root for x in EXCLUDED_DIRS): continue
-            for file in files:
-                file_path = os.path.join(root, file)
-                if os.path.isfile(file_path) and file.endswith('.py'):
-                    for pattern in self.GENERATIVE_PATTERNS:
-                        if re.search(pattern, file):
-                            violations.append(file_path)
-                            break
-        
-        if violations:
-            print(f"   🧹 Found {len(violations)} generative artifacts")
-            for file_path in violations:
-                try:
-                    os.remove(file_path)
-                    print(f"      DELETED: {file_path}")
-                except Exception as e:
-                    print(f"      Failed: {e}")
-        else:
-            self.ctx.report(self.name, 45, True, [])
-    
-    async def propose_hygiene_fix(self, file_path: str, issues: List[str]) -> str:
-        """L5+ Use LLM with few-shot to propose hygiene fixes."""
-        if not self.ctx.intelligence_enabled:
-            return ""
-        
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-        except Exception:
-            return ""
-        
-        issues_summary = "\n".join([f"- {i}" for i in issues[:10]])
-        
-        prompt = f"""
-{self.ctx.FEW_SHOT_HYGIENE}
-
-<primary_issues>
-{issues_summary}
-</primary_issues>
-
-<preserve_keywords>__all__, abstractmethod, @override, __init__, __new__, __del__</preserve_keywords>
-
-<code_to_clean>
-{content[:4000]}
-</code_to_clean>
-
-Apply the most relevant example above.
-Prioritize:
-- Remove unused imports
-- Inline or remove unused variables
-- Preserve __all__, abstract methods, dunder
-- Simplify redundant boolean logic
-- Remove obsolete comments only
-
-Never remove docstrings, type hints, or intentional placeholders.
-Be conservative: when in doubt, preserve.
-
-RESPONSE FORMAT:
-Return ONLY the cleaned Python code.
-No unused imports. No dead variables.
-Preserve __all__ and docstrings.
-No trailing whitespace.
-"""
-        
-        return await self.ctx.resilient_mutation(
-            self.name, prompt, code=content, file_path=file_path, max_attempts=2
-        )
-
-class CodeStyleGuardian(SubAtomicAgent):
-    """
-    Unified Style & Cleanliness Agent.
-    Merges CodeJanitor (Keys 10-16) and StyleGuardian (Keys 21, 47).
-    """
-
-    def can_run(self) -> bool:
-        return "AST_VALID" in self.ctx.signals
-
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Style & Hygiene...")
-        await asyncio.sleep(0)
-
-        self._cleanup_empty_files()
-        
-        self.ctx.report(self.name, 11, *self._check_no_trailing_whitespace())
-        self.ctx.report(self.name, 12, *self._check_no_missing_newline())
-        self.ctx.report(self.name, 13, *self._check_no_tabs())
-        self.ctx.report(self.name, 10, *self._check_line_length())
-        self.ctx.report(self.name, 15, *self._check_magic_numbers())
-        self.ctx.report(self.name, 16, *self._check_nesting_depth())
-        
-        doc_violations = await self._check_documentation()
-        self.ctx.report(self.name, 21, len(doc_violations) == 0, doc_violations)
-        
-        naming_violations = await self._check_naming()
-        self.ctx.report(self.name, 47, len(naming_violations) == 0, naming_violations)
-
-    def _cleanup_empty_files(self):
-        count = 0
-        for root, _, files in os.walk("."):
-            if any(x in root for x in EXCLUDED_DIRS): continue
-            for file in files:
-                p = os.path.join(root, file)
-                try:
-                    if os.path.getsize(p) == 0:
-                        os.remove(p)
-                        count += 1
-                except: pass
-        if count: print(f"      🗑️  Deleted {count} empty files.")
-
-    def _check_line_length(self):
-        violations = []
-        for f in self.ctx.python_files:
-            try:
-                for i, line in enumerate(open(f, encoding='utf-8'), 1):
-                    if len(line.rstrip()) > 150: violations.append(f"{f}:{i}")
-            except: pass
-        return (not violations, violations)
-
-    def _check_magic_numbers(self):
-        violations = []
-        allowed = {0, 1, -1, 2, 10, 100, 200, 404, 500, 1000, 0.0, 1.0, 0.5}
-        for f in self.ctx.python_files:
-            if 'test' in f: continue
-            try:
-                tree = ast.parse(open(f, encoding='utf-8').read())
-                for n in ast.walk(tree):
-                    if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
-                        if n.value not in allowed: violations.append(f"{f}:{n.lineno}")
-            except: pass
-        return (not violations, violations)
-    
-    def _check_nesting_depth(self):
-        violations = []
-        for f in self.ctx.python_files:
-            try:
-                for i, line in enumerate(open(f, encoding='utf-8'), 1):
-                    if (len(line) - len(line.lstrip())) > 40: violations.append(f"{f}:{i}")
-            except: pass
-        return (not violations, violations)
-
-    def _check_no_trailing_whitespace(self): 
-        violations = []
-        for f in self.ctx.python_files:
-            try:
-                for i, line in enumerate(open(f, encoding='utf-8'), 1):
-                    if line.endswith(' \n') or line.endswith('\t\n'):
-                        violations.append(f"{f}:{i}")
-            except: pass
-        return (not violations, violations)
-        
-    def _check_no_missing_newline(self): 
-        violations = []
-        for f in self.ctx.python_files:
-            try:
-                with open(f, 'rb') as file:
-                    content = file.read()
-                    if content and not content.endswith(b'\n'):
-                        violations.append(f)
-            except: pass
-        return (not violations, violations)
-        
-    def _check_no_tabs(self): 
-        violations = []
-        for f in self.ctx.python_files:
-            try:
-                for i, line in enumerate(open(f, encoding='utf-8'), 1):
-                    if '\t' in line: violations.append(f"{f}:{i}")
-            except: pass
-        return (not violations, violations)
-    
-    async def _check_documentation(self):
-        violations = []
-        for file_path in self.ctx.python_files:
-            if 'test_' in file_path or file_path.endswith('__init__.py'):
-                continue
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                tree = ast.parse(content)
-                if not ast.get_docstring(tree):
-                    violations.append(f"{file_path}: Missing module docstring")
-            except: pass
-        return violations
-
-    async def _check_naming(self):
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                tree = ast.parse(content)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
-                            violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
-            except: pass
-        return violations
-    
-    async def propose_style_fix(self, file_path: str, violations: List[str]) -> str:
-        """L5+ Use LLM with few-shot to propose style fixes."""
-        if not self.ctx.intelligence_enabled:
-            return ""
-        
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-        except Exception:
-            return ""
-        
-        violations_summary = "\n".join([f"- {v}" for v in violations[:10]])
-        
-        prompt = f"""
-{self.ctx.FEW_SHOT_STYLE}
-
-<primary_issues>
-{violations_summary}
-</primary_issues>
-
-<code_to_fix>
-{content[:4000]}
-</code_to_fix>
-
-Apply the most relevant example above.
-Prioritize:
-- Correct isort sections
-- Black-compatible line wrapping
-- Full type hints
-- f-strings
-- Google-style docstrings
-- PEP8 naming
-
-Preserve all logic and comments.
-
-RESPONSE FORMAT:
-Return ONLY the reformatted Python code.
-Exact black formatting. No trailing whitespace.
-No explanations. No markdown outside code block.
-"""
-        
-        return await self.ctx.resilient_mutation(
-            self.name, prompt, code=content, file_path=file_path, max_attempts=2
-        )
+# class CodeStyleGuardian(SubAtomicAgent):
+#     """
+#     Unified Style & Cleanliness Agent.
+#     Merges CodeJanitor (Keys 10-16) and StyleGuardian (Keys 21, 47).
+#     """
+#
+#     def can_run(self) -> bool:
+#         return "AST_VALID" in self.ctx.signals
+#
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Style & Hygiene...")
+#         await asyncio.sleep(0)
+#
+#         self._cleanup_empty_files()
+#         
+#         self.ctx.report(self.name, 11, *self._check_no_trailing_whitespace())
+#         self.ctx.report(self.name, 12, *self._check_no_missing_newline())
+#         self.ctx.report(self.name, 13, *self._check_no_tabs())
+#         self.ctx.report(self.name, 10, *self._check_line_length())
+#         self.ctx.report(self.name, 15, *self._check_magic_numbers())
+#         self.ctx.report(self.name, 16, *self._check_nesting_depth())
+#         
+#         doc_violations = await self._check_documentation()
+#         self.ctx.report(self.name, 21, len(doc_violations) == 0, doc_violations)
+#         
+#         naming_violations = await self._check_naming()
+#         self.ctx.report(self.name, 47, len(naming_violations) == 0, naming_violations)
+#
+#     def _cleanup_empty_files(self):
+#         count = 0
+#         for root, _, files in os.walk("."):
+#             if any(x in root for x in EXCLUDED_DIRS): continue
+#             for file in files:
+#                 p = os.path.join(root, file)
+#                 try:
+#                     if os.path.getsize(p) == 0:
+#                         os.remove(p)
+#                         count += 1
+#                 except: pass
+#         if count: print(f"      🗑️  Deleted {count} empty files.")
+#
+#     def _check_line_length(self):
+#         violations = []
+#         for f in self.ctx.python_files:
+#             try:
+#                 for i, line in enumerate(open(f, encoding='utf-8'), 1):
+#                     if len(line.rstrip()) > 150: violations.append(f"{f}:{i}")
+#             except: pass
+#         return (not violations, violations)
+#
+#     def _check_magic_numbers(self):
+#         violations = []
+#         allowed = {0, 1, -1, 2, 10, 100, 200, 404, 500, 1000, 0.0, 1.0, 0.5}
+#         for f in self.ctx.python_files:
+#             if 'test' in f: continue
+#             try:
+#                 tree = ast.parse(open(f, encoding='utf-8').read())
+#                 for n in ast.walk(tree):
+#                     if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
+#                         if n.value not in allowed: violations.append(f"{f}:{n.lineno}")
+#             except: pass
+#         return (not violations, violations)
+#     
+#     def _check_nesting_depth(self):
+#         violations = []
+#         for f in self.ctx.python_files:
+#             try:
+#                 for i, line in enumerate(open(f, encoding='utf-8'), 1):
+#                     if (len(line) - len(line.lstrip())) > 40: violations.append(f"{f}:{i}")
+#             except: pass
+#         return (not violations, violations)
+#
+#     def _check_no_trailing_whitespace(self): 
+#         violations = []
+#         for f in self.ctx.python_files:
+#             try:
+#                 for i, line in enumerate(open(f, encoding='utf-8'), 1):
+#                     if line.endswith(' \n') or line.endswith('\t\n'):
+#                         violations.append(f"{f}:{i}")
+#             except: pass
+#         return (not violations, violations)
+#         
+#     def _check_no_missing_newline(self): 
+#         violations = []
+#         for f in self.ctx.python_files:
+#             try:
+#                 with open(f, 'rb') as file:
+#                     content = file.read()
+#                     if content and not content.endswith(b'\n'):
+#                         violations.append(f)
+#             except: pass
+#         return (not violations, violations)
+#         
+#     def _check_no_tabs(self): 
+#         violations = []
+#         for f in self.ctx.python_files:
+#             try:
+#                 for i, line in enumerate(open(f, encoding='utf-8'), 1):
+#                     if '\t' in line: violations.append(f"{f}:{i}")
+#             except: pass
+#         return (not violations, violations)
+#     
+#     async def _check_documentation(self):
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             if 'test_' in file_path or file_path.endswith('__init__.py'):
+#                 continue
+#             try:
+#                 with open(file_path, 'r', encoding='utf-8') as f:
+#                     content = f.read()
+#                 tree = ast.parse(content)
+#                 if not ast.get_docstring(tree):
+#                     violations.append(f"{file_path}: Missing module docstring")
+#             except: pass
+#         return violations
+#
+#     async def _check_naming(self):
+#         violations = []
+#         for file_path in self.ctx.python_files:
+#             try:
+#                 with open(file_path, 'r', encoding='utf-8') as f:
+#                     content = f.read()
+#                 tree = ast.parse(content)
+#                 for node in ast.walk(tree):
+#                     if isinstance(node, ast.ClassDef):
+#                         if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
+#                             violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
+#             except: pass
+#         return violations
+#     
+#     async def propose_style_fix(self, file_path: str, violations: List[str]) -> str:
+#         """L5+ Use LLM with few-shot to propose style fixes."""
+#         if not self.ctx.intelligence_enabled:
+#             return ""
+#         
+#         try:
+#             with open(file_path, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#         except Exception:
+#             return ""
+#         
+#         violations_summary = "\n".join([f"- {v}" for v in violations[:10]])
+#         
+#         prompt = f"""
+# {self.ctx.FEW_SHOT_STYLE}
+#
+# <primary_issues>
+# {violations_summary}
+# </primary_issues>
+#
+# <code_to_fix>
+# {content[:4000]}
+# </code_to_fix>
+#
+# Apply the most relevant example above.
+# Prioritize:
+# - Correct isort sections
+# - Black-compatible line wrapping
+# - Full type hints
+# - f-strings
+# - Google-style docstrings
+# - PEP8 naming
+#
+# Preserve all logic and comments.
+#
+# RESPONSE FORMAT:
+# Return ONLY the reformatted Python code.
+# Exact black formatting. No trailing whitespace.
+# No explanations. No markdown outside code block.
+# """
+#         
+#         return await self.ctx.resilient_mutation(
+#             self.name, prompt, code=content, file_path=file_path, max_attempts=2
+#         )
 
 class StructuralEngineer(SubAtomicAgent):
     """
@@ -6271,303 +6273,305 @@ class TypeEnforcer(SubAtomicAgent):
         
         self.ctx.write_compliant_file(report_path, report_content)
 
-class SecurityEnforcer(SubAtomicAgent):
-    """ROLE: Security Guardian. Detects and intelligently remediates high-risk security patterns."""
-    
-    # High-risk security patterns for fast scanning
-    RISK_PATTERNS = {
-        'hardcoded_secret': re.compile(
-            r'(password\s*=\s*["\'][^"\']+["\']|'
-            r'api_key\s*=\s*["\'][^"\']+["\']|'
-            r'secret_key\s*=\s*["\'][^"\']+["\']|'
-            r'token\s*=\s*["\'][^"\']+["\']|'
-            r'auth\s*=\s*["\'][^"\']+["\'])',
-            re.IGNORECASE
-        ),
-        'weak_hash': re.compile(
-            r'(md5\(|sha1\(|hashlib\.md5\(|hashlib\.sha1\()',
-            re.IGNORECASE
-        ),
-        'insecure_random': re.compile(
-            r'(random\.random\(|random\.randint\(|random\.choice\()',
-            re.IGNORECASE
-        ),
-        'sql_injection': re.compile(
-            r'(execute\(|cursor\.execute\().*["\'].*\%.*["\']|'
-            r'(execute\(|cursor\.execute\().*["\'].*\+.*["\']|'
-            r'(execute\(|cursor\.execute\().*f["\'].*\{.*\}.*["\']',
-            re.IGNORECASE
-        ),
-        'eval_usage': re.compile(
-            r'\b(eval\(|exec\(|__import__\(|open\().*["\'].*\+|'
-            r'\b(eval|exec|__import__|open)\(.*%.*\)',
-            re.IGNORECASE
-        ),
-        'pickle_usage': re.compile(
-            r'pickle\.loads\(|pickle\.load\(',
-            re.IGNORECASE
-        ),
-        'temp_file': re.compile(
-            r'tempfile\.mktemp\(|tempfile\.NamedTemporaryFile\(delete=True\)',
-            re.IGNORECASE
-        ),
-        'urlopen_no_verify': re.compile(
-            r'urllib\.request\.urlopen\(|urlopen\([^)]*verify=False\)',
-            re.IGNORECASE
-        )
-    }
-    
-    async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Standards...")
-        await asyncio.sleep(0)
-        
-        # Priority 1: Process modified files
-        modified_files = getattr(self.ctx, 'modified_files', set())
-        
-        # Priority 2: Fall back to all Python files if no tracking
-        target_files = list(modified_files) if modified_files else self.ctx.python_files
-        
-        if not target_files:
-            print("   ✅ No files to check for security")
-            return
-        
-        print(f"   🔍 Scanning {len(target_files)} files for security risks...")
-        print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
-        
-        # Track security fixes
-        security_log = []
-        fixed_files = []
-        critical_secrets_found = False
-        
-        # Two-pass scanning: regex filter -> AST context
-        for file_path in target_files:
-            if not file_path.endswith('.py'):
-                continue
-            
-            result = await self._scan_and_fix(file_path)
-            if result:
-                fixed_files.append(file_path)
-                security_log.append(result)
-                
-                # Check for critical secrets
-                if any('critical' in str(result.get('risks', {})).lower() for risk in result.get('risks', {}).values()):
-                    critical_secrets_found = True
-        
-        # Save security hardening report
-        self._save_security_report(security_log, fixed_files)
-        
-        if fixed_files:
-            print(f"   🔒 Security hardening applied to {len(fixed_files)} files")
-            
-            # Signal critical findings
-            if critical_secrets_found:
-                print("   🚨 CRITICAL: Secrets detected - SECURE_REBOOT recommended!")
-                self.ctx.signals.append("SECURE_REBOOT: Critical secrets found and remediated")
-        else:
-            print("   ✅ No security risks detected")
-    
-    async def _scan_and_fix(self, file_path):
-        """Scan file for risks and apply intelligent remediation."""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            
-            # Pass 1: Fast regex scanning
-            detected_risks = self._detect_risks(content)
-            
-            if not detected_risks:
-                return None
-            
-            # Pass 2: AST context analysis
-            risk_context = self._analyze_risk_context(content, detected_risks)
-            
-            print(f"   🔧 Remediating security risks: {os.path.basename(file_path)}")
-            
-            # Generate secure code using Gemini
-            secured_content = await self._generate_secure_code(
-                file_path, content, risk_context, detected_risks
-            )
-            
-            # Apply fixes
-            if secured_content and secured_content != content:
-                if self.ctx.write_compliant_file(file_path, secured_content):
-                    return {
-                        'file': file_path,
-                        'risks': detected_risks,
-                        'context': risk_context,
-                        'reasoning': 'Security risks detected and intelligently remediated'
-                    }
-            
-        except Exception as e:
-            print(f"   ❌ Failed to secure {file_path}: {e}")
-            return {
-                'file': file_path,
-                'error': str(e),
-                'reasoning': 'Failed to process file'
-            }
-        
-        return None
-    
-    def _detect_risks(self, content):
-        """Fast regex-based risk detection."""
-        risks = {}
-        
-        for risk_name, pattern in self.RISK_PATTERNS.items():
-            matches = pattern.finditer(content)
-            if matches:
-                risks[risk_name] = [
-                    {
-                        'line': content[:match.start()].count('\n') + 1,
-                        'snippet': content[match.start():match.end()][:50],
-                        'full_match': match.group()
-                    }
-                    for match in matches
-                ]
-        
-        return risks
-    
-    def _analyze_risk_context(self, content, risks):
-        """Analyze AST to understand risk context."""
-        context = {
-            'functions_with_risks': [],
-            'variables_with_secrets': [],
-            'sql_queries': [],
-            'imports': []
-        }
-        
-        try:
-            tree = ast.parse(content)
-            
-            # Find functions containing risks
-            for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    func_start = node.lineno
-                    func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
-                    
-                    # Check if any risks are in this function
-                    for risk_name, risk_list in risks.items():
-                        for risk in risk_list:
-                            if func_start <= risk['line'] <= func_end:
-                                context['functions_with_risks'].append({
-                                    'function': node.name,
-                                    'risk': risk_name,
-                                    'line': risk['line']
-                                })
-                
-                # Track variable assignments with secrets
-                elif isinstance(node, ast.Assign):
-                    for target in node.targets:
-                        if isinstance(target, ast.Name):
-                            # Check if this is a secret assignment
-                            line_num = node.lineno
-                            for risk in risks.get('hardcoded_secret', []):
-                                if risk['line'] == line_num:
-                                    context['variables_with_secrets'].append({
-                                        'variable': target.id,
-                                        'line': line_num
-                                    })
-                
-                # Track SQL queries
-                elif isinstance(node, ast.Call):
-                    if isinstance(node.func, ast.Attribute):
-                        if node.func.attr == 'execute':
-                            context['sql_queries'].append({
-                                'line': node.lineno,
-                                'has_risk': any(r['line'] == node.lineno for r in risks.get('sql_injection', []))
-                            })
-                
-                # Track imports
-                elif isinstance(node, ast.Import):
-                    for alias in node.names:
-                        context['imports'].append(alias.name)
-                elif isinstance(node, ast.ImportFrom):
-                    if node.module:
-                        context['imports'].append(node.module)
-        
-        except Exception as e:
-            print(f"   ⚠️  AST analysis failed: {e}")
-        
-        return context
-    
-    async def _generate_secure_code(self, file_path: str, content: str, context: dict, detected_risks: dict = None):
-        """Generate secure code using Gemini with context awareness."""
-        # Build risk summary
-        risk_summary = []
-        risks_to_use = detected_risks if detected_risks else {}
-        for risk_name, risk_list in risks_to_use.items():
-            risk_summary.append(f"- {risk_name}: {len(risk_list)} occurrences")
-        
-        prompt = (
-            f"SECURITY REMEDIATION TASK: Fix high-risk security patterns in Python code.\n\n"
-            f"File: {file_path}\n\n"
-            f"Detected Risks:\n"
-            + "\n".join(risk_summary) + "\n\n"
-            "Security Rules:\n"
-            "1. Replace hardcoded secrets with os.getenv() calls\n"
-            "2. Replace MD5/SHA1 with hashlib.sha256()\n"
-            "3. Replace random.random() with secrets.randbelow()\n"
-            "4. Replace SQL injection risks with parameterized queries\n"
-            "5. Replace eval/exec with safer alternatives\n"
-            "6. Replace pickle with json or msgpack\n"
-            "7. Replace insecure temp files with secure alternatives\n"
-            "8. Add SSL verification for HTTP requests\n\n"
-            "Context:\n"
-            f"- Functions with risks: {len(context.get('functions_with_risks', []))}\n"
-            f"- Variables with secrets: {len(context.get('variables_with_secrets', []))}\n"
-            f"- Risky SQL queries: {len([q for q in context.get('sql_queries', []) if q.get('has_risk')])}\n\n"
-            "Requirements:\n"
-            "1. Preserve all existing functionality\n"
-            "2. Use the most secure standard library alternatives\n"
-            "3. Add comments explaining security changes\n"
-            "4. Do not break existing logic\n"
-            "5. Import required modules if needed\n\n"
-            f"Code:\n{content}\n\n"
-            "Return ONLY the complete secured Python code."
-        )
-        
-        return await self.ctx.request_mutation(
-            self.name, prompt, content, reasoning_mode=True
-        )
-    
-    def _save_security_report(self, log_entries, fixed_files):
-        """Save the security hardening report."""
-        timestamp = int(time.time())
-        report_path = f"observability/audit/security_hardening_{timestamp}.md"
-        
-        report_content = f"# Security Hardening Report\n\n"
-        report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
-        report_content += f"## Summary\n\n"
-        report_content += f"- Files scanned: {len(log_entries)}\n"
-        report_content += f"- Files secured: {len(fixed_files)}\n\n"
-        
-        if log_entries:
-            report_content += f"## Security Fixes\n\n"
-            for entry in log_entries:
-                if 'error' in entry:
-                    report_content += f"### ❌ {entry['file']}\n\n"
-                    report_content += f"**Error:** {entry['error']}\n\n"
-                else:
-                    report_content += f"### ✅ {entry['file']}\n\n"
-                    
-                    risks = entry['risks']
-                    report_content += f"**Risks Found:**\n"
-                    for risk_name, risk_list in risks.items():
-                        report_content += f"- {risk_name}: {len(risk_list)} occurrences\n"
-                    
-                    context = entry['context']
-                    if context.get('functions_with_risks'):
-                        report_content += f"\n**Affected Functions:**\n"
-                        for func in context['functions_with_risks'][:5]:
-                            report_content += f"- {func['function']} ({func['risk']})\n"
-                    
-                    if context.get('variables_with_secrets'):
-                        report_content += f"\n**Secret Variables:**\n"
-                        for var in context['variables_with_secrets']:
-                            report_content += f"- {var['variable']} (line {var['line']})\n"
-                    
-                    report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
-        
-        self.ctx.write_compliant_file(report_path, report_content)
+# SecurityEnforcer is now imported from agentic_core.agents.security
+
+# class SecurityEnforcer(SubAtomicAgent):
+#     """ROLE: Security Guardian. Detects and intelligently remediates high-risk security patterns."""
+#     
+#     # High-risk security patterns for fast scanning
+#     RISK_PATTERNS = {
+#         'hardcoded_secret': re.compile(
+#             r'(password\s*=\s*["\'][^"\']+["\']|'
+#             r'api_key\s*=\s*["\'][^"\']+["\']|'
+#             r'secret_key\s*=\s*["\'][^"\']+["\']|'
+#             r'token\s*=\s*["\'][^"\']+["\']|'
+#             r'auth\s*=\s*["\'][^"\']+["\'])',
+#             re.IGNORECASE
+#         ),
+#         'weak_hash': re.compile(
+#             r'(md5\(|sha1\(|hashlib\.md5\(|hashlib\.sha1\()',
+#             re.IGNORECASE
+#         ),
+#         'insecure_random': re.compile(
+#             r'(random\.random\(|random\.randint\(|random\.choice\()',
+#             re.IGNORECASE
+#         ),
+#         'sql_injection': re.compile(
+#             r'(execute\(|cursor\.execute\().*["\'].*\%.*["\']|'
+#             r'(execute\(|cursor\.execute\().*["\'].*\+.*["\']|'
+#             r'(execute\(|cursor\.execute\().*f["\'].*\{.*\}.*["\']',
+#             re.IGNORECASE
+#         ),
+#         'eval_usage': re.compile(
+#             r'\b(eval\(|exec\(|__import__\(|open\().*["\'].*\+|'
+#             r'\b(eval|exec|__import__|open)\(.*%.*\)',
+#             re.IGNORECASE
+#         ),
+#         'pickle_usage': re.compile(
+#             r'pickle\.loads\(|pickle\.load\(',
+#             re.IGNORECASE
+#         ),
+#         'temp_file': re.compile(
+#             r'tempfile\.mktemp\(|tempfile\.NamedTemporaryFile\(delete=True\)',
+#             re.IGNORECASE
+#         ),
+#         'urlopen_no_verify': re.compile(
+#             r'urllib\.request\.urlopen\(|urlopen\([^)]*verify=False\)',
+#             re.IGNORECASE
+#         )
+#     }
+#     
+#     async def execute(self):
+#         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Standards...")
+#         await asyncio.sleep(0)
+#         
+#         # Priority 1: Process modified files
+#         modified_files = getattr(self.ctx, 'modified_files', set())
+#         
+#         # Priority 2: Fall back to all Python files if no tracking
+#         target_files = list(modified_files) if modified_files else self.ctx.python_files
+#         
+#         if not target_files:
+#             print("   ✅ No files to check for security")
+#             return
+#         
+#         print(f"   🔍 Scanning {len(target_files)} files for security risks...")
+#         print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
+#         
+#         # Track security fixes
+#         security_log = []
+#         fixed_files = []
+#         critical_secrets_found = False
+#         
+#         # Two-pass scanning: regex filter -> AST context
+#         for file_path in target_files:
+#             if not file_path.endswith('.py'):
+#                 continue
+#             
+#             result = await self._scan_and_fix(file_path)
+#             if result:
+#                 fixed_files.append(file_path)
+#                 security_log.append(result)
+#                 
+#                 # Check for critical secrets
+#                 if any('critical' in str(result.get('risks', {})).lower() for risk in result.get('risks', {}).values()):
+#                     critical_secrets_found = True
+#         
+#         # Save security hardening report
+#         self._save_security_report(security_log, fixed_files)
+#         
+#         if fixed_files:
+#             print(f"   🔒 Security hardening applied to {len(fixed_files)} files")
+#             
+#             # Signal critical findings
+#             if critical_secrets_found:
+#                 print("   🚨 CRITICAL: Secrets detected - SECURE_REBOOT recommended!")
+#                 self.ctx.signals.append("SECURE_REBOOT: Critical secrets found and remediated")
+#         else:
+#             print("   ✅ No security risks detected")
+#     
+#     async def _scan_and_fix(self, file_path):
+#         """Scan file for risks and apply intelligent remediation."""
+#         try:
+#             with open(file_path, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#             
+#             # Pass 1: Fast regex scanning
+#             detected_risks = self._detect_risks(content)
+#             
+#             if not detected_risks:
+#                 return None
+#             
+#             # Pass 2: AST context analysis
+#             risk_context = self._analyze_risk_context(content, detected_risks)
+#             
+#             print(f"   🔧 Remediating security risks: {os.path.basename(file_path)}")
+#             
+#             # Generate secure code using Gemini
+#             secured_content = await self._generate_secure_code(
+#                 file_path, content, risk_context, detected_risks
+#             )
+#             
+#             # Apply fixes
+#             if secured_content and secured_content != content:
+#                 if self.ctx.write_compliant_file(file_path, secured_content):
+#                     return {
+#                         'file': file_path,
+#                         'risks': detected_risks,
+#                         'context': risk_context,
+#                         'reasoning': 'Security risks detected and intelligently remediated'
+#                     }
+#             
+#         except Exception as e:
+#             print(f"   ❌ Failed to secure {file_path}: {e}")
+#             return {
+#                 'file': file_path,
+#                 'error': str(e),
+#                 'reasoning': 'Failed to process file'
+#             }
+#         
+#         return None
+#     
+#     def _detect_risks(self, content):
+#         """Fast regex-based risk detection."""
+#         risks = {}
+#         
+#         for risk_name, pattern in self.RISK_PATTERNS.items():
+#             matches = pattern.finditer(content)
+#             if matches:
+#                 risks[risk_name] = [
+#                     {
+#                         'line': content[:match.start()].count('\n') + 1,
+#                         'snippet': content[match.start():match.end()][:50],
+#                         'full_match': match.group()
+#                     }
+#                     for match in matches
+#                 ]
+#         
+#         return risks
+#     
+#     def _analyze_risk_context(self, content, risks):
+#         """Analyze AST to understand risk context."""
+#         context = {
+#             'functions_with_risks': [],
+#             'variables_with_secrets': [],
+#             'sql_queries': [],
+#             'imports': []
+#         }
+#         
+#         try:
+#             tree = ast.parse(content)
+#             
+#             # Find functions containing risks
+#             for node in ast.walk(tree):
+#                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+#                     func_start = node.lineno
+#                     func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
+#                     
+#                     # Check if any risks are in this function
+#                     for risk_name, risk_list in risks.items():
+#                         for risk in risk_list:
+#                             if func_start <= risk['line'] <= func_end:
+#                                 context['functions_with_risks'].append({
+#                                     'function': node.name,
+#                                     'risk': risk_name,
+#                                     'line': risk['line']
+#                                 })
+#                 
+#                 # Track variable assignments with secrets
+#                 elif isinstance(node, ast.Assign):
+#                     for target in node.targets:
+#                         if isinstance(target, ast.Name):
+#                             # Check if this is a secret assignment
+#                             line_num = node.lineno
+#                             for risk in risks.get('hardcoded_secret', []):
+#                                 if risk['line'] == line_num:
+#                                     context['variables_with_secrets'].append({
+#                                         'variable': target.id,
+#                                         'line': line_num
+#                                     })
+#                 
+#                 # Track SQL queries
+#                 elif isinstance(node, ast.Call):
+#                     if isinstance(node.func, ast.Attribute):
+#                         if node.func.attr == 'execute':
+#                             context['sql_queries'].append({
+#                                 'line': node.lineno,
+#                                 'has_risk': any(r['line'] == node.lineno for r in risks.get('sql_injection', []))
+#                             })
+#                 
+#                 # Track imports
+#                 elif isinstance(node, ast.Import):
+#                     for alias in node.names:
+#                         context['imports'].append(alias.name)
+#                 elif isinstance(node, ast.ImportFrom):
+#                     if node.module:
+#                         context['imports'].append(node.module)
+#         
+#         except Exception as e:
+#             print(f"   ⚠️  AST analysis failed: {e}")
+#         
+#         return context
+#     
+#     async def _generate_secure_code(self, file_path: str, content: str, context: dict, detected_risks: dict = None):
+#         """Generate secure code using Gemini with context awareness."""
+#         # Build risk summary
+#         risk_summary = []
+#         risks_to_use = detected_risks if detected_risks else {}
+#         for risk_name, risk_list in risks_to_use.items():
+#             risk_summary.append(f"- {risk_name}: {len(risk_list)} occurrences")
+#         
+#         prompt = (
+#             f"SECURITY REMEDIATION TASK: Fix high-risk security patterns in Python code.\n\n"
+#             f"File: {file_path}\n\n"
+#             f"Detected Risks:\n"
+#             + "\n".join(risk_summary) + "\n\n"
+#             "Security Rules:\n"
+#             "1. Replace hardcoded secrets with os.getenv() calls\n"
+#             "2. Replace MD5/SHA1 with hashlib.sha256()\n"
+#             "3. Replace random.random() with secrets.randbelow()\n"
+#             "4. Replace SQL injection risks with parameterized queries\n"
+#             "5. Replace eval/exec with safer alternatives\n"
+#             "6. Replace pickle with json or msgpack\n"
+#             "7. Replace insecure temp files with secure alternatives\n"
+#             "8. Add SSL verification for HTTP requests\n\n"
+#             "Context:\n"
+#             f"- Functions with risks: {len(context.get('functions_with_risks', []))}\n"
+#             f"- Variables with secrets: {len(context.get('variables_with_secrets', []))}\n"
+#             f"- Risky SQL queries: {len([q for q in context.get('sql_queries', []) if q.get('has_risk')])}\n\n"
+#             "Requirements:\n"
+#             "1. Preserve all existing functionality\n"
+#             "2. Use the most secure standard library alternatives\n"
+#             "3. Add comments explaining security changes\n"
+#             "4. Do not break existing logic\n"
+#             "5. Import required modules if needed\n\n"
+#             f"Code:\n{content}\n\n"
+#             "Return ONLY the complete secured Python code."
+#         )
+#         
+#         return await self.ctx.request_mutation(
+#             self.name, prompt, content, reasoning_mode=True
+#         )
+#     
+#     def _save_security_report(self, log_entries, fixed_files):
+#         """Save the security hardening report."""
+#         timestamp = int(time.time())
+#         report_path = f"observability/audit/security_hardening_{timestamp}.md"
+#         
+#         report_content = f"# Security Hardening Report\n\n"
+#         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
+#         report_content += f"## Summary\n\n"
+#         report_content += f"- Files scanned: {len(log_entries)}\n"
+#         report_content += f"- Files secured: {len(fixed_files)}\n\n"
+#         
+#         if log_entries:
+#             report_content += f"## Security Fixes\n\n"
+#             for entry in log_entries:
+#                 if 'error' in entry:
+#                     report_content += f"### ❌ {entry['file']}\n\n"
+#                     report_content += f"**Error:** {entry['error']}\n\n"
+#                 else:
+#                     report_content += f"### ✅ {entry['file']}\n\n"
+#                     
+#                     risks = entry['risks']
+#                     report_content += f"**Risks Found:**\n"
+#                     for risk_name, risk_list in risks.items():
+#                         report_content += f"- {risk_name}: {len(risk_list)} occurrences\n"
+#                     
+#                     context = entry['context']
+#                     if context.get('functions_with_risks'):
+#                         report_content += f"\n**Affected Functions:**\n"
+#                         for func in context['functions_with_risks'][:5]:
+#                             report_content += f"- {func['function']} ({func['risk']})\n"
+#                     
+#                     if context.get('variables_with_secrets'):
+#                         report_content += f"\n**Secret Variables:**\n"
+#                         for var in context['variables_with_secrets']:
+#                             report_content += f"- {var['variable']} (line {var['line']})\n"
+#                     
+#                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
+#         
+#         self.ctx.write_compliant_file(report_path, report_content)
 
 class PerformanceEnforcer(SubAtomicAgent):
     """ROLE: Performance Guardian. Identifies and remediates computational inefficiencies."""
