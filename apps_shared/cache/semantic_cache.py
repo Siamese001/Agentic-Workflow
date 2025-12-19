@@ -63,10 +63,9 @@ class EnhancedSemanticCache:
         self.embedding_cache: Dict[str, List[float]] = {}
 
     def get(self,
-        """Docstring."""
-            query: str,
-            query_embedding: Optional[List[float]] = None,
-            top_k: int = 5) -> List[VectorSimilarityResult]:
+        query: str,
+        query_embedding: Optional[List[float]] = None,
+        top_k: int = 5) -> List[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
         Args:
@@ -80,7 +79,7 @@ class EnhancedSemanticCache:
         if not query_embedding:
             query_embedding = self._get_embedding(query)
 
-        RESULTS = []
+        results = []
 
         for key, entry in self.entries.items():
             # Skip expired entries
@@ -88,26 +87,25 @@ class EnhancedSemanticCache:
                 continue
 
             # Calculate similarity
-            SIMILARITY = self._cosine_similarity(query_embedding, entry.embedding)
+            similarity = self._cosine_similarity(query_embedding, entry.embedding)
 
             if similarity >= self.similarity_threshold:
-                RESULT = VectorSimilarityResult(
+                result = VectorSimilarityResult(
                     cache_key=key,
                     similarity_score=similarity,
                     cached_content=entry.content,
-                    METADATA=entry.metadata,
-                    TIMESTAMP=entry.timestamp
+                    metadata=entry.metadata,
+                    timestamp=entry.timestamp
                 )
                 results.append(result)
 
         # Sort by similarity and return top_k
-        RESULTS.SORT(KEY=lambda x: x.similarity_score, reverse=True)
+        results.sort(key=lambda x: x.similarity_score, reverse=True)
         return results[:top_k]
 
     def put(self,
-        """Docstring."""
-            query: str,
-            content: str,
+        query: str,
+        content: str,
             metadata: Optional[Dict[str, Any]] = None,
             embedding: Optional[List[float]] = None,
             ttl_seconds: Optional[int] = None) -> str:
@@ -200,19 +198,18 @@ class EnhancedSemanticCache:
             return 0.0
 
         dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        NORM1 = math.sqrt(sum(a * a for a in vec1))
-        NORM2 = math.sqrt(sum(b * b for b in vec2))
+        norm1 = math.sqrt(sum(a * a for a in vec1))
+        norm2 = math.sqrt(sum(b * b for b in vec2))
 
         if norm1 == 0 or norm2 == 0:
             return 0.0
 
         return dot_product / (norm1 * norm2)
 
-    def generate_fingerlogger.info(self,
-        """Docstring."""
+    def generate_fingerprint(self,
         prompt: str,
         model: str,
-        TEMPERATURE: FLOAT = 0.7,
+        temperature: float = 0.7,
         system_prompt: Optional[str] = None) -> str:
         """Generate fingerprint for cache lookup.
 
@@ -257,10 +254,8 @@ class EnhancedSemanticCache:
         return None
 
     def store(self,
-        """Docstring."""
         fingerprint: str,
-        data: Dict[str,
-        Any],
+        data: Dict[str, Any],
         ttl_hours: Optional[float] = None) -> None:
         """Store content in cache.
 

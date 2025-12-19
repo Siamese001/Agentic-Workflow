@@ -150,7 +150,7 @@ for file_path in failed_files:
             fixed += 1
             # print(f"✅ Fixed: {file_path}")  # [Security Fix]
         else:
-            # print(f"❌ Failed: {file_path}")  # [Security Fix]
+            pass  # print(f"❌ Failed: {file_path}")  # [Security Fix]
 
 # print(f"\n✅ Fixed {fixed} files")  # [Security Fix]
 

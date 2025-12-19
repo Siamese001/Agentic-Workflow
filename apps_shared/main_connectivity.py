@@ -74,8 +74,7 @@ class SystemSanityCheck:
             logger.info(f"   💾 AOF: {aof_status}")
 
         except Exception as e:
-pass
-results["components"]["redis"] = {
+            results["components"]["redis"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
@@ -107,8 +106,7 @@ results["components"]["redis"] = {
             logger.info(f"   🎯 Target index '{index_name}': {index_status}")
 
         except Exception as e:
-pass
-results["components"]["pinecone"] = {
+            results["components"]["pinecone"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
@@ -141,8 +139,7 @@ results["components"]["pinecone"] = {
             logger.info(f"   📐 Dimensions: {dims_status}")
 
         except Exception as e:
-pass
-results["components"]["embeddings"] = {
+            results["components"]["embeddings"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
@@ -167,7 +164,7 @@ results["components"]["embeddings"] = {
             logger.info(f"   🔑 Key prefix: {redis_index.prefix}")
 
         except Exception as e:
-pass
+            pass
 results["components"]["redis_index"] = {
                 "status": "FAILED",
                 "error": str(e)
@@ -345,12 +342,12 @@ if __name__ == "__main__":
         exit_code = main()
         sys.exit(exit_code)
     except KeyboardInterrupt:
-pass
+        pass
 logger.info("⏹️  Shutdown requested by user")
         sys.exit(0)
     except Exception as e:
-pass
-logger.error(f"❌ Fatal error: {e}")
+        pass
+        logger.error(f"❌ Fatal error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

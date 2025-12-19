@@ -49,19 +49,16 @@ def main():
         # print("\n✅ Workflow Completed Successfully.")  # [Security Fix]
 
     except ImportError as e:
-pass
-logger.critical(f"❌ Configuration Error: {e}")
+        logger.critical(f"❌ Configuration Error: {e}")
         # print("\nFix: Ensure your folder structure matches: orchestrator.py in project root")  # [Security Fix]
         sys.exit(1)
 
     except KeyboardInterrupt:
-pass
-# print("\n\n⚠️  User Aborted.")  # [Security Fix]
+        # print("\n\n⚠️  User Aborted.")  # [Security Fix]
         sys.exit(0)
 
     except Exception as e:
-pass
-# This catches anything that slipped past the Hardened Orchestrator
+        # This catches anything that slipped past the Hardened Orchestrator
         logger.critical(f"❌ Unhandled System Crash: {e}", exc_info=True)
         sys.exit(1)
 

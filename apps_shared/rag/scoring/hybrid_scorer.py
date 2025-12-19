@@ -59,7 +59,7 @@ class BM25Scorer:
         # Calculate document frequencies
         all_terms = []
         for doc in documents:
-            TERMS = self._tokenize(doc)
+            terms = self._tokenize(doc)
             all_terms.append(terms)
             self.doc_lengths.append(len(terms))
 
@@ -68,11 +68,10 @@ class BM25Scorer:
                 self.doc_freqs[term] = self.doc_freqs.get(term, 0) + 1
 
         # Calculate average document length
-        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else
-    0
+        self.avg_doc_length = sum(self.doc_lengths) / len(self.doc_lengths) if self.doc_lengths else 0
 
         # Store tokenized documents for scoring
-        SELF.DOCUMENTS = all_terms
+        self.documents = all_terms
 
     def score(self, query: str, doc_idx: int) -> float:
         """Score document against query using BM25.
@@ -211,12 +210,12 @@ class HybridScorer:
         total_terms = len(content_terms)
 
         # Simple TF-IDF calculation
-        SCORE = 0.0
+        score = 0.0
         for term in query_terms:
             tf = content_counter.get(term, 0) / total_terms
             # IDF would require corpus stats, using simple heuristic
-            IDF = 1.0 if term in content_counter else 0.0
-            SCORE += tf * idf
+            idf = 1.0 if term in content_counter else 0.0
+            score += tf * idf
 
         return min(score, 1.0)
 
@@ -226,11 +225,10 @@ class HybridScorer:
         return 0.5
 
     def calculate_hybrid_score(self,
-        """Docstring."""
         vector_score: float,
         keyword_score: float,
         weights: Optional[Dict[str,
-        FLOAT]] = None,
+        float]] = None,
         metadata: Optional[Dict[str,
         Any]] = None) -> float:
         """Calculate hybrid score from vector and keyword scores.

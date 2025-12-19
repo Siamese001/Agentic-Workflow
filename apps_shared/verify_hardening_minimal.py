@@ -24,11 +24,11 @@ def test_manifest_integrity():
             return True
 
         except json.JSONDecodeError as e:
-pass
+            pass
 # print(f"❌ Manifest corruption: Invalid JSON syntax. {e}")  # [Security Fix]
             return False
         except Exception as e:
-pass
+            pass
 # print(f"❌ Manifest validation error: {e}")  # [Security Fix]
             return False
 
@@ -116,7 +116,7 @@ def test_error_classification():
     for error, expected in test_cases:
         result = classify_error(error)
         if result == expected:
-            # print(f"   ✅ {type(error).__name__} correctly classified as {result}")  # [Security Fix]
+            pass  # print(f"   ✅ {type(error).__name__} correctly classified as {result}")  # [Security Fix]
         else:
             # print(f"   ❌ {type(error).__name__} classified as {result}, expected {expected}")  # [Security Fix]
             all_passed = False

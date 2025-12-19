@@ -129,8 +129,8 @@ class ETLPipeline:
             return patterns
 
         except Exception as e:
-pass
-logger.error(f"Failed to fetch golden patterns: {e}")
+            pass
+            logger.error(f"Failed to fetch golden patterns: {e}")
             return []
 
     def _load_to_redis(self, patterns: List[CanonEntry]) -> int:
@@ -173,8 +173,8 @@ logger.error(f"Failed to fetch golden patterns: {e}")
             return loaded_count
 
         except Exception as e:
-pass
-logger.error(f"Failed to load patterns to Redis: {e}")
+            pass
+            logger.error(f"Failed to load patterns to Redis: {e}")
             return 0
 
     def backfill_from_code(
@@ -220,8 +220,8 @@ logger.error(f"Failed to load patterns to Redis: {e}")
                     processed += 1
 
                 except Exception as e:
-pass
-logger.error(f"Failed to process {file_path}: {e}")
+                    pass
+                    logger.error(f"Failed to process {file_path}: {e}")
                     failed += 1
 
             # Upsert batch to Pinecone
@@ -280,8 +280,8 @@ logger.error(f"Failed to process {file_path}: {e}")
             logger.debug(f"Upserted {len(entries)} vectors to Pinecone")
 
         except Exception as e:
-pass
-logger.error(f"Failed to upsert to Pinecone: {e}")
+            pass
+            logger.error(f"Failed to upsert to Pinecone: {e}")
             raise
 
     def get_cache_stats(self) -> Dict[str, Any]:
@@ -301,8 +301,8 @@ logger.error(f"Failed to upsert to Pinecone: {e}")
                 "keyspace_misses": redis_info.get("keyspace_misses", 0)
             }
         except Exception as e:
-pass
-logger.error(f"Failed to get Redis stats: {e}")
+            pass
+            logger.error(f"Failed to get Redis stats: {e}")
 
         # Pinecone stats
         try:
@@ -314,8 +314,8 @@ logger.error(f"Failed to get Redis stats: {e}")
                 "index_fullness": index_stats.get("index_fullness", 0)
             }
         except Exception as e:
-pass
-logger.error(f"Failed to get Pinecone stats: {e}")
+            pass
+            logger.error(f"Failed to get Pinecone stats: {e}")
 
         return stats
 

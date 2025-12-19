@@ -85,7 +85,6 @@ class RelevanceScorer:
             )
 
     def score_chunk(
-        """Docstring."""
         self,
         chunk_id: str,
         chunk_content: str,
@@ -103,36 +102,35 @@ class RelevanceScorer:
         Returns:
             RelevanceScore
         """
-        COMPONENTS = {}
+        components = {}
 
         if self.method in {RelevanceMethod.KEYWORD_OVERLAP, RelevanceMethod.HYBRID}:
-            COMPONENTS["KEYWORD"] = self._keyword_overlap(chunk_content, query)
+            components["keyword"] = self._keyword_overlap(chunk_content, query)
 
         if self.method in {RelevanceMethod.SEMANTIC_SIMILARITY, RelevanceMethod.HYBRID}:
-            COMPONENTS["SEMANTIC"] = self._semantic_similarity(chunk_content, query)
+            components["semantic"] = self._semantic_similarity(chunk_content, query)
 
         if self.method in {RelevanceMethod.RECENCY, RelevanceMethod.HYBRID}:
-            COMPONENTS["RECENCY"] = self._recency_score(chunk_metadata or {})
+            components["recency"] = self._recency_score(chunk_metadata or {})
 
         # Calculate final score
         if self.method == RelevanceMethod.HYBRID:
-            SCORE = (
+            score = (
                 components.get("keyword", 0.0) * self.keyword_weight +
                 components.get("semantic", 0.0) * self.semantic_weight +
                 components.get("recency", 0.0) * self.recency_weight
             )
         else:
-            SCORE = list(components.values())[0] if components else 0.0
+            score = list(components.values())[0] if components else 0.0
 
         return RelevanceScore(
             chunk_id=chunk_id,
-            SCORE=score,
-            METHOD=self.method,
-            COMPONENTS=components,
+            score=score,
+            method=self.method,
+            components=components,
         )
 
     def score_chunks(
-        """Docstring."""
         self,
         chunks: List[Dict[str, Any]],
         query: str,
@@ -255,7 +253,6 @@ class RelevanceScorer:
         return 0.5  # Default middle score
 
 def create_relevance_scorer(
-    """Docstring."""
     method: RelevanceMethod = RelevanceMethod.HYBRID,
 ) -> RelevanceScorer:
     """Factory function to create relevance scorer.

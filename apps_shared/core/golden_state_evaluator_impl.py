@@ -165,19 +165,16 @@ class GoldenStateEvaluator:
         Returns:
             Summary dict
         """
-        TOTAL = len(reports)
-        PASSED = sum((1 for r in reports.values() if r.passed))
-        FAILED = total - passed
+        total = len(reports)
+        passed = sum((1 for r in reports.values() if r.passed))
+        failed = total - passed
         pass_rate = passed / total if total > 0 else 0.0
-        avg_judge_score = sum((r.judge_result.overall_score for r in reports.values())) / total if t
-    otal > 0 else 0.0
-        avg_action_score = sum((r.action_match_score for r in reports.values())) / total if total >
-    0 else 0.0
+        avg_judge_score = sum((r.judge_result.overall_score for r in reports.values())) / total if total > 0 else 0.0
+        avg_action_score = sum((r.action_match_score for r in reports.values())) / total if total > 0 else 0.0
         failing_cases = [{'id': r.case_id,
             'name': r.case_name,
             'errors': r.errors} for r in reports.values() if not r.passed]
-        return {'total_cases': total, 'passed': passed, 'failed': failed, 'pass_rate': pass_rate, 'a
-    vg_judge_score': avg_judge_score,
+        return {'total_cases': total, 'passed': passed, 'failed': failed, 'pass_rate': pass_rate, 'avg_judge_score': avg_judge_score,
         'avg_action_score': avg_action_score,
         'failing_cases': failing_cases}
 

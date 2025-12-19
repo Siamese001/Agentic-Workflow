@@ -17,7 +17,7 @@ def calculate_freshness_filter(time_str: str, months_ago: int = 6) -> str:
         filter_dt = current_dt - timedelta(days=30 * months_ago)
         return filter_dt.strftime('%Y-%m-%d')
     except Exception as e:
-pass
+        pass
 # Fallback to a safe, wide date range if L4 Time MCP fails
         return "2024-01-01"
 
@@ -96,8 +96,7 @@ def execute_time_bound_salary_benchmarking(
                     "Brave Search failed or returned stale data. Utilizing fallback context.")
 
     except Exception as e:
-pass
-if logger:
+        if logger:
             logger.error(f"Brave Search failed: {e}. Using fallback.")
         salary_data = None
         source_freshness = "CRITICAL_FAILURE"
@@ -121,10 +120,6 @@ if logger:
                 "entityName": "CostGovernance",
                 "contents": [audit_message]
             }])
-except Exception:
-    pass
-pass
-pass
 
     return {
         "status": "success",
