@@ -5,6 +5,13 @@
 from .analysis import SemanticMapper, TruthKeeper
 from .base import ImportPatcher, SubAtomicAgent
 
+# Canon Validator agents (Subatomic Level 5)
+from .canon_base_agent import CanonBaseAgent
+from .system_architect import SystemArchitect
+from .code_janitor import CodeJanitor
+from .structural_engineer import StructuralEngineer as CanonStructuralEngineer
+from .healer_agent import HealerAgent
+
 # Concurrency agents
 from .concurrency import (
     DeadlockAnalyzer,
@@ -56,6 +63,12 @@ __all__ = [
     # Base
     'SubAtomicAgent',
     'ImportPatcher',
+    # Canon Validator (Subatomic Level 5)
+    'CanonBaseAgent',
+    'SystemArchitect',
+    'CodeJanitor',
+    'CanonStructuralEngineer',
+    'HealerAgent',
     # Analysis
     'SemanticMapper',
     'TruthKeeper',
