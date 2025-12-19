@@ -128,6 +128,7 @@ class ServiceManager:
     pinecone_index: Optional[Any] = field(default=None)
     mcp_clients: Dict[str, Any] = field(default_factory=dict)
     redis_fallback: Dict[str, Any] = field(default_factory=dict)  # Local dict fallback for Redis
+    mcp_init_pending: bool = field(default=False)  # Flag for async MCP initialization
     
     def __post_init__(self):
         """Initialize services if available."""
@@ -189,24 +190,45 @@ class ServiceManager:
     
     def _init_mcp(self):
         """Initialize MCP clients if available."""
-        # MCP requires async initialization with read/write streams
-        # Disabling for now to prevent blocking initialization
-        # TODO: Implement proper async MCP initialization with stdio_client
-        # Example pattern:
-        # async def init_mcp_async():
-        #     from mcp.client.session import ClientSession
-        #     from mcp.client.stdio import stdio_client
-        #     
-        #     async with stdio_client() as (read_stream, write_stream):
-        #         async with ClientSession(read_stream, write_stream) as session:
-        #             await session.initialize()
-        #             self.mcp_clients['figma'] = session
+        # MCP requires async initialization - will be initialized in async context
+        # Set flag to initialize in async context later
+        self.mcp_init_pending = True
+    
+    async def init_mcp_async(self):
+        """Async initialization of MCP clients for filesystem operations."""
+        if not self.mcp_init_pending:
+            return
+        
         try:
+            # Try to import MCP filesystem client
+            try:
+                from mcp import ClientSession, StdioServerParameters
+                from mcp.client.stdio import stdio_client
+                
+                # Initialize filesystem MCP for autonomous file writing
+                server_params = StdioServerParameters(
+                    command="npx",
+                    args=["-y", "@modelcontextprotocol/server-filesystem", os.getcwd()]
+                )
+                
+                async with stdio_client(server_params) as (read_stream, write_stream):
+                    async with ClientSession(read_stream, write_stream) as session:
+                        await session.initialize()
+                        self.mcp_clients['filesystem'] = session
+                        print("   ✅ MCP Filesystem initialized for autonomous file operations")
+                        self.mcp_init_pending = False
+                        return
+            except ImportError:
+                print("   ⚠️  MCP not installed - using direct file I/O")
+            
+            # Fallback: Check for Figma token
             figma_token = os.getenv('FIGMA_TOKEN')
             if figma_token:
-                print("   ⚠️  MCP services require async initialization - skipping for now")
+                print("   ⚠️  Figma MCP available but not initialized (optional)")
         except Exception as e:
-            print(f"   ⚠️  MCP services unavailable: {e}")
+            print(f"   ⚠️  MCP initialization failed: {e}")
+        finally:
+            self.mcp_init_pending = False
     
     def get_cached_result(self, file_hash: str) -> Optional[Dict]:
         """Get cached validation result from Redis or fallback dict."""
@@ -401,15 +423,11 @@ class ValidationContext:
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
         """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
         
-        # Build conversation history for chat session
+        # Build conversation history for chat session - PRESERVE FULL HISTORY
         history = []
         if file_path and file_path in self.conversation_history:
-            # Convert stored history to chat format
-            for turn in self.conversation_history[file_path]:
-                if turn["role"] == "user":
-                    history.append({"role": "user", "parts": [{"text": turn["parts"][0]["text"]}]})
-                elif turn["role"] == "model":
-                    history.append({"role": "model", "parts": [{"text": turn["parts"][0]["text"]}]})
+            # Use stored history directly without stripping
+            history = self.conversation_history[file_path].copy()
         
         # Build the prompt
         prompt = f"""Task: {task}
@@ -446,13 +464,22 @@ RULES:
             
             response = await asyncio.to_thread(get_gemini_response)
             
-            fixed_code = response.text.strip()
+            # DEBUG: Check if model is calling a tool instead of returning text
+            if response.candidates and response.candidates[0].content.parts:
+                first_part = response.candidates[0].content.parts[0]
+                if hasattr(first_part, 'function_call') and first_part.function_call:
+                    print(f"🔍 DEBUG: Model is calling a tool: {first_part.function_call.name}")
+                    print(f"   This indicates the model is stuck in a tool-calling loop.")
+                    # Return original code to break the loop
+                    return code
+            
+            fixed_code = response.text.strip() if response.text else code
             
             # Log success for record_healing_attempt logic
             if hasattr(response, 'usage_metadata'):
                 print(f"✅ Reasoning Complete. Tokens used: {response.usage_metadata.total_token_count}")
             
-            # Update conversation history with the new response
+            # Update conversation history with FULL response (including function calls)
             if file_path:
                 if file_path not in self.conversation_history:
                     self.conversation_history[file_path] = []
@@ -463,11 +490,25 @@ RULES:
                     "parts": [{"text": prompt}]
                 })
                 
-                # Add model response (SDK manages signature automatically)
-                self.conversation_history[file_path].append({
-                    "role": "model",
-                    "parts": [{"text": fixed_code}]
-                })
+                # Add model response - preserve ALL parts (text + function calls)
+                model_parts = []
+                for part in response.candidates[0].content.parts:
+                    if hasattr(part, 'text') and part.text:
+                        model_parts.append({"text": part.text})
+                    elif hasattr(part, 'function_call') and part.function_call:
+                        # Store function call in history for continuity
+                        model_parts.append({
+                            "function_call": {
+                                "name": part.function_call.name,
+                                "args": dict(part.function_call.args)
+                            }
+                        })
+                
+                if model_parts:
+                    self.conversation_history[file_path].append({
+                        "role": "model",
+                        "parts": model_parts
+                    })
             
             return fixed_code
             
@@ -2358,6 +2399,9 @@ class IntelligentOrchestrator:
     async def run_mission(self):
         """Execute all agents in sequence."""
         print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
+        
+        # Initialize MCP async services for filesystem operations
+        await self.ctx.services.init_mcp_async()
 
         for agent in self.swarm:
             if not agent.can_run():
