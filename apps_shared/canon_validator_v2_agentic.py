@@ -14,6 +14,7 @@ import os
 import re
 import subprocess
 import sys
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
@@ -90,6 +91,9 @@ class ValidationContext:
     intelligence_enabled: bool = field(default=False)
     _client: Any = field(default=None)
     target_scope: str = field(default=".")
+    
+    # L5: Self-monitoring – track healing attempts per file
+    healing_attempts: Dict[str, int] = field(default_factory=dict)
 
     def __post_init__(self):
         # TARGETED SCAN: Only load files in the target scope to save tokens
@@ -116,7 +120,15 @@ class ValidationContext:
         else:
             print("      ⚠️  No GOOGLE_API_KEY found in .env - AUDIT ONLY")
 
-    @rate_limited_retry(max_retries=3, base_delay=1.0)
+    def record_healing_attempt(self, file_path: str):
+        """Track healing attempts to enforce L5 safety bounds."""
+        self.healing_attempts[file_path] = self.healing_attempts.get(file_path, 0) + 1
+
+    def can_attempt_healing(self, file_path: str, max_per_file: int = 5) -> bool:
+        """Prevent runaway healing loops (L5 autonomy guardrail)."""
+        return self.healing_attempts.get(file_path, 0) < max_per_file
+
+    @rate_limited_retry(max_retries=5, base_delay=2.0, backoff_factor=1.5)
     async def resilient_mutation(self, agent_name: str, task: str, code: str) -> str:
         """The 'Smart' fix logic. Calls Gemini to rewrite code."""
         if not self.intelligence_enabled or not self._client:
@@ -128,18 +140,21 @@ SYSTEM: You are a Level 6 Autonomous Repair Agent.
 RULES:
 1. Fix the specific violation ONLY.
 2. DO NOT hallucinate imports (only use stdlib or existing).
-3. DO NOT delete logic, comments, or docstrings unless necessary.
-4. DO NOT use 'pass' to silence errors; fix them properly.
-5. Return ONLY valid Python code. No markdown.
+3. DO NOT delete logic, comments, or docstrings.
+4. Return ONLY valid Python code. No markdown.
 
 {code}"""
         
         try:
-            # Run LLM call in a thread to keep orchestrator async-friendly
+            # L5: Strict generation config for code reliability
             response = await asyncio.to_thread(
                 self._client.models.generate_content,
                 model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp"),
-                contents=[prompt]
+                contents=[prompt],
+                generation_config={
+                    "temperature": 0.0,
+                    "top_p": 1.0,
+                }
             )
             fixed_code = response.text.strip()
             # Clean up any markdown blocks
@@ -264,13 +279,17 @@ class SubAtomicAgent:
         """Default: Run unless a critical failure exists."""
         return "CRITICAL_FAIL" not in self.ctx.signals
 
-    async def smart_fix(self, file_path: str, violation_key: int):
+    async def smart_fix(self, file_path: str, violation_key: int) -> bool:
         """Trigger an LLM-based fix for a specific violation."""
         if not self.ctx.intelligence_enabled:
-            print(f"      🔧 {self.name}: Intelligence disabled - skipping smart fix")
             return False
 
-        # Ensure registry is built
+        # L5 Guardrail: Prevent infinite healing loops
+        if not self.ctx.can_attempt_healing(file_path):
+            print(f"      ⛔ {self.name}: Max healing attempts reached for {os.path.basename(file_path)}")
+            return False
+        self.ctx.record_healing_attempt(file_path)
+
         self.__class__._init_registry(self.ctx)
 
         try:
@@ -278,20 +297,18 @@ class SubAtomicAgent:
                 original_code = f.read()
             
             current_code = original_code
-
+            
             # Get specific violation context if possible
             check_func = self.VERIFICATION_REGISTRY.get(violation_key)
             violation_details = ""
             if check_func:
-                 # Re-run check to get exact lines/messages
                 res = await check_func() if asyncio.iscoroutinefunction(check_func) else check_func()
                 if not res[0]:
-                    # Filter for this file only
                     relevant = [d for d in res[1] if str(d).startswith(file_path)]
-                    if relevant: violation_details = f"\nSpecific Violations to Fix:\n" + "\n".join(relevant[:5])
-            
+                    if relevant: violation_details = f"\nViolations:\n" + "\n".join(relevant[:5])
+
             # L5 Hardening: Multi-Round Healing
-            for round_num in range(1, 4):
+            for round_num in range(1, 5):
                 print(f"      [Round {round_num}] Attempting fix for Key {violation_key} in {os.path.basename(file_path)}...")
                 
                 prompt = f"Fix Subatomic Canon Key {violation_key}. {violation_details}\nReturn ONLY full corrected code. No markdown."
@@ -338,18 +355,13 @@ class SubAtomicAgent:
             return False
 
     async def _verify_fix_resolved(self, orig_path: str, temp_path: str, key: int) -> bool:
-        """
-        L6 Reflection: Re-runs validation on the temporary healed file.
-        Intercepts file I/O to trick the checker into reading the temp file 
-        while thinking it is reading the original path.
-        """
-        # L6 "Immune System": Check for regressions before checking specific fix
+        """L6 Reflection: Re-runs validation with immune system checks."""
+        
+        # 1. L6 Immune System: Check for regressions (Hallucinations/Security)
         if not await self._check_side_effects(temp_path, orig_path):
-            print(f"      🛡️  L6 Immune Response: Rejecting fix (Regression/Hallucination detected).")
             return False
 
         if key not in self.VERIFICATION_REGISTRY:
-            # If we don't have a specific check, we trust the LLM (or return True to proceed)
             return True 
 
         check_func = self.VERIFICATION_REGISTRY[key]
@@ -359,32 +371,36 @@ class SubAtomicAgent:
         import io
         
         real_open = builtins.open
-        # Pre-read the temp content so we don't have to deal with file handles inside the mock
         with real_open(temp_path, 'r', encoding='utf-8') as f:
             new_content = f.read()
 
         def patched_open(file, mode='r', *args, **kwargs):
-            # If the checker asks for the ORIG_PATH, give it the NEW_CONTENT
             if str(file) == str(orig_path) and 'r' in mode:
                 return io.StringIO(new_content)
             return real_open(file, mode, *args, **kwargs)
 
+        @contextmanager
+        def _safe_open_patch():
+            """Context manager ensures open() is always restored."""
+            try:
+                builtins.open = patched_open
+                yield
+            finally:
+                builtins.open = real_open
+
         try:
-            builtins.open = patched_open
-            # Handle both async and sync check functions
-            if asyncio.iscoroutinefunction(check_func):
-                passed, details = await check_func()
-            else:
-                passed, details = check_func()
-            
+            with _safe_open_patch():
+                if asyncio.iscoroutinefunction(check_func):
+                    passed, details = await check_func()
+                else:
+                    passed, details = check_func()
+                
             if not passed:
                  print(f"      ⚠️ Verification failed: {details[:1]}...")
             return passed
         except Exception as e:
             print(f"      ⚠️ Verification Error: {e}")
             return False
-        finally:
-            builtins.open = real_open # RESTORE REAL OPEN IMMEDIATELY
 
     async def _check_side_effects(self, temp_path: str, orig_path: str) -> bool:
         """L6: Verify the fix didn't break the Hippocratic Oath (Do No Harm)."""
