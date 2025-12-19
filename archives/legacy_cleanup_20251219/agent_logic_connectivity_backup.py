@@ -154,6 +154,11 @@ class CanonValidator:
             }
 
             # Create and load into Redis
+            embedding_attrs = {
+                "dims": len(embedding),
+                "distance_metric": "cosine",
+                "algorithm": "hnsw"
+            }
             redis_schema = {
                 "index": {
                     "name": "canon-index",
@@ -163,8 +168,7 @@ class CanonValidator:
                 "fields": [
                     {"name": "id", "type": "tag"},
                     {"name": "code_snippet", "type": "text"},
-                    {"name": "embedding", "type": "vector", "attrs": {"dims": len(
-                        embedding), "distance_metric": "cosine", "algorithm": "hnsw"}},
+                    {"name": "embedding", "type": "vector", "attrs": embedding_attrs},
                     {"name": "failure_count", "type": "numeric"},
                     {"name": "success_count", "type": "numeric"},
                     {"name": "project_context", "type": "tag"},

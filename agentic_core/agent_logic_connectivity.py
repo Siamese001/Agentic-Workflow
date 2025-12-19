@@ -69,6 +69,29 @@ class CanonValidator:
             return file_entry.get('content_hash', 'unknown_hash')
         return "global_context"
 
+    def _is_file_in_manifest(self, file_path: str) -> bool:
+        """
+        Checks if a given file path is present in the active manifest.
+        """
+        manifest_path = "active_manifest.json"
+        if not os.path.exists(manifest_path):
+            self.logger.debug(f"Manifest file not found at {manifest_path}. Assuming file is not in manifest for indexing check.")
+            return False
+
+        try:
+            with open(manifest_path, 'r') as f:
+                manifest = json.load(f)
+
+            files_list = manifest.get("files", [])
+            file_paths_in_manifest = {
+                file_info.get("absolute_path", "")
+                for file_info in files_list
+            }
+            return file_path in file_paths_in_manifest
+        except Exception as e:
+            self.logger.warning(f"⚠️  Failed to check manifest: {e}")
+            return False
+
     def _generate_compound_key(self, query_content: str, context_file_path: Optional[str] = None) -> str:
         """
         [HARDENED 6b] Generates a cache key that binds the query to the SPECIFIC file version.
@@ -100,7 +123,7 @@ class CanonValidator:
             try:
                 entry.embedding = self.embedding_fn(entry.content)
             except Exception as e:
-                logger.error(f"Embedding generation failed: {e}")
+                self.logger.error(f"Embedding generation failed: {e}")
                 return {"status": "error", "message": str(e)}
 
         # 2. Check L1: Exact AST/Hash Match (Hot Memory)
@@ -127,7 +150,7 @@ class CanonValidator:
         try:
             embedding = self.embedding_fn(code)
         except Exception as e:
-            logger.error(f"Embedding generation failed: {e}")
+            self.logger.error(f"Embedding generation failed: {e}")
             return {"status": "error", "message": str(e)}
 
         # Create CanonEntry from string input
@@ -201,7 +224,7 @@ class CanonValidator:
         """
         try:
             # query() expects a list of floats
-            logger.info(
+            self.logger.info(
                 f"Querying Pinecone with embedding dimension: {len(entry.embedding)}")
             results = self.pinecone_index.query(
                 vector=entry.embedding,
@@ -209,12 +232,12 @@ class CanonValidator:
                 include_metadata=True
             )
 
-            logger.info(f"Pinecone raw response: {results}")
+            self.logger.info(f"Pinecone raw response: {results}")
 
             if results and results['matches']:
                 best_match = results['matches'][0]
                 score = best_match['score']
-                logger.info(
+                self.logger.info(
                     f"Best match: ID={best_match['id']}, score={score}")
 
                 if score >= self.similarity_threshold:
@@ -229,7 +252,7 @@ class CanonValidator:
                     }
 
         except Exception as e:
-            logger.error(f"Pinecone query failed: {e}")
+            self.logger.error(f"Pinecone query failed: {e}")
 
         return None
 
@@ -240,31 +263,17 @@ class CanonValidator:
         """
         # Check if file is in active manifest before indexing
         if hasattr(entry, 'file_path') and entry.file_path:
-            manifest_path = "active_manifest.json"
-            if os.path.exists(manifest_path):
-                try:
-                    with open(manifest_path, 'r') as f:
-                        manifest = json.load(f)
-
-                    # Check if file is in the active manifest
-                    file_paths_in_manifest = {
-                        file_info.get("absolute_path", "")
-                        for file_info in manifest.get("files", [])
-                    }
-
-                    if entry.file_path not in file_paths_in_manifest:
-                        logger.warning(f"⚠️  Skipping indexing for non-manifest file: {entry.file_path}")
-                        return {
-                            "status": "skipped",
-                            "is_valid": False,
-                            "confidence": 0.0,
-                            "source": "not_in_manifest",
-                            "matched_pattern": None,
-                            "processing_time": time.time() - start_time,
-                            "message": "File not in active manifest - indexing skipped"
-                        }
-                except Exception as e:
-                    logger.warning(f"⚠️  Failed to check manifest: {e}")
+            if not self._is_file_in_manifest(entry.file_path):
+                self.logger.warning(f"⚠️  Skipping indexing for non-manifest file: {entry.file_path}")
+                return {
+                    "status": "skipped",
+                    "is_valid": False,
+                    "confidence": 0.0,
+                    "source": "not_in_manifest",
+                    "matched_pattern": None,
+                    "processing_time": time.time() - start_time,
+                    "message": "File not in active manifest - indexing skipped"
+                }
 
         try:
             # 1. Get the authoritative hash for this file version
@@ -273,7 +282,7 @@ class CanonValidator:
             # 2. Write to Redis (Hot)
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
-            logger.info(f"✅ Stored new pattern in Redis: {entry.id}")
+            self.logger.info(f"✅ Stored new pattern in Redis: {entry.id}")
 
             # 3. Write to Pinecone (Cold) with Version Tags
             pinecone_record = entry.to_pinecone_record()
@@ -283,7 +292,7 @@ class CanonValidator:
             pinecone_record['metadata']['content_hash'] = current_hash
 
             self.pinecone_index.upsert(vectors=[pinecone_record])
-            logger.info(f"✅ Indexed {getattr(entry, 'file_path', 'unknown')} (Hash: {current_hash[:8]})")
+            self.logger.info(f"✅ Indexed {getattr(entry, 'file_path', 'unknown')} (Hash: {current_hash[:8]})")
 
             return {
                 "status": "ingested",
@@ -298,7 +307,7 @@ class CanonValidator:
             }
 
         except Exception as e:
-            logger.error(f"Ingestion failed: {e}")
+            self.logger.error(f"Ingestion failed: {e}")
             return {
                 "status": "error",
                 "is_valid": False,

@@ -35,13 +35,19 @@ from apps_shared.signal_bus import (
     get_signal_bus,
     reset_signal_bus,
 )
-# Phase 5: Import from canonical location
-from agentic_core.domain.context import ValidationContext
+# Phase 5: Removed import to avoid circular dependency
+# ValidationContext should be imported directly from agentic_core.domain.context
+# Legacy compatibility maintained through lazy import pattern
 
-# Legacy compatibility - ModifiedItem and create_validation_context
-# These are now handled directly through ValidationContext
+def _get_validation_context():
+    """Lazy import to avoid circular dependency."""
+    from agentic_core.domain.context import ValidationContext
+    return ValidationContext
+
+# Legacy compatibility
 ModifiedItem = None  # Deprecated - use ValidationContext directly
-create_validation_context = ValidationContext  # Factory function compatibility
+create_validation_context = _get_validation_context  # Factory function compatibility
+ValidationContext = property(lambda self: _get_validation_context())  # Lazy property
 
 __all__ = [
     # Signal Bus
