@@ -12,9 +12,10 @@ import sys
 from datetime import datetime
 from typing import Any, Dict
 
+from orchestrator import SwarmOrchestrator
+
 from core.connections import SwarmNetwork
 from core.exceptions import CANON_EXCEPTIONS, SwarmInitializationError
-from orchestrator import SwarmOrchestrator
 
 # Configure structured JSON logging
 logging.basicConfig(

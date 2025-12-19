@@ -6,6 +6,7 @@ Strip BOM and fix leading whitespace issues in test files.
 import os
 from pathlib import Path
 
+
 def fix_file(file_path: Path):
     """Fix BOM and leading whitespace in a file"""
     try:
@@ -33,7 +34,6 @@ def fix_file(file_path: Path):
 
         return True
     except Exception as e:
-pass
 # print(f"Error fixing {file_path}: {e}")  # [Security Fix]
         return False
 

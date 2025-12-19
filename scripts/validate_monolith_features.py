@@ -10,7 +10,6 @@ Tests the 4 new features ported from the monolith:
 """
 
 import asyncio
-import json
 import os
 import sys
 import tempfile
@@ -21,10 +20,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
 from interfaces.governance import ArchitectureGovernor
-from L1_cognition.truth_keeper import TruthKeeper, get_truth_keeper
-from L5_safety.red_sentinel import RedSentinel, get_red_sentinel
-from L1_cognition.the_cartographer import TheCartographer, get_cartographer
-from L4_state.omni_context import TheOmniContext, get_omni_context
+from L1_cognition.the_cartographer import TheCartographer
+from L1_cognition.truth_keeper import TruthKeeper
+from L4_state.omni_context import TheOmniContext
+from L5_safety.red_sentinel import RedSentinel
 
 
 async def test_complexity_enforcement():

@@ -23,7 +23,12 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.engines.canon_validator_engine_zlm import (
-    CanonValidatorEngineZLM, ExitReason, P6FixResult, PhaseResult, PhaseStatus)
+    CanonValidatorEngineZLM,
+    ExitReason,
+    P6FixResult,
+    PhaseResult,
+    PhaseStatus,
+)
 
 
 class TestZLMStandardSuccessfulMerge(unittest.TestCase):

@@ -1,8 +1,9 @@
-import docker
-import os
 import logging
+import os
 import shutil
-from typing import Optional, Dict, Tuple
+from typing import Dict, Optional, Tuple
+
+import docker
 
 # Configure logging
 logger = logging.getLogger("DockerSandbox")

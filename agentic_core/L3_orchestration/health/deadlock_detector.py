@@ -8,8 +8,8 @@ Alerts when tasks exceed MAX_PHASE_TIME without progress.
 import asyncio
 import logging
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Set
+from datetime import datetime
+from typing import Dict, Optional, Set
 
 LOGGER = logging.getLogger(__name__)
 

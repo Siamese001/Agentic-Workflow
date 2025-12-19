@@ -1,8 +1,6 @@
-import unittest
-import json
 import os
-import tempfile
 import sys
+import tempfile
 
 # Add current directory to path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -70,7 +68,6 @@ def test_memory_filtering():
             return False
 
     except Exception as e:
-pass
 # print(f"   ❌ Test failed with error: {e}")  # [Security Fix]
         return False
 
@@ -93,7 +90,6 @@ def test_error_classification():
             return False
 
     except Exception as e:
-pass
 # print(f"   ❌ Test failed with error: {e}")  # [Security Fix]
         return False
 

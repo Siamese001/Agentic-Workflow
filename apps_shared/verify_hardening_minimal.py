@@ -2,6 +2,7 @@ import json
 import os
 import tempfile
 
+
 def test_manifest_integrity():
     """Test that corrupt manifests are rejected."""
     # print("\n🛡️  Test 1: Integrity Gate (Sabotage)...")  # [Security Fix]

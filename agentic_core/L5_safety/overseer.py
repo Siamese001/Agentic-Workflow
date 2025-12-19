@@ -7,7 +7,7 @@ Includes SafetyInspector with Socratic Judge for false positive mitigation.
 import logging
 import os
 import re
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 from agentic_core.interfaces import ActionRequest
 
@@ -343,7 +343,7 @@ class SafetyInspector:
         try:
             # Try to import google.generativeai
             import google.generativeai as genai
-            
+
             # Check for API key
             api_key = os.getenv("GOOGLE_API_KEY")
             if not api_key:

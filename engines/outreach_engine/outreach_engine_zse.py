@@ -1,29 +1,26 @@
-import os
-import json
-import time
 import hashlib
-from typing import Any, Dict, Optional
+import json
+import os
+import time
 from datetime import datetime
+from typing import Any, Dict, Optional
+
+# Import consensus engine for P6
+from consensus_engine import jury
 
 # Import core utilities for P5 compliance
 from core_utils import (
     add_observations,
-    register_process,
-    log_action,
     convert_time,
+    log_action,
+    register_process,
 )
 
 # Import hardened MCP functions
-from mcp_hardening import (
-    ensure_brand_compliance,
-    get_brand_style_guide
-)
+from mcp_hardening import ensure_brand_compliance, get_brand_style_guide
 
 # Import egress filter for Protocol 8
-from network_utils import strict_egress_filter, NetworkViolationError
-
-# Import consensus engine for P6
-from consensus_engine import jury
+from network_utils import NetworkViolationError, strict_egress_filter
 
 # Configuration variables
 MAX_PITCH_REFINEMENTS = int(os.environ.get("MAX_PITCH_REFINEMENTS", "2"))

@@ -2,10 +2,10 @@ import logging
 import uuid
 
 import numpy as np
-from dotenv import load_dotenv
 
 # Import our hardened modules
 from connection_manager import ConnectionFactory
+from dotenv import load_dotenv
 from schemas_connectivity import CanonEntry, CanonMetadata, generate_ast_structure
 
 # Configure structured logging

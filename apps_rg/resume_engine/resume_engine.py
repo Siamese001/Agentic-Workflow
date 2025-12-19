@@ -4,18 +4,30 @@ from typing import Any, Dict, Optional
 
 # The original file had issues with unused imports.
 # We keep only the functions actually utilized in the three main functions.
-from core_utils import (add_observations, generate_draft_llm, search_nodes,
-                        search_records, semantic_score_draft, write_file)
+from core_utils import (
+    add_observations,
+    generate_draft_llm,
+    search_nodes,
+    search_records,
+    semantic_score_draft,
+    write_file,
+)
+
 # Import fact checker for truth anchor validation
 from fact_checker import HallucinationException
+
 # Import hardened MCP functions
 from mcp_hardening import get_version_locked_design
+
 # Import egress filter for Protocol 8
 from network_utils import strict_egress_filter
+
 # Import Redis/LangCache pipeline functions
 from redis_langcache_pipeline import execute_governed_prompt_caching
+
 # Import hardening protocols
 from security_utils import PromptFirewall, SecurityException
+
 # Import time-bound benchmarking function
 from time_bound_benchmarking import execute_time_bound_salary_benchmarking
 

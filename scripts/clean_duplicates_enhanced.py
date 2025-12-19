@@ -1,10 +1,9 @@
-import json
+import argparse
+import ast
+import hashlib
+import logging
 import os
 import shutil
-import logging
-import argparse
-import hashlib
-import ast
 from collections import defaultdict
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -152,7 +151,6 @@ def merge_validator_logic(silos, exclude_dirs, merge_to):
     
     # Extract and deduplicate functions
     function_map = defaultdict(list)
-    function_sources = {}
     
     for filepath in all_files:
         functions = extract_functions(filepath)

@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 # Import L5+ autonomy components
 try:
     from apps_shared.intervention_server import get_intervention_server
-    from apps_shared.reflection_agent import (ReflectionDecision,
-                                              create_reflection_agent)
+    from apps_shared.reflection_agent import ReflectionDecision, create_reflection_agent
     from apps_shared.signal_bus import SignalType, get_signal_bus
     AUTONOMY_COMPONENTS_AVAILABLE = True
 except ImportError as e:
@@ -21,10 +20,12 @@ except ImportError as e:
     AUTONOMY_COMPONENTS_AVAILABLE = False
 
 from apps_lic.L3_orchestration.l5_orchestrator.types import (
-    OutreachCycleState, OutreachExecutionPhase, OutreachSnapshot)
+    OutreachCycleState,
+    OutreachExecutionPhase,
+    OutreachSnapshot,
+)
 
-from . import (intervention_handler, phase_executor, reflection_handler,
-               snapshot_manager)
+from . import intervention_handler, phase_executor, reflection_handler, snapshot_manager
 
 
 class L5OutreachOrchestrator:

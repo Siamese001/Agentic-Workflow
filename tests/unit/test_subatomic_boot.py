@@ -6,18 +6,16 @@ the interfaces and core components.
 """
 
 import pytest
+
 from agentic_core.interfaces import (
-    OrchestratorConfig,
     ExecutionContext,
     ExecutionResult,
-    ExecutionPhase,
+    OrchestratorConfig,
     PlanningRequest,
     PlanningResult,
-    ICognitivePlane,
-    IActionPlane,
 )
-from agentic_core.L3_orchestration.nervous_system import NervousSystem
 from agentic_core.L1_cognition.episodic_memory import EpisodicMemory
+from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
 
 class MockCognitivePlane:
@@ -178,14 +176,14 @@ def test_episodic_memory_integration():
     
     # Test that the module has the expected functions
     from agentic_core.L1_cognition.episodic_memory import (
-        commit_episode,
-        recall_relevant_experience,
-        get_successful_patterns,
         analyze_failure_patterns,
+        commit_episode,
+        create_episodic_memory,
         get_stats,
-        create_episodic_memory
+        get_successful_patterns,
+        recall_relevant_experience,
     )
-    
+
     # Verify all functions exist
     assert commit_episode is not None
     assert recall_relevant_experience is not None
@@ -198,18 +196,18 @@ def test_episodic_memory_integration():
 def test_interface_imports():
     """Verify that all interfaces can be imported successfully."""
     from agentic_core.interfaces import (
-        ExecutionContext,
-        ExecutionResult,
-        ExecutionPhase,
-        ICognitivePlane,
-        IActionPlane,
-        IOrchestrator,
         ActionRequest,
+        ExecutionContext,
+        ExecutionPhase,
+        ExecutionResult,
+        IActionPlane,
+        ICognitivePlane,
+        IOrchestrator,
+        OrchestratorConfig,
         PlanningRequest,
         PlanningResult,
-        OrchestratorConfig,
     )
-    
+
     # Verify all imports worked
     assert ExecutionContext is not None
     assert ExecutionResult is not None

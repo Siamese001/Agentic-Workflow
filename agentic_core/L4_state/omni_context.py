@@ -5,10 +5,8 @@ Concatenates all source code from mapped repositories into a single context buff
 for complex architectural queries and RAG-based agent retrieval.
 """
 
-import json
 import logging
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 

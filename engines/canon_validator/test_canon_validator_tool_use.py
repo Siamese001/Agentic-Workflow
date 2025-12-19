@@ -17,7 +17,6 @@ import sys
 from unittest.mock import Mock, patch
 
 import pytest
-
 from canon_validator import CanonValidator
 from canon_validator_engine import execute_cost_governed_vulnerability_check
 

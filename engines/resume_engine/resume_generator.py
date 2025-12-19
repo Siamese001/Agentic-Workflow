@@ -7,9 +7,10 @@ Rewrites and optimizes resume content based on job analysis results.
 import logging
 from typing import Any, Dict, List, Optional
 
+import google.generativeai as genai  # For Gemini client
+
 # Assuming Provider and get_client are from a local utility module
-from .utils import get_client, Provider
-import google.generativeai as genai # For Gemini client
+from .utils import Provider, get_client
 
 LOGGER = logging.getLogger(__name__)
 

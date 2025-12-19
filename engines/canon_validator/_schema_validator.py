@@ -10,7 +10,12 @@ from pydantic_core import CoreConfig, CoreSchema, SchemaValidator, ValidationErr
 from typing_extensions import ParamSpec
 
 if TYPE_CHECKING:
-    from venv.Lib.site-packages.pydantic.plugin import BaseValidateHandlerProtocol, PydanticPluginProtocol, SchemaKind, SchemaTypePath
+    from venv.Lib.site-packages.pydantic.plugin import (
+        BaseValidateHandlerProtocol,
+        PydanticPluginProtocol,
+        SchemaKind,
+        SchemaTypePath,
+    )
 
 
 P = ParamSpec('P')

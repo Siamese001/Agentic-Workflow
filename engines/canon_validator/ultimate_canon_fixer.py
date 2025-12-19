@@ -4,11 +4,11 @@ Ultimate Canon Fixer - Final push to 100% compliance
 Addresses all remaining violations with maximum aggression.
 """
 
+import logging
 import os
 import re
 from pathlib import Path
 from typing import List, Set
-import logging
 
 EXCLUDE_DIRS = {'archives', 'data', '.git', '__pycache__', 'venv', '.venv'}
 EXCLUDE_FILES = {'canon_validator.py',

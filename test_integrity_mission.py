@@ -1,7 +1,8 @@
 import asyncio
 import logging
+
+from agentic_core.interfaces import OrchestratorConfig
 from agentic_core.L3_orchestration.nervous_system import NervousSystem
-from agentic_core.interfaces import OrchestratorConfig, ExecutionPhase
 
 # Setup high-visibility logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

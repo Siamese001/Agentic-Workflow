@@ -16,8 +16,14 @@ from ..context import ResumeEngineContext
 from ..gitops import Phase4Orchestrator
 from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
 from ..learning import ResumeLearningAgent
-from ..observability import (AuditReporter, ExecutionTracer, MetricsCollector,
-                             MetricType, Phase5Orchestrator, ValidationAgent)
+from ..observability import (
+    AuditReporter,
+    ExecutionTracer,
+    MetricsCollector,
+    MetricType,
+    Phase5Orchestrator,
+    ValidationAgent,
+)
 
 
 @pytest.fixture

@@ -1,28 +1,20 @@
-"""
-agentic_core/agents/infrastructure.py
-Depth: 3
-Role: Manages environment, version control, logging, and file monitoring.
-"""
 import asyncio
 import datetime
 import os
-import sys
 import time
-from typing import Optional
 
 from agentic_core.agents.base import SubAtomicAgent
 from apps_shared.domain.constants import EXCLUDED_DIRS
 
 # Optional dependencies
 try:
-    from git import Repo, GitCommandError
+    from git import Repo
     GITPYTHON_AVAILABLE = True
 except ImportError:
     GITPYTHON_AVAILABLE = False
 
 try:
     from watchdog.events import FileSystemEventHandler
-    from watchdog.observers import Observer
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
@@ -34,7 +26,8 @@ class Historian(SubAtomicAgent):
     """
     def __init__(self, ctx):
         super().__init__(ctx)
-        self.log_file = f"validation_log_{datetime.date.today()}.md"
+        # Use env var for log path for better environment isolation
+        self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
 
     async def execute(self):
         # The Historian is usually called directly via record_event, 
@@ -45,13 +38,13 @@ class Historian(SubAtomicAgent):
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\n"
         
-        # Atomic append
+        # Atomic append - Note: Consider migrating to async file I/O for high-scale environments
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
                 if f.tell() == 0:
                     f.write("| Time | Agent | Status | Details |\n|---|---|---|---|\n")
                 f.write(entry)
-        except Exception as e:
+        except (IOError, OSError) as e:
             print(f"   ⚠️ Historian failed to write: {e}")
 
 
@@ -64,7 +57,9 @@ class GitAgent(SubAtomicAgent):
         self.repo = None
         if GITPYTHON_AVAILABLE:
             try:
-                self.repo = Repo('.')
+                # Use environment variable for repository path to avoid hardcoded relative paths
+                repo_path = os.getenv("GIT_REPO_PATH", ".")
+                self.repo = Repo(repo_path)
             except Exception:
                 pass
 
@@ -78,9 +73,12 @@ class GitAgent(SubAtomicAgent):
 
     async def _commit_changes(self):
         try:
-            if self.repo.is_dirty(untracked_files=True):
-                self.repo.git.add(A=True)
-                self.repo.index.commit(f"Auto-fix by {self.ctx._current_agent}")
+            # git operations are blocking calls; use to_thread to keep the event loop responsive
+            is_dirty = await asyncio.to_thread(self.repo.is_dirty, untracked_files=True)
+            if is_dirty:
+                await asyncio.to_thread(self.repo.git.add, A=True)
+                commit_msg = f"Auto-fix by {self.ctx._current_agent}"
+                await asyncio.to_thread(self.repo.index.commit, commit_msg)
                 print("   💾 Changes committed to git.")
         except Exception as e:
             print(f"   ⚠️ Git operation failed: {e}")
@@ -91,8 +89,7 @@ class BenchmarkingAgent(SubAtomicAgent):
     ROLE: Measures execution time and ensures tools aren't too slow.
     """
     async def execute(self):
-        # In a real run, this might aggregate stats from the Context
-        # For now, it's a placeholder for Key 62 (Time Budgets)
+        # Placeholder for Time Budget logic
         pass
 
 
@@ -111,18 +108,16 @@ if WATCHDOG_AVAILABLE:
             if any(x in event.src_path for x in EXCLUDED_DIRS): return
             if not event.src_path.endswith('.py'): return
 
-            # Debounce
+            # Non-blocking debounce using wall-clock time
             now = time.time()
             if now - self.cooldown < 2.0: return
             self.cooldown = now
 
             print(f"\n   👀 WATCHMAN: Detected change in {event.src_path}")
             
-            # Signal the loop to re-scan
-            # Note: Thread-safe signaling needed here in full async app
-            self.ctx.modified_files.add(event.src_path)
+            # Thread-safe signaling for the async context
+            self.loop.call_soon_threadsafe(self.ctx.modified_files.add, event.src_path)
 else:
-    # Stub class when watchdog is not available
     class WatchmanHandler:
         """Stub WatchmanHandler when watchdog is not installed."""
         def __init__(self, context, loop):

@@ -6,12 +6,11 @@ to optimize performance and prevent unnecessary re-scanning.
 """
 
 import json
-import hashlib
 import logging
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Set, Optional, Any
+from typing import Any, Dict, List, Optional, Set
 
 LOGGER = logging.getLogger(__name__)
 
@@ -70,6 +69,15 @@ class ValidationContext:
     def is_flapping(self, file_path: str, threshold: int = 3) -> bool:
         """Check if a file is flapping."""
         return self.flapping_files.get(file_path, 0) >= threshold
+    
+    def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
+        """Signal the start of a healing cycle."""
+        print(f"   🔄 Healing Cycle {cycle_number}/{max_cycles}")
+    
+    def signal_convergence(self):
+        """Signal that the validation has converged (no more changes)."""
+        print("   ✅ Convergence achieved - no modifications in this cycle")
+        self.add_signal("CONVERGENCE")
     
     def complete(self, status: str = "COMPLETED"):
         """Mark the cycle as complete."""

@@ -1,13 +1,15 @@
 """Implementation for subatomic_orchestrator."""
 
-import logging
-from typing import Any, Dict, List, Optional
-import networkx as nx
 import asyncio
+import logging
 from datetime import datetime
 
 # Assuming these are defined elsewhere
 from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import networkx as nx
+
 
 class AgentRole(Enum):
     CONTEXT_GATHERER = "context_gatherer"

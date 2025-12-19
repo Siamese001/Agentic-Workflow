@@ -1,6 +1,5 @@
 """Tests for extracted utilities from the monolith."""
 
-import pytest
 from apps_shared.utils.text_processing import clean_llm_code
 
 

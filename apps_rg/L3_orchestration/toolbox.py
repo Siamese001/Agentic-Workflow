@@ -1,6 +1,6 @@
-import os
 import glob
 import logging
+import os
 
 logger = logging.getLogger("Toolbox")
 

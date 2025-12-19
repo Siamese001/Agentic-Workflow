@@ -10,12 +10,16 @@ from typing import Any, Dict, Optional
 
 # Import Clarity & Brevity Filter for L1 content refinement
 from clarity_brevity_filter import filter_content
+
 # Import Intent Scoring Model for L4 cost governance
 from intent_scoring_model import score_lead_intent
+
 # Import News RAG for dynamic personalization
 from news_rag_pipeline import execute_news_rag
+
 # Import LangCache functions
 from redis_langcache_pipeline import execute_temporal_rate_limiting
+
 # Import temporal vetting
 from temporal_vetting import vet_lead_optimal_time
 

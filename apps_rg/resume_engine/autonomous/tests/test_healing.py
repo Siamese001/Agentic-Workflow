@@ -13,9 +13,15 @@ Tests the core self-healing functionality:
 import pytest
 
 from ..context import ResumeEngineContext
-from ..healing import (AgentFactory, AutomaticRollback, ConvergenceDetector,
-                       CycleResult, HealingCycle, HealingStrategy,
-                       SignalRouter)
+from ..healing import (
+    AgentFactory,
+    AutomaticRollback,
+    ConvergenceDetector,
+    CycleResult,
+    HealingCycle,
+    HealingStrategy,
+    SignalRouter,
+)
 
 
 @pytest.fixture

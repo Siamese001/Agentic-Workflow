@@ -1,5 +1,4 @@
 import pytest
-import os
 from core_utils import validate_python_syntax
 
 

@@ -7,7 +7,7 @@ autonomous actions during validation missions.
 
 import asyncio
 import threading
-from typing import Optional, Any
+from typing import Any, Optional
 
 # Global event for pausing execution pending human approval
 approval_event = asyncio.Event()

@@ -17,11 +17,21 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..observability import (AuditReporter, ExecutionTrace, ExecutionTracer,
-                             Metric, MetricsCollector, MetricType,
-                             Phase5Orchestrator, TelemetryExporter, TraceLevel,
-                             TraceStep, ValidationAgent, ValidationIssue,
-                             ValidationSeverity)
+from ..observability import (
+    AuditReporter,
+    ExecutionTrace,
+    ExecutionTracer,
+    Metric,
+    MetricsCollector,
+    MetricType,
+    Phase5Orchestrator,
+    TelemetryExporter,
+    TraceLevel,
+    TraceStep,
+    ValidationAgent,
+    ValidationIssue,
+    ValidationSeverity,
+)
 
 
 @pytest.fixture

@@ -1,13 +1,12 @@
 """File system utilities for apps_shared."""
 
-import os
-import hashlib
-import re
 import ast
-from pathlib import Path
+import hashlib
+import os
+import re
 from typing import List
 
-from apps_shared.domain.constants import EXCLUDED_DIRS, EXCLUDED_FILES, ALLOWED_ROOT_FILES
+from apps_shared.domain.constants import EXCLUDED_DIRS, EXCLUDED_FILES
 
 
 def calculate_file_hash(file_path: str) -> str:

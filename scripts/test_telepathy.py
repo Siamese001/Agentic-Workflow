@@ -12,14 +12,20 @@ This test validates:
 
 import asyncio
 import tempfile
-import time
 from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
-from L3_orchestration.telepathy import TelepathyInterface, process_telepathy_instructions
-from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig, ExecutionContext
+from L3_orchestration.nervous_system import (
+    ExecutionContext,
+    NervousSystem,
+    OrchestratorConfig,
+)
+from L3_orchestration.telepathy import (
+    TelepathyInterface,
+    process_telepathy_instructions,
+)
 
 
 async def test_telepathy_interface():
@@ -254,7 +260,7 @@ async def test_nervous_system_integration():
         config = OrchestratorConfig(max_iterations=1)
         
         try:
-            from L4_state.storage import create_storage_adapter, SignalLedger
+            from L4_state.storage import SignalLedger, create_storage_adapter
             storage = create_storage_adapter("local", base_path=str(temp_path))
             signal_ledger = SignalLedger(storage, "telepathy-test")
             
@@ -315,7 +321,7 @@ async def test_forced_agent_execution():
     config = OrchestratorConfig(max_iterations=1)
     
     try:
-        from L4_state.storage import create_storage_adapter, SignalLedger
+        from L4_state.storage import SignalLedger, create_storage_adapter
         storage = create_storage_adapter("local", base_path="./agentic_core")
         signal_ledger = SignalLedger(storage, "forced-test")
         
@@ -395,5 +401,4 @@ async def run_telepathy_validation():
 
 
 if __name__ == "__main__":
-    import sys
     asyncio.run(run_telepathy_validation())

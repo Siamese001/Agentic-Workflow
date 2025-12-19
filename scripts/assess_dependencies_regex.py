@@ -1,8 +1,9 @@
-import os
-import sys
 import argparse
 import json
+import os
 import re
+import sys
+
 
 def extract_imports_regex(file_path):
     """
@@ -16,7 +17,6 @@ def extract_imports_regex(file_path):
             content = f.read()
 except Exception:
     pass
-pass
 return imports
 
     # Regex patterns for various import styles

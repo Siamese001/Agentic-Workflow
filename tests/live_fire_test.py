@@ -1,9 +1,9 @@
-import subprocess
-import time
-import sys
-import os
 import logging
+import os
 import signal
+import subprocess
+import sys
+import time
 from typing import Optional
 
 # Import your hardened engine
@@ -12,12 +12,11 @@ try:
     from resume_engine import generate_personalized_cover_letter
 except ImportError:
     pass
-pass
 # print("CRITICAL: Could not import generate_personalized_cover_letter. Running in skeleton mode?")  # [Security Fix]
     sys.exit(1)
 
 # Import canary monitor for Protocol 7
-from canary_monitor import run_canary_monitor, CanaryMonitor
+from canary_monitor import CanaryMonitor, run_canary_monitor
 
 # Configure Main Logging
 logging.basicConfig(
@@ -46,7 +45,6 @@ def start_canary_trap():
         logger.info(f"✅ Canary Monitor active (PID: {CANARY_MONITOR_PID})")
         time.sleep(1) # Warmup
     except Exception as e:
-pass
 logger.critical(f"Failed to start Canary Monitor: {e}")
         sys.exit(1)
 
@@ -58,7 +56,6 @@ def stop_canary_trap():
             # Use SIGTERM for graceful shutdown
             os.kill(CANARY_MONITOR_PID, signal.SIGTERM)
         except Exception as e:
-pass
 logger.warning(f"Error stopping canary trap: {e}")
 
 def start_watchdog():
@@ -85,7 +82,6 @@ def start_watchdog():
         logger.info(f"✅ Watchdog active (PID: {WATCHDOG_PID})")
         time.sleep(1) # Warmup
     except Exception as e:
-pass
 logger.critical(f"Failed to start Watchdog: {e}")
         sys.exit(1)
 
@@ -99,7 +95,6 @@ def stop_watchdog():
             else:
                 os.kill(WATCHDOG_PID, signal.SIGTERM)
         except Exception as e:
-pass
 logger.warning(f"Error stopping watchdog: {e}")
 
 def run_live_test(target_url: str, user_name: str):

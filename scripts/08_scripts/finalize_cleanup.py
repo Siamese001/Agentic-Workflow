@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Finalize cleanup - handle orphans and clean merged files."""
 
-import logging
-import os
 import shutil
 from datetime import datetime
 from pathlib import Path

@@ -10,8 +10,9 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from core.semantic_gatekeeper import get_gatekeeper
 from db_manager import HybridDatabaseManager
+
+from core.semantic_gatekeeper import get_gatekeeper
 from schemas import CanonEntry
 
 logger = logging.getLogger(__name__)

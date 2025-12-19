@@ -6,10 +6,6 @@ All tests are skipped until the original implementation is fixed.
 """
 
 import pytest
-from unittest.mock import MagicMock, Mock, patch, AsyncMock
-import asyncio
-from typing import Dict, List, Any, Optional, Tuple
-from pathlib import Path
 
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
@@ -17,47 +13,40 @@ def test_critical_log_emission():
     """
     Test EBP-3.1: Emit CRITICAL log to MEMemory
     """
-    pass
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_secondary_log_dump_on_memeory_failure():
     """
     Test EBP-3.2: Secondary log dump when MEMemory fails
     """
-    pass
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_operator_notification():
     """
     Test EBP-3.3: Operator notification via external services
     """
-    pass
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_notification_content_formatting():
     """
     Test that notification content is properly formatted
     """
-    pass
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_notification_retry_logic():
     """
     Test notification retry on failure
     """
-    pass
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_observability_metrics_collection():
     """
     Test collection of observability metrics during bailout
     """
-    pass
 
 @pytest.mark.skip(reason="Original test file had syntax errors - needs implementation")
 def test_complete_observability_sequence():
     """
     Test complete EBP-3 observability sequence
     """
-    pass
 

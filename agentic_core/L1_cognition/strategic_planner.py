@@ -5,11 +5,9 @@ Generates MissionPlan at the start of cycles.
 Coordinates agent execution and resource allocation.
 """
 
-import json
 import logging
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Optional, Any
+from datetime import datetime
+from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -479,7 +477,7 @@ def get_strategic_planner() -> StrategicPlanner:
 
 def initialize_strategic_planner():
     """Initialize the StrategicPlanner system."""
-    planner = get_strategic_planner()
+    get_strategic_planner()
     LOGGER.info("StrategicPlanner system initialized")
 
 

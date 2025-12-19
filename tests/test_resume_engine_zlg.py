@@ -21,13 +21,15 @@ from unittest.mock import patch
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.engines.resume_engine_zlg import (DraftResult, ExitReason,
-                                                    ResumeEngineZLG,
-                                                    RewriteResult,
-                                                    ShadowModeEngine)
+from agentic_core.engines.resume_engine_zlg import (
+    DraftResult,
+    ExitReason,
+    ResumeEngineZLG,
+    RewriteResult,
+    ShadowModeEngine,
+)
 from agentic_core.knowledge.l5_consolidated import KnowledgeResult
-from agentic_core.security.security_utilities import (SecurityResult,
-                                                      SecurityStatus)
+from agentic_core.security.security_utilities import SecurityResult, SecurityStatus
 
 
 class TestStandardZLGSuccess(unittest.TestCase):

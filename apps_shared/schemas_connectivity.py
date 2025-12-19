@@ -240,7 +240,6 @@ def generate_ast_structure(code_str: str) -> Dict[str, Any]:
             "valid": True
         }
     except SyntaxError as e:
-pass
 return {
             "type": "Error",
             "error": str(e),

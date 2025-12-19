@@ -2,8 +2,8 @@
 
 import pytest
 
+
 @pytest.mark.skip(reason="Original file had syntax errors")
 def test_placeholder():
     """Placeholder test."""
-    pass
 

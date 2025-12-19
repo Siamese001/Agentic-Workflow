@@ -1,8 +1,5 @@
 import ast
 import os
-import sys
-from pathlib import Path
-from typing import Set, Dict, List
 
 # CONFIGURATION
 MONOLITH_PATH = "scripts/canon_validator_agentic.py"  # Correct path

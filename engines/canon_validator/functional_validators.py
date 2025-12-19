@@ -7,16 +7,32 @@ import sys
 import warnings
 from functools import partialmethod
 from types import FunctionType
-from typing import TYPE_CHECKING, Annotated, Any, Callable, Literal, TypeVar, Union, cast, overload
-
-from pydantic_core import PydanticUndefined, core_schema
-from typing_extensions import Self, TypeAlias
-
-from venv.Lib.site-packages.pydantic._internal import _decorators, _generics, _internal_dataclass
+from typing import (
+    TYPE_CHECKING,
+    Annotated,
+    Any,
+    Callable,
+    Literal,
+    TypeVar,
+    Union,
+    cast,
+    overload,
+)
+from venv.Lib.site-packages.pydantic._internal import (
+    _decorators,
+    _generics,
+    _internal_dataclass,
+)
 from venv.Lib.site-packages.pydantic.annotated_handlers import GetCoreSchemaHandler
 from venv.Lib.site-packages.pydantic.errors import PydanticUserError
 from venv.Lib.site-packages.pydantic.version import version_short
-from venv.Lib.site-packages.pydantic.warnings import ArbitraryTypeWarning, PydanticDeprecatedSince212
+from venv.Lib.site-packages.pydantic.warnings import (
+    ArbitraryTypeWarning,
+    PydanticDeprecatedSince212,
+)
+
+from pydantic_core import PydanticUndefined, core_schema
+from typing_extensions import Self, TypeAlias
 
 if sys.version_info < (3, 11):
     from typing_extensions import Protocol

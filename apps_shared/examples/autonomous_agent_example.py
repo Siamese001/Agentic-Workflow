@@ -12,9 +12,11 @@ import asyncio
 import logging
 
 # Import autonomous components
-from runtime.core.autonomous_subatomic_hop import (AutonomousHopConfig,
-                                                   AutonomyConfig,
-                                                   create_autonomous_hop)
+from runtime.core.autonomous_subatomic_hop import (
+    AutonomousHopConfig,
+    AutonomyConfig,
+    create_autonomous_hop,
+)
 
 # Import hardening components
 

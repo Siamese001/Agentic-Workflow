@@ -13,18 +13,18 @@ This test validates:
 import asyncio
 import json
 import sys
-import time
 import tempfile
+import time
 from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
-from L5_safety.streamer import L5Streamer, get_l5_streamer
-from interfaces.governance import DependencyGraph, ArchitectureGovernor
-from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
+from interfaces.governance import ArchitectureGovernor, DependencyGraph
 from L3_orchestration.models import ExecutionContext
-from L4_state.storage import create_storage_adapter, SignalLedger
+from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
+from L4_state.storage import SignalLedger, create_storage_adapter
+from L5_safety.streamer import L5Streamer, get_l5_streamer
 
 
 async def test_l5_streamer():

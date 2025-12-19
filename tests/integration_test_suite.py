@@ -1,15 +1,15 @@
-import pytest
 import os
 import time
-import threading
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 # Import your engines and protocols
 # Note: We assume these are importable. If they are scripts, we might need to adjust paths.
 from core_utils import validate_python_syntax
+from fact_checker import HallucinationException, fact_checker
 from sandbox_utils import execute_in_sandbox
-from security_utils import firewall, SecurityException
-from fact_checker import fact_checker, HallucinationException
+from security_utils import SecurityException, firewall
 from watchdog_sidecar import DeadManSwitch
 
 # Import Engines (Mocking dependencies where necessary to isolate logic)
@@ -164,6 +164,7 @@ def test_outreach_kill_switch(mock_kill, tmp_path):
 if __name__ == "__main__":
     # Allow running this script directly without pytest for quick checks
     import sys
+
     from pytest import main
     sys.exit(main(["-v", __file__]))
 

@@ -13,11 +13,13 @@ from typing import Any, Dict, List, Optional
 from scripts.runtime.shared.agent_executor import AgentExecutor, AgentMessage
 from scripts.runtime.shared.cache_clients import cache_get, cache_set
 from scripts.runtime.shared.multi_provider_clients import Provider
-from scripts.runtime.shared.observability_clients import (create_span,
-                                                          setup_tracing)
+from scripts.runtime.shared.observability_clients import create_span, setup_tracing
 from scripts.runtime.shared.vector_store_clients import (
-    VectorStoreProvider, create_chroma_collection, get_vector_store,
-    search_vectors_chroma)
+    VectorStoreProvider,
+    create_chroma_collection,
+    get_vector_store,
+    search_vectors_chroma,
+)
 
 LOGGER = logging.getLogger(__name__)
 

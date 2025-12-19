@@ -11,18 +11,17 @@ This test validates:
 """
 
 import asyncio
-import json
 import sys
-import tempfile
-from datetime import datetime
 from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
 from L1_cognition.reflection_agent import (
-    ReflectionAgent, get_reflection_agent,
-    process_successful_traces, search_memory
+    ReflectionAgent,
+    get_reflection_agent,
+    process_successful_traces,
+    search_memory,
 )
 
 

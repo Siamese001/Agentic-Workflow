@@ -7,6 +7,7 @@ import os
 import re
 from pathlib import Path
 
+
 def fix_file_simple(file_path: Path):
     """Simple fix - replace with basic test stub"""
     # print(f"\nFixing: {file_path}")  # [Security Fix]
@@ -57,7 +58,6 @@ def {test_name}():
         return True
 
     except Exception as e:
-pass
 # print(f"  ❌ Error: {e}")  # [Security Fix]
         return False
 
@@ -75,7 +75,6 @@ for pattern in ["test_*.py", "*_test.py"]:
                 compile(content, str(file_path), 'exec')
 except Exception:
     pass
-pass
 broken_files.append(file_path)
 
 # print(f"Found {len(broken_files)} broken files")  # [Security Fix]

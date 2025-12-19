@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 
 def get_source_files(root_dir):
     """

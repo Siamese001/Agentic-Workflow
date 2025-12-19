@@ -4,7 +4,7 @@ Grafted from monolith with Presidio-based PII detection and redaction.
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ class PIIVault:
     def _fallback_redact(self, text: str) -> str:
         """Fallback PII redaction using regex patterns."""
         import re
-        
+
         # Simple email redaction
         text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', 
                      '<EMAIL_ADDRESS>', text)

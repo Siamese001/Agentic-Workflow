@@ -7,8 +7,7 @@ import pytest
 # Add the scripts directory to the path to import canon_validator_agentic
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'scripts'))
 
-from canon_validator_agentic import (Historian, TheCartographer,
-                                     ValidationContext)
+from canon_validator_agentic import Historian, TheCartographer, ValidationContext
 
 
 @pytest.fixture

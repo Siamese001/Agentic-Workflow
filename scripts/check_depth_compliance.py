@@ -6,7 +6,7 @@ MAX depth = 5 (max 5 levels from repo root)
 """
 
 import os
-from pathlib import Path
+
 
 def check_depth_compliance():
     """Check all Python files for depth compliance"""

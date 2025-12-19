@@ -1,15 +1,16 @@
+import glob
 import json
 import logging
 import os
 import subprocess
 import sys
-import glob
 
 from action_registry import ActionRegistry
-from engines.canon_validator.canon_validator import CanonValidator
 from cognitive_node import CognitiveNode  # <--- NEW IMPORT
 from llm_client import LLMClient
+
 from apps_rg.L3_orchestration.toolbox import SAFE_TOOLS, TOOLBOX_DESC  # <--- NEW IMPORT
+from engines.canon_validator.canon_validator import CanonValidator
 
 # Setup
 logging.basicConfig(level=logging.INFO,

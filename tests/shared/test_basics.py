@@ -1,8 +1,7 @@
 """Basic tests for apps_shared utilities."""
 
-import pytest
-from apps_shared.utils.text_processing import clean_llm_code
 from apps_shared.domain.constants import EXCLUDED_DIRS
+from apps_shared.utils.text_processing import clean_llm_code
 
 
 def test_clean_llm_code_strips_markdown():

@@ -1,7 +1,7 @@
 """Dataclass models for resume_orchestration_config_types."""
 import logging
-from typing import Any, Optional, List
 from dataclasses import dataclass, field
+from typing import Any, List, Optional
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 

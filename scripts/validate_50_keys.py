@@ -4,11 +4,9 @@ Real 50-Key Canon Validator - Programmatically checks each principle
 """
 
 import ast
-import os
 import re
-import sys
 from pathlib import Path
-from typing import List, Dict, Any
+
 
 class CanonValidator50:
     """Validates code against the 50 Subatomic Canon principles"""
@@ -100,7 +98,6 @@ class CanonValidator50:
     
     def check_key_49_depth_law(self, file_path: str):
         """Key 49: UNIVERSAL DEPTH LAW - Already checked separately"""
-        pass
     
     def validate_file(self, file_path: str):
         """Validate a single Python file"""

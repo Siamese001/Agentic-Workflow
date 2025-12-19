@@ -3,26 +3,23 @@
 Canon Validator V2 - The Sovereign Runner
 Fully refactored entry point using agentic_core.
 """
+import argparse
 import asyncio
 import sys
-import argparse
-import time
 
 # Verify Layout
 try:
-    import agentic_core
-    import apps_shared
+    pass
 except ImportError:
     print("CRITICAL: 'agentic_core' or 'apps_shared' not found in path.")
     sys.exit(1)
 
 from agentic_core.core.orchestrator import SwarmScheduler
-from agentic_core.agents.infrastructure import WatchmanHandler
 
 # Check for Watchdog
 try:
-    from watchdog.observers import Observer
     from watchdog.events import FileSystemEventHandler
+    from watchdog.observers import Observer
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False

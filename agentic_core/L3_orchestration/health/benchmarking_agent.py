@@ -5,13 +5,13 @@ Measures execution time of specific functions and operations.
 Tracks performance metrics across cycles to detect degradation.
 """
 
-import time
 import logging
 import statistics
+import time
 from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional, Callable, Any
 from functools import wraps
+from pathlib import Path
+from typing import Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -378,7 +378,7 @@ class BenchmarkContext:
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        duration = self.agent.end_timer(self.name, self.metadata)
+        self.agent.end_timer(self.name, self.metadata)
         return False
 
 
@@ -396,7 +396,7 @@ def get_benchmarking_agent() -> BenchmarkingAgent:
 
 def initialize_benchmarking():
     """Initialize the BenchmarkingAgent system."""
-    agent = get_benchmarking_agent()
+    get_benchmarking_agent()
     LOGGER.info("BenchmarkingAgent system initialized")
 
 

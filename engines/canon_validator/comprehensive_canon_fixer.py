@@ -5,11 +5,11 @@ Systematically fixes all 50 canon keys with zero tolerance.
 """
 
 import ast
+import logging
 import os
 import re
 from pathlib import Path
 from typing import List, Set
-import logging
 
 # Assume logger is configured elsewhere or define a basic one
 logger = logging.getLogger(__name__)

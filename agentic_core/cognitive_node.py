@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
-
 from llm_client import LLMClient
 
 logger = logging.getLogger("CognitiveNode")
@@ -316,6 +315,5 @@ class CognitiveNode:
                 f.write(f"# Session ID: {session_id}\n\n")
                 f.write(code)
         except Exception as e:
-pass
 logger.warning(f"Failed to save final result: {e}")
 

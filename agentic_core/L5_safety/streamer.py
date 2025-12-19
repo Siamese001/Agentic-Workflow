@@ -15,13 +15,12 @@ Features:
 import asyncio
 import json
 import logging
-import os
 import re
 import sys
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Set
+from typing import Any, Optional, Set
 
 # Wrap stdout for UTF-8 encoding on Windows
 if sys.platform == "win32":

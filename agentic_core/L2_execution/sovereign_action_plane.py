@@ -4,7 +4,6 @@ Bypasses corrupted registry files with Toolsmith logic from the monolith.
 """
 
 import asyncio
-import json
 import logging
 import os
 import subprocess
@@ -12,8 +11,8 @@ import time
 from typing import Any, Dict, List, Optional
 
 from agentic_core.interfaces import (
-    IActionPlane,
     ActionRequest,
+    IActionPlane,
 )
 from agentic_core.interfaces.requests import ActionResult
 

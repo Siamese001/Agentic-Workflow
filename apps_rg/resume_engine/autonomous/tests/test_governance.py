@@ -15,11 +15,21 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..governance import (CostPrediction, DashboardGenerator,
-                          DependencyArbiter, DependencyIssue, DependencyStatus,
-                          DocComplianceLevel, DocViolation, Phase7Orchestrator,
-                          PredictiveBudgetManager, PromptGovernor, PromptIssue,
-                          PromptRisk, StrictDocEnforcer)
+from ..governance import (
+    CostPrediction,
+    DashboardGenerator,
+    DependencyArbiter,
+    DependencyIssue,
+    DependencyStatus,
+    DocComplianceLevel,
+    DocViolation,
+    Phase7Orchestrator,
+    PredictiveBudgetManager,
+    PromptGovernor,
+    PromptIssue,
+    PromptRisk,
+    StrictDocEnforcer,
+)
 
 
 @pytest.fixture

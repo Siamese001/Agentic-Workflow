@@ -7,12 +7,11 @@ and human-in-the-loop intervention.
 """
 
 import asyncio
-import json
-from typing import Optional, List, Any
 
 from agentic_core.domain.context import ValidationContext
 from agentic_core.L3_orchestration.intervention_server import (
-    approval_event, start_intervention_server, FASTAPI_AVAILABLE
+    approval_event,
+    start_intervention_server,
 )
 
 
@@ -55,15 +54,30 @@ class CanonSwarmScheduler:
             raise ValueError("No agent classes provided. Call set_phases() or provide agent_classes in constructor.")
         
         # Import agent classes dynamically to avoid circular imports
-        from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-        from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
-        from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
-        from agentic_core.agents.engineering import StructuralEngineer, PatternEnforcer
+        from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+        from agentic_core.agents.governance import (
+            ArchitectureGovernor,
+            DependencySentinel,
+        )
+        from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
+        from agentic_core.agents.quality import (
+            CodeStyleGuardian,
+            HygieneGuardian,
+            PerformanceEnforcer,
+        )
         from agentic_core.agents.repair import TestPilot, ToolsmithAgent
-        from agentic_core.agents.infrastructure import Historian, BenchmarkingAgent
+        from agentic_core.agents.security import (
+            ConcurrencyGuardian,
+            SafetyInspector,
+            SecurityEnforcer,
+        )
         from agentic_core.agents.specialized import (
-            TheCartographer, TheOmniContext, TheStrategist,
-            NamingEnforcer, DocEnforcer, TypeEnforcer
+            DocEnforcer,
+            NamingEnforcer,
+            TheCartographer,
+            TheOmniContext,
+            TheStrategist,
+            TypeEnforcer,
         )
         
         self.phases = {

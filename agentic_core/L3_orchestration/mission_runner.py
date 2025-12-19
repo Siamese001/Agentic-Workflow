@@ -16,7 +16,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Optional, List, Any
+from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -53,19 +53,19 @@ except ImportError:
 
 def _get_imports():
     """Lazy import to avoid circular dependencies."""
+    from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+    from agentic_core.agents.infrastructure import GitAgent, Historian, WatchmanHandler
+    from agentic_core.agents.planning import ReflectionAgent, StrategicPlanner
+    from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian
+    from agentic_core.agents.repair import TestPilot
+    from agentic_core.agents.security import ConcurrencyGuardian, SafetyInspector
     from agentic_core.domain.context import ValidationContext
     from agentic_core.L3_orchestration.canon_scheduler import CanonSwarmScheduler
     from agentic_core.L3_orchestration.intervention_server import (
-        start_intervention_server,
-        approval_event,
         FASTAPI_AVAILABLE,
+        approval_event,
+        start_intervention_server,
     )
-    from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-    from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian
-    from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian
-    from agentic_core.agents.repair import TestPilot
-    from agentic_core.agents.infrastructure import Historian, GitAgent, WatchmanHandler
-    from agentic_core.agents.planning import StrategicPlanner, ReflectionAgent
     
     return {
         'ValidationContext': ValidationContext,

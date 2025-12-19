@@ -13,10 +13,13 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import (ConversationalRepair, GitOpsManager, ImportPatcher,
-                      Phase4Orchestrator)
-from ..healing import (HealingOrchestrator, HealingResult,
-                       run_self_healing_mission)
+from ..gitops import (
+    ConversationalRepair,
+    GitOpsManager,
+    ImportPatcher,
+    Phase4Orchestrator,
+)
+from ..healing import HealingOrchestrator, HealingResult, run_self_healing_mission
 from ..learning import MemoryPersistence, ResumeLearningAgent
 
 

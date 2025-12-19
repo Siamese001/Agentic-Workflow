@@ -13,10 +13,17 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
-from .agents import (ATSCompatibilityAgent, BrandComplianceAgent,
-                     ContentQualityAgent, FactCheckAgent, ReflectionAgent,
-                     SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
-                     TestPilot)
+from .agents import (
+    ATSCompatibilityAgent,
+    BrandComplianceAgent,
+    ContentQualityAgent,
+    FactCheckAgent,
+    ReflectionAgent,
+    SectionBalanceAgent,
+    StrategicPlanner,
+    TemplateOptimizer,
+    TestPilot,
+)
 from .base_agent import ResumeAgent
 from .context import ResumeEngineContext
 

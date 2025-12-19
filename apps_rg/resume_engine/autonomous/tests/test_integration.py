@@ -10,10 +10,17 @@ Tests agent coordination and signal-based routing:
 
 import pytest
 
-from ..agents import (ATSCompatibilityAgent, BrandComplianceAgent,
-                      ContentQualityAgent, FactCheckAgent, ReflectionAgent,
-                      SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
-                      TestPilot)
+from ..agents import (
+    ATSCompatibilityAgent,
+    BrandComplianceAgent,
+    ContentQualityAgent,
+    FactCheckAgent,
+    ReflectionAgent,
+    SectionBalanceAgent,
+    StrategicPlanner,
+    TemplateOptimizer,
+    TestPilot,
+)
 from ..context import ResumeEngineContext
 
 

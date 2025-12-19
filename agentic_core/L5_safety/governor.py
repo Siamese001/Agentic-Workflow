@@ -4,9 +4,8 @@ Tracks token usage and halts execution if cost exceeds threshold.
 """
 
 import logging
-import os
 import time
-from typing import Dict, Optional
+from typing import Dict
 
 LOGGER = logging.getLogger(__name__)
 

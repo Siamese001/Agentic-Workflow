@@ -8,6 +8,7 @@ Generated: 2025-12-07T13:28:54.238560
 import logging
 from typing import Dict, Optional, Union
 
+
 # Assuming RefinementResult is defined elsewhere
 class RefinementResult:
     def __init__(self, original, refined, changes):

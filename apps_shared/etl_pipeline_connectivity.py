@@ -2,12 +2,11 @@ import logging
 import os
 from typing import List
 
-from tqdm import tqdm
-
 from agent_logic_connectivity import CanonValidator
 
 # Import our hardened infrastructure
 from schemas_connectivity import CanonEntry, CanonMetadata
+from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(

@@ -11,8 +11,7 @@ Tests the core context class including:
 
 import pytest
 
-from ..context import (BudgetManager, ResumeEngineContext,
-                       SectionDependencyGraph)
+from ..context import BudgetManager, ResumeEngineContext, SectionDependencyGraph
 
 
 class TestBudgetManager:

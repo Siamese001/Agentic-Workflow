@@ -64,7 +64,6 @@ def test_news_rag_pipeline():
             return False
 
     except Exception as e:
-pass
 logger.error(f"❌ News RAG pipeline test failed: {e}")
         return False
 
@@ -124,7 +123,6 @@ def test_news_rag_caching():
             return False
 
     except Exception as e:
-pass
 logger.error(f"❌ News RAG caching test failed: {e}")
         return False
 
@@ -190,7 +188,6 @@ def test_news_rag_outreach_integration():
             return False
 
     except Exception as e:
-pass
 logger.error(f"❌ News RAG outreach integration test failed: {e}")
         return False
 
@@ -244,7 +241,6 @@ def test_news_rag_error_handling():
             return False
 
     except Exception as e:
-pass
 logger.error(f"❌ News RAG error handling test failed: {e}")
         return False
 
@@ -312,7 +308,6 @@ def test_news_rag_personalization_quality():
             return False
 
     except Exception as e:
-pass
 logger.error(f"❌ Personalization quality test failed: {e}")
         return False
 

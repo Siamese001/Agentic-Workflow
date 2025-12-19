@@ -1,6 +1,7 @@
-import os
 import logging
-from typing import Any, Optional, Callable
+import os
+from typing import Any, Callable, Optional
+
 from redis import Redis
 from redisvl.index import SearchIndex
 

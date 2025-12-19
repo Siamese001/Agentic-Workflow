@@ -138,25 +138,14 @@ class IOrchestrator(Protocol):
         """
         ...
 
-    async def execute_step(self, phase: Any, context: Any) -> Dict[str, Any]:
-        """Execute a single phase of the cycle.
+    async def execute_step(self, phase: str, context: Any) -> Any:
+        """Execute a single step of the mission cycle.
         
         Args:
-            phase: ExecutionPhase to execute
-            context: Current execution context
+            phase: Current execution phase (e.g., 'plan', 'act', 'observe')
+            context: ExecutionContext with current state
             
         Returns:
-            Phase result
-        """
-        ...
-
-    async def should_continue(self, context: Any) -> bool:
-        """Determine if execution should continue.
-        
-        Args:
-            context: Current execution context
-            
-        Returns:
-            True if should continue executing
+            Step result with status and updates
         """
         ...
