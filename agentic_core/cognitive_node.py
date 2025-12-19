@@ -96,6 +96,17 @@ class CognitiveNode:
             'log_timing': True
         }
 
+    def _check_and_trip_circuit_breaker(self, current_breaker_count: int, step_num: int) -> None:
+        """
+        Helper method to check if the circuit breaker should trip and raises TimeoutError if it does.
+        This extracts the deeply nested logic to reduce nesting depth.
+        """
+        if current_breaker_count >= self.circuit_breaker_trips:
+            self.logger.error(
+                "❌ Circuit breaker tripped - too many slow steps")
+            raise TimeoutError(
+                "Sequential thinking circuit breaker activated")
+
     def _handle_step_duration_and_circuit_breaker(self, step_duration: float, circuit_breaker_count: int, step_num: int) -> int:
         """
         Handles checking step duration against threshold and manages the circuit breaker.
@@ -107,11 +118,8 @@ class CognitiveNode:
             self.logger.warning(
                 f"⚠️ Step {step_num} took {step_duration:.2f}s (threshold: {self.slow_step_threshold}s)")
 
-            if circuit_breaker_count >= self.circuit_breaker_trips:
-                self.logger.error(
-                    "❌ Circuit breaker tripped - too many slow steps")
-                raise TimeoutError(
-                    "Sequential thinking circuit breaker activated")
+            # Call the new helper method to handle the circuit breaker tripping logic
+            self._check_and_trip_circuit_breaker(circuit_breaker_count, step_num)
         return circuit_breaker_count
 
     def think(self, user_goal: str, toolbox_desc: str) -> str:

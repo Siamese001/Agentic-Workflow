@@ -30,6 +30,13 @@ class ActionRegistry:
         self._redis_hash: Dict[str, Dict[str, str]] = {}
 
     # --- CORE TOOLS (Canon Validator) ---
+    def _format_search_result_item(self, item: Dict) -> str:
+        """Helper to format a single search result item."""
+        title = item.get('title', 'No Title')
+        desc = item.get('description', 'No Description')
+        link = item.get('url', 'No Link')
+        return f"Title: {title}\nSummary: {desc}\nLink: {link}\n---"
+
     def search_web(self, query: str) -> str:
         """
         Performs a real web search using Brave API.
@@ -57,11 +64,7 @@ class ActionRegistry:
             results = []
             if "web" in data and "results" in data["web"]:
                 for item in data["web"]["results"]:
-                    title = item.get('title', 'No Title')
-                    desc = item.get('description', 'No Description')
-                    link = item.get('url', 'No Link')
-                    results.append(
-                        f"Title: {title}\nSummary: {desc}\nLink: {link}\n---")
+                    results.append(self._format_search_result_item(item))
 
             return "\n".join(results) if results else "No results found."
 

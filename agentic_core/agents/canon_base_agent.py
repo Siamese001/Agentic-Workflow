@@ -1,13 +1,3 @@
-"""
-Canon Validator Base Agent - Subatomic Level 5 Agent Architecture
-
-This module provides the base class for all Canon Validator agents with:
-- Dynamic prompt loading from modularized markdown files
-- Gemini 2.5 Flash integration with thinking_budget
-- Negative constraint checking for banned imports
-- Persistent chat sessions with clean slate protocol
-- Zero-tolerance deletion enforcement
-"""
 import asyncio
 import ast
 import os
@@ -23,6 +13,11 @@ try:
 except ImportError:
     genai = None
     types = None
+
+from dotenv import load_dotenv
+
+# Load environment variables from .env file at module level
+load_dotenv()
 
 
 @dataclass
@@ -56,8 +51,12 @@ class CanonBaseAgent(ABC):
         self.role = self._get_role_name()
         
         # Initialize Gemini client if available
-        if genai and os.getenv("GOOGLE_API_KEY"):
-            self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+        api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+        if genai and api_key:
+            self._client = genai.Client(api_key=api_key)
+            print(f"✅ {self.name} connected to Gemini 2.5", flush=True)
+        else:
+            print(f"⚠️  {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})", flush=True)
     
     def _get_role_name(self) -> str:
         """Convert class name to role name (e.g., SystemArchitect -> system_architect)."""
@@ -100,6 +99,70 @@ class CanonBaseAgent(ABC):
                     violations.append(f"Banned import detected: {pattern}")
         
         return len(violations) == 0, violations
+
+    def _reset_chat_session_if_needed(self, chat_key: str, file_path: Optional[str], round_num: int):
+        """
+        Resets the chat session if round_num is 3 or greater, clearing contaminated history.
+        """
+        if round_num >= 3 and chat_key in self.chat_sessions:
+            print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
+            del self.chat_sessions[chat_key]
+            if file_path in self.conversation_history:
+                self.conversation_history[file_path] = []
+
+    def _get_gemini_response_from_session(self, chat_key: str, config: Any, prompt: str, round_num: int, file_path: Optional[str]) -> Any:
+        """
+        Gets or creates a Gemini chat session and sends a message.
+        """
+        # Reuse existing chat session or create new one
+        if chat_key not in self.chat_sessions:
+            self.chat_sessions[chat_key] = self._client.chats.create(
+                model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
+                config=config
+            )
+            print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
+        else:
+            print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
+        
+        chat = self.chat_sessions[chat_key]
+        return chat.send_message(prompt)
+
+    def _process_gemini_response(self, response: Any, code: str) -> str:
+        """
+        Extracts and validates code from the Gemini API response.
+        """
+        if not (response.candidates and response.candidates[0].content.parts):
+            print(f"      ⚠️ Malformed response from Gemini", flush=True)
+            return code
+        
+        first_part = response.candidates[0].content.parts[0]
+        
+        # Check for tool calls (should never happen)
+        if hasattr(first_part, 'function_call') and first_part.function_call:
+            print(f"      🚨 CRITICAL: Model called tool despite tools=[] - {first_part.function_call.name}", flush=True)
+            return code  # Return original code if model misbehaves
+        
+        # Get text response
+        if hasattr(first_part, 'text'):
+            generated_code = first_part.text.strip()
+            
+            # NEGATIVE CONSTRAINT CHECK: Verify no banned imports
+            is_valid, violations = self.check_negative_constraints(generated_code)
+            if not is_valid:
+                print(f"      🚫 Hallucination Detected: {', '.join(violations)}", flush=True)
+                # Return original code and let the caller retry
+                return code
+            
+            # Track token usage
+            if hasattr(response, 'usage_metadata'):
+                total_tokens = response.usage_metadata.total_token_count
+                print(f"      ✅ Tokens: {total_tokens}", flush=True)
+            
+            return generated_code
+        
+        # Fallback if no text part
+        print(f"      ⚠️ Malformed response from Gemini (no text part)", flush=True)
+        return code
     
     async def resilient_mutation(
         self,
@@ -178,58 +241,13 @@ class CanonBaseAgent(ABC):
             chat_key = f"chat_{file_path}" if file_path else "chat_default"
             
             # CRITICAL: Reset session on Round 3+ to clear contaminated history
-            if round_num >= 3 and chat_key in self.chat_sessions:
-                print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
-                del self.chat_sessions[chat_key]
-                if file_path in self.conversation_history:
-                    self.conversation_history[file_path] = []
+            self._reset_chat_session_if_needed(chat_key, file_path, round_num)
             
-            def get_gemini_response():
-                # Reuse existing chat session or create new one
-                if chat_key not in self.chat_sessions:
-                    self.chat_sessions[chat_key] = self._client.chats.create(
-                        model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
-                        config=config
-                    )
-                    print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
-                else:
-                    print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
-                
-                chat = self.chat_sessions[chat_key]
-                return chat.send_message(prompt)
+            response = await asyncio.to_thread(
+                lambda: self._get_gemini_response_from_session(chat_key, config, prompt, round_num, file_path)
+            )
             
-            response = await asyncio.to_thread(get_gemini_response)
-            
-            # Extract code from response
-            if response.candidates and response.candidates[0].content.parts:
-                first_part = response.candidates[0].content.parts[0]
-                
-                # Check for tool calls (should never happen)
-                if hasattr(first_part, 'function_call') and first_part.function_call:
-                    print(f"      🚨 CRITICAL: Model called tool despite tools=[] - {first_part.function_call.name}", flush=True)
-                    return code  # Return original code if model misbehaves
-                
-                # Get text response
-                if hasattr(first_part, 'text'):
-                    generated_code = first_part.text.strip()
-                    
-                    # NEGATIVE CONSTRAINT CHECK: Verify no banned imports
-                    is_valid, violations = self.check_negative_constraints(generated_code)
-                    if not is_valid:
-                        print(f"      🚫 Hallucination Detected: {', '.join(violations)}", flush=True)
-                        # Return original code and let the caller retry
-                        return code
-                    
-                    # Track token usage
-                    if hasattr(response, 'usage_metadata'):
-                        total_tokens = response.usage_metadata.total_token_count
-                        print(f"      ✅ Tokens: {total_tokens}", flush=True)
-                    
-                    return generated_code
-            
-            # Fallback: return original code if response is malformed
-            print(f"      ⚠️ Malformed response from Gemini", flush=True)
-            return code
+            return self._process_gemini_response(response, code)
             
         except Exception as e:
             print(f"      ❌ Gemini API error: {e}", flush=True)

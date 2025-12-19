@@ -48,6 +48,19 @@ class CanonValidator:
 
         logger.info("CanonValidator initialized with hybrid cache")
 
+    def _safe_parse_ast(self, code: str) -> tuple[Optional[str], Optional[str]]:
+        """
+        Safely parses code into an AST string representation.
+        Returns (ast_string, error_message)
+        """
+        try:
+            tree = ast.parse(code)
+            return ast.dump(tree), None
+        except SyntaxError as e:
+            return None, str(e)
+        except Exception as e:
+            return None, f"Unexpected AST parsing error: {e}"
+
     def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> CanonEntry:
         """
         Generates a CanonEntry from code and metadata.
@@ -55,17 +68,12 @@ class CanonValidator:
         including AST parsing and embedding generation.
         """
         ast_representation: str
-        try:
-            tree = ast.parse(code)
-            ast_representation = ast.dump(tree)
-        except SyntaxError as e:
-            # Store syntax error as a JSON string
-            ast_representation = json.dumps({"error": str(e)})
-            logger.error(f"Syntax error parsing code for CanonEntry: {e}")
-        except Exception as e:
-            # Store other AST parsing errors as a JSON string
-            ast_representation = json.dumps({"error": f"Unexpected AST parsing error: {e}"})
-            logger.error(f"Unexpected error parsing code for CanonEntry: {e}")
+        ast_dump_str, ast_error = self._safe_parse_ast(code)
+        if ast_error:
+            ast_representation = json.dumps({"error": ast_error})
+            logger.error(f"Error parsing code for CanonEntry: {ast_error}")
+        else:
+            ast_representation = ast_dump_str
 
         embedding: List[float]
         try:
@@ -140,6 +148,29 @@ class CanonValidator:
 
         return result
 
+    def _extract_ast_error_message(self, ast_str: str) -> Optional[str]:
+        """
+        Extracts an error message from a potential JSON-encoded AST error string.
+        Returns the error message if found and valid, otherwise None.
+        """
+        if not ast_str.startswith('{"error":'):
+            return None
+
+        error_dict: Optional[Dict[str, Any]] = None
+        try:
+            error_dict = json.loads(ast_str)
+        except json.JSONDecodeError:
+            logger.debug("Malformed JSON error string encountered.")
+            return None
+        except Exception as e:
+            logger.debug(f"Unexpected error during AST error message extraction: {e}")
+            return None
+
+        if isinstance(error_dict, dict) and "error" in error_dict:
+            return error_dict["error"]
+        
+        return None
+
     def _validate_ast_match(
         self,
         new_entry: CanonEntry,
@@ -163,21 +194,8 @@ class CanonValidator:
         existing_ast_str = existing_entry.ast_structure
 
         # Check for errors by attempting to parse JSON error strings
-        new_ast_error: Optional[str] = None
-        if new_ast_str.startswith('{"error":'):
-            try:
-                error_dict = json.loads(new_ast_str)
-                new_ast_error = error_dict.get("error")
-            except json.JSONDecodeError:
-                pass # Malformed error string, treat as no error
-
-        existing_ast_error: Optional[str] = None
-        if existing_ast_str.startswith('{"error":'):
-            try:
-                error_dict = json.loads(existing_ast_str)
-                existing_ast_error = error_dict.get("error")
-            except json.JSONDecodeError:
-                pass # Malformed error string, treat as no error
+        new_ast_error = self._extract_ast_error_message(new_ast_str)
+        existing_ast_error = self._extract_ast_error_message(existing_ast_str)
 
         if new_ast_error:
             return {

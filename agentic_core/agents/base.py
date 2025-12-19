@@ -1,8 +1,4 @@
-"""
-agentic_core/agents/base.py
-Depth: 3
-Role: Abstract Base Class for all SubAtomic Agents.
-"""
+import ast
 from agentic_core.domain.context import ValidationContext
 
 
@@ -38,9 +34,35 @@ class SubAtomicAgent:
 class ImportPatcher:
     """Mixin class providing unified import patching capabilities for Surgeon agents."""
 
-    def build_import_dependency_map(self, moved_files):
+    def _is_import_node_for_module(self, node: ast.AST, old_module: str) -> bool:
+        """Helper to check if an AST import node refers to the given module."""
+        if isinstance(node, ast.ImportFrom):
+            return bool(node.module and node.module.startswith(old_module))
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name.startswith(old_module):
+                    return True
+        return False
+
+    def _find_module_import_in_tree(self, tree: ast.AST, old_module: str) -> bool:
+        """Helper to check if a specific module is imported in a given AST tree."""
+        for node in ast.walk(tree):
+            if self._is_import_node_for_module(node, old_module):
+                return True
+        return False
+
+    def _is_module_imported_in_file(self, file_path: str, old_module: str) -> bool:
+        """Helper to check if a specific module is imported in a given file."""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                tree = ast.parse(f.read())
+            return self._find_module_import_in_tree(tree, old_module)
+        except Exception:
+            # Log or handle error more gracefully if needed, for now just skip
+            return False
+
+    def build_import_dependency_map(self, moved_files: list[str]) -> dict[str, list[str]]:
         """Build a map of which files import the moved modules."""
-        import ast
         import_map = {}
 
         for moved_file in moved_files:
@@ -49,27 +71,11 @@ class ImportPatcher:
 
             # Scan all Python files for imports of this module
             for file_path in self.ctx.python_files:
-                if file_path == moved_file: continue
-
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        tree = ast.parse(f.read())
-
-                    # Check for ImportFrom and Import nodes
-                    for node in ast.walk(tree):
-                        if isinstance(node, ast.ImportFrom):
-                            # Check if this import matches our moved module
-                            if node.module and node.module.startswith(old_module):
-                                import_map[old_module].append(file_path)
-                                break
-                        elif isinstance(node, ast.Import):
-                            # Check for direct imports
-                            for alias in node.names:
-                                if alias.name.startswith(old_module):
-                                    import_map[old_module].append(file_path)
-                                    break
-                except Exception:
+                if file_path == moved_file:
                     continue
+
+                if self._is_module_imported_in_file(file_path, old_module):
+                    import_map[old_module].append(file_path)
 
         # Remove empty entries
         return {k: v for k, v in import_map.items() if v}
