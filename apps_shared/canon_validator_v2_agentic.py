@@ -440,33 +440,59 @@ class ValidationContext:
             formatted.append(types.Content(role=entry['role'], parts=parts))
         return formatted
 
-    async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None, round_num: int = 1) -> str:
+    async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None, round_num: int = 1, previous_failure: str = None) -> str:
         """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
         
-        # Build the prompt with STRONG negative constraints
+        # Count original lines for feedback
+        original_line_count = len(code.splitlines())
+        
+        # CLEAN SLATE PROTOCOL: Clear contaminated history on failure
+        chat_key = f"chat_{file_path}" if file_path else "chat_default"
+        if previous_failure and chat_key in self.chat_sessions:
+            print(f"      🧹 Clean Slate Protocol: Clearing contaminated history", flush=True)
+            del self.chat_sessions[chat_key]
+            if file_path in self.conversation_history:
+                self.conversation_history[file_path] = []
+        
+        # Build lesson learned from previous failure
+        lesson_learned = ""
+        if previous_failure:
+            lesson_learned = f"\n\n📚 LESSON LEARNED FROM PREVIOUS ATTEMPT:\n{previous_failure}\nApply this lesson to your current fix. Start fresh with the original file.\n"
+        
+        # Build the prompt with ELITE ENGINEER standards
         prompt = f"""Task: {task}
-SYSTEM: You are a Level 5 Autonomous Repair Agent.
+SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 
-CRITICAL CONSTRAINTS:
-1. NEVER use 'import base', 'import context', 'import L3_orchestration', or 'import conversational_repair'
-2. These modules DO NOT EXIST in this codebase: base, context, L3_orchestration, conversational_repair
-3. ONLY use imports from Python standard library (os, sys, pathlib, etc.) or imports that exist in the provided code
-4. If you need a utility, use fully qualified paths like 'from agentic_workflow.runtime.shared import ...'
+🚫 ZERO-TOLERANCE DELETION RULE:
+- The original file has {original_line_count} lines of code
+- Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines
+- NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'
+- If you delete more than 10% of lines ({int(original_line_count * 0.1)} lines) without structural reason, REJECTED
+- Every mutation must be COMPLETE and FUNCTIONAL
+- Preserve ALL sections exactly as-is unless directly fixing the violation
 
-RULES:
-1. Fix the specific violation ONLY.
-2. DO NOT hallucinate imports - verify all imports are real.
-3. DO NOT delete logic, comments, or docstrings.
+🚫 PROHIBITED MODULES (HARD-CODED BLACKLIST):
+- 'base' - DOES NOT EXIST
+- 'context' - DOES NOT EXIST  
+- 'L3_orchestration' - DOES NOT EXIST
+- 'conversational_repair' - DOES NOT EXIST
+- These are HALLUCINATIONS. Do not import them under any circumstances.
+- ONLY use: Python stdlib (os, sys, pathlib, etc.) OR 'from agentic_workflow.runtime.shared import ...'
+
+⚡ ELITE ENGINEER RULES:
+1. Fix the specific violation ONLY - surgical precision
+2. NEVER hallucinate imports - verify all imports are real
+3. NEVER delete logic, comments, or docstrings
 4. Return ONLY valid Python code. No markdown blocks.
-5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
+5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.{lesson_learned}
 
 {code}"""
         
         try:
-            # CRITICAL: Use temperature=0.4 for deterministic code fixing (not 1.0)
-            # Lower temperature prevents hallucination of fake imports
+            # SUBATOMIC FIX: Force temperature=0.2 for maximum determinism
+            # Low temperature prevents "creative" hallucinations and deletions
             config = types.GenerateContentConfig(
-                temperature=0.4,  # Lower temp for literal, deterministic code fixes
+                temperature=0.2,  # ELITE: Ultra-low temp for literal, deterministic fixes
                 thinking_config=types.ThinkingConfig(
                     thinking_budget=16000  # Deep healing budget for Gemini 2.5
                 ),
@@ -740,6 +766,8 @@ class SubAtomicAgent:
 
             # L5: 5-Round Reflective Healing
             max_rounds = 5
+            previous_failure = None  # Track failure reason for feedback
+            
             for round_num in range(1, max_rounds + 1):
                 print(f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}")
                 
@@ -752,7 +780,7 @@ class SubAtomicAgent:
                 else:
                     prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', 'L3_orchestration', or 'conversational_repair'. Use full relative paths for local modules."
 
-                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path, round_num)
+                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path, round_num, previous_failure)
 
                 # 1. Syntax Gate
                 try:
@@ -762,9 +790,23 @@ class SubAtomicAgent:
                     current_code = mutated_code 
                     continue
 
-                # 2. Hallucination Guard (Growth check)
-                if len(mutated_code.splitlines()) > len(current_code.splitlines()) * int(os.getenv('CODE_EXPANSION_FACTOR', '4')):
+                # 2. ZERO-TOLERANCE DELETION GUARD (10% max)
+                original_lines = len(current_code.splitlines())
+                mutated_lines = len(mutated_code.splitlines())
+                max_allowed_deletion = int(original_lines * 0.1)  # 10% zero-tolerance threshold
+                deletion_count = original_lines - mutated_lines
+                
+                if deletion_count > max_allowed_deletion:
+                    print(f"      🚫 ZERO-TOLERANCE VIOLATION: {original_lines} -> {mutated_lines} lines ({deletion_count} deleted, max {max_allowed_deletion})")
+                    # Clean slate protocol: provide lesson learned
+                    previous_failure = f"ZERO-TOLERANCE VIOLATION: You deleted {deletion_count} lines (max allowed: {max_allowed_deletion}). You are an ELITE engineer - preserve the complete file structure and only fix the specific violation."
+                    current_code = mutated_code
+                    continue
+                
+                # 3. Hallucination Guard (Growth check)
+                if mutated_lines > original_lines * int(os.getenv('CODE_EXPANSION_FACTOR', '4')):
                     print(f"      ⚠️ Round {round_num}: Code bloat detected – rejecting")
+                    previous_failure = f"Code bloat detected: You added too many lines. Only fix the specific violation."
                     current_code = mutated_code
                     continue
 
