@@ -49,6 +49,12 @@ from .security import (
     SecurityEnforcer,
 )
 
+# Memory agents (Level 5 Autonomous Learning)
+from .memory_architect import MemoryArchitect, get_memory_architect
+
+# Pattern retrieval agents
+from .pattern_retrieval_agent import PatternRetrievalAgent, get_pattern_agent
+
 # Specialized agents
 from .specialized import (
     DocEnforcer,

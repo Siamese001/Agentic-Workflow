@@ -63,7 +63,7 @@ class GeminiConfig:
     """Configuration for Gemini client."""
     model: str = "gemini-2.5-flash"
     temperature: float = 0.2
-    thinking_budget: int = 16000
+    thinking_budget: int = 24576
     max_retries: int = 5
     base_delay: float = 2.0
     backoff_factor: float = 2.0
