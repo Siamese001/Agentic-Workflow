@@ -37,6 +37,14 @@ class ActionRegistry:
         link = item.get('url', 'No Link')
         return f"Title: {title}\nSummary: {desc}\nLink: {link}\n---"
 
+    def _process_search_results(self, data: Dict) -> str:
+        """Helper to process raw search API response data into a formatted string."""
+        results = []
+        if "web" in data and "results" in data["web"]:
+            for item in data["web"]["results"]:
+                results.append(self._format_search_result_item(item))
+        return "\n".join(results) if results else "No results found."
+
     def search_web(self, query: str) -> str:
         """
         Performs a real web search using Brave API.
@@ -60,13 +68,8 @@ class ActionRegistry:
 
             data = response.json()
 
-            # Parse the results into a clean string
-            results = []
-            if "web" in data and "results" in data["web"]:
-                for item in data["web"]["results"]:
-                    results.append(self._format_search_result_item(item))
-
-            return "\n".join(results) if results else "No results found."
+            # Delegate processing to a helper function to reduce nesting
+            return self._process_search_results(data)
 
         except Exception as e:
             logger.error(f"Search failed: {e}")
