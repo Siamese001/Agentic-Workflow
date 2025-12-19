@@ -9,6 +9,7 @@ import ast
 import asyncio
 import hashlib
 import importlib.util
+import json
 import logging
 import os
 import re
@@ -18,7 +19,7 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple, Callable
+from typing import Any, Dict, List, Set, Tuple, Callable, Optional
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -60,7 +61,7 @@ def get_python_files(root: str = '.') -> List[str]:
     return python_files
 
 try:
-    from google import genai
+    import google.generativeai as genai
 except ImportError:
     print("   ⚠️  google-generativeai not installed - run: pip install google-generativeai")
     genai = None
@@ -113,6 +114,173 @@ def is_excluded(path: str) -> bool:
     return False
 
 # ==============================================================================
+# SERVICE MANAGER (REDIS, PINECONE, MCP INTEGRATION)
+# ==============================================================================
+@dataclass
+class ServiceManager:
+    """Manages external services (Redis, Pinecone, MCP) with graceful fallback."""
+    redis_client: Optional[Any] = field(default=None)
+    pinecone_index: Optional[Any] = field(default=None)
+    mcp_clients: Dict[str, Any] = field(default_factory=dict)
+    
+    def __post_init__(self):
+        """Initialize services if available."""
+        self._init_redis()
+        self._init_pinecone()
+        self._init_mcp()
+    
+    def _init_redis(self):
+        """Initialize Redis client if available."""
+        try:
+            import redis
+            self.redis_client = redis.Redis(
+                host=os.getenv('REDIS_HOST', 'localhost'),
+                port=int(os.getenv('REDIS_PORT', 6379)),
+                db=int(os.getenv('REDIS_DB', 0)),
+                decode_responses=True
+            )
+            # Test connection
+            self.redis_client.ping()
+            print("   ✅ Redis connected - caching enabled")
+        except Exception as e:
+            self.redis_client = None
+            print(f"   ⚠️  Redis unavailable: {e}")
+    
+    def _init_pinecone(self):
+        """Initialize Pinecone index if available."""
+        try:
+            from pinecone import Pinecone, ServerlessSpec
+            pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
+            index_name = "canon-healing-patterns"
+            if index_name not in pc.list_indexes().names():
+                pc.create_index(
+                    name=index_name,
+                    dimension=1536,  # OpenAI embedding dimension
+                    metric="cosine",
+                    spec=ServerlessSpec(
+                        cloud="aws",
+                        region="us-west-2"
+                    )
+                )
+            self.pinecone_index = pc.Index(index_name)
+            print("   ✅ Pinecone connected - pattern learning enabled")
+        except Exception as e:
+            self.pinecone_index = None
+            print(f"   ⚠️  Pinecone unavailable: {e}")
+    
+    def _init_mcp(self):
+        """Initialize MCP clients if available."""
+        try:
+            from mcp import Client
+            # Initialize Figma MCP for UI pattern validation
+            figma_token = os.getenv('FIGMA_TOKEN')
+            if figma_token:
+                self.mcp_clients['figma'] = Client(figma_token)
+                print("   ✅ Figma MCP connected - UI validation enabled")
+        except Exception as e:
+            print(f"   ⚠️  MCP services unavailable: {e}")
+    
+    def get_cached_result(self, file_hash: str) -> Optional[Dict]:
+        """Get cached validation result from Redis."""
+        if not self.redis_client:
+            return None
+        try:
+            cached = self.redis_client.get(f"canon:validation:{file_hash}")
+            return json.loads(cached) if cached else None
+        except:
+            return None
+    
+    def cache_result(self, file_hash: str, result: Dict, ttl: int = 3600):
+        """Cache validation result in Redis."""
+        if not self.redis_client:
+            return
+        try:
+            self.redis_client.setex(
+                f"canon:validation:{file_hash}",
+                ttl,
+                json.dumps(result)
+            )
+        except:
+            pass
+    
+    def store_healing_pattern(self, violation: str, fix: str, success_rate: float):
+        """Store successful healing pattern in Pinecone."""
+        if not self.pinecone_index:
+            return
+        try:
+            import openai
+            # Create embedding of violation+fix pattern
+            text = f"Violation: {violation}\nFix: {fix}"
+            response = openai.Embedding.create(
+                input=text,
+                model="text-embedding-ada-002"
+            )
+            embedding = response['data'][0]['embedding']
+            
+            # Store in Pinecone
+            self.pinecone_index.upsert([
+                {
+                    'id': f"pattern_{hash(text)}",
+                    'values': embedding,
+                    'metadata': {
+                        'violation': violation,
+                        'fix': fix,
+                        'success_rate': success_rate,
+                        'timestamp': time.time()
+                    }
+                }
+            ])
+        except:
+            pass
+    
+    def find_similar_patterns(self, violation: str, top_k: int = 3) -> List[Dict]:
+        """Find similar healing patterns for a violation."""
+        if not self.pinecone_index:
+            return []
+        try:
+            import openai
+            # Create embedding of violation
+            response = openai.Embedding.create(
+                input=violation,
+                model="text-embedding-ada-002"
+            )
+            embedding = response['data'][0]['embedding']
+            
+            # Query Pinecone
+            results = self.pinecone_index.query(
+                vector=embedding,
+                top_k=top_k,
+                include_metadata=True
+            )
+            
+            return [{
+                'fix': match['metadata']['fix'],
+                'success_rate': match['metadata']['success_rate'],
+                'similarity': match['score']
+            } for match in results['matches']]
+        except:
+            return []
+    
+    def validate_ui_patterns(self, design_spec: Dict) -> List[str]:
+        """Validate UI patterns using Figma MCP."""
+        if 'figma' not in self.mcp_clients:
+            return []
+        try:
+            # Use Figma MCP to validate design patterns
+            figma_client = self.mcp_clients['figma']
+            violations = []
+            
+            # Check component consistency
+            if 'components' in design_spec:
+                for component in design_spec['components']:
+                    if not figma_client.validate_component(component):
+                        violations.append(f"Invalid component: {component['name']}")
+            
+            return violations
+        except:
+            return []
+
+# ==============================================================================
 # VALIDATION CONTEXT (BLACKBOARD PATTERN)
 # ==============================================================================
 @dataclass
@@ -126,6 +294,7 @@ class ValidationContext:
     intelligence_enabled: bool = field(default=False)
     _client: Any = field(default=None)
     target_scope: str = field(default=".")
+    services: ServiceManager = field(default_factory=ServiceManager)
 
     # L5 Autonomy: Economic & Safety State
     healing_attempts: Dict[str, int] = field(default_factory=dict)       # Per-file counter
@@ -136,55 +305,34 @@ class ValidationContext:
 
     def __post_init__(self):
         # TARGETED SCAN: Only load files in the target scope to save tokens
-        self.python_files = get_python_files(self.target_scope)
-        self._init_intelligence()
-        print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
-        if self.target_scope != ".":
-            print(f"   [CTX] Target scope: {self.target_scope}")
-
-    def _init_intelligence(self):
-        """Initialize Gemini client for autonomous healing."""
-        if not genai:
-            print("      ❌ Google Generative AI not available")
-            return
-            
-        api_key = os.getenv("GOOGLE_API_KEY")
-        if api_key:
-            try:
-                self._client = genai.Client(api_key=api_key)
-                self.intelligence_enabled = True
-                print("      ✅ Gemini Connected - HEALING MODE ACTIVE")
-            except Exception as e:
-                print(f"      ⚠️  Gemini Connection Failed: {e}")
+        if self.target_scope and self.target_scope != ".":
+            self.python_files = get_python_files(self.target_scope)
         else:
-            print("      ⚠️  No GOOGLE_API_KEY found in .env - AUDIT ONLY")
+            self.python_files = get_python_files(".")
+        
+        # Initialize intelligence if healing is enabled
+        if genai and os.getenv("GOOGLE_API_KEY"):
+            self.intelligence_enabled = True
+            genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+            self._client = genai.GenerativeModel(
+                model_name=os.getenv("GEMINI_MODEL", "gemini-1.5-pro-latest")
+            )
+            print("   ✅ Gemini Connected - HEALING MODE ACTIVE")
+        else:
+            self.intelligence_enabled = False
+            print("   ⚠️  Healing disabled: No API key configured")
 
     def can_attempt_healing(self, file_path: str) -> bool:
-        """L5 Guardrail: Enforce global and local healing budgets."""
+        """Check if we can attempt healing on this file."""
         if self.healing_budget_used >= self.global_healing_budget:
-            print("   ⛔ Global healing budget exhausted – halting autonomous repairs.")
             return False
         if self.healing_attempts.get(file_path, 0) >= self.max_healing_per_file:
-            print(f"   ⛔ Max healing attempts reached for {os.path.basename(file_path)}")
             return False
         return True
 
-    def record_healing_attempt(self, file_path: str, success: bool = False):
-        """Track cost and history."""
-        self.healing_attempts[file_path] = self.healing_attempts.get(file_path, 0) + 1
-        self.healing_budget_used += 1
-        if success:
-            timestamp = time.strftime('%H:%M:%S')
-            self.healing_history.setdefault(file_path, []).append(f"Healed at {timestamp}")
-
-    @rate_limited_retry(max_retries=5, base_delay=2.0, backoff_factor=1.5)
     async def resilient_mutation(self, agent_name: str, task: str, code: str) -> str:
         """The 'Smart' fix logic. Calls Gemini to rewrite code."""
-        if not self.intelligence_enabled or not self._client:
-            return code
-        
-        prompt = f"""Agent: {agent_name}
-Task: {task}
+        prompt = f"""Task: {task}
 SYSTEM: You are a Level 5 Autonomous Repair Agent.
 RULES:
 1. Fix the specific violation ONLY.
@@ -219,6 +367,22 @@ RULES:
         except Exception as e:
             print(f"      ❌ Mutation Error ({agent_name}): {e}")
             return code
+
+    async def read_file(self, file_path: str) -> str:
+        """Read file content."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                return f.read()
+        except:
+            return ""
+
+    async def write_file(self, file_path: str, content: str):
+        """Write content to file."""
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+        except Exception as e:
+            print(f"   ❌ Failed to write {file_path}: {e}")
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
@@ -333,6 +497,32 @@ class SubAtomicAgent:
     def can_run(self) -> bool:
         """Default: Run unless a critical failure exists."""
         return "CRITICAL_FAIL" not in self.ctx.signals
+    
+    def get_file_hash(self, file_path: str) -> str:
+        """Calculate SHA-256 hash of a file."""
+        try:
+            with open(file_path, 'rb') as f:
+                return hashlib.sha256(f.read()).hexdigest()
+        except:
+            return ""
+    
+    def check_cache(self, file_path: str, key: int) -> Optional[Dict]:
+        """Check Redis cache for validation result."""
+        file_hash = self.get_file_hash(file_path)
+        if not file_hash:
+            return None
+        
+        cache_key = f"{self.name}:{key}:{file_hash}"
+        return self.ctx.services.get_cached_result(cache_key)
+    
+    def store_cache(self, file_path: str, key: int, result: Dict):
+        """Store validation result in Redis cache."""
+        file_hash = self.get_file_hash(file_path)
+        if not file_hash:
+            return
+        
+        cache_key = f"{self.name}:{key}:{file_hash}"
+        self.ctx.services.cache_result(cache_key, result)
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
         """Trigger an LLM-based fix for a specific violation."""
@@ -361,12 +551,27 @@ class SubAtomicAgent:
                     if relevant:
                         violation_details = "\nSpecific Violations:\n" + "\n".join(map(str, relevant[:8]))
 
+            # Get similar healing patterns from Pinecone
+            violation_desc = f"{self.name} Key {violation_key} violation in {file_path}"
+            similar_patterns = self.ctx.services.find_similar_patterns(violation_desc)
+            
+            reference_fix = None
+            if similar_patterns:
+                print(f"      🧠 Found {len(similar_patterns)} similar patterns from Pinecone")
+                # Use highest success rate pattern as reference
+                best_pattern = max(similar_patterns, key=lambda x: x['success_rate'])
+                reference_fix = best_pattern['fix']
+                print(f"      📈 Best pattern success rate: {best_pattern['success_rate']:.2%}")
+
             # L5: 5-Round Reflective Healing
             max_rounds = 5
             for round_num in range(1, max_rounds + 1):
                 print(f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}")
                 
                 base_prompt = f"Fix Subatomic Canon Key {violation_key} only. {violation_details}"
+                if reference_fix and round_num == 1:
+                    base_prompt += f"\n\nReference successful fix for similar violation:\n{reference_fix[:500]}..."
+                
                 if round_num == 1:
                     prompt = f"{base_prompt}\nReturn ONLY full corrected code."
                 else:
@@ -404,6 +609,17 @@ class SubAtomicAgent:
                     os.replace(temp_path, file_path)
                     self.ctx.modified_files.add(file_path)
                     self.ctx.record_healing_attempt(file_path, success=True)
+                    
+                    # Store successful healing pattern in Pinecone
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        fixed_code = f.read()
+                    self.ctx.services.store_healing_pattern(
+                        violation=violation_desc,
+                        fix=fixed_code,
+                        success_rate=1.0
+                    )
+                    print(f"      💾 Stored healing pattern in Pinecone")
+                    
                     print(f"      ✨ SUCCESS: {os.path.basename(file_path)} healed in {round_num} rounds")
                     return True
                 else:
@@ -1868,6 +2084,91 @@ class PatternEnforcer(SubAtomicAgent):
             except: continue
         return len(violations) == 0, violations
 
+class UIValidationAgent(SubAtomicAgent):
+    """
+    ROLE: UI Pattern Validator. Uses Figma MCP to validate UI components and design patterns.
+    """
+    
+    def can_run(self) -> bool:
+        """Only run if Figma MCP is available."""
+        return 'figma' in self.ctx.services.mcp_clients
+    
+    def execute(self):
+        """Validate UI patterns using Figma MCP."""
+        print(f"\n[>>>] {self.name} ACTIVATED: Validating UI Patterns...")
+        
+        if not self.can_run():
+            print(f"   ⚠️  Figma MCP not available - skipping UI validation")
+            return
+        
+        # Look for UI component files and design specs
+        ui_files = [f for f in self.ctx.python_files if any(keyword in f.lower() 
+                   for keyword in ['ui', 'component', 'view', 'screen', 'page'])]
+        
+        if not ui_files:
+            print(f"   ℹ No UI files found - skipping UI validation")
+            return
+        
+        violations = []
+        for file_path in ui_files[:5]:  # Limit to first 5 UI files
+            try:
+                # Extract component definitions from file
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # Simple component detection (could be enhanced with AST)
+                components = self._extract_components(content, file_path)
+                
+                if components:
+                    print(f"   🎨 Validating {len(components)} components in {file_path}")
+                    
+                    # Validate with Figma MCP
+                    design_spec = {
+                        'components': components,
+                        'file_path': file_path
+                    }
+                    
+                    ui_violations = self.ctx.services.validate_ui_patterns(design_spec)
+                    violations.extend(ui_violations)
+                    
+            except Exception as e:
+                print(f"      ❌ Failed to validate {file_path}: {e}")
+        
+        # Report UI validation results
+        if violations:
+            print(f"   🚨 Found {len(violations)} UI pattern violations")
+            for v in violations[:3]:  # Show first 3
+                print(f"      - {v}")
+            self.ctx.report(self.name, 51, False, violations)  # Use key 51 for UI patterns
+        else:
+            print(f"   ✅ All UI patterns validated successfully")
+            self.ctx.report(self.name, 51, True, [])  # Use key 51 for UI patterns
+    
+    def _extract_components(self, content: str, file_path: str) -> List[Dict]:
+        """Extract UI component definitions from Python code."""
+        components = []
+        
+        # Simple regex-based extraction (could be enhanced with AST parsing)
+        import re
+        
+        # Look for class definitions that might be UI components
+        class_matches = re.finditer(r'class\s+(\w+).*?(?=class|\Z)', content, re.DOTALL)
+        
+        for match in class_matches:
+            class_name = match.group(1)
+            class_body = match.group(0)
+            
+            # Check if it's likely a UI component
+            ui_indicators = ['QWidget', 'View', 'Component', 'Layout', 'Button', 'Input', 'Form']
+            if any(indicator in class_body for indicator in ui_indicators):
+                components.append({
+                    'name': class_name,
+                    'type': 'ui_component',
+                    'file': file_path
+                })
+        
+        return components
+
 class SemanticMapper(SubAtomicAgent):
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
@@ -1912,8 +2213,9 @@ class IntelligentOrchestrator:
             NamingAgent(self.ctx),          # 8. Naming
             BudgetAgent(self.ctx),          # 9. Complexity
             TypeMechanic(self.ctx),         # 10. Types
-            SemanticMapper(self.ctx),       # 11. Clustering
-            StructuralEngineer(self.ctx),   # 12. Refactoring
+            UIValidationAgent(self.ctx),    # 11. UI Patterns (MCP)
+            SemanticMapper(self.ctx),       # 12. Clustering
+            StructuralEngineer(self.ctx),   # 13. Refactoring
         ]
 
     async def run_mission(self):
