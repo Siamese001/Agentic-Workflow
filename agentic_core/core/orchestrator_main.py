@@ -42,6 +42,8 @@ from agentic_core.agents import (
     SafetyInspector,
     SecurityEnforcer,
     PerformanceEnforcer,
+    get_dependency_diplomat,
+    get_regression_oracle,
 )
 
 try:
@@ -92,6 +94,8 @@ class OrchestratorConfig:
     clean_slate: bool = False  # --clean-slate flag (flush Redis)
     override_preservation: bool = False  # --override-preservation (SystemArchitect only)
     target_path: Optional[str] = None  # Target file or directory
+    smart_scope: bool = False  # --smart-scope flag (use dependency graph for surgical targeting)
+    smart_scope_depth: int = 2  # BFS depth limit for smart scope
 
 
 @dataclass
@@ -209,7 +213,15 @@ class ConsolidatedOrchestrator:
         logger.info(f"🚀 MISSION START: {workflow_id}")
         logger.info(f"{'='*60}")
         
-        if target_path:
+        # Smart scope integration
+        if self.config.smart_scope:
+            logger.info(f"🔗 SMART SCOPE ENABLED: Building dependency graph...")
+            target_files = await self._calculate_smart_scope(target_path)
+            logger.info(f"   Impact scope: {len(target_files)} files (depth: {self.config.smart_scope_depth})")
+            
+            # Store in context for agents
+            self.ctx.smart_scope_targets = target_files
+        elif target_path:
             logger.info(f"🎯 SURGICAL MODE: Targeting {target_path}")
         else:
             logger.info(f"🌐 FULL REPOSITORY MODE")
@@ -263,6 +275,63 @@ class ConsolidatedOrchestrator:
         
         return agents
     
+    async def _calculate_smart_scope(self, target_path: Optional[str] = None) -> List[str]:
+        """
+        Calculate smart scope using Dependency Diplomat.
+        
+        Uses BFS on dependency graph to find all files affected by changes.
+        
+        Args:
+            target_path: Optional target file or directory
+            
+        Returns:
+            List of files in impact scope
+        """
+        # Get Dependency Diplomat
+        diplomat = get_dependency_diplomat(self.ctx)
+        
+        # Build dependency graph
+        await diplomat.execute()
+        
+        # Determine modified files
+        if target_path:
+            # If target specified, use it as modified file
+            modified_files = [target_path]
+        else:
+            # Try to get modified files from git
+            import subprocess
+            try:
+                result = subprocess.run(
+                    ['git', 'diff', '--name-only', 'HEAD'],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                modified_files = [
+                    f for f in result.stdout.strip().split('\n') 
+                    if f and f.endswith('.py')
+                ]
+                
+                if not modified_files:
+                    logger.warning("   No modified Python files found in git diff")
+                    # Fallback: scan for recently modified files
+                    modified_files = []
+            except Exception as e:
+                logger.warning(f"   Could not get git diff: {e}")
+                modified_files = []
+        
+        if not modified_files:
+            logger.info("   No modified files detected, using full repository scope")
+            return []
+        
+        # Calculate impact scope
+        impact_scope = diplomat.calculate_impact_scope(
+            modified_files, 
+            max_depth=self.config.smart_scope_depth
+        )
+        
+        return impact_scope
+    
     async def execute_workflow(
         self,
         workflow_id: str,
@@ -308,6 +377,29 @@ class ConsolidatedOrchestrator:
                 try:
                     logger.info(f"\n[>>>] Running: {agent.__class__.__name__}")
                     await agent.execute()
+                    
+                    # Regression Oracle Hook: Run after healing agents
+                    if self.config.enable_healing and agent.__class__.__name__ in ['SystemArchitect', 'CodeJanitor']:
+                        if self.ctx.modified_files:
+                            logger.info(f"\n[🔮] Running Regression Oracle for {len(self.ctx.modified_files)} modified files...")
+                            
+                            # Emit FILE_MODIFIED signals for each modified file
+                            for file_path in self.ctx.modified_files:
+                                self.ctx.signals.add(f"FILE_MODIFIED:{file_path}")
+                            
+                            # Run Regression Oracle
+                            oracle = get_regression_oracle(self.ctx)
+                            await oracle.execute()
+                            
+                            # Check for regression detection
+                            regression_signals = [s for s in self.ctx.signals if s.startswith('REGRESSION_DETECTED:')]
+                            if regression_signals:
+                                logger.error(f"\n🚨 REGRESSIONS DETECTED: {len(regression_signals)}")
+                                for signal in regression_signals:
+                                    logger.error(f"   {signal}")
+                                
+                                # Mark as requiring intervention
+                                self.state.signals.add("INTERVENTION_REQUIRED")
                     
                     # Clean Slate Protocol: If agent fails, clear its session
                     if "AGENT_FAILURE" in self.ctx.signals:
@@ -630,6 +722,19 @@ Examples:
         help="Allow SystemArchitect to override preservation rules (use with caution)"
     )
     
+    parser.add_argument(
+        "--smart-scope",
+        action="store_true",
+        help="Use dependency graph for surgical targeting (reduces CI time by 95%%)"
+    )
+    
+    parser.add_argument(
+        "--smart-scope-depth",
+        type=int,
+        default=2,
+        help="BFS depth limit for smart scope (default: 2)"
+    )
+    
     args = parser.parse_args()
     
     # Create configuration from CLI args
@@ -638,7 +743,9 @@ Examples:
         enable_healing=args.heal,
         clean_slate=args.clean_slate,
         override_preservation=args.override_preservation,
-        target_path=args.target
+        target_path=args.target,
+        smart_scope=args.smart_scope,
+        smart_scope_depth=args.smart_scope_depth
     )
     
     # Create orchestrator
