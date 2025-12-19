@@ -1,14 +1,8 @@
-"""
-Agent Logic Module - Canon Validator System
-
-Facade module that wraps the existing SemanticGatekeeper implementation
-to match the master prompt specifications.
-"""
-
 import ast
 import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+import json # Added for handling JSON-encoded AST error strings
 
 from db_manager import HybridDatabaseManager
 
@@ -54,6 +48,48 @@ class CanonValidator:
 
         logger.info("CanonValidator initialized with hybrid cache")
 
+    def _generate_entry(self, code: str, metadata: Optional[Dict[str, Any]] = None) -> CanonEntry:
+        """
+        Generates a CanonEntry from code and metadata.
+        This helper method encapsulates the logic for creating a CanonEntry,
+        including AST parsing and embedding generation.
+        """
+        ast_representation: str
+        try:
+            tree = ast.parse(code)
+            ast_representation = ast.dump(tree)
+        except SyntaxError as e:
+            # Store syntax error as a JSON string
+            ast_representation = json.dumps({"error": str(e)})
+            logger.error(f"Syntax error parsing code for CanonEntry: {e}")
+        except Exception as e:
+            # Store other AST parsing errors as a JSON string
+            ast_representation = json.dumps({"error": f"Unexpected AST parsing error: {e}"})
+            logger.error(f"Unexpected error parsing code for CanonEntry: {e}")
+
+        embedding: List[float]
+        try:
+            embedding = self.gatekeeper.embed_text(code)
+        except Exception as e:
+            embedding = []  # Fallback
+            logger.error(f"Error generating embedding for CanonEntry: {e}")
+
+        entry_metadata = metadata or {}
+        entry_metadata.update({
+            "embedding_generated_at": datetime.now(timezone.utc).isoformat()
+        })
+
+        # Generate a unique ID for the entry
+        entry_id = f"entry_{hash(code)}_{datetime.now().timestamp()}"
+
+        return CanonEntry(
+            id=entry_id,
+            code_snippet=code,
+            embedding=embedding,
+            ast_structure=ast_representation,
+            metadata=entry_metadata
+        )
+
     def check_and_learn(self, new_code: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Check code against the Canon and learn from results.
@@ -80,7 +116,7 @@ class CanonValidator:
             "validation_timestamp": datetime.now(timezone.utc).isoformat()
         })
 
-        new_entry = generate_entry(new_code, metadata)
+        new_entry = self._generate_entry(new_code, metadata) # Modified to use internal helper
 
         # Query L1 (Redis) - fast working memory
         l1_results, l2_results = self.db_manager.search_patterns(
@@ -158,29 +194,45 @@ class CanonValidator:
         Returns:
             Validation result with match details
         """
-        # Extract AST structures
-        new_ast = new_entry.ast_structure
-        existing_ast = existing_entry.ast_structure
+        # Extract AST structures (which are string representations)
+        new_ast_str = new_entry.ast_structure
+        existing_ast_str = existing_entry.ast_structure
 
-        # Check for errors
-        if "error" in new_ast:
+        # Check for errors by attempting to parse JSON error strings
+        new_ast_error: Optional[str] = None
+        if new_ast_str.startswith('{"error":'):
+            try:
+                error_dict = json.loads(new_ast_str)
+                new_ast_error = error_dict.get("error")
+            except json.JSONDecodeError:
+                pass # Malformed error string, treat as no error
+
+        existing_ast_error: Optional[str] = None
+        if existing_ast_str.startswith('{"error":'):
+            try:
+                error_dict = json.loads(existing_ast_str)
+                existing_ast_error = error_dict.get("error")
+            except json.JSONDecodeError:
+                pass # Malformed error string, treat as no error
+
+        if new_ast_error:
             return {
                 "is_match": False,
                 "is_valid": False,
                 "confidence": 0.0,
-                "recommendation": f"Syntax error in new code: {new_ast['error']}"
+                "recommendation": f"Syntax error in new code: {new_ast_error}"
             }
 
-        if "error" in existing_ast:
+        if existing_ast_error:
             return {
                 "is_match": False,
                 "is_valid": False,
                 "confidence": 0.0,
-                "recommendation": "Reference pattern has syntax error"
+                "recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
             }
 
         # Compare AST patterns
-        similarity = self._calculate_ast_similarity(new_ast, existing_ast)
+        similarity = self._calculate_ast_similarity(new_ast_str, existing_ast_str)
 
         # Check if existing pattern is successful
         success_rate = existing_entry.get_success_rate()
@@ -195,7 +247,14 @@ class CanonValidator:
             "recommendation": self._generate_recommendation(similarity, success_rate)
         }
 
-    def _calculate_ast_similarity(self, ast1: Dict[str, Any], ast2: Dict[str, Any]) -> float:
+    def _get_ast_node_types_from_tree(self, tree: ast.AST) -> set[str]:
+        """
+        Helper method to extract unique node types from an AST tree.
+        Reduces nesting depth in _calculate_ast_similarity.
+        """
+        return set(type(node).__name__ for node in ast.walk(tree))
+
+    def _calculate_ast_similarity(self, ast1_str: str, ast2_str: str) -> float:
         """
         Calculate similarity between two AST structures.
 
@@ -203,34 +262,33 @@ class CanonValidator:
         In production, this would use more sophisticated algorithms.
 
         Args:
-            ast1: First AST structure
-            ast2: Second AST structure
+            ast1_str: First AST structure as a string
+            ast2_str: Second AST structure as a string
 
         Returns:
             Similarity score between 0 and 1
         """
         try:
             # Parse AST strings to compare structure
-            tree1 = ast.parse(ast1)
-            tree2 = ast.parse(ast2)
+            tree1 = ast.parse(ast1_str)
+            tree2 = ast.parse(ast2_str)
 
-            # Compare node types and structure
-            nodes1 = list(ast.walk(tree1))
-            nodes2 = list(ast.walk(tree2))
+            # Get unique node types using the helper method
+            types1 = self._get_ast_node_types_from_tree(tree1)
+            types2 = self._get_ast_node_types_from_tree(tree2)
 
             # Calculate Jaccard similarity of node types
-            types1 = set(type(node).__name__ for node in nodes1)
-            types2 = set(type(node).__name__ for node in nodes2)
-
             intersection = len(types1.intersection(types2))
             union = len(types1.union(types2))
 
             return intersection / union if union > 0 else 0.0
 
+        except SyntaxError as e:
+            logger.error(f"Syntax error encountered while parsing AST strings for similarity: {e}")
+            return 0.0
         except Exception as e:
-            logger.error(f"AST similarity calculation failure: {e}")
-
-        return 0.0
+            logger.error(f"Unexpected error during AST similarity calculation: {e}")
+            return 0.0
 
     def _generate_recommendation(self, similarity: float, success_rate: float) -> str:
         """Generate recommendation based on similarity and success rate."""
@@ -311,7 +369,7 @@ class CanonValidator:
             List of similar patterns with metadata
         """
         # Generate entry for search
-        entry = generate_entry(code)
+        entry = self._generate_entry(code) # Modified to use internal helper
 
         # Search both caches
         l1_results, l2_results = self.db_manager.search_patterns(

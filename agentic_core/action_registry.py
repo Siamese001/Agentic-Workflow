@@ -70,19 +70,26 @@ class ActionRegistry:
             return f"Search Error: {str(e)}"
 
     # --- RESUME ENGINE TOOLS ---
+    def _read_pdf_file(self, file_path: str) -> str:
+        """Helper to read content from a PDF file."""
+        if not PyPDF2:
+            return "Error: PyPDF2 module not installed."
+        with open(file_path, 'rb') as f:
+            reader = PyPDF2.PdfReader(f)
+            return "\n".join([page.extract_text() for page in reader.pages])
+
+    def _read_text_file(self, file_path: str) -> str:
+        """Helper to read content from a text-based file."""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+
     def read_file(self, file_path: str) -> str:
-        # TODO: Fix relative import
-        #         """Reads text from .txt, .md, or .pdf files."""
+        """Reads text from .txt, .md, or .pdf files."""
         try:
             if file_path.endswith('.pdf'):
-                if not PyPDF2:
-                    return "Error: PyPDF2 module not installed."
-                with open(file_path, 'rb') as f:
-                    reader = PyPDF2.PdfReader(f)
-                    return "\n".join([page.extract_text() for page in reader.pages])
+                return self._read_pdf_file(file_path)
             else:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    return f.read()
+                return self._read_text_file(file_path)
         except Exception as e:
             return f"Read Error: {e}"
 
@@ -134,21 +141,30 @@ class ActionRegistry:
         return value
 
     # --- TIME MCP TOOLS (L4 Temporal Awareness) ---
+    def _get_current_time_fallback(self, timezone: str) -> str:
+        """Helper to get current time using datetime/pytz if mcp_time_client is unavailable."""
+        try:
+            from datetime import datetime
+            import pytz
+        except ImportError:
+            return "Error: pytz module not installed for timezone operations."
+        except Exception as e:
+            return f"Error during fallback import: {e}"
+
+        try:
+            tz = pytz.timezone(timezone)
+            now = datetime.now(tz)
+            return now.isoformat()
+        except Exception as e:
+            return f"Error getting time with pytz: {e}"
+
     def get_current_time(self, timezone: str = "UTC") -> str:
         """Gets the current date, time, and timezone in ISO 8601 format."""
         try:
             from mcp_time_client import get_current_time as mcp_get_time
             return mcp_get_time(timezone)
         except ImportError:
-            from datetime import datetime
-
-            import pytz
-            try:
-                tz = pytz.timezone(timezone)
-                now = datetime.now(tz)
-                return now.isoformat()
-            except Exception as e:
-                return f"Error getting time: {e}"
+            return self._get_current_time_fallback(timezone)
 
     def convert_time(self, source_timezone: str, time: str, target_timezone: str) -> str:
         """Converts a time string between two specified IANA timezones."""
@@ -244,4 +260,3 @@ class ActionRegistry:
             "commit": self.commit,
             "status": self.status,
         }
-
