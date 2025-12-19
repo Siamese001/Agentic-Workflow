@@ -10,10 +10,10 @@ import collections
 def analyze_patterns(keys):
     """
     Identifies recurring failure keys and calculates frequency distributions.
-    
+
     Args:
         keys (list): List of integers representing failure occurrences.
-        
+
     Returns:
         dict: Analysis results containing total, unique, and recurring patterns.
     """
@@ -22,7 +22,7 @@ def analyze_patterns(keys):
 
     count_map = collections.Counter(keys)
     recurring = {k: v for k, v in count_map.items() if v > 1}
-    
+
     # Sort by frequency descending
     sorted_patterns = sorted(recurring.items(), key=lambda x: x[1], reverse=True)
 
@@ -50,7 +50,7 @@ def display_results(results):
     print(f"Total Events: {s['total_failures']}")
     print(f"Unique Sigs:  {s['unique_signatures']}")
     print(f"Recurrences:  {s['recurring_count']}")
-    
+
     print("\nTop Patterns (ID: Count):")
     for key, freq in results["top_recurring"]:
         print(f" - {key}: {freq}")
@@ -58,9 +58,9 @@ def display_results(results):
 if __name__ == "__main__":
     # Contextual data provided
     failure_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     # Adding synthetic recurrences for demonstration
     sample_data = failure_keys + [50, 19, 50, 7]
-    
+
     report = analyze_patterns(sample_data)
     display_results(report)

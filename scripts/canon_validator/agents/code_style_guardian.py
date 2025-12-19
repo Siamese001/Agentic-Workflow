@@ -64,7 +64,7 @@ class CodeStyleGuardian(SubAtomicAgent):
 
         naming_violations = await self._check_naming()
         self.ctx.report(self.name, 47, len(naming_violations) == 0, naming_violations)
-        
+
         # Signal AST_VALID after cleanup
         self.ctx.signal_ast_valid()
 
@@ -170,9 +170,9 @@ class CodeStyleGuardian(SubAtomicAgent):
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     lines = f.readlines()
-                
+
                 new_lines = [line.rstrip() + '\n' if line.endswith('\n') else line.rstrip() for line in lines]
-                
+
                 if lines != new_lines:
                     with open(file_path, 'w', encoding='utf-8') as f:
                         f.writelines(new_lines)

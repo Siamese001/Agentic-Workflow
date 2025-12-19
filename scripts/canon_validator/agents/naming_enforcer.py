@@ -146,13 +146,13 @@ class NamingEnforcer(SubAtomicAgent):
         for entry in naming_log:
             file_path = entry['file']
             symbols = entry['symbols']
-            
+
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                
+
                 modified = False
-                
+
                 # Fix abbreviations
                 for abbrev_info in symbols.get('abbreviations', []):
                     old_name = abbrev_info['name']
@@ -165,7 +165,7 @@ class NamingEnforcer(SubAtomicAgent):
                             content = re.sub(pattern, new_name, content)
                             modified = True
                             print(f"      Renamed: {old_name} -> {new_name}")
-                
+
                 # Fix camelCase to snake_case for functions/variables
                 for name in symbols.get('functions', []) + symbols.get('variables', []):
                     if self._is_camel_case(name):
@@ -176,11 +176,11 @@ class NamingEnforcer(SubAtomicAgent):
                             content = re.sub(pattern, snake_name, content)
                             modified = True
                             print(f"      Converted: {name} -> {snake_name}")
-                
+
                 if modified:
                     if self.ctx.write_compliant_file(file_path, content):
                         print(f"   ✅ Fixed naming in: {file_path}")
-                        
+
             except Exception as e:
                 print(f"   ❌ Failed to fix naming in {file_path}: {e}")
 

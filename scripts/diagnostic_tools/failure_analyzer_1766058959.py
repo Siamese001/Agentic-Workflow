@@ -22,7 +22,7 @@ class FailureAnalyzer:
 
         counts = collections.Counter(self.keys)
         total = len(self.keys)
-        
+
         # Calculate stats
         mean_val = statistics.mean(self.keys)
         median_val = statistics.median(self.keys)
@@ -49,7 +49,7 @@ class FailureAnalyzer:
 def main():
     # Context-provided keys
     failure_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     analyzer = FailureAnalyzer(failure_keys)
     print(analyzer.generate_report())
 

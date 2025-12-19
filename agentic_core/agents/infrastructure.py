@@ -30,14 +30,14 @@ class Historian(SubAtomicAgent):
         self.log_file = os.getenv("HISTORIAN_LOG_PATH", f"validation_log_{datetime.date.today()}.md")
 
     async def execute(self):
-        # The Historian is usually called directly via record_event, 
+        # The Historian is usually called directly via record_event,
         # but can run as an agent to flush/summary logs.
         pass
 
     def record_event(self, agent: str, status: str, details: str):
         timestamp = datetime.datetime.now().strftime("%H:%M:%S")
         entry = f"| {timestamp} | {agent:<20} | {status:<10} | {details} |\n"
-        
+
         # Atomic append - Note: Consider migrating to async file I/O for high-scale environments
         try:
             with open(self.log_file, "a", encoding="utf-8") as f:
@@ -114,7 +114,7 @@ if WATCHDOG_AVAILABLE:
             self.cooldown = now
 
             print(f"\n   👀 WATCHMAN: Detected change in {event.src_path}")
-            
+
             # Thread-safe signaling for the async context
             self.loop.call_soon_threadsafe(self.ctx.modified_files.add, event.src_path)
 else:
@@ -123,6 +123,6 @@ else:
         def __init__(self, context, loop):
             self.ctx = context
             self.loop = loop
-        
+
         def on_modified(self, event):
             pass

@@ -21,10 +21,10 @@ class FailureAnalyzer:
 
         total_count = len(self.keys)
         counts = collections.Counter(self.keys)
-        
+
         # Sort patterns by frequency (descending)
         patterns = sorted(counts.items(), key=lambda x: x[1], reverse=True)
-        
+
         return {
             "metrics": {
                 "total_events": total_count,
@@ -49,7 +49,7 @@ class FailureAnalyzer:
         print(f"\nTop Recurring Signatures:")
         print(f"{'-'*35}")
         print(f"{'Key':<10} | {'Count':<8} | {'Impact':<8}")
-        
+
         for key, count in results["patterns"]:
             impact = (count / metrics['total_events']) * 100
             print(f"{str(key):<10} | {count:<8} | {impact:>6.1f}%")
@@ -58,9 +58,9 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Contextual keys provided for analysis
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     # Simulated historical stream for pattern detection
     historical_stream = context_keys + [50, 50, 22, 8, 50, 19, 50, 22, 7]
-    
+
     analyzer = FailureAnalyzer(historical_stream)
     analyzer.report()

@@ -48,7 +48,7 @@ class DependencyGraph:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                
+
                 # Extract Imports and Definitions
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
@@ -74,11 +74,11 @@ class DependencyGraph:
         impacted = set()
         # Heuristic: map file path back to module name (e.g. apps/utils.py -> apps.utils)
         module_name = file_path.replace("/", ".").replace("\\", ".").replace(".py", "")
-        
+
         # Direct imports
         if module_name in self.reverse_graph:
             impacted.update(self.reverse_graph[module_name])
-            
+
         return list(impacted)
 
 class BudgetManager:
@@ -94,7 +94,7 @@ class BudgetManager:
         out_t = len(response) / 4
         self.input_tokens += in_t
         self.output_tokens += out_t
-        
+
         # Calculate Cost ($0.50 / 1M input, $1.50 / 1M output)
         cost = (in_t / 1_000_000 * 0.50) + (out_t / 1_000_000 * 1.50)
         self.spent += cost
@@ -104,7 +104,7 @@ class BudgetManager:
             print(f"   💸 BUDGET EXCEEDED (${self.spent:.4f} / ${self.limit}). Halting Intelligence.")
             return False
         return True
-    
+
     def get_status(self) -> str:
         return f"${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
 
@@ -116,42 +116,42 @@ class ValidationContext:
     instructions: List[str] = field(default_factory=list)
     modified_files: Set[str] = field(default_factory=set)
     python_files: List[str] = field(default_factory=list)
-    
+
     # Memory persistence
     memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
     file_hashes: Dict[str, str] = field(default_factory=dict)
     skip_files: Set[str] = field(default_factory=set)
     flapping_files: Set[str] = field(default_factory=set)
-    
+
     # Tri-Brain Infrastructure
     model_id: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.5-flash"))
     _client: Any = field(default=None, init=False)
     intelligence_enabled: bool = field(default=False, init=False)
-    
+
     # Hot Brain (Redis)
     redis_client: Any = field(default=None, init=False)
     redis_available: bool = field(default=False, init=False)
-    
+
     # Deep Brain (Pinecone)
     pinecone_index: Any = field(default=None, init=False)
     pinecone_available: bool = field(default=False, init=False)
-    
+
     # Local fallbacks
     _local_cache: Dict[str, Any] = field(default_factory=dict)
-    
+
     # Components
     code_graph: DependencyGraph = field(default_factory=DependencyGraph)
     budget: BudgetManager = field(default_factory=lambda: BudgetManager(limit_usd=2.0))
-    
+
     # L5 Streamer
     stream_queue: asyncio.Queue = field(default_factory=asyncio.Queue)
     _current_agent: str = "System"
     _streamer_initialized: bool = False
-    
+
     # Additional fields from monolith
     refactor_plans: Dict[str, Any] = field(default_factory=dict)
     _local_embeddings: List[Dict] = field(default_factory=list)
-    
+
     # L5+ Positive Instructional Context (TRUSTED - never from user input)
     POSITIVE_INSTRUCTIONAL_CONTEXT: str = field(default_factory=lambda: """
 You are an elite subatomic governance agent in a sovereign self-healing codebase.
@@ -171,7 +171,7 @@ Preferred patterns (prioritize these):
 Always output in the exact format requested. Never add commentary.
 Think step-by-step before responding.
 """)
-    
+
     # L5+ Few-Shot Prompting: Trusted Positive Instructional Examples
     FEW_SHOT_GLOBAL_REFACTOR: str = field(default_factory=lambda: """
 FEW-SHOT REFACTORING PATTERNS (Follow exactly for subatomic compliance):
@@ -184,7 +184,7 @@ def handle_order(order):
 GOOD (compliant):
 # Split into:
 # apps_rg/orders/validate.py
-# apps_rg/orders/charge.py  
+# apps_rg/orders/charge.py
 # apps_rg/orders/notify.py
 # Each file <180 lines, single responsibility
 
@@ -238,7 +238,7 @@ def test_add_associative():
     for x, y, z in strategies(integers(), integers(), integers()):
         assert add(add(x, y), z) == add(x, add(y, z))
 
-@property  
+@property
 def test_add_identity():
     for x in strategies(integers()):
         assert add(x, 0) == x
@@ -380,10 +380,10 @@ EXAMPLE 1: Basic Test Structure
 def test_function_name():
     # Arrange
     input_data = {"key": "value"}
-    
+
     # Act
     result = function_under_test(input_data)
-    
+
     # Assert
     assert result["status"] == "success"
 """)
@@ -410,7 +410,7 @@ FEW-SHOT SELF-REFLECTION (ReflectionAgent):
 FEW-SHOT GIT OPERATIONS (GitAgent — Follow exactly):
 
 BRANCH NAMING: fix/issue-description or feature/feature-name
-COMMIT MESSAGE: 
+COMMIT MESSAGE:
 fix: brief description
 
 Detailed explanation of what changed and why.
@@ -434,12 +434,12 @@ RESOLUTION: Extract shared interface or fix contract
         print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
         self.python_files = get_python_files()
         self._load_memory()
-        
+
         # Initialize Clients (Gemini, Redis, Pinecone)
         self._init_intelligence()
         self._init_redis()
         self._init_pinecone()
-        
+
     def _init_intelligence(self):
         api_key = os.environ.get("GOOGLE_API_KEY")
         if not api_key:
@@ -490,7 +490,7 @@ RESOLUTION: Extract shared interface or fix contract
         return self._client
 
     # --- Core Methods ---
-    
+
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
         status = "PASS" if passed else "FAIL"
@@ -513,16 +513,16 @@ RESOLUTION: Extract shared interface or fix contract
         if saved_hash and saved_hash == current_hash:
             return True # Simplified skip logic
         return False
-    
+
     def get_file_content(self, file_path: str) -> str:
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception:
             return ""
-            
+
     # --- Intelligence Bridge ---
-    
+
     @rate_limited_retry()
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, *, max_attempts: int = 4, diff_mode: bool = False, min_confidence: float = 0.7) -> str:
         """Centralized Gemini mutation request."""
@@ -530,7 +530,7 @@ RESOLUTION: Extract shared interface or fix contract
         if not self.budget.check_budget(): return code
 
         current_code = code or ""
-        
+
         # PRE-FLIGHT: Deterministic clean
         if file_path and os.path.exists(file_path):
              pass # In real v2, we call formatters here
@@ -538,16 +538,16 @@ RESOLUTION: Extract shared interface or fix contract
         for attempt in range(1, max_attempts + 1):
             try:
                 prompt = f"Agent: {agent_name}\nTask: {task}\nContext:\n{current_code[:4000]}"
-                
+
                 response = await asyncio.to_thread(
                     self._client.models.generate_content,
                     model=self.model_id,
                     contents=[prompt]
                 )
-                
+
                 self.budget.track(prompt, response.text)
                 final_content = clean_llm_code(response.text)
-                
+
                 # Success
                 return final_content
 

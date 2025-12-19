@@ -22,7 +22,7 @@ class FailureAnalyzer:
         counts = collections.Counter(self.keys)
         total = len(self.keys)
         unique = len(counts)
-        
+
         # Sort by frequency descending
         sorted_patterns = counts.most_common()
 
@@ -34,7 +34,7 @@ class FailureAnalyzer:
                 "unique_keys": unique
             },
             "frequency_distribution": [
-                {"key": k, "count": v, "percentage": f"{(v/total)*100:.2f}%"} 
+                {"key": k, "count": v, "percentage": f"{(v/total)*100:.2f}%"}
                 for k, v in sorted_patterns
             ],
             "recommendation": "Address high-frequency keys first to optimize healing."
@@ -52,10 +52,10 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Context provided by sovereign governance layer
     context = {
-        'name': 'failure_analyzer', 
-        'purpose': 'Analyze patterns in recurring failures', 
+        'name': 'failure_analyzer',
+        'purpose': 'Analyze patterns in recurring failures',
         'keys': [50, 19, 7, 8, 22, 2, 3, 4, 5, 60, 50, 7, 50, 22]
     }
-    
+
     analyzer = FailureAnalyzer(context)
     analyzer.display()

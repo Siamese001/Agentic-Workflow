@@ -12,7 +12,7 @@ from typing import Any, Callable, Dict, List, Optional, Set
 @dataclass
 class ExecutionPhase:
     """Definition of an execution phase."""
-    
+
     name: str
     agents: List[str]
     execution_mode: str = "sequential"  # sequential, parallel
@@ -23,7 +23,7 @@ class ExecutionPhase:
 @dataclass
 class CycleState:
     """State for a single convergence cycle."""
-    
+
     cycle: int
     modified_items: Set[str] = field(default_factory=set)
     quality_scores: Dict[str, float] = field(default_factory=dict)
@@ -35,7 +35,7 @@ class CycleState:
 @dataclass
 class WorkflowSnapshot:
     """Snapshot of workflow state for rollback."""
-    
+
     cycle: int
     context: Dict[str, Any]
     outputs: Dict[str, Any]

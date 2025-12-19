@@ -39,7 +39,7 @@ class DependencyGraph:
         for file_path in files:
             self.graph[file_path] = {"imports": [], "classes": []}
             try:
-                # Synchronous file read is replaced in high-performance contexts, 
+                # Synchronous file read is replaced in high-performance contexts,
                 # but standard open remains safe for local configuration analysis.
                 with open(file_path, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
@@ -95,7 +95,7 @@ class BudgetManager:
             print(f"   💸 BUDGET EXCEEDED (${self.spent:.4f}). Halting.")
             return False
         return True
-    
+
     def get_status(self) -> str:
         """Returns a formatted budget status string."""
         return f"${self.spent:.4f} / ${self.limit} ({self.input_tokens:.0f} in, {self.output_tokens:.0f} out)"
@@ -112,25 +112,25 @@ class ValidationContext:
     graph: DependencyGraph = field(default_factory=DependencyGraph)
     code_graph: DependencyGraph = field(default_factory=DependencyGraph)
     budget: BudgetManager = field(default_factory=BudgetManager)
-    
+
     # Memory
     memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
     file_hashes: Dict[str, str] = field(default_factory=dict)
     skip_files: Set[str] = field(default_factory=set)
     flapping_files: Set[str] = field(default_factory=set)
     successful_traces: List[str] = field(default_factory=list)
-    
+
     # Infrastructure
     model_id: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
     _client: Any = field(default=None, init=False)
     intelligence_enabled: bool = field(default=False, init=False)
-    
+
     # File backups for rollback
     file_backups: Dict[str, str] = field(default_factory=dict)
-    
+
     # WebSocket clients for L5 streaming
     websocket_clients: Set[Any] = field(default_factory=set)
-    
+
     # Prompts
     FEW_SHOT_HYGIENE: str = FEW_SHOT_HYGIENE
     FEW_SHOT_STYLE: str = FEW_SHOT_STYLE
@@ -192,7 +192,7 @@ class ValidationContext:
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
-        
+
         try:
             prompt = f"Agent: {agent_name}\nTask: {task}\nContext:\n{code[:4000]}"
             response = await asyncio.to_thread(

@@ -207,19 +207,19 @@ async def mock_personalization_enhancer(context: Dict[str, Any]) -> Dict[str, An
 
 class VerificationResults:
     """Track verification results."""
-    
+
     def __init__(self, engine_name: str):
         self.engine_name = engine_name
         self.checks = {}
-    
+
     def record(self, check_name: str, passed: bool, details: str = ""):
         self.checks[check_name] = {"passed": passed, "details": details}
         status = "✅ PASS" if passed else "❌ FAIL"
         logger.info(f"  [{self.engine_name}] {check_name}: {status} {details}")
-    
+
     def all_passed(self) -> bool:
         return all(c["passed"] for c in self.checks.values())
-    
+
     def summary(self) -> str:
         lines = [f"\n{'='*60}", f"Verification Results: {self.engine_name}", "="*60]
         for name, result in self.checks.items():
@@ -236,24 +236,24 @@ class VerificationResults:
 
 async def verify_resume_engine_with_failures() -> VerificationResults:
     """Verify Resume Engine signal emission on failures."""
-    
+
     logger.info("\n" + "="*60)
     logger.info("VERIFYING RESUME ENGINE WITH FORCED FAILURES")
     logger.info("="*60)
-    
+
     results = VerificationResults("Resume Engine")
-    
+
     try:
         from apps_rg.L3_orchestration.l5_autonomous_orchestrator import (
             create_l5_orchestrator,
         )
         from apps_shared.signal_bus import reset_signal_bus
-        
+
         results.record("Import", True, "Components imported successfully")
-        
+
         # Reset signal bus for clean state
         signal_bus = reset_signal_bus()
-        
+
         # Create orchestrator
         orchestrator = create_l5_orchestrator(
             workflow_id="signal_failure_resume_test",
@@ -261,9 +261,9 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             quality_threshold=0.7,
             enable_intervention=False,
         )
-        
+
         results.record("Instantiation", True, "Orchestrator created")
-        
+
         # Define mock agents WITH FAILURES
         mock_agents = {
             "input_validator": mock_input_validator_FAIL,  # WILL FAIL
@@ -279,12 +279,12 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             "tone_adjuster": mock_tone_adjuster,
             "length_optimizer": mock_length_optimizer,
         }
-        
+
         initial_context = {
             "resume_data": {"name": "Test User"},  # Missing 'experience' to trigger failure
             "job_description": "Software Engineer at TestCorp",
         }
-        
+
         # Check initial state
         initial_summary = signal_bus.get_summary()
         logger.info(f"\n[SIGNAL STATE] Before execution: {initial_summary}")
@@ -293,12 +293,12 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             initial_summary["signal_count"] == 0,
             f"Signals: {initial_summary['signal_count']}"
         )
-        
+
         # Execute with convergence
         logger.info("\n" + "-"*40)
         logger.info("Executing convergence loop with failures...")
         logger.info("-"*40)
-        
+
         try:
             final_results = await orchestrator.execute_with_convergence(
                 initial_context=initial_context,
@@ -313,7 +313,7 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             import traceback
             traceback.print_exc()
             return results
-        
+
         # Check signal state after execution
         final_summary = signal_bus.get_summary()
         logger.info(f"\n[SIGNAL STATE] After execution:")
@@ -321,7 +321,7 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
         logger.info(f"  Signal count: {final_summary['signal_count']}")
         logger.info(f"  History count: {final_summary['history_count']}")
         logger.info(f"  Recent signals: {final_summary['recent_signals']}")
-        
+
         # Check 1: VALIDATION_FAILURE was emitted
         validation_failure_emitted = any(
             s.get("type") == "VALIDATION_FAILURE"
@@ -332,7 +332,7 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             validation_failure_emitted or final_summary["history_count"] > 0,
             f"History: {final_summary['history_count']}, Recent: {[s.get('type') for s in final_summary['recent_signals']]}"
         )
-        
+
         # Check 2: Signals appear in history
         signals_in_history = final_summary["history_count"] > 0
         results.record(
@@ -340,7 +340,7 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             signals_in_history,
             f"History count: {final_summary['history_count']}"
         )
-        
+
         # Check 3: Reflection received signals
         reflection_summary = final_results.get("reflection_summary")
         results.record(
@@ -348,14 +348,14 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             True,  # If we got here, reflection ran
             f"Reflection summary available: {reflection_summary is not None}"
         )
-        
+
         # Check 4: No unawaited coroutines
         results.record(
             "No Async Errors",
             True,
             "No RuntimeWarning raised"
         )
-        
+
         # Check 5: Convergence behavior with failures
         converged = final_results.get("converged", False)
         reason = final_results.get("convergence_reason", "")
@@ -364,16 +364,16 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
             True,  # Any behavior is valid for this test
             f"converged={converged}, reason={reason}"
         )
-        
+
         logger.info(f"\nFinal: converged={converged}, reason={reason}")
-        
+
     except ImportError as e:
         results.record("Import", False, f"ImportError: {e}")
     except Exception as e:
         results.record("Unexpected Error", False, f"{type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-    
+
     return results
 
 
@@ -383,24 +383,24 @@ async def verify_resume_engine_with_failures() -> VerificationResults:
 
 async def verify_outreach_engine_with_failures() -> VerificationResults:
     """Verify Outreach Engine signal emission on failures."""
-    
+
     logger.info("\n" + "="*60)
     logger.info("VERIFYING OUTREACH ENGINE WITH FORCED FAILURES")
     logger.info("="*60)
-    
+
     results = VerificationResults("Outreach Engine")
-    
+
     try:
         from apps_lic.L3_orchestration.l5_autonomous_orchestrator import (
             create_l5_outreach_orchestrator,
         )
         from apps_shared.signal_bus import reset_signal_bus
-        
+
         results.record("Import", True, "Components imported successfully")
-        
+
         # Reset signal bus
         signal_bus = reset_signal_bus()
-        
+
         # Create orchestrator
         orchestrator = create_l5_outreach_orchestrator(
             campaign_id="signal_failure_outreach_test",
@@ -408,9 +408,9 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
             max_cycles=2,
             enable_intervention=False,
         )
-        
+
         results.record("Instantiation", True, "Orchestrator created")
-        
+
         # Define mock agents WITH FAILURES
         mock_agents = {
             "recipient_analyzer": mock_recipient_analyzer,
@@ -427,16 +427,16 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
             "tone_adjuster": mock_tone_adjuster,
             "personalization_enhancer": mock_personalization_enhancer,
         }
-        
+
         recipients = [
             {"id": "test_1", "name": "John Doe", "title": "Engineering Manager"},
         ]
-        
+
         campaign_context = {
             "campaign_name": "Failure Test Campaign",
             "product": "TestProduct",
         }
-        
+
         # Check initial state
         initial_summary = signal_bus.get_summary()
         logger.info(f"\n[SIGNAL STATE] Before execution: {initial_summary}")
@@ -445,12 +445,12 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
             initial_summary["signal_count"] == 0,
             f"Signals: {initial_summary['signal_count']}"
         )
-        
+
         # Execute campaign
         logger.info("\n" + "-"*40)
         logger.info("Executing outreach campaign with failures...")
         logger.info("-"*40)
-        
+
         try:
             final_results = await orchestrator.execute_outreach_campaign(
                 recipients=recipients,
@@ -466,7 +466,7 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
             import traceback
             traceback.print_exc()
             return results
-        
+
         # Check signal state after execution
         final_summary = signal_bus.get_summary()
         logger.info(f"\n[SIGNAL STATE] After execution:")
@@ -474,7 +474,7 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
         logger.info(f"  Signal count: {final_summary['signal_count']}")
         logger.info(f"  History count: {final_summary['history_count']}")
         logger.info(f"  Recent signals: {final_summary['recent_signals']}")
-        
+
         # Check 1: Signals were emitted (CRITICAL_FAIL from hard gate failure)
         signals_emitted = final_summary["history_count"] > 0
         results.record(
@@ -482,28 +482,28 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
             signals_emitted,
             f"History: {final_summary['history_count']}, Types: {[s.get('type') for s in final_summary['recent_signals']]}"
         )
-        
+
         # Check 2: Signals appear in history
         results.record(
             "Signals In History",
             signals_emitted,
             f"History count: {final_summary['history_count']}"
         )
-        
+
         # Check 3: Reflection available
         results.record(
             "Reflection Available",
             orchestrator.reflection_agent is not None,
             f"Reflection agent: {orchestrator.reflection_agent is not None}"
         )
-        
+
         # Check 4: No unawaited coroutines
         results.record(
             "No Async Errors",
             True,
             "No RuntimeWarning raised"
         )
-        
+
         # Check 5: Campaign results
         msg_count = final_results.get("messages_generated", 0)
         success_rate = final_results.get("success_rate", 0)
@@ -512,16 +512,16 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
             True,
             f"messages={msg_count}, success_rate={success_rate:.2f}"
         )
-        
+
         logger.info(f"\nFinal: messages={msg_count}, success_rate={success_rate:.2f}")
-        
+
     except ImportError as e:
         results.record("Import", False, f"ImportError: {e}")
     except Exception as e:
         results.record("Unexpected Error", False, f"{type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-    
+
     return results
 
 
@@ -531,19 +531,19 @@ async def verify_outreach_engine_with_failures() -> VerificationResults:
 
 async def verify_direct_signal_emission() -> VerificationResults:
     """Directly test signal emission without orchestrator."""
-    
+
     logger.info("\n" + "="*60)
     logger.info("DIRECT SIGNAL EMISSION TEST")
     logger.info("="*60)
-    
+
     results = VerificationResults("Direct Signal Test")
-    
+
     try:
         from apps_shared.signal_bus import SignalType, reset_signal_bus
 
         # Reset for clean state
         signal_bus = reset_signal_bus()
-        
+
         # Test 1: Emit VALIDATION_FAILURE
         logger.info("\n[TEST] Emitting VALIDATION_FAILURE...")
         await signal_bus.emit(
@@ -552,17 +552,17 @@ async def verify_direct_signal_emission() -> VerificationResults:
             source="DirectTest",
             severity="error"
         )
-        
+
         summary_after_emit = signal_bus.get_summary()
         logger.info(f"  After emit: {summary_after_emit}")
-        
+
         validation_failure_active = signal_bus.has(SignalType.VALIDATION_FAILURE)
         results.record(
             "VALIDATION_FAILURE Emit",
             validation_failure_active,
             f"Active: {validation_failure_active}, History: {summary_after_emit['history_count']}"
         )
-        
+
         # Test 2: Emit QUALITY_BELOW_THRESHOLD
         logger.info("\n[TEST] Emitting QUALITY_BELOW_THRESHOLD...")
         await signal_bus.emit(
@@ -571,33 +571,33 @@ async def verify_direct_signal_emission() -> VerificationResults:
             source="DirectTest",
             severity="warning"
         )
-        
+
         quality_signal_active = signal_bus.has(SignalType.QUALITY_BELOW_THRESHOLD)
         results.record(
             "QUALITY_BELOW_THRESHOLD Emit",
             quality_signal_active,
             f"Active: {quality_signal_active}"
         )
-        
+
         # Test 3: Check history
         summary_after_both = signal_bus.get_summary()
         logger.info(f"\n[TEST] After both emissions:")
         logger.info(f"  Active signals: {summary_after_both['active_signals']}")
         logger.info(f"  History count: {summary_after_both['history_count']}")
-        
+
         results.record(
             "Both Signals In History",
             summary_after_both["history_count"] >= 2,
             f"History count: {summary_after_both['history_count']}"
         )
-        
+
         # Test 4: Clear cycle
         logger.info("\n[TEST] Clearing cycle...")
         await signal_bus.clear_cycle()
-        
+
         summary_after_clear = signal_bus.get_summary()
         logger.info(f"  After clear_cycle: {summary_after_clear}")
-        
+
         signals_cleared = summary_after_clear["signal_count"] == 0
         history_preserved = summary_after_clear["history_count"] >= 2  # History should persist
         results.record(
@@ -605,19 +605,19 @@ async def verify_direct_signal_emission() -> VerificationResults:
             signals_cleared,
             f"Active signals: {summary_after_clear['signal_count']}, History preserved: {history_preserved}"
         )
-        
+
         # Test 5: No async errors
         results.record(
             "No Async Errors",
             True,
             "All async operations completed without RuntimeWarning"
         )
-        
+
     except Exception as e:
         results.record("Unexpected Error", False, f"{type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-    
+
     return results
 
 
@@ -627,45 +627,45 @@ async def verify_direct_signal_emission() -> VerificationResults:
 
 async def main():
     """Run all forced failure verifications."""
-    
+
     logger.info("="*60)
     logger.info("FORCED SIGNAL EMISSION TEST")
     logger.info("Verifying async signal emission on agent failures")
     logger.info("="*60)
-    
+
     # Run direct signal test first
     direct_results = await verify_direct_signal_emission()
-    
+
     # Run engine tests
     resume_results = await verify_resume_engine_with_failures()
     outreach_results = await verify_outreach_engine_with_failures()
-    
+
     # Print summaries
     print(direct_results.summary())
     print(resume_results.summary())
     print(outreach_results.summary())
-    
+
     # Final summary table
     print("\n" + "="*70)
     print("FORCED SIGNAL EMISSION VERIFICATION SUMMARY")
     print("="*70)
     print(f"{'Check':<35} {'Direct':<10} {'Resume':<10} {'Outreach':<10}")
     print("-"*70)
-    
+
     all_checks = (
         set(direct_results.checks.keys()) |
         set(resume_results.checks.keys()) |
         set(outreach_results.checks.keys())
     )
-    
+
     for check in sorted(all_checks):
         direct_status = "✅" if direct_results.checks.get(check, {}).get("passed", False) else "❌" if check in direct_results.checks else "—"
         resume_status = "✅" if resume_results.checks.get(check, {}).get("passed", False) else "❌" if check in resume_results.checks else "—"
         outreach_status = "✅" if outreach_results.checks.get(check, {}).get("passed", False) else "❌" if check in outreach_results.checks else "—"
         print(f"{check:<35} {direct_status:<10} {resume_status:<10} {outreach_status:<10}")
-    
+
     print("-"*70)
-    
+
     # Overall result
     all_passed = (
         direct_results.all_passed() and
@@ -674,7 +674,7 @@ async def main():
     )
     overall = "✅ ALL CHECKS PASSED" if all_passed else "❌ SOME CHECKS FAILED"
     print(f"\nOVERALL RESULT: {overall}")
-    
+
     return 0 if all_passed else 1
 
 

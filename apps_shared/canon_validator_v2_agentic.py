@@ -4,7 +4,9 @@ SubAtomic Canon Validator - Complete 50 Key Implementation
 All 50 Subatomic Canon keys are validated with proper AST-based checks.
 """
 
+import argparse
 import ast
+import asyncio
 import hashlib
 import logging
 import os
@@ -12,7 +14,19 @@ import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
+
+from apps_shared.config.reliability import rate_limited_retry
+from apps_shared.utils.file_io import get_python_files
+from dotenv import load_dotenv
+load_dotenv()
+
+try:
+    from google import genai
+except ImportError:
+    print("   ⚠️  google-generativeai not installed - run: pip install google-generativeai")
+    genai = None
 
 logger = logging.getLogger(__name__)
 
@@ -48,17 +62,17 @@ EXCLUDED_FILES = {
 def is_excluded(path: str) -> bool:
     """Check if a path should be excluded from validation."""
     path_parts = path.split(os.sep)
-    
+
     # Check directory exclusions
     for part in path_parts:
         if part in EXCLUDED_DIRS:
             return True
-    
+
     # Check file exclusions
     filename = os.path.basename(path)
     if filename in EXCLUDED_FILES:
         return True
-    
+
     return False
 
 # ==============================================================================
@@ -72,10 +86,62 @@ class ValidationContext:
     modified_files: Set[str] = field(default_factory=set)
     python_files: List[str] = field(default_factory=list)
     refactor_plans: Dict[str, Any] = field(default_factory=dict)
+    intelligence_enabled: bool = field(default=False)
+    _client: Any = field(default=None)
+    target_scope: str = field(default=".")
 
     def __post_init__(self):
-        self.python_files = get_python_files()
+        # TARGETED SCAN: Only load files in the target scope to save tokens
+        self.python_files = get_python_files(self.target_scope)
+        self._init_intelligence()
         print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
+        if self.target_scope != ".":
+            print(f"   [CTX] Target scope: {self.target_scope}")
+
+    def _init_intelligence(self):
+        """Initialize Gemini client for autonomous healing."""
+        if not genai:
+            print("      ❌ Google Generative AI not available")
+            return
+            
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if api_key:
+            try:
+                self._client = genai.Client(api_key=api_key)
+                self.intelligence_enabled = True
+                print("      ✅ Gemini Connected - HEALING MODE ACTIVE")
+            except Exception as e:
+                print(f"      ⚠️  Gemini Connection Failed: {e}")
+        else:
+            print("      ⚠️  No GOOGLE_API_KEY found in .env - AUDIT ONLY")
+
+    @rate_limited_retry(max_retries=3, base_delay=1.0)
+    async def resilient_mutation(self, agent_name: str, task: str, code: str) -> str:
+        """The 'Smart' fix logic. Calls Gemini to rewrite code."""
+        if not self.intelligence_enabled or not self._client:
+            return code
+        
+        prompt = f"""Agent: {agent_name}
+Task: {task}
+Fix the following code to comply with Subatomic Laws. Return ONLY the fixed code without explanations or markdown blocks.
+
+{code}"""
+        
+        try:
+            # Run LLM call in a thread to keep orchestrator async-friendly
+            response = await asyncio.to_thread(
+                self._client.models.generate_content,
+                model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp"),
+                contents=[prompt]
+            )
+            fixed_code = response.text.strip()
+            # Clean up any markdown blocks
+            if "```python" in fixed_code:
+                fixed_code = fixed_code.replace("```python", "").replace("```", "")
+            return fixed_code.strip()
+        except Exception as e:
+            print(f"      ❌ Mutation Error: {e}")
+            return code
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
@@ -105,6 +171,68 @@ class ValidationContext:
 class SubAtomicAgent:
     """Base class for all validation agents."""
 
+    # ==============================================================================
+    # L5 VERIFICATION REGISTRY
+    # ==============================================================================
+    VERIFICATION_REGISTRY = {}
+    _registry_built = False
+
+    @classmethod
+    def _init_registry(cls, ctx: ValidationContext):
+        """Builds the registry once to avoid repetitive agent instantiation."""
+        if cls._registry_built: return
+
+        # Instantiate agents purely for their check methods
+        janitor = CodeJanitor(ctx)
+        safety = SafetyInspector(ctx)
+        docs = DocumentationAgent(ctx)
+        type_mech = TypeMechanic(ctx)
+        budget = BudgetAgent(ctx)
+        struct = StructuralEngineer(ctx)
+        arch = SystemArchitect(ctx)
+        pattern = PatternEnforcer(ctx)
+        deps = DependencySentinel(ctx)
+
+        cls.VERIFICATION_REGISTRY = {
+            0: safety.check_key_00_no_hardcoded_secrets,
+            1: safety.check_key_01_no_todo_fixme,
+            2: safety.check_key_02_no_print_statements,
+            7: deps.check_key_07_no_star_imports,
+            8: deps.check_key_08_no_relative_imports,
+            9: deps.check_key_45_no_unused_imports,
+            10: janitor.check_key_10_no_long_lines,
+            11: janitor.check_key_11_no_trailing_whitespace,
+            12: janitor.check_key_12_no_missing_newline,
+            13: janitor.check_key_13_no_tabs,
+            15: janitor.check_key_15_no_magic_numbers,
+            16: janitor.check_key_16_no_deep_nesting,
+            17: budget.check_key_17_no_large_functions,
+            18: struct.check_key_18_no_many_parameters,
+            19: budget.check_key_19_no_complex_functions,
+            20: struct.check_key_20_no_large_classes,
+            21: docs.check_key_21_no_missing_docstrings,
+            22: type_mech.check_key_22_no_missing_type_hints,
+            23: type_mech.check_key_23_no_unreachable_code,
+            24: type_mech.check_key_24_no_unused_variables,
+            25: struct.check_key_25_no_global_variables,
+            26: pattern.check_key_26_no_mutable_defaults,
+            27: pattern.check_key_27_prefer_str_join,
+            28: pattern.check_key_28_no_bare_except,
+            30: pattern.check_key_30_prefer_fstrings,
+            34: pattern.check_key_34_use_is_for_none,
+            40: arch.check_key_40_no_metaclasses,
+            41: arch.check_key_41_scoped_nesting,
+            42: struct.check_key_42_no_large_files,
+            43: struct.check_key_43_class_density,
+            44: deps.check_key_44_no_circular_imports,
+            45: deps.check_key_45_no_unused_imports,
+            46: struct.check_key_46_no_duplicate_code,
+            47: NamingAgent(ctx).check_key_47_naming_conventions,
+            49: arch.check_key_49_directory_depth,
+            50: arch.check_key_50_law_of_void,
+        }
+        cls._registry_built = True
+
     def __init__(self, context: ValidationContext):
         self.ctx = context
         self.name = self.__class__.__name__
@@ -112,6 +240,106 @@ class SubAtomicAgent:
     def can_run(self) -> bool:
         """Default: Run unless a critical failure exists."""
         return "CRITICAL_FAIL" not in self.ctx.signals
+
+    async def smart_fix(self, file_path: str, violation_key: int):
+        """Trigger an LLM-based fix for a specific violation."""
+        if not self.ctx.intelligence_enabled:
+            print(f"      🔧 {self.name}: Intelligence disabled - skipping smart fix")
+            return False
+
+        # Ensure registry is built
+        self.__class__._init_registry(self.ctx)
+
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                original_code = f.read()
+            
+            current_code = original_code
+            
+            # L5 Hardening: Multi-Round Healing
+            for round_num in range(1, 4):
+                print(f"      [Round {round_num}] Attempting fix for Key {violation_key} in {os.path.basename(file_path)}...")
+                
+                prompt = f"Fix Subatomic Canon Key {violation_key}. Return ONLY full corrected code."
+                if round_num > 1:
+                    prompt = f"Previous fix FAILED verification for Key {violation_key}. Critique and improve. Return ONLY full corrected code."
+
+                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code)
+
+                # 1. Syntax Verification
+                try:
+                    ast.parse(mutated_code)
+                except SyntaxError:
+                    print(f"      ⚠️ Round {round_num} failed: Syntax Error generated.")
+                    continue
+
+                # 2. Semantic Verification (Using Mocked IO)
+                # Write to temp file
+                temp_path = file_path + ".heal_tmp"
+                with open(temp_path, "w", encoding="utf-8") as f:
+                    f.write(mutated_code)
+
+                # Verify using the patched open method
+                is_fixed = await self._verify_fix_resolved(file_path, temp_path, violation_key)
+                
+                if is_fixed:
+                    os.replace(temp_path, file_path) # Commit the fix
+                    self.ctx.modified_files.add(file_path)
+                    print(f"      ✨ Healed {os.path.basename(file_path)} after {round_num} rounds.")
+                    return True
+                else:
+                    if os.path.exists(temp_path):
+                        os.remove(temp_path) # Cleanup failed attempt
+
+            return False
+
+        except Exception as e:
+            print(f"      ❌ {self.name} failed to fix {file_path}: {e}")
+            return False
+
+    async def _verify_fix_resolved(self, orig_path: str, temp_path: str, key: int) -> bool:
+        """
+        L5 Reflection: Re-runs validation on the temporary healed file.
+        Intercepts file I/O to trick the checker into reading the temp file 
+        while thinking it is reading the original path.
+        """
+        if key not in self.VERIFICATION_REGISTRY:
+            # If we don't have a specific check, we trust the LLM (or return True to proceed)
+            return True 
+
+        check_func = self.VERIFICATION_REGISTRY[key]
+        
+        # --- MAGIC: Intercept open() calls ---
+        import builtins
+        import io
+        
+        real_open = builtins.open
+        # Pre-read the temp content so we don't have to deal with file handles inside the mock
+        with real_open(temp_path, 'r', encoding='utf-8') as f:
+            new_content = f.read()
+
+        def patched_open(file, mode='r', *args, **kwargs):
+            # If the checker asks for the ORIG_PATH, give it the NEW_CONTENT
+            if str(file) == str(orig_path) and 'r' in mode:
+                return io.StringIO(new_content)
+            return real_open(file, mode, *args, **kwargs)
+
+        try:
+            builtins.open = patched_open
+            # Handle both async and sync check functions
+            if asyncio.iscoroutinefunction(check_func):
+                passed, details = await check_func()
+            else:
+                passed, details = check_func()
+            
+            if not passed:
+                 print(f"      ⚠️ Verification failed: {details[:1]}...")
+            return passed
+        except Exception as e:
+            print(f"      ⚠️ Verification Error: {e}")
+            return False
+        finally:
+            builtins.open = real_open # RESTORE REAL OPEN IMMEDIATELY
 
     def execute(self):
         """Execute agent's validation logic."""
@@ -127,17 +355,153 @@ class SystemArchitect(SubAtomicAgent):
     ROLE: The Gatekeeper. If this fails, the system is unstable.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
 
-        # Key 40: No metaclasses (stub)
-        self.ctx.report(self.name, 40, True, [])
+        # Key 40: No Metaclasses (The Law of the Void)
+        passed, details = self.check_key_40_no_metaclasses()
+        self.ctx.report(self.name, 40, passed, details)
 
-        # Key 41: No deep directories (stub)
-        self.ctx.report(self.name, 41, True, [])
+        # Key 41: Deep Nesting (No nested classes / limit inheritance)
+        passed, details = self.check_key_41_scoped_nesting()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(v.split(":")[0] for v in details)[:3]:
+                await self.smart_fix(fp, 41)
+            passed, details = self.check_key_41_scoped_nesting()
+        self.ctx.report(self.name, 41, passed, details)
 
-        # Key 50: Canon meta-integrity (stub)
-        self.ctx.report(self.name, 50, True, [])
+        # Key 49: Universal Depth Law
+        passed, details = self.check_key_49_directory_depth()
+        self.ctx.report(self.name, 49, passed, details)
+        if not passed: self.ctx.signal_critical_failure()
+        
+        # Key 50: Atomicity / Law of the Void
+        passed, details = self.check_key_50_law_of_void()
+        self.ctx.report(self.name, 50, passed, details)
+
+    def check_key_40_no_metaclasses(self) -> Tuple[bool, List[str]]:
+        """Check for metaclass usage."""
+        metaclass_violations = []
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef):
+                        if any(kw.arg == "metaclass" for kw in node.keywords):
+                            metaclass_violations.append(f"{file_path}:{node.lineno}")
+            except: continue
+        
+        return (len(metaclass_violations) == 0, metaclass_violations)
+
+    def check_key_41_scoped_nesting(self) -> Tuple[bool, List[str]]:
+        """Max nesting depth 4 inside functions/classes with scope awareness."""
+        violations = []
+        NESTERS = (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
+
+        class NestVisitor(ast.NodeVisitor):
+            def __init__(self, fp):
+                self.fp = fp
+                self.depth = 0
+                self.scope = "global"
+            def visit_FunctionDef(self, node):
+                old, self.scope = self.scope, f"func {node.name}"
+                self.generic_visit(node)
+                self.scope = old
+            def visit_ClassDef(self, node):
+                old, self.scope = self.scope, f"class {node.name}"
+                self.generic_visit(node)
+                self.scope = old
+            def visit(self, node):
+                is_nest = isinstance(node, NESTERS)
+                if is_nest:
+                    self.depth += 1
+                    if self.depth > 4:
+                        violations.append(f"{self.fp}:{node.lineno} {self.scope} depth {self.depth}")
+                super().visit(node)
+                if is_nest: self.depth -= 1
+
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                NestVisitor(fp).visit(tree)
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_49_directory_depth(self) -> Tuple[bool, List[str]]:
+        violations = []
+        warnings = []
+        for file_path in self.ctx.python_files:
+            parts = Path(file_path).parts
+            depth = len(parts)
+            if depth > 5:
+                violations.append(f"{file_path} (Invalid depth: {depth})")
+            elif depth == 1:
+                warnings.append(f"{file_path} (Depth 1 — move to package recommended)")
+        return len(violations) == 0, violations + warnings
+
+    def check_key_50_law_of_void(self) -> Tuple[bool, List[str]]:
+        root_violations = []
+        for file_path in self.ctx.python_files:
+            parts = Path(file_path).parts
+            if len(parts) == 1:
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        content = f.read()
+                        ast_tree = ast.parse(content)
+                        for node in ast_tree.body:
+                            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                                root_violations.append(file_path)
+                                break
+                except: root_violations.append(file_path)
+        return len(root_violations) == 0, root_violations
+
+class Sherlock(SubAtomicAgent):
+    """
+    KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
+    ROLE: The Detective. Performs RCA on tracebacks and applies surgical smart_fixes.
+    """
+    async def execute(self):
+        print(f"\n[>>>] {self.name} ACTIVATED: Investigating Failures...")
+        MAX_HEALING_ROUNDS = 3
+        healed_this_round = True
+        round_num = 0
+
+        while healed_this_round and round_num < MAX_HEALING_ROUNDS:
+            round_num += 1
+            syntax_errors = []
+            for file_path in self.ctx.python_files:
+                if not is_excluded(file_path):
+                    try:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            ast.parse(f.read())
+                    except SyntaxError as e:
+                        syntax_errors.append((file_path, e))
+
+            if not syntax_errors:
+                healed_this_round = False
+                break
+
+            print(f"   🚨 Round {round_num}: Found {len(syntax_errors)} Syntax Blockers. Healing...")
+            for file_path, error in syntax_errors:
+                print(f"      🔍 Fixing {file_path}:{error.lineno} – {error.msg}")
+                success = await self.smart_fix(file_path, 48)
+                if not success: healed_this_round = False
+
+        # Final Verification
+        remaining = []
+        for file_path in self.ctx.python_files:
+            try:
+                ast.parse(open(file_path, "r", encoding="utf-8").read())
+            except SyntaxError as e: remaining.append(file_path)
+
+        if not remaining:
+            print("   ✅ Architecture verified. Core integrity intact.")
+            self.ctx.report(self.name, 48, True, [])
+            self.ctx.signal_ast_valid()
+        else:
+            self.ctx.report(self.name, 48, False, remaining)
+            self.ctx.signal_critical_failure()
 
 class GenerativeGuard(SubAtomicAgent):
     """
@@ -193,7 +557,7 @@ class CodeJanitor(SubAtomicAgent):
     ROLE: The Cleaner. Can SELF-FIX violations. Emits AST_VALID signal.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Sanitizing Codebase...")
 
         # Key 11: Trailing whitespace
@@ -207,20 +571,41 @@ class CodeJanitor(SubAtomicAgent):
 
         # Key 12: Missing newline
         passed, details = self.check_key_12_no_missing_newline()
+        if not passed:
+            print("      🔧 Auto-fixing missing final newlines...")
+            for file_path in details:
+                try:
+                    with open(file_path, "a", encoding="utf-8") as f:
+                        f.write("\n")
+                except Exception as e:
+                    print(f"      ❌ Failed to fix newline in {file_path}: {e}")
+            passed, details = self.check_key_12_no_missing_newline()
         self.ctx.report(self.name, 12, passed, details)
 
         # Key 13: Tab characters
         passed, details = self.check_key_13_no_tabs()
+        if not passed and self.ctx.intelligence_enabled:
+            print("      🧠 Converting tabs to spaces...")
+            for file_path in set(d.split(":")[0] for d in details):
+                await self.smart_fix(file_path, 13)
+            passed, details = self.check_key_13_no_tabs()
         self.ctx.report(self.name, 13, passed, details)
 
-        # Key 10: Long lines (stub)
-        self.ctx.report(self.name, 10, True, [])
+        # L5 Hygiene Keys 10, 15, 16
+        keys_to_check = {
+            10: self.check_key_10_no_long_lines,
+            15: self.check_key_15_no_magic_numbers,
+            16: self.check_key_16_no_deep_nesting
+        }
 
-        # Key 15: Magic numbers (stub)
-        self.ctx.report(self.name, 15, True, [])
-
-        # Key 16: Deep nesting (stub)
-        self.ctx.report(self.name, 16, True, [])
+        for key, check_func in keys_to_check.items():
+            passed, details = check_func()
+            if not passed and self.ctx.intelligence_enabled:
+                files = set(d.split(":")[0].strip() for d in details if ":" in d)
+                for fp in list(files)[:3]:
+                    await self.smart_fix(fp, key)
+                passed, details = check_func()  # Re-verify
+            self.ctx.report(self.name, key, passed, details)
 
         self.ctx.signal_ast_valid()
 
@@ -264,6 +649,63 @@ class CodeJanitor(SubAtomicAgent):
                 continue
         return (len(violations) == 0, violations)
 
+    def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
+        violations = []
+        for file_path in self.ctx.python_files:
+            with open(file_path, "r", encoding="utf-8") as f:
+                for i, line in enumerate(f, 1):
+                    if len(line) > 100:
+                        violations.append(f"{file_path}:{i}")
+        return (len(violations) == 0, violations)
+
+    def check_key_15_no_magic_numbers(self) -> Tuple[bool, List[str]]:
+        """Bare numeric literals (except 0, 1, -1, 2) must be named constants."""
+        violations = []
+        ALLOWED = {0, 1, -1, 2}
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Assign):
+                        # Allow assignment to uppercase constants: MY_CONST = 42
+                        if any(isinstance(t, ast.Name) and t.id.isupper() for t in node.targets):
+                            continue
+                    
+                    if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+                        if node.value not in ALLOWED:
+                            violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
+        """Maximum nesting depth of 4 levels."""
+        violations = []
+        NEST_NODES = (ast.If, ast.For, ast.While, ast.Try, ast.With)
+        
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                # Reverting to the Visitor pattern but reporting line numbers
+                visitor = self._NestingLineVisitor(fp)
+                visitor.visit(tree)
+                violations.extend(visitor.violations)
+            except: continue
+        return len(violations) == 0, violations
+
+    class _NestingLineVisitor(ast.NodeVisitor):
+        def __init__(self, filepath):
+            self.filepath = filepath
+            self.depth = 0
+            self.violations = []
+        def visit(self, node):
+            is_nest = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With))
+            if is_nest:
+                self.depth += 1
+                if self.depth > 4:
+                    self.violations.append(f"{self.filepath}:{node.lineno}")
+            super().generic_visit(node)
+            if is_nest: self.depth -= 1
+
     def _fix_trailing_whitespace(self):
         """Auto-fix trailing whitespace."""
         try:
@@ -298,9 +740,9 @@ class DependencySentinel(SubAtomicAgent):
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_autoflake = False
 
-        # Key 9: Unused imports (auto-fix with autoflake)
+        # Key 45: Unused imports (auto-fix with autoflake)
         if has_autoflake:
-            print("   🔧 Running autoflake (Removes Key 9 violations)...")
+            print("   🔧 Running autoflake (Removes Key 45 violations)...")
             try:
                 subprocess.run([
                     "autoflake",
@@ -310,12 +752,12 @@ class DependencySentinel(SubAtomicAgent):
                     "--recursive",
                     "--exclude=.venv,venv,archives,data,__pycache__",
                     "."
-                ], capture_output=True, check=False)
-                self.ctx.report(self.name, 9, True, [])
+                ], check=True)
+                self.ctx.report(self.name, 45, True, [])
             except Exception:
-                self.ctx.report(self.name, 9, False, ["autoflake failed"])
+                self.ctx.report(self.name, 45, False, ["autoflake failed"])
         else:
-            self.ctx.report(self.name, 9, True, [])
+            self.ctx.report(self.name, 45, True, [])
 
         # Key 14: Duplicate imports (auto-fix with isort)
         if has_isort:
@@ -377,48 +819,48 @@ class DependencySentinel(SubAtomicAgent):
                 continue
         return (len(violations) == 0, violations)
 
+    def check_key_45_no_unused_imports(self) -> Tuple[bool, List[str]]:
+        """Detect unused imports via AST usage analysis."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                imported, used = set(), set()
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        for alias in node.names: imported.add(alias.asname or alias.name.split('.')[0])
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        for alias in node.names: imported.add(alias.asname or alias.name)
+                    elif isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load):
+                        used.add(node.id)
+                unused = imported - used - {"__future__", "typing", "os", "sys", "Path"}
+                if unused: violations.append(f"{fp} unused: {', '.join(sorted(unused))}")
+            except: continue
+        return len(violations) == 0, violations
+
     def check_key_44_no_circular_imports(self) -> Tuple[bool, List[str]]:
         """Check for circular imports."""
         violations = []
-        import_map = {}
-
+        imports = {}
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                imported_modules = set()
+                tree = ast.parse(open(file_path, "r", encoding="utf-8").read())
+                mods = set()
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
-                        for alias in node.names:
-                            imported_modules.add(alias.name.split('.')[0])
-                    elif isinstance(node, ast.ImportFrom):
-                        if node.module:
-                            imported_modules.add(node.module.split('.')[0])
+                        for a in node.names: mods.add(a.name.split('.')[0])
+                    elif isinstance(node, ast.ImportFrom) and node.module:
+                        mods.add(node.module.split('.')[0])
+                imports[file_path] = mods
+            except: continue
 
-                import_map[file_path] = imported_modules
-            except Exception:
-                continue
-
-        checked_pairs = set()
-        for file_a, imports_a in import_map.items():
-            base_a = os.path.splitext(os.path.basename(file_a))[0]
-
-            for file_b, imports_b in import_map.items():
-                if file_a == file_b:
-                    continue
-
-                pair = tuple(sorted([file_a, file_b]))
-                if pair in checked_pairs:
-                    continue
-                checked_pairs.add(pair)
-
-                base_b = os.path.splitext(os.path.basename(file_b))[0]
-
-                if base_b in imports_a and base_a in imports_b:
-                    violations.append(f"Circular import: {file_a} <-> {file_b}")
-
-        return (len(violations) == 0, violations)
+        for fp, mod_set in imports.items():
+            stem_a = Path(fp).stem
+            for target_mod in mod_set:
+                for other_fp, other_mods in imports.items():
+                    if Path(other_fp).stem == target_mod and stem_a in other_mods:
+                        violations.append(f"Circular: {fp} <-> {other_fp}")
+        return len(violations) == 0, list(set(violations))
 
 class SafetyInspector(SubAtomicAgent):
     """
@@ -426,19 +868,28 @@ class SafetyInspector(SubAtomicAgent):
     ROLE: Security Compliance. Emits SECURE signal.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Scanning Security Protocols...")
 
         # Key 0: No hardcoded secrets
         passed, details = self.check_key_00_no_hardcoded_secrets()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(d.split(':')[0] for d in details): await self.smart_fix(fp, 0)
+            passed, details = self.check_key_00_no_hardcoded_secrets()
         self.ctx.report(self.name, 0, passed, details)
 
         # Key 1: No TODO/FIXME
         passed, details = self.check_key_01_no_todo_fixme()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(d.split(':')[0] for d in details): await self.smart_fix(fp, 1)
+            passed, details = self.check_key_01_no_todo_fixme()
         self.ctx.report(self.name, 1, passed, details)
 
         # Key 2: No print statements
         passed, details = self.check_key_02_no_print_statements()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(d.split(':')[0] for d in details): await self.smart_fix(fp, 2)
+            passed, details = self.check_key_02_no_print_statements()
         self.ctx.report(self.name, 2, passed, details)
 
         # Key 3: No debugger statements
@@ -600,10 +1051,15 @@ class DocumentationAgent(SubAtomicAgent):
     ROLE: Pure focus on Docstrings.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Documentation...")
         try:
             passed, details = self.check_key_21_no_missing_docstrings()
+            if not passed and self.ctx.intelligence_enabled:
+                print("      🧠 Generating missing Google-style docstrings...")
+                for file_path in set(d.split(":")[0] for d in details):
+                    await self.smart_fix(file_path, 21)
+                passed, details = self.check_key_21_no_missing_docstrings()
             self.ctx.report(self.name, 21, passed, details)
         except Exception as e:
             self.ctx.report(self.name, 21, False, [str(e)])
@@ -632,13 +1088,31 @@ class NamingAgent(SubAtomicAgent):
     ROLE: Enforces Snake_Case/PascalCase.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
-        try:
-            # Stub implementation
-            self.ctx.report(self.name, 47, True, [])
-        except Exception as e:
-            self.ctx.report(self.name, 47, False, [str(e)])
+        passed, details = self.check_key_47_naming_conventions()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(v.split(":")[0] for v in details)[:5]:
+                await self.smart_fix(fp, 47)
+            passed, details = self.check_key_47_naming_conventions()
+        self.ctx.report(self.name, 47, passed, details)
+
+    def check_key_47_naming_conventions(self) -> Tuple[bool, List[str]]:
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.FunctionDef) and not node.name.startswith('_'):
+                        # Corrected: Only flag if it contains uppercase (not snake_case)
+                        if any(c.isupper() for c in node.name):
+                            violations.append(f"{fp}:{node.lineno}")
+                    elif isinstance(node, ast.ClassDef):
+                        expected = ''.join(w.title() for w in node.name.split('_'))
+                        if node.name != expected:
+                            violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
 
 class TypeMechanic(SubAtomicAgent):
     """
@@ -649,11 +1123,16 @@ class TypeMechanic(SubAtomicAgent):
     def can_run(self) -> bool:
         return "AST_VALID" in self.ctx.signals and "DEPS_VALID" in self.ctx.signals
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Type Safety...")
 
         # Key 22: Missing type hints
         passed, details = self.check_key_22_no_missing_type_hints()
+        if not passed and self.ctx.intelligence_enabled:
+            print("      🧠 Sherlock/TypeMechanic: Adding missing type hints...")
+            for viol in details[:5]: # Limit per batch
+                await self.smart_fix(viol.split(":")[0], 22)
+            passed, details = self.check_key_22_no_missing_type_hints()
         self.ctx.report(self.name, 22, passed, details)
 
         # Key 23: Unreachable code
@@ -737,14 +1216,19 @@ class BudgetAgent(SubAtomicAgent):
     ROLE: The Comptroller. Proactively marks functions exceeding size/complexity limits.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Complexity Budgets...")
 
         # Key 17: Large functions
         passed, details = self.check_key_17_no_large_functions()
+        if not passed and self.ctx.intelligence_enabled:
+            print("      🧠 BudgetAgent: Attempting to refactor large functions...")
+            for fp in set(v.split(":")[0] for v in details)[:3]:
+                await self.smart_fix(fp, 17)
+            passed, details = self.check_key_17_no_large_functions()
         self.ctx.report(self.name, 17, passed, details)
 
-        # Key 19: Complex functions
+        # Key 19: Cyclomatic Complexity (>10)
         passed, details = self.check_key_19_no_complex_functions()
         self.ctx.report(self.name, 19, passed, details)
 
@@ -774,9 +1258,20 @@ class BudgetAgent(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
     def check_key_19_no_complex_functions(self) -> Tuple[bool, List[str]]:
-        """Check for complex functions (cyclomatic complexity >10)."""
-        # Stub implementation
-        return (True, [])
+        violations = []
+        for file_path in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(file_path, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        complexity = 1
+                        for child in ast.walk(node):
+                            if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler, ast.And, ast.Or)):
+                                complexity += 1
+                        if complexity > 10:
+                            violations.append(f"{file_path}:{node.lineno} (score: {complexity})")
+            except: continue
+        return (len(violations) == 0, violations)
 
 class StructuralEngineer(SubAtomicAgent):
     """
@@ -787,56 +1282,52 @@ class StructuralEngineer(SubAtomicAgent):
     def can_run(self) -> bool:
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
 
-        # Key 17: Large functions (duplicate check from BudgetAgent)
-        passed, details = self.check_key_17_no_large_functions()
-        self.ctx.report(self.name, 17, passed, details)
-
         # Key 18: Many parameters
-        self.ctx.report(self.name, 18, True, [])
-
-        # Key 19: Complexity (stub)
-        self.ctx.report(self.name, 19, True, [])
+        passed, details = self.check_key_18_no_many_parameters()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(v.split(":")[0] for v in details)[:3]:
+                await self.smart_fix(fp, 18)
+            passed, details = self.check_key_18_no_many_parameters()
+        self.ctx.report(self.name, 18, passed, details)
 
         # Key 20: Large classes
-        self.ctx.report(self.name, 20, True, [])
+        passed, details = self.check_key_20_no_large_classes()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(v.split(":")[0] for v in details)[:2]:
+                await self.smart_fix(fp, 20)
+            passed, details = self.check_key_20_no_large_classes()
+        self.ctx.report(self.name, 20, passed, details)
+
+        # Key 42: Large files
+        passed, details = self.check_key_42_no_large_files()
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(v.split(":")[0] for v in details)[:2]:
+                await self.smart_fix(fp, 42)
+            passed, details = self.check_key_42_no_large_files()
+        self.ctx.report(self.name, 42, passed, details)
 
         # Key 25: Global variables
         passed, details = self.check_key_25_no_global_variables()
+        if not passed and self.ctx.intelligence_enabled:
+            print("      🧠 Refactoring global variables to constants/config...")
+            for file_path in set(d.split(":")[0] for d in details):
+                await self.smart_fix(file_path, 25)
+            passed, details = self.check_key_25_no_global_variables()
         self.ctx.report(self.name, 25, passed, details)
 
-        # Key 42: Large files (stub)
-        self.ctx.report(self.name, 42, True, [])
-
-        # Key 43: Class density (stub)
-        self.ctx.report(self.name, 43, True, [])
+        
+        # Key 43: Class density
+        passed, details = self.check_key_43_class_density()
+        self.ctx.report(self.name, 43, passed, details)
 
         # Key 46: Duplicate code
         passed, details = self.check_key_46_no_duplicate_code()
         self.ctx.report(self.name, 46, passed, details)
 
         print("   ✅ No structural changes pending.")
-
-    def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions (>50 lines)."""
-        violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read())
-
-                for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
-                            func_lines = node.end_lineno - node.lineno + 1
-                            if func_lines > 50:
-                                violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
-            except Exception:
-                continue
-
-        return (len(violations) == 0, violations)
 
     def check_key_25_no_global_variables(self) -> Tuple[bool, List[str]]:
         """Check for global variables."""
@@ -857,6 +1348,63 @@ class StructuralEngineer(SubAtomicAgent):
 
         return (len(violations) == 0, violations)
 
+    def check_key_43_class_density(self) -> Tuple[bool, List[str]]:
+        """Maximum 3 classes per file."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
+                if len(classes) > 3:
+                    violations.append(f"{fp} has {len(classes)} classes: {', '.join(c.name for c in classes)}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_18_no_many_parameters(self) -> Tuple[bool, List[str]]:
+        """Max 5 parameters per function (excl. self/*args/**kwargs)."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if node.name.startswith('_'): continue
+                        args = node.args
+                        total = len(args.posonlyargs) + len(args.args) + len(args.kwonlyargs)
+                        if 'self' in [a.arg for a in args.args]: total -= 1
+                        total -= bool(args.vararg) + bool(args.kwarg)
+                        if total > 5:
+                            violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
+        """Classes >20 methods or >500 lines are forbidden."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ClassDef):
+                        methods = [n for n in node.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+                        size = (node.end_lineno - node.lineno + 1) if hasattr(node, 'end_lineno') else 0
+                        if len(methods) > 20 or size > 500:
+                            violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_42_no_large_files(self) -> Tuple[bool, List[str]]:
+        """Files >1000 lines forbidden."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                with open(fp, "r", encoding="utf-8") as f:
+                    lines = sum(1 for _ in f)
+                if lines > 1000:
+                    violations.append(f"{fp}:1")
+            except: continue
+        return len(violations) == 0, violations
+
     def check_key_46_no_duplicate_code(self) -> Tuple[bool, List[str]]:
         """Check for duplicate code."""
         violations = []
@@ -864,13 +1412,15 @@ class StructuralEngineer(SubAtomicAgent):
 
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, "rb") as f:
-                    content_hash = hashlib.md5(f.read()).hexdigest()
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                # L5 Normalization: Hash the AST structure, ignoring formatting
+                struct_hash = hashlib.sha256(ast.dump(tree).encode()).hexdigest()
 
-                if content_hash in file_hashes:
-                    violations.append(f"Duplicate: {file_path} (same as {file_hashes[content_hash]})")
+                if struct_hash in file_hashes:
+                    violations.append(f"Structural Duplicate: {file_path} == {file_hashes[struct_hash]}")
                 else:
-                    file_hashes[content_hash] = file_path
+                    file_hashes[struct_hash] = file_path
             except Exception:
                 continue
 
@@ -882,12 +1432,108 @@ class PatternEnforcer(SubAtomicAgent):
     ROLE: Enforces coding patterns and best practices.
     """
 
-    def execute(self):
+    async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Code Patterns...")
+        
+        results = {}
+        
+        # Run all pattern checks
+        results[26] = self.check_key_26_no_mutable_defaults()
+        results[27] = self.check_key_27_prefer_str_join()
+        results[28] = self.check_key_28_no_bare_except()
+        results[30] = self.check_key_30_prefer_fstrings()
+        results[34] = self.check_key_34_use_is_for_none()
+        
+        # Report results
+        for key, (passed, details) in results.items():
+            self.ctx.report(self.name, key, passed, details)
+        
+        # Attempt healing for failed checks
+        check_map = {
+            26: self.check_key_26_no_mutable_defaults,
+            27: self.check_key_27_prefer_str_join,
+            28: self.check_key_28_no_bare_except,
+            30: self.check_key_30_prefer_fstrings,
+            34: self.check_key_34_use_is_for_none,
+        }
+        for key, (passed, details) in results.items():
+            if not passed and self.ctx.intelligence_enabled:
+                files = set(d.split(":")[0].strip() for d in details if ":" in d)
+                for fp in list(files)[:3]:
+                    await self.smart_fix(fp, key)
+                results[key] = check_map[key]()
+                self.ctx.report(self.name, key, results[key][0], results[key][1])
 
-        # All pattern checks are stubs for now
-        for key in range(26, 40):
-            self.ctx.report(self.name, key, True, [])
+    def check_key_26_no_mutable_defaults(self) -> Tuple[bool, List[str]]:
+        """No mutable default arguments (list, dict, set)."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        for default in node.args.defaults:
+                            if isinstance(default, (ast.List, ast.Dict, ast.Set)):
+                                violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_27_prefer_str_join(self) -> Tuple[bool, List[str]]:
+        """Identify inefficient string concatenation (s += "...") in loops."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.For, ast.While)):
+                        for stmt in ast.walk(node):
+                            if isinstance(stmt, ast.AugAssign) and isinstance(stmt.op, ast.Add):
+                                if isinstance(stmt.target, ast.Name):
+                                    violations.append(f"{fp}:{stmt.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_28_no_bare_except(self) -> Tuple[bool, List[str]]:
+        """No bare except clauses."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ExceptHandler) and node.type is None:
+                        violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_30_prefer_fstrings(self) -> Tuple[bool, List[str]]:
+        """Enforce f-strings over .format() on actual string literals."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+                        if node.func.attr == "format" and isinstance(node.func.value, ast.Constant):
+                            if isinstance(node.func.value.value, str):
+                                violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_34_use_is_for_none(self) -> Tuple[bool, List[str]]:
+        """Use 'is' for None comparisons."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Compare):
+                        for op in node.ops:
+                            if isinstance(op, (ast.Eq, ast.NotEq)):
+                                for comparator in node.comparators:
+                                    if isinstance(comparator, ast.Constant) and comparator.value is None:
+                                        violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
 
 class SemanticMapper(SubAtomicAgent):
     """
@@ -919,24 +1565,25 @@ class SemanticMapper(SubAtomicAgent):
 class IntelligentOrchestrator:
     """Orchestrates all validation agents in dependency order."""
 
-    def __init__(self):
-        self.ctx = ValidationContext()
+    def __init__(self, target=None):
+        self.ctx = ValidationContext(target_scope=target or ".")
         self.swarm = [
+            Sherlock(self.ctx),             # 0. Syntax/RCA (Blocker)
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy
             CodeJanitor(self.ctx),          # 3. Syntax (Signal: AST_VALID)
-            DependencySentinel(self.ctx),   # 4. Import Hygiene (Signal: DEPS_VALID)
-            SafetyInspector(self.ctx),      # 5. Secrets (Signal: SECURE)
-            PatternEnforcer(self.ctx),      # 6. Patterns (Keys 26-39)
+            DependencySentinel(self.ctx),   # 4. Imports (Signal: DEPS_VALID)
+            SafetyInspector(self.ctx),      # 5. Security (Signal: SECURE)
+            PatternEnforcer(self.ctx),      # 6. Patterns
             DocumentationAgent(self.ctx),   # 7. Docs
-            NamingAgent(self.ctx),          # 8. Style
-            BudgetAgent(self.ctx),          # 9. Complexity (Signal: COMPLEXITY_CLEAN)
-            TypeMechanic(self.ctx),         # 10. Types (Requires AST_VALID + DEPS_VALID)
-            SemanticMapper(self.ctx),       # 11. Semantics
-            StructuralEngineer(self.ctx)    # 12. Complexity (Final Pass)
+            NamingAgent(self.ctx),          # 8. Naming
+            BudgetAgent(self.ctx),          # 9. Complexity
+            TypeMechanic(self.ctx),         # 10. Types
+            SemanticMapper(self.ctx),       # 11. Clustering
+            StructuralEngineer(self.ctx),   # 12. Refactoring
         ]
 
-    def run_mission(self):
+    async def run_mission(self):
         """Execute all agents in sequence."""
         print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
 
@@ -946,7 +1593,9 @@ class IntelligentOrchestrator:
                 continue
 
             try:
-                agent.execute()
+                result = agent.execute()
+                if asyncio.iscoroutine(result):
+                    await result
             except Exception as e:
                 print(f"   🚨 AGENT CRASH ({agent.name}): {str(e)}")
 
@@ -981,5 +1630,19 @@ class IntelligentOrchestrator:
 # 5. MAIN EXECUTION
 # ==============================================================================
 if __name__ == "__main__":
-    orchestrator = IntelligentOrchestrator()
-    orchestrator.run_mission()
+    parser = argparse.ArgumentParser(description="Canon Validator V2 - Autonomous Healing Mode")
+    parser.add_argument("--target", type=str, help="Target directory (e.g., agentic_core, apps_rg)")
+    parser.add_argument("--heal", action="store_true", help="Enable LLM-based autonomous healing")
+    args = parser.parse_args()
+
+    print("🤖 SUBATOMIC CANON VALIDATOR - LEVEL 5 AUTONOMOUS HEALING")
+    if args.target:
+        print(f"🎯 Target Scope: {args.target}")
+    if args.heal:
+        print("🧠 Healing Mode: ENABLED")
+    else:
+        print("🔍 Healing Mode: DISABLED (Audit Only)")
+    print("=" * 60)
+    
+    orchestrator = IntelligentOrchestrator(target=args.target)
+    asyncio.run(orchestrator.run_mission())

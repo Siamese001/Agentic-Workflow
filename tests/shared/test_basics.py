@@ -10,12 +10,12 @@ def test_clean_llm_code_strips_markdown():
     input_text = "```python\nprint('hello world')\n```"
     expected = "print('hello world')"
     assert clean_llm_code(input_text) == expected
-    
+
     # Test with no language specifier
     input_text = "```\ndef test():\n    return True\n```"
     expected = "def test():\n    return True"
     assert clean_llm_code(input_text) == expected
-    
+
     # Test with plain text (no markdown)
     input_text = "print('no markdown')"
     expected = "print('no markdown')"

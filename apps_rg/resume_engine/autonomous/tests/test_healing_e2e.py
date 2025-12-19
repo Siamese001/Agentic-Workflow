@@ -50,16 +50,16 @@ def job_description():
     """Sample job description."""
     return """
     Senior Software Engineer
-    
+
     We are looking for an experienced software engineer to join our team.
-    
+
     Requirements:
     - 5+ years of experience in software development
     - Strong Python and JavaScript skills
     - Experience with AWS and cloud infrastructure
     - Experience with microservices architecture
     - Strong communication skills
-    
+
     Nice to have:
     - Kubernetes experience
     - Team leadership experience
@@ -68,7 +68,7 @@ def job_description():
 
 class TestRunSelfHealingMission:
     """Tests for run_self_healing_mission function."""
-    
+
     @pytest.mark.asyncio
     async def test_mission_with_valid_resume(self, valid_resume, job_description):
         """Test mission completes successfully with valid resume."""
@@ -77,13 +77,13 @@ class TestRunSelfHealingMission:
             master_resume=valid_resume,
             max_cycles=3,
         )
-        
+
         assert isinstance(result, HealingResult)
         assert result.success is True
         assert result.convergence_cycle is not None
         assert result.total_cycles <= 3
         assert "summary" in result.final_resume
-    
+
     @pytest.mark.asyncio
     async def test_mission_with_problematic_resume(self, problematic_resume, job_description):
         """Test mission with problematic resume."""
@@ -92,13 +92,13 @@ class TestRunSelfHealingMission:
             master_resume=problematic_resume,
             max_cycles=2,
         )
-        
+
         assert isinstance(result, HealingResult)
         assert result.total_cycles <= 2
         # May not converge
         if not result.success:
             assert len(result.final_signals) > 0
-    
+
     @pytest.mark.asyncio
     async def test_mission_with_user_profile(self, valid_resume, job_description):
         """Test mission with user profile for fact-checking."""
@@ -109,16 +109,16 @@ class TestRunSelfHealingMission:
                 {"company": "StartupXYZ", "title": "Software Engineer"},
             ]
         }
-        
+
         result = await run_self_healing_mission(
             job_description=job_description,
             master_resume=valid_resume,
             user_profile=user_profile,
             max_cycles=3,
         )
-        
+
         assert result.success is True
-    
+
     @pytest.mark.asyncio
     async def test_mission_respects_max_cycles(self, problematic_resume, job_description):
         """Test that mission respects max_cycles limit."""
@@ -127,9 +127,9 @@ class TestRunSelfHealingMission:
             master_resume=problematic_resume,
             max_cycles=1,
         )
-        
+
         assert result.total_cycles == 1
-    
+
     @pytest.mark.asyncio
     async def test_mission_tracks_all_cycles(self, valid_resume, job_description):
         """Test that mission tracks all cycle results."""
@@ -138,10 +138,10 @@ class TestRunSelfHealingMission:
             master_resume=valid_resume,
             max_cycles=3,
         )
-        
+
         assert len(result.cycle_results) > 0
         assert len(result.cycle_results) == result.total_cycles
-    
+
     @pytest.mark.asyncio
     async def test_mission_with_reflection(self, valid_resume, job_description):
         """Test mission with reflection enabled."""
@@ -151,9 +151,9 @@ class TestRunSelfHealingMission:
             max_cycles=2,
             enable_reflection=True,
         )
-        
+
         assert result.success is True
-    
+
     @pytest.mark.asyncio
     async def test_mission_without_reflection(self, valid_resume, job_description):
         """Test mission with reflection disabled."""
@@ -163,13 +163,13 @@ class TestRunSelfHealingMission:
             max_cycles=2,
             enable_reflection=False,
         )
-        
+
         assert result.success is True
 
 
 class TestSelfHealingCycles:
     """Tests for self-healing cycle behavior."""
-    
+
     @pytest.mark.asyncio
     async def test_early_convergence(self, valid_resume, job_description):
         """Test that mission converges early when possible."""
@@ -178,11 +178,11 @@ class TestSelfHealingCycles:
             master_resume=valid_resume,
             max_cycles=5,
         )
-        
+
         # Should converge in 1-2 cycles for valid resume
         assert result.success is True
         assert result.convergence_cycle <= 2
-    
+
     @pytest.mark.asyncio
     async def test_cycle_strategies_evolve(self, valid_resume, job_description):
         """Test that cycle strategies evolve based on signals."""
@@ -191,11 +191,11 @@ class TestSelfHealingCycles:
             master_resume=valid_resume,
             max_cycles=3,
         )
-        
+
         # First cycle should be full diagnostic
         from ..healing import HealingStrategy
         assert result.cycle_results[0].strategy == HealingStrategy.FULL_DIAGNOSTIC
-    
+
     @pytest.mark.asyncio
     async def test_signals_tracked_per_cycle(self, valid_resume, job_description):
         """Test that signals are tracked per cycle."""
@@ -204,7 +204,7 @@ class TestSelfHealingCycles:
             master_resume=valid_resume,
             max_cycles=3,
         )
-        
+
         for cycle_result in result.cycle_results:
             assert isinstance(cycle_result.signals_before, set)
             assert isinstance(cycle_result.signals_after, set)
@@ -212,7 +212,7 @@ class TestSelfHealingCycles:
 
 class TestEdgeCases:
     """Tests for edge cases and error handling."""
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume(self, job_description):
         """Test handling of empty resume."""
@@ -221,10 +221,10 @@ class TestEdgeCases:
             master_resume={},
             max_cycles=2,
         )
-        
+
         assert result.success is False
         assert len(result.final_signals) > 0
-    
+
     @pytest.mark.asyncio
     async def test_empty_job_description(self, valid_resume):
         """Test handling of empty job description."""
@@ -233,10 +233,10 @@ class TestEdgeCases:
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         # Should still work without job-specific optimization
         assert isinstance(result, HealingResult)
-    
+
     @pytest.mark.asyncio
     async def test_minimal_resume(self, job_description):
         """Test handling of minimal but valid resume."""
@@ -245,15 +245,15 @@ class TestEdgeCases:
             "experience": "Senior Developer at TechCo - Led development of core platform features, improving performance by 50%.",
             "skills": ["Python", "JavaScript", "SQL"],
         }
-        
+
         result = await run_self_healing_mission(
             job_description=job_description,
             master_resume=minimal_resume,
             max_cycles=3,
         )
-        
+
         assert isinstance(result, HealingResult)
-    
+
     @pytest.mark.asyncio
     async def test_single_cycle_limit(self, valid_resume, job_description):
         """Test with single cycle limit."""
@@ -262,13 +262,13 @@ class TestEdgeCases:
             master_resume=valid_resume,
             max_cycles=1,
         )
-        
+
         assert result.total_cycles == 1
 
 
 class TestHealingResultDetails:
     """Tests for HealingResult details."""
-    
+
     @pytest.mark.asyncio
     async def test_result_contains_timing(self, valid_resume, job_description):
         """Test that result contains timing information."""
@@ -277,11 +277,11 @@ class TestHealingResultDetails:
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         assert result.total_duration_ms > 0
         for cycle_result in result.cycle_results:
             assert cycle_result.duration_ms > 0
-    
+
     @pytest.mark.asyncio
     async def test_result_contains_agent_details(self, valid_resume, job_description):
         """Test that result contains agent execution details."""
@@ -290,12 +290,12 @@ class TestHealingResultDetails:
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         for cycle_result in result.cycle_results:
             assert len(cycle_result.agents_executed) > 0
             assert isinstance(cycle_result.passed_agents, list)
             assert isinstance(cycle_result.failed_agents, list)
-    
+
     @pytest.mark.asyncio
     async def test_result_preserves_resume(self, valid_resume, job_description):
         """Test that result preserves final resume state."""
@@ -304,7 +304,7 @@ class TestHealingResultDetails:
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         # All original sections should be present
         for section in valid_resume.keys():
             assert section in result.final_resume
@@ -312,21 +312,21 @@ class TestHealingResultDetails:
 
 class TestResumePreservation:
     """Tests for resume data preservation during healing."""
-    
+
     @pytest.mark.asyncio
     async def test_original_resume_not_modified(self, valid_resume, job_description):
         """Test that original resume is not modified."""
         original_copy = valid_resume.copy()
-        
+
         await run_self_healing_mission(
             job_description=job_description,
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         # Original should be unchanged
         assert valid_resume == original_copy
-    
+
     @pytest.mark.asyncio
     async def test_resume_sections_preserved(self, valid_resume, job_description):
         """Test that all resume sections are preserved."""
@@ -335,7 +335,7 @@ class TestResumePreservation:
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         # All original sections should be present
         for section in valid_resume.keys():
             assert section in result.final_resume
@@ -343,7 +343,7 @@ class TestResumePreservation:
 
 class TestBudgetManagement:
     """Tests for budget management during healing."""
-    
+
     @pytest.mark.asyncio
     async def test_budget_not_exhausted_normally(self, valid_resume, job_description):
         """Test that budget is not exhausted under normal conditions."""
@@ -352,7 +352,7 @@ class TestBudgetManagement:
             master_resume=valid_resume,
             max_cycles=3,
         )
-        
+
         assert result.budget_exhausted is False
 
 

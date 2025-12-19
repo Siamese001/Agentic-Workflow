@@ -15,67 +15,67 @@ LOGGER = logging.getLogger(__name__)
 class TelepathyInterface:
     """
     Human instruction telepathy interface for dynamic mission control.
-    
+
     Watches observability/human_instructions.md for commands and injects
     them into the execution context to alter mission behavior.
     """
-    
+
     def __init__(self, instructions_path: str = "observability/human_instructions.md"):
         """
         Initialize the telepathy interface.
-        
+
         Args:
             instructions_path: Path to the human instructions file
         """
         self.instructions_path = Path(instructions_path)
         self._cycle = 0
         self._last_consumed = ""
-        
+
         # Ensure observability directory exists
         self.instructions_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         LOGGER.info(f"Telepathy interface initialized: {self.instructions_path}")
-    
+
     def check_instructions(self, cycle: int) -> Optional[str]:
         """
         Check for new human instructions.
-        
+
         Args:
             cycle: Current mission cycle
-            
+
         Returns:
             Instruction text if found, None otherwise
         """
         self._cycle = cycle
-        
+
         if not self.instructions_path.exists():
             return None
-        
+
         try:
             content = self.instructions_path.read_text(encoding="utf-8").strip()
-            
+
             # Skip if already consumed or marked as done
             if not content or content.startswith("# DONE"):
                 return None
-            
+
             # Skip if same as last consumed (prevent re-processing)
             if content == self._last_consumed:
                 return None
-            
+
             LOGGER.info(f"🧠 Telepathic instruction received (Cycle {cycle}): {content[:100]}...")
             return content
-            
+
         except Exception as e:
             LOGGER.error(f"Failed to read telepathy instructions: {e}")
             return None
-    
+
     def parse_instructions(self, instructions: str) -> Dict[str, Any]:
         """
         Parse human instructions into executable commands.
-        
+
         Args:
             instructions: Raw instruction text
-            
+
         Returns:
             Dictionary of parsed commands and signals
         """
@@ -91,20 +91,20 @@ class TelepathyInterface:
             "custom_signals": set(),
             "raw": instructions
         }
-        
+
         # Convert to lowercase for parsing
         instructions_lower = instructions.lower()
-        
+
         # Parse stop/abort commands
         if any(word in instructions_lower for word in ["stop", "abort", "halt"]):
             commands["stop"] = True
             commands["custom_signals"].add("TELEPATHY_STOP")
-        
+
         # Parse pause command
         if "pause" in instructions_lower:
             commands["pause"] = True
             commands["custom_signals"].add("TELEPATHY_PAUSE")
-        
+
         # Parse force agent commands
         agent_mapping = {
             "test": "TestPilot",
@@ -117,12 +117,12 @@ class TelepathyInterface:
             "sherlock": "Sherlock",
             "reflection": "ReflectionAgent"
         }
-        
+
         for keyword, agent in agent_mapping.items():
             if f"force {keyword}" in instructions_lower or f"run {keyword}" in instructions_lower:
                 commands["force_agents"].append(agent)
                 commands["custom_signals"].add(f"FORCE_{agent.upper()}")
-                
+
                 # Set specific flags for common agents
                 if keyword == "test":
                     commands["force_test"] = True
@@ -132,7 +132,7 @@ class TelepathyInterface:
                     commands["force_safety"] = True
                 elif keyword == "dependency":
                     commands["force_dependency"] = True
-        
+
         # Parse skip files command
         if "skip" in instructions_lower:
             # Extract file patterns after "skip"
@@ -142,20 +142,20 @@ class TelepathyInterface:
                 skip_patterns = [p.strip() for p in skip_match.group(1).split(",")]
                 commands["skip_files"] = skip_patterns
                 commands["custom_signals"].add("SKIP_FILES")
-        
+
         # Parse custom signals
         if "signal:" in instructions_lower:
             import re
             signal_matches = re.findall(r'signal:\s*(\w+)', instructions_lower)
             for signal in signal_matches:
                 commands["custom_signals"].add(signal.upper())
-        
+
         return commands
-    
+
     def consume_instructions(self, instructions: str) -> None:
         """
         Mark instructions as consumed to prevent re-processing.
-        
+
         Args:
             instructions: The instructions that were consumed
         """
@@ -163,30 +163,30 @@ class TelepathyInterface:
             # Write DONE header with cycle number
             done_content = f"# DONE (Cycle {self._cycle})\n\n# Original instructions:\n{instructions}"
             self.instructions_path.write_text(done_content, encoding="utf-8")
-            
+
             # Track last consumed
             self._last_consumed = instructions
-            
+
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
-            
+
         except Exception as e:
             LOGGER.error(f"Failed to mark instructions as done: {e}")
-    
+
     def inject_into_context(self, context: Any, commands: Dict[str, Any]) -> Any:
         """
         Inject parsed commands into execution context.
-        
+
         Args:
             context: Current execution context
             commands: Parsed commands from telepathy
-            
+
         Returns:
             Modified context with injected commands
         """
         # Add custom signals
         if hasattr(context, 'signals'):
             context.signals.update(commands["custom_signals"])
-        
+
         # Add telepathy metadata
         if hasattr(context, 'metadata'):
             context.metadata.update({
@@ -198,13 +198,13 @@ class TelepathyInterface:
                 "telepathy_commands": commands,
                 "telepathy_cycle": self._cycle
             }
-        
+
         # Add forced agents to execution plan
         if commands["force_agents"] and hasattr(context, 'forced_agents'):
             context.forced_agents.extend(commands["force_agents"])
-        
+
         return context
-    
+
     def clear_instructions(self) -> None:
         """Clear the instructions file."""
         try:
@@ -230,36 +230,36 @@ def get_telepathy_interface(instructions_path: str = "observability/human_instru
 async def process_telepathy_instructions(context: Any, cycle: int) -> Any:
     """
     Process any telepathic instructions and inject into context.
-    
+
     Args:
         context: Current execution context
         cycle: Current mission cycle
-        
+
     Returns:
         Modified context with telepathic instructions applied
     """
     telepathy = get_telepathy_interface()
-    
+
     # Check for new instructions
     instructions = telepathy.check_instructions(cycle)
-    
+
     if instructions:
         # Parse the instructions
         commands = telepathy.parse_instructions(instructions)
-        
+
         # Inject into context
         context = telepathy.inject_into_context(context, commands)
-        
+
         # Mark as consumed
         telepathy.consume_instructions(instructions)
-        
+
         # Log forced agents
         if commands["force_agents"]:
             LOGGER.info(f"🎯 Telepathy forcing agents: {', '.join(commands['force_agents'])}")
-        
+
         # Handle immediate stop
         if commands["stop"]:
             LOGGER.warning("🛑 Telepathic STOP instruction received")
             context.signals.add("TELEPATHY_STOP")
-    
+
     return context

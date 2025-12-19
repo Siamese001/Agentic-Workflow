@@ -25,16 +25,16 @@ from typing import Dict, List, Optional
 @dataclass
 class FewShotExample:
     """A single few-shot example."""
-    
+
     input_text: str
     output_text: str
     explanation: str = ""
     tags: List[str] = None
-    
+
     def __post_init__(self):
         if self.tags is None:
             self.tags = []
-    
+
     def format(self, include_explanation: bool = False) -> str:
         """Format the example for prompt injection."""
         result = f"Input: {self.input_text}\nOutput: {self.output_text}"
@@ -85,7 +85,7 @@ FEW_SHOT_STRATEGIC = """
 <strategic_planning_examples>
 Example 1: High signal count with TEST_FAILURE
 Analysis: Tests failing after recent changes to validation logic
-Strategy: 
+Strategy:
 1. Identify modified files in last cycle
 2. Run targeted tests on those files
 3. If still failing, rollback and try alternative approach
@@ -326,31 +326,31 @@ Improved: "Data engineering leader with 12 years building petabyte-scale analyti
 class FewShotLibrary:
     """
     Central library for few-shot examples.
-    
+
     Provides easy access to all few-shot patterns with filtering
     and combination capabilities.
     """
-    
+
     # Core Canon Validator patterns
     SHERLOCK = FEW_SHOT_SHERLOCK
     GITOPS = FEW_SHOT_GITOPS
     STRATEGIC = FEW_SHOT_STRATEGIC
     REFLECTION_STRATEGY = FEW_SHOT_REFLECTION_STRATEGY
     GLOBAL_REFACTOR = FEW_SHOT_GLOBAL_REFACTOR
-    
+
     # Resume Engine patterns
     RESUME_BULLETS = FEW_SHOT_RESUME_BULLETS
     EXECUTIVE_SUMMARY = FEW_SHOT_EXECUTIVE_SUMMARY
     METRIC_BINDING = FEW_SHOT_METRIC_BINDING
-    
+
     # Outreach Engine patterns
     OUTREACH_PERSONALIZATION = FEW_SHOT_OUTREACH_PERSONALIZATION
     OUTREACH_HOOKS = FEW_SHOT_OUTREACH_HOOKS
     OUTREACH_CTA = FEW_SHOT_OUTREACH_CTA
-    
+
     # Quality patterns
     QUALITY_CRITIQUE = FEW_SHOT_QUALITY_CRITIQUE
-    
+
     @classmethod
     def get_all_patterns(cls) -> Dict[str, str]:
         """Get all available patterns."""
@@ -368,7 +368,7 @@ class FewShotLibrary:
             "outreach_cta": cls.OUTREACH_CTA,
             "quality_critique": cls.QUALITY_CRITIQUE,
         }
-    
+
     @classmethod
     def get_resume_patterns(cls) -> Dict[str, str]:
         """Get Resume Engine specific patterns."""
@@ -378,7 +378,7 @@ class FewShotLibrary:
             "metric_binding": cls.METRIC_BINDING,
             "quality_critique": cls.QUALITY_CRITIQUE,
         }
-    
+
     @classmethod
     def get_outreach_patterns(cls) -> Dict[str, str]:
         """Get Outreach Engine specific patterns."""
@@ -388,7 +388,7 @@ class FewShotLibrary:
             "outreach_cta": cls.OUTREACH_CTA,
             "quality_critique": cls.QUALITY_CRITIQUE,
         }
-    
+
     @classmethod
     def get_autonomy_patterns(cls) -> Dict[str, str]:
         """Get core autonomy patterns (Canon Validator)."""
@@ -399,7 +399,7 @@ class FewShotLibrary:
             "reflection_strategy": cls.REFLECTION_STRATEGY,
             "global_refactor": cls.GLOBAL_REFACTOR,
         }
-    
+
     @classmethod
     def inject_into_prompt(
         cls,
@@ -409,27 +409,27 @@ class FewShotLibrary:
     ) -> str:
         """
         Inject few-shot patterns into a prompt.
-        
+
         Args:
             base_prompt: The base prompt to enhance
             patterns: List of pattern names to inject
             position: "prefix" or "suffix"
-            
+
         Returns:
             Enhanced prompt with few-shot examples
         """
         all_patterns = cls.get_all_patterns()
-        
+
         injections = []
         for pattern_name in patterns:
             if pattern_name in all_patterns:
                 injections.append(all_patterns[pattern_name])
-        
+
         if not injections:
             return base_prompt
-        
+
         injection_text = "\n\n".join(injections)
-        
+
         if position == "prefix":
             return f"{injection_text}\n\n{base_prompt}"
         else:

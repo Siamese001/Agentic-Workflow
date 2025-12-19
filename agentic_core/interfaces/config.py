@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 @dataclass
 class OrchestratorConfig:
     """Configuration for the orchestrator (Nervous System).
-    
+
     Attributes:
         mission_id: Unique identifier for the mission
         max_iterations: Maximum Think-Act-Observe iterations
@@ -56,7 +56,7 @@ class OrchestratorConfig:
 @dataclass
 class CognitiveConfig:
     """Configuration for the cognitive plane.
-    
+
     Attributes:
         model: LLM model to use for reasoning
         temperature: Sampling temperature
@@ -84,7 +84,7 @@ class CognitiveConfig:
 @dataclass
 class ActionConfig:
     """Configuration for the action plane.
-    
+
     Attributes:
         sandbox_enabled: Whether to run actions in sandbox
         timeout_per_action: Timeout per action in seconds

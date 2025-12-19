@@ -14,7 +14,7 @@ class HygieneGuardian(SubAtomicAgent):
     Unified Hygiene Agent.
     Merges GenerativeGuard (Key 45) and TheCurator (File Taxonomy).
     """
-    
+
     GENERATIVE_PATTERNS = [
         r"_impl_impl_",
         r"generated_\d+",
@@ -25,7 +25,7 @@ class HygieneGuardian(SubAtomicAgent):
     SCRIPT_CATEGORIES = {
         'maintenance', 'setup', 'migration', 'testing', 'archive'
     }
-    
+
     IMMUTABLE_FILES = {
         'canon_validator_v2_agentic.py',
         'auto_canon.py',
@@ -52,7 +52,7 @@ class HygieneGuardian(SubAtomicAgent):
                         if re.search(pattern, file):
                             violations.append(file_path)
                             break
-        
+
         if violations:
             print(f"   🧹 Found {len(violations)} generative artifacts")
             for file_path in violations:
@@ -63,20 +63,20 @@ class HygieneGuardian(SubAtomicAgent):
                     print(f"      Failed: {e}")
         else:
             self.ctx.report(self.name, 45, True, [])
-    
+
     async def propose_hygiene_fix(self, file_path: str, issues: List[str]) -> str:
         """L5+ Use LLM with few-shot to propose hygiene fixes."""
         if not self.ctx.intelligence_enabled:
             return ""
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
         except Exception:
             return ""
-        
+
         issues_summary = "\n".join([f"- {i}" for i in issues[:10]])
-        
+
         prompt = f"""
 {self.ctx.FEW_SHOT_HYGIENE}
 
@@ -107,7 +107,7 @@ No unused imports. No dead variables.
 Preserve __all__ and docstrings.
 No trailing whitespace.
 """
-        
+
         return await self.ctx.resilient_mutation(
             self.name, prompt, code=content, file_path=file_path, max_attempts=2
         )
@@ -127,7 +127,7 @@ class CodeStyleGuardian(SubAtomicAgent):
         await asyncio.sleep(0)
 
         self._cleanup_empty_files()
-        
+
         self.ctx.report(self.name, 11, *self._check_no_trailing_whitespace())
         self.ctx.report(self.name, 12, *self._check_no_missing_newline())
         self.ctx.report(self.name, 13, *self._check_no_tabs())

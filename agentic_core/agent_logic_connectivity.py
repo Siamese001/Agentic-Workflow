@@ -53,8 +53,7 @@ class CanonValidator:
                 self.last_manifest_load = current_mtime
                 self.logger.debug("Manifest reloaded for cache coherence.")
         except FileNotFoundError:
-pass
-self.logger.warning("Manifest not found. Cache invalidation may be disabled.")
+            self.logger.warning("Manifest not found. Cache invalidation may be disabled.")
             self.manifest_cache = {}
 
     def _get_file_hash(self, file_path: str) -> str:
@@ -103,8 +102,7 @@ self.logger.warning("Manifest not found. Cache invalidation may be disabled.")
             try:
                 entry.embedding = self.embedding_fn(entry.content)
             except Exception as e:
-pass
-logger.error(f"Embedding generation failed: {e}")
+                logger.error(f"Embedding generation failed: {e}")
                 return {"status": "error", "message": str(e)}
 
         # 2. Check L1: Exact AST/Hash Match (Hot Memory)
@@ -131,8 +129,7 @@ logger.error(f"Embedding generation failed: {e}")
         try:
             embedding = self.embedding_fn(code)
         except Exception as e:
-pass
-logger.error(f"Embedding generation failed: {e}")
+            logger.error(f"Embedding generation failed: {e}")
             return {"status": "error", "message": str(e)}
 
         # Create CanonEntry from string input
@@ -180,8 +177,7 @@ logger.error(f"Embedding generation failed: {e}")
                 self.logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
                 return json.loads(cached_data)
         except Exception as e:
-pass
-self.logger.error(f"Redis lookup failed: {e}")
+            self.logger.error(f"Redis lookup failed: {e}")
 
         self.logger.info(f"Reasoning cache miss - Code version may have changed.")
         return None
@@ -199,8 +195,7 @@ self.logger.error(f"Redis lookup failed: {e}")
             # Set with expiration (e.g., 1 hour) to prevent stale build-up
             self.redis_client.setex(cache_key, 3600, json.dumps(result))
         except Exception as e:
-pass
-self.logger.error(f"Redis upsert failed: {e}")
+            self.logger.error(f"Redis upsert failed: {e}")
 
     def _check_l2_cache(self, entry: CanonEntry) -> Optional[Dict[str, Any]]:
         """
@@ -236,8 +231,7 @@ self.logger.error(f"Redis upsert failed: {e}")
                     }
 
         except Exception as e:
-pass
-logger.error(f"Pinecone query failed: {e}")
+            logger.error(f"Pinecone query failed: {e}")
 
         return None
 
@@ -272,8 +266,7 @@ logger.error(f"Pinecone query failed: {e}")
                             "message": "File not in active manifest - indexing skipped"
                         }
                 except Exception as e:
-pass
-logger.warning(f"⚠️  Failed to check manifest: {e}")
+                    logger.warning(f"⚠️  Failed to check manifest: {e}")
 
         try:
             # 1. Get the authoritative hash for this file version
@@ -307,8 +300,7 @@ logger.warning(f"⚠️  Failed to check manifest: {e}")
             }
 
         except Exception as e:
-pass
-logger.error(f"Ingestion failed: {e}")
+            logger.error(f"Ingestion failed: {e}")
             return {
                 "status": "error",
                 "is_valid": False,
@@ -344,8 +336,7 @@ logger.error(f"Ingestion failed: {e}")
             )
             return results
         except Exception as e:
-pass
-self.logger.error(f"Semantic query failed: {e}")
+            self.logger.error(f"Semantic query failed: {e}")
             return None
 
     def update_learning(self, pattern_id: str, is_valid: bool):
@@ -402,4 +393,3 @@ self.logger.error(f"Semantic query failed: {e}")
             "metadata": match.get('metadata'),
             "query_time_ms": (time.time() - start_time) * 1000
         }
-

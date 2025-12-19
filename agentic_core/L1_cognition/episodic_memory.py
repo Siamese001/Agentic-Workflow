@@ -117,6 +117,6 @@ class EpisodicMemory:
         """Find best matching episodes based on goal similarity."""
         if self._embedding_matrix is None:
             return []
-        
+
         # Implementation of search logic
         return []

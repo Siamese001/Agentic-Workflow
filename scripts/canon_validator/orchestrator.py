@@ -220,7 +220,7 @@ class SwarmScheduler:
     async def _targeted_remediation(self):
         """Trigger targeted remediation for Phase 8 agents (Naming, Docs, Types)."""
         print("   🔧 TARGETED REMEDIATION: Activating mutation mode for refinement agents...")
-        
+
         # Get the refinement agents and force mutation mode
         refinement_agents = self.phases.get("refinement_parallel", [])
         for agent in refinement_agents:
@@ -231,7 +231,7 @@ class SwarmScheduler:
                 "SwarmScheduler",
                 f"{agent.name}: MUTATION MODE ACTIVE - fix issues immediately, do not just report"
             )
-        
+
         # Re-run refinement phase in mutation mode
         print("   🔄 Re-running REFINEMENT phase in mutation mode...")
         await self._run_parallel("refinement_parallel")

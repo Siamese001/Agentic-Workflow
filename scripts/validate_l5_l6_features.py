@@ -21,24 +21,24 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 async def run_test_suite(name: str, test_file: str) -> bool:
     """
     Run a single test suite.
-    
+
     Args:
         name: Name of the test suite
         test_file: Path to the test file
-        
+
     Returns:
         True if all tests passed
     """
     print(f"\n{'='*80}")
     print(f"RUNNING: {name}")
     print(f"{'='*80}")
-    
+
     start_time = time.time()
-    
+
     try:
         # Import and run the test
         spec = __import__(f"scripts.{test_file}", fromlist=["run_validation"])
-        
+
         if hasattr(spec, "run_validation"):
             passed = await spec.run_validation()
         elif hasattr(spec, "run_sanitization_and_redis_validation"):
@@ -50,16 +50,16 @@ async def run_test_suite(name: str, test_file: str) -> bool:
         else:
             print(f"❌ No validation function found in {test_file}")
             return False
-        
+
         duration = time.time() - start_time
-        
+
         if passed:
             print(f"\n✅ {name} - PASSED ({duration:.1f}s)")
         else:
             print(f"\n❌ {name} - FAILED ({duration:.1f}s)")
-        
+
         return passed
-        
+
     except Exception as e:
         print(f"\n❌ {name} - ERROR: {e}")
         import traceback
@@ -73,28 +73,28 @@ async def main():
     print("L5/L6 FEATURES VALIDATION SUITE")
     print("="*80)
     print("\nValidating all implemented features with fallback support")
-    
+
     # Define test suites
     test_suites = [
         ("L6 Deterministic Sanitation & L5 Hot-Brain Resilience", "test_sanitization_redis"),
         ("L5 Learning Loop & Pinecone Memory", "test_learning_loop"),
         ("L6 Conversational Repair & Multi-Agent Debate", "test_conversational_repair")
     ]
-    
+
     # Run all suites
     results = {}
     total_start = time.time()
-    
+
     for name, test_file in test_suites:
         results[name] = await run_test_suite(name, test_file)
-    
+
     total_duration = time.time() - total_start
-    
+
     # Generate final report
     print("\n" + "="*80)
     print("FINAL VALIDATION REPORT")
     print("="*80)
-    
+
     print("\nFeature Status:")
     all_passed = True
     for name, passed in results.items():
@@ -102,9 +102,9 @@ async def main():
         print(f"  {name}: {status}")
         if not passed:
             all_passed = False
-    
+
     print(f"\nTotal Duration: {total_duration:.1f} seconds")
-    
+
     if all_passed:
         print("\n🎉 ALL FEATURES VALIDATED SUCCESSFULLY!")
         print("\nThe Agentic-Workflow system now includes:")
@@ -128,7 +128,7 @@ async def main():
         print("    - Pinecone vector storage for embeddings")
         print("    - Cross-cycle recall via semantic search")
         print("    - Self-critique with CONVERGE_AND_COMMIT/ROLLBACK")
-        
+
         print("\n📦 Setup Requirements:")
         print("  pip install isort autopep8          # For deterministic sanitation")
         print("  pip install redis                   # For distributed systems")
@@ -140,14 +140,14 @@ async def main():
         print("  export OPENAI_API_KEY=your_key      # For LLM debate")
         print("  export REDIS_URL=redis://localhost:6379  # For Redis")
         print("  export PINECONE_API_KEY=your_key    # For Pinecone")
-        
+
         print("\n🚀 All features gracefully degrade when services are unavailable!")
-        
+
     else:
         print("\n⚠️  SOME VALIDATIONS FAILED")
         print("Please check the logs above for details")
         print("\n💡 Tip: Features work with fallbacks even without external services")
-    
+
     return all_passed
 
 

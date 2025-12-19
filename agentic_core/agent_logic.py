@@ -7,7 +7,7 @@ to match the master prompt specifications.
 
 import ast
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from db_manager import HybridDatabaseManager
@@ -77,7 +77,7 @@ class CanonValidator:
         metadata.update({
             "canon_rule_id": metadata.get("canon_rule_id", "validation"),
             "project_context": metadata.get("project_context", "validation"),
-            "validation_timestamp": datetime.utcnow().isoformat()
+            "validation_timestamp": datetime.now(timezone.utc).isoformat()
         })
 
         new_entry = generate_entry(new_code, metadata)
@@ -227,10 +227,8 @@ class CanonValidator:
 
             return intersection / union if union > 0 else 0.0
 
-
-        except Exception:
-pass
-pass
+        except Exception as e:
+            logger.error(f"AST similarity calculation failure: {e}")
 
         return 0.0
 
@@ -337,4 +335,3 @@ pass
             })
 
         return formatted
-

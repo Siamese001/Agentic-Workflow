@@ -48,7 +48,7 @@ def write_compliant_file(path: str, content: str, dry_run: bool = False) -> bool
     if "```" in clean_content:
         clean_content = re.sub(r"```[a-z]*\n", "", clean_content)
         clean_content = clean_content.replace("```", "")
-    
+
     clean_content = clean_content.strip()
 
     # 2. STRICT AST CHECK: Do not write if syntax is invalid
@@ -62,18 +62,18 @@ def write_compliant_file(path: str, content: str, dry_run: bool = False) -> bool
 
     # 3. Standard Subatomic Checks
     parts = path.split(os.sep)
-    
+
     # Check depth
     if len(parts) - 1 < 3 or len(parts) - 1 > 5:
         print(f"   🛑 BLOCKED WRITE: File depth violation for {path}")
         return False
-    
+
     # Check line count
     line_count = len(clean_content.splitlines())
     if line_count < 10 or line_count > 200:
         print(f"   🛑 BLOCKED WRITE: File line count violation for {path} ({line_count} lines)")
         return False
-    
+
     # Write file if not dry run
     if not dry_run:
         try:
@@ -84,5 +84,5 @@ def write_compliant_file(path: str, content: str, dry_run: bool = False) -> bool
         except Exception as e:
             print(f"   ❌ Failed to write {path}: {e}")
             return False
-    
+
     return True

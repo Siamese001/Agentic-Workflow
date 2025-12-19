@@ -68,7 +68,7 @@ class HealingResult:
 
 class SignalRouter:
     """Routes signals to appropriate agents."""
-    
+
     # Signal to agent mapping
     SIGNAL_AGENT_MAP = {
         "QUALITY_FAILURE": ["ContentQualityAgent", "FactCheckAgent"],
@@ -79,10 +79,10 @@ class SignalRouter:
         "TEST_FAILURE": ["TestPilot"],
         "TEMPLATE_MISMATCH": ["TemplateOptimizer"],
     }
-    
+
     # Critical signals that trigger rollback
     CRITICAL_SIGNALS = {"CRITICAL_FAILURE", "DATA_CORRUPTION", "SCHEMA_VIOLATION"}
-    
+
     @classmethod
     def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
         """Get list of agent names that should handle the given signals."""
@@ -91,36 +91,36 @@ class SignalRouter:
             if signal in cls.SIGNAL_AGENT_MAP:
                 agents.update(cls.SIGNAL_AGENT_MAP[signal])
         return list(agents)
-    
+
     @classmethod
     def has_critical_signal(cls, signals: Set[str]) -> bool:
         """Check if any critical signals are present."""
         return bool(signals & cls.CRITICAL_SIGNALS)
-    
+
     @classmethod
     def determine_strategy(cls, cycle: int, signals: Set[str], modified_sections: Set[str]) -> HealingStrategy:
         """Determine the healing strategy based on current state."""
         if cycle == 1:
             return HealingStrategy.FULL_DIAGNOSTIC
-        
+
         if not signals and not modified_sections:
             return HealingStrategy.VERIFICATION_ONLY
-        
+
         quality_signals = {"QUALITY_FAILURE", "HALLUCINATION_DETECTED"}
         compliance_signals = {"BRAND_VIOLATION", "ATS_FAILURE", "BALANCE_ISSUE"}
-        
+
         if signals & quality_signals and not (signals & compliance_signals):
             return HealingStrategy.QUALITY_FOCUS
-        
+
         if signals & compliance_signals and not (signals & quality_signals):
             return HealingStrategy.COMPLIANCE_FOCUS
-        
+
         return HealingStrategy.SURGICAL_STRIKE
 
 
 class AgentFactory:
     """Factory for creating agent instances."""
-    
+
     @staticmethod
     def create_all_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
         """Create all available agents."""
@@ -133,7 +133,7 @@ class AgentFactory:
             ATSCompatibilityAgent(ctx),
             TestPilot(ctx),
         ]
-    
+
     @staticmethod
     def create_agents_by_name(ctx: ResumeEngineContext, names: List[str]) -> List[ResumeAgent]:
         """Create specific agents by name."""
@@ -148,13 +148,13 @@ class AgentFactory:
             "StrategicPlanner": StrategicPlanner,
             "ReflectionAgent": ReflectionAgent,
         }
-        
+
         agents = []
         for name in names:
             if name in agent_map:
                 agents.append(agent_map[name](ctx))
         return agents
-    
+
     @staticmethod
     def create_quality_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
         """Create quality-focused agents."""
@@ -163,7 +163,7 @@ class AgentFactory:
             FactCheckAgent(ctx),
             TestPilot(ctx),
         ]
-    
+
     @staticmethod
     def create_compliance_agents(ctx: ResumeEngineContext) -> List[ResumeAgent]:
         """Create compliance-focused agents."""
@@ -177,56 +177,56 @@ class AgentFactory:
 
 class HealingCycle:
     """Manages a single healing cycle."""
-    
+
     def __init__(self, ctx: ResumeEngineContext, cycle_number: int):
         self.ctx = ctx
         self.cycle_number = cycle_number
         self.start_time: Optional[float] = None
         self.end_time: Optional[float] = None
-    
+
     async def execute(self, strategy: HealingStrategy) -> CycleResult:
         """Execute the healing cycle with the given strategy."""
         import time
         self.start_time = time.time()
-        
+
         signals_before = set(self.ctx.signals)
-        
+
         # Build agent agenda based on strategy
         agents = self._build_agenda(strategy)
-        
+
         # Execute agents
         agents_executed = []
         passed_agents = []
         failed_agents = []
-        
+
         for agent in agents:
             try:
                 await agent.execute()
                 agents_executed.append(agent.name)
-                
+
                 # Check result
                 result = self.ctx.results.get(agent.name, {})
                 if result.get("passed", True):
                     passed_agents.append(agent.name)
                 else:
                     failed_agents.append(agent.name)
-                    
+
             except Exception as e:
                 agents_executed.append(agent.name)
                 failed_agents.append(agent.name)
                 self.ctx.record_result(agent.name, passed=False, details=str(e))
-        
+
         # Check for rollback conditions
         rollback_triggered = self._check_rollback_conditions()
         if rollback_triggered:
             self._execute_rollback()
-        
+
         self.end_time = time.time()
         duration_ms = (self.end_time - self.start_time) * 1000
-        
+
         signals_after = set(self.ctx.signals)
         converged = self.ctx.is_converged()
-        
+
         return CycleResult(
             cycle_number=self.cycle_number,
             strategy=strategy,
@@ -239,21 +239,21 @@ class HealingCycle:
             converged=converged,
             duration_ms=duration_ms,
         )
-    
+
     def _build_agenda(self, strategy: HealingStrategy) -> List[ResumeAgent]:
         """Build the agent agenda based on strategy."""
         if strategy == HealingStrategy.FULL_DIAGNOSTIC:
             return AgentFactory.create_all_agents(self.ctx)
-        
+
         elif strategy == HealingStrategy.VERIFICATION_ONLY:
             return [TestPilot(self.ctx)]
-        
+
         elif strategy == HealingStrategy.QUALITY_FOCUS:
             return AgentFactory.create_quality_agents(self.ctx)
-        
+
         elif strategy == HealingStrategy.COMPLIANCE_FOCUS:
             return AgentFactory.create_compliance_agents(self.ctx)
-        
+
         elif strategy == HealingStrategy.SURGICAL_STRIKE:
             # Get agents based on current signals
             agent_names = SignalRouter.get_agents_for_signals(self.ctx.signals)
@@ -264,28 +264,28 @@ class HealingCycle:
             if not any(isinstance(a, TestPilot) for a in agents):
                 agents.append(TestPilot(self.ctx))
             return agents
-        
+
         return AgentFactory.create_all_agents(self.ctx)
-    
+
     def _check_rollback_conditions(self) -> bool:
         """Check if rollback should be triggered."""
         # Rollback on critical signals
         if SignalRouter.has_critical_signal(self.ctx.signals):
             return True
-        
+
         # Rollback on test failure after cycle 1 with modifications
-        if (self.cycle_number > 1 and 
-            self.ctx.has_signal("TEST_FAILURE") and 
+        if (self.cycle_number > 1 and
+            self.ctx.has_signal("TEST_FAILURE") and
             self.ctx.section_backups):
             return True
-        
+
         return False
-    
+
     def _execute_rollback(self):
         """Execute rollback of all changes."""
         print(f"   🚨 Cycle {self.cycle_number}: Triggering rollback...")
         self.ctx.rollback_all()
-        
+
         # Clear critical signals after rollback
         for signal in list(self.ctx.signals):
             if signal in SignalRouter.CRITICAL_SIGNALS or signal == "TEST_FAILURE":
@@ -294,7 +294,7 @@ class HealingCycle:
 
 class HealingOrchestrator:
     """Orchestrates the complete self-healing process."""
-    
+
     def __init__(
         self,
         ctx: ResumeEngineContext,
@@ -305,30 +305,30 @@ class HealingOrchestrator:
         self.max_cycles = max_cycles
         self.enable_reflection = enable_reflection
         self.cycle_results: List[CycleResult] = []
-    
+
     async def run(self) -> HealingResult:
         """Run the complete healing process."""
         import time
         start_time = time.time()
-        
+
         print("\n" + "=" * 60)
         print("🧬 SELF-HEALING ORCHESTRATOR STARTED")
         print("=" * 60)
-        
+
         convergence_cycle = None
         budget_exhausted = False
-        
+
         for cycle_num in range(1, self.max_cycles + 1):
             self.ctx.signal_healing_cycle(cycle_num)
-            
+
             print(f"\n{'=' * 40}")
             print(f"🔄 HEALING CYCLE {cycle_num}/{self.max_cycles}")
             print(f"{'=' * 40}")
-            
+
             # Clear per-cycle tracking
             self.ctx.modified_sections.clear()
             self.ctx.impact_zone.clear()
-            
+
             # Determine strategy
             strategy = SignalRouter.determine_strategy(
                 cycle_num,
@@ -336,50 +336,50 @@ class HealingOrchestrator:
                 self.ctx.modified_sections
             )
             print(f"   📋 Strategy: {strategy.value}")
-            
+
             # Execute cycle
             cycle = HealingCycle(self.ctx, cycle_num)
             result = await cycle.execute(strategy)
             self.cycle_results.append(result)
-            
+
             # Log cycle result
             print(f"   ✅ Passed: {len(result.passed_agents)} | ❌ Failed: {len(result.failed_agents)}")
             if result.rollback_triggered:
                 print(f"   ⏪ Rollback triggered")
-            
+
             # Check convergence
             if result.converged:
                 convergence_cycle = cycle_num
                 print(f"\n✅ CONVERGED at cycle {cycle_num}")
                 break
-            
+
             # Check budget
             if not self.ctx.budget.check_budget():
                 budget_exhausted = True
                 print(f"\n💸 Budget exhausted at cycle {cycle_num}")
                 break
-            
+
             # Log remaining signals
             if self.ctx.signals:
                 print(f"   📡 Remaining signals: {list(self.ctx.signals)}")
-        
+
         # Run reflection if enabled
         if self.enable_reflection:
             reflection = ReflectionAgent(self.ctx)
             await reflection.execute()
-        
+
         end_time = time.time()
         total_duration_ms = (end_time - start_time) * 1000
-        
+
         success = convergence_cycle is not None
-        
+
         print("\n" + "=" * 60)
         print(f"{'✅ HEALING SUCCESS' if success else '⚠️ HEALING INCOMPLETE'}")
         print(f"   Cycles: {len(self.cycle_results)}/{self.max_cycles}")
         print(f"   Duration: {total_duration_ms:.0f}ms")
         print(f"   Budget: ${self.ctx.budget.current_cost:.4f}")
         print("=" * 60)
-        
+
         return HealingResult(
             success=success,
             total_cycles=len(self.cycle_results),
@@ -401,16 +401,16 @@ async def run_self_healing_mission(
 ) -> HealingResult:
     """
     Run a self-healing resume generation mission.
-    
+
     This is the main entry point for Phase 2 self-healing functionality.
-    
+
     Args:
         job_description: Target job description
         master_resume: User's master resume data
         user_profile: Optional user profile for fact-checking
         max_cycles: Maximum healing cycles (default 5)
         enable_reflection: Whether to run reflection agent at end
-    
+
     Returns:
         HealingResult with complete execution details
     """
@@ -420,85 +420,85 @@ async def run_self_healing_mission(
     ctx.current_resume = master_resume.copy()
     ctx.user_profile = user_profile or {}
     ctx.max_cycles = max_cycles
-    
+
     # Create and run orchestrator
     orchestrator = HealingOrchestrator(
         ctx=ctx,
         max_cycles=max_cycles,
         enable_reflection=enable_reflection,
     )
-    
+
     return await orchestrator.run()
 
 
 class ConvergenceDetector:
     """Detects when the system has converged."""
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self.history: List[Set[str]] = []
-    
+
     def record_state(self):
         """Record current signal state."""
         self.history.append(set(self.ctx.signals))
-    
+
     def is_converged(self) -> bool:
         """Check if system has converged."""
         return self.ctx.is_converged()
-    
+
     def is_oscillating(self, window: int = 3) -> bool:
         """Check if signals are oscillating (stuck in a loop)."""
         if len(self.history) < window * 2:
             return False
-        
+
         recent = self.history[-window:]
         earlier = self.history[-window * 2:-window]
-        
+
         # Check if recent states match earlier states
         for i, state in enumerate(recent):
             if i < len(earlier) and state == earlier[i]:
                 return True
-        
+
         return False
-    
+
     def get_stuck_signals(self) -> Set[str]:
         """Get signals that have persisted across multiple cycles."""
         if len(self.history) < 2:
             return set()
-        
+
         return self.history[-1] & self.history[-2]
 
 
 class AutomaticRollback:
     """Handles automatic rollback on critical failures."""
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self.rollback_count = 0
         self.max_rollbacks = 3
-    
+
     def should_rollback(self) -> bool:
         """Determine if rollback should be triggered."""
         if self.rollback_count >= self.max_rollbacks:
             return False  # Prevent infinite rollback loop
-        
+
         return SignalRouter.has_critical_signal(self.ctx.signals)
-    
+
     def execute_rollback(self) -> bool:
         """Execute rollback and return success status."""
         if not self.should_rollback():
             return False
-        
+
         self.ctx.rollback_all()
         self.rollback_count += 1
-        
+
         # Clear critical signals
         for signal in list(self.ctx.signals):
             if signal in SignalRouter.CRITICAL_SIGNALS:
                 self.ctx.remove_signal(signal)
-        
+
         return True
-    
+
     def reset(self):
         """Reset rollback counter."""
         self.rollback_count = 0

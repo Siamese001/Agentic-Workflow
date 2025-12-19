@@ -11,7 +11,7 @@ from .agent_registry_models import AgentCard, RegistrationResult
 
 __all__ = [
     "AgentCard",
-    "AgentRegistry", 
+    "AgentRegistry",
     "AgentCapability",
     "RegistrationResult",
     "create_agent_registry",

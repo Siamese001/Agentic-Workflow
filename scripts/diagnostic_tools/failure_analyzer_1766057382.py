@@ -26,7 +26,7 @@ class FailureAnalyzer:
         counts = collections.Counter(self.keys)
         total = sum(counts.values())
         freq_list = list(counts.values())
-        
+
         mean_freq = statistics.mean(freq_list)
         std_dev = statistics.stdev(freq_list) if len(freq_list) > 1 else 0
 
@@ -46,7 +46,7 @@ class FailureAnalyzer:
             f"Unique Patterns: {len(counts)}\n"
             f"Avg Frequency: {mean_freq:.2f}"
         )
-        
+
         return "\n".join(report) + "\n" + summary
 
 def run_diagnostic():
@@ -54,7 +54,7 @@ def run_diagnostic():
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
     # Simulated expansion for pattern recognition
     sample_data = context_keys + [50, 50, 19, 7, 50, 22, 19]
-    
+
     analyzer = FailureAnalyzer(sample_data)
     print("--- Failure Pattern Analysis Report ---")
     print(analyzer.analyze())

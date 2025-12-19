@@ -14,7 +14,7 @@ from agentic_core.agents.base import SubAtomicAgent
 
 class SafetyInspector(SubAtomicAgent):
     """
-    Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger, 
+    Enforces Security Protocols: Keys 0-6 (Secrets, TODO/FIXME, Print, Debugger,
     Empty Except, Bare Except, Eval/Exec).
     Also checks for async blocking issues and performs intelligent remediation.
     """
@@ -50,7 +50,7 @@ class SafetyInspector(SubAtomicAgent):
         # Key 6: No eval/exec
         passed, details = await self.check_key_06_no_eval_exec()
         self.ctx.report(self.name, 6, passed, details)
-        
+
         # Additional: Async blocking issues
         passed, details = await self.check_async_blocking_issues()
 
@@ -76,7 +76,7 @@ class SafetyInspector(SubAtomicAgent):
                     if re.search(pattern, content, re.IGNORECASE):
                         if self.ctx.intelligence_enabled:
                             verification = await self._socratic_verify(
-                                file_path, 
+                                file_path,
                                 f"Potential secret matching pattern: {pattern}",
                                 "Is this actually a hardcoded secret or a false positive?"
                             )
@@ -89,7 +89,7 @@ class SafetyInspector(SubAtomicAgent):
                 continue
 
         return (len(violations) == 0, violations)
-    
+
     def _read_file_sync(self, file_path: str) -> str:
         """Synchronous file helper for use in to_thread."""
         with open(file_path, "r", encoding="utf-8") as f:

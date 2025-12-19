@@ -41,11 +41,11 @@ class Sherlock(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating test failure...")
         # Replaced blocking calls with async sleep
         await asyncio.sleep(0)
-        
+
         if not self.last_failure:
             print(f"   ⚠️  No failure context available")
             return
-        
+
         await self._analyze_failure(self.last_failure)
 
     async def _analyze_failure(self, failure_info: dict):
@@ -53,14 +53,14 @@ class Sherlock(SubAtomicAgent):
             return
 
         print(f"   🔍 Analyzing failure in {failure_info.get('test_file', 'unknown')}")
-        
+
         # 1. Read files
         primary = failure_info.get('modified_file')
         traceback = failure_info.get('traceback', '')
-        
+
         # Extract error file from traceback or default to primary
         error_file = self._extract_error_file(traceback) or primary
-        
+
         files_content = {}
         for fpath in [primary, error_file]:
             if fpath and isinstance(fpath, str) and os.path.exists(fpath):
@@ -83,7 +83,7 @@ Return ONLY the python code for {primary}.
         # 3. Request Fix
         # Use resilient mutation capability
         fix = await self.ctx.resilient_mutation(self.name, prompt, code=files_content.get(primary, ""))
-        
+
         if fix and fix != files_content.get(primary, ""):
             print(f"   🕵️ Sherlock proposing fix for {primary}")
             if self.ctx.write_compliant_file(primary, fix):
@@ -118,13 +118,13 @@ class TestPilot(SubAtomicAgent):
         # 1. Identify tests to run
         target_tests = set()
         modified_files = getattr(self.ctx, 'modified_files', set())
-        
+
         if modified_files:
             for mod_file in modified_files:
                 test_file = self._find_test_file(mod_file)
-                if test_file: 
+                if test_file:
                     target_tests.add(test_file)
-        
+
         if not target_tests:
             return
 

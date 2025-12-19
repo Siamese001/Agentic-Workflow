@@ -74,9 +74,9 @@ async def start_intervention_server(ctx):
         host = os.getenv("INTERVENTION_HOST", "127.0.0.1")
         port = int(os.getenv("INTERVENTION_PORT", "8080"))
         config = uvicorn.Config(
-            intervention_app, 
-            host=host, 
-            port=port, 
+            intervention_app,
+            host=host,
+            port=port,
             log_level="error"
         )
         server = uvicorn.Server(config)
@@ -88,7 +88,7 @@ async def start_intervention_server(ctx):
 class SwarmScheduler:
     def __init__(self):
         self.ctx = ValidationContext()
-        
+
         # Define Phases
         self.phases = {
             "integrity_seq": [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinel(self.ctx)],
@@ -108,24 +108,24 @@ class SwarmScheduler:
         if target_scope:
             print(f"🎯 SURGICAL MISSION: {target_scope}")
             self.ctx.python_files = [target_scope]
-        
+
         await start_intervention_server(self.ctx)
-        
+
         for cycle in range(5):
             print(f"\n=== CYCLE {cycle + 1}/5 ===")
             self.ctx.signals.clear()
-            
+
             # Sequential Integrity and Curation
             for agent in self.phases["integrity_seq"]:
                 await agent.run()
             for agent in self.phases["curation_seq"]:
                 await agent.run()
-            
+
             # Parallel Context and Resilience Analysis
             await asyncio.gather(*(agent.run() for agent in self.phases["memory_parallel"]))
             await asyncio.gather(*(agent.run() for agent in self.phases["resilience_parallel"]))
             await asyncio.gather(*(agent.run() for agent in self.phases["resource_safety_parallel"]))
-            
+
             if "INTERVENTION_REQUIRED" in self.ctx.signals:
                 print("✋ INTERVENTION REQUIRED. Waiting for human approval...")
                 await approval_event.wait()
@@ -137,11 +137,11 @@ class SwarmScheduler:
             # Parallel Engineering and Refinement
             await asyncio.gather(*(agent.run() for agent in self.phases["engineering_parallel"]))
             await asyncio.gather(*(agent.run() for agent in self.phases["refinement_parallel"]))
-            
+
             # Testing and Final Benchmarking
             for agent in self.phases["test_seq"]:
                 await agent.run()
-            
+
             if cycle == 4:
                 for agent in self.phases["benchmarking_seq"]:
                     await agent.run()

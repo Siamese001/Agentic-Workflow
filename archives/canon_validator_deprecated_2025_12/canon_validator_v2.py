@@ -34,11 +34,11 @@ if __name__ == "__main__":
         if not WATCHDOG_AVAILABLE:
             print("❌ Watchdog required for daemon mode: pip install watchdog")
             sys.exit(1)
-            
+
         print("🚀 THE WATCHMAN: L5 Autonomous Mode Active")
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        
+
         # Bridge Watchdog -> Orchestrator
         class BridgeHandler(FileSystemEventHandler):
             def on_modified(self, event):
@@ -46,20 +46,20 @@ if __name__ == "__main__":
                 print(f"\n[WATCHMAN] Change detected: {event.src_path}")
                 # Fire and forget mission
                 asyncio.run_coroutine_threadsafe(
-                    SwarmScheduler().run_mission(target_scope=event.src_path), 
+                    SwarmScheduler().run_mission(target_scope=event.src_path),
                     loop
                 )
 
         observer = Observer()
         observer.schedule(BridgeHandler(), path='.', recursive=True)
         observer.start()
-        
+
         try:
             loop.run_forever()
         except KeyboardInterrupt:
             observer.stop()
             observer.join()
-            
+
     else:
         # Standard Run
         asyncio.run(SwarmScheduler().run_mission(target_scope=args.target))

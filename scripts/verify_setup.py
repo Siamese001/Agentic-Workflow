@@ -45,7 +45,7 @@ def check_library(lib_name: str, import_name: str = None) -> Tuple[bool, str]:
     """Check if a Python library is installed"""
     if import_name is None:
         import_name = lib_name
-    
+
     try:
         __import__(import_name)
         return True, f"✅ {lib_name} installed"
@@ -61,7 +61,7 @@ def check_env_var(var_name: str, optional: bool = False) -> Tuple[bool, str]:
             masked = value[:8] + "..." if len(value) > 8 else "***"
             return True, f"✅ {var_name} set ({masked})"
         return True, f"✅ {var_name} set ({value})"
-    
+
     if optional:
         return True, f"⚠️  {var_name} not set (optional)"
     return False, f"❌ {var_name} not set"
@@ -86,10 +86,10 @@ def check_pinecone_connection() -> Tuple[bool, str]:
         api_key = os.environ.get("PINECONE_API_KEY")
         if not api_key:
             return False, "❌ PINECONE_API_KEY not set"
-        
+
         pc = Pinecone(api_key=api_key)
         indexes = pc.list_indexes().names()
-        
+
         # Check for canon-memory-l2 (the index we're using)
         if "canon-memory-l2" in indexes:
             return True, f"✅ Pinecone connected - index 'canon-memory-l2' exists"
@@ -107,7 +107,7 @@ def check_gemini_connection() -> Tuple[bool, str]:
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
             return False, "❌ GEMINI_API_KEY not set"
-        
+
         # Try to configure and list models (lightweight check)
         genai.configure(api_key=api_key)
         return True, "✅ Gemini API key valid"
@@ -122,29 +122,29 @@ def main():
     print("🧠 TRI-BRAIN DEPENDENCY VERIFICATION")
     print("=" * 60)
     print()
-    
+
     # Load environment variables from .env file if it exists
     load_env_file()
-    
+
     checks: List[Tuple[str, Tuple[bool, str]]] = []
-    
+
     # Python version
     print("\n📦 SYSTEM REQUIREMENTS")
     print("-" * 60)
     checks.append(("Python Version", check_python_version()))
-    
+
     # Core libraries
     print("\n📚 PYTHON LIBRARIES")
     print("-" * 60)
     checks.append(("google-genai", check_library("google-genai", "google.generativeai")))
     checks.append(("redis", check_library("redis")))
     checks.append(("pinecone-client", check_library("pinecone-client", "pinecone")))
-    
+
     # Optional libraries
     checks.append(("isort", check_library("isort")))
     checks.append(("autoflake", check_library("autoflake")))
     checks.append(("pytest", check_library("pytest")))
-    
+
     # Environment variables
     print("\n🔐 ENVIRONMENT VARIABLES")
     print("-" * 60)
@@ -152,24 +152,24 @@ def main():
     checks.append(("REDIS_URL", check_env_var("REDIS_URL")))
     checks.append(("PINECONE_API_KEY", check_env_var("PINECONE_API_KEY")))
     checks.append(("ENABLE_FUZZ", check_env_var("ENABLE_FUZZ", optional=True)))
-    
+
     # Connection tests
     print("\n🌐 CONNECTION TESTS")
     print("-" * 60)
     checks.append(("Redis Connection", check_redis_connection()))
     checks.append(("Pinecone Connection", check_pinecone_connection()))
     checks.append(("Gemini API", check_gemini_connection()))
-    
+
     # Print all results
     for name, (success, message) in checks:
         print(f"{message}")
-    
+
     # Summary
     print("\n" + "=" * 60)
     total = len(checks)
     passed = sum(1 for _, (success, _) in checks if success)
     failed = total - passed
-    
+
     if failed == 0:
         print(f"✅ ALL CHECKS PASSED ({passed}/{total})")
         print("=" * 60)

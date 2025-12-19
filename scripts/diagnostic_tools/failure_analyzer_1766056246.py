@@ -17,7 +17,7 @@ class FailureAnalyzer:
 
         total = len(self.failure_keys)
         counts = collections.Counter(self.failure_keys)
-        
+
         return {
             "total_samples": total,
             "unique_signatures": len(counts),
@@ -38,7 +38,7 @@ class FailureAnalyzer:
         print("\nPrimary Failure Drivers:")
         for key, count in metrics['top_recurring']:
             print(f" - Key [{key}]: {count} occurrences")
-        
+
         print("\nPattern Distribution:")
         print(json.dumps(metrics['distribution'], indent=4))
         print("---------------------------------------")
@@ -47,6 +47,6 @@ if __name__ == "__main__":
     # Context provided: [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
     # Adding synthetic recurrences to demonstrate pattern analysis
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60, 50, 7, 50, 22, 50]
-    
+
     analyzer = FailureAnalyzer(context_keys)
     analyzer.display_report()

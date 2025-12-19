@@ -11,7 +11,7 @@ import collections
 class FailureAnalyzer:
     """
     Diagnostic tool for analyzing recurring failure patterns.
-    
+
     Usage:
         Initialize with a list of failure keys.
         Call `analyze()` to get statistical breakdown.
@@ -24,10 +24,10 @@ class FailureAnalyzer:
         """Calculates frequency distribution and impact metrics."""
         if not self.keys:
             return {"error": "No failure keys provided."}
-            
+
         counts = collections.Counter(self.keys)
         total = len(self.keys)
-        
+
         return {
             "metrics": {
                 "total_failures": total,
@@ -48,7 +48,7 @@ class FailureAnalyzer:
         print(f"Uniqueness: {results['metrics']['unique_patterns']} patterns identified")
         print("-" * 31)
         print(f"{'Key':<10} | {'Count':<7} | {'Impact'}")
-        
+
         # Sort by count descending then key ascending
         sorted_dist = sorted(results['distribution'].items(), key=lambda x: (-x[1]['count'], x[0]))
         for key, data in sorted_dist:
@@ -57,6 +57,6 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Contextual failure data for analysis
     CONTEXT_KEYS = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     analyzer = FailureAnalyzer(CONTEXT_KEYS)
     analyzer.report()

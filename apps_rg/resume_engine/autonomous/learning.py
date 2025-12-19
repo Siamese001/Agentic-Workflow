@@ -50,20 +50,20 @@ class ConfidenceResult:
     logprobs: Optional[List[float]] = None
     avg_logprob: Optional[float] = None
     should_retry: bool = False
-    
+
     @classmethod
     def from_logprob(cls, avg_logprob: float, min_confidence: float = 0.7) -> "ConfidenceResult":
         """Create ConfidenceResult from average logprob."""
         # Normalize logprob (-2.0 to 0.0) to confidence (0.0 to 1.0)
         score = min(1.0, max(0.0, (avg_logprob + 2.0) / 2.0))
-        
+
         if score >= 0.8:
             level = ConfidenceLevel.HIGH
         elif score >= 0.5:
             level = ConfidenceLevel.MEDIUM
         else:
             level = ConfidenceLevel.LOW
-        
+
         return cls(
             score=score,
             level=level,
@@ -97,11 +97,11 @@ class MemoryState:
 class LearningLoop:
     """
     Few-shot learning from past successful fixes.
-    
+
     Uses vector store (Pinecone) for semantic search of similar past examples.
     Falls back to local storage if vector store unavailable.
     """
-    
+
     def __init__(
         self,
         ctx: ResumeEngineContext,
@@ -111,17 +111,17 @@ class LearningLoop:
         self.ctx = ctx
         self.index_name = index_name
         self.local_fallback = local_fallback
-        
+
         # Local storage for fallback
         self._local_examples: List[LearningExample] = []
         self._local_file = Path(".memory/resume_learning.json")
-        
+
         # Vector store connection (lazy init)
         self._pinecone_index = None
         self._pinecone_available = False
-        
+
         self._load_local_examples()
-    
+
     def _load_local_examples(self):
         """Load examples from local storage."""
         if self._local_file.exists():
@@ -133,7 +133,7 @@ class LearningLoop:
                     ]
             except Exception:
                 self._local_examples = []
-    
+
     def _save_local_examples(self):
         """Save examples to local storage."""
         try:
@@ -147,7 +147,7 @@ class LearningLoop:
                 )
         except Exception:
             pass
-    
+
     async def recall_similar(
         self,
         query: str,
@@ -156,12 +156,12 @@ class LearningLoop:
     ) -> List[LearningExample]:
         """
         Recall similar past examples for few-shot learning.
-        
+
         Args:
             query: The current task/problem description
             task_type: Optional filter by task type
             top_k: Number of examples to return
-        
+
         Returns:
             List of similar LearningExample objects
         """
@@ -173,10 +173,10 @@ class LearningLoop:
                     return results
             except Exception:
                 pass
-        
+
         # Fallback to local search
         return self._search_local(query, task_type, top_k)
-    
+
     async def _search_pinecone(
         self,
         query: str,
@@ -187,7 +187,7 @@ class LearningLoop:
         # This would use the actual Pinecone client
         # For now, return empty to use local fallback
         return []
-    
+
     def _search_local(
         self,
         query: str,
@@ -197,26 +197,26 @@ class LearningLoop:
         """Search local examples using simple text matching."""
         query_lower = query.lower()
         query_words = set(query_lower.split())
-        
+
         scored_examples = []
         for ex in self._local_examples:
             if not ex.success:
                 continue
-            
+
             if task_type and ex.task_type != task_type:
                 continue
-            
+
             # Simple word overlap scoring
             ex_words = set(ex.input_context.lower().split())
             overlap = len(query_words & ex_words)
             if overlap > 0:
                 scored_examples.append((overlap, ex))
-        
+
         # Sort by score descending
         scored_examples.sort(key=lambda x: x[0], reverse=True)
-        
+
         return [ex for _, ex in scored_examples[:top_k]]
-    
+
     async def record_success(
         self,
         task_type: str,
@@ -227,7 +227,7 @@ class LearningLoop:
     ):
         """
         Record a successful fix for future learning.
-        
+
         Args:
             task_type: Type of task (e.g., "quality_fix", "ats_optimization")
             input_context: The input/problem that was solved
@@ -244,25 +244,25 @@ class LearningLoop:
             confidence=confidence,
             metadata=metadata or {},
         )
-        
+
         self._local_examples.append(example)
         self._save_local_examples()
-        
+
         # Also upsert to vector store if available
         if self._pinecone_available:
             await self._upsert_pinecone(example)
-    
+
     async def _upsert_pinecone(self, example: LearningExample):
         """Upsert example to Pinecone."""
         # Would use actual Pinecone client
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get learning statistics."""
         successful = [ex for ex in self._local_examples if ex.success]
         task_types = {}
         for ex in successful:
             task_types[ex.task_type] = task_types.get(ex.task_type, 0) + 1
-        
+
         return {
             "total_examples": len(self._local_examples),
             "successful_examples": len(successful),
@@ -274,10 +274,10 @@ class LearningLoop:
 class ConfidenceScorer:
     """
     Confidence scoring for LLM responses using logprobs.
-    
+
     Provides retry logic when confidence is below threshold.
     """
-    
+
     def __init__(
         self,
         min_confidence: float = 0.7,
@@ -287,12 +287,12 @@ class ConfidenceScorer:
         self.min_confidence = min_confidence
         self.max_retries = max_retries
         self.retry_delay = retry_delay
-        
+
         # Statistics
         self.total_scores = 0
         self.high_confidence_count = 0
         self.retry_count = 0
-    
+
     def score_response(
         self,
         response: Any,
@@ -300,23 +300,23 @@ class ConfidenceScorer:
     ) -> ConfidenceResult:
         """
         Score the confidence of an LLM response.
-        
+
         Args:
             response: The LLM response object
             extract_logprobs: Whether to extract logprobs from response
-        
+
         Returns:
             ConfidenceResult with score and level
         """
         self.total_scores += 1
-        
+
         # Try to extract logprobs from response
         avg_logprob = None
         if extract_logprobs and hasattr(response, 'candidates'):
             candidates = response.candidates
             if candidates and hasattr(candidates[0], 'avg_logprobs'):
                 avg_logprob = candidates[0].avg_logprobs
-        
+
         if avg_logprob is not None:
             result = ConfidenceResult.from_logprob(avg_logprob, self.min_confidence)
         else:
@@ -326,35 +326,35 @@ class ConfidenceScorer:
                 level=ConfidenceLevel.MEDIUM,
                 should_retry=False
             )
-        
+
         if result.level == ConfidenceLevel.HIGH:
             self.high_confidence_count += 1
-        
+
         if result.should_retry:
             self.retry_count += 1
-        
+
         return result
-    
+
     def score_from_logprob(self, avg_logprob: float) -> ConfidenceResult:
         """Score directly from a logprob value."""
         self.total_scores += 1
         result = ConfidenceResult.from_logprob(avg_logprob, self.min_confidence)
-        
+
         if result.level == ConfidenceLevel.HIGH:
             self.high_confidence_count += 1
-        
+
         return result
-    
+
     def score_from_text(self, text: str) -> ConfidenceResult:
         """
         Heuristic confidence scoring based on text characteristics.
-        
+
         Used when logprobs are not available.
         """
         self.total_scores += 1
-        
+
         score = 0.5  # Base score
-        
+
         # Positive indicators
         if len(text) > 100:
             score += 0.1
@@ -362,15 +362,15 @@ class ConfidenceScorer:
             score += 0.1
         if any(phrase in text.lower() for phrase in ["specifically", "exactly", "precisely"]):
             score += 0.1
-        
+
         # Negative indicators
         if "error" in text.lower() or "failed" in text.lower():
             score -= 0.2
         if text.count("?") > 2:
             score -= 0.1
-        
+
         score = min(1.0, max(0.0, score))
-        
+
         if score >= 0.8:
             level = ConfidenceLevel.HIGH
             self.high_confidence_count += 1
@@ -378,13 +378,13 @@ class ConfidenceScorer:
             level = ConfidenceLevel.MEDIUM
         else:
             level = ConfidenceLevel.LOW
-        
+
         return ConfidenceResult(
             score=score,
             level=level,
             should_retry=score < self.min_confidence
         )
-    
+
     async def retry_with_confidence(
         self,
         call_fn: Callable,
@@ -393,21 +393,21 @@ class ConfidenceScorer:
     ) -> Tuple[Any, ConfidenceResult]:
         """
         Retry a function call until confidence threshold is met.
-        
+
         Args:
             call_fn: Async function to call
             *args, **kwargs: Arguments to pass to call_fn
-        
+
         Returns:
             Tuple of (result, confidence_result)
         """
         best_result = None
         best_confidence = ConfidenceResult(score=0.0, level=ConfidenceLevel.LOW)
-        
+
         for attempt in range(self.max_retries):
             try:
                 result = await call_fn(*args, **kwargs)
-                
+
                 # Score the result
                 if hasattr(result, 'candidates'):
                     confidence = self.score_response(result)
@@ -415,27 +415,27 @@ class ConfidenceScorer:
                     confidence = self.score_from_text(result)
                 else:
                     confidence = ConfidenceResult(score=0.6, level=ConfidenceLevel.MEDIUM)
-                
+
                 # Keep best result
                 if confidence.score > best_confidence.score:
                     best_result = result
                     best_confidence = confidence
-                
+
                 # Return if confidence is high enough
                 if not confidence.should_retry:
                     return result, confidence
-                
+
                 # Wait before retry
                 if attempt < self.max_retries - 1:
                     await asyncio.sleep(self.retry_delay * (attempt + 1))
-                    
+
             except Exception as e:
                 if attempt == self.max_retries - 1:
                     raise e
                 await asyncio.sleep(self.retry_delay)
-        
+
         return best_result, best_confidence
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get scoring statistics."""
         return {
@@ -450,15 +450,15 @@ class ConfidenceScorer:
 class InstructionInjector:
     """
     Dynamic instruction injection for real-time agent steering.
-    
+
     Allows users or agents to inject instructions that guide
     downstream agent behavior.
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._instructions: List[Instruction] = []
-    
+
     def inject(
         self,
         source: str,
@@ -469,14 +469,14 @@ class InstructionInjector:
     ) -> str:
         """
         Inject a new instruction.
-        
+
         Args:
             source: Who is injecting (agent name or "user")
             content: The instruction content
             priority: Priority level (higher = more important)
             target_agents: List of agent names this applies to (None = all)
             ttl_seconds: Time-to-live in seconds (None = no expiry)
-        
+
         Returns:
             Instruction ID
         """
@@ -485,7 +485,7 @@ class InstructionInjector:
             expires_at = (
                 datetime.now().timestamp() + ttl_seconds
             ).__str__()
-        
+
         instruction = Instruction(
             id=f"inst_{int(time.time())}_{len(self._instructions)}",
             source=source,
@@ -494,14 +494,14 @@ class InstructionInjector:
             target_agents=target_agents or [],
             expires_at=expires_at,
         )
-        
+
         self._instructions.append(instruction)
-        
+
         # Also add to context for backward compatibility
         self.ctx.instructions.append(f"[{source}] {content}")
-        
+
         return instruction.id
-    
+
     def get_instructions(
         self,
         agent_name: Optional[str] = None,
@@ -509,16 +509,16 @@ class InstructionInjector:
     ) -> List[Instruction]:
         """
         Get active instructions, optionally filtered by agent.
-        
+
         Args:
             agent_name: Filter by target agent (None = all)
             include_expired: Include expired instructions
-        
+
         Returns:
             List of matching instructions, sorted by priority
         """
         now = datetime.now().timestamp()
-        
+
         result = []
         for inst in self._instructions:
             # Check expiry
@@ -528,43 +528,43 @@ class InstructionInjector:
                         continue
                 except ValueError:
                     pass
-            
+
             # Check target
             if agent_name and inst.target_agents:
                 if agent_name not in inst.target_agents:
                     continue
-            
+
             result.append(inst)
-        
+
         # Sort by priority (descending)
         result.sort(key=lambda x: x.priority, reverse=True)
-        
+
         return result
-    
+
     def get_instruction_text(
         self,
         agent_name: Optional[str] = None,
     ) -> str:
         """
         Get formatted instruction text for an agent.
-        
+
         Args:
             agent_name: The agent requesting instructions
-        
+
         Returns:
             Formatted string of all applicable instructions
         """
         instructions = self.get_instructions(agent_name)
-        
+
         if not instructions:
             return ""
-        
+
         lines = ["## Active Instructions:"]
         for inst in instructions:
             lines.append(f"- [{inst.source}] {inst.content}")
-        
+
         return "\n".join(lines)
-    
+
     def remove(self, instruction_id: str) -> bool:
         """Remove an instruction by ID."""
         for i, inst in enumerate(self._instructions):
@@ -572,7 +572,7 @@ class InstructionInjector:
                 self._instructions.pop(i)
                 return True
         return False
-    
+
     def clear(self, source: Optional[str] = None):
         """Clear instructions, optionally filtered by source."""
         if source:
@@ -582,13 +582,13 @@ class InstructionInjector:
             ]
         else:
             self._instructions.clear()
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get instruction statistics."""
         by_source = {}
         for inst in self._instructions:
             by_source[inst.source] = by_source.get(inst.source, 0) + 1
-        
+
         return {
             "total_instructions": len(self._instructions),
             "by_source": by_source,
@@ -599,10 +599,10 @@ class InstructionInjector:
 class MemoryPersistence:
     """
     Persistent memory for resume validation state.
-    
+
     Tracks file hashes, skip logic, and flapping detection.
     """
-    
+
     def __init__(
         self,
         memory_file: Optional[Path] = None,
@@ -610,10 +610,10 @@ class MemoryPersistence:
     ):
         self.memory_file = memory_file or Path(".memory/resume_memory.json")
         self.flapping_threshold = flapping_threshold
-        
+
         self.state = MemoryState()
         self._load()
-    
+
     def _load(self):
         """Load memory state from disk."""
         if self.memory_file.exists():
@@ -629,7 +629,7 @@ class MemoryPersistence:
                     )
             except Exception:
                 self.state = MemoryState()
-    
+
     def _save(self):
         """Save memory state to disk."""
         try:
@@ -648,41 +648,41 @@ class MemoryPersistence:
                 )
         except Exception:
             pass
-    
+
     def calculate_hash(self, content: str) -> str:
         """Calculate SHA-256 hash of content."""
         return hashlib.sha256(content.encode()).hexdigest()
-    
+
     def should_skip(self, file_id: str, content: str) -> bool:
         """
         Check if a file should be skipped based on memory.
-        
+
         Args:
             file_id: Unique identifier for the file/section
             content: Current content
-        
+
         Returns:
             True if file should be skipped
         """
         current_hash = self.calculate_hash(content)
         saved_hash = self.state.file_hashes.get(file_id)
-        
+
         # If content has changed, don't skip
         if saved_hash and saved_hash != current_hash:
             return False
-        
+
         # If content unchanged and in skip list, skip it
         if file_id in self.state.skip_files and saved_hash == current_hash:
             return True
-        
+
         # If content unchanged, check validation history
         if saved_hash and saved_hash == current_hash:
             history = self.state.validation_history.get(file_id, [])
             if history and history[-1]:  # Last validation passed
                 return True
-        
+
         return False
-    
+
     def record_validation(
         self,
         file_id: str,
@@ -691,7 +691,7 @@ class MemoryPersistence:
     ):
         """
         Record a validation result.
-        
+
         Args:
             file_id: Unique identifier for the file/section
             content: Content that was validated
@@ -699,42 +699,42 @@ class MemoryPersistence:
         """
         current_hash = self.calculate_hash(content)
         self.state.file_hashes[file_id] = current_hash
-        
+
         # Update history
         if file_id not in self.state.validation_history:
             self.state.validation_history[file_id] = []
-        
+
         history = self.state.validation_history[file_id]
         history.append(passed)
-        
+
         # Keep only last N results
         if len(history) > 10:
             history = history[-10:]
             self.state.validation_history[file_id] = history
-        
+
         # Detect flapping
         if len(history) >= self.flapping_threshold:
             recent = history[-self.flapping_threshold:]
             if len(set(recent)) > 1:  # Mixed results
                 self.state.flapping_files.add(file_id)
-        
+
         # Update skip list
         if passed:
             self.state.skip_files.add(file_id)
         else:
             self.state.skip_files.discard(file_id)
-        
+
         self._save()
-    
+
     def is_flapping(self, file_id: str) -> bool:
         """Check if a file is flapping (unstable validation)."""
         return file_id in self.state.flapping_files
-    
+
     def clear_flapping(self, file_id: str):
         """Clear flapping status for a file."""
         self.state.flapping_files.discard(file_id)
         self._save()
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get memory statistics."""
         return {
@@ -743,7 +743,7 @@ class MemoryPersistence:
             "flapping_count": len(self.state.flapping_files),
             "last_updated": self.state.last_updated,
         }
-    
+
     def reset(self):
         """Reset all memory state."""
         self.state = MemoryState()
@@ -753,24 +753,24 @@ class MemoryPersistence:
 class ResumeLearningAgent:
     """
     Agent that combines all Phase 3 learning capabilities.
-    
+
     Integrates:
     - Few-shot learning from past successes
     - Confidence scoring with retry logic
     - Dynamic instruction injection
     - Memory persistence
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self.name = "ResumeLearningAgent"
-        
+
         # Initialize components
         self.learning_loop = LearningLoop(ctx)
         self.confidence_scorer = ConfidenceScorer()
         self.instruction_injector = InstructionInjector(ctx)
         self.memory = MemoryPersistence()
-    
+
     async def get_few_shot_context(
         self,
         task_description: str,
@@ -778,7 +778,7 @@ class ResumeLearningAgent:
     ) -> str:
         """
         Get few-shot context from past successful fixes.
-        
+
         Returns formatted string for prompt injection.
         """
         examples = await self.learning_loop.recall_similar(
@@ -786,18 +786,18 @@ class ResumeLearningAgent:
             task_type=task_type,
             top_k=2,
         )
-        
+
         if not examples:
             return ""
-        
+
         lines = ["\n## Similar Past Successes:"]
         for i, ex in enumerate(examples, 1):
             lines.append(f"\n### Example {i} (confidence: {ex.confidence:.2f})")
             lines.append(f"Input: {ex.input_context[:200]}...")
             lines.append(f"Output: {ex.output_result[:200]}...")
-        
+
         return "\n".join(lines)
-    
+
     async def record_success(
         self,
         task_type: str,
@@ -812,7 +812,7 @@ class ResumeLearningAgent:
             output_result=output_result,
             confidence=confidence,
         )
-    
+
     def inject_instruction(
         self,
         content: str,
@@ -826,15 +826,15 @@ class ResumeLearningAgent:
             priority=priority,
             target_agents=target_agents,
         )
-    
+
     def get_instructions_for_agent(self, agent_name: str) -> str:
         """Get formatted instructions for an agent."""
         return self.instruction_injector.get_instruction_text(agent_name)
-    
+
     def should_skip_section(self, section_id: str, content: str) -> bool:
         """Check if a section should be skipped."""
         return self.memory.should_skip(section_id, content)
-    
+
     def record_section_validation(
         self,
         section_id: str,
@@ -843,7 +843,7 @@ class ResumeLearningAgent:
     ):
         """Record section validation result."""
         self.memory.record_validation(section_id, content, passed)
-    
+
     def get_comprehensive_stats(self) -> Dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {

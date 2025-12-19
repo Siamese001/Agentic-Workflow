@@ -19,12 +19,12 @@ def analyze_patterns(keys):
     counts = collections.Counter(keys)
     total = len(keys)
     unique = len(counts)
-    
+
     # Statistical measures
     mean_val = sum(keys) / total
     sorted_keys = sorted(keys)
     median_val = sorted_keys[total // 2]
-    
+
     # Variance calculation for dispersion signal
     variance = sum((x - mean_val) ** 2 for x in keys) / total
     std_dev = math.sqrt(variance)
