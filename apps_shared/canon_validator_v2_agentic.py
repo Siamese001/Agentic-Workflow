@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-SubAtomic Canon Validator - Complete 50 Key Implementation
-All 50 Subatomic Canon keys are validated with proper AST-based checks.
+Subatomic Canon Validator - L5 Autonomous Healing
+Enforces 50 validation keys with AI-powered fixes.
 """
+
+print("DEBUG: VERSION 2.1 - CACHE CLEARED - DECEMBER 19 2025")
 
 import argparse
 import ast
