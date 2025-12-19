@@ -10,9 +10,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from db_manager import HybridDatabaseManager
 from sentence_transformers import SentenceTransformer
 
-from db_manager import HybridDatabaseManager
 from schemas import CanonEntry, UnifiedSemanticElement, generate_ast_structure
 
 logger = logging.getLogger(__name__)
@@ -120,7 +120,6 @@ def backfill_qdrant(
             entries.append(entry)
 
         except Exception as e:
-pass
 logger.error(f"Failed to process {file_path}: {e}")
 
     # Upsert to Qdrant in batches
@@ -182,7 +181,6 @@ def hydrate_redis(
             loaded_count += 1
 
         except Exception as e:
-pass
 logger.error(f"Failed to load pattern {entry.id} into Redis: {e}")
 
     logger.info(f"Hydrated Redis with {loaded_count} golden patterns")

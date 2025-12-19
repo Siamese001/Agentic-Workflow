@@ -1,27 +1,16 @@
-import pytest
-
-import os
-
 import json
+import os
+from unittest.mock import MagicMock, mock_open, patch
 
-from unittest.mock import MagicMock, patch, mock_open
-
+import pytest
 from outreach_engine_zse import (
-
-    execute_outreach_zse,
-
-    PitchGenerator,
-
-    ShadowModeEngine,
-
     MAX_PITCH_REFINEMENTS,
-
+    OUTREACH_ALLOWED_HOSTS,
     SHADOW_MODE_ACTIVE,
-
-    OUTREACH_ALLOWED_HOSTS
-
+    PitchGenerator,
+    ShadowModeEngine,
+    execute_outreach_zse,
 )
-
 
 
 @pytest.fixture
@@ -756,13 +745,9 @@ class TestNetworkIntegration:
 
         """Test that egress filter decorator is properly applied"""
 
-        from network_utils import strict_egress_filter
-
-
-
         # Verify the decorator is applied to _fetch_company_content
-
         import outreach_engine_zse
+        from network_utils import strict_egress_filter
 
         assert hasattr(outreach_engine_zse._fetch_company_content, '__wrapped__')
 

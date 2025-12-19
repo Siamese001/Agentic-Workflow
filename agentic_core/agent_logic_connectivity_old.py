@@ -10,9 +10,8 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from redisvl.query import VectorQuery
-
 from connection_manager import ConnectionFactory
+from redisvl.query import VectorQuery
 from schemas_connectivity import (
     CanonEntry,
     CanonQuery,

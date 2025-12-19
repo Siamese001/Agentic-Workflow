@@ -12,8 +12,7 @@ from typing import Any, Dict
 
 from ..knowledge.l5_consolidated import get_consolidated_knowledge
 from ..utils.core_utilities import log_action, register_process
-from ..utils.networking import (get_networking_utility, send_email,
-                                strict_egress_filter)
+from ..utils.networking import get_networking_utility, send_email, strict_egress_filter
 from ..utils.pitch_generator import PitchGenerator
 from ..utils.shadow_mode import ShadowModeEngine
 

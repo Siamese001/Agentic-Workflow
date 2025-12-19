@@ -1,23 +1,26 @@
-import os
-import sys
+import hashlib
 import json
 import logging
+import os
 import subprocess
-import hashlib
-from typing import Dict, Any, Optional, Tuple
+import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
+
+# Import consensus engine for Protocol 6
+from consensus_engine import jury
 
 # Import core utilities for validation and signing
 from core_utils import (
-    validate_python_syntax,
-    sign_and_commit,
-    search_nodes,
     add_observations,
-    semantic_score_draft,
-    write_file,
-    register_process,
     log_action,
+    register_process,
+    search_nodes,
+    semantic_score_draft,
+    sign_and_commit,
+    validate_python_syntax,
+    write_file,
 )
 
 # Import MCP hardening utilities
@@ -25,8 +28,6 @@ from mcp_hardening import check_design_drift, execute_vulnerability_search
 
 # Import sandbox utilities for execution isolation
 from sandbox_utils import execute_in_sandbox
-# Import consensus engine for Protocol 6
-from consensus_engine import jury
 
 # Add this global configuration flag (or load from environment/config)
 SHADOW_MODE_ACTIVE = os.environ.get("AGENT_MODE", "PRODUCTION") == "SHADOW"

@@ -15,17 +15,27 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_lic.outreach_engine.autonomous.agents import (
-    CampaignBalanceAgent, CampaignPlanner, ContactValidatorAgent,
-    DeliverabilityAgent, LeadQualityAgent, MessageComplianceAgent,
-    OutreachReflectionAgent, OutreachTestPilot, TemplateOptimizer)
+    CampaignBalanceAgent,
+    CampaignPlanner,
+    ContactValidatorAgent,
+    DeliverabilityAgent,
+    LeadQualityAgent,
+    MessageComplianceAgent,
+    OutreachReflectionAgent,
+    OutreachTestPilot,
+    TemplateOptimizer,
+)
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingOrchestrator, OutreachHealingResult,
-    run_outreach_healing_mission)
+    OutreachHealingOrchestrator,
+    OutreachHealingResult,
+    run_outreach_healing_mission,
+)
 from apps_lic.outreach_engine.autonomous.learning import (
-    OutreachLearningAgent, OutreachMemoryPersistence)
-from apps_lic.outreach_engine.autonomous.observability import \
-    OutreachPhase5Orchestrator
+    OutreachLearningAgent,
+    OutreachMemoryPersistence,
+)
+from apps_lic.outreach_engine.autonomous.observability import OutreachPhase5Orchestrator
 
 
 @pytest.fixture

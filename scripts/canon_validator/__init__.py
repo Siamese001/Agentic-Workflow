@@ -10,23 +10,55 @@ This package provides the complete Canon Validator infrastructure:
 """
 
 # All agents
-from .agents import (ArchitectureGovernor, BenchmarkingAgent,
-                     CodeStyleGuardian, ConcurrencyGuardian, DeadlockDetector,
-                     DependencySentinel, DocEnforcer, GitAgent, Historian,
-                     HygieneGuardian, MemoryLeakDetector, NamingEnforcer,
-                     PatternEnforcer, PerformanceEnforcer, ReflectionAgent,
-                     SafetyInspector, SecurityEnforcer, Sherlock,
-                     StrategicPlanner, StructuralEngineer, TestPilot,
-                     TheCartographer, TheOmniContext, TheStrategist,
-                     ToolsmithAgent, TypeEnforcer)
+from .agents import (
+    ArchitectureGovernor,
+    BenchmarkingAgent,
+    CodeStyleGuardian,
+    ConcurrencyGuardian,
+    DeadlockDetector,
+    DependencySentinel,
+    DocEnforcer,
+    GitAgent,
+    Historian,
+    HygieneGuardian,
+    MemoryLeakDetector,
+    NamingEnforcer,
+    PatternEnforcer,
+    PerformanceEnforcer,
+    ReflectionAgent,
+    SafetyInspector,
+    SecurityEnforcer,
+    Sherlock,
+    StrategicPlanner,
+    StructuralEngineer,
+    TestPilot,
+    TheCartographer,
+    TheOmniContext,
+    TheStrategist,
+    ToolsmithAgent,
+    TypeEnforcer,
+)
 from .base import ImportPatcher, SubAtomicAgent
-from .config import (ALLOWED_ROOT_FILES, ALLOWED_ROOT_FOLDERS, EXCLUDED_DIRS,
-                     EXCLUDED_FILES, MAX_DEPTH, MAX_LINES, MIN_DEPTH,
-                     MIN_LINES, get_python_files, is_excluded)
+from .config import (
+    ALLOWED_ROOT_FILES,
+    ALLOWED_ROOT_FOLDERS,
+    EXCLUDED_DIRS,
+    EXCLUDED_FILES,
+    MAX_DEPTH,
+    MAX_LINES,
+    MIN_DEPTH,
+    MIN_LINES,
+    get_python_files,
+    is_excluded,
+)
+
 # Orchestrator
 from .orchestrator import IntelligentOrchestrator, SwarmScheduler
-from .prompts import (FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_PROMPTS,
-                      POSITIVE_INSTRUCTIONAL_CONTEXT)
+from .prompts import (
+    FEW_SHOT_GLOBAL_REFACTOR,
+    FEW_SHOT_PROMPTS,
+    POSITIVE_INSTRUCTIONAL_CONTEXT,
+)
 from .types import BudgetManager, DependencyGraph, ValidationContext
 
 __all__ = [

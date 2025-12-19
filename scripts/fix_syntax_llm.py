@@ -1,14 +1,15 @@
-import os
 import argparse
-import google.generativeai as genai
-import time
 import json
+import os
 import sys
+import time
 from pathlib import Path
+
+import google.generativeai as genai
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from shared.config.exclusions import EXCLUDED_FILES, EXCLUDED_DIRS
+from shared.config.exclusions import EXCLUDED_DIRS, EXCLUDED_FILES
 
 # --- CONFIGURATION ---
 API_KEY = os.environ.get("GOOGLE_API_KEY")

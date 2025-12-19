@@ -11,14 +11,13 @@ This test validates:
 """
 
 import asyncio
-import os
 import tempfile
 from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
-from interfaces.governance import ArchitectureGovernor, create_architecture_governor
+from interfaces.governance import create_architecture_governor
 
 
 async def test_root_hygiene_enforcement():
@@ -434,5 +433,4 @@ async def run_root_hygiene_validation():
 
 
 if __name__ == "__main__":
-    import sys
     asyncio.run(run_root_hygiene_validation())

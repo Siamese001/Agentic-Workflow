@@ -1,17 +1,18 @@
-import os
-import ast
-import time
 import argparse
-import google.generativeai as genai
+import ast
 import json
-from typing import Optional
 import logging
+import os
 import sys
+import time
 from pathlib import Path
+from typing import Optional
+
+import google.generativeai as genai
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from shared.config.exclusions import EXCLUDED_FILES, EXCLUDED_DIRS
+from shared.config.exclusions import EXCLUDED_DIRS, EXCLUDED_FILES
 
 # --- CONFIGURATION ---
 # Ensure GOOGLE_API_KEY is in your docker-compose environment variables

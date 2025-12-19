@@ -3,9 +3,8 @@ agentic_core/agents/base.py
 Depth: 3
 Role: Abstract Base Class for all SubAtomic Agents.
 """
-import time
-import asyncio
 from agentic_core.domain.context import ValidationContext
+
 
 class SubAtomicAgent:
     """Base class for all validation agents with async support."""
@@ -85,7 +84,6 @@ class ImportPatcher:
                       For splits: {'old.module': ['new.module1', 'new.module2']}
             source_agent: Name of the agent performing the changes
         """
-        import os
         if not change_map:
             return
         

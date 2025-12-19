@@ -14,10 +14,16 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..governance import (DashboardGenerator, DependencyArbiter,
-                          DocComplianceLevel, Phase7Orchestrator,
-                          PredictiveBudgetManager, PromptGovernor, PromptRisk,
-                          StrictDocEnforcer)
+from ..governance import (
+    DashboardGenerator,
+    DependencyArbiter,
+    DocComplianceLevel,
+    Phase7Orchestrator,
+    PredictiveBudgetManager,
+    PromptGovernor,
+    PromptRisk,
+    StrictDocEnforcer,
+)
 from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
 from ..intelligence import Phase6Orchestrator
 from ..observability import Phase5Orchestrator

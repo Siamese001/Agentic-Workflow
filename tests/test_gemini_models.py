@@ -1,4 +1,5 @@
 import os
+
 import google.generativeai as genai
 
 # Configure with the API key

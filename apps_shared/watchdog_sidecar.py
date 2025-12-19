@@ -1,8 +1,8 @@
-import time
-import os
-import signal
 import logging
+import os
 import re
+import signal
+import time
 from typing import List
 
 # Configure Logging
@@ -29,7 +29,6 @@ class DeadManSwitch:
             with open(self.pid_file, 'r') as f:
                 return int(f.read().strip())
         except (ValueError, FileNotFoundError):
-pass
 return None
 
     def kill_agent(self, pid: int):
@@ -47,10 +46,8 @@ return None
             # send_alert("Agent killed due to spam loop.")
 
         except ProcessLookupError:
-pass
 logger.warning(f"PID {pid} not found (already dead?).")
         except PermissionError:
-pass
 logger.error(f"❌ Permission denied killing PID {pid}.")
 
     def monitor(self):
@@ -104,6 +101,5 @@ if __name__ == "__main__":
     try:
         watchdog.monitor()
     except KeyboardInterrupt:
-pass
 logger.info("Watchdog stopped by user.")
 

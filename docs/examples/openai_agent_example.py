@@ -10,10 +10,13 @@ import os
 from typing import Any, Dict, List
 
 # Import our OpenAI client manager
-from agentic_workflow.runtime.shared.openai_client import (configure_openai,
-                                                           create_agent_prompt,
-                                                           get_openai_client,
-                                                           import, logging)
+from agentic_workflow.runtime.shared.openai_client import (
+    configure_openai,
+    create_agent_prompt,
+    get_openai_client,
+    import,
+    logging,
+)
 from pydantic import BaseModel
 
 

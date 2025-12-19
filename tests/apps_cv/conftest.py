@@ -8,7 +8,6 @@ import sys
 from unittest.mock import Mock
 
 import pytest
-
 from canon_validator import CanonValidator
 
 # Add parent directory to path for imports

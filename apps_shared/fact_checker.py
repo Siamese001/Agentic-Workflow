@@ -1,8 +1,8 @@
 import json
+import logging
 import os
 import re
-import logging
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
 
 logger = logging.getLogger("FactChecker")
 logging.basicConfig(level=logging.INFO)

@@ -4,29 +4,34 @@ Phase 2 - Pillar 1: Layering Model
 Coordinates Brain (cognitive) and Hands (action) through Think-Act-Observe cycle.
 """
 
+import asyncio
 import logging
 import time
 from typing import Any, Dict, List, Optional
-import asyncio
 
 from agentic_core.interfaces import (
-    ICognitivePlane,
-    IActionPlane,
-    OrchestratorConfig,
+    ActionRequest,
     ExecutionContext,
     ExecutionResult,
-    ExecutionPhase,
-    PlanningRequest,
-    ActionRequest,
+    IActionPlane,
+    ICognitivePlane,
+    OrchestratorConfig,
 )
-from agentic_core.L1_cognition.sovereign_cognitive_plane import SovereignCognitivePlane, create_sovereign_cognitive_plane
-from agentic_core.L2_execution.sovereign_action_plane import SovereignActionPlane, create_sovereign_action_plane
-from agentic_core.L5_safety.safety_layer import create_l5_safety_layer, L5SafetyLayer
-from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
-from agentic_core.L4_state.storage import create_storage_adapter, SignalLedger
-from agentic_core.L5_safety.intervention_server import InterventionServer, InterventionContext, check_intervention_required
 from agentic_core.interfaces.governance import ArchitectureGovernor
-from agentic_core.L3_orchestration.telepathy import process_telepathy_instructions, get_telepathy_interface
+from agentic_core.L1_cognition.sovereign_cognitive_plane import (
+    create_sovereign_cognitive_plane,
+)
+from agentic_core.L2_execution.sovereign_action_plane import (
+    create_sovereign_action_plane,
+)
+from agentic_core.L3_orchestration.telepathy import process_telepathy_instructions
+from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
+from agentic_core.L4_state.storage import SignalLedger, create_storage_adapter
+from agentic_core.L5_safety.intervention_server import (
+    InterventionServer,
+    check_intervention_required,
+)
+from agentic_core.L5_safety.safety_layer import create_l5_safety_layer
 
 LOGGER = logging.getLogger(__name__)
 
@@ -567,9 +572,8 @@ class NervousSystem:
             phase_name: Name of the completed phase
             context: Current execution context
         """
-        import time
         from datetime import datetime
-        
+
         # Prepare checkpoint state
         success_rate = self._calculate_success_rate()
         checkpoint_state = {
@@ -951,7 +955,6 @@ class NervousSystem:
         Args:
             path: Path to save state
         """
-        import json
 
         STATE = self.get_state()
 
@@ -968,7 +971,7 @@ class NervousSystem:
         """
 
         with open(path, 'r') as f:
-            STATE = json.load(f)
+            json.load(f)
 
         self._iteration = state.get("iteration", 0)
         self._state = state.get("state", {})
@@ -986,7 +989,7 @@ class NervousSystem:
         """
         actions: List[ActionRequest] = []
 
-        PLAN = think_result.get("plan", [])
+        think_result.get("plan", [])
 
         for step in plan:
             if step.get("type") == "action":

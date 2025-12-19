@@ -1,6 +1,7 @@
 import pytest
 from security_utils import PromptFirewall, SecurityException
 
+
 @pytest.mark.skip(reason="Test not implemented")
 def test_firewall_blocks_basic_injection():
     """Ensure standard 'Ignore Instructions' attacks are caught."""

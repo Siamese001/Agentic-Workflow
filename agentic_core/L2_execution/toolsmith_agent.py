@@ -5,13 +5,12 @@ Dynamically creates and manages tools for the agentic system.
 Generates specialized tools based on requirements.
 """
 
-import inspect
-import logging
 import json
+import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Callable, Type
-from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -523,7 +522,7 @@ def get_toolsmith_agent() -> ToolsmithAgent:
 
 def initialize_toolsmith_agent():
     """Initialize the ToolsmithAgent system."""
-    agent = get_toolsmith_agent()
+    get_toolsmith_agent()
     LOGGER.info("ToolsmithAgent system initialized")
 
 

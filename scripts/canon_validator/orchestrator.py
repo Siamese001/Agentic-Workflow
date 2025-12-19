@@ -9,14 +9,30 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .types import ValidationContext
 
-from .agents import (ArchitectureGovernor, BenchmarkingAgent,
-                     CodeStyleGuardian, ConcurrencyGuardian, DeadlockDetector,
-                     DependencySentinel, DocEnforcer, Historian,
-                     HygieneGuardian, MemoryLeakDetector, NamingEnforcer,
-                     PatternEnforcer, PerformanceEnforcer, SafetyInspector,
-                     SecurityEnforcer, StructuralEngineer, TestPilot,
-                     TheCartographer, TheOmniContext, TheStrategist,
-                     ToolsmithAgent, TypeEnforcer)
+from .agents import (
+    ArchitectureGovernor,
+    BenchmarkingAgent,
+    CodeStyleGuardian,
+    ConcurrencyGuardian,
+    DeadlockDetector,
+    DependencySentinel,
+    DocEnforcer,
+    Historian,
+    HygieneGuardian,
+    MemoryLeakDetector,
+    NamingEnforcer,
+    PatternEnforcer,
+    PerformanceEnforcer,
+    SafetyInspector,
+    SecurityEnforcer,
+    StructuralEngineer,
+    TestPilot,
+    TheCartographer,
+    TheOmniContext,
+    TheStrategist,
+    ToolsmithAgent,
+    TypeEnforcer,
+)
 from .types import ValidationContext
 
 

@@ -3,31 +3,32 @@ agentic_core/domain/context.py
 Depth: 3
 Role: Shared state (Blackboard) and Infrastructure Context.
 """
+import asyncio
+import datetime
+import hashlib
+import json
+import logging
 import os
 import sys
-import json
 import time
-import asyncio
-import hashlib
-import logging
-import datetime
-from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Set, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
 
 # Third-party hard-gates (Tri-Brain)
 try:
     import redis.asyncio as redis
-    from pinecone import Pinecone
     from google import genai
+    from pinecone import Pinecone
 except ImportError:
     pass  # Handled by dependency checks in runner
+
+from apps_shared.config.reliability import rate_limited_retry
 
 # Shared Utilities
 from apps_shared.domain.constants import EXCLUDED_DIRS
 from apps_shared.utils.file_io import get_python_files, write_compliant_file
 from apps_shared.utils.text_processing import clean_llm_code
-from apps_shared.config.reliability import rate_limited_retry
 
 # ==============================================================================
 # LEVEL 6: SOVEREIGN ARCHITECTURE

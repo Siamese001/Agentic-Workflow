@@ -6,10 +6,10 @@ Follows the functional component pattern with proper logging.
 """
 
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Any, Dict, Tuple
-from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 

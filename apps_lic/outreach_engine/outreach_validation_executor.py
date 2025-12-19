@@ -9,7 +9,11 @@ import re
 from typing import Any, Dict, List, Optional
 
 from validation_gate_executor import (  # Assuming this import is correct
-    RuleFailure, ValidationGateExecutor, ValidationResult, ValidationStatus)
+    RuleFailure,
+    ValidationGateExecutor,
+    ValidationResult,
+    ValidationStatus,
+)
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,5 +1,4 @@
 import pytest
-import os
 from sandbox_utils import DockerSandbox, execute_in_sandbox
 
 # Check if docker is available for tests

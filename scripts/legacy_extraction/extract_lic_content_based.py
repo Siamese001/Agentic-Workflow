@@ -5,7 +5,7 @@ import hashlib
 import logging
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict
 
 
 def get_file_hash(filepath: Path) -> str:

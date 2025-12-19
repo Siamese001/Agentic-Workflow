@@ -14,9 +14,17 @@ from pathlib import Path
 import pytest
 
 from ..context import ResumeEngineContext
-from ..gitops import (ConversationalRepair, FileBackup, GitOpsManager,
-                      ImportPatcher, MutationMode, MutationResult,
-                      Phase4Orchestrator, RepairProposal, ResilientMutator)
+from ..gitops import (
+    ConversationalRepair,
+    FileBackup,
+    GitOpsManager,
+    ImportPatcher,
+    MutationMode,
+    MutationResult,
+    Phase4Orchestrator,
+    RepairProposal,
+    ResilientMutator,
+)
 
 
 @pytest.fixture

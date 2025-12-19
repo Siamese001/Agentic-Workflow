@@ -1,6 +1,7 @@
 import pytest
 from consensus_engine import ConsensusEngine
 
+
 @pytest.mark.skip(reason="Test not implemented")
 def test_unanimous_pass():
     """All Big Three reasoning models should agree on clean code."""

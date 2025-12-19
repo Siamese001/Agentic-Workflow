@@ -6,6 +6,7 @@ Fix the final 74 files with syntax errors by creating minimal stubs.
 import os
 from pathlib import Path
 
+
 def create_minimal_file(file_path):
     """Create a minimal valid test file"""
     stub = '''"""Test file - regenerated due to syntax errors."""
@@ -42,7 +43,6 @@ for file_path in tests_dir.rglob('test_*.py'):
         compile(content, str(file_path), 'exec')
 except Exception:
     pass
-pass
 error_files.append(file_path)
 
 for file_path in tests_dir.rglob('*_test.py'):
@@ -52,7 +52,6 @@ for file_path in tests_dir.rglob('*_test.py'):
         compile(content, str(file_path), 'exec')
 except Exception:
     pass
-pass
 error_files.append(file_path)
 
 # print(f'Found {len(error_files)} files with syntax errors')  # [Security Fix]

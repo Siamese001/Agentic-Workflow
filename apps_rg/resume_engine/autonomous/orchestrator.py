@@ -7,10 +7,17 @@ implementing self-healing cycles with strategic planning and signal-based routin
 
 from typing import Any, Dict, List, Optional
 
-from .agents import (ATSCompatibilityAgent, BrandComplianceAgent,
-                     ContentQualityAgent, FactCheckAgent, ReflectionAgent,
-                     SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
-                     TestPilot)
+from .agents import (
+    ATSCompatibilityAgent,
+    BrandComplianceAgent,
+    ContentQualityAgent,
+    FactCheckAgent,
+    ReflectionAgent,
+    SectionBalanceAgent,
+    StrategicPlanner,
+    TemplateOptimizer,
+    TestPilot,
+)
 from .base_agent import ResumeAgent
 from .context import ResumeEngineContext
 

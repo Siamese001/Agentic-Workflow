@@ -10,18 +10,17 @@ This test demonstrates:
 """
 
 import asyncio
-import sys
-import time
-import tempfile
 import os
+import sys
+import tempfile
 from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
-from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
 from L3_orchestration.models import ExecutionContext
-from L4_state.storage import create_storage_adapter, SignalLedger
+from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
+from L4_state.storage import SignalLedger, create_storage_adapter
 from L5_safety.governor import MemoryPressureError
 
 

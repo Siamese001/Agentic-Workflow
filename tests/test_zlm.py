@@ -1,11 +1,8 @@
-import pytest
-
 import os
+from unittest.mock import MagicMock, mock_open, patch
 
-from unittest.mock import MagicMock, patch, mock_open
-
-from canon_validator_engine import execute_dependency_refactor_zlm, MAX_P6_ATTEMPTS
-
+import pytest
+from canon_validator_engine import MAX_P6_ATTEMPTS, execute_dependency_refactor_zlm
 
 
 @pytest.fixture

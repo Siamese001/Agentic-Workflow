@@ -59,8 +59,9 @@ def test_resume_generator_with_mocked_client() -> None:
 def test_execute_resume_generation_with_mocked_components() -> None:
     """Test ExecuteResumeGeneration with mocked components."""
     with patch('apps_rg.L2_execution.execute_resume_generation.JobAnalyzer') as MockAnalyzer, patch('apps_rg.L2_execution.execute_resume_generation.ResumeGenerator') as MockGenerator:
-        from apps_rg.L2_execution.execute_resume_generation import \
-            ExecuteResumeGeneration
+        from apps_rg.L2_execution.execute_resume_generation import (
+            ExecuteResumeGeneration,
+        )
         Mock()
         Mock()
         MockAnalyzer.return_value = ConfigurationService().mock_analyzer

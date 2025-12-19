@@ -1,52 +1,56 @@
 """Agent classes for agentic_core."""
 
 # Base classes
-from .base import SubAtomicAgent, ImportPatcher
-
 # Analysis agents
 from .analysis import SemanticMapper, TruthKeeper
+from .base import ImportPatcher, SubAtomicAgent
 
 # Concurrency agents
 from .concurrency import (
-    MemoryLeakDetector,
     DeadlockAnalyzer,
     DeadlockDetector,
-    RaceAnalyzer
+    MemoryLeakDetector,
+    RaceAnalyzer,
 )
 
 # Context agents
 from .context import OmniContext
 
-# Planning agents
-from .planning import StrategicPlanner, ReflectionAgent
-
-# Security agents (SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel)
-from .security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel
-
-# Specialized agents
-from .specialized import (
-    TheCartographer,
-    TheOmniContext,
-    TheStrategist,
-    NamingEnforcer,
-    DocEnforcer,
-    TypeEnforcer
-)
-
-# Infrastructure agents
-from .infrastructure import Historian, GitAgent, BenchmarkingAgent
-
 # Engineering agents
-from .engineering import StructuralEngineer, PatternEnforcer
+from .engineering import PatternEnforcer, StructuralEngineer
 
 # Governance agents
 from .governance import ArchitectureGovernor, DependencySentinel
 
+# Infrastructure agents
+from .infrastructure import BenchmarkingAgent, GitAgent, Historian
+
+# Planning agents
+from .planning import ReflectionAgent, StrategicPlanner
+
 # Quality agents (HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer)
-from .quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
+from .quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
 
 # Repair agents
-from .repair import TestPilot, ToolsmithAgent, Sherlock
+from .repair import Sherlock, TestPilot, ToolsmithAgent
+
+# Security agents (SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel)
+from .security import (
+    ConcurrencyGuardian,
+    RedSentinel,
+    SafetyInspector,
+    SecurityEnforcer,
+)
+
+# Specialized agents
+from .specialized import (
+    DocEnforcer,
+    NamingEnforcer,
+    TheCartographer,
+    TheOmniContext,
+    TheStrategist,
+    TypeEnforcer,
+)
 
 __all__ = [
     # Base

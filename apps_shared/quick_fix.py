@@ -6,6 +6,7 @@ Quick fix for the specific pass/pass indentation corruption pattern
 import os
 import re
 
+
 def fix_file(filepath):
     """Fix a single file"""
     try:

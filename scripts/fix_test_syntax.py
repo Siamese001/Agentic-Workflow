@@ -9,11 +9,12 @@ This script batch-fixes the most common syntax issues:
 4. Unmatched parentheses
 """
 
+import ast
 import os
 import re
-import ast
 from pathlib import Path
 from typing import List, Tuple
+
 
 class TestSyntaxFixer:
     def __init__(self, tests_dir: str = "tests"):

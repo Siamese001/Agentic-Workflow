@@ -4,14 +4,14 @@ Adapted Canon Validator execution script that works with the actual implementati
 This script sets up the environment and executes the Canon Validator with security protocols.
 """
 
-import os
-import sys
 import json
-import subprocess
-import tempfile
+import os
 import shutil
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import MagicMock, Mock, patch
 
 # Add the current directory to Python path
 sys.path.insert(0, os.getcwd())
@@ -268,7 +268,7 @@ def execute_canon_validator():
         return result
 
     except Exception as e:
-# print(f"❌ Error executing Canon Validator: {e}")  # [Security Fix]
+f"❌ Error executing Canon Validator: {e}")  # [Security Fix]
         import traceback
         traceback.print_exc()
         return {"status": "FAILED", "reason": str(e)}
@@ -299,7 +299,7 @@ def main():
             # print(f"\n❌ Canon Validator failed: {result.get('reason', 'Unknown error')}")  # [Security Fix]
 
     except Exception as e:
-# print(f"\n❌ Fatal error: {e}")  # [Security Fix]
+f"\n❌ Fatal error: {e}")  # [Security Fix]
         import traceback
         traceback.print_exc()
 

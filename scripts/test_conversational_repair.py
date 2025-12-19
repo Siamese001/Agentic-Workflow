@@ -11,7 +11,6 @@ This test validates:
 """
 
 import asyncio
-import json
 import sys
 from pathlib import Path
 
@@ -19,8 +18,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
 from L3_orchestration.conversational_repair import (
-    ConversationalRepair, get_conversational_repair,
-    debate_complex_failure
+    ConversationalRepair,
+    debate_complex_failure,
+    get_conversational_repair,
 )
 from L3_orchestration.test_pilot import TestPilot
 

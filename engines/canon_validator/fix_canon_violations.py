@@ -6,8 +6,8 @@ This script renames directories and files to comply with the canon.
 
 import logging
 import os
-import shutil
 import re
+import shutil
 from pathlib import Path
 
 import scripts.validation.check_canonical_structure
@@ -81,7 +81,6 @@ def fix_smashed_directories():
             shutil.move(str(d), str(new_path))
 
         except Exception as e:
-pass
 
 
 def fix_repeated_concept_filenames():
@@ -125,7 +124,6 @@ def fix_repeated_concept_filenames():
                         f.rename(new_path)
 
                     except Exception as e:
-pass
                 else:
                     pass
 

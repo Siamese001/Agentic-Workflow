@@ -1,10 +1,12 @@
-import pytest
 import os
-import time
 import signal
 import threading
-from unittest.mock import patch, MagicMock
-from canary_monitor import CanaryMonitor, CANARY_FILE_PATH, run_canary_monitor
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
+from canary_monitor import CANARY_FILE_PATH, CanaryMonitor, run_canary_monitor
+
 
 # Required setup: This test needs a temporary PID file and the canary file
 @pytest.fixture(autouse=True)

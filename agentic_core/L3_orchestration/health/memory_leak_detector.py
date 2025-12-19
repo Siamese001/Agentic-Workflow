@@ -7,11 +7,10 @@ Uses tracemalloc to snapshot memory before and after phases.
 
 import gc
 import logging
-import time
 import tracemalloc
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -331,7 +330,7 @@ def get_memory_detector() -> MemoryLeakDetector:
 
 def initialize_memory_detector():
     """Initialize the MemoryLeakDetector system."""
-    detector = get_memory_detector()
+    get_memory_detector()
     LOGGER.info("MemoryLeakDetector system initialized")
 
 

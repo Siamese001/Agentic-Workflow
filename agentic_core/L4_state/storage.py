@@ -5,14 +5,11 @@ Provides atomic storage operations with hot-swappable backends.
 Supports local disk (for development) and S3 (for production).
 """
 
-import asyncio
 import json
 import logging
-import os
 import time
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -707,9 +704,8 @@ class SignalLedger:
         Args:
             result: ExecutionResult to log
         """
-        import time
         from datetime import datetime
-        
+
         # Convert result to dictionary
         if hasattr(result, '__dict__'):
             result_dict = result.__dict__

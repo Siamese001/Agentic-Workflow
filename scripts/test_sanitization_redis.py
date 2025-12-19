@@ -14,20 +14,24 @@ This test validates:
 import asyncio
 import sys
 import tempfile
-import time
 from pathlib import Path
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
 from L2_execution.deterministic_sanitizer import (
-    DeterministicCleaner, CompliantFileWriter,
-    deterministic_clean, write_compliant_file
+    CompliantFileWriter,
+    DeterministicCleaner,
+    deterministic_clean,
+    write_compliant_file,
 )
 from L4_state.storage import (
-    RedisDistributedLock, RedisHotCache,
-    initialize_redis, acquire_lock, release_lock,
-    set_cache, get_cache
+    RedisDistributedLock,
+    RedisHotCache,
+    acquire_lock,
+    get_cache,
+    release_lock,
+    set_cache,
 )
 
 

@@ -3,10 +3,10 @@
 Enhanced cleanup script that moves files to sovereign silos
 """
 
+import argparse
+import logging
 import os
 import shutil
-import logging
-import argparse
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)

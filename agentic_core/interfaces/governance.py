@@ -12,12 +12,9 @@ Features:
 """
 
 import ast
-import hashlib
-import json
 import logging
-import os
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -537,7 +534,7 @@ class ArchitectureGovernor:
                 return None
         
         import shutil
-        
+
         # Determine correct depth
         if "too shallow" in violation.lower():
             # Move deeper (create subdirectories)

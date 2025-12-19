@@ -3,10 +3,9 @@ import sys
 import time
 from typing import Any, Dict, List
 
-from redisvl.query import VectorQuery
-
 # Import hardened connectivity modules
 from connection_manager import ConnectionManager
+from redisvl.query import VectorQuery
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR)  # Keep it quiet, show only errors

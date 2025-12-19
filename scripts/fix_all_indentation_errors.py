@@ -7,6 +7,7 @@ Pattern: except ...:\n    pass\npass\nlogger.error
 import os
 import re
 
+
 def fix_indentation_errors(file_path):
     """Fix indentation errors in a Python file."""
     try:

@@ -17,19 +17,30 @@ import pytest
 # Add parent directories to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
-from apps_lic.outreach_engine.autonomous.agents import (ContactValidatorAgent,
-                                                        LeadQualityAgent,
-                                                        MessageComplianceAgent)
-from apps_lic.outreach_engine.autonomous.context import (OutreachBudgetManager,
-                                                         OutreachEngineContext)
+from apps_lic.outreach_engine.autonomous.agents import (
+    ContactValidatorAgent,
+    LeadQualityAgent,
+    MessageComplianceAgent,
+)
+from apps_lic.outreach_engine.autonomous.context import (
+    OutreachBudgetManager,
+    OutreachEngineContext,
+)
 from apps_lic.outreach_engine.autonomous.healing import (
-    OutreachHealingOrchestrator, OutreachHealingResult,
-    OutreachHealingStrategy, OutreachSignalRouter,
-    run_outreach_healing_mission)
+    OutreachHealingOrchestrator,
+    OutreachHealingResult,
+    OutreachHealingStrategy,
+    OutreachSignalRouter,
+    run_outreach_healing_mission,
+)
 from apps_lic.outreach_engine.autonomous.learning import (
-    OutreachConfidenceScorer, OutreachLearningLoop)
+    OutreachConfidenceScorer,
+    OutreachLearningLoop,
+)
 from apps_lic.outreach_engine.autonomous.observability import (
-    OutreachMetricsCollector, OutreachPhase5Orchestrator)
+    OutreachMetricsCollector,
+    OutreachPhase5Orchestrator,
+)
 
 
 @pytest.fixture

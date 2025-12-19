@@ -8,8 +8,14 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
 # Import core utilities
-from core_utils import (add_observations, brave_search, get_variable_defs,
-                        incr, string_get, string_set)
+from core_utils import (
+    add_observations,
+    brave_search,
+    get_variable_defs,
+    incr,
+    string_get,
+    string_set,
+)
 
 # --- Figma Hardening Functions ---
 

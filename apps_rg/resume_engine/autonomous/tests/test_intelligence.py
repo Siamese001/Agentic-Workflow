@@ -13,11 +13,20 @@ Tests the core intelligence functionality:
 import pytest
 
 from ..context import ResumeEngineContext
-from ..intelligence import (AnalysisType, OmniContext, Phase6Orchestrator,
-                            RefactorProposal, RefactorType, SecurityHardener,
-                            SecurityIssue, SecurityLevel, SemanticAnalyzer,
-                            SemanticMatch, StrategicAdvisor,
-                            UnifiedOrchestrator)
+from ..intelligence import (
+    AnalysisType,
+    OmniContext,
+    Phase6Orchestrator,
+    RefactorProposal,
+    RefactorType,
+    SecurityHardener,
+    SecurityIssue,
+    SecurityLevel,
+    SemanticAnalyzer,
+    SemanticMatch,
+    StrategicAdvisor,
+    UnifiedOrchestrator,
+)
 
 
 @pytest.fixture

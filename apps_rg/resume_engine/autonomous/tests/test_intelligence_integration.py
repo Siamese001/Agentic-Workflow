@@ -14,9 +14,14 @@ import pytest
 from ..context import ResumeEngineContext
 from ..gitops import Phase4Orchestrator
 from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
-from ..intelligence import (OmniContext, Phase6Orchestrator, SecurityHardener,
-                            SemanticAnalyzer, StrategicAdvisor,
-                            UnifiedOrchestrator)
+from ..intelligence import (
+    OmniContext,
+    Phase6Orchestrator,
+    SecurityHardener,
+    SemanticAnalyzer,
+    StrategicAdvisor,
+    UnifiedOrchestrator,
+)
 from ..learning import ResumeLearningAgent
 from ..observability import Phase5Orchestrator
 

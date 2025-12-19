@@ -7,8 +7,9 @@ Generated: 2025-12-07T13:28:54.215610
 import logging
 from typing import Dict, Optional, Union
 
-from services.configuration import ConfigurationService
 from shared.result_types import DiagnosticReport
+
+from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)
 

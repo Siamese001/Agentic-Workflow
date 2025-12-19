@@ -5,7 +5,7 @@ Fix global variable violations by replacing with manager pattern
 
 import os
 import re
-from pathlib import Path
+
 
 def fix_global_variables(file_path: str):
     """Fix global variables in a Python file"""

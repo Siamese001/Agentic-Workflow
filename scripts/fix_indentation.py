@@ -3,6 +3,7 @@
 
 import re
 
+
 def fix_indentation_errors():
     # Read the file
     with open('canon_validator_engine.py', 'r') as f:

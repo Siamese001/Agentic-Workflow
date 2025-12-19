@@ -1,6 +1,5 @@
 import logging
-import time
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 # Configure logging
 logger = logging.getLogger("ConsensusEngine")  # GLOBAL: Review if this should be constant

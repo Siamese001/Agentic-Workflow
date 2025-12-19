@@ -235,8 +235,7 @@ async def example_with_real_subatomic_hop():
     
     try:
         # Try to import real SubatomicHop
-        from scripts.runtime.core.subatomic_hop import (SubatomicHop,
-                                                        SubatomicHopConfig)
+        from scripts.runtime.core.subatomic_hop import SubatomicHop, SubatomicHopConfig
         
         logger.info("Real SubatomicHop found - creating swarm...")
         

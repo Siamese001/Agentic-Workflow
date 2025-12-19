@@ -7,7 +7,7 @@ Allows humans to telepathically control mission execution by writing commands.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 

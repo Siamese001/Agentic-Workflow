@@ -20,7 +20,6 @@ def count_top_level_defs(filepath: Path) -> int:
                                                        ast.ClassDef,
                                                        ast.AsyncFunctionDef)))
     except Exception:
-pass
     return 0
 
 

@@ -7,8 +7,7 @@ discuss complex failures to reach consensus on fixes.
 
 import json
 import logging
-import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -247,7 +246,7 @@ class ConversationalRepair:
             Python code or None
         """
         import re
-        
+
         # Look for ```python blocks
         pattern = r'```python\n(.*?)\n```'
         match = re.search(pattern, response, re.DOTALL)

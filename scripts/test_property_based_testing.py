@@ -18,7 +18,7 @@ from pathlib import Path
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
-from L3_orchestration.test_pilot import TestPilot, create_test_pilot
+from L3_orchestration.test_pilot import create_test_pilot
 
 
 async def test_standard_pytest_execution():
@@ -247,8 +247,8 @@ async def test_integration_with_nervous_system():
     
     try:
         from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
-        from L4_state.storage import create_storage_adapter, SignalLedger
-        
+        from L4_state.storage import SignalLedger, create_storage_adapter
+
         # Create nervous system
         config = OrchestratorConfig(max_iterations=1)
         storage = create_storage_adapter("local", base_path="./agentic_core")
@@ -429,5 +429,4 @@ async def run_property_based_testing_validation():
 
 
 if __name__ == "__main__":
-    import sys
     asyncio.run(run_property_based_testing_validation())

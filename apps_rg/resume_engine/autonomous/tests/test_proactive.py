@@ -16,13 +16,15 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_rg.resume_engine.autonomous.context import ResumeEngineContext
-from apps_rg.resume_engine.autonomous.proactive import (CapabilityMonitor,
-                                                        CapabilityProfile,
-                                                        HandoffReason,
-                                                        PredictiveHandoff,
-                                                        ProactiveAgent,
-                                                        ProactiveScheduler,
-                                                        TaskPriority)
+from apps_rg.resume_engine.autonomous.proactive import (
+    CapabilityMonitor,
+    CapabilityProfile,
+    HandoffReason,
+    PredictiveHandoff,
+    ProactiveAgent,
+    ProactiveScheduler,
+    TaskPriority,
+)
 
 
 @pytest.fixture

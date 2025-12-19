@@ -1,11 +1,11 @@
-import os
+import ast
+import hashlib
 import json
 import logging
-import hashlib
-import time
+import os
 import subprocess
-import ast
-from typing import Dict, Any, Optional, List, Optional, Tuple
+import time
+from typing import Any, Dict, List, Optional, Tuple
 
 # Configure logging
 logger = logging.getLogger("CanonValidator")

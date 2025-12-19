@@ -13,8 +13,14 @@ import pytest
 from ..agents import ContentQualityAgent
 from ..context import ResumeEngineContext
 from ..healing import HealingCycle, HealingOrchestrator, HealingStrategy
-from ..learning import (ConfidenceLevel, ConfidenceScorer, InstructionInjector,
-                        LearningLoop, MemoryPersistence, ResumeLearningAgent)
+from ..learning import (
+    ConfidenceLevel,
+    ConfidenceScorer,
+    InstructionInjector,
+    LearningLoop,
+    MemoryPersistence,
+    ResumeLearningAgent,
+)
 
 
 @pytest.fixture

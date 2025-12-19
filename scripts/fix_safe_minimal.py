@@ -6,9 +6,9 @@ Only handles non-destructive fixes that cannot corrupt files.
 Targets: Keys 4, 5, 11 (bare except, empty except, trailing whitespace)
 """
 
+import logging
 import os
 import re
-import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
