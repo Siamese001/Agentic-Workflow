@@ -63,7 +63,7 @@ class CanonBaseAgent(ABC):
         
         # Initialize Fission Manager for monolithic file decomposition
         if self._client:
-            from .fission_manager import FissionManager
+            from agentic_core.infra.fission_manager import FissionManager
             self._fission_manager = FissionManager(gemini_client=self._client)
     
     def _get_role_name(self) -> str:

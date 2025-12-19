@@ -46,6 +46,12 @@ from agentic_core.agents import (
     get_regression_oracle,
 )
 
+# Phase 5: L1-L5 Unified Architecture
+from agentic_core.infra.tui_dashboard import AgenticTUI
+from agentic_core.infra.fission_manager import FissionManager
+from agentic_core.infra.safety_guardrail import SafetyGuardrail
+from agentic_core.memory.pinecone_sync import MemoryArchitectSync
+
 try:
     from google import genai
     from google.genai import types
