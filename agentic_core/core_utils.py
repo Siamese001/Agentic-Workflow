@@ -1,5 +1,4 @@
 import ast
-import hashlib
 import json
 import logging
 import os
