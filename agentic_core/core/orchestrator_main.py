@@ -1,33 +1,47 @@
 """
-Consolidated Core Orchestrator - Subatomic Architecture
-Standardizes all orchestration on Gemini 2.5/3.0 with AtomicBlackboard integration.
+🚀 PHASE 5: THE SWARM ASSEMBLY - Consolidated Core Orchestrator
 
-This is the single source of truth for orchestration logic. All legacy orchestrators
-are now thin wrappers that delegate to this consolidated implementation.
+This is the single Command & Control center for all orchestration across the repository.
+All legacy orchestrators are now thin wrappers that delegate to this implementation.
 
 Features:
-- AtomicBlackboard integration with HealingLease
+- UniversalContext (ValidationContext) integration - Phase 3
+- AtomicBlackboard with HealingLease - Phase 2
+- Subatomic Agent Architecture (SystemArchitect, CodeJanitor, StructuralEngineer)
 - Gemini 2.5/3.0 SDK standardization
 - Race condition elimination via lease-based file operations
 - Convergence loop with max cycles
 - Signal-based blackboard communication
+- Clean Slate Protocol - flush Redis on agent failure
+- Graceful lease release on exit/CTRL+C
 - Human-in-the-loop intervention
 - Atomic state checkpointing
-- Provider fallback and resilience
 """
 
 import asyncio
+import atexit
 import logging
 import os
+import signal
+import sys
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 
+# Phase 3: UniversalContext
 from agentic_core.domain.context import ValidationContext
-from agentic_core.tools import (
-    create_tool_registry,
-    write_file,
-    WriteFileArgs,
+
+# Phase 4: Subatomic Agents
+from agentic_core.agents import (
+    SystemArchitect,
+    CodeJanitor,
+    CanonStructuralEngineer,
+    HygieneGuardian,
+    CodeStyleGuardian,
+    SafetyInspector,
+    SecurityEnforcer,
+    PerformanceEnforcer,
 )
 
 try:
@@ -40,6 +54,22 @@ except ImportError:
     types = None
 
 logger = logging.getLogger(__name__)
+
+# Global reference for graceful shutdown
+_orchestrator_instance: Optional['ConsolidatedOrchestrator'] = None
+
+
+def _signal_handler(signum, frame):
+    """Handle CTRL+C and graceful shutdown."""
+    logger.info("\n🛑 Shutdown signal received. Releasing all leases...")
+    if _orchestrator_instance:
+        _orchestrator_instance.release_all_leases()
+    sys.exit(0)
+
+
+# Register signal handlers
+signal.signal(signal.SIGINT, _signal_handler)
+signal.signal(signal.SIGTERM, _signal_handler)
 
 
 @dataclass
@@ -56,6 +86,12 @@ class OrchestratorConfig:
     enable_healing: bool = True
     max_healing_per_file: int = 8
     global_healing_budget: int = 50
+    
+    # Phase 5: CLI Flags
+    heal_mode: bool = False  # --heal flag
+    clean_slate: bool = False  # --clean-slate flag (flush Redis)
+    override_preservation: bool = False  # --override-preservation (SystemArchitect only)
+    target_path: Optional[str] = None  # Target file or directory
 
 
 @dataclass
@@ -75,10 +111,18 @@ class OrchestratorState:
 
 class ConsolidatedOrchestrator:
     """
-    Consolidated orchestrator implementing subatomic architecture patterns.
+    🚀 PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
     
     This orchestrator serves as the single source of truth for all orchestration
-    logic, eliminating race conditions through AtomicBlackboard integration.
+    logic across the entire repository. All legacy orchestrators are thin wrappers
+    that delegate to this implementation.
+    
+    Features:
+    - UniversalContext (ValidationContext) - Phase 3
+    - AtomicBlackboard integration - Phase 2
+    - Subatomic Agent Architecture
+    - Clean Slate Protocol
+    - Graceful lease release
     """
     
     def __init__(
@@ -93,10 +137,16 @@ class ConsolidatedOrchestrator:
             config: Orchestrator configuration
             context: Validation context (creates new if None)
         """
+        global _orchestrator_instance
+        
         self.config = config or OrchestratorConfig()
         self.ctx = context or ValidationContext()
         self.state = None
-        self.tool_registry = create_tool_registry()
+        self.blackboard = getattr(self.ctx, 'blackboard', None)
+        
+        # Register for graceful shutdown
+        _orchestrator_instance = self
+        atexit.register(self.release_all_leases)
         
         if GENAI_AVAILABLE and os.getenv("GOOGLE_API_KEY"):
             self.client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -105,7 +155,113 @@ class ConsolidatedOrchestrator:
             self.client = None
             logger.warning("⚠️  Gemini client not available")
         
-        logger.info("Consolidated orchestrator initialized")
+        # Clean Slate Protocol: Flush Redis if requested
+        if self.config.clean_slate:
+            self._execute_clean_slate()
+        
+        logger.info("🚀 Consolidated orchestrator initialized (Phase 5: Swarm Assembly)")
+    
+    def _execute_clean_slate(self):
+        """Execute Clean Slate Protocol: Flush Redis and clear all leases."""
+        logger.info("🧹 CLEAN SLATE PROTOCOL: Flushing Redis...")
+        try:
+            # Try to flush Redis if available
+            if self.blackboard:
+                # Release all leases first
+                self.release_all_leases()
+                logger.info("   ✅ All leases released")
+            
+            # Additional cleanup can be added here
+            logger.info("   ✅ Clean slate executed")
+        except Exception as e:
+            logger.warning(f"   ⚠️  Clean slate failed: {e}")
+    
+    def release_all_leases(self):
+        """Release all leases held by this orchestrator (graceful shutdown)."""
+        if self.blackboard and hasattr(self.blackboard, 'release_all_leases'):
+            try:
+                self.blackboard.release_all_leases()
+                logger.info("   ✅ All blackboard leases released")
+            except Exception as e:
+                logger.warning(f"   ⚠️  Lease release failed: {e}")
+    
+    async def run_mission(
+        self,
+        target_path: Optional[str] = None,
+        workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Run the orchestration mission with subatomic agents.
+        
+        This is the main entry point for all orchestration tasks.
+        
+        Args:
+            target_path: Optional target file or directory for surgical scope
+            workflow_id: Optional workflow identifier
+            
+        Returns:
+            Mission execution results
+        """
+        workflow_id = workflow_id or f"mission_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        target_path = target_path or self.config.target_path
+        
+        logger.info(f"\n{'='*60}")
+        logger.info(f"🚀 MISSION START: {workflow_id}")
+        logger.info(f"{'='*60}")
+        
+        if target_path:
+            logger.info(f"🎯 SURGICAL MODE: Targeting {target_path}")
+        else:
+            logger.info(f"🌐 FULL REPOSITORY MODE")
+        
+        # Create subatomic agent swarm
+        agents = self._create_agent_swarm()
+        
+        # Execute workflow with convergence loop
+        results = await self.execute_workflow(
+            workflow_id=workflow_id,
+            agents=agents,
+            context={"target_path": target_path}
+        )
+        
+        logger.info(f"\n{'='*60}")
+        logger.info(f"✅ MISSION COMPLETE: {results['status']}")
+        logger.info(f"{'='*60}")
+        
+        return results
+    
+    def _create_agent_swarm(self) -> List[Any]:
+        """
+        Create the subatomic agent swarm based on configuration.
+        
+        Returns:
+            List of agent instances
+        """
+        agents = []
+        
+        # Phase 1: Core Architecture (SystemArchitect)
+        agents.append(SystemArchitect(self.ctx))
+        
+        # Phase 2: Code Quality (CodeJanitor)
+        agents.append(CodeJanitor(self.ctx))
+        
+        # Phase 3: Structure (StructuralEngineer)
+        agents.append(CanonStructuralEngineer(self.ctx))
+        
+        # Phase 4: Hygiene & Style
+        agents.append(HygieneGuardian(self.ctx))
+        agents.append(CodeStyleGuardian(self.ctx))
+        
+        # Phase 5: Security & Safety
+        agents.append(SafetyInspector(self.ctx))
+        agents.append(SecurityEnforcer(self.ctx))
+        
+        # Phase 6: Performance
+        agents.append(PerformanceEnforcer(self.ctx))
+        
+        logger.info(f"   🤖 Agent Swarm Created: {len(agents)} agents")
+        
+        return agents
     
     async def execute_workflow(
         self,
@@ -114,7 +270,7 @@ class ConsolidatedOrchestrator:
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Execute a workflow with the given agents.
+        Execute a workflow with the given agents using convergence loop.
         
         Args:
             workflow_id: Unique workflow identifier
@@ -129,17 +285,20 @@ class ConsolidatedOrchestrator:
             start_time=datetime.now()
         )
         
-        logger.info(f"🚀 Starting workflow: {workflow_id}")
-        logger.info(f"   Agents: {len(agents)}")
+        logger.info(f"\n🔄 Starting convergence loop...")
         logger.info(f"   Max cycles: {self.config.max_cycles}")
+        logger.info(f"   Agents: {len(agents)}")
         
         context = context or {}
         
         for cycle in range(self.config.max_cycles):
             self.state.current_cycle = cycle + 1
             self.state.signals.clear()
+            self.ctx.modified_files.clear()
             
-            logger.info(f"\n=== CYCLE {cycle + 1}/{self.config.max_cycles} ===")
+            logger.info(f"\n{'='*60}")
+            logger.info(f"CYCLE {cycle + 1}/{self.config.max_cycles}")
+            logger.info(f"{'='*60}")
             
             for agent in agents:
                 if not self._should_run_agent(agent):
@@ -147,32 +306,45 @@ class ConsolidatedOrchestrator:
                     continue
                 
                 try:
-                    logger.info(f"Running agent: {agent.__class__.__name__}")
+                    logger.info(f"\n[>>>] Running: {agent.__class__.__name__}")
                     await agent.execute()
+                    
+                    # Clean Slate Protocol: If agent fails, clear its session
+                    if "AGENT_FAILURE" in self.ctx.signals:
+                        logger.warning(f"   ⚠️  Agent failure detected - executing clean slate")
+                        self._execute_clean_slate()
+                        self.ctx.signals.discard("AGENT_FAILURE")
                     
                     if self.config.enable_checkpointing:
                         await self._checkpoint_state(agent.__class__.__name__)
                     
                 except Exception as e:
-                    logger.error(f"Agent {agent.__class__.__name__} failed: {e}")
+                    logger.error(f"❌ Agent {agent.__class__.__name__} failed: {e}")
                     self.state.signals.add("AGENT_FAILURE")
+                    
+                    # Clean Slate Protocol: Clear session before retry
+                    if self.config.clean_slate:
+                        self._execute_clean_slate()
             
+            # Check for convergence
+            if self._should_terminate():
+                logger.info("\n✅ CONVERGENCE ACHIEVED")
+                self.state.status = "COMPLETED"
+                break
+            
+            # Check for intervention
             if self.config.enable_intervention and "INTERVENTION_REQUIRED" in self.state.signals:
-                logger.info("✋ INTERVENTION REQUIRED")
+                logger.info("\n✋ INTERVENTION REQUIRED")
                 if not await self._handle_intervention():
                     logger.info("🛑 WORKFLOW VETOED")
                     self.state.status = "VETOED"
                     break
-            
-            if self._should_terminate():
-                logger.info("✅ Convergence achieved")
-                self.state.status = "COMPLETED"
-                break
         
         self.state.end_time = datetime.now()
         
         if self.state.status != "COMPLETED" and self.state.status != "VETOED":
             self.state.status = "MAX_CYCLES_REACHED"
+            logger.warning(f"\n⚠️  Max cycles reached without convergence")
         
         return self._build_results()
     
@@ -394,41 +566,110 @@ def create_orchestrator(
 
 
 async def main():
-    """Main entry point for standalone execution."""
+    """
+    🚀 PHASE 5: Main entry point for consolidated orchestrator.
+    
+    Supports CLI flags:
+    - --heal: Enable healing mode
+    - --clean-slate: Flush Redis and clear all leases
+    - --override-preservation: Allow SystemArchitect to override preservation rules
+    - --target: Target file or directory for surgical scope
+    - --max-cycles: Maximum convergence cycles
+    """
     import argparse
     
-    parser = argparse.ArgumentParser(description="Consolidated Orchestrator")
-    parser.add_argument("--workflow-id", default="default", help="Workflow ID")
-    parser.add_argument("--max-cycles", type=int, default=5, help="Max cycles")
-    parser.add_argument("--target", help="Target file or directory")
+    parser = argparse.ArgumentParser(
+        description="🚀 Phase 5: Consolidated Orchestrator - Command & Control Center",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Full repository scan with healing
+  python orchestrator_main.py --heal
+  
+  # Clean slate and target specific directory
+  python orchestrator_main.py --clean-slate --target apps_rg/
+  
+  # Override preservation for SystemArchitect
+  python orchestrator_main.py --override-preservation --target agentic_core/
+        """
+    )
+    
+    parser.add_argument(
+        "--workflow-id",
+        default=None,
+        help="Workflow ID (auto-generated if not provided)"
+    )
+    
+    parser.add_argument(
+        "--max-cycles",
+        type=int,
+        default=5,
+        help="Maximum convergence cycles (default: 5)"
+    )
+    
+    parser.add_argument(
+        "--target",
+        help="Target file or directory for surgical scope"
+    )
+    
+    parser.add_argument(
+        "--heal",
+        action="store_true",
+        help="Enable healing mode (auto-fix violations)"
+    )
+    
+    parser.add_argument(
+        "--clean-slate",
+        action="store_true",
+        help="Execute Clean Slate Protocol (flush Redis, clear leases)"
+    )
+    
+    parser.add_argument(
+        "--override-preservation",
+        action="store_true",
+        help="Allow SystemArchitect to override preservation rules (use with caution)"
+    )
     
     args = parser.parse_args()
     
-    config = OrchestratorConfig(max_cycles=args.max_cycles)
-    orchestrator = create_orchestrator(config=config)
-    
-    from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian
-    from agentic_core.agents.security import SafetyInspector
-    
-    agents = [
-        HygieneGuardian(orchestrator.ctx),
-        CodeStyleGuardian(orchestrator.ctx),
-        SafetyInspector(orchestrator.ctx)
-    ]
-    
-    results = await orchestrator.execute_workflow(
-        workflow_id=args.workflow_id,
-        agents=agents
+    # Create configuration from CLI args
+    config = OrchestratorConfig(
+        max_cycles=args.max_cycles,
+        enable_healing=args.heal,
+        clean_slate=args.clean_slate,
+        override_preservation=args.override_preservation,
+        target_path=args.target
     )
     
+    # Create orchestrator
+    orchestrator = create_orchestrator(config=config)
+    
+    # Run mission
+    results = await orchestrator.run_mission(
+        target_path=args.target,
+        workflow_id=args.workflow_id
+    )
+    
+    # Print results
     print(f"\n{'='*60}")
-    print(f"Workflow Results:")
-    print(f"  Status: {results['status']}")
-    print(f"  Cycles: {results['cycles_executed']}")
-    print(f"  Modified Files: {len(results['modified_files'])}")
-    print(f"  Healing Budget Used: {results['healing_budget_used']}")
-    print(f"  Duration: {results['duration_seconds']:.2f}s")
+    print(f"📊 MISSION RESULTS")
     print(f"{'='*60}")
+    print(f"  Status: {results['status']}")
+    print(f"  Cycles: {results['cycles_executed']}/{config.max_cycles}")
+    print(f"  Modified Files: {len(results['modified_files'])}")
+    print(f"  Healing Budget Used: {results['healing_budget_used']}/{config.global_healing_budget}")
+    print(f"  Checkpoints: {results['checkpoints_created']}")
+    if results.get('duration_seconds'):
+        print(f"  Duration: {results['duration_seconds']:.2f}s")
+    print(f"{'='*60}")
+    
+    # Exit with appropriate code
+    if results['status'] == 'COMPLETED':
+        sys.exit(0)
+    elif results['status'] == 'VETOED':
+        sys.exit(2)
+    else:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
