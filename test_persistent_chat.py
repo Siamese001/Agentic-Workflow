@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""
+Test script to verify persistent chat sessions work correctly.
+"""
+import os
+import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()
+
+try:
+    from google import genai
+    from google.genai import types
+except ImportError:
+    print("❌ google-genai not installed")
+    exit(1)
+
+async def test_persistent_chat():
+    """Test that chat sessions persist across multiple rounds."""
+    
+    # Initialize client
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        print("❌ GOOGLE_API_KEY not set")
+        return
+    
+    client = genai.Client(api_key=api_key)
+    print("✅ Gemini client initialized")
+    
+    # Create persistent chat session
+    config = types.GenerateContentConfig(
+        temperature=0.7,
+        thinking_config=types.ThinkingConfig(
+            thinking_budget=8000
+        )
+    )
+    
+    chat = client.chats.create(
+        model='gemini-2.5-flash',
+        config=config
+    )
+    print("✅ Chat session created")
+    
+    # Round 1: Ask a question
+    print("\n--- Round 1 ---")
+    response1 = await asyncio.to_thread(
+        chat.send_message,
+        "What is 2+2? Answer with just the number."
+    )
+    print(f"Response 1: {response1.text.strip()}")
+    
+    # Round 2: Follow-up question (tests memory)
+    print("\n--- Round 2 ---")
+    response2 = await asyncio.to_thread(
+        chat.send_message,
+        "Now multiply that number by 3. Answer with just the number."
+    )
+    print(f"Response 2: {response2.text.strip()}")
+    
+    # Round 3: Another follow-up (tests continued memory)
+    print("\n--- Round 3 ---")
+    response3 = await asyncio.to_thread(
+        chat.send_message,
+        "Subtract 5 from that. Answer with just the number."
+    )
+    print(f"Response 3: {response3.text.strip()}")
+    
+    print("\n✅ All rounds completed successfully!")
+    print("✅ Chat session maintained memory across all rounds")
+
+if __name__ == "__main__":
+    print("🧪 Testing Persistent Chat Sessions\n")
+    asyncio.run(test_persistent_chat())

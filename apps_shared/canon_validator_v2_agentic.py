@@ -53,14 +53,25 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_fa
 # Inline file_io functions to avoid import dependencies
 def get_python_files(root: str = '.') -> List[str]:
     """Get all Python files excluding specified directories and files."""
+    print(f"   📂 Scanning Python files in {root}...", flush=True)
     python_files = []
+    dir_count = 0
+    
     for root_dir, dirs, files in os.walk(root):
+        # Filter excluded directories IN-PLACE to prevent os.walk from descending
         dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+        
+        dir_count += 1
+        if dir_count % 50 == 0:
+            print(f"      Scanned {dir_count} directories, found {len(python_files)} files...", flush=True)
+        
         for file in files:
             if file.endswith('.py') and file not in EXCLUDED_FILES:
                 file_path = os.path.join(root_dir, file)
                 if not is_excluded(file_path):
                     python_files.append(file_path)
+    
+    print(f"   ✅ Found {len(python_files)} Python files in {dir_count} directories", flush=True)
     return python_files
 
 try:
@@ -132,9 +143,21 @@ class ServiceManager:
     
     def __post_init__(self):
         """Initialize services if available."""
-        self._init_redis()
-        self._init_pinecone()
-        self._init_mcp()
+        print("\n🔌 Initializing External Services...", flush=True)
+        try:
+            self._init_redis()
+        except Exception as e:
+            print(f"   ⚠️  Redis init failed: {e}", flush=True)
+        
+        try:
+            self._init_pinecone()
+        except Exception as e:
+            print(f"   ⚠️  Pinecone init failed: {e}", flush=True)
+        
+        try:
+            self._init_mcp()
+        except Exception as e:
+            print(f"   ⚠️  MCP init failed: {e}", flush=True)
     
     def _init_redis(self):
         """Initialize Redis client if available."""
@@ -199,36 +222,19 @@ class ServiceManager:
         if not self.mcp_init_pending:
             return
         
-        try:
-            # Try to import MCP filesystem client
-            try:
-                from mcp import ClientSession, StdioServerParameters
-                from mcp.client.stdio import stdio_client
-                
-                # Initialize filesystem MCP for autonomous file writing
-                server_params = StdioServerParameters(
-                    command="npx",
-                    args=["-y", "@modelcontextprotocol/server-filesystem", os.getcwd()]
-                )
-                
-                async with stdio_client(server_params) as (read_stream, write_stream):
-                    async with ClientSession(read_stream, write_stream) as session:
-                        await session.initialize()
-                        self.mcp_clients['filesystem'] = session
-                        print("   ✅ MCP Filesystem initialized for autonomous file operations")
-                        self.mcp_init_pending = False
-                        return
-            except ImportError:
-                print("   ⚠️  MCP not installed - using direct file I/O")
-            
-            # Fallback: Check for Figma token
-            figma_token = os.getenv('FIGMA_TOKEN')
-            if figma_token:
-                print("   ⚠️  Figma MCP available but not initialized (optional)")
-        except Exception as e:
-            print(f"   ⚠️  MCP initialization failed: {e}")
-        finally:
-            self.mcp_init_pending = False
+        # MCP initialization is optional and can block - skip for now
+        # Direct file I/O is used instead (write_file/read_file methods)
+        print("   ⚠️  MCP initialization skipped - using direct file I/O")
+        self.mcp_init_pending = False
+        
+        # Future: Add timeout-wrapped MCP initialization
+        # try:
+        #     async with asyncio.timeout(5.0):  # 5 second timeout
+        #         from mcp import ClientSession, StdioServerParameters
+        #         from mcp.client.stdio import stdio_client
+        #         ...
+        # except asyncio.TimeoutError:
+        #     print("   ⚠️  MCP initialization timed out - using direct file I/O")
     
     def get_cached_result(self, file_hash: str) -> Optional[Dict]:
         """Get cached validation result from Redis or fallback dict."""
@@ -369,20 +375,33 @@ class ValidationContext:
     chat_sessions: Dict[str, Any] = field(default_factory=dict)  # Persistent chat sessions per file
 
     def __post_init__(self):
+        print("\n🔧 Initializing Validation Context...", flush=True)
+        
         # TARGETED SCAN: Only load files in the target scope to save tokens
-        if self.target_scope and self.target_scope != ".":
-            self.python_files = get_python_files(self.target_scope)
-        else:
-            self.python_files = get_python_files(".")
+        try:
+            if self.target_scope and self.target_scope != ".":
+                self.python_files = get_python_files(self.target_scope)
+            else:
+                self.python_files = get_python_files(".")
+        except Exception as e:
+            print(f"   ⚠️  File scanning failed: {e}", flush=True)
+            self.python_files = []
         
         # Initialize intelligence if healing is enabled
+        print("\n🤖 Initializing Gemini Client...", flush=True)
         if genai and os.getenv("GOOGLE_API_KEY"):
-            self.intelligence_enabled = True
-            self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-            print("   ✅ Gemini Connected - HEALING MODE ACTIVE")
+            try:
+                self.intelligence_enabled = True
+                self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+                print("   ✅ Gemini Connected - HEALING MODE ACTIVE", flush=True)
+            except Exception as e:
+                print(f"   ⚠️  Gemini initialization failed: {e}", flush=True)
+                self.intelligence_enabled = False
         else:
             self.intelligence_enabled = False
-            print("   ⚠️  Healing disabled: No API key configured")
+            print("   ⚠️  Healing disabled: No API key configured", flush=True)
+        
+        print("\n✅ Validation Context Ready\n", flush=True)
 
     def can_attempt_healing(self, file_path: str) -> bool:
         """Check if we can attempt healing on this file."""
