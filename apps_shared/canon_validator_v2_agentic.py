@@ -14,10 +14,11 @@ import os
 import re
 import subprocess
 import sys
+import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple, Callable
 
 from apps_shared.config.reliability import rate_limited_retry
 from apps_shared.utils.file_io import get_python_files
@@ -91,9 +92,13 @@ class ValidationContext:
     intelligence_enabled: bool = field(default=False)
     _client: Any = field(default=None)
     target_scope: str = field(default=".")
-    
-    # L5: Self-monitoring – track healing attempts per file
-    healing_attempts: Dict[str, int] = field(default_factory=dict)
+
+    # L5 Autonomy: Economic & Safety State
+    healing_attempts: Dict[str, int] = field(default_factory=dict)       # Per-file counter
+    healing_history: Dict[str, List[str]] = field(default_factory=dict)  # Audit log
+    max_healing_per_file: int = 8                                        # Hard limit per file
+    global_healing_budget: int = 50                                      # Hard limit global
+    healing_budget_used: int = 0
 
     def __post_init__(self):
         # TARGETED SCAN: Only load files in the target scope to save tokens
@@ -120,13 +125,23 @@ class ValidationContext:
         else:
             print("      ⚠️  No GOOGLE_API_KEY found in .env - AUDIT ONLY")
 
-    def record_healing_attempt(self, file_path: str):
-        """Track healing attempts to enforce L5 safety bounds."""
-        self.healing_attempts[file_path] = self.healing_attempts.get(file_path, 0) + 1
+    def can_attempt_healing(self, file_path: str) -> bool:
+        """L5 Guardrail: Enforce global and local healing budgets."""
+        if self.healing_budget_used >= self.global_healing_budget:
+            print("   ⛔ Global healing budget exhausted – halting autonomous repairs.")
+            return False
+        if self.healing_attempts.get(file_path, 0) >= self.max_healing_per_file:
+            print(f"   ⛔ Max healing attempts reached for {os.path.basename(file_path)}")
+            return False
+        return True
 
-    def can_attempt_healing(self, file_path: str, max_per_file: int = 5) -> bool:
-        """Prevent runaway healing loops (L5 autonomy guardrail)."""
-        return self.healing_attempts.get(file_path, 0) < max_per_file
+    def record_healing_attempt(self, file_path: str, success: bool = False):
+        """Track cost and history."""
+        self.healing_attempts[file_path] = self.healing_attempts.get(file_path, 0) + 1
+        self.healing_budget_used += 1
+        if success:
+            timestamp = time.strftime('%H:%M:%S')
+            self.healing_history.setdefault(file_path, []).append(f"Healed at {timestamp}")
 
     @rate_limited_retry(max_retries=5, base_delay=2.0, backoff_factor=1.5)
     async def resilient_mutation(self, agent_name: str, task: str, code: str) -> str:
@@ -136,33 +151,39 @@ class ValidationContext:
         
         prompt = f"""Agent: {agent_name}
 Task: {task}
-SYSTEM: You are a Level 6 Autonomous Repair Agent.
+SYSTEM: You are a Level 5 Autonomous Repair Agent.
 RULES:
 1. Fix the specific violation ONLY.
 2. DO NOT hallucinate imports (only use stdlib or existing).
 3. DO NOT delete logic, comments, or docstrings.
-4. Return ONLY valid Python code. No markdown.
+4. Return ONLY valid Python code. No markdown blocks.
 
 {code}"""
         
         try:
-            # L5: Strict generation config for code reliability
+            # L5: Deterministic generation for code stability
             response = await asyncio.to_thread(
                 self._client.models.generate_content,
-                model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp"),
+                model=os.getenv("GEMINI_MODEL", "gemini-1.5-pro-latest"),
                 contents=[prompt],
                 generation_config={
                     "temperature": 0.0,
-                    "top_p": 1.0,
-                }
+                    "top_p": 0.95,
+                    "max_output_tokens": 8192,
+                },
+                safety_settings=[
+                    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
+                ]
             )
             fixed_code = response.text.strip()
-            # Clean up any markdown blocks
+            # Clean up markdown
             if "```python" in fixed_code:
-                fixed_code = fixed_code.replace("```python", "").replace("```", "")
-            return fixed_code.strip()
+                fixed_code = fixed_code.replace("```python", "").replace("```", "").strip()
+            elif fixed_code.startswith("```"):
+                fixed_code = fixed_code[3:].replace("```", "").strip()
+            return fixed_code
         except Exception as e:
-            print(f"      ❌ Mutation Error: {e}")
+            print(f"      ❌ Mutation Error ({agent_name}): {e}")
             return code
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
@@ -284,11 +305,9 @@ class SubAtomicAgent:
         if not self.ctx.intelligence_enabled:
             return False
 
-        # L5 Guardrail: Prevent infinite healing loops
+        # L5: Budget Check
         if not self.ctx.can_attempt_healing(file_path):
-            print(f"      ⛔ {self.name}: Max healing attempts reached for {os.path.basename(file_path)}")
             return False
-        self.ctx.record_healing_attempt(file_path)
 
         self.__class__._init_registry(self.ctx)
 
@@ -298,56 +317,67 @@ class SubAtomicAgent:
             
             current_code = original_code
             
-            # Get specific violation context if possible
+            # Get violation details
             check_func = self.VERIFICATION_REGISTRY.get(violation_key)
             violation_details = ""
             if check_func:
                 res = await check_func() if asyncio.iscoroutinefunction(check_func) else check_func()
                 if not res[0]:
                     relevant = [d for d in res[1] if str(d).startswith(file_path)]
-                    if relevant: violation_details = f"\nViolations:\n" + "\n".join(relevant[:5])
+                    if relevant:
+                        violation_details = "\nSpecific Violations:\n" + "\n".join(map(str, relevant[:8]))
 
-            # L5 Hardening: Multi-Round Healing
-            for round_num in range(1, 5):
-                print(f"      [Round {round_num}] Attempting fix for Key {violation_key} in {os.path.basename(file_path)}...")
+            # L5: 5-Round Reflective Healing
+            max_rounds = 5
+            for round_num in range(1, max_rounds + 1):
+                print(f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}")
                 
-                prompt = f"Fix Subatomic Canon Key {violation_key}. {violation_details}\nReturn ONLY full corrected code. No markdown."
-                if round_num > 1:
-                    prompt = f"Previous fix FAILED verification for Key {violation_key}. Critique and improve. Return ONLY full corrected code."
+                base_prompt = f"Fix Subatomic Canon Key {violation_key} only. {violation_details}"
+                if round_num == 1:
+                    prompt = f"{base_prompt}\nReturn ONLY full corrected code."
+                else:
+                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code."
 
                 mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code)
 
-                # 1. Syntax Verification
+                # 1. Syntax Gate
                 try:
                     ast.parse(mutated_code)
-                except SyntaxError:
-                    print(f"      ⚠️ Round {round_num} failed: Syntax Error generated.")
+                except SyntaxError as se:
+                    print(f"      ⚠️ Round {round_num}: SyntaxError line {se.lineno} – retrying")
+                    current_code = mutated_code 
                     continue
 
-                # 2. Semantic Verification (Using Mocked IO)
-                # Write to temp file
+                # 2. Hallucination Guard (Growth check)
+                if len(mutated_code.splitlines()) > len(current_code.splitlines()) * 4:
+                    print(f"      ⚠️ Round {round_num}: Code bloat detected – rejecting")
+                    current_code = mutated_code
+                    continue
+
                 temp_path = file_path + ".heal_tmp"
                 with open(temp_path, "w", encoding="utf-8") as f:
                     f.write(mutated_code)
 
-                # Verify using the patched open method
+                # 3. Verify Fix & Side Effects
                 is_fixed = await self._verify_fix_resolved(file_path, temp_path, violation_key)
                 
                 if is_fixed:
-                    # L5 SAFETY: Create backup before overwrite
-                    backup_path = file_path + ".bak"
+                    # L5: Atomic Commit with Timestamped Backup
+                    backup_path = file_path + f".bak.{int(time.time())}"
                     if not os.path.exists(backup_path):
-                        with open(backup_path, "w", encoding="utf-8") as bk:
-                            bk.write(original_code)
-                            
-                    os.replace(temp_path, file_path) # Commit the fix
+                        os.replace(file_path, backup_path)
+                        
+                    os.replace(temp_path, file_path)
                     self.ctx.modified_files.add(file_path)
-                    print(f"      ✨ Healed {os.path.basename(file_path)} after {round_num} rounds.")
+                    self.ctx.record_healing_attempt(file_path, success=True)
+                    print(f"      ✨ SUCCESS: {os.path.basename(file_path)} healed in {round_num} rounds")
                     return True
                 else:
-                    if os.path.exists(temp_path):
-                        os.remove(temp_path) # Cleanup failed attempt
+                    os.remove(temp_path)
+                    current_code = mutated_code  # Feed failed code forward for critique
 
+            self.ctx.record_healing_attempt(file_path, success=False)
+            print(f"      ❌ FAILED: Key {violation_key} unhealed after {max_rounds} rounds")
             return False
 
         except Exception as e:
@@ -355,9 +385,9 @@ class SubAtomicAgent:
             return False
 
     async def _verify_fix_resolved(self, orig_path: str, temp_path: str, key: int) -> bool:
-        """L6 Reflection: Re-runs validation with immune system checks."""
+        """L5 Reflection: Re-runs validation with Immune System checks."""
         
-        # 1. L6 Immune System: Check for regressions (Hallucinations/Security)
+        # 1. Immune System Check
         if not await self._check_side_effects(temp_path, orig_path):
             return False
 
@@ -379,9 +409,9 @@ class SubAtomicAgent:
                 return io.StringIO(new_content)
             return real_open(file, mode, *args, **kwargs)
 
+        # L5: Safe Context Manager for patching
         @contextmanager
-        def _safe_open_patch():
-            """Context manager ensures open() is always restored."""
+        def _patched_open():
             try:
                 builtins.open = patched_open
                 yield
@@ -389,21 +419,18 @@ class SubAtomicAgent:
                 builtins.open = real_open
 
         try:
-            with _safe_open_patch():
+            with _patched_open():
                 if asyncio.iscoroutinefunction(check_func):
                     passed, details = await check_func()
                 else:
                     passed, details = check_func()
-                
-            if not passed:
-                 print(f"      ⚠️ Verification failed: {details[:1]}...")
+            
             return passed
-        except Exception as e:
-            print(f"      ⚠️ Verification Error: {e}")
+        except Exception:
             return False
 
     async def _check_side_effects(self, temp_path: str, orig_path: str) -> bool:
-        """L6: Verify the fix didn't break the Hippocratic Oath (Do No Harm)."""
+        """L5 Immune System: Verify 'Do No Harm'."""
         try:
             with open(temp_path, 'r', encoding='utf-8') as f:
                 new_code = f.read()
@@ -417,27 +444,26 @@ class SubAtomicAgent:
                 elif isinstance(node, ast.ImportFrom) and node.module:
                     new_imports.add(node.module.split('.')[0])
             
-            # Simple check: If import doesn't resolve, it's likely bad
             for imp in new_imports:
                 if imp not in sys.builtin_module_names:
                     try:
                         if not importlib.util.find_spec(imp):
-                            # Allow if it looks like a local module (heuristic)
+                            # Allow local modules
                             if not os.path.exists(imp) and not os.path.exists(imp + ".py"):
                                 print(f"      🚫 Hallucination Detected: Invalid import '{imp}'")
                                 return False
-                    except: pass # Ignore importlib errors
+                    except: pass
 
-            # 2. Security Regression (No Secrets/Eval)
+            # 2. Security Regression
             if "eval(" in new_code or "exec(" in new_code:
                 print("      🚫 Security Regression: eval/exec detected")
                 return False
             
-            # 3. Code Loss Check (Did we lose >50% of the file?)
+            # 3. Mass Deletion Check
             with open(orig_path, 'r', encoding='utf-8') as f:
                 orig_len = len(f.readlines())
             new_len = len(new_code.splitlines())
-            if orig_len > 10 and new_len < (orig_len * 0.5):
+            if orig_len > 15 and new_len < (orig_len * 0.6):
                 print(f"      🚫 Mass Deletion Detected: {orig_len} -> {new_len} lines")
                 return False
                 
@@ -1898,6 +1924,21 @@ class IntelligentOrchestrator:
             for key, result in sorted(self.ctx.results.items()):
                 if not result["passed"]:
                     print(f"   Key {key}")
+
+        # L5 Final Autonomy Report
+        if self.ctx.modified_files:
+            print(f"\n✨ AUTONOMOUS REPAIRS COMPLETED ({len(self.ctx.modified_files)} files):")
+            for fp in sorted(self.ctx.modified_files):
+                history = self.ctx.healing_history.get(fp, [])
+                print(f"   • {fp} {'(' + ', '.join(history) + ')' if history else ''}")
+
+        print(f"\nHealing budget: {self.ctx.healing_budget_used}/{self.ctx.global_healing_budget} used")
+
+        if failed_checks == 0:
+            print("\n🎯 LEVEL 5 SUBATOMIC CANON ACHIEVED – FULL AUTONOMOUS INTEGRITY")
+        else:
+            print(f"\n⚠️  Canon incomplete – {failed_checks} keys remain violated.")
+            print("   Run again with healing enabled for further convergence.")
 
 # ==============================================================================
 # 5. MAIN EXECUTION
