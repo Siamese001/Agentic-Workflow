@@ -218,23 +218,41 @@ class ServiceManager:
         self.mcp_init_pending = True
     
     async def init_mcp_async(self):
-        """Async initialization of MCP clients for filesystem operations."""
+        """Async initialization of MCP clients for Level 5 Swarm with full MCP bridge."""
         if not self.mcp_init_pending:
             return
         
-        # MCP initialization is optional and can block - skip for now
-        # Direct file I/O is used instead (write_file/read_file methods)
-        print("   ⚠️  MCP initialization skipped - using direct file I/O")
-        self.mcp_init_pending = False
-        
-        # Future: Add timeout-wrapped MCP initialization
-        # try:
-        #     async with asyncio.timeout(5.0):  # 5 second timeout
-        #         from mcp import ClientSession, StdioServerParameters
-        #         from mcp.client.stdio import stdio_client
-        #         ...
-        # except asyncio.TimeoutError:
-        #     print("   ⚠️  MCP initialization timed out - using direct file I/O")
+        try:
+            from mcp import ClientSession, StdioServerParameters
+            from mcp.client.stdio import stdio_client
+            
+            # Create MCP file server parameters
+            server_params = StdioServerParameters(
+                command="python",
+                args=["apps_shared/mcp_file_server.py"]
+            )
+            
+            # Force the async pipe open for Gemini toolset
+            async with asyncio.timeout(5.0):  # 5 second timeout
+                async with stdio_client(server_params) as (read, write):
+                    async with ClientSession(read, write) as session:
+                        await session.initialize()
+                        self.mcp_clients['file_server'] = session
+                        print("   ✅ MCP initialized - Tools are now live for agents")
+                        self.mcp_init_pending = False
+                        return
+        except asyncio.TimeoutError:
+            print("   ⚠️  MCP initialization timed out - using direct file I/O")
+            self.mcp_init_pending = False
+        except ImportError:
+            print("   ⚠️  MCP not installed - using direct file I/O")
+            self.mcp_init_pending = False
+        except FileNotFoundError:
+            print("   ⚠️  MCP file server not found - using direct file I/O")
+            self.mcp_init_pending = False
+        except Exception as e:
+            print(f"   ⚠️  MCP initialization failed: {e} - using direct file I/O")
+            self.mcp_init_pending = False
     
     def get_cached_result(self, file_hash: str) -> Optional[Dict]:
         """Get cached validation result from Redis or fallback dict."""
@@ -459,6 +477,14 @@ class ValidationContext:
         
         # DYNAMIC PROMPT LOADING: Load prompts from modularized markdown files
         try:
+            import sys
+            from pathlib import Path
+            
+            # Add project root to Python path if not already there
+            project_root = Path(__file__).parent.parent
+            if str(project_root) not in sys.path:
+                sys.path.insert(0, str(project_root))
+            
             from prompts.prompt_loader import load_prompt_for_agent
             
             # Map agent name to role (e.g., "HealerAgent" -> "healer_agent")

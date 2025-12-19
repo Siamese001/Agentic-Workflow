@@ -13,8 +13,10 @@ class PromptLoader:
     def __init__(self, prompts_dir: Optional[str] = None):
         """Initialize prompt loader with base directory."""
         if prompts_dir is None:
-            # Default to prompts/ directory relative to this file
-            self.prompts_dir = Path(__file__).parent
+            # Default to prompts/ directory at project root
+            # Navigate from this file to project root
+            project_root = Path(__file__).parent.parent
+            self.prompts_dir = project_root / "prompts"
         else:
             self.prompts_dir = Path(prompts_dir)
         
