@@ -4,9 +4,7 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Set, Optional
-
-import httpx
+from typing import Any, Dict, List, Optional, Set
 
 # Third-party
 try:
@@ -16,22 +14,8 @@ except ImportError:
 
 # Import Prompts (Resolves Syntax Error & Atomicity Law)
 from agentic_core.domain.prompts import (
-    FEW_SHOT_CONCURRENCY,
-    FEW_SHOT_GITOPS,
-    FEW_SHOT_GLOBAL_REFACTOR,
-    FEW_SHOT_HISTORIAN,
     FEW_SHOT_HYGIENE,
-    FEW_SHOT_IMPORT_FIXES,
-    FEW_SHOT_PROPERTY_TESTS,
-    FEW_SHOT_REFLECTION,
-    FEW_SHOT_REFLECTION_ENHANCED,
-    FEW_SHOT_REFLECTION_STRATEGY,
-    FEW_SHOT_SAFETY,
-    FEW_SHOT_SHERLOCK,
-    FEW_SHOT_STRATEGIC,
     FEW_SHOT_STYLE,
-    FEW_SHOT_TESTPILOT,
-    POSITIVE_INSTRUCTIONAL_CONTEXT,
 )
 from apps_shared.config.reliability import rate_limited_retry
 
@@ -127,3 +111,146 @@ class ValidationContext:
     python_files: List[str] = field(default_factory=list)
     graph: DependencyGraph = field(default_factory=DependencyGraph)
     budget: BudgetManager = field(default_factory=BudgetManager)
+    
+    # Memory
+    memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
+    file_hashes: Dict[str, str] = field(default_factory=dict)
+    skip_files: Set[str] = field(default_factory=set)
+    flapping_files: Set[str] = field(default_factory=set)
+    successful_traces: List[str] = field(default_factory=list)
+    
+    # Infrastructure
+    model_id: str = field(default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
+    _client: Any = field(default=None, init=False)
+    intelligence_enabled: bool = field(default=False, init=False)
+    
+    # File backups for rollback
+    file_backups: Dict[str, str] = field(default_factory=dict)
+    
+    # WebSocket clients for L5 streaming
+    websocket_clients: Set[Any] = field(default_factory=set)
+    
+    # Prompts
+    FEW_SHOT_HYGIENE: str = FEW_SHOT_HYGIENE
+    FEW_SHOT_STYLE: str = FEW_SHOT_STYLE
+
+    def __post_init__(self):
+        print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
+        self.python_files = get_python_files()
+        self._load_memory()
+        self._init_intelligence()
+
+    def _init_intelligence(self):
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if api_key and genai:
+            try:
+                self._client = genai.Client(api_key=api_key)
+                self.intelligence_enabled = True
+                print(f"      ✅ Gemini Connected")
+            except Exception:
+                pass
+
+    def _load_memory(self):
+        if self.memory_file.exists():
+            try:
+                with open(self.memory_file, 'r') as f:
+                    data = json.load(f)
+                    self.file_hashes = data.get('hashes', {})
+                    self.skip_files = set(data.get('skip', []))
+            except Exception:
+                pass
+
+    def _save_memory(self):
+        try:
+            data = {'hashes': self.file_hashes, 'skip': list(self.skip_files)}
+            with open(self.memory_file, 'w') as f:
+                json.dump(data, f)
+        except Exception:
+            pass
+
+    def report(self, agent: str, key: int, passed: bool, details: Any):
+        self.results[key] = {"passed": passed, "details": details, "agent": agent}
+        if not passed:
+            print(f"   [{agent}] Key {key}: FAIL")
+
+    def get_file_content(self, file_path: str) -> str:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read()
+        except Exception:
+            return ""
+
+    def write_compliant_file(self, path: str, content: str) -> bool:
+        return write_compliant_file(path, content)
+
+    @property
+    def client(self):
+        return self._client
+
+    @rate_limited_retry()
+    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
+        if not self.intelligence_enabled or not self.budget.check_budget():
+            return code
+        
+        try:
+            prompt = f"Agent: {agent_name}\nTask: {task}\nContext:\n{code[:4000]}"
+            response = await asyncio.to_thread(
+                self._client.models.generate_content,
+                model=self.model_id,
+                contents=[prompt]
+            )
+            await self.budget.track(prompt, response.text)
+            return clean_llm_code(response.text)
+        except Exception as e:
+            print(f"   [{agent_name}] Mutation failed: {e}")
+            return code
+
+    def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
+        """Signal the start of a healing cycle."""
+        print(f"   🔄 Healing Cycle {cycle_number}/{max_cycles}")
+
+    def signal_convergence(self):
+        """Signal that the validation has converged."""
+        print("   ✅ Convergence achieved - no modifications in this cycle")
+        self.signals.add("CONVERGENCE")
+
+    def signal_critical_failure(self, message: str):
+        """Signal a critical failure."""
+        self.signals.add("CRITICAL_FAILURE")
+        print(f"   🚨 SIGNAL: CRITICAL_FAILURE - {message}")
+
+    def signal_ast_valid(self):
+        """Signal that AST checks passed."""
+        self.signals.add("AST_VALID")
+        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+
+    def signal_deps_valid(self):
+        """Signal that dependency checks passed."""
+        self.signals.add("DEPS_VALID")
+        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+
+    def signal_secure(self):
+        """Signal that security checks passed."""
+        self.signals.add("SECURE")
+        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+
+    def signal_llm_failure(self, error: str):
+        """Signal an LLM failure."""
+        self.signals.add("LLM_FAILURE")
+        print(f"   ⚠️ SIGNAL: LLM_FAILURE - {error}")
+
+    def rollback_changes(self):
+        """Rollback changes from file backups."""
+        if self.file_backups:
+            for file_path, content in self.file_backups.items():
+                try:
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    print(f"   ↩️ Rolled back: {file_path}")
+                except Exception as e:
+                    print(f"   ⚠️ Rollback failed for {file_path}: {e}")
+            self.file_backups.clear()
+
+    def refresh_graph(self):
+        """Rebuilds graph after mutations."""
+        asyncio.run(self.graph.build(self.python_files))

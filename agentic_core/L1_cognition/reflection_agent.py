@@ -1,9 +1,5 @@
-import json
 import logging
 import os
-import asyncio
-import httpx
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
@@ -95,8 +91,8 @@ class ReflectionAgent:
                 # Extract key information safely
                 task = trace.get("task", "")
                 code_before = trace.get("code_before", "")
-                _code_after = trace.get("code_after", "")
-                _context = trace.get("context", {})
+                trace.get("code_after", "")
+                trace.get("context", {})
                 
                 if not task or not code_before:
                     LOGGER.warning("Skipping trace with missing mandatory fields 'task' or 'code_before'")

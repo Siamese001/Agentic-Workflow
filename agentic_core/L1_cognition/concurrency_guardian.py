@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from L4_state.storage import acquire_lock, release_lock
 

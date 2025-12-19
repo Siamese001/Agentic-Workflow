@@ -1,7 +1,6 @@
 import asyncio
 import os
 import re
-import sys
 from typing import Optional
 
 from agentic_core.agents.base import SubAtomicAgent
@@ -11,7 +10,6 @@ INTELLIGENCE_THRESHOLD = os.getenv("INTELLIGENCE_THRESHOLD", "0.5")
 
 # Optional AutoGen import for collective repair
 try:
-    import autogen
     AUTOGEN_AVAILABLE = True
 except ImportError:
     AUTOGEN_AVAILABLE = False
