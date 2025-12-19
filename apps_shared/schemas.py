@@ -156,5 +156,4 @@ def validate_ast_integrity(ast_structure: Dict[str, Any]) -> bool:
             ast.parse(ast_structure)
         return True
     except Exception:
-    return False
-
+        return False

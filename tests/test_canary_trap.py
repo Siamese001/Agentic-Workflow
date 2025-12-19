@@ -2,10 +2,10 @@ import os
 import signal
 import threading
 import time
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-from canary_monitor import CANARY_FILE_PATH, CanaryMonitor, run_canary_monitor
+from canary_monitor import CanaryMonitor, run_canary_monitor
 
 
 # Required setup: This test needs a temporary PID file and the canary file
@@ -53,7 +53,7 @@ def test_canary_trap_triggers_on_access(setup_canary_env):
             with open(canary_path, 'r') as f:
                 _ = f.read()
         except Exception:
-pass # Ignore read errors
+            pass # Ignore read errors
 
         # Wait a moment for the event handler to fire
         time.sleep(1)
@@ -67,4 +67,3 @@ pass # Ignore read errors
 
         # Cleanup monitor thread
         monitor.stop()
-

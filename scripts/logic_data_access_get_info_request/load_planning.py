@@ -164,7 +164,7 @@ class ScriptsLoadPlanner:
             return result
 
         except Exception as e:
-self.logger.error(f"Load planning failed: {str(e)}")
+            self.logger.error(f"Load planning failed: {str(e)}")
             return LoadPlanningResult(
                 success=False,
                 errors=[str(e)],
@@ -453,4 +453,3 @@ def plan_scripts_load(
         "errors": result.errors,
         "metadata": result.metadata
     }
-
