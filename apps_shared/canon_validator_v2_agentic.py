@@ -387,22 +387,19 @@ class ValidationContext:
     def convert_to_genai_types(self, raw_history):
         """
         Converts old list-of-dicts history into strict Google GenAI Content objects.
-        Ensures 'thought_signature' is preserved to prevent AFC loops.
+        Gemini 2.5 does NOT support thought_signature - removed to prevent crashes.
         """
         formatted = []
         for entry in raw_history:
             parts = []
             for p in entry.get('parts', []):
-                # Create a Part object, preserving thought_signature if it exists
-                part_dict = {"text": p.get('text')}
-                if p.get('thought_signature'):
-                    part_dict["thought_signature"] = p.get('thought_signature')
-                parts.append(types.Part(**part_dict))
+                # Create a Part object - NO thought_signature for Gemini 2.5
+                parts.append(types.Part(text=p.get('text')))
             formatted.append(types.Content(role=entry['role'], parts=parts))
         return formatted
 
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
-        """The 'Smart' fix logic using Hardened Universal Repair Script for Gemini 3."""
+        """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
         
         # Build conversation history for chat session
         history = []
@@ -427,27 +424,27 @@ RULES:
 {code}"""
         
         try:
-            # Corrected Config: Nested thinking and full parameter names
+            # Gemini 2.5 Flash Config: Nested thinking_budget inside ThinkingConfig
             config = types.GenerateContentConfig(
                 temperature=1.0,
                 automatic_function_calling=types.AutomaticFunctionCallingConfig(
-                    maximum_remote_calls=20  # Fix: 'maximum' not 'max'
+                    maximum_remote_calls=20
                 ),
                 thinking_config=types.ThinkingConfig(
-                    thinking_level="HIGH"  # Options: MINIMAL, LOW, MEDIUM, HIGH
+                    thinking_budget=16000  # Deep healing budget for Gemini 2.5
                 )
             )
             
             # Use chat session for automatic signature management
-            def get_gemini_3_response():
+            def get_gemini_response():
                 chat = self._client.chats.create(
-                    model="gemini-3-flash-preview",
+                    model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
                     history=history,
                     config=config
                 )
                 return chat.send_message(prompt)
             
-            response = await asyncio.to_thread(get_gemini_3_response)
+            response = await asyncio.to_thread(get_gemini_response)
             
             fixed_code = response.text.strip()
             
