@@ -5,7 +5,7 @@ import json
 class FailureAnalyzer:
     """
     Diagnostic tool to analyze patterns in recurring failures via frequency distribution.
-    
+
     Usage:
         analyzer = FailureAnalyzer(failure_keys=[50, 19, 7, ...])
         report = analyzer.generate_report()
@@ -45,10 +45,10 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Contextual failure keys provided for analysis
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     # Example usage with simulated recurring patterns
     simulation_data = context_keys + [50, 50, 19, 50, 7, 50, 19]
-    
+
     analyzer = FailureAnalyzer(simulation_data)
     print("FAILURE ANALYZER OUTPUT")
     print("=======================")

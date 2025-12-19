@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 @dataclass
 class ActionRequest:
     """Request for the action plane to execute a tool or action.
-    
+
     Attributes:
         action_type: Type of action (e.g., "tool_call", "api_request")
         tool_name: Name of the tool to execute
@@ -42,7 +42,7 @@ class ActionRequest:
 @dataclass
 class ActionResult:
     """Result from action plane execution.
-    
+
     Attributes:
         success: Whether the action succeeded
         output: Output from the action
@@ -70,7 +70,7 @@ class ActionResult:
 @dataclass
 class PlanningRequest:
     """Request for the cognitive plane to generate a plan.
-    
+
     Attributes:
         task: The task or goal to plan for
         context: Current context including scene, state, history
@@ -95,7 +95,7 @@ class PlanningRequest:
 @dataclass
 class PlanningResult:
     """Result from cognitive plane planning.
-    
+
     Attributes:
         success: Whether planning succeeded
         plan: List of planned steps

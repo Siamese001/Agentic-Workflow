@@ -103,7 +103,7 @@ class VerifiableCheckpointManager:
         if verify:
             calculated_checksum = hashlib.sha256(data_bytes).hexdigest()
             LOGGER.debug(f"Verifying checkpoint checksum: {calculated_checksum[:8]}...")
-            
+
             # Get stored checksum from metadata if available
             metadata = await self.storage.get_blob_metadata(key)
             stored_checksum = metadata.get("checksum")

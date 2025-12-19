@@ -125,7 +125,7 @@ class BudgetManager:
 @dataclass
 class ValidationContext:
     """Shared memory for all agents with Tri-Brain infrastructure and persistence."""
-    
+
     # Core state
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
@@ -204,7 +204,7 @@ class ValidationContext:
     def __post_init__(self):
         """Initialize Tri-Brain infrastructure (MANDATORY MODE - fail if keys missing)."""
         from .config import get_python_files
-        
+
         print("   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
         self.python_files = get_python_files()
         self._load_memory()
@@ -421,45 +421,45 @@ class ValidationContext:
         if not self.pinecone_available or not self.intelligence_enabled:
             return
 
-    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", 
+    async def resilient_mutation(self, agent_name: str, task: str, code: str = "",
                                   file_path: str = None, *, max_attempts: int = 4,
                                   diff_mode: bool = False, min_confidence: float = 0.7) -> str:
         """Level 6 Mutation with retry logic. Returns original code if intelligence disabled."""
         if not self.intelligence_enabled:
             print(f"   [{agent_name}] ⚠️ Intelligence disabled - skipping mutation")
             return code
-        
+
         current_code = code or ""
         for attempt in range(1, max_attempts + 1):
             try:
                 if not self.budget.check_budget():
                     return current_code
-                
+
                 prompt = f"{self.POSITIVE_INSTRUCTIONAL_CONTEXT}\n\nAgent: {agent_name}\nTask: {task}\nContext:\n{current_code[:4000]}"
-                
+
                 response = await asyncio.to_thread(
                     self._client.models.generate_content,
                     model=self.model_id,
                     contents=[prompt]
                 )
-                
+
                 self.budget.track(prompt, response.text)
                 result_text = self._clean_llm_code(response.text)
-                
+
                 if result_text.strip() and (file_path and file_path.endswith('.py')):
                     ast.parse(result_text)
-                
+
                 self.mutation_stats["success"] += 1
                 self.mutation_stats["total"] += 1
                 print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
                 return result_text
-                
+
             except Exception as e:
                 print(f"   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}")
                 self.mutation_stats["total"] += 1
                 if "429" in str(e):
                     await asyncio.sleep(2 ** attempt)
-        
+
         return current_code
 
     def _clean_llm_code(self, raw_code: str) -> str:

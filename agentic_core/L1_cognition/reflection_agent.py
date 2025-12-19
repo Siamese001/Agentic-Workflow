@@ -10,11 +10,11 @@ class ReflectionAgent:
     Agent responsible for learning from successful execution traces
     and consolidating them into long-term memory (Pinecone).
     """
-    
+
     def __init__(self, pinecone_client: Any = None, embedding_model: Optional[str] = None):
         """
         Initialize the ReflectionAgent.
-        
+
         Args:
             pinecone_client: Pinecone client instance
             embedding_model: Model name for embeddings
@@ -25,13 +25,13 @@ class ReflectionAgent:
         self._local_fallback = {}  # Local storage when Pinecone unavailable
         self._index_name = os.getenv("PINECONE_INDEX_NAME", "successful-traces")
         self.index = None
-        
+
         # Initialize Pinecone if available
         if self.pinecone_client:
             self._initialize_pinecone()
         else:
             LOGGER.warning("Pinecone not available - using local fallback only")
-    
+
     def _initialize_pinecone(self):
         """Initialize Pinecone index for storing traces."""
         try:
@@ -51,21 +51,21 @@ class ReflectionAgent:
                     metric="cosine"
                 )
                 LOGGER.info(f"Created Pinecone index: {self._index_name}")
-            
+
             self.index = self.pinecone_client.Index(self._index_name)
             LOGGER.info(f"Pinecone index ready: {self._index_name}")
-            
+
         except Exception as e:
             LOGGER.error(f"Failed to initialize Pinecone: {str(e)}")
             self.pinecone_client = None
-    
+
     async def execute(self, successful_traces: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Process successful traces and internalize them to memory.
-        
+
         Args:
             successful_traces: List of successful execution traces
-            
+
         Returns:
             Processing results
         """
@@ -75,14 +75,14 @@ class ReflectionAgent:
             return {"processed": 0, "internalized": 0, "errors": ["Invalid input type"]}
 
         LOGGER.info(f"ReflectionAgent processing {len(successful_traces)} successful traces")
-        
+
         results = {
             "processed": 0,
             "internalized": 0,
             "errors": [],
             "recommendations": []
         }
-        
+
         for trace in successful_traces:
             try:
                 if not isinstance(trace, dict):
@@ -93,37 +93,37 @@ class ReflectionAgent:
                 code_before = trace.get("code_before", "")
                 trace.get("code_after", "")
                 trace.get("context", {})
-                
+
                 if not task or not code_before:
                     LOGGER.warning("Skipping trace with missing mandatory fields 'task' or 'code_before'")
                     continue
-                
+
                 # Analyze the success pattern (Async)
                 analysis = await self._analyze_success_pattern(trace)
-                
+
                 # Store in memory (Async)
                 if await self._internalize_trace(trace, analysis):
                     results["internalized"] += 1
-                
+
                 results["processed"] += 1
-                
+
                 # Generate recommendations (Async)
                 recommendations = await self._generate_recommendations(trace, analysis)
                 if isinstance(recommendations, list):
                     results["recommendations"].extend(recommendations)
-                
+
             except Exception as e:
                 error_msg = f"Error processing trace: {str(e)}"
                 LOGGER.error(error_msg)
                 results["errors"].append(error_msg)
-        
+
         # Self-critique (Async resolution of truncated call)
         try:
             results["critique"] = await self._self_critique(results)
         except Exception as e:
             LOGGER.error(f"Self-critique failed: {e}")
             results["critique"] = "Internal critique unavailable"
-            
+
         return results
 
     async def _analyze_success_pattern(self, trace: Dict[str, Any]) -> Dict[str, Any]:

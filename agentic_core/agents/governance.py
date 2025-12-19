@@ -28,9 +28,9 @@ class ArchitectureGovernor(SubAtomicAgent):
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
-        
+
         violations = {'depth': [], 'atomicity': [], 'complexity': [], 'system': []}
-        
+
         for file_path in self.ctx.python_files:
             violations['depth'].extend(self._check_depth(file_path))
             violations['atomicity'].extend(await self._check_atomicity(file_path))
@@ -42,7 +42,7 @@ class ArchitectureGovernor(SubAtomicAgent):
         for cat, v in violations.items():
             if v:
                 print(f"   🏛️  {cat.title()} Violations: {len(v)}")
-        
+
         self.ctx.report(self.name, 49, not violations['depth'], violations['depth'])
         self.ctx.report(self.name, 50, not violations['atomicity'], violations['atomicity'])
         self.ctx.report(self.name, 19, not violations['complexity'], violations['complexity'])
@@ -64,7 +64,7 @@ class ArchitectureGovernor(SubAtomicAgent):
             content = await asyncio.to_thread(self._read_file, file_path)
             if len(content.splitlines()) > MAX_LINES:
                 v.append(f"{file_path}: > {MAX_LINES} lines")
-            
+
             tree = ast.parse(content)
             classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             if len(classes) > 1:
@@ -85,7 +85,7 @@ class ArchitectureGovernor(SubAtomicAgent):
                         length = node.end_lineno - node.lineno
                         if length > self.MAX_FUNC_LINES:
                             v.append(f"{file_path}:{node.name} too long ({length} lines)")
-                    
+
                     complexity = self._calculate_mccabe(node)
                     if complexity > self.MAX_COMPLEXITY:
                         v.append(f"{file_path}:{node.name} complex ({complexity})")
@@ -118,7 +118,7 @@ class ArchitectureGovernor(SubAtomicAgent):
 
 class DependencySentinel(SubAtomicAgent):
     """
-    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 
+    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
           14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
     """

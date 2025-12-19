@@ -13,7 +13,7 @@ import collections
 class FailureAnalyzer:
     """
     Diagnostic tool for analyzing patterns in recurring system failures.
-    
+
     Usage:
         analyzer = FailureAnalyzer(keys=[...])
         analyzer.generate_report()
@@ -30,13 +30,13 @@ class FailureAnalyzer:
         counts = self.analyze_distribution()
         total = len(self.keys)
         unique = len(counts)
-        
+
         print(f"{'FAILURE ANALYSIS REPORT':^40}")
         print("-" * 40)
         print(f"Total Failure Events:  {total}")
         print(f"Unique Error Keys:     {unique}")
         print("-" * 40)
-        
+
         if total > 0:
             print(f"{'Key':<10} | {'Frequency':<10} | {'Impact %':<10}")
             for key, count in counts.most_common():
@@ -49,11 +49,11 @@ class FailureAnalyzer:
 def main():
     # Context provided by ToolsmithAgent
     context = {
-        'name': 'failure_analyzer', 
-        'purpose': 'Analyze patterns in recurring failures', 
+        'name': 'failure_analyzer',
+        'purpose': 'Analyze patterns in recurring failures',
         'keys': [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
     }
-    
+
     analyzer = FailureAnalyzer(context['keys'])
     analyzer.generate_report()
 

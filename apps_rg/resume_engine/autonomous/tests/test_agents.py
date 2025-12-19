@@ -64,29 +64,29 @@ def invalid_resume():
 
 class TestContentQualityAgent:
     """Tests for ContentQualityAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_valid_resume_passes(self, ctx, valid_resume):
         """Test that valid resume passes quality check."""
         ctx.current_resume = valid_resume
         agent = ContentQualityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ContentQualityAgent"]["passed"] is True
         assert "QUALITY_FAILURE" not in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume_fails(self, ctx):
         """Test that empty resume fails."""
         ctx.current_resume = {}
         agent = ContentQualityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ContentQualityAgent"]["passed"] is False
         assert "QUALITY_FAILURE" in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_placeholder_detection(self, ctx):
         """Test placeholder detection."""
@@ -96,12 +96,12 @@ class TestContentQualityAgent:
             "skills": "Python, JavaScript",
         }
         agent = ContentQualityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ContentQualityAgent"]["passed"] is False
         assert "QUALITY_FAILURE" in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_short_section_detection(self, ctx):
         """Test short section detection."""
@@ -111,27 +111,27 @@ class TestContentQualityAgent:
             "skills": "Python",
         }
         agent = ContentQualityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ContentQualityAgent"]["passed"] is False
 
 
 class TestFactCheckAgent:
     """Tests for FactCheckAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_no_profile_skips(self, ctx, valid_resume):
         """Test that missing profile skips deep fact-check."""
         ctx.current_resume = valid_resume
         ctx.user_profile = {}
         agent = FactCheckAgent(ctx)
-        
+
         await agent.execute()
-        
+
         # Should pass (skipped) when no profile
         assert ctx.results["FactCheckAgent"]["passed"] is True
-    
+
     @pytest.mark.asyncio
     async def test_verified_skills_pass(self, ctx):
         """Test that verified skills pass."""
@@ -144,37 +144,37 @@ class TestFactCheckAgent:
             "skills": ["Python", "JavaScript", "AWS"],
         }
         agent = FactCheckAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["FactCheckAgent"]["passed"] is True
         assert "HALLUCINATION_DETECTED" not in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume_fails(self, ctx):
         """Test that empty resume fails fact-check."""
         ctx.current_resume = {}
         agent = FactCheckAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["FactCheckAgent"]["passed"] is False
 
 
 class TestBrandComplianceAgent:
     """Tests for BrandComplianceAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_professional_content_passes(self, ctx, valid_resume):
         """Test that professional content passes."""
         ctx.current_resume = valid_resume
         agent = BrandComplianceAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["BrandComplianceAgent"]["passed"] is True
         assert "BRAND_VIOLATION" not in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_forbidden_phrases_fail(self, ctx):
         """Test that forbidden phrases are detected."""
@@ -184,75 +184,75 @@ class TestBrandComplianceAgent:
             "skills": "Python",
         }
         agent = BrandComplianceAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["BrandComplianceAgent"]["passed"] is False
         assert "BRAND_VIOLATION" in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume_fails(self, ctx):
         """Test that empty resume fails."""
         ctx.current_resume = {}
         agent = BrandComplianceAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["BrandComplianceAgent"]["passed"] is False
 
 
 class TestTemplateOptimizer:
     """Tests for TemplateOptimizer."""
-    
+
     @pytest.mark.asyncio
     async def test_technical_job_detection(self, ctx, valid_resume):
         """Test technical job type detection."""
         ctx.current_resume = valid_resume
         ctx.job_description = "Senior Software Engineer needed for cloud development"
         agent = TemplateOptimizer(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["TemplateOptimizer"]["passed"] is True
         assert ctx.results["template_recommendations"]["job_type"] == "technical"
-    
+
     @pytest.mark.asyncio
     async def test_executive_job_detection(self, ctx, valid_resume):
         """Test executive job type detection."""
         ctx.current_resume = valid_resume
         ctx.job_description = "VP of Engineering, Director level position"
         agent = TemplateOptimizer(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["template_recommendations"]["job_type"] == "executive"
-    
+
     @pytest.mark.asyncio
     async def test_no_job_description(self, ctx, valid_resume):
         """Test handling of missing job description."""
         ctx.current_resume = valid_resume
         ctx.job_description = ""
         agent = TemplateOptimizer(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["TemplateOptimizer"]["passed"] is True
 
 
 class TestSectionBalanceAgent:
     """Tests for SectionBalanceAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_balanced_resume_passes(self, ctx, valid_resume):
         """Test that balanced resume passes."""
         ctx.current_resume = valid_resume
         agent = SectionBalanceAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["SectionBalanceAgent"]["passed"] is True
         assert "BALANCE_ISSUE" not in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_missing_required_section(self, ctx):
         """Test detection of missing required sections."""
@@ -261,37 +261,37 @@ class TestSectionBalanceAgent:
             # Missing experience and skills
         }
         agent = SectionBalanceAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["SectionBalanceAgent"]["passed"] is False
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume_fails(self, ctx):
         """Test that empty resume fails."""
         ctx.current_resume = {}
         agent = SectionBalanceAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["SectionBalanceAgent"]["passed"] is False
 
 
 class TestATSCompatibilityAgent:
     """Tests for ATSCompatibilityAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_ats_friendly_passes(self, ctx, valid_resume):
         """Test that ATS-friendly resume passes."""
         ctx.current_resume = valid_resume
         ctx.job_description = "Python developer needed"
         agent = ATSCompatibilityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ATSCompatibilityAgent"]["passed"] is True
         assert "ATS_FAILURE" not in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_special_characters_fail(self, ctx):
         """Test that special characters are detected."""
@@ -301,37 +301,37 @@ class TestATSCompatibilityAgent:
             "skills": "Python",
         }
         agent = ATSCompatibilityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ATSCompatibilityAgent"]["passed"] is False
         assert "ATS_FAILURE" in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume_fails(self, ctx):
         """Test that empty resume fails."""
         ctx.current_resume = {}
         agent = ATSCompatibilityAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["ATSCompatibilityAgent"]["passed"] is False
 
 
 class TestTestPilot:
     """Tests for TestPilot agent."""
-    
+
     @pytest.mark.asyncio
     async def test_valid_resume_passes(self, ctx, valid_resume):
         """Test that valid resume passes all tests."""
         ctx.current_resume = valid_resume
         agent = TestPilot(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["TestPilot"]["passed"] is True
         assert "TEST_FAILURE" not in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_missing_sections_fail(self, ctx):
         """Test that missing required sections fail."""
@@ -340,52 +340,52 @@ class TestTestPilot:
             # Missing summary, experience, skills
         }
         agent = TestPilot(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["TestPilot"]["passed"] is False
         assert "TEST_FAILURE" in ctx.signals
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume_fails(self, ctx):
         """Test that empty resume fails."""
         ctx.current_resume = {}
         agent = TestPilot(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results["TestPilot"]["passed"] is False
 
 
 class TestStrategicPlanner:
     """Tests for StrategicPlanner agent."""
-    
+
     @pytest.mark.asyncio
     async def test_quality_failure_strategy(self, ctx, valid_resume):
         """Test strategy for quality failure."""
         ctx.current_resume = valid_resume
         ctx.add_signal("QUALITY_FAILURE")
         agent = StrategicPlanner(ctx)
-        
+
         await agent.execute()
-        
+
         plan = ctx.results["strategic_plan"]
         assert "QUALITY_FAILURE" in plan["priority_signals"]
         assert "ContentQualityAgent" in plan["recommended_agents"]
-    
+
     @pytest.mark.asyncio
     async def test_ats_failure_strategy(self, ctx, valid_resume):
         """Test strategy for ATS failure."""
         ctx.current_resume = valid_resume
         ctx.add_signal("ATS_FAILURE")
         agent = StrategicPlanner(ctx)
-        
+
         await agent.execute()
-        
+
         plan = ctx.results["strategic_plan"]
         assert "ATS_FAILURE" in plan["priority_signals"]
         assert "ATSCompatibilityAgent" in plan["recommended_agents"]
-    
+
     @pytest.mark.asyncio
     async def test_blast_radius_tracking(self, ctx, valid_resume):
         """Test blast radius tracking."""
@@ -393,16 +393,16 @@ class TestStrategicPlanner:
         ctx.impact_zone.add("skills")
         ctx.impact_zone.add("summary")
         agent = StrategicPlanner(ctx)
-        
+
         await agent.execute()
-        
+
         plan = ctx.results["strategic_plan"]
         assert len(plan["sections_to_review"]) == 2
 
 
 class TestReflectionAgent:
     """Tests for ReflectionAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_success_reflection(self, ctx, valid_resume):
         """Test reflection on successful execution."""
@@ -411,13 +411,13 @@ class TestReflectionAgent:
         ctx.record_result("Agent1", passed=True)
         ctx.record_result("Agent2", passed=True)
         agent = ReflectionAgent(ctx)
-        
+
         await agent.execute()
-        
+
         insights = ctx.results["reflection"]
         assert insights["outcome"] == "success"
         assert insights["converged"] is True
-    
+
     @pytest.mark.asyncio
     async def test_incomplete_reflection(self, ctx, valid_resume):
         """Test reflection on incomplete execution."""
@@ -425,9 +425,9 @@ class TestReflectionAgent:
         ctx.current_cycle = 1
         ctx.add_signal("QUALITY_FAILURE")
         agent = ReflectionAgent(ctx)
-        
+
         await agent.execute()
-        
+
         insights = ctx.results["reflection"]
         assert insights["outcome"] == "needs_more_cycles"
         assert insights["converged"] is False

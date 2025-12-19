@@ -342,10 +342,10 @@ class ClarityBrevityFilter:
 
 class ClarityBrevityFilterManager:
     """Manager for Clarity & Brevity Filter without global state"""
-    
+
     def __init__(self):
         self._instance = None
-    
+
     def get_filter(self) -> ClarityBrevityFilter:
         """Get or create the Clarity & Brevity Filter instance"""
         if self._instance is None:

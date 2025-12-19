@@ -14,7 +14,7 @@ def handle_order(order):
 GOOD (compliant):
 # Split into:
 # apps_rg/orders/validate.py
-# apps_rg/orders/charge.py  
+# apps_rg/orders/charge.py
 # apps_rg/orders/notify.py
 # Each file <180 lines, single responsibility
 

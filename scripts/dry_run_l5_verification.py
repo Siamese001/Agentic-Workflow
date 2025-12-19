@@ -203,19 +203,19 @@ async def mock_personalization_enhancer(context: Dict[str, Any]) -> Dict[str, An
 
 class VerificationResults:
     """Track verification results."""
-    
+
     def __init__(self, engine_name: str):
         self.engine_name = engine_name
         self.checks = {}
-    
+
     def record(self, check_name: str, passed: bool, details: str = ""):
         self.checks[check_name] = {"passed": passed, "details": details}
         status = "✅ PASS" if passed else "❌ FAIL"
         logger.info(f"  [{self.engine_name}] {check_name}: {status} {details}")
-    
+
     def all_passed(self) -> bool:
         return all(c["passed"] for c in self.checks.values())
-    
+
     def summary(self) -> str:
         lines = [f"\n{'='*60}", f"Verification Results: {self.engine_name}", "="*60]
         for name, result in self.checks.items():
@@ -232,25 +232,25 @@ class VerificationResults:
 
 async def verify_resume_engine() -> VerificationResults:
     """Verify Resume Engine L5 orchestrator async flow."""
-    
+
     logger.info("\n" + "="*60)
     logger.info("VERIFYING RESUME ENGINE (apps_rg)")
     logger.info("="*60)
-    
+
     results = VerificationResults("Resume Engine")
-    
+
     try:
         # Import orchestrator
         from apps_rg.L3_orchestration.l5_autonomous_orchestrator import (
             create_l5_orchestrator,
         )
         from apps_shared.signal_bus import reset_signal_bus
-        
+
         results.record("Import", True, "L5AutonomousOrchestrator imported successfully")
-        
+
         # Reset signal bus for clean state
         signal_bus = reset_signal_bus()
-        
+
         # Create orchestrator with minimal config
         orchestrator = create_l5_orchestrator(
             workflow_id="dry_run_resume_test",
@@ -258,9 +258,9 @@ async def verify_resume_engine() -> VerificationResults:
             quality_threshold=0.7,
             enable_intervention=False,  # Disable for test
         )
-        
+
         results.record("Instantiation", True, "Orchestrator created successfully")
-        
+
         # Define mock agents
         mock_agents = {
             "input_validator": mock_input_validator,
@@ -276,13 +276,13 @@ async def verify_resume_engine() -> VerificationResults:
             "tone_adjuster": mock_tone_adjuster,
             "length_optimizer": mock_length_optimizer,
         }
-        
+
         # Initial context
         initial_context = {
             "resume_data": {"name": "Test User", "experience": []},
             "job_description": "Software Engineer at TestCorp",
         }
-        
+
         # Check 1: Signal bus starts empty
         initial_signals = signal_bus.get_summary()
         results.record(
@@ -290,10 +290,10 @@ async def verify_resume_engine() -> VerificationResults:
             initial_signals["signal_count"] == 0,
             f"Signal count: {initial_signals['signal_count']}"
         )
-        
+
         # Execute with convergence
         logger.info("\nExecuting convergence loop...")
-        
+
         try:
             final_results = await orchestrator.execute_with_convergence(
                 initial_context=initial_context,
@@ -306,7 +306,7 @@ async def verify_resume_engine() -> VerificationResults:
         except Exception as e:
             results.record("Execution", False, f"Exception: {e}")
             return results
-        
+
         # Check 2: Signals were emitted during execution
         signal_summary = signal_bus.get_summary()
         signals_emitted = signal_summary["history_count"] > 0
@@ -315,7 +315,7 @@ async def verify_resume_engine() -> VerificationResults:
             signals_emitted,
             f"History count: {signal_summary['history_count']}"
         )
-        
+
         # Check 3: Verify convergence result structure
         has_required_keys = all(
             k in final_results
@@ -326,7 +326,7 @@ async def verify_resume_engine() -> VerificationResults:
             has_required_keys,
             f"Keys: {list(final_results.keys())}"
         )
-        
+
         # Check 4: Cycles completed
         cycles = final_results.get("cycles_completed", 0)
         results.record(
@@ -334,14 +334,14 @@ async def verify_resume_engine() -> VerificationResults:
             cycles > 0,
             f"Completed {cycles} cycle(s)"
         )
-        
+
         # Check 5: No unawaited coroutine warnings (if we got here, we passed)
         results.record(
             "No Unawaited Coroutines",
             True,
             "No RuntimeWarning raised"
         )
-        
+
         # Check 6: Reflection was available
         reflection_summary = final_results.get("reflection_summary")
         results.record(
@@ -349,17 +349,17 @@ async def verify_resume_engine() -> VerificationResults:
             reflection_summary is not None or orchestrator.reflection_agent is not None,
             f"Reflection agent: {orchestrator.reflection_agent is not None}"
         )
-        
+
         logger.info(f"\nFinal Results: converged={final_results.get('converged')}, "
                    f"reason={final_results.get('convergence_reason')}")
-        
+
     except ImportError as e:
         results.record("Import", False, f"ImportError: {e}")
     except Exception as e:
         results.record("Unexpected Error", False, f"{type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-    
+
     return results
 
 
@@ -369,25 +369,25 @@ async def verify_resume_engine() -> VerificationResults:
 
 async def verify_outreach_engine() -> VerificationResults:
     """Verify Outreach Engine L5 orchestrator async flow."""
-    
+
     logger.info("\n" + "="*60)
     logger.info("VERIFYING OUTREACH ENGINE (apps_lic)")
     logger.info("="*60)
-    
+
     results = VerificationResults("Outreach Engine")
-    
+
     try:
         # Import orchestrator
         from apps_lic.L3_orchestration.l5_autonomous_orchestrator import (
             create_l5_outreach_orchestrator,
         )
         from apps_shared.signal_bus import reset_signal_bus
-        
+
         results.record("Import", True, "L5OutreachOrchestrator imported successfully")
-        
+
         # Reset signal bus for clean state
         signal_bus = reset_signal_bus()
-        
+
         # Create orchestrator with minimal config
         orchestrator = create_l5_outreach_orchestrator(
             campaign_id="dry_run_outreach_test",
@@ -395,9 +395,9 @@ async def verify_outreach_engine() -> VerificationResults:
             max_cycles=2,
             enable_intervention=False,
         )
-        
+
         results.record("Instantiation", True, "Orchestrator created successfully")
-        
+
         # Define mock agents
         mock_agents = {
             "recipient_analyzer": mock_recipient_analyzer,
@@ -414,18 +414,18 @@ async def verify_outreach_engine() -> VerificationResults:
             "tone_adjuster": mock_tone_adjuster,
             "personalization_enhancer": mock_personalization_enhancer,
         }
-        
+
         # Test recipients
         recipients = [
             {"id": "test_1", "name": "John Doe", "title": "Engineering Manager"},
         ]
-        
+
         # Campaign context
         campaign_context = {
             "campaign_name": "Test Campaign",
             "product": "TestProduct",
         }
-        
+
         # Check 1: Signal bus starts empty
         initial_signals = signal_bus.get_summary()
         results.record(
@@ -433,10 +433,10 @@ async def verify_outreach_engine() -> VerificationResults:
             initial_signals["signal_count"] == 0,
             f"Signal count: {initial_signals['signal_count']}"
         )
-        
+
         # Execute campaign
         logger.info("\nExecuting outreach campaign...")
-        
+
         try:
             final_results = await orchestrator.execute_outreach_campaign(
                 recipients=recipients,
@@ -452,7 +452,7 @@ async def verify_outreach_engine() -> VerificationResults:
             import traceback
             traceback.print_exc()
             return results
-        
+
         # Check 2: Signals were emitted during execution
         signal_summary = signal_bus.get_summary()
         signals_emitted = signal_summary["history_count"] > 0
@@ -461,7 +461,7 @@ async def verify_outreach_engine() -> VerificationResults:
             signals_emitted,
             f"History count: {signal_summary['history_count']}"
         )
-        
+
         # Check 3: Verify result structure
         has_required_keys = all(
             k in final_results
@@ -472,7 +472,7 @@ async def verify_outreach_engine() -> VerificationResults:
             has_required_keys,
             f"Keys: {list(final_results.keys())}"
         )
-        
+
         # Check 4: Messages generated
         msg_count = final_results.get("messages_generated", 0)
         results.record(
@@ -480,31 +480,31 @@ async def verify_outreach_engine() -> VerificationResults:
             True,  # Even 0 is valid for dry run
             f"Generated {msg_count} message(s)"
         )
-        
+
         # Check 5: No unawaited coroutine warnings
         results.record(
             "No Unawaited Coroutines",
             True,
             "No RuntimeWarning raised"
         )
-        
+
         # Check 6: Reflection was available
         results.record(
             "Reflection Available",
             orchestrator.reflection_agent is not None,
             f"Reflection agent: {orchestrator.reflection_agent is not None}"
         )
-        
+
         logger.info(f"\nFinal Results: messages={msg_count}, "
                    f"success_rate={final_results.get('success_rate', 0):.2f}")
-        
+
     except ImportError as e:
         results.record("Import", False, f"ImportError: {e}")
     except Exception as e:
         results.record("Unexpected Error", False, f"{type(e).__name__}: {e}")
         import traceback
         traceback.print_exc()
-    
+
     return results
 
 
@@ -514,41 +514,41 @@ async def verify_outreach_engine() -> VerificationResults:
 
 async def main():
     """Run all verifications."""
-    
+
     logger.info("="*60)
     logger.info("L5+ ORCHESTRATOR ASYNC MIGRATION VERIFICATION")
     logger.info("="*60)
     logger.info("This script verifies that the async migration works correctly.")
     logger.info("")
-    
+
     # Run verifications
     resume_results = await verify_resume_engine()
     outreach_results = await verify_outreach_engine()
-    
+
     # Print summaries
     print(resume_results.summary())
     print(outreach_results.summary())
-    
+
     # Final summary table
     print("\n" + "="*60)
     print("VERIFICATION SUMMARY TABLE")
     print("="*60)
     print(f"{'Check':<30} {'Resume Engine':<15} {'Outreach Engine':<15}")
     print("-"*60)
-    
+
     all_checks = set(resume_results.checks.keys()) | set(outreach_results.checks.keys())
     for check in sorted(all_checks):
         resume_status = "✅" if resume_results.checks.get(check, {}).get("passed", False) else "❌"
         outreach_status = "✅" if outreach_results.checks.get(check, {}).get("passed", False) else "❌"
         print(f"{check:<30} {resume_status:<15} {outreach_status:<15}")
-    
+
     print("-"*60)
-    
+
     # Overall result
     all_passed = resume_results.all_passed() and outreach_results.all_passed()
     overall = "✅ ALL CHECKS PASSED" if all_passed else "❌ SOME CHECKS FAILED"
     print(f"\nOVERALL RESULT: {overall}")
-    
+
     return 0 if all_passed else 1
 
 

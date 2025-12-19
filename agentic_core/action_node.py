@@ -37,7 +37,7 @@ class ActionNode:
         logger.info(f"⚙️ Action Node received plan: {plan.get('goal')}")
 
         results = []
-        steps = plan.get('steps', [])
+        steps = plan.get('steps') or plan.get('plan', {}).get('steps', [])
 
         if not steps:
             logger.warning("⚠️ Received empty plan. No actions taken.")
@@ -89,8 +89,7 @@ class ActionNode:
             output = self.allowed_tools[tool_key](**params)
             return {"step": step.get('step'), "status": "success", "output": output}
         except Exception as e:
-pass
-logger.error(f"❌ Tool execution failed: {e}")
+            logger.error(f"❌ Tool execution failed: {e}")
             return {"step": step.get('step'), "status": "error", "output": str(e)}
 
     # =========================================================================
@@ -157,8 +156,7 @@ logger.error(f"❌ Tool execution failed: {e}")
             else:
                 return f"Command Failed:\n{result.stderr}"
         except subprocess.TimeoutExpired:
-pass
-return "Error: Command timed out."
+            return "Error: Command timed out."
 
 
 if __name__ == "__main__":
@@ -168,31 +166,23 @@ if __name__ == "__main__":
     # 1. Simulate a plan from Cognitive Node
     mock_plan = {
         "goal": "Create a secure environment",
-        "plan": {
-            "steps": [
-                {
-                    "step": 1,
-                    "action": "write_file",
-                    "params": {"filename": "security.txt", "content": "Security Level: Maximum"}
-                },
-                {
-                    "step": 2,
-                    "action": "ls",
-                    "params": {"subdir": "."}
-                },
-                {
-                    "step": 3,
-                    "action": "read_file",
-                    "params": {"filename": "security.txt"}
-                }
-            ]
-        }
+        "steps": [
+            {
+                "step": 1,
+                "action": "write_file",
+                "params": {"filename": "security.txt", "content": "Security Level: Maximum"}
+            },
+            {
+                "step": 2,
+                "action": "ls",
+                "params": {"subdir": "."}
+            },
+            {
+                "step": 3,
+                "action": "read_file",
+                "params": {"filename": "security.txt"}
+            }
+        ]
     }
 
-    # print("\n🚀 STARTING ACTION NODE TEST")  # [Security Fix]
-    # print("========================================")  # [Security Fix]
     report = action_node.execute_plan(mock_plan)
-
-    # print("\n📊 EXECUTION REPORT")  # [Security Fix]
-    # print(json.dumps(report, indent=2))  # [Security Fix]
-

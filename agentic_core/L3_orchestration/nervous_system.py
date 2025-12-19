@@ -66,13 +66,13 @@ class NervousSystem:
         """
         # Initialize L5 Safety Layer first
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.00)
-        
+
         # Initialize L4 State Persistence
         storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.checkpoint_manager = VerifiableCheckpointManager(storage_adapter)
         self.session_id = getattr(config, 'mission_id', f"mission_{int(time.time())}")
         self.signal_ledger = SignalLedger(storage_adapter, self.session_id)
-        
+
         # Create sovereign implementations if not provided
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
         self.hands = action_plane or create_sovereign_action_plane(
@@ -83,19 +83,19 @@ class NervousSystem:
 
         self._state: Dict[str, Any] = {}
         self._iteration = 0
-        
+
         # Populate phases with real agents from cognitive plane
         self.phases = self._populate_phases()
-        
+
         # Execution tracking
         self._results: Dict[str, Dict[str, Any]] = {}
         self._signals: set = set()
         self._modified_files: set = set()
         self._phase_failure_counts: Dict[str, int] = {}  # Track consecutive failures per phase
-        
+
         # L5 Intervention Server
         self.intervention_server = InterventionServer()
-        
+
         # L6 Architecture Governor
         self.architecture_governor = ArchitectureGovernor()
 
@@ -108,7 +108,7 @@ class NervousSystem:
                 "phases_populated": len([p for p in self.phases.values() if p])
             }
         )
-    
+
     def _populate_phases(self) -> Dict[str, List]:
         """Populate phases with sovereign agents from the cognitive plane."""
         # Get agents from sovereign cognitive plane
@@ -116,7 +116,7 @@ class NervousSystem:
         if hasattr(self.brain, 'get_agent_registry'):
             registry = self.brain.get_agent_registry()
             agents = list(registry.values())
-        
+
         # Group agents by phase
         phases = {
             "integrity_seq": [],
@@ -130,17 +130,17 @@ class NervousSystem:
             "benchmarking_seq": [],
             "optimization_conditional": [],
         }
-        
+
         # Create mock agent objects from sovereign registry
         for agent_info in agents:
             phase = agent_info.phase
-            
+
             # Create a simple mock agent that has execute method
             class MockAgent:
                 def __init__(self, name, phase):
                     self.name = name
                     self.phase = phase
-                
+
                 async def execute(self):
                     # Simulate agent execution
                     return {
@@ -149,20 +149,20 @@ class NervousSystem:
                         "phase": self.phase,
                         "details": f"Agent {self.name} executed successfully"
                     }
-            
+
             mock_agent = MockAgent(agent_info.name, phase)
-            
+
             if phase in phases:
                 phases[phase].append(mock_agent)
-        
+
         return phases
 
     async def run_mission(self, max_phases: Optional[int] = None) -> ExecutionResult:
         """Run the full mission with phase-based execution.
-        
+
         Args:
             max_phases: Maximum number of phases to execute (None for all)
-            
+
         Returns:
             ExecutionResult with mission status and report
         """
@@ -173,7 +173,7 @@ class NervousSystem:
             LOGGER.info(f"L4: Checkpoint found. Resuming from Phase 2.")
             await self._restore_from_checkpoint(last_checkpoint)
             resume_phase = last_checkpoint['phase']
-        
+
         # Create execution context for the mission
         context = ExecutionContext(
             mission="Execute 10-phase mission validation",
@@ -184,10 +184,10 @@ class NervousSystem:
             },
             state=self._state.copy()
         )
-        
+
         # Add forced agents support for telepathy
         context.forced_agents = []
-        
+
         # If max_phases is specified, limit the phases
         if max_phases:
             phase_names = list(self.phases.keys())
@@ -196,15 +196,15 @@ class NervousSystem:
                 limited_phases[phase_name] = self.phases[phase_name]
             self.phases = limited_phases
             LOGGER.info(f"Limiting execution to first {max_phases} phases")
-        
+
         # Check for high-risk states that require intervention
         cycle = self._iteration
         modified_count = len(self._modified_files)
         signals_list = list(self._signals)
-        
+
         # Process telepathic instructions (L6 Codebase Telepathy)
         context = await process_telepathy_instructions(context, cycle)
-        
+
         # Check for immediate telepathic stop
         if "TELEPATHY_STOP" in context.signals:
             LOGGER.warning("Mission stopped by telepathic instruction")
@@ -213,18 +213,18 @@ class NervousSystem:
                 report="Mission stopped by telepathic instruction",
                 signals=["TELEPATHY_STOP"]
             )
-        
+
         intervention_required, risk_factors = check_intervention_required(
             cycle=cycle,
             modified_count=modified_count,
             signals_list=signals_list
         )
-        
+
         if intervention_required:
             LOGGER.warning(f"High-risk state detected: {risk_factors}")
             # Start intervention server
             await self.intervention_server.start_server()
-            
+
             # Request human approval
             approved = await self.intervention_server.request_approval(
                 risk_factors=risk_factors,
@@ -232,7 +232,7 @@ class NervousSystem:
                 modified_files=list(self._modified_files),
                 timeout=300  # 5 minutes timeout
             )
-            
+
             if not approved:
                 LOGGER.error("Human intervention vetoed - aborting mission")
                 self._signals.add("VETOED")
@@ -244,14 +244,14 @@ class NervousSystem:
                     error="Mission vetoed by human intervention",
                     execution_time=time.time() - start_time
                 )
-            
+
             # Stop intervention server after approval
             await self.intervention_server.stop_server()
             LOGGER.info("Human intervention approved - continuing mission")
-        
+
         # Execute the mission
         return await self.execute(context, resume_phase=resume_phase)
-    
+
     async def execute(self, context: ExecutionContext, resume_phase: Optional[str] = None) -> ExecutionResult:
         """Execute mission through phase-based execution.
 
@@ -290,53 +290,53 @@ class NervousSystem:
                 max_cycles = self.config.max_iterations or 10
                 for cycle in range(max_cycles):
                     LOGGER.info(f"Cycle {cycle + 1}/{max_cycles}")
-                    
+
                     # Execute all phases (only on first cycle when resuming)
                     if cycle == 0 or not resume_phase:
                         converged = await self._execute_all_phases(context, execution_trace, resume_phase=resume_phase)
                     else:
                         # On subsequent cycles, run without skipping
                         converged = await self._execute_all_phases(context, execution_trace, resume_phase=None)
-                    
+
                     # Execute any forced agents from telepathy
                     if hasattr(context, 'forced_agents') and context.forced_agents:
                         await self._execute_forced_agents(context, execution_trace)
-                    
+
                     # Check for convergence
                     if converged:
                         LOGGER.info("Convergence achieved - all checks passed!")
                         break
-                    
+
                     # Check for critical failures
                     if "CRITICAL_FAIL" in self._signals:
                         errors.append("Critical failure detected")
                         break
-            
+
             # Generate mission report and calculate success rate
             self._generate_mission_report()
-            
+
             # Create execution result
             result = self._create_execution_result(context, execution_trace, errors, start_time)
-            
+
             # Log result to signal ledger
             await self.signal_ledger.append_result(result)
-            
+
             return result
         except Exception as e:
             return self._handle_execution_error(context, execution_trace, start_time, e)
 
     async def _get_previous_phase_signals(self, current_phase: str) -> Dict[str, Any]:
         """Get signals from the previous phase for blackboard communication.
-        
+
         Args:
             current_phase: Name of the current phase
-            
+
         Returns:
             Dictionary with signals from previous phase
         """
         phase_order = [
             "integrity_seq",
-            "curation_seq", 
+            "curation_seq",
             "test_seq",
             "memory_parallel",
             "resilience_parallel",
@@ -346,7 +346,7 @@ class NervousSystem:
             "benchmarking_seq",
             "optimization_conditional"
         ]
-        
+
         try:
             current_index = phase_order.index(current_phase)
             if current_index > 0:
@@ -354,22 +354,22 @@ class NervousSystem:
                 return await self.signal_ledger.get_phase_summary(previous_phase)
         except ValueError:
             pass
-        
+
         return {}
-    
+
     async def _reconcile_signals(self, results: Dict[str, Any]) -> Dict[str, Any]:
         """Reconcile conflicting signals from different agents.
-        
+
         Args:
             results: Dictionary of agent results with potential conflicts
-            
+
         Returns:
             Dictionary with reconciled signals and conflicts flagged
         """
         conflicts = []
         reconciled = {}
         file_results = {}  # Track results by file path
-        
+
         # Organize results by file path
         for agent_name, result in results.items():
             if isinstance(result, dict):
@@ -383,7 +383,7 @@ class NervousSystem:
                         'result': result,
                         'action': result.get('action', 'unknown')
                     })
-        
+
         # Detect conflicts
         for file_path, file_agents in file_results.items():
             if len(file_agents) > 1:
@@ -405,13 +405,13 @@ class NervousSystem:
                         'conflict_type': 'duplicate_modification',
                         'description': f"Multiple agents performed the same action on {file_path}: {actions[0]}"
                     })
-        
+
         # Generate reconciliation recommendations
         if conflicts:
             reconciled['has_conflicts'] = True
             reconciled['conflicts'] = conflicts
             reconciled['recommendations'] = []
-            
+
             for conflict in conflicts:
                 if conflict['conflict_type'] == 'action_conflict':
                     reconciled['recommendations'].append(
@@ -424,18 +424,18 @@ class NervousSystem:
                     reconciled['recommendations'].append(
                         f"Review duplicate modification on {conflict['file']}"
                     )
-            
+
             # Add global signal
             reconciled['signal'] = 'CONFLICTS_DETECTED'
         else:
             reconciled['has_conflicts'] = False
             reconciled['signal'] = 'NO_CONFLICTS'
-        
+
         return reconciled
-    
+
     async def _execute_all_phases(self, context: ExecutionContext, execution_trace: List[Dict], resume_phase: Optional[str] = None) -> bool:
         """Execute all phases in order with early abort logic (from SwarmScheduler).
-        
+
         Args:
             context: Execution context
             execution_trace: List to track execution
@@ -447,7 +447,7 @@ class NervousSystem:
                 return False
             phase_order = [
                 "integrity_seq",
-                "curation_seq", 
+                "curation_seq",
                 "test_seq",
                 "memory_parallel",
                 "resilience_parallel",
@@ -463,7 +463,7 @@ class NervousSystem:
                 return phase_index <= resume_index
             except ValueError:
                 return False
-        
+
         # Phase 1: Integrity (Sequential - Hard Gate)
         if not should_skip_phase("integrity_seq"):
             LOGGER.info("Phase 1: INTEGRITY CHECK (Sequential)")
@@ -476,7 +476,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("integrity_seq", context)
         else:
             LOGGER.info("Phase 1: INTEGRITY CHECK (Skipping - already completed)")
-        
+
         # Phase 2: Curation (Sequential)
         if not should_skip_phase("curation_seq"):
             LOGGER.info("Phase 2: CURATION (Sequential)")
@@ -486,7 +486,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("curation_seq", context)
         else:
             LOGGER.info("Phase 2: CURATION (Skipping - already completed)")
-        
+
         # Phase 3: Testing (Sequential)
         if not should_skip_phase("test_seq"):
             LOGGER.info("Phase 3: TESTING (Sequential)")
@@ -495,7 +495,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("test_seq", context)
         else:
             LOGGER.info("Phase 3: TESTING (Skipping - already completed)")
-        
+
         # Phase 4: Memory (Parallel)
         if not should_skip_phase("memory_parallel"):
             LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Parallel)")
@@ -504,7 +504,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("memory_parallel", context)
         else:
             LOGGER.info("Phase 4: MEMORY ENHANCEMENT (Skipping - already completed)")
-        
+
         # Phase 5: RESILIENCE (Parallel)
         if not should_skip_phase("resilience_parallel"):
             LOGGER.info("Phase 5: RESILIENCE HARDENING (Parallel)")
@@ -513,7 +513,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("resilience_parallel", context)
         else:
             LOGGER.info("Phase 5: RESILIENCE HARDENING (Skipping - already completed)")
-        
+
         # Phase 6: Resource Safety (Parallel)
         if not should_skip_phase("resource_safety_parallel"):
             LOGGER.info("Phase 6: RESOURCE SAFETY (Parallel)")
@@ -522,7 +522,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("resource_safety_parallel", context)
         else:
             LOGGER.info("Phase 6: RESOURCE SAFETY (Skipping - already completed)")
-        
+
         # Phase 7: ENGINEERING (Parallel)
         if not should_skip_phase("engineering_parallel"):
             LOGGER.info("Phase 7: ENGINEERING (Parallel)")
@@ -531,7 +531,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("engineering_parallel", context)
         else:
             LOGGER.info("Phase 7: ENGINEERING (Skipping - already completed)")
-        
+
         # Phase 8: Refinement (Parallel)
         if not should_skip_phase("refinement_parallel"):
             LOGGER.info("Phase 8: REFINEMENT (Parallel)")
@@ -540,7 +540,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("refinement_parallel", context)
         else:
             LOGGER.info("Phase 8: REFINEMENT (Skipping - already completed)")
-        
+
         # Phase 9: Benchmarking (Sequential)
         if not should_skip_phase("benchmarking_seq"):
             LOGGER.info("Phase 9: BENCHMARKING (Sequential)")
@@ -549,7 +549,7 @@ class NervousSystem:
             await self._save_phase_checkpoint("benchmarking_seq", context)
         else:
             LOGGER.info("Phase 9: BENCHMARKING (Skipping - already completed)")
-        
+
         # Phase 10: Optimization (Conditional - Sequential)
         if not should_skip_phase("optimization_conditional"):
             LOGGER.info("Phase 10: OPTIMIZATION (Conditional)")
@@ -561,13 +561,13 @@ class NervousSystem:
                 LOGGER.info("Skipping optimization - not fully converged")
         else:
             LOGGER.info("Phase 10: OPTIMIZATION (Skipping - already completed)")
-        
+
         # Return convergence status
         return self._is_converged()
-    
+
     async def _save_phase_checkpoint(self, phase_name: str, context: ExecutionContext) -> None:
         """Save checkpoint after phase completion.
-        
+
         Args:
             phase_name: Name of the completed phase
             context: Current execution context
@@ -589,7 +589,7 @@ class NervousSystem:
             "scene": context.scene,
             "success_rate": success_rate
         }
-        
+
         # Save checkpoint
         try:
             await self.checkpoint_manager.save_checkpoint(
@@ -600,10 +600,10 @@ class NervousSystem:
             LOGGER.info(f"Checkpoint saved for phase: {phase_name}")
         except Exception as e:
             LOGGER.error(f"Failed to save checkpoint for phase {phase_name}: {e}")
-    
+
     async def _find_last_checkpoint(self) -> Optional[Dict[str, Any]]:
         """Find the most recent checkpoint for this mission.
-        
+
         Returns:
             Dictionary with checkpoint state or None if not found
         """
@@ -612,7 +612,7 @@ class NervousSystem:
             # Get list of phase names in order
             phase_order = [
                 "integrity_seq",
-                "curation_seq", 
+                "curation_seq",
                 "test_seq",
                 "memory_parallel",
                 "resilience_parallel",
@@ -622,26 +622,26 @@ class NervousSystem:
                 "benchmarking_seq",
                 "optimization_conditional"
             ]
-            
+
             # Check phases in reverse order to find last checkpoint
             for phase_name in reversed(phase_order):
                 if await self.checkpoint_manager.checkpoint_exists(self.session_id, phase_name):
                     checkpoint = await self.checkpoint_manager.load_checkpoint(
-                        self.session_id, 
+                        self.session_id,
                         phase_name,
                         verify=True
                     )
                     if checkpoint:
                         return checkpoint
-            
+
             return None
         except Exception as e:
             LOGGER.error(f"Error finding checkpoint: {e}")
             return None
-    
+
     async def _restore_from_checkpoint(self, checkpoint: Dict[str, Any]) -> None:
         """Restore system state from checkpoint.
-        
+
         Args:
             checkpoint: Checkpoint state dictionary
         """
@@ -652,12 +652,12 @@ class NervousSystem:
             self._results = checkpoint.get("results", {})
             self._signals = set(checkpoint.get("signals", []))
             self._modified_files = set(checkpoint.get("modified_files", []))
-            
+
             LOGGER.info(f"Restored from checkpoint phase: {checkpoint.get('phase')}")
             LOGGER.info(f"Restored state: {len(self._state)} keys, {len(self._results)} results")
         except Exception as e:
             LOGGER.error(f"Error restoring from checkpoint: {e}")
-    
+
     async def _run_sequential(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]) -> bool:
         """Execute a phase sequentially (from SwarmScheduler)."""
         # Check circuit breaker before executing phase
@@ -666,10 +666,10 @@ class NervousSystem:
             LOGGER.error("Entering SAFE MODE - Phase 0")
             self._signals.add("CIRCUIT_BREAKER_TRIPPED")
             return False
-        
+
         agents = self.phases.get(phase_name, [])
         phase_passed = True
-        
+
         for agent in agents:
             # Map agent execution to cognitive plane
             if hasattr(agent, 'execute'):
@@ -693,25 +693,25 @@ class NervousSystem:
                         self._signals.add("PREREQ_FAIL")
                         phase_passed = False
                         continue
-                
+
                 # Execute agent with context
                 if hasattr(agent, 'execute_with_context'):
                     result = await agent.execute_with_context(context)
                 else:
                     result = await agent.execute()
-                
+
                 self._results[agent.name] = result
                 if not result.get("passed", True):
                     self._signals.add("CRITICAL_FAIL")
                     phase_passed = False
-            
+
             # Early abort for critical failures in integrity phase
             if phase_name == "integrity_seq" and ("CRITICAL_FAIL" in self._signals or "PREREQ_FAIL" in self._signals):
                 LOGGER.error(f"Critical failure in {phase_name} - Aborting")
                 # Update failure count
                 self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
                 return False
-        
+
         # Update failure count based on phase result
         if not phase_passed:
             self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
@@ -721,9 +721,9 @@ class NervousSystem:
             if phase_name in self._phase_failure_counts:
                 del self._phase_failure_counts[phase_name]
                 LOGGER.info(f"Phase {phase_name} succeeded - Resetting failure count")
-        
+
         return phase_passed
-    
+
     async def _run_parallel(self, phase_name: str, context: ExecutionContext, execution_trace: List[Dict]):
         """Execute a phase in parallel (from SwarmScheduler)."""
         # Check circuit breaker before executing phase
@@ -732,7 +732,7 @@ class NervousSystem:
             LOGGER.error("Entering SAFE MODE - Phase 0")
             self._signals.add("CIRCUIT_BREAKER_TRIPPED")
             return
-        
+
         # Check memory pressure before parallel execution
         if hasattr(self.safety_layer, 'cost_governor'):
             try:
@@ -743,11 +743,11 @@ class NervousSystem:
                     return
             except Exception as e:
                 LOGGER.warning(f"Could not check memory pressure: {e}")
-        
+
         agents = self.phases.get(phase_name, [])
         if not agents:
             return
-        
+
         # Create tasks for parallel execution
         tasks = []
         for agent in agents:
@@ -768,31 +768,31 @@ class NervousSystem:
                             self._results[agent.name] = result
                             self._signals.add("PREREQ_FAIL")
                             return result
-                    
+
                     # Execute agent with context
                     if hasattr(agent, 'execute_with_context'):
                         result = await agent.execute_with_context(context)
                     else:
                         result = await agent.execute()
-                    
+
                     self._results[agent.name] = result
                     if not result.get("passed", True):
                         self._signals.add("CRITICAL_FAIL")
                     return result
-                
+
                 task = self._rate_limited_retry(lambda a=agent: execute_agent_with_context(a))
                 tasks.append(task)
-        
+
         # Execute all agents in parallel
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
-            
+
             # Check if phase passed and update failure count
             phase_passed = all(
-                self._results.get(agent.name, {}).get("passed", True) 
+                self._results.get(agent.name, {}).get("passed", True)
                 for agent in agents if hasattr(agent, 'name')
             )
-            
+
             if not phase_passed:
                 self._phase_failure_counts[phase_name] = self._phase_failure_counts.get(phase_name, 0) + 1
                 LOGGER.warning(f"Phase {phase_name} failed - Strike {self._phase_failure_counts[phase_name]}/3")
@@ -801,7 +801,7 @@ class NervousSystem:
                 if phase_name in self._phase_failure_counts:
                     del self._phase_failure_counts[phase_name]
                     LOGGER.info(f"Phase {phase_name} succeeded - Resetting failure count")
-            
+
             # Reconcile signals to detect conflicts
             conflicts = await self._reconcile_signals(self._results)
             if conflicts.get('has_conflicts'):
@@ -810,7 +810,7 @@ class NervousSystem:
                     LOGGER.warning(f"  {conflict['description']}")
                 # Add conflict signal
                 self._signals.add("CONFLICTS_DETECTED")
-    
+
     async def _rate_limited_retry(self, func, max_retries: int = 5, base_delay: float = 2.0):
         """Decorator to handle rate limiting with exponential backoff (from SwarmScheduler)."""
         for attempt in range(max_retries):
@@ -827,50 +827,50 @@ class NervousSystem:
         """Check if all agents have passed (from SwarmScheduler)."""
         if not self._results:
             return False
-        
+
         return all(r.get("passed", False) for r in self._results.values())
-    
+
     def _generate_mission_report(self):
         """Generate final mission report (from SwarmScheduler)."""
         LOGGER.info("Generating mission report")
-        
+
         total_keys = len(self._results)
         passed_keys = sum(1 for r in self._results.values() if r.get("passed", False))
-        
+
         # Calculate success rate safely
         success_rate = passed_keys/total_keys*100 if total_keys > 0 else 0
-        
+
         LOGGER.info(f"SUMMARY: Total Keys Checked: {total_keys}, "
                    f"Keys Passed: {passed_keys}, "
                    f"Keys Failed: {total_keys - passed_keys}, "
                    f"Success Rate: {success_rate:.1f}%")
-        
+
         if self._is_converged():
             LOGGER.info("MISSION SUCCESS - Full convergence achieved!")
         else:
             LOGGER.warning("MISSION INCOMPLETE - Some issues remain")
-        
+
         # Store success rate in state for later retrieval
         self._state["success_rate"] = success_rate
-        
+
         LOGGER.info("DETAILED RESULTS:")
         for key, result in sorted(self._results.items()):
             status = "PASS" if result.get("passed", False) else "FAIL"
             LOGGER.info(f"Key {key}: {status} - {result.get('agent', 'Unknown')}")
-    
+
     def _calculate_success_rate(self) -> float:
         """Calculate current success rate based on results.
-        
+
         Returns:
             Success rate as percentage (0-100)
         """
         total_keys = len(self._results)
         if total_keys == 0:
             return 0.0
-        
+
         passed_keys = sum(1 for r in self._results.values() if r.get("passed", False))
         return (passed_keys / total_keys) * 100
-    
+
     def _create_execution_result(self,
         context: ExecutionContext,
         execution_trace: List[Dict],
@@ -878,13 +878,13 @@ class NervousSystem:
         start_time: float) -> ExecutionResult:
         """Create final execution result."""
         success = len(errors) == 0 and self._is_converged()
-        
+
         result = ExecutionResult(
-            success=success, 
-            output=context.state.get("final_output"), 
+            success=success,
+            output=context.state.get("final_output"),
             final_state=context.state,
-            execution_trace=execution_trace, 
-            iterations=self._iteration, 
+            execution_trace=execution_trace,
+            iterations=self._iteration,
             errors=errors,
             metadata={
                 "execution_time_seconds": time.time() - start_time,
@@ -895,7 +895,7 @@ class NervousSystem:
                 "modified_files": list(self._modified_files)
             }
         )
-        
+
         LOGGER.info("execution_completed",
             extra={"success": success,
             "iterations": self._iteration,
@@ -1002,20 +1002,20 @@ class NervousSystem:
                 actions.append(action)
 
         return actions
-    
+
     async def _execute_forced_agents(self, context: ExecutionContext, execution_trace: List[Dict[str, Any]]):
         """
         Execute agents forced by telepathic instructions.
-        
+
         Args:
             context: Current execution context
             execution_trace: Trace to record execution results
         """
         if not hasattr(context, 'forced_agents') or not context.forced_agents:
             return
-        
+
         LOGGER.info(f"🎯 Executing forced agents from telepathy: {', '.join(context.forced_agents)}")
-        
+
         for agent_name in context.forced_agents:
             try:
                 # Find the agent in our phases
@@ -1024,10 +1024,10 @@ class NervousSystem:
                     for agent in phase_agents:
                         if hasattr(agent, 'name') and agent.name == agent_name:
                             LOGGER.info(f"  → Executing forced agent: {agent_name} (from {phase_name})")
-                            
+
                             # Execute the agent
                             result = await agent.execute()
-                            
+
                             # Record in execution trace
                             execution_trace.append({
                                 "agent": agent_name,
@@ -1036,41 +1036,41 @@ class NervousSystem:
                                 "result": result,
                                 "timestamp": time.time()
                             })
-                            
+
                             # Update signals based on result
                             if isinstance(result, dict):
                                 if result.get("passed", False):
                                     self._signals.add(f"{agent_name.upper()}_FORCED_SUCCESS")
                                 else:
                                     self._signals.add(f"{agent_name.upper()}_FORCED_FAILED")
-                            
+
                             agent_found = True
                             break
-                
+
                 if not agent_found:
                     LOGGER.warning(f"  ⚠️  Forced agent not found: {agent_name}")
-                    
+
             except Exception as e:
                 LOGGER.error(f"  ❌ Error executing forced agent {agent_name}: {e}")
                 self._signals.add(f"{agent_name.upper()}_FORCED_ERROR")
-        
+
         # Clear forced agents after execution
         context.forced_agents.clear()
         LOGGER.info("Forced agents execution complete")
-    
+
     async def get_impact_radius(self, modified_files: List[str] = None) -> Dict[str, Any]:
         """
         Calculate the blast radius for modified files.
-        
+
         Args:
             modified_files: List of modified file paths (uses tracked files if None)
-            
+
         Returns:
             Dictionary with impact analysis
         """
         if modified_files is None:
             modified_files = list(self._modified_files)
-        
+
         if not modified_files:
             return {
                 "modified_count": 0,
@@ -1078,30 +1078,30 @@ class NervousSystem:
                 "blast_radius": [],
                 "message": "No modified files to analyze"
             }
-        
+
         # Build dependency graph if needed
         if not self.architecture_governor.dependency_graph._built:
             self.architecture_governor.build_graph()
-        
+
         # Calculate blast radius
         impact_analysis = self.architecture_governor.get_blast_radius(modified_files)
-        
+
         # Log blast radius
         LOGGER.info(f"☢️ BLAST RADIUS: {impact_analysis['total_impacted']} files in scope")
-        
+
         # Add impacted files to modified set for verification
         for file_path in impact_analysis["blast_radius"]:
             self._modified_files.add(file_path)
-        
+
         return impact_analysis
-    
+
     def validate_architecture(self, file_paths: List[str] = None) -> Dict[str, Any]:
         """
         Validate architecture compliance.
-        
+
         Args:
             file_paths: Specific files to validate
-            
+
         Returns:
             Validation report
         """

@@ -15,19 +15,19 @@ LOGGER = logging.getLogger(__name__)
 
 class ImportAnalyzer(ast.NodeVisitor):
     """AST visitor to extract import information."""
-    
+
     def __init__(self, file_path: Path):
         self.file_path = file_path
         self.imports: List[Dict] = []
         self.from_imports: List[Dict] = []
-        
+
         # Determine file's layer
         self.layer = self._determine_layer()
-    
+
     def _determine_layer(self) -> str:
         """Determine which layer the file belongs to."""
         parts = self.file_path.parts
-        
+
         if "L1_cognition" in parts:
             return "L1"
         elif "L2_execution" in parts:
@@ -40,7 +40,7 @@ class ImportAnalyzer(ast.NodeVisitor):
             return "L5"
         else:
             return "UNKNOWN"
-    
+
     def visit_Import(self, node: ast.Import):
         """Handle import statements."""
         for alias in node.names:
@@ -51,7 +51,7 @@ class ImportAnalyzer(ast.NodeVisitor):
                 "type": "import"
             })
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """Handle from...import statements."""
         if node.module:
@@ -67,15 +67,15 @@ class ImportAnalyzer(ast.NodeVisitor):
 
 class DependencyViolation:
     """Represents a dependency rule violation."""
-    
-    def __init__(self, violation_type: str, file_path: Path, line: int, 
+
+    def __init__(self, violation_type: str, file_path: Path, line: int,
                  message: str, details: Dict = None):
         self.type = violation_type
         self.file_path = file_path
         self.line = line
         self.message = message
         self.details = details or {}
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -90,24 +90,24 @@ class DependencyViolation:
 class DependencySentinel:
     """
     Guards the codebase against illegal dependencies.
-    
+
     Rules enforced:
     1. No circular imports
     2. No cross-layer violations (L3 cannot import L1, etc.)
     3. No illegal cross-repo imports
     4. Depth compliance for imports
     """
-    
+
     def __init__(self, root_dir: Path = None):
         """
         Initialize the DependencySentinel.
-        
+
         Args:
             root_dir: Root directory of the codebase
         """
         self.root_dir = root_dir or Path.cwd()
         self.violations: List[DependencyViolation] = []
-        
+
         # Layer hierarchy (lower number = lower level)
         self.layer_hierarchy = {
             "L1": 1,  # Cognition
@@ -116,7 +116,7 @@ class DependencySentinel:
             "L4": 4,  # State
             "L5": 5,  # Safety
         }
-        
+
         # Allowed cross-layer imports (higher can import lower)
         self.allowed_cross_layers = {
             ("L2", "L1"),  # Execution can import Cognition
@@ -128,44 +128,44 @@ class DependencySentinel:
             ("L5", "L3"),  # Safety can import Orchestration
             ("L5", "L4"),  # Safety can import State
         }
-        
+
         LOGGER.info("DependencySentinel initialized")
-    
+
     def check_file(self, file_path: Path) -> List[DependencyViolation]:
         """
         Check a single file for dependency violations.
-        
+
         Args:
             file_path: Path to the Python file
-            
+
         Returns:
             List of violations found
         """
         violations = []
-        
+
         try:
             # Parse file
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             tree = ast.parse(content)
-            
+
             # Analyze imports
             analyzer = ImportAnalyzer(file_path)
             analyzer.visit(tree)
-            
+
             # Check each import
             for imp in analyzer.imports:
                 violation = self._check_import(analyzer, imp["module"], imp["line"])
                 if violation:
                     violations.append(violation)
-            
+
             for imp in analyzer.from_imports:
                 for name in imp["names"]:
                     violation = self._check_import(analyzer, imp["module"], imp["line"], name)
                     if violation:
                         violations.append(violation)
-            
+
         except SyntaxError as e:
             violations.append(DependencyViolation(
                 "syntax_error",
@@ -175,27 +175,27 @@ class DependencySentinel:
             ))
         except Exception as e:
             LOGGER.error(f"Error checking {file_path}: {e}")
-        
+
         return violations
-    
-    def _check_import(self, analyzer: ImportAnalyzer, module: str, 
+
+    def _check_import(self, analyzer: ImportAnalyzer, module: str,
                      line: int, name: str = None) -> Optional[DependencyViolation]:
         """
         Check if an import violates rules.
-        
+
         Args:
             analyzer: Import analyzer for the file
             module: Module being imported
             line: Line number
             name: Specific name being imported (for from...import)
-            
+
         Returns:
             Violation if found
         """
         # Skip standard library and third-party imports
         if self._is_external_import(module):
             return None
-        
+
         # Check for circular import
         if self._is_circular_import(analyzer.file_path, module):
             return DependencyViolation(
@@ -204,12 +204,12 @@ class DependencySentinel:
                 line,
                 f"Circular import detected: {module}"
             )
-        
+
         # Check cross-layer violation
         violation = self._check_cross_layer_violation(analyzer, module, line)
         if violation:
             return violation
-        
+
         # Check depth violation
         if self._violates_depth_law(analyzer.file_path, module):
             return DependencyViolation(
@@ -218,9 +218,9 @@ class DependencySentinel:
                 line,
                 f"Import violates depth law: {module}"
             )
-        
+
         return None
-    
+
     def _is_external_import(self, module: str) -> bool:
         """Check if module is external (stdlib or third-party)."""
         # Skip if module starts with known external prefixes
@@ -230,36 +230,36 @@ class DependencySentinel:
             "typing", "dataclasses", "enum", "contextlib",
             "google", "openai", "anthropic", "pinecone", "redis"
         ]
-        
+
         return any(module.startswith(prefix) for prefix in external_prefixes)
-    
+
     def _is_circular_import(self, file_path: Path, module: str) -> bool:
         """
         Check if import would create a circular dependency.
-        
+
         This is a simplified check - full circular import detection
         would require building a full dependency graph.
         """
         # For now, just check if importing from same directory
         # with a name that might reference back
         module_path = self.root_dir / module.replace(".", "/")
-        
+
         if not module_path.exists():
             return False
-        
+
         # Check if module is in same directory as file
         if module_path.parent == file_path.parent:
             # This could be circular - needs more sophisticated analysis
             return False
-        
+
         return False
-    
-    def _check_cross_layer_violation(self, analyzer: ImportAnalyzer, 
+
+    def _check_cross_layer_violation(self, analyzer: ImportAnalyzer,
                                     module: str, line: int) -> Optional[DependencyViolation]:
         """Check for cross-layer import violations."""
         # Determine imported module's layer
         imported_layer = None
-        
+
         if "L1_cognition" in module:
             imported_layer = "L1"
         elif "L2_execution" in module:
@@ -270,20 +270,20 @@ class DependencySentinel:
             imported_layer = "L4"
         elif "L5_safety" in module:
             imported_layer = "L5"
-        
+
         if not imported_layer or analyzer.layer == "UNKNOWN":
             return None
-        
+
         # Check if this cross-layer import is allowed
         cross = (analyzer.layer, imported_layer)
-        
+
         if cross in self.allowed_cross_layers:
             return None
-        
+
         # Check if importing within same layer (allowed)
         if analyzer.layer == imported_layer:
             return None
-        
+
         # Violation
         return DependencyViolation(
             "cross_layer_violation",
@@ -296,51 +296,51 @@ class DependencySentinel:
                 "module": module
             }
         )
-    
+
     def _violates_depth_law(self, file_path: Path, module: str) -> bool:
         """Check if import violates the depth law."""
         # Convert to relative paths
         try:
             file_rel = file_path.relative_to(self.root_dir)
             module_path = self.root_dir / module.replace(".", "/")
-            
+
             if not module_path.exists():
                 return False
-            
+
             module_rel = module_path.relative_to(self.root_dir)
-            
+
             # Check depth
             file_depth = len(file_rel.parts)
             module_depth = len(module_rel.parts)
-            
+
             # Simple rule: don't import from deeper levels
             return module_depth > file_depth + 2
-            
+
         except (ValueError, OSError):
             return False
-    
+
     def check_directory(self, directory: Path) -> List[DependencyViolation]:
         """
         Check all Python files in a directory.
-        
+
         Args:
             directory: Directory to check
-            
+
         Returns:
             List of all violations found
         """
         violations = []
-        
+
         for py_file in directory.rglob("*.py"):
             # Skip __init__.py and test files
             if py_file.name == "__init__.py" or "test" in py_file.name.lower():
                 continue
-            
+
             file_violations = self.check_file(py_file)
             violations.extend(file_violations)
-        
+
         return violations
-    
+
     def get_violation_summary(self) -> Dict:
         """Get summary of all violations."""
         summary = {
@@ -348,16 +348,16 @@ class DependencySentinel:
             "by_type": {},
             "by_file": {}
         }
-        
+
         for violation in self.violations:
             # Count by type
             vtype = violation.type
             summary["by_type"][vtype] = summary["by_type"].get(vtype, 0) + 1
-            
+
             # Count by file
             file = str(violation.file_path)
             summary["by_file"][file] = summary["by_file"].get(file, 0) + 1
-        
+
         return summary
 
 
@@ -376,7 +376,7 @@ def get_dependency_sentinel() -> DependencySentinel:
 def initialize_dependency_sentinel(root_dir: Path = None):
     """
     Initialize the DependencySentinel system.
-    
+
     Args:
         root_dir: Root directory of the codebase
     """
@@ -389,16 +389,16 @@ def initialize_dependency_sentinel(root_dir: Path = None):
 def check_dependencies(file_path: Path = None, directory: Path = None) -> List[DependencyViolation]:
     """
     Check dependencies for a file or directory.
-    
+
     Args:
         file_path: Specific file to check
         directory: Directory to check
-        
+
     Returns:
         List of violations
     """
     sentinel = get_dependency_sentinel()
-    
+
     if file_path:
         return sentinel.check_file(file_path)
     elif directory:

@@ -83,7 +83,7 @@ class MissionPhase:
     parallel: bool = False
     retry_count: int = 0
     max_retries: int = 3
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -109,7 +109,7 @@ class MissionPlan:
     risk_assessment: Dict = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.utcnow)
     status: MissionStatus = MissionStatus.PLANNED
-    
+
     def to_dict(self) -> Dict:
         """Convert to dictionary."""
         return {
@@ -122,7 +122,7 @@ class MissionPlan:
             "created_at": self.created_at.isoformat(),
             "status": self.status.value
         }
-    
+
     @classmethod
     def from_dict(cls, data: Dict) -> "MissionPlan":
         """Create from dictionary."""
@@ -134,7 +134,7 @@ class MissionPlan:
             risk_assessment=data.get("risk_assessment", {}),
             status=MissionStatus(data.get("status", "PLANNED"))
         )
-        
+
         # Parse phases
         for phase_data in data.get("phases", []):
             phase = MissionPhase(
@@ -148,29 +148,29 @@ class MissionPlan:
                 max_retries=phase_data.get("max_retries", 3)
             )
             plan.phases.append(phase)
-        
+
         return plan
 
 
 class StrategicPlanner:
     """
     Plans and coordinates mission execution.
-    
+
     Features:
     - Generates mission plans based on objectives
     - Optimizes agent execution order
     - Manages resource allocation
     - Tracks mission progress
     """
-    
+
     def __init__(self):
         """Initialize the StrategicPlanner."""
         self.active_missions: Dict[str, MissionPlan] = {}
         self.mission_history: List[Dict] = []
         self.agent_capabilities = self._load_agent_capabilities()
-        
+
         LOGGER.info("StrategicPlanner initialized")
-    
+
     def _load_agent_capabilities(self) -> Dict[str, Dict]:
         """Load agent capabilities and requirements."""
         return {
@@ -220,24 +220,24 @@ class StrategicPlanner:
                 "phase": "optimization"
             }
         }
-    
-    def generate_plan(self, objective: str, cycle_id: int, 
+
+    def generate_plan(self, objective: str, cycle_id: int,
                      priority: MissionPriority = MissionPriority.MEDIUM,
                      context: Dict = None) -> MissionPlan:
         """
         Generate a mission plan for the given objective.
-        
+
         Args:
             objective: Mission objective
             cycle_id: Cycle identifier
             priority: Mission priority
             context: Additional context for planning
-            
+
         Returns:
             Generated mission plan
         """
         mission_id = f"mission-{cycle_id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
-        
+
         # Create base plan
         plan = MissionPlan(
             mission_id=mission_id,
@@ -245,27 +245,27 @@ class StrategicPlanner:
             priority=priority,
             objective=objective
         )
-        
+
         # Generate phases based on objective
         phases = self._generate_phases(objective, context or {})
         plan.phases = phases
-        
+
         # Add risk assessment
         plan.risk_assessment = self._assess_risks(plan)
-        
+
         # Store plan
         self.active_missions[mission_id] = plan
-        
+
         LOGGER.info(f"Generated mission plan: {mission_id}")
         LOGGER.info(f"  Objective: {objective}")
         LOGGER.info(f"  Phases: {len(phases)}")
-        
+
         return plan
-    
+
     def _generate_phases(self, objective: str, context: Dict) -> List[MissionPhase]:
         """Generate mission phases based on objective."""
         phases = []
-        
+
         # Phase 1: Reconnaissance
         phases.append(MissionPhase(
             name="reconnaissance",
@@ -275,7 +275,7 @@ class StrategicPlanner:
             resources=["cpu", "disk"],
             parallel=True
         ))
-        
+
         # Phase 2: Validation
         phases.append(MissionPhase(
             name="validation",
@@ -285,7 +285,7 @@ class StrategicPlanner:
             resources=["cpu", "llm", "file_access"],
             parallel=True
         ))
-        
+
         # Phase 3: Testing
         phases.append(MissionPhase(
             name="testing",
@@ -295,7 +295,7 @@ class StrategicPlanner:
             resources=["cpu", "memory"],
             parallel=True
         ))
-        
+
         # Phase 4: Learning
         phases.append(MissionPhase(
             name="learning",
@@ -304,7 +304,7 @@ class StrategicPlanner:
             estimated_duration=180,
             resources=["memory", "pinecone"]
         ))
-        
+
         # Phase 5: Execution
         phases.append(MissionPhase(
             name="execution",
@@ -313,59 +313,59 @@ class StrategicPlanner:
             estimated_duration=60,
             resources=["git", "network"]
         ))
-        
+
         # Customize based on context
         if context.get("skip_testing"):
             phases = [p for p in phases if p.name != "testing"]
-        
+
         if context.get("urgent"):
             for phase in phases:
                 phase.estimated_duration = int(phase.estimated_duration * 0.7)
-        
+
         return phases
-    
+
     def _assess_risks(self, plan: MissionPlan) -> Dict:
         """Assess risks for the mission plan."""
         risks = []
         mitigations = []
-        
+
         # Check for resource conflicts
         resource_usage = {}
         for phase in plan.phases:
             for resource in phase.resources:
                 resource_usage[resource] = resource_usage.get(resource, 0) + 1
-        
+
         for resource, count in resource_usage.items():
             if count > 3:  # Too many phases using same resource
                 risks.append(f"Resource contention for {resource}")
                 mitigations.append(f"Stagger phases using {resource}")
-        
+
         # Check for long-running phases
         for phase in plan.phases:
             if phase.estimated_duration > 600:  # > 10 minutes
                 risks.append(f"Long running phase: {phase.name}")
                 mitigations.append(f"Add progress monitoring for {phase.name}")
-        
+
         # Check agent dependencies
         all_agents = set()
         for phase in plan.phases:
             all_agents.update(phase.agents)
-        
+
         if len(all_agents) > 8:
             risks.append("High agent coordination complexity")
             mitigations.append("Consider parallel execution where possible")
-        
+
         return {
             "risks": risks,
             "mitigations": mitigations,
             "risk_score": min(len(risks) * 10, 100)  # Simple scoring
         }
-    
-    def update_phase_status(self, mission_id: str, phase_name: str, 
+
+    def update_phase_status(self, mission_id: str, phase_name: str,
                            status: str, result: Dict = None):
         """
         Update the status of a mission phase.
-        
+
         Args:
             mission_id: Mission identifier
             phase_name: Phase name
@@ -375,9 +375,9 @@ class StrategicPlanner:
         if mission_id not in self.active_missions:
             LOGGER.error(f"Mission not found: {mission_id}")
             return
-        
+
         plan = self.active_missions[mission_id]
-        
+
         # Find phase
         for phase in plan.phases:
             if phase.name == phase_name:
@@ -388,69 +388,69 @@ class StrategicPlanner:
                     "timestamp": datetime.utcnow().isoformat(),
                     "result": result or {}
                 }
-                
+
                 LOGGER.info(f"Updated phase {phase_name} status to {status}")
                 break
-    
+
     def complete_mission(self, mission_id: str, status: MissionStatus):
         """
         Mark a mission as complete.
-        
+
         Args:
             mission_id: Mission identifier
             status: Final mission status
         """
         if mission_id not in self.active_missions:
             return
-        
+
         plan = self.active_missions[mission_id]
         plan.status = status
-        
+
         # Move to history
         self.mission_history.append(plan.to_dict())
         del self.active_missions[mission_id]
-        
+
         LOGGER.info(f"Mission {mission_id} completed with status {status.value}")
-    
+
     def get_mission_plan(self, mission_id: str) -> Optional[MissionPlan]:
         """Get a mission plan by ID."""
         return self.active_missions.get(mission_id)
-    
+
     def get_active_missions(self) -> List[MissionPlan]:
         """Get all active missions."""
         return list(self.active_missions.values())
-    
+
     def get_next_phase(self, mission_id: str) -> Optional[MissionPhase]:
         """
         Get the next phase to execute for a mission.
-        
+
         Args:
             mission_id: Mission identifier
-            
+
         Returns:
             Next phase to execute, or None if complete
         """
         plan = self.active_missions.get(mission_id)
         if not plan:
             return None
-        
+
         # Find first phase without results
         for phase in plan.phases:
             if not hasattr(phase, 'results'):
                 return phase
-        
+
         return None
-    
+
     def get_mission_summary(self, mission_id: str) -> Dict:
         """Get summary of mission execution."""
         plan = self.active_missions.get(mission_id)
         if not plan:
             return {"error": "Mission not found"}
-        
+
         completed_phases = sum(1 for p in plan.phases if hasattr(p, 'results'))
         total_phases = len(plan.phases)
         total_duration = sum(p.estimated_duration for p in plan.phases)
-        
+
         return {
             "mission_id": plan.mission_id,
             "objective": plan.objective,
@@ -482,7 +482,7 @@ def initialize_strategic_planner():
 
 
 # Convenience functions
-def generate_mission_plan(objective: str, cycle_id: int, 
+def generate_mission_plan(objective: str, cycle_id: int,
                          priority: MissionPriority = MissionPriority.MEDIUM,
                          context: Dict = None) -> MissionPlan:
     """Generate a mission plan."""

@@ -23,7 +23,7 @@ class FailureAnalyzer:
         """Generates a formatted summary of failure frequencies."""
         total = len(self.data)
         unique = len(self.stats)
-        
+
         print("-" * 30)
         print(f"FAILURE ANALYSIS REPORT")
         print("-" * 30)
@@ -32,7 +32,7 @@ class FailureAnalyzer:
         print("-" * 30)
         print(f"{'Key':<10} | {'Count':<10} | {'Frequency':<10}")
         print("-" * 30)
-        
+
         # Sort by frequency descending
         for key, count in self.stats.most_common():
             freq = (count / total) * 100
@@ -42,7 +42,7 @@ class FailureAnalyzer:
 def main():
     # Contextual data provided for analysis
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     # Simulate a larger sample based on pattern distribution for demonstration
     # In production, this would ingest real-time signal data
     analyzer = FailureAnalyzer(context_keys)

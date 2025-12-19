@@ -26,7 +26,7 @@ class StrategicPlanner(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Formulating Strategic Plan...")
         if not self.ctx.intelligence_enabled:
             return
-        
+
         # LEVEL 6: Refresh Dependency Graph
         self.ctx.refresh_graph()
         print(f"   🕸️ Code Graph: {len(self.ctx.code_graph.graph)} files mapped.")
@@ -34,7 +34,7 @@ class StrategicPlanner(SubAtomicAgent):
         # 1. Aggregate State
         violations = [f"Key {k}: {v.get('details','')}..." for k, v in self.ctx.results.items() if not v.get('passed')]
         signals = list(self.ctx.signals)
-        
+
         # LEVEL 6: Dynamic Instruction Watcher (Telepathy Interface)
         instruction_file = Path("observability/human_instructions.md")
         if instruction_file.exists():
@@ -42,7 +42,7 @@ class StrategicPlanner(SubAtomicAgent):
             instructions = instruction_file.read_text().strip()
             if instructions and not instructions.startswith("# DONE"):
                 print(f"   🗣️ HUMAN INTERVENTION: New orders received -> '{instructions[:50]}...'")
-                
+
                 # Inject into agenda based on text
                 if "stop" in instructions.lower():
                     print("   🛑 Stopping per user request.")
@@ -51,10 +51,10 @@ class StrategicPlanner(SubAtomicAgent):
                     self.ctx.signals.add("TEST_FAILURE")  # Force testing
                 if "style" in instructions.lower():
                     self.ctx.modified_files.add("FORCE_STYLE_CHECK")
-                
+
                 # Mark handled
                 instruction_file.write_text(f"# DONE (Cycle {len(self.ctx.successful_traces)})\n" + instructions)
-        
+
         # LEVEL 6: Analyze Dependency Graph for Blast Radius
         if self.ctx.modified_files:
             print("   🕸️ Analyzing Dependency Graph for Blast Radius...")
@@ -62,12 +62,12 @@ class StrategicPlanner(SubAtomicAgent):
             for f in self.ctx.modified_files:
                 deps = self.ctx.code_graph.get_impact_radius(f)
                 all_impacted.update(deps)
-            
+
             if all_impacted:
                 print(f"      -> ☢️ Blast Radius detected: {len(all_impacted)} dependent files.")
                 # Store for TestPilot to use
                 self.ctx.impact_zone = all_impacted
-        
+
         # 2. Generate Plan with L5+ Few-Shot Strategic Injection
         prompt = f"""
 {getattr(self.ctx, 'FEW_SHOT_STRATEGIC', '')}
@@ -87,9 +87,9 @@ Task: Generate a strategic refactor plan.
 Propose optimal agent agenda based on priority rules above.
 Output ONLY the plan in Markdown.
 """
-        
+
         plan = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=2)
-        
+
         if "NO_PLAN_NEEDED" not in plan:
             print(f"   📋 STRATEGIC PLAN:\n{plan[:500]}...")
             self.ctx.strategic_plan = plan
@@ -118,10 +118,10 @@ class ReflectionAgent(SubAtomicAgent):
         # Consolidate mutations into memory
         recent_trace = self.ctx.successful_traces[-1]
         prompt = f"Critique and consolidate the following mutation into long-term memory: {recent_trace}"
-        
+
         critique = await self.ctx.resilient_mutation(self.name, prompt)
         print(f"   🧐 CRITIQUE: {critique[:100]}...")
-        
+
         if not hasattr(self.ctx, 'long_term_memory'):
             self.ctx.long_term_memory = []
         self.ctx.long_term_memory.append({"trace": recent_trace, "critique": critique})

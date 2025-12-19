@@ -44,7 +44,7 @@ def job_description():
     """Sample job description."""
     return """
     Senior Software Engineer
-    
+
     Requirements:
     - 5+ years of experience in software development
     - Strong Python and JavaScript skills
@@ -55,33 +55,33 @@ def job_description():
 
 class TestFullMissionWithIntelligence:
     """Tests for full mission with intelligence components."""
-    
+
     @pytest.mark.asyncio
     async def test_complete_intelligence_mission(self, valid_resume, job_description):
         """Test a complete intelligence mission."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
         ctx.job_description = job_description
-        
+
         phase6 = Phase6Orchestrator(ctx)
-        
+
         # Run full mission
         result = await phase6.run_full_mission(valid_resume, job_description)
-        
+
         assert "success" in result
         assert "cycles" in result
         assert "phases" in result
         assert result["cycles"] >= 1
-    
+
     @pytest.mark.asyncio
     async def test_intelligence_analysis_comprehensive(self, valid_resume, job_description):
         """Test comprehensive intelligence analysis."""
         ctx = ResumeEngineContext()
-        
+
         phase6 = Phase6Orchestrator(ctx)
-        
+
         result = await phase6.analyze_resume(valid_resume, job_description)
-        
+
         assert "security" in result
         assert "semantic" in result
         assert "strategic" in result
@@ -91,14 +91,14 @@ class TestFullMissionWithIntelligence:
 
 class TestIntegrationWithAllPhases:
     """Tests for integration with all previous phases."""
-    
+
     @pytest.mark.asyncio
     async def test_full_pipeline_with_all_phases(self, valid_resume, job_description, tmp_path):
         """Test complete pipeline with all phases."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
         ctx.job_description = job_description
-        
+
         # Initialize all orchestrators
         phase4 = Phase4Orchestrator(ctx)
         phase4.gitops.enable_git = False
@@ -106,24 +106,24 @@ class TestIntegrationWithAllPhases:
         phase6 = Phase6Orchestrator(ctx)
         learning_agent = ResumeLearningAgent(ctx)
         memory = MemoryPersistence(memory_file=tmp_path / "memory.json")
-        
+
         # Phase 3: Learning - Inject instructions
         learning_agent.inject_instruction("Focus on ATS compatibility", priority=10)
         learning_agent.inject_instruction("Emphasize leadership", priority=8)
-        
+
         # Phase 4: GitOps - Backup files
         test_file = tmp_path / "resume.py"
         test_file.write_text("def get_resume():\n    pass")
         phase4.gitops.backup_file(str(test_file))
-        
+
         # Phase 5: Observability - Start mission
         phase5.start_mission("full_pipeline_e2e")
-        
+
         # Phase 6: Intelligence - Analyze
         step_id = phase5.track_agent("Phase6Orchestrator", "analyze_resume")
         analysis = await phase6.analyze_resume(valid_resume, job_description)
         phase5.complete_agent(step_id, success=True)
-        
+
         # Phase 2: Healing
         step_id = phase5.track_agent("HealingOrchestrator", "run")
         result = await run_self_healing_mission(
@@ -132,7 +132,7 @@ class TestIntegrationWithAllPhases:
             max_cycles=2,
         )
         phase5.complete_agent(step_id, success=result.success)
-        
+
         # Phase 3: Record learning
         step_id = phase5.track_agent("ResumeLearningAgent", "record_success")
         await learning_agent.record_success(
@@ -142,17 +142,17 @@ class TestIntegrationWithAllPhases:
             confidence=0.9,
         )
         phase5.complete_agent(step_id, success=True)
-        
+
         # Record section validations
         for section in ["summary", "experience", "skills"]:
             memory.record_validation(section, str(valid_resume.get(section, "")), passed=True)
-        
+
         # End observability
         trace = phase5.end_mission(success=True)
-        
+
         # Generate report
         report = phase5.generate_report("full_pipeline_e2e")
-        
+
         # Verify all phases worked
         assert len(ctx.instructions) >= 2
         assert str(test_file) in phase4.gitops._backups
@@ -161,29 +161,29 @@ class TestIntegrationWithAllPhases:
         assert "security" in analysis
         assert result.success is True
         assert report is not None
-    
+
     @pytest.mark.asyncio
     async def test_intelligence_with_healing_loop(self, valid_resume, job_description):
         """Test intelligence analysis within healing loop."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
         ctx.job_description = job_description
-        
+
         phase6 = Phase6Orchestrator(ctx)
-        
+
         # Analyze before healing
         analysis_before = await phase6.analyze_resume(valid_resume, job_description)
-        
+
         # Run healing
         result = await run_self_healing_mission(
             job_description=job_description,
             master_resume=valid_resume,
             max_cycles=2,
         )
-        
+
         # Analyze after healing
         analysis_after = await phase6.analyze_resume(ctx.current_resume, job_description)
-        
+
         # Both analyses should complete
         assert "security" in analysis_before
         assert "security" in analysis_after
@@ -192,42 +192,42 @@ class TestIntegrationWithAllPhases:
 
 class TestEdgeCases:
     """Tests for edge cases in Phase 6."""
-    
+
     @pytest.mark.asyncio
     async def test_empty_resume(self):
         """Test handling empty resume."""
         ctx = ResumeEngineContext()
         phase6 = Phase6Orchestrator(ctx)
-        
+
         result = await phase6.analyze_resume({})
-        
+
         assert "security" in result
         assert result["security"]["issues"] == 0
-    
+
     @pytest.mark.asyncio
     async def test_resume_with_pii(self, valid_resume):
         """Test handling resume with PII."""
         ctx = ResumeEngineContext()
         phase6 = Phase6Orchestrator(ctx)
-        
+
         resume_with_pii = valid_resume.copy()
         resume_with_pii["contact"] = {
             "email": "test@example.com",
             "phone": "555-123-4567",
             "ssn": "123-45-6789",
         }
-        
+
         result = await phase6.analyze_resume(resume_with_pii)
-        
+
         # Should detect PII
         assert result["security"]["issues"] >= 1
-    
+
     @pytest.mark.asyncio
     async def test_weak_resume_analysis(self):
         """Test analyzing a weak resume."""
         ctx = ResumeEngineContext()
         phase6 = Phase6Orchestrator(ctx)
-        
+
         weak_resume = {
             "summary": "I helped with tasks and assisted the team.",
             "experience": [
@@ -239,20 +239,20 @@ class TestEdgeCases:
             ],
             "skills": ["Python"],
         }
-        
+
         result = await phase6.analyze_resume(weak_resume)
-        
+
         # Weak resume should have recommendations for improvement
         assert len(result["recommendations"]) > 0
-    
+
     @pytest.mark.asyncio
     async def test_no_job_description(self, valid_resume):
         """Test analysis without job description."""
         ctx = ResumeEngineContext()
         phase6 = Phase6Orchestrator(ctx)
-        
+
         result = await phase6.analyze_resume(valid_resume)
-        
+
         # Should still work without JD
         assert "security" in result
         assert "recommendations" in result
@@ -260,41 +260,41 @@ class TestEdgeCases:
 
 class TestComprehensiveWorkflow:
     """Tests for comprehensive end-to-end workflow."""
-    
+
     @pytest.mark.asyncio
     async def test_complete_workflow_with_all_components(self, valid_resume, job_description, tmp_path):
         """Test complete workflow with all Phase 6 components."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
         ctx.job_description = job_description
-        
+
         phase6 = Phase6Orchestrator(ctx)
-        
+
         # 1. Security scan
         security_issues = phase6.security.scan_resume(valid_resume)
-        
+
         # 2. Build context
         context_buffer = phase6.omni.build_context(valid_resume)
-        
+
         # 3. Search context
         matches = phase6.omni.search("engineer leadership")
-        
+
         # 4. Semantic analysis
         semantic_result = phase6.semantic.analyze_resume(valid_resume)
-        
+
         # 5. Strategic analysis
         proposals = phase6.strategic.analyze_structure(valid_resume)
         ats_recs = phase6.strategic.get_ats_recommendations(valid_resume, job_description)
-        
+
         # 6. Full analysis
         full_analysis = await phase6.analyze_resume(valid_resume, job_description)
-        
+
         # 7. Full mission
         mission_result = await phase6.run_full_mission(valid_resume, job_description)
-        
+
         # 8. Get comprehensive stats
         stats = phase6.get_comprehensive_stats()
-        
+
         # Verify all components worked
         assert isinstance(security_issues, list)
         assert len(context_buffer) > 0
@@ -308,16 +308,16 @@ class TestComprehensiveWorkflow:
         assert "semantic" in stats
         assert "strategic" in stats
         assert "omni" in stats
-    
+
     @pytest.mark.asyncio
     async def test_workflow_with_run_self_healing_mission(self, valid_resume, job_description):
         """Test workflow using the main entry point function."""
         ctx = ResumeEngineContext()
         phase6 = Phase6Orchestrator(ctx)
-        
+
         # Analyze resume
         analysis = await phase6.analyze_resume(valid_resume, job_description)
-        
+
         # Run self-healing mission
         result = await run_self_healing_mission(
             job_description=job_description,
@@ -325,19 +325,19 @@ class TestComprehensiveWorkflow:
             max_cycles=3,
             enable_reflection=True,
         )
-        
+
         assert isinstance(result, HealingResult)
         assert result.success is True
         assert "security" in analysis
-    
+
     @pytest.mark.asyncio
     async def test_comprehensive_stats_after_workflow(self, valid_resume, job_description):
         """Test getting comprehensive statistics after workflow."""
         ctx = ResumeEngineContext()
         ctx.current_resume = valid_resume
-        
+
         phase6 = Phase6Orchestrator(ctx)
-        
+
         # Run various operations
         phase6.security.scan_resume(valid_resume)
         phase6.omni.build_context(valid_resume)
@@ -345,10 +345,10 @@ class TestComprehensiveWorkflow:
         phase6.semantic.analyze_resume(valid_resume)
         phase6.strategic.analyze_structure(valid_resume)
         await phase6.run_full_mission(valid_resume, job_description)
-        
+
         # Get comprehensive stats
         stats = phase6.get_comprehensive_stats()
-        
+
         assert stats["security"]["scans_performed"] >= 1
         assert stats["omni"]["queries_performed"] >= 1
         assert stats["semantic"]["total_analyses"] >= 1

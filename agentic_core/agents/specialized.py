@@ -13,14 +13,14 @@ class TheCartographer(SubAtomicAgent):
         modified_files = getattr(self.ctx, "modified_files", [])
         pinecone_available = getattr(self.ctx, "pinecone_available", False)
         return len(modified_files) > 0 and pinecone_available
-    
+
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Mapping code to semantic space...")
         await asyncio.sleep(0)
-        
+
         if not getattr(self.ctx, "pinecone_available", False):
             return
-        
+
         for file_path in getattr(self.ctx, "modified_files", []):
             await self._map_file(file_path)
 
@@ -30,13 +30,13 @@ class TheCartographer(SubAtomicAgent):
             def _read_sync():
                 with open(file_path, 'r', encoding='utf-8') as f:
                     return f.read()
-            
+
             content = await asyncio.to_thread(_read_sync)
-            
+
             # Upsert embedding with explicit UTC timestamp
             await self.ctx.upsert_embedding(
-                file_path, 
-                content, 
+                file_path,
+                content,
                 metadata={"modified": datetime.datetime.now(datetime.timezone.utc).isoformat()}
             )
             print(f"      📍 Mapped: {file_path}")
@@ -61,16 +61,16 @@ class TheStrategist(SubAtomicAgent):
     """
     def can_run(self) -> bool:
         results = getattr(self.ctx, "results", {})
-        if not results: 
+        if not results:
             return False
         return all(r.get("passed", False) for r in results.values())
-    
+
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing architectural patterns...")
         await asyncio.sleep(0)
         # Placeholder for strategic analysis logic
         if getattr(self.ctx, "intelligence_enabled", False):
-            pass 
+            pass
 
 
 class NamingEnforcer(SubAtomicAgent):

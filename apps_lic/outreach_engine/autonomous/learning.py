@@ -51,15 +51,15 @@ class OutreachInstruction:
 class OutreachLearningLoop:
     """
     Learning loop for outreach campaigns.
-    
+
     Tracks patterns and improves over time.
     """
-    
+
     def __init__(self, ctx: OutreachEngineContext):
         self.ctx = ctx
         self._examples: List[OutreachLearningExample] = []
         self._patterns: Dict[str, int] = {}
-    
+
     async def record_success(
         self,
         task_type: str,
@@ -71,7 +71,7 @@ class OutreachLearningLoop:
         example_id = hashlib.sha256(
             f"{task_type}:{input_context}:{output_result}".encode()
         ).hexdigest()[:12]
-        
+
         example = OutreachLearningExample(
             example_id=example_id,
             task_type=task_type,
@@ -80,10 +80,10 @@ class OutreachLearningLoop:
             success=True,
             confidence=confidence,
         )
-        
+
         self._examples.append(example)
         self._update_patterns(task_type, success=True)
-    
+
     async def record_failure(
         self,
         task_type: str,
@@ -94,7 +94,7 @@ class OutreachLearningLoop:
         example_id = hashlib.sha256(
             f"{task_type}:{input_context}:{error}".encode()
         ).hexdigest()[:12]
-        
+
         example = OutreachLearningExample(
             example_id=example_id,
             task_type=task_type,
@@ -103,33 +103,33 @@ class OutreachLearningLoop:
             success=False,
             confidence=0.0,
         )
-        
+
         self._examples.append(example)
         self._update_patterns(task_type, success=False)
-    
+
     def _update_patterns(self, task_type: str, success: bool):
         """Update pattern tracking."""
         key = f"{task_type}:{'success' if success else 'failure'}"
         self._patterns[key] = self._patterns.get(key, 0) + 1
-    
+
     def get_success_rate(self, task_type: str) -> float:
         """Get success rate for a task type."""
         successes = self._patterns.get(f"{task_type}:success", 0)
         failures = self._patterns.get(f"{task_type}:failure", 0)
         total = successes + failures
-        
+
         if total == 0:
             return 0.5  # Default
-        
+
         return successes / total
-    
+
     def get_examples(self, task_type: str = None, limit: int = 10) -> List[OutreachLearningExample]:
         """Get learning examples."""
         if task_type:
             examples = [e for e in self._examples if e.task_type == task_type]
         else:
             examples = self._examples
-        
+
         return examples[-limit:]
 
 
@@ -137,63 +137,63 @@ class OutreachConfidenceScorer:
     """
     Scores confidence for outreach decisions.
     """
-    
+
     def __init__(self, ctx: OutreachEngineContext):
         self.ctx = ctx
         self.learning_loop = OutreachLearningLoop(ctx)
-    
+
     def score_lead(self, lead: Dict[str, Any]) -> float:
         """Score confidence for a lead."""
         score = 0.5  # Base score
-        
+
         # Has company
         if lead.get("company"):
             score += 0.1
-        
+
         # Has contact name
         if lead.get("contact_name"):
             score += 0.1
-        
+
         # Has email
         if lead.get("email"):
             score += 0.1
-        
+
         # Has title
         if lead.get("title"):
             score += 0.1
-        
+
         # Has LinkedIn
         if lead.get("linkedin"):
             score += 0.1
-        
+
         return min(1.0, score)
-    
+
     def score_message(self, message: Dict[str, Any]) -> float:
         """Score confidence for a message."""
         score = 0.5  # Base score
-        
+
         content = message.get("content", "")
         subject = message.get("subject", "")
-        
+
         # Has personalization
         if "{name}" in content or "{company}" in content:
             score += 0.15
-        
+
         # Has call to action
         cta_words = ["schedule", "call", "meet", "discuss"]
         if any(word in content.lower() for word in cta_words):
             score += 0.1
-        
+
         # Good subject length
         if 20 <= len(subject) <= 60:
             score += 0.1
-        
+
         # Has unsubscribe
         if "unsubscribe" in content.lower():
             score += 0.1
-        
+
         return min(1.0, score)
-    
+
     def get_confidence_level(self, score: float) -> OutreachConfidenceLevel:
         """Convert score to confidence level."""
         if score >= 0.85:
@@ -210,12 +210,12 @@ class OutreachMemoryPersistence:
     """
     Persists outreach learning across sessions.
     """
-    
+
     def __init__(self, memory_file: str = "outreach_memory.json"):
         self.memory_file = Path(memory_file)
         self._memory: Dict[str, Any] = {}
         self._load()
-    
+
     def _load(self):
         """Load memory from file."""
         if self.memory_file.exists():
@@ -223,14 +223,14 @@ class OutreachMemoryPersistence:
                 self._memory = json.loads(self.memory_file.read_text())
             except Exception:
                 self._memory = {}
-    
+
     def _save(self):
         """Save memory to file."""
         try:
             self.memory_file.write_text(json.dumps(self._memory, indent=2))
         except Exception:
             pass
-    
+
     def store(self, key: str, value: Any):
         """Store a value in memory."""
         self._memory[key] = {
@@ -238,18 +238,18 @@ class OutreachMemoryPersistence:
             "timestamp": datetime.now().isoformat(),
         }
         self._save()
-    
+
     def retrieve(self, key: str) -> Optional[Any]:
         """Retrieve a value from memory."""
         entry = self._memory.get(key)
         if entry:
             return entry.get("value")
         return None
-    
+
     def list_keys(self) -> List[str]:
         """List all memory keys."""
         return list(self._memory.keys())
-    
+
     def clear(self):
         """Clear all memory."""
         self._memory = {}
@@ -259,61 +259,61 @@ class OutreachMemoryPersistence:
 class OutreachLearningAgent(OutreachAgent):
     """
     Learning agent for outreach campaigns.
-    
+
     Learns from past campaigns and provides recommendations.
     """
-    
+
     def __init__(self, ctx: OutreachEngineContext):
         super().__init__(ctx)
         self.learning_loop = OutreachLearningLoop(ctx)
         self.confidence_scorer = OutreachConfidenceScorer(ctx)
         self.memory = OutreachMemoryPersistence()
-    
+
     async def execute(self) -> None:
         print(f"   [{self.name}] Analyzing patterns...")
-        
+
         # Score leads
         lead_scores = []
         for lead in self.ctx.leads:
             score = self.confidence_scorer.score_lead(lead)
             lead_scores.append(score)
-        
+
         # Score messages
         message_scores = []
         for message in self.ctx.messages:
             score = self.confidence_scorer.score_message(message)
             message_scores.append(score)
-        
+
         # Calculate averages
         avg_lead_score = sum(lead_scores) / len(lead_scores) if lead_scores else 0
         avg_message_score = sum(message_scores) / len(message_scores) if message_scores else 0
-        
+
         # Store in memory
         self.memory.store("last_lead_score", avg_lead_score)
         self.memory.store("last_message_score", avg_message_score)
-        
+
         # Generate recommendations
         recommendations = []
-        
+
         if avg_lead_score < 0.6:
             recommendations.append("Improve lead quality - add more contact details")
-        
+
         if avg_message_score < 0.6:
             recommendations.append("Improve message quality - add personalization")
-        
+
         if recommendations:
             self.ctx.inject_instruction(
                 f"Learning recommendations: {'; '.join(recommendations)}",
                 priority=7,
             )
-        
+
         self.record_result(True, f"Lead score: {avg_lead_score:.2f}, Message score: {avg_message_score:.2f}")
         print(f"   [{self.name}] ✅ Analysis complete")
-    
+
     def inject_instruction(self, instruction: str, priority: int = 5):
         """Inject an instruction into the context."""
         self.ctx.inject_instruction(instruction, priority)
-    
+
     async def record_success(
         self,
         task_type: str,
@@ -325,7 +325,7 @@ class OutreachLearningAgent(OutreachAgent):
         await self.learning_loop.record_success(
             task_type, input_context, output_result, confidence
         )
-    
+
     async def record_failure(
         self,
         task_type: str,
