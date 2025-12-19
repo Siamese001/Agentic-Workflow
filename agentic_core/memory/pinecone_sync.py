@@ -168,7 +168,9 @@ class MemoryArchitectSync:
                 metadata["parent_monolith"] = parent_monolith
             
             # Upsert to Pinecone
-            vector_id = f"vec_{file_path.replace('/', '_').replace('\\', '_')}"
+            # Create vector ID by replacing path separators
+            clean_path = file_path.replace('/', '_').replace('\\', '_')
+            vector_id = f"vec_{clean_path}"
             self.index.upsert(vectors=[(vector_id, vector, metadata)])
             
             logger.info(f"    ✅ Indexed {file_path} ({len(content.splitlines())} lines)")
@@ -225,7 +227,8 @@ class MemoryArchitectSync:
         for file_path in file_paths:
             try:
                 # Query for file
-                vector_id = f"vec_{file_path.replace('/', '_').replace('\\', '_')}"
+                clean_path = file_path.replace('/', '_').replace('\\', '_')
+                vector_id = f"vec_{clean_path}"
                 fetch_result = self.index.fetch(ids=[vector_id])
                 
                 results[file_path] = vector_id in fetch_result.vectors
