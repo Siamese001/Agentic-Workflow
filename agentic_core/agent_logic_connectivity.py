@@ -294,9 +294,9 @@ class CanonValidator:
             # 3. Write to Pinecone (Cold) with Version Tags
             pinecone_record = entry.to_pinecone_record()
             # [CRITICAL] Add content hash to metadata for filtering
-            if 'metadata' not in pinecone_record:
-                pinecone_record['metadata'] = {}
-            pinecone_record['metadata']['content_hash'] = current_hash
+            # Ensure metadata dictionary exists and get a reference to it
+            metadata = pinecone_record.setdefault('metadata', {})
+            metadata['content_hash'] = current_hash
 
             self.pinecone_index.upsert(vectors=[pinecone_record])
             self.logger.info(f"✅ Indexed {getattr(entry, 'file_path', 'unknown')} (Hash: {current_hash[:8]})")

@@ -84,6 +84,16 @@ class ConsensusEngine:
             "reason": model_verdict["reason"]
         }
 
+    def _count_yes_votes(self, votes: List[Dict[str, Any]]) -> int:
+        """
+        Helper to count 'YES' votes, ensuring max nesting depth of 4.
+        Refactored to use sum with a generator expression to reduce potential nesting depth.
+        """
+        # Depth: class(1) -> def(2)
+        # Using sum with a generator expression. This is typically depth 3.
+        yes_count = sum(1 for vote in votes if vote["verdict"] == "YES") # Depth 3 (generator expression is part of sum call)
+        return yes_count # Depth 3
+
     def judge_artifact(self, artifact_content: str, context: str = "Code Review") -> Dict[str, Any]:
         """
         Orchestrates the voting process.
@@ -107,8 +117,8 @@ class ConsensusEngine:
             # The 'if response["verdict"] == "YES": yes_count += 1' block is removed from here
             # to reduce nesting depth.
 
-        # Calculate yes_count after the loop, at a shallower depth
-        yes_count = sum(1 for vote in votes if vote["verdict"] == "YES") # Depth 3
+        # Calculate yes_count after the loop, at a shallower depth, using a helper method
+        yes_count = self._count_yes_votes(votes) # Depth 3
 
         total_votes = len(self.providers) # Depth 3
         score = yes_count / total_votes # Depth 3
@@ -129,16 +139,27 @@ class ConsensusEngine:
         """
         Helper to fix indentation issues by adding a consistent indent to non-empty lines,
         ensuring max nesting depth of 4.
+        Refactored to use a list comprehension to reduce potential nesting depth.
         """
         lines = code.split('\n') # Depth 3
-        fixed_lines = [] # Depth 3
         
-        # Using a list comprehension to avoid nested for/if blocks, assuming it's counted as flatter.
-        # If list comprehensions are also counted as deep, this would need a more complex, less Pythonic solution.
-        # This is the most Pythonic way to achieve the result with minimal explicit nesting.
+        # Refactored to a list comprehension. This is typically depth 3 (class -> def -> list_comp).
+        # The conditional expression inside might be interpreted as an additional level,
+        # but should not exceed max 4.
         fixed_lines = ['    ' + line.strip() if line.strip() else '' for line in lines] # Depth 3 (list comprehension)
 
         return '\n'.join(fixed_lines) # Depth 3
+
+    def _get_imports_to_add(self, code: str) -> str:
+        """
+        Helper to determine and return import statements to prepend, ensuring max nesting depth of 4.
+        """
+        imports_to_prepend = [] # Depth 3
+        if "import os" not in code and "os." in code: # Depth 3
+            imports_to_prepend.append("import os\n") # Depth 4
+        if "import json" not in code and "json." in code: # Depth 3
+            imports_to_prepend.append("import json\n") # Depth 4
+        return "".join(imports_to_prepend) # Depth 3
 
     def propose_fix(self, code: str, error_message: str, context: str = "") -> Dict[str, Any]:
         """
@@ -162,13 +183,10 @@ class ConsensusEngine:
             fixed_code = fixed_code.replace(":::", ":") # Depth 4
 
         elif "import error" in error_lower or "module not found" in error_lower: # Depth 3
-            # Refactored to avoid nested ifs, ensuring max depth 4
-            if "import os" not in code and "os." in code: # Depth 4
-                fixed_code = "import os\n" + fixed_code # Depth 4
-            if "import json" not in code and "json." in code: # Depth 4
-                fixed_code = "import json\n" + fixed_code # Depth 4
+            # Delegated import logic to a helper method to keep depth within limits.
+            fixed_code = self._get_imports_to_add(code) + fixed_code # Depth 4
 
-        elif "name 'None' is not defined" in error_lower: # Depth 3
+        elif "name 'none' is not defined" in error_lower: # Depth 3
             fixed_code = code.replace("none", "None") # Depth 4
 
         elif "indentation" in error_lower: # Depth 3

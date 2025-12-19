@@ -89,13 +89,13 @@ class TruthKeeper(SubAtomicAgent):
         if not docstring:
             return
 
-        await self._run_intelligence_check_if_enabled(file_path, node.name, docstring, content)
+        # Move the intelligence_enabled check here to reduce nesting in the subsequent call
+        if self.ctx.intelligence_enabled:
+            await self._run_intelligence_check(file_path, node.name, docstring, content)
 
-    async def _run_intelligence_check_if_enabled(self, file_path: str, node_name: str, docstring: str, content: str):
-        """Runs the Gemini intelligence check if enabled in the context."""
-        if not self.ctx.intelligence_enabled:
-            return
-
+    async def _run_intelligence_check(self, file_path: str, node_name: str, docstring: str, content: str):
+        """Runs the Gemini intelligence check."""
+        # The check for self.ctx.intelligence_enabled has been moved to the caller.
         is_consistent = await self._verify_docstring_consistency(
             file_path, node_name, docstring, content
         )
