@@ -8,8 +8,6 @@ Contains:
 
 import json
 import sys
-import asyncio
-import httpx
 from pathlib import Path
 
 from agentic_core.agents.base import SubAtomicAgent

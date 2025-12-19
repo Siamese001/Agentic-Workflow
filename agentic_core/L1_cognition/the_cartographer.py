@@ -1,9 +1,7 @@
-import asyncio
-import httpx
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

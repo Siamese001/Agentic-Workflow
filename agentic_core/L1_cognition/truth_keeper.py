@@ -1,9 +1,7 @@
 import ast
 import logging
 import os
-import asyncio
-import httpx
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -96,7 +94,7 @@ class TruthKeeper:
             Dictionary with violation info and potential fix
         """
         # Extract function signature
-        args = [arg.arg for arg in node.args.args]
+        [arg.arg for arg in node.args.args]
         docstring = ast.get_docstring(node) or ""
         
         # Get function source

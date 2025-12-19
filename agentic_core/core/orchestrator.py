@@ -1,6 +1,6 @@
 import asyncio
 import os
-import httpx
+
 import uvicorn
 
 from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
