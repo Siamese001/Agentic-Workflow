@@ -35,11 +35,13 @@ from apps_shared.signal_bus import (
     get_signal_bus,
     reset_signal_bus,
 )
-from apps_shared.validation_context import (
-    ModifiedItem,
-    ValidationContext,
-    create_validation_context,
-)
+# Phase 5: Import from canonical location
+from agentic_core.domain.context import ValidationContext
+
+# Legacy compatibility - ModifiedItem and create_validation_context
+# These are now handled directly through ValidationContext
+ModifiedItem = None  # Deprecated - use ValidationContext directly
+create_validation_context = ValidationContext  # Factory function compatibility
 
 __all__ = [
     # Signal Bus
