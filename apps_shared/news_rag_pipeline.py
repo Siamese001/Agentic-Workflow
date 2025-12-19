@@ -143,7 +143,6 @@ class NewsRAGPipeline:
             return insights
 
         except Exception as e:
-            pass
             logger.error(f"❌ News search failed for {company}: {e}")
             return []
 
@@ -188,7 +187,6 @@ class NewsRAGPipeline:
             return insights
 
         except Exception as e:
-            pass
             logger.error(f"❌ Industry trends search failed: {e}")
             return []
 

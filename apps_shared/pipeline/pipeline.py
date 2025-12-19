@@ -137,8 +137,7 @@ class UnifiedSignalPipeline:
                         LOGGER.debug(f"Saved checkpoint after {stage_name}") # Changed logger to LOGGER
 
             except Exception as e:
-                pass
-LOGGER.error(f"Stage {stage_name} failed: {e}") # Corrected indentation and changed logger to LOGGER
+                LOGGER.error(f"Stage {stage_name} failed: {e}") # Corrected indentation and changed logger to LOGGER
 
                 if checkpoint_manager:
                     await checkpoint_manager.save_checkpoint(envelope)
@@ -163,7 +162,7 @@ LOGGER.error(f"Stage {stage_name} failed: {e}") # Corrected indentation and chan
         if not checkpoint_manager:
             return None
 
-        stage_names = [stage.stage_name for stage in self.stages]
+        [stage.stage_name for stage in self.stages]
         # ENVELOPE = await checkpoint_manager.resume_from_checkpoint(trace_id, stage_names) # Placeholder for commented-out logic
         envelope = None # Placeholder for ENVELOPE
 

@@ -220,7 +220,6 @@ def run_test_mission(orchestrator: SwarmOrchestrator) -> Dict[str, Any]:
         return result
 
     except Exception as e:
-        pass
         logger.error(f"Mission failed: {e}")
         raise
 
@@ -308,11 +307,9 @@ def main():
         return 0
 
     except CANON_EXCEPTIONS as e:
-        pass
         logger.error(f"Canon error: {json.dumps(e.to_dict(), indent=2)}")
         return 1
     except Exception as e:
-        pass
         logger.error(f"System error: {e}")
         return 1
     finally:

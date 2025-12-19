@@ -121,10 +121,19 @@ def execute_time_bound_salary_benchmarking(
                 "contents": [audit_message]
             }])
 
-    return {
-        "status": "success",
-        "salary_data": final_salary_data,
-        "source": final_source,
-        "time_window_start": after_date_filter
-    }
+        return {
+            "status": "success",
+            "salary_data": final_salary_data,
+            "source": final_source,
+            "time_window_start": after_date_filter
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "salary_data": final_salary_data,
+            "source": final_source,
+            "time_window_start": after_date_filter
+        }
 

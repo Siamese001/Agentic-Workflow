@@ -2,14 +2,13 @@ import json
 import logging
 import os
 import re
-from typing import Dict, List, Tuple
+from typing import Dict
 
 logger = logging.getLogger("FactChecker")
 logging.basicConfig(level=logging.INFO)
 
 class HallucinationException(Exception):
     """Raised when the agent invents facts not in the golden record."""
-    pass
 
 class FactChecker:
     def __init__(self, record_path: str = "config/golden_record.json"):
@@ -26,7 +25,6 @@ class FactChecker:
             with open(self.record_path, 'r') as f:
                 return json.load(f)
         except Exception as e:
-            pass
             logger.error(f"Failed to load Golden Record: {e}")
             return {}
 

@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 import signal
 import time
 from typing import List

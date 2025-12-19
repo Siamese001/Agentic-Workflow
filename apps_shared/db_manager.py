@@ -159,7 +159,6 @@ class QdrantManager:
                 self.qdrant.upsert(entry._canon_entry)
             return True
         except Exception as e:
-            pass
             logger.error(f"Failed to upsert to Qdrant: {e}")
             return False
 

@@ -198,10 +198,11 @@ def prevent_hallucination_loops():
         pass  # print("✅ PASS: Semantic duplicate was correctly identified via similarity.")  # [Security Fix]
     else:
         # print(f"⚠️ WARNING: Semantic duplicate was treated as new (similarity too low).")  # [Security Fix]
+        pass
 
-        # ---------------------------------------------------------
-        # SCENARIO 4: THE NOVELTY (Completely New)
-        # ---------------------------------------------------------
+    # ---------------------------------------------------------
+    # SCENARIO 4: THE NOVELTY (Completely New)
+    # ---------------------------------------------------------
     print_section("TEST 4: NOVEL DATA (Should be Ingested)")
 
     novel_text = '''
@@ -219,15 +220,16 @@ def get_tuesday_menu():
     # print(f"Result: {result_4}")  # [Security Fix]
 
     if result_4.get('is_valid') and result_4.get('source') == 'no_match':
-        # print("✅ PASS: Novel data was correctly ingested.")  # [Security Fix]
+        pass  # print("✅ PASS: Novel data was correctly ingested.")  # [Security Fix]
     else:
         # print(f"❌ FAIL: Novel data was rejected.")  # [Security Fix]
+        pass
 
-        # Show final storage state
+    # Show final storage state
     print_section("FINAL STORAGE STATE")
     # print(f"Total patterns stored: {len(validator.storage)}")  # [Security Fix]
     for pid, data in validator.storage.items():
-        # print(f"  - {pid[:8]}... ({data['metadata'].get('type', 'unknown')})")  # [Security Fix]
+        pass  # print(f"  - {pid[:8]}... ({data['metadata'].get('type', 'unknown')})")  # [Security Fix]
 
     print_section("SIMULATION COMPLETE")
 

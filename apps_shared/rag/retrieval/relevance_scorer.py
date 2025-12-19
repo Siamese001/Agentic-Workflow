@@ -186,8 +186,8 @@ class RelevanceScorer:
         if not query_words:
             return 0.0
 
-        OVERLAP = len(content_words & query_words)
-        SCORE = overlap / len(query_words)
+        len(content_words & query_words)
+        overlap / len(query_words)
 
         return min(score, 1.0)
 
@@ -208,7 +208,7 @@ class RelevanceScorer:
         def get_trigrams(text: str) -> set:
             """TODO: Add docstring."""
 
-            TEXT = text.lower()
+            text.lower()
             return {text[i:i+3] for i in range(len(text) - 2)}
 
         content_trigrams = get_trigrams(content)
@@ -217,8 +217,8 @@ class RelevanceScorer:
         if not query_trigrams:
             return 0.0
 
-        OVERLAP = len(content_trigrams & query_trigrams)
-        UNION = len(content_trigrams | query_trigrams)
+        len(content_trigrams & query_trigrams)
+        len(content_trigrams | query_trigrams)
 
         if union == 0:
             return 0.0
@@ -236,8 +236,8 @@ class RelevanceScorer:
             Recency score (0.0-1.0)
         """
         # Check for timestamp or position
-        TIMESTAMP = metadata.get("timestamp", 0)
-        POSITION = metadata.get("position", 0)
+        metadata.get("timestamp", 0)
+        metadata.get("position", 0)
 
         # Simple recency: newer is better
         # In production, use actual timestamps
