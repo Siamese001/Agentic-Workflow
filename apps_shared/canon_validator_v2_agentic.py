@@ -20,10 +20,44 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple, Callable
 
-from apps_shared.config.reliability import rate_limited_retry
-from apps_shared.utils.file_io import get_python_files
 from dotenv import load_dotenv
 load_dotenv()
+
+# Inline reliability decorator to avoid import dependencies
+def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_factor: float = 2.0):
+    """Decorator to handle Gemini 429 errors with exponential backoff."""
+    from functools import wraps
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            for attempt in range(max_retries):
+                try:
+                    return await func(*args, **kwargs)
+                except Exception as e:
+                    if "429" in str(e) or "quota" in str(e).lower():
+                        wait = base_delay * (backoff_factor ** attempt)
+                        if attempt < max_retries - 1:
+                            await asyncio.sleep(wait)
+                        else:
+                            raise
+                    else:
+                        raise
+            return None
+        return wrapper
+    return decorator
+
+# Inline file_io functions to avoid import dependencies
+def get_python_files(root: str = '.') -> List[str]:
+    """Get all Python files excluding specified directories and files."""
+    python_files = []
+    for root_dir, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+        for file in files:
+            if file.endswith('.py') and file not in EXCLUDED_FILES:
+                file_path = os.path.join(root_dir, file)
+                if not is_excluded(file_path):
+                    python_files.append(file_path)
+    return python_files
 
 try:
     from google import genai
