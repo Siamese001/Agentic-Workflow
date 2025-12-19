@@ -29,7 +29,7 @@ class DeadManSwitch:
             with open(self.pid_file, 'r') as f:
                 return int(f.read().strip())
         except (ValueError, FileNotFoundError):
-return None
+            return None
 
     def kill_agent(self, pid: int):
         """Terminates the agent process immediately."""
@@ -46,9 +46,9 @@ return None
             # send_alert("Agent killed due to spam loop.")
 
         except ProcessLookupError:
-logger.warning(f"PID {pid} not found (already dead?).")
+            logger.warning(f"PID {pid} not found (already dead?).")
         except PermissionError:
-logger.error(f"❌ Permission denied killing PID {pid}.")
+            logger.error(f"❌ Permission denied killing PID {pid}.")
 
     def monitor(self):
         """Main loop: Tails the log file and counts actions."""
@@ -101,5 +101,5 @@ if __name__ == "__main__":
     try:
         watchdog.monitor()
     except KeyboardInterrupt:
-logger.info("Watchdog stopped by user.")
+        logger.info("Watchdog stopped by user.")
 

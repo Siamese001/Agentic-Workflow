@@ -192,7 +192,7 @@ class TestDIAtomicityCompliance:
 
         for imp in business_logic_imports:
             # Allow in comments or type hints only
-            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().s...
+            lines_with_imp = [line for line in source_lines if imp in line and not line.strip().startswith('#')]
             assert len(lines_with_imp) == 0, f"Found direct import: {imp}"
 
     def test_no_direct_imports_in_l3(self) -> None:

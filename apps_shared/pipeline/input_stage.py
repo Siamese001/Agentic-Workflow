@@ -27,9 +27,8 @@ class InputProcessingStage(PipelineStage):
 #             from ..rag_components import SemanticCache
             self.semantic_cache = SemanticCache()
             self.hyde_processor = HyDEProcessor()
-        except ImportError:
-pass
-self.semantic_cache = None
+        except Exception as e:
+            self.semantic_cache = None
             self.hyde_processor = None
             logger.warning("SemanticCache or HyDEProcessor not available")
 
@@ -80,8 +79,7 @@ self.semantic_cache = None
             return envelope
 
         except Exception as e:
-pass
-logger.error(f"Input processing failed: {e}")
+            logger.error(f"Input processing failed: {e}")
             envelope.mark_stage_failed(
                 stage_name,
                 str(e),

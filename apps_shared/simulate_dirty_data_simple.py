@@ -145,7 +145,7 @@ def validate_cognitive_action_separation():
     # print(f"Result: {result_1}")  # [Security Fix]
 
     if result_1.get('is_valid') and result_1.get('source') == 'no_match':
-        # print("✅ PASS: Anchor truth ingested successfully.")  # [Security Fix]
+        pass  # print("✅ PASS: Anchor truth ingested successfully.")  # [Security Fix]
     else:
         # print(f"❌ FAIL: Anchor truth was rejected. Reason: {result_1}")  # [Security Fix]
         return  # Stop if we can't seed
@@ -165,9 +165,9 @@ def validate_cognitive_action_separation():
 
     # We expect exact duplicate detection
     if result_2.get('source') == 'L1_Exact_Duplicate':
-        # print("✅ PASS: Exact duplicate was correctly filtered by hash check.")  # [Security Fix]
+        pass  # print("✅ PASS: Exact duplicate was correctly filtered by hash check.")  # [Security Fix]
     else:
-        # print(f"⚠️ WARNING: Duplicate was not detected properly.")  # [Security Fix]
+        pass  # print(f"⚠️ WARNING: Duplicate was not detected properly.")  # [Security Fix]
 
         # ---------------------------------------------------------
         # SCENARIO 3: THE MIMIC (Semantic Duplicate)
@@ -195,7 +195,7 @@ def prevent_hallucination_loops():
 
     # If semantic similarity is working, this should be flagged
     if result_3.get('source') == 'L2_Semantic_Duplicate':
-        # print("✅ PASS: Semantic duplicate was correctly identified via similarity.")  # [Security Fix]
+        pass  # print("✅ PASS: Semantic duplicate was correctly identified via similarity.")  # [Security Fix]
     else:
         # print(f"⚠️ WARNING: Semantic duplicate was treated as new (similarity too low).")  # [Security Fix]
 

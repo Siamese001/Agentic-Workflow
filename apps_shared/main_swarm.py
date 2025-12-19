@@ -64,8 +64,7 @@ class SystemSanityCheck:
                 results["overall_status"] = "warning"
 
         except Exception as e:
-pass
-results["checks"]["redis_aof"] = {
+            results["checks"]["redis_aof"] = {
                 "status": "failed",
                 "message": str(e)
             }
@@ -79,8 +78,7 @@ results["checks"]["redis_aof"] = {
                 "message": f"Connected to {len(collections.collections)} collections"
             }
         except Exception as e:
-pass
-results["checks"]["qdrant"] = {
+            results["checks"]["qdrant"] = {
                 "status": "failed",
                 "message": str(e)
             }
@@ -222,8 +220,8 @@ def run_test_mission(orchestrator: SwarmOrchestrator) -> Dict[str, Any]:
         return result
 
     except Exception as e:
-pass
-logger.error(f"Mission failed: {e}")
+        pass
+        logger.error(f"Mission failed: {e}")
         raise
 
 
@@ -310,12 +308,12 @@ def main():
         return 0
 
     except CANON_EXCEPTIONS as e:
-pass
-logger.error(f"Canon error: {json.dumps(e.to_dict(), indent=2)}")
+        pass
+        logger.error(f"Canon error: {json.dumps(e.to_dict(), indent=2)}")
         return 1
     except Exception as e:
-pass
-logger.error(f"System error: {e}")
+        pass
+        logger.error(f"System error: {e}")
         return 1
     finally:
         # Cleanup

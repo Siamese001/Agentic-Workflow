@@ -52,8 +52,7 @@ class UnifiedSignalPipeline:
                 # self._checkpoint_manager = await get_checkpoint_manager(self._checkpoint_config)
                 pass # Placeholder for commented-out logic
             except ImportError:
-pass
-LOGGER.warning("Checkpoint manager not available") # Corrected indentation and changed logger to LOGGER
+                LOGGER.warning("Checkpoint manager not available") # Corrected indentation and changed logger to LOGGER
                 self._checkpoint_manager = None
         return self._checkpoint_manager
 
@@ -75,8 +74,7 @@ LOGGER.warning("Checkpoint manager not available") # Corrected indentation and c
                 # domain_config = get_shared_infrastructure().create_domain_config(engine_type)
                 pass # Placeholder for commented-out logic
             except ImportError:
-pass
-domain_config = None # Corrected indentation
+                domain_config = None # Corrected indentation
 
         if resume_trace_id:
             # ENVELOPE = await self._resume_from_checkpoint(resume_trace_id) # Placeholder for commented-out logic
@@ -103,7 +101,7 @@ domain_config = None # Corrected indentation
                 # )
                 raise NotImplementedError("EnvelopeFactory not imported") # Placeholder to simulate behavior
             except ImportError:
-pass
+                pass
 # from .types import PipelineExecutionError # Need to import for this to work
                 class PipelineExecutionError(Exception): # Dummy class for syntax repair
                     def __init__(self, stage_name, message, original_exception=None):
@@ -139,7 +137,7 @@ pass
                         LOGGER.debug(f"Saved checkpoint after {stage_name}") # Changed logger to LOGGER
 
             except Exception as e:
-pass
+                pass
 LOGGER.error(f"Stage {stage_name} failed: {e}") # Corrected indentation and changed logger to LOGGER
 
                 if checkpoint_manager:
