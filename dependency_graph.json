@@ -5,16 +5,16 @@
       "label": "action_node.py"
     },
     {
+      "id": "logging",
+      "label": "logging"
+    },
+    {
       "id": "typing",
       "label": "typing"
     },
     {
       "id": "subprocess",
       "label": "subprocess"
-    },
-    {
-      "id": "logging",
-      "label": "logging"
     },
     {
       "id": "pathlib",
@@ -25,24 +25,12 @@
       "label": "action_registry.py"
     },
     {
-      "id": "PyPDF2",
-      "label": "PyPDF2"
-    },
-    {
       "id": "requests",
       "label": "requests"
     },
     {
-      "id": "mcp0_git_status",
-      "label": "mcp0_git_status"
-    },
-    {
       "id": "mcp0_git_add_or_commit",
       "label": "mcp0_git_add_or_commit"
-    },
-    {
-      "id": "mcp_time_client",
-      "label": "mcp_time_client"
     },
     {
       "id": "datetime",
@@ -53,8 +41,20 @@
       "label": "pytz"
     },
     {
+      "id": "mcp_time_client",
+      "label": "mcp_time_client"
+    },
+    {
       "id": "os",
       "label": "os"
+    },
+    {
+      "id": "mcp0_git_status",
+      "label": "mcp0_git_status"
+    },
+    {
+      "id": "PyPDF2",
+      "label": "PyPDF2"
     },
     {
       "id": "agentic_core\\agent_capabilities.py",
@@ -65,16 +65,16 @@
       "label": "agent_logic.py"
     },
     {
-      "id": "db_manager",
-      "label": "db_manager"
-    },
-    {
       "id": "json",
       "label": "json"
     },
     {
       "id": "core.semantic_gatekeeper",
       "label": "core.semantic_gatekeeper"
+    },
+    {
+      "id": "db_manager",
+      "label": "db_manager"
     },
     {
       "id": "ast",
@@ -89,20 +89,20 @@
       "label": "agent_logic_connectivity.py"
     },
     {
-      "id": "hashlib",
-      "label": "hashlib"
-    },
-    {
-      "id": "time",
-      "label": "time"
-    },
-    {
       "id": "connection_manager",
       "label": "connection_manager"
     },
     {
       "id": "schemas_connectivity",
       "label": "schemas_connectivity"
+    },
+    {
+      "id": "time",
+      "label": "time"
+    },
+    {
+      "id": "hashlib",
+      "label": "hashlib"
     },
     {
       "id": "agentic_core\\cognitive_node.py",
@@ -129,20 +129,12 @@
       "label": "core_utils.py"
     },
     {
-      "id": "agentic_core.utils.syntax_validator",
-      "label": "agentic_core.utils.syntax_validator"
+      "id": "agentic_core.utils.process_utils",
+      "label": "agentic_core.utils.process_utils"
     },
     {
       "id": "agentic_core.utils.mcp_mocks",
       "label": "agentic_core.utils.mcp_mocks"
-    },
-    {
-      "id": "agentic_core.utils.crypto_utils",
-      "label": "agentic_core.utils.crypto_utils"
-    },
-    {
-      "id": "agentic_core.utils.process_utils",
-      "label": "agentic_core.utils.process_utils"
     },
     {
       "id": "agentic_core.utils.validation_utils",
@@ -151,6 +143,14 @@
     {
       "id": "agentic_core.utils.error_handling",
       "label": "agentic_core.utils.error_handling"
+    },
+    {
+      "id": "agentic_core.utils.crypto_utils",
+      "label": "agentic_core.utils.crypto_utils"
+    },
+    {
+      "id": "agentic_core.utils.syntax_validator",
+      "label": "agentic_core.utils.syntax_validator"
     },
     {
       "id": "agentic_core\\core_utils_wrapper.py",
@@ -233,24 +233,24 @@
       "label": "canon_base_agent.py"
     },
     {
+      "id": "google",
+      "label": "google"
+    },
+    {
       "id": "re",
       "label": "re"
     },
     {
-      "id": "google.genai",
-      "label": "google.genai"
+      "id": "abc",
+      "label": "abc"
     },
     {
       "id": "prompts.prompt_loader",
       "label": "prompts.prompt_loader"
     },
     {
-      "id": "google",
-      "label": "google"
-    },
-    {
-      "id": "abc",
-      "label": "abc"
+      "id": "google.genai",
+      "label": "google.genai"
     },
     {
       "id": "agentic_core\\agents\\code_janitor.py",
@@ -301,12 +301,12 @@
       "label": "dynamic_model_router.py"
     },
     {
-      "id": "agentic_core.patterns.subatomic_flattening_rule",
-      "label": "agentic_core.patterns.subatomic_flattening_rule"
-    },
-    {
       "id": "enum",
       "label": "enum"
+    },
+    {
+      "id": "agentic_core.patterns.subatomic_flattening_rule",
+      "label": "agentic_core.patterns.subatomic_flattening_rule"
     },
     {
       "id": "agentic_core\\agents\\engineering.py",
@@ -337,24 +337,24 @@
       "label": "infrastructure.py"
     },
     {
-      "id": "git",
-      "label": "git"
-    },
-    {
       "id": "watchdog.events",
       "label": "watchdog.events"
+    },
+    {
+      "id": "git",
+      "label": "git"
     },
     {
       "id": "agentic_core\\agents\\memory_architect.py",
       "label": "memory_architect.py"
     },
     {
-      "id": "difflib",
-      "label": "difflib"
-    },
-    {
       "id": "pinecone",
       "label": "pinecone"
+    },
+    {
+      "id": "difflib",
+      "label": "difflib"
     },
     {
       "id": "agentic_core\\agents\\pattern_retrieval_agent.py",
@@ -409,48 +409,20 @@
       "label": "__init__.py"
     },
     {
-      "id": "regression_oracle",
-      "label": "regression_oracle"
-    },
-    {
-      "id": "governance",
-      "label": "governance"
-    },
-    {
-      "id": "healer_agent",
-      "label": "healer_agent"
-    },
-    {
-      "id": "code_janitor",
-      "label": "code_janitor"
-    },
-    {
-      "id": "specialized",
-      "label": "specialized"
-    },
-    {
-      "id": "analysis",
-      "label": "analysis"
-    },
-    {
-      "id": "adversarial_red_teamer",
-      "label": "adversarial_red_teamer"
-    },
-    {
-      "id": "concurrency",
-      "label": "concurrency"
-    },
-    {
-      "id": "repair",
-      "label": "repair"
-    },
-    {
-      "id": "memory_architect",
-      "label": "memory_architect"
+      "id": "planning",
+      "label": "planning"
     },
     {
       "id": "quality",
       "label": "quality"
+    },
+    {
+      "id": "security",
+      "label": "security"
+    },
+    {
+      "id": "repair",
+      "label": "repair"
     },
     {
       "id": "infrastructure",
@@ -461,16 +433,48 @@
       "label": "system_architect"
     },
     {
+      "id": "schema_evolver",
+      "label": "schema_evolver"
+    },
+    {
+      "id": "regression_oracle",
+      "label": "regression_oracle"
+    },
+    {
+      "id": "specialized",
+      "label": "specialized"
+    },
+    {
+      "id": "governance",
+      "label": "governance"
+    },
+    {
+      "id": "adversarial_red_teamer",
+      "label": "adversarial_red_teamer"
+    },
+    {
       "id": "context_curator",
       "label": "context_curator"
+    },
+    {
+      "id": "memory_architect",
+      "label": "memory_architect"
+    },
+    {
+      "id": "predictive_cost_auditor",
+      "label": "predictive_cost_auditor"
     },
     {
       "id": "structural_engineer",
       "label": "structural_engineer"
     },
     {
-      "id": "dynamic_model_router",
-      "label": "dynamic_model_router"
+      "id": "pattern_retrieval_agent",
+      "label": "pattern_retrieval_agent"
+    },
+    {
+      "id": "code_janitor",
+      "label": "code_janitor"
     },
     {
       "id": "dependency_diplomat",
@@ -481,32 +485,28 @@
       "label": "engineering"
     },
     {
-      "id": "security",
-      "label": "security"
-    },
-    {
-      "id": "context",
-      "label": "context"
-    },
-    {
-      "id": "planning",
-      "label": "planning"
-    },
-    {
-      "id": "predictive_cost_auditor",
-      "label": "predictive_cost_auditor"
-    },
-    {
-      "id": "pattern_retrieval_agent",
-      "label": "pattern_retrieval_agent"
-    },
-    {
       "id": "hallucination_hunter",
       "label": "hallucination_hunter"
     },
     {
-      "id": "schema_evolver",
-      "label": "schema_evolver"
+      "id": "healer_agent",
+      "label": "healer_agent"
+    },
+    {
+      "id": "concurrency",
+      "label": "concurrency"
+    },
+    {
+      "id": "dynamic_model_router",
+      "label": "dynamic_model_router"
+    },
+    {
+      "id": "analysis",
+      "label": "analysis"
+    },
+    {
+      "id": "context",
+      "label": "context"
     },
     {
       "id": "agentic_core\\agents\\specialized\\outreach_agent.py",
@@ -521,32 +521,24 @@
       "label": "orchestrator.py"
     },
     {
+      "id": "agentic_core.agents.quality",
+      "label": "agentic_core.agents.quality"
+    },
+    {
       "id": "agentic_core.agents.governance",
       "label": "agentic_core.agents.governance"
     },
     {
-      "id": "uvicorn",
-      "label": "uvicorn"
+      "id": "agentic_core.agents.engineering",
+      "label": "agentic_core.agents.engineering"
     },
     {
       "id": "agentic_core.agents.security",
       "label": "agentic_core.agents.security"
     },
     {
-      "id": "agentic_core.agents.quality",
-      "label": "agentic_core.agents.quality"
-    },
-    {
       "id": "agentic_core.agents.specialized",
       "label": "agentic_core.agents.specialized"
-    },
-    {
-      "id": "fastapi.responses",
-      "label": "fastapi.responses"
-    },
-    {
-      "id": "agentic_core.agents.engineering",
-      "label": "agentic_core.agents.engineering"
     },
     {
       "id": "agentic_core.agents.repair",
@@ -555,6 +547,14 @@
     {
       "id": "fastapi",
       "label": "fastapi"
+    },
+    {
+      "id": "uvicorn",
+      "label": "uvicorn"
+    },
+    {
+      "id": "fastapi.responses",
+      "label": "fastapi.responses"
     },
     {
       "id": "agentic_core.agents.infrastructure",
@@ -569,16 +569,16 @@
       "label": "atexit"
     },
     {
-      "id": "argparse",
-      "label": "argparse"
+      "id": "signal",
+      "label": "signal"
     },
     {
       "id": "agentic_core.agents",
       "label": "agentic_core.agents"
     },
     {
-      "id": "signal",
-      "label": "signal"
+      "id": "argparse",
+      "label": "argparse"
     },
     {
       "id": "agentic_core\\core\\__init__.py",
@@ -601,16 +601,16 @@
       "label": "apps_shared.config.reliability"
     },
     {
+      "id": "apps_shared.utils.file_io",
+      "label": "apps_shared.utils.file_io"
+    },
+    {
       "id": "agentic_core.domain.prompts",
       "label": "agentic_core.domain.prompts"
     },
     {
       "id": "apps_shared.utils.text_processing",
       "label": "apps_shared.utils.text_processing"
-    },
-    {
-      "id": "apps_shared.utils.file_io",
-      "label": "apps_shared.utils.file_io"
     },
     {
       "id": "agentic_core\\domain\\prompts.py",
@@ -625,28 +625,32 @@
       "label": "outreach_engine_zse.py"
     },
     {
-      "id": "utils.shadow_mode",
-      "label": "utils.shadow_mode"
-    },
-    {
-      "id": "knowledge.l5_consolidated",
-      "label": "knowledge.l5_consolidated"
-    },
-    {
-      "id": "utils.networking",
-      "label": "utils.networking"
+      "id": "utils.pitch_generator",
+      "label": "utils.pitch_generator"
     },
     {
       "id": "utils.core_utilities",
       "label": "utils.core_utilities"
     },
     {
-      "id": "utils.pitch_generator",
-      "label": "utils.pitch_generator"
+      "id": "utils.networking",
+      "label": "utils.networking"
+    },
+    {
+      "id": "knowledge.l5_consolidated",
+      "label": "knowledge.l5_consolidated"
+    },
+    {
+      "id": "utils.shadow_mode",
+      "label": "utils.shadow_mode"
     },
     {
       "id": "agentic_core\\engines\\resume_engine_zlg.py",
       "label": "resume_engine_zlg.py"
+    },
+    {
+      "id": "agentic_core.security.security_utilities",
+      "label": "agentic_core.security.security_utilities"
     },
     {
       "id": "agentic_core.knowledge.l5_consolidated",
@@ -657,20 +661,16 @@
       "label": "agentic_core.utils.core_utilities"
     },
     {
-      "id": "agentic_core.security.security_utilities",
-      "label": "agentic_core.security.security_utilities"
-    },
-    {
       "id": "agentic_core\\infra\\context.py",
       "label": "context.py"
     },
     {
-      "id": "agentic_core.L4_state.atomic_blackboard",
-      "label": "agentic_core.L4_state.atomic_blackboard"
-    },
-    {
       "id": "dotenv",
       "label": "dotenv"
+    },
+    {
+      "id": "agentic_core.L4_state.atomic_blackboard",
+      "label": "agentic_core.L4_state.atomic_blackboard"
     },
     {
       "id": "agentic_core\\infra\\__init__.py",
@@ -689,12 +689,12 @@
       "label": "governance.py"
     },
     {
-      "id": "glob",
-      "label": "glob"
-    },
-    {
       "id": "shutil",
       "label": "shutil"
+    },
+    {
+      "id": "glob",
+      "label": "glob"
     },
     {
       "id": "agentic_core\\interfaces\\planes.py",
@@ -709,10 +709,6 @@
       "label": "__init__.py"
     },
     {
-      "id": "agentic_core.interfaces.config",
-      "label": "agentic_core.interfaces.config"
-    },
-    {
       "id": "agentic_core.interfaces.requests",
       "label": "agentic_core.interfaces.requests"
     },
@@ -723,6 +719,10 @@
     {
       "id": "agentic_core.interfaces.planes",
       "label": "agentic_core.interfaces.planes"
+    },
+    {
+      "id": "agentic_core.interfaces.config",
+      "label": "agentic_core.interfaces.config"
     },
     {
       "id": "agentic_core\\knowledge\\l5_consolidated.py",
@@ -821,16 +821,16 @@
       "label": "__init__.py"
     },
     {
-      "id": "agent_registry_enums",
-      "label": "agent_registry_enums"
-    },
-    {
       "id": "agent_registry_impl",
       "label": "agent_registry_impl"
     },
     {
       "id": "agent_registry_models",
       "label": "agent_registry_models"
+    },
+    {
+      "id": "agent_registry_enums",
+      "label": "agent_registry_enums"
     },
     {
       "id": "agentic_core\\L1_cognition\\identity\\spiffe_manager.py",
@@ -941,16 +941,16 @@
       "label": "mcp_manager.py"
     },
     {
+      "id": "contextlib",
+      "label": "contextlib"
+    },
+    {
       "id": "mcp",
       "label": "mcp"
     },
     {
       "id": "mcp.client.stdio",
       "label": "mcp.client.stdio"
-    },
-    {
-      "id": "contextlib",
-      "label": "contextlib"
     },
     {
       "id": "agentic_core\\L2_execution\\sandbox.py",
@@ -1077,8 +1077,12 @@
       "label": "mission_runner.py"
     },
     {
-      "id": "agentic_core.L3_orchestration.canon_scheduler",
-      "label": "agentic_core.L3_orchestration.canon_scheduler"
+      "id": "scripts.canon_validator.agents",
+      "label": "scripts.canon_validator.agents"
+    },
+    {
+      "id": "websockets",
+      "label": "websockets"
     },
     {
       "id": "scripts.canon_validator.types",
@@ -1089,12 +1093,8 @@
       "label": "watchdog.observers"
     },
     {
-      "id": "scripts.canon_validator.agents",
-      "label": "scripts.canon_validator.agents"
-    },
-    {
-      "id": "websockets",
-      "label": "websockets"
+      "id": "agentic_core.L3_orchestration.canon_scheduler",
+      "label": "agentic_core.L3_orchestration.canon_scheduler"
     },
     {
       "id": "agentic_core\\L3_orchestration\\model_router.py",
@@ -1113,18 +1113,6 @@
       "label": "nervous_system.py"
     },
     {
-      "id": "agentic_core.L3_orchestration.telepathy",
-      "label": "agentic_core.L3_orchestration.telepathy"
-    },
-    {
-      "id": "agentic_core.interfaces.governance",
-      "label": "agentic_core.interfaces.governance"
-    },
-    {
-      "id": "agentic_core.L1_cognition.sovereign_cognitive_plane",
-      "label": "agentic_core.L1_cognition.sovereign_cognitive_plane"
-    },
-    {
       "id": "agentic_core.L2_execution.sovereign_action_plane",
       "label": "agentic_core.L2_execution.sovereign_action_plane"
     },
@@ -1133,16 +1121,28 @@
       "label": "agentic_core.L5_safety.intervention_server"
     },
     {
-      "id": "agentic_core.L4_state.checkpointing",
-      "label": "agentic_core.L4_state.checkpointing"
+      "id": "agentic_core.L3_orchestration.telepathy",
+      "label": "agentic_core.L3_orchestration.telepathy"
+    },
+    {
+      "id": "agentic_core.L4_state.storage",
+      "label": "agentic_core.L4_state.storage"
     },
     {
       "id": "agentic_core.L5_safety.safety_layer",
       "label": "agentic_core.L5_safety.safety_layer"
     },
     {
-      "id": "agentic_core.L4_state.storage",
-      "label": "agentic_core.L4_state.storage"
+      "id": "agentic_core.L4_state.checkpointing",
+      "label": "agentic_core.L4_state.checkpointing"
+    },
+    {
+      "id": "agentic_core.L1_cognition.sovereign_cognitive_plane",
+      "label": "agentic_core.L1_cognition.sovereign_cognitive_plane"
+    },
+    {
+      "id": "agentic_core.interfaces.governance",
+      "label": "agentic_core.interfaces.governance"
     },
     {
       "id": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
@@ -1173,16 +1173,16 @@
       "label": "__init__.py"
     },
     {
-      "id": "agentic_core.L3_orchestration.mission_runner",
-      "label": "agentic_core.L3_orchestration.mission_runner"
+      "id": "agentic_core.L3_orchestration.dag_engine",
+      "label": "agentic_core.L3_orchestration.dag_engine"
     },
     {
       "id": "agentic_core.L3_orchestration.think_act_observe",
       "label": "agentic_core.L3_orchestration.think_act_observe"
     },
     {
-      "id": "agentic_core.L3_orchestration.dag_engine",
-      "label": "agentic_core.L3_orchestration.dag_engine"
+      "id": "agentic_core.L3_orchestration.mission_runner",
+      "label": "agentic_core.L3_orchestration.mission_runner"
     },
     {
       "id": "agentic_core.L3_orchestration.nervous_system",
@@ -1293,12 +1293,12 @@
       "label": "storage.py"
     },
     {
-      "id": "redis.asyncio",
-      "label": "redis.asyncio"
-    },
-    {
       "id": "boto3",
       "label": "boto3"
+    },
+    {
+      "id": "redis.asyncio",
+      "label": "redis.asyncio"
     },
     {
       "id": "agentic_core\\L4_state\\validation_context.py",
@@ -1345,12 +1345,12 @@
       "label": "pii_vault.py"
     },
     {
-      "id": "presidio_anonymizer.entities",
-      "label": "presidio_anonymizer.entities"
-    },
-    {
       "id": "presidio_anonymizer",
       "label": "presidio_anonymizer"
+    },
+    {
+      "id": "presidio_anonymizer.entities",
+      "label": "presidio_anonymizer.entities"
     },
     {
       "id": "presidio_analyzer",
@@ -1365,12 +1365,12 @@
       "label": "safety_layer.py"
     },
     {
-      "id": "agentic_core.L5_safety.pii_vault",
-      "label": "agentic_core.L5_safety.pii_vault"
-    },
-    {
       "id": "agentic_core.L5_safety.overseer",
       "label": "agentic_core.L5_safety.overseer"
+    },
+    {
+      "id": "agentic_core.L5_safety.pii_vault",
+      "label": "agentic_core.L5_safety.pii_vault"
     },
     {
       "id": "agentic_core.L5_safety.governor",
@@ -1401,12 +1401,12 @@
       "label": "cost_governor.py"
     },
     {
-      "id": "io",
-      "label": "io"
-    },
-    {
       "id": "csv",
       "label": "csv"
+    },
+    {
+      "id": "io",
+      "label": "io"
     },
     {
       "id": "agentic_core\\runtime\\subatomic_hop.py",
@@ -1517,12 +1517,12 @@
       "label": "registry"
     },
     {
-      "id": "network_ops",
-      "label": "network_ops"
-    },
-    {
       "id": "analysis_ops",
       "label": "analysis_ops"
+    },
+    {
+      "id": "network_ops",
+      "label": "network_ops"
     },
     {
       "id": "agentic_core\\utils\\core_utilities.py",
@@ -1581,12 +1581,8 @@
       "label": "__init__.py"
     },
     {
-      "id": "mcp_mocks",
-      "label": "mcp_mocks"
-    },
-    {
-      "id": "process_utils",
-      "label": "process_utils"
+      "id": "error_handling",
+      "label": "error_handling"
     },
     {
       "id": "crypto_utils",
@@ -1597,28 +1593,32 @@
       "label": "dead_man_switch"
     },
     {
-      "id": "syntax_validator",
-      "label": "syntax_validator"
-    },
-    {
-      "id": "validation_utils",
-      "label": "validation_utils"
-    },
-    {
-      "id": "core_utilities",
-      "label": "core_utilities"
+      "id": "networking",
+      "label": "networking"
     },
     {
       "id": "shadow_mode",
       "label": "shadow_mode"
     },
     {
-      "id": "error_handling",
-      "label": "error_handling"
+      "id": "process_utils",
+      "label": "process_utils"
     },
     {
-      "id": "networking",
-      "label": "networking"
+      "id": "syntax_validator",
+      "label": "syntax_validator"
+    },
+    {
+      "id": "mcp_mocks",
+      "label": "mcp_mocks"
+    },
+    {
+      "id": "core_utilities",
+      "label": "core_utilities"
+    },
+    {
+      "id": "validation_utils",
+      "label": "validation_utils"
     },
     {
       "id": "apps_shared\\canon_validator_v2_agentic.py",
@@ -1681,12 +1681,12 @@
       "label": "git_insight_server.py"
     },
     {
-      "id": "mcp.server.fastmcp",
-      "label": "mcp.server.fastmcp"
-    },
-    {
       "id": "pydriller",
       "label": "pydriller"
+    },
+    {
+      "id": "mcp.server.fastmcp",
+      "label": "mcp.server.fastmcp"
     },
     {
       "id": "apps_shared\\healthcheck.py",
@@ -1709,12 +1709,12 @@
       "label": "main.py"
     },
     {
-      "id": "agent_logic",
-      "label": "agent_logic"
-    },
-    {
       "id": "etl_pipeline",
       "label": "etl_pipeline"
+    },
+    {
+      "id": "agent_logic",
+      "label": "agent_logic"
     },
     {
       "id": "apps_shared\\main_connectivity.py",
@@ -1733,12 +1733,12 @@
       "label": "main_swarm.py"
     },
     {
-      "id": "core.connections",
-      "label": "core.connections"
-    },
-    {
       "id": "core.exceptions",
       "label": "core.exceptions"
+    },
+    {
+      "id": "core.connections",
+      "label": "core.connections"
     },
     {
       "id": "orchestrator",
@@ -1801,24 +1801,24 @@
       "label": "sandbox_utils_wrapper.py"
     },
     {
-      "id": "agentic_core.tools.execution",
-      "label": "agentic_core.tools.execution"
-    },
-    {
       "id": "apps_shared.sandbox_utils",
       "label": "apps_shared.sandbox_utils"
+    },
+    {
+      "id": "agentic_core.tools.execution",
+      "label": "agentic_core.tools.execution"
     },
     {
       "id": "apps_shared\\schemas.py",
       "label": "schemas.py"
     },
     {
-      "id": "uuid",
-      "label": "uuid"
-    },
-    {
       "id": "schemas.canon_models",
       "label": "schemas.canon_models"
+    },
+    {
+      "id": "uuid",
+      "label": "uuid"
     },
     {
       "id": "apps_shared\\schemas_connectivity.py",
@@ -1869,16 +1869,16 @@
       "label": "validation_context.py"
     },
     {
-      "id": "apps_shared.signal_bus",
-      "label": "apps_shared.signal_bus"
-    },
-    {
       "id": "apps_shared.reflection_agent",
       "label": "apps_shared.reflection_agent"
     },
     {
       "id": "apps_shared.few_shot_library",
       "label": "apps_shared.few_shot_library"
+    },
+    {
+      "id": "apps_shared.signal_bus",
+      "label": "apps_shared.signal_bus"
     },
     {
       "id": "apps_shared\\validation_context_wrapper.py",
@@ -1893,12 +1893,12 @@
       "label": "verify_hardening.py"
     },
     {
-      "id": "unittest",
-      "label": "unittest"
-    },
-    {
       "id": "apps_rg.L3_orchestration.hardened_orchestrator",
       "label": "apps_rg.L3_orchestration.hardened_orchestrator"
+    },
+    {
+      "id": "unittest",
+      "label": "unittest"
     },
     {
       "id": "unittest.mock",
@@ -2240,6 +2240,10 @@
   "edges": [
     {
       "from": "agentic_core\\action_node.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\action_node.py",
       "to": "typing"
     },
     {
@@ -2248,15 +2252,7 @@
     },
     {
       "from": "agentic_core\\action_node.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\action_node.py",
       "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\action_registry.py",
-      "to": "PyPDF2"
     },
     {
       "from": "agentic_core\\action_registry.py",
@@ -2264,19 +2260,7 @@
     },
     {
       "from": "agentic_core\\action_registry.py",
-      "to": "mcp0_git_status"
-    },
-    {
-      "from": "agentic_core\\action_registry.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\action_registry.py",
       "to": "mcp0_git_add_or_commit"
-    },
-    {
-      "from": "agentic_core\\action_registry.py",
-      "to": "mcp_time_client"
     },
     {
       "from": "agentic_core\\action_registry.py",
@@ -2288,15 +2272,27 @@
     },
     {
       "from": "agentic_core\\action_registry.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\action_registry.py",
+      "to": "mcp_time_client"
+    },
+    {
+      "from": "agentic_core\\action_registry.py",
       "to": "os"
     },
     {
       "from": "agentic_core\\action_registry.py",
-      "to": "logging"
+      "to": "mcp0_git_status"
     },
     {
-      "from": "agentic_core\\agent_logic.py",
-      "to": "db_manager"
+      "from": "agentic_core\\action_registry.py",
+      "to": "PyPDF2"
+    },
+    {
+      "from": "agentic_core\\action_registry.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agent_logic.py",
@@ -2304,7 +2300,7 @@
     },
     {
       "from": "agentic_core\\agent_logic.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\agent_logic.py",
@@ -2312,7 +2308,11 @@
     },
     {
       "from": "agentic_core\\agent_logic.py",
-      "to": "datetime"
+      "to": "db_manager"
+    },
+    {
+      "from": "agentic_core\\agent_logic.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\agent_logic.py",
@@ -2320,19 +2320,11 @@
     },
     {
       "from": "agentic_core\\agent_logic.py",
-      "to": "schemas"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agent_logic.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\agent_logic_connectivity.py",
-      "to": "hashlib"
-    },
-    {
-      "from": "agentic_core\\agent_logic_connectivity.py",
-      "to": "time"
+      "to": "schemas"
     },
     {
       "from": "agentic_core\\agent_logic_connectivity.py",
@@ -2340,7 +2332,7 @@
     },
     {
       "from": "agentic_core\\agent_logic_connectivity.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\agent_logic_connectivity.py",
@@ -2348,23 +2340,23 @@
     },
     {
       "from": "agentic_core\\agent_logic_connectivity.py",
-      "to": "schemas_connectivity"
-    },
-    {
-      "from": "agentic_core\\agent_logic_connectivity.py",
       "to": "os"
     },
     {
       "from": "agentic_core\\agent_logic_connectivity.py",
-      "to": "logging"
+      "to": "schemas_connectivity"
     },
     {
-      "from": "agentic_core\\cognitive_node.py",
+      "from": "agentic_core\\agent_logic_connectivity.py",
       "to": "time"
     },
     {
-      "from": "agentic_core\\cognitive_node.py",
-      "to": "llm_client"
+      "from": "agentic_core\\agent_logic_connectivity.py",
+      "to": "hashlib"
+    },
+    {
+      "from": "agentic_core\\agent_logic_connectivity.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\cognitive_node.py",
@@ -2372,15 +2364,11 @@
     },
     {
       "from": "agentic_core\\cognitive_node.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\cognitive_node.py",
       "to": "datetime"
     },
     {
       "from": "agentic_core\\cognitive_node.py",
-      "to": "ast"
+      "to": "llm_client"
     },
     {
       "from": "agentic_core\\cognitive_node.py",
@@ -2388,14 +2376,22 @@
     },
     {
       "from": "agentic_core\\cognitive_node.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\cognitive_node.py",
       "to": "logging"
     },
     {
       "from": "agentic_core\\cognitive_node.py",
-      "to": "pathlib"
+      "to": "ast"
     },
     {
-      "from": "agentic_core\\consensus_engine.py",
+      "from": "agentic_core\\cognitive_node.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\cognitive_node.py",
       "to": "typing"
     },
     {
@@ -2403,16 +2399,8 @@
       "to": "logging"
     },
     {
-      "from": "agentic_core\\core_utils.py",
-      "to": "agentic_core.utils.syntax_validator"
-    },
-    {
-      "from": "agentic_core\\core_utils.py",
-      "to": "agentic_core.utils.mcp_mocks"
-    },
-    {
-      "from": "agentic_core\\core_utils.py",
-      "to": "agentic_core.utils.crypto_utils"
+      "from": "agentic_core\\consensus_engine.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\core_utils.py",
@@ -2420,7 +2408,7 @@
     },
     {
       "from": "agentic_core\\core_utils.py",
-      "to": "logging"
+      "to": "agentic_core.utils.mcp_mocks"
     },
     {
       "from": "agentic_core\\core_utils.py",
@@ -2429,6 +2417,18 @@
     {
       "from": "agentic_core\\core_utils.py",
       "to": "agentic_core.utils.error_handling"
+    },
+    {
+      "from": "agentic_core\\core_utils.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\core_utils.py",
+      "to": "agentic_core.utils.crypto_utils"
+    },
+    {
+      "from": "agentic_core\\core_utils.py",
+      "to": "agentic_core.utils.syntax_validator"
     },
     {
       "from": "agentic_core\\core_utils_wrapper.py",
@@ -2480,15 +2480,11 @@
     },
     {
       "from": "agentic_core\\agents\\adversarial_red_teamer.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\adversarial_red_teamer.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\adversarial_red_teamer.py",
       "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\adversarial_red_teamer.py",
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\agents\\adversarial_red_teamer.py",
@@ -2496,7 +2492,11 @@
     },
     {
       "from": "agentic_core\\agents\\adversarial_red_teamer.py",
-      "to": "pathlib"
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\adversarial_red_teamer.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\analysis.py",
@@ -2504,15 +2504,11 @@
     },
     {
       "from": "agentic_core\\agents\\analysis.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\agents\\analysis.py",
       "to": "ast"
     },
     {
-      "from": "agentic_core\\agents\\base.py",
-      "to": "os"
+      "from": "agentic_core\\agents\\analysis.py",
+      "to": "asyncio"
     },
     {
       "from": "agentic_core\\agents\\base.py",
@@ -2520,11 +2516,11 @@
     },
     {
       "from": "agentic_core\\agents\\base.py",
-      "to": "ast"
+      "to": "os"
     },
     {
-      "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "asyncio"
+      "from": "agentic_core\\agents\\base.py",
+      "to": "ast"
     },
     {
       "from": "agentic_core\\agents\\canon_base_agent.py",
@@ -2532,19 +2528,7 @@
     },
     {
       "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "re"
-    },
-    {
-      "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "google.genai"
-    },
-    {
-      "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "prompts.prompt_loader"
+      "to": "asyncio"
     },
     {
       "from": "agentic_core\\agents\\canon_base_agent.py",
@@ -2552,15 +2536,7 @@
     },
     {
       "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "sys"
-    },
-    {
-      "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\canon_base_agent.py",
-      "to": "os"
+      "to": "re"
     },
     {
       "from": "agentic_core\\agents\\canon_base_agent.py",
@@ -2571,12 +2547,28 @@
       "to": "pathlib"
     },
     {
-      "from": "agentic_core\\agents\\code_janitor.py",
-      "to": "re"
+      "from": "agentic_core\\agents\\canon_base_agent.py",
+      "to": "prompts.prompt_loader"
     },
     {
-      "from": "agentic_core\\agents\\code_janitor.py",
+      "from": "agentic_core\\agents\\canon_base_agent.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\agents\\canon_base_agent.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\canon_base_agent.py",
+      "to": "sys"
+    },
+    {
+      "from": "agentic_core\\agents\\canon_base_agent.py",
       "to": "typing"
+    },
+    {
+      "from": "agentic_core\\agents\\canon_base_agent.py",
+      "to": "google.genai"
     },
     {
       "from": "agentic_core\\agents\\code_janitor.py",
@@ -2584,6 +2576,10 @@
     },
     {
       "from": "agentic_core\\agents\\code_janitor.py",
+      "to": "re"
+    },
+    {
+      "from": "agentic_core\\agents\\code_janitor.py",
       "to": "ast"
     },
     {
@@ -2591,20 +2587,12 @@
       "to": "os"
     },
     {
+      "from": "agentic_core\\agents\\code_janitor.py",
+      "to": "typing"
+    },
+    {
       "from": "agentic_core\\agents\\concurrency.py",
       "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\agents\\concurrency.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\agents\\concurrency.py",
-      "to": "collections"
-    },
-    {
-      "from": "agentic_core\\agents\\concurrency.py",
-      "to": "re"
     },
     {
       "from": "agentic_core\\agents\\concurrency.py",
@@ -2612,11 +2600,23 @@
     },
     {
       "from": "agentic_core\\agents\\concurrency.py",
-      "to": "ast"
+      "to": "re"
     },
     {
       "from": "agentic_core\\agents\\concurrency.py",
       "to": "os"
+    },
+    {
+      "from": "agentic_core\\agents\\concurrency.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\concurrency.py",
+      "to": "collections"
+    },
+    {
+      "from": "agentic_core\\agents\\concurrency.py",
+      "to": "time"
     },
     {
       "from": "agentic_core\\agents\\concurrency.py",
@@ -2640,10 +2640,6 @@
     },
     {
       "from": "agentic_core\\agents\\context_curator.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\context_curator.py",
       "to": "datetime"
     },
     {
@@ -2652,19 +2648,19 @@
     },
     {
       "from": "agentic_core\\agents\\context_curator.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\agents\\context_curator.py",
       "to": "logging"
     },
     {
       "from": "agentic_core\\agents\\context_curator.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\debugger_agent.py",
       "to": "json"
-    },
-    {
-      "from": "agentic_core\\agents\\debugger_agent.py",
-      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\debugger_agent.py",
@@ -2679,6 +2675,10 @@
       "to": "logging"
     },
     {
+      "from": "agentic_core\\agents\\debugger_agent.py",
+      "to": "typing"
+    },
+    {
       "from": "agentic_core\\agents\\dependency_diplomat.py",
       "to": "dataclasses"
     },
@@ -2688,19 +2688,7 @@
     },
     {
       "from": "agentic_core\\agents\\dependency_diplomat.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\dependency_diplomat.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\dependency_diplomat.py",
       "to": "agentic_core.agents.base"
-    },
-    {
-      "from": "agentic_core\\agents\\dependency_diplomat.py",
-      "to": "logging"
     },
     {
       "from": "agentic_core\\agents\\dependency_diplomat.py",
@@ -2708,27 +2696,23 @@
     },
     {
       "from": "agentic_core\\agents\\dependency_diplomat.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\agents\\dependency_diplomat.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\dependency_diplomat.py",
       "to": "redis"
     },
     {
-      "from": "agentic_core\\agents\\dynamic_model_router.py",
-      "to": "agentic_core.patterns.subatomic_flattening_rule"
-    },
-    {
-      "from": "agentic_core\\agents\\dynamic_model_router.py",
-      "to": "dataclasses"
-    },
-    {
-      "from": "agentic_core\\agents\\dynamic_model_router.py",
+      "from": "agentic_core\\agents\\dependency_diplomat.py",
       "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\dynamic_model_router.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\agents\\dynamic_model_router.py",
-      "to": "ast"
+      "to": "dataclasses"
     },
     {
       "from": "agentic_core\\agents\\dynamic_model_router.py",
@@ -2743,12 +2727,20 @@
       "to": "pathlib"
     },
     {
-      "from": "agentic_core\\agents\\engineering.py",
-      "to": "hashlib"
+      "from": "agentic_core\\agents\\dynamic_model_router.py",
+      "to": "logging"
     },
     {
-      "from": "agentic_core\\agents\\engineering.py",
-      "to": "apps_shared.domain.constants"
+      "from": "agentic_core\\agents\\dynamic_model_router.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\dynamic_model_router.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\agents\\dynamic_model_router.py",
+      "to": "agentic_core.patterns.subatomic_flattening_rule"
     },
     {
       "from": "agentic_core\\agents\\engineering.py",
@@ -2760,7 +2752,7 @@
     },
     {
       "from": "agentic_core\\agents\\engineering.py",
-      "to": "typing"
+      "to": "agentic_core.agents.base"
     },
     {
       "from": "agentic_core\\agents\\engineering.py",
@@ -2768,11 +2760,15 @@
     },
     {
       "from": "agentic_core\\agents\\engineering.py",
-      "to": "agentic_core.agents.base"
+      "to": "apps_shared.domain.constants"
     },
     {
-      "from": "agentic_core\\agents\\governance.py",
-      "to": "apps_shared.domain.constants"
+      "from": "agentic_core\\agents\\engineering.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\agents\\engineering.py",
+      "to": "hashlib"
     },
     {
       "from": "agentic_core\\agents\\governance.py",
@@ -2784,7 +2780,7 @@
     },
     {
       "from": "agentic_core\\agents\\governance.py",
-      "to": "typing"
+      "to": "agentic_core.agents.base"
     },
     {
       "from": "agentic_core\\agents\\governance.py",
@@ -2792,15 +2788,19 @@
     },
     {
       "from": "agentic_core\\agents\\governance.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\governance.py",
       "to": "os"
     },
     {
       "from": "agentic_core\\agents\\governance.py",
-      "to": "agentic_core.agents.base"
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\governance.py",
+      "to": "apps_shared.domain.constants"
+    },
+    {
+      "from": "agentic_core\\agents\\governance.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\hallucination_hunter.py",
@@ -2816,7 +2816,11 @@
     },
     {
       "from": "agentic_core\\agents\\hallucination_hunter.py",
-      "to": "typing"
+      "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\hallucination_hunter.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\agents\\hallucination_hunter.py",
@@ -2824,11 +2828,11 @@
     },
     {
       "from": "agentic_core\\agents\\hallucination_hunter.py",
-      "to": "agentic_core.agents.base"
+      "to": "typing"
     },
     {
-      "from": "agentic_core\\agents\\hallucination_hunter.py",
-      "to": "logging"
+      "from": "agentic_core\\agents\\healer_agent.py",
+      "to": "canon_base_agent"
     },
     {
       "from": "agentic_core\\agents\\healer_agent.py",
@@ -2840,11 +2844,7 @@
     },
     {
       "from": "agentic_core\\agents\\healer_agent.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\healer_agent.py",
-      "to": "canon_base_agent"
+      "to": "os"
     },
     {
       "from": "agentic_core\\agents\\healer_agent.py",
@@ -2852,11 +2852,31 @@
     },
     {
       "from": "agentic_core\\agents\\healer_agent.py",
-      "to": "os"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\infrastructure.py",
       "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\agents\\infrastructure.py",
+      "to": "datetime"
+    },
+    {
+      "from": "agentic_core\\agents\\infrastructure.py",
+      "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\infrastructure.py",
+      "to": "watchdog.events"
+    },
+    {
+      "from": "agentic_core\\agents\\infrastructure.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\agents\\infrastructure.py",
+      "to": "apps_shared.domain.constants"
     },
     {
       "from": "agentic_core\\agents\\infrastructure.py",
@@ -2867,24 +2887,44 @@
       "to": "git"
     },
     {
-      "from": "agentic_core\\agents\\infrastructure.py",
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "dataclasses"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "json"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
       "to": "datetime"
     },
     {
-      "from": "agentic_core\\agents\\infrastructure.py",
-      "to": "watchdog.events"
-    },
-    {
-      "from": "agentic_core\\agents\\infrastructure.py",
-      "to": "apps_shared.domain.constants"
-    },
-    {
-      "from": "agentic_core\\agents\\infrastructure.py",
-      "to": "os"
-    },
-    {
-      "from": "agentic_core\\agents\\infrastructure.py",
+      "from": "agentic_core\\agents\\memory_architect.py",
       "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "pinecone"
+    },
+    {
+      "from": "agentic_core\\agents\\memory_architect.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\memory_architect.py",
@@ -2899,60 +2939,8 @@
       "to": "difflib"
     },
     {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "dataclasses"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "json"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "pinecone"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "agentic_core.agents.base"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
+      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
       "to": "logging"
-    },
-    {
-      "from": "agentic_core\\agents\\memory_architect.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
-      "to": "agentic_core.patterns.subatomic_flattening_rule"
-    },
-    {
-      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
-      "to": "pinecone"
-    },
-    {
-      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
-      "to": "ast"
     },
     {
       "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
@@ -2960,7 +2948,23 @@
     },
     {
       "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
-      "to": "logging"
+      "to": "pinecone"
+    },
+    {
+      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\agents\\pattern_retrieval_agent.py",
+      "to": "agentic_core.patterns.subatomic_flattening_rule"
+    },
+    {
+      "from": "agentic_core\\agents\\planning.py",
+      "to": "sys"
     },
     {
       "from": "agentic_core\\agents\\planning.py",
@@ -2975,16 +2979,8 @@
       "to": "json"
     },
     {
-      "from": "agentic_core\\agents\\planning.py",
-      "to": "sys"
-    },
-    {
       "from": "agentic_core\\agents\\predictive_cost_auditor.py",
       "to": "dataclasses"
-    },
-    {
-      "from": "agentic_core\\agents\\predictive_cost_auditor.py",
-      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\predictive_cost_auditor.py",
@@ -2996,11 +2992,15 @@
     },
     {
       "from": "agentic_core\\agents\\predictive_cost_auditor.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\agents\\predictive_cost_auditor.py",
       "to": "logging"
     },
     {
       "from": "agentic_core\\agents\\predictive_cost_auditor.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\quality.py",
@@ -3008,7 +3008,7 @@
     },
     {
       "from": "agentic_core\\agents\\quality.py",
-      "to": "time"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\agents\\quality.py",
@@ -3016,15 +3016,7 @@
     },
     {
       "from": "agentic_core\\agents\\quality.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\quality.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\agents\\quality.py",
-      "to": "apps_shared.domain.constants"
+      "to": "agentic_core.agents.base"
     },
     {
       "from": "agentic_core\\agents\\quality.py",
@@ -3032,7 +3024,15 @@
     },
     {
       "from": "agentic_core\\agents\\quality.py",
-      "to": "agentic_core.agents.base"
+      "to": "apps_shared.domain.constants"
+    },
+    {
+      "from": "agentic_core\\agents\\quality.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\agents\\quality.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\regression_oracle.py",
@@ -3044,11 +3044,23 @@
     },
     {
       "from": "agentic_core\\agents\\regression_oracle.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\agents\\regression_oracle.py",
-      "to": "datetime"
+      "to": "google"
+    },
+    {
+      "from": "agentic_core\\agents\\regression_oracle.py",
+      "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\regression_oracle.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\agents\\regression_oracle.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\agents\\regression_oracle.py",
@@ -3064,15 +3076,11 @@
     },
     {
       "from": "agentic_core\\agents\\regression_oracle.py",
-      "to": "agentic_core.agents.base"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\regression_oracle.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\agents\\regression_oracle.py",
-      "to": "pathlib"
+      "to": "google.genai"
     },
     {
       "from": "agentic_core\\agents\\repair.py",
@@ -3080,15 +3088,15 @@
     },
     {
       "from": "agentic_core\\agents\\repair.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\agents\\repair.py",
       "to": "re"
     },
     {
       "from": "agentic_core\\agents\\repair.py",
-      "to": "typing"
+      "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\repair.py",
+      "to": "time"
     },
     {
       "from": "agentic_core\\agents\\repair.py",
@@ -3096,7 +3104,7 @@
     },
     {
       "from": "agentic_core\\agents\\repair.py",
-      "to": "agentic_core.agents.base"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\schema_evolver.py",
@@ -3108,15 +3116,11 @@
     },
     {
       "from": "agentic_core\\agents\\schema_evolver.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\schema_evolver.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\schema_evolver.py",
       "to": "agentic_core.agents.base"
+    },
+    {
+      "from": "agentic_core\\agents\\schema_evolver.py",
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\agents\\schema_evolver.py",
@@ -3124,7 +3128,11 @@
     },
     {
       "from": "agentic_core\\agents\\schema_evolver.py",
-      "to": "pathlib"
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\schema_evolver.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\security.py",
@@ -3136,7 +3144,7 @@
     },
     {
       "from": "agentic_core\\agents\\security.py",
-      "to": "typing"
+      "to": "agentic_core.agents.base"
     },
     {
       "from": "agentic_core\\agents\\security.py",
@@ -3144,7 +3152,7 @@
     },
     {
       "from": "agentic_core\\agents\\security.py",
-      "to": "agentic_core.agents.base"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\specialized.py",
@@ -3160,87 +3168,59 @@
     },
     {
       "from": "agentic_core\\agents\\structural_engineer.py",
-      "to": "os"
-    },
-    {
-      "from": "agentic_core\\agents\\structural_engineer.py",
       "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\structural_engineer.py",
-      "to": "canon_base_agent"
     },
     {
       "from": "agentic_core\\agents\\structural_engineer.py",
       "to": "ast"
     },
     {
-      "from": "agentic_core\\agents\\system_architect.py",
-      "to": "typing"
+      "from": "agentic_core\\agents\\structural_engineer.py",
+      "to": "os"
     },
     {
-      "from": "agentic_core\\agents\\system_architect.py",
+      "from": "agentic_core\\agents\\structural_engineer.py",
       "to": "canon_base_agent"
     },
     {
       "from": "agentic_core\\agents\\system_architect.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\agents\\system_architect.py",
-      "to": "os"
+      "to": "canon_base_agent"
     },
     {
       "from": "agentic_core\\agents\\system_architect.py",
       "to": "pathlib"
     },
     {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "regression_oracle"
+      "from": "agentic_core\\agents\\system_architect.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\agents\\system_architect.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\agents\\system_architect.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
-      "to": "governance"
+      "to": "planning"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
-      "to": "healer_agent"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "code_janitor"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "specialized"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "analysis"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "adversarial_red_teamer"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "concurrency"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "repair"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "memory_architect"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "base"
+      "to": "canon_base_agent"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
       "to": "quality"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "security"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "repair"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
@@ -3252,11 +3232,39 @@
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
+      "to": "schema_evolver"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "regression_oracle"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "base"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "specialized"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "governance"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "adversarial_red_teamer"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
       "to": "context_curator"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
-      "to": "canon_base_agent"
+      "to": "memory_architect"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "predictive_cost_auditor"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
@@ -3264,7 +3272,11 @@
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
-      "to": "dynamic_model_router"
+      "to": "pattern_retrieval_agent"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "code_janitor"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
@@ -3276,41 +3288,29 @@
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
-      "to": "security"
+      "to": "hallucination_hunter"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "healer_agent"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "concurrency"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "dynamic_model_router"
+    },
+    {
+      "from": "agentic_core\\agents\\__init__.py",
+      "to": "analysis"
     },
     {
       "from": "agentic_core\\agents\\__init__.py",
       "to": "context"
     },
     {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "planning"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "predictive_cost_auditor"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "pattern_retrieval_agent"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "hallucination_hunter"
-    },
-    {
-      "from": "agentic_core\\agents\\__init__.py",
-      "to": "schema_evolver"
-    },
-    {
-      "from": "agentic_core\\agents\\specialized\\outreach_agent.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\agents\\specialized\\outreach_agent.py",
-      "to": "dataclasses"
-    },
-    {
       "from": "agentic_core\\agents\\specialized\\outreach_agent.py",
       "to": "logging"
     },
@@ -3319,11 +3319,11 @@
       "to": "agentic_core.domain.context"
     },
     {
-      "from": "agentic_core\\agents\\specialized\\resume_agent.py",
+      "from": "agentic_core\\agents\\specialized\\outreach_agent.py",
       "to": "typing"
     },
     {
-      "from": "agentic_core\\agents\\specialized\\resume_agent.py",
+      "from": "agentic_core\\agents\\specialized\\outreach_agent.py",
       "to": "dataclasses"
     },
     {
@@ -3335,20 +3335,12 @@
       "to": "agentic_core.domain.context"
     },
     {
-      "from": "agentic_core\\core\\orchestrator.py",
-      "to": "agentic_core.agents.governance"
+      "from": "agentic_core\\agents\\specialized\\resume_agent.py",
+      "to": "typing"
     },
     {
-      "from": "agentic_core\\core\\orchestrator.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator.py",
-      "to": "uvicorn"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator.py",
-      "to": "agentic_core.agents.security"
+      "from": "agentic_core\\agents\\specialized\\resume_agent.py",
+      "to": "dataclasses"
     },
     {
       "from": "agentic_core\\core\\orchestrator.py",
@@ -3356,15 +3348,23 @@
     },
     {
       "from": "agentic_core\\core\\orchestrator.py",
-      "to": "agentic_core.agents.specialized"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator.py",
-      "to": "fastapi.responses"
+      "to": "agentic_core.agents.governance"
     },
     {
       "from": "agentic_core\\core\\orchestrator.py",
       "to": "agentic_core.agents.engineering"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator.py",
+      "to": "agentic_core.agents.security"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator.py",
+      "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator.py",
+      "to": "agentic_core.agents.specialized"
     },
     {
       "from": "agentic_core\\core\\orchestrator.py",
@@ -3380,19 +3380,19 @@
     },
     {
       "from": "agentic_core\\core\\orchestrator.py",
-      "to": "agentic_core.agents.infrastructure"
+      "to": "uvicorn"
     },
     {
       "from": "agentic_core\\core\\orchestrator.py",
       "to": "agentic_core.domain.context"
     },
     {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "atexit"
+      "from": "agentic_core\\core\\orchestrator.py",
+      "to": "fastapi.responses"
     },
     {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "asyncio"
+      "from": "agentic_core\\core\\orchestrator.py",
+      "to": "agentic_core.agents.infrastructure"
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
@@ -3400,23 +3400,7 @@
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "argparse"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "json"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "google.genai"
+      "to": "asyncio"
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
@@ -3424,27 +3408,15 @@
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "agentic_core.agents"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "subprocess"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "signal"
-    },
-    {
-      "from": "agentic_core\\core\\orchestrator_main.py",
       "to": "google"
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "ast"
+      "to": "json"
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
-      "to": "os"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
@@ -3452,11 +3424,47 @@
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "subprocess"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "google.genai"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "atexit"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
       "to": "sys"
     },
     {
       "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "signal"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
       "to": "agentic_core.domain.context"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "agentic_core.agents"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "argparse"
+    },
+    {
+      "from": "agentic_core\\core\\orchestrator_main.py",
+      "to": "ast"
     },
     {
       "from": "agentic_core\\core\\__init__.py",
@@ -3464,11 +3472,11 @@
     },
     {
       "from": "agentic_core\\domain\\context.py",
-      "to": "dataclasses"
+      "to": "apps_shared.config.reliability"
     },
     {
       "from": "agentic_core\\domain\\context.py",
-      "to": "asyncio"
+      "to": "dataclasses"
     },
     {
       "from": "agentic_core\\domain\\context.py",
@@ -3476,11 +3484,19 @@
     },
     {
       "from": "agentic_core\\domain\\context.py",
-      "to": "apps_shared.config.reliability"
+      "to": "asyncio"
     },
     {
       "from": "agentic_core\\domain\\context.py",
-      "to": "typing"
+      "to": "google"
+    },
+    {
+      "from": "agentic_core\\domain\\context.py",
+      "to": "apps_shared.utils.file_io"
+    },
+    {
+      "from": "agentic_core\\domain\\context.py",
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\domain\\context.py",
@@ -3492,7 +3508,7 @@
     },
     {
       "from": "agentic_core\\domain\\context.py",
-      "to": "google"
+      "to": "os"
     },
     {
       "from": "agentic_core\\domain\\context.py",
@@ -3500,35 +3516,11 @@
     },
     {
       "from": "agentic_core\\domain\\context.py",
-      "to": "os"
-    },
-    {
-      "from": "agentic_core\\domain\\context.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\domain\\context.py",
-      "to": "apps_shared.utils.file_io"
-    },
-    {
-      "from": "agentic_core\\engines\\outreach_engine_zse.py",
-      "to": "utils.shadow_mode"
-    },
-    {
-      "from": "agentic_core\\engines\\outreach_engine_zse.py",
-      "to": "knowledge.l5_consolidated"
-    },
-    {
-      "from": "agentic_core\\engines\\outreach_engine_zse.py",
-      "to": "utils.networking"
-    },
-    {
-      "from": "agentic_core\\engines\\outreach_engine_zse.py",
       "to": "typing"
     },
     {
       "from": "agentic_core\\engines\\outreach_engine_zse.py",
-      "to": "enum"
+      "to": "utils.pitch_generator"
     },
     {
       "from": "agentic_core\\engines\\outreach_engine_zse.py",
@@ -3540,19 +3532,31 @@
     },
     {
       "from": "agentic_core\\engines\\outreach_engine_zse.py",
-      "to": "os"
+      "to": "utils.networking"
     },
     {
       "from": "agentic_core\\engines\\outreach_engine_zse.py",
-      "to": "utils.pitch_generator"
+      "to": "enum"
     },
     {
       "from": "agentic_core\\engines\\outreach_engine_zse.py",
       "to": "logging"
     },
     {
-      "from": "agentic_core\\engines\\resume_engine_zlg.py",
-      "to": "agentic_core.knowledge.l5_consolidated"
+      "from": "agentic_core\\engines\\outreach_engine_zse.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\engines\\outreach_engine_zse.py",
+      "to": "knowledge.l5_consolidated"
+    },
+    {
+      "from": "agentic_core\\engines\\outreach_engine_zse.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\engines\\outreach_engine_zse.py",
+      "to": "utils.shadow_mode"
     },
     {
       "from": "agentic_core\\engines\\resume_engine_zlg.py",
@@ -3560,19 +3564,15 @@
     },
     {
       "from": "agentic_core\\engines\\resume_engine_zlg.py",
-      "to": "agentic_core.utils.core_utilities"
-    },
-    {
-      "from": "agentic_core\\engines\\resume_engine_zlg.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\engines\\resume_engine_zlg.py",
       "to": "enum"
     },
     {
       "from": "agentic_core\\engines\\resume_engine_zlg.py",
-      "to": "sys"
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\engines\\resume_engine_zlg.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\engines\\resume_engine_zlg.py",
@@ -3584,11 +3584,23 @@
     },
     {
       "from": "agentic_core\\engines\\resume_engine_zlg.py",
-      "to": "logging"
+      "to": "agentic_core.knowledge.l5_consolidated"
     },
     {
       "from": "agentic_core\\engines\\resume_engine_zlg.py",
-      "to": "pathlib"
+      "to": "sys"
+    },
+    {
+      "from": "agentic_core\\engines\\resume_engine_zlg.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\engines\\resume_engine_zlg.py",
+      "to": "agentic_core.utils.core_utilities"
+    },
+    {
+      "from": "agentic_core\\infra\\context.py",
+      "to": "dotenv"
     },
     {
       "from": "agentic_core\\infra\\context.py",
@@ -3596,27 +3608,7 @@
     },
     {
       "from": "agentic_core\\infra\\context.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\infra\\context.py",
       "to": "json"
-    },
-    {
-      "from": "agentic_core\\infra\\context.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\infra\\context.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\infra\\context.py",
-      "to": "google.genai"
-    },
-    {
-      "from": "agentic_core\\infra\\context.py",
-      "to": "enum"
     },
     {
       "from": "agentic_core\\infra\\context.py",
@@ -3628,15 +3620,19 @@
     },
     {
       "from": "agentic_core\\infra\\context.py",
+      "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\infra\\context.py",
+      "to": "enum"
+    },
+    {
+      "from": "agentic_core\\infra\\context.py",
       "to": "agentic_core.L4_state.atomic_blackboard"
     },
     {
       "from": "agentic_core\\infra\\context.py",
-      "to": "os"
-    },
-    {
-      "from": "agentic_core\\infra\\context.py",
-      "to": "dotenv"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\infra\\context.py",
@@ -3644,7 +3640,19 @@
     },
     {
       "from": "agentic_core\\infra\\context.py",
-      "to": "pathlib"
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\infra\\context.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\infra\\context.py",
+      "to": "google.genai"
+    },
+    {
+      "from": "agentic_core\\infra\\context.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\infra\\__init__.py",
@@ -3672,19 +3680,11 @@
     },
     {
       "from": "agentic_core\\interfaces\\governance.py",
-      "to": "glob"
-    },
-    {
-      "from": "agentic_core\\interfaces\\governance.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\interfaces\\governance.py",
       "to": "shutil"
     },
     {
       "from": "agentic_core\\interfaces\\governance.py",
-      "to": "ast"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\interfaces\\governance.py",
@@ -3692,7 +3692,15 @@
     },
     {
       "from": "agentic_core\\interfaces\\governance.py",
-      "to": "pathlib"
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\interfaces\\governance.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\interfaces\\governance.py",
+      "to": "glob"
     },
     {
       "from": "agentic_core\\interfaces\\planes.py",
@@ -3708,10 +3716,6 @@
     },
     {
       "from": "agentic_core\\interfaces\\__init__.py",
-      "to": "agentic_core.interfaces.config"
-    },
-    {
-      "from": "agentic_core\\interfaces\\__init__.py",
       "to": "agentic_core.interfaces.requests"
     },
     {
@@ -3723,16 +3727,20 @@
       "to": "agentic_core.interfaces.planes"
     },
     {
+      "from": "agentic_core\\interfaces\\__init__.py",
+      "to": "agentic_core.interfaces.config"
+    },
+    {
+      "from": "agentic_core\\knowledge\\l5_consolidated.py",
+      "to": "logging"
+    },
+    {
       "from": "agentic_core\\knowledge\\l5_consolidated.py",
       "to": "typing"
     },
     {
       "from": "agentic_core\\knowledge\\l5_consolidated.py",
       "to": "dataclasses"
-    },
-    {
-      "from": "agentic_core\\knowledge\\l5_consolidated.py",
-      "to": "logging"
     },
     {
       "from": "agentic_core\\knowledge\\__init__.py",
@@ -3744,7 +3752,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\concurrency_guardian.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L1_cognition\\concurrency_guardian.py",
@@ -3752,7 +3760,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\concurrency_guardian.py",
-      "to": "datetime"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\concurrency_guardian.py",
@@ -3760,10 +3768,6 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\concurrency_guardian.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\dependency_sentinel.py",
       "to": "typing"
     },
     {
@@ -3772,11 +3776,15 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\dependency_sentinel.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L1_cognition\\dependency_sentinel.py",
       "to": "ast"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\dependency_sentinel.py",
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L1_cognition\\episodic_memory.py",
@@ -3788,7 +3796,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\episodic_memory.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\episodic_memory.py",
@@ -3796,11 +3804,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\episodic_memory.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\historian.py",
-      "to": "hashlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L1_cognition\\historian.py",
@@ -3808,15 +3812,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\historian.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\historian.py",
       "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\historian.py",
-      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\historian.py",
@@ -3824,31 +3820,35 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\historian.py",
-      "to": "L4_state.validation_context"
+      "to": "logging"
     },
     {
-      "from": "agentic_core\\L1_cognition\\reflection_agent.py",
-      "to": "os"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\reflection_agent.py",
+      "from": "agentic_core\\L1_cognition\\historian.py",
       "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\historian.py",
+      "to": "hashlib"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\historian.py",
+      "to": "L4_state.validation_context"
     },
     {
       "from": "agentic_core\\L1_cognition\\reflection_agent.py",
       "to": "logging"
     },
     {
-      "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane.py",
-      "to": "agentic_core.interfaces"
+      "from": "agentic_core\\L1_cognition\\reflection_agent.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\reflection_agent.py",
+      "to": "os"
     },
     {
       "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane.py",
       "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane.py",
-      "to": "typing"
     },
     {
       "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane.py",
@@ -3859,8 +3859,12 @@
       "to": "logging"
     },
     {
-      "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane_with_streamer.py",
+      "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane.py",
       "to": "agentic_core.interfaces"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane_with_streamer.py",
@@ -3872,11 +3876,15 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane_with_streamer.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane_with_streamer.py",
-      "to": "logging"
+      "to": "agentic_core.interfaces"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\sovereign_cognitive_plane_with_streamer.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L1_cognition\\strategic_planner.py",
@@ -3884,7 +3892,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\strategic_planner.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L1_cognition\\strategic_planner.py",
@@ -3892,15 +3900,15 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\strategic_planner.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\strategic_planner.py",
       "to": "logging"
     },
     {
+      "from": "agentic_core\\L1_cognition\\strategic_planner.py",
+      "to": "typing"
+    },
+    {
       "from": "agentic_core\\L1_cognition\\the_cartographer.py",
-      "to": "os"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\the_cartographer.py",
@@ -3908,7 +3916,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\the_cartographer.py",
-      "to": "logging"
+      "to": "os"
     },
     {
       "from": "agentic_core\\L1_cognition\\the_cartographer.py",
@@ -3916,7 +3924,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\truth_keeper.py",
-      "to": "os"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\truth_keeper.py",
@@ -3924,7 +3932,7 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\truth_keeper.py",
-      "to": "logging"
+      "to": "os"
     },
     {
       "from": "agentic_core\\L1_cognition\\truth_keeper.py",
@@ -3932,11 +3940,11 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\__init__.py",
-      "to": "agentic_core.L1_cognition.episodic_memory"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\__init__.py",
-      "to": "logging"
+      "to": "agentic_core.L1_cognition.episodic_memory"
     },
     {
       "from": "agentic_core\\L1_cognition\\discovery\\agent_registry_enums.py",
@@ -3945,10 +3953,6 @@
     {
       "from": "agentic_core\\L1_cognition\\discovery\\agent_registry_enums.py",
       "to": "enum"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\discovery\\__init__.py",
-      "to": "agent_registry_enums"
     },
     {
       "from": "agentic_core\\L1_cognition\\discovery\\__init__.py",
@@ -3959,12 +3963,16 @@
       "to": "agent_registry_models"
     },
     {
-      "from": "agentic_core\\L1_cognition\\planning\\dag_agent_assignment.py",
-      "to": "asyncio"
+      "from": "agentic_core\\L1_cognition\\discovery\\__init__.py",
+      "to": "agent_registry_enums"
     },
     {
       "from": "agentic_core\\L1_cognition\\planning\\dag_agent_assignment.py",
       "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\planning\\dag_agent_assignment.py",
+      "to": "asyncio"
     },
     {
       "from": "agentic_core\\L1_cognition\\planning\\deprecated_agent_bus_basic.py",
@@ -3976,14 +3984,10 @@
     },
     {
       "from": "agentic_core\\L1_cognition\\planning\\sandbox_microvm_basic.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L1_cognition\\planning\\sandbox_microvm_basic.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L1_cognition\\planning\\sandbox_observability.py",
       "to": "typing"
     },
     {
@@ -3991,12 +3995,16 @@
       "to": "logging"
     },
     {
-      "from": "agentic_core\\L1_cognition\\planning\\simulation_simulator.py",
+      "from": "agentic_core\\L1_cognition\\planning\\sandbox_observability.py",
       "to": "typing"
     },
     {
       "from": "agentic_core\\L1_cognition\\planning\\simulation_simulator.py",
       "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L1_cognition\\planning\\simulation_simulator.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L2_execution\\deterministic_sanitizer.py",
@@ -4004,11 +4012,11 @@
     },
     {
       "from": "agentic_core\\L2_execution\\deterministic_sanitizer.py",
-      "to": "typing"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L2_execution\\deterministic_sanitizer.py",
-      "to": "tempfile"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L2_execution\\deterministic_sanitizer.py",
@@ -4024,19 +4032,23 @@
     },
     {
       "from": "agentic_core\\L2_execution\\deterministic_sanitizer.py",
-      "to": "logging"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L2_execution\\deterministic_sanitizer.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\git_agent.py",
-      "to": "typing"
+      "to": "tempfile"
     },
     {
       "from": "agentic_core\\L2_execution\\git_agent.py",
       "to": "datetime"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\git_agent.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\git_agent.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L2_execution\\git_agent.py",
@@ -4048,27 +4060,7 @@
     },
     {
       "from": "agentic_core\\L2_execution\\git_agent.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\git_agent.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\mcp_manager.py",
-      "to": "mcp"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\mcp_manager.py",
       "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\mcp_manager.py",
-      "to": "mcp.client.stdio"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\mcp_manager.py",
-      "to": "os"
     },
     {
       "from": "agentic_core\\L2_execution\\mcp_manager.py",
@@ -4076,7 +4068,7 @@
     },
     {
       "from": "agentic_core\\L2_execution\\mcp_manager.py",
-      "to": "yaml"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L2_execution\\mcp_manager.py",
@@ -4084,7 +4076,27 @@
     },
     {
       "from": "agentic_core\\L2_execution\\mcp_manager.py",
-      "to": "pathlib"
+      "to": "mcp"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\mcp_manager.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\mcp_manager.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\mcp_manager.py",
+      "to": "yaml"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\mcp_manager.py",
+      "to": "mcp.client.stdio"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\sandbox.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L2_execution\\sandbox.py",
@@ -4095,20 +4107,8 @@
       "to": "docker"
     },
     {
-      "from": "agentic_core\\L2_execution\\sandbox.py",
-      "to": "logging"
-    },
-    {
       "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
       "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
-      "to": "agentic_core.interfaces"
     },
     {
       "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
@@ -4116,7 +4116,7 @@
     },
     {
       "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
@@ -4124,11 +4124,19 @@
     },
     {
       "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
+      "to": "agentic_core.interfaces"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
       "to": "os"
     },
     {
       "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
-      "to": "logging"
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\L2_execution\\sovereign_action_plane.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L2_execution\\toolsmith_agent.py",
@@ -4140,11 +4148,11 @@
     },
     {
       "from": "agentic_core\\L2_execution\\toolsmith_agent.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L2_execution\\toolsmith_agent.py",
-      "to": "datetime"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L2_execution\\toolsmith_agent.py",
@@ -4152,7 +4160,7 @@
     },
     {
       "from": "agentic_core\\L2_execution\\toolsmith_agent.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L2_execution\\execution\\tools\\sandbox_models.py",
@@ -4160,11 +4168,11 @@
     },
     {
       "from": "agentic_core\\L2_execution\\execution\\tools\\sandbox_timeout.py",
-      "to": "pytest"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L2_execution\\execution\\tools\\sandbox_timeout.py",
-      "to": "logging"
+      "to": "pytest"
     },
     {
       "from": "agentic_core\\L2_execution\\execution\\tools\\sandbox_vm_integration.py",
@@ -4176,23 +4184,11 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
-      "to": "agentic_core.agents.governance"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
-      "to": "agentic_core.agents.security"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
       "to": "agentic_core.agents.quality"
     },
     {
       "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
-      "to": "agentic_core.agents.specialized"
+      "to": "agentic_core.agents.governance"
     },
     {
       "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
@@ -4200,19 +4196,31 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
-      "to": "agentic_core.agents.repair"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
       "to": "agentic_core.L3_orchestration.intervention_server"
     },
     {
       "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
-      "to": "agentic_core.agents.infrastructure"
+      "to": "agentic_core.agents.security"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
+      "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
+      "to": "agentic_core.agents.specialized"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
+      "to": "agentic_core.agents.repair"
     },
     {
       "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
       "to": "agentic_core.domain.context"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\canon_scheduler.py",
+      "to": "agentic_core.agents.infrastructure"
     },
     {
       "from": "agentic_core\\L3_orchestration\\conversational_repair.py",
@@ -4228,11 +4236,11 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\conversational_repair.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L3_orchestration\\conversational_repair.py",
-      "to": "logging"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L3_orchestration\\intervention_server.py",
@@ -4240,7 +4248,11 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\intervention_server.py",
-      "to": "threading"
+      "to": "fastapi.responses"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\intervention_server.py",
+      "to": "fastapi"
     },
     {
       "from": "agentic_core\\L3_orchestration\\intervention_server.py",
@@ -4252,63 +4264,7 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\intervention_server.py",
-      "to": "fastapi.responses"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\intervention_server.py",
-      "to": "fastapi"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "agentic_core.L3_orchestration.canon_scheduler"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "git"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "scripts.canon_validator.types"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
       "to": "threading"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "watchdog.observers"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "watchdog.events"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "subprocess"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "scripts.canon_validator.agents"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "websockets"
     },
     {
       "from": "agentic_core\\L3_orchestration\\mission_runner.py",
@@ -4316,11 +4272,19 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "os"
+      "to": "scripts.canon_validator.agents"
     },
     {
       "from": "agentic_core\\L3_orchestration\\mission_runner.py",
-      "to": "agentic_core.agents.infrastructure"
+      "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "watchdog.events"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L3_orchestration\\mission_runner.py",
@@ -4328,39 +4292,51 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "subprocess"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "websockets"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "scripts.canon_validator.types"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "watchdog.observers"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
       "to": "sys"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "agentic_core.L3_orchestration.telepathy"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "agentic_core.interfaces"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
       "to": "time"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "agentic_core.interfaces.governance"
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "agentic_core.L3_orchestration.canon_scheduler"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
       "to": "typing"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "agentic_core.L1_cognition.sovereign_cognitive_plane"
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "git"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "datetime"
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "threading"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\mission_runner.py",
+      "to": "agentic_core.agents.infrastructure"
     },
     {
       "from": "agentic_core\\L3_orchestration\\nervous_system.py",
@@ -4372,11 +4348,15 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "agentic_core.L4_state.checkpointing"
+      "to": "asyncio"
     },
     {
       "from": "agentic_core\\L3_orchestration\\nervous_system.py",
-      "to": "agentic_core.L5_safety.safety_layer"
+      "to": "datetime"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "agentic_core.L3_orchestration.telepathy"
     },
     {
       "from": "agentic_core\\L3_orchestration\\nervous_system.py",
@@ -4384,7 +4364,35 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "agentic_core.L5_safety.safety_layer"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
       "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "agentic_core.L4_state.checkpointing"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "agentic_core.interfaces"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "agentic_core.L1_cognition.sovereign_cognitive_plane"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\nervous_system.py",
+      "to": "agentic_core.interfaces.governance"
     },
     {
       "from": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
@@ -4396,7 +4404,7 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
@@ -4404,15 +4412,15 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
       "to": "logging"
     },
     {
+      "from": "agentic_core\\L3_orchestration\\swarm_scheduler.py",
+      "to": "typing"
+    },
+    {
       "from": "agentic_core\\L3_orchestration\\telepathy.py",
-      "to": "re"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L3_orchestration\\telepathy.py",
@@ -4420,7 +4428,7 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\telepathy.py",
-      "to": "logging"
+      "to": "re"
     },
     {
       "from": "agentic_core\\L3_orchestration\\telepathy.py",
@@ -4429,6 +4437,26 @@
     {
       "from": "agentic_core\\L3_orchestration\\test_pilot.py",
       "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
+      "to": "conversational_repair"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
+      "to": "sys"
     },
     {
       "from": "agentic_core\\L3_orchestration\\test_pilot.py",
@@ -4443,32 +4471,8 @@
       "to": "tempfile"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
-      "to": "os"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
-      "to": "conversational_repair"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\test_pilot.py",
-      "to": "sys"
-    },
-    {
       "from": "agentic_core\\L3_orchestration\\__init__.py",
-      "to": "agentic_core.L3_orchestration.canon_scheduler"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\__init__.py",
-      "to": "agentic_core.L3_orchestration.mission_runner"
+      "to": "agentic_core.L3_orchestration.dag_engine"
     },
     {
       "from": "agentic_core\\L3_orchestration\\__init__.py",
@@ -4476,7 +4480,7 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\__init__.py",
-      "to": "agentic_core.L3_orchestration.dag_engine"
+      "to": "agentic_core.L3_orchestration.mission_runner"
     },
     {
       "from": "agentic_core\\L3_orchestration\\__init__.py",
@@ -4484,35 +4488,23 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\__init__.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\__init__.py",
       "to": "agentic_core.L3_orchestration.nervous_system"
     },
     {
       "from": "agentic_core\\L3_orchestration\\__init__.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\framework\\dag_executor.py",
-      "to": "typing"
+      "to": "agentic_core.L3_orchestration.canon_scheduler"
     },
     {
       "from": "agentic_core\\L3_orchestration\\framework\\dag_executor.py",
       "to": "logging"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
-      "to": "json"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
+      "from": "agentic_core\\L3_orchestration\\framework\\dag_executor.py",
       "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
-      "to": "datetime"
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
@@ -4520,7 +4512,15 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
-      "to": "functools"
+      "to": "datetime"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
+      "to": "json"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
@@ -4528,7 +4528,15 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
-      "to": "pathlib"
+      "to": "functools"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\health\\benchmarking_agent.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
@@ -4536,7 +4544,7 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
-      "to": "time"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
@@ -4548,22 +4556,14 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
       "to": "logging"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
-      "to": "json"
+      "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
+      "to": "time"
     },
     {
-      "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
+      "from": "agentic_core\\L3_orchestration\\health\\deadlock_detector.py",
       "to": "typing"
     },
     {
@@ -4572,7 +4572,7 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
-      "to": "gc"
+      "to": "json"
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
@@ -4580,23 +4580,23 @@
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
       "to": "logging"
     },
     {
       "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
-      "from": "agentic_core\\L4_state\\checkpointing.py",
-      "to": "hashlib"
+      "from": "agentic_core\\L3_orchestration\\health\\memory_leak_detector.py",
+      "to": "gc"
     },
     {
       "from": "agentic_core\\L4_state\\checkpointing.py",
       "to": "json"
-    },
-    {
-      "from": "agentic_core\\L4_state\\checkpointing.py",
-      "to": "typing"
     },
     {
       "from": "agentic_core\\L4_state\\checkpointing.py",
@@ -4607,8 +4607,16 @@
       "to": "logging"
     },
     {
+      "from": "agentic_core\\L4_state\\checkpointing.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L4_state\\checkpointing.py",
+      "to": "hashlib"
+    },
+    {
       "from": "agentic_core\\L4_state\\omni_context.py",
-      "to": "L1_cognition.reflection_agent"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L4_state\\omni_context.py",
@@ -4616,15 +4624,7 @@
     },
     {
       "from": "agentic_core\\L4_state\\omni_context.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L4_state\\storage.py",
-      "to": "redis.asyncio"
-    },
-    {
-      "from": "agentic_core\\L4_state\\storage.py",
-      "to": "time"
+      "to": "L1_cognition.reflection_agent"
     },
     {
       "from": "agentic_core\\L4_state\\storage.py",
@@ -4632,15 +4632,11 @@
     },
     {
       "from": "agentic_core\\L4_state\\storage.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L4_state\\storage.py",
       "to": "datetime"
     },
     {
       "from": "agentic_core\\L4_state\\storage.py",
-      "to": "boto3"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L4_state\\storage.py",
@@ -4648,7 +4644,19 @@
     },
     {
       "from": "agentic_core\\L4_state\\storage.py",
-      "to": "pathlib"
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\L4_state\\storage.py",
+      "to": "boto3"
+    },
+    {
+      "from": "agentic_core\\L4_state\\storage.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L4_state\\storage.py",
+      "to": "redis.asyncio"
     },
     {
       "from": "agentic_core\\L4_state\\validation_context.py",
@@ -4660,11 +4668,11 @@
     },
     {
       "from": "agentic_core\\L4_state\\validation_context.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L4_state\\validation_context.py",
-      "to": "datetime"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L4_state\\validation_context.py",
@@ -4672,11 +4680,11 @@
     },
     {
       "from": "agentic_core\\L4_state\\validation_context.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L4_state\\__init__.py",
-      "to": "agentic_core.L4_state.storage"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L4_state\\__init__.py",
@@ -4684,15 +4692,11 @@
     },
     {
       "from": "agentic_core\\L4_state\\__init__.py",
+      "to": "agentic_core.L4_state.storage"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\governor.py",
       "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\governor.py",
-      "to": "psutil"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\governor.py",
-      "to": "typing"
     },
     {
       "from": "agentic_core\\L5_safety\\governor.py",
@@ -4700,7 +4704,11 @@
     },
     {
       "from": "agentic_core\\L5_safety\\governor.py",
-      "to": "logging"
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\governor.py",
+      "to": "psutil"
     },
     {
       "from": "agentic_core\\L5_safety\\intervention_server.py",
@@ -4709,6 +4717,22 @@
     {
       "from": "agentic_core\\L5_safety\\intervention_server.py",
       "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\intervention_server.py",
+      "to": "datetime"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\intervention_server.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\intervention_server.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\intervention_server.py",
+      "to": "fastapi"
     },
     {
       "from": "agentic_core\\L5_safety\\intervention_server.py",
@@ -4723,28 +4747,8 @@
       "to": "fastapi.responses"
     },
     {
-      "from": "agentic_core\\L5_safety\\intervention_server.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\intervention_server.py",
-      "to": "fastapi"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\intervention_server.py",
+      "from": "agentic_core\\L5_safety\\membrane.py",
       "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\intervention_server.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\membrane.py",
-      "to": "re"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\membrane.py",
-      "to": "typing"
     },
     {
       "from": "agentic_core\\L5_safety\\membrane.py",
@@ -4752,6 +4756,22 @@
     },
     {
       "from": "agentic_core\\L5_safety\\membrane.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\membrane.py",
+      "to": "re"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\overseer.py",
+      "to": "google.generativeai"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\overseer.py",
+      "to": "re"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\overseer.py",
       "to": "logging"
     },
     {
@@ -4760,34 +4780,10 @@
     },
     {
       "from": "agentic_core\\L5_safety\\overseer.py",
-      "to": "re"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\overseer.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\overseer.py",
       "to": "os"
     },
     {
       "from": "agentic_core\\L5_safety\\overseer.py",
-      "to": "google.generativeai"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\overseer.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\pii_vault.py",
-      "to": "presidio_anonymizer.entities"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\pii_vault.py",
-      "to": "re"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\pii_vault.py",
       "to": "typing"
     },
     {
@@ -4796,11 +4792,23 @@
     },
     {
       "from": "agentic_core\\L5_safety\\pii_vault.py",
-      "to": "presidio_analyzer"
+      "to": "re"
     },
     {
       "from": "agentic_core\\L5_safety\\pii_vault.py",
       "to": "logging"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\pii_vault.py",
+      "to": "presidio_anonymizer.entities"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\pii_vault.py",
+      "to": "presidio_analyzer"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\pii_vault.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\L5_safety\\red_sentinel.py",
@@ -4808,19 +4816,7 @@
     },
     {
       "from": "agentic_core\\L5_safety\\red_sentinel.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\red_sentinel.py",
       "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\red_sentinel.py",
-      "to": "ast"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\red_sentinel.py",
-      "to": "os"
     },
     {
       "from": "agentic_core\\L5_safety\\red_sentinel.py",
@@ -4828,11 +4824,31 @@
     },
     {
       "from": "agentic_core\\L5_safety\\red_sentinel.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\red_sentinel.py",
       "to": "logging"
     },
     {
       "from": "agentic_core\\L5_safety\\red_sentinel.py",
-      "to": "pathlib"
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\red_sentinel.py",
+      "to": "ast"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\red_sentinel.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\safety_layer.py",
+      "to": "agentic_core.L5_safety.overseer"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\safety_layer.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L5_safety\\safety_layer.py",
@@ -4848,23 +4864,7 @@
     },
     {
       "from": "agentic_core\\L5_safety\\safety_layer.py",
-      "to": "agentic_core.L5_safety.overseer"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\safety_layer.py",
       "to": "agentic_core.L5_safety.governor"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\safety_layer.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "threading"
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
@@ -4872,7 +4872,11 @@
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "pathlib"
+      "to": "asyncio"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\streamer.py",
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
@@ -4880,11 +4884,11 @@
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "typing"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "datetime"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
@@ -4896,11 +4900,23 @@
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "logging"
+      "to": "sys"
     },
     {
       "from": "agentic_core\\L5_safety\\streamer.py",
-      "to": "sys"
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\streamer.py",
+      "to": "threading"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\__init__.py",
+      "to": "agentic_core.L5_safety.overseer"
+    },
+    {
+      "from": "agentic_core\\L5_safety\\__init__.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\L5_safety\\__init__.py",
@@ -4912,15 +4928,7 @@
     },
     {
       "from": "agentic_core\\L5_safety\\__init__.py",
-      "to": "agentic_core.L5_safety.overseer"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\__init__.py",
       "to": "agentic_core.L5_safety.governor"
-    },
-    {
-      "from": "agentic_core\\L5_safety\\__init__.py",
-      "to": "logging"
     },
     {
       "from": "agentic_core\\patterns\\subatomic_flattening_rule.py",
@@ -4936,7 +4944,7 @@
     },
     {
       "from": "agentic_core\\runtime\\cost_governor.py",
-      "to": "io"
+      "to": "csv"
     },
     {
       "from": "agentic_core\\runtime\\cost_governor.py",
@@ -4944,23 +4952,11 @@
     },
     {
       "from": "agentic_core\\runtime\\cost_governor.py",
-      "to": "threading"
-    },
-    {
-      "from": "agentic_core\\runtime\\cost_governor.py",
-      "to": "time"
+      "to": "io"
     },
     {
       "from": "agentic_core\\runtime\\cost_governor.py",
       "to": "json"
-    },
-    {
-      "from": "agentic_core\\runtime\\cost_governor.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\runtime\\cost_governor.py",
-      "to": "csv"
     },
     {
       "from": "agentic_core\\runtime\\cost_governor.py",
@@ -4971,8 +4967,16 @@
       "to": "logging"
     },
     {
-      "from": "agentic_core\\runtime\\telemetry.py",
+      "from": "agentic_core\\runtime\\cost_governor.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\runtime\\cost_governor.py",
       "to": "typing"
+    },
+    {
+      "from": "agentic_core\\runtime\\cost_governor.py",
+      "to": "threading"
     },
     {
       "from": "agentic_core\\runtime\\telemetry.py",
@@ -4980,11 +4984,15 @@
     },
     {
       "from": "agentic_core\\runtime\\telemetry.py",
-      "to": "json"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\runtime\\telemetry.py",
       "to": "duckdb"
+    },
+    {
+      "from": "agentic_core\\runtime\\telemetry.py",
+      "to": "json"
     },
     {
       "from": "agentic_core\\security\\security_utilities.py",
@@ -5000,11 +5008,11 @@
     },
     {
       "from": "agentic_core\\security\\security_utilities.py",
-      "to": "typing"
+      "to": "enum"
     },
     {
       "from": "agentic_core\\security\\security_utilities.py",
-      "to": "enum"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\security\\security_utilities.py",
@@ -5012,7 +5020,7 @@
     },
     {
       "from": "agentic_core\\security\\security_utilities.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\security\\__init__.py",
@@ -5020,11 +5028,7 @@
     },
     {
       "from": "agentic_core\\state\\blackboard.py",
-      "to": "hashlib"
-    },
-    {
-      "from": "agentic_core\\state\\blackboard.py",
-      "to": "time"
+      "to": "openai"
     },
     {
       "from": "agentic_core\\state\\blackboard.py",
@@ -5036,19 +5040,23 @@
     },
     {
       "from": "agentic_core\\state\\blackboard.py",
-      "to": "openai"
-    },
-    {
-      "from": "agentic_core\\state\\blackboard.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\state\\blackboard.py",
       "to": "datetime"
     },
     {
       "from": "agentic_core\\state\\blackboard.py",
       "to": "os"
+    },
+    {
+      "from": "agentic_core\\state\\blackboard.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\state\\blackboard.py",
+      "to": "hashlib"
+    },
+    {
+      "from": "agentic_core\\state\\blackboard.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\state\\memory_manager.py",
@@ -5056,11 +5064,11 @@
     },
     {
       "from": "agentic_core\\state\\memory_manager.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "agentic_core\\state\\memory_manager.py",
-      "to": "datetime"
+      "to": "pathlib"
     },
     {
       "from": "agentic_core\\state\\memory_manager.py",
@@ -5068,7 +5076,7 @@
     },
     {
       "from": "agentic_core\\state\\memory_manager.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\state\\__init__.py",
@@ -5080,7 +5088,11 @@
     },
     {
       "from": "agentic_core\\tools\\analysis_ops.py",
-      "to": "typing"
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\tools\\analysis_ops.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\tools\\analysis_ops.py",
@@ -5092,11 +5104,7 @@
     },
     {
       "from": "agentic_core\\tools\\analysis_ops.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\tools\\analysis_ops.py",
-      "to": "pathlib"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\tools\\definitions.py",
@@ -5109,18 +5117,6 @@
     {
       "from": "agentic_core\\tools\\definitions.py",
       "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\tools\\examples.py",
-      "to": "agentic_core.tools"
-    },
-    {
-      "from": "agentic_core\\tools\\examples.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\tools\\examples.py",
-      "to": "google.genai"
     },
     {
       "from": "agentic_core\\tools\\examples.py",
@@ -5136,23 +5132,19 @@
     },
     {
       "from": "agentic_core\\tools\\examples.py",
+      "to": "agentic_core.tools"
+    },
+    {
+      "from": "agentic_core\\tools\\examples.py",
       "to": "os"
     },
     {
-      "from": "agentic_core\\tools\\execution.py",
+      "from": "agentic_core\\tools\\examples.py",
       "to": "typing"
     },
     {
-      "from": "agentic_core\\tools\\execution.py",
-      "to": "filesystem"
-    },
-    {
-      "from": "agentic_core\\tools\\execution.py",
-      "to": "subprocess"
-    },
-    {
-      "from": "agentic_core\\tools\\execution.py",
-      "to": "sys"
+      "from": "agentic_core\\tools\\examples.py",
+      "to": "google.genai"
     },
     {
       "from": "agentic_core\\tools\\execution.py",
@@ -5160,10 +5152,22 @@
     },
     {
       "from": "agentic_core\\tools\\execution.py",
+      "to": "subprocess"
+    },
+    {
+      "from": "agentic_core\\tools\\execution.py",
+      "to": "filesystem"
+    },
+    {
+      "from": "agentic_core\\tools\\execution.py",
       "to": "definitions"
     },
     {
-      "from": "agentic_core\\tools\\filesystem.py",
+      "from": "agentic_core\\tools\\execution.py",
+      "to": "sys"
+    },
+    {
+      "from": "agentic_core\\tools\\execution.py",
       "to": "typing"
     },
     {
@@ -5172,6 +5176,10 @@
     },
     {
       "from": "agentic_core\\tools\\filesystem.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "agentic_core\\tools\\filesystem.py",
       "to": "agentic_core.L4_state.atomic_blackboard"
     },
     {
@@ -5180,19 +5188,15 @@
     },
     {
       "from": "agentic_core\\tools\\filesystem.py",
+      "to": "definitions"
+    },
+    {
+      "from": "agentic_core\\tools\\filesystem.py",
       "to": "functools"
     },
     {
       "from": "agentic_core\\tools\\filesystem.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "agentic_core\\tools\\filesystem.py",
-      "to": "definitions"
-    },
-    {
-      "from": "agentic_core\\tools\\network_ops.py",
-      "to": "time"
+      "to": "typing"
     },
     {
       "from": "agentic_core\\tools\\network_ops.py",
@@ -5204,19 +5208,15 @@
     },
     {
       "from": "agentic_core\\tools\\network_ops.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\tools\\network_ops.py",
       "to": "logging"
     },
     {
-      "from": "agentic_core\\tools\\registry.py",
-      "to": "typing"
+      "from": "agentic_core\\tools\\network_ops.py",
+      "to": "time"
     },
     {
-      "from": "agentic_core\\tools\\registry.py",
-      "to": "filesystem"
+      "from": "agentic_core\\tools\\network_ops.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\tools\\registry.py",
@@ -5224,7 +5224,7 @@
     },
     {
       "from": "agentic_core\\tools\\registry.py",
-      "to": "google.genai"
+      "to": "google"
     },
     {
       "from": "agentic_core\\tools\\registry.py",
@@ -5232,11 +5232,19 @@
     },
     {
       "from": "agentic_core\\tools\\registry.py",
-      "to": "google"
+      "to": "filesystem"
     },
     {
       "from": "agentic_core\\tools\\registry.py",
       "to": "definitions"
+    },
+    {
+      "from": "agentic_core\\tools\\registry.py",
+      "to": "typing"
+    },
+    {
+      "from": "agentic_core\\tools\\registry.py",
+      "to": "google.genai"
     },
     {
       "from": "agentic_core\\tools\\__init__.py",
@@ -5244,15 +5252,15 @@
     },
     {
       "from": "agentic_core\\tools\\__init__.py",
-      "to": "filesystem"
-    },
-    {
-      "from": "agentic_core\\tools\\__init__.py",
       "to": "execution"
     },
     {
       "from": "agentic_core\\tools\\__init__.py",
-      "to": "network_ops"
+      "to": "filesystem"
+    },
+    {
+      "from": "agentic_core\\tools\\__init__.py",
+      "to": "definitions"
     },
     {
       "from": "agentic_core\\tools\\__init__.py",
@@ -5260,7 +5268,7 @@
     },
     {
       "from": "agentic_core\\tools\\__init__.py",
-      "to": "definitions"
+      "to": "network_ops"
     },
     {
       "from": "agentic_core\\utils\\core_utilities.py",
@@ -5272,43 +5280,31 @@
     },
     {
       "from": "agentic_core\\utils\\core_utilities.py",
-      "to": "re"
-    },
-    {
-      "from": "agentic_core\\utils\\core_utilities.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\utils\\core_utilities.py",
       "to": "datetime"
     },
     {
       "from": "agentic_core\\utils\\core_utilities.py",
-      "to": "logging"
+      "to": "re"
     },
     {
       "from": "agentic_core\\utils\\core_utilities.py",
       "to": "pathlib"
     },
     {
-      "from": "agentic_core\\utils\\crypto_utils.py",
-      "to": "subprocess"
+      "from": "agentic_core\\utils\\core_utilities.py",
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\utils\\core_utilities.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\utils\\crypto_utils.py",
       "to": "logging"
     },
     {
-      "from": "agentic_core\\utils\\dead_man_switch.py",
-      "to": "time"
-    },
-    {
-      "from": "agentic_core\\utils\\dead_man_switch.py",
-      "to": "collections"
-    },
-    {
-      "from": "agentic_core\\utils\\dead_man_switch.py",
-      "to": "threading"
+      "from": "agentic_core\\utils\\crypto_utils.py",
+      "to": "subprocess"
     },
     {
       "from": "agentic_core\\utils\\dead_man_switch.py",
@@ -5316,7 +5312,11 @@
     },
     {
       "from": "agentic_core\\utils\\dead_man_switch.py",
-      "to": "signal"
+      "to": "logging"
+    },
+    {
+      "from": "agentic_core\\utils\\dead_man_switch.py",
+      "to": "collections"
     },
     {
       "from": "agentic_core\\utils\\dead_man_switch.py",
@@ -5328,15 +5328,23 @@
     },
     {
       "from": "agentic_core\\utils\\dead_man_switch.py",
-      "to": "logging"
+      "to": "signal"
     },
     {
-      "from": "agentic_core\\utils\\error_handling.py",
-      "to": "typing"
+      "from": "agentic_core\\utils\\dead_man_switch.py",
+      "to": "time"
+    },
+    {
+      "from": "agentic_core\\utils\\dead_man_switch.py",
+      "to": "threading"
     },
     {
       "from": "agentic_core\\utils\\error_handling.py",
       "to": "time"
+    },
+    {
+      "from": "agentic_core\\utils\\error_handling.py",
+      "to": "typing"
     },
     {
       "from": "agentic_core\\utils\\mcp_mocks.py",
@@ -5344,18 +5352,22 @@
     },
     {
       "from": "agentic_core\\utils\\mcp_mocks.py",
+      "to": "datetime"
+    },
+    {
+      "from": "agentic_core\\utils\\mcp_mocks.py",
       "to": "random"
+    },
+    {
+      "from": "agentic_core\\utils\\mcp_mocks.py",
+      "to": "logging"
     },
     {
       "from": "agentic_core\\utils\\mcp_mocks.py",
       "to": "typing"
     },
     {
-      "from": "agentic_core\\utils\\mcp_mocks.py",
-      "to": "datetime"
-    },
-    {
-      "from": "agentic_core\\utils\\mcp_mocks.py",
+      "from": "agentic_core\\utils\\networking.py",
       "to": "logging"
     },
     {
@@ -5365,10 +5377,6 @@
     {
       "from": "agentic_core\\utils\\networking.py",
       "to": "dataclasses"
-    },
-    {
-      "from": "agentic_core\\utils\\networking.py",
-      "to": "logging"
     },
     {
       "from": "agentic_core\\utils\\networking.py",
@@ -5384,10 +5392,6 @@
     },
     {
       "from": "agentic_core\\utils\\pitch_generator.py",
-      "to": "typing"
-    },
-    {
-      "from": "agentic_core\\utils\\pitch_generator.py",
       "to": "datetime"
     },
     {
@@ -5395,8 +5399,12 @@
       "to": "logging"
     },
     {
+      "from": "agentic_core\\utils\\pitch_generator.py",
+      "to": "typing"
+    },
+    {
       "from": "agentic_core\\utils\\process_utils.py",
-      "to": "os"
+      "to": "logging"
     },
     {
       "from": "agentic_core\\utils\\process_utils.py",
@@ -5404,6 +5412,10 @@
     },
     {
       "from": "agentic_core\\utils\\process_utils.py",
+      "to": "os"
+    },
+    {
+      "from": "agentic_core\\utils\\shadow_mode.py",
       "to": "logging"
     },
     {
@@ -5419,7 +5431,7 @@
       "to": "dataclasses"
     },
     {
-      "from": "agentic_core\\utils\\shadow_mode.py",
+      "from": "agentic_core\\utils\\syntax_validator.py",
       "to": "logging"
     },
     {
@@ -5428,19 +5440,11 @@
     },
     {
       "from": "agentic_core\\utils\\syntax_validator.py",
-      "to": "logging"
-    },
-    {
-      "from": "agentic_core\\utils\\syntax_validator.py",
       "to": "ast"
     },
     {
       "from": "agentic_core\\utils\\__init__.py",
-      "to": "mcp_mocks"
-    },
-    {
-      "from": "agentic_core\\utils\\__init__.py",
-      "to": "process_utils"
+      "to": "error_handling"
     },
     {
       "from": "agentic_core\\utils\\__init__.py",
@@ -5452,6 +5456,18 @@
     },
     {
       "from": "agentic_core\\utils\\__init__.py",
+      "to": "networking"
+    },
+    {
+      "from": "agentic_core\\utils\\__init__.py",
+      "to": "shadow_mode"
+    },
+    {
+      "from": "agentic_core\\utils\\__init__.py",
+      "to": "process_utils"
+    },
+    {
+      "from": "agentic_core\\utils\\__init__.py",
       "to": "pitch_generator"
     },
     {
@@ -5460,7 +5476,7 @@
     },
     {
       "from": "agentic_core\\utils\\__init__.py",
-      "to": "validation_utils"
+      "to": "mcp_mocks"
     },
     {
       "from": "agentic_core\\utils\\__init__.py",
@@ -5468,55 +5484,15 @@
     },
     {
       "from": "agentic_core\\utils\\__init__.py",
-      "to": "shadow_mode"
-    },
-    {
-      "from": "agentic_core\\utils\\__init__.py",
-      "to": "error_handling"
-    },
-    {
-      "from": "agentic_core\\utils\\__init__.py",
-      "to": "networking"
+      "to": "validation_utils"
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "time"
+      "to": "dataclasses"
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "builtins"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "openai"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "google.genai"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "mcp.client.stdio"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "subprocess"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "redis"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "pinecone"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "functools"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "mcp"
+      "to": "pathlib"
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
@@ -5528,11 +5504,55 @@
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "asyncio"
+      "to": "builtins"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "dotenv"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "json"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "subprocess"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "mcp"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "prompts.prompt_loader"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "redis"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "time"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
       "to": "typing"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "openai"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "asyncio"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "importlib.util"
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
@@ -5544,43 +5564,7 @@
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "re"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "dotenv"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "contextlib"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "pathlib"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "hashlib"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "io"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "dataclasses"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "json"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
       "to": "argparse"
-    },
-    {
-      "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "prompts.prompt_loader"
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
@@ -5588,7 +5572,39 @@
     },
     {
       "from": "apps_shared\\canon_validator_v2_agentic.py",
-      "to": "importlib.util"
+      "to": "pinecone"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "google.genai"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "contextlib"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "io"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "re"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "functools"
+    },
+    {
+      "from": "apps_shared\\canon_validator_v2_agentic.py",
+      "to": "mcp.client.stdio"
+    },
+    {
+      "from": "apps_shared\\clarity_brevity_filter.py",
+      "to": "logging"
+    },
+    {
+      "from": "apps_shared\\clarity_brevity_filter.py",
+      "to": "typing"
     },
     {
       "from": "apps_shared\\clarity_brevity_filter.py",
@@ -5596,19 +5612,7 @@
     },
     {
       "from": "apps_shared\\clarity_brevity_filter.py",
-      "to": "typing"
-    },
-    {
-      "from": "apps_shared\\clarity_brevity_filter.py",
       "to": "dataclasses"
-    },
-    {
-      "from": "apps_shared\\clarity_brevity_filter.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\db_manager.py",
-      "to": "typing"
     },
     {
       "from": "apps_shared\\db_manager.py",
@@ -5620,19 +5624,15 @@
     },
     {
       "from": "apps_shared\\db_manager.py",
-      "to": "schemas"
-    },
-    {
-      "from": "apps_shared\\db_manager.py",
       "to": "logging"
     },
     {
-      "from": "apps_shared\\etl_pipeline.py",
-      "to": "db_manager"
+      "from": "apps_shared\\db_manager.py",
+      "to": "typing"
     },
     {
-      "from": "apps_shared\\etl_pipeline.py",
-      "to": "typing"
+      "from": "apps_shared\\db_manager.py",
+      "to": "schemas"
     },
     {
       "from": "apps_shared\\etl_pipeline.py",
@@ -5640,7 +5640,15 @@
     },
     {
       "from": "apps_shared\\etl_pipeline.py",
-      "to": "schemas"
+      "to": "db_manager"
+    },
+    {
+      "from": "apps_shared\\etl_pipeline.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "apps_shared\\etl_pipeline.py",
+      "to": "logging"
     },
     {
       "from": "apps_shared\\etl_pipeline.py",
@@ -5648,11 +5656,11 @@
     },
     {
       "from": "apps_shared\\etl_pipeline.py",
-      "to": "logging"
+      "to": "typing"
     },
     {
       "from": "apps_shared\\etl_pipeline.py",
-      "to": "pathlib"
+      "to": "schemas"
     },
     {
       "from": "apps_shared\\etl_pipeline_connectivity.py",
@@ -5660,15 +5668,7 @@
     },
     {
       "from": "apps_shared\\etl_pipeline_connectivity.py",
-      "to": "typing"
-    },
-    {
-      "from": "apps_shared\\etl_pipeline_connectivity.py",
-      "to": "schemas_connectivity"
-    },
-    {
-      "from": "apps_shared\\etl_pipeline_connectivity.py",
-      "to": "os"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\etl_pipeline_connectivity.py",
@@ -5676,7 +5676,15 @@
     },
     {
       "from": "apps_shared\\etl_pipeline_connectivity.py",
-      "to": "logging"
+      "to": "os"
+    },
+    {
+      "from": "apps_shared\\etl_pipeline_connectivity.py",
+      "to": "schemas_connectivity"
+    },
+    {
+      "from": "apps_shared\\etl_pipeline_connectivity.py",
+      "to": "typing"
     },
     {
       "from": "apps_shared\\fact_checker.py",
@@ -5688,7 +5696,7 @@
     },
     {
       "from": "apps_shared\\fact_checker.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\fact_checker.py",
@@ -5696,7 +5704,7 @@
     },
     {
       "from": "apps_shared\\fact_checker.py",
-      "to": "logging"
+      "to": "typing"
     },
     {
       "from": "apps_shared\\few_shot_library.py",
@@ -5716,11 +5724,7 @@
     },
     {
       "from": "apps_shared\\git_insight_server.py",
-      "to": "mcp.server.fastmcp"
-    },
-    {
-      "from": "apps_shared\\git_insight_server.py",
-      "to": "collections"
+      "to": "datetime"
     },
     {
       "from": "apps_shared\\git_insight_server.py",
@@ -5728,7 +5732,11 @@
     },
     {
       "from": "apps_shared\\git_insight_server.py",
-      "to": "datetime"
+      "to": "mcp.server.fastmcp"
+    },
+    {
+      "from": "apps_shared\\git_insight_server.py",
+      "to": "collections"
     },
     {
       "from": "apps_shared\\git_insight_server.py",
@@ -5748,6 +5756,10 @@
     },
     {
       "from": "apps_shared\\healthcheck.py",
+      "to": "redis"
+    },
+    {
+      "from": "apps_shared\\healthcheck.py",
       "to": "os"
     },
     {
@@ -5755,12 +5767,8 @@
       "to": "sys"
     },
     {
-      "from": "apps_shared\\healthcheck.py",
-      "to": "redis"
-    },
-    {
       "from": "apps_shared\\intent_scoring_model.py",
-      "to": "datetime"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\intent_scoring_model.py",
@@ -5772,7 +5780,7 @@
     },
     {
       "from": "apps_shared\\intent_scoring_model.py",
-      "to": "logging"
+      "to": "datetime"
     },
     {
       "from": "apps_shared\\intervention_server.py",
@@ -5781,6 +5789,22 @@
     {
       "from": "apps_shared\\intervention_server.py",
       "to": "asyncio"
+    },
+    {
+      "from": "apps_shared\\intervention_server.py",
+      "to": "datetime"
+    },
+    {
+      "from": "apps_shared\\intervention_server.py",
+      "to": "pathlib"
+    },
+    {
+      "from": "apps_shared\\intervention_server.py",
+      "to": "logging"
+    },
+    {
+      "from": "apps_shared\\intervention_server.py",
+      "to": "fastapi"
     },
     {
       "from": "apps_shared\\intervention_server.py",
@@ -5795,24 +5819,8 @@
       "to": "fastapi.responses"
     },
     {
-      "from": "apps_shared\\intervention_server.py",
-      "to": "datetime"
-    },
-    {
-      "from": "apps_shared\\intervention_server.py",
-      "to": "fastapi"
-    },
-    {
-      "from": "apps_shared\\intervention_server.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\intervention_server.py",
-      "to": "pathlib"
-    },
-    {
       "from": "apps_shared\\l5_governance_policy_filter.py",
-      "to": "re"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\l5_governance_policy_filter.py",
@@ -5820,19 +5828,7 @@
     },
     {
       "from": "apps_shared\\l5_governance_policy_filter.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\main.py",
-      "to": "db_manager"
-    },
-    {
-      "from": "apps_shared\\main.py",
-      "to": "time"
-    },
-    {
-      "from": "apps_shared\\main.py",
-      "to": "agent_logic"
+      "to": "re"
     },
     {
       "from": "apps_shared\\main.py",
@@ -5840,11 +5836,51 @@
     },
     {
       "from": "apps_shared\\main.py",
+      "to": "db_manager"
+    },
+    {
+      "from": "apps_shared\\main.py",
       "to": "logging"
+    },
+    {
+      "from": "apps_shared\\main.py",
+      "to": "agent_logic"
+    },
+    {
+      "from": "apps_shared\\main.py",
+      "to": "time"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "datetime"
     },
     {
       "from": "apps_shared\\main_connectivity.py",
       "to": "etl_pipeline_connectivity"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "logging"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "agent_logic_connectivity"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "connection_manager"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "traceback"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "os"
+    },
+    {
+      "from": "apps_shared\\main_connectivity.py",
+      "to": "sys"
     },
     {
       "from": "apps_shared\\main_connectivity.py",
@@ -5855,44 +5891,12 @@
       "to": "typing"
     },
     {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "traceback"
-    },
-    {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "datetime"
-    },
-    {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "connection_manager"
-    },
-    {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "os"
-    },
-    {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "agent_logic_connectivity"
-    },
-    {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\main_connectivity.py",
-      "to": "sys"
-    },
-    {
       "from": "apps_shared\\main_swarm.py",
       "to": "json"
     },
     {
       "from": "apps_shared\\main_swarm.py",
-      "to": "typing"
-    },
-    {
-      "from": "apps_shared\\main_swarm.py",
-      "to": "core.connections"
+      "to": "datetime"
     },
     {
       "from": "apps_shared\\main_swarm.py",
@@ -5900,23 +5904,7 @@
     },
     {
       "from": "apps_shared\\main_swarm.py",
-      "to": "datetime"
-    },
-    {
-      "from": "apps_shared\\main_swarm.py",
       "to": "shutil"
-    },
-    {
-      "from": "apps_shared\\main_swarm.py",
-      "to": "orchestrator"
-    },
-    {
-      "from": "apps_shared\\main_swarm.py",
-      "to": "signal"
-    },
-    {
-      "from": "apps_shared\\main_swarm.py",
-      "to": "os"
     },
     {
       "from": "apps_shared\\main_swarm.py",
@@ -5924,7 +5912,27 @@
     },
     {
       "from": "apps_shared\\main_swarm.py",
+      "to": "core.connections"
+    },
+    {
+      "from": "apps_shared\\main_swarm.py",
+      "to": "os"
+    },
+    {
+      "from": "apps_shared\\main_swarm.py",
       "to": "sys"
+    },
+    {
+      "from": "apps_shared\\main_swarm.py",
+      "to": "signal"
+    },
+    {
+      "from": "apps_shared\\main_swarm.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\main_swarm.py",
+      "to": "orchestrator"
     },
     {
       "from": "apps_shared\\mcp_hardening.py",
@@ -5948,15 +5956,7 @@
     },
     {
       "from": "apps_shared\\mcp_time_client.py",
-      "to": "importlib"
-    },
-    {
-      "from": "apps_shared\\mcp_time_client.py",
       "to": "datetime"
-    },
-    {
-      "from": "apps_shared\\mcp_time_client.py",
-      "to": "subprocess"
     },
     {
       "from": "apps_shared\\mcp_time_client.py",
@@ -5968,7 +5968,19 @@
     },
     {
       "from": "apps_shared\\mcp_time_client.py",
+      "to": "subprocess"
+    },
+    {
+      "from": "apps_shared\\mcp_time_client.py",
       "to": "sys"
+    },
+    {
+      "from": "apps_shared\\mcp_time_client.py",
+      "to": "importlib"
+    },
+    {
+      "from": "apps_shared\\network_utils.py",
+      "to": "logging"
     },
     {
       "from": "apps_shared\\network_utils.py",
@@ -5983,12 +5995,8 @@
       "to": "functools"
     },
     {
-      "from": "apps_shared\\network_utils.py",
-      "to": "logging"
-    },
-    {
       "from": "apps_shared\\news_rag_pipeline.py",
-      "to": "hashlib"
+      "to": "requests"
     },
     {
       "from": "apps_shared\\news_rag_pipeline.py",
@@ -6000,39 +6008,31 @@
     },
     {
       "from": "apps_shared\\news_rag_pipeline.py",
-      "to": "requests"
-    },
-    {
-      "from": "apps_shared\\news_rag_pipeline.py",
-      "to": "typing"
-    },
-    {
-      "from": "apps_shared\\news_rag_pipeline.py",
       "to": "datetime"
-    },
-    {
-      "from": "apps_shared\\news_rag_pipeline.py",
-      "to": "os"
     },
     {
       "from": "apps_shared\\news_rag_pipeline.py",
       "to": "logging"
     },
     {
-      "from": "apps_shared\\quick_fix.py",
+      "from": "apps_shared\\news_rag_pipeline.py",
       "to": "os"
+    },
+    {
+      "from": "apps_shared\\news_rag_pipeline.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\news_rag_pipeline.py",
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\quick_fix.py",
       "to": "re"
     },
     {
-      "from": "apps_shared\\redis_langcache_pipeline.py",
-      "to": "typing"
-    },
-    {
-      "from": "apps_shared\\redis_langcache_pipeline.py",
-      "to": "time"
+      "from": "apps_shared\\quick_fix.py",
+      "to": "os"
     },
     {
       "from": "apps_shared\\redis_langcache_pipeline.py",
@@ -6040,11 +6040,15 @@
     },
     {
       "from": "apps_shared\\redis_langcache_pipeline.py",
-      "to": "json"
+      "to": "time"
     },
     {
-      "from": "apps_shared\\reflection_agent.py",
-      "to": "hashlib"
+      "from": "apps_shared\\redis_langcache_pipeline.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\redis_langcache_pipeline.py",
+      "to": "json"
     },
     {
       "from": "apps_shared\\reflection_agent.py",
@@ -6056,7 +6060,7 @@
     },
     {
       "from": "apps_shared\\reflection_agent.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "apps_shared\\reflection_agent.py",
@@ -6064,7 +6068,7 @@
     },
     {
       "from": "apps_shared\\reflection_agent.py",
-      "to": "datetime"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\reflection_agent.py",
@@ -6072,19 +6076,19 @@
     },
     {
       "from": "apps_shared\\reflection_agent.py",
-      "to": "logging"
+      "to": "typing"
     },
     {
-      "from": "apps_shared\\reset_memory.py",
-      "to": "time"
-    },
-    {
-      "from": "apps_shared\\reset_memory.py",
-      "to": "pinecone"
+      "from": "apps_shared\\reflection_agent.py",
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\reset_memory.py",
       "to": "connection_manager"
+    },
+    {
+      "from": "apps_shared\\reset_memory.py",
+      "to": "pinecone"
     },
     {
       "from": "apps_shared\\reset_memory.py",
@@ -6093,6 +6097,14 @@
     {
       "from": "apps_shared\\reset_memory.py",
       "to": "redis"
+    },
+    {
+      "from": "apps_shared\\reset_memory.py",
+      "to": "time"
+    },
+    {
+      "from": "apps_shared\\run_agent.py",
+      "to": "logging"
     },
     {
       "from": "apps_shared\\run_agent.py",
@@ -6104,15 +6116,11 @@
     },
     {
       "from": "apps_shared\\run_agent.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\run_agent.py",
       "to": "sys"
     },
     {
       "from": "apps_shared\\sandbox_utils.py",
-      "to": "os"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\sandbox_utils.py",
@@ -6124,7 +6132,11 @@
     },
     {
       "from": "apps_shared\\sandbox_utils.py",
-      "to": "logging"
+      "to": "os"
+    },
+    {
+      "from": "apps_shared\\sandbox_utils_wrapper.py",
+      "to": "apps_shared.sandbox_utils"
     },
     {
       "from": "apps_shared\\sandbox_utils_wrapper.py",
@@ -6135,24 +6147,8 @@
       "to": "agentic_core.tools.filesystem"
     },
     {
-      "from": "apps_shared\\sandbox_utils_wrapper.py",
-      "to": "apps_shared.sandbox_utils"
-    },
-    {
-      "from": "apps_shared\\schemas.py",
-      "to": "hashlib"
-    },
-    {
-      "from": "apps_shared\\schemas.py",
-      "to": "uuid"
-    },
-    {
       "from": "apps_shared\\schemas.py",
       "to": "json"
-    },
-    {
-      "from": "apps_shared\\schemas.py",
-      "to": "typing"
     },
     {
       "from": "apps_shared\\schemas.py",
@@ -6160,27 +6156,23 @@
     },
     {
       "from": "apps_shared\\schemas.py",
+      "to": "schemas.canon_models"
+    },
+    {
+      "from": "apps_shared\\schemas.py",
       "to": "ast"
     },
     {
       "from": "apps_shared\\schemas.py",
-      "to": "schemas.canon_models"
+      "to": "typing"
     },
     {
-      "from": "apps_shared\\schemas_connectivity.py",
+      "from": "apps_shared\\schemas.py",
       "to": "hashlib"
     },
     {
-      "from": "apps_shared\\schemas_connectivity.py",
-      "to": "json"
-    },
-    {
-      "from": "apps_shared\\schemas_connectivity.py",
+      "from": "apps_shared\\schemas.py",
       "to": "uuid"
-    },
-    {
-      "from": "apps_shared\\schemas_connectivity.py",
-      "to": "typing"
     },
     {
       "from": "apps_shared\\schemas_connectivity.py",
@@ -6188,7 +6180,15 @@
     },
     {
       "from": "apps_shared\\schemas_connectivity.py",
+      "to": "json"
+    },
+    {
+      "from": "apps_shared\\schemas_connectivity.py",
       "to": "datetime"
+    },
+    {
+      "from": "apps_shared\\schemas_connectivity.py",
+      "to": "ast"
     },
     {
       "from": "apps_shared\\schemas_connectivity.py",
@@ -6196,23 +6196,31 @@
     },
     {
       "from": "apps_shared\\schemas_connectivity.py",
-      "to": "ast"
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\schemas_connectivity.py",
+      "to": "hashlib"
+    },
+    {
+      "from": "apps_shared\\schemas_connectivity.py",
+      "to": "uuid"
+    },
+    {
+      "from": "apps_shared\\security_utils.py",
+      "to": "logging"
     },
     {
       "from": "apps_shared\\security_utils.py",
       "to": "re"
     },
     {
-      "from": "apps_shared\\security_utils.py",
+      "from": "apps_shared\\services.py",
       "to": "logging"
     },
     {
       "from": "apps_shared\\services.py",
       "to": "services.configuration"
-    },
-    {
-      "from": "apps_shared\\services.py",
-      "to": "logging"
     },
     {
       "from": "apps_shared\\signal_bus.py",
@@ -6224,7 +6232,7 @@
     },
     {
       "from": "apps_shared\\signal_bus.py",
-      "to": "typing"
+      "to": "datetime"
     },
     {
       "from": "apps_shared\\signal_bus.py",
@@ -6232,15 +6240,15 @@
     },
     {
       "from": "apps_shared\\signal_bus.py",
-      "to": "datetime"
-    },
-    {
-      "from": "apps_shared\\signal_bus.py",
       "to": "logging"
     },
     {
+      "from": "apps_shared\\signal_bus.py",
+      "to": "typing"
+    },
+    {
       "from": "apps_shared\\simulate_dirty_data.py",
-      "to": "dotenv"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\simulate_dirty_data.py",
@@ -6252,27 +6260,7 @@
     },
     {
       "from": "apps_shared\\simulate_dirty_data.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\simulate_dirty_data_simple.py",
-      "to": "hashlib"
-    },
-    {
-      "from": "apps_shared\\simulate_dirty_data_simple.py",
-      "to": "time"
-    },
-    {
-      "from": "apps_shared\\simulate_dirty_data_simple.py",
-      "to": "math"
-    },
-    {
-      "from": "apps_shared\\simulate_dirty_data_simple.py",
-      "to": "uuid"
-    },
-    {
-      "from": "apps_shared\\simulate_dirty_data_simple.py",
-      "to": "typing"
+      "to": "dotenv"
     },
     {
       "from": "apps_shared\\simulate_dirty_data_simple.py",
@@ -6281,6 +6269,26 @@
     {
       "from": "apps_shared\\simulate_dirty_data_simple.py",
       "to": "logging"
+    },
+    {
+      "from": "apps_shared\\simulate_dirty_data_simple.py",
+      "to": "time"
+    },
+    {
+      "from": "apps_shared\\simulate_dirty_data_simple.py",
+      "to": "hashlib"
+    },
+    {
+      "from": "apps_shared\\simulate_dirty_data_simple.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\simulate_dirty_data_simple.py",
+      "to": "uuid"
+    },
+    {
+      "from": "apps_shared\\simulate_dirty_data_simple.py",
+      "to": "math"
     },
     {
       "from": "apps_shared\\strip_bom_and_fix.py",
@@ -6308,7 +6316,7 @@
     },
     {
       "from": "apps_shared\\validation_context.py",
-      "to": "apps_shared.signal_bus"
+      "to": "apps_shared.reflection_agent"
     },
     {
       "from": "apps_shared\\validation_context.py",
@@ -6320,19 +6328,11 @@
     },
     {
       "from": "apps_shared\\validation_context.py",
-      "to": "typing"
-    },
-    {
-      "from": "apps_shared\\validation_context.py",
-      "to": "apps_shared.reflection_agent"
-    },
-    {
-      "from": "apps_shared\\validation_context.py",
       "to": "datetime"
     },
     {
       "from": "apps_shared\\validation_context.py",
-      "to": "apps_shared.few_shot_library"
+      "to": "pathlib"
     },
     {
       "from": "apps_shared\\validation_context.py",
@@ -6340,7 +6340,19 @@
     },
     {
       "from": "apps_shared\\validation_context.py",
-      "to": "pathlib"
+      "to": "apps_shared.few_shot_library"
+    },
+    {
+      "from": "apps_shared\\validation_context.py",
+      "to": "apps_shared.signal_bus"
+    },
+    {
+      "from": "apps_shared\\validation_context.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\validation_context_wrapper.py",
+      "to": "logging"
     },
     {
       "from": "apps_shared\\validation_context_wrapper.py",
@@ -6352,31 +6364,7 @@
     },
     {
       "from": "apps_shared\\validation_context_wrapper.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\validation_context_wrapper.py",
       "to": "pathlib"
-    },
-    {
-      "from": "apps_shared\\verify_hardening.py",
-      "to": "unittest"
-    },
-    {
-      "from": "apps_shared\\verify_hardening.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "apps_shared\\verify_hardening.py",
-      "to": "tempfile"
-    },
-    {
-      "from": "apps_shared\\verify_hardening.py",
-      "to": "orchestrator"
-    },
-    {
-      "from": "apps_shared\\verify_hardening.py",
-      "to": "connection_manager"
     },
     {
       "from": "apps_shared\\verify_hardening.py",
@@ -6384,7 +6372,27 @@
     },
     {
       "from": "apps_shared\\verify_hardening.py",
+      "to": "asyncio"
+    },
+    {
+      "from": "apps_shared\\verify_hardening.py",
+      "to": "agent_logic_connectivity"
+    },
+    {
+      "from": "apps_shared\\verify_hardening.py",
+      "to": "connection_manager"
+    },
+    {
+      "from": "apps_shared\\verify_hardening.py",
       "to": "os"
+    },
+    {
+      "from": "apps_shared\\verify_hardening.py",
+      "to": "unittest"
+    },
+    {
+      "from": "apps_shared\\verify_hardening.py",
+      "to": "sys"
     },
     {
       "from": "apps_shared\\verify_hardening.py",
@@ -6392,19 +6400,19 @@
     },
     {
       "from": "apps_shared\\verify_hardening.py",
-      "to": "agent_logic_connectivity"
+      "to": "orchestrator"
     },
     {
       "from": "apps_shared\\verify_hardening.py",
-      "to": "sys"
-    },
-    {
-      "from": "apps_shared\\verify_hardening_minimal.py",
-      "to": "os"
+      "to": "tempfile"
     },
     {
       "from": "apps_shared\\verify_hardening_minimal.py",
       "to": "tempfile"
+    },
+    {
+      "from": "apps_shared\\verify_hardening_minimal.py",
+      "to": "os"
     },
     {
       "from": "apps_shared\\verify_hardening_minimal.py",
@@ -6412,19 +6420,7 @@
     },
     {
       "from": "apps_shared\\verify_hardening_simple.py",
-      "to": "tempfile"
-    },
-    {
-      "from": "apps_shared\\verify_hardening_simple.py",
       "to": "hardened_orchestrator"
-    },
-    {
-      "from": "apps_shared\\verify_hardening_simple.py",
-      "to": "orchestrator"
-    },
-    {
-      "from": "apps_shared\\verify_hardening_simple.py",
-      "to": "os"
     },
     {
       "from": "apps_shared\\verify_hardening_simple.py",
@@ -6432,7 +6428,31 @@
     },
     {
       "from": "apps_shared\\verify_hardening_simple.py",
+      "to": "os"
+    },
+    {
+      "from": "apps_shared\\verify_hardening_simple.py",
       "to": "sys"
+    },
+    {
+      "from": "apps_shared\\verify_hardening_simple.py",
+      "to": "orchestrator"
+    },
+    {
+      "from": "apps_shared\\verify_hardening_simple.py",
+      "to": "tempfile"
+    },
+    {
+      "from": "apps_shared\\watchdog_sidecar.py",
+      "to": "logging"
+    },
+    {
+      "from": "apps_shared\\watchdog_sidecar.py",
+      "to": "os"
+    },
+    {
+      "from": "apps_shared\\watchdog_sidecar.py",
+      "to": "signal"
     },
     {
       "from": "apps_shared\\watchdog_sidecar.py",
@@ -6443,16 +6463,8 @@
       "to": "typing"
     },
     {
-      "from": "apps_shared\\watchdog_sidecar.py",
-      "to": "signal"
-    },
-    {
-      "from": "apps_shared\\watchdog_sidecar.py",
-      "to": "os"
-    },
-    {
-      "from": "apps_shared\\watchdog_sidecar.py",
-      "to": "logging"
+      "from": "apps_shared\\__init__.py",
+      "to": "apps_shared.reflection_agent"
     },
     {
       "from": "apps_shared\\__init__.py",
@@ -6460,19 +6472,15 @@
     },
     {
       "from": "apps_shared\\__init__.py",
-      "to": "apps_shared.reflection_agent"
-    },
-    {
-      "from": "apps_shared\\__init__.py",
       "to": "apps_shared.few_shot_library"
     },
     {
       "from": "apps_shared\\__init__.py",
-      "to": "apps_shared.intervention_server"
+      "to": "agentic_core.domain.context"
     },
     {
       "from": "apps_shared\\__init__.py",
-      "to": "agentic_core.domain.context"
+      "to": "apps_shared.intervention_server"
     },
     {
       "from": "apps_shared\\cache\\semantic_cache.py",
@@ -6480,11 +6488,11 @@
     },
     {
       "from": "apps_shared\\cache\\semantic_cache.py",
-      "to": "hashlib"
+      "to": "typing"
     },
     {
       "from": "apps_shared\\cache\\semantic_cache.py",
-      "to": "typing"
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\config\\reliability.py",
@@ -6504,10 +6512,6 @@
     },
     {
       "from": "apps_shared\\core\\dag_executor_basic.py",
-      "to": "asyncio"
-    },
-    {
-      "from": "apps_shared\\core\\dag_executor_basic.py",
       "to": "logging"
     },
     {
@@ -6515,7 +6519,7 @@
       "to": "pytest"
     },
     {
-      "from": "apps_shared\\core\\dag_models.py",
+      "from": "apps_shared\\core\\dag_executor_basic.py",
       "to": "asyncio"
     },
     {
@@ -6523,20 +6527,24 @@
       "to": "logging"
     },
     {
-      "from": "apps_shared\\core\\golden_state_evaluator_impl.py",
-      "to": "typing"
+      "from": "apps_shared\\core\\dag_models.py",
+      "to": "asyncio"
     },
     {
       "from": "apps_shared\\core\\golden_state_evaluator_impl.py",
       "to": "logging"
     },
     {
-      "from": "apps_shared\\core\\golden_state_evaluator_types.py",
+      "from": "apps_shared\\core\\golden_state_evaluator_impl.py",
       "to": "typing"
     },
     {
       "from": "apps_shared\\core\\golden_state_evaluator_types.py",
       "to": "logging"
+    },
+    {
+      "from": "apps_shared\\core\\golden_state_evaluator_types.py",
+      "to": "typing"
     },
     {
       "from": "apps_shared\\core\\golden_state_gating.py",
@@ -6572,11 +6580,11 @@
     },
     {
       "from": "apps_shared\\core\\modularity_layer_boundaries.py",
-      "to": "pathlib"
+      "to": "ast"
     },
     {
       "from": "apps_shared\\core\\modularity_layer_boundaries.py",
-      "to": "ast"
+      "to": "pathlib"
     },
     {
       "from": "apps_shared\\core\\modularity_provider_isolation.py",
@@ -6592,10 +6600,14 @@
     },
     {
       "from": "apps_shared\\core_logic\\safety.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\core_logic\\safety.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\examples\\autonomous_agent_example.py",
       "to": "logging"
     },
     {
@@ -6607,16 +6619,16 @@
       "to": "asyncio"
     },
     {
-      "from": "apps_shared\\examples\\autonomous_agent_example.py",
+      "from": "apps_shared\\pipeline\\enrichment_stages.py",
       "to": "logging"
     },
     {
       "from": "apps_shared\\pipeline\\enrichment_stages.py",
-      "to": "hashlib"
+      "to": "time"
     },
     {
       "from": "apps_shared\\pipeline\\enrichment_stages.py",
-      "to": "time"
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\pipeline\\enrichment_stages.py",
@@ -6627,12 +6639,12 @@
       "to": "rag_components"
     },
     {
-      "from": "apps_shared\\pipeline\\enrichment_stages.py",
-      "to": "logging"
+      "from": "apps_shared\\pipeline\\input_stage.py",
+      "to": "json"
     },
     {
       "from": "apps_shared\\pipeline\\input_stage.py",
-      "to": "hashlib"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\pipeline\\input_stage.py",
@@ -6640,15 +6652,19 @@
     },
     {
       "from": "apps_shared\\pipeline\\input_stage.py",
-      "to": "json"
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\pipeline\\input_stage.py",
       "to": "typing"
     },
     {
-      "from": "apps_shared\\pipeline\\input_stage.py",
+      "from": "apps_shared\\pipeline\\output_stages.py",
       "to": "logging"
+    },
+    {
+      "from": "apps_shared\\pipeline\\output_stages.py",
+      "to": "time"
     },
     {
       "from": "apps_shared\\pipeline\\output_stages.py",
@@ -6659,28 +6675,8 @@
       "to": "typing"
     },
     {
-      "from": "apps_shared\\pipeline\\output_stages.py",
-      "to": "time"
-    },
-    {
-      "from": "apps_shared\\pipeline\\output_stages.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\pipeline\\pipeline.py",
-      "to": "threading"
-    },
-    {
-      "from": "apps_shared\\pipeline\\pipeline.py",
-      "to": "collections"
-    },
-    {
       "from": "apps_shared\\pipeline\\pipeline.py",
       "to": "json"
-    },
-    {
-      "from": "apps_shared\\pipeline\\pipeline.py",
-      "to": "typing"
     },
     {
       "from": "apps_shared\\pipeline\\pipeline.py",
@@ -6691,8 +6687,16 @@
       "to": "logging"
     },
     {
-      "from": "apps_shared\\pipeline\\types.py",
-      "to": "hashlib"
+      "from": "apps_shared\\pipeline\\pipeline.py",
+      "to": "collections"
+    },
+    {
+      "from": "apps_shared\\pipeline\\pipeline.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\pipeline\\pipeline.py",
+      "to": "threading"
     },
     {
       "from": "apps_shared\\pipeline\\types.py",
@@ -6704,7 +6708,7 @@
     },
     {
       "from": "apps_shared\\pipeline\\types.py",
-      "to": "typing"
+      "to": "abc"
     },
     {
       "from": "apps_shared\\pipeline\\types.py",
@@ -6712,11 +6716,15 @@
     },
     {
       "from": "apps_shared\\pipeline\\types.py",
-      "to": "abc"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\pipeline\\types.py",
-      "to": "logging"
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\pipeline\\types.py",
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\pipeline\\__init__.py",
@@ -6732,19 +6740,19 @@
     },
     {
       "from": "apps_shared\\rag\\__init__.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\rag\\__init__.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\rag\\hardening\\deprecated_agent_cards.py",
       "to": "logging"
     },
     {
       "from": "apps_shared\\rag\\hardening\\deprecated_agent_cards.py",
       "to": "pytest"
-    },
-    {
-      "from": "apps_shared\\rag\\hardening\\deprecated_agent_cards.py",
-      "to": "logging"
     },
     {
       "from": "apps_shared\\rag\\hardening\\refactoring_l1_phase_a_impl_impl.py",
@@ -6764,19 +6772,19 @@
     },
     {
       "from": "apps_shared\\rag\\retrieval\\deprecated_instructional_prompts.py",
-      "to": "typing"
+      "to": "pytest"
     },
     {
       "from": "apps_shared\\rag\\retrieval\\deprecated_instructional_prompts.py",
-      "to": "pytest"
-    },
-    {
-      "from": "apps_shared\\rag\\retrieval\\deprecated_vector_imports.py",
-      "to": "pytest"
+      "to": "typing"
     },
     {
       "from": "apps_shared\\rag\\retrieval\\deprecated_vector_imports.py",
       "to": "logging"
+    },
+    {
+      "from": "apps_shared\\rag\\retrieval\\deprecated_vector_imports.py",
+      "to": "pytest"
     },
     {
       "from": "apps_shared\\rag\\retrieval\\golden_state_runner.py",
@@ -6800,10 +6808,14 @@
     },
     {
       "from": "apps_shared\\rag\\retrieval\\relevance_scorer.py",
-      "to": "typing"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\rag\\retrieval\\relevance_scorer.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\rag\\retrieval\\simulation_metrics.py",
       "to": "logging"
     },
     {
@@ -6811,16 +6823,12 @@
       "to": "typing"
     },
     {
-      "from": "apps_shared\\rag\\retrieval\\simulation_metrics.py",
-      "to": "logging"
+      "from": "apps_shared\\rag\\scoring\\hybrid_scorer.py",
+      "to": "typing"
     },
     {
       "from": "apps_shared\\rag\\scoring\\hybrid_scorer.py",
       "to": "re"
-    },
-    {
-      "from": "apps_shared\\rag\\scoring\\hybrid_scorer.py",
-      "to": "typing"
     },
     {
       "from": "apps_shared\\rag\\scoring\\hybrid_scorer.py",
@@ -6832,7 +6840,7 @@
     },
     {
       "from": "apps_shared\\servers\\telemetry_server.py",
-      "to": "mcp.server.fastmcp"
+      "to": "logging"
     },
     {
       "from": "apps_shared\\servers\\telemetry_server.py",
@@ -6840,19 +6848,11 @@
     },
     {
       "from": "apps_shared\\servers\\telemetry_server.py",
-      "to": "logging"
-    },
-    {
-      "from": "apps_shared\\servers\\telemetry_server.py",
       "to": "duckdb"
     },
     {
-      "from": "apps_shared\\utils\\file_io.py",
-      "to": "hashlib"
-    },
-    {
-      "from": "apps_shared\\utils\\file_io.py",
-      "to": "apps_shared.domain.constants"
+      "from": "apps_shared\\servers\\telemetry_server.py",
+      "to": "mcp.server.fastmcp"
     },
     {
       "from": "apps_shared\\utils\\file_io.py",
@@ -6860,7 +6860,7 @@
     },
     {
       "from": "apps_shared\\utils\\file_io.py",
-      "to": "typing"
+      "to": "os"
     },
     {
       "from": "apps_shared\\utils\\file_io.py",
@@ -6868,7 +6868,15 @@
     },
     {
       "from": "apps_shared\\utils\\file_io.py",
-      "to": "os"
+      "to": "apps_shared.domain.constants"
+    },
+    {
+      "from": "apps_shared\\utils\\file_io.py",
+      "to": "typing"
+    },
+    {
+      "from": "apps_shared\\utils\\file_io.py",
+      "to": "hashlib"
     },
     {
       "from": "apps_shared\\utils\\text_processing.py",
