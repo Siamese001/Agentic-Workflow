@@ -196,14 +196,17 @@ class CanonValidator:
         # Generate the version-aware key
         cache_key = self._generate_compound_key(query_content, file_path)
 
-        # Query Redis
+        cached_data = None
         try:
             cached_data = self.redis_client.get(cache_key)
-            if cached_data:
-                self.logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
-                return json.loads(cached_data)
         except Exception as e:
             self.logger.error(f"Redis lookup failed: {e}")
+            self.logger.info(f"Reasoning cache miss due to Redis error.")
+            return None
+
+        if cached_data:
+            self.logger.info(f"🟢 L1 Cache Hit for {file_path or 'global'}")
+            return json.loads(cached_data)
 
         self.logger.info(f"Reasoning cache miss - Code version may have changed.")
         return None
@@ -267,20 +270,19 @@ class CanonValidator:
         Checks active_manifest.json to ensure we only index validated files.
         """
         # Check if file is in active manifest before indexing
-        if hasattr(entry, 'file_path') and entry.file_path:
-            if not self._is_file_in_manifest(entry.file_path):
-                self.logger.warning(f"⚠️  Skipping indexing for non-manifest file: {entry.file_path}")
-                # Reduce nesting depth by assigning the dictionary to a variable first
-                skipped_result = {
-                    "status": "skipped",
-                    "is_valid": False,
-                    "confidence": 0.0,
-                    "source": "not_in_manifest",
-                    "matched_pattern": None,
-                    "processing_time": time.time() - start_time,
-                    "message": "File not in active manifest - indexing skipped"
-                }
-                return skipped_result
+        # Refactored to reduce nesting depth
+        if not (hasattr(entry, 'file_path') and entry.file_path and self._is_file_in_manifest(entry.file_path)):
+            self.logger.warning(f"⚠️  Skipping indexing for non-manifest file: {getattr(entry, 'file_path', 'N/A')}")
+            skipped_result = {
+                "status": "skipped",
+                "is_valid": False,
+                "confidence": 0.0,
+                "source": "not_in_manifest",
+                "matched_pattern": None,
+                "processing_time": time.time() - start_time,
+                "message": "File not in active manifest - indexing skipped"
+            }
+            return skipped_result
 
         try:
             # 1. Get the authoritative hash for this file version

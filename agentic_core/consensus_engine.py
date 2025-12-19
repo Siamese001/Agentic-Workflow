@@ -64,25 +64,21 @@ class ConsensusEngine:
         artifact_lower = artifact.lower() # Depth 3
 
         # 1. Universal Critical Failures (Guard Clause)
-        # Using explicit OR conditions to avoid generator expression nesting depth.
-        if ("hack" in artifact_lower or
-            "delete /" in artifact_lower or
-            "malware" in artifact_lower or
-            "drop table" in artifact_lower): # Depth: class(1) -> def(2) -> if(3)
-            return { # Depth 4
-                "model": model_name,
-                "verdict": "NO",
-                "reason": "Safety Protocols Triggered during analysis."
-            }
+        # Refactored to avoid deep nesting in the 'if' condition and ensure dictionary content is not excessively indented.
+        is_critical_violation = any(keyword in artifact_lower for keyword in self._CRITICAL_KEYWORDS) # Depth 3
+
+        if is_critical_violation: # Depth 3
+            return {"model": model_name,
+                    "verdict": "NO",
+                    "reason": "Safety Protocols Triggered during analysis."} # Depth 4
 
         # 2. Model-Specific Reasoning Quirks (Delegated to helper method)
         model_verdict = self._get_model_specific_verdict(model_name, artifact_lower) # Depth 3
 
-        return { # Depth 3
-            "model": model_name,
-            "verdict": model_verdict["verdict"],
-            "reason": model_verdict["reason"]
-        }
+        # Ensure dictionary content is not excessively indented
+        return {"model": model_name,
+                "verdict": model_verdict["verdict"],
+                "reason": model_verdict["reason"]} # Depth 3
 
     def _count_yes_votes(self, votes: List[Dict[str, Any]]) -> int:
         """
@@ -101,7 +97,6 @@ class ConsensusEngine:
         logger.info(f"🔔 Convening Supreme Court ({', '.join(self.providers)})...") # Depth 3
 
         votes = [] # Depth 3
-        # yes_count = 0 # Removed, will be calculated after the loop
 
         prompt = ( # Depth 3
             f"Context: {context}.\n"
@@ -114,8 +109,6 @@ class ConsensusEngine:
         for model in self.providers: # Depth 3
             response = self._call_juror(model, artifact_content, prompt) # Depth 4
             votes.append(response) # Depth 4
-            # The 'if response["verdict"] == "YES": yes_count += 1' block is removed from here
-            # to reduce nesting depth.
 
         # Calculate yes_count after the loop, at a shallower depth, using a helper method
         yes_count = self._count_yes_votes(votes) # Depth 3
@@ -129,11 +122,10 @@ class ConsensusEngine:
 
         logger.info(f"📝 Jury Verdict: {status} ({yes_count}/{total_votes} votes)") # Depth 3
 
-        return { # Depth 3
-            "status": status,
-            "score": score,
-            "votes": votes
-        }
+        # Ensure dictionary content is not excessively indented
+        return {"status": status,
+                "score": score,
+                "votes": votes} # Depth 3
 
     def _fix_indentation(self, code: str) -> str:
         """
@@ -195,11 +187,10 @@ class ConsensusEngine:
         if fixed_code == code: # Depth 3
             return {"status": "FAILED", "error": "No fix could be generated"} # Depth 4
 
-        return { # Depth 3
-            "status": "SUCCESS",
-            "fixed_code": fixed_code,
-            "context": context
-        }
+        # Ensure dictionary content is not excessively indented
+        return {"status": "SUCCESS",
+                "fixed_code": fixed_code,
+                "context": context} # Depth 3
 
 
 # Initialize the global jury instance

@@ -331,6 +331,25 @@ class CanonValidator:
         
         return result
 
+    def _handle_failure_outcome(self, entry: CanonEntry):
+        """Helper to handle failure outcome for an entry."""
+        entry.update_failure()
+        logger.info(f"Recorded failure for pattern {entry.id}")
+
+        # If too many failures, consider blocking
+        if entry.failure_count >= self.failure_threshold:
+            logger.warning(f"Pattern {entry.id} exceeded failure threshold")
+
+    def _handle_success_outcome(self, entry: CanonEntry):
+        """Helper to handle success outcome for an entry."""
+        entry.update_success()
+        logger.info(f"Recorded success for pattern {entry.id}")
+
+        # Check for promotion to L2
+        if entry.success_count >= self.promotion_threshold:
+            self.db_manager.promote_to_l2(entry)
+            logger.info(f"Promoted pattern {entry.id} to L2")
+
     def update_learning(self, entry_id: str, outcome: str, error_trace: Optional[str] = None):
         """
         Update learning based on execution outcome.
@@ -348,22 +367,9 @@ class CanonValidator:
 
         # Update based on outcome
         if outcome.upper() == "FAILURE":
-            entry.update_failure()
-            logger.info(f"Recorded failure for pattern {entry_id}")
-
-            # If too many failures, consider blocking
-            if entry.failure_count >= self.failure_threshold:
-                logger.warning(
-                    f"Pattern {entry_id} exceeded failure threshold")
-
+            self._handle_failure_outcome(entry)
         elif outcome.upper() == "SUCCESS":
-            entry.update_success()
-            logger.info(f"Recorded success for pattern {entry_id}")
-
-            # Check for promotion to L2
-            if entry.success_count >= self.promotion_threshold:
-                self.db_manager.promote_to_l2(entry)
-                logger.info(f"Promoted pattern {entry_id} to L2")
+            self._handle_success_outcome(entry)
 
         # Update the entry in Redis
         self.db_manager.redis.update_entry(entry)
