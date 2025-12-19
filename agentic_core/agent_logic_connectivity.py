@@ -270,7 +270,8 @@ class CanonValidator:
         if hasattr(entry, 'file_path') and entry.file_path:
             if not self._is_file_in_manifest(entry.file_path):
                 self.logger.warning(f"⚠️  Skipping indexing for non-manifest file: {entry.file_path}")
-                return {
+                # Reduce nesting depth by assigning the dictionary to a variable first
+                skipped_result = {
                     "status": "skipped",
                     "is_valid": False,
                     "confidence": 0.0,
@@ -279,6 +280,7 @@ class CanonValidator:
                     "processing_time": time.time() - start_time,
                     "message": "File not in active manifest - indexing skipped"
                 }
+                return skipped_result
 
         try:
             # 1. Get the authoritative hash for this file version

@@ -229,34 +229,34 @@ class ActionRegistry:
     def get_tool_map(self) -> Dict[str, Callable]:
         """Returns the master tool map for the LLM."""
         return {
-            # --- LAYER 1: FILESYSTEM & I/O ---
-            "read_file": self.read_file,
-            "save_file": self.save_file,
-            "send_email": self.mock_send_email,
+        # --- LAYER 1: FILESYSTEM & I/O ---
+        "read_file": self.read_file,
+        "save_file": self.save_file,
+        "send_email": self.mock_send_email,
 
-            # --- LAYER 2: DESIGN & CONTEXT ---
-            "get_variable_defs": self.get_variable_defs,
-            "get_design_context": self.get_design_context,
-            "get_screenshot": self.get_screenshot,
+        # --- LAYER 2: DESIGN & CONTEXT ---
+        "get_variable_defs": self.get_variable_defs,
+        "get_design_context": self.get_design_context,
+        "get_screenshot": self.get_screenshot,
 
-            # --- LAYER 3: RAG & WISDOM ---
-            "search_records": self.search_records,
-            "search_web": self.search_web,
+        # --- LAYER 3: RAG & WISDOM ---
+        "search_records": self.search_records,
+        "search_web": self.search_web,
 
-            # --- LAYER 4: STATE & TEMPORAL ---
-            "string_set": self.string_set,
-            "string_get": self.string_get,
-            "hash_set": self.hash_set,
-            "hash_get": self.hash_get,
-            "get_current_time": self.get_current_time,
-            "convert_time": self.convert_time,
+        # --- LAYER 4: STATE & TEMPORAL ---
+        "string_set": self.string_set,
+        "string_get": self.string_get,
+        "hash_set": self.hash_set,
+        "hash_get": self.hash_get,
+        "get_current_time": self.get_current_time,
+        "convert_time": self.convert_time,
 
-            # --- LAYER 5: MEMORY & AUDIT ---
-            "add_observations": self.add_observations,
-            "create_entities": self.create_entities,
-            "open_nodes": self.open_nodes,
+        # --- LAYER 5: MEMORY & AUDIT ---
+        "add_observations": self.add_observations,
+        "create_entities": self.create_entities,
+        "open_nodes": self.open_nodes,
 
-            # --- GIT OPERATIONS ---
-            "commit": self.commit,
-            "status": self.status,
+        # --- GIT OPERATIONS ---
+        "commit": self.commit,
+        "status": self.status,
         }

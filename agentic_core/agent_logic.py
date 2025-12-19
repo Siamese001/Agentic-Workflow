@@ -351,6 +351,21 @@ class CanonValidator:
 
         return stats
 
+    def _format_search_result(self, result: CanonEntry) -> Dict[str, Any]:
+        """
+        Helper method to format a single CanonEntry into a dictionary
+        for search results, reducing nesting in search_similar_patterns.
+        """
+        return {
+            "id": result.id,
+            "success_count": result.metadata.get("success_count", 0),
+            "failure_count": result.metadata.get("failure_count", 0),
+            "success_rate": result.get_success_rate(),
+            "project": result.metadata.get("project_context", "unknown"),
+            "last_validated": result.metadata.get("last_validated"),
+            "is_golden": result.metadata.get("is_golden_pattern", False)
+        }
+
     def search_similar_patterns(
         self,
         code: str,
@@ -382,14 +397,6 @@ class CanonValidator:
 
         formatted = []
         for result in all_results[:max_results]:
-            formatted.append({
-                "id": result.id,
-                "success_count": result.metadata.get("success_count", 0),
-                "failure_count": result.metadata.get("failure_count", 0),
-                "success_rate": result.get_success_rate(),
-                "project": result.metadata.get("project_context", "unknown"),
-                "last_validated": result.metadata.get("last_validated"),
-                "is_golden": result.metadata.get("is_golden_pattern", False)
-            })
+            formatted.append(self._format_search_result(result))
 
         return formatted
