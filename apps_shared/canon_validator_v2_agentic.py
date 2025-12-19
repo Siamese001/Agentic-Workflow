@@ -8,6 +8,7 @@ import argparse
 import ast
 import asyncio
 import hashlib
+import importlib.util
 import logging
 import os
 import re
@@ -123,7 +124,13 @@ class ValidationContext:
         
         prompt = f"""Agent: {agent_name}
 Task: {task}
-Fix the following code to comply with Subatomic Laws. Return ONLY the fixed code without explanations or markdown blocks.
+SYSTEM: You are a Level 6 Autonomous Repair Agent.
+RULES:
+1. Fix the specific violation ONLY.
+2. DO NOT hallucinate imports (only use stdlib or existing).
+3. DO NOT delete logic, comments, or docstrings unless necessary.
+4. DO NOT use 'pass' to silence errors; fix them properly.
+5. Return ONLY valid Python code. No markdown.
 
 {code}"""
         
@@ -332,10 +339,15 @@ class SubAtomicAgent:
 
     async def _verify_fix_resolved(self, orig_path: str, temp_path: str, key: int) -> bool:
         """
-        L5 Reflection: Re-runs validation on the temporary healed file.
+        L6 Reflection: Re-runs validation on the temporary healed file.
         Intercepts file I/O to trick the checker into reading the temp file 
         while thinking it is reading the original path.
         """
+        # L6 "Immune System": Check for regressions before checking specific fix
+        if not await self._check_side_effects(temp_path, orig_path):
+            print(f"      🛡️  L6 Immune Response: Rejecting fix (Regression/Hallucination detected).")
+            return False
+
         if key not in self.VERIFICATION_REGISTRY:
             # If we don't have a specific check, we trust the LLM (or return True to proceed)
             return True 
@@ -373,6 +385,50 @@ class SubAtomicAgent:
             return False
         finally:
             builtins.open = real_open # RESTORE REAL OPEN IMMEDIATELY
+
+    async def _check_side_effects(self, temp_path: str, orig_path: str) -> bool:
+        """L6: Verify the fix didn't break the Hippocratic Oath (Do No Harm)."""
+        try:
+            with open(temp_path, 'r', encoding='utf-8') as f:
+                new_code = f.read()
+            
+            # 1. Hallucination Check (New Imports)
+            tree = ast.parse(new_code)
+            new_imports = set()
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    for n in node.names: new_imports.add(n.name.split('.')[0])
+                elif isinstance(node, ast.ImportFrom) and node.module:
+                    new_imports.add(node.module.split('.')[0])
+            
+            # Simple check: If import doesn't resolve, it's likely bad
+            for imp in new_imports:
+                if imp not in sys.builtin_module_names:
+                    try:
+                        if not importlib.util.find_spec(imp):
+                            # Allow if it looks like a local module (heuristic)
+                            if not os.path.exists(imp) and not os.path.exists(imp + ".py"):
+                                print(f"      🚫 Hallucination Detected: Invalid import '{imp}'")
+                                return False
+                    except: pass # Ignore importlib errors
+
+            # 2. Security Regression (No Secrets/Eval)
+            if "eval(" in new_code or "exec(" in new_code:
+                print("      🚫 Security Regression: eval/exec detected")
+                return False
+            
+            # 3. Code Loss Check (Did we lose >50% of the file?)
+            with open(orig_path, 'r', encoding='utf-8') as f:
+                orig_len = len(f.readlines())
+            new_len = len(new_code.splitlines())
+            if orig_len > 10 and new_len < (orig_len * 0.5):
+                print(f"      🚫 Mass Deletion Detected: {orig_len} -> {new_len} lines")
+                return False
+                
+            return True
+        except Exception as e:
+            print(f"      ⚠️ Side-effect check failed: {e}")
+            return False
 
     def execute(self):
         """Execute agent's validation logic."""
@@ -1349,9 +1405,19 @@ class StructuralEngineer(SubAtomicAgent):
 
         # Key 20: Large classes
         passed, details = self.check_key_20_no_large_classes()
+        # L6 Constraint: Structural refactors require manual oversight or specialized splitting agents.
+        # Auto-fixing large classes often results in broken logic or circular imports.
+        # We will ONLY attempt fix if the class is marginally over limit.
         if not passed and self.ctx.intelligence_enabled:
-            for fp in set(v.split(":")[0] for v in details)[:2]:
-                await self.smart_fix(fp, 20)
+            try:
+                for viol in details[:1]:
+                    fp = viol.split(":")[0]
+                    # Safe heuristic: Don't auto-refactor massive core files (>20kb)
+                    if os.path.getsize(fp) < 20000: 
+                        await self.smart_fix(fp, 20)
+                    else:
+                        print(f"      ⚠️ Skipping Auto-Fix for {fp} (File too complex for atomic repair)")
+            except: pass
             passed, details = self.check_key_20_no_large_classes()
         self.ctx.report(self.name, 20, passed, details)
 
