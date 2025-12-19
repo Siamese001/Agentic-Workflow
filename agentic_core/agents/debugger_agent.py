@@ -66,40 +66,6 @@ class DebuggerAgent:
             
             ConfigurationService().results['SUMMARY'] = self._generate_summary(ConfigurationService().results)
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(f'Error in debugging cycle: {e}')
             ConfigurationService().results['ERROR'] = str(e)
         return ConfigurationService().results
@@ -112,40 +78,6 @@ class DebuggerAgent:
             return [{'trace_id': trace_id, 'summary': summary,
                      'analysis': analysis, 'source': 'specific_trace'}]
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(
                 f'Error debugging trace {trace_id}: {e}')
             return []
@@ -172,40 +104,6 @@ class DebuggerAgent:
             ConfigurationService().errors = error_traces
             return error_traces
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(
                 f'Error finding recent errors: {e}')
             return []
@@ -227,40 +125,6 @@ class DebuggerAgent:
                 'root_cause': llm_analysis.get('root_cause', 'unknown')
             }
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(
                 f'Error analyzing trace {trace_id}: {e}')
             return {'trace_id': trace_id, 'error': str(e)}
@@ -280,40 +144,6 @@ class DebuggerAgent:
             import json
             return json.loads(response.choices[0].message.content)
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(f'Error in LLM analysis: {e}')
             return {'category': 'unknown', 'severity': 'medium', 'root_cause': 'Analysis failed', 'fixable': False}
 
@@ -378,40 +208,6 @@ class DebuggerAgent:
             else:
                 implementation['RESULT'] = f"Fix type {fix['type']} requires manual implementation"
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             implementation['ERROR'] = str(e)
             ConfigurationService().logger.error(f'Error implementing fix: {e}')
         
@@ -444,40 +240,6 @@ class DebuggerAgent:
                 verification['recent_errors'] = recent_errors
             await self._record_verification(trace_id, verification)
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             verification['ERROR'] = str(e)
             ConfigurationService().logger.error(
                 f'Error verifying fix for {trace_id}: {e}')
@@ -489,40 +251,6 @@ class DebuggerAgent:
             ConfigurationService().logger.info(
                 f"Fix verification for {trace_id}: {verification.get('RESULT')}")
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(
                 f'Error recording verification: {e}')
 
@@ -540,40 +268,6 @@ class DebuggerAgent:
                 return True
             return False
         except Exception as e:
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
-            pass
             ConfigurationService().logger.error(
                 f'Error checking circuit breaker: {e}')
             return False

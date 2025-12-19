@@ -159,34 +159,48 @@ class ServiceManager:
         try:
             from pinecone import Pinecone, ServerlessSpec
             pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-            # Hardcode infrastructure settings to override defaults
-            index_name = "canon-memory-l2"  # Fixed index name
+            
+            # Force infrastructure settings to override defaults
+            index_name = "canon-memory-l2"  # Fixed index name - ignore env vars
+            cloud = "aws"  # Fixed cloud provider - ignore env vars  
+            region = "us-east-1"  # Fixed region - ignore env vars
+            dimension = int(os.getenv('PINECONE_DIMENSION', '1536'))  # Allow dimension from env
+            metric = os.getenv('PINECONE_METRIC', 'cosine')  # Allow metric from env
+            
             if index_name not in pc.list_indexes().names():
                 pc.create_index(
                     name=index_name,
-                    dimension=1536,  # OpenAI embedding dimension
-                    metric="cosine",
+                    dimension=dimension,
+                    metric=metric,
                     spec=ServerlessSpec(
-                        cloud="aws",
-                        region="us-east-1"  # Fixed region
+                        cloud=cloud,
+                        region=region
                     )
                 )
             self.pinecone_index = pc.Index(index_name)
-            print("   ✅ Pinecone connected - pattern learning enabled")
+            print(f"   ✅ Pinecone connected - pattern learning enabled ({region})")
         except Exception as e:
             self.pinecone_index = None
             print(f"   ⚠️  Pinecone unavailable: {e}")
     
     def _init_mcp(self):
         """Initialize MCP clients if available."""
+        # MCP requires async initialization with read/write streams
+        # Disabling for now to prevent blocking initialization
+        # TODO: Implement proper async MCP initialization with stdio_client
+        # Example pattern:
+        # async def init_mcp_async():
+        #     from mcp.client.session import ClientSession
+        #     from mcp.client.stdio import stdio_client
+        #     
+        #     async with stdio_client() as (read_stream, write_stream):
+        #         async with ClientSession(read_stream, write_stream) as session:
+        #             await session.initialize()
+        #             self.mcp_clients['figma'] = session
         try:
-            from mcp.client.session import ClientSession
-
-            # Initialize Figma MCP for UI pattern validation
             figma_token = os.getenv('FIGMA_TOKEN')
             if figma_token:
-                self.mcp_clients['figma'] = ClientSession(figma_token)
-                print("   ✅ Figma MCP connected - UI validation enabled")
+                print("   ⚠️  MCP services require async initialization - skipping for now")
         except Exception as e:
             print(f"   ⚠️  MCP services unavailable: {e}")
     
@@ -202,8 +216,10 @@ class ServiceManager:
         # Fallback to local dict
         return self.redis_fallback.get(f"canon:validation:{file_hash}")
     
-    def cache_result(self, file_hash: str, result: Dict, ttl: int = 3600):
+    def cache_result(self, file_hash: str, result: Dict, ttl: int = None):
         """Cache validation result in Redis or fallback dict."""
+        if ttl is None:
+            ttl = int(os.getenv('CACHE_TTL', '3600'))
         if self.redis_client:
             try:
                 self.redis_client.setex(
@@ -248,8 +264,10 @@ class ServiceManager:
         except:
             pass
     
-    def find_similar_patterns(self, violation: str, top_k: int = 3) -> List[Dict]:
+    def find_similar_patterns(self, violation: str, top_k: int = None) -> List[Dict]:
         """Find similar healing patterns for a violation."""
+        if top_k is None:
+            top_k = int(os.getenv('PATTERN_MATCH_TOP_K', '3'))
         if not self.pinecone_index:
             return []
         try:
@@ -315,8 +333,8 @@ class ValidationContext:
     # L5 Autonomy: Economic & Safety State
     healing_attempts: Dict[str, int] = field(default_factory=dict)       # Per-file counter
     healing_history: Dict[str, List[str]] = field(default_factory=dict)  # Audit log
-    max_healing_per_file: int = 8                                        # Hard limit per file
-    global_healing_budget: int = 50                                      # Hard limit global
+    max_healing_per_file: int = field(default_factory=lambda: int(os.getenv('MAX_HEALING_PER_FILE', '8')))    # From env
+    global_healing_budget: int = field(default_factory=lambda: int(os.getenv('GLOBAL_HEALING_BUDGET', '50')))    # From env
     healing_budget_used: int = 0
     
     # Gemini 3 Flash: Thought signature tracking for multi-turn
@@ -333,12 +351,8 @@ class ValidationContext:
         # Initialize intelligence if healing is enabled
         if genai and os.getenv("GOOGLE_API_KEY"):
             self.intelligence_enabled = True
-            # AFC Limit: Increase max_remote_calls to 20 for complex 600-file repairs
-            self._client = genai.Client(
-                api_key=os.getenv("GOOGLE_API_KEY"),
-                http_options={'max_remote_calls': 20}
-            )
-            print("   ✅ Gemini Connected - HEALING MODE ACTIVE (AFC limit: 20)")
+            self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+            print("   ✅ Gemini Connected - HEALING MODE ACTIVE")
         else:
             self.intelligence_enabled = False
             print("   ⚠️  Healing disabled: No API key configured")
@@ -350,6 +364,21 @@ class ValidationContext:
         if self.healing_attempts.get(file_path, 0) >= self.max_healing_per_file:
             return False
         return True
+    
+    def record_healing_attempt(self, file_path: str, success: bool):
+        """Record a healing attempt and update counters."""
+        # Increment per-file counter
+        if file_path not in self.healing_attempts:
+            self.healing_attempts[file_path] = 0
+        self.healing_attempts[file_path] += 1
+        
+        # Increment global budget usage
+        self.healing_budget_used += 1
+        
+        # Log to console
+        status = "✅ SUCCESS" if success else "❌ FAILED"
+        print(f"   Healing attempt {self.healing_attempts[file_path]} for {file_path}: {status}")
+        print(f"   Healing budget: {self.healing_budget_used}/{self.global_healing_budget}")
 
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
         """The 'Smart' fix logic. Calls Gemini to rewrite code with thought signature support."""
@@ -376,29 +405,44 @@ RULES:
         
         try:
             # L5: Deterministic generation with thinking and thought signature
+            from google.genai.types import GenerateContentConfig
+            
             response = await asyncio.to_thread(
                 self._client.models.generate_content,
                 model='gemini-3-flash-preview',
                 contents=contents,
-                config={
-                    "thinking_config": {
+                config=GenerateContentConfig(
+                    thinking_config={
                         "thinking_level": "HIGH"
                     }
-                }
+                )
             )
             
             fixed_code = response.text.strip()
             
             # Store thought signature and update conversation history
             if file_path:
-                if hasattr(response, 'thought_signature') and response.thought_signature:
-                    self.thought_signatures[file_path] = response.thought_signature
+                thought_signature = None
+                
+                # Extract thought_signature from response.candidates[0].content.parts
+                if (hasattr(response, 'candidates') and 
+                    len(response.candidates) > 0 and 
+                    hasattr(response.candidates[0], 'content') and
+                    hasattr(response.candidates[0].content, 'parts')):
+                    
+                    for part in response.candidates[0].content.parts:
+                        if hasattr(part, 'thought_signature') and part.thought_signature:
+                            thought_signature = part.thought_signature
+                            break
+                
+                if thought_signature:
+                    self.thought_signatures[file_path] = thought_signature
                     
                     # Create new conversation turn with thought signature
                     new_turn = {
                         "role": "model",
                         "parts": [{"text": fixed_code}],
-                        "thought_signature": response.thought_signature
+                        "thought_signature": thought_signature
                     }
                 else:
                     # Fallback for older models or no thought signature
@@ -608,7 +652,7 @@ class SubAtomicAgent:
                 if not res[0]:
                     relevant = [d for d in res[1] if str(d).startswith(file_path)]
                     if relevant:
-                        violation_details = "\nSpecific Violations:\n" + "\n".join(map(str, relevant[:8]))
+                        violation_details = "\nSpecific Violations:\n" + "\n".join(map(str, relevant[:int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))]))
 
             # Get similar healing patterns from Pinecone
             violation_desc = f"{self.name} Key {violation_key} violation in {file_path}"
@@ -629,12 +673,12 @@ class SubAtomicAgent:
                 
                 base_prompt = f"Fix Subatomic Canon Key {violation_key} only. {violation_details}"
                 if reference_fix and round_num == 1:
-                    base_prompt += f"\n\nReference successful fix for similar violation:\n{reference_fix[:500]}..."
+                    base_prompt += f"\n\nReference successful fix for similar violation:\n{reference_fix[:int(os.getenv('REFERENCE_FIX_CHARS', '500'))]}..."
                 
                 if round_num == 1:
-                    prompt = f"{base_prompt}\nReturn ONLY full corrected code."
+                    prompt = f"{base_prompt}\nReturn ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', or 'L3_orchestration'. Use full relative paths for local modules."
                 else:
-                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code."
+                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', or 'L3_orchestration'. Use full relative paths for local modules."
 
                 mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path)
 
@@ -647,7 +691,7 @@ class SubAtomicAgent:
                     continue
 
                 # 2. Hallucination Guard (Growth check)
-                if len(mutated_code.splitlines()) > len(current_code.splitlines()) * 4:
+                if len(mutated_code.splitlines()) > len(current_code.splitlines()) * int(os.getenv('CODE_EXPANSION_FACTOR', '4')):
                     print(f"      ⚠️ Round {round_num}: Code bloat detected – rejecting")
                     current_code = mutated_code
                     continue
@@ -837,7 +881,8 @@ class SystemArchitect(SubAtomicAgent):
         return (len(metaclass_violations) == 0, metaclass_violations)
 
     def check_key_41_scoped_nesting(self) -> Tuple[bool, List[str]]:
-        """Max nesting depth 4 inside functions/classes with scope awareness."""
+        """Max nesting depth from environment with scope awareness."""
+        max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         violations = []
         NESTERS = (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
 
@@ -858,7 +903,7 @@ class SystemArchitect(SubAtomicAgent):
                 is_nest = isinstance(node, NESTERS)
                 if is_nest:
                     self.depth += 1
-                    if self.depth > 4:
+                    if self.depth > max_depth:
                         violations.append(f"{self.fp}:{node.lineno} {self.scope} depth {self.depth}")
                 super().visit(node)
                 if is_nest: self.depth -= 1
@@ -898,18 +943,19 @@ class SystemArchitect(SubAtomicAgent):
                 except: root_violations.append(file_path)
         return len(root_violations) == 0, root_violations
 
-class Sherlock(SubAtomicAgent):
+class HealerAgent(SubAtomicAgent):
     """
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
-    ROLE: The Detective. Performs RCA on tracebacks and applies surgical smart_fixes.
+    ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
     """
+    MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
+
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating Failures...")
-        MAX_HEALING_ROUNDS = 3
         healed_this_round = True
         round_num = 0
 
-        while healed_this_round and round_num < MAX_HEALING_ROUNDS:
+        while healed_this_round and round_num < self.MAX_HEALING_ROUNDS:
             round_num += 1
             syntax_errors = []
             for file_path in self.ctx.python_files:
@@ -1093,10 +1139,11 @@ class CodeJanitor(SubAtomicAgent):
 
     def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
         violations = []
+        max_line_length = int(os.getenv('MAX_LINE_LENGTH', '100'))
         for file_path in self.ctx.python_files:
             with open(file_path, "r", encoding="utf-8") as f:
                 for i, line in enumerate(f, 1):
-                    if len(line) > 100:
+                    if len(line) > max_line_length:
                         violations.append(f"{file_path}:{i}")
         return (len(violations) == 0, violations)
 
@@ -1120,30 +1167,32 @@ class CodeJanitor(SubAtomicAgent):
         return len(violations) == 0, violations
 
     def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
-        """Maximum nesting depth of 4 levels."""
+        """Maximum nesting depth from environment."""
+        max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         violations = []
-        (ast.If, ast.For, ast.While, ast.Try, ast.With)
+        (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
         
         for fp in self.ctx.python_files:
             try:
                 tree = ast.parse(open(fp, "r", encoding="utf-8").read())
                 # Reverting to the Visitor pattern but reporting line numbers
-                visitor = self._NestingLineVisitor(fp)
+                visitor = self._NestingLineVisitor(fp, max_depth)
                 visitor.visit(tree)
                 violations.extend(visitor.violations)
             except: continue
         return len(violations) == 0, violations
 
     class _NestingLineVisitor(ast.NodeVisitor):
-        def __init__(self, filepath):
+        def __init__(self, filepath, max_depth):
             self.filepath = filepath
+            self.max_depth = max_depth
             self.depth = 0
             self.violations = []
         def visit(self, node):
             is_nest = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With))
             if is_nest:
                 self.depth += 1
-                if self.depth > 4:
+                if self.depth > self.max_depth:
                     self.violations.append(f"{self.filepath}:{node.lineno}")
             super().generic_visit(node)
             if is_nest: self.depth -= 1
@@ -1349,11 +1398,9 @@ class SafetyInspector(SubAtomicAgent):
             passed, details = self.check_key_01_no_todo_fixme()
         self.ctx.report(self.name, 1, passed, details)
 
-        # Key 2: No print statements
+        # Key 2: No print statements - TEMPORARILY SKIPPED DURING CORE REPAIR
         passed, details = self.check_key_02_no_print_statements()
-        if not passed and self.ctx.intelligence_enabled:
-            for fp in set(d.split(':')[0] for d in details): await self.smart_fix(fp, 2)
-            passed, details = self.check_key_02_no_print_statements()
+        print(f"      ⚠️ Key 2 healing temporarily skipped - core orchestrator stabilization")
         self.ctx.report(self.name, 2, passed, details)
 
         # Key 3: No debugger statements
@@ -1675,7 +1722,7 @@ class TypeMechanic(SubAtomicAgent):
 
                 unused = assigned - used
                 if unused:
-                    violations.extend([f"{file_path}:{var}" for var in list(unused)[:10]])
+                    violations.extend([f"{file_path}:{var}" for var in list(unused)[:int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))]])
             except Exception:
                 continue
 
@@ -1709,7 +1756,8 @@ class BudgetAgent(SubAtomicAgent):
             self.ctx.signals.add("COMPLEXITY_CLEAN")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions (>50 lines)."""
+        """Check for large functions from environment."""
+        max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
         violations = []
         for file_path in self.ctx.python_files:
             try:
@@ -1720,7 +1768,7 @@ class BudgetAgent(SubAtomicAgent):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
                             func_lines = node.end_lineno - node.lineno + 1
-                            if func_lines > 50:
+                            if func_lines > max_lines:
                                 violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
             except Exception:
                 continue
@@ -1741,7 +1789,7 @@ class BudgetAgent(SubAtomicAgent):
                         for child in ast.walk(node):
                             if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler, ast.And, ast.Or)):
                                 complexity += 1
-                        if complexity > 10:
+                        if complexity > int(os.getenv('MAX_FUNCTION_COMPLEXITY', '10')):
                             violations.append(f"{file_path}:{node.lineno} (score: {complexity})")
             except: continue
         return (len(violations) == 0, violations)
@@ -1763,7 +1811,7 @@ class StructuralEngineer(SubAtomicAgent):
         if not passed and self.ctx.intelligence_enabled:
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in set(v.split(":")[0] for v in details_list)[:3]:
+            for fp in set(v.split(":")[0] for v in details_list)[:int(os.getenv('MAX_PARAMETERS', '8'))]:
                 await self.smart_fix(fp, 18)
             passed, details = self.check_key_18_no_many_parameters()
         self.ctx.report(self.name, 18, passed, details)
@@ -1777,8 +1825,9 @@ class StructuralEngineer(SubAtomicAgent):
             try:
                 for viol in details[:1]:
                     fp = viol.split(":")[0]
-                    # Safe heuristic: Don't auto-refactor massive core files (>20kb)
-                    if os.path.getsize(fp) < 20000: 
+                    # Safe heuristic: Don't auto-refactor massive core files
+                    max_size_kb = int(os.getenv('MAX_CLASS_SIZE_KB', '20'))
+                    if os.path.getsize(fp) < max_size_kb * 1020: 
                         await self.smart_fix(fp, 20)
                     else:
                         print(f"      ⚠️ Skipping Auto-Fix for {fp} (File too complex for atomic repair)")
@@ -2279,7 +2328,7 @@ class IntelligentOrchestrator:
     def __init__(self, target=None):
         self.ctx = ValidationContext(target_scope=target or ".")
         self.swarm = [
-            Sherlock(self.ctx),             # 0. Syntax/RCA (Blocker)
+            TypeMechanic(self.ctx),        # 0. Syntax/RCA (Blocker)
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy
             CodeJanitor(self.ctx),          # 3. Syntax (Signal: AST_VALID)
