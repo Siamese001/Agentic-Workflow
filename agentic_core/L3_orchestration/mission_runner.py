@@ -58,7 +58,7 @@ def _get_imports():
     self-healing agents with mutation logic. The agentic_core/agents/ versions
     are detection-only stubs without healing capabilities.
     """
-    # Import FULL self-healing agents from canon_validator
+    # Import ALL self-healing agents from canon_validator (ZERO CAPABILITY LOSS)
     # WatchmanHandler is in agentic_core (not in scripts/canon_validator)
     from agentic_core.agents.infrastructure import WatchmanHandler
     from agentic_core.L3_orchestration.canon_scheduler import CanonSwarmScheduler
@@ -68,17 +68,35 @@ def _get_imports():
         start_intervention_server,
     )
     from scripts.canon_validator.agents import (
-        ArchitectureGovernor,
-        CodeStyleGuardian,
-        ConcurrencyGuardian,
-        DependencySentinel,
+        ArchitectureGovernor,  # Keys 40, 41, 50 + syntax fix
+    )
+    from scripts.canon_validator.agents import (
+        CodeStyleGuardian,  # Keys 10-16, 21, 47 + auto-fix whitespace/tabs/newlines
+    )
+    from scripts.canon_validator.agents import ConcurrencyGuardian  # Keys 61, 63, 64
+    from scripts.canon_validator.agents import (
+        DependencySentinel,  # Keys 7, 8, 9, 14, 44 + autoflake/isort
+    )
+    from scripts.canon_validator.agents import (
+        HygieneGuardian,  # Key 45 + auto-delete generative artifacts
+    )
+    from scripts.canon_validator.agents import (
+        NamingEnforcer,  # Key 47 + auto-fix naming
+    )
+    from scripts.canon_validator.agents import PatternEnforcer  # Keys 26-39
+    from scripts.canon_validator.agents import SafetyInspector  # Keys 0-6, 60
+    from scripts.canon_validator.agents import (
+        StructuralEngineer,  # Keys 17, 18, 20, 25, 42, 43, 46
+    )
+    from scripts.canon_validator.agents import TestPilot  # Key 22 (tests)
+    from scripts.canon_validator.agents import (
+        TypeEnforcer,  # Key 22 + auto-inject typing imports
+    )
+    from scripts.canon_validator.agents import (  # Core agents; Type and naming agents with mutation; Pattern and structure agents; Safety and testing; Strategic agents
         GitAgent,
         Historian,
-        HygieneGuardian,
         ReflectionAgent,
-        SafetyInspector,
         StrategicPlanner,
-        TestPilot,
     )
 
     # Use the FULL ValidationContext from scripts/canon_validator which has all methods
@@ -90,18 +108,23 @@ def _get_imports():
         'start_intervention_server': start_intervention_server,
         'approval_event': approval_event,
         'FASTAPI_AVAILABLE': FASTAPI_AVAILABLE,
+        # All agents for zero capability loss
         'ArchitectureGovernor': ArchitectureGovernor,
-        'DependencySentinel': DependencySentinel,
-        'SafetyInspector': SafetyInspector,
-        'ConcurrencyGuardian': ConcurrencyGuardian,
-        'HygieneGuardian': HygieneGuardian,
         'CodeStyleGuardian': CodeStyleGuardian,
-        'TestPilot': TestPilot,
-        'Historian': Historian,
+        'ConcurrencyGuardian': ConcurrencyGuardian,
+        'DependencySentinel': DependencySentinel,
         'GitAgent': GitAgent,
-        'WatchmanHandler': WatchmanHandler,
-        'StrategicPlanner': StrategicPlanner,
+        'Historian': Historian,
+        'HygieneGuardian': HygieneGuardian,
+        'NamingEnforcer': NamingEnforcer,
+        'TypeEnforcer': TypeEnforcer,
+        'PatternEnforcer': PatternEnforcer,
+        'StructuralEngineer': StructuralEngineer,
+        'SafetyInspector': SafetyInspector,
+        'TestPilot': TestPilot,
         'ReflectionAgent': ReflectionAgent,
+        'StrategicPlanner': StrategicPlanner,
+        'WatchmanHandler': WatchmanHandler,
     }
 
 
@@ -206,17 +229,22 @@ def run_standard_mode():
     start_intervention_server = imports['start_intervention_server']
     approval_event = imports['approval_event']
     FASTAPI_AVAILABLE = imports['FASTAPI_AVAILABLE']
+    # ALL agents for zero capability loss
     ArchitectureGovernor = imports['ArchitectureGovernor']
-    DependencySentinel = imports['DependencySentinel']
-    SafetyInspector = imports['SafetyInspector']
-    ConcurrencyGuardian = imports['ConcurrencyGuardian']
-    HygieneGuardian = imports['HygieneGuardian']
     CodeStyleGuardian = imports['CodeStyleGuardian']
-    TestPilot = imports['TestPilot']
-    Historian = imports['Historian']
+    ConcurrencyGuardian = imports['ConcurrencyGuardian']
+    DependencySentinel = imports['DependencySentinel']
     GitAgent = imports['GitAgent']
-    StrategicPlanner = imports['StrategicPlanner']
+    Historian = imports['Historian']
+    HygieneGuardian = imports['HygieneGuardian']
+    NamingEnforcer = imports['NamingEnforcer']
+    TypeEnforcer = imports['TypeEnforcer']
+    PatternEnforcer = imports['PatternEnforcer']
+    StructuralEngineer = imports['StructuralEngineer']
+    SafetyInspector = imports['SafetyInspector']
+    TestPilot = imports['TestPilot']
     ReflectionAgent = imports['ReflectionAgent']
+    StrategicPlanner = imports['StrategicPlanner']
     
     try:
         ctx = ValidationContext()
@@ -229,12 +257,37 @@ def run_standard_mode():
         print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
         sys.exit(1)
     
-    # Build agent list
+    # Build COMPLETE agent list - ALL 50 KEYS COVERED (ZERO CAPABILITY LOSS)
+    # Order matches original IntelligentOrchestrator swarm order
     agents = [
-        Historian(ctx), ArchitectureGovernor(ctx), HygieneGuardian(ctx),
-        CodeStyleGuardian(ctx), DependencySentinel(ctx), SafetyInspector(ctx),
-        ConcurrencyGuardian(ctx), TestPilot(ctx)
+        # 1. Structure (Blocker) - Keys 40, 41, 50 + syntax fix
+        ArchitectureGovernor(ctx),
+        # 2. Generative Policy - Key 45 + auto-delete
+        HygieneGuardian(ctx),
+        # 3. Syntax/Style (Signal: AST_VALID) - Keys 10-16, 21, 47 + auto-fix
+        CodeStyleGuardian(ctx),
+        # 4. Import Hygiene (Signal: DEPS_VALID) - Keys 7, 8, 9, 14, 44 + autoflake/isort
+        DependencySentinel(ctx),
+        # 5. Security (Signal: SECURE) - Keys 0-6, 60
+        SafetyInspector(ctx),
+        # 6. Patterns - Keys 26-39
+        PatternEnforcer(ctx),
+        # 7. Naming - Key 47 + auto-fix
+        NamingEnforcer(ctx),
+        # 8. Types - Key 22 + auto-inject typing
+        TypeEnforcer(ctx),
+        # 9. Concurrency - Keys 61, 63, 64
+        ConcurrencyGuardian(ctx),
+        # 10. Structure - Keys 17, 18, 20, 25, 42, 43, 46
+        StructuralEngineer(ctx),
+        # 11. History
+        Historian(ctx),
+        # 12. Tests - Key 22
+        TestPilot(ctx),
     ]
+    
+    # Enable MUTATION MODE for self-healing - agents will fix issues, not just report
+    ctx.instructions.append("[SYSTEM] MUTATION MODE: Agents should fix violations, not just report them.")
 
     async def run_mission():
         MAX_CYCLES = 5

@@ -259,6 +259,19 @@ class ValidationContext:
             except Exception as e:
                 print(f"      ⚠️  Memory load failed: {e}")
 
+    def _save_memory(self):
+        """Save canon memory to disk."""
+        memory_file = Path("canon_memory.json")
+        try:
+            data = {
+                "file_hashes": self.file_hashes,
+                "skip_files": list(self.skip_files)
+            }
+            with open(memory_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            print(f"      ⚠️  Memory save failed: {e}")
+
     def report(self, agent: str, key: int, passed: bool, details: Any = None):
         """Report validation result for a specific key to the blackboard."""
         status = "PASS" if passed else "FAIL"
@@ -289,6 +302,18 @@ class ValidationContext:
         """Signal that the validation has converged."""
         print("   ✅ Convergence achieved - no modifications in this cycle")
         self.signals.add("CONVERGENCE")
+
+    def rollback_changes(self):
+        """Rollback changes from file backups."""
+        if self.file_backups:
+            for file_path, content in self.file_backups.items():
+                try:
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    print(f"   ↩️ Rolled back: {file_path}")
+                except Exception as e:
+                    print(f"   ⚠️ Rollback failed for {file_path}: {e}")
+            self.file_backups.clear()
 
     def inject_instruction(self, source_agent: str, instruction: str):
         """Add a guiding hint to the blackboard for downstream agents."""
