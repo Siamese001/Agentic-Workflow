@@ -37,6 +37,9 @@ class CanonBaseAgent(ABC):
     chat_sessions: Dict[str, Any] = field(default_factory=dict, init=False)
     conversation_history: Dict[str, List] = field(default_factory=dict, init=False)
     
+    # Fission Manager for monolithic file decomposition
+    _fission_manager: Optional[Any] = field(default=None, init=False)
+    
     # Banned imports from constraints.md
     BANNED_IMPORTS = [
         'base',
@@ -57,6 +60,11 @@ class CanonBaseAgent(ABC):
             print(f"✅ {self.name} connected to Gemini 2.5", flush=True)
         else:
             print(f"⚠️  {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})", flush=True)
+        
+        # Initialize Fission Manager for monolithic file decomposition
+        if self._client:
+            from .fission_manager import FissionManager
+            self._fission_manager = FissionManager(gemini_client=self._client)
     
     def _get_role_name(self) -> str:
         """Convert class name to role name (e.g., SystemArchitect -> system_architect)."""
@@ -87,16 +95,13 @@ class CanonBaseAgent(ABC):
         violations = []
         
         for banned in self.BANNED_IMPORTS:
-            # Check for various import patterns
-            patterns = [
-                f"import {banned}",
-                f"from {banned} import",
-                f"from {banned}.",
-            ]
+            # Create a regex pattern that matches any of the banned import forms
+            # e.g., r"(?:import\s+base|from\s+base\s+import|from\s+base\.)"
+            # The (?:...) creates a non-capturing group.
+            regex_pattern = rf"(?:import\s+{re.escape(banned)}|from\s+{re.escape(banned)}\s+import|from\s+{re.escape(banned)}\.)"
             
-            for pattern in patterns:
-                if pattern in code:
-                    violations.append(f"Banned import detected: {pattern}")
+            if re.search(regex_pattern, code):
+                violations.append(f"Banned import detected: {banned}")
         
         return len(violations) == 0, violations
 

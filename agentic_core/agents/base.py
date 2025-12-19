@@ -111,49 +111,63 @@ class ImportPatcher:
         for file_path in affected_files:
             await self._patch_file_imports(file_path, change_map, source_agent)
 
-    async def _patch_file_imports(self, file_path, change_map, source_agent):
-        """Patch imports in a single file based on the change map."""
-        import os
+    def _generate_patch_instructions(self, change_map: dict) -> list[str]:
+        """Generates a list of human-readable patch instructions from a change map."""
+        instructions = []
+        for old_module, new_targets in change_map.items():
+            if isinstance(new_targets, str):
+                instructions.append(f"{old_module} → {new_targets}")
+            elif isinstance(new_targets, list):
+                for new_target in new_targets:
+                    instructions.append(f"{old_module} → {new_target}")
+        return instructions
+
+    def _read_file_content(self, file_path: str) -> str | None:
+        """Reads file content, handling potential errors."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                return f.read()
+        except Exception as e:
+            print(f"   ❌ Failed to read file {file_path}: {e}")
+            self.ctx.signals.add("CRITICAL_WARNING")
+            return None
 
-            # Build patch instructions specific to this file
-            patch_instructions = []
+    def _apply_patch_and_log(self, file_path: str, updated_content: str):
+        """Applies the patched content to the file and logs the outcome."""
+        import os # os is only used here for os.path.basename
+        if self.ctx.write_compliant_file(file_path, updated_content):
+            print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
 
-            for old_module, new_targets in change_map.items():
-                if isinstance(new_targets, str):
-                    # Simple move: old -> new
-                    patch_instructions.append(f"{old_module} → {new_targets}")
-                elif isinstance(new_targets, list):
-                    # Split: old -> [new1, new2, ...]
-                    for new_target in new_targets:
-                        patch_instructions.append(f"{old_module} → {new_target}")
+    async def _patch_file_imports(self, file_path, change_map, source_agent):
+        """Patch imports in a single file based on the change map."""
 
-            patch_text = "\n".join(patch_instructions)
+        content = self._read_file_content(file_path)
+        if content is None:
+            return
 
-            # Generate patch task
-            patch_task = (
-                f"Update imports in this file to reflect module changes.\n"
-                f"Required changes:\n{patch_text}\n\n"
-                f"File content:\n{content}\n\n"
-                "Rules:\n"
-                "1. Update import statements to use new module paths\n"
-                "2. For split modules, import specific symbols from new modules\n"
-                "3. Preserve relative imports where possible\n"
-                "4. Return ONLY the updated Python code with corrected imports"
-            )
+        patch_instructions = self._generate_patch_instructions(change_map)
+        patch_text = "\n".join(patch_instructions)
 
-            # Request patch from Gemini
+        patch_task = (
+            f"Update imports in this file to reflect module changes.\n"
+            f"Required changes:\n{patch_text}\n\n"
+            f"File content:\n{content}\n\n"
+            "Rules:\n"
+            "1. Update import statements to use new module paths\n"
+            "2. For split modules, import specific symbols from new modules\n"
+            "3. Preserve relative imports where possible\n"
+            "4. Return ONLY the updated Python code with corrected imports"
+        )
+
+        updated_content = None
+        try:
             updated_content = await self.ctx.request_mutation(
                 source_agent, patch_task, content, reasoning_mode=False
             )
-
-            # Apply patch if changed
-            if updated_content and updated_content != content:
-                if self.ctx.write_compliant_file(file_path, updated_content):
-                    print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
-
         except Exception as e:
-            print(f"   ❌ Failed to patch imports in {file_path}: {e}")
+            print(f"   ❌ Failed to request mutation for {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
+            return
+
+        if updated_content and updated_content != content:
+            self._apply_patch_and_log(file_path, updated_content)
