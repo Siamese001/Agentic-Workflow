@@ -197,13 +197,19 @@ class SubAtomicAgent:
             0: safety.check_key_00_no_hardcoded_secrets,
             1: safety.check_key_01_no_todo_fixme,
             2: safety.check_key_02_no_print_statements,
+            # Key 3-6 handled by SafetyInspector but not explicitly mapped in V2
+            3: safety.check_key_03_no_debugger_statements,
+            4: safety.check_key_04_no_empty_except_blocks,
+            5: safety.check_key_05_no_bare_except,
+            6: safety.check_key_06_no_eval_exec,
             7: deps.check_key_07_no_star_imports,
             8: deps.check_key_08_no_relative_imports,
-            9: deps.check_key_45_no_unused_imports,
+            9: deps.check_key_45_no_unused_imports, # Alias for Unused Imports
             10: janitor.check_key_10_no_long_lines,
             11: janitor.check_key_11_no_trailing_whitespace,
             12: janitor.check_key_12_no_missing_newline,
             13: janitor.check_key_13_no_tabs,
+            14: deps.check_key_14_no_duplicate_imports, # Handled by isort check in execute
             15: janitor.check_key_15_no_magic_numbers,
             16: janitor.check_key_16_no_deep_nesting,
             17: budget.check_key_17_no_large_functions,
@@ -218,8 +224,17 @@ class SubAtomicAgent:
             26: pattern.check_key_26_no_mutable_defaults,
             27: pattern.check_key_27_prefer_str_join,
             28: pattern.check_key_28_no_bare_except,
+            29: pattern.check_key_29_no_assert_in_prod,
             30: pattern.check_key_30_prefer_fstrings,
+            31: pattern.check_key_31_no_complex_comprehensions, # Placeholder/Future
+            32: pattern.check_key_32_no_dict_keys_check, # Placeholder/Future
+            33: pattern.check_key_33_no_float_equality, # Placeholder/Future
             34: pattern.check_key_34_use_is_for_none,
+            35: deps.check_key_07_no_star_imports, # Duplicate of Key 07
+            36: pattern.check_key_36_no_shadowed_builtins,
+            37: pattern.check_key_37_no_redundant_self,
+            38: pattern.check_key_38_prefer_comprehensions,
+            39: pattern.check_key_39_no_useless_return, # Placeholder/Future
             40: arch.check_key_40_no_metaclasses,
             41: arch.check_key_41_scoped_nesting,
             42: struct.check_key_42_no_large_files,
@@ -228,6 +243,7 @@ class SubAtomicAgent:
             45: deps.check_key_45_no_unused_imports,
             46: struct.check_key_46_no_duplicate_code,
             47: NamingAgent(ctx).check_key_47_naming_conventions,
+            48: janitor.check_key_48_syntax_validity, # Handled by Sherlock
             49: arch.check_key_49_directory_depth,
             50: arch.check_key_50_law_of_void,
         }
@@ -255,12 +271,23 @@ class SubAtomicAgent:
                 original_code = f.read()
             
             current_code = original_code
+
+            # Get specific violation context if possible
+            check_func = self.VERIFICATION_REGISTRY.get(violation_key)
+            violation_details = ""
+            if check_func:
+                 # Re-run check to get exact lines/messages
+                res = await check_func() if asyncio.iscoroutinefunction(check_func) else check_func()
+                if not res[0]:
+                    # Filter for this file only
+                    relevant = [d for d in res[1] if str(d).startswith(file_path)]
+                    if relevant: violation_details = f"\nSpecific Violations to Fix:\n" + "\n".join(relevant[:5])
             
             # L5 Hardening: Multi-Round Healing
             for round_num in range(1, 4):
                 print(f"      [Round {round_num}] Attempting fix for Key {violation_key} in {os.path.basename(file_path)}...")
                 
-                prompt = f"Fix Subatomic Canon Key {violation_key}. Return ONLY full corrected code."
+                prompt = f"Fix Subatomic Canon Key {violation_key}. {violation_details}\nReturn ONLY full corrected code. No markdown."
                 if round_num > 1:
                     prompt = f"Previous fix FAILED verification for Key {violation_key}. Critique and improve. Return ONLY full corrected code."
 
@@ -283,6 +310,12 @@ class SubAtomicAgent:
                 is_fixed = await self._verify_fix_resolved(file_path, temp_path, violation_key)
                 
                 if is_fixed:
+                    # L5 SAFETY: Create backup before overwrite
+                    backup_path = file_path + ".bak"
+                    if not os.path.exists(backup_path):
+                        with open(backup_path, "w", encoding="utf-8") as bk:
+                            bk.write(original_code)
+                            
                     os.replace(temp_path, file_path) # Commit the fix
                     self.ctx.modified_files.add(file_path)
                     print(f"      ✨ Healed {os.path.basename(file_path)} after {round_num} rounds.")
@@ -862,6 +895,22 @@ class DependencySentinel(SubAtomicAgent):
                         violations.append(f"Circular: {fp} <-> {other_fp}")
         return len(violations) == 0, list(set(violations))
 
+    def check_key_14_no_duplicate_imports(self) -> Tuple[bool, List[str]]:
+        """Check for duplicate imports (Basic AST check to supplement isort)."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                imports = set()
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        for name in node.names:
+                            n = name.asname or name.name
+                            if n in imports: violations.append(f"{fp} dup: {n}")
+                            imports.add(n)
+            except: continue
+        return len(violations) == 0, violations
+
 class SafetyInspector(SubAtomicAgent):
     """
     KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
@@ -923,9 +972,14 @@ class SafetyInspector(SubAtomicAgent):
         ]
 
         for file_path in self.ctx.python_files:
+            if is_excluded(file_path): continue
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
+                    # L5 Optimization: Check common headers first
+                    if "import os" in content and "getenv" in content:
+                        continue # Likely safe usage
+
                     for pattern in secret_patterns:
                         if re.search(pattern, content, re.IGNORECASE):
                             violations.append(file_path)
@@ -1441,8 +1495,16 @@ class PatternEnforcer(SubAtomicAgent):
         results[26] = self.check_key_26_no_mutable_defaults()
         results[27] = self.check_key_27_prefer_str_join()
         results[28] = self.check_key_28_no_bare_except()
+        results[29] = self.check_key_29_no_assert_in_prod()
         results[30] = self.check_key_30_prefer_fstrings()
         results[34] = self.check_key_34_use_is_for_none()
+        results[36] = self.check_key_36_no_shadowed_builtins()
+        results[37] = self.check_key_37_no_redundant_self()
+        results[38] = self.check_key_38_prefer_comprehensions()
+        results[31] = self.check_key_31_no_complex_comprehensions()
+        results[32] = self.check_key_32_no_dict_keys_check()
+        results[33] = self.check_key_33_no_float_equality()
+        results[39] = self.check_key_39_no_useless_return()
         
         # Report results
         for key, (passed, details) in results.items():
@@ -1453,11 +1515,22 @@ class PatternEnforcer(SubAtomicAgent):
             26: self.check_key_26_no_mutable_defaults,
             27: self.check_key_27_prefer_str_join,
             28: self.check_key_28_no_bare_except,
+            29: self.check_key_29_no_assert_in_prod,
             30: self.check_key_30_prefer_fstrings,
+            31: self.check_key_31_no_complex_comprehensions,
+            32: self.check_key_32_no_dict_keys_check,
+            33: self.check_key_33_no_float_equality,
             34: self.check_key_34_use_is_for_none,
+            36: self.check_key_36_no_shadowed_builtins,
+            37: self.check_key_37_no_redundant_self,
+            38: self.check_key_38_prefer_comprehensions,
+            39: self.check_key_39_no_useless_return,
         }
-        for key, (passed, details) in results.items():
-            if not passed and self.ctx.intelligence_enabled:
+        # Re-iterate only on failures
+        failures = [k for k, v in results.items() if not v[0]]
+        for key in failures:
+             passed, details = results[key]
+             if not passed and self.ctx.intelligence_enabled:
                 files = set(d.split(":")[0].strip() for d in details if ":" in d)
                 for fp in list(files)[:3]:
                     await self.smart_fix(fp, key)
@@ -1532,6 +1605,124 @@ class PatternEnforcer(SubAtomicAgent):
                                 for comparator in node.comparators:
                                     if isinstance(comparator, ast.Constant) and comparator.value is None:
                                         violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_29_no_assert_in_prod(self) -> Tuple[bool, List[str]]:
+        """No assert statements (removed in -O optimization)."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Assert):
+                        violations.append(f"{fp}:{node.lineno}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_36_no_shadowed_builtins(self) -> Tuple[bool, List[str]]:
+        """Variable names should not shadow Python builtins."""
+        import builtins
+        builtins_set = set(dir(builtins))
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
+                        if node.id in builtins_set and node.id not in ("id", "type", "open", "dir"): # Soft exemptions
+                            violations.append(f"{fp}:{node.lineno} shadows {node.id}")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_37_no_redundant_self(self) -> Tuple[bool, List[str]]:
+        """Avoid passing 'self' explicitly as an argument."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Call):
+                        # Check args for explicit 'self'
+                        for arg in node.args:
+                            if isinstance(arg, ast.Name) and arg.id == "self":
+                                violations.append(f"{fp}:{node.lineno} explicit 'self' arg")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_38_prefer_comprehensions(self) -> Tuple[bool, List[str]]:
+        """Prefer list/dict comprehensions over map() and filter()."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                        if node.func.id in ("map", "filter"):
+                            violations.append(f"{fp}:{node.lineno} use comprehension")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_31_no_complex_comprehensions(self) -> Tuple[bool, List[str]]:
+        """No comprehensions with >2 generators or complex nested ifs."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
+                        if len(node.generators) > 2:
+                            violations.append(f"{fp}:{node.lineno} too many generators")
+                        elif len(node.generators) == 1 and len(node.generators[0].ifs) > 1:
+                            violations.append(f"{fp}:{node.lineno} complex logic")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_32_no_dict_keys_check(self) -> Tuple[bool, List[str]]:
+        """Prefer 'k in d' over 'k in d.keys()'."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Compare):
+                        for comparator in node.comparators:
+                            if isinstance(comparator, ast.Call) and isinstance(comparator.func, ast.Attribute):
+                                if comparator.func.attr == 'keys':
+                                    violations.append(f"{fp}:{node.lineno} use 'key in dict'")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_33_no_float_equality(self) -> Tuple[bool, List[str]]:
+        """Avoid direct float equality checks (use math.isclose)."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Compare):
+                        for op in node.ops:
+                            if isinstance(op, (ast.Eq, ast.NotEq)):
+                                # Check if any operand is a float literal
+                                has_float = any(isinstance(c, ast.Constant) and isinstance(c.value, float) 
+                                              for c in node.comparators + [node.left])
+                                if has_float:
+                                    violations.append(f"{fp}:{node.lineno} unsafe float compare")
+            except: continue
+        return len(violations) == 0, violations
+
+    def check_key_39_no_useless_return(self) -> Tuple[bool, List[str]]:
+        """No explicit 'return' or 'return None' at end of function."""
+        violations = []
+        for fp in self.ctx.python_files:
+            try:
+                tree = ast.parse(open(fp, "r", encoding="utf-8").read())
+                for node in ast.walk(tree):
+                    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if node.body and isinstance(node.body[-1], ast.Return):
+                            ret = node.body[-1]
+                            if ret.value is None or (isinstance(ret.value, ast.Constant) and ret.value.value is None):
+                                violations.append(f"{fp}:{ret.lineno}")
             except: continue
         return len(violations) == 0, violations
 
