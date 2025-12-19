@@ -6,8 +6,6 @@ import time
 from typing import Any, Dict, Optional
 
 from connection_manager import ConnectionManager
-from redisvl.query import VectorQuery
-from redisvl.query.filter import Tag
 
 # Import our hardened schemas and connection manager
 from schemas_connectivity import CanonEntry

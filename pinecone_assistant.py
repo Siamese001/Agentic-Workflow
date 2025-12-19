@@ -1,6 +1,7 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
 from pinecone import Pinecone, ServerlessSpec
 
 # Get the project root directory (where .env is located)

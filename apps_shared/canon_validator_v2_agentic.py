@@ -62,9 +62,9 @@ def get_python_files(root: str = '.') -> List[str]:
     return python_files
 
 try:
-    import google.generativeai as genai
+    from google import genai
 except ImportError:
-    print("   ⚠️  google-generativeai not installed - run: pip install google-generativeai")
+    print("   ⚠️  google-genai not installed - run: pip install google-genai")
     genai = None
 
 logger = logging.getLogger(__name__)
@@ -160,7 +160,7 @@ class ServiceManager:
                     metric="cosine",
                     spec=ServerlessSpec(
                         cloud="aws",
-                        region="us-west-2"
+                        region="us-east-1"
                     )
                 )
             self.pinecone_index = pc.Index(index_name)
@@ -306,6 +306,10 @@ class ValidationContext:
     max_healing_per_file: int = 8                                        # Hard limit per file
     global_healing_budget: int = 50                                      # Hard limit global
     healing_budget_used: int = 0
+    
+    # Gemini 3 Flash: Thought signature tracking for multi-turn
+    thought_signatures: Dict[str, str] = field(default_factory=dict)     # Per-file thought signatures
+    conversation_history: Dict[str, List[Any]] = field(default_factory=dict)  # Per-file conversation history
 
     def __post_init__(self):
         # TARGETED SCAN: Only load files in the target scope to save tokens
@@ -317,10 +321,7 @@ class ValidationContext:
         # Initialize intelligence if healing is enabled
         if genai and os.getenv("GOOGLE_API_KEY"):
             self.intelligence_enabled = True
-            genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-            self._client = genai.GenerativeModel(
-                model_name=os.getenv("GEMINI_MODEL", "gemini-1.5-pro-latest")
-            )
+            self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
             print("   ✅ Gemini Connected - HEALING MODE ACTIVE")
         else:
             self.intelligence_enabled = False
@@ -334,8 +335,17 @@ class ValidationContext:
             return False
         return True
 
-    async def resilient_mutation(self, agent_name: str, task: str, code: str) -> str:
-        """The 'Smart' fix logic. Calls Gemini to rewrite code."""
+    async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
+        """The 'Smart' fix logic. Calls Gemini to rewrite code with thought signature support."""
+        
+        # Build conversation contents including history if available
+        contents = []
+        
+        # Add previous conversation history if this is a follow-up
+        if file_path and file_path in self.conversation_history:
+            contents.extend(self.conversation_history[file_path])
+        
+        # Add current prompt
         prompt = f"""Task: {task}
 SYSTEM: You are a Level 5 Autonomous Repair Agent.
 RULES:
@@ -346,22 +356,52 @@ RULES:
 
 {code}"""
         
+        contents.append(prompt)
+        
         try:
-            # L5: Deterministic generation for code stability
+            # L5: Deterministic generation with thinking and thought signature
             response = await asyncio.to_thread(
                 self._client.models.generate_content,
-                model=os.getenv("GEMINI_MODEL", "gemini-1.5-pro-latest"),
-                contents=[prompt],
-                generation_config={
-                    "temperature": 0.0,
-                    "top_p": 0.95,
-                    "max_output_tokens": 8192,
-                },
-                safety_settings=[
-                    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
-                ]
+                model='gemini-3-flash-preview',
+                contents=contents,
+                config={
+                    "thinking_config": {
+                        "thinking_level": "HIGH"
+                    }
+                }
             )
+            
             fixed_code = response.text.strip()
+            
+            # Store thought signature and update conversation history
+            if file_path:
+                if hasattr(response, 'thought_signature') and response.thought_signature:
+                    self.thought_signatures[file_path] = response.thought_signature
+                    
+                    # Create new conversation turn with thought signature
+                    new_turn = {
+                        "role": "model",
+                        "parts": [{"text": fixed_code}],
+                        "thought_signature": response.thought_signature
+                    }
+                else:
+                    # Fallback for older models or no thought signature
+                    new_turn = {
+                        "role": "model", 
+                        "parts": [{"text": fixed_code}]
+                    }
+                
+                # Update conversation history
+                if file_path not in self.conversation_history:
+                    self.conversation_history[file_path] = []
+                
+                # Add user prompt and model response to history
+                self.conversation_history[file_path].append({
+                    "role": "user",
+                    "parts": [{"text": prompt}]
+                })
+                self.conversation_history[file_path].append(new_turn)
+            
             # Clean up markdown
             if "```python" in fixed_code:
                 fixed_code = fixed_code.replace("```python", "").replace("```", "").strip()
@@ -488,7 +528,6 @@ class SubAtomicAgent:
             45: deps.check_key_45_no_unused_imports,
             46: struct.check_key_46_no_duplicate_code,
             47: NamingAgent(ctx).check_key_47_naming_conventions,
-            48: janitor.check_key_48_syntax_validity, # Handled by Sherlock
             49: arch.check_key_49_directory_depth,
             50: arch.check_key_50_law_of_void,
         }
@@ -581,7 +620,7 @@ class SubAtomicAgent:
                 else:
                     prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code."
 
-                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code)
+                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path)
 
                 # 1. Syntax Gate
                 try:
