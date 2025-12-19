@@ -23,6 +23,15 @@ except ImportError:
 
 from agentic_core.agents.base import SubAtomicAgent
 
+try:
+    from google import genai
+    from google.genai import types
+    GENAI_AVAILABLE = True
+except ImportError:
+    GENAI_AVAILABLE = False
+    genai = None
+    types = None
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,9 +60,11 @@ class IntegrityReport:
     supported_claims: int
     unsupported_claims: int
     integrity_score: float
+    hallucination_percentage: float
     risk_level: str  # "low", "medium", "high", "critical"
     unsupported_details: List[VerificationResult]
     requires_rollback: bool
+    audit_trail: Dict[str, str]  # Maps output claims to source citations
 
 
 class HallucinationHunter(SubAtomicAgent):
@@ -84,45 +95,73 @@ class HallucinationHunter(SubAtomicAgent):
         # Similarity threshold
         self.SIMILARITY_THRESHOLD = 0.85
         
+        # Hallucination threshold (mission requirement: >5% fails)
+        self.HALLUCINATION_THRESHOLD = 0.05  # 5%
+        
         # Risk thresholds
         self.LOW_RISK_THRESHOLD = 0.95  # >95% supported
         self.MEDIUM_RISK_THRESHOLD = 0.85  # >85% supported
         self.HIGH_RISK_THRESHOLD = 0.70  # >70% supported
         # <70% is critical
+        
+        # Gemini client for claim extraction
+        self.genai_available = GENAI_AVAILABLE
+        if GENAI_AVAILABLE:
+            api_key = self.ctx.get_env("GEMINI_API_KEY") if hasattr(self.ctx, 'get_env') else None
+            if api_key:
+                try:
+                    self.genai_client = genai.Client(api_key=api_key)
+                    logger.info("✅ Hallucination Hunter connected to Gemini 2.5")
+                except Exception as e:
+                    logger.warning(f"⚠️  Could not connect to Gemini: {e}")
+                    self.genai_available = False
     
     async def execute(self):
         """
         Execute hallucination hunting.
         
-        Audits data integrity of pipeline outputs.
+        Listens for PIPELINE_OUTPUT signals and audits factual integrity.
         """
-        logger.info("🔍 Hallucination Hunter: Auditing data integrity...")
+        logger.info("🔍 Hallucination Hunter: Monitoring for PIPELINE_OUTPUT signals...")
         
-        # Check if we have source and generated data
-        if not hasattr(self.ctx, 'pipeline_data'):
-            logger.info("   No pipeline data to audit")
-            return
+        # Listen for PIPELINE_OUTPUT signals from blackboard
+        if hasattr(self.ctx, 'signals'):
+            output_signals = [s for s in self.ctx.signals if s.startswith('PIPELINE_OUTPUT:')]
+            
+            if output_signals:
+                logger.info(f"   Detected {len(output_signals)} PIPELINE_OUTPUT signals")
+                
+                for signal in output_signals:
+                    # Extract file path from signal
+                    file_path = signal.replace('PIPELINE_OUTPUT:', '')
+                    await self._audit_pipeline_output(file_path)
+            else:
+                logger.info("   No PIPELINE_OUTPUT signals detected")
         
-        # Audit each stage
-        for stage_name, stage_data in self.ctx.pipeline_data.items():
-            if 'source_truth' in stage_data and 'generated_artifact' in stage_data:
-                report = await self._audit_integrity(
-                    stage_name,
-                    stage_data['source_truth'],
-                    stage_data['generated_artifact']
-                )
-                
-                # Store report
-                if not hasattr(self.ctx, 'integrity_reports'):
-                    self.ctx.integrity_reports = {}
-                self.ctx.integrity_reports[stage_name] = report
-                
-                # Display report
-                self._display_report(stage_name, report)
-                
-                # Block if critical
-                if report.requires_rollback:
-                    self._trigger_rollback(stage_name, report)
+        # Fallback: Check for pipeline data in context
+        elif hasattr(self.ctx, 'pipeline_data'):
+            logger.info(f"   Processing pipeline data from context")
+            for stage_name, stage_data in self.ctx.pipeline_data.items():
+                if 'source_truth' in stage_data and 'generated_artifact' in stage_data:
+                    report = await self._audit_integrity(
+                        stage_name,
+                        stage_data['source_truth'],
+                        stage_data['generated_artifact']
+                    )
+                    
+                    # Store report
+                    if not hasattr(self.ctx, 'integrity_reports'):
+                        self.ctx.integrity_reports = {}
+                    self.ctx.integrity_reports[stage_name] = report
+                    
+                    # Display report
+                    self._display_report(stage_name, report)
+                    
+                    # Block if hallucination threshold exceeded
+                    if report.hallucination_percentage > self.HALLUCINATION_THRESHOLD:
+                        self._emit_factual_integrity_fail(stage_name, report)
+        else:
+            logger.info("   No pipeline outputs to audit")
     
     async def _audit_integrity(self, stage_name: str, source_truth: str,
                                generated_artifact: str) -> IntegrityReport:
@@ -174,23 +213,96 @@ class HallucinationHunter(SubAtomicAgent):
         # Get unsupported details
         unsupported_details = [r for r in verification_results if not r.is_supported]
         
+        # Calculate hallucination percentage
+        hallucination_percentage = (unsupported_claims / total_claims) if total_claims > 0 else 0.0
+        
+        # Build audit trail (maps claims to source citations)
+        audit_trail = {}
+        for result in verification_results:
+            if result.is_supported and result.source_citation:
+                audit_trail[result.claim.text] = result.source_citation
+        
         return IntegrityReport(
             total_claims=total_claims,
             supported_claims=supported_claims,
             unsupported_claims=unsupported_claims,
             integrity_score=integrity_score,
+            hallucination_percentage=hallucination_percentage,
             risk_level=risk_level,
             unsupported_details=unsupported_details[:10],  # First 10
-            requires_rollback=requires_rollback
+            requires_rollback=requires_rollback,
+            audit_trail=audit_trail
         )
     
-    def _extract_claims(self, text: str) -> List[AtomicClaim]:
+    async def _extract_claims(self, text: str) -> List[AtomicClaim]:
         """
-        Extract atomic claims (propositions) from text.
+        Extract atomic claims (propositions) from text using Gemini.
         
-        Simple implementation: Split by sentences and filter.
-        Production would use more sophisticated NLP.
+        Uses Gemini to intelligently break text into verifiable atomic claims.
         """
+        if self.genai_available:
+            try:
+                return await self._extract_claims_with_gemini(text)
+            except Exception as e:
+                logger.warning(f"Gemini claim extraction failed: {e}, falling back to simple extraction")
+        
+        # Fallback to simple extraction
+        return self._extract_claims_simple(text)
+    
+    async def _extract_claims_with_gemini(self, text: str) -> List[AtomicClaim]:
+        """Use Gemini to extract atomic claims from text."""
+        prompt = f"""Extract atomic claims from this text. Each claim should be a single, verifiable fact.
+
+TEXT:
+{text}
+
+REQUIREMENTS:
+1. Break the text into individual atomic claims (propositions)
+2. Each claim should be independently verifiable
+3. Focus on factual statements (skills, experience, achievements)
+4. Ignore filler words and formatting
+5. Number each claim
+
+OUTPUT FORMAT:
+Return a numbered list of atomic claims, one per line:
+1. [First atomic claim]
+2. [Second atomic claim]
+...
+
+Example for "John has 5 years of Python experience and led 3 projects":
+1. John has 5 years of Python experience
+2. John led 3 projects
+"""
+        
+        response = self.genai_client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.1,
+                max_output_tokens=2048
+            )
+        )
+        
+        # Parse response into claims
+        claims = []
+        lines = response.text.strip().split('\n')
+        
+        for line in lines:
+            line = line.strip()
+            # Match numbered claims: "1. Claim text" or "1) Claim text"
+            match = re.match(r'^\d+[\.)]\s*(.+)$', line)
+            if match:
+                claim_text = match.group(1).strip()
+                if len(claim_text) > 10:  # Filter very short claims
+                    claims.append(AtomicClaim(
+                        text=claim_text,
+                        line_number=len(claims) + 1
+                    ))
+        
+        return claims
+    
+    def _extract_claims_simple(self, text: str) -> List[AtomicClaim]:
+        """Fallback simple claim extraction."""
         claims = []
         
         # Split into sentences
@@ -300,7 +412,15 @@ class HallucinationHunter(SubAtomicAgent):
         logger.info(f"  Supported: {report.supported_claims}")
         logger.info(f"  Unsupported: {report.unsupported_claims}")
         logger.info(f"Integrity Score: {report.integrity_score:.1%}")
+        logger.info(f"Hallucination Rate: {report.hallucination_percentage:.1%}")
         logger.info(f"Risk Level: {report.risk_level.upper()}")
+        
+        # Check hallucination threshold (5%)
+        if report.hallucination_percentage > self.HALLUCINATION_THRESHOLD:
+            logger.error(f"\n🚨 HALLUCINATION THRESHOLD EXCEEDED")
+            logger.error(f"   Threshold: {self.HALLUCINATION_THRESHOLD:.1%}")
+            logger.error(f"   Actual: {report.hallucination_percentage:.1%}")
+            logger.error(f"   FACTUAL_INTEGRITY_FAIL signal will be emitted")
         
         if report.risk_level in ["high", "critical"]:
             logger.error(f"\n⚠️  {report.risk_level.upper()} RISK DETECTED")
@@ -314,6 +434,10 @@ class HallucinationHunter(SubAtomicAgent):
                 if result.source_citation:
                     logger.warning(f"     Best match: {result.source_citation}")
         
+        # Display audit trail summary
+        if report.audit_trail:
+            logger.info(f"\n✅ AUDIT TRAIL: {len(report.audit_trail)} claims mapped to sources")
+        
         logger.info(f"{'='*80}\n")
     
     def _trigger_rollback(self, stage_name: str, report: IntegrityReport):
@@ -325,6 +449,113 @@ class HallucinationHunter(SubAtomicAgent):
         # Emit signal for orchestrator
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f"FACTUAL_RISK:{stage_name}:ROLLBACK_REQUIRED")
+    
+    def _emit_factual_integrity_fail(self, stage_name: str, report: IntegrityReport):
+        """
+        Emit FACTUAL_INTEGRITY_FAIL signal when hallucination threshold exceeded.
+        
+        Prevents resume from being sent to output folder.
+        """
+        logger.error(f"🚨 FACTUAL_INTEGRITY_FAIL for {stage_name}")
+        logger.error(f"   Hallucination rate: {report.hallucination_percentage:.1%}")
+        logger.error(f"   Threshold: {self.HALLUCINATION_THRESHOLD:.1%}")
+        logger.error(f"   Unsupported claims: {report.unsupported_claims}/{report.total_claims}")
+        logger.error(f"   Action: BLOCKING output to prevent hallucinated content")
+        
+        # Emit signal to blackboard
+        if hasattr(self.ctx, 'signals'):
+            self.ctx.signals.add(f"FACTUAL_INTEGRITY_FAIL:{stage_name}")
+            self.ctx.signals.add(f"HALLUCINATION_DETECTED:{stage_name}:{report.hallucination_percentage:.1%}")
+    
+    async def _audit_pipeline_output(self, file_path: str):
+        """
+        Audit a pipeline output file for factual integrity.
+        
+        Args:
+            file_path: Path to pipeline output file
+        """
+        logger.info(f"   Auditing pipeline output: {file_path}")
+        
+        # Get source raw data from blackboard
+        source_raw_data = None
+        if hasattr(self.ctx, 'blackboard') and hasattr(self.ctx.blackboard, 'get'):
+            source_raw_data = self.ctx.blackboard.get(f"source_raw_data:{file_path}")
+        
+        if not source_raw_data:
+            logger.warning(f"   No source raw data found for {file_path}")
+            return
+        
+        # Read generated output
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                generated_output = f.read()
+        except Exception as e:
+            logger.error(f"   Could not read output file: {e}")
+            return
+        
+        # Audit integrity
+        report = await self._audit_integrity(
+            file_path,
+            source_raw_data,
+            generated_output
+        )
+        
+        # Store report
+        if not hasattr(self.ctx, 'integrity_reports'):
+            self.ctx.integrity_reports = {}
+        self.ctx.integrity_reports[file_path] = report
+        
+        # Display report
+        self._display_report(file_path, report)
+        
+        # Inject audit trail metadata
+        self._inject_audit_trail(file_path, report)
+        
+        # Block if hallucination threshold exceeded
+        if report.hallucination_percentage > self.HALLUCINATION_THRESHOLD:
+            self._emit_factual_integrity_fail(file_path, report)
+    
+    def _inject_audit_trail(self, file_path: str, report: IntegrityReport):
+        """
+        Inject audit trail metadata into output file or create sidecar file.
+        
+        Maps every claim in the resume to a specific line in the source document.
+        """
+        if not report.audit_trail:
+            logger.warning(f"   No audit trail to inject for {file_path}")
+            return
+        
+        # Create sidecar file with audit trail
+        sidecar_path = file_path.replace('.txt', '_audit.json').replace('.md', '_audit.json')
+        
+        import json
+        audit_data = {
+            "file": file_path,
+            "timestamp": datetime.now().isoformat(),
+            "integrity_score": report.integrity_score,
+            "hallucination_percentage": report.hallucination_percentage,
+            "total_claims": report.total_claims,
+            "supported_claims": report.supported_claims,
+            "unsupported_claims": report.unsupported_claims,
+            "audit_trail": report.audit_trail,
+            "unsupported_claims_details": [
+                {
+                    "claim": r.claim.text,
+                    "similarity_score": r.similarity_score,
+                    "source_citation": r.source_citation
+                }
+                for r in report.unsupported_details
+            ]
+        }
+        
+        try:
+            with open(sidecar_path, 'w', encoding='utf-8') as f:
+                json.dump(audit_data, f, indent=2)
+            
+            logger.info(f"   ✅ Audit trail injected: {sidecar_path}")
+            logger.info(f"      Mapped {len(report.audit_trail)} claims to source citations")
+        except Exception as e:
+            logger.error(f"   Could not inject audit trail: {e}")
     
     def inject_citations(self, generated_text: str, source_text: str) -> str:
         """
