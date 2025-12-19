@@ -420,8 +420,9 @@ SYSTEM: You are a Level 5 Autonomous Repair Agent.
 RULES:
 1. Fix the specific violation ONLY.
 2. DO NOT hallucinate imports (only use stdlib or existing).
-3. DO NOT delete logic, comments, or docstrings.
-4. Return ONLY valid Python code. No markdown blocks.
+3. FORBIDDEN IMPORTS: Do NOT import 'base', 'context', 'L3_orchestration', or 'conversational_repair'.
+4. DO NOT delete logic, comments, or docstrings.
+5. Return ONLY valid Python code. No markdown blocks.
 
 {code}"""
         
@@ -689,9 +690,9 @@ class SubAtomicAgent:
                     base_prompt += f"\n\nReference successful fix for similar violation:\n{reference_fix[:int(os.getenv('REFERENCE_FIX_CHARS', '500'))]}..."
                 
                 if round_num == 1:
-                    prompt = f"{base_prompt}\nReturn ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', or 'L3_orchestration'. Use full relative paths for local modules."
+                    prompt = f"{base_prompt}\nReturn ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', 'L3_orchestration', or 'conversational_repair'. Use full relative paths for local modules."
                 else:
-                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', or 'L3_orchestration'. Use full relative paths for local modules."
+                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', 'L3_orchestration', or 'conversational_repair'. Use full relative paths for local modules."
 
                 mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path)
 
@@ -864,7 +865,7 @@ class SystemArchitect(SubAtomicAgent):
         if not passed and self.ctx.intelligence_enabled:
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in set(v.split(":")[0] for v in details_list)[:3]:
+            for fp in list(set(v.split(":")[0] for v in details_list))[:3]:
                 await self.smart_fix(fp, 41)
             passed, details = self.check_key_41_scoped_nesting()
         self.ctx.report(self.name, 41, passed, details)
@@ -1623,7 +1624,7 @@ class NamingAgent(SubAtomicAgent):
         if not passed and self.ctx.intelligence_enabled:
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in set(v.split(":")[0] for v in details_list)[:5]:
+            for fp in list(set(v.split(":")[0] for v in details_list))[:5]:
                 await self.smart_fix(fp, 47)
             passed, details = self.check_key_47_naming_conventions()
         self.ctx.report(self.name, 47, passed, details)
@@ -1756,7 +1757,7 @@ class BudgetAgent(SubAtomicAgent):
             print("      🧠 BudgetAgent: Attempting to refactor large functions...")
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in set(v.split(":")[0] for v in details_list)[:3]:
+            for fp in list(set(v.split(":")[0] for v in details_list))[:3]:
                 await self.smart_fix(fp, 17)
             passed, details = self.check_key_17_no_large_functions()
         self.ctx.report(self.name, 17, passed, details)
@@ -1824,7 +1825,7 @@ class StructuralEngineer(SubAtomicAgent):
         if not passed and self.ctx.intelligence_enabled:
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in set(v.split(":")[0] for v in details_list)[:int(os.getenv('MAX_PARAMETERS', '8'))]:
+            for fp in list(set(v.split(":")[0] for v in details_list))[:int(os.getenv('MAX_PARAMETERS', '8'))]:
                 await self.smart_fix(fp, 18)
             passed, details = self.check_key_18_no_many_parameters()
         self.ctx.report(self.name, 18, passed, details)
@@ -1853,7 +1854,7 @@ class StructuralEngineer(SubAtomicAgent):
         if not passed and self.ctx.intelligence_enabled:
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in set(v.split(":")[0] for v in details_list)[:2]:
+            for fp in list(set(v.split(":")[0] for v in details_list))[:2]:
                 await self.smart_fix(fp, 42)
             passed, details = self.check_key_42_no_large_files()
         self.ctx.report(self.name, 42, passed, details)
