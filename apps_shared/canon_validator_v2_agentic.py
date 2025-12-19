@@ -366,6 +366,7 @@ class ValidationContext:
     # Gemini 3 Flash: Thought signature tracking for multi-turn
     thought_signatures: Dict[str, str] = field(default_factory=dict)     # Per-file thought signatures
     conversation_history: Dict[str, List[Any]] = field(default_factory=dict)  # Per-file conversation history
+    chat_sessions: Dict[str, Any] = field(default_factory=dict)  # Persistent chat sessions per file
 
     def __post_init__(self):
         # TARGETED SCAN: Only load files in the target scope to save tokens
@@ -423,12 +424,6 @@ class ValidationContext:
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
         """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
         
-        # Build conversation history for chat session - PRESERVE FULL HISTORY
-        history = []
-        if file_path and file_path in self.conversation_history:
-            # Use stored history directly without stripping
-            history = self.conversation_history[file_path].copy()
-        
         # Build the prompt
         prompt = f"""Task: {task}
 SYSTEM: You are a Level 5 Autonomous Repair Agent.
@@ -438,28 +433,37 @@ RULES:
 3. FORBIDDEN IMPORTS: Do NOT import 'base', 'context', 'L3_orchestration', or 'conversational_repair'.
 4. DO NOT delete logic, comments, or docstrings.
 5. Return ONLY valid Python code. No markdown blocks.
+6. DO NOT use tools or function calls - return code directly as text.
 
 {code}"""
         
         try:
-            # Gemini 2.5 Flash Config: Nested thinking_budget inside ThinkingConfig
+            # Gemini 2.5 Flash Config: DISABLE automatic_function_calling to prevent loops
             config = types.GenerateContentConfig(
-                temperature=1.0,
-                automatic_function_calling=types.AutomaticFunctionCallingConfig(
-                    maximum_remote_calls=20
-                ),
+                temperature=0.7,  # Lower temp for more deterministic fixes
                 thinking_config=types.ThinkingConfig(
                     thinking_budget=16000  # Deep healing budget for Gemini 2.5
                 )
+                # NO automatic_function_calling - prevents tool loop
             )
             
-            # Use chat session for automatic signature management
+            # Get or create persistent chat session for this file
+            chat_key = f"chat_{file_path}" if file_path else "chat_default"
+            
             def get_gemini_response():
-                chat = self._client.chats.create(
-                    model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
-                    history=history,
-                    config=config
-                )
+                # Reuse existing chat session or create new one
+                if chat_key not in self.chat_sessions:
+                    # Create new persistent chat session
+                    self.chat_sessions[chat_key] = self._client.chats.create(
+                        model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
+                        config=config
+                    )
+                    print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}")
+                else:
+                    print(f"      ♻️  Reusing chat session (Round {len(self.conversation_history.get(file_path, [])) // 2 + 1})")
+                
+                # Use persistent session
+                chat = self.chat_sessions[chat_key]
                 return chat.send_message(prompt)
             
             response = await asyncio.to_thread(get_gemini_response)
@@ -469,46 +473,27 @@ RULES:
                 first_part = response.candidates[0].content.parts[0]
                 if hasattr(first_part, 'function_call') and first_part.function_call:
                     print(f"🔍 DEBUG: Model is calling a tool: {first_part.function_call.name}")
-                    print(f"   This indicates the model is stuck in a tool-calling loop.")
-                    # Return original code to break the loop
+                    print(f"   ⚠️  Tool calling should be disabled - clearing session and retrying")
+                    # Clear corrupted session
+                    if chat_key in self.chat_sessions:
+                        del self.chat_sessions[chat_key]
                     return code
             
             fixed_code = response.text.strip() if response.text else code
             
             # Log success for record_healing_attempt logic
             if hasattr(response, 'usage_metadata'):
-                print(f"✅ Reasoning Complete. Tokens used: {response.usage_metadata.total_token_count}")
+                print(f"      ✅ Tokens: {response.usage_metadata.total_token_count}")
             
-            # Update conversation history with FULL response (including function calls)
+            # Track conversation history for debugging (chat session handles actual history)
             if file_path:
                 if file_path not in self.conversation_history:
                     self.conversation_history[file_path] = []
-                
-                # Add user prompt
                 self.conversation_history[file_path].append({
-                    "role": "user",
-                    "parts": [{"text": prompt}]
+                    "round": len(self.conversation_history[file_path]) // 2 + 1,
+                    "prompt_length": len(prompt),
+                    "response_length": len(fixed_code)
                 })
-                
-                # Add model response - preserve ALL parts (text + function calls)
-                model_parts = []
-                for part in response.candidates[0].content.parts:
-                    if hasattr(part, 'text') and part.text:
-                        model_parts.append({"text": part.text})
-                    elif hasattr(part, 'function_call') and part.function_call:
-                        # Store function call in history for continuity
-                        model_parts.append({
-                            "function_call": {
-                                "name": part.function_call.name,
-                                "args": dict(part.function_call.args)
-                            }
-                        })
-                
-                if model_parts:
-                    self.conversation_history[file_path].append({
-                        "role": "model",
-                        "parts": model_parts
-                    })
             
             return fixed_code
             
