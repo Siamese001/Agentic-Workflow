@@ -1,14 +1,19 @@
 """Orchestrator Interface - The Nervous System.
 
-
-LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Coordinates between Brain (cognitive) and Hands (action).
 L3 Orchestration: Manages the Think-Act-Observe cycle.
+
+Updated December 2025: Aligned with SubatomicAgent interface and consolidated orchestrator.
 """
 
 import logging
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any, Dict, List, Optional
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ExecutionPhase(Enum):
@@ -65,7 +70,7 @@ class ExecutionResult:
     output: Any = None
     final_state: Dict[str, Any] = field(default_factory=dict)
     execution_trace: List[Dict[str, Any]] = field(default_factory=list)
-    ITERATIONS: INT = 0
+    iterations: int = 0
     errors: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -124,7 +129,6 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def execute_step(
-        """Docstring."""
         self,
         phase: ExecutionPhase,
         context: ExecutionContext,
@@ -152,9 +156,8 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def act(
-        """Docstring."""
         self,
-        actions: List[ActionRequest],
+        actions: List[Any],
         context: ExecutionContext,
     ) -> List[Dict[str, Any]]:
         """Execute the ACT phase (action execution).
@@ -169,7 +172,6 @@ class IOrchestrator(ABC):
 
     @abstractmethod
     async def observe(
-        """Docstring."""
         self,
         action_results: List[Dict[str, Any]],
         context: ExecutionContext,
