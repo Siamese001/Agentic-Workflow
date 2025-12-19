@@ -500,9 +500,10 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 3. NEVER delete logic, comments, or docstrings
 4. Return ONLY valid Python code. No markdown blocks.
 5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
-{('\n\n📚 LESSON LEARNED: ' + lesson_learned) if lesson_learned else ''}
-
-{code}"""
+"""
+            if lesson_learned:
+                prompt += f"\n\n📚 LESSON LEARNED: {lesson_learned}\n"
+            prompt += f"\n{code}"
         
         try:
             # SUBATOMIC FIX: Force temperature=0.2 for maximum determinism
