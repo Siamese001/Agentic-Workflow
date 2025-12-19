@@ -40,6 +40,52 @@ except Exception as e:
     CycleConfig = None
     CycleState = None
 
+try:
+    from agentic_core.L3_orchestration.canon_scheduler import (
+        CanonSwarmScheduler,
+        SwarmScheduler,
+        IntelligentOrchestrator,
+    )
+except Exception as e:
+    LOGGER.debug(f"CanonSwarmScheduler not available: {e}")
+    CanonSwarmScheduler = None
+    SwarmScheduler = None
+    IntelligentOrchestrator = None
+
+try:
+    from agentic_core.L3_orchestration.mission_runner import (
+        run_daemon_mode,
+        run_surgical_mode,
+        run_standard_mode,
+        WATCHDOG_AVAILABLE,
+        WEBSOCKETS_AVAILABLE,
+        GITPYTHON_AVAILABLE,
+    )
+except Exception as e:
+    LOGGER.debug(f"mission_runner not available: {e}")
+    run_daemon_mode = None
+    run_surgical_mode = None
+    run_standard_mode = None
+    WATCHDOG_AVAILABLE = False
+    WEBSOCKETS_AVAILABLE = False
+    GITPYTHON_AVAILABLE = False
+
+try:
+    from agentic_core.L3_orchestration.intervention_server import (
+        start_intervention_server,
+        approval_event,
+        FASTAPI_AVAILABLE,
+        wait_for_approval,
+        reset_approval_event,
+    )
+except Exception as e:
+    LOGGER.debug(f"intervention_server not available: {e}")
+    start_intervention_server = None
+    approval_event = None
+    FASTAPI_AVAILABLE = False
+    wait_for_approval = None
+    reset_approval_event = None
+
 __all__ = [
     "NervousSystem",
     "DAGEngine",
@@ -48,5 +94,22 @@ __all__ = [
     "TaskStatus",
     "ThinkActObserveEngine",
     "CycleConfig",
+    # Canon Scheduler
+    "CanonSwarmScheduler",
+    "SwarmScheduler",
+    "IntelligentOrchestrator",
+    # Intervention Server
+    "start_intervention_server",
+    "approval_event",
+    "FASTAPI_AVAILABLE",
+    "wait_for_approval",
+    "reset_approval_event",
+    # Mission Runner
+    "run_daemon_mode",
+    "run_surgical_mode",
+    "run_standard_mode",
+    "WATCHDOG_AVAILABLE",
+    "WEBSOCKETS_AVAILABLE",
+    "GITPYTHON_AVAILABLE",
     "CycleState",
 ]
