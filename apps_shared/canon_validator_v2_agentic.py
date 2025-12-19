@@ -65,9 +65,11 @@ def get_python_files(root: str = '.') -> List[str]:
 
 try:
     from google import genai
+    from google.genai import types
 except ImportError:
     print("   ⚠️  google-genai not installed - run: pip install google-genai")
     genai = None
+    types = None
 
 logger = logging.getLogger(__name__)
 
@@ -382,17 +384,37 @@ class ValidationContext:
         print(f"   Healing attempt {self.healing_attempts[file_path]} for {file_path}: {status}")
         print(f"   Healing budget: {self.healing_budget_used}/{self.global_healing_budget}")
 
+    def convert_to_genai_types(self, raw_history):
+        """
+        Converts old list-of-dicts history into strict Google GenAI Content objects.
+        Ensures 'thought_signature' is preserved to prevent AFC loops.
+        """
+        formatted = []
+        for entry in raw_history:
+            parts = []
+            for p in entry.get('parts', []):
+                # Create a Part object, preserving thought_signature if it exists
+                part_dict = {"text": p.get('text')}
+                if p.get('thought_signature'):
+                    part_dict["thought_signature"] = p.get('thought_signature')
+                parts.append(types.Part(**part_dict))
+            formatted.append(types.Content(role=entry['role'], parts=parts))
+        return formatted
+
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
-        """The 'Smart' fix logic. Calls Gemini to rewrite code with thought signature support."""
+        """The 'Smart' fix logic using Hardened Universal Repair Script for Gemini 3."""
         
-        # Build conversation contents including history if available
-        contents = []
-        
-        # Add previous conversation history if this is a follow-up
+        # Build conversation history for chat session
+        history = []
         if file_path and file_path in self.conversation_history:
-            contents.extend(self.conversation_history[file_path])
+            # Convert stored history to chat format
+            for turn in self.conversation_history[file_path]:
+                if turn["role"] == "user":
+                    history.append({"role": "user", "parts": [{"text": turn["parts"][0]["text"]}]})
+                elif turn["role"] == "model":
+                    history.append({"role": "model", "parts": [{"text": turn["parts"][0]["text"]}]})
         
-        # Add current prompt
+        # Build the prompt
         prompt = f"""Task: {task}
 SYSTEM: You are a Level 5 Autonomous Repair Agent.
 RULES:
@@ -403,76 +425,65 @@ RULES:
 
 {code}"""
         
-        contents.append(prompt)
-        
         try:
-            # L5: Deterministic generation with thinking and thought signature
-            from google.genai.types import GenerateContentConfig
-            
-            response = await asyncio.to_thread(
-                self._client.models.generate_content,
-                model='gemini-3-flash-preview',
-                contents=contents,
-                config=GenerateContentConfig(
-                    thinking_config={
-                        "thinking_level": "HIGH"
-                    }
+            # Corrected Config: Nested thinking and full parameter names
+            config = types.GenerateContentConfig(
+                temperature=1.0,
+                automatic_function_calling=types.AutomaticFunctionCallingConfig(
+                    maximum_remote_calls=20  # Fix: 'maximum' not 'max'
+                ),
+                thinking_config=types.ThinkingConfig(
+                    thinking_level="HIGH"  # Options: MINIMAL, LOW, MEDIUM, HIGH
                 )
             )
             
+            # Use chat session for automatic signature management
+            def get_gemini_3_response():
+                chat = self._client.chats.create(
+                    model="gemini-3-flash-preview",
+                    history=history,
+                    config=config
+                )
+                return chat.send_message(prompt)
+            
+            response = await asyncio.to_thread(get_gemini_3_response)
+            
             fixed_code = response.text.strip()
             
-            # Store thought signature and update conversation history
+            # Log success for record_healing_attempt logic
+            if hasattr(response, 'usage_metadata'):
+                print(f"✅ Reasoning Complete. Tokens used: {response.usage_metadata.total_token_count}")
+            
+            # Update conversation history with the new response
             if file_path:
-                thought_signature = None
-                
-                # Extract thought_signature from response.candidates[0].content.parts
-                if (hasattr(response, 'candidates') and 
-                    len(response.candidates) > 0 and 
-                    hasattr(response.candidates[0], 'content') and
-                    hasattr(response.candidates[0].content, 'parts')):
-                    
-                    for part in response.candidates[0].content.parts:
-                        if hasattr(part, 'thought_signature') and part.thought_signature:
-                            thought_signature = part.thought_signature
-                            break
-                
-                if thought_signature:
-                    self.thought_signatures[file_path] = thought_signature
-                    
-                    # Create new conversation turn with thought signature
-                    new_turn = {
-                        "role": "model",
-                        "parts": [{"text": fixed_code}],
-                        "thought_signature": thought_signature
-                    }
-                else:
-                    # Fallback for older models or no thought signature
-                    new_turn = {
-                        "role": "model", 
-                        "parts": [{"text": fixed_code}]
-                    }
-                
-                # Update conversation history
                 if file_path not in self.conversation_history:
                     self.conversation_history[file_path] = []
                 
-                # Add user prompt and model response to history
+                # Add user prompt
                 self.conversation_history[file_path].append({
                     "role": "user",
                     "parts": [{"text": prompt}]
                 })
-                self.conversation_history[file_path].append(new_turn)
+                
+                # Add model response (SDK manages signature automatically)
+                self.conversation_history[file_path].append({
+                    "role": "model",
+                    "parts": [{"text": fixed_code}]
+                })
             
-            # Clean up markdown
-            if "```python" in fixed_code:
-                fixed_code = fixed_code.replace("```python", "").replace("```", "").strip()
-            elif fixed_code.startswith("```"):
-                fixed_code = fixed_code[3:].replace("```", "").strip()
             return fixed_code
+            
         except Exception as e:
-            print(f"      ❌ Mutation Error ({agent_name}): {e}")
-            return code
+            if "maximum_remote_calls" in str(e):
+                print("🚨 SDK Error: Check Pydantic field names in GenerateContentConfig.")
+            elif "thought_signature" in str(e):
+                print("🚨 Signature Error: History corruption detected. Resetting session.")
+                # Clear corrupted history
+                if file_path and file_path in self.conversation_history:
+                    self.conversation_history[file_path] = []
+            else:
+                print(f"🚨 Mutation Error ({agent_name}): {str(e)}")
+            return code  # Return original code on error
 
     async def read_file(self, file_path: str) -> str:
         """Read file content."""
