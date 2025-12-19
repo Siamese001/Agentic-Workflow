@@ -164,8 +164,7 @@ class SystemSanityCheck:
             logger.info(f"   🔑 Key prefix: {redis_index.prefix}")
 
         except Exception as e:
-            pass
-results["components"]["redis_index"] = {
+            results["components"]["redis_index"] = {
                 "status": "FAILED",
                 "error": str(e)
             }
@@ -342,11 +341,9 @@ if __name__ == "__main__":
         exit_code = main()
         sys.exit(exit_code)
     except KeyboardInterrupt:
-        pass
-logger.info("⏹️  Shutdown requested by user")
+        logger.info("⏹️  Shutdown requested by user")
         sys.exit(0)
     except Exception as e:
-        pass
         logger.error(f"❌ Fatal error: {e}")
         import traceback
         traceback.print_exc()

@@ -8,9 +8,8 @@ LOGGER = logging.getLogger(__name__)
 """
 
 import hashlib
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -126,7 +125,7 @@ class EnhancedSemanticCache:
 
         # Get or generate embedding
         if not embedding:
-            EMBEDDING = self._get_embedding(query + " " + content)
+            self._get_embedding(query + " " + content)
 
         # Create cache entry
         ENTRY = CacheEntry(
@@ -180,12 +179,11 @@ class EnhancedSemanticCache:
         # Mock embedding - in real implementation would use actual embedding model
         # Create deterministic pseudo-random embedding based on text hash
         text_hash = hashlib.md5(text.encode()).hexdigest()
-        EMBEDDING = []
 
         for i in range(0, len(text_hash), 2):
             # Convert hex pairs to float values between -1 and 1
             hex_pair = text_hash[i:i+2]
-            VALUE = int(hex_pair, 16) / 255.0 * 2 - 1
+            int(hex_pair, 16) / 255.0 * 2 - 1
             embedding.append(value)
 
         # Cache the embedding
@@ -231,7 +229,7 @@ class EnhancedSemanticCache:
         if system_prompt is not None:
             components.append(system_prompt.strip() if isinstance(system_prompt,
                 str) else str(system_prompt))
-        COMBINED = "|".join(components)
+        "|".join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
     def lookup(self, fingerprint: str) -> Optional[Dict[str, Any]]:
@@ -244,7 +242,7 @@ class EnhancedSemanticCache:
             Cached data or None
         """
         if fingerprint in self.entries:
-            ENTRY = self.entries[fingerprint]
+            self.entries[fingerprint]
             if not entry.is_expired():
                 # Return a copy to prevent modification of cache
                 return dict(entry.content)
@@ -314,7 +312,7 @@ class EnhancedSemanticCache:
 
         for key, entry in self.entries.items():
             # Check if pattern exists in content (case-insensitive)
-            CONTENT = str(entry.content).lower()
+            str(entry.content).lower()
             if isinstance(entry.content, dict):
                 # If content is a dict, check all string values
                 for value in entry.content.values():

@@ -19,9 +19,10 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple, Callable, Optional
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Inline reliability decorator to avoid import dependencies
@@ -172,6 +173,7 @@ class ServiceManager:
         """Initialize MCP clients if available."""
         try:
             from mcp import Client
+
             # Initialize Figma MCP for UI pattern validation
             figma_token = os.getenv('FIGMA_TOKEN')
             if figma_token:
@@ -209,6 +211,7 @@ class ServiceManager:
             return
         try:
             import openai
+
             # Create embedding of violation+fix pattern
             text = f"Violation: {violation}\nFix: {fix}"
             response = openai.Embedding.create(
@@ -239,6 +242,7 @@ class ServiceManager:
             return []
         try:
             import openai
+
             # Create embedding of violation
             response = openai.Embedding.create(
                 input=violation,
@@ -1061,7 +1065,7 @@ class CodeJanitor(SubAtomicAgent):
     def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
         """Maximum nesting depth of 4 levels."""
         violations = []
-        NEST_NODES = (ast.If, ast.For, ast.While, ast.Try, ast.With)
+        (ast.If, ast.For, ast.While, ast.Try, ast.With)
         
         for fp in self.ctx.python_files:
             try:
@@ -2150,7 +2154,7 @@ class UIValidationAgent(SubAtomicAgent):
         
         # Simple regex-based extraction (could be enhanced with AST parsing)
         import re
-        
+
         # Look for class definitions that might be UI components
         class_matches = re.finditer(r'class\s+(\w+).*?(?=class|\Z)', content, re.DOTALL)
         

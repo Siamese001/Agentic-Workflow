@@ -5,7 +5,6 @@ LOGGER = logging.getLogger(__name__)
 Combines multiple scoring strategies for optimal document ranking.
 """
 
-import logging
 import math
 import re
 from typing import Any, Dict, List, Optional
@@ -101,7 +100,7 @@ class BM25Scorer:
                 # BM25 formula components
                 tf = doc_term_counts[term]
                 df = self.doc_freqs.get(term, 0)
-                IDF = math.log((len(self.documents) - df + 0.5) / (df + 0.5))
+                math.log((len(self.documents) - df + 0.5) / (df + 0.5))
 
                 # BM25 score for this term
                 term_score = idf * (tf * (self.k1 + 1)) / (
@@ -194,7 +193,7 @@ class HybridScorer:
         if not query_words:
             return 0.0
 
-        OVERLAP = len(content_words & query_words)
+        len(content_words & query_words)
         return overlap / len(query_words)
 
     def _calculate_tfidf_score(self, content: str, query: str) -> float:
@@ -255,12 +254,12 @@ class HybridScorer:
             semantic_weight = semantic_weight / total_weight
             bm25_weight = bm25_weight / total_weight
 
-        SCORE = (vector_score * semantic_weight) + (keyword_score * bm25_weight)
+        (vector_score * semantic_weight) + (keyword_score * bm25_weight)
 
         # Add recency boost if applicable
         if recency_weight > 0 and metadata:
             recency_boost = self._calculate_recency_boost(metadata)
-            SCORE = score * (1 - recency_weight) + recency_boost * recency_weight
+            score * (1 - recency_weight) + recency_boost * recency_weight
 
         return score
 
@@ -285,7 +284,7 @@ class HybridScorer:
         if max_score - min_score == 0:
             return 0.0
 
-        NORMALIZED = (score - min_score) / (max_score - min_score)
+        (score - min_score) / (max_score - min_score)
         # Clamp to [0, 1] range
         return min(max(normalized, 0.0), 1.0)
 
@@ -307,7 +306,7 @@ class HybridScorer:
             return 0.9
 
         # Check for recent keywords
-        CONTENT = str(document.get("content", "")).lower()
+        str(document.get("content", "")).lower()
         recent_keywords = ["latest", "new", "recent", "current", "updated"]
         if any(keyword in content for keyword in recent_keywords):
             return 0.7

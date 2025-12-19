@@ -7,7 +7,6 @@ Tests DI container functionality and proper service injection
 across all layers to maintain L1-L5 atomicity.
 """
 
-import logging
 
 import pytest
 
@@ -28,13 +27,13 @@ class TestSimpleDIContainer:
         self.container.register(Mock, mock_service)
 
         # Retrieve the service
-        RETRIEVED = self.container.get(Mock)
+        self.container.get(Mock)
 
         assert retrieved is mock_service
 
     def test_get_nonexistent_service(self) -> None:
         """Test getting a service that doesn't exist."""
-        RESULT = self.container.get(Mock)
+        self.container.get(Mock)
         assert result is None
 
     def test_clear_services(self) -> None:
@@ -63,7 +62,7 @@ class TestGlobalDIContainer:
     def setup_method(self) -> None:
         """Set up test fixtures."""
         # Clear global container before each test
-        CONTAINER = get_container()
+        get_container()
         container.clear()
 
     def test_global_register_and_get(self) -> None:
@@ -74,7 +73,7 @@ class TestGlobalDIContainer:
         register_service(Mock, mock_service)
 
         # Get globally
-        RETRIEVED = get_service(Mock)
+        get_service(Mock)
 
         assert retrieved is mock_service
 
@@ -82,7 +81,7 @@ class TestGlobalDIContainer:
         """Test initialization of default services."""
         initialize_default_services()
 
-        CONTAINER = get_container()
+        get_container()
 
         # Should have PineconeAdapter and SafetyEngine
         assert container.get(PineconeAdapter) is not None
@@ -148,7 +147,7 @@ class TestLayerDIIntegration:
             api_key = os.getenv("API_KEY"),
             index_name="test_index"
         )
-        ADAPTER = PineconeAdapter(config)
+        PineconeAdapter(config)
 
         # Should have retrieve_evidence method for DI
         assert hasattr(adapter, 'retrieve_evidence')
@@ -156,7 +155,7 @@ class TestLayerDIIntegration:
 
     def test_safety_engine_di_interface(self) -> None:
         """Test that SafetyEngine provides DI-compatible interface."""
-        ENGINE = SafetyEngine()
+        SafetyEngine()
 
         # Should have evaluate method for DI
         assert hasattr(engine, 'evaluate')
@@ -178,7 +177,7 @@ class TestDIAtomicityCompliance:
             # Skip if file not found in test environment
             return
 
-        SOURCE = ''.join(source_lines)
+        ''.join(source_lines)
 
         # Should contain DI imports
         assert 'from infra.di_container import' in source
@@ -207,7 +206,7 @@ class TestDIAtomicityCompliance:
         except FileNotFoundError:
             return
 
-        SOURCE = ''.join(source_lines)
+        ''.join(source_lines)
         assert 'from infra.di_container import' in source
 
 if __name__ == "__main__":

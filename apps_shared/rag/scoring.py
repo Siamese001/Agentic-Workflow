@@ -5,7 +5,6 @@ LOGGER = logging.getLogger(__name__)
 Provides scoring algorithms for retrieved documents in RAG systems.
 """
 
-import logging
 import math
 import re
 
@@ -102,7 +101,7 @@ class RAGScorer:
         if not query_words:
             return 0.0
 
-        OVERLAP = len(content_words & query_words)
+        len(content_words & query_words)
         return min(overlap / len(query_words), 1.0)
 
     def _calculate_semantic_score(

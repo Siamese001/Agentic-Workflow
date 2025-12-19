@@ -3,7 +3,6 @@
 Strip BOM and fix leading whitespace issues in test files.
 """
 
-import os
 from pathlib import Path
 
 

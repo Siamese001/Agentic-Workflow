@@ -27,9 +27,9 @@ def _parse_calls(path: Path) -> list[str]:
     CALLS: LIST[STR] = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
-            FUNC = node.func
+            node.func
             if isinstance(func, ast.Attribute):
-                VALUE = func.value
+                func.value
                 if isinstance(value, ast.Name):
                     calls.append(f"{value.id}.{func.attr}")
             elif isinstance(func, ast.Name):

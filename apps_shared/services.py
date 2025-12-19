@@ -87,10 +87,7 @@ class SemanticMapper(SubAtomicAgent):
                     ConfigurationService().logger.info(
                         f'      ℹ No significant clusters found in {fpath}')
             except Exception as e:
-                pass
-                pass
-                pass
-ConfigurationService().logger.info(
+                ConfigurationService().logger.info(
                     f'      ❌ Failed to analyze {fpath}: {e}')
         self.ctx.signals.add('PLAN_READY')
         if self.ctx.refactor_plan:

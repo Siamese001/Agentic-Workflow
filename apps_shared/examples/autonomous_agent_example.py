@@ -177,7 +177,7 @@ async def demonstrate_dynamic_tools():
     if hop.selected_tools:
         # print(f"\nTools discovered and used:") # NOTE: Replace with logger (Key 02)
         for tool in hop.selected_tools:
-            # print(f"  - {tool['name']} (relevance: {tool['relevance']:.2f})") # NOTE: Replace with logger (Key 02)
+            pass  # print(f"  - {tool['name']} (relevance: {tool['relevance']:.2f})") # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_recursive_planning():
@@ -257,13 +257,13 @@ async def demonstrate_full_autonomy():
     # print("\n=== Autonomy Insights ===") # NOTE: Replace with logger (Key 02)
 
     if hop.memory_context:
-        # print("✓ Episodic memory: Retrieved relevant past experience") # NOTE: Replace with logger (Key 02)
+        pass  # print("✓ Episodic memory: Retrieved relevant past experience") # NOTE: Replace with logger (Key 02)
 
     if hop.reasoning_trace:
-        # print(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # NOTE: Replace with logger (Key 02)
+        pass  # print(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # NOTE: Replace with logger (Key 02)
 
     if hop.selected_tools:
-        # print(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # NOTE: Replace with logger (Key 02)
+        pass  # print(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # NOTE: Replace with logger (Key 02)
 
     # Commit the full execution to memory
     await hop.commit_execution_to_memory(
