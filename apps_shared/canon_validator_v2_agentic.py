@@ -455,12 +455,27 @@ class ValidationContext:
                 self.conversation_history[file_path] = []
         
         # Build lesson learned from previous failure
-        lesson_learned = ""
-        if previous_failure:
-            lesson_learned = f"\n\n📚 LESSON LEARNED FROM PREVIOUS ATTEMPT:\n{previous_failure}\nApply this lesson to your current fix. Start fresh with the original file.\n"
+        lesson_learned = previous_failure if previous_failure else ""
         
-        # Build the prompt with ELITE ENGINEER standards
-        prompt = f"""Task: {task}
+        # DYNAMIC PROMPT LOADING: Load prompts from modularized markdown files
+        try:
+            from prompts.prompt_loader import load_prompt_for_agent
+            
+            # Map agent name to role (e.g., "HealerAgent" -> "healer_agent")
+            agent_role = agent_name.lower().replace(" ", "_")
+            
+            # Build complete prompt from modularized files
+            prompt = load_prompt_for_agent(
+                agent_role=agent_role,
+                task=task,
+                code=code,
+                original_line_count=original_line_count,
+                lesson_learned=lesson_learned
+            )
+        except Exception as e:
+            # Fallback to inline prompt if loader fails
+            print(f"      ⚠️ Prompt loader failed ({e}), using fallback", flush=True)
+            prompt = f"""Task: {task}
 SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 
 🚫 ZERO-TOLERANCE DELETION RULE:
@@ -484,7 +499,8 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 2. NEVER hallucinate imports - verify all imports are real
 3. NEVER delete logic, comments, or docstrings
 4. Return ONLY valid Python code. No markdown blocks.
-5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.{lesson_learned}
+5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
+{('\n\n📚 LESSON LEARNED: ' + lesson_learned) if lesson_learned else ''}
 
 {code}"""
         
