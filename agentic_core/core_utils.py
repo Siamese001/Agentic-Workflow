@@ -261,21 +261,56 @@ class CircuitBreakerOpenError(MCPError):
     """Raised when circuit breaker is open."""
 
 
+def _perform_single_attempt(func, *args, **kwargs) -> Tuple[bool, Any, Optional[Exception]]:
+    """
+    Helper to perform a single function call attempt and capture its result or exception.
+    This helps reduce nesting depth in the retry_with_backoff decorator.
+    """
+    try:
+        result = func(*args, **kwargs)
+        return True, result, None
+    except Exception as e:
+        return False, None, e
+
+def _execute_with_retries_internal(func, max_retries: int, base_delay: float, *args, **kwargs) -> Tuple[bool, Any, Optional[Exception]]:
+    """
+    Helper function to execute a function with retries and exponential backoff.
+    This function encapsulates the retry logic to reduce nesting in the decorator.
+    It returns exceptions instead of raising them to allow the wrapper to handle the final raise.
+    """
+    for attempt in range(max_retries):
+        success, result, exception = _perform_single_attempt(func, *args, **kwargs)
+
+        if success:
+            return True, result, None
+        
+        # If not successful and it's the last attempt, return the exception
+        if attempt == max_retries - 1:
+            return False, None, exception
+        
+        # Otherwise, delay and retry
+        delay = base_delay * (2 ** attempt)
+        time.sleep(delay)
+    
+    # This line is only reachable if max_retries is 0, as otherwise
+    # the loop will either return a result or return an exception.
+    return False, None, None
+
 def retry_with_backoff(func, max_retries: int = 3, base_delay: float = 1.0):
     """
     Retry decorator for MCP calls with exponential backoff.
     """
     def wrapper(*args, **kwargs):
-        for attempt in range(max_retries):
-            try:
-                return func(*args, **kwargs)
-            except Exception:
-                pass
-
-            if attempt == max_retries - 1:
-                raise
-            delay = base_delay * (2 ** attempt)
-            time.sleep(delay)
+        # Delegate the actual retry logic to the helper function
+        success, result, exception = _execute_with_retries_internal(func, max_retries, base_delay, *args, **kwargs)
+        
+        if success:
+            return result
+        
+        if exception:
+            raise exception
+        
+        # This case handles max_retries = 0 where no success or exception occurred.
         return None
     return wrapper
 
@@ -357,7 +392,6 @@ def get_variable_defs(node_id: str, version: Optional[str] = None) -> str:
 
 def get_file_versions(component_id: str) -> str:
     """Mock for Figma MCP: Get file version history."""
-    # Return mock version history with timestamps
     from datetime import datetime, timedelta
     now = datetime.utcnow()
 
