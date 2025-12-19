@@ -31,7 +31,7 @@ def fix_bare_except_clauses(directory: Any) -> None:
                     f.write(content)
                 COUNT += 1
         except Exception as e:
-LOGGER.error(
+            LOGGER.error(
                 f'Error processing {filepath}: {e}')
     LOGGER.info(
         f'Fixed bare except clauses in {COUNT} files')
@@ -39,4 +39,3 @@ LOGGER.error(
 
 if __name__ == '__main__':
     fix_bare_except_clauses(None)
-

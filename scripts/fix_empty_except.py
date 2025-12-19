@@ -38,7 +38,7 @@ def fix_empty_except_blocks(directory: Any) -> None:
                     f.write(CONTENT)
                 COUNT += 1
         except Exception as e:
-LOGGER.error(
+            LOGGER.error(
                 f'Error processing {filepath}: {e}')
     LOGGER.info(
         f'Fixed empty except blocks in {COUNT} files')
@@ -46,4 +46,3 @@ LOGGER.error(
 
 if __name__ == '__main__':
     fix_empty_except_blocks()
-

@@ -3,14 +3,13 @@
 import ast
 import logging
 from pathlib import Path
-from typing import List, Tuple
 
 
 def count_top_level_defs(filepath: Path) -> int:
     """Docstring."""
 
 
-    LOGGER = logging.getLogger(__name__)
+    logging.getLogger(__name__)
 
     """Count top-level definitions in a Python file."""
     try:
@@ -20,7 +19,7 @@ def count_top_level_defs(filepath: Path) -> int:
                                                        ast.ClassDef,
                                                        ast.AsyncFunctionDef)))
     except Exception:
-    return 0
+        return 0
 
 
 def split_file_by_type(filepath: Path) -> None:
@@ -183,4 +182,3 @@ for file_path in files_to_fix:
             split_file_by_type(full_path)
 
 LOGGER.info("\nDone! Re-run canon_validator.py to verify.")
-

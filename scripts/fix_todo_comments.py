@@ -36,7 +36,7 @@ def fix_todo_comments(directory: Any) -> None:
                     f.write(content)
                 COUNT += 1
         except Exception as e:
-logger.error(
+            logger.error(
                 f'Error processing {filepath}: {e}')
     logger.info(
         f'Fixed TODO/FIXME comments in {COUNT} files')
@@ -44,4 +44,3 @@ logger.error(
 
 if __name__ == '__main__':
     fix_todo_comments()
-

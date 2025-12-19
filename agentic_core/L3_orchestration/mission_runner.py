@@ -52,20 +52,37 @@ except ImportError:
 
 
 def _get_imports():
-    """Lazy import to avoid circular dependencies."""
-    from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-    from agentic_core.agents.infrastructure import GitAgent, Historian, WatchmanHandler
-    from agentic_core.agents.planning import ReflectionAgent, StrategicPlanner
-    from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian
-    from agentic_core.agents.repair import TestPilot
-    from agentic_core.agents.security import ConcurrencyGuardian, SafetyInspector
-    from agentic_core.domain.context import ValidationContext
+    """Lazy import to avoid circular dependencies.
+    
+    NOTE: We import from scripts/canon_validator/agents/ which has the FULL
+    self-healing agents with mutation logic. The agentic_core/agents/ versions
+    are detection-only stubs without healing capabilities.
+    """
+    # Import FULL self-healing agents from canon_validator
+    # WatchmanHandler is in agentic_core (not in scripts/canon_validator)
+    from agentic_core.agents.infrastructure import WatchmanHandler
     from agentic_core.L3_orchestration.canon_scheduler import CanonSwarmScheduler
     from agentic_core.L3_orchestration.intervention_server import (
         FASTAPI_AVAILABLE,
         approval_event,
         start_intervention_server,
     )
+    from scripts.canon_validator.agents import (
+        ArchitectureGovernor,
+        CodeStyleGuardian,
+        ConcurrencyGuardian,
+        DependencySentinel,
+        GitAgent,
+        Historian,
+        HygieneGuardian,
+        ReflectionAgent,
+        SafetyInspector,
+        StrategicPlanner,
+        TestPilot,
+    )
+
+    # Use the FULL ValidationContext from scripts/canon_validator which has all methods
+    from scripts.canon_validator.types import ValidationContext
     
     return {
         'ValidationContext': ValidationContext,

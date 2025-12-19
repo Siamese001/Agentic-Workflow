@@ -110,6 +110,7 @@ class ValidationContext:
     modified_files: Set[str] = field(default_factory=set)
     python_files: List[str] = field(default_factory=list)
     graph: DependencyGraph = field(default_factory=DependencyGraph)
+    code_graph: DependencyGraph = field(default_factory=DependencyGraph)
     budget: BudgetManager = field(default_factory=BudgetManager)
     
     # Memory
@@ -252,5 +253,28 @@ class ValidationContext:
             self.file_backups.clear()
 
     def refresh_graph(self):
-        """Rebuilds graph after mutations."""
-        asyncio.run(self.graph.build(self.python_files))
+        """Rebuilds graph after mutations (sync wrapper)."""
+        # Build graph synchronously since we may be called from async context
+        print("   🕸️ Building Holistic Code Graph...")
+        self.graph.graph = {}
+        self.graph.reverse_graph = {}
+        for file_path in self.python_files:
+            self.graph.graph[file_path] = {"imports": [], "classes": []}
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read())
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.Import):
+                        for n in node.names:
+                            self.graph.graph[file_path]["imports"].append(n.name)
+                    elif isinstance(node, ast.ImportFrom):
+                        if node.module:
+                            self.graph.graph[file_path]["imports"].append(node.module)
+            except (OSError, SyntaxError, UnicodeDecodeError):
+                continue
+        for file, data in self.graph.graph.items():
+            for imp in data["imports"]:
+                if isinstance(imp, str):
+                    if imp not in self.graph.reverse_graph:
+                        self.graph.reverse_graph[imp] = []
+                    self.graph.reverse_graph[imp].append(file)

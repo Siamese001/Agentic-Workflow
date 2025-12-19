@@ -301,7 +301,7 @@ def test_transaction_rollback():
         tx2.commit()
         assert False, "Should have raised exception"
     except Exception:
-result = tx2.rollback()
+        result = tx2.rollback()
         assert result == "ROLLED_BACK"
         assert len(tx2.operations) == 0
 
@@ -400,4 +400,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

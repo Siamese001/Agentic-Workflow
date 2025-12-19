@@ -228,7 +228,6 @@ class CognitiveNode:
         last_error = None
 
         # [HARDENED 5c] Ensure synthesis uses low temp (0.0) for precision
-        synthesis_temp = 0.0
 
         for attempt in range(max_attempts):
             final_prompt = f"""
@@ -315,5 +314,4 @@ class CognitiveNode:
                 f.write(f"# Session ID: {session_id}\n\n")
                 f.write(code)
         except Exception as e:
-logger.warning(f"Failed to save final result: {e}")
-
+            logger.warning(f"Failed to save final result: {e}")

@@ -281,6 +281,15 @@ class ValidationContext:
         self.signals.add("SECURE")
         print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
 
+    def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
+        """Signal the start of a healing cycle."""
+        print(f"   🔄 Healing Cycle {cycle_number}/{max_cycles}")
+
+    def signal_convergence(self):
+        """Signal that the validation has converged."""
+        print("   ✅ Convergence achieved - no modifications in this cycle")
+        self.signals.add("CONVERGENCE")
+
     def inject_instruction(self, source_agent: str, instruction: str):
         """Add a guiding hint to the blackboard for downstream agents."""
         self.instructions.append(f"[{source_agent}] {instruction}")
