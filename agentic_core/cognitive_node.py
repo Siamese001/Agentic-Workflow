@@ -230,6 +230,15 @@ class CognitiveNode:
 
         return final_code
 
+    def _validate_generated_code(self, code: str) -> None:
+        """
+        Validates the syntax and content of the generated Python code.
+        Raises SyntaxError or ValueError on failure.
+        """
+        if not code.strip():
+            raise ValueError("Generated code is empty or only whitespace.")
+        ast.parse(code)  # This will raise SyntaxError if invalid
+
     def _synthesize_code(self, goal: str, history: List[Dict[str, Any]], toolbox_desc: str) -> str:
         """Ask the LLM to convert the sequential thought history into Final Python Code."""
         self.logger.info("✍️ Synthesizing final code from thought sequence...")
@@ -272,38 +281,49 @@ class CognitiveNode:
             if attempt > 0 and last_error:
                 final_prompt += f"\n\nPREVIOUS ATTEMPT FAILED WITH SYNTAX ERROR:\n{last_error}\n\nPlease fix the syntax error and try again."
 
-            final_response = self.llm.generate_plan(
-                "You are a master coder. Use the context provided to write perfect code.",
-                final_prompt
-                # Note: LLMClient doesn't support temperature parameter yet
-            )
+            code = ""  # Initialize code for this attempt
+            validation_failed = False
 
-            code = final_response.get("code", "")
-
-            # Debug: Log the raw LLM response
-            self.logger.debug(f"Raw LLM response: {final_response}")
-            self.logger.debug(f"Extracted code (first 500 chars): {code[:500] if code else 'EMPTY'}")
-
-            # Validate syntax
             try:
-                ast.parse(code)
-                if not code.strip():
-                    raise ValueError("Generated code is empty")
+                final_response = self.llm.generate_plan(
+                    "You are a master coder. Use the context provided to write perfect code.",
+                    final_prompt
+                    # Note: LLMClient doesn't support temperature parameter yet
+                )
+
+                code = final_response.get("code", "")
+
+                # Debug: Log the raw LLM response
+                self.logger.debug(f"Raw LLM response: {final_response}")
+                self.logger.debug(f"Extracted code (first 500 chars): {code[:500] if code else 'EMPTY'}")
+
+                # Validate syntax using helper method
+                self._validate_generated_code(code)
                 self.logger.info("✅ Code syntax validation passed!")
                 return code
             except (SyntaxError, ValueError) as e:
                 last_error = f"Validation error: {str(e)}"
                 self.logger.warning(
                     f"⚠️ Code validation failed (attempt {attempt + 1}): {last_error}")
-                # Refactored: Invert condition to reduce nesting depth
-                if attempt < max_attempts - 1:
-                    continue
+                validation_failed = True
+
+            # If validation failed and it's the last attempt, raise an exception
+            if validation_failed and attempt == max_attempts - 1:
                 self.logger.error(
                     "❌ Max validation attempts reached. Raising exception.")
                 raise RuntimeError(
                     f"Failed to generate valid code after {max_attempts} attempts. Last error: {last_error}")
 
-        return code
+        # This line should theoretically be unreachable if max_attempts > 0
+        # and the logic correctly returns on success or raises on final failure.
+        # However, to satisfy type checkers or extremely unusual edge cases,
+        # we can return an empty string or raise a final error if somehow reached.
+        # Given the preceding logic, a RuntimeError should always be raised if all attempts fail.
+        # The original code had a `return code` here, which would return the last (invalid) code.
+        # To preserve the spirit of "failure to generate valid code", we ensure an error is raised.
+        raise RuntimeError(
+            f"Unexpected state: _synthesize_code finished loop without returning valid code or raising an error. Last error: {last_error}")
+
 
     def _save_thought_history(self, session_id: str, goal: str, history: List[Dict[str, Any]]) -> None:
         """Save thought history to disk for debugging."""
