@@ -116,7 +116,7 @@ class CanonValidator:
             "validation_timestamp": datetime.now(timezone.utc).isoformat()
         })
 
-        new_entry = self._generate_entry(new_code, metadata) # Modified to use internal helper
+        new_entry = self._generate_entry(new_code, metadata)
 
         # Query L1 (Redis) - fast working memory
         l1_results, l2_results = self.db_manager.search_patterns(
@@ -126,50 +126,14 @@ class CanonValidator:
             filter_failures=True
         )
 
-        result = {
-            "is_valid": True,  # Default to valid
-            "confidence": 1.0,
-            "matched_pattern": None,
-            "source": "no_match",
-            "ast_match": False,
-            "recommendation": "Code appears to be new and valid"
-        }
+        # Initialize default result
+        result = self._initialize_validation_result()
 
-        # Check L1 results
+        # Process matches using extracted helpers
         if l1_results:
-            best_match = l1_results[0]
-            validation = self._validate_ast_match(new_entry, best_match)
-
-            result.update({
-                "matched_pattern": best_match.id,
-                "source": "L1_Redis",
-                "ast_match": validation["is_match"],
-                "confidence": validation["confidence"],
-                "is_valid": validation["is_valid"],
-                "recommendation": validation["recommendation"]
-            })
-
-            logger.info(f"L1 match found: {best_match.id}")
-
-        # Check L2 results if no L1 match
+            result.update(self._process_l1_match(new_entry, l1_results[0]))
         elif l2_results:
-            best_match = l2_results[0]
-            validation = self._validate_ast_match(new_entry, best_match)
-
-            result.update({
-                "matched_pattern": best_match.id,
-                "source": "L2_Qdrant",
-                "ast_match": validation["is_match"],
-                "confidence": validation["confidence"],
-                "is_valid": validation["is_valid"],
-                "recommendation": validation["recommendation"]
-            })
-
-            logger.info(f"L2 match found: {best_match.id}")
-
-            # Promote to L1 if valid
-            if validation["is_valid"]:
-                self.db_manager.promote_to_l2(best_match)
+            result.update(self._process_l2_match(new_entry, l2_results[0]))
 
         # Store the new pattern in L1 for future learning
         self.db_manager.store_pattern(new_entry, store_in_l2=False)
@@ -300,6 +264,54 @@ class CanonValidator:
             return "Code matches a pattern with mixed results - review carefully"
         else:
             return "Code appears to be unique - validate thoroughly"
+
+    def _initialize_validation_result(self) -> Dict[str, Any]:
+        """Initialize default validation result structure."""
+        return {
+            "is_valid": True,
+            "confidence": 1.0,
+            "matched_pattern": None,
+            "source": "no_match",
+            "ast_match": False,
+            "recommendation": "Code appears to be new and valid"
+        }
+
+    def _process_l1_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
+        """Process L1 Redis match and return validation result."""
+        validation = self._validate_ast_match(new_entry, best_match)
+        
+        result = {
+            "matched_pattern": best_match.id,
+            "source": "L1_Redis",
+            "ast_match": validation["is_match"],
+            "confidence": validation["confidence"],
+            "is_valid": validation["is_valid"],
+            "recommendation": validation["recommendation"]
+        }
+        
+        logger.info(f"L1 match found: {best_match.id}")
+        return result
+
+    def _process_l2_match(self, new_entry: CanonEntry, best_match: CanonEntry) -> Dict[str, Any]:
+        """Process L2 Qdrant match, promote if valid, and return validation result."""
+        validation = self._validate_ast_match(new_entry, best_match)
+        
+        result = {
+            "matched_pattern": best_match.id,
+            "source": "L2_Qdrant",
+            "ast_match": validation["is_match"],
+            "confidence": validation["confidence"],
+            "is_valid": validation["is_valid"],
+            "recommendation": validation["recommendation"]
+        }
+        
+        logger.info(f"L2 match found: {best_match.id}")
+        
+        # Promote to L1 if valid
+        if validation["is_valid"]:
+            self.db_manager.promote_to_l2(best_match)
+        
+        return result
 
     def update_learning(self, entry_id: str, outcome: str, error_trace: Optional[str] = None):
         """
