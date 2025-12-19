@@ -1,3 +1,7 @@
+from agentic_core.agents.base import SubAtomicAgent
+import ast
+import asyncio
+
 """
 Analysis agents for code quality and semantic consistency.
 
@@ -5,11 +9,6 @@ Contains:
 - SemanticMapper: Analyzes 'God Files' and proposes logical splits based on call graphs
 - TruthKeeper: Ensures docstrings match code logic using Gemini
 """
-
-import ast
-import asyncio
-
-from .base import SubAtomicAgent
 
 
 class SemanticMapper(SubAtomicAgent):
@@ -55,32 +54,59 @@ class TruthKeeper(SubAtomicAgent):
             await self._check_docstring_consistency(file_path)
 
     async def _check_docstring_consistency(self, file_path: str):
-        """Check if docstrings match the actual code logic."""
+        """
+        Check if docstrings match the actual code logic for a given file.
+        This method orchestrates file reading, AST parsing, and node processing.
+        """
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-
+            content = await self._read_file_content(file_path)
             tree = ast.parse(content)
-
-            for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                    docstring = ast.get_docstring(node)
-                    if not docstring:
-                        continue
-
-                    # Use Gemini to verify consistency
-                    if self.ctx.intelligence_enabled:
-                        is_consistent = await self._verify_docstring_consistency(
-                            file_path, node.name, docstring, content
-                        )
-
-                        if not is_consistent:
-                            print(f"   📝 Docstring mismatch in {file_path}:{node.name}")
-                            # Auto-fix the docstring
-                            await self._fix_docstring(file_path, node.name, content)
-
+            await self._iterate_and_process_nodes(file_path, tree, content)
         except Exception as e:
             print(f"   ❌ Failed to check {file_path}: {e}")
+
+    async def _read_file_content(self, file_path: str) -> str:
+        """Reads the content of a file."""
+        # Note: open() is a blocking operation. For true async, aiofiles would be used.
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+
+    async def _iterate_and_process_nodes(self, file_path: str, tree: ast.AST, content: str):
+        """Iterates through AST nodes and processes them for docstring consistency."""
+        for node in ast.walk(tree):
+            await self._process_node_for_docstring_consistency(file_path, node, content)
+
+    async def _process_node_for_docstring_consistency(self, file_path: str, node, content: str):
+        """Helper to process a single AST node for docstring consistency."""
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            return
+
+        docstring = ast.get_docstring(node)
+        await self._process_docstring_if_exists(file_path, node, content, docstring)
+
+    async def _process_docstring_if_exists(self, file_path: str, node, content: str, docstring: str | None):
+        """Processes a node's docstring if it exists."""
+        if not docstring:
+            return
+
+        await self._run_intelligence_check_if_enabled(file_path, node.name, docstring, content)
+
+    async def _run_intelligence_check_if_enabled(self, file_path: str, node_name: str, docstring: str, content: str):
+        """Runs the Gemini intelligence check if enabled in the context."""
+        if not self.ctx.intelligence_enabled:
+            return
+
+        is_consistent = await self._verify_docstring_consistency(
+            file_path, node_name, docstring, content
+        )
+        await self._handle_inconsistent_docstring(file_path, node_name, content, is_consistent)
+
+    async def _handle_inconsistent_docstring(self, file_path: str, node_name: str, content: str, is_consistent: bool):
+        """Helper to handle cases where a docstring is found to be inconsistent."""
+        if not is_consistent:
+            print(f"   📝 Docstring mismatch in {file_path}:{node_name}")
+            # Auto-fix the docstring
+            await self._fix_docstring(file_path, node_name, content)
 
     async def _verify_docstring_consistency(self, file_path: str, name: str, docstring: str, content: str) -> bool:
         """Ask Gemini if docstring matches the code."""

@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Set
 
 from connection_manager import ConnectionManager
 
@@ -69,6 +69,15 @@ class CanonValidator:
             return file_entry.get('content_hash', 'unknown_hash')
         return "global_context"
 
+    def _get_manifest_file_paths(self, manifest_data: Dict[str, Any]) -> Set[str]:
+        """
+        Helper to extract absolute file paths from the manifest data.
+        """
+        files_list = manifest_data.get("files", [])
+        return {file_info.get("absolute_path", "")
+                for file_info in files_list
+                if isinstance(file_info, dict)}
+
     def _is_file_in_manifest(self, file_path: str) -> bool:
         """
         Checks if a given file path is present in the active manifest.
@@ -82,11 +91,7 @@ class CanonValidator:
             with open(manifest_path, 'r') as f:
                 manifest = json.load(f)
 
-            files_list = manifest.get("files", [])
-            file_paths_in_manifest = {
-                file_info.get("absolute_path", "")
-                for file_info in files_list
-            }
+            file_paths_in_manifest = self._get_manifest_file_paths(manifest)
             return file_path in file_paths_in_manifest
         except Exception as e:
             self.logger.warning(f"⚠️  Failed to check manifest: {e}")
