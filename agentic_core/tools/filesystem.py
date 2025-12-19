@@ -92,6 +92,11 @@ def validate_sandbox(path: str) -> Path:
     return resolved
 
 
+class PreservationViolationError(Exception):
+    """Raised when a write operation would delete too much content."""
+    pass
+
+
 def require_healing_lease(func):
     """
     Decorator to verify HealingLease before write operations.
@@ -150,21 +155,66 @@ def read_file(args: ReadFileArgs) -> str:
 def write_file(
     args: WriteFileArgs,
     blackboard=None,
-    agent_id: Optional[str] = None
+    agent_id: Optional[str] = None,
+    override_preservation: bool = False
 ) -> None:
     """
-    Write content to file with sandbox validation and HealingLease verification.
+    Write content to file with sandbox validation, HealingLease verification, and preservation enforcement.
+    
+    **Preservation Rule**: If the new content is less than 90% of the original file's line count,
+    the write is REJECTED unless override_preservation=True is passed by a SystemArchitect agent.
     
     Args:
         args: WriteFileArgs with path, content, and options
         blackboard: Optional AtomicBlackboard instance for lease verification
         agent_id: Optional agent ID for lease verification
+        override_preservation: Allow writes that delete >10% of lines (SystemArchitect only)
         
     Raises:
         SandboxViolationError: If path violates sandbox
         HealingLeaseError: If agent doesn't hold HealingLease
+        PreservationViolationError: If write would delete too much content
     """
     resolved_path = validate_sandbox(args.path)
+    
+    # Preservation enforcement: Check line count if file exists
+    if resolved_path.exists() and not override_preservation:
+        try:
+            with open(resolved_path, 'r', encoding='utf-8') as f:
+                original_lines = len(f.readlines())
+            
+            new_lines = len(args.content.splitlines())
+            
+            # Require at least 90% of original line count
+            min_lines = int(original_lines * 0.9)
+            
+            if new_lines < min_lines:
+                # Log to AtomicBlackboard if available
+                if blackboard:
+                    try:
+                        blackboard.log_security_event(
+                            agent_id=agent_id or "unknown",
+                            event_type="PRESERVATION_VIOLATION",
+                            file_path=args.path,
+                            details={
+                                "original_lines": original_lines,
+                                "new_lines": new_lines,
+                                "threshold": min_lines,
+                                "deletion_percentage": round((1 - new_lines/original_lines) * 100, 2)
+                            }
+                        )
+                    except Exception:
+                        pass
+                
+                raise PreservationViolationError(
+                    f"Preservation violation: New content ({new_lines} lines) is less than 90% "
+                    f"of original ({original_lines} lines). Minimum required: {min_lines} lines. "
+                    f"This would delete {round((1 - new_lines/original_lines) * 100, 2)}% of the file. "
+                    f"Set override_preservation=True if this is intentional (SystemArchitect only)."
+                )
+        except (IOError, UnicodeDecodeError):
+            # If we can't read the file, allow the write
+            pass
     
     if args.create_dirs:
         resolved_path.parent.mkdir(parents=True, exist_ok=True)
