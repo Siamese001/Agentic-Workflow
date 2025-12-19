@@ -443,7 +443,7 @@ class ValidationContext:
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
         """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
         
-        # Build the prompt
+        # Build the prompt - CRITICAL: No tool instructions
         prompt = f"""Task: {task}
 SYSTEM: You are a Level 5 Autonomous Repair Agent.
 RULES:
@@ -452,18 +452,19 @@ RULES:
 3. FORBIDDEN IMPORTS: Do NOT import 'base', 'context', 'L3_orchestration', or 'conversational_repair'.
 4. DO NOT delete logic, comments, or docstrings.
 5. Return ONLY valid Python code. No markdown blocks.
-6. DO NOT use tools or function calls - return code directly as text.
+6. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
 
 {code}"""
         
         try:
-            # Gemini 2.5 Flash Config: DISABLE automatic_function_calling to prevent loops
+            # CRITICAL: Force temperature=1.0 to prevent deterministic loops
+            # CRITICAL: Explicitly set tools=[] to disable ALL tool calling
             config = types.GenerateContentConfig(
-                temperature=0.7,  # Lower temp for more deterministic fixes
+                temperature=1.0,  # MUST be 1.0 for Gemini 2.5 to avoid loops
                 thinking_config=types.ThinkingConfig(
                     thinking_budget=16000  # Deep healing budget for Gemini 2.5
-                )
-                # NO automatic_function_calling - prevents tool loop
+                ),
+                tools=[]  # EXPLICITLY disable all tools
             )
             
             # Get or create persistent chat session for this file
@@ -477,9 +478,10 @@ RULES:
                         model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
                         config=config
                     )
-                    print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}")
+                    print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
                 else:
-                    print(f"      ♻️  Reusing chat session (Round {len(self.conversation_history.get(file_path, [])) // 2 + 1})")
+                    round_num = len(self.conversation_history.get(file_path, [])) + 1
+                    print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
                 
                 # Use persistent session
                 chat = self.chat_sessions[chat_key]
@@ -487,13 +489,15 @@ RULES:
             
             response = await asyncio.to_thread(get_gemini_response)
             
-            # DEBUG: Check if model is calling a tool instead of returning text
+            # DEBUG: Check if model is calling a tool (should NEVER happen now)
             if response.candidates and response.candidates[0].content.parts:
                 first_part = response.candidates[0].content.parts[0]
                 if hasattr(first_part, 'function_call') and first_part.function_call:
-                    print(f"🔍 DEBUG: Model is calling a tool: {first_part.function_call.name}")
-                    print(f"   ⚠️  Tool calling should be disabled - clearing session and retrying")
-                    # Clear corrupted session
+                    tool_name = first_part.function_call.name
+                    tool_args = dict(first_part.function_call.args) if first_part.function_call.args else {}
+                    print(f"🔍 DEBUG: Model called tool '{tool_name}' with args: {tool_args}", flush=True)
+                    print(f"   🚨 CRITICAL: Tools should be disabled! Clearing session.", flush=True)
+                    # Clear corrupted session and return original code
                     if chat_key in self.chat_sessions:
                         del self.chat_sessions[chat_key]
                     return code
@@ -502,14 +506,14 @@ RULES:
             
             # Log success for record_healing_attempt logic
             if hasattr(response, 'usage_metadata'):
-                print(f"      ✅ Tokens: {response.usage_metadata.total_token_count}")
+                print(f"      ✅ Tokens: {response.usage_metadata.total_token_count}", flush=True)
             
             # Track conversation history for debugging (chat session handles actual history)
             if file_path:
                 if file_path not in self.conversation_history:
                     self.conversation_history[file_path] = []
                 self.conversation_history[file_path].append({
-                    "round": len(self.conversation_history[file_path]) // 2 + 1,
+                    "round": len(self.conversation_history[file_path]) + 1,
                     "prompt_length": len(prompt),
                     "response_length": len(fixed_code)
                 })
