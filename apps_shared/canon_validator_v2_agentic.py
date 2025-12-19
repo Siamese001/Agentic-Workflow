@@ -440,27 +440,33 @@ class ValidationContext:
             formatted.append(types.Content(role=entry['role'], parts=parts))
         return formatted
 
-    async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None) -> str:
+    async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None, round_num: int = 1) -> str:
         """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
         
-        # Build the prompt - CRITICAL: No tool instructions
+        # Build the prompt with STRONG negative constraints
         prompt = f"""Task: {task}
 SYSTEM: You are a Level 5 Autonomous Repair Agent.
+
+CRITICAL CONSTRAINTS:
+1. NEVER use 'import base', 'import context', 'import L3_orchestration', or 'import conversational_repair'
+2. These modules DO NOT EXIST in this codebase: base, context, L3_orchestration, conversational_repair
+3. ONLY use imports from Python standard library (os, sys, pathlib, etc.) or imports that exist in the provided code
+4. If you need a utility, use fully qualified paths like 'from agentic_workflow.runtime.shared import ...'
+
 RULES:
 1. Fix the specific violation ONLY.
-2. DO NOT hallucinate imports (only use stdlib or existing).
-3. FORBIDDEN IMPORTS: Do NOT import 'base', 'context', 'L3_orchestration', or 'conversational_repair'.
-4. DO NOT delete logic, comments, or docstrings.
-5. Return ONLY valid Python code. No markdown blocks.
-6. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
+2. DO NOT hallucinate imports - verify all imports are real.
+3. DO NOT delete logic, comments, or docstrings.
+4. Return ONLY valid Python code. No markdown blocks.
+5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
 
 {code}"""
         
         try:
-            # CRITICAL: Force temperature=1.0 to prevent deterministic loops
-            # CRITICAL: Explicitly set tools=[] to disable ALL tool calling
+            # CRITICAL: Use temperature=0.4 for deterministic code fixing (not 1.0)
+            # Lower temperature prevents hallucination of fake imports
             config = types.GenerateContentConfig(
-                temperature=1.0,  # MUST be 1.0 for Gemini 2.5 to avoid loops
+                temperature=0.4,  # Lower temp for literal, deterministic code fixes
                 thinking_config=types.ThinkingConfig(
                     thinking_budget=16000  # Deep healing budget for Gemini 2.5
                 ),
@@ -469,6 +475,13 @@ RULES:
             
             # Get or create persistent chat session for this file
             chat_key = f"chat_{file_path}" if file_path else "chat_default"
+            
+            # CRITICAL: Reset session on Round 3 to clear contaminated history (30k+ tokens)
+            if round_num >= 3 and chat_key in self.chat_sessions:
+                print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
+                del self.chat_sessions[chat_key]
+                if file_path in self.conversation_history:
+                    self.conversation_history[file_path] = []
             
             def get_gemini_response():
                 # Reuse existing chat session or create new one
@@ -480,7 +493,6 @@ RULES:
                     )
                     print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
                 else:
-                    round_num = len(self.conversation_history.get(file_path, [])) + 1
                     print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
                 
                 # Use persistent session
@@ -740,7 +752,7 @@ class SubAtomicAgent:
                 else:
                     prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', 'L3_orchestration', or 'conversational_repair'. Use full relative paths for local modules."
 
-                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path)
+                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path, round_num)
 
                 # 1. Syntax Gate
                 try:
