@@ -6,14 +6,14 @@ Shared core for Fission, Safety Guardrails, and Resilient Mutation.
 
 import asyncio
 import importlib
-from datetime import datetime
 import json
 import logging
-import random
-import shutil
 import os
+import random
 import re
+import shutil
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -30,7 +30,11 @@ except ImportError as e:
 # Gemini SDK
 try:
     from google import genai
-    from google.api_core.exceptions import ResourceExhausted, InternalServerError, DeadlineExceeded
+    from google.api_core.exceptions import (
+        DeadlineExceeded,
+        InternalServerError,
+        ResourceExhausted,
+    )
     from google.genai import types
     GENAI_AVAILABLE = True
 except ImportError:
