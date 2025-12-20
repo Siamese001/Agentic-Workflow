@@ -7,10 +7,7 @@ from .base import ImportPatcher, SubAtomicAgent
 
 # Canon Validator agents (Subatomic Level 5)
 from .canon_base_agent import CanonBaseAgent
-from .system_architect import SystemArchitect
 from .code_janitor import CodeJanitor
-from .structural_engineer import StructuralEngineer as CanonStructuralEngineer
-from .healer_agent import HealerAgent
 
 # Concurrency agents
 from .concurrency import (
@@ -28,6 +25,7 @@ from .engineering import PatternEnforcer, StructuralEngineer
 
 # Governance agents
 from .governance import ArchitectureGovernor, DependencySentinel
+from .healer_agent import HealerAgent
 
 # Infrastructure agents
 from .infrastructure import BenchmarkingAgent, GitAgent, Historian
@@ -49,14 +47,6 @@ from .security import (
     SecurityEnforcer,
 )
 
-# Memory agents (Level 5 Autonomous Learning)
-
-# Pattern retrieval agents
-
-# Systemic enhancement agents
-
-# Cognitive assurance agents
-
 # Specialized agents
 from .specialized import (
     DocEnforcer,
@@ -66,6 +56,17 @@ from .specialized import (
     TheStrategist,
     TypeEnforcer,
 )
+from .structural_engineer import StructuralEngineer as CanonStructuralEngineer
+from .system_architect import SystemArchitect
+
+# Memory agents (Level 5 Autonomous Learning)
+
+# Pattern retrieval agents
+
+# Systemic enhancement agents
+
+# Cognitive assurance agents
+
 
 __all__ = [
     # Base

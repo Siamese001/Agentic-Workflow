@@ -8,9 +8,9 @@ Pattern Origin: agent_logic.py check_and_learn() method refactoring (Dec 19, 202
 Success Metrics: 41% line reduction, 50% nesting reduction, 103% preservation
 """
 
+import ast
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
-import ast
 
 
 @dataclass

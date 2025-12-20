@@ -10,11 +10,11 @@ import asyncio
 import logging
 from typing import Optional
 
-from agentic_core.core.orchestrator_main import (
-    create_orchestrator,
-    OrchestratorConfig,
-)
 from agentic_core.agents.specialized.resume_agent import create_resume_agent
+from agentic_core.core.orchestrator_main import (
+    OrchestratorConfig,
+    create_orchestrator,
+)
 from agentic_core.domain.context import ValidationContext
 
 logger = logging.getLogger(__name__)

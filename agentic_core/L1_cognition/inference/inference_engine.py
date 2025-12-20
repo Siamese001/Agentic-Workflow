@@ -1,15 +1,12 @@
 import logging
 import time
-from enum import Enum
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
-from agentic_workflow.runtime.llm_providers import (
-    Provider, get_client
-)
-from agentic_core.L1_cognition.context.signal_context import (
-    SignalContext
-)
+from agentic_workflow.runtime.llm_providers import Provider, get_client
+
+from agentic_core.L1_cognition.context.signal_context import SignalContext
 
 LOGGER = logging.getLogger(__name__)
 

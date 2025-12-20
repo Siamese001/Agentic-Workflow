@@ -9,11 +9,11 @@ by routing all orchestration through the consolidated AtomicBlackboard-integrate
 import asyncio
 import logging
 
-from agentic_core.core.orchestrator_main import (
-    create_orchestrator,
-    OrchestratorConfig,
-)
 from agentic_core.agents.specialized.outreach_agent import create_outreach_agent
+from agentic_core.core.orchestrator_main import (
+    OrchestratorConfig,
+    create_orchestrator,
+)
 from agentic_core.domain.context import ValidationContext
 
 logger = logging.getLogger(__name__)

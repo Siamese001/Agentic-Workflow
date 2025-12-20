@@ -5,16 +5,16 @@ Shared core for Fission, Safety Guardrails, and Resilient Mutation.
 """
 
 import asyncio
+import importlib
 import json
 import logging
 import os
 import re
-import sys
 import subprocess
-import importlib
+import sys
 import time
 from pathlib import Path
-from typing import Tuple, Optional, Dict, Any
+from typing import Any, Dict, Optional, Tuple
 
 # Windows console encoding handled by terminal settings
 
@@ -317,32 +317,37 @@ async def run_mission(target_scope: str = "agentic_core"):
         ctx = ValidationContext()
         print("   [!] Using minimal ValidationContext (full context not available)")
     
-    # CONTEXT HARDENING: Ensure imported objects meet current requirements
+    # HYBRID CONTEXT HARDENING
+    # Supports both Legacy (list.append) and Modern (callable) report formats
+    
+    class CallableReport(list):
+        """Hybrid report object that acts as both a list and a callable method."""
+        def __call__(self, agent_name, key_num, passed, details=""):
+            """Handles modern 4-parameter calls: ctx.report(name, key, passed, msg)"""
+            status = "PASS" if passed else "FAIL"
+            self.append({
+                "agent": agent_name, 
+                "key": key_num, 
+                "status": status, 
+                "msg": details if isinstance(details, str) else str(details)
+            })
+    
+    # Initialize or convert existing report
+    existing_data = getattr(ctx, 'report', [])
+    if not isinstance(existing_data, list):
+        existing_data = []
+    
+    # Overwrite with the Hybrid object
+    ctx.report = CallableReport(existing_data)
+    
+    # Ensure get_env exists for MemoryArchitect
     if not hasattr(ctx, 'get_env'):
         ctx.get_env = lambda key, default=None: os.getenv(key, default)
-    
-    if not hasattr(ctx, 'report'):
-        ctx.report = []
-    elif not isinstance(ctx.report, list):
-        # If report exists but isn't a list, create report_data for method-based reporting
-        ctx.report_data = []
-        ctx.report
-        def report_method(agent_name, key_number, passed, details):
-            ctx.report_data.append({
-                "agent": agent_name,
-                "key": key_number,
-                "passed": passed,
-                "details": details
-            })
-        ctx.report = report_method
         
     if not hasattr(ctx, 'add_to_report'):
-        def hardened_report(agent_name, message, severity="info"):
-            if isinstance(ctx.report, list):
-                ctx.report.append({"agent": agent_name, "msg": message, "lvl": severity})
-            elif hasattr(ctx, 'report_data'):
-                ctx.report_data.append({"agent": agent_name, "msg": message, "lvl": severity})
-        ctx.add_to_report = hardened_report
+        def hardened_add_to_report(agent_name, message, severity="info"):
+            ctx.report.append({"agent": agent_name, "msg": message, "lvl": severity})
+        ctx.add_to_report = hardened_add_to_report
     
     if not hasattr(ctx, 'signals'):
         ctx.signals = set()
@@ -426,7 +431,30 @@ async def run_mission(target_scope: str = "agentic_core"):
                 print(f"   [!] Agent error: {e}")
     
     print("\n[*] SAVING BLACKBOARD STATE...")
-    print("[*] MISSION COMPLETE")
+    
+    # Mission Summary Dashboard
+    print("\n" + "="*60)
+    print(f"[START] MISSION COMPLETE: {len(files_to_validate)} Files Swept")
+    print(f"[STATS] TOTAL VIOLATIONS DETECTED: {len(ctx.report)}")
+    
+    # Quick Summary by Agent
+    if ctx.report:
+        from collections import Counter
+        summary = Counter(item.get('agent', 'Unknown') for item in ctx.report)
+        print("\n[STATS] Violations by Agent:")
+        for agent, count in summary.most_common():
+            print(f"   - {agent}: {count} issues")
+        
+        # Summary by Canon Key (if available)
+        key_summary = Counter(item.get('key') for item in ctx.report if 'key' in item)
+        if key_summary:
+            print("\n[STATS] Top Violated Canon Keys:")
+            for key, count in key_summary.most_common(10):
+                print(f"   - Key {key}: {count} violations")
+    else:
+        print("\n[!] No violations recorded (check agent execution)")
+    
+    print("="*60)
 
 
 # ==============================================================================

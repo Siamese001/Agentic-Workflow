@@ -4,7 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Callable
+from typing import Callable, Dict, List, Optional, Tuple
 
 try:
     from pinecone import Pinecone

@@ -1,9 +1,9 @@
+import datetime
+import json
 import logging
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional
-import datetime
-import json
 
 try:
     NUMPY_AVAILABLE = True
@@ -11,7 +11,11 @@ except ImportError:
     NUMPY_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager
+from apps_shared.canon_validator_agentic_v2 import (
+    get_fission_manager,
+    get_safety_guardrail,
+    get_subatomic_engine,
+)
 
 try:
     from google import genai

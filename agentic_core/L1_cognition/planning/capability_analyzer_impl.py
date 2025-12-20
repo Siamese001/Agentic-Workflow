@@ -3,7 +3,14 @@ import time
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-from agentic_workflow.runtime.shared import CapabilityGap, Recommendation, AnalysisReport, CapabilityGapType, RecommendationType
+from agentic_workflow.runtime.shared import (
+    AnalysisReport,
+    CapabilityGap,
+    CapabilityGapType,
+    Recommendation,
+    RecommendationType,
+)
+
 
 class CapabilityAnalyzer:
     """Analyzes capability gaps and generates improvement recommendations.

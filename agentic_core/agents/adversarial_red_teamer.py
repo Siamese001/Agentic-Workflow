@@ -17,9 +17,10 @@ import ast
 import logging
 import textwrap
 from dataclasses import dataclass
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from agentic_core.agents.base import SubAtomicAgent
+
 # Assuming AgentContext is defined in agentic_core.context or similar.
 # If not, use `Any` for `ctx` type hint.
 # from agentic_core.context import AgentContext

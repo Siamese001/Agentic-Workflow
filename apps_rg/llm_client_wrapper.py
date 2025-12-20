@@ -44,8 +44,8 @@ class LLMClient:
         Returns:
             Generated plan as dictionary
         """
-        import time
         import json
+        import time
         
         start_time = time.time()
         

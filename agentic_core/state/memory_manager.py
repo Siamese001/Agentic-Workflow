@@ -4,11 +4,11 @@ Memory Manager - JSON Persistence for Canon Validator State
 Handles loading and saving of validation state, conversation history,
 and other persistent data structures.
 """
-import os
 import json
-from typing import Dict, Any, Optional, List
-from pathlib import Path
+import os
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 class MemoryManager:
