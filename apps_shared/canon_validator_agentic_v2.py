@@ -33,7 +33,7 @@ try:
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
-    print("⚠️  Gemini SDK not available. Install with: pip install google-generativeai")
+    print("[!] Gemini SDK not available. Install with: pip install google-generativeai")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -257,21 +257,21 @@ class SubAtomicEngine:
 
 async def run_mission(target_scope: str = "agentic_core"):
     """Executes the full 50-key agentic validation mission."""
-    print(f"\n🚀 MISSION START: Validating {target_scope}")
+    print(f"\n[*] MISSION START: Validating {target_scope}")
     print(f"DEBUG: VERSION 2.2 - BUDGET HARDENED (CAP: 24,576)")
     
     # LEVEL 6: Create healing branch on start (GitOps)
     branch_name = f"healing/auto_{int(time.time())}"
     try:
         subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
-        print(f"   🌱 GitOps: Created healing branch '{branch_name}'")
+        print(f"   [+] GitOps: Created healing branch '{branch_name}'")
     except Exception:
-        print("   ⚠️ GitOps: Git not detected or branch creation failed.")
+        print("   [!] GitOps: Git not detected or branch creation failed.")
 
     # Strategy: Analyze signals and form agenda for the 50-key sweep
-    print("\n=== 🧬 SELF-HEALING CYCLE 1/5 ===")
-    print(f"   📂 Target: {os.path.abspath(target_scope)}")
-    print("   📋 PLAN: Executing full system diagnostic via modular agents...")
+    print("\n=== [*] SELF-HEALING CYCLE 1/5 ===")
+    print(f"   [>] Target: {os.path.abspath(target_scope)}")
+    print("   [>] PLAN: Executing full system diagnostic via modular agents...")
     
     # Add project root to Python path
     project_root = Path(__file__).parent.parent
@@ -281,16 +281,33 @@ async def run_mission(target_scope: str = "agentic_core"):
     # 1. Initialize Context (Blackboard)
     try:
         from agentic_core.L4_state.validation_context import ValidationContext
+        ctx = ValidationContext()
     except ImportError:
-        # Fallback: Create minimal context
+        # Fallback: Create minimal context with required structure
         class ValidationContext:
             def __init__(self):
                 self.target_scope = None
                 self._client = None
-        print("   ⚠️ Using minimal ValidationContext (full context not available)")
+                self.python_files = []
+                self.report = []
+                self.env_vars = {}
+                self.signals = set()
+                
+            def get_env(self, key, default=None):
+                """Get environment variable."""
+                return os.getenv(key, default)
+                
+            def add_to_report(self, agent_name, message, severity="info"):
+                """Add finding to report."""
+                self.report.append({"agent": agent_name, "msg": message, "lvl": severity})
+        
+        ctx = ValidationContext()
+        print("   [!] Using minimal ValidationContext (full context not available)")
     
-    ctx = ValidationContext()
     ctx.target_scope = target_scope
+    
+    # Populate python_files list
+    ctx.python_files = [str(p) for p in Path(target_scope).rglob("*.py")]
 
     # 2. Dynamic Agent Loading (Key 11/12 Enforcement)
     # Load available agents from agentic_core/agents
@@ -329,33 +346,33 @@ async def run_mission(target_scope: str = "agentic_core"):
                 module = importlib.import_module(module_path)
                 agent_class = getattr(module, class_name)
                 cleaning_crew.append(agent_class(ctx))
-                print(f"   ✅ Loaded: {class_name}")
+                print(f"   [+] Loaded: {class_name}")
             except (ImportError, AttributeError) as e:
-                print(f"   ⚠️ Could not load {class_name}: {e}")
+                print(f"   [!] Could not load {class_name}: {e}")
     except Exception as e:
-        print(f"   ⚠️ Agent loading error: {e}")
+        print(f"   [!] Agent loading error: {e}")
 
     if not cleaning_crew:
-        print("   ⚠️ No agents loaded. Running in diagnostic mode only.")
+        print("   [!] No agents loaded. Running in diagnostic mode only.")
     else:
-        print(f"   ✅ Loaded {len(cleaning_crew)} agents for validation sweep")
+        print(f"   [+] Loaded {len(cleaning_crew)} agents for validation sweep")
 
     # 3. Execution Loop
     files_to_validate = [str(p) for p in Path(target_scope).rglob("*.py")]
-    print(f"   📊 Found {len(files_to_validate)} Python files to validate\n")
+    print(f"   [>] Found {len(files_to_validate)} Python files to validate\n")
     
     for file_path in files_to_validate:
-        print(f"🔍 Agentic Sweep: {os.path.basename(file_path)}")
+        print(f"[>] Agentic Sweep: {os.path.basename(file_path)}")
         for agent in cleaning_crew:
             try:
                 if hasattr(agent, 'can_run') and agent.can_run():
                     if hasattr(agent, 'execute'):
                         await agent.execute()
             except Exception as e:
-                print(f"   ⚠️ Agent error: {e}")
+                print(f"   [!] Agent error: {e}")
     
-    print("\n💾 SAVING BLACKBOARD STATE...")
-    print("MISSION COMPLETE")
+    print("\n[*] SAVING BLACKBOARD STATE...")
+    print("[*] MISSION COMPLETE")
 
 
 # ==============================================================================
@@ -421,8 +438,8 @@ if __name__ == "__main__":
     try:
         asyncio.run(run_mission(args.target))
     except KeyboardInterrupt:
-        print("\n⚠️ Mission interrupted by user")
+        print("\n[!] Mission interrupted by user")
     except Exception as e:
-        print(f"\n❌ Mission failed: {e}")
+        print(f"\n[X] Mission failed: {e}")
         import traceback
         traceback.print_exc()
