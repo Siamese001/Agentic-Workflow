@@ -9,7 +9,6 @@ Tests the complete L1-L5 MCP architecture including:
 """
 
 import asyncio
-import os
 import sys
 from pathlib import Path
 
@@ -17,9 +16,9 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from agentic_core.infra.mcp_router import MCPRouter, get_mcp_router
-from agentic_core.infra.git_safety_handler import GitSafetyHandler, get_git_safety_handler
-from agentic_core.core.proactive_audit import ProactiveFissionScanner, get_proactive_scanner
+from agentic_core.infra.mcp_router import get_mcp_router
+from agentic_core.infra.git_safety_handler import get_git_safety_handler
+from agentic_core.core.proactive_audit import get_proactive_scanner
 
 
 class MCPIntegrationTests:
@@ -282,7 +281,7 @@ class MCPIntegrationTests:
             assert l4_result["status"] == "success", "L4 routing failed"
             
             print("   → Step 4: Verify clean state")
-            is_clean = await git_safety.verify_clean_state("test_monolith.py")
+            await git_safety.verify_clean_state("test_monolith.py")
             # Note: This may fail in actual git repo, but the call should succeed
             
             print("   → Step 5: Generate pre-emptive strategy")

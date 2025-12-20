@@ -12,12 +12,10 @@ from typing import Any, Callable, Optional, Tuple
 
 class MCPError(Exception):
     """Base exception for MCP-related errors."""
-    pass
 
 
 class CircuitBreakerOpenError(MCPError):
     """Raised when circuit breaker is open."""
-    pass
 
 
 def _perform_single_attempt(func: Callable, *args, **kwargs) -> Tuple[bool, Any, Optional[Exception]]:

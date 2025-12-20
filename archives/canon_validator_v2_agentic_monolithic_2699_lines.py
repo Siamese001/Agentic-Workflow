@@ -52,18 +52,15 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_fa
 
 # Inline file_io functions to avoid import dependencies
 def get_python_files(root: str = '.') -> List[str]:
-    """Get all Python files excluding specified directories and files."""
-    print(f"   📂 Scanning Python files in {root}...", flush=True)
-    python_files = []
-    dir_count = 0
+    """Hardened file scanner with absolute path resolution."""
+    # Resolve the absolute path to ensure the scanner doesn't lose the context
+    absolute_root = os.path.abspath(root)
+    print(f"   📂 Scanning absolute path: {absolute_root}", flush=True)
     
-    for root_dir, dirs, files in os.walk(root):
-        # Filter excluded directories IN-PLACE to prevent os.walk from descending
+    python_files = []
+    for root_dir, dirs, files in os.walk(absolute_root):
+        # Prevent descending into virtual envs or excluded zones
         dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
-        
-        dir_count += 1
-        if dir_count % 50 == 0:
-            print(f"      Scanned {dir_count} directories, found {len(python_files)} files...", flush=True)
         
         for file in files:
             if file.endswith('.py') and file not in EXCLUDED_FILES:
@@ -71,7 +68,7 @@ def get_python_files(root: str = '.') -> List[str]:
                 if not is_excluded(file_path):
                     python_files.append(file_path)
     
-    print(f"   ✅ Found {len(python_files)} Python files in {dir_count} directories", flush=True)
+    print(f"   ✅ Found {len(python_files)} Python files.", flush=True)
     return python_files
 
 try:
@@ -1112,7 +1109,20 @@ class SystemArchitect(SubAtomicAgent):
         if not passed and self.ctx.intelligence_enabled:
             # Convert to list to avoid set subscript issues
             details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in list(set(v.split(":")[0] for v in details_list))[:3]:
+            # Extract file paths - handle Windows paths with drive letters (C:\...)
+            file_paths = set()
+            for v in details_list:
+                # Split on last colon to handle line numbers, but preserve drive letters
+                parts = str(v).rsplit(":", 1)
+                if len(parts) > 1 and parts[1].strip().isdigit():
+                    # Has line number, take everything before last colon
+                    file_paths.add(parts[0])
+                else:
+                    # No line number, take first part before any colon after drive letter
+                    match = re.match(r'^([A-Za-z]:\\[^:]+|/[^:]+|[^:]+)', str(v))
+                    if match:
+                        file_paths.add(match.group(1))
+            for fp in list(file_paths)[:3]:
                 await self.smart_fix(fp, 41)
             passed, details = self.check_key_41_scoped_nesting()
         self.ctx.report(self.name, 41, passed, details)

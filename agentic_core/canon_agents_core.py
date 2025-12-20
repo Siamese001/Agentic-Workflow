@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 from agentic_core.canon_base_agent import SubAtomicAgent
-from config.canon_validator_config import EXCLUDED_DIRS, is_excluded
+from apps_shared.canon_utils import EXCLUDED_DIRS, is_excluded
 
 
 class SystemArchitect(SubAtomicAgent):

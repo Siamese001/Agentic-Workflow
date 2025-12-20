@@ -17,7 +17,6 @@ Integration:
 """
 
 import ast
-import asyncio
 import difflib
 import hashlib
 import json
@@ -25,7 +24,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 try:
     from pinecone import Pinecone
@@ -34,7 +33,6 @@ except ImportError:
     PINECONE_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
-from agentic_core.patterns.subatomic_flattening_rule import FlatteningPattern
 
 logger = logging.getLogger(__name__)
 

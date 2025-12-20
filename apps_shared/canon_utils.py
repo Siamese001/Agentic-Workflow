@@ -8,7 +8,36 @@ import os
 from functools import wraps
 from typing import List
 
-from config.canon_validator_config import EXCLUDED_DIRS, EXCLUDED_FILES, is_excluded
+# Exclusion zones (inlined from config)
+EXCLUDED_DIRS = {
+    '.git', '.venv', 'venv', 'env', '__pycache__', '.pytest_cache',
+    'node_modules', '.idea', '.vscode', 'build', 'dist', 'eggs',
+    'archives', 'data',
+}
+
+EXCLUDED_FILES = {
+    'canon_validator.py',
+    'canon_validator_backup.py',
+    'canon_validator_v2_agentic.py',
+    'auto_canon.py',
+    '.DS_Store'
+}
+
+def is_excluded(path: str) -> bool:
+    """Check if a path should be excluded from validation."""
+    path_parts = path.split(os.sep)
+    
+    # Check directory exclusions
+    for part in path_parts:
+        if part in EXCLUDED_DIRS:
+            return True
+    
+    # Check file exclusions
+    filename = os.path.basename(path)
+    if filename in EXCLUDED_FILES:
+        return True
+    
+    return False
 
 
 def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_factor: float = 2.0):

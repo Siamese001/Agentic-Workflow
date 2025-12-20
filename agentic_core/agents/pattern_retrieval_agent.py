@@ -9,7 +9,7 @@ Integration: SystemArchitect → Pattern Retrieval → Automatic Extraction
 
 import logging
 import os
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 try:
     from pinecone import Pinecone
@@ -19,8 +19,7 @@ except ImportError:
 
 from agentic_core.patterns.subatomic_flattening_rule import (
     FlatteningPattern,
-    ComplexityMetrics,
-    ExtractionCandidate
+    ComplexityMetrics
 )
 
 logger = logging.getLogger(__name__)

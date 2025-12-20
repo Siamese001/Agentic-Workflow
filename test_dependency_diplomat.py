@@ -12,8 +12,8 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from agentic_core.domain.context import ValidationContext
 from agentic_core.agents import get_dependency_diplomat
+from agentic_core.domain.context import ValidationContext
 
 logging.basicConfig(
     level=logging.INFO,

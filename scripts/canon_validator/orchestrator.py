@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 # Phase 5: Import from consolidated orchestrator
 from agentic_core.core.orchestrator_main import (
-    ConsolidatedOrchestrator,
     OrchestratorConfig,
     create_orchestrator,
 )

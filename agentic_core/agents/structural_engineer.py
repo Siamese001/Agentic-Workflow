@@ -60,7 +60,7 @@ class StructuralEngineer(CanonBaseAgent):
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     tree = ast.parse(content)
-                    lines = content.splitlines()
+                    content.splitlines()
                 
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):

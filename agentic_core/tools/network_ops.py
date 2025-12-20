@@ -5,8 +5,7 @@ Consolidated from core_utils.py, network_utils.py, and security_utils.py
 
 import json
 import logging
-import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +33,6 @@ def string_set(key: str, value: str) -> None:
         key: Redis key
         value: Value to set
     """
-    pass
 
 
 def incr(key: str) -> int:
@@ -56,7 +54,6 @@ def incr(key: str) -> int:
 
 def start_transaction() -> None:
     """Mock for Redis MCP: Start a transaction."""
-    pass
 
 
 def watch_key(key: str) -> None:
@@ -66,7 +63,6 @@ def watch_key(key: str) -> None:
     Args:
         key: Redis key to watch
     """
-    pass
 
 
 def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
@@ -78,12 +74,10 @@ def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
         value: Value to set
         ttl: Time to live in seconds
     """
-    pass
 
 
 def commit_transaction() -> None:
     """Mock for Redis MCP: Commit transaction."""
-    pass
 
 
 def get_and_set(key: str, new_value: str) -> str:
@@ -234,7 +228,6 @@ def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
         value: Value to cache
         ttl: Time to live in seconds
     """
-    pass
 
 
 # Time Utilities
@@ -293,7 +286,6 @@ def browser_navigate(url: str) -> None:
     Args:
         url: URL to navigate to
     """
-    pass
 
 
 def browser_type(element: str, ref: str, text: str) -> None:
@@ -305,7 +297,6 @@ def browser_type(element: str, ref: str, text: str) -> None:
         ref: Element reference
         text: Text to type
     """
-    pass
 
 
 def browser_click(element: str, ref: str) -> None:
@@ -316,4 +307,3 @@ def browser_click(element: str, ref: str) -> None:
         element: Element description
         ref: Element reference
     """
-    pass

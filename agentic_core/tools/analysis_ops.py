@@ -6,7 +6,6 @@ Consolidated from core_utils.py and security_utils.py
 import ast
 import logging
 import subprocess
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)

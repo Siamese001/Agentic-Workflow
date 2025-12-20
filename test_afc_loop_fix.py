@@ -2,8 +2,9 @@
 """
 Test that AFC loop is fixed - model should NOT call tools.
 """
-import os
 import asyncio
+import os
+
 from dotenv import load_dotenv
 
 load_dotenv()

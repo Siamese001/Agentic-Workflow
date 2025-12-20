@@ -5,10 +5,10 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any, List
 
 from agentic_workflow.runtime.llm_providers import (
-    Provider, get_client, ProviderConfig, get_api_key
+    Provider, get_client
 )
 from agentic_core.L1_cognition.context.signal_context import (
-    SignalContext, ThermalProfile, HardState, SoftState
+    SignalContext
 )
 
 LOGGER = logging.getLogger(__name__)
