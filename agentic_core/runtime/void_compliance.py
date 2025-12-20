@@ -54,6 +54,22 @@ FORBIDDEN_ROOT_FOLDERS = {
     ".pytest_cache",
     ".ruff_cache",
     "node_modules",
+    # Numbered folders from Light Canon migration (NOT APPROVED)
+    "01_runtime_logic",
+    "02_runtime_cache",
+    "03_scripts_logic",
+    "04_scripts_cache",
+    "05_runtime_security",
+    "06_runtime_runtime",
+    "07_runtime_pipeline",
+    "08_shared_security",
+    "09_shared_runtime",
+    "10_shared_pipeline",
+    "11_shared_logic",
+    "12_shared_cache",
+    "13_scripts_security",
+    "14_scripts_runtime",
+    "15_scripts_pipeline",
 }
 
 
@@ -164,6 +180,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         # Check if in forbidden folder
         if root_folder in FORBIDDEN_ROOT_FOLDERS:
             return False, f"VOID VIOLATION: File in forbidden folder '{root_folder}' (out of scope)"
+        
+        # Check for numbered prefix pattern (NOT APPROVED)
+        if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
+            return False, f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)"
         
         # Unknown folder
         return False, f"VOID VIOLATION: File in unknown folder '{root_folder}' (not in ALLOWED_ROOT_FOLDERS)"

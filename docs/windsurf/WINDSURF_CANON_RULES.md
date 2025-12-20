@@ -152,7 +152,7 @@ Action: Split into:
 
 **Rule:** Files must only exist in the 12 Approved Root Folders. Anything else is "The Void."
 
-**Approved Root Folders:**
+**Approved Root Folders (ONLY 12):**
 1. `agentic_core/`
 2. `prompt_governance/`
 3. `schemas/`
@@ -165,6 +165,8 @@ Action: Split into:
 10. `tests/`
 11. `data/` (out of scope, static only)
 12. `archives/` (out of scope, legacy only)
+
+**❌ FORBIDDEN:** Any folder with numerical prefix (`01_*`, `02_*`, `03_*`, etc.) is **NOT APPROVED**. These were temporary Light Canon workarounds and must be migrated to approved folders.
 
 **Enforcement:**
 - Detect `.py` files in `data/` or `archives/`

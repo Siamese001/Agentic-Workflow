@@ -6,6 +6,8 @@ This document defines the canonical mapping between the 50 validation keys and t
 
 **Hardening Status:** This specification includes L6 runtime enforcement with anti-single-child detection, import waterfall validation, and self-validation priority for sovereign directories.
 
+**⚠️ CRITICAL:** Only the **12 Approved Root Folders** listed below are valid. Any folder with a numerical prefix (e.g., `01_`, `02_`, etc.) is **NOT APPROVED** and will be rejected by void compliance enforcement.
+
 ---
 
 ## 🛡️ **Hardening Rules**
