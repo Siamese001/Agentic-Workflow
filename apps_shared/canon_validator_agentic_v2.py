@@ -309,7 +309,7 @@ if __name__ == "__main__":
     print("=" * 60)
     print("\nThis is a shared library module.")
     print("Import components in your orchestrator:")
-    print("\n  from apps_shared.canon_validator_sub_atomic import (")
+    print("\n  from apps_shared.canon_validator_agentic_v2 import (")
     print("      FissionManager,")
     print("      SafetyGuardrail,")
     print("      SubAtomicEngine,")

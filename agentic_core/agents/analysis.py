@@ -1,8 +1,8 @@
-```python
 from agentic_core.agents.base import SubAtomicAgent
 import ast
 import asyncio
 import logging
+from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager
 
 # Configure logging for the module
 logger = logging.getLogger(__name__)
@@ -308,5 +308,3 @@ class TruthKeeper(SubAtomicAgent):
 
         except Exception as e:
             logger.error(f"   ❌ Failed to fix docstring for '{name}' in {file_path}: {e}")
-
-```

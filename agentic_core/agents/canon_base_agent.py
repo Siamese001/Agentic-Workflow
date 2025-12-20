@@ -1,4 +1,3 @@
-```python
 # Standard library imports
 import asyncio
 import ast
@@ -18,6 +17,13 @@ except ImportError:
     # Handle cases where google-generativeai might not be installed
     genai = None
     types = None
+
+# Import shared Sub-Atomic Engine
+from apps_shared.canon_validator_agentic_v2 import (
+    get_subatomic_engine,
+    get_safety_guardrail,
+    get_fission_manager
+)
 
 # Load environment variables from .env file at module level
 load_dotenv()
@@ -41,8 +47,10 @@ class CanonBaseAgent(ABC):
     # Stores conversation history, typically a list of messages/turns
     conversation_history: Dict[str, List[Any]] = field(default_factory=dict, init=False)
 
-    # Fission Manager for monolithic file decomposition
+    # Shared Sub-Atomic Engine components
+    _subatomic_engine: Optional[Any] = field(default=None, init=False)
     _fission_manager: Optional[Any] = field(default=None, init=False)
+    _safety_guardrail: Optional[Any] = field(default=None, init=False)
 
     # Banned imports from constraints.md
     BANNED_IMPORTS: List[str] = field(default_factory=lambda: [
@@ -66,11 +74,15 @@ class CanonBaseAgent(ABC):
             print(f"⚠️  {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})",
                   flush=True)
 
-        # Initialize Fission Manager for monolithic file decomposition
+        # Initialize shared Sub-Atomic Engine components
         if self._client:
-            # Local import to avoid circular dependencies or unnecessary import if client is not available
-            from agentic_core.infra.fission_manager import FissionManager
-            self._fission_manager = FissionManager(gemini_client=self._client)
+            try:
+                self._subatomic_engine = get_subatomic_engine(gemini_client=self._client)
+                self._fission_manager = get_fission_manager()
+                self._safety_guardrail = get_safety_guardrail()
+                print(f"   🔧 {self.name}: Sub-Atomic Engine initialized", flush=True)
+            except Exception as e:
+                print(f"   ⚠️  {self.name}: Failed to initialize Sub-Atomic Engine: {e}", flush=True)
 
     def _get_role_name(self) -> str:
         """Convert class name to role name (e.g., SystemArchitect -> system_architect)."""
@@ -335,5 +347,3 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
             return False, f"Banned imports: {', '.join(violations)}"
 
         return True, "Fix verified"
-
-```
