@@ -71,10 +71,10 @@ class OutreachAgent:
             await self._enforce_quality_threshold()
             
             self.ctx.signals.add("OUTREACH_COMPLETE")
-            logger.info(f"✅ Outreach campaign completed: {self.config.campaign_id}")
+            logger.info(f"[OK] Outreach campaign completed: {self.config.campaign_id}")
         
         except Exception as e:
-            logger.error(f"❌ Outreach campaign failed: {e}")
+            logger.error(f"[X] Outreach campaign failed: {e}")
             results["status"] = "FAILED"
             results["error"] = str(e)
             self.ctx.signals.add("OUTREACH_FAILED")

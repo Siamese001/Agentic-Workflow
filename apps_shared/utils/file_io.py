@@ -82,7 +82,7 @@ def write_compliant_file(path: str, content: str, dry_run: bool = False) -> bool
                 f.write(clean_content)
             return True
         except Exception as e:
-            print(f"   ❌ Failed to write {path}: {e}")
+            print(f"   [X] Failed to write {path}: {e}")
             return False
 
     return True

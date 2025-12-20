@@ -75,7 +75,7 @@ class ActionNode:
         steps: List[Dict[str, Any]] = plan.get('steps') or plan.get('plan', {}).get('steps', [])
 
         if not steps:
-            logger.warning("⚠️ Received empty plan. No actions taken.")
+            logger.warning("[!] Received empty plan. No actions taken.")
             return {"status": "skipped", "results": []}
 
         for step in steps:
@@ -87,7 +87,7 @@ class ActionNode:
                 logger.error(f"🛑 Execution halted at step {step.get('step', 'N/A')}: {result.get('output')}")
                 return {"status": "failed", "results": results}
 
-        logger.info("✅ Plan execution completed successfully.")
+        logger.info("[OK] Plan execution completed successfully.")
         return {"status": "success", "results": results}
 
     def _execute_single_step(self, step: Dict[str, Any]) -> Dict[str, Any]:
@@ -110,7 +110,7 @@ class ActionNode:
         if not tool_key or tool_key not in self.allowed_tools:
             # Fixed: Wrapped long string for PEP8 line length
             msg = (
-                f"🚫 Tool '{action_name}' (mapped to '{tool_key}') is NOT "
+                f"[X] Tool '{action_name}' (mapped to '{tool_key}') is NOT "
                 "whitelisted or recognized."
             )
             logger.warning(msg)
@@ -123,11 +123,11 @@ class ActionNode:
             output: str = self.allowed_tools[tool_key](**params)
             return {"step": step_number, "status": "success", "output": output}
         except Exception as e:
-            logger.error(f"❌ Tool '{tool_key}' execution failed for step {step_number}: {e}", exc_info=True)
+            logger.error(f"[X] Tool '{tool_key}' execution failed for step {step_number}: {e}", exc_info=True)
             return {"step": step_number, "status": "error", "output": str(e)}
 
     # =========================================================================
-    # 🔧 SECURE TOOL IMPLEMENTATIONS
+    # [+] SECURE TOOL IMPLEMENTATIONS
     # =========================================================================
 
     def _safe_path(self, filename: str) -> Path:

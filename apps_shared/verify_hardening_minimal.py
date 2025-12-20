@@ -18,18 +18,18 @@ def test_manifest_integrity():
 
             # Basic Schema Validation
             if not isinstance(data, dict):
-                # print("❌ Manifest corruption: Root element is not a dictionary.")  # [Security Fix]
+                # print("[X] Manifest corruption: Root element is not a dictionary.")  # [Security Fix]
                 return False
 
             return True
 
         except json.JSONDecodeError as e:
             pass
-# print(f"❌ Manifest corruption: Invalid JSON syntax. {e}")  # [Security Fix]
+# print(f"[X] Manifest corruption: Invalid JSON syntax. {e}")  # [Security Fix]
             return False
         except Exception as e:
             pass
-# print(f"❌ Manifest validation error: {e}")  # [Security Fix]
+# print(f"[X] Manifest validation error: {e}")  # [Security Fix]
             return False
 
     with tempfile.NamedTemporaryFile(mode='w+', delete=False) as tmp:
@@ -40,10 +40,10 @@ def test_manifest_integrity():
     try:
         result = validate_manifest_integrity(tmp_path)
         if not result:
-            # print("   ✅ Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
+            # print("   [OK] Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
             return True
         else:
-            # print("   ❌ Security Flaw: Orchestrator accepted corrupt JSON!")  # [Security Fix]
+            # print("   [X] Security Flaw: Orchestrator accepted corrupt JSON!")  # [Security Fix]
             return False
     finally:
         os.remove(tmp_path)
@@ -75,10 +75,10 @@ def test_memory_filtering():
     expected = {"file_path": "auth.py", "content_hash": "HASH_V2_NEW"}
 
     if result == expected:
-        # print(f"   ✅ Query included strict hash filter: {result}")  # [Security Fix]
+        # print(f"   [OK] Query included strict hash filter: {result}")  # [Security Fix]
         return True
     else:
-        # print(f"   ❌ Security Flaw: Filter missing! Expected {expected}, got {result}")  # [Security Fix]
+        # print(f"   [X] Security Flaw: Filter missing! Expected {expected}, got {result}")  # [Security Fix]
         return False
 
 def test_error_classification():
@@ -116,9 +116,9 @@ def test_error_classification():
     for error, expected in test_cases:
         result = classify_error(error)
         if result == expected:
-            pass  # print(f"   ✅ {type(error).__name__} correctly classified as {result}")  # [Security Fix]
+            pass  # print(f"   [OK] {type(error).__name__} correctly classified as {result}")  # [Security Fix]
         else:
-            # print(f"   ❌ {type(error).__name__} classified as {result}, expected {expected}")  # [Security Fix]
+            # print(f"   [X] {type(error).__name__} classified as {result}, expected {expected}")  # [Security Fix]
             all_passed = False
 
     return all_passed
@@ -142,7 +142,7 @@ def main():
     total = len(results)
 
     if passed == total:
-        # print(f"✅ ALL TESTS PASSED ({passed}/{total})")  # [Security Fix]
+        # print(f"[OK] ALL TESTS PASSED ({passed}/{total})")  # [Security Fix]
         # print("\n🎉 SYSTEM IS PROPERLY HARDENED!")  # [Security Fix]
         # print("\nHardening Features Verified:")  # [Security Fix]
         # print("  ✓ Manifest integrity check prevents corrupt JSON")  # [Security Fix]
@@ -151,8 +151,8 @@ def main():
         # print("\nThe system is ready for Phase B runtime!")  # [Security Fix]
         return 0
     else:
-        # print(f"❌ SOME TESTS FAILED ({passed}/{total})")  # [Security Fix]
-        # print("\n⚠️  SYSTEM HAS SECURITY VULNERABILITIES!")  # [Security Fix]
+        # print(f"[X] SOME TESTS FAILED ({passed}/{total})")  # [Security Fix]
+        # print("\n[!]  SYSTEM HAS SECURITY VULNERABILITIES!")  # [Security Fix]
         return 1
 
 if __name__ == '__main__':

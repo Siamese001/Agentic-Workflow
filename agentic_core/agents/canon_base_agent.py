@@ -69,9 +69,9 @@ class CanonBaseAgent(ABC):
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         if genai and api_key:
             self._client = genai.Client(api_key=api_key)
-            print(f"✅ {self.name} connected to Gemini 2.5", flush=True)
+            print(f"[OK] {self.name} connected to Gemini 2.5", flush=True)
         else:
-            print(f"⚠️  {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})",
+            print(f"[!] {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})",
                   flush=True)
 
         # Initialize shared Sub-Atomic Engine components
@@ -80,9 +80,9 @@ class CanonBaseAgent(ABC):
                 self._subatomic_engine = get_subatomic_engine(gemini_client=self._client)
                 self._fission_manager = get_fission_manager()
                 self._safety_guardrail = get_safety_guardrail()
-                print(f"   🔧 {self.name}: Sub-Atomic Engine initialized", flush=True)
+                print(f"   [+] {self.name}: Sub-Atomic Engine initialized", flush=True)
             except Exception as e:
-                print(f"   ⚠️  {self.name}: Failed to initialize Sub-Atomic Engine: {e}", flush=True)
+                print(f"   [!]  {self.name}: Failed to initialize Sub-Atomic Engine: {e}", flush=True)
 
     def _get_role_name(self) -> str:
         """Convert class name to role name (e.g., SystemArchitect -> system_architect)."""
@@ -128,7 +128,7 @@ class CanonBaseAgent(ABC):
         Resets the chat session if round_num is 3 or greater, clearing contaminated history.
         """
         if round_num >= 3 and chat_key in self.chat_sessions:
-            print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
+            print(f"      [~] Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
             del self.chat_sessions[chat_key]
             if file_path in self.conversation_history:
                 # Clear conversation history for the specific file path
@@ -147,10 +147,10 @@ class CanonBaseAgent(ABC):
                 model=model_name,
                 config=config
             )
-            print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}",
+            print(f"      [NEW] Created new chat session for {os.path.basename(file_path) if file_path else 'default'}",
                   flush=True)
         else:
-            print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
+            print(f"      [REUSE]  Reusing chat session (Round {round_num})", flush=True)
 
         chat = self.chat_sessions[chat_key]
         return chat.send_message(prompt)
@@ -160,14 +160,14 @@ class CanonBaseAgent(ABC):
         Extracts and validates code from the Gemini API response.
         """
         if not (response.candidates and response.candidates[0].content.parts):
-            print(f"      ⚠️ Malformed response from Gemini", flush=True)
+            print(f"      [!] Malformed response from Gemini", flush=True)
             return code
 
         first_part = response.candidates[0].content.parts[0]
 
         # Check for tool calls (should never happen as tools are explicitly disabled)
         if hasattr(first_part, 'function_call') and first_part.function_call:
-            print(f"      🚨 CRITICAL: Model called tool despite tools=[] - {first_part.function_call.name}",
+            print(f"      [ALERT] CRITICAL: Model called tool despite tools=[] - {first_part.function_call.name}",
                   flush=True)
             return code  # Return original code if model misbehaves
 
@@ -178,19 +178,19 @@ class CanonBaseAgent(ABC):
             # NEGATIVE CONSTRAINT CHECK: Verify no banned imports
             is_valid, violations = self.check_negative_constraints(generated_code)
             if not is_valid:
-                print(f"      🚫 Hallucination Detected: {', '.join(violations)}", flush=True)
+                print(f"      [X] Hallucination Detected: {', '.join(violations)}", flush=True)
                 # Return original code and let the caller retry
                 return code
 
             # Track token usage
             if hasattr(response, 'usage_metadata'):
                 total_tokens = response.usage_metadata.total_token_count
-                print(f"      ✅ Tokens: {total_tokens}", flush=True)
+                print(f"      [OK] Tokens: {total_tokens}", flush=True)
 
             return generated_code
 
         # Fallback if no text part
-        print(f"      ⚠️ Malformed response from Gemini (no text part)", flush=True)
+        print(f"      [!] Malformed response from Gemini (no text part)", flush=True)
         return code
 
     async def resilient_mutation(
@@ -223,7 +223,7 @@ class CanonBaseAgent(ABC):
         # CLEAN SLATE PROTOCOL: Clear contaminated history on failure
         chat_key = f"chat_{file_path}" if file_path else "chat_default"
         if previous_failure and chat_key in self.chat_sessions:
-            print(f"      🧹 Clean Slate Protocol: Clearing contaminated history", flush=True)
+            print(f"      [CLEAN] Clean Slate Protocol: Clearing contaminated history", flush=True)
             del self.chat_sessions[chat_key]
             if file_path in self.conversation_history:
                 # Clear conversation history for the specific file path
@@ -254,7 +254,7 @@ class CanonBaseAgent(ABC):
             )
         except Exception as e:
             # Fallback to basic prompt if loader fails
-            print(f"      ⚠️ Prompt loader failed ({e}), using fallback", flush=True)
+            print(f"      [!] Prompt loader failed ({e}), using fallback", flush=True)
             prompt = self._build_fallback_prompt(task, code, original_line_count, lesson_learned)
 
         try:
@@ -277,7 +277,7 @@ class CanonBaseAgent(ABC):
             return self._process_gemini_response(response, code)
 
         except Exception as e:
-            print(f"      ❌ Gemini API error: {e}", flush=True)
+            print(f"      [X] Gemini API error: {e}", flush=True)
             return code
 
     def _build_fallback_prompt(self, task: str, code: str, original_line_count: int, lesson_learned: str) -> str:
@@ -285,13 +285,13 @@ class CanonBaseAgent(ABC):
         prompt = f"""Task: {task}
 SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 
-🚫 ZERO-TOLERANCE DELETION RULE:
+[X] ZERO-TOLERANCE DELETION RULE:
 - The original file has {original_line_count} lines of code
 - Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines
 - NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'
 - If you delete more than 10% of lines ({int(original_line_count * 0.1)} lines) without structural reason, REJECTED
 
-🚫 PROHIBITED MODULES (HARD-CODED BLACKLIST):
+[X] PROHIBITED MODULES (HARD-CODED BLACKLIST):
 - 'base' - DOES NOT EXIST
 - 'context' - DOES NOT EXIST
 - 'L3_orchestration' - DOES NOT EXIST

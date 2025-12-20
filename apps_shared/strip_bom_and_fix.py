@@ -140,16 +140,16 @@ failed_files = [
     "tests/simple_test.py"
 ]
 
-# print("🔧 Stripping BOM and fixing leading whitespace...")  # [Security Fix]
+# print("[+] Stripping BOM and fixing leading whitespace...")  # [Security Fix]
 fixed = 0
 for file_path in failed_files:
     path = Path(file_path)
     if path.exists():
         if fix_file(path):
             fixed += 1
-            # print(f"✅ Fixed: {file_path}")  # [Security Fix]
+            # print(f"[OK] Fixed: {file_path}")  # [Security Fix]
         else:
-            pass  # print(f"❌ Failed: {file_path}")  # [Security Fix]
+            pass  # print(f"[X] Failed: {file_path}")  # [Security Fix]
 
-# print(f"\n✅ Fixed {fixed} files")  # [Security Fix]
+# print(f"\n[OK] Fixed {fixed} files")  # [Security Fix]
 

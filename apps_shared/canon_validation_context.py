@@ -47,7 +47,7 @@ class ValidationContext:
     last_fission_map: Dict[str, str] = field(default_factory=dict)
     
     def __post_init__(self):
-        print("\n🔧 Initializing Validation Context...", flush=True)
+        print("\n[+] Initializing Validation Context...", flush=True)
         
         try:
             if self.target_scope and self.target_scope != ".":
@@ -55,7 +55,7 @@ class ValidationContext:
             else:
                 self.python_files = get_python_files(".")
         except Exception as e:
-            print(f"   ⚠️  File scanning failed: {e}", flush=True)
+            print(f"   [!]  File scanning failed: {e}", flush=True)
             self.python_files = []
         
         print("\n🤖 Initializing Gemini Client...", flush=True)
@@ -63,15 +63,15 @@ class ValidationContext:
             try:
                 self.intelligence_enabled = True
                 self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-                print("   ✅ Gemini Connected - HEALING MODE ACTIVE", flush=True)
+                print("   [OK] Gemini Connected - HEALING MODE ACTIVE", flush=True)
             except Exception as e:
-                print(f"   ⚠️  Gemini initialization failed: {e}", flush=True)
+                print(f"   [!]  Gemini initialization failed: {e}", flush=True)
                 self.intelligence_enabled = False
         else:
             self.intelligence_enabled = False
-            print("   ⚠️  Healing disabled: No API key configured", flush=True)
+            print("   [!]  Healing disabled: No API key configured", flush=True)
         
-        print("\n✅ Validation Context Ready\n", flush=True)
+        print("\n[OK] Validation Context Ready\n", flush=True)
     
     def can_attempt_healing(self, file_path: str) -> bool:
         """Check if we can attempt healing on this file."""
@@ -88,7 +88,7 @@ class ValidationContext:
         self.healing_attempts[file_path] += 1
         self.healing_budget_used += 1
         
-        status = "✅ SUCCESS" if success else "❌ FAILED"
+        status = "[OK] SUCCESS" if success else "[X] FAILED"
         print(f"   Healing attempt {self.healing_attempts[file_path]} for {file_path}: {status}")
         print(f"   Healing budget: {self.healing_budget_used}/{self.global_healing_budget}")
     
@@ -113,7 +113,7 @@ class ValidationContext:
         
         chat_key = f"chat_{file_path}" if file_path else "chat_default"
         if previous_failure and chat_key in self.chat_sessions:
-            print(f"      🧹 Clean Slate Protocol: Clearing contaminated history", flush=True)
+            print(f"      [CLEAN] Clean Slate Protocol: Clearing contaminated history", flush=True)
             del self.chat_sessions[chat_key]
             if file_path in self.conversation_history:
                 self.conversation_history[file_path] = []
@@ -123,7 +123,7 @@ class ValidationContext:
         prompt = f"""Task: {task}
 SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 
-🚫 ZERO-TOLERANCE DELETION RULE:
+[X] ZERO-TOLERANCE DELETION RULE:
 - The original file has {original_line_count} lines of code
 - Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines
 - NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'
@@ -131,7 +131,7 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 - Every mutation must be COMPLETE and FUNCTIONAL
 - Preserve ALL sections exactly as-is unless directly fixing the violation
 
-🚫 PROHIBITED MODULES (HARD-CODED BLACKLIST):
+[X] PROHIBITED MODULES (HARD-CODED BLACKLIST):
 - 'base' - DOES NOT EXIST
 - 'context' - DOES NOT EXIST  
 - 'L3_orchestration' - DOES NOT EXIST
@@ -160,7 +160,7 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
             chat_key = f"chat_{file_path}" if file_path else "chat_default"
             
             if round_num >= 3 and chat_key in self.chat_sessions:
-                print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
+                print(f"      [~] Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
                 del self.chat_sessions[chat_key]
                 if file_path in self.conversation_history:
                     self.conversation_history[file_path] = []
@@ -171,9 +171,9 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
                         model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
                         config=config
                     )
-                    print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
+                    print(f"      [NEW] Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
                 else:
-                    print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
+                    print(f"      [REUSE]  Reusing chat session (Round {round_num})", flush=True)
                 
                 chat = self.chat_sessions[chat_key]
                 return chat.send_message(prompt)
@@ -185,8 +185,8 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
                 if hasattr(first_part, 'function_call') and first_part.function_call:
                     tool_name = first_part.function_call.name
                     tool_args = dict(first_part.function_call.args) if first_part.function_call.args else {}
-                    print(f"🔍 DEBUG: Model called tool '{tool_name}' with args: {tool_args}", flush=True)
-                    print(f"   🚨 CRITICAL: Tools should be disabled! Clearing session.", flush=True)
+                    print(f"[SCAN] DEBUG: Model called tool '{tool_name}' with args: {tool_args}", flush=True)
+                    print(f"   [ALERT] CRITICAL: Tools should be disabled! Clearing session.", flush=True)
                     if chat_key in self.chat_sessions:
                         del self.chat_sessions[chat_key]
                     return code
@@ -195,7 +195,7 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
             
             # L5 SAFETY: Truncation Guard
             if not self.fission_active and "..." in raw_output and len(raw_output) < (len(code) * 0.8):
-                print(f"      🚫 TRUNCATION DETECTED: L1 attempted to skip code. Rejecting.", flush=True)
+                print(f"      [X] TRUNCATION DETECTED: L1 attempted to skip code. Rejecting.", flush=True)
                 return code
             
             # L5 Fission: Handle atomic fission response
@@ -206,12 +206,12 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
                     print(f"      ⚛️  FISSION COMPLETE: Generated {len(self.last_fission_map)} modules", flush=True)
                     return "FISSION_COMPLETE"
                 except json.JSONDecodeError:
-                    print("      ❌ Fission Error: L1 failed to produce valid JSON.", flush=True)
+                    print("      [X] Fission Error: L1 failed to produce valid JSON.", flush=True)
                     self.fission_active = False
                     return code
             
             if hasattr(response, 'usage_metadata'):
-                print(f"      ✅ Tokens: {response.usage_metadata.total_token_count}", flush=True)
+                print(f"      [OK] Tokens: {response.usage_metadata.total_token_count}", flush=True)
             
             if file_path:
                 if file_path not in self.conversation_history:
@@ -226,13 +226,13 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
             
         except Exception as e:
             if "maximum_remote_calls" in str(e):
-                print("🚨 SDK Error: Check Pydantic field names in GenerateContentConfig.")
+                print("[ALERT] SDK Error: Check Pydantic field names in GenerateContentConfig.")
             elif "thought_signature" in str(e):
-                print("🚨 Signature Error: History corruption detected. Resetting session.")
+                print("[ALERT] Signature Error: History corruption detected. Resetting session.")
                 if file_path and file_path in self.conversation_history:
                     self.conversation_history[file_path] = []
             else:
-                print(f"🚨 Mutation Error ({agent_name}): {str(e)}")
+                print(f"[ALERT] Mutation Error ({agent_name}): {str(e)}")
             return code
     
     async def read_file(self, file_path: str) -> str:
@@ -249,7 +249,7 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
         except Exception as e:
-            print(f"   ❌ Failed to write {file_path}: {e}")
+            print(f"   [X] Failed to write {file_path}: {e}")
     
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
@@ -259,16 +259,16 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
     
     def signal_critical_failure(self):
         self.signals.add("CRITICAL_FAIL")
-        print("   🚨 SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
+        print("   [ALERT] SIGNAL: CRITICAL_FAIL asserted on Blackboard.")
     
     def signal_ast_valid(self):
         self.signals.add("AST_VALID")
-        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+        print("   [OK] SIGNAL: AST_VALID asserted on Blackboard.")
     
     def signal_deps_valid(self):
         self.signals.add("DEPS_VALID")
-        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+        print("   [OK] SIGNAL: DEPS_VALID asserted on Blackboard.")
     
     def signal_secure(self):
         self.signals.add("SECURE")
-        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+        print("   [OK] SIGNAL: SECURE asserted on Blackboard.")

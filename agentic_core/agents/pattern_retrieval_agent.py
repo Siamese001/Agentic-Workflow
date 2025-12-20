@@ -47,15 +47,15 @@ class PatternRetrievalAgent:
                 try:
                     self.pc = Pinecone(api_key=api_key)
                     self.index = self.pc.Index(index_name)
-                    logger.info(f"✅ Pattern Retrieval Agent connected to Pinecone: {index_name}")
+                    logger.info(f"[OK] Pattern Retrieval Agent connected to Pinecone: {index_name}")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Pinecone: {e}")
+                    logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     self.pinecone_available = False
             else:
-                logger.warning("⚠️  PINECONE_API_KEY not found")
+                logger.warning("[!]  PINECONE_API_KEY not found")
                 self.pinecone_available = False
         else:
-            logger.warning("⚠️  Pinecone client not available")
+            logger.warning("[!]  Pinecone client not available")
     
     def should_retrieve_pattern(self, file_path: str, error_message: str) -> bool:
         """
@@ -92,7 +92,7 @@ class PatternRetrievalAgent:
             Pattern metadata or None
         """
         if not self.pinecone_available:
-            logger.warning("⚠️  Pinecone not available, using local pattern")
+            logger.warning("[!]  Pinecone not available, using local pattern")
             return self._get_local_pattern()
         
         try:
@@ -102,11 +102,11 @@ class PatternRetrievalAgent:
             
             # Generate embedding (simplified - would use OpenAI in production)
             # For now, return local pattern
-            logger.info(f"🔍 Querying Pinecone: {query}")
+            logger.info(f"[SCAN] Querying Pinecone: {query}")
             return self._get_local_pattern()
             
         except Exception as e:
-            logger.error(f"❌ Error retrieving pattern: {e}")
+            logger.error(f"[X] Error retrieving pattern: {e}")
             return self._get_local_pattern()
     
     def _get_local_pattern(self) -> Dict:
@@ -132,7 +132,7 @@ class PatternRetrievalAgent:
             with open(file_path, 'r', encoding='utf-8') as f:
                 source = f.read()
         except Exception as e:
-            logger.error(f"❌ Could not read file: {e}")
+            logger.error(f"[X] Could not read file: {e}")
             return {"error": str(e)}
         
         # Analyze complexity
@@ -156,10 +156,10 @@ class PatternRetrievalAgent:
                             # Generate plan
                             plan = FlatteningPattern.generate_extraction_plan(metrics, candidates)
                             
-                            logger.info(f"✅ Generated extraction plan for {method_name}")
+                            logger.info(f"[OK] Generated extraction plan for {method_name}")
                             return plan
             except Exception as e:
-                logger.error(f"❌ Error analyzing method: {e}")
+                logger.error(f"[X] Error analyzing method: {e}")
                 return {"error": str(e)}
         
         # Analyze entire file
@@ -183,7 +183,7 @@ class PatternRetrievalAgent:
                         plan["line"] = node.lineno
                         all_plans.append(plan)
             
-            logger.info(f"✅ Found {len(all_plans)} methods needing extraction")
+            logger.info(f"[OK] Found {len(all_plans)} methods needing extraction")
             return {
                 "file": file_path,
                 "methods_needing_extraction": len(all_plans),
@@ -191,7 +191,7 @@ class PatternRetrievalAgent:
             }
             
         except Exception as e:
-            logger.error(f"❌ Error analyzing file: {e}")
+            logger.error(f"[X] Error analyzing file: {e}")
             return {"error": str(e)}
     
     def get_extraction_guidance(self, metrics: ComplexityMetrics) -> str:

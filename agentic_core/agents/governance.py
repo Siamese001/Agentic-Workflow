@@ -41,7 +41,7 @@ class ArchitectureGovernor(SubAtomicAgent):
 
         for cat, v in violations.items():
             if v:
-                print(f"   🏛️  {cat.title()} Violations: {len(v)}")
+                print(f"   [ARCH]  {cat.title()} Violations: {len(v)}")
 
         self.ctx.report(self.name, 49, not violations['depth'], violations['depth'])
         self.ctx.report(self.name, 50, not violations['atomicity'], violations['atomicity'])
@@ -133,7 +133,7 @@ class DependencySentinel(SubAtomicAgent):
             has_isort = True
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_isort = False
-            print("      ⚠️  isort not installed. Install with: pip install isort")
+            print("      [!]  isort not installed. Install with: pip install isort")
 
         # Check for autoflake
         try:
@@ -144,7 +144,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 9: Unused imports (auto-fix with autoflake)
         if has_autoflake:
-            print("   🔧 Running autoflake (Removes Key 9 violations)...")
+            print("   [+] Running autoflake (Removes Key 9 violations)...")
             try:
                 subprocess.run([
                     "autoflake",
@@ -163,7 +163,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 14: Duplicate imports (auto-fix with isort)
         if has_isort:
-            print("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
+            print("   [+] Running isort (Orders and removes Key 14 duplicates)...")
             try:
                 subprocess.run([
                     "isort",

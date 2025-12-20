@@ -48,7 +48,7 @@ if FASTAPI_AVAILABLE:
     async def get_dashboard():
         ctx = _intervention_context
         signals = list(ctx.signals) if ctx else []
-        return f"""<html><body><h1>🚨 L5 INTERVENTION REQUIRED</h1>
+        return f"""<html><body><h1>[ALERT] L5 INTERVENTION REQUIRED</h1>
         <p>Signals: {signals}</p>
         <button onclick="fetch('/approve', {{method:'POST'}})">APPROVE</button>
         <button onclick="fetch('/veto', {{method:'POST'}})">VETO</button>
@@ -104,7 +104,7 @@ class SwarmScheduler:
         }
 
     async def run_mission(self, target_scope: str = None):
-        print("🚀 STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
+        print("[START] STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         if target_scope:
             print(f"🎯 SURGICAL MISSION: {target_scope}")
             self.ctx.python_files = [target_scope]

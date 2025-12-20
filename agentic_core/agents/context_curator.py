@@ -134,7 +134,7 @@ class ContextCurator(SubAtomicAgent):
         # Wipe active memory
         self._wipe_active_memory()
         
-        logger.info(f"   ✅ Context compressed: {snapshot.total_size} → {len(handoff.compressed_context)} chars")
+        logger.info(f"   [OK] Context compressed: {snapshot.total_size} → {len(handoff.compressed_context)} chars")
     
     def _take_snapshot(self) -> ContextSnapshot:
         """Take snapshot of current context."""

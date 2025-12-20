@@ -50,7 +50,7 @@ class StructuralEngineer(SubAtomicAgent):
         passed, details = self.check_key_46_no_duplicate_code()
         self.ctx.report(self.name, 46, passed, details)
 
-        print("   ✅ No structural changes pending.")
+        print("   [OK] No structural changes pending.")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for functions exceeding MAX_LINES."""

@@ -140,14 +140,14 @@ def run_daemon_mode():
     surgical validation missions using blast radius analysis.
     """
     if not WATCHDOG_AVAILABLE:
-        print("❌ WATCHDOG NOT AVAILABLE. Install with: pip install watchdog")
+        print("[X] WATCHDOG NOT AVAILABLE. Install with: pip install watchdog")
         sys.exit(1)
 
     imports = _get_imports()
     WatchmanHandler = imports['WatchmanHandler']
 
     print("=" * 60)
-    print("🚀 THE WATCHMAN: L5 Autonomous Mode Active")
+    print("[START] THE WATCHMAN: L5 Autonomous Mode Active")
     print("=" * 60)
     print("   Monitoring repository for changes...")
     print("   Press Ctrl+C to stop.")
@@ -297,14 +297,14 @@ def run_standard_mode():
         branch_name = f"healing/auto_{int(time.time())}"
         try:
             subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
-            print(f"   🌱 GitOps: Created healing branch '{branch_name}'")
+            print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
         except Exception:
-            print("   ⚠️ GitOps: Could not create branch (may not be in git repo)")
+            print("   [!] GitOps: Could not create branch (may not be in git repo)")
 
         while cycle < MAX_CYCLES:
             cycle += 1
             ctx.signal_healing_cycle(cycle)
-            print(f"\n=== 🧬 SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
+            print(f"\n=== [CYCLE] SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
 
             # Reset tracking for this cycle
             ctx.modified_files.clear()
@@ -326,7 +326,7 @@ def run_standard_mode():
 
             # Rollback on critical regression
             if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
-                print("   🚨 Critical Regression Detected. Initiating Rollback Protocol.")
+                print("   [ALERT] Critical Regression Detected. Initiating Rollback Protocol.")
                 ctx.rollback_changes()
                 ctx.signals.discard("TEST_FAILURE")
 
@@ -336,7 +336,7 @@ def run_standard_mode():
                 break
 
             if cycle < MAX_CYCLES:
-                print(f"   🔄 Modifications detected. Rerunning validation to ensure stability...")
+                print(f"   [~] Modifications detected. Rerunning validation to ensure stability...")
                 await asyncio.sleep(1)
         else:
             _handle_max_cycles_reached(ctx)
@@ -344,7 +344,7 @@ def run_standard_mode():
         # L5: Remote Sync on Mission Completion
         _remote_sync(ctx, branch_name)
 
-        print("\n💾 SAVING BLACKBOARD STATE...")
+        print("\n[SAVE] SAVING BLACKBOARD STATE...")
         ctx._save_memory()
         print("\nMISSION COMPLETE")
 
@@ -382,7 +382,7 @@ def _build_agenda(cycle: int, ctx, agents: List, GitAgent, StrategicPlanner, Ref
 
     if cycle == 1:
         agenda.extend(agents)
-        print("   📋 PLAN: Executing full system diagnostic.")
+        print("   [PLAN] PLAN: Executing full system diagnostic.")
     else:
         print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
         agenda.append(agents[0])  # Historian
@@ -442,7 +442,7 @@ async def _check_intervention(cycle: int, ctx, FASTAPI_AVAILABLE: bool,
     )
 
     if high_risk and FASTAPI_AVAILABLE:
-        print(f"\n   🚨 L5 INTERVENTION: High-risk state detected (cycle {cycle})")
+        print(f"\n   [ALERT] L5 INTERVENTION: High-risk state detected (cycle {cycle})")
         print(f"      Modified files: {len(ctx.modified_files)} | Signals: {len(ctx.signals)}")
         start_intervention_server(ctx)
         print(f"   ⏳ Awaiting human decision at http://127.0.0.1:8080")
@@ -457,20 +457,20 @@ async def _check_intervention(cycle: int, ctx, FASTAPI_AVAILABLE: bool,
             ctx.signals.add("HUMAN_VETO")
             return True
         else:
-            print("   ✅ HUMAN APPROVAL RECEIVED. Proceeding with execution.")
+            print("   [OK] HUMAN APPROVAL RECEIVED. Proceeding with execution.")
 
     return False
 
 
 def _handle_max_cycles_reached(ctx):
     """Handle the case when max healing cycles are reached."""
-    print(f"\n⚠️ MAX HEALING CYCLES REACHED. Escalating...")
+    print(f"\n[!] MAX HEALING CYCLES REACHED. Escalating...")
     if ctx.modified_files or ctx.signals:
         esc_dir = Path("observability/human_review")
         esc_dir.mkdir(parents=True, exist_ok=True)
         report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
         (esc_dir / f"escalation_{int(time.time())}.md").write_text(report)
-        print(f"   🚨 Manual Review Required. Report saved to: {esc_dir}")
+        print(f"   [ALERT] Manual Review Required. Report saved to: {esc_dir}")
 
 
 def _remote_sync(ctx, branch_name: str):
@@ -488,8 +488,8 @@ def _remote_sync(ctx, branch_name: str):
                 print(f"   ☁️ L5: Pushing healing branch to remote {remote_url}")
                 push_info = origin.push(refspec=f'HEAD:refs/heads/{branch_name}')[0]
                 if push_info.flags & push_info.ERROR:
-                    print(f"   ❌ Push failed: {push_info.summary}")
+                    print(f"   [X] Push failed: {push_info.summary}")
                 else:
-                    print(f"   ✅ Successfully pushed {branch_name}")
+                    print(f"   [OK] Successfully pushed {branch_name}")
             except Exception as e:
-                print(f"   ⚠️ Remote push failed: {e}")
+                print(f"   [!] Remote push failed: {e}")

@@ -284,7 +284,7 @@ class UIValidationAgent(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Validating UI Patterns...")
 
         if not self.can_run():
-            print(f"   ⚠️  Figma MCP not available - skipping UI validation")
+            print(f"   [!]  Figma MCP not available - skipping UI validation")
             return
 
         print("   ℹ UI validation placeholder - Figma MCP integration pending")

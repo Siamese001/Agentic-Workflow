@@ -74,10 +74,10 @@ class ResumeAgent:
             await self._finalize_workflow()
             
             self.ctx.signals.add("RESUME_COMPLETE")
-            logger.info(f"✅ Resume workflow completed: {self.config.workflow_id}")
+            logger.info(f"[OK] Resume workflow completed: {self.config.workflow_id}")
         
         except Exception as e:
-            logger.error(f"❌ Resume workflow failed: {e}")
+            logger.error(f"[X] Resume workflow failed: {e}")
             results["status"] = "FAILED"
             results["error"] = str(e)
             self.ctx.signals.add("RESUME_FAILED")

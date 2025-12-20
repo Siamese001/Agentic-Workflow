@@ -22,9 +22,9 @@ def setup_gpg_signing(key_id: str):
         # 2. Set the key ID for signing
         subprocess.run(["git", "config", "--global", "user.signingkey", key_id], 
                       check=True, capture_output=True)
-        logger.info(f"✅ Git configured for signing with key: {key_id}")
+        logger.info(f"[OK] Git configured for signing with key: {key_id}")
     except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Failed to configure Git signing: {e.stderr.decode()}")
+        logger.error(f"[X] Failed to configure Git signing: {e.stderr.decode()}")
         raise RuntimeError("Git GPG configuration failed.")
 
 
@@ -47,8 +47,8 @@ def sign_and_commit(path: str, message: str, key_id: str = None) -> bool:
             capture_output=True,
             text=True
         )
-        logger.info(f"✅ Commit successful (demo mode - no GPG signing): {result.stdout.strip()}")
+        logger.info(f"[OK] Commit successful (demo mode - no GPG signing): {result.stdout.strip()}")
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Commit failed (Git Error): {e.stderr}")
+        logger.error(f"[X] Commit failed (Git Error): {e.stderr}")
         return False

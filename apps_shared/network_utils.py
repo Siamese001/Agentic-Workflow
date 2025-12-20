@@ -36,7 +36,7 @@ def strict_egress_filter(allowed_domains: List[str]):
 
                 # 2. Enforcement Check
                 if host_lower not in normalized_allowed:
-                    logger.critical(f"🚨 PROTOCOL 8 VIOLATION! Blocked unauthorized egress to: {host}")
+                    logger.critical(f"[ALERT] PROTOCOL 8 VIOLATION! Blocked unauthorized egress to: {host}")
                     raise NetworkViolationError(
                         f"Egress Filter Blocked: Outbound connection to '{host}' is not on the Allow-List."
                     )

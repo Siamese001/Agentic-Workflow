@@ -147,7 +147,7 @@ class ValidationContext:
             try:
                 self._client = genai.Client(api_key=api_key)
                 self.intelligence_enabled = True
-                print(f"      ✅ Gemini Connected")
+                print(f"      [OK] Gemini Connected")
             except Exception:
                 pass
 
@@ -208,37 +208,37 @@ class ValidationContext:
 
     def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
         """Signal the start of a healing cycle."""
-        print(f"   🔄 Healing Cycle {cycle_number}/{max_cycles}")
+        print(f"   [~] Healing Cycle {cycle_number}/{max_cycles}")
 
     def signal_convergence(self):
         """Signal that the validation has converged."""
-        print("   ✅ Convergence achieved - no modifications in this cycle")
+        print("   [OK] Convergence achieved - no modifications in this cycle")
         self.signals.add("CONVERGENCE")
 
     def signal_critical_failure(self, message: str):
         """Signal a critical failure."""
         self.signals.add("CRITICAL_FAILURE")
-        print(f"   🚨 SIGNAL: CRITICAL_FAILURE - {message}")
+        print(f"   [ALERT] SIGNAL: CRITICAL_FAILURE - {message}")
 
     def signal_ast_valid(self):
         """Signal that AST checks passed."""
         self.signals.add("AST_VALID")
-        print("   ✅ SIGNAL: AST_VALID asserted on Blackboard.")
+        print("   [OK] SIGNAL: AST_VALID asserted on Blackboard.")
 
     def signal_deps_valid(self):
         """Signal that dependency checks passed."""
         self.signals.add("DEPS_VALID")
-        print("   ✅ SIGNAL: DEPS_VALID asserted on Blackboard.")
+        print("   [OK] SIGNAL: DEPS_VALID asserted on Blackboard.")
 
     def signal_secure(self):
         """Signal that security checks passed."""
         self.signals.add("SECURE")
-        print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+        print("   [OK] SIGNAL: SECURE asserted on Blackboard.")
 
     def signal_llm_failure(self, error: str):
         """Signal an LLM failure."""
         self.signals.add("LLM_FAILURE")
-        print(f"   ⚠️ SIGNAL: LLM_FAILURE - {error}")
+        print(f"   [!] SIGNAL: LLM_FAILURE - {error}")
 
     def rollback_changes(self):
         """Rollback changes from file backups."""
@@ -249,7 +249,7 @@ class ValidationContext:
                         f.write(content)
                     print(f"   ↩️ Rolled back: {file_path}")
                 except Exception as e:
-                    print(f"   ⚠️ Rollback failed for {file_path}: {e}")
+                    print(f"   [!] Rollback failed for {file_path}: {e}")
             self.file_backups.clear()
 
     def refresh_graph(self):

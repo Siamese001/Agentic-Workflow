@@ -72,9 +72,9 @@ class SemanticMapper(SubAtomicAgent):
                 logger.info(f"      ℹ No significant clusters found in {file_path} (analysis logic not yet implemented)")
                 analysis_performed = True
             except SyntaxError as se:
-                logger.error(f"      ❌ Failed to parse {file_path} due to syntax error: {se}")
+                logger.error(f"      [X] Failed to parse {file_path} due to syntax error: {se}")
             except Exception as e:
-                logger.error(f"      ❌ Failed to analyze {file_path}: {e}")
+                logger.error(f"      [X] Failed to analyze {file_path}: {e}")
 
         if not analysis_performed:
             logger.info("\n   ℹ No Python files were successfully processed for refactoring analysis.")
@@ -116,9 +116,9 @@ class TruthKeeper(SubAtomicAgent):
             tree = ast.parse(content)
             await self._iterate_and_process_nodes(file_path, tree, content)
         except SyntaxError as se:
-            logger.error(f"   ❌ Failed to parse {file_path} due to syntax error: {se}")
+            logger.error(f"   [X] Failed to parse {file_path} due to syntax error: {se}")
         except Exception as e:
-            logger.error(f"   ❌ Failed to check {file_path}: {e}")
+            logger.error(f"   [X] Failed to check {file_path}: {e}")
 
     async def _read_file_content(self, file_path: str) -> str:
         """
@@ -189,7 +189,7 @@ class TruthKeeper(SubAtomicAgent):
         if not is_consistent:
             await self._perform_inconsistent_docstring_actions(file_path, node_name, content)
         else:
-            logger.info(f"   ✅ Docstring for '{node_name}' in {file_path} is consistent.")
+            logger.info(f"   [OK] Docstring for '{node_name}' in {file_path} is consistent.")
 
     async def _perform_inconsistent_docstring_actions(self, file_path: str, node_name: str, content: str):
         """
@@ -245,14 +245,14 @@ class TruthKeeper(SubAtomicAgent):
                 return response.text.strip().upper() == "YES"
             else:
                 logger.warning(
-                    f"      ⚠️ Gemini returned empty response for consistency check of '{name}' in {file_path}. "
+                    f"      [!] Gemini returned empty response for consistency check of '{name}' in {file_path}. "
                     "Assuming consistent."
                 )
                 return True # Assume consistent on empty response
 
         except Exception as e:
             logger.error(
-                f"      ❌ Error verifying docstring consistency for '{name}' in {file_path}: {e}. "
+                f"      [X] Error verifying docstring consistency for '{name}' in {file_path}: {e}. "
                 "Assuming consistent to prevent blocking."
             )
             return True  # Assume consistent on error to prevent blocking the agent
@@ -297,12 +297,12 @@ class TruthKeeper(SubAtomicAgent):
                 # and then write the modified AST back to the file. This requires
                 # careful AST manipulation or source code transformation libraries
                 # (e.g., `libcst` or `astunparse` for basic cases, or more advanced tools).
-                logger.info(f"   ✅ Generated new docstring for '{name}'. (File update logic not implemented)")
+                logger.info(f"   [OK] Generated new docstring for '{name}'. (File update logic not implemented)")
                 logger.debug(f"      Generated docstring for '{name}': \n{new_docstring}")
             else:
                 logger.warning(
-                    f"      ⚠️ Gemini returned empty response for docstring fix of '{name}' in {file_path}."
+                    f"      [!] Gemini returned empty response for docstring fix of '{name}' in {file_path}."
                 )
 
         except Exception as e:
-            logger.error(f"   ❌ Failed to fix docstring for '{name}' in {file_path}: {e}")
+            logger.error(f"   [X] Failed to fix docstring for '{name}' in {file_path}: {e}")

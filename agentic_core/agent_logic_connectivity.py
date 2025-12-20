@@ -326,7 +326,7 @@ class CanonValidator:
         # Check if file is in active manifest before indexing
         if not (file_path and self._is_file_in_manifest(file_path)):
             logger.warning(
-                f"⚠️  Skipping indexing for non-manifest file: {file_path or 'N/A'}"
+                f"[!]  Skipping indexing for non-manifest file: {file_path or 'N/A'}"
             )
             skipped_result = {
                 "status": "skipped",
@@ -346,7 +346,7 @@ class CanonValidator:
             # 2. Write to Redis (Hot)
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
-            logger.info(f"✅ Stored new pattern in Redis: {entry.id}")
+            logger.info(f"[OK] Stored new pattern in Redis: {entry.id}")
 
             # 3. Write to Pinecone (Cold) with Version Tags
             pinecone_record = entry.to_pinecone_record()
@@ -360,7 +360,7 @@ class CanonValidator:
 
             self.pinecone_index.upsert(vectors=[pinecone_record])
             logger.info(
-                f"✅ Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})"
+                f"[OK] Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})"
             )
 
             return {

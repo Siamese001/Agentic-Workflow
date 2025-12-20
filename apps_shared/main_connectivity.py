@@ -58,7 +58,7 @@ class SystemSanityCheck:
 
             # Check AOF persistence
             aof_enabled = redis_info.get("aof_enabled", False)
-            aof_status = "✅ ENABLED" if aof_enabled else "⚠️  DISABLED"
+            aof_status = "[OK] ENABLED" if aof_enabled else "[!]  DISABLED"
 
             results["components"]["redis"] = {
                 "status": "PASSED",
@@ -69,9 +69,9 @@ class SystemSanityCheck:
                 }
             }
 
-            logger.info("   ✅ RedisVL connected successfully")
-            logger.info(f"   📊 Memory: {redis_info.get('used_memory_human', '0B')}")
-            logger.info(f"   💾 AOF: {aof_status}")
+            logger.info("   [OK] RedisVL connected successfully")
+            logger.info(f"   [STATS] Memory: {redis_info.get('used_memory_human', '0B')}")
+            logger.info(f"   [SAVE] AOF: {aof_status}")
 
         except Exception as e:
             results["components"]["redis"] = {
@@ -79,7 +79,7 @@ class SystemSanityCheck:
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            logger.error(f"   ❌ RedisVL connection failed: {e}")
+            logger.error(f"   [X] RedisVL connection failed: {e}")
 
         # Test Pinecone connection
         logger.info("2️⃣ Testing Pinecone Connection...")
@@ -90,7 +90,7 @@ class SystemSanityCheck:
 
             # Check if our index exists
             index_exists = index_name in index_list
-            index_status = "✅ EXISTS" if index_exists else "⚠️  WILL CREATE"
+            index_status = "[OK] EXISTS" if index_exists else "[!]  WILL CREATE"
 
             results["components"]["pinecone"] = {
                 "status": "PASSED",
@@ -101,8 +101,8 @@ class SystemSanityCheck:
                 }
             }
 
-            logger.info("   ✅ Pinecone connected successfully")
-            logger.info(f"   📋 Total indexes: {len(index_list.names())}")
+            logger.info("   [OK] Pinecone connected successfully")
+            logger.info(f"   [PLAN] Total indexes: {len(index_list.names())}")
             logger.info(f"   🎯 Target index '{index_name}': {index_status}")
 
         except Exception as e:
@@ -111,7 +111,7 @@ class SystemSanityCheck:
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            logger.error(f"   ❌ Pinecone connection failed: {e}")
+            logger.error(f"   [X] Pinecone connection failed: {e}")
 
         # Test embedding function
         logger.info("3️⃣ Testing Embedding Function...")
@@ -122,7 +122,7 @@ class SystemSanityCheck:
 
             # Verify dimensions
             dims_correct = len(embedding) == 768
-            dims_status = "✅ CORRECT" if dims_correct else f"❌ WRONG ({len(embedding)} dims)"
+            dims_status = "[OK] CORRECT" if dims_correct else f"[X] WRONG ({len(embedding)} dims)"
 
             results["components"]["embeddings"] = {
                 "status": "PASSED" if dims_correct else "FAILED",
@@ -134,8 +134,8 @@ class SystemSanityCheck:
                 }
             }
 
-            logger.info("   ✅ Embedding function initialized")
-            logger.info(f"   🔧 Provider: {os.getenv('EMBEDDING_PROVIDER', 'unknown')}")
+            logger.info("   [OK] Embedding function initialized")
+            logger.info(f"   [+] Provider: {os.getenv('EMBEDDING_PROVIDER', 'unknown')}")
             logger.info(f"   📐 Dimensions: {dims_status}")
 
         except Exception as e:
@@ -144,7 +144,7 @@ class SystemSanityCheck:
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            logger.error(f"   ❌ Embedding function failed: {e}")
+            logger.error(f"   [X] Embedding function failed: {e}")
 
         # Test RedisVL index creation
         logger.info("4️⃣ Testing RedisVL Index Creation...")
@@ -159,7 +159,7 @@ class SystemSanityCheck:
                 }
             }
 
-            logger.info("   ✅ RedisVL index created successfully")
+            logger.info("   [OK] RedisVL index created successfully")
             logger.info(f"   📁 Index name: {redis_index.name}")
             logger.info(f"   🔑 Key prefix: {redis_index.prefix}")
 
@@ -169,11 +169,11 @@ class SystemSanityCheck:
                 "error": str(e)
             }
             results["overall_status"] = "FAILED"
-            logger.error(f"   ❌ RedisVL index creation failed: {e}")
+            logger.error(f"   [X] RedisVL index creation failed: {e}")
 
         # Summary
         logger.info("="*60)
-        status_color = "✅" if results["overall_status"] == "PASSED" else "❌"
+        status_color = "[OK]" if results["overall_status"] == "PASSED" else "[X]"
         logger.info(f"{status_color} CONNECTIVITY HANDSHAKE: {results['overall_status']}")
         logger.info("="*60)
 
@@ -235,9 +235,9 @@ async def fetch_data(url):
         )
 
         # Display results
-        status_icon = "✅" if result["is_valid"] else "❌"
+        status_icon = "[OK]" if result["is_valid"] else "[X]"
         logger.info(f"{status_icon} Valid: {result['is_valid']}")
-        logger.info(f"📊 Confidence: {result['confidence']:.3f}")
+        logger.info(f"[STATS] Confidence: {result['confidence']:.3f}")
         logger.info(f"📍 Source: {result['source']}")
         logger.info(f"💡 Recommendation: {result['recommendation']}")
 
@@ -260,33 +260,33 @@ async def fetch_data(url):
 
     logger.info("\nRedis L1 Cache:")
     redis_stats = stats["redis_stats"]
-    logger.info(f"   💾 Memory used: {redis_stats.get('used_memory', 'N/A')}")
-    logger.info(f"   🔍 Cache hits: {redis_stats.get('keyspace_hits', 0)}")
-    logger.info(f"   ❌ Cache misses: {redis_stats.get('keyspace_misses', 0)}")
+    logger.info(f"   [SAVE] Memory used: {redis_stats.get('used_memory', 'N/A')}")
+    logger.info(f"   [SCAN] Cache hits: {redis_stats.get('keyspace_hits', 0)}")
+    logger.info(f"   [X] Cache misses: {redis_stats.get('keyspace_misses', 0)}")
 
     logger.info("\nPinecone L2 Cache:")
     pinecone_stats = stats["pinecone_stats"]
-    logger.info(f"   📊 Total vectors: {pinecone_stats.get('vector_count', 0)}")
+    logger.info(f"   [STATS] Total vectors: {pinecone_stats.get('vector_count', 0)}")
     logger.info(f"   📐 Dimensions: {pinecone_stats.get('dimension', 0)}")
     logger.info(f"   📈 Index fullness: {pinecone_stats.get('index_fullness', 0):.2%}")
 
     logger.info("\nThresholds:")
     thresholds = stats["thresholds"]
-    logger.info(f"   ⚠️  Failure threshold: {thresholds['failure_threshold']}")
-    logger.info(f"   ✅ Success threshold: {thresholds['success_threshold']}")
+    logger.info(f"   [!]  Failure threshold: {thresholds['failure_threshold']}")
+    logger.info(f"   [OK] Success threshold: {thresholds['success_threshold']}")
 
 
 def main():
     """Main entry point with complete boot sequence."""
     logger.info("="*60)
-    logger.info("🚀 CONNECTIVITY-HARDENED CANON VALIDATOR")
+    logger.info("[START] CONNECTIVITY-HARDENED CANON VALIDATOR")
     logger.info("="*60)
     logger.info("Boot sequence initiated...")
 
     # Step 1: Load environment
-    logger.info("📋 Step 1: Loading environment variables...")
+    logger.info("[PLAN] Step 1: Loading environment variables...")
     if not os.path.exists(".env"):
-        logger.warning("⚠️  Warning: .env file not found. Using defaults.")
+        logger.warning("[!]  Warning: .env file not found. Using defaults.")
 
     env_vars = [
         "REDIS_URL", "PINECONE_API_KEY", "PINECONE_INDEX_NAME",
@@ -295,7 +295,7 @@ def main():
 
     for var in env_vars:
         value = os.getenv(var, "NOT SET")
-        status = "✅" if value != "NOT SET" else "⚠️"
+        status = "[OK]" if value != "NOT SET" else "[!]"
         display_val = f"{value[:30]}..." if len(value) > 30 else value
         logger.info(f"   {status} {var}: {display_val}")
 
@@ -304,13 +304,13 @@ def main():
 
     # Step 3: Check if we should proceed
     if handshake_results["overall_status"] != "PASSED":
-        logger.error("❌ CRITICAL: Connectivity handshake failed!")
+        logger.error("[X] CRITICAL: Connectivity handshake failed!")
         logger.error("Please check the errors above and restart.")
         return 1
 
     # Step 4: Hydrate cache
     logger.info("="*60)
-    logger.info("💾 HYDRATING CACHE")
+    logger.info("[SAVE] HYDRATING CACHE")
     logger.info("="*60)
 
     if os.getenv("CACHE_WARMUP", "true").lower() == "true":
@@ -318,7 +318,7 @@ def main():
         etl = ETLPipeline()
         hydration_stats = etl.hydrate_cache()
 
-        logger.info("✅ Cache hydration complete:")
+        logger.info("[OK] Cache hydration complete:")
         logger.info(f"   📥 Fetched from Pinecone: {hydration_stats['fetched_from_pinecone']}")
         logger.info(f"   📤 Loaded to Redis: {hydration_stats['loaded_to_redis']}")
     else:
@@ -344,7 +344,7 @@ if __name__ == "__main__":
         logger.info("⏹️  Shutdown requested by user")
         sys.exit(0)
     except Exception as e:
-        logger.error(f"❌ Fatal error: {e}")
+        logger.error(f"[X] Fatal error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

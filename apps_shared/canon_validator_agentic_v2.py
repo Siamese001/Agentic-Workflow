@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 CANON SUB-ATOMIC ENGINE - V2.2
+[START] CANON SUB-ATOMIC ENGINE - V2.2
 Shared core for Fission, Safety Guardrails, and Resilient Mutation.
 """
 
@@ -221,9 +221,9 @@ class SubAtomicEngine:
                 model=model_name,
                 config=config
             )
-            logger.info(f"   🆕 Created new chat session for {os.path.basename(file_path)}")
+            logger.info(f"   [NEW] Created new chat session for {os.path.basename(file_path)}")
         else:
-            logger.info(f"   ♻️  Reusing chat session (Round {round_num})")
+            logger.info(f"   [REUSE]  Reusing chat session (Round {round_num})")
         
         try:
             # Send message
@@ -238,16 +238,16 @@ class SubAtomicEngine:
                 
                 # Truncation guard
                 if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
-                    logger.warning("   🚫 TRUNCATION DETECTED. Rejecting mutation.")
+                    logger.warning("   [X] TRUNCATION DETECTED. Rejecting mutation.")
                     return code
                 
                 return output
             else:
-                logger.warning("   ⚠️  Malformed response from Gemini")
+                logger.warning("   [!]  Malformed response from Gemini")
                 return code
         
         except Exception as e:
-            logger.error(f"   ❌ Gemini API error: {e}")
+            logger.error(f"   [X] Gemini API error: {e}")
             return code
 
 

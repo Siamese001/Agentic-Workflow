@@ -278,7 +278,7 @@ class SubAtomicAgent:
                 )
 
                 if fixed_code == current_code:
-                    print(f"      ⚠️ No changes made in Round {round_num}",
+                    print(f"      [!] No changes made in Round {round_num}",
                           flush=True)
                     previous_failure = "No changes were made to the code."
                     continue
@@ -293,7 +293,7 @@ class SubAtomicAgent:
                     else check_func()
                 )
                 if res[0]:  # If no violations remain
-                    print(f"      ✅ Healing successful in Round {round_num}",
+                    print(f"      [OK] Healing successful in Round {round_num}",
                           flush=True)
                     self.ctx.record_healing_attempt(file_path, success=True)
                     self.ctx.modified_files.add(file_path)
@@ -330,7 +330,7 @@ class SubAtomicAgent:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(original_code)
 
-            print(f"      ❌ Healing failed after {max_rounds} rounds - "
+            print(f"      [X] Healing failed after {max_rounds} rounds - "
                   f"reverting {os.path.basename(file_path)}", flush=True)
             self.ctx.record_healing_attempt(file_path, success=False)
             return False
@@ -340,7 +340,7 @@ class SubAtomicAgent:
             # of LLM interactions and file operations.
             logger.error(f"Healing error for {file_path}, key {violation_key}: {e}",
                          exc_info=True)  # Log exception info for debugging
-            print(f"      🚨 Healing error for {os.path.basename(file_path)}: {e}",
+            print(f"      [ALERT] Healing error for {os.path.basename(file_path)}: {e}",
                   flush=True)
             return False
 

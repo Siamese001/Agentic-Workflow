@@ -86,8 +86,8 @@ class AgenticTUI:
         l_table = Table(title="Tri-Brain Layer Status", border_style="cyan", expand=True)
         l_table.add_column("Layer", style="bold cyan")
         l_table.add_column("Status", style="magenta")
-        l_table.add_row("L5: Safety", "[green]✅ ACTIVE (Guard: 110L)")
-        l_table.add_row("L4: State", f"[yellow]📂 {self.target_dir}")
+        l_table.add_row("L5: Safety", "[green][OK] ACTIVE (Guard: 110L)")
+        l_table.add_row("L4: State", f"[yellow][DIR] {self.target_dir}")
         l_table.add_row("L3: Orchestration", "[bold green]⚙️ HEALING")
         l_table.add_row("L2: Execution", "[orange1]⚡ HIGH LATENCY")
         l_table.add_row("L1: Cognition", f"[bold reverse]🧠 {self.tokens}/{self.max_tokens} Reasoning")
@@ -142,7 +142,7 @@ with Live(tui.generate_layout(), refresh_per_second=4) as live:
                 key="Key 42",
                 round_num=round_num,
                 tokens=token_count,
-                log_msg=f"✅ Fixed {file_path}"
+                log_msg=f"[OK] Fixed {file_path}"
             )
             
             # Refresh display

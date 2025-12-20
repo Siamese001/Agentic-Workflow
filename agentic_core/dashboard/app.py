@@ -137,7 +137,7 @@ st.markdown("---")
 col_left, col_right = st.columns([1, 2])
 
 with col_left:
-    st.subheader("📋 Event Stream")
+    st.subheader("[PLAN] Event Stream")
 
     events_df = conn.execute("""
         SELECT span_id, event_type, timestamp, payload
@@ -167,7 +167,7 @@ with col_left:
         st.warning("No events found")
 
 with col_right:
-    st.subheader("🔍 Black Box Data")
+    st.subheader("[SCAN] Black Box Data")
 
     if selected_event_idx is not None and not events_df.empty:
         ROW = events_df.loc[selected_event_idx]
@@ -184,11 +184,11 @@ with col_right:
                 st.write(payload['reasoning'])
 
             if row['event_type'] == 'MCP_CALL' and 'tool' in payload:
-                st.markdown(f"### 🔧 Tool Call: `{payload['tool']}`")
+                st.markdown(f"### [+] Tool Call: `{payload['tool']}`")
                 st.json(payload.get('args', {}))
 
             if 'ERROR' in row['event_type']:
-                st.error("### ⚠️ Error Event")
+                st.error("### [!] Error Event")
                 st.code(payload.get('error_message', 'Unknown error'))
 
             with st.expander("📦 Full Payload (JSON)"):
@@ -200,7 +200,7 @@ with col_right:
         st.info("Select an event from the stream to view details")
 
 st.markdown("---")
-st.subheader("📊 MCP Tool Performance")
+st.subheader("[STATS] MCP Tool Performance")
 
 tool_stats_df = conn.execute("""
     SELECT json_extract_string(payload, '$.tool') as tool_name,
@@ -230,7 +230,7 @@ else:
     st.info("No MCP tool calls recorded for this trace")
 
 st.markdown("---")
-st.subheader("⚠️ Error Analysis")
+st.subheader("[!] Error Analysis")
 
 error_df = conn.execute("""
     SELECT span_id, event_type, timestamp, payload
@@ -243,7 +243,7 @@ if not error_df.empty:
     error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
 
     for idx, row in error_df.iterrows():
-        with st.expander(f"❌ {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
+        with st.expander(f"[X] {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
             try:
                 PAYLOAD = json.loads(row['payload'])
                 st.error(payload.get('error_message', 'Unknown error'))
@@ -251,7 +251,7 @@ if not error_df.empty:
             except Exception:
                 st.text(row['payload'])
 else:
-    st.success("✅ No errors recorded for this trace")
+    st.success("[OK] No errors recorded for this trace")
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 📈 Global Stats")

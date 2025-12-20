@@ -19,7 +19,7 @@ try:
     from apps_rg.L3_orchestration.hardened_orchestrator import HardenedOrchestrator
 except ImportError as e:
     pass
-# print(f"❌ Setup Error: Could not import project modules. {e}")  # [Security Fix]
+# print(f"[X] Setup Error: Could not import project modules. {e}")  # [Security Fix]
     # print("Ensure this script is in the root directory and your PYTHONPATH is set.")  # [Security Fix]
     sys.exit(1)
 
@@ -40,8 +40,8 @@ class TestSystemHardening(unittest.TestCase):
         try:
             # Should return False or raise Exception
             result = validate_manifest_integrity(tmp_path)
-            self.assertFalse(result, "❌ Security Flaw: Orchestrator accepted corrupt JSON!")
-            # print("   ✅ Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
+            self.assertFalse(result, "[X] Security Flaw: Orchestrator accepted corrupt JSON!")
+            # print("   [OK] Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
         finally:
             os.remove(tmp_path)
 
@@ -73,9 +73,9 @@ class TestSystemHardening(unittest.TestCase):
         expected_filter = {"file_path": "auth.py", "content_hash": "HASH_V2_NEW"}
 
         self.assertEqual(actual_filter, expected_filter,
-            f"❌ Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")
+            f"[X] Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")
 
-        # print(f"   ✅ Query included strict hash filter: {actual_filter}")  # [Security Fix]
+        # print(f"   [OK] Query included strict hash filter: {actual_filter}")  # [Security Fix]
 
     # =========================================================================
     # TEST 3: THE ZOMBIE TEST (Error Classification)
@@ -106,14 +106,14 @@ class TestSystemHardening(unittest.TestCase):
             self.run_resilience_check(SyntaxError("Bad Code"), "FAILED")
         )
         state_fail.mark_failed.assert_called()
-        # print("   ✅ SyntaxError correctly triggered 'mark_failed'.")  # [Security Fix]
+        # print("   [OK] SyntaxError correctly triggered 'mark_failed'.")  # [Security Fix]
 
         # Scenario B: InfrastructureError (Transient) -> Should PAUSED
         state_pause, mock_exit_pause = loop.run_until_complete(
             self.run_resilience_check(InfrastructureError("Redis down"), "PAUSED")
         )
         state_pause.mark_paused.assert_called()
-        # print("   ✅ InfrastructureError correctly triggered 'mark_paused'.")  # [Security Fix]
+        # print("   [OK] InfrastructureError correctly triggered 'mark_paused'.")  # [Security Fix]
 
         loop.close()
 
