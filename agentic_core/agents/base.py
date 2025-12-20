@@ -61,21 +61,29 @@ class ImportPatcher:
             # Log or handle error more gracefully if needed, for now just skip
             return False
 
+    def _get_files_importing_module(self, old_module_name: str, moved_file_path: str) -> list[str]:
+        """Helper to find all files importing a specific old_module, excluding the moved_file itself."""
+        importing_files = []
+        for file_path in self.ctx.python_files:
+            if file_path == moved_file_path:
+                continue
+
+            if self._is_module_imported_in_file(file_path, old_module_name):
+                importing_files.append(file_path)
+        return importing_files
+
     def build_import_dependency_map(self, moved_files: list[str]) -> dict[str, list[str]]:
         """Build a map of which files import the moved modules."""
         import_map = {}
 
         for moved_file in moved_files:
             old_module = self.ctx._path_to_module(moved_file)
-            import_map[old_module] = []
-
-            # Scan all Python files for imports of this module
-            for file_path in self.ctx.python_files:
-                if file_path == moved_file:
-                    continue
-
-                if self._is_module_imported_in_file(file_path, old_module):
-                    import_map[old_module].append(file_path)
+            
+            # Use helper to get files importing this module
+            importing_files = self._get_files_importing_module(old_module, moved_file)
+            
+            if importing_files:
+                import_map[old_module] = importing_files
 
         # Remove empty entries
         return {k: v for k, v in import_map.items() if v}
@@ -138,6 +146,17 @@ class ImportPatcher:
         if self.ctx.write_compliant_file(file_path, updated_content):
             print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
 
+    async def _execute_import_mutation(self, source_agent: str, patch_task: str, content: str, file_path: str) -> str | None:
+        """Helper to execute the mutation request and handle errors."""
+        try:
+            return await self.ctx.request_mutation(
+                source_agent, patch_task, content, reasoning_mode=False
+            )
+        except Exception as e:
+            print(f"   ❌ Failed to request mutation for {file_path}: {e}")
+            self.ctx.signals.add("CRITICAL_WARNING")
+            return None
+
     async def _patch_file_imports(self, file_path, change_map, source_agent):
         """Patch imports in a single file based on the change map."""
 
@@ -159,15 +178,7 @@ class ImportPatcher:
             "4. Return ONLY the updated Python code with corrected imports"
         )
 
-        updated_content = None
-        try:
-            updated_content = await self.ctx.request_mutation(
-                source_agent, patch_task, content, reasoning_mode=False
-            )
-        except Exception as e:
-            print(f"   ❌ Failed to request mutation for {file_path}: {e}")
-            self.ctx.signals.add("CRITICAL_WARNING")
-            return
+        updated_content = await self._execute_import_mutation(source_agent, patch_task, content, file_path)
 
         if updated_content and updated_content != content:
             self._apply_patch_and_log(file_path, updated_content)

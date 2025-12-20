@@ -1,16 +1,13 @@
-"""
-Inference Engine with Thermostat Middleware for High-Temperature/High-Signal Architecture.
-
-The inference engine reads thermal configuration from the SignalContext and dynamically
-adjusts LLM parameters to maximize creativity while maintaining structural integrity.
-"""
-
-
 import logging
 import time
+from enum import Enum
+from dataclasses import dataclass
+from typing import Optional, Dict, Any, List
 
+from agentic_workflow.runtime.llm_providers import (
     Provider, get_client, ProviderConfig, get_api_key
 )
+from agentic_core.L1_cognition.context.signal_context import (
     SignalContext, ThermalProfile, HardState, SoftState
 )
 
@@ -32,7 +29,7 @@ class InferenceRequest:
     provider: Provider = Provider.OPENAI
     model: Optional[str] = None
     max_tokens: Optional[int] = None
-    STREAM: BOOL = False
+    STREAM: bool = False
 
     # Override thermal settings if needed
     temperature_override: Optional[float] = None
@@ -78,7 +75,7 @@ class ThermostatMiddleware:
         """
         # Use explicit overrides if provided
         if request.temperature_override is not None:
-            PARAMS = {
+            params = {
                 "temperature": request.temperature_override,
                 "top_p": request.top_p_override or 0.85,
                 "frequency_penalty": 0.0,
@@ -86,7 +83,7 @@ class ThermostatMiddleware:
             }
         else:
             # Get from context thermal config
-            PARAMS = request.context.get_thermal_params()
+            params = request.context.get_thermal_params()
 
             # Adjust based on inference mode
             mode_adjustments = {
@@ -101,7 +98,7 @@ class ThermostatMiddleware:
                 base_temp = params.get("temperature", 0.7)
                 mode_temp = mode_adjustments[request.mode]["temperature"]
                 # Weight towards mode-specific thermal
-                PARAMS["TEMPERATURE"] = (base_temp * 0.3) + (mode_temp * 0.7)
+                params["temperature"] = (base_temp * 0.3) + (mode_temp * 0.7)
                 params["top_p"] = mode_adjustments[request.mode]["top_p"]
 
         # Log thermal parameters if enabled
@@ -131,7 +128,7 @@ class ThermostatMiddleware:
         if len(self._thermal_history) > 1000:
             self._thermal_history = self._thermal_history[-1000:]
 
-        logger.info(
+        LOGGER.info(
             "thermal_params_applied",
             EXTRA={
                 "execution_id": log_entry["execution_id"],
@@ -176,12 +173,12 @@ class InferenceEngine:
             default_provider: Default LLM provider
             enable_logging: Enable inference logging
         """
-        SELF.THERMOSTAT = thermostat or ThermostatMiddleware(enable_logging)
+        self.thermostat = thermostat or ThermostatMiddleware(enable_logging)
         self.default_provider = default_provider
         self.enable_logging = enable_logging
         self._client_cache: Dict[Provider, Any] = {}
 
-        logger.info(
+        LOGGER.info(
             "inference_engine_initialized",
             EXTRA={
                 "default_provider": default_provider.value,
@@ -205,7 +202,7 @@ class InferenceEngine:
         thermal_params = self.thermostat.get_thermal_params(request)
 
         # Get client for provider
-        CLIENT = self._get_client(request.provider)
+        client = self._get_client(request.provider)
 
         # Prepare API parameters
         api_params = {
@@ -223,11 +220,11 @@ class InferenceEngine:
 
         try:
             # Make the API call
-            RESPONSE = await client.chat.completions.create(**api_params)
+            response = await client.chat.completions.create(**api_params)
 
             # Extract content and usage
-            CONTENT = response.choices[0].message.content
-            USAGE = response.usage.model_dump() if response.usage else {}
+            content = response.choices[0].message.content
+            usage = response.usage.model_dump() if response.usage else {}
 
             # Calculate execution time
             execution_time = (time.time() - start_time) * 1000
@@ -246,18 +243,18 @@ class InferenceEngine:
             request.context.update_timestamp()
 
             # Create result
-            RESULT = InferenceResult(
-                CONTENT=content,
-                USAGE=usage,
+            result = InferenceResult(
+                content=content,
+                usage=usage,
                 thermal_params_used=thermal_params,
                 execution_time_ms=execution_time,
-                PROVIDER=request.provider,
-                MODEL=api_params["model"],
+                provider=request.provider,
+                model=api_params["model"],
                 context_updated=True
             )
 
             if self.enable_logging:
-                logger.info(
+                LOGGER.info(
                     "inference_completed",
                     EXTRA={
                         "execution_id": request.context.hard_state.execution_id,
@@ -272,7 +269,7 @@ class InferenceEngine:
             return result
 
         except Exception as e:
-            logger.error(
+            LOGGER.error(
                 "inference_failed",
                 EXTRA={
                     "execution_id": request.context.hard_state.execution_id,
@@ -323,7 +320,7 @@ class InferenceEngine:
         Returns:
             Default model name
         """
-        DEFAULTS = {
+        defaults = {
             Provider.OPENAI: "gpt-4",
             Provider.ANTHROPIC: "claude-3-sonnet-20240229",
             Provider.GOOGLE: "gemini-pro",
@@ -348,7 +345,6 @@ class InferenceEngine:
 # Factory functions for common inference patterns
 
 async def creative_inference(
-    """Docstring."""
     prompt: str,
     context: SignalContext,
     provider: Provider = Provider.OPENAI
@@ -364,17 +360,16 @@ async def creative_inference(
     Returns:
         Inference result
     """
-    ENGINE = InferenceEngine()
-    REQUEST = InferenceRequest(
-        PROMPT=prompt,
-        CONTEXT=context,
-        MODE=InferenceMode.CREATIVE,
-        PROVIDER=provider
+    engine = InferenceEngine()
+    request = InferenceRequest(
+        prompt=prompt,
+        context=context,
+        mode=InferenceMode.CREATIVE,
+        provider=provider
     )
     return await engine.infer(request)
 
 async def validation_inference(
-    """Docstring."""
     prompt: str,
     context: SignalContext,
     provider: Provider = Provider.OPENAI
@@ -390,17 +385,16 @@ async def validation_inference(
     Returns:
         Inference result
     """
-    ENGINE = InferenceEngine()
-    REQUEST = InferenceRequest(
-        PROMPT=prompt,
-        CONTEXT=context,
-        MODE=InferenceMode.VALIDATION,
-        PROVIDER=provider
+    engine = InferenceEngine()
+    request = InferenceRequest(
+        prompt=prompt,
+        context=context,
+        mode=InferenceMode.VALIDATION,
+        provider=provider
     )
     return await engine.infer(request)
 
 async def analytical_inference(
-    """Docstring."""
     prompt: str,
     context: SignalContext,
     provider: Provider = Provider.OPENAI
@@ -416,11 +410,11 @@ async def analytical_inference(
     Returns:
         Inference result
     """
-    ENGINE = InferenceEngine()
-    REQUEST = InferenceRequest(
-        PROMPT=prompt,
-        CONTEXT=context,
-        MODE=InferenceMode.ANALYTICAL,
-        PROVIDER=provider
+    engine = InferenceEngine()
+    request = InferenceRequest(
+        prompt=prompt,
+        context=context,
+        mode=InferenceMode.ANALYTICAL,
+        provider=provider
     )
     return await engine.infer(request)

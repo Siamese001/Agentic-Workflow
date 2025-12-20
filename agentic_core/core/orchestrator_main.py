@@ -1,33 +1,16 @@
-"""
-🚀 PHASE 5: THE SWARM ASSEMBLY - Consolidated Core Orchestrator
-
-This is the single Command & Control center for all orchestration across the repository.
-All legacy orchestrators are now thin wrappers that delegate to this implementation.
-
-Features:
-- UniversalContext (ValidationContext) integration - Phase 3
-- AtomicBlackboard with HealingLease - Phase 2
-- Subatomic Agent Architecture (SystemArchitect, CodeJanitor, StructuralEngineer)
-- Gemini 2.5/3.0 SDK standardization
-- Race condition elimination via lease-based file operations
-- Convergence loop with max cycles
-- Signal-based blackboard communication
-- Clean Slate Protocol - flush Redis on agent failure
-- Graceful lease release on exit/CTRL+C
-- Human-in-the-loop intervention
-- Atomic state checkpointing
-"""
-
 import asyncio
 import atexit
 import logging
 import os
 import signal
 import sys
+import ast
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+import json # Moved from _checkpoint_state in ConsolidatedOrchestrator
+import subprocess # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
 
 # Phase 3: UniversalContext
 from agentic_core.domain.context import ValidationContext
@@ -51,6 +34,11 @@ from agentic_core.infra.tui_dashboard import AgenticTUI
 from agentic_core.infra.fission_manager import FissionManager
 from agentic_core.infra.safety_guardrail import SafetyGuardrail
 from agentic_core.memory.pinecone_sync import MemoryArchitectSync
+
+# This import was present within the execute_with_healing method in the original code,
+# despite a contradictory comment. It is moved here for proper module structure
+# and availability to the new OrchestratorHealingService.
+from agentic_workflow.runtime.shared import WriteFileArgs, write_file
 
 try:
     from google import genai
@@ -119,6 +107,347 @@ class OrchestratorState:
     status: str = "INITIALIZED"
 
 
+class OrchestratorHealingService:
+    """
+    Manages the healing process for code violations using an LLM.
+    Handles LLM interaction, fix validation, and file writing.
+    """
+    def __init__(
+        self,
+        config: OrchestratorConfig,
+        ctx: ValidationContext,
+        client: Any, # genai client
+        state: OrchestratorState,
+        logger: logging.Logger
+    ):
+        self.config = config
+        self.ctx = ctx
+        self.client = client
+        self.state = state
+        self.logger = logger
+
+    async def execute_healing(
+        self,
+        file_path: str,
+        violation_key: int,
+        fix_prompt: str
+    ) -> bool:
+        """
+        Execute healing operation.
+
+        Args:
+            file_path: Path to file to heal
+            violation_key: Violation key to fix
+            fix_prompt: Prompt for LLM to fix violation
+
+        Returns:
+            True if healing succeeded, False otherwise
+        """
+        if not self.config.enable_healing:
+            return False
+
+        if not self._can_attempt_healing(file_path):
+            self.logger.warning(f"Healing budget exhausted for {file_path}")
+            return False
+
+        if not self.client:
+            self.logger.error("Gemini client not available for healing")
+            return False
+
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                original_code = f.read()
+
+            config = types.GenerateContentConfig(
+                temperature=self.config.temperature,
+                thinking_config=types.ThinkingConfig(
+                    thinking_budget=self.config.thinking_budget
+                ),
+                tools=[]
+            )
+
+            response = await asyncio.to_thread(
+                self.client.models.generate_content,
+                model=self.config.gemini_model,
+                contents=f"{fix_prompt}\n\n{original_code}",
+                config=config
+            )
+
+            fixed_code = response.text.strip() if response.text else original_code
+
+            if self._validate_fix(original_code, fixed_code):
+                write_file(
+                    WriteFileArgs(path=file_path, content=fixed_code),
+                    blackboard=getattr(self.ctx, 'blackboard', None),
+                    agent_id="consolidated_orchestrator"
+                )
+
+                self._record_healing_attempt(file_path, success=True)
+                self.logger.info(f"✅ Healed {file_path} for violation {violation_key}")
+                return True
+            else:
+                self._record_healing_attempt(file_path, success=False)
+                self.logger.warning(f"❌ Healing validation failed for {file_path}")
+                return False
+
+        except Exception as e:
+            self.logger.error(f"Healing failed for {file_path}: {e}")
+            self._record_healing_attempt(file_path, success=False)
+            return False
+
+    def _can_attempt_healing(self, file_path: str) -> bool:
+        """Check if healing can be attempted on this file."""
+        if self.state.healing_budget_used >= self.config.global_healing_budget:
+            return False
+
+        if self.state.healing_attempts.get(file_path, 0) >= self.config.max_healing_per_file:
+            return False
+
+        return True
+
+    def _record_healing_attempt(self, file_path: str, success: bool):
+        """Record a healing attempt."""
+        if file_path not in self.state.healing_attempts:
+            self.state.healing_attempts[file_path] = 0
+
+        self.state.healing_attempts[file_path] += 1
+        self.state.healing_budget_used += 1
+
+        if success:
+            self.state.modified_files.add(file_path)
+
+        status = "✅ SUCCESS" if success else "❌ FAILED"
+        self.logger.info(
+            f"   Healing attempt {self.state.healing_attempts[file_path]} "
+            f"for {file_path}: {status}"
+        )
+        self.logger.info(
+            f"   Healing budget: {self.state.healing_budget_used}/"
+            f"{self.config.global_healing_budget}"
+        )
+
+    def _validate_fix(self, original: str, fixed: str) -> bool:
+        """Validate that a fix is acceptable."""
+        try:
+            ast.parse(fixed)
+        except SyntaxError:
+            return False
+
+        original_lines = len(original.splitlines())
+        fixed_lines = len(fixed.splitlines())
+
+        max_deletion = int(original_lines * 0.1)
+        if original_lines - fixed_lines > max_deletion:
+            self.logger.warning(f"Fix deleted too many lines: {original_lines} -> {fixed_lines}")
+            return False
+
+        if fixed_lines > original_lines * 4:
+            self.logger.warning(f"Fix added too many lines: {original_lines} -> {fixed_lines}")
+            return False
+
+        return True
+
+
+class OrchestratorStateManager:
+    """
+    Manages the orchestrator's state, checkpoints, termination conditions,
+    and result building.
+    """
+    def __init__(
+        self,
+        config: OrchestratorConfig,
+        ctx: ValidationContext,
+        state: OrchestratorState,
+        logger: logging.Logger
+    ):
+        self.config = config
+        self.ctx = ctx
+        self.state = state
+        self.logger = logger
+
+    def should_run_agent(self, agent: Any) -> bool:
+        """Determine if an agent should run based on signals."""
+        if "CRITICAL_FAIL" in self.state.signals:
+            return False
+        
+        if hasattr(agent, 'can_run'):
+            return agent.can_run()
+        
+        return True
+    
+    def should_terminate(self) -> bool:
+        """Determine if workflow should terminate early."""
+        if "CONVERGENCE" in self.state.signals:
+            return True
+        
+        if "CRITICAL_FAIL" in self.state.signals:
+            return True
+        
+        return False
+    
+    async def checkpoint_state(self, agent_name: str):
+        """Create a checkpoint of current state."""
+        checkpoint = {
+            "timestamp": datetime.now().isoformat(),
+            "cycle": self.state.current_cycle,
+            "agent": agent_name,
+            "signals": list(self.state.signals),
+            "modified_files": list(self.state.modified_files),
+            "healing_budget_used": self.state.healing_budget_used
+        }
+        
+        self.state.checkpoints.append(checkpoint)
+        
+        if self.config.checkpoint_dir:
+            os.makedirs(self.config.checkpoint_dir, exist_ok=True)
+            checkpoint_file = os.path.join(
+                self.config.checkpoint_dir,
+                f"{self.state.workflow_id}_cycle{self.state.current_cycle}_{agent_name}.json"
+            )
+            
+            try:
+                with open(checkpoint_file, 'w') as f:
+                    json.dump(checkpoint, f, indent=2)
+            except Exception as e:
+                self.logger.warning(f"Failed to write checkpoint: {e}")
+    
+    async def handle_intervention(self) -> bool:
+        """Handle human-in-the-loop intervention."""
+        self.logger.info("⏸️  Waiting for human approval...")
+        
+        if not self.config.enable_intervention:
+            return True
+        
+        # Placeholder for actual human intervention logic (e.g., TUI prompt)
+        # For now, it always approves if intervention is enabled.
+        return True
+    
+    def build_results(self) -> Dict[str, Any]:
+        """Build final workflow results."""
+        duration = None
+        if self.state.start_time and self.state.end_time:
+            duration = (self.state.end_time - self.state.start_time).total_seconds()
+        
+        return {
+            "workflow_id": self.state.workflow_id,
+            "status": self.state.status,
+            "cycles_executed": self.state.current_cycle,
+            "signals": list(self.state.signals),
+            "modified_files": list(self.state.modified_files),
+            "healing_attempts": self.state.healing_attempts,
+            "healing_budget_used": self.state.healing_budget_used,
+            "checkpoints_created": len(self.state.checkpoints),
+            "duration_seconds": duration,
+            "start_time": self.state.start_time.isoformat() if self.state.start_time else None,
+            "end_time": self.state.end_time.isoformat() if self.state.end_time else None
+        }
+
+
+class OrchestratorAgentAndScopeManager:
+    """
+    Manages the creation of the subatomic agent swarm and calculates
+    the smart scope for targeted execution.
+    """
+    def __init__(
+        self,
+        config: OrchestratorConfig,
+        ctx: ValidationContext,
+        logger: logging.Logger
+    ):
+        self.config = config
+        self.ctx = ctx
+        self.logger = logger
+
+    def create_agent_swarm(self) -> List[Any]:
+        """
+        Create the subatomic agent swarm based on configuration.
+        
+        Returns:
+            List of agent instances
+        """
+        agents = []
+        
+        # Phase 1: Core Architecture (SystemArchitect)
+        agents.append(SystemArchitect(self.ctx))
+        
+        # Phase 2: Code Quality (CodeJanitor)
+        agents.append(CodeJanitor(self.ctx))
+        
+        # Phase 3: Structure (StructuralEngineer)
+        agents.append(CanonStructuralEngineer(self.ctx))
+        
+        # Phase 4: Hygiene & Style
+        agents.append(HygieneGuardian(self.ctx))
+        agents.append(CodeStyleGuardian(self.ctx))
+        
+        # Phase 5: Security & Safety
+        agents.append(SafetyInspector(self.ctx))
+        agents.append(SecurityEnforcer(self.ctx))
+        
+        # Phase 6: Performance
+        agents.append(PerformanceEnforcer(self.ctx))
+        
+        self.logger.info(f"   🤖 Agent Swarm Created: {len(agents)} agents")
+        
+        return agents
+    
+    async def calculate_smart_scope(self, target_path: Optional[str] = None) -> List[str]:
+        """
+        Calculate smart scope using Dependency Diplomat.
+        
+        Uses BFS on dependency graph to find all files affected by changes.
+        
+        Args:
+            target_path: Optional target file or directory
+            
+        Returns:
+            List of files in impact scope
+        """
+        # Get Dependency Diplomat
+        diplomat = get_dependency_diplomat(self.ctx)
+        
+        # Build dependency graph
+        await diplomat.execute()
+        
+        # Determine modified files
+        if target_path:
+            # If target specified, use it as modified file
+            modified_files = [target_path]
+        else:
+            # Try to get modified files from git
+            try:
+                result = subprocess.run(
+                    ['git', 'diff', '--name-only', 'HEAD'],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                modified_files = [
+                    f for f in result.stdout.strip().split('\n') 
+                    if f and f.endswith('.py')
+                ]
+                
+                if not modified_files:
+                    self.logger.warning("   No modified Python files found in git diff")
+                    # Fallback: scan for recently modified files
+                    modified_files = []
+            except Exception as e:
+                self.logger.warning(f"   Could not get git diff: {e}")
+                modified_files = []
+        
+        if not modified_files:
+            self.logger.info("   No modified files detected, using full repository scope")
+            return []
+        
+        # Calculate impact scope
+        impact_scope = diplomat.calculate_impact_scope(
+            modified_files, 
+            max_depth=self.config.smart_scope_depth
+        )
+        
+        return impact_scope
+
+
 class ConsolidatedOrchestrator:
     """
     🚀 PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
@@ -151,7 +480,7 @@ class ConsolidatedOrchestrator:
         
         self.config = config or OrchestratorConfig()
         self.ctx = context or ValidationContext()
-        self.state = None
+        self.state: Optional[OrchestratorState] = None # Will be initialized in execute_workflow
         self.blackboard = getattr(self.ctx, 'blackboard', None)
         
         # Register for graceful shutdown
@@ -164,6 +493,12 @@ class ConsolidatedOrchestrator:
         else:
             self.client = None
             logger.warning("⚠️  Gemini client not available")
+        
+        # Initialize healing service and state manager to None, they will be properly instantiated
+        # in execute_workflow once self.state is available.
+        self.healing_service: Optional[OrchestratorHealingService] = None
+        self.state_manager: Optional[OrchestratorStateManager] = None
+        self.agent_scope_manager = OrchestratorAgentAndScopeManager(self.config, self.ctx, logger)
         
         # Clean Slate Protocol: Flush Redis if requested
         if self.config.clean_slate:
@@ -222,7 +557,7 @@ class ConsolidatedOrchestrator:
         # Smart scope integration
         if self.config.smart_scope:
             logger.info(f"🔗 SMART SCOPE ENABLED: Building dependency graph...")
-            target_files = await self._calculate_smart_scope(target_path)
+            target_files = await self.agent_scope_manager.calculate_smart_scope(target_path)
             logger.info(f"   Impact scope: {len(target_files)} files (depth: {self.config.smart_scope_depth})")
             
             # Store in context for agents
@@ -233,7 +568,7 @@ class ConsolidatedOrchestrator:
             logger.info(f"🌐 FULL REPOSITORY MODE")
         
         # Create subatomic agent swarm
-        agents = self._create_agent_swarm()
+        agents = self.agent_scope_manager.create_agent_swarm()
         
         # Execute workflow with convergence loop
         results = await self.execute_workflow(
@@ -247,96 +582,6 @@ class ConsolidatedOrchestrator:
         logger.info(f"{'='*60}")
         
         return results
-    
-    def _create_agent_swarm(self) -> List[Any]:
-        """
-        Create the subatomic agent swarm based on configuration.
-        
-        Returns:
-            List of agent instances
-        """
-        agents = []
-        
-        # Phase 1: Core Architecture (SystemArchitect)
-        agents.append(SystemArchitect(self.ctx))
-        
-        # Phase 2: Code Quality (CodeJanitor)
-        agents.append(CodeJanitor(self.ctx))
-        
-        # Phase 3: Structure (StructuralEngineer)
-        agents.append(CanonStructuralEngineer(self.ctx))
-        
-        # Phase 4: Hygiene & Style
-        agents.append(HygieneGuardian(self.ctx))
-        agents.append(CodeStyleGuardian(self.ctx))
-        
-        # Phase 5: Security & Safety
-        agents.append(SafetyInspector(self.ctx))
-        agents.append(SecurityEnforcer(self.ctx))
-        
-        # Phase 6: Performance
-        agents.append(PerformanceEnforcer(self.ctx))
-        
-        logger.info(f"   🤖 Agent Swarm Created: {len(agents)} agents")
-        
-        return agents
-    
-    async def _calculate_smart_scope(self, target_path: Optional[str] = None) -> List[str]:
-        """
-        Calculate smart scope using Dependency Diplomat.
-        
-        Uses BFS on dependency graph to find all files affected by changes.
-        
-        Args:
-            target_path: Optional target file or directory
-            
-        Returns:
-            List of files in impact scope
-        """
-        # Get Dependency Diplomat
-        diplomat = get_dependency_diplomat(self.ctx)
-        
-        # Build dependency graph
-        await diplomat.execute()
-        
-        # Determine modified files
-        if target_path:
-            # If target specified, use it as modified file
-            modified_files = [target_path]
-        else:
-            # Try to get modified files from git
-            import subprocess
-            try:
-                result = subprocess.run(
-                    ['git', 'diff', '--name-only', 'HEAD'],
-                    capture_output=True,
-                    text=True,
-                    timeout=10
-                )
-                modified_files = [
-                    f for f in result.stdout.strip().split('\n') 
-                    if f and f.endswith('.py')
-                ]
-                
-                if not modified_files:
-                    logger.warning("   No modified Python files found in git diff")
-                    # Fallback: scan for recently modified files
-                    modified_files = []
-            except Exception as e:
-                logger.warning(f"   Could not get git diff: {e}")
-                modified_files = []
-        
-        if not modified_files:
-            logger.info("   No modified files detected, using full repository scope")
-            return []
-        
-        # Calculate impact scope
-        impact_scope = diplomat.calculate_impact_scope(
-            modified_files, 
-            max_depth=self.config.smart_scope_depth
-        )
-        
-        return impact_scope
     
     async def execute_workflow(
         self,
@@ -359,6 +604,20 @@ class ConsolidatedOrchestrator:
             workflow_id=workflow_id,
             start_time=datetime.now()
         )
+        # Initialize healing service and state manager with the newly created state
+        self.healing_service = OrchestratorHealingService(
+            config=self.config,
+            ctx=self.ctx,
+            client=self.client,
+            state=self.state,
+            logger=logger
+        )
+        self.state_manager = OrchestratorStateManager(
+            config=self.config,
+            ctx=self.ctx,
+            state=self.state,
+            logger=logger
+        )
         
         logger.info(f"\n🔄 Starting convergence loop...")
         logger.info(f"   Max cycles: {self.config.max_cycles}")
@@ -376,7 +635,7 @@ class ConsolidatedOrchestrator:
             logger.info(f"{'='*60}")
             
             for agent in agents:
-                if not self._should_run_agent(agent):
+                if not self.state_manager.should_run_agent(agent):
                     logger.debug(f"Skipping agent {agent.__class__.__name__}")
                     continue
                 
@@ -414,7 +673,7 @@ class ConsolidatedOrchestrator:
                         self.ctx.signals.discard("AGENT_FAILURE")
                     
                     if self.config.enable_checkpointing:
-                        await self._checkpoint_state(agent.__class__.__name__)
+                        await self.state_manager.checkpoint_state(agent.__class__.__name__)
                     
                 except Exception as e:
                     logger.error(f"❌ Agent {agent.__class__.__name__} failed: {e}")
@@ -425,7 +684,7 @@ class ConsolidatedOrchestrator:
                         self._execute_clean_slate()
             
             # Check for convergence
-            if self._should_terminate():
+            if self.state_manager.should_terminate():
                 logger.info("\n✅ CONVERGENCE ACHIEVED")
                 self.state.status = "COMPLETED"
                 break
@@ -433,7 +692,7 @@ class ConsolidatedOrchestrator:
             # Check for intervention
             if self.config.enable_intervention and "INTERVENTION_REQUIRED" in self.state.signals:
                 logger.info("\n✋ INTERVENTION REQUIRED")
-                if not await self._handle_intervention():
+                if not await self.state_manager.handle_intervention():
                     logger.info("🛑 WORKFLOW VETOED")
                     self.state.status = "VETOED"
                     break
@@ -444,7 +703,7 @@ class ConsolidatedOrchestrator:
             self.state.status = "MAX_CYCLES_REACHED"
             logger.warning(f"\n⚠️  Max cycles reached without convergence")
         
-        return self._build_results()
+        return self.state_manager.build_results()
     
     async def execute_with_healing(
         self,
@@ -453,7 +712,7 @@ class ConsolidatedOrchestrator:
         fix_prompt: str
     ) -> bool:
         """
-        Execute healing operation with HealingLease integration.
+        Delegate healing operation to the OrchestratorHealingService.
         
         Args:
             file_path: Path to file to heal
@@ -463,187 +722,10 @@ class ConsolidatedOrchestrator:
         Returns:
             True if healing succeeded, False otherwise
         """
-        if not self.config.enable_healing:
+        if not self.healing_service:
+            logger.error("Healing service not initialized. Cannot execute healing.")
             return False
-        
-        if not self._can_attempt_healing(file_path):
-            logger.warning(f"Healing budget exhausted for {file_path}")
-            return False
-        
-        if not self.client:
-            logger.error("Gemini client not available for healing")
-            return False
-        
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                original_code = f.read()
-            
-            config = types.GenerateContentConfig(
-                temperature=self.config.temperature,
-                thinking_config=types.ThinkingConfig(
-                    thinking_budget=self.config.thinking_budget
-                ),
-                tools=[]
-            )
-            
-            response = await asyncio.to_thread(
-                self.client.models.generate_content,
-                model=self.config.gemini_model,
-                contents=f"{fix_prompt}\n\n{original_code}",
-                config=config
-            )
-            
-            fixed_code = response.text.strip() if response.text else original_code
-            
-            if self._validate_fix(original_code, fixed_code):
-                write_file(
-                    WriteFileArgs(path=file_path, content=fixed_code),
-                    blackboard=getattr(self.ctx, 'blackboard', None),
-                    agent_id="consolidated_orchestrator"
-                )
-                
-                self._record_healing_attempt(file_path, success=True)
-                logger.info(f"✅ Healed {file_path} for violation {violation_key}")
-                return True
-            else:
-                self._record_healing_attempt(file_path, success=False)
-                logger.warning(f"❌ Healing validation failed for {file_path}")
-                return False
-        
-        except Exception as e:
-            logger.error(f"Healing failed for {file_path}: {e}")
-            self._record_healing_attempt(file_path, success=False)
-            return False
-    
-    def _should_run_agent(self, agent: Any) -> bool:
-        """Determine if an agent should run based on signals."""
-        if "CRITICAL_FAIL" in self.state.signals:
-            return False
-        
-        if hasattr(agent, 'can_run'):
-            return agent.can_run()
-        
-        return True
-    
-    def _should_terminate(self) -> bool:
-        """Determine if workflow should terminate early."""
-        if "CONVERGENCE" in self.state.signals:
-            return True
-        
-        if "CRITICAL_FAIL" in self.state.signals:
-            return True
-        
-        return False
-    
-    def _can_attempt_healing(self, file_path: str) -> bool:
-        """Check if healing can be attempted on this file."""
-        if self.state.healing_budget_used >= self.config.global_healing_budget:
-            return False
-        
-        if self.state.healing_attempts.get(file_path, 0) >= self.config.max_healing_per_file:
-            return False
-        
-        return True
-    
-    def _record_healing_attempt(self, file_path: str, success: bool):
-        """Record a healing attempt."""
-        if file_path not in self.state.healing_attempts:
-            self.state.healing_attempts[file_path] = 0
-        
-        self.state.healing_attempts[file_path] += 1
-        self.state.healing_budget_used += 1
-        
-        if success:
-            self.state.modified_files.add(file_path)
-        
-        status = "✅ SUCCESS" if success else "❌ FAILED"
-        logger.info(
-            f"   Healing attempt {self.state.healing_attempts[file_path]} "
-            f"for {file_path}: {status}"
-        )
-        logger.info(
-            f"   Healing budget: {self.state.healing_budget_used}/"
-            f"{self.config.global_healing_budget}"
-        )
-    
-    def _validate_fix(self, original: str, fixed: str) -> bool:
-        """Validate that a fix is acceptable."""
-        import ast
-        
-        try:
-            ast.parse(fixed)
-        except SyntaxError:
-            return False
-        
-        original_lines = len(original.splitlines())
-        fixed_lines = len(fixed.splitlines())
-        
-        max_deletion = int(original_lines * 0.1)
-        if original_lines - fixed_lines > max_deletion:
-            logger.warning(f"Fix deleted too many lines: {original_lines} -> {fixed_lines}")
-            return False
-        
-        if fixed_lines > original_lines * 4:
-            logger.warning(f"Fix added too many lines: {original_lines} -> {fixed_lines}")
-            return False
-        
-        return True
-    
-    async def _checkpoint_state(self, agent_name: str):
-        """Create a checkpoint of current state."""
-        checkpoint = {
-            "timestamp": datetime.now().isoformat(),
-            "cycle": self.state.current_cycle,
-            "agent": agent_name,
-            "signals": list(self.state.signals),
-            "modified_files": list(self.state.modified_files),
-            "healing_budget_used": self.state.healing_budget_used
-        }
-        
-        self.state.checkpoints.append(checkpoint)
-        
-        if self.config.checkpoint_dir:
-            os.makedirs(self.config.checkpoint_dir, exist_ok=True)
-            checkpoint_file = os.path.join(
-                self.config.checkpoint_dir,
-                f"{self.state.workflow_id}_cycle{self.state.current_cycle}_{agent_name}.json"
-            )
-            
-            try:
-                import json
-                with open(checkpoint_file, 'w') as f:
-                    json.dump(checkpoint, f, indent=2)
-            except Exception as e:
-                logger.warning(f"Failed to write checkpoint: {e}")
-    
-    async def _handle_intervention(self) -> bool:
-        """Handle human-in-the-loop intervention."""
-        logger.info("⏸️  Waiting for human approval...")
-        
-        if not self.config.enable_intervention:
-            return True
-        
-        return True
-    
-    def _build_results(self) -> Dict[str, Any]:
-        """Build final workflow results."""
-        duration = None
-        if self.state.start_time and self.state.end_time:
-            duration = (self.state.end_time - self.state.start_time).total_seconds()
-        
-        return {
-            "workflow_id": self.state.workflow_id,
-            "status": self.state.status,
-            "cycles_executed": self.state.current_cycle,
-            "signals": list(self.state.signals),
-            "modified_files": list(self.state.modified_files),
-            "healing_attempts": self.state.healing_attempts,
-            "healing_budget_used": self.state.healing_budget_used,
-            "checkpoints_created": len(self.state.checkpoints),
-            "duration_seconds": duration,
-            "start_time": self.state.start_time.isoformat() if self.state.start_time else None,
-            "end_time": self.state.end_time.isoformat() if self.state.end_time else None
-        }
+        return await self.healing_service.execute_healing(file_path, violation_key, fix_prompt)
 
 
 def create_orchestrator(

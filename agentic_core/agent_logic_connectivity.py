@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional, Set
 from connection_manager import ConnectionManager
 
 # Import our hardened schemas and connection manager
-from schemas_connectivity import CanonEntry
+from schemas_connectivity import CanonEntry, CanonMetadata # Added CanonMetadata to top-level import
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,17 @@ class CanonValidator:
         self._refresh_manifest()
         self.embedding_fn = self.cm.get_embedding
 
+    def _load_manifest_data(self) -> Dict[str, Any]:
+        """Helper to load manifest data from file."""
+        with open(self.manifest_path, 'r') as f:
+            return json.load(f)
+
+    def _perform_manifest_update(self, new_mtime: float):
+        """Helper to update manifest cache and last load time."""
+        self.manifest_cache = self._load_manifest_data()
+        self.last_manifest_load = new_mtime
+        self.logger.debug("Manifest reloaded for cache coherence.")
+
     def _refresh_manifest(self):
         """
         Reloads the manifest if the file on disk has changed.
@@ -45,11 +56,12 @@ class CanonValidator:
         """
         try:
             current_mtime = os.path.getmtime(self.manifest_path)
-            if current_mtime > self.last_manifest_load:
-                with open(self.manifest_path, 'r') as f:
-                    self.manifest_cache = json.load(f)
-                self.last_manifest_load = current_mtime
-                self.logger.debug("Manifest reloaded for cache coherence.")
+            # Invert condition to reduce nesting depth
+            if current_mtime <= self.last_manifest_load:
+                return # Exit early if no update is needed
+            
+            # If we reach here, an update is needed.
+            self._perform_manifest_update(current_mtime)
         except FileNotFoundError:
             self.logger.warning("Manifest not found. Cache invalidation may be disabled.")
             self.manifest_cache = {}
@@ -72,11 +84,17 @@ class CanonValidator:
     def _get_manifest_file_paths(self, manifest_data: Dict[str, Any]) -> Set[str]:
         """
         Helper to extract absolute file paths from the manifest data.
+        Refactored to reduce nesting depth from set comprehension.
         """
         files_list = manifest_data.get("files", [])
-        return {file_info.get("absolute_path", "")
-                for file_info in files_list
-                if isinstance(file_info, dict)}
+        
+        extracted_paths = set()
+        for file_info in files_list:
+            if isinstance(file_info, dict):
+                # Replicate the original behavior of including empty strings if 'absolute_path' is missing
+                path = file_info.get("absolute_path", "")
+                extracted_paths.add(path)
+        return extracted_paths
 
     def _is_file_in_manifest(self, file_path: str) -> bool:
         """
@@ -149,8 +167,6 @@ class CanonValidator:
         Compatibility method for simulation script.
         Accepts raw string input and converts to CanonEntry.
         """
-        from schemas_connectivity import CanonEntry, CanonMetadata
-
         # Generate embedding first to meet validation requirements
         try:
             embedding = self.embedding_fn(code)
@@ -158,16 +174,22 @@ class CanonValidator:
             self.logger.error(f"Embedding generation failed: {e}")
             return {"status": "error", "message": str(e)}
 
+        # Refactor to reduce nesting depth for CanonMetadata arguments
+        project_context_val = "default"
+        canon_rule_id_val = "unknown"
+
+        if context:
+            project_context_val = context.get("project_context", "default")
+            canon_rule_id_val = context.get("type", "unknown")
+
         # Create CanonEntry from string input
         entry = CanonEntry(
             code_snippet=code,
             ast_structure={"type": "module"},  # Simple AST structure
             embedding=embedding,  # Now has valid embedding
             metadata=CanonMetadata(
-                project_context=context.get(
-                    "project_context", "default") if context else "default",
-                canon_rule_id=context.get(
-                    "type", "unknown") if context else "unknown"
+                project_context=project_context_val,
+                canon_rule_id=canon_rule_id_val
             )
         )
 
@@ -226,6 +248,24 @@ class CanonValidator:
         except Exception as e:
             self.logger.error(f"Redis upsert failed: {e}")
 
+    def _process_pinecone_match(self, best_match: Dict[str, Any], score: float) -> Optional[Dict[str, Any]]:
+        """
+        Helper to process a Pinecone match, apply similarity threshold, and format the result.
+        Reduces nesting depth in _check_l2_cache.
+        """
+        if score < self.similarity_threshold:
+            return None
+
+        # Access metadata safely
+        metadata = best_match.get('metadata', {})
+
+        return {
+            "id": best_match['id'],
+            "content": metadata.get('content', 'Content not in metadata'),
+            "similarity": score,
+            "metadata": metadata
+        }
+
     def _check_l2_cache(self, entry: CanonEntry) -> Optional[Dict[str, Any]]:
         """
         Queries Pinecone for semantic similarity.
@@ -248,16 +288,8 @@ class CanonValidator:
                 self.logger.info(
                     f"Best match: ID={best_match['id']}, score={score}")
 
-                if score >= self.similarity_threshold:
-                    # FIX: Access metadata safely
-                    metadata = best_match.get('metadata', {})
-
-                    return {
-                        "id": best_match['id'],
-                        "content": metadata.get('content', 'Content not in metadata'),
-                        "similarity": score,
-                        "metadata": metadata
-                    }
+                # Delegate to helper function to reduce nesting depth
+                return self._process_pinecone_match(best_match, score)
 
         except Exception as e:
             self.logger.error(f"Pinecone query failed: {e}")

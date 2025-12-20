@@ -1,13 +1,8 @@
-"""
-Test script for Regression Oracle integration.
-
-Demonstrates autonomous test synthesis and execution for modified code.
-"""
-
 import asyncio
 import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -23,17 +18,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-async def test_regression_oracle():
-    """Test Regression Oracle autonomous test synthesis."""
-    
-    logger.info("="*80)
-    logger.info("🔮 REGRESSION ORACLE TEST")
-    logger.info("="*80)
-    
-    # Create context
-    ctx = ValidationContext()
-    
-    # Simulate FILE_MODIFIED signals
+async def _setup_oracle_test(ctx: ValidationContext) -> Any:
+    """Sets up the Regression Oracle test environment, simulates signals, and initializes the oracle."""
     logger.info("\n1. Simulating FILE_MODIFIED signals...")
     
     # Add some test signals
@@ -43,7 +29,6 @@ async def test_regression_oracle():
     
     logger.info(f"   Added {len([s for s in ctx.signals if s.startswith('FILE_MODIFIED:')])} FILE_MODIFIED signals")
     
-    # Get Regression Oracle
     logger.info("\n2. Initializing Regression Oracle...")
     oracle = get_regression_oracle(ctx)
     
@@ -59,7 +44,11 @@ async def test_regression_oracle():
     else:
         logger.info("   ⚠️  Pinecone not available - using default edge cases")
     
-    # Execute oracle
+    return oracle
+
+
+async def _execute_oracle(oracle: Any):
+    """Executes the Regression Oracle and handles potential errors."""
     logger.info("\n3. Running Regression Oracle...")
     logger.info("   Listening for FILE_MODIFIED signals...")
     logger.info("   Analyzing modified methods...")
@@ -70,8 +59,10 @@ async def test_regression_oracle():
         await oracle.execute()
     except Exception as e:
         logger.error(f"   Error during execution: {e}")
-    
-    # Report results
+
+
+async def _report_oracle_results(ctx: ValidationContext, oracle: Any):
+    """Reports the results of the Regression Oracle execution, including test outcomes and signals."""
     logger.info("\n4. Results:")
     logger.info(f"   Tests generated: {len(oracle.generated_tests)}")
     
@@ -102,11 +93,10 @@ async def test_regression_oracle():
         logger.info(f"\n   ✅ REGRESSION CHECKS PASSED: {len(pass_signals)}")
         for signal in pass_signals[:5]:  # Show first 5
             logger.info(f"     {signal}")
-    
-    logger.info("\n" + "="*80)
-    logger.info("✅ REGRESSION ORACLE TEST COMPLETE")
-    logger.info("="*80)
-    
+
+
+async def _log_summary_and_features():
+    """Logs the summary of key features demonstrated and orchestrator integration details."""
     logger.info("\nKey Features Demonstrated:")
     logger.info("  1. ✅ FILE_MODIFIED signal listening from blackboard")
     logger.info("  2. ✅ Method change detection via AST diff analysis")
@@ -130,6 +120,24 @@ async def test_regression_oracle():
     logger.info("  2. Modify a file to trigger SystemArchitect")
     logger.info("  3. Regression Oracle will auto-generate tests")
     logger.info("  4. Check tests/autogen/ for generated test files")
+
+
+async def test_regression_oracle():
+    """Test Regression Oracle autonomous test synthesis."""
+    
+    logger.info("="*80)
+    logger.info("🔮 REGRESSION ORACLE TEST")
+    logger.info("="*80)
+    
+    ctx = ValidationContext()
+    oracle = await _setup_oracle_test(ctx)
+    await _execute_oracle(oracle)
+    await _report_oracle_results(ctx, oracle)
+    await _log_summary_and_features()
+    
+    logger.info("\n" + "="*80)
+    logger.info("✅ REGRESSION ORACLE TEST COMPLETE")
+    logger.info("="*80)
 
 
 async def test_orchestrator_integration():

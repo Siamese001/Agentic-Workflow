@@ -1,19 +1,9 @@
-"""
-⚛️ Hallucination Hunter - Ground Truth Verifier
-
-Audits data integrity in HOP pipeline by comparing generated output against source truth.
-Uses vector similarity to verify every claim can be traced to input data.
-
-Mission: Trust data integrity, stop fixing resumes in production
-Strategy: Atomic claim verification with citation mapping
-
-Impact: Deployment speed increases through verified data integrity
-"""
-
 import logging
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Set, Tuple
+import datetime
+import json
 
 try:
     import numpy as np
@@ -67,6 +57,192 @@ class IntegrityReport:
     audit_trail: Dict[str, str]  # Maps output claims to source citations
 
 
+class ClaimExtractor:
+    """Handles extraction of atomic claims from text."""
+    def __init__(self, genai_client, genai_available):
+        self.genai_client = genai_client
+        self.genai_available = genai_available
+
+    async def extract_claims(self, text: str) -> List[AtomicClaim]:
+        """
+        Extract atomic claims (propositions) from text using Gemini or fallback.
+        """
+        if self.genai_available:
+            try:
+                return await self._extract_claims_with_gemini(text)
+            except Exception as e:
+                logger.warning(f"Gemini claim extraction failed: {e}, falling back to simple extraction")
+        
+        # Fallback to simple extraction
+        return self._extract_claims_simple(text)
+
+    async def _extract_claims_with_gemini(self, text: str) -> List[AtomicClaim]:
+        """Use Gemini to extract atomic claims from text."""
+        prompt = f"""Extract atomic claims from this text. Each claim should be a single, verifiable fact.
+
+TEXT:
+{text}
+
+REQUIREMENTS:
+1. Break the text into individual atomic claims (propositions)
+2. Each claim should be independently verifiable
+3. Focus on factual statements (skills, experience, achievements)
+4. Ignore filler words and formatting
+5. Number each claim
+
+OUTPUT FORMAT:
+Return a numbered list of atomic claims, one per line:
+1. [First atomic claim]
+2. [Second atomic claim]
+...
+
+Example for "John has 5 years of Python experience and led 3 projects":
+1. John has 5 years of Python experience
+2. John led 3 projects
+"""
+        
+        response = self.genai_client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.1,
+                max_output_tokens=2048
+            )
+        )
+        
+        # Parse response into claims
+        claims = []
+        lines = response.text.strip().split('\n')
+        
+        for line in lines:
+            line = line.strip()
+            # Match numbered claims: "1. Claim text" or "1) Claim text"
+            match = re.match(r'^\d+[\.)]\s*(.+)$', line)
+            if match:
+                claim_text = match.group(1).strip()
+                if len(claim_text) > 10:  # Filter very short claims
+                    claims.append(AtomicClaim(
+                        text=claim_text,
+                        line_number=len(claims) + 1
+                    ))
+        
+        return claims
+
+    def _extract_claims_simple(self, text: str) -> List[AtomicClaim]:
+        """Fallback simple claim extraction."""
+        claims = []
+        
+        # Split into sentences
+        sentences = re.split(r'[.!?]+', text)
+        
+        for i, sentence in enumerate(sentences, 1):
+            sentence = sentence.strip()
+            
+            # Filter out very short sentences
+            if len(sentence) < 10:
+                continue
+            
+            # Filter out questions
+            if '?' in sentence:
+                continue
+            
+            claims.append(AtomicClaim(
+                text=sentence,
+                line_number=i
+            ))
+        
+        return claims
+
+
+class ClaimEmbedder:
+    """Handles generating embeddings for claims."""
+    def __init__(self):
+        pass
+
+    async def embed_claims(self, claims: List[AtomicClaim]) -> List[AtomicClaim]:
+        """Generate embeddings for claims."""
+        # In production, would use actual embedding model
+        # For now, use simple word-based similarity
+        
+        for claim in claims:
+            # Placeholder: In production, use OpenAI/Gemini embeddings
+            claim.embedding = self._simple_embedding(claim.text)
+        
+        return claims
+
+    def _simple_embedding(self, text: str) -> List[float]:
+        """Simple word-based embedding (placeholder)."""
+        # Convert text to simple vector based on word presence
+        # In production, use actual embedding model
+        words = text.lower().split()
+        return [float(len(words))]  # Placeholder
+
+
+class ClaimVerifier:
+    """Handles verifying claims against a source and calculating similarity."""
+    def __init__(self, similarity_threshold: float):
+        self.SIMILARITY_THRESHOLD = similarity_threshold
+
+    def verify_claim(self, generated_claim: AtomicClaim,
+                     source_claims: List[AtomicClaim]) -> VerificationResult:
+        """
+        Verify a generated claim against source claims.
+        
+        Args:
+            generated_claim: Claim from generated output
+            source_claims: Claims from source truth
+            
+        Returns:
+            Verification result
+        """
+        # Find most similar source claim
+        max_similarity = 0.0
+        best_match = None
+        best_match_line = None
+        
+        for source_claim in source_claims:
+            similarity = self._calculate_similarity(
+                generated_claim.text,
+                source_claim.text
+            )
+            
+            if similarity > max_similarity:
+                max_similarity = similarity
+                best_match = source_claim.text
+                best_match_line = source_claim.line_number
+        
+        # Check if supported
+        is_supported = max_similarity >= self.SIMILARITY_THRESHOLD
+        
+        # Generate citation
+        source_citation = f"Line {best_match_line}: {best_match[:50]}..." if best_match else None
+        
+        return VerificationResult(
+            claim=generated_claim,
+            is_supported=is_supported,
+            similarity_score=max_similarity,
+            source_citation=source_citation,
+            source_line=best_match_line
+        )
+
+    def _calculate_similarity(self, text1: str, text2: str) -> float:
+        """
+        Calculate similarity between two texts.
+        
+        Simple implementation using word overlap.
+        Production would use cosine similarity of embeddings.
+        """
+        # Normalize texts
+        words1 = set(text1.lower().split())
+        words2 = set(text2.lower().split())
+        
+        # Calculate Jaccard similarity
+        intersection = len(words1 & words2)
+        union = len(words1 | words2)
+        
+        return intersection / union if union > 0 else 0.0
+
+
 class HallucinationHunter(SubAtomicAgent):
     """
     The Hallucination Hunter - Ground Truth Verifier
@@ -106,15 +282,21 @@ class HallucinationHunter(SubAtomicAgent):
         
         # Gemini client for claim extraction
         self.genai_available = GENAI_AVAILABLE
+        genai_client = None
         if GENAI_AVAILABLE:
             api_key = self.ctx.get_env("GEMINI_API_KEY") if hasattr(self.ctx, 'get_env') else None
             if api_key:
                 try:
-                    self.genai_client = genai.Client(api_key=api_key)
+                    genai_client = genai.Client(api_key=api_key)
                     logger.info("✅ Hallucination Hunter connected to Gemini 2.5")
                 except Exception as e:
                     logger.warning(f"⚠️  Could not connect to Gemini: {e}")
                     self.genai_available = False
+        
+        # Initialize sub-components
+        self._claim_extractor = ClaimExtractor(genai_client, self.genai_available)
+        self._claim_embedder = ClaimEmbedder()
+        self._claim_verifier = ClaimVerifier(self.SIMILARITY_THRESHOLD)
     
     async def execute(self):
         """
@@ -177,17 +359,17 @@ class HallucinationHunter(SubAtomicAgent):
             Integrity report
         """
         # Extract atomic claims from both
-        source_claims = self._extract_claims(source_truth)
-        generated_claims = self._extract_claims(generated_artifact)
+        source_claims = await self._claim_extractor.extract_claims(source_truth)
+        generated_claims = await self._claim_extractor.extract_claims(generated_artifact)
         
         # Generate embeddings
-        source_claims = await self._embed_claims(source_claims)
-        generated_claims = await self._embed_claims(generated_claims)
+        source_claims = await self._claim_embedder.embed_claims(source_claims)
+        generated_claims = await self._claim_embedder.embed_claims(generated_claims)
         
         # Verify each generated claim
         verification_results = []
         for gen_claim in generated_claims:
-            result = self._verify_claim(gen_claim, source_claims)
+            result = self._claim_verifier.verify_claim(gen_claim, source_claims)
             verification_results.append(result)
         
         # Calculate metrics
@@ -233,175 +415,6 @@ class HallucinationHunter(SubAtomicAgent):
             requires_rollback=requires_rollback,
             audit_trail=audit_trail
         )
-    
-    async def _extract_claims(self, text: str) -> List[AtomicClaim]:
-        """
-        Extract atomic claims (propositions) from text using Gemini.
-        
-        Uses Gemini to intelligently break text into verifiable atomic claims.
-        """
-        if self.genai_available:
-            try:
-                return await self._extract_claims_with_gemini(text)
-            except Exception as e:
-                logger.warning(f"Gemini claim extraction failed: {e}, falling back to simple extraction")
-        
-        # Fallback to simple extraction
-        return self._extract_claims_simple(text)
-    
-    async def _extract_claims_with_gemini(self, text: str) -> List[AtomicClaim]:
-        """Use Gemini to extract atomic claims from text."""
-        prompt = f"""Extract atomic claims from this text. Each claim should be a single, verifiable fact.
-
-TEXT:
-{text}
-
-REQUIREMENTS:
-1. Break the text into individual atomic claims (propositions)
-2. Each claim should be independently verifiable
-3. Focus on factual statements (skills, experience, achievements)
-4. Ignore filler words and formatting
-5. Number each claim
-
-OUTPUT FORMAT:
-Return a numbered list of atomic claims, one per line:
-1. [First atomic claim]
-2. [Second atomic claim]
-...
-
-Example for "John has 5 years of Python experience and led 3 projects":
-1. John has 5 years of Python experience
-2. John led 3 projects
-"""
-        
-        response = self.genai_client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                temperature=0.1,
-                max_output_tokens=2048
-            )
-        )
-        
-        # Parse response into claims
-        claims = []
-        lines = response.text.strip().split('\n')
-        
-        for line in lines:
-            line = line.strip()
-            # Match numbered claims: "1. Claim text" or "1) Claim text"
-            match = re.match(r'^\d+[\.)]\s*(.+)$', line)
-            if match:
-                claim_text = match.group(1).strip()
-                if len(claim_text) > 10:  # Filter very short claims
-                    claims.append(AtomicClaim(
-                        text=claim_text,
-                        line_number=len(claims) + 1
-                    ))
-        
-        return claims
-    
-    def _extract_claims_simple(self, text: str) -> List[AtomicClaim]:
-        """Fallback simple claim extraction."""
-        claims = []
-        
-        # Split into sentences
-        sentences = re.split(r'[.!?]+', text)
-        
-        for i, sentence in enumerate(sentences, 1):
-            sentence = sentence.strip()
-            
-            # Filter out very short sentences
-            if len(sentence) < 10:
-                continue
-            
-            # Filter out questions
-            if '?' in sentence:
-                continue
-            
-            claims.append(AtomicClaim(
-                text=sentence,
-                line_number=i
-            ))
-        
-        return claims
-    
-    async def _embed_claims(self, claims: List[AtomicClaim]) -> List[AtomicClaim]:
-        """Generate embeddings for claims."""
-        # In production, would use actual embedding model
-        # For now, use simple word-based similarity
-        
-        for claim in claims:
-            # Placeholder: In production, use OpenAI/Gemini embeddings
-            claim.embedding = self._simple_embedding(claim.text)
-        
-        return claims
-    
-    def _simple_embedding(self, text: str) -> List[float]:
-        """Simple word-based embedding (placeholder)."""
-        # Convert text to simple vector based on word presence
-        # In production, use actual embedding model
-        words = text.lower().split()
-        return [float(len(words))]  # Placeholder
-    
-    def _verify_claim(self, generated_claim: AtomicClaim,
-                     source_claims: List[AtomicClaim]) -> VerificationResult:
-        """
-        Verify a generated claim against source claims.
-        
-        Args:
-            generated_claim: Claim from generated output
-            source_claims: Claims from source truth
-            
-        Returns:
-            Verification result
-        """
-        # Find most similar source claim
-        max_similarity = 0.0
-        best_match = None
-        best_match_line = None
-        
-        for source_claim in source_claims:
-            similarity = self._calculate_similarity(
-                generated_claim.text,
-                source_claim.text
-            )
-            
-            if similarity > max_similarity:
-                max_similarity = similarity
-                best_match = source_claim.text
-                best_match_line = source_claim.line_number
-        
-        # Check if supported
-        is_supported = max_similarity >= self.SIMILARITY_THRESHOLD
-        
-        # Generate citation
-        source_citation = f"Line {best_match_line}: {best_match[:50]}..." if best_match else None
-        
-        return VerificationResult(
-            claim=generated_claim,
-            is_supported=is_supported,
-            similarity_score=max_similarity,
-            source_citation=source_citation,
-            source_line=best_match_line
-        )
-    
-    def _calculate_similarity(self, text1: str, text2: str) -> float:
-        """
-        Calculate similarity between two texts.
-        
-        Simple implementation using word overlap.
-        Production would use cosine similarity of embeddings.
-        """
-        # Normalize texts
-        words1 = set(text1.lower().split())
-        words2 = set(text2.lower().split())
-        
-        # Calculate Jaccard similarity
-        intersection = len(words1 & words2)
-        union = len(words1 | words2)
-        
-        return intersection / union if union > 0 else 0.0
     
     def _display_report(self, stage_name: str, report: IntegrityReport):
         """Display integrity report."""
@@ -528,10 +541,9 @@ Example for "John has 5 years of Python experience and led 3 projects":
         # Create sidecar file with audit trail
         sidecar_path = file_path.replace('.txt', '_audit.json').replace('.md', '_audit.json')
         
-        import json
         audit_data = {
             "file": file_path,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.datetime.now().isoformat(),
             "integrity_score": report.integrity_score,
             "hallucination_percentage": report.hallucination_percentage,
             "total_claims": report.total_claims,
@@ -557,7 +569,7 @@ Example for "John has 5 years of Python experience and led 3 projects":
         except Exception as e:
             logger.error(f"   Could not inject audit trail: {e}")
     
-    def inject_citations(self, generated_text: str, source_text: str) -> str:
+    async def inject_citations(self, generated_text: str, source_text: str) -> str:
         """
         Inject citation metadata into generated text.
         
@@ -568,19 +580,16 @@ Example for "John has 5 years of Python experience and led 3 projects":
         Returns:
             Text with citation metadata
         """
-        # Extract claims
-        generated_claims = self._extract_claims(generated_text)
-        source_claims = self._extract_claims(source_text)
+        generated_claims = await self._claim_extractor.extract_claims(generated_text)
+        source_claims = await self._claim_extractor.extract_claims(source_text)
         
-        # Add embeddings
-        import asyncio
-        generated_claims = asyncio.run(self._embed_claims(generated_claims))
-        source_claims = asyncio.run(self._embed_claims(source_claims))
+        generated_claims = await self._claim_embedder.embed_claims(generated_claims)
+        source_claims = await self._claim_embedder.embed_claims(source_claims)
         
         # Build cited text
         cited_lines = []
         for claim in generated_claims:
-            result = self._verify_claim(claim, source_claims)
+            result = self._claim_verifier.verify_claim(claim, source_claims)
             
             if result.is_supported and result.source_line:
                 # Add citation

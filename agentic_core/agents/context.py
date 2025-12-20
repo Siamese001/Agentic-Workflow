@@ -3,7 +3,7 @@ Context management agents for global architectural awareness.
 
 Contains:
 - OmniContext: Global Architectural Context that concatenates all non-excluded .py files
-  into a single context buffer for agents to consult
+    into a single context buffer for agents to consult
 """
 
 import asyncio
