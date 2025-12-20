@@ -10,9 +10,7 @@ import json
 import logging
 import os
 import re
-import subprocess
 import sys
-import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -260,206 +258,89 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"\n[*] MISSION START: Validating {target_scope}")
     print(f"DEBUG: VERSION 2.2 - BUDGET HARDENED (CAP: 24,576)")
     
-    # LEVEL 6: Create healing branch on start (GitOps)
-    branch_name = f"healing/auto_{int(time.time())}"
-    try:
-        subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
-        print(f"   [+] GitOps: Created healing branch '{branch_name}'")
-    except Exception:
-        print("   [!] GitOps: Git not detected or branch creation failed.")
-
-    # Strategy: Analyze signals and form agenda for the 50-key sweep
-    print("\n=== [*] SELF-HEALING CYCLE 1/5 ===")
-    print(f"   [>] Target: {os.path.abspath(target_scope)}")
-    print("   [>] PLAN: Executing full system diagnostic via modular agents...")
-    
-    # Add project root to Python path
-    project_root = Path(__file__).parent.parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
-    
-    # 1. Initialize Context (Blackboard)
+    # 1. Initialize & Harden Context (L4 State)
     try:
         from agentic_core.L4_state.validation_context import ValidationContext
         ctx = ValidationContext()
     except ImportError:
-        # Fallback: Create minimal context with agent-compatible API
         class ValidationContext:
             def __init__(self):
-                self.target_scope = None
-                self._client = None
                 self.python_files = []
-                self.report_data = []
-                self.env_vars = {}
+                self.report = []
+                self.results = {}
                 self.signals = set()
-                
-            def get_env(self, key, default=None):
-                """Get environment variable."""
-                return os.getenv(key, default)
-                
-            def report(self, agent_name, key_number, passed, details):
-                """Report validation result for a specific canon key."""
-                self.report_data.append({
-                    "agent": agent_name,
-                    "key": key_number,
-                    "passed": passed,
-                    "details": details
-                })
-                
-            def add_to_report(self, agent_name, message, severity="info"):
-                """Add finding to report."""
-                self.report_data.append({"agent": agent_name, "msg": message, "lvl": severity})
-            
-            def signal_deps_valid(self):
-                """Signal that dependencies are valid."""
-                self.signals.discard("DEPS_INVALID")
-        
         ctx = ValidationContext()
-        print("   [!] Using minimal ValidationContext (full context not available)")
-    
-    # HYBRID CONTEXT HARDENING
-    # Supports both Legacy (list.append) and Modern (callable) report formats
-    
+
+    # 🛡️ SMART-REPORT HYBRID: Fixes "list object not callable" and "missing report"
     class CallableReport(list):
-        """Hybrid report object that acts as both a list and a callable method."""
         def __call__(self, agent_name, key_num, passed, details=""):
-            """Handles modern 4-parameter calls: ctx.report(name, key, passed, msg)"""
             status = "PASS" if passed else "FAIL"
-            self.append({
-                "agent": agent_name, 
-                "key": key_num, 
-                "status": status, 
-                "msg": details if isinstance(details, str) else str(details)
-            })
-    
-    # Initialize or convert existing report
-    existing_data = getattr(ctx, 'report', [])
-    if not isinstance(existing_data, list):
-        existing_data = []
-    
-    # Overwrite with the Hybrid object
-    ctx.report = CallableReport(existing_data)
-    
-    # Ensure get_env exists for MemoryArchitect
-    if not hasattr(ctx, 'get_env'):
-        ctx.get_env = lambda key, default=None: os.getenv(key, default)
-        
-    if not hasattr(ctx, 'add_to_report'):
-        def hardened_add_to_report(agent_name, message, severity="info"):
-            ctx.report.append({"agent": agent_name, "msg": message, "lvl": severity})
-        ctx.add_to_report = hardened_add_to_report
-    
-    if not hasattr(ctx, 'signals'):
-        ctx.signals = set()
-    elif isinstance(ctx.signals, list):
-        ctx.signals = set(ctx.signals)
-        
-    if not hasattr(ctx, 'signal_deps_valid'):
-        ctx.signal_deps_valid = lambda: ctx.signals.discard("DEPS_INVALID") if hasattr(ctx, 'signals') else None
-        
-    if not hasattr(ctx, 'python_files'):
-        ctx.python_files = []
-        
-    if not hasattr(ctx, '_client'):
-        ctx._client = None
-    
-    # 🛡️ CONTEXT HARDENING: Version 2.3 Patch
-    if not hasattr(ctx, 'results'):
-        ctx.results = {}  # Initialize as dict to store agent-specific findings
-        print("   [🔧] Hardened: Added results container to Context")
+            self.append({"agent": agent_name, "key": key_num, "status": status, "msg": str(details)})
+
+    ctx.report = CallableReport(getattr(ctx, 'report', []))
+    if not hasattr(ctx, 'results'): ctx.results = {} 
+    if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
     
     ctx.target_scope = target_scope
-    
-    # Populate python_files list
-    ctx.python_files = [str(p) for p in Path(target_scope).rglob("*.py")]
+    ctx.python_files = [str(p) for p in Path(target_scope).rglob("*.py") if p.suffix == ".py"]
 
-    # 2. Dynamic Agent Loading (Key 11/12 Enforcement)
-    # Load available agents from agentic_core/agents
+    # 2. Load Agents
     cleaning_crew = []
+    agent_modules = [
+        ('agentic_core.agents.system_architect', 'SystemArchitect'),
+        ('agentic_core.agents.structural_engineer', 'StructuralEngineer'),
+        ('agentic_core.agents.healer_agent', 'HealerAgent'),
+        ('agentic_core.agents.quality', 'HygieneGuardian'),
+        ('agentic_core.agents.governance', 'ArchitectureGovernor'),
+        ('agentic_core.agents.governance', 'DependencySentinel'),
+        ('agentic_core.agents.security', 'SecurityEnforcer'),
+        ('agentic_core.agents.memory_architect', 'MemoryArchitect'),
+        ('agentic_core.agents.hallucination_hunter', 'HallucinationHunter'),
+    ]
     
-    try:
-        # Try to load specialized agents that actually exist
-        agent_modules = [
-            # Core Canon Agents (inherit from CanonBaseAgent)
-            ('agentic_core.agents.system_architect', 'SystemArchitect'),
-            ('agentic_core.agents.structural_engineer', 'StructuralEngineer'),
-            ('agentic_core.agents.healer_agent', 'HealerAgent'),
-            
-            # Quality & Hygiene Agents
-            ('agentic_core.agents.quality', 'HygieneGuardian'),
-            ('agentic_core.agents.quality', 'CodeStyleGuardian'),
-            
-            # Governance & Architecture
-            ('agentic_core.agents.governance', 'ArchitectureGovernor'),
-            ('agentic_core.agents.governance', 'DependencySentinel'),
-            
-            # Engineering & Structure
-            ('agentic_core.agents.engineering', 'StructuralEngineer'),
-            
-            # Security
-            ('agentic_core.agents.security', 'SafetyInspector'),
-            ('agentic_core.agents.security', 'SecurityEnforcer'),
-            
-            # Analysis & Memory
-            ('agentic_core.agents.memory_architect', 'MemoryArchitect'),
-            ('agentic_core.agents.hallucination_hunter', 'HallucinationHunter'),
-        ]
+    for module_path, class_name in agent_modules:
+        try:
+            module = importlib.import_module(module_path)
+            agent_class = getattr(module, class_name)
+            cleaning_crew.append(agent_class(ctx))
+        except Exception as e:
+            print(f"   [!] Load Error {class_name}: {e}")
+
+    # 3. L3 ORCHESTRATION: Separate Logic from Monitoring
+    # This prevents the "Silent Loop" hang
+    validators = [a for a in cleaning_crew if a.__class__.__name__ not in ['MemoryArchitect', 'HallucinationHunter']]
+    monitors = [a for a in cleaning_crew if a.__class__.__name__ in ['MemoryArchitect', 'HallucinationHunter']]
+
+    print(f"   [>] Found {len(ctx.python_files)} files. Starting Agentic Sweep...")
+
+    # --- THE ATOMIC SWEEP (Per File) ---
+    for file_path in ctx.python_files:
+        file_name = os.path.basename(file_path)
+        print(f"🔍 [SWEEP] {file_name}")
         
-        for module_path, class_name in agent_modules:
+        for agent in validators:
             try:
-                module = importlib.import_module(module_path)
-                agent_class = getattr(module, class_name)
-                cleaning_crew.append(agent_class(ctx))
-                print(f"   [+] Loaded: {class_name}")
-            except (ImportError, AttributeError) as e:
-                print(f"   [!] Could not load {class_name}: {e}")
-    except Exception as e:
-        print(f"   [!] Agent loading error: {e}")
-
-    if not cleaning_crew:
-        print("   [!] No agents loaded. Running in diagnostic mode only.")
-    else:
-        print(f"   [+] Loaded {len(cleaning_crew)} agents for validation sweep")
-
-    # 3. Execution Loop
-    files_to_validate = [str(p) for p in Path(target_scope).rglob("*.py")]
-    print(f"   [>] Found {len(files_to_validate)} Python files to validate\n")
-    
-    for file_path in files_to_validate:
-        print(f"[>] Agentic Sweep: {os.path.basename(file_path)}")
-        for agent in cleaning_crew:
-            try:
-                if hasattr(agent, 'can_run') and agent.can_run():
-                    if hasattr(agent, 'execute'):
-                        await agent.execute()
+                # Dynamically find the execution method
+                method = getattr(agent, 'execute', getattr(agent, 'run', None))
+                if method:
+                    # If the agent takes a file argument, pass it; otherwise just run
+                    await method() if method.__code__.co_argcount == 1 else await method(file_path)
             except Exception as e:
-                print(f"   [!] Agent error: {e}")
-    
-    print("\n[*] SAVING BLACKBOARD STATE...")
-    
-    # Mission Summary Dashboard
-    print("\n" + "="*60)
-    print(f"[START] MISSION COMPLETE: {len(files_to_validate)} Files Swept")
-    print(f"[STATS] TOTAL VIOLATIONS DETECTED: {len(ctx.report)}")
-    
-    # Quick Summary by Agent
-    if ctx.report:
-        from collections import Counter
-        summary = Counter(item.get('agent', 'Unknown') for item in ctx.report)
-        print("\n[STATS] Violations by Agent:")
-        for agent, count in summary.most_common():
-            print(f"   - {agent}: {count} issues")
-        
-        # Summary by Canon Key (if available)
-        key_summary = Counter(item.get('key') for item in ctx.report if 'key' in item)
-        if key_summary:
-            print("\n[STATS] Top Violated Canon Keys:")
-            for key, count in key_summary.most_common(10):
-                print(f"   - Key {key}: {count} violations")
-    else:
-        print("\n[!] No violations recorded (check agent execution)")
-    
-    print("="*60)
+                ctx.report.append({"agent": agent.__class__.__name__, "msg": f"Error on {file_name}: {e}"})
+
+    # --- THE MONITORING PASS (Final State Check) ---
+    print("\n🧠 [L4 STATE] Finalizing Memory & Hallucination Pass...")
+    for monitor in monitors:
+        try:
+            method = getattr(monitor, 'execute', getattr(monitor, 'run', None))
+            if method: await method()
+        except Exception: pass
+
+    # 📊 MISSION SUMMARY
+    print("\n" + "="*50)
+    print(f"🚀 MISSION COMPLETE: {len(ctx.python_files)} Files Swept")
+    print(f"📊 TOTAL VIOLATIONS DETECTED: {len(ctx.report)}")
+    print("="*50)
 
 
 # ==============================================================================
