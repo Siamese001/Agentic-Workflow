@@ -16,9 +16,6 @@ EXCLUDED_DIRS = {
 }
 
 EXCLUDED_FILES = {
-    'canon_validator.py',
-    'canon_validator_backup.py',
-    'canon_validator_v2_agentic.py',
     'auto_canon.py',
     '.DS_Store'
 }

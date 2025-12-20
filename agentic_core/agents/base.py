@@ -1,4 +1,8 @@
+```python
 import ast
+import os
+from typing import List, Dict, Union
+
 from agentic_core.domain.context import ValidationContext
 
 
@@ -27,6 +31,7 @@ class SubAtomicAgent:
             await self.execute()
 
         except Exception as e:
+            # Catching broad Exception to ensure all agent execution errors are reported.
             print(f"   ❌ [{self.name}] Error: {e}")
             raise
 
@@ -58,11 +63,16 @@ class ImportPatcher:
                 tree = ast.parse(f.read())
             return self._find_module_import_in_tree(tree, old_module)
         except Exception:
-            # Log or handle error more gracefully if needed, for now just skip
+            # Broad exception catch is used here to gracefully skip files
+            # that cannot be parsed or read, preventing a full workflow halt.
             return False
 
-    def _get_files_importing_module(self, old_module_name: str, moved_file_path: str) -> list[str]:
-        """Helper to find all files importing a specific old_module, excluding the moved_file itself."""
+    def _get_files_importing_module(
+        self, old_module_name: str, moved_file_path: str
+    ) -> List[str]:
+        """Helper to find all files importing a specific old_module,
+        excluding the moved_file itself.
+        """
         importing_files = []
         for file_path in self.ctx.python_files:
             if file_path == moved_file_path:
@@ -72,38 +82,43 @@ class ImportPatcher:
                 importing_files.append(file_path)
         return importing_files
 
-    def build_import_dependency_map(self, moved_files: list[str]) -> dict[str, list[str]]:
+    def build_import_dependency_map(
+        self, moved_files: List[str]
+    ) -> Dict[str, List[str]]:
         """Build a map of which files import the moved modules."""
         import_map = {}
 
         for moved_file in moved_files:
             old_module = self.ctx._path_to_module(moved_file)
-            
-            # Use helper to get files importing this module
-            importing_files = self._get_files_importing_module(old_module, moved_file)
-            
+
+            importing_files = self._get_files_importing_module(
+                old_module, moved_file
+            )
+
             if importing_files:
                 import_map[old_module] = importing_files
 
-        # Remove empty entries
         return {k: v for k, v in import_map.items() if v}
 
-    async def _patch_imports_after_changes(self, change_map, source_agent):
+    async def _patch_imports_after_changes(
+        self, change_map: Dict[str, Union[str, List[str]]], source_agent: str
+    ):
         """
         Unified import patching for file moves and splits.
 
         Args:
-            change_map: Dict mapping old modules to new modules or lists of modules
-                      For moves: {'old.module': 'new.module'}
-                      For splits: {'old.module': ['new.module1', 'new.module2']}
-            source_agent: Name of the agent performing the changes
+            change_map: Dict mapping old modules to new modules or lists of modules.
+                        For moves: {'old.module': 'new.module'}
+                        For splits: {'old.module': ['new.module1', 'new.module2']}
+            source_agent: Name of the agent performing the changes.
         """
         if not change_map:
             return
 
         print(f"   🔧 Patching imports for {len(change_map)} module changes...")
 
-        # Build import dependency map using ValidationContext helper
+        # Build import dependency map by querying the ValidationContext.
+        # This map indicates which files import the modules that have changed.
         import_map = self.ctx.build_import_dependency_map(change_map.keys())
 
         # Group affected files by unique set
@@ -119,7 +134,9 @@ class ImportPatcher:
         for file_path in affected_files:
             await self._patch_file_imports(file_path, change_map, source_agent)
 
-    def _generate_patch_instructions(self, change_map: dict) -> list[str]:
+    def _generate_patch_instructions(
+        self, change_map: Dict[str, Union[str, List[str]]]
+    ) -> List[str]:
         """Generates a list of human-readable patch instructions from a change map."""
         instructions = []
         for old_module, new_targets in change_map.items():
@@ -130,34 +147,42 @@ class ImportPatcher:
                     instructions.append(f"{old_module} → {new_target}")
         return instructions
 
-    def _read_file_content(self, file_path: str) -> str | None:
+    def _read_file_content(self, file_path: str) -> Union[str, None]:
         """Reads file content, handling potential errors."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return f.read()
         except Exception as e:
+            # Broad exception catch to report file read issues without halting.
             print(f"   ❌ Failed to read file {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
             return None
 
     def _apply_patch_and_log(self, file_path: str, updated_content: str):
         """Applies the patched content to the file and logs the outcome."""
-        import os # os is only used here for os.path.basename
         if self.ctx.write_compliant_file(file_path, updated_content):
             print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
 
-    async def _execute_import_mutation(self, source_agent: str, patch_task: str, content: str, file_path: str) -> str | None:
+    async def _execute_import_mutation(
+        self, source_agent: str, patch_task: str, content: str, file_path: str
+    ) -> Union[str, None]:
         """Helper to execute the mutation request and handle errors."""
         try:
             return await self.ctx.request_mutation(
                 source_agent, patch_task, content, reasoning_mode=False
             )
         except Exception as e:
+            # Broad exception catch to report mutation request issues without halting.
             print(f"   ❌ Failed to request mutation for {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
             return None
 
-    async def _patch_file_imports(self, file_path, change_map, source_agent):
+    async def _patch_file_imports(
+        self,
+        file_path: str,
+        change_map: Dict[str, Union[str, List[str]]],
+        source_agent: str,
+    ):
         """Patch imports in a single file based on the change map."""
 
         content = self._read_file_content(file_path)
@@ -178,7 +203,10 @@ class ImportPatcher:
             "4. Return ONLY the updated Python code with corrected imports"
         )
 
-        updated_content = await self._execute_import_mutation(source_agent, patch_task, content, file_path)
+        updated_content = await self._execute_import_mutation(
+            source_agent, patch_task, content, file_path
+        )
 
         if updated_content and updated_content != content:
             self._apply_patch_and_log(file_path, updated_content)
+```
