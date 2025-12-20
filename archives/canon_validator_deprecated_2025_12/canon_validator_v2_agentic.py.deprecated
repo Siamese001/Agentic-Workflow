@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """
-Subatomic Canon Validator - L5 Autonomous Healing
-Enforces 50 validation keys with AI-powered fixes.
+SubAtomic Canon Validator - Complete 50 Key Implementation
+All 50 Subatomic Canon keys are validated with proper AST-based checks.
 """
-
-print("DEBUG: VERSION 2.1 - CACHE CLEARED - DECEMBER 19 2025")
 
 import argparse
 import ast
 import asyncio
 import hashlib
 import importlib.util
-import json
 import logging
 import os
 import re
@@ -21,14 +18,13 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Set, Tuple, Callable
 
 from dotenv import load_dotenv
-
 load_dotenv()
 
-# Inline reliability decorator to avoid import dependencies
-def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_factor: float = 2.0):
+# Inline reliability decorator
+def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
     """Decorator to handle Gemini 429 errors with exponential backoff."""
     from functools import wraps
     def decorator(func):
@@ -39,7 +35,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_fa
                     return await func(*args, **kwargs)
                 except Exception as e:
                     if "429" in str(e) or "quota" in str(e).lower():
-                        wait = base_delay * (backoff_factor ** attempt)
+                        wait = base_delay * (2 ** attempt)
                         if attempt < max_retries - 1:
                             await asyncio.sleep(wait)
                         else:
@@ -50,34 +46,11 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_fa
         return wrapper
     return decorator
 
-# Inline file_io functions to avoid import dependencies
-def get_python_files(root: str = '.') -> List[str]:
-    """Hardened file scanner with absolute path resolution."""
-    # Resolve the absolute path to ensure the scanner doesn't lose the context
-    absolute_root = os.path.abspath(root)
-    print(f"   📂 Scanning absolute path: {absolute_root}", flush=True)
-    
-    python_files = []
-    for root_dir, dirs, files in os.walk(absolute_root):
-        # Prevent descending into virtual envs or excluded zones
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
-        
-        for file in files:
-            if file.endswith('.py') and file not in EXCLUDED_FILES:
-                file_path = os.path.join(root_dir, file)
-                if not is_excluded(file_path):
-                    python_files.append(file_path)
-    
-    print(f"   ✅ Found {len(python_files)} Python files.", flush=True)
-    return python_files
-
 try:
     from google import genai
-    from google.genai import types
 except ImportError:
-    print("   ⚠️  google-genai not installed - run: pip install google-genai")
+    print("   ⚠️  google-generativeai not installed - run: pip install google-generativeai")
     genai = None
-    types = None
 
 logger = logging.getLogger(__name__)
 
@@ -127,345 +100,6 @@ def is_excluded(path: str) -> bool:
     return False
 
 # ==============================================================================
-# SERVICE MANAGER (REDIS, PINECONE, MCP INTEGRATION)
-# ==============================================================================
-@dataclass
-class ServiceManager:
-    """Manages external services (Redis, Pinecone, MCP) with graceful fallback."""
-    redis_client: Optional[Any] = field(default=None)
-    pinecone_index: Optional[Any] = field(default=None)
-    mcp_clients: Dict[str, Any] = field(default_factory=dict)
-    redis_fallback: Dict[str, Any] = field(default_factory=dict)  # Local dict fallback for Redis
-    mcp_init_pending: bool = field(default=False)  # Flag for async MCP initialization
-    
-    def __post_init__(self):
-        """Initialize services if available."""
-        print("\n🔌 Initializing External Services...", flush=True)
-        try:
-            self._init_redis()
-        except Exception as e:
-            print(f"   ⚠️  Redis init failed: {e}", flush=True)
-        
-        try:
-            self._init_pinecone()
-        except Exception as e:
-            print(f"   ⚠️  Pinecone init failed: {e}", flush=True)
-        
-        try:
-            self._init_mcp()
-        except Exception as e:
-            print(f"   ⚠️  MCP init failed: {e}", flush=True)
-    
-    def _init_redis(self):
-        """Initialize Redis client if available."""
-        try:
-            import redis
-            self.redis_client = redis.Redis(
-                host=os.getenv('REDIS_HOST', 'localhost'),
-                port=int(os.getenv('REDIS_PORT', 6379)),
-                db=int(os.getenv('REDIS_DB', 0)),
-                decode_responses=True
-            )
-            # Test connection
-            self.redis_client.ping()
-            print("   ✅ Redis connected - caching enabled")
-        except Exception as e:
-            if "10061" in str(e):
-                print("   ⚠️  Redis connection refused (10061) - falling back to local cache")
-                self.redis_client = None
-                # Initialize local dict fallback
-                self.redis_fallback = {}
-            else:
-                self.redis_client = None
-                print(f"   ⚠️  Redis unavailable: {e}")
-    
-    def _init_pinecone(self):
-        """Initialize Pinecone for pattern learning."""
-        try:
-            from pinecone import Pinecone, ServerlessSpec
-            pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-            
-            # Force infrastructure settings to override defaults
-            index_name = "canon-memory-l2"  # Fixed index name - ignore env vars
-            cloud = "aws"  # Fixed cloud provider - ignore env vars  
-            region = "us-east-1"  # Fixed region - ignore env vars
-            dimension = int(os.getenv('PINECONE_DIMENSION', '1536'))  # Allow dimension from env
-            metric = os.getenv('PINECONE_METRIC', 'cosine')  # Allow metric from env
-            
-            if index_name not in pc.list_indexes().names():
-                pc.create_index(
-                    name=index_name,
-                    dimension=dimension,
-                    metric=metric,
-                    spec=ServerlessSpec(
-                        cloud=cloud,
-                        region=region
-                    )
-                )
-            self.pinecone_index = pc.Index(index_name)
-            print(f"   ✅ Pinecone connected - pattern learning enabled ({region})")
-        except Exception as e:
-            self.pinecone_index = None
-            print(f"   ⚠️  Pinecone unavailable: {e}")
-    
-    def _init_mcp(self):
-        """Initialize MCP clients if available."""
-        # MCP requires async initialization - will be initialized in async context
-        # Set flag to initialize in async context later
-        self.mcp_init_pending = True
-    
-    async def init_mcp_async(self):
-        """Async initialization of MCP clients for Level 5 Swarm with full MCP bridge."""
-        if not self.mcp_init_pending:
-            return
-        
-        try:
-            from mcp import ClientSession, StdioServerParameters
-            from mcp.client.stdio import stdio_client
-        except ImportError:
-            print("   ⚠️  MCP not installed - using direct file I/O")
-            self.mcp_init_pending = False
-            return
-        
-        # Define all MCP servers to connect to
-        mcp_servers = {
-            'file_server': {
-                'command': 'python',
-                'args': ['apps_shared/mcp_file_server.py'],
-                'required': False
-            },
-            'gitkraken': {
-                'type': 'windsurf',  # Built-in Windsurf MCP
-                'server_name': 'GitKraken',
-                'required': False
-            },
-            'brave_search': {
-                'type': 'windsurf',
-                'server_name': 'brave-search',
-                'required': False,
-                'env': {'BRAVE_SEARCH_API_KEY': os.getenv('BRAVE_SEARCH_API_KEY', '')}
-            },
-            'deepwiki': {
-                'type': 'windsurf',
-                'server_name': 'deepwiki',
-                'required': False
-            },
-            'fetch': {
-                'type': 'windsurf',
-                'server_name': 'fetch',
-                'required': False
-            },
-            'figma': {
-                'type': 'windsurf',
-                'server_name': 'figma-remote-mcp-server',
-                'required': False,
-                'env': {'FIGMA_TOKEN': os.getenv('FIGMA_TOKEN', '')}
-            },
-            'filesystem': {
-                'type': 'windsurf',
-                'server_name': 'filesystem',
-                'required': False
-            },
-            'playwright': {
-                'type': 'windsurf',
-                'server_name': 'mcp-playwright',
-                'required': False
-            },
-            'memory': {
-                'type': 'windsurf',
-                'server_name': 'memory',
-                'required': False
-            },
-            'pinecone': {
-                'type': 'windsurf',
-                'server_name': 'pinecone-mcp-server',
-                'required': False,
-                'env': {'PINECONE_API_KEY': os.getenv('PINECONE_API_KEY', '')}
-            },
-            'redis': {
-                'type': 'windsurf',
-                'server_name': 'redis',
-                'required': False
-            },
-            'sequential_thinking': {
-                'type': 'windsurf',
-                'server_name': 'sequential-thinking',
-                'required': False
-            }
-        }
-        
-        connected_servers = []
-        windsurf_servers = []
-        
-        # Connect to each MCP server
-        for server_name, config in mcp_servers.items():
-            try:
-                # Skip if required env vars missing
-                if 'env' in config:
-                    missing_vars = [k for k, v in config['env'].items() if not v]
-                    if missing_vars:
-                        print(f"   ⚠️  {server_name} MCP skipped - missing env vars: {missing_vars}")
-                        continue
-                
-                # Windsurf MCPs are managed by IDE - just register them
-                if config.get('type') == 'windsurf':
-                    self.mcp_clients[server_name] = {
-                        'type': 'windsurf',
-                        'server_name': config['server_name'],
-                        'available': True
-                    }
-                    windsurf_servers.append(server_name)
-                    continue
-                
-                # Launch standalone MCP servers
-                server_params = StdioServerParameters(
-                    command=config['command'],
-                    args=config['args'],
-                    env=config.get('env')
-                )
-                
-                async with asyncio.timeout(5.0):
-                    async with stdio_client(server_params) as (read, write):
-                        async with ClientSession(read, write) as session:
-                            await session.initialize()
-                            self.mcp_clients[server_name] = session
-                            connected_servers.append(server_name)
-                            
-            except asyncio.TimeoutError:
-                if config.get('required'):
-                    print(f"   ⚠️  {server_name} MCP timed out - required server unavailable")
-                    self.mcp_init_pending = False
-                    return
-            except FileNotFoundError:
-                pass  # Server binary not found, skip silently
-            except Exception as e:
-                if config.get('required'):
-                    print(f"   ⚠️  {server_name} MCP failed: {e}")
-                    self.mcp_init_pending = False
-                    return
-        
-        all_servers = connected_servers + windsurf_servers
-        if all_servers:
-            status_msg = f"   ✅ MCP initialized - Connected: {', '.join(connected_servers)}"
-            if windsurf_servers:
-                status_msg += f" | Windsurf: {', '.join(windsurf_servers)}"
-            print(status_msg)
-        else:
-            print("   ⚠️  No MCP servers connected - using direct file I/O")
-        
-        self.mcp_init_pending = False
-    
-    def get_cached_result(self, file_hash: str) -> Optional[Dict]:
-        """Get cached validation result from Redis or fallback dict."""
-        if self.redis_client:
-            try:
-                cached = self.redis_client.get(f"canon:validation:{file_hash}")
-                return json.loads(cached) if cached else None
-            except:
-                pass
-        
-        # Fallback to local dict
-        return self.redis_fallback.get(f"canon:validation:{file_hash}")
-    
-    def cache_result(self, file_hash: str, result: Dict, ttl: int = None):
-        """Cache validation result in Redis or fallback dict."""
-        if ttl is None:
-            ttl = int(os.getenv('CACHE_TTL', '3600'))
-        if self.redis_client:
-            try:
-                self.redis_client.setex(
-                    f"canon:validation:{file_hash}",
-                    ttl,
-                    json.dumps(result)
-                )
-            except:
-                pass
-        else:
-            # Store in fallback dict (no TTL support)
-            self.redis_fallback[f"canon:validation:{file_hash}"] = result
-    
-    def store_healing_pattern(self, violation: str, fix: str, success_rate: float):
-        """Store successful healing pattern in Pinecone."""
-        if not self.pinecone_index:
-            return
-        try:
-            import openai
-
-            # Create embedding of violation+fix pattern
-            text = f"Violation: {violation}\nFix: {fix}"
-            response = openai.Embedding.create(
-                input=text,
-                model="text-embedding-ada-002"
-            )
-            embedding = response['data'][0]['embedding']
-            
-            # Store in Pinecone
-            self.pinecone_index.upsert([
-                {
-                    'id': f"pattern_{hash(text)}",
-                    'values': embedding,
-                    'metadata': {
-                        'violation': violation,
-                        'fix': fix,
-                        'success_rate': success_rate,
-                        'timestamp': time.time()
-                    }
-                }
-            ])
-        except:
-            pass
-    
-    def find_similar_patterns(self, violation: str, top_k: int = None) -> List[Dict]:
-        """Find similar healing patterns for a violation."""
-        if top_k is None:
-            top_k = int(os.getenv('PATTERN_MATCH_TOP_K', '3'))
-        if not self.pinecone_index:
-            return []
-        try:
-            import openai
-
-            # Create embedding of violation
-            response = openai.Embedding.create(
-                input=violation,
-                model="text-embedding-ada-002"
-            )
-            embedding = response['data'][0]['embedding']
-            
-            # Query Pinecone
-            results = self.pinecone_index.query(
-                vector=embedding,
-                top_k=top_k,
-                include_metadata=True
-            )
-            
-            return [{
-                'fix': match['metadata']['fix'],
-                'success_rate': match['metadata']['success_rate'],
-                'similarity': match['score']
-            } for match in results['matches']]
-        except:
-            return []
-    
-    def validate_ui_patterns(self, design_spec: Dict) -> List[str]:
-        """Validate UI patterns using Figma MCP."""
-        if 'figma' not in self.mcp_clients:
-            return []
-        try:
-            # Use Figma MCP to validate design patterns
-            figma_client = self.mcp_clients['figma']
-            violations = []
-            
-            # Check component consistency
-            if 'components' in design_spec:
-                for component in design_spec['components']:
-                    if not figma_client.validate_component(component):
-                        violations.append(f"Invalid component: {component['name']}")
-            
-            return violations
-        except:
-            return []
-
-# ==============================================================================
 # VALIDATION CONTEXT (BLACKBOARD PATTERN)
 # ==============================================================================
 @dataclass
@@ -479,256 +113,99 @@ class ValidationContext:
     intelligence_enabled: bool = field(default=False)
     _client: Any = field(default=None)
     target_scope: str = field(default=".")
-    services: ServiceManager = field(default_factory=ServiceManager)
 
     # L5 Autonomy: Economic & Safety State
     healing_attempts: Dict[str, int] = field(default_factory=dict)       # Per-file counter
     healing_history: Dict[str, List[str]] = field(default_factory=dict)  # Audit log
-    max_healing_per_file: int = field(default_factory=lambda: int(os.getenv('MAX_HEALING_PER_FILE', '8')))    # From env
-    global_healing_budget: int = field(default_factory=lambda: int(os.getenv('GLOBAL_HEALING_BUDGET', '50')))    # From env
+    max_healing_per_file: int = 8                                        # Hard limit per file
+    global_healing_budget: int = 50                                      # Hard limit global
     healing_budget_used: int = 0
-    
-    # Gemini 3 Flash: Thought signature tracking for multi-turn
-    thought_signatures: Dict[str, str] = field(default_factory=dict)     # Per-file thought signatures
-    conversation_history: Dict[str, List[Any]] = field(default_factory=dict)  # Per-file conversation history
-    chat_sessions: Dict[str, Any] = field(default_factory=dict)  # Persistent chat sessions per file
 
     def __post_init__(self):
-        print("\n🔧 Initializing Validation Context...", flush=True)
-        
         # TARGETED SCAN: Only load files in the target scope to save tokens
-        try:
-            if self.target_scope and self.target_scope != ".":
-                self.python_files = get_python_files(self.target_scope)
-            else:
-                self.python_files = get_python_files(".")
-        except Exception as e:
-            print(f"   ⚠️  File scanning failed: {e}", flush=True)
-            self.python_files = []
-        
-        # Initialize intelligence if healing is enabled
-        print("\n🤖 Initializing Gemini Client...", flush=True)
-        if genai and os.getenv("GOOGLE_API_KEY"):
+        self.python_files = get_python_files(self.target_scope)
+        self._init_intelligence()
+        print(f"   [CTX] Blackboard initialized with {len(self.python_files)} valid source files.")
+        if self.target_scope != ".":
+            print(f"   [CTX] Target scope: {self.target_scope}")
+
+    def _init_intelligence(self):
+        """Initialize Gemini client for autonomous healing."""
+        if not genai:
+            print("      ❌ Google Generative AI not available")
+            return
+            
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if api_key:
             try:
+                self._client = genai.Client(api_key=api_key)
                 self.intelligence_enabled = True
-                self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-                print("   ✅ Gemini Connected - HEALING MODE ACTIVE", flush=True)
+                print("      ✅ Gemini Connected - HEALING MODE ACTIVE")
             except Exception as e:
-                print(f"   ⚠️  Gemini initialization failed: {e}", flush=True)
-                self.intelligence_enabled = False
+                print(f"      ⚠️  Gemini Connection Failed: {e}")
         else:
-            self.intelligence_enabled = False
-            print("   ⚠️  Healing disabled: No API key configured", flush=True)
-        
-        print("\n✅ Validation Context Ready\n", flush=True)
+            print("      ⚠️  No GOOGLE_API_KEY found in .env - AUDIT ONLY")
 
     def can_attempt_healing(self, file_path: str) -> bool:
-        """Check if we can attempt healing on this file."""
+        """L5 Guardrail: Enforce global and local healing budgets."""
         if self.healing_budget_used >= self.global_healing_budget:
+            print("   ⛔ Global healing budget exhausted – halting autonomous repairs.")
             return False
         if self.healing_attempts.get(file_path, 0) >= self.max_healing_per_file:
+            print(f"   ⛔ Max healing attempts reached for {os.path.basename(file_path)}")
             return False
         return True
-    
-    def record_healing_attempt(self, file_path: str, success: bool):
-        """Record a healing attempt and update counters."""
-        # Increment per-file counter
-        if file_path not in self.healing_attempts:
-            self.healing_attempts[file_path] = 0
-        self.healing_attempts[file_path] += 1
-        
-        # Increment global budget usage
+
+    def record_healing_attempt(self, file_path: str, success: bool = False):
+        """Track cost and history."""
+        self.healing_attempts[file_path] = self.healing_attempts.get(file_path, 0) + 1
         self.healing_budget_used += 1
-        
-        # Log to console
-        status = "✅ SUCCESS" if success else "❌ FAILED"
-        print(f"   Healing attempt {self.healing_attempts[file_path]} for {file_path}: {status}")
-        print(f"   Healing budget: {self.healing_budget_used}/{self.global_healing_budget}")
+        if success:
+            timestamp = time.strftime('%H:%M:%S')
+            self.healing_history.setdefault(file_path, []).append(f"Healed at {timestamp}")
 
-    def convert_to_genai_types(self, raw_history):
-        """
-        Converts old list-of-dicts history into strict Google GenAI Content objects.
-        Gemini 2.5 does NOT support thought_signature - removed to prevent crashes.
-        """
-        formatted = []
-        for entry in raw_history:
-            parts = []
-            for p in entry.get('parts', []):
-                # Create a Part object - NO thought_signature for Gemini 2.5
-                parts.append(types.Part(text=p.get('text')))
-            formatted.append(types.Content(role=entry['role'], parts=parts))
-        return formatted
-
-    async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None, round_num: int = 1, previous_failure: str = None) -> str:
-        """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
+    @rate_limited_retry(max_retries=5, base_delay=2.0, backoff_factor=1.5)
+    async def resilient_mutation(self, agent_name: str, task: str, code: str) -> str:
+        """The 'Smart' fix logic. Calls Gemini to rewrite code."""
+        if not self.intelligence_enabled or not self._client:
+            return code
         
-        # Count original lines for feedback
-        original_line_count = len(code.splitlines())
-        
-        # CLEAN SLATE PROTOCOL: Clear contaminated history on failure
-        chat_key = f"chat_{file_path}" if file_path else "chat_default"
-        if previous_failure and chat_key in self.chat_sessions:
-            print(f"      🧹 Clean Slate Protocol: Clearing contaminated history", flush=True)
-            del self.chat_sessions[chat_key]
-            if file_path in self.conversation_history:
-                self.conversation_history[file_path] = []
-        
-        # Build lesson learned from previous failure
-        lesson_learned = previous_failure if previous_failure else ""
-        
-        # DYNAMIC PROMPT LOADING: Load prompts from modularized markdown files
-        try:
-            import sys
-            from pathlib import Path
-            
-            # Add project root to Python path if not already there
-            project_root = Path(__file__).parent.parent
-            if str(project_root) not in sys.path:
-                sys.path.insert(0, str(project_root))
-            
-            from prompts.prompt_loader import load_prompt_for_agent
-            
-            # Map agent name to role (e.g., "HealerAgent" -> "healer_agent")
-            agent_role = agent_name.lower().replace(" ", "_")
-            
-            # Build complete prompt from modularized files
-            prompt = load_prompt_for_agent(
-                agent_role=agent_role,
-                task=task,
-                code=code,
-                original_line_count=original_line_count,
-                lesson_learned=lesson_learned
-            )
-        except Exception as e:
-            # Fallback to inline prompt if loader fails
-            print(f"      ⚠️ Prompt loader failed ({e}), using fallback", flush=True)
-            prompt = f"""Task: {task}
-SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
-
-🚫 ZERO-TOLERANCE DELETION RULE:
-- The original file has {original_line_count} lines of code
-- Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines
-- NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'
-- If you delete more than 10% of lines ({int(original_line_count * 0.1)} lines) without structural reason, REJECTED
-- Every mutation must be COMPLETE and FUNCTIONAL
-- Preserve ALL sections exactly as-is unless directly fixing the violation
-
-🚫 PROHIBITED MODULES (HARD-CODED BLACKLIST):
-- 'base' - DOES NOT EXIST
-- 'context' - DOES NOT EXIST  
-- 'L3_orchestration' - DOES NOT EXIST
-- 'conversational_repair' - DOES NOT EXIST
-- These are HALLUCINATIONS. Do not import them under any circumstances.
-- ONLY use: Python stdlib (os, sys, pathlib, etc.) OR 'from agentic_workflow.runtime.shared import ...'
-
-⚡ ELITE ENGINEER RULES:
-1. Fix the specific violation ONLY - surgical precision
-2. NEVER hallucinate imports - verify all imports are real
-3. NEVER delete logic, comments, or docstrings
+        prompt = f"""Agent: {agent_name}
+Task: {task}
+SYSTEM: You are a Level 5 Autonomous Repair Agent.
+RULES:
+1. Fix the specific violation ONLY.
+2. DO NOT hallucinate imports (only use stdlib or existing).
+3. DO NOT delete logic, comments, or docstrings.
 4. Return ONLY valid Python code. No markdown blocks.
-5. CRITICAL: Return code as TEXT. Do NOT call any tools or functions.
-"""
-            if lesson_learned:
-                prompt += f"\n\n📚 LESSON LEARNED: {lesson_learned}\n"
-            prompt += f"\n{code}"
+
+{code}"""
         
         try:
-            # SUBATOMIC FIX: Force temperature=0.2 for maximum determinism
-            # Low temperature prevents "creative" hallucinations and deletions
-            config = types.GenerateContentConfig(
-                temperature=0.2,  # ELITE: Ultra-low temp for literal, deterministic fixes
-                thinking_config=types.ThinkingConfig(
-                    thinking_budget=16000  # Deep healing budget for Gemini 2.5
-                ),
-                tools=[]  # EXPLICITLY disable all tools
+            # L5: Deterministic generation for code stability
+            response = await asyncio.to_thread(
+                self._client.models.generate_content,
+                model=os.getenv("GEMINI_MODEL", "gemini-1.5-pro-latest"),
+                contents=[prompt],
+                generation_config={
+                    "temperature": 0.0,
+                    "top_p": 0.95,
+                    "max_output_tokens": 8192,
+                },
+                safety_settings=[
+                    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
+                ]
             )
-            
-            # Get or create persistent chat session for this file
-            chat_key = f"chat_{file_path}" if file_path else "chat_default"
-            
-            # CRITICAL: Reset session on Round 3 to clear contaminated history (30k+ tokens)
-            if round_num >= 3 and chat_key in self.chat_sessions:
-                print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
-                del self.chat_sessions[chat_key]
-                if file_path in self.conversation_history:
-                    self.conversation_history[file_path] = []
-            
-            def get_gemini_response():
-                # Reuse existing chat session or create new one
-                if chat_key not in self.chat_sessions:
-                    # Create new persistent chat session
-                    self.chat_sessions[chat_key] = self._client.chats.create(
-                        model=os.getenv('GEMINI_MODEL', 'gemini-2.5-flash'),
-                        config=config
-                    )
-                    print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}", flush=True)
-                else:
-                    print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
-                
-                # Use persistent session
-                chat = self.chat_sessions[chat_key]
-                return chat.send_message(prompt)
-            
-            response = await asyncio.to_thread(get_gemini_response)
-            
-            # DEBUG: Check if model is calling a tool (should NEVER happen now)
-            if response.candidates and response.candidates[0].content.parts:
-                first_part = response.candidates[0].content.parts[0]
-                if hasattr(first_part, 'function_call') and first_part.function_call:
-                    tool_name = first_part.function_call.name
-                    tool_args = dict(first_part.function_call.args) if first_part.function_call.args else {}
-                    print(f"🔍 DEBUG: Model called tool '{tool_name}' with args: {tool_args}", flush=True)
-                    print(f"   🚨 CRITICAL: Tools should be disabled! Clearing session.", flush=True)
-                    # Clear corrupted session and return original code
-                    if chat_key in self.chat_sessions:
-                        del self.chat_sessions[chat_key]
-                    return code
-            
-            fixed_code = response.text.strip() if response.text else code
-            
-            # Log success for record_healing_attempt logic
-            if hasattr(response, 'usage_metadata'):
-                print(f"      ✅ Tokens: {response.usage_metadata.total_token_count}", flush=True)
-            
-            # Track conversation history for debugging (chat session handles actual history)
-            if file_path:
-                if file_path not in self.conversation_history:
-                    self.conversation_history[file_path] = []
-                self.conversation_history[file_path].append({
-                    "round": len(self.conversation_history[file_path]) + 1,
-                    "prompt_length": len(prompt),
-                    "response_length": len(fixed_code)
-                })
-            
+            fixed_code = response.text.strip()
+            # Clean up markdown
+            if "```python" in fixed_code:
+                fixed_code = fixed_code.replace("```python", "").replace("```", "").strip()
+            elif fixed_code.startswith("```"):
+                fixed_code = fixed_code[3:].replace("```", "").strip()
             return fixed_code
-            
         except Exception as e:
-            if "maximum_remote_calls" in str(e):
-                print("🚨 SDK Error: Check Pydantic field names in GenerateContentConfig.")
-            elif "thought_signature" in str(e):
-                print("🚨 Signature Error: History corruption detected. Resetting session.")
-                # Clear corrupted history
-                if file_path and file_path in self.conversation_history:
-                    self.conversation_history[file_path] = []
-            else:
-                print(f"🚨 Mutation Error ({agent_name}): {str(e)}")
-            return code  # Return original code on error
-
-    async def read_file(self, file_path: str) -> str:
-        """Read file content."""
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                return f.read()
-        except:
-            return ""
-
-    async def write_file(self, file_path: str, content: str):
-        """Write content to file."""
-        try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(content)
-        except Exception as e:
-            print(f"   ❌ Failed to write {file_path}: {e}")
+            print(f"      ❌ Mutation Error ({agent_name}): {e}")
+            return code
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         """Report validation result to blackboard."""
@@ -830,6 +307,7 @@ class SubAtomicAgent:
             45: deps.check_key_45_no_unused_imports,
             46: struct.check_key_46_no_duplicate_code,
             47: NamingAgent(ctx).check_key_47_naming_conventions,
+            48: janitor.check_key_48_syntax_validity, # Handled by Sherlock
             49: arch.check_key_49_directory_depth,
             50: arch.check_key_50_law_of_void,
         }
@@ -842,32 +320,6 @@ class SubAtomicAgent:
     def can_run(self) -> bool:
         """Default: Run unless a critical failure exists."""
         return "CRITICAL_FAIL" not in self.ctx.signals
-    
-    def get_file_hash(self, file_path: str) -> str:
-        """Calculate SHA-256 hash of a file."""
-        try:
-            with open(file_path, 'rb') as f:
-                return hashlib.sha256(f.read()).hexdigest()
-        except:
-            return ""
-    
-    def check_cache(self, file_path: str, key: int) -> Optional[Dict]:
-        """Check Redis cache for validation result."""
-        file_hash = self.get_file_hash(file_path)
-        if not file_hash:
-            return None
-        
-        cache_key = f"{self.name}:{key}:{file_hash}"
-        return self.ctx.services.get_cached_result(cache_key)
-    
-    def store_cache(self, file_path: str, key: int, result: Dict):
-        """Store validation result in Redis cache."""
-        file_hash = self.get_file_hash(file_path)
-        if not file_hash:
-            return
-        
-        cache_key = f"{self.name}:{key}:{file_hash}"
-        self.ctx.services.cache_result(cache_key, result)
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
         """Trigger an LLM-based fix for a specific violation."""
@@ -894,37 +346,20 @@ class SubAtomicAgent:
                 if not res[0]:
                     relevant = [d for d in res[1] if str(d).startswith(file_path)]
                     if relevant:
-                        violation_details = "\nSpecific Violations:\n" + "\n".join(map(str, relevant[:int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))]))
-
-            # Get similar healing patterns from Pinecone
-            violation_desc = f"{self.name} Key {violation_key} violation in {file_path}"
-            similar_patterns = self.ctx.services.find_similar_patterns(violation_desc)
-            
-            reference_fix = None
-            if similar_patterns:
-                print(f"      🧠 Found {len(similar_patterns)} similar patterns from Pinecone")
-                # Use highest success rate pattern as reference
-                best_pattern = max(similar_patterns, key=lambda x: x['success_rate'])
-                reference_fix = best_pattern['fix']
-                print(f"      📈 Best pattern success rate: {best_pattern['success_rate']:.2%}")
+                        violation_details = "\nSpecific Violations:\n" + "\n".join(map(str, relevant[:8]))
 
             # L5: 5-Round Reflective Healing
             max_rounds = 5
-            previous_failure = None  # Track failure reason for feedback
-            
             for round_num in range(1, max_rounds + 1):
                 print(f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {os.path.basename(file_path)}")
                 
                 base_prompt = f"Fix Subatomic Canon Key {violation_key} only. {violation_details}"
-                if reference_fix and round_num == 1:
-                    base_prompt += f"\n\nReference successful fix for similar violation:\n{reference_fix[:int(os.getenv('REFERENCE_FIX_CHARS', '500'))]}..."
-                
                 if round_num == 1:
-                    prompt = f"{base_prompt}\nReturn ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', 'L3_orchestration', or 'conversational_repair'. Use full relative paths for local modules."
+                    prompt = f"{base_prompt}\nReturn ONLY full corrected code."
                 else:
-                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code.\n\nNEGATIVE CONSTRAINTS: DO NOT generate imports for 'base', 'context', 'L3_orchestration', or 'conversational_repair'. Use full relative paths for local modules."
+                    prompt = f"{base_prompt}\nPrevious attempt FAILED verification.\nHere is the failed code:\n\n{current_code}\n\nCritique weaknesses and produce improved code. Return ONLY full corrected code."
 
-                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code, file_path, round_num, previous_failure)
+                mutated_code = await self.ctx.resilient_mutation(self.name, prompt, current_code)
 
                 # 1. Syntax Gate
                 try:
@@ -934,23 +369,9 @@ class SubAtomicAgent:
                     current_code = mutated_code 
                     continue
 
-                # 2. ZERO-TOLERANCE DELETION GUARD (10% max)
-                original_lines = len(current_code.splitlines())
-                mutated_lines = len(mutated_code.splitlines())
-                max_allowed_deletion = int(original_lines * 0.1)  # 10% zero-tolerance threshold
-                deletion_count = original_lines - mutated_lines
-                
-                if deletion_count > max_allowed_deletion:
-                    print(f"      🚫 ZERO-TOLERANCE VIOLATION: {original_lines} -> {mutated_lines} lines ({deletion_count} deleted, max {max_allowed_deletion})")
-                    # Clean slate protocol: provide lesson learned
-                    previous_failure = f"ZERO-TOLERANCE VIOLATION: You deleted {deletion_count} lines (max allowed: {max_allowed_deletion}). You are an ELITE engineer - preserve the complete file structure and only fix the specific violation."
-                    current_code = mutated_code
-                    continue
-                
-                # 3. Hallucination Guard (Growth check)
-                if mutated_lines > original_lines * int(os.getenv('CODE_EXPANSION_FACTOR', '4')):
+                # 2. Hallucination Guard (Growth check)
+                if len(mutated_code.splitlines()) > len(current_code.splitlines()) * 4:
                     print(f"      ⚠️ Round {round_num}: Code bloat detected – rejecting")
-                    previous_failure = f"Code bloat detected: You added too many lines. Only fix the specific violation."
                     current_code = mutated_code
                     continue
 
@@ -970,17 +391,6 @@ class SubAtomicAgent:
                     os.replace(temp_path, file_path)
                     self.ctx.modified_files.add(file_path)
                     self.ctx.record_healing_attempt(file_path, success=True)
-                    
-                    # Store successful healing pattern in Pinecone
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        fixed_code = f.read()
-                    self.ctx.services.store_healing_pattern(
-                        violation=violation_desc,
-                        fix=fixed_code,
-                        success_rate=1.0
-                    )
-                    print(f"      💾 Stored healing pattern in Pinecone")
-                    
                     print(f"      ✨ SUCCESS: {os.path.basename(file_path)} healed in {round_num} rounds")
                     return True
                 else:
@@ -1107,22 +517,7 @@ class SystemArchitect(SubAtomicAgent):
         # Key 41: Deep Nesting (No nested classes / limit inheritance)
         passed, details = self.check_key_41_scoped_nesting()
         if not passed and self.ctx.intelligence_enabled:
-            # Convert to list to avoid set subscript issues
-            details_list = list(details) if isinstance(details, (set, tuple)) else details
-            # Extract file paths - handle Windows paths with drive letters (C:\...)
-            file_paths = set()
-            for v in details_list:
-                # Split on last colon to handle line numbers, but preserve drive letters
-                parts = str(v).rsplit(":", 1)
-                if len(parts) > 1 and parts[1].strip().isdigit():
-                    # Has line number, take everything before last colon
-                    file_paths.add(parts[0])
-                else:
-                    # No line number, take first part before any colon after drive letter
-                    match = re.match(r'^([A-Za-z]:\\[^:]+|/[^:]+|[^:]+)', str(v))
-                    if match:
-                        file_paths.add(match.group(1))
-            for fp in list(file_paths)[:3]:
+            for fp in set(v.split(":")[0] for v in details)[:3]:
                 await self.smart_fix(fp, 41)
             passed, details = self.check_key_41_scoped_nesting()
         self.ctx.report(self.name, 41, passed, details)
@@ -1152,8 +547,7 @@ class SystemArchitect(SubAtomicAgent):
         return (len(metaclass_violations) == 0, metaclass_violations)
 
     def check_key_41_scoped_nesting(self) -> Tuple[bool, List[str]]:
-        """Max nesting depth from environment with scope awareness."""
-        max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
+        """Max nesting depth 4 inside functions/classes with scope awareness."""
         violations = []
         NESTERS = (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
 
@@ -1174,7 +568,7 @@ class SystemArchitect(SubAtomicAgent):
                 is_nest = isinstance(node, NESTERS)
                 if is_nest:
                     self.depth += 1
-                    if self.depth > max_depth:
+                    if self.depth > 4:
                         violations.append(f"{self.fp}:{node.lineno} {self.scope} depth {self.depth}")
                 super().visit(node)
                 if is_nest: self.depth -= 1
@@ -1214,19 +608,18 @@ class SystemArchitect(SubAtomicAgent):
                 except: root_violations.append(file_path)
         return len(root_violations) == 0, root_violations
 
-class HealerAgent(SubAtomicAgent):
+class Sherlock(SubAtomicAgent):
     """
     KEYS: 48 (Syntax Repair), 49 (Structural Alignment)
-    ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
+    ROLE: The Detective. Performs RCA on tracebacks and applies surgical smart_fixes.
     """
-    MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
-
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Investigating Failures...")
+        MAX_HEALING_ROUNDS = 3
         healed_this_round = True
         round_num = 0
 
-        while healed_this_round and round_num < self.MAX_HEALING_ROUNDS:
+        while healed_this_round and round_num < MAX_HEALING_ROUNDS:
             round_num += 1
             syntax_errors = []
             for file_path in self.ctx.python_files:
@@ -1410,11 +803,10 @@ class CodeJanitor(SubAtomicAgent):
 
     def check_key_10_no_long_lines(self) -> Tuple[bool, List[str]]:
         violations = []
-        max_line_length = int(os.getenv('MAX_LINE_LENGTH', '100'))
         for file_path in self.ctx.python_files:
             with open(file_path, "r", encoding="utf-8") as f:
                 for i, line in enumerate(f, 1):
-                    if len(line) > max_line_length:
+                    if len(line) > 100:
                         violations.append(f"{file_path}:{i}")
         return (len(violations) == 0, violations)
 
@@ -1438,41 +830,33 @@ class CodeJanitor(SubAtomicAgent):
         return len(violations) == 0, violations
 
     def check_key_16_no_deep_nesting(self) -> Tuple[bool, List[str]]:
-        """Maximum nesting depth from environment."""
-        max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
+        """Maximum nesting depth of 4 levels."""
         violations = []
-        (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
+        NEST_NODES = (ast.If, ast.For, ast.While, ast.Try, ast.With)
         
         for fp in self.ctx.python_files:
             try:
                 tree = ast.parse(open(fp, "r", encoding="utf-8").read())
                 # Reverting to the Visitor pattern but reporting line numbers
-                visitor = self._NestingLineVisitor(fp, max_depth)
+                visitor = self._NestingLineVisitor(fp)
                 visitor.visit(tree)
                 violations.extend(visitor.violations)
             except: continue
         return len(violations) == 0, violations
 
     class _NestingLineVisitor(ast.NodeVisitor):
-        def __init__(self, filepath, max_depth):
+        def __init__(self, filepath):
             self.filepath = filepath
-            self.max_depth = max_depth
             self.depth = 0
             self.violations = []
         def visit(self, node):
             is_nest = isinstance(node, (ast.If, ast.For, ast.While, ast.Try, ast.With))
             if is_nest:
                 self.depth += 1
-                if self.depth > self.max_depth:
+                if self.depth > 4:
                     self.violations.append(f"{self.filepath}:{node.lineno}")
             super().generic_visit(node)
             if is_nest: self.depth -= 1
-
-    def check_key_48_syntax_validity(self) -> Tuple[bool, List[str]]:
-        """Stub method for Key 48 - RESERVED/DELETED.
-        This key was replaced by Universal Depth Law (Key 49).
-        """
-        return True, []  # Always pass - key is no longer valid
 
     def _fix_trailing_whitespace(self):
         """Auto-fix trailing whitespace."""
@@ -1669,9 +1053,11 @@ class SafetyInspector(SubAtomicAgent):
             passed, details = self.check_key_01_no_todo_fixme()
         self.ctx.report(self.name, 1, passed, details)
 
-        # Key 2: No print statements - TEMPORARILY SKIPPED DURING CORE REPAIR
+        # Key 2: No print statements
         passed, details = self.check_key_02_no_print_statements()
-        print(f"      ⚠️ Key 2 healing temporarily skipped - core orchestrator stabilization")
+        if not passed and self.ctx.intelligence_enabled:
+            for fp in set(d.split(':')[0] for d in details): await self.smart_fix(fp, 2)
+            passed, details = self.check_key_02_no_print_statements()
         self.ctx.report(self.name, 2, passed, details)
 
         # Key 3: No debugger statements
@@ -1879,9 +1265,7 @@ class NamingAgent(SubAtomicAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Naming Conventions...")
         passed, details = self.check_key_47_naming_conventions()
         if not passed and self.ctx.intelligence_enabled:
-            # Convert to list to avoid set subscript issues
-            details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in list(set(v.split(":")[0] for v in details_list))[:5]:
+            for fp in set(v.split(":")[0] for v in details)[:5]:
                 await self.smart_fix(fp, 47)
             passed, details = self.check_key_47_naming_conventions()
         self.ctx.report(self.name, 47, passed, details)
@@ -1993,7 +1377,7 @@ class TypeMechanic(SubAtomicAgent):
 
                 unused = assigned - used
                 if unused:
-                    violations.extend([f"{file_path}:{var}" for var in list(unused)[:int(os.getenv('MAX_VIOLATIONS_SHOWN', '8'))]])
+                    violations.extend([f"{file_path}:{var}" for var in list(unused)[:10]])
             except Exception:
                 continue
 
@@ -2012,9 +1396,7 @@ class BudgetAgent(SubAtomicAgent):
         passed, details = self.check_key_17_no_large_functions()
         if not passed and self.ctx.intelligence_enabled:
             print("      🧠 BudgetAgent: Attempting to refactor large functions...")
-            # Convert to list to avoid set subscript issues
-            details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in list(set(v.split(":")[0] for v in details_list))[:3]:
+            for fp in set(v.split(":")[0] for v in details)[:3]:
                 await self.smart_fix(fp, 17)
             passed, details = self.check_key_17_no_large_functions()
         self.ctx.report(self.name, 17, passed, details)
@@ -2027,8 +1409,7 @@ class BudgetAgent(SubAtomicAgent):
             self.ctx.signals.add("COMPLEXITY_CLEAN")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
-        """Check for large functions from environment."""
-        max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
+        """Check for large functions (>50 lines)."""
         violations = []
         for file_path in self.ctx.python_files:
             try:
@@ -2039,7 +1420,7 @@ class BudgetAgent(SubAtomicAgent):
                     if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                         if hasattr(node, 'end_lineno') and hasattr(node, 'lineno'):
                             func_lines = node.end_lineno - node.lineno + 1
-                            if func_lines > max_lines:
+                            if func_lines > 50:
                                 violations.append(f"{file_path}:{node.lineno} ({func_lines} lines)")
             except Exception:
                 continue
@@ -2060,7 +1441,7 @@ class BudgetAgent(SubAtomicAgent):
                         for child in ast.walk(node):
                             if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler, ast.And, ast.Or)):
                                 complexity += 1
-                        if complexity > int(os.getenv('MAX_FUNCTION_COMPLEXITY', '10')):
+                        if complexity > 10:
                             violations.append(f"{file_path}:{node.lineno} (score: {complexity})")
             except: continue
         return (len(violations) == 0, violations)
@@ -2080,9 +1461,7 @@ class StructuralEngineer(SubAtomicAgent):
         # Key 18: Many parameters
         passed, details = self.check_key_18_no_many_parameters()
         if not passed and self.ctx.intelligence_enabled:
-            # Convert to list to avoid set subscript issues
-            details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in list(set(v.split(":")[0] for v in details_list))[:int(os.getenv('MAX_PARAMETERS', '8'))]:
+            for fp in set(v.split(":")[0] for v in details)[:3]:
                 await self.smart_fix(fp, 18)
             passed, details = self.check_key_18_no_many_parameters()
         self.ctx.report(self.name, 18, passed, details)
@@ -2096,9 +1475,8 @@ class StructuralEngineer(SubAtomicAgent):
             try:
                 for viol in details[:1]:
                     fp = viol.split(":")[0]
-                    # Safe heuristic: Don't auto-refactor massive core files
-                    max_size_kb = int(os.getenv('MAX_CLASS_SIZE_KB', '20'))
-                    if os.path.getsize(fp) < max_size_kb * 1020: 
+                    # Safe heuristic: Don't auto-refactor massive core files (>20kb)
+                    if os.path.getsize(fp) < 20000: 
                         await self.smart_fix(fp, 20)
                     else:
                         print(f"      ⚠️ Skipping Auto-Fix for {fp} (File too complex for atomic repair)")
@@ -2109,9 +1487,7 @@ class StructuralEngineer(SubAtomicAgent):
         # Key 42: Large files
         passed, details = self.check_key_42_no_large_files()
         if not passed and self.ctx.intelligence_enabled:
-            # Convert to list to avoid set subscript issues
-            details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for fp in list(set(v.split(":")[0] for v in details_list))[:2]:
+            for fp in set(v.split(":")[0] for v in details)[:2]:
                 await self.smart_fix(fp, 42)
             passed, details = self.check_key_42_no_large_files()
         self.ctx.report(self.name, 42, passed, details)
@@ -2120,9 +1496,7 @@ class StructuralEngineer(SubAtomicAgent):
         passed, details = self.check_key_25_no_global_variables()
         if not passed and self.ctx.intelligence_enabled:
             print("      🧠 Refactoring global variables to constants/config...")
-            # Convert to list to avoid set subscript issues
-            details_list = list(details) if isinstance(details, (set, tuple)) else details
-            for file_path in set(d.split(":")[0] for d in details_list):
+            for file_path in set(d.split(":")[0] for d in details):
                 await self.smart_fix(file_path, 25)
             passed, details = self.check_key_25_no_global_variables()
         self.ctx.report(self.name, 25, passed, details)
@@ -2481,91 +1855,6 @@ class PatternEnforcer(SubAtomicAgent):
             except: continue
         return len(violations) == 0, violations
 
-class UIValidationAgent(SubAtomicAgent):
-    """
-    ROLE: UI Pattern Validator. Uses Figma MCP to validate UI components and design patterns.
-    """
-    
-    def can_run(self) -> bool:
-        """Only run if Figma MCP is available."""
-        return 'figma' in self.ctx.services.mcp_clients
-    
-    def execute(self):
-        """Validate UI patterns using Figma MCP."""
-        print(f"\n[>>>] {self.name} ACTIVATED: Validating UI Patterns...")
-        
-        if not self.can_run():
-            print(f"   ⚠️  Figma MCP not available - skipping UI validation")
-            return
-        
-        # Look for UI component files and design specs
-        ui_files = [f for f in self.ctx.python_files if any(keyword in f.lower() 
-                   for keyword in ['ui', 'component', 'view', 'screen', 'page'])]
-        
-        if not ui_files:
-            print(f"   ℹ No UI files found - skipping UI validation")
-            return
-        
-        violations = []
-        for file_path in ui_files[:5]:  # Limit to first 5 UI files
-            try:
-                # Extract component definitions from file
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                
-                # Simple component detection (could be enhanced with AST)
-                components = self._extract_components(content, file_path)
-                
-                if components:
-                    print(f"   🎨 Validating {len(components)} components in {file_path}")
-                    
-                    # Validate with Figma MCP
-                    design_spec = {
-                        'components': components,
-                        'file_path': file_path
-                    }
-                    
-                    ui_violations = self.ctx.services.validate_ui_patterns(design_spec)
-                    violations.extend(ui_violations)
-                    
-            except Exception as e:
-                print(f"      ❌ Failed to validate {file_path}: {e}")
-        
-        # Report UI validation results
-        if violations:
-            print(f"   🚨 Found {len(violations)} UI pattern violations")
-            for v in violations[:3]:  # Show first 3
-                print(f"      - {v}")
-            self.ctx.report(self.name, 51, False, violations)  # Use key 51 for UI patterns
-        else:
-            print(f"   ✅ All UI patterns validated successfully")
-            self.ctx.report(self.name, 51, True, [])  # Use key 51 for UI patterns
-    
-    def _extract_components(self, content: str, file_path: str) -> List[Dict]:
-        """Extract UI component definitions from Python code."""
-        components = []
-        
-        # Simple regex-based extraction (could be enhanced with AST parsing)
-        import re
-
-        # Look for class definitions that might be UI components
-        class_matches = re.finditer(r'class\s+(\w+).*?(?=class|\Z)', content, re.DOTALL)
-        
-        for match in class_matches:
-            class_name = match.group(1)
-            class_body = match.group(0)
-            
-            # Check if it's likely a UI component
-            ui_indicators = ['QWidget', 'View', 'Component', 'Layout', 'Button', 'Input', 'Form']
-            if any(indicator in class_body for indicator in ui_indicators):
-                components.append({
-                    'name': class_name,
-                    'type': 'ui_component',
-                    'file': file_path
-                })
-        
-        return components
-
 class SemanticMapper(SubAtomicAgent):
     """
     ROLE: The Architect. Analyzes 'God Files' and proposes logical splits based on call graphs.
@@ -2599,7 +1888,7 @@ class IntelligentOrchestrator:
     def __init__(self, target=None):
         self.ctx = ValidationContext(target_scope=target or ".")
         self.swarm = [
-            TypeMechanic(self.ctx),        # 0. Syntax/RCA (Blocker)
+            Sherlock(self.ctx),             # 0. Syntax/RCA (Blocker)
             SystemArchitect(self.ctx),      # 1. Structure (Blocker)
             GenerativeGuard(self.ctx),      # 2. Generative Policy
             CodeJanitor(self.ctx),          # 3. Syntax (Signal: AST_VALID)
@@ -2610,17 +1899,13 @@ class IntelligentOrchestrator:
             NamingAgent(self.ctx),          # 8. Naming
             BudgetAgent(self.ctx),          # 9. Complexity
             TypeMechanic(self.ctx),         # 10. Types
-            UIValidationAgent(self.ctx),    # 11. UI Patterns (MCP)
-            SemanticMapper(self.ctx),       # 12. Clustering
-            StructuralEngineer(self.ctx),   # 13. Refactoring
+            SemanticMapper(self.ctx),       # 11. Clustering
+            StructuralEngineer(self.ctx),   # 12. Refactoring
         ]
 
     async def run_mission(self):
         """Execute all agents in sequence."""
         print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
-        
-        # Initialize MCP async services for filesystem operations
-        await self.ctx.services.init_mcp_async()
 
         for agent in self.swarm:
             if not agent.can_run():
