@@ -1,21 +1,18 @@
 #!/usr/bin/env python3
 """
-Canon Validator v2.1 - Modular Agentic Architecture
-
-Entry point for the Canon Validator system. All logic has been extracted to:
-- agentic_core/agents/ - Agent classes
-- agentic_core/domain/ - Domain models and context
-- agentic_core/L3_orchestration/ - Scheduler and intervention server
-- apps_shared/ - Shared utilities and constants
+🚀 CANON SUB-ATOMIC ENGINE - V2.2
+Shared core for Fission, Safety Guardrails, and Resilient Mutation.
 """
 
 import asyncio
+import json
 import logging
 import os
-import subprocess
+import re
 import sys
 import time
 from pathlib import Path
+from typing import Tuple, Optional, Dict, Any
 
 # Fix Windows console encoding FIRST (before any print with unicode)
 if sys.platform == "win32":
@@ -31,354 +28,293 @@ except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
 
+# Gemini SDK
+try:
+    from google import genai
+    from google.genai import types
+    GENAI_AVAILABLE = True
+except ImportError:
+    GENAI_AVAILABLE = False
+    genai = None
+    types = None
+    print("⚠️  Gemini SDK not available. Install with: pip install google-generativeai")
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
-# ==============================================================================
-# OPTIONAL DEPENDENCY CHECKS
-# ==============================================================================
-
-# L5 Watchman: File System Monitoring
-try:
-    from watchdog.events import FileSystemEventHandler
-    from watchdog.observers import Observer
-    WATCHDOG_AVAILABLE = True
-except ImportError:
-    WATCHDOG_AVAILABLE = False
-    FileSystemEventHandler = object
-    Observer = None
-    logger.warning("Watchdog not found. Install 'watchdog' for L5 Autonomous Mode.")
-
-# L5 Live Reasoning Stream: WebSockets
-try:
-    import websockets
-    WEBSOCKETS_AVAILABLE = True
-except ImportError:
-    WEBSOCKETS_AVAILABLE = False
-    websockets = None
-    logger.warning("websockets not found. Install 'websockets' for live reasoning stream.")
-
-# L5 Multi-Repository: GitPython
-try:
-    from git import Repo
-    GITPYTHON_AVAILABLE = True
-except ImportError:
-    GITPYTHON_AVAILABLE = False
-    Repo = None
-    logger.warning("GitPython not found. Install 'GitPython' for L5 Remote GitOps.")
 
 # ==============================================================================
-# IMPORTS FROM MODULAR ARCHITECTURE
+# L3 ORCHESTRATION: FISSION MANAGER
 # ==============================================================================
-
-# Import core domain and context
-from agentic_core.domain.context import ValidationContext
-
-# Import orchestration components
-from agentic_core.L3_orchestration.canon_scheduler import CanonSwarmScheduler
-from agentic_core.L3_orchestration.intervention_server import (
-    start_intervention_server,
-    approval_event,
-    FASTAPI_AVAILABLE,
-)
-
-# Import agent classes
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
-from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
-from agentic_core.agents.engineering import StructuralEngineer, PatternEnforcer
-from agentic_core.agents.repair import Sherlock, TestPilot, ToolsmithAgent
-from agentic_core.agents.infrastructure import Historian, GitAgent, BenchmarkingAgent, WatchmanHandler
-from agentic_core.agents.specialized import (
-    TheCartographer, TheOmniContext, TheStrategist,
-    NamingEnforcer, DocEnforcer, TypeEnforcer
-)
-from agentic_core.agents.planning import StrategicPlanner, ReflectionAgent
-
-# Legacy aliases for backward compatibility
-SwarmScheduler = CanonSwarmScheduler
-IntelligentOrchestrator = CanonSwarmScheduler
-
-
-# ==============================================================================
-# MAIN ENTRY POINT
-# ==============================================================================
-
-def run_daemon_mode():
-    """L5 Autonomous Mode: The Watchman - monitors repository for changes."""
-    if not WATCHDOG_AVAILABLE:
-        print("❌ WATCHDOG NOT AVAILABLE. Install with: pip install watchdog")
-        sys.exit(1)
+class FissionManager:
+    """Determines when a file is too large or an agent is exhausted."""
     
-    print("=" * 60)
-    print("🚀 THE WATCHMAN: L5 Autonomous Mode Active")
-    print("=" * 60)
-    print("   Monitoring repository for changes...")
-    print("   Press Ctrl+C to stop.")
-    print("=" * 60)
-    
-    # Create event loop for async operations
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    
-    # Create handler and observer
-    handler = WatchmanHandler(loop)
-    
-    # Wrap handler to work with watchdog's FileSystemEventHandler
-    class WatchdogAdapter(FileSystemEventHandler):
-        def __init__(self, watchman_handler):
-            self.watchman = watchman_handler
+    def __init__(self, line_limit: int = 800, max_rounds: int = 3):
+        self.line_limit = line_limit
+        self.max_rounds = max_rounds
+
+    def should_trigger_fission(self, file_path: str, current_round: int) -> Tuple[bool, Optional[str]]:
+        """
+        Check if fission should be triggered based on file size or healing exhaustion.
         
-        def on_modified(self, event):
-            self.watchman.on_modified(event)
-    
-    adapter = WatchdogAdapter(handler)
-    observer = Observer()
-    observer.schedule(adapter, path='.', recursive=True)
-    observer.start()
-    
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        print("\n[WATCHMAN] 🛑 Shutting down gracefully...")
-        observer.stop()
-    finally:
-        observer.join()
-        loop.close()
-        print("[WATCHMAN] 👋 The Watchman has left the building.")
-
-
-def run_surgical_mode(target_file: str):
-    """Surgical mode: Target a specific file for validation."""
-    print(f"🎯 SURGICAL MODE: Targeting {target_file}")
-    scheduler = CanonSwarmScheduler()
-    scheduler.build_default_phases()
-    asyncio.run(scheduler.run_mission(target_scope=target_file))
-
-
-def run_standard_mode():
-    """Standard L4 Mode: Full validation mission."""
-    try:
-        ctx = ValidationContext()
+        Args:
+            file_path: Path to file being validated
+            current_round: Current healing round number
+            
+        Returns:
+            Tuple of (should_trigger, reason)
+        """
+        if os.path.exists(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                line_count = len(f.readlines())
+                if line_count > self.line_limit:
+                    return True, f"L4 State Bloat: {line_count} lines exceeds limit."
         
-        # L5: Start live reasoning stream server in background
-        if WEBSOCKETS_AVAILABLE:
-            async def ws_handler(websocket):
-                ctx.websocket_clients.add(websocket)
-                try:
-                    await websocket.wait_closed()
-                finally:
-                    ctx.websocket_clients.discard(websocket)
-            
-            async def start_ws_server():
-                async with websockets.serve(ws_handler, "127.0.0.1", 8765):
-                    print("   📡 L5: Live reasoning stream at ws://127.0.0.1:8765")
-                    await asyncio.Future()
-            
-            import threading
-            def run_ws_server():
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-                loop.run_until_complete(start_ws_server())
-            
-            ws_thread = threading.Thread(target=run_ws_server, daemon=True)
-            ws_thread.start()
-            
-    except Exception as e:
-        print(f"\n🛑 SYSTEM INITIALIZATION FAILED: {e}")
-        sys.exit(1)
+        if current_round >= self.max_rounds:
+            return True, "Cognitive Exhaustion: Round 3 reached."
+        
+        return False, None
+
+
+# ==============================================================================
+# L5 SAFETY: GUARDRAILS
+# ==============================================================================
+class SafetyGuardrail:
+    """Enforces Zero-Loss principles during mutation."""
     
-    # Build agent list
-    agents = [
-        Historian(ctx), ArchitectureGovernor(ctx), HygieneGuardian(ctx),
-        CodeStyleGuardian(ctx), DependencySentinel(ctx), SafetyInspector(ctx),
-        ConcurrencyGuardian(ctx), TestPilot(ctx)
-    ]
-
-    async def run_mission():
-        MAX_CYCLES = 5
-        cycle = 0
+    def __init__(self, deletion_limit: int = 110):
+        self.deletion_limit = deletion_limit
+    
+    def verify_change(self, original_code: str, new_code: str, fission_active: bool = False) -> Tuple[bool, str]:
+        """
+        Verify that code changes are safe and don't violate zero-loss principles.
         
-        # LEVEL 6: Create healing branch on start (GitOps)
-        branch_name = f"healing/auto_{int(time.time())}"
-        try:
-            subprocess.run(["git", "checkout", "-b", branch_name], capture_output=True, check=False)
-            print(f"   🌱 GitOps: Created healing branch '{branch_name}'")
-        except Exception:
-            print("   ⚠️ GitOps: Could not create branch (may not be in git repo)")
+        Args:
+            original_code: Original code before mutation
+            new_code: New code after mutation
+            fission_active: Whether atomic fission is active (allows mass deletion)
+            
+        Returns:
+            Tuple of (is_safe, message)
+        """
+        if not new_code.strip():
+            return False, "Safety Block: Attempted to wipe file."
         
-        while cycle < MAX_CYCLES:
-            cycle += 1
-            ctx.signal_healing_cycle(cycle)
-            print(f"\n=== 🧬 SELF-HEALING CYCLE {cycle}/{MAX_CYCLES} ===")
-            
-            # Reset tracking for this cycle
-            ctx.modified_files.clear()
-            
-            # Build agenda
-            agenda = [GitAgent(ctx)]
-            
-            if cycle == 1:
-                agenda.extend(agents)
-                print("   📋 PLAN: Executing full system diagnostic.")
-            else:
-                print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
-                agenda.append(agents[0])  # Historian
-                agenda.append(StrategicPlanner(ctx))
-                
-                if "TEST_FAILURE" in ctx.signals:
-                    agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
-                    print("      -> Priority: Root Cause Analysis & Verification")
-                
-                if any(s for s in ctx.signals if "IMPORT" in s or "ModuleNotFound" in s):
-                    agenda.extend([a for a in agents if a.name == "DependencySentinel"])
-                    print("      -> Priority: Dependency Resolution")
-                
-                if ctx.modified_files:
-                    agenda.extend([a for a in agents if a.name in ["SafetyInspector", "CodeStyleGuardian"]])
-                    print("      -> Priority: Safety/Style check on modified files")
-                    
-                    impact_zone = set()
-                    for f in ctx.modified_files:
-                        deps = ctx.get_dependent_files(f)
-                        impact_zone.update(deps)
-                    
-                    if impact_zone:
-                        print(f"      ☢️ BLAST RADIUS: {len(impact_zone)} dependent files added to verification scope.")
-                        ctx.impact_zone = impact_zone
-                
-                if "SYNTAX_ERROR" in str(ctx.signals):
-                    agenda.extend([a for a in agents if a.name == "SafetyInspector"])
-                    print("      -> Priority: Syntax Repair")
+        orig_len = len(original_code.splitlines())
+        new_len = len(new_code.splitlines())
+        delta = orig_len - new_len
 
-                if len(agenda) == 2:
-                    agenda.append(agents[-1])  # TestPilot
-                    print("      -> Plan: General System Verification")
-            
-            agenda.append(ReflectionAgent(ctx))
-            
-            # Deduplicate agenda
-            seen = set()
-            final_agenda = []
-            for a in agenda:
-                if a.name not in seen:
-                    final_agenda.append(a)
-                    seen.add(a.name)
-            
-            # L5 Human-in-the-Loop intervention check
-            high_risk = (
-                cycle >= 3 and len(ctx.modified_files) > 8
-                or "TEST_FAILURE" in ctx.signals and cycle > 2
-                or len(ctx.signals) > 5
-            )
+        # Fission mode: Mass deletion is expected (monolith → facade)
+        if fission_active:
+            return True, "Fission Whitelist: Mass deletion permitted for Facade."
+        
+        # Standard mode: Enforce deletion limit
+        if delta > self.deletion_limit:
+            return False, f"Safety Block: Mass deletion detected ({delta} lines)."
+        
+        return True, "Safety Pass."
 
-            if high_risk and FASTAPI_AVAILABLE:
-                print(f"\n   🚨 L5 INTERVENTION: High-risk state detected (cycle {cycle})")
-                print(f"      Modified files: {len(ctx.modified_files)} | Signals: {len(ctx.signals)}")
-                start_intervention_server(ctx)
-                print(f"   ⏳ Awaiting human decision at http://127.0.0.1:8080")
-                approval_event.clear()
-                try:
-                    await asyncio.wait_for(approval_event.wait(), timeout=None)
-                except asyncio.CancelledError:
-                    pass
-                
-                if "VETOED" in ctx.signals:
-                    print("   🛑 HUMAN VETO RECEIVED. Aborting mission.")
-                    ctx.signals.add("HUMAN_VETO")
-                    break
-                else:
-                    print("   ✅ HUMAN APPROVAL RECEIVED. Proceeding with execution.")
-            
-            # Execute agents
-            for agent in final_agenda:
-                if agent.can_run():
-                    await agent.execute()
-            
-            # Rollback on critical regression
-            if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
-                print("   🚨 Critical Regression Detected. Initiating Rollback Protocol.")
-                ctx.rollback_changes()
-                ctx.signals.discard("TEST_FAILURE")
-            
-            # Convergence check
-            if not ctx.modified_files and cycle > 1:
-                ctx.signal_convergence()
-                break
-                
-            if cycle < MAX_CYCLES:
-                print(f"   🔄 Modifications detected. Rerunning validation to ensure stability...")
-                await asyncio.sleep(1)
+
+# ==============================================================================
+# ATOMIC MUTATION ENGINE
+# ==============================================================================
+class SubAtomicEngine:
+    """Hardens the LLM interaction with the 24,576 token budget."""
+    
+    def __init__(self, gemini_client: Optional[Any] = None):
+        """
+        Initialize SubAtomicEngine.
+        
+        Args:
+            gemini_client: Optional Gemini client (creates new if None)
+        """
+        if not GENAI_AVAILABLE:
+            raise RuntimeError("Gemini SDK not available. Install with: pip install google-generativeai")
+        
+        if gemini_client:
+            self._client = gemini_client
         else:
-            print(f"\n⚠️ MAX HEALING CYCLES REACHED. Escalating...")
-            if ctx.modified_files or ctx.signals:
-                esc_dir = Path("observability/human_review")
-                esc_dir.mkdir(parents=True, exist_ok=True)
-                report = f"# ESCALATION REPORT\nTimestamp: {time.ctime()}\nSignals: {ctx.signals}\nPending Files: {ctx.modified_files}"
-                (esc_dir / f"escalation_{int(time.time())}.md").write_text(report)
-                print(f"   🚨 Manual Review Required. Report saved to: {esc_dir}")
+            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            if not api_key:
+                raise RuntimeError("No Gemini API key found. Set GOOGLE_API_KEY or GEMINI_API_KEY.")
+            self._client = genai.Client(api_key=api_key)
+        
+        self.chat_sessions: Dict[str, Any] = {}
+    
+    @staticmethod
+    def get_safe_config(is_fission: bool = False) -> Any:
+        """
+        Get safe Gemini configuration with hardened thinking budget.
+        
+        Args:
+            is_fission: Whether this is for fission mode (uses max budget)
+            
+        Returns:
+            GenerateContentConfig with safe thinking budget
+        """
+        if not GENAI_AVAILABLE:
+            raise RuntimeError("Gemini SDK not available")
+        
+        # 🛑 HARDENED: Fixed at 24,576 to prevent 400 INVALID_ARGUMENT
+        safe_budget = 24576 if is_fission else 16000
+        return types.GenerateContentConfig(
+            temperature=0.1,
+            thinking_config=types.ThinkingConfig(thinking_budget=safe_budget)
+        )
+    
+    @staticmethod
+    def parse_fission_output(output: str) -> Dict[str, str]:
+        """
+        Extracts JSON file map from AI response.
+        
+        Args:
+            output: Raw output from Gemini
+            
+        Returns:
+            Dictionary mapping file paths to content
+        """
+        try:
+            # Try to extract JSON from response
+            json_match = re.search(r'\{.*\}', output, re.DOTALL)
+            if json_match:
+                return json.loads(json_match.group())
+        except Exception as e:
+            logger.warning(f"Failed to parse fission output: {e}")
+        
+        return {}
+    
+    async def resilient_mutation(
+        self,
+        file_path: str,
+        code: str,
+        task: str,
+        round_num: int = 1,
+        fission_active: bool = False
+    ) -> str:
+        """
+        Execute resilient mutation with Gemini.
+        
+        Args:
+            file_path: Path to file being mutated
+            code: Original code
+            task: Task description for the AI
+            round_num: Current healing round
+            fission_active: Whether atomic fission is active
+            
+        Returns:
+            Mutated code or original code on failure
+        """
+        if not self._client:
+            raise RuntimeError("Gemini client not initialized")
+        
+        # Build prompt
+        if fission_active:
+            prompt = f"ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}"
+        else:
+            prompt = f"HEAL: Fix all syntax and style violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}"
+        
+        # Get safe config
+        config = self.get_safe_config(is_fission=fission_active)
+        
+        # Create or reuse chat session
+        chat_key = f"chat_{file_path}"
+        if chat_key not in self.chat_sessions:
+            model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
+            self.chat_sessions[chat_key] = self._client.chats.create(
+                model=model_name,
+                config=config
+            )
+            logger.info(f"   🆕 Created new chat session for {os.path.basename(file_path)}")
+        else:
+            logger.info(f"   ♻️  Reusing chat session (Round {round_num})")
+        
+        try:
+            # Send message
+            response = await asyncio.to_thread(
+                self.chat_sessions[chat_key].send_message,
+                prompt
+            )
+            
+            # Extract response
+            if response.candidates and response.candidates[0].content.parts:
+                output = response.candidates[0].content.parts[0].text.strip()
+                
+                # Truncation guard
+                if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
+                    logger.warning("   🚫 TRUNCATION DETECTED. Rejecting mutation.")
+                    return code
+                
+                return output
+            else:
+                logger.warning("   ⚠️  Malformed response from Gemini")
+                return code
+        
+        except Exception as e:
+            logger.error(f"   ❌ Gemini API error: {e}")
+            return code
 
-        # L5: Remote Sync on Mission Completion
-        if GITPYTHON_AVAILABLE and hasattr(ctx, 'signal_convergence') and getattr(ctx.signal_convergence, 'reached', False):
-            remote_url = os.getenv("CANON_REMOTE_REPO")
-            if remote_url:
-                try:
-                    repo = Repo('.')
-                    try:
-                        origin = repo.remote('origin')
-                    except ValueError:
-                        origin = repo.create_remote('origin', remote_url)
-                    
-                    print(f"   ☁️ L5: Pushing healing branch to remote {remote_url}")
-                    push_info = origin.push(refspec=f'HEAD:refs/heads/{branch_name}')[0]
-                    if push_info.flags & push_info.ERROR:
-                        print(f"   ❌ Push failed: {push_info.summary}")
-                    else:
-                        print(f"   ✅ Successfully pushed {branch_name}")
-                except Exception as e:
-                    print(f"   ⚠️ Remote push failed: {e}")
 
-        print("\n💾 SAVING BLACKBOARD STATE...")
-        ctx._save_memory()
-        print("\nMISSION COMPLETE")
+# ==============================================================================
+# FACTORY FUNCTIONS
+# ==============================================================================
 
-    asyncio.run(run_mission())
+def get_fission_manager(line_limit: int = 800, max_rounds: int = 3) -> FissionManager:
+    """
+    Factory function to create FissionManager instance.
+    
+    Args:
+        line_limit: Maximum lines before triggering fission
+        max_rounds: Maximum healing rounds before exhaustion
+        
+    Returns:
+        FissionManager instance
+    """
+    return FissionManager(line_limit=line_limit, max_rounds=max_rounds)
 
+
+def get_safety_guardrail(deletion_limit: int = 110) -> SafetyGuardrail:
+    """
+    Factory function to create SafetyGuardrail instance.
+    
+    Args:
+        deletion_limit: Maximum lines that can be deleted
+        
+    Returns:
+        SafetyGuardrail instance
+    """
+    return SafetyGuardrail(deletion_limit=deletion_limit)
+
+
+def get_subatomic_engine(gemini_client: Optional[Any] = None) -> SubAtomicEngine:
+    """
+    Factory function to create SubAtomicEngine instance.
+    
+    Args:
+        gemini_client: Optional Gemini client
+        
+    Returns:
+        SubAtomicEngine instance
+    """
+    return SubAtomicEngine(gemini_client=gemini_client)
+
+
+# ==============================================================================
+# USAGE EXAMPLE
+# ==============================================================================
 
 if __name__ == "__main__":
-    import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="Canon Validator v2.1 - Modular Agentic Architecture",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Modes:
-  Standard (L4):  python canon_validator_agentic.py
-  Daemon (L5):    python canon_validator_agentic.py --daemon
-  Surgical:       python canon_validator_agentic.py --target <file>
-
-The Watchman (L5 Daemon Mode):
-  Monitors the repository for file changes and automatically triggers
-  surgical validation missions using blast radius analysis.
-        """
-    )
-    parser.add_argument(
-        "--daemon", 
-        action="store_true", 
-        help="Run in L5 Autonomous Mode (The Watchman)"
-    )
-    parser.add_argument(
-        "--target",
-        type=str,
-        default=None,
-        help="Target a specific file for surgical validation"
-    )
-    args = parser.parse_args()
-
-    if args.daemon:
-        run_daemon_mode()
-    elif args.target:
-        run_surgical_mode(args.target)
-    else:
-        run_standard_mode()
+    print("=" * 60)
+    print("🚀 CANON SUB-ATOMIC ENGINE - V2.2")
+    print("=" * 60)
+    print("\nThis is a shared library module.")
+    print("Import components in your orchestrator:")
+    print("\n  from apps_shared.canon_validator_sub_atomic import (")
+    print("      FissionManager,")
+    print("      SafetyGuardrail,")
+    print("      SubAtomicEngine,")
+    print("      get_fission_manager,")
+    print("      get_safety_guardrail,")
+    print("      get_subatomic_engine,")
+    print("  )")
+    print("\n" + "=" * 60)
