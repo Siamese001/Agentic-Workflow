@@ -283,7 +283,7 @@ async def run_mission(target_scope: str = "agentic_core"):
         from agentic_core.L4_state.validation_context import ValidationContext
         ctx = ValidationContext()
     except ImportError:
-        # Fallback: Create minimal context with required structure
+        # Fallback: Create minimal context with agent-compatible API
         class ValidationContext:
             def __init__(self):
                 self.target_scope = None
@@ -316,6 +316,47 @@ async def run_mission(target_scope: str = "agentic_core"):
         
         ctx = ValidationContext()
         print("   [!] Using minimal ValidationContext (full context not available)")
+    
+    # CONTEXT HARDENING: Ensure imported objects meet current requirements
+    if not hasattr(ctx, 'get_env'):
+        ctx.get_env = lambda key, default=None: os.getenv(key, default)
+    
+    if not hasattr(ctx, 'report'):
+        ctx.report = []
+    elif not isinstance(ctx.report, list):
+        # If report exists but isn't a list, create report_data for method-based reporting
+        ctx.report_data = []
+        ctx.report
+        def report_method(agent_name, key_number, passed, details):
+            ctx.report_data.append({
+                "agent": agent_name,
+                "key": key_number,
+                "passed": passed,
+                "details": details
+            })
+        ctx.report = report_method
+        
+    if not hasattr(ctx, 'add_to_report'):
+        def hardened_report(agent_name, message, severity="info"):
+            if isinstance(ctx.report, list):
+                ctx.report.append({"agent": agent_name, "msg": message, "lvl": severity})
+            elif hasattr(ctx, 'report_data'):
+                ctx.report_data.append({"agent": agent_name, "msg": message, "lvl": severity})
+        ctx.add_to_report = hardened_report
+    
+    if not hasattr(ctx, 'signals'):
+        ctx.signals = set()
+    elif isinstance(ctx.signals, list):
+        ctx.signals = set(ctx.signals)
+        
+    if not hasattr(ctx, 'signal_deps_valid'):
+        ctx.signal_deps_valid = lambda: ctx.signals.discard("DEPS_INVALID") if hasattr(ctx, 'signals') else None
+        
+    if not hasattr(ctx, 'python_files'):
+        ctx.python_files = []
+        
+    if not hasattr(ctx, '_client'):
+        ctx._client = None
     
     ctx.target_scope = target_scope
     
