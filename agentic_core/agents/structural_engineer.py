@@ -51,13 +51,16 @@ class StructuralEngineer(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_methods = int(os.getenv('MAX_CLASS_METHODS', '20'))
         max_lines = int(os.getenv('MAX_CLASS_LINES', '500'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     tree = ast.parse(content)
                     content.splitlines()
@@ -91,12 +94,15 @@ class StructuralEngineer(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     tree = ast.parse(content)
                 
@@ -125,7 +131,9 @@ class StructuralEngineer(CanonBaseAgent):
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     tree = ast.parse(f.read())
                 
                 for node in ast.walk(tree):
@@ -189,8 +197,11 @@ class StructuralEngineer(CanonBaseAgent):
             violation_key: Canon key being fixed
             violations: List of violations in this file
         """
+        from pathlib import Path
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            # FIX: Use pathlib.Path to handle Windows paths correctly
+            resolved_path = Path(file_path).resolve()
+            with open(resolved_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
             print(f"      [!] Cannot read {file_path}: {e}")

@@ -87,12 +87,15 @@ class SystemArchitect(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     tree = ast.parse(f.read())
                 
                 # Check nesting depth
@@ -111,12 +114,15 @@ class SystemArchitect(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_lines = int(os.getenv('MAX_FILE_LINES', '1000'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     line_count = len(f.readlines())
                 
                 if line_count > max_lines:
@@ -182,8 +188,11 @@ class SystemArchitect(CanonBaseAgent):
             violation_key: Canon key being fixed
             violations: List of violations in this file
         """
+        from pathlib import Path
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            # FIX: Use pathlib.Path to handle Windows paths correctly
+            resolved_path = Path(file_path).resolve()
+            with open(resolved_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
             print(f"      [!] Cannot read {file_path}: {e}")
