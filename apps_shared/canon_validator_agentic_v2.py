@@ -354,11 +354,15 @@ Original file split into sub-modules for atomicity compliance
 
 async def run_mission(target_scope: str = "agentic_core"):
     """
-    Executes the full 50-key agentic validation mission.
-    L1-L5 Architecture: Linear Execution (No Cognitive Loops)
+    [L3 ORCHESTRATOR]
+    Executes the full Agentic Validation Mission with:
+    - L4 State Hardening (Smart-Report Hybrid)
+    - L3 Linear Execution (No Monitoring Loops)
+    - L1 Intelligence Injection (Surgeon Mode)
+    - L5 Safety (Active Fission Trigger for files > 200 LOC)
     """
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.3 - LINEAR EXECUTION (CAP: 24,576)")
+    print(f"DEBUG: VERSION 2.4 - ATOMIC FISSION ACTIVE (CAP: 24,576)")
     
     # Add project root to sys.path for imports
     project_root = Path(__file__).parent.parent
@@ -366,16 +370,11 @@ async def run_mission(target_scope: str = "agentic_core"):
         sys.path.insert(0, str(project_root))
     
     # ===========================================================================
-    # L4 STATE HARDENING: Smart-Report Hybrid
+    # [ENHANCEMENT 1] L4 STATE HARDENING: Smart-Report Hybrid
     # ===========================================================================
-    
     class CallableReport(list):
-        """
-        Hybrid report that supports both legacy .append() and modern callable interface.
-        Fixes: "list object is not callable" and "missing report" errors.
-        """
+        """Hybrid report: Acts as list for append() AND callable for ctx.report()"""
         def __call__(self, agent_name: str, key_num: int, passed: bool, details: str = ""):
-            """Modern 4-parameter interface: ctx.report(agent, key, passed, msg)"""
             status = "PASS" if passed else "FAIL"
             self.append({
                 "agent": agent_name,
@@ -383,14 +382,13 @@ async def run_mission(target_scope: str = "agentic_core"):
                 "status": status,
                 "msg": str(details)
             })
-    
-    # Initialize or import ValidationContext
+
+    # Initialize Context
     try:
         from agentic_core.L4_state.validation_context import ValidationContext
         ctx = ValidationContext()
         print("   [OK] ValidationContext loaded from agentic_core")
     except ImportError:
-        # Fallback: Minimal context with hardened API
         class ValidationContext:
             def __init__(self):
                 self.target_scope = None
@@ -399,49 +397,22 @@ async def run_mission(target_scope: str = "agentic_core"):
                 self.results = {}
                 self.signals = set()
                 self._client = None
-                
-            def get_env(self, key: str, default=None):
-                """Get environment variable (fixes 'gget_env' typo)"""
-                return os.getenv(key, default)
-                
-            def add_to_report(self, agent_name: str, message: str, severity: str = "info"):
-                """Legacy report interface"""
-                self.report.append({"agent": agent_name, "msg": message, "lvl": severity})
-            
-            def signal_deps_valid(self):
-                """Signal that dependencies are valid"""
-                self.signals.discard("DEPS_INVALID")
-        
         ctx = ValidationContext()
         print("   [!] Using fallback ValidationContext")
     
-    # Harden context with CallableReport
-    existing_report = getattr(ctx, 'report', [])
-    if not isinstance(existing_report, list):
-        existing_report = []
-    ctx.report = CallableReport(existing_report)
-    
-    # Ensure required attributes exist
-    if not hasattr(ctx, 'results'):
-        ctx.results = {}
-    if not hasattr(ctx, 'get_env'):
-        ctx.get_env = lambda k, d=None: os.getenv(k, d)
-    if not hasattr(ctx, 'signals'):
-        ctx.signals = set()
-    if not hasattr(ctx, 'add_to_report'):
-        ctx.add_to_report = lambda agent, msg, lvl="info": ctx.report.append({"agent": agent, "msg": msg, "lvl": lvl})
-    if not hasattr(ctx, 'signal_deps_valid'):
-        ctx.signal_deps_valid = lambda: ctx.signals.discard("DEPS_INVALID") if hasattr(ctx, 'signals') else None
+    # Harden Attributes (The "AttributeError" Fix)
+    ctx.report = CallableReport(getattr(ctx, 'report', []))
+    if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
+    if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
+    if not hasattr(ctx, 'signals'): ctx.signals = set()
     
     ctx.target_scope = target_scope
     ctx.python_files = [str(p) for p in Path(target_scope).rglob("*.py") if p.suffix == ".py"]
-    
     print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files discovered")
     
     # ===========================================================================
-    # L2 AGENT LOADING: Dynamic Import
+    # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Agent Loading & Surgeon Prompt
     # ===========================================================================
-    
     cleaning_crew = []
     agent_modules = [
         ('agentic_core.agents.system_architect', 'SystemArchitect'),
@@ -460,220 +431,146 @@ async def run_mission(target_scope: str = "agentic_core"):
             module = importlib.import_module(module_path)
             agent_class = getattr(module, class_name)
             cleaning_crew.append(agent_class(ctx))
-            print(f"   [+] Loaded: {class_name}")
         except Exception as e:
             print(f"   [!] Load Error {class_name}: {e}")
-    
-    if not cleaning_crew:
-        print("   [!] CRITICAL: No agents loaded. Aborting mission.")
-        return
+
+    # Inject "Surgeon Mode" into ArchitectureGovernor
+    surgeon_prompt = """
+### SYSTEM_ROLE: ARCHITECTURAL_SURGEON
+Your primary directive is ATOMICITY. 
+THRESHOLD: 200 Lines.
+
+IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
+    1. ABANDON standard healing. 
+    2. TRIGGER FISSION_EVENT.
+    3. GENERATE JSON ONLY (No Markdown):
+    {
+      "fission_event": true,
+      "original_file": "{{file_path}}",
+      "blueprint": {
+        "logic_core": {"content": "...", "exports": ["ClassA"]},
+        "utils_shared": {"content": "...", "exports": ["helper_v"]}
+      }
+    }
+    4. Ensure 'content' includes imports.
+"""
+    governor = next((a for a in cleaning_crew if a.__class__.__name__ == 'ArchitectureGovernor'), None)
+    if governor:
+        # Try updating system prompt via method or attribute
+        if hasattr(governor, 'update_system_prompt'):
+            governor.update_system_prompt(surgeon_prompt)
+        else:
+            governor.system_prompt = surgeon_prompt
+        print("   [+] L1 Injection: ArchitectureGovernor configured as Surgeon")
     
     # ===========================================================================
-    # L3 ORCHESTRATION: Separate File Validators from Mission Monitors
+    # [ENHANCEMENT 3] L3 ORCHESTRATION: Separation of Concerns
     # ===========================================================================
-    # This prevents the "Silent Loop Hang" where monitors query Pinecone 221x
-    
-    file_validators = [
-        agent for agent in cleaning_crew 
-        if agent.__class__.__name__ not in ['MemoryArchitect', 'HallucinationHunter']
-    ]
-    
-    mission_monitors = [
-        agent for agent in cleaning_crew 
-        if agent.__class__.__name__ in ['MemoryArchitect', 'HallucinationHunter']
-    ]
+    file_validators = [a for a in cleaning_crew if a.__class__.__name__ not in ['MemoryArchitect', 'HallucinationHunter']]
+    mission_monitors = [a for a in cleaning_crew if a.__class__.__name__ in ['MemoryArchitect', 'HallucinationHunter']]
     
     print(f"   [L3] Orchestration: {len(file_validators)} validators, {len(mission_monitors)} monitors")
     print(f"   [>] Starting Linear Execution Sweep...\n")
-    
+
     # ===========================================================================
-    # L2 EXECUTION LOGIC: Per-File Validation (Linear, Not Looped)
+    # [ENHANCEMENT 4 & 5] L2 EXECUTION & L5 SAFETY: The Atomic Sweep
     # ===========================================================================
-    
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = os.path.basename(file_path)
         
-        # ===========================================================================
-        # L5 SAFETY THRESHOLD: Check file size before healing
-        # ===========================================================================
-        # Files >200 lines trigger FISSION instead of healing to prevent cognitive exhaustion
-        
+        # Check LOC for Safety Threshold
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 loc_count = len(f.readlines())
-        except Exception:
-            loc_count = 0
+        except: loc_count = 0
         
-        print(f"🔍 [{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC)")
-        
+        print(f"🔍 [{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC)", end='\r')
+
+        # --- ACTIVE FISSION TRIGGER (Files > 200 Lines) ---
         if loc_count > 200:
-            print(f"⚠️  [FISSION TRIGGER] {file_name} is {loc_count} lines. Exceeds HOP threshold (200).")
+            print(f"\n⚠️  [FISSION TRIGGER] {file_name} ({loc_count} lines). Engaging Auto-Fission.")
             
-            # 1. Initialize FissionManager (L3)
-            fission = get_fission_manager(line_limit=200)
+            if governor:
+                try:
+                    # 1. Force Governor to generate Blueprint
+                    print(f"   [>] Generating Blueprint via ArchitectureGovernor...")
+                    method = getattr(governor, 'execute', getattr(governor, 'run', None))
+                    
+                    # Pass file path (Modern) or set context (Legacy)
+                    if method:
+                        res = await method(file_path) if method.__code__.co_argcount > 1 else await method()
+                    else:
+                        res = None
+
+                    # 2. Check for Fission Event in Result
+                    if isinstance(res, dict) and res.get("fission_event"):
+                        fission_mgr = get_fission_manager(line_limit=200)
+                        
+                        # 3. Execute Physical Split (L2)
+                        success = await apply_fission_blueprint(file_path, res["blueprint"], fission_mgr)
+                        
+                        if success:
+                            ctx.results[file_name] = {"action": "FISSION_COMPLETE", "loc": loc_count}
+                            ctx.report("FissionManager", 50, True, f"Split {file_name} into sub-modules")
+                            print(f"   [✓] Fission Complete. Skipping standard validation.")
+                            continue # Skip to next file
+                        else:
+                            print(f"   [!] Blueprint Application Failed.")
+                except Exception as e:
+                    print(f"   [!] Fission Error: {e}")
             
-            # 2. Execute Cognition (L1) -> Identify Split Points
-            # Instead of healing, we force a fission plan
-            if hasattr(ctx, 'results'):
-                ctx.results[file_name] = {
-                    "action": "FISSION_REQUIRED",
-                    "loc": loc_count,
-                    "threshold": 200,
-                    "reason": "File exceeds L5 safety threshold for healing"
-                }
-                print(f"   [+] Fission plan drafted for {file_name}. Moving to next file.")
-            
-            # 3. Skip HealerAgent for this file (Avoid Cognitive Exhaustion)
+            # If fission failed or no governor, mark as manual req and skip healing to save budget
+            ctx.results[file_name] = {"action": "FISSION_REQUIRED_MANUAL", "loc": loc_count}
             continue
-        
-        # File is within safe threshold - proceed with normal validation
+
+        # --- STANDARD VALIDATION (Files < 200 Lines) ---
+        print(f"\n", end='') # New line for clean logging
         for agent in file_validators:
             try:
-                # Handle both .execute() and .run() methods
-                method = getattr(agent, 'execute', None) or getattr(agent, 'run', None)
-                
+                method = getattr(agent, 'execute', getattr(agent, 'run', None))
                 if method:
-                    # Check if method accepts file_path argument (modern) or no args (legacy)
-                    import inspect
-                    sig = inspect.signature(method)
-                    params = list(sig.parameters.keys())
-                    
-                    # Remove 'self' from parameter count
-                    param_count = len([p for p in params if p != 'self'])
-                    
-                    if param_count >= 1:
-                        # Modern: Pass file_path
-                        result = await method(file_path)
+                    # Introspection to handle arguments safely
+                    if method.__code__.co_argcount > 1:
+                        await method(file_path)
                     else:
-                        # Legacy: No arguments
-                        result = await method()
-                    
-                    # ===========================================================================
-                    # L3 INTEGRATION: Auto-Fission Hook
-                    # ===========================================================================
-                    # Check if ArchitectureGovernor triggered a Fission Event
-                    if isinstance(result, dict) and result.get("fission_event"):
-                        print(f"✂️  [L2 EXECUTION] Auto-Fission triggered for {file_name}")
-                        
-                        # Initialize FissionManager to handle physical file splits
-                        fission_mgr = get_fission_manager(line_limit=200)
-                        
-                        # Execute the split based on the L1 Cognition Blueprint
-                        try:
-                            success = await apply_fission_blueprint(
-                                file_path, 
-                                result["blueprint"], 
-                                fission_mgr
-                            )
-                            
-                            if success:
-                                ctx.report("FissionManager", 0, True, 
-                                          f"Successfully split {file_name} into sub-modules")
-                                print(f"   [✓] Fission complete for {file_name}")
-                                # Break validator loop - file no longer exists in monolithic form
-                                break
-                            else:
-                                print(f"   [!] Fission failed for {file_name}")
-                        except Exception as fission_error:
-                            print(f"   [!] Fission execution error: {fission_error}")
-                    
-                    # Check if ArchitectureGovernor stored blueprints in context
-                    if (agent.__class__.__name__ == 'ArchitectureGovernor' and 
-                        hasattr(ctx, 'fission_blueprints') and 
-                        file_path in ctx.fission_blueprints):
-                        
-                        blueprint = ctx.fission_blueprints[file_path]
-                        print(f"✂️  [L2 EXECUTION] Auto-Fission triggered for {file_name} (from context)")
-                        
-                        fission_mgr = get_fission_manager(line_limit=200)
-                        
-                        try:
-                            success = await apply_fission_blueprint(
-                                file_path,
-                                blueprint.get("blueprint", {}),
-                                fission_mgr
-                            )
-                            
-                            if success:
-                                ctx.report("FissionManager", 0, True,
-                                          f"Successfully split {file_name} into sub-modules")
-                                print(f"   [✓] Fission complete for {file_name}")
-                                break
-                        except Exception as fission_error:
-                            print(f"   [!] Fission execution error: {fission_error}")
-                        
+                        await method()
             except Exception as e:
-                ctx.report.append({
-                    "agent": agent.__class__.__name__,
-                    "file": file_name,
-                    "msg": f"Execution error: {str(e)[:100]}"
-                })
+                ctx.report(agent.__class__.__name__, 0, False, f"Exec Error: {str(e)[:50]}")
     
     # ===========================================================================
-    # L3 ORCHESTRATION: Mission Monitors (Single Pass After File Loop)
+    # [ENHANCEMENT 3] GLOBAL MONITORING (Run ONCE at End)
     # ===========================================================================
-    
-    print(f"\n🧠 [L4 STATE] Executing Mission Monitors (Single Pass)...")
+    print(f"\n\n🧠 [L4 STATE] Executing Global Monitors (Single Pass)...")
     for monitor in mission_monitors:
         try:
-            method = getattr(monitor, 'execute', None) or getattr(monitor, 'run', None)
-            if method:
-                await method()
-                print(f"   [✓] {monitor.__class__.__name__} completed")
-        except Exception as e:
-            print(f"   [!] {monitor.__class__.__name__} error: {e}")
-    
+            method = getattr(monitor, 'execute', getattr(monitor, 'run', None))
+            if method: await method()
+            print(f"   [✓] {monitor.__class__.__name__} completed")
+        except Exception: pass
+
     # ===========================================================================
-    # L5 SAFETY: Mission Summary Dashboard
+    # [ENHANCEMENT 6] MISSION DASHBOARD & SUMMARY
     # ===========================================================================
-    
     print("\n" + "="*70)
     print(f"🚀 MISSION COMPLETE: {len(ctx.python_files)} Files Swept")
-    print(f"📊 TOTAL VIOLATIONS DETECTED: {len(ctx.report)}")
     
-    # Count fission triggers
-    fission_count = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_REQUIRED')
-    if fission_count > 0:
-        print(f"⚡ FISSION TRIGGERS: {fission_count} files exceed 200 LOC threshold")
+    # Fission Stats
+    fission_done = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_COMPLETE')
+    fission_pending = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_REQUIRED_MANUAL')
     
-    # Count violations by agent
+    if fission_done > 0:
+        print(f"⚡ FISSION SUCCESS: {fission_done} files split into sub-modules")
+    if fission_pending > 0:
+        print(f"⚠️  FISSION PENDING: {fission_pending} files require manual blueprint")
+
+    # Violation Summary
     if ctx.report:
+        print(f"📊 TOTAL VIOLATIONS: {len(ctx.report)}")
         from collections import Counter
-        
-        agent_summary = Counter(item.get('agent', 'Unknown') for item in ctx.report)
-        key_summary = Counter(item.get('key') for item in ctx.report if 'key' in item)
-        
-        print("\n📋 VIOLATIONS BY AGENT:")
-        for agent, count in agent_summary.most_common():
-            print(f"   - {agent}: {count} issues")
-            
-            # Special flag for ArchitectureGovernor atomicity violations
-            if agent == 'ArchitectureGovernor' and count > 100:
-                print(f"      ⚠️  CRITICAL: {count} Atomicity Violations (Key 50)")
-        
-        if key_summary:
-            print("\n🔑 TOP VIOLATED CANON KEYS:")
-            for key, count in key_summary.most_common(10):
-                print(f"   - Key {key}: {count} violations")
-    else:
-        print("\n✅ No violations detected (or agents did not report)")
+        agent_counts = Counter(item.get('agent', 'Unknown') for item in ctx.report)
+        for agent, count in agent_counts.most_common():
+            print(f"   - {agent}: {count}")
     
-    # Report fission candidates
-    if fission_count > 0:
-        print(f"\n⚡ FISSION CANDIDATES ({fission_count} files):")
-        fission_files = [(k, v['loc']) for k, v in ctx.results.items() 
-                        if isinstance(v, dict) and v.get('action') == 'FISSION_REQUIRED']
-        # Sort by LOC descending
-        fission_files.sort(key=lambda x: x[1], reverse=True)
-        for file_name, loc in fission_files[:10]:  # Show top 10
-            print(f"   - {file_name}: {loc} LOC")
-        if len(fission_files) > 10:
-            print(f"   ... and {len(fission_files) - 10} more files")
-    
-    print("="*70)
-    print(f"[L5] Token Budget Enforced: 24,576 max per agent")
-    print(f"[L5] Safety Threshold: Files >200 LOC trigger fission (not healing)")
-    print(f"[L3] Linear Execution: No cognitive loops detected")
     print("="*70)
 
 
