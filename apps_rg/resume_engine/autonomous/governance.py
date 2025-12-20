@@ -482,131 +482,30 @@ class DashboardGenerator:
         """Generate HTML content."""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+        # Condensed CSS for line reduction
+        condensed_css = """* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #eee; min-height: 100vh; padding: 20px; } .container { max-width: 1200px; margin: 0 auto; } h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; background: linear-gradient(90deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .timestamp { text-align: center; color: #888; margin-bottom: 20px; } .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; } .metric-card { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; backdrop-filter: blur(10px); } .metric-value { font-size: 2.5em; font-weight: bold; } .metric-label { color: #888; margin-top: 5px; } .success { color: #00ff88; } .failure { color: #ff4444; } .warning { color: #ffaa00; } .section { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; } .section h2 { margin-bottom: 15px; color: #00d4ff; } table { width: 100%; border-collapse: collapse; } th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); } th { color: #888; font-weight: normal; } .status-pass { color: #00ff88; } .status-fail { color: #ff4444; } .signal-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(255,170,0,0.2); color: #ffaa00; margin: 4px; font-size: 0.9em; } .mermaid { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; }"""
+
         html = f"""<!DOCTYPE html>
 <html>
 <head>
     <title>Resume Engine Mission Control</title>
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #eee;
-            min-height: 100vh;
-            padding: 20px;
-        }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        h1 {{
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }}
-        .timestamp {{ text-align: center; color: #888; margin-bottom: 20px; }}
-        .metrics {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }}
-        .metric-card {{
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }}
-        .metric-value {{ font-size: 2.5em; font-weight: bold; }}
-        .metric-label {{ color: #888; margin-top: 5px; }}
-        .success {{ color: #00ff88; }}
-        .failure {{ color: #ff4444; }}
-        .warning {{ color: #ffaa00; }}
-        .section {{
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }}
-        .section h2 {{ margin-bottom: 15px; color: #00d4ff; }}
-        table {{ width: 100%; border-collapse: collapse; }}
-        th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }}
-        th {{ color: #888; font-weight: normal; }}
-        .status-pass {{ color: #00ff88; }}
-        .status-fail {{ color: #ff4444; }}
-        .signal-badge {{
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(255,170,0,0.2);
-            color: #ffaa00;
-            margin: 4px;
-            font-size: 0.9em;
-        }}
-        .mermaid {{ background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; }}
-    </style>
+    <style>{condensed_css}</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧬 Resume Engine Mission Control</h1>
-        <p class="timestamp">Generated: {timestamp}</p>
-
+    <div class="container"><h1>🧬 Resume Engine Mission Control</h1><p class="timestamp">Generated: {timestamp}</p>
         <div class="metrics">
-            <div class="metric-card">
-                <div class="metric-value">{total}</div>
-                <div class="metric-label">Total Checks</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value success">{passed}</div>
-                <div class="metric-label">Passed</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value failure">{failed}</div>
-                <div class="metric-label">Failed</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div>
-                <div class="metric-label">Success Rate</div>
-            </div>
+            <div class="metric-card"><div class="metric-value">{total}</div><div class="metric-label">Total Checks</div></div>
+            <div class="metric-card"><div class="metric-value success">{passed}</div><div class="metric-label">Passed</div></div>
+            <div class="metric-card"><div class="metric-value failure">{failed}</div><div class="metric-label">Failed</div></div>
+            <div class="metric-card"><div class="metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div><div class="metric-label">Success Rate</div></div>
         </div>
-
-        <div class="section">
-            <h2>📡 Active Signals</h2>
-            <div>
-                {self._render_signals(signals)}
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>📊 Agent Results</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Agent</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {self._render_results_table(results)}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2>🔗 Dependency Graph</h2>
-            <div class="mermaid">
-                {self._render_mermaid_graph(results)}
-            </div>
-        </div>
+        <div class="section"><h2>📡 Active Signals</h2><div>{self._render_signals(signals)}</div></div>
+        <div class="section"><h2>📊 Agent Results</h2><table><thead><tr><th>Agent</th><th>Status</th><th>Details</th></tr></thead><tbody>{self._render_results_table(results)}</tbody></table></div>
+        <div class="section"><h2>🔗 Dependency Graph</h2><div class="mermaid">{self._render_mermaid_graph(results)}</div></div>
     </div>
-
-    <script>
-        mermaid.initialize({{ startOnLoad: true, theme: 'dark' }});
-    </script>
+    <script>mermaid.initialize({{ startOnLoad: true, theme: 'dark' }});</script>
 </body>
 </html>"""
 

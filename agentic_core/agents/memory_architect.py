@@ -69,6 +69,107 @@ class DistilledPattern:
     timestamp: str
 
 
+class HealingDiffAnalyzer:
+    """
+    Analyzes before/after code to identify structural changes and metrics.
+    This class encapsulates the logic for diff analysis, function extraction,
+    and nesting calculation, reducing the complexity of MemoryArchitect.
+    """
+    def __init__(self, logger: logging.Logger):
+        self.logger = logger
+
+    def analyze_diff(self, success: HealingSuccess) -> Optional[Dict]:
+        """
+        Analyze the before/after AST to identify the specific refactoring mutation.
+        
+        Args:
+            success: Healing success to analyze
+            
+        Returns:
+            Diff analysis dictionary
+        """
+        try:
+            # Parse before and after code
+            before_tree = ast.parse(success.before_code)
+            after_tree = ast.parse(success.after_code)
+            
+            # Extract structural changes
+            before_functions = self._extract_functions(before_tree)
+            after_functions = self._extract_functions(after_tree)
+            
+            # Identify what changed
+            added_functions = set(after_functions.keys()) - set(before_functions.keys())
+            removed_functions = set(before_functions.keys()) - set(after_functions.keys())
+            modified_functions = set(before_functions.keys()) & set(after_functions.keys())
+            
+            # Analyze modifications
+            modifications = []
+            for func_name in modified_functions:
+                before_func = before_functions[func_name]
+                after_func = after_functions[func_name]
+                
+                if before_func['lines'] != after_func['lines'] or before_func['nesting'] != after_func['nesting']:
+                    modifications.append({
+                        'function': func_name,
+                        'before': before_func,
+                        'after': after_func,
+                        'line_reduction': before_func['lines'] - after_func['lines'],
+                        'nesting_reduction': before_func['nesting'] - after_func['nesting']
+                    })
+            
+            # Generate text diff for context
+            text_diff = list(difflib.unified_diff(
+                success.before_code.split('\n'),
+                success.after_code.split('\n'),
+                lineterm='',
+                n=3
+            ))
+            
+            return {
+                'added_functions': list(added_functions),
+                'removed_functions': list(removed_functions),
+                'modified_functions': modifications,
+                'text_diff': '\n'.join(text_diff[:50]),  # First 50 lines
+                'total_line_reduction': success.before_metrics.get('lines', 0) - success.after_metrics.get('lines', 0),
+                'total_nesting_reduction': success.before_metrics.get('nesting', 0) - success.after_metrics.get('nesting', 0)
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error analyzing diff: {e}")
+            return None
+    
+    def _extract_functions(self, tree: ast.AST) -> Dict:
+        """Extract function metadata from AST."""
+        functions = {}
+        
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                # Calculate metrics
+                lines = (node.end_lineno or node.lineno) - node.lineno + 1
+                nesting = self._calculate_nesting(node)
+                
+                functions[node.name] = {
+                    'lines': lines,
+                    'nesting': nesting,
+                    'is_private': node.name.startswith('_'),
+                    'is_async': isinstance(node, ast.AsyncFunctionDef)
+                }
+        
+        return functions
+    
+    def _calculate_nesting(self, node: ast.AST, depth: int = 0) -> int:
+        """Calculate maximum nesting depth."""
+        max_depth = depth
+        
+        for child in ast.iter_child_nodes(node):
+            child_depth = depth
+            if isinstance(child, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+                child_depth += 1
+            max_depth = max(max_depth, self._calculate_nesting(child, child_depth))
+        
+        return max_depth
+
+
 class MemoryArchitect(SubAtomicAgent):
     """
     Autonomous Knowledge Distillation Agent
@@ -111,6 +212,9 @@ class MemoryArchitect(SubAtomicAgent):
         
         # Track processed successes to avoid duplicates
         self.processed_hashes = set()
+        
+        # Initialize the extracted diff analyzer
+        self.diff_analyzer = HealingDiffAnalyzer(logger)
     
     async def execute(self):
         """
@@ -195,7 +299,7 @@ class MemoryArchitect(SubAtomicAgent):
         logger.info(f"🌾 Harvesting success: {success.file_path} (Key {success.key_id})")
         
         # Stage 2: Reflection - Analyze the diff
-        diff_analysis = self._analyze_diff(success)
+        diff_analysis = self.diff_analyzer.analyze_diff(success)
         
         if not diff_analysis:
             logger.warning(f"   Could not analyze diff for {success.file_path}")
@@ -212,99 +316,6 @@ class MemoryArchitect(SubAtomicAgent):
         await self._inoculate_pattern(pattern)
         
         logger.info(f"✅ Successfully harvested pattern from {success.file_path}")
-    
-    def _analyze_diff(self, success: HealingSuccess) -> Optional[Dict]:
-        """
-        Stage 2: Reflection - Diff Distillation
-        
-        Analyze the before/after AST to identify the specific refactoring mutation.
-        
-        Args:
-            success: Healing success to analyze
-            
-        Returns:
-            Diff analysis dictionary
-        """
-        try:
-            # Parse before and after code
-            before_tree = ast.parse(success.before_code)
-            after_tree = ast.parse(success.after_code)
-            
-            # Extract structural changes
-            before_functions = self._extract_functions(before_tree)
-            after_functions = self._extract_functions(after_tree)
-            
-            # Identify what changed
-            added_functions = set(after_functions.keys()) - set(before_functions.keys())
-            removed_functions = set(before_functions.keys()) - set(after_functions.keys())
-            modified_functions = set(before_functions.keys()) & set(after_functions.keys())
-            
-            # Analyze modifications
-            modifications = []
-            for func_name in modified_functions:
-                before_func = before_functions[func_name]
-                after_func = after_functions[func_name]
-                
-                if before_func['lines'] != after_func['lines'] or before_func['nesting'] != after_func['nesting']:
-                    modifications.append({
-                        'function': func_name,
-                        'before': before_func,
-                        'after': after_func,
-                        'line_reduction': before_func['lines'] - after_func['lines'],
-                        'nesting_reduction': before_func['nesting'] - after_func['nesting']
-                    })
-            
-            # Generate text diff for context
-            text_diff = list(difflib.unified_diff(
-                success.before_code.split('\n'),
-                success.after_code.split('\n'),
-                lineterm='',
-                n=3
-            ))
-            
-            return {
-                'added_functions': list(added_functions),
-                'removed_functions': list(removed_functions),
-                'modified_functions': modifications,
-                'text_diff': '\n'.join(text_diff[:50]),  # First 50 lines
-                'total_line_reduction': success.before_metrics.get('lines', 0) - success.after_metrics.get('lines', 0),
-                'total_nesting_reduction': success.before_metrics.get('nesting', 0) - success.after_metrics.get('nesting', 0)
-            }
-            
-        except Exception as e:
-            logger.error(f"Error analyzing diff: {e}")
-            return None
-    
-    def _extract_functions(self, tree: ast.AST) -> Dict:
-        """Extract function metadata from AST."""
-        functions = {}
-        
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                # Calculate metrics
-                lines = (node.end_lineno or node.lineno) - node.lineno + 1
-                nesting = self._calculate_nesting(node)
-                
-                functions[node.name] = {
-                    'lines': lines,
-                    'nesting': nesting,
-                    'is_private': node.name.startswith('_'),
-                    'is_async': isinstance(node, ast.AsyncFunctionDef)
-                }
-        
-        return functions
-    
-    def _calculate_nesting(self, node: ast.AST, depth: int = 0) -> int:
-        """Calculate maximum nesting depth."""
-        max_depth = depth
-        
-        for child in ast.iter_child_nodes(node):
-            child_depth = depth
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
-                child_depth += 1
-            max_depth = max(max_depth, self._calculate_nesting(child, child_depth))
-        
-        return max_depth
     
     async def _synthesize_pattern(self, success: HealingSuccess, diff_analysis: Dict) -> Optional[DistilledPattern]:
         """

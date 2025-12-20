@@ -148,6 +148,20 @@ class CanonValidator:
 
         return result
 
+    def _parse_json_safely(self, json_str: str) -> Optional[Dict[str, Any]]:
+        """
+        Helper method to safely parse a JSON string.
+        Reduces nesting depth in _extract_ast_error_message.
+        """
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            logger.debug("Malformed JSON string encountered (JSONDecodeError).")
+            return None
+        except Exception as e:
+            logger.debug(f"Unexpected error during JSON parsing: {e}")
+            return None
+
     def _extract_ast_error_message(self, ast_str: str) -> Optional[str]:
         """
         Extracts an error message from a potential JSON-encoded AST error string.
@@ -156,19 +170,35 @@ class CanonValidator:
         if not ast_str.startswith('{"error":'):
             return None
 
-        error_dict: Optional[Dict[str, Any]] = None
-        try:
-            error_dict = json.loads(ast_str)
-        except json.JSONDecodeError:
-            logger.debug("Malformed JSON error string encountered.")
-            return None
-        except Exception as e:
-            logger.debug(f"Unexpected error during AST error message extraction: {e}")
-            return None
-
-        if isinstance(error_dict, dict) and "error" in error_dict:
+        error_dict = self._parse_json_safely(ast_str)
+        
+        if error_dict and isinstance(error_dict, dict) and "error" in error_dict:
             return error_dict["error"]
         
+        return None
+
+    def _handle_ast_parsing_errors(self, new_ast_str: str, existing_ast_str: str) -> Optional[Dict[str, Any]]:
+        """
+        Checks for AST parsing errors in new and existing AST strings.
+        Returns a validation result dictionary if an error is found, otherwise None.
+        """
+        new_ast_error = self._extract_ast_error_message(new_ast_str)
+        if new_ast_error:
+            return {
+                "is_match": False,
+                "is_valid": False,
+                "confidence": 0.0,
+                "recommendation": f"Syntax error in new code: {new_ast_error}"
+            }
+
+        existing_ast_error = self._extract_ast_error_message(existing_ast_str)
+        if existing_ast_error:
+            return {
+                "is_match": False,
+                "is_valid": False,
+                "confidence": 0.0,
+                "recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
+            }
         return None
 
     def _validate_ast_match(
@@ -194,24 +224,9 @@ class CanonValidator:
         existing_ast_str = existing_entry.ast_structure
 
         # Check for errors by attempting to parse JSON error strings
-        new_ast_error = self._extract_ast_error_message(new_ast_str)
-        existing_ast_error = self._extract_ast_error_message(existing_ast_str)
-
-        if new_ast_error:
-            return {
-                "is_match": False,
-                "is_valid": False,
-                "confidence": 0.0,
-                "recommendation": f"Syntax error in new code: {new_ast_error}"
-            }
-
-        if existing_ast_error:
-            return {
-                "is_match": False,
-                "is_valid": False,
-                "confidence": 0.0,
-                "recommendation": f"Reference pattern has syntax error: {existing_ast_error}"
-            }
+        error_result = self._handle_ast_parsing_errors(new_ast_str, existing_ast_str)
+        if error_result:
+            return error_result
 
         # Compare AST patterns
         similarity = self._calculate_ast_similarity(new_ast_str, existing_ast_str)

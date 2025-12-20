@@ -82,14 +82,11 @@ class TruthKeeper(SubAtomicAgent):
             return
 
         docstring = ast.get_docstring(node)
-        await self._process_docstring_if_exists(file_path, node, content, docstring)
 
-    async def _process_docstring_if_exists(self, file_path: str, node, content: str, docstring: str | None):
-        """Processes a node's docstring if it exists."""
+        # Inlined logic from _process_docstring_if_exists to reduce call chain depth
         if not docstring:
             return
 
-        # Move the intelligence_enabled check here to reduce nesting in the subsequent call
         if self.ctx.intelligence_enabled:
             await self._run_intelligence_check(file_path, node.name, docstring, content)
 
@@ -99,14 +96,14 @@ class TruthKeeper(SubAtomicAgent):
         is_consistent = await self._verify_docstring_consistency(
             file_path, node_name, docstring, content
         )
-        await self._handle_inconsistent_docstring(file_path, node_name, content, is_consistent)
-
-    async def _handle_inconsistent_docstring(self, file_path: str, node_name: str, content: str, is_consistent: bool):
-        """Helper to handle cases where a docstring is found to be inconsistent."""
         if not is_consistent:
-            print(f"   📝 Docstring mismatch in {file_path}:{node_name}")
-            # Auto-fix the docstring
-            await self._fix_docstring(file_path, node_name, content)
+            await self._perform_inconsistent_docstring_actions(file_path, node_name, content)
+
+    async def _perform_inconsistent_docstring_actions(self, file_path: str, node_name: str, content: str):
+        """Performs actions when a docstring is found to be inconsistent."""
+        print(f"   📝 Docstring mismatch in {file_path}:{node_name}")
+        # Auto-fix the docstring
+        await self._fix_docstring(file_path, node_name, content)
 
     async def _verify_docstring_consistency(self, file_path: str, name: str, docstring: str, content: str) -> bool:
         """Ask Gemini if docstring matches the code."""
@@ -122,10 +119,7 @@ class TruthKeeper(SubAtomicAgent):
             Answer ONLY "YES" if docstring accurately describes the code, or "NO" if it doesn't.
             """
 
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
+            response = self.ctx.client.models.generate_content(model=self.ctx.model_id, contents=prompt)
 
             return response.text.strip().upper() == "YES"
 
@@ -150,10 +144,7 @@ class TruthKeeper(SubAtomicAgent):
             Return ONLY the corrected docstring.
             """
 
-            response = self.ctx.client.models.generate_content(
-                model=self.ctx.model_id,
-                contents=prompt
-            )
+            response = self.ctx.client.models.generate_content(model=self.ctx.model_id, contents=prompt)
 
             response.text.strip()
 

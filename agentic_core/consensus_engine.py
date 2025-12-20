@@ -55,6 +55,19 @@ class ConsensusEngine:
         # If no specific issues found for the model, or model not in config
         return {"verdict": "YES", "reason": "Compliance verified."} # Depth 3
 
+    def _check_critical_violation(self, artifact_lower: str) -> bool:
+        """
+        Helper to check for universal critical keywords, ensuring max nesting depth of 4.
+        Refactored to avoid a return statement at depth 5.
+        """
+        # Depth: class(1) -> def(2)
+        has_violation = False # Depth 3
+        for keyword in self._CRITICAL_KEYWORDS: # Depth 3
+            if keyword in artifact_lower: # Depth 4
+                has_violation = True # Depth 4
+                break # Depth 4
+        return has_violation # Depth 3
+
     def _call_juror(self, model_name: str, artifact: str, prompt: str) -> Dict[str, Any]:
         """
         Simulates calling the specific High-Reasoning AI model API, ensuring max nesting depth of 4.
@@ -64,21 +77,19 @@ class ConsensusEngine:
         artifact_lower = artifact.lower() # Depth 3
 
         # 1. Universal Critical Failures (Guard Clause)
-        # Refactored to avoid deep nesting in the 'if' condition and ensure dictionary content is not excessively indented.
-        is_critical_violation = any(keyword in artifact_lower for keyword in self._CRITICAL_KEYWORDS) # Depth 3
+        is_critical_violation = self._check_critical_violation(artifact_lower) # Depth 3
 
         if is_critical_violation: # Depth 3
-            return {"model": model_name,
-                    "verdict": "NO",
-                    "reason": "Safety Protocols Triggered during analysis."} # Depth 4
+            # Flattened dictionary return to avoid potential depth issues with multi-line dicts
+            critical_result = {"model": model_name, "verdict": "NO", "reason": "Safety Protocols Triggered during analysis."} # Depth 4
+            return critical_result # Depth 4
 
         # 2. Model-Specific Reasoning Quirks (Delegated to helper method)
         model_verdict = self._get_model_specific_verdict(model_name, artifact_lower) # Depth 3
 
-        # Ensure dictionary content is not excessively indented
-        return {"model": model_name,
-                "verdict": model_verdict["verdict"],
-                "reason": model_verdict["reason"]} # Depth 3
+        # Flattened dictionary return to avoid potential depth issues with multi-line dicts
+        final_result = {"model": model_name, "verdict": model_verdict["verdict"], "reason": model_verdict["reason"]} # Depth 3
+        return final_result # Depth 3
 
     def _count_yes_votes(self, votes: List[Dict[str, Any]]) -> int:
         """
@@ -122,10 +133,9 @@ class ConsensusEngine:
 
         logger.info(f"📝 Jury Verdict: {status} ({yes_count}/{total_votes} votes)") # Depth 3
 
-        # Ensure dictionary content is not excessively indented
-        return {"status": status,
-                "score": score,
-                "votes": votes} # Depth 3
+        # Flattened dictionary return to avoid potential depth issues with multi-line dicts
+        final_verdict = {"status": status, "score": score, "votes": votes} # Depth 3
+        return final_verdict # Depth 3
 
     def _fix_indentation(self, code: str) -> str:
         """
@@ -185,12 +195,13 @@ class ConsensusEngine:
             fixed_code = self._fix_indentation(code) # Depth 4
 
         if fixed_code == code: # Depth 3
-            return {"status": "FAILED", "error": "No fix could be generated"} # Depth 4
+            # Flattened dictionary return to avoid potential depth issues with multi-line dicts
+            fail_result = {"status": "FAILED", "error": "No fix could be generated"} # Depth 4
+            return fail_result # Depth 4
 
-        # Ensure dictionary content is not excessively indented
-        return {"status": "SUCCESS",
-                "fixed_code": fixed_code,
-                "context": context} # Depth 3
+        # Flattened dictionary return to avoid potential depth issues with multi-line dicts
+        success_result = {"status": "SUCCESS", "fixed_code": fixed_code, "context": context} # Depth 3
+        return success_result # Depth 3
 
 
 # Initialize the global jury instance

@@ -13,11 +13,8 @@ except ImportError:
 logger = logging.getLogger("ActionRegistry")
 
 
-class ActionRegistry:
-    """
-    The 'Hands' of the Agent.
-    Contains the whitelist of allowed actions (Key #3).
-    """
+class WebSearchTools:
+    """Encapsulates web search functionality using Brave API."""
 
     def __init__(self):
         self.brave_key = os.getenv("BRAVE_SEARCH_API_KEY")
@@ -25,11 +22,6 @@ class ActionRegistry:
             logger.warning(
                 "⚠️ BRAVE_SEARCH_API_KEY not found. Web search will fail.")
 
-        # Mock Redis storage for L1 caching
-        self._redis_store: Dict[str, str] = {}
-        self._redis_hash: Dict[str, Dict[str, str]] = {}
-
-    # --- CORE TOOLS (Canon Validator) ---
     def _format_search_result_item(self, item: Dict) -> str:
         """Helper to format a single search result item."""
         title = item.get('title', 'No Title')
@@ -75,7 +67,13 @@ class ActionRegistry:
             logger.error(f"Search failed: {e}")
             return f"Search Error: {str(e)}"
 
-    # --- RESUME ENGINE TOOLS ---
+
+class FileIO:
+    """Handles file reading and saving operations."""
+
+    def __init__(self):
+        pass # No specific state needed for file operations
+
     def _read_pdf_file(self, file_path: str) -> str:
         """Helper to read content from a PDF file."""
         if not PyPDF2:
@@ -108,14 +106,15 @@ class ActionRegistry:
         except Exception as e:
             return f"Save Error: {e}"
 
-    # --- OUTREACH ENGINE TOOLS ---
-    def mock_send_email(self, recipient: str, subject: str, body: str) -> str:
-        """Simulates sending an email (Safety first)."""
-        # In Phase 4 we will connect real SMTP
-        logger.info(f"📧 EMAIL SENT to {recipient} | Subj: {subject}")
-        return f"Email simulated sent to {recipient}"
 
-    # --- REDIS MCP TOOLS (L1 Caching) ---
+class RedisCache:
+    """Provides mock Redis-like caching functionalities."""
+
+    def __init__(self):
+        # Mock Redis storage for L1 caching
+        self._redis_store: Dict[str, str] = {}
+        self._redis_hash: Dict[str, Dict[str, str]] = {}
+
     def string_set(self, key: str, value: str) -> str:
         """Stores a simple string key-value pair in Redis."""
         self._redis_store[key] = value
@@ -146,7 +145,13 @@ class ActionRegistry:
         logger.info(f"📦 Redis HGET: {key}.{field} = {value[:20]}...")
         return value
 
-    # --- TIME MCP TOOLS (L4 Temporal Awareness) ---
+
+class TimeTools:
+    """Provides time-related functionalities, including current time and conversion."""
+
+    def __init__(self):
+        pass # No specific state needed
+
     def _get_current_time_fallback(self, timezone: str) -> str:
         """Helper to get current time using datetime/pytz if mcp_time_client is unavailable."""
         try:
@@ -180,6 +185,13 @@ class ActionRegistry:
         except ImportError:
             return f"Error: MCP Time client not available for conversion"
 
+
+class GitTools:
+    """Provides git operations like commit and status."""
+
+    def __init__(self):
+        pass # No specific state needed
+
     def commit(self, file_path: str, message: str) -> str:
         """Commits a file to git."""
         try:
@@ -201,7 +213,13 @@ class ActionRegistry:
         except Exception as e:
             return f"Status Error: {e}"
 
-    # --- FIGMA MCP TOOLS (L2 Design) - Stubs for Phase 1 ---
+
+class FigmaTools:
+    """Stubs for Figma MCP tools (L2 Design)."""
+
+    def __init__(self):
+        pass
+
     def get_variable_defs(self, node_id: str, file_key: str = None) -> str:
         """Gets Figma variable definitions."""
         return "Figma MCP not implemented in Phase 1"
@@ -214,12 +232,24 @@ class ActionRegistry:
         """Gets Figma screenshot."""
         return "Figma MCP not implemented in Phase 1"
 
-    # --- PINECONE MCP TOOLS (L3 RAG) - Stubs for Phase 1 ---
+
+class PineconeTools:
+    """Stub for Pinecone MCP tools (L3 RAG)."""
+
+    def __init__(self):
+        pass
+
     def search_records(self, query: str, index: str, top_k: int, namespace: str) -> str:
         """Searches Pinecone records."""
         return "Pinecone MCP not implemented in Phase 1"
 
-    # --- MEMORY MCP TOOLS (L5 MEMemory) - Stubs for Phase 1 ---
+
+class MemoryTools:
+    """Stubs for MEMemory MCP tools (L5 MEMemory)."""
+
+    def __init__(self):
+        pass
+
     def add_observations(self, observations: list) -> str:
         """Adds observations to MEMemory."""
         return "MEMemory MCP not implemented in Phase 1"
@@ -232,37 +262,62 @@ class ActionRegistry:
         """Opens nodes in MEMemory."""
         return "MEMemory MCP not implemented in Phase 1"
 
+
+class ActionRegistry:
+    """
+    The 'Hands' of the Agent.
+    Contains the whitelist of allowed actions (Key #3).
+    """
+
+    def __init__(self):
+        # Initialize sub-components
+        self.web_search_tools = WebSearchTools()
+        self.file_io_tools = FileIO()
+        self.redis_cache_tools = RedisCache()
+        self.time_tools = TimeTools()
+        self.git_tools = GitTools()
+        self.figma_tools = FigmaTools()
+        self.pinecone_tools = PineconeTools()
+        self.memory_tools = MemoryTools()
+
+    # --- OUTREACH ENGINE TOOLS ---
+    def mock_send_email(self, recipient: str, subject: str, body: str) -> str:
+        """Simulates sending an email (Safety first)."""
+        # In Phase 4 we will connect real SMTP
+        logger.info(f"📧 EMAIL SENT to {recipient} | Subj: {subject}")
+        return f"Email simulated sent to {recipient}"
+
     def get_tool_map(self) -> Dict[str, Callable]:
         """Returns the master tool map for the LLM."""
         return {
             # --- LAYER 1: FILESYSTEM & I/O ---
-            "read_file": self.read_file,
-            "save_file": self.save_file,
+            "read_file": self.file_io_tools.read_file,
+            "save_file": self.file_io_tools.save_file,
             "send_email": self.mock_send_email,
 
             # --- LAYER 2: DESIGN & CONTEXT ---
-            "get_variable_defs": self.get_variable_defs,
-            "get_design_context": self.get_design_context,
-            "get_screenshot": self.get_screenshot,
+            "get_variable_defs": self.figma_tools.get_variable_defs,
+            "get_design_context": self.figma_tools.get_design_context,
+            "get_screenshot": self.figma_tools.get_screenshot,
 
             # --- LAYER 3: RAG & WISDOM ---
-            "search_records": self.search_records,
-            "search_web": self.search_web,
+            "search_records": self.pinecone_tools.search_records,
+            "search_web": self.web_search_tools.search_web,
 
             # --- LAYER 4: STATE & TEMPORAL ---
-            "string_set": self.string_set,
-            "string_get": self.string_get,
-            "hash_set": self.hash_set,
-            "hash_get": self.hash_get,
-            "get_current_time": self.get_current_time,
-            "convert_time": self.convert_time,
+            "string_set": self.redis_cache_tools.string_set,
+            "string_get": self.redis_cache_tools.string_get,
+            "hash_set": self.redis_cache_tools.hash_set,
+            "hash_get": self.redis_cache_tools.hash_get,
+            "get_current_time": self.time_tools.get_current_time,
+            "convert_time": self.time_tools.convert_time,
 
             # --- LAYER 5: MEMORY & AUDIT ---
-            "add_observations": self.add_observations,
-            "create_entities": self.create_entities,
-            "open_nodes": self.open_nodes,
+            "add_observations": self.memory_tools.add_observations,
+            "create_entities": self.memory_tools.create_entities,
+            "open_nodes": self.memory_tools.open_nodes,
 
             # --- GIT OPERATIONS ---
-            "commit": self.commit,
-            "status": self.status,
+            "commit": self.git_tools.commit,
+            "status": self.git_tools.status,
         }

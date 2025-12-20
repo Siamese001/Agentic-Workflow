@@ -1,19 +1,14 @@
-"""
-Test script for Hallucination Hunter integration.
-
-Demonstrates atomic claim validation and factual integrity auditing.
-"""
-
 import asyncio
 import logging
 import sys
 from pathlib import Path
+from typing import Set
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from agentic_core.domain.context import ValidationContext
-from agentic_core.agents import get_hallucination_hunter
+from agentic_core.agents import get_hallucination_hunter, HallucinationHunter # Added HallucinationHunter for type hinting
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,35 +18,28 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-async def test_hallucination_hunter():
-    """Test Hallucination Hunter atomic claim validation."""
-    
+async def _setup_hunter_test_environment(ctx: ValidationContext) -> HallucinationHunter:
+    """Sets up the test environment for Hallucination Hunter."""
     logger.info("="*80)
     logger.info("🔍 HALLUCINATION HUNTER TEST")
     logger.info("="*80)
     
-    # Create context
-    ctx = ValidationContext()
-    
-    # Simulate PIPELINE_OUTPUT signals
     logger.info("\n1. Simulating PIPELINE_OUTPUT signals...")
-    
     ctx.signals = set()
     ctx.signals.add("PIPELINE_OUTPUT:output/resume_john_doe.txt")
-    
     logger.info(f"   Added {len([s for s in ctx.signals if s.startswith('PIPELINE_OUTPUT:')])} PIPELINE_OUTPUT signals")
     
-    # Get Hallucination Hunter
     logger.info("\n2. Initializing Hallucination Hunter...")
     hunter = get_hallucination_hunter(ctx)
     
-    # Check Gemini availability
     if hunter.genai_available:
         logger.info("   ✅ Gemini 2.5 connected - intelligent claim extraction enabled")
     else:
         logger.info("   ⚠️  Gemini not available - using simple claim extraction")
-    
-    # Create test data
+    return hunter
+
+def _prepare_hallucination_test_data(ctx: ValidationContext):
+    """Prepares source and generated data for the hallucination test."""
     logger.info("\n3. Creating test data...")
     
     # Source raw data (ground truth)
@@ -100,8 +88,9 @@ async def test_hallucination_hunter():
     logger.info("   Source data: 150 characters")
     logger.info("   Generated resume: 400 characters")
     logger.info("   Expected hallucinations: 3 (7 years, 10 developers, ML expertise)")
-    
-    # Execute hunter
+
+async def _execute_hallucination_hunter(hunter: HallucinationHunter):
+    """Executes the Hallucination Hunter and logs its progress."""
     logger.info("\n4. Running Hallucination Hunter...")
     logger.info("   Extracting atomic claims...")
     logger.info("   Performing vector similarity search...")
@@ -111,8 +100,9 @@ async def test_hallucination_hunter():
         await hunter.execute()
     except Exception as e:
         logger.error(f"   Error during execution: {e}")
-    
-    # Report results
+
+def _report_integrity_results(ctx: ValidationContext, hunter: HallucinationHunter):
+    """Reports the integrity scores and hallucination rates."""
     logger.info("\n5. Results:")
     
     if hasattr(ctx, 'integrity_reports'):
@@ -129,8 +119,9 @@ async def test_hallucination_hunter():
                 logger.error(f"   🚨 HALLUCINATION THRESHOLD EXCEEDED")
                 logger.error(f"      Threshold: {hunter.HALLUCINATION_THRESHOLD:.1%}")
                 logger.error(f"      Actual: {report.hallucination_percentage:.1%}")
-    
-    # Check for signals
+
+def _report_hallucination_signals(ctx: ValidationContext):
+    """Reports any factual integrity or hallucination signals."""
     fail_signals = [s for s in ctx.signals if s.startswith('FACTUAL_INTEGRITY_FAIL:')]
     if fail_signals:
         logger.error(f"\n   🚨 FACTUAL_INTEGRITY_FAIL SIGNALS: {len(fail_signals)}")
@@ -142,7 +133,9 @@ async def test_hallucination_hunter():
         logger.warning(f"\n   ⚠️  HALLUCINATION_DETECTED SIGNALS: {len(hallucination_signals)}")
         for signal in hallucination_signals:
             logger.warning(f"     {signal}")
-    
+
+def _log_hallucination_test_summary():
+    """Logs the final summary and key features of the hallucination test."""
     logger.info("\n" + "="*80)
     logger.info("✅ HALLUCINATION HUNTER TEST COMPLETE")
     logger.info("="*80)
@@ -166,6 +159,17 @@ async def test_hallucination_hunter():
     logger.info("    → FACTUAL_INTEGRITY_FAIL signal emitted")
     logger.info("    → Resume blocked from output folder")
     logger.info("    → Requires human review or regeneration")
+
+
+async def test_hallucination_hunter():
+    """Test Hallucination Hunter atomic claim validation."""
+    ctx = ValidationContext()
+    hunter = await _setup_hunter_test_environment(ctx)
+    _prepare_hallucination_test_data(ctx)
+    await _execute_hallucination_hunter(hunter)
+    _report_integrity_results(ctx, hunter)
+    _report_hallucination_signals(ctx)
+    _log_hallucination_test_summary()
 
 
 async def test_claim_extraction():
