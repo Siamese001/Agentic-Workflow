@@ -360,9 +360,10 @@ async def run_mission(target_scope: str = "agentic_core"):
     - L3 Linear Execution (No Monitoring Loops)
     - L1 Intelligence Injection (Surgeon Mode)
     - L5 Safety (Active Fission Trigger for files > 200 LOC)
+    - L2 Execution (JSON Parsing & Blueprint Application)
     """
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.4 - ATOMIC FISSION ACTIVE (CAP: 24,576)")
+    print(f"DEBUG: VERSION 2.5 - FINAL HARDENING (CAP: 24,576)")
     
     # Add project root to sys.path for imports
     project_root = Path(__file__).parent.parent
@@ -501,6 +502,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                         res = await method(file_path) if method.__code__.co_argcount > 1 else await method()
                     else:
                         res = None
+
+                    # [CRITICAL FIX] L2 Parsing Bridge: Convert String to Dict
+                    if isinstance(res, str):
+                        res = SubAtomicEngine.parse_fission_output(res)
 
                     # 2. Check for Fission Event in Result
                     if isinstance(res, dict) and res.get("fission_event"):
