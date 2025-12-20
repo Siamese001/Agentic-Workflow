@@ -14,7 +14,6 @@ from agentic_core.agents import (
 )
 from agentic_core.domain.context import ValidationContext
 
-
 logging.basicConfig(
     level=logging.INFO,
     format='%(message)s'
