@@ -225,34 +225,138 @@ class ServiceManager:
         try:
             from mcp import ClientSession, StdioServerParameters
             from mcp.client.stdio import stdio_client
-            
-            # Create MCP file server parameters
-            server_params = StdioServerParameters(
-                command="python",
-                args=["apps_shared/mcp_file_server.py"]
-            )
-            
-            # Force the async pipe open for Gemini toolset
-            async with asyncio.timeout(5.0):  # 5 second timeout
-                async with stdio_client(server_params) as (read, write):
-                    async with ClientSession(read, write) as session:
-                        await session.initialize()
-                        self.mcp_clients['file_server'] = session
-                        print("   ✅ MCP initialized - Tools are now live for agents")
-                        self.mcp_init_pending = False
-                        return
-        except asyncio.TimeoutError:
-            print("   ⚠️  MCP initialization timed out - using direct file I/O")
-            self.mcp_init_pending = False
         except ImportError:
             print("   ⚠️  MCP not installed - using direct file I/O")
             self.mcp_init_pending = False
-        except FileNotFoundError:
-            print("   ⚠️  MCP file server not found - using direct file I/O")
-            self.mcp_init_pending = False
-        except Exception as e:
-            print(f"   ⚠️  MCP initialization failed: {e} - using direct file I/O")
-            self.mcp_init_pending = False
+            return
+        
+        # Define all MCP servers to connect to
+        mcp_servers = {
+            'file_server': {
+                'command': 'python',
+                'args': ['apps_shared/mcp_file_server.py'],
+                'required': False
+            },
+            'gitkraken': {
+                'type': 'windsurf',  # Built-in Windsurf MCP
+                'server_name': 'GitKraken',
+                'required': False
+            },
+            'brave_search': {
+                'type': 'windsurf',
+                'server_name': 'brave-search',
+                'required': False,
+                'env': {'BRAVE_SEARCH_API_KEY': os.getenv('BRAVE_SEARCH_API_KEY', '')}
+            },
+            'deepwiki': {
+                'type': 'windsurf',
+                'server_name': 'deepwiki',
+                'required': False
+            },
+            'fetch': {
+                'type': 'windsurf',
+                'server_name': 'fetch',
+                'required': False
+            },
+            'figma': {
+                'type': 'windsurf',
+                'server_name': 'figma-remote-mcp-server',
+                'required': False,
+                'env': {'FIGMA_TOKEN': os.getenv('FIGMA_TOKEN', '')}
+            },
+            'filesystem': {
+                'type': 'windsurf',
+                'server_name': 'filesystem',
+                'required': False
+            },
+            'playwright': {
+                'type': 'windsurf',
+                'server_name': 'mcp-playwright',
+                'required': False
+            },
+            'memory': {
+                'type': 'windsurf',
+                'server_name': 'memory',
+                'required': False
+            },
+            'pinecone': {
+                'type': 'windsurf',
+                'server_name': 'pinecone-mcp-server',
+                'required': False,
+                'env': {'PINECONE_API_KEY': os.getenv('PINECONE_API_KEY', '')}
+            },
+            'redis': {
+                'type': 'windsurf',
+                'server_name': 'redis',
+                'required': False
+            },
+            'sequential_thinking': {
+                'type': 'windsurf',
+                'server_name': 'sequential-thinking',
+                'required': False
+            }
+        }
+        
+        connected_servers = []
+        windsurf_servers = []
+        
+        # Connect to each MCP server
+        for server_name, config in mcp_servers.items():
+            try:
+                # Skip if required env vars missing
+                if 'env' in config:
+                    missing_vars = [k for k, v in config['env'].items() if not v]
+                    if missing_vars:
+                        print(f"   ⚠️  {server_name} MCP skipped - missing env vars: {missing_vars}")
+                        continue
+                
+                # Windsurf MCPs are managed by IDE - just register them
+                if config.get('type') == 'windsurf':
+                    self.mcp_clients[server_name] = {
+                        'type': 'windsurf',
+                        'server_name': config['server_name'],
+                        'available': True
+                    }
+                    windsurf_servers.append(server_name)
+                    continue
+                
+                # Launch standalone MCP servers
+                server_params = StdioServerParameters(
+                    command=config['command'],
+                    args=config['args'],
+                    env=config.get('env')
+                )
+                
+                async with asyncio.timeout(5.0):
+                    async with stdio_client(server_params) as (read, write):
+                        async with ClientSession(read, write) as session:
+                            await session.initialize()
+                            self.mcp_clients[server_name] = session
+                            connected_servers.append(server_name)
+                            
+            except asyncio.TimeoutError:
+                if config.get('required'):
+                    print(f"   ⚠️  {server_name} MCP timed out - required server unavailable")
+                    self.mcp_init_pending = False
+                    return
+            except FileNotFoundError:
+                pass  # Server binary not found, skip silently
+            except Exception as e:
+                if config.get('required'):
+                    print(f"   ⚠️  {server_name} MCP failed: {e}")
+                    self.mcp_init_pending = False
+                    return
+        
+        all_servers = connected_servers + windsurf_servers
+        if all_servers:
+            status_msg = f"   ✅ MCP initialized - Connected: {', '.join(connected_servers)}"
+            if windsurf_servers:
+                status_msg += f" | Windsurf: {', '.join(windsurf_servers)}"
+            print(status_msg)
+        else:
+            print("   ⚠️  No MCP servers connected - using direct file I/O")
+        
+        self.mcp_init_pending = False
     
     def get_cached_result(self, file_hash: str) -> Optional[Dict]:
         """Get cached validation result from Redis or fallback dict."""
