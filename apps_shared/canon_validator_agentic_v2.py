@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 """
-[START] CANON SUB-ATOMIC ENGINE - V2.2
-Shared core for Fission, Safety Guardrails, and Resilient Mutation.
+Canon Validator - Orchestration Entry Point
+Coordinates L1-L5 components for 50-key canon validation.
+VERSION 2.5 - GOLDEN MASTER (Refactored)
 """
 
 import asyncio
 import importlib
-import json
 import logging
 import os
-import random
-import re
-import shutil
 import sys
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Optional
 
-# Windows console encoding handled by terminal settings
+# Add project root to sys.path for imports
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
@@ -27,19 +26,15 @@ except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
 
-# Gemini SDK
-try:
-    from google import genai
-    from google.api_core.exceptions import (
-        DeadlineExceeded,
-        InternalServerError,
-        ResourceExhausted,
-    )
-    from google.genai import types
-    GENAI_AVAILABLE = True
-except ImportError:
-    GENAI_AVAILABLE = False
-    print("[!] Gemini SDK not available. Install with: pip install google-generativeai")
+# Import core components from agentic_core
+from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
+from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
+from agentic_core.runtime import (
+    ALLOWED_ROOT_FOLDERS,
+    enforce_void_compliance,
+    get_applicable_keys_for_file,
+    get_folder_scope_summary,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -47,301 +42,10 @@ logger = logging.getLogger(__name__)
 
 
 # ==============================================================================
-# L3 ORCHESTRATION: FISSION MANAGER
+# NOTE: Core components (FissionManager, SafetyGuardrail, SubAtomicEngine,
+# apply_fission_blueprint) have been moved to agentic_core/ for reusability.
+# They are imported at the top of this file.
 # ==============================================================================
-class FissionManager:
-    """Determines when a file is too large or an agent is exhausted."""
-    
-    def __init__(self, line_limit: int = 800, max_rounds: int = 3):
-        self.line_limit = line_limit
-        self.max_rounds = max_rounds
-
-    def should_trigger_fission(self, file_path: str, current_round: int) -> Tuple[bool, Optional[str]]:
-        """
-        Check if fission should be triggered based on file size or healing exhaustion.
-        
-        Args:
-            file_path: Path to file being validated
-            current_round: Current healing round number
-            
-        Returns:
-            Tuple of (should_trigger, reason)
-        """
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                line_count = len(f.readlines())
-                if line_count > self.line_limit:
-                    return True, f"L4 State Bloat: {line_count} lines exceeds limit."
-        
-        if current_round >= self.max_rounds:
-            return True, "Cognitive Exhaustion: Round 3 reached."
-        
-        return False, None
-
-
-# ==============================================================================
-# L5 SAFETY: GUARDRAILS
-# ==============================================================================
-class SafetyGuardrail:
-    """Enforces Zero-Loss principles during mutation."""
-    
-    def __init__(self, deletion_limit: int = 110):
-        self.deletion_limit = deletion_limit
-    
-    def verify_change(self, original_code: str, new_code: str, fission_active: bool = False) -> Tuple[bool, str]:
-        """
-        Verify that code changes are safe and don't violate zero-loss principles.
-        
-        Args:
-            original_code: Original code before mutation
-            new_code: New code after mutation
-            fission_active: Whether atomic fission is active (allows mass deletion)
-            
-        Returns:
-            Tuple of (is_safe, message)
-        """
-        if not new_code.strip():
-            return False, "Safety Block: Attempted to wipe file."
-        
-        orig_len = len(original_code.splitlines())
-        new_len = len(new_code.splitlines())
-        delta = orig_len - new_len
-
-        # Fission mode: Mass deletion is expected (monolith → facade)
-        if fission_active:
-            return True, "Fission Whitelist: Mass deletion permitted for Facade."
-        
-        # Standard mode: Enforce deletion limit
-        if delta > self.deletion_limit:
-            return False, f"Safety Block: Mass deletion detected ({delta} lines)."
-        
-        return True, "Safety Pass."
-
-
-# ==============================================================================
-# ATOMIC MUTATION ENGINE
-# ==============================================================================
-class SubAtomicEngine:
-    """Hardens the LLM interaction with the 24,576 token budget."""
-    
-    def __init__(self, gemini_client: Optional[Any] = None):
-        """
-        Initialize SubAtomicEngine.
-        
-        Args:
-            gemini_client: Optional Gemini client (creates new if None)
-        """
-        if not GENAI_AVAILABLE:
-            raise RuntimeError("Gemini SDK not available. Install with: pip install google-generativeai")
-        
-        if gemini_client:
-            self._client = gemini_client
-        else:
-            # L5 SAFETY: Suppress redundant API key warnings
-            # Check GOOGLE_API_KEY first (canonical), then GEMINI_API_KEY (legacy)
-            api_key = os.getenv("GOOGLE_API_KEY")
-            if not api_key:
-                api_key = os.getenv("GEMINI_API_KEY")
-                if api_key:
-                    logger.warning("[L5] Using legacy GEMINI_API_KEY. Please migrate to GOOGLE_API_KEY.")
-            
-            if not api_key:
-                raise RuntimeError("No Gemini API key found. Set GOOGLE_API_KEY in your .env file.")
-            
-            self._client = genai.Client(api_key=api_key)
-        
-        self.chat_sessions: Dict[str, Any] = {}
-    
-    @staticmethod
-    def get_safe_config(is_fission: bool = False) -> Any:
-        """
-        Get safe Gemini configuration with hardened thinking budget.
-        
-        Args:
-            is_fission: Whether this is for fission mode (uses max budget)
-            
-        Returns:
-            GenerateContentConfig with safe thinking budget
-        """
-        if not GENAI_AVAILABLE:
-            raise RuntimeError("Gemini SDK not available")
-        
-        # 🛑 HARDENED: Fixed at 24,576 to prevent 400 INVALID_ARGUMENT
-        safe_budget = 24576 if is_fission else 16000
-        return types.GenerateContentConfig(
-            temperature=0.1,
-            thinking_config=types.ThinkingConfig(thinking_budget=safe_budget)
-        )
-    
-    @staticmethod
-    def parse_fission_output(output: str) -> Dict[str, str]:
-        """
-        Extracts JSON file map from AI response.
-        
-        Args:
-            output: Raw output from Gemini
-            
-        Returns:
-            Dictionary mapping file paths to content
-        """
-        try:
-            # Try to extract JSON from response
-            json_match = re.search(r'\{.*\}', output, re.DOTALL)
-            if json_match:
-                return json.loads(json_match.group())
-        except Exception as e:
-            logger.warning(f"Failed to parse fission output: {e}")
-        
-        return {}
-    
-    async def resilient_mutation(
-        self,
-        file_path: str,
-        code: str,
-        task: str,
-        round_num: int = 1,
-        fission_active: bool = False
-    ) -> str:
-        """Execute resilient mutation with exponential backoff retry."""
-        if not self._client:
-            raise RuntimeError("Gemini client not initialized")
-        
-        # Build prompt
-        if fission_active:
-            prompt = f"ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}"
-        else:
-            prompt = f"HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}"
-        
-        config = self.get_safe_config(is_fission=fission_active)
-        chat_key = f"chat_{file_path}"
-        
-        if chat_key not in self.chat_sessions:
-            model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
-            self.chat_sessions[chat_key] = self._client.chats.create(model=model_name, config=config)
-            logger.info(f"   [NEW] Created chat session for {os.path.basename(file_path)}")
-        
-        # === RETRY WITH EXPONENTIAL BACKOFF (Max 3 attempts) ===
-        max_retries = 3
-        response = None
-        
-        for attempt in range(1, max_retries + 1):
-            try:
-                response = await asyncio.to_thread(self.chat_sessions[chat_key].send_message, prompt)
-                break  # Success
-            except (ResourceExhausted, InternalServerError, DeadlineExceeded) as e:
-                if attempt == max_retries:
-                    logger.error(f"   [X] Gemini Error (Final): {e}")
-                    return code
-                wait = (2 ** attempt) + random.uniform(0, 1)
-                logger.warning(f"   [!] Gemini Transient Error ({attempt}/{max_retries}): {e}. Retrying in {wait:.1f}s")
-                await asyncio.sleep(wait)
-            except Exception as e:
-                logger.error(f"   [X] Gemini Fatal Error: {e}")
-                return code
-
-        # Extract response
-        if response and response.candidates and response.candidates[0].content.parts:
-            output = response.candidates[0].content.parts[0].text.strip()
-            # Truncation guard
-            if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
-                logger.warning("   [X] TRUNCATION DETECTED. Rejecting mutation.")
-                return code
-            return output
-        
-        logger.warning("   [!] Malformed response from Gemini")
-        return code
-
-
-# ==============================================================================
-# L3 FISSION: Blueprint Application Helper
-# ==============================================================================
-
-async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: FissionManager) -> bool:
-    """
-    Apply a fission blueprint to split a monolithic file into sub-modules.
-    
-    Args:
-        file_path: Path to the monolithic file
-        blueprint: Fission blueprint with module definitions
-        fission_mgr: FissionManager instance
-        
-    Returns:
-        bool: True if fission was successful, False otherwise
-    """
-    try:
-        file_dir = os.path.dirname(file_path)
-        file_name = os.path.basename(file_path)
-        base_name = file_name.replace('.py', '')
-        
-        # Create sub-module directory
-        submodule_dir = os.path.join(file_dir, f"{base_name}_modules")
-        os.makedirs(submodule_dir, exist_ok=True)
-        
-        # Write sub-modules
-        created_modules = []
-        for module_name, module_data in blueprint.items():
-            if not isinstance(module_data, dict):
-                logger.warning(f"   [!] Skipping invalid module entry: {module_name}")
-                continue
-                
-            module_content = module_data.get('content', '').strip()
-            if not module_content:
-                logger.warning(f"   [!] Empty content for module {module_name}")
-                continue
-            
-            # Create sub-module file
-            module_file = os.path.join(submodule_dir, f"{module_name}.py")
-            with open(module_file, 'w', encoding='utf-8', errors='ignore') as f:
-                f.write(module_content)
-            
-            created_modules.append((module_name, module_data.get('exports', [])))
-            logger.info(f"   [+] Created sub-module: {module_name}.py")
-        
-        if not created_modules:
-            logger.warning(f"   [!] No sub-modules created from blueprint")
-            return False
-        
-        # Create router file (original filename becomes orchestrator)
-        router_content = f'''"""
-{base_name} - L3 Orchestration Router
-Auto-generated by Atomic Fission Protocol
-Original file split into sub-modules for atomicity compliance
-"""
-
-# Import all sub-modules
-'''
-        
-        for module_name, exports in created_modules:
-            if exports:
-                exports_str = ', '.join(exports)
-                router_content += f"from .{base_name}_modules.{module_name} import {exports_str}\n"
-            else:
-                router_content += f"from .{base_name}_modules import {module_name}\n"
-        
-        # Safe __all__ generation
-        all_exports = [e for _, exports in created_modules for e in exports]
-        if all_exports:
-            router_content += f"\n__all__ = [" + ", ".join(f'"{e}"' for e in all_exports) + "]\n"
-        else:
-            router_content += "\n# No public exports defined\n__all__ = []\n"
-        
-        # Backup & Write
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup_path = f"{file_path}.fission_backup_{timestamp}"
-        
-        # Atomic backup: copy to temp then move
-        shutil.copy2(file_path, f"{backup_path}.tmp")
-        os.replace(f"{backup_path}.tmp", backup_path)
-        
-        with open(file_path, 'w', encoding='utf-8', errors='ignore') as f:
-            f.write(router_content)
-        
-        logger.info(f"   [✓] Fission complete: {len(created_modules)} sub-modules created")
-        return True
-        
-    except Exception as e:
-        logger.error(f"   [X] Fission blueprint application failed: {e}")
-        return False
 
 
 # ==============================================================================
@@ -422,8 +126,28 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not target_path.is_relative_to(project_root_path):
         raise ValueError(f"[SECURITY BLOCK] Target scope '{target_scope}' escapes project root.")
     
-    ctx.python_files = [str(p) for p in target_path.rglob("*.py") if p.is_file()]
-    print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in safe scope '{target_path}'")
+    # Discover all Python files in target scope
+    discovered_files = [p for p in target_path.rglob("*.py") if p.is_file()]
+    
+    # === L6 RUNTIME: Void Compliance Enforcement ===
+    valid_files, violations = enforce_void_compliance(discovered_files, project_root_path)
+    
+    if violations:
+        print(f"\n⚠️  [VOID COMPLIANCE] {len(violations)} files in forbidden/unknown folders:")
+        for file_path, reason in violations[:5]:  # Show first 5
+            print(f"   [X] {file_path.name}: {reason}")
+        if len(violations) > 5:
+            print(f"   ... and {len(violations) - 5} more violations")
+    
+    ctx.python_files = [str(p) for p in valid_files]
+    print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in {len(ALLOWED_ROOT_FOLDERS)} allowed folders")
+    
+    # Print folder scope summary
+    folder_summary = get_folder_scope_summary(project_root_path)
+    print(f"   [SCOPE] Folder distribution:")
+    for folder, count in sorted(folder_summary.items()):
+        if count > 0:
+            print(f"      • {folder}: {count} files")
     
     # ===========================================================================
     # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Agent Loading & Surgeon Prompt
@@ -492,6 +216,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     # ===========================================================================
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = os.path.basename(file_path)
+        file_path_obj = Path(file_path)
+        
+        # === L6 RUNTIME: Determine Applicable Keys ===
+        applicable_keys = get_applicable_keys_for_file(file_path_obj, project_root_path)
         
         # Check LOC for Safety Threshold
         try:
@@ -499,7 +227,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                 loc_count = len(f.readlines())
         except: loc_count = 0
         
-        print(f"🔍 [{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC)", end='\r')
+        print(f"🔍 [{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
 
         # --- ACTIVE FISSION TRIGGER (Files > 200 Lines) ---
         if loc_count > 200:
@@ -544,6 +272,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
 
         # --- STANDARD VALIDATION (Files < 200 Lines) ---
         print(f"\n", end='') # New line for clean logging
+        
+        # Store applicable keys in context for agents to filter
+        ctx.current_file_applicable_keys = applicable_keys
+        
         for agent in file_validators:
             try:
                 method = getattr(agent, 'execute', getattr(agent, 'run', None))
