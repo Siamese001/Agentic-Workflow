@@ -22,7 +22,7 @@ except ImportError:
 
 @dataclass
 class ValidationContext:
-    """Shared memory for all agents."""
+    """Hardened Shared memory with Fission & Truncation Guard."""
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
     modified_files: Set[str] = field(default_factory=set)
@@ -42,6 +42,10 @@ class ValidationContext:
     thought_signatures: Dict[str, str] = field(default_factory=dict)
     conversation_history: Dict[str, List[Any]] = field(default_factory=dict)
     chat_sessions: Dict[str, Any] = field(default_factory=dict)
+    
+    # L5 Hardening: Truncation & Fission State
+    fission_active: bool = False
+    last_fission_map: Dict[str, str] = field(default_factory=dict)
     
     def __post_init__(self):
         print("\n🔧 Initializing Validation Context...", flush=True)
@@ -100,8 +104,13 @@ class ValidationContext:
         return formatted
     
     async def resilient_mutation(self, agent_name: str, task: str, code: str, file_path: str = None, round_num: int = 1, previous_failure: str = None) -> str:
-        """The 'Smart' fix logic using Gemini 2.5 Flash with thinking_budget for deep healing."""
+        """ELITE L1 Cognition with Truncation Guard and Fission Awareness."""
         original_line_count = len(code.splitlines())
+        
+        # L3 Orchestration: Check if we need to pivot to FISSION
+        if original_line_count > 800 or round_num >= 3:
+            self.fission_active = True
+            task = f"ATOMIC FISSION: The file {file_path} is too large ({original_line_count} lines). Split it into _core.py, _signals.py, and a Facade. Return ONLY a JSON map with keys: 'core', 'signals', 'facade' mapping to their respective code."
         
         chat_key = f"chat_{file_path}" if file_path else "chat_default"
         if previous_failure and chat_key in self.chat_sessions:
@@ -144,8 +153,8 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
         
         try:
             config = types.GenerateContentConfig(
-                temperature=0.2,
-                thinking_config=types.ThinkingConfig(thinking_budget=16000),
+                temperature=0.1,  # Maximum determinism for L1 Cognition
+                thinking_config=types.ThinkingConfig(thinking_budget=50000),  # 50k Budget for deep reasoning
                 tools=[]
             )
             
@@ -183,7 +192,24 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
                         del self.chat_sessions[chat_key]
                     return code
             
-            fixed_code = response.text.strip() if response.text else code
+            raw_output = response.text.strip() if response.text else code
+            
+            # L5 SAFETY: Truncation Guard
+            if not self.fission_active and "..." in raw_output and len(raw_output) < (len(code) * 0.8):
+                print(f"      🚫 TRUNCATION DETECTED: L1 attempted to skip code. Rejecting.", flush=True)
+                return code
+            
+            # L5 Fission: Handle atomic fission response
+            if self.fission_active:
+                try:
+                    import json
+                    self.last_fission_map = json.loads(raw_output)
+                    print(f"      ⚛️  FISSION COMPLETE: Generated {len(self.last_fission_map)} modules", flush=True)
+                    return "FISSION_COMPLETE"
+                except json.JSONDecodeError:
+                    print("      ❌ Fission Error: L1 failed to produce valid JSON.", flush=True)
+                    self.fission_active = False
+                    return code
             
             if hasattr(response, 'usage_metadata'):
                 print(f"      ✅ Tokens: {response.usage_metadata.total_token_count}", flush=True)
@@ -194,10 +220,10 @@ SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
                 self.conversation_history[file_path].append({
                     "round": len(self.conversation_history[file_path]) + 1,
                     "prompt_length": len(prompt),
-                    "response_length": len(fixed_code)
+                    "response_length": len(raw_output)
                 })
             
-            return fixed_code
+            return raw_output
             
         except Exception as e:
             if "maximum_remote_calls" in str(e):
