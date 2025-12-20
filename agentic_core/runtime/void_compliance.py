@@ -5,6 +5,7 @@ Ensures files only exist in ALLOWED_ROOT_FOLDERS and enforces key-to-folder mapp
 """
 
 import logging
+import os
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
@@ -249,3 +250,97 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
             summary[folder] = len(py_files)
     
     return summary
+
+
+def check_single_child_violations(project_root: Path) -> List[Tuple[Path, str]]:
+    """
+    Detect "single-child" antipattern: L2/L3 folders containing only one item.
+    These should be collapsed into parent to maintain flat-velocity.
+    
+    Args:
+        project_root: Project root directory
+        
+    Returns:
+        List of (folder_path, violation_reason) tuples
+    """
+    violations = []
+    
+    for root_folder in ALLOWED_ROOT_FOLDERS:
+        folder_path = project_root / root_folder
+        if not folder_path.exists():
+            continue
+            
+        # Check all subdirectories
+        for dirpath, dirnames, filenames in os.walk(folder_path):
+            current_dir = Path(dirpath)
+            
+            # Count immediate children (dirs + files, excluding __pycache__)
+            children_dirs = [d for d in dirnames if d != "__pycache__"]
+            children_files = [f for f in filenames if not f.startswith(".")]
+            total_children = len(children_dirs) + len(children_files)
+            
+            # Single-child violation
+            if total_children == 1:
+                child_name = children_dirs[0] if children_dirs else children_files[0]
+                violations.append((
+                    current_dir,
+                    f"Single-child antipattern: '{current_dir.name}' contains only '{child_name}' - should be collapsed"
+                ))
+    
+    return violations
+
+
+def check_import_waterfall_violations(file_path: Path, project_root: Path) -> List[str]:
+    """
+    Enforce Dependency Waterfall: Sovereign directories must NEVER import from apps_*.
+    
+    Waterfall Rule:
+    - agentic_core/ (Sovereign) -> Can import: nothing from apps
+    - prompt_governance/ (Sovereign) -> Can import: nothing from apps
+    - schemas/ (Sovereign) -> Can import: nothing from apps
+    - apps_shared/ -> Can import: agentic_core, schemas
+    - apps_rg/, apps_lic/ -> Can import: agentic_core, schemas, apps_shared
+    
+    Args:
+        file_path: Path to Python file
+        project_root: Project root directory
+        
+    Returns:
+        List of violation messages
+    """
+    violations = []
+    
+    try:
+        rel_path = file_path.relative_to(project_root)
+        parts = rel_path.parts
+        
+        # Check if file is in a sovereign directory
+        is_sovereign = any(sov in parts for sov in ["agentic_core", "prompt_governance", "schemas"])
+        
+        if not is_sovereign:
+            return violations
+            
+        # Read file and check imports
+        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+            content = f.read()
+            
+        # Check for forbidden imports from apps
+        forbidden_patterns = [
+            "from apps_rg",
+            "from apps_lic", 
+            "from apps_shared",
+            "import apps_rg",
+            "import apps_lic",
+            "import apps_shared",
+        ]
+        
+        for pattern in forbidden_patterns:
+            if pattern in content:
+                violations.append(
+                    f"WATERFALL VIOLATION (Key 40): Sovereign file imports from apps domain: '{pattern}'"
+                )
+                
+    except Exception as e:
+        logger.warning(f"Could not check import waterfall for {file_path}: {e}")
+        
+    return violations

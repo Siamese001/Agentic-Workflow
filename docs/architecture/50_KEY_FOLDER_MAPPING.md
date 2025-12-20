@@ -4,6 +4,47 @@
 
 This document defines the canonical mapping between the 50 validation keys and the project's folder structure, enforcing logical separation and scope boundaries.
 
+**Hardening Status:** This specification includes L6 runtime enforcement with anti-single-child detection, import waterfall validation, and self-validation priority for sovereign directories.
+
+---
+
+## 🛡️ **Hardening Rules**
+
+### **1. Anti-Single-Child Rule (L6 Compliance)**
+
+**Rule:** Any L2 or L3 folder containing only one sub-item must be collapsed into its parent to maintain flat-velocity.
+
+**Enforcement:** `check_single_child_violations()` detects and reports these violations during validation.
+
+**Example:**
+```
+❌ VIOLATION: prompt_governance/logic/negative/ contains only constraints.md
+✅ CORRECT: prompt_governance/logic/negative_constraints.md
+```
+
+### **2. Import Waterfall Rule (Key 40 Critical)**
+
+**Rule:** Strictly enforce the Dependency Waterfall. Sovereign directories (agentic_core, prompt_governance, schemas) must NEVER import from apps_*.
+
+**Waterfall:**
+- Sovereign → Can import: NOTHING from apps
+- apps_shared → Can import: agentic_core, schemas
+- apps_rg/apps_lic → Can import: agentic_core, schemas, apps_shared
+
+**Enforcement:** `check_import_waterfall_violations()` scans Python files for forbidden imports.
+
+**Violation Example:**
+```python
+# ❌ CRITICAL in agentic_core/L5_safety/guardrail.py
+from apps_shared.signal_bus import EventBus  # FORBIDDEN
+```
+
+### **3. Self-Validation Priority (Keys 40-42)**
+
+**Rule:** The Brain (agentic_core) has "Self-Validation" priority. The validator must validate itself before validating apps domains.
+
+**Enforcement:** Run canon validator on `agentic_core/` first in CI/CD pipelines.
+
 ---
 
 ## 📋 **Complete Key-to-Folder Mapping**
@@ -126,6 +167,8 @@ This document defines the canonical mapping between the 50 validation keys and t
 - Max LOC: 200 lines per file
 - Cyclomatic complexity thresholds
 - Cognitive complexity bounds
+- **Import Waterfall**: No sovereign → apps imports (CRITICAL)
+- **Single-Child Detection**: No folders with only one item
 
 ---
 
