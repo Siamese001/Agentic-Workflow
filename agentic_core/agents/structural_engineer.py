@@ -33,16 +33,22 @@ class StructuralEngineer(CanonBaseAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Code Structure...")
         
         # Check Key 20: Large classes
+        print(f"   [{self.name}] 🔍 Checking Key 20: Large Classes...")
         passed, violations = self.check_key_20_no_large_classes()
         if not passed:
-            print(f"   [{self.name}] Key 20: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 20: FAIL ({len(violations)} violations)")
             await self._heal_violations(20, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 20: PASS - All classes within limits")
         
         # Check Key 21: Large functions
+        print(f"   [{self.name}] 🔍 Checking Key 21: Large Functions...")
         passed, violations = self.check_key_21_no_large_functions()
         if not passed:
-            print(f"   [{self.name}] Key 21: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 21: FAIL ({len(violations)} violations) - Large functions detected")
             await self._heal_violations(21, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 21: PASS - All functions within limits")
     
     def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
         """
@@ -179,10 +185,14 @@ class StructuralEngineer(CanonBaseAgent):
         file_violations = {}
         for violation in violations[:max_healing_per_file]:
             if ':' in violation:
-                file_path = violation.split(':')[0]
-                if file_path not in file_violations:
-                    file_violations[file_path] = []
-                file_violations[file_path].append(violation)
+                # FIX: Handle Windows paths correctly (C:\path\file.py: message)
+                # Split on ': ' (colon-space) instead of just ':' to avoid splitting drive letters
+                parts = violation.split(': ', 1)
+                if len(parts) >= 1:
+                    file_path = parts[0]
+                    if file_path not in file_violations:
+                        file_violations[file_path] = []
+                    file_violations[file_path].append(violation)
         
         # Heal each file
         for file_path, file_viols in file_violations.items():

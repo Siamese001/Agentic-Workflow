@@ -68,29 +68,50 @@ class IntelligentOrchestrator:
         are not met, it will stand down. Critical failures can abort the mission.
         """
         print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
+        print(f"\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...")
+        
+        # Track agent execution
+        agents_executed = 0
+        agents_passed = 0
+        agents_failed = 0
 
         # Initialize MCP async services for filesystem operations
         await self.ctx.services.init_mcp_async()
 
-        for agent in self.swarm:
+        for i, agent in enumerate(self.swarm, 1):
+            print(f"\n[MISSION] Agent {i}/{len(self.swarm)}: {agent.name}")
+            
             if not agent.can_run():
                 print(f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
                 continue
 
+            agents_executed += 1
+            
             try:
+                print(f"   ⚡ Executing {agent.name}...")
                 result = agent.execute()
                 if asyncio.iscoroutine(result):
                     await result
+                agents_passed += 1
+                print(f"   ✅ {agent.name} completed successfully")
             except Exception as e:
                 # Catching broad Exception is acceptable here as it's an orchestrator
                 # reporting agent failures, not necessarily recovering from them.
-                print(f"   [ALERT] AGENT CRASH ({agent.name}): {e}")
+                print(f"   ❌ [ALERT] AGENT CRASH ({agent.name}): {e}")
+                agents_failed += 1
 
             if "CRITICAL_FAIL" in self.ctx.signals:
                 print("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
                 print("   Action: Fix Key 40/41/50 immediately.")
                 break
 
+        # Print execution summary
+        print(f"\n[MISSION] Agent Execution Summary:")
+        print(f"   • Total Agents: {len(self.swarm)}")
+        print(f"   • Executed: {agents_executed}")
+        print(f"   • Passed: {agents_passed} ✅")
+        print(f"   • Failed: {agents_failed} ❌")
+        
         self.print_mission_report()
 
     def print_mission_report(self) -> None:

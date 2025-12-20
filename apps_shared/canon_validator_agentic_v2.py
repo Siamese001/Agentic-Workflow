@@ -31,9 +31,12 @@ from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprin
 from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
 from agentic_core.runtime import (
     ALLOWED_ROOT_FOLDERS,
+    check_import_waterfall_violations,
+    check_single_child_violations,
     enforce_void_compliance,
     get_applicable_keys_for_file,
     get_folder_scope_summary,
+    validate_file_location,
 )
 
 # Configure logging
@@ -46,6 +49,77 @@ logger = logging.getLogger(__name__)
 # apply_fission_blueprint) have been moved to agentic_core/ for reusability.
 # They are imported at the top of this file.
 # ==============================================================================
+
+
+# ==============================================================================
+# L6 PEACEKEEPER: PHYSICAL BOUNDARY ENFORCEMENT
+# ==============================================================================
+
+def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
+    """
+    Integrates Void Compliance into the Master Validation Sweep.
+    Ensures the system is self-aware of its physical boundaries before judging code.
+    
+    Args:
+        target_sector: Target directory to validate
+        project_root: Project root directory
+        
+    Returns:
+        True if sector is void-compliant, False otherwise
+    """
+    print(f"\n[*] L6 PRE-FLIGHT: Enforcing Void Compliance on {target_sector}...")
+    
+    target_path = Path(target_sector).resolve()
+    
+    # Check 1: Single-Child Antipattern Detection
+    single_child_violations = check_single_child_violations(target_path if target_path.is_dir() else project_root)
+    if single_child_violations:
+        print(f"[!] L6 ALERT: Found {len(single_child_violations)} single-child antipatterns:")
+        for folder_path, reason in single_child_violations[:3]:
+            print(f"   [X] {folder_path.relative_to(project_root)}: {reason}")
+        if len(single_child_violations) > 3:
+            print(f"   ... and {len(single_child_violations) - 3} more violations")
+    
+    # Check 2: Import Waterfall Violations (Sovereign -> Apps)
+    waterfall_violations = []
+    if target_path.is_dir():
+        for py_file in target_path.rglob("*.py"):
+            violations = check_import_waterfall_violations(py_file, project_root)
+            if violations:
+                waterfall_violations.extend([(py_file, v) for v in violations])
+    
+    if waterfall_violations:
+        print(f"[!] L6 ALERT: Found {len(waterfall_violations)} import waterfall violations:")
+        for file_path, reason in waterfall_violations[:3]:
+            print(f"   [X] {file_path.name}: {reason}")
+        if len(waterfall_violations) > 3:
+            print(f"   ... and {len(waterfall_violations) - 3} more violations")
+    
+    # Check 3: File Location Validation
+    location_violations = []
+    if target_path.is_dir():
+        for py_file in target_path.rglob("*.py"):
+            is_valid, reason = validate_file_location(py_file, project_root)
+            if not is_valid:
+                location_violations.append((py_file, reason))
+    
+    if location_violations:
+        print(f"[!] L6 ALERT: Found {len(location_violations)} file location violations:")
+        for file_path, reason in location_violations[:3]:
+            print(f"   [X] {file_path.name}: {reason}")
+        if len(location_violations) > 3:
+            print(f"   ... and {len(location_violations) - 3} more violations")
+    
+    # Summary
+    total_violations = len(single_child_violations) + len(waterfall_violations) + len(location_violations)
+    
+    if total_violations == 0:
+        print("[OK] L6 PRE-FLIGHT: Sector is Void-Compliant.")
+        return True
+    else:
+        print(f"[!] L6 PRE-FLIGHT: {total_violations} physical structure violations detected.")
+        print("    ArchitectureGovernor may auto-flatten or halt based on severity.")
+        return False
 
 
 # ==============================================================================
@@ -65,6 +139,13 @@ async def run_mission(target_scope: str = "agentic_core"):
     project_root = Path(__file__).parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
+    
+    # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
+    # Execute void compliance check BEFORE any validation begins
+    l6_compliant = run_l6_preflight(target_scope, project_root)
+    if not l6_compliant:
+        print("\n⚠️  [L6 WARNING] Physical structure violations detected.")
+        print("    Proceeding with validation, but auto-healing may be restricted.")
 
     # --- L5 HARDENING INSTANTIATION ---
     # 1. Initialize Safety Components

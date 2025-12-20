@@ -39,9 +39,9 @@ import uuid  # Added for unique ID generation
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+from core.semantic_gatekeeper import get_gatekeeper
 from db_manager import HybridDatabaseManager
 
-from core.semantic_gatekeeper import get_gatekeeper
 from schemas import CanonEntry
 
 logger = logging.getLogger(__name__)

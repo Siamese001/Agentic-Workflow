@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from core.qdrant_cache import QdrantCache
 from core.semantic_gatekeeper import get_gatekeeper
+
 from schemas import CanonEntry
 
 logger = logging.getLogger(__name__)

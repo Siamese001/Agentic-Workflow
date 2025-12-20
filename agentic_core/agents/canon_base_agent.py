@@ -174,6 +174,14 @@ class CanonBaseAgent(ABC):
         # Get text response
         if hasattr(first_part, 'text'):
             generated_code = first_part.text.strip()
+            
+            # CRITICAL FIX: Strip markdown fences and extract pure Python code
+            generated_code = self._extract_python_code(generated_code)
+            
+            # CRITICAL FIX: Validate that this is actual Python code
+            if not self._is_valid_python(generated_code):
+                print(f"      [!] Response is not valid Python code - rejecting", flush=True)
+                return code
 
             # NEGATIVE CONSTRAINT CHECK: Verify no banned imports
             is_valid, violations = self.check_negative_constraints(generated_code)
@@ -192,6 +200,59 @@ class CanonBaseAgent(ABC):
         # Fallback if no text part
         print(f"      [!] Malformed response from Gemini (no text part)", flush=True)
         return code
+    
+    def _extract_python_code(self, text: str) -> str:
+        """
+        Extract pure Python code from LLM response, stripping markdown fences
+        and any explanatory text.
+        """
+        # Remove markdown code blocks
+        if "```python" in text:
+            # Extract content between ```python and ```
+            start = text.find("```python") + 9
+            end = text.find("```", start)
+            if end != -1:
+                code = text[start:end].strip()
+                return code
+        elif "```" in text:
+            # Extract content between first pair of ```
+            start = text.find("```") + 3
+            end = text.find("```", start)
+            if end != -1:
+                code = text[start:end].strip()
+                return code
+        
+        # If no markdown fences, check if the text starts with Python-like content
+        lines = text.split('\n')
+        python_lines = []
+        
+        # Skip leading non-Python lines (comments, explanations)
+        for line in lines:
+            stripped = line.strip()
+            # Skip empty lines, comments, or explanatory text
+            if not stripped or stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
+                if stripped and not (stripped.startswith('"""') or stripped.startswith("'''")):
+                    continue  # Skip regular comments
+                python_lines.append(line)
+                continue
+            
+            # If we hit what looks like Python code, include everything after
+            python_lines.append(line)
+            # Add remaining lines
+            python_lines.extend(lines[lines.index(line) + 1:])
+            break
+        
+        return '\n'.join(python_lines) if python_lines else text
+    
+    def _is_valid_python(self, code: str) -> bool:
+        """
+        Validate that the code is valid Python syntax.
+        """
+        try:
+            ast.parse(code)
+            return True
+        except SyntaxError:
+            return False
 
     async def resilient_mutation(
         self,
@@ -242,7 +303,12 @@ class CanonBaseAgent(ABC):
             if str(project_root) not in sys.path:
                 sys.path.insert(0, str(project_root))
 
-            from prompts.prompt_loader import load_prompt_for_agent
+            # Try the legacy location first
+            try:
+                from archives.legacy_code.prompts.prompt_loader import load_prompt_for_agent
+            except ImportError:
+                # If not in archives, try root prompts (if it exists)
+                from prompts.prompt_loader import load_prompt_for_agent
 
             # Build complete prompt from modularized files
             prompt = load_prompt_for_agent(

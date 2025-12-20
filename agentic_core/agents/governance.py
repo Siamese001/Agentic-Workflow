@@ -11,7 +11,7 @@ import subprocess
 from typing import List, Tuple
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
+from agentic_core.domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
 
 
 class ArchitectureGovernor(SubAtomicAgent):
@@ -23,25 +23,43 @@ class ArchitectureGovernor(SubAtomicAgent):
     MAX_COMPLEXITY = 10
     MAX_FUNC_LINES = 50
 
-    def can_run(self) -> bool:
-        return True
-
     async def execute(self):
+        """Execute Architecture Governor validation checks."""
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
+        print(f"   [{self.name}] 🏛️  Analyzing {len(self.ctx.python_files)} files for architectural compliance...")
 
         violations = {'depth': [], 'atomicity': [], 'complexity': [], 'system': []}
+
+        # Progress tracking
+        files_processed = 0
+        total_files = len(self.ctx.python_files)
 
         for file_path in self.ctx.python_files:
             violations['depth'].extend(self._check_depth(file_path))
             violations['atomicity'].extend(await self._check_atomicity(file_path))
             violations['system'].extend(self._check_system(file_path))
             violations['complexity'].extend(await self._check_complexity(file_path))
+
+            files_processed += 1
+            if files_processed % 50 == 0 or files_processed == total_files:
+                print(f"   [{self.name}] 📊 Processed {files_processed}/{total_files} files...")
+
             # Yield control to the event loop to prevent blocking during heavy file analysis
             await asyncio.sleep(0)
 
+        # Summary report
+        print(f"\n   [{self.name}] 📋 ARCHITECTURAL VIOLATION SUMMARY:")
+        total_violations = sum(len(v) for v in violations.values())
         for cat, v in violations.items():
             if v:
-                print(f"   [ARCH]  {cat.title()} Violations: {len(v)}")
+                print(f"      • {cat.title()}: {len(v)} violations")
+            else:
+                print(f"      • {cat.title()}: ✅ PASS")
+
+        if total_violations > 0:
+            print(f"   [{self.name}] ⚠️  Total violations: {total_violations}")
+        else:
+            print(f"   [{self.name}] ✅ Perfect architectural compliance!")
 
         self.ctx.report(self.name, 49, not violations['depth'], violations['depth'])
         self.ctx.report(self.name, 50, not violations['atomicity'], violations['atomicity'])
@@ -154,7 +172,7 @@ OUTPUT FORMAT (JSON):
 Generate the blueprint now:"""
 
             # Call Gemini with safe config
-            from apps_shared.canon_validator_agentic_v2 import SubAtomicEngine
+            from agentic_core.L5_safety import SubAtomicEngine
             config = SubAtomicEngine.get_safe_config(is_fission=True)
             
             response = await asyncio.to_thread(

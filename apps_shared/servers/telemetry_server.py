@@ -2,7 +2,6 @@ import logging
 
 import duckdb
 from mcp.server.fastmcp import FastMCP
-
 from services.configuration import ConfigurationService
 
 _logger = logging.getLogger(__name__)
