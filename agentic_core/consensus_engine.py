@@ -223,7 +223,7 @@ class ConsensusEngine:
             A dictionary with "status" ("SUCCESS" or "FAILED") and "fixed_code" if successful,
             or "error" if no fix could be generated.
         """
-        logger.info(f"🔧 Consensus Engine: Proposing fix for error: {error_message[:100]}...")
+        logger.info(f"[+] Consensus Engine: Proposing fix for error: {error_message[:100]}...")
 
         fixed_code = code
         error_lower = error_message.lower()

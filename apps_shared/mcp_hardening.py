@@ -40,13 +40,13 @@ def get_version_locked_design(file_id: str, version_id: str, logger: Optional[An
 
         if logger:
             logger.info(
-                f"✅ Figma: Retrieved version-locked design v{version_id}")
+                f"[OK] Figma: Retrieved version-locked design v{version_id}")
 
         return design_data
 
     except Exception as e:
         if logger:
-            logger.error(f"❌ Figma version-locked access failed: {e}")
+            logger.error(f"[X] Figma version-locked access failed: {e}")
         raise
 
 
@@ -70,13 +70,13 @@ def get_brand_style_guide(brand_id: str, logger: Optional[Any] = None) -> Dict[s
                 ]
             }])
             if logger:
-                logger.info(f"✅ Figma: Retrieved brand style guide for {brand_id}")
+                logger.info(f"[OK] Figma: Retrieved brand style guide for {brand_id}")
 
             return style_data
 
         except Exception as e:
             if logger:
-                logger.warning(f"⚠️ Figma brand guide retrieval failed: {e}")
+                logger.warning(f"[!] Figma brand guide retrieval failed: {e}")
             # Return fallback brand guidelines
             return {
                 "colors": ["#000000", "#FFFFFF", "#007ACC"],
@@ -87,7 +87,7 @@ def get_brand_style_guide(brand_id: str, logger: Optional[Any] = None) -> Dict[s
 
     except Exception as e:
         if logger:
-            logger.warning(f"⚠️ Figma brand guide retrieval failed: {e}")
+            logger.warning(f"[!] Figma brand guide retrieval failed: {e}")
         # Return fallback brand guidelines
         return {
             "colors": ["#000000", "#FFFFFF", "#007ACC"],
@@ -134,15 +134,15 @@ def check_design_drift(file_id: str, canonical_version: str, logger: Optional[An
         if logger:
             if drift_detected:
                 logger.warning(
-                    f"⚠️ Design drift detected: {len(drift_report)} violations")
+                    f"[!] Design drift detected: {len(drift_report)} violations")
             else:
-                logger.info("✅ No design drift detected")
+                logger.info("[OK] No design drift detected")
 
         return result
 
     except Exception as e:
         if logger:
-            logger.error(f"❌ Design drift check failed: {e}")
+            logger.error(f"[X] Design drift check failed: {e}")
         return {"drift_detected": True, "error": str(e)}
 
 # --- Brave Search Hardening Functions ---
@@ -166,7 +166,7 @@ def execute_cost_controlled_search(query: str, max_daily_queries: int = 500, log
             string_set(SEARCH_LIMIT_KEY, "0")
             string_set(RESET_TIME_KEY, today)
             if logger:
-                logger.info("🔄 Daily search counter reset")
+                logger.info("[~] Daily search counter reset")
     except Exception:
         pass
 
@@ -177,12 +177,12 @@ def execute_cost_controlled_search(query: str, max_daily_queries: int = 500, log
         if current_count > max_daily_queries:
             if logger:
                 logger.error(
-                    f"❌ Brave Search aborted: Daily query limit ({max_daily_queries}) exceeded")
+                    f"[X] Brave Search aborted: Daily query limit ({max_daily_queries}) exceeded")
             return None  # Abort search, save cost
 
         if logger:
             logger.info(
-                f"✅ Search budget check passed: {current_count}/{max_daily_queries}")
+                f"[OK] Search budget check passed: {current_count}/{max_daily_queries}")
 
     except Exception as e:
         if logger:
@@ -192,7 +192,7 @@ def execute_cost_controlled_search(query: str, max_daily_queries: int = 500, log
     # 3. Execute Brave Search (L1/L3 Action)
     try:
         if logger:
-            logger.info(f"🔍 Executing Brave Search for: {query}")
+            logger.info(f"[SCAN] Executing Brave Search for: {query}")
 
         return brave_search(query=query, count=5)
 
@@ -215,7 +215,7 @@ def execute_time_bound_search(query: str, months_back: int = 6, logger: Optional
     time_constrained_query = f"{query} after:{date_str}"
 
     if logger:
-        logger.info(f"🔍 Time-bound search: {time_constrained_query}")
+        logger.info(f"[SCAN] Time-bound search: {time_constrained_query}")
 
     return execute_cost_controlled_search(time_constrained_query, logger=logger)
 
@@ -236,12 +236,12 @@ def execute_vulnerability_search(security_query: str, logger: Optional[Any] = No
         result = execute_cost_controlled_search(site_query, logger=logger)
         if result:
             if logger:
-                logger.info(f"✅ Found vulnerability info on security site")
+                logger.info(f"[OK] Found vulnerability info on security site")
             return result
 
     # Fallback to general search if no specific results
     if logger:
-        logger.info("🔄 No specific security results, trying general search")
+        logger.info("[~] No specific security results, trying general search")
 
     return execute_cost_controlled_search(
         f"{security_query} vulnerability security",
@@ -277,9 +277,9 @@ def ensure_brand_compliance(content: str, brand_guidelines: Dict[str, Any], logg
 
     if logger:
         if result['compliant']:
-            logger.info("✅ Content complies with brand guidelines")
+            logger.info("[OK] Content complies with brand guidelines")
         else:
-            logger.warning(f"⚠️ Brand compliance issues: {compliance_issues}")
+            logger.warning(f"[!] Brand compliance issues: {compliance_issues}")
 
     return result
 

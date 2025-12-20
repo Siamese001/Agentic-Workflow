@@ -1048,10 +1048,10 @@ class NervousSystem:
                             break
 
                 if not agent_found:
-                    LOGGER.warning(f"  ⚠️  Forced agent not found: {agent_name}")
+                    LOGGER.warning(f"  [!]  Forced agent not found: {agent_name}")
 
             except Exception as e:
-                LOGGER.error(f"  ❌ Error executing forced agent {agent_name}: {e}")
+                LOGGER.error(f"  [X] Error executing forced agent {agent_name}: {e}")
                 self._signals.add(f"{agent_name.upper()}_FORCED_ERROR")
 
         # Clear forced agents after execution

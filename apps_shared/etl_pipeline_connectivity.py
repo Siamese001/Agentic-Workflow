@@ -67,8 +67,8 @@ class ETLPipeline:
             return [c.strip() for c in content.split('\n\n') if len(c.strip()) > 50]
 
     def run(self):
-        # print("🚀 STARTING ETL PIPELINE")  # [Security Fix]
-        # print(f"📂 Source: {self.source_dir}")  # [Security Fix]
+        # print("[START] STARTING ETL PIPELINE")  # [Security Fix]
+        # print(f"[DIR] Source: {self.source_dir}")  # [Security Fix]
 
         files = self.scan_files()
         # print(f"📄 Found {len(files)} files to process.")  # [Security Fix]
@@ -119,12 +119,12 @@ class ETLPipeline:
         self._print_summary()
 
     def _print_summary(self):
-        # print("\n📊 ETL SUMMARY")  # [Security Fix]
+        # print("\n[STATS] ETL SUMMARY")  # [Security Fix]
         # print("=========================")  # [Security Fix]
         # print(f"Total Chunks Processed: {self.stats['processed']}")  # [Security Fix]
-        # print(f"✅ Ingested (New):      {self.stats['ingested']}")  # [Security Fix]
-        # print(f"♻️  Duplicates (Saved):  {self.stats['duplicates']}")  # [Security Fix]
-        # print(f"❌ Errors:              {self.stats['errors']}")  # [Security Fix]
+        # print(f"[OK] Ingested (New):      {self.stats['ingested']}")  # [Security Fix]
+        # print(f"[REUSE]  Duplicates (Saved):  {self.stats['duplicates']}")  # [Security Fix]
+        # print(f"[X] Errors:              {self.stats['errors']}")  # [Security Fix]
         # print("=========================")  # [Security Fix]
         pass
 

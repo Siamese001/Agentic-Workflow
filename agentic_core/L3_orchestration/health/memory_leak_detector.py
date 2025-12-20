@@ -218,7 +218,7 @@ class MemoryLeakDetector:
         }
 
         # Log alert
-        LOGGER.error(f"🚨 MEMORY LEAK DETECTED in cycle {cycle_id}")
+        LOGGER.error(f"[ALERT] MEMORY LEAK DETECTED in cycle {cycle_id}")
         LOGGER.error(f"  Growth: {growth_mb:.1f}MB (threshold: {MEMORY_THRESHOLD_MB}MB)")
         LOGGER.error(f"  Peak growth: {peak_growth_mb:.1f}MB")
 

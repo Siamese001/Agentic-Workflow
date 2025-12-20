@@ -217,12 +217,12 @@ class MemoryArchitect(SubAtomicAgent):
                 try:
                     self.pc = Pinecone(api_key=api_key)
                     self.index = self.pc.Index("structural-patterns")
-                    logger.info("✅ Memory Architect connected to Pinecone")
+                    logger.info("[OK] Memory Architect connected to Pinecone")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Pinecone: {e}")
+                    logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     self.pinecone_available = False
             else:
-                logger.warning("⚠️  PINECONE_API_KEY not found")
+                logger.warning("[!]  PINECONE_API_KEY not found")
                 self.pinecone_available = False
         
         # Track processed successes to avoid duplicates
@@ -253,7 +253,7 @@ class MemoryArchitect(SubAtomicAgent):
             try:
                 await self._harvest_success(success)
             except Exception as e:
-                logger.error(f"❌ Error harvesting success from {success.file_path}: {e}")
+                logger.error(f"[X] Error harvesting success from {success.file_path}: {e}")
     
     def _detect_healing_successes(self) -> List[HealingSuccess]:
         """
@@ -330,7 +330,7 @@ class MemoryArchitect(SubAtomicAgent):
         # Stage 4: Inoculation - Upsert to Pinecone
         await self._inoculate_pattern(pattern)
         
-        logger.info(f"✅ Successfully harvested pattern from {success.file_path}")
+        logger.info(f"[OK] Successfully harvested pattern from {success.file_path}")
     
     async def _synthesize_pattern(self, success: HealingSuccess, diff_analysis: Dict) -> Optional[DistilledPattern]:
         """
@@ -553,10 +553,10 @@ class MemoryArchitect(SubAtomicAgent):
                 namespace=self.namespace
             )
             
-            logger.info(f"✅ Pattern inoculated to Pinecone: {pattern.pattern_id}")
+            logger.info(f"[OK] Pattern inoculated to Pinecone: {pattern.pattern_id}")
             
         except Exception as e:
-            logger.error(f"❌ Error inoculating pattern: {e}")
+            logger.error(f"[X] Error inoculating pattern: {e}")
             # Fallback to local storage
             self._store_pattern_locally(pattern)
     
@@ -612,7 +612,7 @@ class MemoryArchitect(SubAtomicAgent):
                 'timestamp': pattern.timestamp
             }, f, indent=2)
         
-        logger.info(f"✅ Pattern stored locally: {pattern_file}")
+        logger.info(f"[OK] Pattern stored locally: {pattern_file}")
 
 
 # Singleton instance for global access

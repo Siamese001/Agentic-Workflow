@@ -293,7 +293,7 @@ async def main():
         await demonstrate_full_autonomy()
 
         # print("\n" + "=" * 50) # NOTE: Replace with logger (Key 02)
-        # print("✅ All autonomy demonstrations completed successfully!") # NOTE: Replace with logger (Key 02)
+        # print("[OK] All autonomy demonstrations completed successfully!") # NOTE: Replace with logger (Key 02)
 
     except Exception as e:
         logger.error(f"Demonstration failed: {e}")

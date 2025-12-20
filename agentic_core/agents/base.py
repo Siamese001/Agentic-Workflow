@@ -31,7 +31,7 @@ class SubAtomicAgent:
 
         except Exception as e:
             # Catching broad Exception to ensure all agent execution errors are reported.
-            print(f"   ❌ [{self.name}] Error: {e}")
+            print(f"   [X] [{self.name}] Error: {e}")
             raise
 
 
@@ -114,7 +114,7 @@ class ImportPatcher:
         if not change_map:
             return
 
-        print(f"   🔧 Patching imports for {len(change_map)} module changes...")
+        print(f"   [+] Patching imports for {len(change_map)} module changes...")
 
         # Build import dependency map by querying the ValidationContext.
         # This map indicates which files import the modules that have changed.
@@ -126,7 +126,7 @@ class ImportPatcher:
             affected_files.update(file_list)
 
         if not affected_files:
-            print("   ✅ No external imports to patch.")
+            print("   [OK] No external imports to patch.")
             return
 
         # Build patch instructions for each affected file
@@ -153,14 +153,14 @@ class ImportPatcher:
                 return f.read()
         except Exception as e:
             # Broad exception catch to report file read issues without halting.
-            print(f"   ❌ Failed to read file {file_path}: {e}")
+            print(f"   [X] Failed to read file {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
             return None
 
     def _apply_patch_and_log(self, file_path: str, updated_content: str):
         """Applies the patched content to the file and logs the outcome."""
         if self.ctx.write_compliant_file(file_path, updated_content):
-            print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
+            print(f"   [OK] Imports patched: {os.path.basename(file_path)}")
 
     async def _execute_import_mutation(
         self, source_agent: str, patch_task: str, content: str, file_path: str
@@ -172,7 +172,7 @@ class ImportPatcher:
             )
         except Exception as e:
             # Broad exception catch to report mutation request issues without halting.
-            print(f"   ❌ Failed to request mutation for {file_path}: {e}")
+            print(f"   [X] Failed to request mutation for {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
             return None
 

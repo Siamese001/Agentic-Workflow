@@ -57,10 +57,10 @@ class MemoryLeakDetector(SubAtomicAgent):
         target_files = list(modified_files) if modified_files else self.ctx.python_files
 
         if not target_files:
-            print("   ✅ No files to check for leaks")
+            print("   [OK] No files to check for leaks")
             return
 
-        print(f"   🔍 Scanning {len(target_files)} files for resource leaks...")
+        print(f"   [SCAN] Scanning {len(target_files)} files for resource leaks...")
         print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
 
         # Track leak fixes
@@ -83,7 +83,7 @@ class MemoryLeakDetector(SubAtomicAgent):
         if fixed_files:
             print(f"   🛡️  Resource leaks fixed in {len(fixed_files)} files")
         else:
-            print("   ✅ No resource leaks detected")
+            print("   [OK] No resource leaks detected")
 
     async def _scan_and_fix(self, file_path):
         """Scan file for leaks and apply fixes."""
@@ -125,7 +125,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                     }
 
         except Exception as e:
-            print(f"   ❌ Failed to fix leaks in {file_path}: {e}")
+            print(f"   [X] Failed to fix leaks in {file_path}: {e}")
             return {
                 'file': file_path,
                 'error': str(e),
@@ -224,7 +224,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                                     })
 
         except Exception as e:
-            print(f"   ⚠️  AST analysis failed: {e}")
+            print(f"   [!]  AST analysis failed: {e}")
 
         return context
 
@@ -336,10 +336,10 @@ class MemoryLeakDetector(SubAtomicAgent):
             report_content += f"## Resource Fixes\n\n"
             for entry in log_entries:
                 if 'error' in entry:
-                    report_content += f"### ❌ {entry['file']}\n\n"
+                    report_content += f"### [X] {entry['file']}\n\n"
                     report_content += f"**Error:** {entry['error']}\n\n"
                 else:
-                    report_content += f"### ✅ {entry['file']}\n\n"
+                    report_content += f"### [OK] {entry['file']}\n\n"
 
                     leaks = entry['leaks']
                     report_content += f"**Leaks Fixed:**\n"
@@ -511,10 +511,10 @@ class DeadlockDetector(SubAtomicAgent):
         target_files = list(modified_files) if modified_files else self.ctx.python_files
 
         if not target_files:
-            print("   ✅ No files to check for deadlocks")
+            print("   [OK] No files to check for deadlocks")
             return
 
-        print(f"   🔍 Analyzing {len(target_files)} files for deadlock patterns...")
+        print(f"   [SCAN] Analyzing {len(target_files)} files for deadlock patterns...")
         print(f"   🎯 Building global lock acquisition graph")
 
         # Global graph to merge all file graphs
@@ -578,12 +578,12 @@ class DeadlockDetector(SubAtomicAgent):
                             })
 
             except Exception as e:
-                print(f"   ❌ Failed to analyze {file_path}: {e}")
+                print(f"   [X] Failed to analyze {file_path}: {e}")
 
         # Detect cycles in the global graph
         global_cycles = self._detect_global_cycles(global_graph)
         if global_cycles:
-            print(f"   🚨 Global deadlock cycles detected: {len(global_cycles)}")
+            print(f"   [ALERT] Global deadlock cycles detected: {len(global_cycles)}")
 
         # Save deadlock analysis report
         self._save_analysis_report(global_graph, global_cycles, all_timeouts, fixed_files)
@@ -591,7 +591,7 @@ class DeadlockDetector(SubAtomicAgent):
         if fixed_files:
             print(f"   🔒 Deadlock risks fixed in {len(fixed_files)} files")
         else:
-            print("   ✅ No deadlock risks detected")
+            print("   [OK] No deadlock risks detected")
 
     def _detect_global_cycles(self, graph):
         """Detect cycles in the global lock acquisition graph."""
@@ -704,7 +704,7 @@ class DeadlockDetector(SubAtomicAgent):
         if fixed_files:
             report_content += f"## Files Fixed\n\n"
             for file_path in fixed_files:
-                report_content += f"- ✅ {file_path}\n"
+                report_content += f"- [OK] {file_path}\n"
 
         self.ctx.write_compliant_file(report_path, report_content)
 

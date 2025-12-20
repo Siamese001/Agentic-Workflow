@@ -141,7 +141,7 @@ class UniversalContext:
         self._load_memory()
         
         self._initialized = True
-        logger.info("✅ Universal Context initialized (singleton)")
+        logger.info("[OK] Universal Context initialized (singleton)")
     
     @property
     def client(self):
@@ -160,7 +160,7 @@ class UniversalContext:
                 raise ValueError("GOOGLE_API_KEY not found in environment")
             
             self._client = genai.Client(api_key=api_key)
-            logger.info(f"✅ Gemini client initialized: {self.gemini_config.model}")
+            logger.info(f"[OK] Gemini client initialized: {self.gemini_config.model}")
         
         return self._client
     
@@ -176,9 +176,9 @@ class UniversalContext:
             try:
                 from agentic_core.L4_state.atomic_blackboard import AtomicBlackboard
                 self._blackboard = AtomicBlackboard()
-                logger.info("✅ AtomicBlackboard integrated")
+                logger.info("[OK] AtomicBlackboard integrated")
             except ImportError:
-                logger.warning("⚠️  AtomicBlackboard not available")
+                logger.warning("[!]  AtomicBlackboard not available")
         
         return self._blackboard
     
@@ -219,7 +219,7 @@ class UniversalContext:
         try:
             with open(memory_file, 'w') as f:
                 json.dump(memory_data, f, indent=2)
-            logger.debug(f"💾 Saved memory to {memory_file}")
+            logger.debug(f"[SAVE] Saved memory to {memory_file}")
         except Exception as e:
             logger.error(f"Failed to save memory: {e}")
     
@@ -338,7 +338,7 @@ class UniversalContext:
         if success:
             self.modified_files.add(Path(file_path))
         
-        status = "✅ SUCCESS" if success else "❌ FAILED"
+        status = "[OK] SUCCESS" if success else "[X] FAILED"
         logger.info(
             f"Healing attempt {self.healing_attempts[file_path]} "
             f"for {file_path}: {status}"
@@ -426,7 +426,7 @@ class UniversalContext:
         self.context_buffer = "".join(buffer_parts)
         stats["buffer_size"] = len(self.context_buffer)
         
-        logger.info(f"✅ Context buffer built: {stats['files_processed']} files")
+        logger.info(f"[OK] Context buffer built: {stats['files_processed']} files")
         
         return stats
     
@@ -470,14 +470,14 @@ class UniversalContext:
         self.start_time = datetime.utcnow()
         self.status = "RUNNING"
         
-        logger.info(f"🔄 Starting cycle {self.cycle_id}")
+        logger.info(f"[~] Starting cycle {self.cycle_id}")
     
     def complete_cycle(self, status: str = "COMPLETED"):
         """Complete the current cycle."""
         self.status = status
         self.save_memory()
         
-        logger.info(f"✅ Cycle {self.cycle_id} completed: {status}")
+        logger.info(f"[OK] Cycle {self.cycle_id} completed: {status}")
 
 
 _global_context: Optional[UniversalContext] = None

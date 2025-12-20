@@ -73,7 +73,7 @@ class IntelligentOrchestrator:
             except Exception as e:
                 # Catching broad Exception is acceptable here as it's an orchestrator
                 # reporting agent failures, not necessarily recovering from them.
-                print(f"   🚨 AGENT CRASH ({agent.name}): {e}")
+                print(f"   [ALERT] AGENT CRASH ({agent.name}): {e}")
 
             if "CRITICAL_FAIL" in self.ctx.signals:
                 print("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
@@ -102,7 +102,7 @@ class IntelligentOrchestrator:
         print(f"Failed:       {failed_checks}")
 
         if failed_checks > 0:
-            print("\n❌ OPEN VIOLATIONS:")
+            print("\n[X] OPEN VIOLATIONS:")
             # Sort violations by key for consistent reporting
             for key, result in sorted(self.ctx.results.items()):
                 if not result["passed"]:
@@ -121,5 +121,5 @@ class IntelligentOrchestrator:
         if failed_checks == 0:
             print("\n🎯 LEVEL 5 SUBATOMIC CANON ACHIEVED – FULL AUTONOMOUS INTEGRITY")
         else:
-            print(f"\n⚠️  Canon incomplete – {failed_checks} keys remain violated.")
+            print(f"\n[!]  Canon incomplete – {failed_checks} keys remain violated.")
             print("   Run again with healing enabled for further convergence.")

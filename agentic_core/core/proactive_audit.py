@@ -44,7 +44,7 @@ class ProactiveFissionScanner:
         """
         self.router = mcp_router
         self.threshold = line_threshold
-        logger.info(f"✅ Proactive Scanner initialized (threshold: {line_threshold} lines)")
+        logger.info(f"[OK] Proactive Scanner initialized (threshold: {line_threshold} lines)")
     
     def get_line_count(self, file_path: str) -> int:
         """
@@ -60,7 +60,7 @@ class ProactiveFissionScanner:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return len(f.readlines())
         except Exception as e:
-            logger.warning(f"   ⚠️  Could not read {file_path}: {e}")
+            logger.warning(f"   [!]  Could not read {file_path}: {e}")
             return 0
     
     async def scan_repository(self, target_dir: str) -> List[Dict[str, any]]:
@@ -73,7 +73,7 @@ class ProactiveFissionScanner:
         Returns:
             List of candidate files with metadata
         """
-        logger.info(f"🔍 Scanning repository: {target_dir}")
+        logger.info(f"[SCAN] Scanning repository: {target_dir}")
         candidates = []
         
         for root, _, files in os.walk(target_dir):
@@ -89,9 +89,9 @@ class ProactiveFissionScanner:
                             "severity": self._calculate_severity(line_count),
                             "relative_path": os.path.relpath(path, target_dir)
                         })
-                        logger.info(f"   🚨 Bloat detected: {file} ({line_count} lines)")
+                        logger.info(f"   [ALERT] Bloat detected: {file} ({line_count} lines)")
         
-        logger.info(f"   ✅ Scan complete: {len(candidates)} candidates found")
+        logger.info(f"   [OK] Scan complete: {len(candidates)} candidates found")
         return candidates
     
     def _calculate_severity(self, line_count: int) -> str:
@@ -148,11 +148,11 @@ class ProactiveFissionScanner:
                 "recommended_split": self._recommend_split(file_path)
             }
             
-            logger.info(f"   ✅ Strategy generated")
+            logger.info(f"   [OK] Strategy generated")
             return strategy
         
         except Exception as e:
-            logger.error(f"   ❌ Strategy generation failed: {e}")
+            logger.error(f"   [X] Strategy generation failed: {e}")
             return {"file_path": file_path, "error": str(e)}
     
     def _recommend_split(self, file_path: str) -> Dict[str, str]:
@@ -207,11 +207,11 @@ class ProactiveFissionScanner:
                 "value": str(len(candidates))
             })
             
-            logger.info(f"   ✅ Refactor proposal created: {len(candidates)} files")
+            logger.info(f"   [OK] Refactor proposal created: {len(candidates)} files")
             return branch_name
         
         except Exception as e:
-            logger.error(f"   ❌ Failed to create refactor proposal: {e}")
+            logger.error(f"   [X] Failed to create refactor proposal: {e}")
             return None
     
     async def generate_audit_report(self, candidates: List[Dict[str, any]]) -> Dict[str, any]:
@@ -224,7 +224,7 @@ class ProactiveFissionScanner:
         Returns:
             Audit report dictionary
         """
-        logger.info(f"📊 Generating audit report")
+        logger.info(f"[STATS] Generating audit report")
         
         severity_counts = {
             "LOW": 0,
@@ -247,7 +247,7 @@ class ProactiveFissionScanner:
             "candidates": candidates
         }
         
-        logger.info(f"   ✅ Report generated: {len(candidates)} candidates")
+        logger.info(f"   [OK] Report generated: {len(candidates)} candidates")
         logger.info(f"      CRITICAL: {severity_counts['CRITICAL']}")
         logger.info(f"      HIGH: {severity_counts['HIGH']}")
         logger.info(f"      MEDIUM: {severity_counts['MEDIUM']}")

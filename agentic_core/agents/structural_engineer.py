@@ -193,7 +193,7 @@ class StructuralEngineer(CanonBaseAgent):
             with open(file_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
-            print(f"      ⚠️ Cannot read {file_path}: {e}")
+            print(f"      [!] Cannot read {file_path}: {e}")
             return
         
         # Build task description
@@ -221,7 +221,7 @@ class StructuralEngineer(CanonBaseAgent):
             is_valid, reason = await self.verify_fix(original_code, mutated_code, violation_key)
             
             if not is_valid:
-                print(f"      ⚠️ Round {round_num}: {reason} – retrying")
+                print(f"      [!] Round {round_num}: {reason} – retrying")
                 previous_failure = reason
                 current_code = mutated_code
                 continue
@@ -230,10 +230,10 @@ class StructuralEngineer(CanonBaseAgent):
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(mutated_code)
-                print(f"      ✅ Round {round_num}: Fixed {os.path.basename(file_path)}")
+                print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
                 return
             except Exception as e:
-                print(f"      ❌ Cannot write {file_path}: {e}")
+                print(f"      [X] Cannot write {file_path}: {e}")
                 return
         
-        print(f"      ❌ Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")
+        print(f"      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")

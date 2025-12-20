@@ -393,7 +393,7 @@ Provide a JSON response with:
             analysis = response.text
 
             if "code_regression" in analysis.lower():
-                logger.error(f"   🚨 REGRESSION DETECTED in {change.method_name}")
+                logger.error(f"   [ALERT] REGRESSION DETECTED in {change.method_name}")
                 logger.error(f"   Analysis: {analysis}")
 
                 if hasattr(self.ctx, 'signals'):
@@ -411,7 +411,7 @@ Provide a JSON response with:
                     passed, new_error = await self._run_test(test_file)
 
                     if passed:
-                        logger.info(f"   ✅ Test auto-fixed and now passes")
+                        logger.info(f"   [OK] Test auto-fixed and now passes")
                         return True, None
                     else:
                         logger.warning(f"   Fixed test still fails: {new_error}")
@@ -500,13 +500,13 @@ Return the complete corrected Python test file code.
         logger.info(f"  Failed: {failed_tests}")
 
         if failed_tests > 0:
-            logger.warning(f"\n⚠️  FAILED TESTS:")
+            logger.warning(f"\n[!]  FAILED TESTS:")
             for test in generated_tests:
                 if not test.passed:
                     logger.warning(f"  {test.test_name}: {test.error_message}")
 
         if passed_tests > 0:
-            logger.info(f"\n✅ PASSED TESTS:")
+            logger.info(f"\n[OK] PASSED TESTS:")
             for test in generated_tests:
                 if test.passed:
                     logger.info(f"  {test.test_name} → {test.test_file}")
@@ -553,9 +553,9 @@ class RegressionOracle(SubAtomicAgent):
                 try:
                     pc = Pinecone(api_key=api_key)
                     pinecone_index = pc.Index("structural-patterns")
-                    logger.info("✅ Regression Oracle connected to Pinecone")
+                    logger.info("[OK] Regression Oracle connected to Pinecone")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Pinecone: {e}")
+                    logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     pinecone_available = False
         
         # Gemini client for test synthesis
@@ -566,9 +566,9 @@ class RegressionOracle(SubAtomicAgent):
             if api_key:
                 try:
                     genai_client = genai.Client(api_key=api_key)
-                    logger.info("✅ Regression Oracle connected to Gemini 2.5")
+                    logger.info("[OK] Regression Oracle connected to Gemini 2.5")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Gemini: {e}")
+                    logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     genai_available = False
         
         # Initialize helper components
@@ -646,7 +646,7 @@ class RegressionOracle(SubAtomicAgent):
         """Emit REGRESSION_CHECK_PASS signal to blackboard."""
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f"REGRESSION_CHECK_PASS:{file_path}:{method_name}")
-            logger.info(f"   ✅ Regression check passed for {method_name}")
+            logger.info(f"   [OK] Regression check passed for {method_name}")
 
 
 # Singleton instance

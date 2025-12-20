@@ -21,10 +21,10 @@ def test_manifest_integrity():
     try:
         result = validate_manifest_integrity(tmp_path)
         if not result:
-            # print("   ✅ Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
+            # print("   [OK] Orchestrator successfully rejected corrupt manifest.")  # [Security Fix]
             return True
         else:
-            # print("   ❌ Security Flaw: Orchestrator accepted corrupt JSON!")  # [Security Fix]
+            # print("   [X] Security Flaw: Orchestrator accepted corrupt JSON!")  # [Security Fix]
             return False
     finally:
         os.remove(tmp_path)
@@ -61,14 +61,14 @@ def test_memory_filtering():
         expected_filter = {"file_path": "auth.py", "content_hash": "HASH_V2_NEW"}
 
         if actual_filter == expected_filter:
-            # print(f"   ✅ Query included strict hash filter: {actual_filter}")  # [Security Fix]
+            # print(f"   [OK] Query included strict hash filter: {actual_filter}")  # [Security Fix]
             return True
         else:
-            # print(f"   ❌ Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")  # [Security Fix]
+            # print(f"   [X] Security Flaw: Filter missing! Expected {expected_filter}, got {actual_filter}")  # [Security Fix]
             return False
 
     except Exception as e:
-# print(f"   ❌ Test failed with error: {e}")  # [Security Fix]
+# print(f"   [X] Test failed with error: {e}")  # [Security Fix]
         return False
 
 # Test 3: Error Classification
@@ -83,14 +83,14 @@ def test_error_classification():
 
         # Check that SyntaxError is in terminal errors
         if SyntaxError in TERMINAL_ERRORS:
-            # print("   ✅ SyntaxError correctly classified as terminal error.")  # [Security Fix]
+            # print("   [OK] SyntaxError correctly classified as terminal error.")  # [Security Fix]
             return True
         else:
-            # print("   ❌ SyntaxError not in terminal errors!")  # [Security Fix]
+            # print("   [X] SyntaxError not in terminal errors!")  # [Security Fix]
             return False
 
     except Exception as e:
-# print(f"   ❌ Test failed with error: {e}")  # [Security Fix]
+# print(f"   [X] Test failed with error: {e}")  # [Security Fix]
         return False
 
 def main():
@@ -112,11 +112,11 @@ def main():
     total = len(results)
 
     if passed == total:
-        # print(f"✅ ALL TESTS PASSED ({passed}/{total})")  # [Security Fix]
+        # print(f"[OK] ALL TESTS PASSED ({passed}/{total})")  # [Security Fix]
         # print("System is properly hardened!")  # [Security Fix]
         return 0
     else:
-        # print(f"❌ SOME TESTS FAILED ({passed}/{total})")  # [Security Fix]
+        # print(f"[X] SOME TESTS FAILED ({passed}/{total})")  # [Security Fix]
         # print("System has security vulnerabilities!")  # [Security Fix]
         return 1
 

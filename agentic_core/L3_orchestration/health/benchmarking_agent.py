@@ -287,7 +287,7 @@ class BenchmarkingAgent:
             "timestamp": result.timestamp.isoformat()
         }
 
-        LOGGER.warning(f"⚠️ Performance degradation detected: {name}")
+        LOGGER.warning(f"[!] Performance degradation detected: {name}")
         LOGGER.warning(f"  Current: {result.duration_ms:.2f}ms")
         LOGGER.warning(f"  Historical avg: {suite.stats['avg_ms']:.2f}ms")
         LOGGER.warning(f"  Degradation: {alert['degradation_percent']:.1f}%")

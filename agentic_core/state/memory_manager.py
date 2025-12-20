@@ -70,7 +70,7 @@ class MemoryManager:
             with open(history_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"⚠️ Failed to load conversation history for {file_path}: {e}")
+            print(f"[!] Failed to load conversation history for {file_path}: {e}")
             return []
     
     def save_conversation_history(self, file_path: str, history: List[Dict[str, Any]]):
@@ -87,7 +87,7 @@ class MemoryManager:
         try:
             self._atomic_write(history_file, history)
         except Exception as e:
-            print(f"⚠️ Failed to save conversation history for {file_path}: {e}")
+            print(f"[!] Failed to save conversation history for {file_path}: {e}")
     
     def clear_conversation_history(self, file_path: str):
         """
@@ -103,7 +103,7 @@ class MemoryManager:
             try:
                 history_file.unlink()
             except Exception as e:
-                print(f"⚠️ Failed to clear conversation history for {file_path}: {e}")
+                print(f"[!] Failed to clear conversation history for {file_path}: {e}")
     
     # ============================================================================
     # VALIDATION RESULTS
@@ -135,7 +135,7 @@ class MemoryManager:
             with open(results_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"⚠️ Failed to load validation results: {e}")
+            print(f"[!] Failed to load validation results: {e}")
             return {}
     
     def save_validation_results(self, results: Dict[str, Any], session_id: str = None):
@@ -154,7 +154,7 @@ class MemoryManager:
         try:
             self._atomic_write(results_file, results)
         except Exception as e:
-            print(f"⚠️ Failed to save validation results: {e}")
+            print(f"[!] Failed to save validation results: {e}")
     
     # ============================================================================
     # AGENT STATE
@@ -179,7 +179,7 @@ class MemoryManager:
             with open(state_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            print(f"⚠️ Failed to load state for {agent_name}: {e}")
+            print(f"[!] Failed to load state for {agent_name}: {e}")
             return {}
     
     def save_agent_state(self, agent_name: str, state: Dict[str, Any]):
@@ -195,7 +195,7 @@ class MemoryManager:
         try:
             self._atomic_write(state_file, state)
         except Exception as e:
-            print(f"⚠️ Failed to save state for {agent_name}: {e}")
+            print(f"[!] Failed to save state for {agent_name}: {e}")
     
     # ============================================================================
     # GENERIC MEMORY OPERATIONS
@@ -226,7 +226,7 @@ class MemoryManager:
                 data = json.load(f)
                 return data.get('value')
         except Exception as e:
-            print(f"⚠️ Failed to load memory {key}: {e}")
+            print(f"[!] Failed to load memory {key}: {e}")
             return None
     
     def save_memory(self, key: str, value: Any, category: str = 'general'):
@@ -253,7 +253,7 @@ class MemoryManager:
             }
             self._atomic_write(memory_file, data)
         except Exception as e:
-            print(f"⚠️ Failed to save memory {key}: {e}")
+            print(f"[!] Failed to save memory {key}: {e}")
     
     def delete_memory(self, key: str, category: str = 'general'):
         """
@@ -271,7 +271,7 @@ class MemoryManager:
             try:
                 memory_file.unlink()
             except Exception as e:
-                print(f"⚠️ Failed to delete memory {key}: {e}")
+                print(f"[!] Failed to delete memory {key}: {e}")
     
     # ============================================================================
     # CLEANUP OPERATIONS
@@ -293,7 +293,7 @@ class MemoryManager:
                         memory_file.unlink()
                         print(f"🗑️  Cleaned up old memory: {memory_file.name}")
                 except Exception as e:
-                    print(f"⚠️ Failed to cleanup {memory_file}: {e}")
+                    print(f"[!] Failed to cleanup {memory_file}: {e}")
     
     def get_memory_stats(self) -> Dict[str, Any]:
         """

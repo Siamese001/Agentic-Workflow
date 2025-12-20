@@ -37,7 +37,7 @@ class WebSearchTools:
         self.brave_key = os.getenv("BRAVE_SEARCH_API_KEY")
         if not self.brave_key:
             logger.warning(
-                "⚠️ BRAVE_SEARCH_API_KEY not found. Web search will fail."
+                "[!] BRAVE_SEARCH_API_KEY not found. Web search will fail."
             )
 
     def _format_search_result_item(self, item: Dict) -> str:
@@ -212,13 +212,13 @@ class FileIO:
         Returns:
             str: A success message or an error message.
         """
-        logger.info(f"💾 Saving file: '{file_path}' (content length: {len(content)})")
+        logger.info(f"[SAVE] Saving file: '{file_path}' (content length: {len(content)})")
         try:
             # Ensure the directory exists
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            return f"✅ File saved successfully: {file_path}"
+            return f"[OK] File saved successfully: {file_path}"
         except IOError as e:
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
         except Exception as e:
@@ -390,7 +390,7 @@ class TimeTools:
         Returns:
             str: The converted time string in ISO 8601 format or an error message.
         """
-        logger.info(f"🔄 Converting time '{time}' from '{source_timezone}' to '{target_timezone}'")
+        logger.info(f"[~] Converting time '{time}' from '{source_timezone}' to '{target_timezone}'")
         try:
             # Attempt to use the MCP Time client if available
             from mcp_time_client import convert_time as mcp_convert_time
@@ -442,7 +442,7 @@ class GitTools:
             if "Error" in commit_result:
                 return f"Commit Error (Commit): {commit_result}"
 
-            return f"✅ Committed: {message}"
+            return f"[OK] Committed: {message}"
         except ImportError:
             return (
                 "Commit Error: 'mcp0_git_add_or_commit' client not available. "

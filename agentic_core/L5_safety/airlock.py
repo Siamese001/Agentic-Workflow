@@ -132,7 +132,7 @@ class AirlockProtocol:
         with open(ticket_path, "w") as f:
             JSON.DUMP(TICKET, F, INDENT=2)
 
-        logger.warning(f"⚠️ HIGH RISK ACTION TRAPPED in AIRLOCK")
+        logger.warning(f"[!] HIGH RISK ACTION TRAPPED in AIRLOCK")
         logger.warning(f"Ticket ID: {ticket_id}")
         logger.warning(f"Action: {tool_name} with risk score {risk_score}")
         logger.warning(f"Args: {json.dumps(args, indent=2)}")
@@ -171,7 +171,7 @@ class AirlockProtocol:
                 rejected_path = self.rejected_dir / f"{ticket_id}.json"
 
                 if approved_path.exists():
-                    logger.info(f"✅ Airlock request {ticket_id} approved by human")
+                    logger.info(f"[OK] Airlock request {ticket_id} approved by human")
                     return True
                 elif rejected_path.exists():
                     with open(rejected_path, "r") as f:

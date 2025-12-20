@@ -196,7 +196,7 @@ class DeadlockDetector:
         }
 
         # Log alert
-        LOGGER.error(f"🚨 DEADLOCK DETECTED: {task_id}")
+        LOGGER.error(f"[ALERT] DEADLOCK DETECTED: {task_id}")
         LOGGER.error(f"  Elapsed: {elapsed:.1f}s (threshold: {MAX_PHASE_TIME}s)")
         LOGGER.error(f"  Stack traces: {len(monitor.stack_traces)} captured")
 

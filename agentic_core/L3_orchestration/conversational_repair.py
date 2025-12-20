@@ -133,9 +133,9 @@ class ConversationalRepair:
         }
 
         if result["success"]:
-            LOGGER.info("✅ Consensus reached on fix")
+            LOGGER.info("[OK] Consensus reached on fix")
         else:
-            LOGGER.warning("⚠️  No consensus reached")
+            LOGGER.warning("[!]  No consensus reached")
 
         return result
 

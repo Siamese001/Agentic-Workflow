@@ -37,34 +37,34 @@ class CodeJanitor(SubAtomicAgent):
         passed, details = self.check_key_11_no_trailing_whitespace()
         self.ctx.report(self.name, 11, passed, details)
         if not passed:
-            print("      🔧 Auto-fixing trailing whitespace...")
+            print("      [+] Auto-fixing trailing whitespace...")
             self._fix_trailing_whitespace()
             # Re-check after fix
             passed, details = self.check_key_11_no_trailing_whitespace()
             self.ctx.report(self.name, 11, passed, details)
             if not passed:
-                print("      ❌ Trailing whitespace fix failed or new violations appeared.")
+                print("      [X] Trailing whitespace fix failed or new violations appeared.")
             else:
-                print("      ✅ Trailing whitespace fixed successfully.")
+                print("      [OK] Trailing whitespace fixed successfully.")
 
         # Check and fix missing final newlines (Key 12)
         passed, details = self.check_key_12_no_missing_newline()
         if not passed:
-            print("      🔧 Auto-fixing missing final newlines...")
+            print("      [+] Auto-fixing missing final newlines...")
             for file_path in details:
                 try:
                     with open(file_path, "a", encoding="utf-8") as f:
                         f.write("\n")
-                    print(f"      ✅ Added newline to {file_path}")
+                    print(f"      [OK] Added newline to {file_path}")
                 except IOError as e:
-                    print(f"      ❌ Failed to fix newline in {file_path}: {e}")
+                    print(f"      [X] Failed to fix newline in {file_path}: {e}")
             # Re-check after fix
             passed, details = self.check_key_12_no_missing_newline()
             self.ctx.report(self.name, 12, passed, details)
             if not passed:
-                print("      ❌ Missing final newline fix failed or new violations appeared.")
+                print("      [X] Missing final newline fix failed or new violations appeared.")
             else:
-                print("      ✅ Missing final newlines fixed successfully.")
+                print("      [OK] Missing final newlines fixed successfully.")
         else:
             self.ctx.report(self.name, 12, passed, details)
 
@@ -80,9 +80,9 @@ class CodeJanitor(SubAtomicAgent):
             passed, details = self.check_key_13_no_tabs()
             self.ctx.report(self.name, 13, passed, details)
             if not passed:
-                print("      ❌ Tab conversion fix failed or new violations appeared.")
+                print("      [X] Tab conversion fix failed or new violations appeared.")
             else:
-                print("      ✅ Tabs converted to spaces successfully.")
+                print("      [OK] Tabs converted to spaces successfully.")
         else:
             self.ctx.report(self.name, 13, passed, details)
 
@@ -104,9 +104,9 @@ class CodeJanitor(SubAtomicAgent):
                 # Re-check after fix
                 passed, details = check_func()
                 if not passed:
-                    print(f"      ❌ Smart fix for Key {key} failed or new violations appeared.")
+                    print(f"      [X] Smart fix for Key {key} failed or new violations appeared.")
                 else:
-                    print(f"      ✅ Smart fix for Key {key} applied successfully.")
+                    print(f"      [OK] Smart fix for Key {key} applied successfully.")
             self.ctx.report(self.name, key, passed, details)
 
         self.ctx.signal_ast_valid()
@@ -128,7 +128,7 @@ class CodeJanitor(SubAtomicAgent):
                         if line.rstrip('\n') != line.rstrip('\n').rstrip():
                             violations.append(f"{file_path}:{i}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {file_path} for Key 11 check: {e}")
+                print(f"      [!]  Could not read {file_path} for Key 11 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
@@ -145,7 +145,7 @@ class CodeJanitor(SubAtomicAgent):
                     if content and not content.endswith("\n"):
                         violations.append(file_path)
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {file_path} for Key 12 check: {e}")
+                print(f"      [!]  Could not read {file_path} for Key 12 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
@@ -162,7 +162,7 @@ class CodeJanitor(SubAtomicAgent):
                         if "\t" in line:
                             violations.append(f"{file_path}:{i}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {file_path} for Key 13 check: {e}")
+                print(f"      [!]  Could not read {file_path} for Key 13 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
@@ -182,7 +182,7 @@ class CodeJanitor(SubAtomicAgent):
                         if len(line.rstrip('\n')) > max_line_length:
                             violations.append(f"{file_path}:{i}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {file_path} for Key 10 check: {e}")
+                print(f"      [!]  Could not read {file_path} for Key 10 check: {e}")
                 continue
         return (len(violations) == 0, violations)
 
@@ -210,10 +210,10 @@ class CodeJanitor(SubAtomicAgent):
                         if node.value not in ALLOWED_MAGIC_NUMBERS:
                             violations.append(f"{fp}:{node.lineno}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {fp} for Key 15 check: {e}")
+                print(f"      [!]  Could not read {fp} for Key 15 check: {e}")
                 continue
             except SyntaxError as e:
-                print(f"      ❌ Syntax error in {fp} for Key 15 check: {e}")
+                print(f"      [X] Syntax error in {fp} for Key 15 check: {e}")
                 continue
         return len(violations) == 0, violations
 
@@ -253,10 +253,10 @@ class CodeJanitor(SubAtomicAgent):
                 visitor.visit(tree)
                 violations.extend(visitor.violations)
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {fp} for Key 16 check: {e}")
+                print(f"      [!]  Could not read {fp} for Key 16 check: {e}")
                 continue
             except SyntaxError as e:
-                print(f"      ❌ Syntax error in {fp} for Key 16 check: {e}")
+                print(f"      [X] Syntax error in {fp} for Key 16 check: {e}")
                 continue
         return len(violations) == 0, violations
 
@@ -268,19 +268,19 @@ class CodeJanitor(SubAtomicAgent):
             # Assuming 'scripts/fix_trailing_whitespace.py' exists and is executable
             result = subprocess.run([sys.executable, "scripts/fix_trailing_whitespace.py", "."],
                                     capture_output=True, text=True, check=True)
-            print("      ✅ Trailing whitespace fix script executed.")
+            print("      [OK] Trailing whitespace fix script executed.")
             if result.stdout:
                 print(f"         Script output: {result.stdout.strip()}")
             if result.stderr:
                 print(f"         Script errors: {result.stderr.strip()}")
         except subprocess.CalledProcessError as e:
-            print(f"      ❌ Failed to fix trailing whitespace (script returned non-zero exit code): {e}")
+            print(f"      [X] Failed to fix trailing whitespace (script returned non-zero exit code): {e}")
             print(f"         Stdout: {e.stdout.strip()}")
             print(f"         Stderr: {e.stderr.strip()}")
         except FileNotFoundError:
-            print("      ❌ Fix script 'scripts/fix_trailing_whitespace.py' not found.")
+            print("      [X] Fix script 'scripts/fix_trailing_whitespace.py' not found.")
         except Exception as e:  # Catch other potential errors during subprocess execution
-            print(f"      ❌ An unexpected error occurred while fixing trailing whitespace: {e}")
+            print(f"      [X] An unexpected error occurred while fixing trailing whitespace: {e}")
 
 
 class DependencySentinel(SubAtomicAgent):
@@ -300,47 +300,47 @@ class DependencySentinel(SubAtomicAgent):
             subprocess.run(["isort", "--version"], capture_output=True, check=True)
             has_isort = True
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print("      ⚠️  isort not installed or not found. Install with: pip install isort")
+            print("      [!]  isort not installed or not found. Install with: pip install isort")
 
         has_autoflake = False
         try:
             subprocess.run(["autoflake", "--version"], capture_output=True, check=True)
             has_autoflake = True
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print("      ⚠️  autoflake not installed or not found. Install with: pip install autoflake")
+            print("      [!]  autoflake not installed or not found. Install with: pip install autoflake")
 
         if has_autoflake:
-            print("      🔧 Auto-removing unused imports with autoflake...")
+            print("      [+] Auto-removing unused imports with autoflake...")
             try:
                 result = subprocess.run(
                     ["autoflake", "--in-place", "--remove-all-unused-imports", "--recursive", "."],
                     capture_output=True, text=True, check=True
                 )
-                print("      ✅ Unused imports removed by autoflake.")
+                print("      [OK] Unused imports removed by autoflake.")
                 if result.stdout:
                     print(f"         Autoflake output: {result.stdout.strip()}")
             except subprocess.CalledProcessError as e:
-                print(f"      ❌ Autoflake failed: {e}")
+                print(f"      [X] Autoflake failed: {e}")
                 print(f"         Stdout: {e.stdout.strip()}")
                 print(f"         Stderr: {e.stderr.strip()}")
             except Exception as e:
-                print(f"      ❌ An unexpected error occurred during autoflake execution: {e}")
+                print(f"      [X] An unexpected error occurred during autoflake execution: {e}")
         else:
             print("      ⏩ Skipping autoflake: not installed.")
 
         if has_isort:
-            print("      🔧 Auto-sorting imports with isort...")
+            print("      [+] Auto-sorting imports with isort...")
             try:
                 result = subprocess.run(["isort", "."], capture_output=True, text=True, check=True)
-                print("      ✅ Imports sorted by isort.")
+                print("      [OK] Imports sorted by isort.")
                 if result.stdout:
                     print(f"         isort output: {result.stdout.strip()}")
             except subprocess.CalledProcessError as e:
-                print(f"      ❌ isort failed: {e}")
+                print(f"      [X] isort failed: {e}")
                 print(f"         Stdout: {e.stdout.strip()}")
                 print(f"         Stderr: {e.stderr.strip()}")
             except Exception as e:
-                print(f"      ❌ An unexpected error occurred during isort execution: {e}")
+                print(f"      [X] An unexpected error occurred during isort execution: {e}")
         else:
             print("      ⏩ Skipping isort: not installed.")
 
@@ -380,10 +380,10 @@ class DependencySentinel(SubAtomicAgent):
                         if any(alias.name == "*" for alias in node.names):
                             violations.append(f"{fp}:{node.lineno}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {fp} for Key 7 check: {e}")
+                print(f"      [!]  Could not read {fp} for Key 7 check: {e}")
                 continue
             except SyntaxError as e:
-                print(f"      ❌ Syntax error in {fp} for Key 7 check: {e}")
+                print(f"      [X] Syntax error in {fp} for Key 7 check: {e}")
                 continue
         return len(violations) == 0, violations
 
@@ -402,10 +402,10 @@ class DependencySentinel(SubAtomicAgent):
                         if node.level > 0:  # level > 0 indicates a relative import
                             violations.append(f"{fp}:{node.lineno}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {fp} for Key 8 check: {e}")
+                print(f"      [!]  Could not read {fp} for Key 8 check: {e}")
                 continue
             except SyntaxError as e:
-                print(f"      ❌ Syntax error in {fp} for Key 8 check: {e}")
+                print(f"      [X] Syntax error in {fp} for Key 8 check: {e}")
                 continue
         return len(violations) == 0, violations
 
@@ -456,10 +456,10 @@ class DependencySentinel(SubAtomicAgent):
                         lineno = imported_names_with_lines.get(unused_name, "unknown_line")
                         violations.append(f"{fp}:{lineno}: {unused_name}")
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {fp} for Key 9 check: {e}")
+                print(f"      [!]  Could not read {fp} for Key 9 check: {e}")
                 continue
             except SyntaxError as e:
-                print(f"      ❌ Syntax error in {fp} for Key 9 check: {e}")
+                print(f"      [X] Syntax error in {fp} for Key 9 check: {e}")
                 continue
         return len(violations) == 0, violations
 
@@ -504,10 +504,10 @@ class DependencySentinel(SubAtomicAgent):
                             seen_imports.add(import_tuple)
                 violations.extend(current_file_violations)
             except (IOError, OSError, UnicodeDecodeError) as e:
-                print(f"      ⚠️  Could not read {fp} for Key 14 check: {e}")
+                print(f"      [!]  Could not read {fp} for Key 14 check: {e}")
                 continue
             except SyntaxError as e:
-                print(f"      ❌ Syntax error in {fp} for Key 14 check: {e}")
+                print(f"      [X] Syntax error in {fp} for Key 14 check: {e}")
                 continue
         return len(violations) == 0, violations
 

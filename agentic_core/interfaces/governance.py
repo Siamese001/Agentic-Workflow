@@ -109,7 +109,7 @@ class DependencyGraph:
         self._calculate_dependencies()
 
         self._built = True
-        LOGGER.info(f"✅ Code graph built: {len(self.graph)} files, {len(self.class_map)} classes")
+        LOGGER.info(f"[OK] Code graph built: {len(self.graph)} files, {len(self.class_map)} classes")
 
     def _build_reverse_index(self):
         """Build reverse lookup indices."""

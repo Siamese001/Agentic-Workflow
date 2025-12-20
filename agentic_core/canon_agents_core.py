@@ -268,12 +268,12 @@ class HealerAgent(SubAtomicAgent):
                 any_file_healed_in_current_round = False  # No errors found, stop healing attempts
                 break
 
-            print(f"   🚨 Round {round_num}: Found {len(syntax_errors_found_this_round)} Syntax Blockers. Healing...")
+            print(f"   [ALERT] Round {round_num}: Found {len(syntax_errors_found_this_round)} Syntax Blockers. Healing...")
             
             # Reset flag for the current round
             any_file_healed_in_current_round = False 
             for file_path, error in syntax_errors_found_this_round:
-                print(f"      🔍 Fixing {file_path}:{error.lineno} – {error.msg}")
+                print(f"      [SCAN] Fixing {file_path}:{error.lineno} – {error.msg}")
                 success = await self.smart_fix(file_path, 48)
                 if success:
                     any_file_healed_in_current_round = True  # At least one file was fixed
@@ -295,11 +295,11 @@ class HealerAgent(SubAtomicAgent):
                 remaining_syntax_errors.append(file_path)
 
         if not remaining_syntax_errors:
-            print("   ✅ Architecture verified. Core integrity intact.")
+            print("   [OK] Architecture verified. Core integrity intact.")
             self.ctx.report(self.name, 48, True, [])
             self.ctx.signal_ast_valid()
         else:
-            print(f"   ❌ Critical Failure: {len(remaining_syntax_errors)} files still have syntax errors.")
+            print(f"   [X] Critical Failure: {len(remaining_syntax_errors)} files still have syntax errors.")
             self.ctx.report(self.name, 48, False, remaining_syntax_errors)
             self.ctx.signal_critical_failure()
 
@@ -357,9 +357,9 @@ class GenerativeGuard(SubAtomicAgent):
                         os.remove(file_path)
                         print(f"         DELETED: {file_path}")
                     except OSError as e:  # Catch specific OS errors for file operations
-                        print(f"         ❌ Failed to delete {file_path}: {e}", file=sys.stderr)
+                        print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
                 self.ctx.signals.add("GENERATIVE_CLEAN")  # Signal clean even if some failed to delete
         else:
-            print("   ✅ No runaway generation detected.")
+            print("   [OK] No runaway generation detected.")
             self.ctx.report(self.name, 45, True, [])
             self.ctx.signals.add("GENERATIVE_CLEAN")

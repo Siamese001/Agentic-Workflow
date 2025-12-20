@@ -1,5 +1,5 @@
 """
-🚀 HARDENED MCP File Server for Canon Validator v2.0
+[START] HARDENED MCP File Server for Canon Validator v2.0
 Provides L4 State filesystem operations with Atomic Fission support.
 """
 

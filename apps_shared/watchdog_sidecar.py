@@ -32,14 +32,14 @@ class DeadManSwitch:
 
     def kill_agent(self, pid: int):
         """Terminates the agent process immediately."""
-        logger.critical(f"🚨 RUNAWAY DETECTED! Killing PID {pid}...")
+        logger.critical(f"[ALERT] RUNAWAY DETECTED! Killing PID {pid}...")
         try:
             # Cross-platform process termination
             if os.name == 'nt':  # Windows
                 os.kill(pid, signal.SIGTERM)
             else:  # Unix/Linux
                 os.kill(pid, signal.SIGKILL)
-            logger.info(f"✅ PID {pid} successfully terminated.")
+            logger.info(f"[OK] PID {pid} successfully terminated.")
 
             # Optional: Send Alert (Email/Slack)
             # send_alert("Agent killed due to spam loop.")
@@ -47,7 +47,7 @@ class DeadManSwitch:
         except ProcessLookupError:
             logger.warning(f"PID {pid} not found (already dead?).")
         except PermissionError:
-            logger.error(f"❌ Permission denied killing PID {pid}.")
+            logger.error(f"[X] Permission denied killing PID {pid}.")
 
     def monitor(self):
         """Main loop: Tails the log file and counts actions."""

@@ -54,7 +54,7 @@ class HygieneGuardian(SubAtomicAgent):
                             break
 
         if violations:
-            print(f"   🧹 Found {len(violations)} generative artifacts")
+            print(f"   [CLEAN] Found {len(violations)} generative artifacts")
             for file_path in violations:
                 try:
                     os.remove(file_path)

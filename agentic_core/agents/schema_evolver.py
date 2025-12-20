@@ -303,7 +303,7 @@ class SchemaEvolver(SubAtomicAgent):
         logger.info(f"  Severity: {impact.severity.upper()}")
         
         if impact.breaking_change:
-            logger.warning(f"\n⚠️  BREAKING CHANGE DETECTED")
+            logger.warning(f"\n[!]  BREAKING CHANGE DETECTED")
         
         if impact.transformation_mapping:
             logger.info(f"\nTransformation Mapping:")

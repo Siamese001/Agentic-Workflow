@@ -50,7 +50,7 @@ class MCPRouter:
             "L5": ["sequential_thinking", "gitkraken"]
         }
         
-        logger.info("✅ MCP Router initialized with L1-L5 registry")
+        logger.info("[OK] MCP Router initialized with L1-L5 registry")
     
     async def resolve_failure(self, layer: str, error_context: str) -> Dict[str, Any]:
         """
@@ -108,7 +108,7 @@ class MCPRouter:
                 "purpose": "Verify git history before override"
             })
         
-        logger.warning(f"   ⚠️  Unknown layer: {layer}")
+        logger.warning(f"   [!]  Unknown layer: {layer}")
         return {"status": "error", "message": f"Unknown layer: {layer}"}
     
     async def call_mcp(self, mcp_name: str, params: Dict[str, Any]) -> Dict[str, Any]:
@@ -173,7 +173,7 @@ class MCPRouter:
                     result = await self.call_mcp(mcp, {"action": "health_check"})
                     health[mcp] = result.get("status") == "success"
                 except Exception as e:
-                    logger.warning(f"   ⚠️  MCP {mcp} health check failed: {e}")
+                    logger.warning(f"   [!]  MCP {mcp} health check failed: {e}")
                     health[mcp] = False
         
         return health
