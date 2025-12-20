@@ -11,7 +11,6 @@ Here's a breakdown of the changes made:
     *   In `GitTools.commit` and `GitTools.status`, the `ImportError` return messages were also wrapped.
 4.  **Readability in `FileIO._read_pdf_file`**: The list comprehension for extracting text from PDF pages was slightly long. It has been assigned to a temporary variable (`extracted_texts`) before being joined, improving readability.
 
-```python
 import logging
 import os
 from typing import Callable, Dict, Optional # Added Optional
@@ -130,7 +129,6 @@ class FileIO:
 
     def __init__(self):
         """Initializes FileIO. No specific state needed for file operations."""
-        pass
 
     def _read_pdf_file(self, file_path: str) -> str:
         """
@@ -324,7 +322,6 @@ class TimeTools:
 
     def __init__(self):
         """Initializes TimeTools. No specific state needed."""
-        pass
 
     def _get_current_time_fallback(self, timezone: str) -> str:
         """
@@ -415,7 +412,6 @@ class GitTools:
 
     def __init__(self):
         """Initializes GitTools. No specific state needed."""
-        pass
 
     def commit(self, file_path: str, message: str) -> str:
         """
@@ -485,7 +481,6 @@ class FigmaTools:
 
     def __init__(self):
         """Initializes FigmaTools. No specific state needed."""
-        pass
 
     def get_variable_defs(self, node_id: str, file_key: Optional[str] = None) -> str:
         """
@@ -541,7 +536,6 @@ class PineconeTools:
 
     def __init__(self):
         """Initializes PineconeTools. No specific state needed."""
-        pass
 
     def search_records(self, query: str, index: str, top_k: int, namespace: str) -> str:
         """
@@ -573,7 +567,6 @@ class MemoryTools:
 
     def __init__(self):
         """Initializes MemoryTools. No specific state needed."""
-        pass
 
     def add_observations(self, observations: list) -> str:
         """
@@ -697,5 +690,3 @@ class ActionRegistry:
             "commit": self.git_tools.commit,
             "status": self.git_tools.status,
         }
-
-```

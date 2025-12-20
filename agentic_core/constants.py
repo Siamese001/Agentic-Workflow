@@ -1,4 +1,3 @@
-```python
 """
 Constants for the Agentic Core system.
 
@@ -109,4 +108,3 @@ ADDITIONAL_REPO_ROOTS = "ADDITIONAL_REPO_ROOTS"
 MEMORY_DIR = "observability/memory"
 ALERTS_DIR = "observability/alerts"
 CACHE_DIR = "observability/cache"
-```

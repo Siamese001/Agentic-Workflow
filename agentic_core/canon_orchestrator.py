@@ -2,7 +2,6 @@ The provided Python code is already very well-structured and adheres to most syn
 
 Here's the fixed code with that minor style adjustment:
 
-```python
 """
 Canon Validator Intelligent Orchestrator
 
@@ -124,5 +123,3 @@ class IntelligentOrchestrator:
         else:
             print(f"\n⚠️  Canon incomplete – {failed_checks} keys remain violated.")
             print("   Run again with healing enabled for further convergence.")
-
-```

@@ -1,4 +1,3 @@
-```python
 import ast
 import os
 from typing import List, Dict, Union
@@ -209,4 +208,3 @@ class ImportPatcher:
 
         if updated_content and updated_content != content:
             self._apply_patch_and_log(file_path, updated_content)
-```

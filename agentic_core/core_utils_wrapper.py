@@ -1,4 +1,3 @@
-```python
 """
 Core Utils - Thin Wrapper
 Delegates to consolidated tools in agentic_core/tools/
@@ -80,4 +79,3 @@ __all__ = [
     "read_text_file",
     "write_file",
 ]
-```

@@ -1,4 +1,3 @@
-```python
 import hashlib
 import json
 import logging
@@ -476,5 +475,3 @@ class CanonValidator:
             "query_time_ms": (time.time() - start_time) * 1000,
             "content": content  # Include content for better debugging/info
         }
-
-```

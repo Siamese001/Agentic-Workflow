@@ -1,4 +1,3 @@
-```python
 """
 Code Janitor Agent - Syntax and Style Validation (Keys 10-20)
 
@@ -262,5 +261,3 @@ class CodeJanitor(CanonBaseAgent):
                 return
         
         print(f"      ❌ Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")
-
-```

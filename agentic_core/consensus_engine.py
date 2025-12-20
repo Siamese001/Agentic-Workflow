@@ -1,4 +1,3 @@
-```python
 import logging
 from typing import Any, Dict, List
 
@@ -256,4 +255,3 @@ class ConsensusEngine:
 # Initialize the global jury instance.
 # This pattern is common for singletons or module-level services.
 jury = ConsensusEngine()
-```

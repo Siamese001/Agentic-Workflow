@@ -140,7 +140,6 @@ Generate 5 hostile test inputs for this function to test robustness:
 Function: {func_name}
 
 Implementation:
-```python
 {func_code}
 ```
 

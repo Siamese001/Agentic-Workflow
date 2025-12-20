@@ -5,7 +5,6 @@ Here are the minor adjustments for improved style and precision:
 1.  **Module Docstring Enhancement**: Expanded for better clarity and context.
 2.  **`check_key_39_no_useless_return` Precision**: Changed the reported line number to point directly to the `return` statement instead of the function definition line, for more accurate violation reporting.
 
-```python
 """
 Canon Validator Pattern Agents
 
@@ -302,5 +301,3 @@ class SemanticMapper(SubAtomicAgent):
         """
         print(f"\n[>>>] {self.name} ACTIVATED: Semantic Analysis...")
         print("   ℹ No refactoring opportunities identified.")
-
-```

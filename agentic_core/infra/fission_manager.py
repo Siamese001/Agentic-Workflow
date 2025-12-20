@@ -147,7 +147,6 @@ class FissionManager:
 The target file `{file_name}` has exceeded L1 Cognition limits and is structurally unstable.
 
 ORIGINAL FILE CONTENT:
-```python
 {content}
 ```
 

@@ -6,7 +6,6 @@ The only minor stylistic adjustment I could find, which doesn't impact correctne
 
 Here's the healed code with that minor adjustment:
 
-```python
 """
 Canon Validator Syntax Agents
 CodeJanitor, DependencySentinel - Code hygiene and import management.
@@ -523,5 +522,3 @@ class DependencySentinel(SubAtomicAgent):
         # This would typically involve static analysis tools or a more comprehensive agent.
         print("      ⏩ Skipping Key 44 (Circular Imports): Not implemented.")
         return True, ["Key 44 (Circular Imports) check is not implemented."]
-
-```

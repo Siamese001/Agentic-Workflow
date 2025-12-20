@@ -11,15 +11,12 @@ import os
 import re
 import sys
 import subprocess
+import importlib
 import time
 from pathlib import Path
 from typing import Tuple, Optional, Dict, Any
 
-# Fix Windows console encoding FIRST (before any print with unicode)
-if sys.platform == "win32":
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+# Windows console encoding handled by terminal settings
 
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
@@ -276,8 +273,86 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"   📂 Target: {os.path.abspath(target_scope)}")
     print("   📋 PLAN: Executing full system diagnostic via modular agents...")
     
-    # [This is where the agent loop triggers the 50-key validation]
-    # Agents inherit from CanonBaseAgent to use the Engine components in this file.
+    # Add project root to Python path
+    project_root = Path(__file__).parent.parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    
+    # 1. Initialize Context (Blackboard)
+    try:
+        from agentic_core.L4_state.validation_context import ValidationContext
+    except ImportError:
+        # Fallback: Create minimal context
+        class ValidationContext:
+            def __init__(self):
+                self.target_scope = None
+                self._client = None
+        print("   ⚠️ Using minimal ValidationContext (full context not available)")
+    
+    ctx = ValidationContext()
+    ctx.target_scope = target_scope
+
+    # 2. Dynamic Agent Loading (Key 11/12 Enforcement)
+    # Load available agents from agentic_core/agents
+    cleaning_crew = []
+    
+    try:
+        # Try to load specialized agents that actually exist
+        agent_modules = [
+            # Core Canon Agents (inherit from CanonBaseAgent)
+            ('agentic_core.agents.system_architect', 'SystemArchitect'),
+            ('agentic_core.agents.structural_engineer', 'StructuralEngineer'),
+            ('agentic_core.agents.healer_agent', 'HealerAgent'),
+            
+            # Quality & Hygiene Agents
+            ('agentic_core.agents.quality', 'HygieneGuardian'),
+            ('agentic_core.agents.quality', 'CodeStyleGuardian'),
+            
+            # Governance & Architecture
+            ('agentic_core.agents.governance', 'ArchitectureGovernor'),
+            ('agentic_core.agents.governance', 'DependencySentinel'),
+            
+            # Engineering & Structure
+            ('agentic_core.agents.engineering', 'StructuralEngineer'),
+            
+            # Security
+            ('agentic_core.agents.security', 'SafetyInspector'),
+            ('agentic_core.agents.security', 'SecurityEnforcer'),
+            
+            # Analysis & Memory
+            ('agentic_core.agents.memory_architect', 'MemoryArchitect'),
+            ('agentic_core.agents.hallucination_hunter', 'HallucinationHunter'),
+        ]
+        
+        for module_path, class_name in agent_modules:
+            try:
+                module = importlib.import_module(module_path)
+                agent_class = getattr(module, class_name)
+                cleaning_crew.append(agent_class(ctx))
+                print(f"   ✅ Loaded: {class_name}")
+            except (ImportError, AttributeError) as e:
+                print(f"   ⚠️ Could not load {class_name}: {e}")
+    except Exception as e:
+        print(f"   ⚠️ Agent loading error: {e}")
+
+    if not cleaning_crew:
+        print("   ⚠️ No agents loaded. Running in diagnostic mode only.")
+    else:
+        print(f"   ✅ Loaded {len(cleaning_crew)} agents for validation sweep")
+
+    # 3. Execution Loop
+    files_to_validate = [str(p) for p in Path(target_scope).rglob("*.py")]
+    print(f"   📊 Found {len(files_to_validate)} Python files to validate\n")
+    
+    for file_path in files_to_validate:
+        print(f"🔍 Agentic Sweep: {os.path.basename(file_path)}")
+        for agent in cleaning_crew:
+            try:
+                if hasattr(agent, 'can_run') and agent.can_run():
+                    if hasattr(agent, 'execute'):
+                        await agent.execute()
+            except Exception as e:
+                print(f"   ⚠️ Agent error: {e}")
     
     print("\n💾 SAVING BLACKBOARD STATE...")
     print("MISSION COMPLETE")
@@ -343,4 +418,11 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    asyncio.run(run_mission(args.target))
+    try:
+        asyncio.run(run_mission(args.target))
+    except KeyboardInterrupt:
+        print("\n⚠️ Mission interrupted by user")
+    except Exception as e:
+        print(f"\n❌ Mission failed: {e}")
+        import traceback
+        traceback.print_exc()

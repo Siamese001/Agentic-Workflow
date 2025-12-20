@@ -1,4 +1,3 @@
-```python
 """
 Canon Validator Core Agents
 SystemArchitect, HealerAgent, GenerativeGuard - Critical infrastructure agents.
@@ -364,5 +363,3 @@ class GenerativeGuard(SubAtomicAgent):
             print("   ✅ No runaway generation detected.")
             self.ctx.report(self.name, 45, True, [])
             self.ctx.signals.add("GENERATIVE_CLEAN")
-
-```

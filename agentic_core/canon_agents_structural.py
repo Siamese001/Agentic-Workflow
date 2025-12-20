@@ -1,4 +1,3 @@
-```python
 """
 Canon Validator Structural Agents
 
@@ -380,5 +379,3 @@ class StructuralEngineer(SubAtomicAgent):
         # This check is currently a placeholder and always passes.
         # Real duplicate code detection would involve more sophisticated analysis.
         return True, []
-
-```

@@ -1,4 +1,3 @@
-```python
 """
 ⚛️ Adversarial Red-Teamer - The Skeptic
 
@@ -595,5 +594,3 @@ def get_red_teamer(ctx: Any) -> AdversarialRedTeamer:
     if _red_teamer is None:
         _red_teamer = AdversarialRedTeamer(ctx)
     return _red_teamer
-
-```
