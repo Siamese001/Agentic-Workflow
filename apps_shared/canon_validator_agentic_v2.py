@@ -363,6 +363,11 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not hasattr(ctx, '_client'):
         ctx._client = None
     
+    # 🛡️ CONTEXT HARDENING: Version 2.3 Patch
+    if not hasattr(ctx, 'results'):
+        ctx.results = {}  # Initialize as dict to store agent-specific findings
+        print("   [🔧] Hardened: Added results container to Context")
+    
     ctx.target_scope = target_scope
     
     # Populate python_files list
