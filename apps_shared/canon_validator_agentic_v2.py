@@ -8,6 +8,8 @@ import asyncio
 import importlib
 import json
 import logging
+import random
+import shutil
 import os
 import re
 import sys
@@ -27,6 +29,7 @@ except ImportError as e:
 # Gemini SDK
 try:
     from google import genai
+    from google.api_core.exceptions import ResourceExhausted, InternalServerError, DeadlineExceeded
     from google.genai import types
     GENAI_AVAILABLE = True
 except ImportError:
@@ -194,19 +197,7 @@ class SubAtomicEngine:
         round_num: int = 1,
         fission_active: bool = False
     ) -> str:
-        """
-        Execute resilient mutation with Gemini.
-        
-        Args:
-            file_path: Path to file being mutated
-            code: Original code
-            task: Task description for the AI
-            round_num: Current healing round
-            fission_active: Whether atomic fission is active
-            
-        Returns:
-            Mutated code or original code on failure
-        """
+        """Execute resilient mutation with exponential backoff retry."""
         if not self._client:
             raise RuntimeError("Gemini client not initialized")
         
@@ -214,47 +205,46 @@ class SubAtomicEngine:
         if fission_active:
             prompt = f"ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}"
         else:
-            prompt = f"HEAL: Fix all syntax and style violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}"
+            prompt = f"HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}"
         
-        # Get safe config
         config = self.get_safe_config(is_fission=fission_active)
-        
-        # Create or reuse chat session
         chat_key = f"chat_{file_path}"
+        
         if chat_key not in self.chat_sessions:
             model_name = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
-            self.chat_sessions[chat_key] = self._client.chats.create(
-                model=model_name,
-                config=config
-            )
-            logger.info(f"   [NEW] Created new chat session for {os.path.basename(file_path)}")
-        else:
-            logger.info(f"   [REUSE]  Reusing chat session (Round {round_num})")
+            self.chat_sessions[chat_key] = self._client.chats.create(model=model_name, config=config)
+            logger.info(f"   [NEW] Created chat session for {os.path.basename(file_path)}")
         
-        try:
-            # Send message
-            response = await asyncio.to_thread(
-                self.chat_sessions[chat_key].send_message,
-                prompt
-            )
-            
-            # Extract response
-            if response.candidates and response.candidates[0].content.parts:
-                output = response.candidates[0].content.parts[0].text.strip()
-                
-                # Truncation guard
-                if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
-                    logger.warning("   [X] TRUNCATION DETECTED. Rejecting mutation.")
+        # === RETRY WITH EXPONENTIAL BACKOFF (Max 3 attempts) ===
+        max_retries = 3
+        response = None
+        
+        for attempt in range(1, max_retries + 1):
+            try:
+                response = await asyncio.to_thread(self.chat_sessions[chat_key].send_message, prompt)
+                break  # Success
+            except (ResourceExhausted, InternalServerError, DeadlineExceeded) as e:
+                if attempt == max_retries:
+                    logger.error(f"   [X] Gemini Error (Final): {e}")
                     return code
-                
-                return output
-            else:
-                logger.warning("   [!]  Malformed response from Gemini")
+                wait = (2 ** attempt) + random.uniform(0, 1)
+                logger.warning(f"   [!] Gemini Transient Error ({attempt}/{max_retries}): {e}. Retrying in {wait:.1f}s")
+                await asyncio.sleep(wait)
+            except Exception as e:
+                logger.error(f"   [X] Gemini Fatal Error: {e}")
                 return code
+
+        # Extract response
+        if response and response.candidates and response.candidates[0].content.parts:
+            output = response.candidates[0].content.parts[0].text.strip()
+            # Truncation guard
+            if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
+                logger.warning("   [X] TRUNCATION DETECTED. Rejecting mutation.")
+                return code
+            return output
         
-        except Exception as e:
-            logger.error(f"   [X] Gemini API error: {e}")
-            return code
+        logger.warning("   [!] Malformed response from Gemini")
+        return code
 
 
 # ==============================================================================
@@ -298,7 +288,7 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
             
             # Create sub-module file
             module_file = os.path.join(submodule_dir, f"{module_name}.py")
-            with open(module_file, 'w', encoding='utf-8') as f:
+            with open(module_file, 'w', encoding='utf-8', errors='ignore') as f:
                 f.write(module_content)
             
             created_modules.append((module_name, module_data.get('exports', [])))
@@ -332,14 +322,16 @@ Original file split into sub-modules for atomicity compliance
         else:
             router_content += "\n# No public exports defined\n__all__ = []\n"
         
-        # Backup original file
-        backup_path = file_path + '.fission_backup'
-        import shutil
-        shutil.copy2(file_path, backup_path)
-        logger.info(f"   [+] Backed up original to: {os.path.basename(backup_path)}")
+        # Backup & Write
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = f"{file_path}.fission_backup_{timestamp}"
         
-        # Write router file
-        with open(file_path, 'w', encoding='utf-8') as f:
+        # Atomic backup: copy to temp then move
+        shutil.copy2(file_path, f"{backup_path}.tmp")
+        os.replace(f"{backup_path}.tmp", backup_path)
+        
+        with open(file_path, 'w', encoding='utf-8', errors='ignore') as f:
             f.write(router_content)
         
         logger.info(f"   [✓] Fission complete: {len(created_modules)} sub-modules created")
@@ -421,8 +413,15 @@ async def run_mission(target_scope: str = "agentic_core"):
     ctx.fission = fission_mgr
     
     ctx.target_scope = target_scope
-    ctx.python_files = [str(p) for p in Path(target_scope).rglob("*.py") if p.suffix == ".py"]
-    print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files discovered")
+    
+    # === L5 SAFETY: Path Containment ===
+    target_path = Path(target_scope).resolve()
+    project_root_path = project_root.resolve()
+    if not target_path.is_relative_to(project_root_path):
+        raise ValueError(f"[SECURITY BLOCK] Target scope '{target_scope}' escapes project root.")
+    
+    ctx.python_files = [str(p) for p in target_path.rglob("*.py") if p.is_file()]
+    print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in safe scope '{target_path}'")
     
     # ===========================================================================
     # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Agent Loading & Surgeon Prompt
@@ -494,7 +493,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         
         # Check LOC for Safety Threshold
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                 loc_count = len(f.readlines())
         except: loc_count = 0
         
@@ -651,11 +650,19 @@ if __name__ == "__main__":
         help="Target folder for validation"
     )
     args = parser.parse_args()
+    
+    # Global mission timeout: 30 minutes
+    MISSION_TIMEOUT = int(os.getenv("MISSION_TIMEOUT_SECONDS", "1800"))
 
     try:
-        asyncio.run(run_mission(args.target))
+        async def timed_mission():
+            async with asyncio.timeout(MISSION_TIMEOUT):
+                await run_mission(args.target)
+        asyncio.run(timed_mission())
     except KeyboardInterrupt:
         print("\n[!] Mission interrupted by user")
+    except asyncio.TimeoutError:
+        print(f"\n[X] Mission timed out after {MISSION_TIMEOUT}s")
     except Exception as e:
         print(f"\n[X] Mission failed: {e}")
         import traceback
