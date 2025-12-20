@@ -6,7 +6,7 @@ import time
 from typing import Dict, List
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.domain.constants import EXCLUDED_DIRS
+from agentic_core.domain.constants import EXCLUDED_DIRS
 
 
 class HygieneGuardian(SubAtomicAgent):
@@ -36,9 +36,11 @@ class HygieneGuardian(SubAtomicAgent):
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Project Hygiene...")
+        print(f"   [{self.name}] 🧹 Scanning for generative artifacts and hygiene violations...")
         await asyncio.sleep(0)
         await self._purge_generative_artifacts()
         self.ctx.signals.add("GENERATIVE_CLEAN")
+        print(f"   [{self.name}] ✅ Project hygiene enforcement complete")
 
     async def _purge_generative_artifacts(self):
         violations = []

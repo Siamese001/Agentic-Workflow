@@ -44,7 +44,7 @@ import os
 import logging  # Added for better error handling
 from typing import Optional
 
-from apps_shared.canon_validation_context import ValidationContext
+from agentic_core.L4_state.validation_context import ValidationContext
 
 
 # Configure basic logging for this module.

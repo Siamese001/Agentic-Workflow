@@ -34,24 +34,31 @@ class SystemArchitect(CanonBaseAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
         
         # Check Key 40: Core architecture
+        print(f"   [{self.name}] 🔍 Checking Key 40: Core Architecture...")
         passed, violations = self.check_key_40_core_architecture()
         if passed:
-            print(f"   [{self.name}] Key 40: PASS")
+            print(f"   [{self.name}] ✅ Key 40: PASS - Core architecture valid")
         else:
-            print(f"   [{self.name}] Key 40: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 40: FAIL ({len(violations)} violations)")
             await self._heal_violations(40, violations)
         
         # Check Key 41: Deep nesting
+        print(f"   [{self.name}] 🔍 Checking Key 41: Deep Nesting...")
         passed, violations = self.check_key_41_no_deep_nesting()
         if not passed:
-            print(f"   [{self.name}] Key 41: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 41: FAIL ({len(violations)} violations)")
             await self._heal_violations(41, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 41: PASS - No deep nesting detected")
         
         # Check Key 42: Large files
+        print(f"   [{self.name}] 🔍 Checking Key 42: Large Files...")
         passed, violations = self.check_key_42_no_large_files()
         if not passed:
-            print(f"   [{self.name}] Key 42: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 42: FAIL ({len(violations)} violations)")
             await self._heal_violations(42, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 42: PASS - All files within size limits")
     
     def check_key_40_core_architecture(self) -> Tuple[bool, List[str]]:
         """
@@ -170,10 +177,14 @@ class SystemArchitect(CanonBaseAgent):
         file_violations = {}
         for violation in violations[:max_healing_per_file]:
             if ':' in violation:
-                file_path = violation.split(':')[0]
-                if file_path not in file_violations:
-                    file_violations[file_path] = []
-                file_violations[file_path].append(violation)
+                # FIX: Handle Windows paths correctly (C:\path\file.py: message)
+                # Split on ': ' (colon-space) instead of just ':' to avoid splitting drive letters
+                parts = violation.split(': ', 1)
+                if len(parts) >= 1:
+                    file_path = parts[0]
+                    if file_path not in file_violations:
+                        file_violations[file_path] = []
+                    file_violations[file_path].append(violation)
         
         # Heal each file
         for file_path, file_viols in file_violations.items():

@@ -19,7 +19,6 @@ class CanonValidator:
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
     HARDENED: Uses compound cache keys to prevent stale cache hits.
     """
-
     # Class constants for configuration
     REDIS_CACHE_EXPIRY_SECONDS = 3600  # 1 hour
     FAILURE_THRESHOLD = 0.5
@@ -81,20 +80,21 @@ class CanonValidator:
         """
         try:
             current_mtime = os.path.getmtime(self.manifest_path)
-            # Invert condition to reduce nesting depth
-            if current_mtime <= self.last_manifest_load:
-                return  # Exit early if no update is needed
-
-            # If we reach here, an update is needed.
-            self._perform_manifest_update(current_mtime)
         except FileNotFoundError:
             logger.warning("Manifest not found. Cache invalidation may be disabled.")
             self.manifest_cache = {}
             self.manifest_lookup = {}  # Clear lookup as well
+            return
         except Exception as e:
             logger.error(f"Error refreshing manifest: {e}")
             self.manifest_cache = {}
             self.manifest_lookup = {}
+            return
+
+        # If we reached here, current_mtime was successfully retrieved.
+        # Check if an update is needed.
+        if current_mtime > self.last_manifest_load:
+            self._perform_manifest_update(current_mtime)
 
     def _get_file_hash(self, file_path: str) -> str:
         """

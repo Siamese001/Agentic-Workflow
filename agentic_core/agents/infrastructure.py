@@ -4,7 +4,7 @@ import os
 import time
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.domain.constants import EXCLUDED_DIRS
+from agentic_core.domain.constants import EXCLUDED_DIRS
 
 # Optional dependencies
 try:

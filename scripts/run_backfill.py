@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
-
 from core.etl_pipeline import BackfillPipeline, ContinuousIngester
 from core.qdrant_cache import QdrantCache
 from core.semantic_gatekeeper import get_gatekeeper
