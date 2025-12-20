@@ -7,16 +7,13 @@ All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
 Legacy API preserved for backward compatibility.
 """
 
-import asyncio
 import logging
-from datetime import datetime
 from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
 # Phase 5: Import from consolidated orchestrator
 from agentic_core.core.orchestrator_main import (
-    ConsolidatedOrchestrator,
     OrchestratorConfig,
     create_orchestrator,
 )

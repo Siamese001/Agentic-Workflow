@@ -5,7 +5,7 @@ Extracted from apps_lic/L3_orchestration/l5_autonomous_orchestrator.py
 
 import logging
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from agentic_core.domain.context import ValidationContext
 

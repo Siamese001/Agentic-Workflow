@@ -36,17 +36,14 @@ def issues_get_detail(issue_id: str) -> str:
 
 def browser_navigate(url: str) -> None:
     """Mock for Playwright MCP: Navigate to URL."""
-    pass
 
 
 def browser_type(element: str, ref: str, text: str) -> None:
     """Mock for Playwright MCP: Type text into element."""
-    pass
 
 
 def browser_click(element: str, ref: str) -> None:
     """Mock for Playwright MCP: Click element."""
-    pass
 
 
 # --- REDIS MCP MOCKS ---
@@ -58,27 +55,22 @@ def string_get(key: str) -> Optional[str]:
 
 def string_set(key: str, value: str) -> None:
     """Mock for Redis MCP: Set string value."""
-    pass
 
 
 def start_transaction() -> None:
     """Mock for Redis MCP: Start a transaction."""
-    pass
 
 
 def watch_key(key: str) -> None:
     """Mock for Redis MCP: Watch a key for transaction."""
-    pass
 
 
 def transaction_set_with_ttl(key: str, value: str, ttl: int) -> None:
     """Mock for Redis MCP: Set value with TTL in transaction."""
-    pass
 
 
 def commit_transaction() -> None:
     """Mock for Redis MCP: Commit transaction."""
-    pass
 
 
 def incr(key: str) -> int:
@@ -138,7 +130,6 @@ def get_from_langcache(key: str) -> Optional[str]:
 
 def set_to_langcache(key: str, value: str, ttl: int = 86400) -> None:
     """Mock: Writes result to LangCache with TTL."""
-    pass
 
 
 # --- MEMORY MCP MOCKS ---
@@ -155,7 +146,6 @@ def search_nodes(query: str) -> str:
 
 def add_observations(observations: List[Dict[str, Any]]) -> None:
     """Mock for MEMemory MCP: Add observations."""
-    pass
 
 
 # --- PINECONE MCP MOCKS ---

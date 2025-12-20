@@ -13,14 +13,13 @@ import ast
 import logging
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agentic_core.patterns.subatomic_flattening_rule import (
-    ComplexityMetrics,
-    FlatteningPattern
+    ComplexityMetrics
 )
 
 logging.basicConfig(level=logging.INFO)

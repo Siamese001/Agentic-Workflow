@@ -1,11 +1,10 @@
 import ast
-import asyncio
 import logging
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple, Callable
+from typing import Dict, List, Optional, Tuple, Callable
 
 try:
     from pinecone import Pinecone

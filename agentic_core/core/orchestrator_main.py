@@ -7,7 +7,6 @@ import sys
 import ast
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 import json # Moved from _checkpoint_state in ConsolidatedOrchestrator
 import subprocess # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
@@ -30,10 +29,6 @@ from agentic_core.agents import (
 )
 
 # Phase 5: L1-L5 Unified Architecture
-from agentic_core.infra.tui_dashboard import AgenticTUI
-from agentic_core.infra.fission_manager import FissionManager
-from agentic_core.infra.safety_guardrail import SafetyGuardrail
-from agentic_core.memory.pinecone_sync import MemoryArchitectSync
 
 # This import was present within the execute_with_healing method in the original code,
 # despite a contradictory comment. It is moved here for proper module structure

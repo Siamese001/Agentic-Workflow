@@ -39,12 +39,10 @@ EXCLUDED_DIRS: Set[str] = {
 
 class SandboxViolationError(Exception):
     """Raised when a file operation violates sandbox constraints."""
-    pass
 
 
 class HealingLeaseError(Exception):
     """Raised when an agent attempts to write without holding the HealingLease."""
-    pass
 
 
 def get_project_root() -> Path:
@@ -94,7 +92,6 @@ def validate_sandbox(path: str) -> Path:
 
 class PreservationViolationError(Exception):
     """Raised when a write operation would delete too much content."""
-    pass
 
 
 def require_healing_lease(func):

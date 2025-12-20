@@ -2,13 +2,15 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
-from typing import Set
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+from agentic_core.agents import (  # Added HallucinationHunter for type hinting
+    HallucinationHunter,
+    get_hallucination_hunter,
+)
 from agentic_core.domain.context import ValidationContext
-from agentic_core.agents import get_hallucination_hunter, HallucinationHunter # Added HallucinationHunter for type hinting
 
 logging.basicConfig(
     level=logging.INFO,

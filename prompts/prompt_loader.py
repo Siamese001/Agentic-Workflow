@@ -3,7 +3,6 @@ Dynamic Prompt Loader for Canon Validator Agents
 
 Loads prompts from modularized markdown files based on agent role.
 """
-import os
 from pathlib import Path
 from typing import Dict, Optional
 

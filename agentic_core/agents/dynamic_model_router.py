@@ -19,11 +19,9 @@ import ast
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 from agentic_core.agents.base import SubAtomicAgent
-from agentic_core.patterns.subatomic_flattening_rule import ComplexityMetrics, FlatteningPattern
 
 logger = logging.getLogger(__name__)
 

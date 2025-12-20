@@ -6,8 +6,7 @@ Blackboard pattern for shared state across validation agents.
 import asyncio
 import os
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 
 from apps_shared.canon_service_manager import ServiceManager
 from apps_shared.canon_utils import get_python_files

@@ -4,11 +4,9 @@ Demonstrates integration with Gemini 2.5/3.0 and AtomicBlackboard.
 """
 
 import os
-from typing import Dict, Any
 
 from agentic_core.tools import (
     create_tool_registry,
-    get_function_declarations,
     ReadFileArgs,
     WriteFileArgs,
     ExecuteCommandArgs,

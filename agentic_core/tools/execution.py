@@ -14,12 +14,10 @@ from .filesystem import get_project_root, validate_sandbox
 
 class ExecutionTimeoutError(Exception):
     """Raised when command execution exceeds timeout."""
-    pass
 
 
 class ExecutionError(Exception):
     """Raised when command execution fails."""
-    pass
 
 
 ALLOWED_COMMANDS: Dict[str, List[str]] = {

@@ -50,22 +50,12 @@ from .security import (
 )
 
 # Memory agents (Level 5 Autonomous Learning)
-from .memory_architect import MemoryArchitect, get_memory_architect
 
 # Pattern retrieval agents
-from .pattern_retrieval_agent import PatternRetrievalAgent, get_pattern_agent
 
 # Systemic enhancement agents
-from .adversarial_red_teamer import AdversarialRedTeamer, get_red_teamer
-from .dynamic_model_router import DynamicModelRouter, get_model_router
-from .schema_evolver import SchemaEvolver, get_schema_evolver
-from .predictive_cost_auditor import PredictiveCostAuditor, get_cost_auditor
 
 # Cognitive assurance agents
-from .regression_oracle import RegressionOracle, get_regression_oracle
-from .hallucination_hunter import HallucinationHunter, get_hallucination_hunter
-from .dependency_diplomat import DependencyDiplomat, get_dependency_diplomat
-from .context_curator import ContextCurator, get_context_curator
 
 # Specialized agents
 from .specialized import (

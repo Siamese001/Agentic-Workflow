@@ -7,7 +7,6 @@ from typing import Any, Callable, Dict, List, Optional
 from pydantic import BaseModel
 
 try:
-    from google import genai
     from google.genai import types
     GENAI_AVAILABLE = True
 except ImportError:

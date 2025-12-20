@@ -8,8 +8,7 @@ Responsible for:
 - Integration with Pinecone for pattern storage
 """
 import os
-import json
-from typing import List, Tuple, Optional, Dict, Any
+from typing import List, Optional
 
 from .canon_base_agent import CanonBaseAgent
 

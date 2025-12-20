@@ -2,8 +2,9 @@
 """
 Test script to verify persistent chat sessions work correctly.
 """
-import os
 import asyncio
+import os
+
 from dotenv import load_dotenv
 
 load_dotenv()

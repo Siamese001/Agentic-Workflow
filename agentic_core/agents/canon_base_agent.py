@@ -4,7 +4,6 @@ import os
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Optional, Dict, Any, List, Tuple
 
 try:

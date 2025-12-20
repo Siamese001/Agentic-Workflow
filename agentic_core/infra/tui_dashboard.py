@@ -8,10 +8,9 @@ Provides live visualization of:
 - Signal stream with rolling logs
 """
 
-from rich.live import Live
 from rich.table import Table
 from rich.panel import Panel
-from rich.console import Group, Console
+from rich.console import Console
 from rich.layout import Layout
 from rich.text import Text
 from datetime import datetime

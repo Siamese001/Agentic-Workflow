@@ -8,7 +8,7 @@ This is a backward compatibility shim. All new code should import directly from:
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Dict, Optional, Set
 
 from agentic_core.infra.context import get_context
 
