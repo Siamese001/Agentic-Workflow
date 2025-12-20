@@ -1,17 +1,65 @@
-"""
-Canon Validator Structural Agents
-
-This module defines a set of SubAtomicAgents responsible for validating the structural
-and complexity aspects of Python codebases. These agents perform checks related to
-type hints, code reachability, variable usage, function/class size, cyclomatic
-complexity, global variables, file size, and class density.
-"""
-
 import ast
 import os
 from typing import List, Set, Tuple
 
 from agentic_core.canon_base_agent import SubAtomicAgent
+
+
+class NestingDepthVisitor(ast.NodeVisitor):
+    """
+    A visitor to calculate and report violations for excessive nesting depth within an AST.
+    """
+    def __init__(self, max_allowed_depth: int, filepath: str):
+        self.max_allowed_depth = max_allowed_depth
+        self.filepath = filepath
+        self.current_depth = 0
+        self.violations: List[str] = []
+
+    def _generic_visit_with_depth(self, node):
+        self.current_depth += 1
+        if self.current_depth > self.max_allowed_depth:
+            # Report violation at the start of the block that exceeds the limit
+            self.violations.append(
+                f"{self.filepath}:{getattr(node, 'lineno', 'N/A')}: "
+                f"Nesting depth {self.current_depth} exceeds max {self.max_allowed_depth} "
+                f"at {type(node).__name__} block."
+            )
+        super().generic_visit(node)
+        self.current_depth -= 1
+
+    # Override visit methods for nodes that increase nesting
+    def visit_FunctionDef(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_AsyncFunctionDef(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_ClassDef(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_If(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_For(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_AsyncFor(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_While(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_With(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_AsyncWith(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_Try(self, node):
+        self._generic_visit_with_depth(node)
+
+    def visit_ExceptHandler(self, node):
+        self._generic_visit_with_depth(node)
 
 
 class TypeMechanic(SubAtomicAgent):
@@ -218,8 +266,8 @@ class BudgetAgent(SubAtomicAgent):
 
 class StructuralEngineer(SubAtomicAgent):
     """
-    KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 42 (Large Files),
-          43 (Class Density), 46 (Duplicate Code)
+    KEYS: 18 (Many Parameters), 20 (Large Classes), 25 (Globals), 41 (Excessive Nesting),
+          42 (Large Files), 43 (Class Density), 46 (Duplicate Code)
     ROLE: Heavy Refactoring with Semantic Intelligence.
     """
 
@@ -233,6 +281,7 @@ class StructuralEngineer(SubAtomicAgent):
             (18, self.check_key_18_no_many_parameters),
             (20, self.check_key_20_no_large_classes),
             (25, self.check_key_25_no_global_variables),
+            (41, self.check_key_41_no_excessive_nesting), # Add this key
             (42, self.check_key_42_no_large_files),
             (43, self.check_key_43_class_density),
             (46, self.check_key_46_no_duplicate_code),
@@ -323,6 +372,28 @@ class StructuralEngineer(SubAtomicAgent):
                                     )
             except (IOError, SyntaxError) as e:
                 self.ctx.log_error(f"Error parsing {fp} for global variables: {e}")
+                continue
+        return len(violations) == 0, violations
+
+    def check_key_41_no_excessive_nesting(self) -> Tuple[bool, List[str]]:
+        """
+        Checks for code blocks exceeding a maximum nesting depth.
+        The limit is configurable via the 'MAX_NESTING_DEPTH' environment variable.
+        """
+        violations = []
+        max_nesting_depth = int(os.getenv('MAX_NESTING_DEPTH', '4')) # Default to 4 as per violation
+
+        for fp in self.ctx.python_files:
+            try:
+                with open(fp, "r", encoding="utf-8") as f:
+                    tree = ast.parse(f.read(), filename=fp)
+
+                visitor = NestingDepthVisitor(max_nesting_depth, fp)
+                visitor.visit(tree)
+                violations.extend(visitor.violations)
+
+            except (IOError, SyntaxError) as e:
+                self.ctx.log_error(f"Error parsing {fp} for excessive nesting: {e}")
                 continue
         return len(violations) == 0, violations
 

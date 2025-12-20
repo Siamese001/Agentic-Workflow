@@ -39,6 +39,22 @@ class SafetyInspector(SubAtomicAgent):
 
         self.ctx.signal_secure()
 
+    def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
+        """Helper to find hardcoded secrets in a single file."""
+        file_violations = []
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                content = f.read()
+                for pattern in patterns:
+                    if re.search(pattern, content, re.IGNORECASE):
+                        file_violations.append(fp)
+                        break
+        except Exception:  # Removed 'as e' since 'e' was not used.
+            # Log the error if necessary, but for now, just skip the file
+            # print(f"Error reading file {fp}: {e}")
+            pass
+        return file_violations
+
     def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
         """
         Checks for hardcoded secrets (passwords, API keys, tokens) in files.
@@ -52,18 +68,21 @@ class SafetyInspector(SubAtomicAgent):
         ]
 
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    content = f.read()
-                    for pattern in patterns:
-                        if re.search(pattern, content, re.IGNORECASE):
-                            violations.append(fp)
-                            break
-            except Exception:  # Removed 'as e' since 'e' was not used.
-                # Log the error if necessary, but for now, just skip the file
-                # print(f"Error reading file {fp}: {e}")
-                continue
+            violations.extend(self._find_secret_violations_in_file(fp, patterns))
         return len(violations) == 0, violations
+
+    def _find_todo_fixme_violations_in_file(self, fp: str) -> List[str]:
+        """Helper to find TODO/FIXME comments in a single file."""
+        file_violations = []
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                for i, line in enumerate(f, 1):
+                    if re.search(r'\b(TODO|FIXME)\b', line, re.IGNORECASE):
+                        file_violations.append(f"{fp}:{i}")
+        except Exception:  # Removed 'as e' since 'e' was not used.
+            # print(f"Error reading file {fp}: {e}")
+            pass
+        return file_violations
 
     def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
         """
@@ -71,15 +90,18 @@ class SafetyInspector(SubAtomicAgent):
         """
         violations = []
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    for i, line in enumerate(f, 1):
-                        if re.search(r'\b(TODO|FIXME)\b', line, re.IGNORECASE):
-                            violations.append(f"{fp}:{i}")
-            except Exception:  # Removed 'as e' since 'e' was not used.
-                # print(f"Error reading file {fp}: {e}")
-                continue
+            violations.extend(self._find_todo_fixme_violations_in_file(fp))
         return len(violations) == 0, violations
+
+    def _find_print_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+        """Helper to find print statements in an AST tree."""
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and \
+               isinstance(node.func, ast.Name) and \
+               node.func.id == "print":
+                file_violations.append(f"{fp}:{node.lineno}")
+        return file_violations
 
     def check_key_02_no_print_statements(self) -> Tuple[bool, List[str]]:
         """
@@ -90,14 +112,24 @@ class SafetyInspector(SubAtomicAgent):
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Call):
-                        if isinstance(node.func, ast.Name) and node.func.id == "print":
-                            violations.append(f"{fp}:{node.lineno}")
+                violations.extend(self._find_print_violations_in_tree(tree, fp))
             except Exception:  # Removed 'as e' since 'e' was not used.
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
+
+    def _find_debugger_violations_in_file(self, fp: str) -> List[str]:
+        """Helper to find debugger statements in a single file."""
+        file_violations = []
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                for i, line in enumerate(f, 1):
+                    if re.search(r'\bbreakpoint\(\)|pdb\.set_trace\(\)', line):
+                        file_violations.append(f"{fp}:{i}")
+        except Exception:  # Removed 'as e' since 'e' was not used.
+            # print(f"Error reading file {fp}: {e}")
+            pass
+        return file_violations
 
     def check_key_03_no_debugger_statements(self) -> Tuple[bool, List[str]]:
         """
@@ -105,15 +137,17 @@ class SafetyInspector(SubAtomicAgent):
         """
         violations = []
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    for i, line in enumerate(f, 1):
-                        if re.search(r'\bbreakpoint\(\)|pdb\.set_trace\(\)', line):
-                            violations.append(f"{fp}:{i}")
-            except Exception:  # Removed 'as e' since 'e' was not used.
-                # print(f"Error reading file {fp}: {e}")
-                continue
+            violations.extend(self._find_debugger_violations_in_file(fp))
         return len(violations) == 0, violations
+
+    def _find_empty_except_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+        """Helper to find empty except blocks in an AST tree."""
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ExceptHandler):
+                if not node.body or (len(node.body) == 1 and isinstance(node.body[0], ast.Pass)):
+                    file_violations.append(f"{fp}:{node.lineno}")
+        return file_violations
 
     def check_key_04_no_empty_except_blocks(self) -> Tuple[bool, List[str]]:
         """
@@ -124,14 +158,20 @@ class SafetyInspector(SubAtomicAgent):
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ExceptHandler):
-                        if not node.body or (len(node.body) == 1 and isinstance(node.body[0], ast.Pass)):
-                            violations.append(f"{fp}:{node.lineno}")
+                violations.extend(self._find_empty_except_violations_in_tree(tree, fp))
             except Exception:  # Removed 'as e' since 'e' was not used.
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
+
+    def _find_bare_except_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+        """Helper to find bare except statements in an AST tree."""
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ExceptHandler):
+                if node.type is None:  # This indicates a bare 'except:'
+                    file_violations.append(f"{fp}:{node.lineno}")
+        return file_violations
 
     def check_key_05_no_bare_except(self) -> Tuple[bool, List[str]]:
         """
@@ -142,14 +182,20 @@ class SafetyInspector(SubAtomicAgent):
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ExceptHandler):
-                        if node.type is None:  # This indicates a bare 'except:'
-                            violations.append(f"{fp}:{node.lineno}")
+                violations.extend(self._find_bare_except_violations_in_tree(tree, fp))
             except Exception:  # Removed 'as e' since 'e' was not used.
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
+
+    def _find_eval_exec_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+        """Helper to find eval() or exec() calls in an AST tree."""
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Name) and node.func.id in ("eval", "exec"):
+                    file_violations.append(f"{fp}:{node.lineno}")
+        return file_violations
 
     def check_key_06_no_eval_exec(self) -> Tuple[bool, List[str]]:
         """
@@ -160,10 +206,7 @@ class SafetyInspector(SubAtomicAgent):
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Call):
-                        if isinstance(node.func, ast.Name) and node.func.id in ("eval", "exec"):
-                            violations.append(f"{fp}:{node.lineno}")
+                violations.extend(self._find_eval_exec_violations_in_tree(tree, fp))
             except Exception:  # Removed 'as e' since 'e' was not used.
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
@@ -184,6 +227,15 @@ class DocumentationAgent(SubAtomicAgent):
         passed, details = self.check_key_21_no_missing_docstrings()
         self.ctx.report(self.name, 21, passed, details)
 
+    def _find_missing_docstring_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+        """Helper to find missing docstrings in an AST tree."""
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                if not ast.get_docstring(node):
+                    file_violations.append(f"{fp}:{node.lineno} {node.name}")
+        return file_violations
+
     def check_key_21_no_missing_docstrings(self) -> Tuple[bool, List[str]]:
         """
         Checks for missing docstrings in classes and functions using AST parsing.
@@ -193,10 +245,7 @@ class DocumentationAgent(SubAtomicAgent):
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
-                        if not ast.get_docstring(node):
-                            violations.append(f"{fp}:{node.lineno} {node.name}")
+                violations.extend(self._find_missing_docstring_violations_in_tree(tree, fp))
             except Exception:  # Removed 'as e' since 'e' was not used.
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
@@ -217,6 +266,21 @@ class NamingAgent(SubAtomicAgent):
         passed, details = self.check_key_47_naming_conventions()
         self.ctx.report(self.name, 47, passed, details)
 
+    def _find_naming_convention_violations_in_tree(self, tree: ast.AST, fp: str) -> List[str]:
+        """Helper to find naming convention violations in an AST tree."""
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                # Function names should be lowercase, with words separated by underscores.
+                # The regex allows leading underscores, which is acceptable for internal functions.
+                if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
+                    file_violations.append(f"{fp}:{node.lineno} function {node.name}")
+            elif isinstance(node, ast.ClassDef):
+                # Class names should normally use the CapWords convention.
+                if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
+                    file_violations.append(f"{fp}:{node.lineno} class {node.name}")
+        return file_violations
+
     def check_key_47_naming_conventions(self) -> Tuple[bool, List[str]]:
         """
         Checks for PEP 8 naming conventions for functions (snake_case)
@@ -227,16 +291,7 @@ class NamingAgent(SubAtomicAgent):
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        # Function names should be lowercase, with words separated by underscores.
-                        # The regex allows leading underscores, which is acceptable for internal functions.
-                        if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
-                            violations.append(f"{fp}:{node.lineno} function {node.name}")
-                    elif isinstance(node, ast.ClassDef):
-                        # Class names should normally use the CapWords convention.
-                        if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
-                            violations.append(f"{fp}:{node.lineno} class {node.name}")
+                violations.extend(self._find_naming_convention_violations_in_tree(tree, fp))
             except Exception:  # Removed 'as e' since 'e' was not used.
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue

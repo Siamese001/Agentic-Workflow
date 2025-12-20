@@ -14,6 +14,61 @@ from agentic_core.canon_base_agent import SubAtomicAgent
 from apps_shared.canon_utils import EXCLUDED_DIRS, is_excluded
 
 
+class NestVisitor(ast.NodeVisitor):
+    """
+    AST visitor to check nesting depth within a file.
+    Moved to module level to reduce nesting depth in SystemArchitect.
+    """
+    NESTERS = (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
+
+    def __init__(self, fp: str, max_nesting_depth: int):
+        self.fp = fp
+        self.depth = 0
+        self.scope_stack: List[str] = ["global"]
+        self.violations_in_file: List[str] = []
+        self.MAX_NESTING_DEPTH = max_nesting_depth
+
+    @property
+    def current_scope(self) -> str:
+        """Returns the current scope name."""
+        return self.scope_stack[-1]
+
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        """Visits a function definition, pushing its name onto the scope stack."""
+        self.scope_stack.append(f"func {node.name}")
+        self.generic_visit(node)
+        self.scope_stack.pop()
+    
+    def visit_ClassDef(self, node: ast.ClassDef):
+        """Visits a class definition, pushing its name onto the scope stack."""
+        self.scope_stack.append(f"class {node.name}")
+        self.generic_visit(node)
+        self.scope_stack.pop()
+    
+    def _check_and_report_nesting(self, node: ast.AST):
+        """Helper to check if current depth exceeds max and report violation."""
+        if self.depth > self.MAX_NESTING_DEPTH:
+            self.violations_in_file.append(
+                f"{self.fp}:{node.lineno} {self.current_scope} depth {self.depth}"
+            )
+
+    def visit(self, node: ast.AST):
+        """
+        Generic visit method to track nesting depth for specific AST nodes.
+        Reports violations if depth exceeds MAX_NESTING_DEPTH.
+        """
+        is_nest = isinstance(node, self.NESTERS)
+        if not is_nest: # Use a guard clause to reduce nesting
+            super().visit(node)
+            return
+
+        # If it is a nester:
+        self.depth += 1
+        self._check_and_report_nesting(node) # Call helper to reduce nesting for reporting
+        super().visit(node)  # Continue traversal
+        self.depth -= 1
+
+
 class SystemArchitect(SubAtomicAgent):
     """
     KEYS: 40 (Metaclasses), 41 (Deep Nesting), 49 (Directory Depth), 50 (Integrity)
@@ -56,6 +111,19 @@ class SystemArchitect(SubAtomicAgent):
         passed_50, details_50 = self.check_key_50_law_of_void()
         self.ctx.report(self.name, 50, passed_50, details_50)
 
+    def _check_tree_for_metaclasses(self, tree: ast.AST, file_path: str) -> List[str]:
+        """
+        Helper method to check an AST tree for metaclass definitions.
+        Reduces nesting depth in the main check_key_40_no_metaclasses method.
+        """
+        violations_in_tree = []
+        for node in ast.walk(tree): # Depth 1 (relative to this helper method)
+            if isinstance(node, ast.ClassDef): # Depth 2
+                # Check for 'metaclass=...' in class definition keywords
+                if any(kw.arg == "metaclass" for kw in node.keywords): # Depth 3
+                    violations_in_tree.append(f"{file_path}:{node.lineno}") # Depth 4
+        return violations_in_tree
+
     def check_key_40_no_metaclasses(self) -> Tuple[bool, List[str]]:
         """
         Checks for metaclass usage in Python files.
@@ -67,17 +135,14 @@ class SystemArchitect(SubAtomicAgent):
                           where a metaclass was found.
         """
         metaclass_violations = []
-        for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
+        for file_path in self.ctx.python_files: # Depth 1
+            try: # Depth 2
+                with open(file_path, "r", encoding="utf-8") as f: # Depth 3
                     # Add filename for better error messages from ast.parse
                     tree = ast.parse(f.read(), filename=file_path)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.ClassDef):
-                        # Check for 'metaclass=...' in class definition keywords
-                        if any(kw.arg == "metaclass" for kw in node.keywords):
-                            metaclass_violations.append(f"{file_path}:{node.lineno}")
-            except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
+                # Delegate the tree traversal and violation finding to the helper
+                metaclass_violations.extend(self._check_tree_for_metaclasses(tree, file_path)) # Depth 3
+            except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e: # Depth 2
                 # Log a warning for files that cannot be parsed, but continue processing others.
                 print(
                     f"Warning: Could not parse {file_path} for metaclass check: {e}",
@@ -100,56 +165,16 @@ class SystemArchitect(SubAtomicAgent):
         """
         MAX_NESTING_DEPTH = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         violations = []
-        NESTERS = (ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With, ast.AsyncWith)
-
-        class NestVisitor(ast.NodeVisitor):
-            """AST visitor to check nesting depth within a file."""
-            def __init__(self, fp: str):
-                self.fp = fp
-                self.depth = 0
-                self.scope_stack: List[str] = ["global"]  # Use a stack for managing scopes
-                self.violations_in_file: List[str] = []  # Collect violations specific to this file
-
-            @property
-            def current_scope(self) -> str:
-                """Returns the current scope name."""
-                return self.scope_stack[-1]
-
-            def visit_FunctionDef(self, node: ast.FunctionDef):
-                """Visits a function definition, pushing its name onto the scope stack."""
-                self.scope_stack.append(f"func {node.name}")
-                self.generic_visit(node)
-                self.scope_stack.pop()
-            
-            def visit_ClassDef(self, node: ast.ClassDef):
-                """Visits a class definition, pushing its name onto the scope stack."""
-                self.scope_stack.append(f"class {node.name}")
-                self.generic_visit(node)
-                self.scope_stack.pop()
-            
-            def visit(self, node: ast.AST):
-                """
-                Generic visit method to track nesting depth for specific AST nodes.
-                Reports violations if depth exceeds MAX_NESTING_DEPTH.
-                """
-                is_nest = isinstance(node, NESTERS)
-                if is_nest:
-                    self.depth += 1
-                    if self.depth > MAX_NESTING_DEPTH:
-                        self.violations_in_file.append(
-                            f"{self.fp}:{node.lineno} {self.current_scope} depth {self.depth}"
-                        )
-                super().visit(node)  # Continue traversal
-                if is_nest:
-                    self.depth -= 1
+        # NESTERS is now a class attribute of NestVisitor, so it's removed from here.
 
         for fp in self.ctx.python_files:
             try:
                 with open(fp, "r", encoding="utf-8") as f:
                     tree = ast.parse(f.read(), filename=fp)
-                visitor = NestVisitor(fp)
+                # Instantiate the module-level NestVisitor
+                visitor = NestVisitor(fp, MAX_NESTING_DEPTH) 
                 visitor.visit(tree)
-                violations.extend(visitor.violations_in_file)  # Collect violations from each file
+                violations.extend(visitor.violations_in_file)
             except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
                 print(
                     f"Warning: Could not parse {fp} for nesting check: {e}",
@@ -218,7 +243,7 @@ class SystemArchitect(SubAtomicAgent):
                         f"Warning: Could not parse {file_path} for Law of Void check: {e}",
                         file=sys.stderr
                     )
-                    # Consider unparseable files as violations for this key
+                    # Treat unparseable files as violations for the purpose of this report
                     root_violations.append(file_path)
         return len(root_violations) == 0, root_violations
 
