@@ -51,10 +51,18 @@ class ArchitectureGovernor(SubAtomicAgent):
 
     def _check_depth(self, file_path: str) -> List[str]:
         """Check if file violates the Law of Depth (Key 49)."""
-        parts = [p for p in file_path.split(os.sep) if p and p not in {'.git', 'data', '.'}]
-        depth = len(parts)
-        if depth > MAX_DEPTH or depth < MIN_DEPTH:
-            return [f"{file_path}: Depth {depth} violates Law of Depth ({MIN_DEPTH}-{MAX_DEPTH})"]
+        # FIX: Use pathlib.Path to handle Windows drive letters correctly
+        from pathlib import Path
+        try:
+            path_obj = Path(file_path).resolve()
+            parts = [p for p in path_obj.parts if p and p not in {'.git', 'data', '.', '__pycache__'}]
+            # Filter out drive letters (e.g., 'C:' on Windows)
+            parts = [p for p in parts if not (len(p) == 2 and p[1] == ':')]
+            depth = len(parts)
+            if depth > MAX_DEPTH or depth < MIN_DEPTH:
+                return [f"{file_path}: Depth {depth} violates Law of Depth ({MIN_DEPTH}-{MAX_DEPTH})"]
+        except Exception as e:
+            return [f"{file_path}: Cannot analyze depth: {e}"]
         return []
 
     async def _check_atomicity(self, file_path: str) -> List[str]:
