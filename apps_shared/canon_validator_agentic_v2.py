@@ -289,7 +289,7 @@ async def run_mission(target_scope: str = "agentic_core"):
                 self.target_scope = None
                 self._client = None
                 self.python_files = []
-                self.report = []
+                self.report_data = []
                 self.env_vars = {}
                 self.signals = set()
                 
@@ -297,9 +297,22 @@ async def run_mission(target_scope: str = "agentic_core"):
                 """Get environment variable."""
                 return os.getenv(key, default)
                 
+            def report(self, agent_name, key_number, passed, details):
+                """Report validation result for a specific canon key."""
+                self.report_data.append({
+                    "agent": agent_name,
+                    "key": key_number,
+                    "passed": passed,
+                    "details": details
+                })
+                
             def add_to_report(self, agent_name, message, severity="info"):
                 """Add finding to report."""
-                self.report.append({"agent": agent_name, "msg": message, "lvl": severity})
+                self.report_data.append({"agent": agent_name, "msg": message, "lvl": severity})
+            
+            def signal_deps_valid(self):
+                """Signal that dependencies are valid."""
+                self.signals.discard("DEPS_INVALID")
         
         ctx = ValidationContext()
         print("   [!] Using minimal ValidationContext (full context not available)")
