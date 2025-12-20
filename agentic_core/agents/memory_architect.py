@@ -220,7 +220,7 @@ class MemoryArchitect(SubAtomicAgent):
             if api_key:
                 try:
                     self.pc = Pinecone(api_key=api_key)
-                    self.index = self.pc.Index("structural-patterns")
+                    self.index = self.pc.Index("canon-healing-patterns")
                     logger.info("[OK] Memory Architect connected to Pinecone")
                 except Exception as e:
                     logger.warning(f"[!]  Could not connect to Pinecone: {e}")

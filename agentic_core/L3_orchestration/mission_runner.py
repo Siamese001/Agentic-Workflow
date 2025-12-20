@@ -348,7 +348,8 @@ def run_standard_mode():
         ctx._save_memory()
         print("\nMISSION COMPLETE")
 
-    asyncio.run(run_mission())
+    # Return the coroutine for the caller to run
+    return run_mission
 
 
 def _start_websocket_server(ctx):
