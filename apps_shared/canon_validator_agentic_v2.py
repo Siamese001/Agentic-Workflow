@@ -6,6 +6,7 @@ Shared core for Fission, Safety Guardrails, and Resilient Mutation.
 
 import asyncio
 import importlib
+from datetime import datetime
 import json
 import logging
 import random
@@ -264,8 +265,6 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
         bool: True if fission was successful, False otherwise
     """
     try:
-        import os
-        
         file_dir = os.path.dirname(file_path)
         file_name = os.path.basename(file_path)
         base_name = file_name.replace('.py', '')
@@ -323,7 +322,6 @@ Original file split into sub-modules for atomicity compliance
             router_content += "\n# No public exports defined\n__all__ = []\n"
         
         # Backup & Write
-        from datetime import datetime
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_path = f"{file_path}.fission_backup_{timestamp}"
         
