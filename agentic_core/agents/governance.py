@@ -58,20 +58,121 @@ class ArchitectureGovernor(SubAtomicAgent):
         return []
 
     async def _check_atomicity(self, file_path: str) -> List[str]:
-        """Check if file violates the Law of Atomicity (Key 50)."""
+        """
+        Check if file violates the Law of Atomicity (Key 50).
+        
+        L5 SAFETY: ATOMIC FISSION PROTOCOL
+        If the target file exceeds 200 lines, trigger FISSION_BLUEPRINT generation
+        instead of just reporting violations.
+        """
         v = []
         try:
             content = await asyncio.to_thread(self._read_file, file_path)
-            if len(content.splitlines()) > MAX_LINES:
+            loc = len(content.splitlines())
+            
+            # L5 SAFETY THRESHOLD: 200 lines triggers fission blueprint
+            if loc > 200:
+                # Generate fission blueprint instead of simple violation report
+                blueprint = await self._generate_fission_blueprint(file_path, content, loc)
+                
+                if blueprint:
+                    # Store blueprint in context for FissionManager to execute
+                    if not hasattr(self.ctx, 'fission_blueprints'):
+                        self.ctx.fission_blueprints = {}
+                    self.ctx.fission_blueprints[file_path] = blueprint
+                    v.append(f"{file_path}: FISSION_REQUIRED ({loc} lines) - Blueprint generated")
+                else:
+                    v.append(f"{file_path}: > 200 lines ({loc} LOC) - Fission blueprint generation failed")
+            elif loc > MAX_LINES:
                 v.append(f"{file_path}: > {MAX_LINES} lines")
 
             tree = ast.parse(content)
             classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             if len(classes) > 1:
                 v.append(f"{file_path}: Multiple classes detected (Violation of Atomic Split)")
-        except Exception:
+        except Exception as e:
             pass
         return v
+    
+    async def _generate_fission_blueprint(self, file_path: str, content: str, loc: int) -> dict:
+        """
+        Generate a fission blueprint for monolithic files (>200 LOC).
+        
+        MISSION: ATOMIC FISSION PROTOCOL
+        1. ANALYZE the file for logical "seams" (e.g., helper functions vs. core classes)
+        2. GENERATE a JSON Blueprint mapping source code into sub-modules (<100 lines each)
+        3. ENSURE the original filename is preserved as a "Router" (L3 Orchestration layer)
+        
+        Returns:
+            dict: Fission blueprint with module splits and exports
+        """
+        try:
+            # Use Gemini to analyze and generate the blueprint
+            if not hasattr(self.ctx, 'gemini_client') or not self.ctx.gemini_client:
+                return None
+            
+            file_name = os.path.basename(file_path)
+            
+            prompt = f"""### MISSION: ATOMIC FISSION PROTOCOL
+You are analyzing a monolithic Python file that exceeds the L5 Safety Threshold (200 lines).
+
+FILE: {file_name}
+LINES: {loc}
+
+Your task is to generate a FISSION BLUEPRINT that splits this file into smaller, atomic modules.
+
+RULES:
+1. Each sub-module should be <100 lines
+2. Preserve all functionality (Zero-Loss principle)
+3. The original filename becomes a "Router" that imports and re-exports from sub-modules
+4. Identify logical seams: helper functions, data classes, core logic, utilities
+
+ANALYZE THIS CODE:
+```python
+{content[:8000]}  # Truncate to fit in context
+```
+
+OUTPUT FORMAT (JSON):
+{{
+  "fission_event": true,
+  "original_file": "{file_name}",
+  "reason": "Atomicity Violation ({loc} lines)",
+  "blueprint": {{
+    "module_a": {{"content": "...", "exports": [...]}},
+    "module_b": {{"content": "...", "exports": [...]}}
+  }}
+}}
+
+Generate the blueprint now:"""
+
+            # Call Gemini with safe config
+            from apps_shared.canon_validator_agentic_v2 import SubAtomicEngine
+            config = SubAtomicEngine.get_safe_config(is_fission=True)
+            
+            response = await asyncio.to_thread(
+                self.ctx.gemini_client.models.generate_content,
+                model='gemini-2.5-flash',
+                contents=prompt,
+                config=config
+            )
+            
+            if response.candidates and response.candidates[0].content.parts:
+                output = response.candidates[0].content.parts[0].text.strip()
+                
+                # Extract JSON from response
+                import json
+                import re
+                json_match = re.search(r'\{.*\}', output, re.DOTALL)
+                if json_match:
+                    blueprint = json.loads(json_match.group())
+                    if blueprint.get('fission_event'):
+                        return blueprint
+            
+            return None
+            
+        except Exception as e:
+            print(f"   [!] Fission blueprint generation error: {e}")
+            return None
 
     async def _check_complexity(self, file_path: str) -> List[str]:
         """Check function complexity and length (Keys 17, 19)."""

@@ -355,8 +355,7 @@ class CanonValidator:
             metadata = pinecone_record.setdefault('metadata', {})
             metadata['content_hash'] = current_hash
             # Also add file_path to metadata for filtering
-            if file_path:
-                metadata['file_path'] = file_path
+            metadata['file_path'] = file_path # Assign directly, can be None
 
             self.pinecone_index.upsert(vectors=[pinecone_record])
             logger.info(
