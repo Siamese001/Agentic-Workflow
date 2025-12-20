@@ -1,4 +1,3 @@
-```python
 import logging
 import subprocess
 from pathlib import Path
@@ -350,5 +349,3 @@ if __name__ == "__main__":
         print(f"Removed {test_workspace_dir}")
     else:
         print(f"Workspace {test_workspace_dir} already removed or never created.")
-
-```

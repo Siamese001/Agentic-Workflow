@@ -33,7 +33,6 @@ Here's a summary of the changes made:
 
 The healed code is provided below:
 
-```python
 """
 Canon Validator Base Agent
 Base class for all validation agents with caching and healing capabilities.
@@ -348,5 +347,3 @@ class SubAtomicAgent:
     def execute(self):
         """Override in subclass."""
         raise NotImplementedError(f"{self.name}.execute() not implemented")
-
-```

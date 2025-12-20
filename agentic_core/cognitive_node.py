@@ -1,4 +1,3 @@
-```python
 import ast
 import json
 import logging
@@ -630,5 +629,3 @@ class CognitiveNode:
                 f.write(content)
         except Exception as e:
             self.logger.warning(f"Failed to save final result: {e}")
-
-```

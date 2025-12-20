@@ -188,12 +188,10 @@ FILE: {change.file_path}
 METHOD: {change.method_name}
 
 BEFORE CODE (preserve this behavior):
-```python
 {change.before_code}
 ```
 
 AFTER CODE (test this):
-```python
 {change.after_code}
 ```
 
@@ -356,17 +354,14 @@ METHOD: {change.method_name}
 FILE: {change.file_path}
 
 BEFORE CODE (expected behavior):
-```python
 {change.before_code}
 ```
 
 AFTER CODE (actual implementation):
-```python
 {change.after_code}
 ```
 
 GENERATED TEST:
-```python
 {test_code}
 ```
 
@@ -442,7 +437,6 @@ Provide a JSON response with:
             fix_prompt = f"""Fix this broken pytest test based on the analysis.
 
 ORIGINAL TEST:
-```python
 {test_code}
 ```
 

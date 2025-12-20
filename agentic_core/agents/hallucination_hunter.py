@@ -6,7 +6,6 @@ import datetime
 import json
 
 try:
-    import numpy as np
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False

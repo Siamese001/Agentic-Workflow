@@ -1,4 +1,3 @@
-```python
 """
 ⚛️ THIN PROXY - Core Utils (Post-Atomic Fission)
 
@@ -131,4 +130,3 @@ __all__ = [
     # Logger
     'logger',
 ]
-```

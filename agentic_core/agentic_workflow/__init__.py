@@ -4,7 +4,6 @@ The module docstring is present, imports are ordered logically, constants are na
 
 Therefore, no changes are necessary.
 
-```python
 """
 Agentic Workflow - Main package entry point.
 
@@ -25,4 +24,3 @@ from . import runtime
 from . import shared
 
 __all__ = ["runtime", "shared"]
-```

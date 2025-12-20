@@ -32,7 +32,6 @@ Here's a summary of the issues found and the fixes applied:
 
 The refactored code is provided below:
 
-```python
 import ast
 import json
 import logging
@@ -513,4 +512,3 @@ class CanonValidator:
             formatted.append(self._format_search_result(result))
 
         return formatted
-```

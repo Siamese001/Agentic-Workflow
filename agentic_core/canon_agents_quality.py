@@ -1,4 +1,3 @@
-```python
 """
 Canon Validator Quality Agents
 SafetyInspector, DocumentationAgent, NamingAgent - Code quality and standards.
@@ -242,4 +241,3 @@ class NamingAgent(SubAtomicAgent):
                 # print(f"Error processing AST for file {fp}: {e}")
                 continue
         return len(violations) == 0, violations
-```

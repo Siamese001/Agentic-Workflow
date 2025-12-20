@@ -297,7 +297,6 @@ Format your response as:
 CONSENSUS: [Brief explanation of the consensus approach]
 
 CODE:
-```python
 [The final consensus code fix]
 ```
 """
