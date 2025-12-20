@@ -31,7 +31,7 @@ class PatternRetrievalAgent:
     to files that exceed complexity thresholds.
     """
     
-    def __init__(self, index_name: str = "structural-patterns"):
+    def __init__(self, index_name: str = "canon-healing-patterns"):
         """
         Initialize Pattern Retrieval Agent.
         

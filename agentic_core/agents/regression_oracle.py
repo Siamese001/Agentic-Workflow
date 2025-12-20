@@ -552,7 +552,7 @@ class RegressionOracle(SubAtomicAgent):
             if api_key:
                 try:
                     pc = Pinecone(api_key=api_key)
-                    pinecone_index = pc.Index("structural-patterns")
+                    pinecone_index = pc.Index("canon-healing-patterns")
                     logger.info("[OK] Regression Oracle connected to Pinecone")
                 except Exception as e:
                     logger.warning(f"[!]  Could not connect to Pinecone: {e}")
