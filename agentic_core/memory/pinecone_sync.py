@@ -13,7 +13,7 @@ Strategy:
 
 import logging
 import os
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 try:
     from pinecone import Pinecone

@@ -20,7 +20,6 @@ __version__ = "1.0.0"
 # These imports make submodules/subpackages accessible directly under the
 # 'agentic_workflow' namespace (e.g., agentic_workflow.runtime).
 # They are also listed in __all__ for 'from agentic_workflow import *' usage.
-from . import runtime
-from . import shared
+from . import runtime, shared
 
 __all__ = ["runtime", "shared"]

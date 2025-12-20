@@ -1,9 +1,15 @@
-import logging
-from typing import Any, Dict, List, Optional
-import time
-import secrets
 import hashlib
-from .spiffe_manager_types import TrustDomain, IdentityType, AgentIdentity, IdentityVerificationResult
+import logging
+import secrets
+import time
+from typing import Any, Dict, List, Optional
+
+from .spiffe_manager_types import (
+    AgentIdentity,
+    IdentityType,
+    IdentityVerificationResult,
+    TrustDomain,
+)
 
 LOGGER = logging.getLogger(__name__)
 # from .spiffe_manager_types import *  # Star import removed

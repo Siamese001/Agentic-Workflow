@@ -1,11 +1,11 @@
 # Standard library imports
-import asyncio
 import ast
+import asyncio
 import os
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Third-party imports
 from dotenv import load_dotenv
@@ -20,9 +20,9 @@ except ImportError:
 
 # Import shared Sub-Atomic Engine
 from apps_shared.canon_validator_agentic_v2 import (
-    get_subatomic_engine,
+    get_fission_manager,
     get_safety_guardrail,
-    get_fission_manager
+    get_subatomic_engine,
 )
 
 # Load environment variables from .env file at module level

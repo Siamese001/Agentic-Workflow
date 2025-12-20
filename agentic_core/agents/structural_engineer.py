@@ -6,8 +6,8 @@ Responsible for:
 - Key 21-25: Complexity metrics, cyclomatic complexity
 - Key 26-30: Code organization, modularity, cohesion
 """
-import os
 import ast
+import os
 from typing import List, Tuple
 
 from .canon_base_agent import CanonBaseAgent

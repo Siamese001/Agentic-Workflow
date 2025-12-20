@@ -1,39 +1,40 @@
+import ast
 import asyncio
 import atexit
+import json  # Moved from _checkpoint_state in ConsolidatedOrchestrator
 import logging
 import os
 import signal
+import subprocess  # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
 import sys
-import ast
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
-import json # Moved from _checkpoint_state in ConsolidatedOrchestrator
-import subprocess # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
-
-# Phase 3: UniversalContext
-from agentic_core.domain.context import ValidationContext
-
-# Phase 4: Subatomic Agents
-from agentic_core.agents import (
-    SystemArchitect,
-    CodeJanitor,
-    CanonStructuralEngineer,
-    HygieneGuardian,
-    CodeStyleGuardian,
-    SafetyInspector,
-    SecurityEnforcer,
-    PerformanceEnforcer,
-    get_dependency_diplomat,
-    get_regression_oracle,
-)
-
-# Phase 5: L1-L5 Unified Architecture
 
 # This import was present within the execute_with_healing method in the original code,
 # despite a contradictory comment. It is moved here for proper module structure
 # and availability to the new OrchestratorHealingService.
 from agentic_workflow.runtime.shared import WriteFileArgs, write_file
+
+# Phase 4: Subatomic Agents
+from agentic_core.agents import (
+    CanonStructuralEngineer,
+    CodeJanitor,
+    CodeStyleGuardian,
+    HygieneGuardian,
+    PerformanceEnforcer,
+    SafetyInspector,
+    SecurityEnforcer,
+    SystemArchitect,
+    get_dependency_diplomat,
+    get_regression_oracle,
+)
+
+# Phase 3: UniversalContext
+from agentic_core.domain.context import ValidationContext
+
+# Phase 5: L1-L5 Unified Architecture
+
 
 try:
     from google import genai

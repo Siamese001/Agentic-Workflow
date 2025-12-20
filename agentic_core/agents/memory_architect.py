@@ -33,7 +33,11 @@ except ImportError:
     PINECONE_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager
+from apps_shared.canon_validator_agentic_v2 import (
+    get_fission_manager,
+    get_safety_guardrail,
+    get_subatomic_engine,
+)
 
 logger = logging.getLogger(__name__)
 

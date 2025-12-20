@@ -35,6 +35,7 @@ from apps_shared.signal_bus import (
     get_signal_bus,
     reset_signal_bus,
 )
+
 # Phase 5: Removed import to avoid circular dependency
 # ValidationContext should be imported directly from agentic_core.domain.context
 # Legacy compatibility maintained through lazy import pattern

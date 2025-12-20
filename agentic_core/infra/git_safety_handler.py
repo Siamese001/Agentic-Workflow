@@ -14,7 +14,7 @@ Strategy:
 
 import logging
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 

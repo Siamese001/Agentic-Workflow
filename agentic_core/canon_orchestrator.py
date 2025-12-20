@@ -10,14 +10,25 @@ Orchestrates all validation agents in dependency order.
 import asyncio
 from typing import Optional
 
-from apps_shared.canon_validation_context import ValidationContext
-
 # Local application imports (grouped by sub-module for clarity)
-from agentic_core.canon_agents_core import SystemArchitect, HealerAgent, GenerativeGuard
+from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
+from agentic_core.canon_agents_pattern import (
+    PatternEnforcer,
+    SemanticMapper,
+    UIValidationAgent,
+)
+from agentic_core.canon_agents_quality import (
+    DocumentationAgent,
+    NamingAgent,
+    SafetyInspector,
+)
+from agentic_core.canon_agents_structural import (
+    BudgetAgent,
+    StructuralEngineer,
+    TypeMechanic,
+)
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
-from agentic_core.canon_agents_quality import SafetyInspector, DocumentationAgent, NamingAgent
-from agentic_core.canon_agents_structural import TypeMechanic, BudgetAgent, StructuralEngineer
-from agentic_core.canon_agents_pattern import PatternEnforcer, UIValidationAgent, SemanticMapper
+from apps_shared.canon_validation_context import ValidationContext
 
 
 class IntelligentOrchestrator:

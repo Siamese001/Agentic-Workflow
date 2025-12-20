@@ -9,8 +9,7 @@ complexity, global variables, file size, and class density.
 
 import ast
 import os
-from typing import List, Tuple, Set
-
+from typing import List, Set, Tuple
 
 from agentic_core.canon_base_agent import SubAtomicAgent
 

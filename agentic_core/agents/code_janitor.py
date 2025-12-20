@@ -6,8 +6,8 @@ Responsible for:
 - Key 11-15: Whitespace, indentation, formatting
 - Key 16-20: Linting, style guide compliance, naming conventions
 """
-import os
 import ast
+import os
 import re
 from typing import List, Tuple
 

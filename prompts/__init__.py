@@ -4,10 +4,10 @@ Prompts package for Canon Validator
 Contains modularized prompts for global constraints and specialist agents.
 """
 from .prompt_loader import (
-    load_prompt_for_agent,
+    PromptLoader,
     get_global_constraints,
     get_specialist_prompt,
-    PromptLoader
+    load_prompt_for_agent,
 )
 
 __all__ = [

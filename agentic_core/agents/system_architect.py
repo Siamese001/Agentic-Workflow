@@ -6,10 +6,10 @@ Responsible for:
 - Key 41-47: Import dependencies, module structure
 - Key 48-50: Architectural patterns and design
 """
-import os
 import ast
-from typing import List, Tuple
+import os
 from pathlib import Path
+from typing import List, Tuple
 
 from .canon_base_agent import CanonBaseAgent
 

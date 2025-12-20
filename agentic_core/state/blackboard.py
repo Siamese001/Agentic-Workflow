@@ -10,12 +10,12 @@ across concurrent healing operations. Features:
 - Redis (HOT BRAIN) for fast caching and locks
 - Pinecone (DEEP BRAIN) for pattern learning
 """
-import os
-import json
-import time
 import hashlib
-from typing import Optional, Dict, Any, List, Tuple
+import json
+import os
+import time
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -450,7 +450,7 @@ class AtomicBlackboard:
         
         try:
             import openai
-            
+
             # Create embedding of the violation description
             text = f"Canon Key {violation_key}: {violation_desc}"
             response = openai.Embedding.create(
@@ -498,7 +498,7 @@ class AtomicBlackboard:
         
         try:
             import openai
-            
+
             # Create embedding of the violation description
             response = openai.Embedding.create(
                 input=violation_desc,

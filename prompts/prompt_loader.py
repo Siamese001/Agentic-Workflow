@@ -6,6 +6,7 @@ Loads prompts from modularized markdown files based on agent role.
 from pathlib import Path
 from typing import Dict, Optional
 
+
 class PromptLoader:
     """Loads and caches prompts from markdown files."""
     
