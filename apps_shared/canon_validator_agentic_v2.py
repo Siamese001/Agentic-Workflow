@@ -288,10 +288,12 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
         created_modules = []
         for module_name, module_data in blueprint.items():
             if not isinstance(module_data, dict):
+                logger.warning(f"   [!] Skipping invalid module entry: {module_name}")
                 continue
                 
-            module_content = module_data.get('content', '')
+            module_content = module_data.get('content', '').strip()
             if not module_content:
+                logger.warning(f"   [!] Empty content for module {module_name}")
                 continue
             
             # Create sub-module file
@@ -323,12 +325,12 @@ Original file split into sub-modules for atomicity compliance
             else:
                 router_content += f"from .{base_name}_modules import {module_name}\n"
         
-        router_content += f"\n# Re-export all components\n__all__ = ["
-        all_exports = []
-        for _, exports in created_modules:
-            all_exports.extend(exports)
-        router_content += ", ".join(f'"{e}"' for e in all_exports)
-        router_content += "]\n"
+        # Safe __all__ generation
+        all_exports = [e for _, exports in created_modules for e in exports]
+        if all_exports:
+            router_content += f"\n__all__ = [" + ", ".join(f'"{e}"' for e in all_exports) + "]\n"
+        else:
+            router_content += "\n# No public exports defined\n__all__ = []\n"
         
         # Backup original file
         backup_path = file_path + '.fission_backup'
@@ -355,20 +357,26 @@ Original file split into sub-modules for atomicity compliance
 async def run_mission(target_scope: str = "agentic_core"):
     """
     [L3 ORCHESTRATOR]
-    Executes the full Agentic Validation Mission with:
-    - L4 State Hardening (Smart-Report Hybrid)
-    - L3 Linear Execution (No Monitoring Loops)
-    - L1 Intelligence Injection (Surgeon Mode)
-    - L5 Safety (Active Fission Trigger for files > 200 LOC)
-    - L2 Execution (JSON Parsing & Blueprint Application)
+    Executes the full Agentic Validation Mission.
+    FULLY HARDENED: Instantiates Safety, Engine, and Fission Logic and wires to Context.
     """
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.5 - FINAL HARDENING (CAP: 24,576)")
+    print(f"DEBUG: VERSION 2.5 - GOLDEN MASTER (CAP: 24,576)")
     
     # Add project root to sys.path for imports
     project_root = Path(__file__).parent.parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
+
+    # --- L5 HARDENING INSTANTIATION ---
+    # 1. Initialize Safety Components
+    safety_guard = SafetyGuardrail(deletion_limit=110)
+    subatomic_engine = SubAtomicEngine() # Uses environment keys
+    # 2. Initialize Fission Logic with CORRECT 200 line threshold
+    fission_mgr = FissionManager(line_limit=200, max_rounds=3)
+    
+    print(f"   [OK] SubAtomicEngine active (Model: {os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')})")
+    print(f"   [OK] SafetyGuardrail active (Limit: 110 lines)")
     
     # ===========================================================================
     # [ENHANCEMENT 1] L4 STATE HARDENING: Smart-Report Hybrid
@@ -406,6 +414,11 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
     if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
     if not hasattr(ctx, 'signals'): ctx.signals = set()
+    
+    # 3. WIRE COMPONENTS TO CONTEXT (Crucial Fix)
+    ctx.engine = subatomic_engine
+    ctx.safety = safety_guard
+    ctx.fission = fission_mgr
     
     ctx.target_scope = target_scope
     ctx.python_files = [str(p) for p in Path(target_scope).rglob("*.py") if p.suffix == ".py"]
@@ -509,7 +522,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
 
                     # 2. Check for Fission Event in Result
                     if isinstance(res, dict) and res.get("fission_event"):
-                        fission_mgr = get_fission_manager(line_limit=200)
+                        # Use the pre-initialized fission_mgr with 200 limit
                         
                         # 3. Execute Physical Split (L2)
                         success = await apply_fission_blueprint(file_path, res["blueprint"], fission_mgr)
