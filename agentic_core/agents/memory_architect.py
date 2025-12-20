@@ -33,6 +33,7 @@ except ImportError:
     PINECONE_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
+from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager
 
 logger = logging.getLogger(__name__)
 
@@ -190,6 +191,22 @@ class MemoryArchitect(SubAtomicAgent):
             ctx: ValidationContext with Gemini client and Pinecone access
         """
         super().__init__(ctx)
+        # Initialize shared Sub-Atomic Engine components
+        if hasattr(self.ctx, '_client') and self.ctx._client:
+            try:
+                self.engine = get_subatomic_engine(gemini_client=self.ctx._client)
+                self.safety = get_safety_guardrail()
+                self.fission = get_fission_manager()
+            except Exception as e:
+                logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
+                self.engine = None
+                self.safety = None
+                self.fission = None
+        else:
+            self.engine = None
+            self.safety = None
+            self.fission = None
+
         self.namespace = "structural_patterns"
         self.pinecone_available = PINECONE_AVAILABLE
         
