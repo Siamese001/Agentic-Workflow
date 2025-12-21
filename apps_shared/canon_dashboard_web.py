@@ -3,17 +3,12 @@ Canon Validator Web Dashboard - Interactive Web Interface
 Real-time metrics with Flask backend and modern frontend
 """
 
-import json
-import threading
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
-from flask import Flask, render_template, jsonify, send_from_directory
-from flask_cors import CORS
-import time
 
 # Import our metrics system
-from canon_dashboard import DashboardMetrics, CanonDashboard
+from canon_dashboard import CanonDashboard, DashboardMetrics
+from flask import Flask, jsonify, render_template
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
@@ -131,6 +126,13 @@ def get_violators():
     """Get top violating files"""
     limit = int(request.args.get('limit', 20))
     return jsonify(metrics.get_top_violators(limit))
+
+
+@app.route('/api/healing-log')
+def get_healing_log():
+    """Get healing activity log"""
+    limit = int(request.args.get('limit', 50))
+    return jsonify(metrics.get_healing_log(limit))
 
 
 @app.route('/api/summary')

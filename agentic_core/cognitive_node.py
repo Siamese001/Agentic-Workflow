@@ -541,6 +541,27 @@ class CognitiveNode:
         self._validate_generated_code(code)
         return code
 
+    def _perform_synthesis_attempt(
+        self,
+        goal: str,
+        thoughts: str,
+        toolbox_desc: str,
+        attempt: int,
+        last_error: Optional[str],
+    ) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Helper to perform a single code synthesis attempt and return code or error.
+        Returns (code, None) on success, or (None, error_message) on failure.
+        """
+        try:
+            code = self._attempt_code_synthesis_single_pass(
+                goal, thoughts, toolbox_desc, attempt, last_error
+            )
+            self.logger.info("[OK] Code syntax validation passed!")
+            return code, None
+        except (SyntaxError, ValueError, RuntimeError) as e:
+            return None, f"Validation/Synthesis error: {str(e)}"
+
     def _synthesize_code(
         self, goal: str, history: List[Dict[str, Any]], toolbox_desc: str
     ) -> str:
@@ -567,14 +588,13 @@ class CognitiveNode:
         last_error = None
 
         for attempt in range(max_attempts):
-            try:
-                code = self._attempt_code_synthesis_single_pass(
-                    goal, thoughts, toolbox_desc, attempt, last_error
-                )
-                self.logger.info("[OK] Code syntax validation passed!")
+            code, error = self._perform_synthesis_attempt(
+                goal, thoughts, toolbox_desc, attempt, last_error
+            )
+            if code:
                 return code
-            except (SyntaxError, ValueError, RuntimeError) as e:
-                last_error = f"Validation/Synthesis error: {str(e)}"
+            else:
+                last_error = error
                 self.logger.warning(
                     f"[!] Code validation/synthesis failed (attempt {attempt + 1}): "
                     f"{last_error}"

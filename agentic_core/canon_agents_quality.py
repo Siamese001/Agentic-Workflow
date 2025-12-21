@@ -41,17 +41,23 @@ class SafetyInspector(SubAtomicAgent):
                 return True
         return False
 
-    def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
-        """Helper to find hardcoded secrets in a single file."""
+    def _read_file_content(self, fp: str) -> Tuple[str, bool]:
+        """Helper to read file content, returns content and success status."""
         try:
             with open(fp, "r", encoding="utf-8") as f:
-                content = f.read()
-                if self._check_content_for_secret_patterns(content, patterns):
-                    return [fp]
+                return f.read(), True
         except Exception:
-            # Log the error if necessary, but for now, just skip the file
             # print(f"Error reading file {fp}: {e}")
-            pass
+            return "", False
+
+    def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
+        """Helper to find hardcoded secrets in a single file."""
+        content, success = self._read_file_content(fp)
+        if not success:
+            return []
+
+        if self._check_content_for_secret_patterns(content, patterns):
+            return [fp]
         return []
 
     def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
@@ -70,18 +76,23 @@ class SafetyInspector(SubAtomicAgent):
             violations.extend(self._find_secret_violations_in_file(fp, patterns))
         return len(violations) == 0, violations
 
+    def _process_file_lines_for_todo_fixme(self, f_obj, fp: str) -> List[str]:
+        """Helper to process lines of an open file for TODO/FIXME violations."""
+        violations = []
+        for i, line in enumerate(f_obj, 1):
+            if re.search(r'\b(TODO|FIXME)\b', line, re.IGNORECASE):
+                violations.append(f"{fp}:{i}")
+        return violations
+
     def _find_todo_fixme_violations_in_file(self, fp: str) -> List[str]:
         """Helper to find TODO/FIXME comments in a single file."""
-        file_violations = []
         try:
             with open(fp, "r", encoding="utf-8") as f:
-                for i, line in enumerate(f, 1):
-                    if re.search(r'\b(TODO|FIXME)\b', line, re.IGNORECASE):
-                        file_violations.append(f"{fp}:{i}")
+                return self._process_file_lines_for_todo_fixme(f, fp)
         except Exception:
             # print(f"Error reading file {fp}: {e}")
             pass
-        return file_violations
+        return []
 
     def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
         """

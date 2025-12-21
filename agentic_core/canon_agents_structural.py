@@ -1,8 +1,6 @@
 import ast
 import os
-import sys
-from pathlib import Path
-from typing import List, Tuple, Set, Dict, Any
+from typing import Any, List, Set, Tuple
 
 # Assuming SubAtomicAgent and other necessary base classes/types are defined elsewhere
 # and are available in the context where this file is used.
@@ -115,53 +113,87 @@ class TypeMechanic(SubAtomicAgent):
         passed, details = self.check_key_24_no_unused_variables()
         self.ctx.report(self.name, 24, passed, details)
 
+    def _read_and_parse_file(self, fp: str) -> Tuple[ast.AST | None, str | None]:
+        """
+        Reads a file and parses it into an AST, handling errors.
+        Returns (tree, error_message).
+        """
+        try: # Depth 1
+            with open(fp, "r", encoding="utf-8") as f: # Depth 2
+                tree = ast.parse(f.read(), filename=fp)
+                return tree, None
+        except (IOError, SyntaxError) as e: # Depth 2 (ExceptHandler)
+            return None, f"Error parsing {fp}: {e}"
+
+    def _get_missing_type_hint_violations_for_tree(self, fp: str, tree: ast.AST) -> List[str]:
+        """
+        Collects formatted violation strings for missing type hints in a given AST tree.
+        """
+        file_violations = []
+        for node in ast.walk(tree): # Depth 1
+            if isinstance(node, ast.FunctionDef) and \
+               not node.returns and node.name not in ("__init__", "__str__", "__repr__"): # Depth 2 (If)
+                file_violations.append( # Depth 3
+                    f"{fp}:{node.lineno}: Function '{node.name}' is missing "
+                    "a return type hint."
+                )
+        return file_violations
+
     def check_key_22_no_missing_type_hints(self) -> Tuple[bool, List[str]]:
         """
         Checks for functions with missing type hints (return types).
         Excludes __init__, __str__, __repr__ methods.
+        Refactored to reduce nesting depth to meet max 4.
         """
         violations = []
-        for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        # Check for missing return type hints, excluding common dunder methods
-                        if not node.returns and node.name not in ("__init__", "__str__", "__repr__"):
-                            violations.append(
-                                f"{fp}:{node.lineno}: Function '{node.name}' is missing "
-                                "a return type hint."
-                            )
-            except (IOError, SyntaxError) as e:
-                # Report parsing errors but continue with other files
-                self.ctx.log_error(f"Error parsing {fp} for missing type hints: {e}")
-                continue
+        for fp in self.ctx.python_files: # Depth 1 (from method definition)
+            tree, error_msg = self._read_and_parse_file(fp) # Depth 2
+            if error_msg: # Depth 3
+                self.ctx.log_error(error_msg) # Depth 4
+                continue # Depth 4
+
+            if tree: # Depth 3
+                violations.extend(self._get_missing_type_hint_violations_for_tree(fp, tree)) # Depth 4
         return len(violations) == 0, violations
+
+    def _check_function_for_unreachable_code(self, fp: str, func_node: ast.FunctionDef) -> List[str]:
+        """
+        Checks a single function node for unreachable code after a return statement.
+        """
+        func_violations = [] # Depth 1
+        for i, stmt in enumerate(func_node.body): # Depth 2
+            if isinstance(stmt, ast.Return) and i < len(func_node.body) - 1: # Depth 3
+                func_violations.append( # Depth 4
+                    f"{fp}:{stmt.lineno}: Unreachable code after return "
+                    f"in function '{func_node.name}'."
+                )
+                break  # Only report once per function # Depth 4
+        return func_violations
+
+    def _get_unreachable_code_violations_for_tree(self, fp: str, tree: ast.AST) -> List[str]:
+        """
+        Processes an AST tree to find unreachable code violations within functions.
+        """
+        file_violations = [] # Depth 1
+        for node in ast.walk(tree): # Depth 2
+            if isinstance(node, ast.FunctionDef): # Depth 3
+                file_violations.extend(self._check_function_for_unreachable_code(fp, node)) # Depth 4
+        return file_violations
 
     def check_key_23_no_unreachable_code(self) -> Tuple[bool, List[str]]:
         """
         Checks for unreachable code, specifically statements after a 'return' statement
         within a function body.
+        Refactored to reduce nesting depth to meet max 4.
         """
-        violations = []
-        for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        for i, stmt in enumerate(node.body):
-                            if isinstance(stmt, ast.Return) and i < len(node.body) - 1:
-                                # If a return statement is not the last statement in the function body
-                                violations.append(
-                                    f"{fp}:{stmt.lineno}: Unreachable code after return "
-                                    f"in function '{node.name}'."
-                                )
-                                break  # Only report once per function
-            except (IOError, SyntaxError) as e:
-                self.ctx.log_error(f"Error parsing {fp} for unreachable code: {e}")
-                continue
+        violations = [] # Depth 1
+        for fp in self.ctx.python_files: # Depth 2
+            tree, error_msg = self._read_and_parse_file(fp) # Depth 3
+            if error_msg: # Depth 4
+                self.ctx.log_error(error_msg) # Depth 4
+                continue # Depth 4
+            if tree: # Depth 3
+                violations.extend(self._get_unreachable_code_violations_for_tree(fp, tree)) # Depth 4
         return len(violations) == 0, violations
 
     def _collect_variables(self, func_node: ast.FunctionDef) -> Tuple[Set[str], Set[str]]:

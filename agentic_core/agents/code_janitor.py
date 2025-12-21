@@ -1,15 +1,7 @@
-"""
-Code Janitor Agent - Syntax and Style Validation (Keys 10-20)
-
-Responsible for:
-- Key 10: Syntax errors and basic Python validity
-- Key 11-15: Whitespace, indentation, formatting
-- Key 16-20: Linting, style guide compliance, naming conventions
-"""
 import ast
 import os
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Optional # Added Optional
 
 from .canon_base_agent import CanonBaseAgent
 
@@ -144,6 +136,46 @@ class CodeJanitor(CanonBaseAgent):
         
         return len(violations) == 0, violations
     
+    def _check_node_naming_convention(self, file_path: str, node: ast.AST, violations: List[str]):
+        """
+        Helper to check naming convention for a single AST node.
+        
+        Args:
+            file_path: Path to the file being checked.
+            node: The AST node to check.
+            violations: List to append any found violations.
+        """
+        # Check class names (should be PascalCase)
+        if isinstance(node, ast.ClassDef):
+            if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
+                violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
+        
+        # Check function names (should be snake_case)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            # Exclude dunder methods (e.g., __init__) and private methods (e.g., _helper)
+            # as their naming conventions are slightly different or context-dependent.
+            if not node.name.startswith('__') and not node.name.startswith('_'):
+                if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
+                    violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case")
+    
+    def _process_file_for_naming_conventions(self, file_path: str, violations: List[str]):
+        """
+        Helper to parse a single file and check all its AST nodes for naming conventions.
+        
+        Args:
+            file_path: Path to the file to process.
+            violations: List to append any found violations.
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                tree = ast.parse(f.read())
+            
+            for node in ast.walk(tree):
+                self._check_node_naming_convention(file_path, node, violations)
+        except Exception as e:
+            # Catch potential errors during file reading or AST parsing
+            violations.append(f"{file_path}:0: General Error - {e}")
+
     def check_key_14_naming_conventions(self) -> Tuple[bool, List[str]]:
         """
         Check for proper naming conventions (snake_case for functions/variables, PascalCase for classes).
@@ -154,29 +186,7 @@ class CodeJanitor(CanonBaseAgent):
         violations = []
         
         for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
-                
-                for node in ast.walk(tree):
-                    # Check class names (should be PascalCase)
-                    if isinstance(node, ast.ClassDef):
-                        if not re.match(r'^[A-Z][a-zA-Z0-9]*$', node.name):
-                            violations.append(f"{file_path}:{node.lineno}: Class '{node.name}' should be PascalCase")
-                    
-                    # Check function names (should be snake_case)
-                    elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                        # Exclude dunder methods (e.g., __init__) and private methods (e.g., _helper)
-                        # as their naming conventions are slightly different or context-dependent.
-                        if not node.name.startswith('__') and not node.name.startswith('_'):
-                            if not re.match(r'^[a-z_][a-z0-9_]*$', node.name):
-                                violations.append(f"{file_path}:{node.lineno}: Function '{node.name}' should be snake_case")
-                    
-                    # TODO: Add checks for variable names if desired (e.g., local variables, global constants)
-            except Exception as e:
-                # Catch potential errors during file reading or AST parsing
-                violations.append(f"{file_path}:0: General Error - {e}")
-                continue
+            self._process_file_for_naming_conventions(file_path, violations)
         
         return len(violations) == 0, violations
     
@@ -203,6 +213,31 @@ class CodeJanitor(CanonBaseAgent):
         # Heal each file
         for file_path, file_viols in file_violations.items():
             await self._smart_fix(file_path, key, file_viols)
+
+    def _read_file_content(self, file_path: str) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Helper to read file content, returning content and any error message.
+        Returns:
+            Tuple of (file_content, error_message). error_message is None on success.
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return f.read(), None
+        except Exception as e:
+            return None, f"Cannot read {file_path}: {e}"
+
+    def _write_file_content(self, file_path: str, content: str) -> Optional[str]:
+        """
+        Helper to write content to file, returning any error message.
+        Returns:
+            error_message, which is None on success.
+        """
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            return None
+        except Exception as e:
+            return f"Cannot write {file_path}: {e}"
     
     async def _smart_fix(self, file_path: str, violation_key: int, violations: List[str]):
         """
@@ -213,11 +248,9 @@ class CodeJanitor(CanonBaseAgent):
             violation_key: Canon key being fixed
             violations: List of violations in this file
         """
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                original_code = f.read()
-        except Exception as e:
-            print(f"      [!] Cannot read {file_path}: {e}")
+        original_code, read_error = self._read_file_content(file_path)
+        if read_error:
+            print(f"      [!] {read_error}")
             return
         
         # Build task description
@@ -251,13 +284,12 @@ class CodeJanitor(CanonBaseAgent):
                 continue
             
             # Write the fixed code
-            try:
-                with open(file_path, 'w', encoding='utf-8') as f:
-                    f.write(mutated_code)
-                print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
+            write_error = self._write_file_content(file_path, mutated_code)
+            if write_error:
+                print(f"      [X] {write_error}")
                 return
-            except Exception as e:
-                print(f"      [X] Cannot write {file_path}: {e}")
-                return
+            
+            print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
+            return
         
         print(f"      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")

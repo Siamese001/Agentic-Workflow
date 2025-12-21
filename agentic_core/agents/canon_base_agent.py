@@ -305,7 +305,9 @@ class CanonBaseAgent(ABC):
 
             # Try the legacy location first
             try:
-                from archives.legacy_code.prompts.prompt_loader import load_prompt_for_agent
+                from archives.legacy_code.prompts.prompt_loader import (
+                    load_prompt_for_agent,
+                )
             except ImportError:
                 # If not in archives, try root prompts (if it exists)
                 from prompts.prompt_loader import load_prompt_for_agent

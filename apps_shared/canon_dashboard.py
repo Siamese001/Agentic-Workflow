@@ -4,25 +4,23 @@ Real-time metrics, interactive tables, and comprehensive analytics
 """
 
 import json
-import time
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from collections import defaultdict
 import threading
-import queue
+import time
+from collections import defaultdict
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 try:
-    from rich.console import Console
-    from rich.table import Table
-    from rich.layout import Layout
-    from rich.panel import Panel
-    from rich.live import Live
-    from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
-    from rich.text import Text
-    from rich.align import Align
     from rich import box
+    from rich.align import Align
+    from rich.console import Console
+    from rich.layout import Layout
+    from rich.live import Live
+    from rich.panel import Panel
+    from rich.table import Table
+    from rich.text import Text
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
@@ -211,6 +209,30 @@ class DashboardMetrics:
         
         sorted_files = sorted(file_violations.items(), key=lambda x: x[1], reverse=True)
         return [{"file": f, "violations": v} for f, v in sorted_files[:limit]]
+    
+    def get_healing_log(self, limit: int = 50) -> List[Dict[str, Any]]:
+        """Get recent healing activity log"""
+        with self.lock:
+            # Sort by timestamp descending (most recent first)
+            sorted_healing = sorted(
+                self.healing_timeline, 
+                key=lambda x: x["timestamp"], 
+                reverse=True
+            )
+            
+            # Format for display
+            log_entries = []
+            for entry in sorted_healing[:limit]:
+                log_entries.append({
+                    "timestamp": entry["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
+                    "file": entry["file"],
+                    "key_id": entry["key_id"],
+                    "key_name": self.key_metrics[entry["key_id"]].key_name if entry["key_id"] in self.key_metrics else f"Key {entry['key_id']}",
+                    "healed_count": entry["healed"],
+                    "duration": round(entry["duration"], 2)
+                })
+            
+            return log_entries
     
     def get_key_summary(self) -> Dict[str, Any]:
         """Get summary of key performance"""

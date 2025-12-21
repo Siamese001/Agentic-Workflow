@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Optional
 
 # Import dashboard components
-from canon_dashboard import DashboardMetrics, CanonDashboard
-from canon_dashboard_web import app, metrics as web_metrics, run_server
+from canon_dashboard import CanonDashboard, DashboardMetrics
+from canon_dashboard_web import run_server
 
 
 class DashboardIntegration:
@@ -109,9 +109,8 @@ def run_validator_with_dashboard(target_dir: str, mode: str = "both"):
     if mode in ["web", "both"]:
         integration.start_web_dashboard(port=5000)
     
-    terminal_thread = None
     if mode in ["terminal", "both"]:
-        terminal_thread = integration.start_terminal_dashboard()
+        integration.start_terminal_dashboard()
     
     # Import and run validator
     # Note: This is a placeholder - actual validator import depends on your structure
