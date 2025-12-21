@@ -43,7 +43,7 @@ try:
     # Explicitly point to Root .env to prevent loading failures from subfolders
     env_path = project_root / ".env"
     if not load_dotenv(dotenv_path=env_path):
-        print(f"⚠️  [L6 ALERT] .env not found at {env_path}. Neural link may be offline.")
+        print(f"[!] [L6 ALERT] .env not found at {env_path}. Neural link may be offline.")
 except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
@@ -100,7 +100,7 @@ class GeminiSpy:
 
         # Intercept method calls (e.g., generate_content, query, chat)
         def wrapper(*args, **kwargs):
-            print(f"\n[👀 GEMINI SPY] Agent triggering: {name}")
+            print(f"\n[SPY] GEMINI SPY Agent triggering: {name}")
             # Log prompt preview if available
             if args:
                 try:
@@ -112,11 +112,11 @@ class GeminiSpy:
             try:
                 result = attr(*args, **kwargs)
                 duration = time.time() - start_t
-                print(f"[👀 GEMINI SPY] ✅ LLM Success ({duration:.2f}s).")
+                print(f"[SPY] GEMINI SPY LLM Success ({duration:.2f}s).")
                 return result
             except Exception as e:
                 # Log detailed failure for debugging telemetry mismatches
-                print(f"[👀 GEMINI SPY] ❌ LLM OR TELEMETRY FAILURE: {e}")
+                print(f"[SPY] GEMINI SPY LLM OR TELEMETRY FAILURE: {e}")
                 if "successful_traces" in str(e):
                     print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
                 raise e
@@ -244,7 +244,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     # Execute void compliance check BEFORE any validation begins
     l6_compliant = run_l6_preflight(target_scope, project_root)
     if not l6_compliant:
-        print("\n⚠️  [L6 WARNING] Physical structure violations detected.")
+        print("\n[!] [L6 WARNING] Physical structure violations detected.")
         print("    Proceeding with validation, but auto-healing may be restricted.")
 
     # --- L5 HARDENING INSTANTIATION ---
@@ -260,46 +260,26 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # [AGENTIC UNLEASH] EXPLICIT CLIENT CONSTRUCTION
     try:
-        import google.generativeai as genai
-        from google.generativeai.types import HarmCategory, HarmBlockThreshold
-
-        api_key = os.getenv("GOOGLE_API_KEY")
-        genai.configure(api_key=api_key)
+        # Use the new google.genai SDK (not google.generativeai)
+        from google import genai
         
-        # [UNLEASHED CONFIG] Maximum Creativity & Capacity
-        generation_config = {
-            "temperature": float(os.getenv("GEMINI_TEMPERATURE", "1.0")),   # Transformative fixes
-            "top_p": float(os.getenv("GEMINI_TOP_P", "0.99")),
-            "top_k": int(os.getenv("GEMINI_TOP_K", "64")),
-            "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "32768")), # Full-file rewrites
-        }
-
-        # [NO HANDCUFFS] Disable Safety Filters
-        safety_settings = [
-            {"category": HarmCategory.HARM_CATEGORY_HARASSMENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-            {"category": HarmCategory.HARM_CATEGORY_HATE_SPEECH, "threshold": HarmBlockThreshold.BLOCK_NONE},
-            {"category": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-            {"category": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-        ]
-
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            print("\n[CRITICAL] GOOGLE_API_KEY not set in .env!")
+            sys.exit(1)
+        
         model_name = os.getenv("GEMINI_MODEL")
         if not model_name:
             print("\n[CRITICAL] GEMINI_MODEL not set in .env!")
             print("   -> Add GEMINI_MODEL=gemini-2.5-flash to your .env file")
             sys.exit(1)
-        gemini_model = genai.GenerativeModel(
-            model_name=model_name,
-            generation_config=generation_config,
-            safety_settings=safety_settings
-        )
 
-        # Initialize Engine with PRE-BUILT client
-        _real_engine = SubAtomicEngine(gemini_client=gemini_model)
+        # Initialize Engine with NO client (it will create its own genai.Client)
+        _real_engine = SubAtomicEngine(gemini_client=None)
         # Wrap in Spy for Visibility
         subatomic_engine = GeminiSpy(_real_engine)
         
-        print(f"   [OK] AGENTIC UNLEASHED: {model_name} | Temp: {generation_config['temperature']} | Tokens: {generation_config['max_output_tokens']}")
-        print(f"   [OK] SAFETY FILTERS: DISABLED (BLOCK_NONE)")
+        print(f"   [OK] AGENTIC UNLEASHED: {model_name}")
         print(f"   [OK] TELEMETRY: GEMINI SPY ACTIVE")
 
     except Exception as e:
@@ -396,7 +376,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     valid_files, violations = enforce_void_compliance(discovered_files, project_root_path)
     
     if violations:
-        print(f"\n⚠️  [VOID COMPLIANCE] {len(violations)} files in forbidden/unknown folders:")
+        print(f"\n[!] [VOID COMPLIANCE] {len(violations)} files in forbidden/unknown folders:")
         for file_path, reason in violations[:5]:  # Show first 5
             print(f"   [X] {file_path.name}: {reason}")
         if len(violations) > 5:
@@ -418,10 +398,10 @@ async def run_mission(target_scope: str = "agentic_core"):
         if count > 0:
             print(f"      • {folder:<20} : {count} files")
             
-    # [VISUALIZER] Print the Physical Tree (Max Depth 4 for readability)
-    print("\n   [PHYSICS] Current Directory Structure:")
-    tree_view = generate_ascii_tree(project_root_path, max_depth=4)
-    print(tree_view)
+    # Disabled due to Unicode encoding issues on Windows console
+    # print("\n   [PHYSICS] Current Directory Structure:")
+    # tree_view = generate_ascii_tree(project_root_path, max_depth=4)
+    # print(tree_view)
     print("-" * 50)
     
     # ===========================================================================
@@ -574,6 +554,115 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     print(f"   [>] Starting Execution Sweep...\n")
 
     # ===========================================================================
+    # [AUTONOMY PATCH] PHASE 0: ARCHITECTURAL GRAVITY REFACTOR
+    # ===========================================================================
+    print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR")
+    print(f"   [>] Scanning for Sovereign → Downstream violations...")
+    
+    gravity_violations_fixed = 0
+    gravity_violations_total = 0
+    
+    for file_path in ctx.python_files:
+        file_path_obj = Path(file_path)
+        violations = check_import_waterfall_violations(file_path_obj, project_root_path)
+        
+        if violations:
+            gravity_violations_total += len(violations)
+            file_name = file_path_obj.name
+            print(f"\n   [AUTO-HEAL] {file_name}: {len(violations)} gravity violation(s)")
+            
+            for violation_msg in violations[:3]:  # Show first 3
+                print(f"      - {violation_msg}")
+            
+            # Read current file content
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                    current_code = f.read()
+                
+                # Construct refactor prompt for SubAtomicEngine
+                refactor_prompt = f"""CRITICAL ARCHITECTURAL REFACTOR REQUIRED
+
+FILE: {file_path}
+VIOLATIONS: {len(violations)} Sovereign layer importing from Downstream
+
+{chr(10).join(violations[:5])}
+
+TASK: Refactor this file to eliminate ALL imports from 'apps_shared'.
+
+STRATEGY OPTIONS:
+1. Move required utility functions into 'agentic_core/shared/' or 'agentic_core/utils/'
+2. Use dependency injection via ValidationContext
+3. Inline small helper functions directly into this file
+4. Remove the dependency entirely if not critical
+
+REQUIREMENTS:
+- Preserve all existing functionality
+- Maintain all class/function signatures
+- Keep all docstrings and comments
+- Ensure code remains syntactically valid
+- Do NOT import from apps_shared, apps_rg, or apps_lic
+
+OUTPUT: Return ONLY the complete refactored Python code. No explanations, no markdown.
+
+CURRENT CODE:
+{current_code}
+"""
+                
+                print(f"      [>] Invoking SubAtomicEngine for autonomous refactor...")
+                
+                # Generate refactored code using LLM
+                try:
+                    # Use resilient_mutation method (correct API for SubAtomicEngine)
+                    refactored_code = await subatomic_engine.resilient_mutation(
+                        file_path=str(file_path),
+                        code=current_code,
+                        task=refactor_prompt,
+                        round_num=1,
+                        fission_active=False
+                    )
+                    
+                    # Extract code if wrapped in markdown
+                    if isinstance(refactored_code, str):
+                        # Remove markdown code blocks if present
+                        if refactored_code.startswith("```python"):
+                            refactored_code = refactored_code.split("```python", 1)[1]
+                            refactored_code = refactored_code.rsplit("```", 1)[0]
+                        elif refactored_code.startswith("```"):
+                            refactored_code = refactored_code.split("```", 1)[1]
+                            refactored_code = refactored_code.rsplit("```", 1)[0]
+                        refactored_code = refactored_code.strip()
+                    
+                    # Validate the change with SafetyGuardrail
+                    is_safe, safety_msg = safety_guard.verify_change(current_code, refactored_code, fission_active=False)
+                    if is_safe:
+                        # Apply the fix physically
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            f.write(refactored_code)
+                        
+                        print(f"      [OK] Gravity Refactored. File updated.")
+                        gravity_violations_fixed += len(violations)
+                        ctx.report("GravityRefactor", 0, True, f"Fixed {len(violations)} waterfall violations in {file_name}")
+                    else:
+                        print(f"      [!] SafetyGuardrail rejected refactor: {safety_msg}")
+                        ctx.report("GravityRefactor", 0, False, f"Safety check failed: {safety_msg}")
+                
+                except Exception as e:
+                    print(f"      [!] Refactor failed: {str(e)[:100]}")
+                    ctx.report("GravityRefactor", 0, False, f"Engine error: {str(e)[:50]}")
+            
+            except Exception as e:
+                print(f"      [!] Could not read file: {e}")
+    
+    if gravity_violations_total > 0:
+        print(f"\n   [PHASE 0 COMPLETE] Fixed {gravity_violations_fixed}/{gravity_violations_total} gravity violations")
+        if gravity_violations_fixed < gravity_violations_total:
+            print(f"   [!] {gravity_violations_total - gravity_violations_fixed} violations require manual review")
+    else:
+        print(f"   [OK] No gravity violations detected. Proceeding to standard validation.")
+    
+    print("-" * 70)
+
+    # ===========================================================================
     # PHASE 1: ATOMIC SWEEP (Per-File Validation)
     # ===========================================================================
     for idx, file_path in enumerate(ctx.python_files, 1):
@@ -590,7 +679,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                 loc_count = len(f.readlines())
         except: loc_count = 0
         
-        print(f"🔍 [{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
+        print(f"[{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
 
         # Update dashboard with current file
         if dashboard_metrics:
@@ -600,7 +689,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         # --- ACTIVE FISSION TRIGGER (Files > 10000 Lines) ---
         # Increased threshold to validate all files comprehensively
         if loc_count > 10000:
-            print(f"\n⚠️  [FISSION TRIGGER] {file_name} ({loc_count} lines). Engaging Auto-Fission.")
+            print(f"\n[!] [FISSION TRIGGER] {file_name} ({loc_count} lines). Engaging Auto-Fission.")
             
             if governor:
                 try:
@@ -628,7 +717,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                         if success:
                             ctx.results[file_name] = {"action": "FISSION_COMPLETE", "loc": loc_count}
                             ctx.report("FissionManager", 50, True, f"Split {file_name} into sub-modules")
-                            print(f"   [✓] Fission Complete. Skipping standard validation.")
+                            print(f"   [OK] Fission Complete. Skipping standard validation.")
                             continue # Skip to next file
                         else:
                             print(f"   [!] Blueprint Application Failed.")
@@ -705,7 +794,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     # ===========================================================================
     # PHASE 2: BATCH SWEEP (Cross-File / Full Scope Validation)
     # ===========================================================================
-    print(f"\n\n🧩 [L4 STATE] Executing Batch Agents ({len(batch_validators)})...")
+    print(f"\n\n[L4 STATE] Executing Batch Agents ({len(batch_validators)})...")
     for agent in batch_validators:
         print(f"   [>] Running {agent.__class__.__name__}...")
         try:
@@ -713,7 +802,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             # Batch agents typically run without args or manage their own scope
             if method:
                 await method() 
-            print(f"   [✓] {agent.__class__.__name__} completed")
+            print(f"   [OK] {agent.__class__.__name__} completed")
         except Exception as e:
              print(f"   [!] Error in {agent.__class__.__name__}: {e}")
              ctx.report(agent.__class__.__name__, 0, False, f"Batch Error: {str(e)[:50]}")
@@ -721,19 +810,19 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     # ===========================================================================
     # PHASE 3: MONITORING (Final Pass)
     # ===========================================================================
-    print(f"\n🧠 [L4 STATE] Executing Global Monitors (Single Pass)...")
+    print(f"\n[L4 STATE] Executing Global Monitors (Single Pass)...")
     for monitor in monitors:
         try:
             method = getattr(monitor, 'execute', getattr(monitor, 'run', None))
             if method: await method()
-            print(f"   [✓] {monitor.__class__.__name__} completed")
+            print(f"   [OK] {monitor.__class__.__name__} completed")
         except Exception: pass
 
     # ===========================================================================
     # [ENHANCEMENT 6] MISSION DASHBOARD & SUMMARY
     # ===========================================================================
     print("\n" + "="*70)
-    print(f"🚀 MISSION COMPLETE: {len(ctx.python_files)} Files Swept")
+    print(f"MISSION COMPLETE: {len(ctx.python_files)} Files Swept")
     
     # Mark session as complete
     if dashboard_metrics:
@@ -742,27 +831,27 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         # Export dashboard report
         report_path = f"canon_report_{dashboard_metrics.session.session_id}.json"
         dashboard.export_report(report_path)
-        print(f"📊 Dashboard Report: {report_path}")
+        print(f"[REPORT] Dashboard Report: {report_path}")
     
     # Fission Stats
     fission_done = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_COMPLETE')
     fission_pending = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_REQUIRED_MANUAL')
     
     if fission_done > 0:
-        print(f"⚡ FISSION SUCCESS: {fission_done} files split into sub-modules")
+        print(f"[SUCCESS] FISSION: {fission_done} files split into sub-modules")
     if fission_pending > 0:
-        print(f"⚠️  FISSION PENDING: {fission_pending} files require manual blueprint")
+        print(f"[!] FISSION PENDING: {fission_pending} files require manual blueprint")
 
     # Violation Summary
     if ctx.report:
-        print(f"📊 TOTAL VIOLATIONS: {len(ctx.report)}")
+        print(f"[STATS] TOTAL VIOLATIONS: {len(ctx.report)}")
         from collections import Counter
         agent_counts = Counter(item.get('agent', 'Unknown') for item in ctx.report)
         for agent, count in agent_counts.most_common():
             print(f"   - {agent}: {count}")
     
     if dashboard_metrics:
-        print(f"\n🌐 Web Dashboard: http://localhost:5000 (still running)")
+        print(f"\n[WEB] Dashboard: http://localhost:5000 (still running)")
         print("   Press Ctrl+C to stop...")
     
     print("="*70)
