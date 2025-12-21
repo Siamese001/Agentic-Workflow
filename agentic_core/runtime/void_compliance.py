@@ -17,29 +17,28 @@ logger = logging.getLogger(__name__)
 # ==============================================================================
 
 ALLOWED_ROOT_FOLDERS = {
-    # [THE BRAIN] Domain-Agnostic Framework
+    # [L1: THE BRAIN]
     "agentic_core",
     
-    # [THE LAW] Governance & Configuration
+    # [L1: THE LAW]
     "prompt_governance",
-    "config",
+    
+    # [L1: THE CONTRACTS]
     "schemas",
     
-    # [THE TELEMETRY] Observability
-    "observability",
-    
-    # [THE INFRASTRUCTURE] Shared Application Code
+    # [L1: INFRA & DOMAINS]
     "apps_shared",
-    
-    # [TARGET DOMAINS] Application-Specific Code
     "apps_rg",
     "apps_lic",
     
-    # [THE TOOLS] Execution Utilities
-    "scripts",
-    
-    # [TESTING] Functional Assurance
+    # [L1: QA & TELEMETRY]
     "tests",
+    "config",
+    "observability",
+    
+    # [VOID ZONES] (Exist but strictly ignored by validation)
+    "data", 
+    "archives",
 }
 
 FORBIDDEN_ROOT_FOLDERS = {
@@ -78,78 +77,46 @@ FORBIDDEN_ROOT_FOLDERS = {
 # ==============================================================================
 
 KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
-    # Keys 0-10: Global Configuration (THE SETTINGS)
-    0: ["config"],                          # Root config
-    1: ["config/models"],                   # Model configs (gemini_params.yaml, model_router.json)
-    2: ["config/policy"],                   # Policy configs (token_budgets.yaml, fission_rules.yaml)
-    3: ["config"],                          # General config
-    4: ["config"],                          # General config
-    5: ["config"],                          # General config
-    6: ["config"],                          # General config
-    7: ["config"],                          # General config
-    8: ["config"],                          # General config
-    9: ["config"],                          # General config
-    10: ["config"],                         # General config
+    # --- GLOBAL CONFIG [Key 0] ---
+    0:  ["."], 
+
+    # --- PROMPT GOVERNANCE [L1: THE LAW] ---
+    # [L2: IDENTITY] Keys 11-20
+    11: ["prompt_governance/personas/architectural"], # Surgeon
+    12: ["prompt_governance/personas/operational"],   # Janitor
     
-    # Keys 11-20: Agent Personas (THE LAW - Identity/Soul)
-    11: ["prompt_governance/personas/architectural"],  # Surgeon, Architect personas
-    12: ["prompt_governance/personas/operational"],    # Janitor, Healer personas
-    13: ["prompt_governance/personas/architectural"],
-    14: ["prompt_governance/personas/operational"],
-    15: ["prompt_governance/personas/architectural"],
-    16: ["prompt_governance/personas/operational"],
-    17: ["prompt_governance/personas/architectural"],
-    18: ["prompt_governance/personas/operational"],
-    19: ["prompt_governance/personas/architectural"],
-    20: ["prompt_governance/personas/operational"],
+    # [L2: DIRECTIVES] Keys 21-25
+    21: ["prompt_governance/logic/instructional"],
+    24: ["prompt_governance/logic/negative"],
+
+    # [L2: GUARDRAILS] Keys 26-30
+    26: ["prompt_governance/security/defensive"],
+    28: ["prompt_governance/security/injections"],
+
+    # --- SCHEMAS [L1: THE CONTRACTS] ---
+    # [L2: MISSION] Keys 31-35
+    31: ["schemas/canon/blueprints"], # Fission
+    33: ["schemas/canon/reports"],    # Audit
     
-    # Keys 21-25: Instructional Logic (THE LAW - Task Directives)
-    21: ["prompt_governance/logic/instructional"],     # Task directives, workflow logic
-    22: ["prompt_governance/logic/instructional"],
-    23: ["prompt_governance/logic/instructional"],
-    24: ["prompt_governance/logic/negative"],          # Constraints, exclusion lists
-    25: ["prompt_governance/logic/negative"],
-    
-    # Keys 26-30: Security Prompts (THE LAW - Shield/Guardrails)
-    26: ["prompt_governance/security/defensive"],      # System integrity, safety rules
-    27: ["prompt_governance/security/defensive"],
-    28: ["prompt_governance/security/injections"],     # Jailbreak tests, adversarial cases
-    29: ["prompt_governance/security/injections"],
-    30: ["prompt_governance/security/defensive"],
-    
-    # Keys 31-35: Canon Schemas (THE CONTRACTS - Mission Contracts)
-    31: ["schemas/canon/blueprints"],       # Fission blueprints, module maps
-    32: ["schemas/canon/blueprints"],
-    33: ["schemas/canon/reports"],          # Validation reports, audit logs
-    34: ["schemas/canon/reports"],
-    35: ["schemas/canon"],                  # General canon schemas
-    
-    # Keys 36-39: API Schemas (THE CONTRACTS - Communication Contracts)
-    36: ["schemas/api/internal"],           # Bus events, inter-agent messages
-    37: ["schemas/api/internal"],
-    38: ["schemas/api/external"],           # Tool specs, OpenAI schemas
-    39: ["schemas/api/external"],
-    
-    # Keys 40-42: Core Architecture (THE BRAIN - All L1-L5 Layers)
-    40: ["agentic_core"],                   # Architecture checks (depth, nesting)
-    41: ["agentic_core"],                   # Atomicity checks (file size, LOC)
-    42: ["agentic_core"],                   # Complexity checks (cyclomatic, cognitive)
-    
-    # Keys 43-45: Application Code (TARGET DOMAINS)
-    43: ["apps_shared", "apps_rg", "apps_lic"],  # Application core logic
-    44: ["apps_shared", "apps_rg", "apps_lic"],  # Application agents
-    45: ["apps_shared", "apps_rg", "apps_lic"],  # Application utilities
-    
-    # Key 46: Execution Utilities (THE LABOR)
-    46: ["scripts"],                        # Maintenance, deployment scripts
-    
-    # Key 47: Test Coverage (QA)
-    47: ["tests"],                          # Unit, integration, e2e, adversarial tests
-    
-    # Keys 48-50: Telemetry (THE TELEMETRY)
-    48: ["observability/logs"],             # Execution traces, error stacks
-    49: ["observability/metrics"],          # Token usage, latency stats
-    50: ["observability"],                  # General observability
+    # [L2: COMMUNICATION] Keys 36-39
+    36: ["schemas/api/internal"],
+    38: ["schemas/api/external"],
+
+    # --- AGENTIC CORE [L1: THE BRAIN] ---
+    # Keys 40-42 cover the Strategy/Action/Workflow Layers
+    40: ["agentic_core"],
+    41: ["agentic_core"],
+    42: ["agentic_core"],
+
+    # --- INFRA & DOMAINS [L1: INFRA] ---
+    43: ["apps_shared", "apps_rg", "apps_lic"],       # Core Logic
+    44: ["apps_rg/agents", "apps_lic/agents"],        # App Specialists
+    45: ["apps_shared/utils"],                        # Shared Utils
+
+    # --- QA & TELEMETRY ---
+    47: ["tests"],
+    48: ["observability/logs"],
+    49: ["observability/metrics"]
 }
 
 
@@ -272,6 +239,25 @@ def get_folder_scope_summary(project_root: Path) -> Dict[str, int]:
     return summary
 
 
+def generate_ascii_tree(start_path: Path, max_depth: int = 3) -> str:
+    """[VISUALIZER] Returns the physical directory structure as an ASCII tree string."""
+    tree = []
+    start_path = start_path.resolve()
+    tree.append(f"{start_path.name}/")
+
+    def _add(path, prefix, depth):
+        if depth > max_depth: return
+        items = sorted([x for x in path.iterdir() if x.name not in {'.git', '__pycache__'}])
+        for i, item in enumerate(items):
+            connector = "└── " if i == len(items)-1 else "├── "
+            tree.append(f"{prefix}{connector}{item.name}")
+            if item.is_dir():
+                _add(item, prefix + ("    " if i == len(items)-1 else "│   "), depth + 1)
+    
+    _add(start_path, "", 1)
+    return "\n".join(tree)
+
+
 def check_single_child_violations(project_root: Path) -> List[Tuple[Path, str]]:
     """
     Detect "single-child" antipattern: L2/L3 folders containing only one item.
@@ -312,53 +298,29 @@ def check_single_child_violations(project_root: Path) -> List[Tuple[Path, str]]:
 
 def check_import_waterfall_violations(file_path: Path, project_root: Path) -> List[str]:
     """
-    Enforce Dependency Waterfall: Sovereign directories must NEVER import from apps_*.
-    
-    Waterfall Rule:
-    - agentic_core/ (Sovereign) -> Can import: nothing from apps
-    - prompt_governance/ (Sovereign) -> Can import: nothing from apps
-    - schemas/ (Sovereign) -> Can import: nothing from apps
-    - apps_shared/ -> Can import: agentic_core, schemas
-    - apps_rg/, apps_lic/ -> Can import: agentic_core, schemas, apps_shared
-    
-    Args:
-        file_path: Path to Python file
-        project_root: Project root directory
-        
-    Returns:
-        List of violation messages
+    [L6 PHYSICS] Gravity Rule: 
+    Sovereign Layers (Core, Law, Contracts) MUST NOT import Downstream Domains (Apps).
     """
     violations = []
-    
     try:
         rel_path = file_path.relative_to(project_root)
-        parts = rel_path.parts
         
-        # Check if file is in a sovereign directory
-        is_sovereign = any(sov in parts for sov in ["agentic_core", "prompt_governance", "schemas"])
+        # Define Sovereign Roots (The 'Upstream')
+        sovereign_roots = {"agentic_core", "prompt_governance", "schemas", "config"}
         
-        if not is_sovereign:
-            return violations
-            
-        # Read file and check imports
-        with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+        # If file is not in a Sovereign root, it is downstream and safe.
+        if rel_path.parts[0] not in sovereign_roots:
+            return []
+
+        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
             
-        # Check for forbidden imports from apps
-        forbidden_patterns = [
-            "from apps_rg",
-            "from apps_lic", 
-            "from apps_shared",
-            "import apps_rg",
-            "import apps_lic",
-            "import apps_shared",
-        ]
+        # Forbidden Downstream Imports
+        forbidden = ["apps_rg", "apps_lic", "apps_shared"]
         
-        for pattern in forbidden_patterns:
-            if pattern in content:
-                violations.append(
-                    f"WATERFALL VIOLATION (Key 40): Sovereign file imports from apps domain: '{pattern}'"
-                )
+        for bad_lib in forbidden:
+            if f"import {bad_lib}" in content or f"from {bad_lib}" in content:
+                violations.append(f"GRAVITY VIOLATION: Sovereign '{rel_path.parts[0]}' cannot import downstream '{bad_lib}'")
                 
     except Exception as e:
         logger.warning(f"Could not check import waterfall for {file_path}: {e}")
