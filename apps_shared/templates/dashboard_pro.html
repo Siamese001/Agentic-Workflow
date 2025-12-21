@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canon Validator - Production Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004c99;
+            --success: #00c853;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --info: #2196f3;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #f5f7fa;
+            --border: #e0e6ed;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--darker);
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            background: var(--dark);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header .subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .nav-section {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-section-title {
+            padding: 0 20px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+            font-weight: 600;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+            border-left: 3px solid white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 0;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 16px 32px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .breadcrumb .active {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Filters */
+        .filter-bar {
+            background: white;
+            padding: 20px 32px;
+            margin: 20px 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input[type="text"], input[type="date"] {
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 0 32px 20px;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+        }
+
+        .kpi-card.success::before {
+            background: linear-gradient(90deg, var(--success), #00e676);
+        }
+
+        .kpi-card.warning::before {
+            background: linear-gradient(90deg, var(--warning), #ffc107);
+        }
+
+        .kpi-card.danger::before {
+            background: linear-gradient(90deg, var(--danger), #ff5252);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .kpi-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--info));
+            color: white;
+        }
+
+        .kpi-card.success .kpi-icon {
+            background: linear-gradient(135deg, var(--success), #00e676);
+        }
+
+        .kpi-card.warning .kpi-icon {
+            background: linear-gradient(135deg, var(--warning), #ffc107);
+        }
+
+        .kpi-card.danger .kpi-icon {
+            background: linear-gradient(135deg, var(--danger), #ff5252);
+        }
+
+        .kpi-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .kpi-change {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .kpi-change.positive {
+            color: var(--success);
+        }
+
+        .kpi-change.negative {
+            color: var(--danger);
+        }
+
+        .kpi-progress {
+            margin-top: 16px;
+            height: 6px;
+            background: var(--light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .kpi-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            padding: 0 32px 32px;
+        }
+
+        .content-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--text-light);
+        }
+
+        .icon-btn:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: var(--light);
+            z-index: 10;
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--light);
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background: var(--light);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge.success {
+            background: rgba(0,200,83,0.1);
+            color: var(--success);
+        }
+
+        .badge.warning {
+            background: rgba(255,152,0,0.1);
+            color: var(--warning);
+        }
+
+        .badge.danger {
+            background: rgba(244,67,54,0.1);
+            color: var(--danger);
+        }
+
+        .badge.info {
+            background: rgba(33,150,243,0.1);
+            color: var(--info);
+        }
+
+        .badge.primary {
+            background: rgba(0,102,204,0.1);
+            color: var(--primary);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-top: 16px;
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .pulse-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: var(--darker);
+            color: white;
+            font-size: 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Trend Sparkline */
+        .trend-sparkline {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 32px;
+            margin-top: 12px;
+        }
+
+        .trend-bar {
+            flex: 1;
+            background: var(--primary);
+            opacity: 0.3;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .trend-bar:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container" x-data="dashboard()" x-init="init()">
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" x-show="loading" x-transition>
+            <div>
+                <div class="spinner"></div>
+                <p style="margin-top: 16px; color: var(--text-light); font-weight: 600;">Loading Dashboard...</p>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1><i class="fas fa-shield-alt"></i> Canon Validator</h1>
+                <div class="subtitle">Production Dashboard v2.0</div>
+            </div>
+            
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <div class="nav-item active" @click="currentView = 'overview'">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" @click="currentView = 'keys'">
+                        <i class="fas fa-key"></i>
+                        <span>Keys Analysis</span>
+                    </div>
+                    <div class="nav-item" @click="currentView = 'files'">
+                        <i class="fas fa-file-code"></i>
+                        <span>File Explorer</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Reports</div>
+                    <div class="nav-item" @click="currentView = 'violations'">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Violations</span>
+                    </div>
+                    <div class="nav-item" @click="currentView = 'healing'">
+                        <i class="fas fa-medkit"></i>
+                        <span>Healing Log</span>
+                    </div>
+                    <div class="nav-item" @click="currentView = 'timeline'">
+                        <i class="fas fa-clock"></i>
+                        <span>Timeline</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Settings</div>
+                    <div class="nav-item">
+                        <i class="fas fa-download"></i>
+                        <span>Export Data</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="top-bar-left">
+                    <div class="breadcrumb">
+                        <i class="fas fa-home"></i>
+                        <span>/</span>
+                        <span class="active" x-text="currentView"></span>
+                    </div>
+                </div>
+                <div class="top-bar-right">
+                    <div style="font-size: 13px; color: var(--text-light);">
+                        <i class="fas fa-folder"></i>
+                        <strong x-text="session?.target_directory"></strong>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-light);">
+                        <i class="fas fa-clock"></i>
+                        <span x-text="formatTime(session?.elapsed_time)"></span>
+                    </div>
+                    <button class="btn btn-primary" @click="exportData()">
+                        <i class="fas fa-download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Time Range</label>
+                    <select x-model="filters.timeRange" @change="applyFilters()">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">Last 7 Days</option>
+                        <option value="month">Last 30 Days</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select x-model="filters.status" @change="applyFilters()">
+                        <option value="all">All Status</option>
+                        <option value="passed">Passed</option>
+                        <option value="failed">Failed</option>
+                        <option value="running">Running</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Key Range</label>
+                    <select x-model="filters.keyRange" @change="applyFilters()">
+                        <option value="all">All Keys (0-49)</option>
+                        <option value="subatomic">Subatomic (0-40)</option>
+                        <option value="light">Light Canon (41-47)</option>
+                        <option value="depth">Depth Law (49)</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Search Files</label>
+                    <input type="text" placeholder="Filter by filename..." x-model="filters.search" @input="applyFilters()">
+                </div>
+                
+                <div class="filter-group" style="justify-content: flex-end;">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn btn-secondary" @click="resetFilters()">
+                        <i class="fas fa-redo"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <div>
+                            <div class="kpi-title">Files Processed</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-file-code"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" x-text="session?.files_processed || 0"></div>
+                    <div class="kpi-change">
+                        <span x-text="`${session?.files_processed || 0} / ${session?.total_files || 0} files`"></span>
+                    </div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" :style="`width: ${session?.progress_pct || 0}%`"></div>
+                    </div>
+                </div>
+
+                <div class="kpi-card success">
+                    <div class="kpi-header">
+                        <div>
+                            <div class="kpi-title">Pass Rate</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" x-text="getPassRate() + '%'"></div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span x-text="`${session?.files_passed || 0} files passed`"></span>
+                    </div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="background: linear-gradient(90deg, var(--success), #00e676);" :style="`width: ${getPassRate()}%`"></div>
+                    </div>
+                </div>
+
+                <div class="kpi-card danger">
+                    <div class="kpi-header">
+                        <div>
+                            <div class="kpi-title">Total Violations</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" x-text="session?.total_violations || 0"></div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span x-text="`${session?.files_failed || 0} files affected`"></span>
+                    </div>
+                    <div class="trend-sparkline">
+                        <template x-for="i in 12" :key="i">
+                            <div class="trend-bar" :style="`height: ${Math.random() * 100}%; background: var(--danger);`"></div>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="kpi-card warning">
+                    <div class="kpi-header">
+                        <div>
+                            <div class="kpi-title">Healing Success</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-medkit"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" x-text="getHealingRate() + '%'"></div>
+                    <div class="kpi-change" :class="getHealingRate() >= 80 ? 'positive' : 'negative'">
+                        <i :class="getHealingRate() >= 80 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
+                        <span x-text="`${session?.total_healed || 0} / ${session?.total_violations || 0} healed`"></span>
+                    </div>
+                    <div class="kpi-progress">
+                        <div class="kpi-progress-bar" style="background: linear-gradient(90deg, var(--warning), #ffc107);" :style="`width: ${getHealingRate()}%`"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-grid">
+                <!-- Key Performance Chart -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Key Performance Overview
+                        </div>
+                        <div class="card-actions">
+                            <button class="icon-btn" data-tooltip="Refresh">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="icon-btn" data-tooltip="Fullscreen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="keyPerformanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Key Status Distribution -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-pie-chart"></i>
+                            Status Distribution
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="padding: 12px; background: var(--light); border-radius: 8px;">
+                                <div style="font-size: 12px; color: var(--text-light); margin-bottom: 4px;">Passed</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--success);" x-text="summary?.key_summary?.passed || 0"></div>
+                            </div>
+                            <div style="padding: 12px; background: var(--light); border-radius: 8px;">
+                                <div style="font-size: 12px; color: var(--text-light); margin-bottom: 4px;">Failed</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--danger);" x-text="summary?.key_summary?.failed || 0"></div>
+                            </div>
+                            <div style="padding: 12px; background: var(--light); border-radius: 8px;">
+                                <div style="font-size: 12px; color: var(--text-light); margin-bottom: 4px;">Running</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--warning);" x-text="summary?.key_summary?.running || 0"></div>
+                            </div>
+                            <div style="padding: 12px; background: var(--light); border-radius: 8px;">
+                                <div style="font-size: 12px; color: var(--text-light); margin-bottom: 4px;">Pending</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--text-light);" x-text="summary?.key_summary?.pending || 0"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healing Log Table -->
+            <div style="padding: 0 32px 32px;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-medkit"></i>
+                            Healing Activity Log
+                        </div>
+                        <div class="card-actions">
+                            <button class="icon-btn" @click="fetchData()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button class="icon-btn">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                            <button class="icon-btn">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-clock"></i> Timestamp</th>
+                                    <th><i class="fas fa-file"></i> File</th>
+                                    <th><i class="fas fa-key"></i> Key</th>
+                                    <th><i class="fas fa-check"></i> Healed</th>
+                                    <th><i class="fas fa-stopwatch"></i> Duration</th>
+                                    <th><i class="fas fa-chart-line"></i> Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="entry in healingLog" :key="entry.timestamp">
+                                    <tr>
+                                        <td style="font-size: 12px; color: var(--text-light);" x-text="entry.timestamp"></td>
+                                        <td>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-file-code" style="color: var(--primary);"></i>
+                                                <span x-text="getFileName(entry.file)"></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge primary" x-text="`Key ${entry.key_id}`"></span>
+                                            <div style="font-size: 11px; color: var(--text-light); margin-top: 4px;" x-text="entry.key_name"></div>
+                                        </td>
+                                        <td>
+                                            <span class="badge success">
+                                                <i class="fas fa-check"></i>
+                                                <span x-text="entry.healed_count"></span>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span style="font-family: monospace; color: var(--text-light);" x-text="entry.duration + 's'"></span>
+                                        </td>
+                                        <td>
+                                            <span class="badge success">
+                                                <i class="fas fa-check-circle"></i>
+                                                Success
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <tr x-show="healingLog.length === 0">
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
+                                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                        <div>No healing activity recorded yet</div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Indicator -->
+        <div class="status-indicator">
+            <div class="pulse-dot"></div>
+            <div>
+                <div style="font-size: 12px; color: var(--text-light);">Live Updates</div>
+                <div style="font-size: 14px; font-weight: 600;">Connected</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function dashboard() {
+            return {
+                currentView: 'overview',
+                session: null,
+                keys: [],
+                violators: [],
+                timeline: [],
+                healingLog: [],
+                summary: null,
+                loading: true,
+                keyChart: null,
+                statusChart: null,
+                filters: {
+                    timeRange: 'all',
+                    status: 'all',
+                    keyRange: 'all',
+                    search: ''
+                },
+
+                async init() {
+                    await this.fetchData();
+                    // Wait for DOM and Alpine to be fully ready
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    this.initCharts();
+                    setInterval(() => this.fetchData(), 2000);
+                },
+
+                async fetchData() {
+                    try {
+                        const [sessionRes, keysRes, violatorsRes, timelineRes, healingLogRes, summaryRes] = await Promise.all([
+                            fetch('/api/session'),
+                            fetch('/api/keys'),
+                            fetch('/api/violators?limit=20'),
+                            fetch('/api/timeline?limit=50'),
+                            fetch('/api/healing-log?limit=50'),
+                            fetch('/api/summary')
+                        ]);
+
+                        if (sessionRes.ok) this.session = await sessionRes.json();
+                        if (keysRes.ok) this.keys = await keysRes.json();
+                        if (violatorsRes.ok) this.violators = await violatorsRes.json();
+                        if (timelineRes.ok) this.timeline = await timelineRes.json();
+                        if (healingLogRes.ok) this.healingLog = await healingLogRes.json();
+                        if (summaryRes.ok) this.summary = await summaryRes.json();
+
+                        this.loading = false;
+                        this.updateCharts();
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    }
+                },
+
+                initCharts() {
+                    console.log('Initializing charts...');
+                    
+                    // Destroy existing charts if they exist
+                    if (this.keyChart) {
+                        this.keyChart.destroy();
+                        this.keyChart = null;
+                    }
+                    if (this.statusChart) {
+                        this.statusChart.destroy();
+                        this.statusChart = null;
+                    }
+                    
+                    // Key Performance Chart
+                    const keyCtx = document.getElementById('keyPerformanceChart');
+                    console.log('Key chart canvas:', keyCtx);
+                    if (keyCtx) {
+                        this.keyChart = new Chart(keyCtx, {
+                            type: 'bar',
+                            data: {
+                                labels: [],
+                                datasets: [{
+                                    label: 'Violations',
+                                    data: [],
+                                    backgroundColor: 'rgba(244, 67, 54, 0.8)',
+                                    borderRadius: 8
+                                }, {
+                                    label: 'Healed',
+                                    data: [],
+                                    backgroundColor: 'rgba(0, 200, 83, 0.8)',
+                                    borderRadius: 8
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                        labels: {
+                                            font: { size: 13, weight: '600' },
+                                            padding: 15
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: { color: 'rgba(0,0,0,0.05)' }
+                                    },
+                                    x: {
+                                        grid: { display: false }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Status Chart
+                    const statusCtx = document.getElementById('statusChart');
+                    if (statusCtx) {
+                        this.statusChart = new Chart(statusCtx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Passed', 'Failed', 'Running', 'Pending'],
+                                datasets: [{
+                                    data: [0, 0, 0, 0],
+                                    backgroundColor: [
+                                        'rgba(0, 200, 83, 0.8)',
+                                        'rgba(244, 67, 54, 0.8)',
+                                        'rgba(255, 152, 0, 0.8)',
+                                        'rgba(127, 140, 141, 0.3)'
+                                    ],
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: { size: 12, weight: '600' },
+                                            padding: 15
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                },
+
+                updateCharts() {
+                    console.log('Updating charts...', {
+                        keyChart: !!this.keyChart,
+                        statusChart: !!this.statusChart,
+                        keysLength: this.keys.length,
+                        summary: !!this.summary
+                    });
+
+                    if (this.keyChart && this.keys.length > 0) {
+                        const topKeys = this.keys
+                            .filter(k => k.violations_found > 0)
+                            .sort((a, b) => b.violations_found - a.violations_found)
+                            .slice(0, 10);
+
+                        console.log('Top keys for chart:', topKeys);
+
+                        this.keyChart.data.labels = topKeys.map(k => `Key ${k.key_id}`);
+                        this.keyChart.data.datasets[0].data = topKeys.map(k => k.violations_found);
+                        this.keyChart.data.datasets[1].data = topKeys.map(k => k.violations_healed);
+                        this.keyChart.update();
+                        console.log('Key chart updated');
+                    } else {
+                        console.log('Key chart not ready:', {
+                            hasChart: !!this.keyChart,
+                            hasKeys: this.keys.length > 0
+                        });
+                    }
+
+                    if (this.statusChart && this.summary) {
+                        const data = [
+                            this.summary.key_summary?.passed || 0,
+                            this.summary.key_summary?.failed || 0,
+                            this.summary.key_summary?.running || 0,
+                            this.summary.key_summary?.pending || 0
+                        ];
+                        console.log('Status chart data:', data);
+                        this.statusChart.data.datasets[0].data = data;
+                        this.statusChart.update();
+                        console.log('Status chart updated');
+                    } else {
+                        console.log('Status chart not ready:', {
+                            hasChart: !!this.statusChart,
+                            hasSummary: !!this.summary
+                        });
+                    }
+                },
+
+                getPassRate() {
+                    if (!this.session || this.session.files_processed === 0) return 0;
+                    return ((this.session.files_passed / this.session.files_processed) * 100).toFixed(1);
+                },
+
+                getHealingRate() {
+                    if (!this.session || this.session.total_violations === 0) return 0;
+                    return ((this.session.total_healed / this.session.total_violations) * 100).toFixed(1);
+                },
+
+                getFileName(path) {
+                    if (!path) return '';
+                    return path.split(/[/\\]/).pop();
+                },
+
+                formatTime(seconds) {
+                    if (!seconds) return '0s';
+                    const mins = Math.floor(seconds / 60);
+                    const secs = Math.floor(seconds % 60);
+                    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+                },
+
+                applyFilters() {
+                    console.log('Applying filters:', this.filters);
+                },
+
+                resetFilters() {
+                    this.filters = {
+                        timeRange: 'all',
+                        status: 'all',
+                        keyRange: 'all',
+                        search: ''
+                    };
+                    this.applyFilters();
+                },
+
+                exportData() {
+                    window.location.href = '/api/export';
+                }
+            };
+        }
+    </script>
+</body>
+</html>

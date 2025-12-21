@@ -7,7 +7,7 @@ from datetime import datetime
 
 # Import our metrics system
 from canon_dashboard import CanonDashboard, DashboardMetrics
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -20,7 +20,13 @@ dashboard = CanonDashboard(metrics)
 
 @app.route('/')
 def index():
-    """Serve the main dashboard page"""
+    """Serve the production dashboard HTML"""
+    return render_template('dashboard_pro.html')
+
+
+@app.route('/classic')
+def classic():
+    """Serve the classic dashboard HTML"""
     return render_template('dashboard.html')
 
 
