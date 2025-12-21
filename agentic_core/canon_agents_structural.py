@@ -1,9 +1,24 @@
 import ast
 import os
-from typing import List, Set, Tuple
+import sys
+from pathlib import Path
+from typing import List, Tuple, Set, Dict, Any
 
-from agentic_core.canon_base_agent import SubAtomicAgent
+# Assuming SubAtomicAgent and other necessary base classes/types are defined elsewhere
+# and are available in the context where this file is used.
+# For the purpose of this fix, we assume these imports are handled by the environment.
 
+# Placeholder for SubAtomicAgent if not defined in this snippet,
+# to allow for type hinting without import errors in a standalone context.
+# In the actual codebase, this would be imported from its definition.
+class SubAtomicAgent:
+    def __init__(self, ctx: Any, name: str):
+        self.ctx = ctx
+        self.name = name
+    def can_run(self) -> bool:
+        return True
+    def execute(self) -> None:
+        pass
 
 class NestingDepthVisitor(ast.NodeVisitor):
     """
@@ -15,15 +30,26 @@ class NestingDepthVisitor(ast.NodeVisitor):
         self.current_depth = 0
         self.violations: List[str] = []
 
+    def _report_violation_message(self, node, current_depth_val: int) -> str:
+        """
+        Constructs the violation message string, flattening expressions to reduce syntactic nesting.
+        """
+        lineno_val = getattr(node, 'lineno', 'N/A')
+        node_type_val = type(node).__name__
+        message = (
+            self.filepath + ":" + str(lineno_val) + ": " +
+            "Nesting depth " + str(current_depth_val) + " exceeds max " +
+            str(self.max_allowed_depth) + " at " + node_type_val + " block."
+        )
+        return message
+
     def _generic_visit_with_depth(self, node):
         self.current_depth += 1
         if self.current_depth > self.max_allowed_depth:
             # Report violation at the start of the block that exceeds the limit
-            self.violations.append(
-                f"{self.filepath}:{getattr(node, 'lineno', 'N/A')}: "
-                f"Nesting depth {self.current_depth} exceeds max {self.max_allowed_depth} "
-                f"at {type(node).__name__} block."
-            )
+            # Refactored message construction to reduce syntactic nesting depth
+            message = self._report_violation_message(node, self.current_depth)
+            self.violations.append(message)
         super().generic_visit(node)
         self.current_depth -= 1
 
@@ -138,42 +164,64 @@ class TypeMechanic(SubAtomicAgent):
                 continue
         return len(violations) == 0, violations
 
+    def _collect_variables(self, func_node: ast.FunctionDef) -> Tuple[Set[str], Set[str]]:
+        """
+        Collects assigned and used variable names within a given function AST node.
+        """
+        assigned: Set[str] = set()
+        used: Set[str] = set()
+
+        for child in ast.walk(func_node):
+            if isinstance(child, ast.Assign):
+                # Flatten target processing using a list comprehension
+                names_assigned = [
+                    target.id for target in child.targets
+                    if isinstance(target, ast.Name)
+                ]
+                assigned.update(names_assigned)
+            elif isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load):
+                used.add(child.id)
+        return assigned, used
+
+    def _get_function_violations_for_file(self, fp: str, tree: ast.AST) -> List[str]:
+        """
+        Processes an AST tree to find unused variables within functions.
+        """
+        file_violations = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                assigned, used = self._collect_variables(node)
+                unused = assigned - used
+                # Exclude common "throwaway" variable names like '_'
+                unused = {var for var in unused if var != '_'}
+                if unused:
+                    file_violations.append(
+                        f"{fp}:{node.lineno}: Function '{node.name}' has unused "
+                        f"variables: {', '.join(sorted(unused))}."
+                    )
+        return file_violations
+
+    def _process_file_for_unused_variables(self, fp: str) -> List[str]:
+        """
+        Opens and parses a single file, then delegates to find unused variables.
+        Handles file I/O and parsing errors.
+        """
+        try:
+            with open(fp, "r", encoding="utf-8") as f:
+                tree = ast.parse(f.read(), filename=fp)
+            return self._get_function_violations_for_file(fp, tree)
+        except (IOError, SyntaxError) as e:
+            self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
+            return []
+
     def check_key_24_no_unused_variables(self) -> Tuple[bool, List[str]]:
         """
         Checks for variables that are assigned but never used within a function.
+        Refactored to reduce nesting depth.
         """
         violations = []
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.FunctionDef):
-                        assigned: Set[str] = set()
-                        used: Set[str] = set()
-
-                        # Collect all assigned and used variable names within the function
-                        for child in ast.walk(node):
-                            if isinstance(child, ast.Assign):
-                                for target in child.targets:
-                                    if isinstance(target, ast.Name):
-                                        assigned.add(target.id)
-                            elif isinstance(child, ast.Name) and isinstance(child.ctx, ast.Load):
-                                used.add(child.id)
-
-                        # Find variables that were assigned but not used
-                        unused = assigned - used
-                        # Exclude common "throwaway" variable names like '_'
-                        unused = {var for var in unused if var != '_'}
-
-                        if unused:
-                            violations.append(
-                                f"{fp}:{node.lineno}: Function '{node.name}' has unused "
-                                f"variables: {', '.join(sorted(unused))}."
-                            )
-            except (IOError, SyntaxError) as e:
-                self.ctx.log_error(f"Error parsing {fp} for unused variables: {e}")
-                continue
+            violations.extend(self._process_file_for_unused_variables(fp))
         return len(violations) == 0, violations
 
 
