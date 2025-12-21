@@ -221,6 +221,7 @@ class FirecrackerManager:
                     CHECK=True)
             except subprocess.CalledProcessError:
                 # Container may already be removed, ignore error
+                pass
 
 def create_firecracker_manager(provider: VMProvider=VMProvider.FIRECRACKER) -> FirecrackerManager:
     """Factory function to create Firecracker manager.

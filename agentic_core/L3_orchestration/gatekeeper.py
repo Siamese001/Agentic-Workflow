@@ -27,8 +27,7 @@ class SemanticGatekeeper:
         self.timeout_seconds = timeout_seconds
         self.dead_letter_queue = []
 
-        logger.info(f"Gatekeeper initialized: max_concurrent={max_concurrent},
-            TIMEOUT={timeout_seconds}s")
+        logger.info(f"Gatekeeper initialized: max_concurrent={max_concurrent}, TIMEOUT={timeout_seconds}s")
 
     @asynccontextmanager
     async def execute(self, trace_id: str, operation: str):

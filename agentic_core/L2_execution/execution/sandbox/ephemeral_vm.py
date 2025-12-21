@@ -1,3 +1,4 @@
+```python
 """Ephemeral VM with Isolation and Auto-Teardown.
 
 Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
@@ -8,10 +9,12 @@ import asyncio
 import logging
 import time
 
+from .firecracker_manager import (
     FirecrackerManager,
     VMConfig,
     VMProvider,
     VMStatus,
+    create_firecracker_manager,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -362,3 +365,4 @@ def create_ephemeral_vm(
         vm_manager=vm_manager,
         isolation_config=isolation_config,
     )
+```
