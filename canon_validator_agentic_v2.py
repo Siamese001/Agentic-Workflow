@@ -249,8 +249,8 @@ async def run_mission(target_scope: str = "agentic_core"):
     safety_guard = SafetyGuardrail(deletion_limit=110)
 
     # [HARDENING] VERIFY KEY PRESENCE
-    if not os.getenv("GEMINI_API_KEY"):
-        print("\n[CRITICAL HARDENING] GEMINI_API_KEY NOT FOUND!")
+    if not os.getenv("GOOGLE_API_KEY"):
+        print("\n[CRITICAL HARDENING] GOOGLE_API_KEY NOT FOUND!")
         print("   -> Agentic capabilities cannot be unleashed without a neural link.")
         print("   -> Execution halted to prevent 'Dry Run' silence.")
         sys.exit(1)
@@ -260,7 +260,7 @@ async def run_mission(target_scope: str = "agentic_core"):
         import google.generativeai as genai
         from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = os.getenv("GOOGLE_API_KEY")
         genai.configure(api_key=api_key)
         
         # [UNLEASHED CONFIG] Maximum Creativity & Capacity
