@@ -2,7 +2,7 @@
 """
 Canon Validator - Orchestration Entry Point
 Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.5 - GOLDEN MASTER (Refactored)
+VERSION 2.5 - GOLDEN MASTER (Refactored) + DASHBOARD INTEGRATION
 """
 
 import asyncio
@@ -10,6 +10,8 @@ import importlib
 import logging
 import os
 import sys
+import threading
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -25,6 +27,15 @@ try:
 except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
+
+# Dashboard Integration
+try:
+    from canon_dashboard import DashboardMetrics, CanonDashboard
+    from canon_dashboard_web import app as web_app, metrics as web_metrics, run_server
+    DASHBOARD_AVAILABLE = True
+except ImportError:
+    DASHBOARD_AVAILABLE = False
+    print("[!] Dashboard not available. Install: pip install rich flask flask-cors")
 
 # Import core components from agentic_core
 from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
@@ -140,6 +151,34 @@ async def run_mission(target_scope: str = "agentic_core"):
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     
+    # === DASHBOARD INITIALIZATION ===
+    dashboard_metrics = None
+    dashboard_thread = None
+    web_thread = None
+    
+    if DASHBOARD_AVAILABLE:
+        dashboard_metrics = DashboardMetrics()
+        dashboard = CanonDashboard(dashboard_metrics)
+        
+        # Start web dashboard in background
+        import canon_dashboard_web
+        canon_dashboard_web.metrics = dashboard_metrics
+        web_thread = threading.Thread(
+            target=run_server,
+            args=('0.0.0.0', 5000, False),
+            daemon=True
+        )
+        web_thread.start()
+        print(f"   [OK] Web Dashboard: http://localhost:5000")
+        
+        # Start terminal dashboard in background
+        dashboard_thread = threading.Thread(
+            target=dashboard.run_live,
+            daemon=True
+        )
+        dashboard_thread.start()
+        print(f"   [OK] Terminal Dashboard: Active")
+    
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
     l6_compliant = run_l6_preflight(target_scope, project_root)
@@ -198,6 +237,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     ctx.engine = subatomic_engine
     ctx.safety = safety_guard
     ctx.fission = fission_mgr
+    ctx.dashboard_metrics = dashboard_metrics  # Wire dashboard metrics
     
     ctx.target_scope = target_scope
     
@@ -222,6 +262,10 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     ctx.python_files = [str(p) for p in valid_files]
     print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in {len(ALLOWED_ROOT_FOLDERS)} allowed folders")
+    
+    # Initialize dashboard session
+    if dashboard_metrics:
+        dashboard_metrics.start_session(target_scope, len(ctx.python_files))
     
     # Print folder scope summary
     folder_summary = get_folder_scope_summary(project_root_path)
@@ -310,6 +354,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         
         print(f"🔍 [{idx}/{len(ctx.python_files)}] {file_name} ({loc_count} LOC) [Keys: {sorted(applicable_keys) if applicable_keys else 'ALL'}]", end='\r')
 
+        # Update dashboard with current file
+        if dashboard_metrics:
+            dashboard_metrics.session.current_file = file_path
+
         # --- ACTIVE FISSION TRIGGER (Files > 200 Lines) ---
         if loc_count > 200:
             print(f"\n⚠️  [FISSION TRIGGER] {file_name} ({loc_count} lines). Engaging Auto-Fission.")
@@ -368,6 +416,13 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                         await method()
             except Exception as e:
                 ctx.report(agent.__class__.__name__, 0, False, f"Exec Error: {str(e)[:50]}")
+        
+        # Update dashboard after file processing
+        if dashboard_metrics:
+            # Determine if file passed or failed based on report
+            file_reports = [r for r in ctx.report if file_name in str(r)]
+            file_passed = len([r for r in file_reports if r.get('status') == 'FAIL']) == 0
+            dashboard_metrics.update_file_progress(file_path, "passed" if file_passed else "failed")
     
     # ===========================================================================
     # [ENHANCEMENT 3] GLOBAL MONITORING (Run ONCE at End)
@@ -386,6 +441,15 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     print("\n" + "="*70)
     print(f"🚀 MISSION COMPLETE: {len(ctx.python_files)} Files Swept")
     
+    # Mark session as complete
+    if dashboard_metrics:
+        dashboard_metrics.session.status = "completed"
+        
+        # Export dashboard report
+        report_path = f"canon_report_{dashboard_metrics.session.session_id}.json"
+        dashboard.export_report(report_path)
+        print(f"📊 Dashboard Report: {report_path}")
+    
     # Fission Stats
     fission_done = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_COMPLETE')
     fission_pending = sum(1 for v in ctx.results.values() if isinstance(v, dict) and v.get('action') == 'FISSION_REQUIRED_MANUAL')
@@ -402,6 +466,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         agent_counts = Counter(item.get('agent', 'Unknown') for item in ctx.report)
         for agent, count in agent_counts.most_common():
             print(f"   - {agent}: {count}")
+    
+    if dashboard_metrics:
+        print(f"\n🌐 Web Dashboard: http://localhost:5000 (still running)")
+        print("   Press Ctrl+C to stop...")
     
     print("="*70)
 
