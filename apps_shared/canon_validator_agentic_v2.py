@@ -11,7 +11,6 @@ import logging
 import os
 import sys
 import threading
-import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -30,8 +29,8 @@ except ImportError as e:
 
 # Dashboard Integration
 try:
-    from canon_dashboard import DashboardMetrics, CanonDashboard
-    from canon_dashboard_web import app as web_app, metrics as web_metrics, run_server
+    from canon_dashboard import CanonDashboard, DashboardMetrics
+    from canon_dashboard_web import run_server
     DASHBOARD_AVAILABLE = True
 except ImportError:
     DASHBOARD_AVAILABLE = False
@@ -153,7 +152,6 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     # === DASHBOARD INITIALIZATION ===
     dashboard_metrics = None
-    dashboard_thread = None
     web_thread = None
     
     if DASHBOARD_AVAILABLE:
@@ -205,6 +203,19 @@ async def run_mission(target_scope: str = "agentic_core"):
                 "status": status,
                 "msg": str(details)
             })
+            
+            # Forward to dashboard metrics
+            if dashboard_metrics and hasattr(ctx, 'python_files'):
+                current_file = getattr(ctx, 'current_file_path', None)
+                if current_file and not passed:
+                    # Extract violation count from details if present
+                    violation_count = 1
+                    if "violations" in str(details).lower():
+                        import re
+                        match = re.search(r'(\d+)\s+violations?', str(details), re.IGNORECASE)
+                        if match:
+                            violation_count = int(match.group(1))
+                    dashboard_metrics.record_violation(current_file, key_num, violation_count)
 
     # Initialize Context
     try:
@@ -353,12 +364,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         # Update dashboard with current file
         if dashboard_metrics:
             dashboard_metrics.session.current_file = file_path
-            dashboard_metrics.session.files_processed += 1
-            dashboard_metrics.add_activity(
-                "file_start",
-                f"Processing {file_name}",
-                {"file": file_path, "loc": loc_count}
-            )
+            ctx.current_file_path = file_path  # Store for report callback
 
         # --- ACTIVE FISSION TRIGGER (Files > 200 Lines) ---
         if loc_count > 200:
@@ -409,14 +415,6 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         
         for agent in file_validators:
             try:
-                # Track agent start
-                if dashboard_metrics:
-                    dashboard_metrics.add_activity(
-                        "agent_start",
-                        f"{agent.__class__.__name__} checking {file_name}",
-                        {"agent": agent.__class__.__name__, "file": file_path}
-                    )
-                
                 method = getattr(agent, 'execute', getattr(agent, 'run', None))
                 if method:
                     # Introspection to handle arguments safely
@@ -433,11 +431,6 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             file_reports = [r for r in ctx.report if file_name in str(r)]
             file_passed = len([r for r in file_reports if r.get('status') == 'FAIL']) == 0
             dashboard_metrics.update_file_progress(file_path, "passed" if file_passed else "failed")
-            dashboard_metrics.add_activity(
-                "file_complete",
-                f"Completed {file_name}",
-                {"file": file_path, "status": "passed" if file_passed else "failed"}
-            )
     
     # ===========================================================================
     # [ENHANCEMENT 3] GLOBAL MONITORING (Run ONCE at End)

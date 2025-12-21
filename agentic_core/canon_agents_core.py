@@ -8,7 +8,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 from agentic_core.canon_base_agent import SubAtomicAgent
 from apps_shared.canon_utils import EXCLUDED_DIRS, is_excluded
@@ -89,13 +89,7 @@ class SystemArchitect(SubAtomicAgent):
         # Key 41: Scoped Nesting
         passed_41, details_41 = self.check_key_41_scoped_nesting()
         if not passed_41 and self.ctx.intelligence_enabled:
-            # Extract unique file paths from details for smart fixing
-            unique_fps_to_fix = list(
-                {v.split(":")[0] for v in details_41}
-            )
-            # Limit fixes to the first 3 files to avoid excessive calls
-            for fp in unique_fps_to_fix[:3]:
-                await self.smart_fix(fp, 41)
+            await self._handle_key_41_fix_attempts(details_41)
             # Re-check after attempted fixes
             passed_41, details_41 = self.check_key_41_scoped_nesting()
         self.ctx.report(self.name, 41, passed_41, details_41)
@@ -123,6 +117,10 @@ class SystemArchitect(SubAtomicAgent):
             )
             return None
 
+    def _has_metaclass_keyword(self, node: ast.ClassDef) -> bool:
+        """Helper to check if a ClassDef node has a metaclass keyword."""
+        return any(kw.arg == "metaclass" for kw in node.keywords)
+
     def _check_tree_for_metaclasses(self, tree: ast.AST, file_path: str) -> List[str]:
         """
         Helper method to check an AST tree for metaclass definitions.
@@ -131,8 +129,7 @@ class SystemArchitect(SubAtomicAgent):
         violations_in_tree = []
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                # Check for 'metaclass=...' in class definition keywords
-                if any(kw.arg == "metaclass" for kw in node.keywords):
+                if self._has_metaclass_keyword(node):
                     violations_in_tree.append(f"{file_path}:{node.lineno}")
         return violations_in_tree
 
@@ -221,6 +218,13 @@ class SystemArchitect(SubAtomicAgent):
         # Treat unparseable as a violation for safety if parsing failed
         return True 
 
+    def _is_root_file_with_definitions(self, file_path: str) -> bool:
+        """Helper to check if a file is at root depth and contains definitions."""
+        if len(Path(file_path).parts) == 1:
+            if self._check_file_for_definitions(file_path):
+                return True
+        return False
+
     def check_key_50_law_of_void(self) -> Tuple[bool, List[str]]:
         """
         Checks for Python files directly in the project root (depth 1) that contain
@@ -236,11 +240,18 @@ class SystemArchitect(SubAtomicAgent):
         """
         root_violations = []
         for file_path in self.ctx.python_files:
-            # Check if the file is directly in the assumed project root
-            if len(Path(file_path).parts) == 1:
-                if self._check_file_for_definitions(file_path):
-                    root_violations.append(file_path)
+            if self._is_root_file_with_definitions(file_path):
+                root_violations.append(file_path)
         return len(root_violations) == 0, root_violations
+
+    async def _handle_key_41_fix_attempts(self, details_41: List[str]):
+        """Helper to attempt smart fixes for Key 41 violations."""
+        unique_fps_to_fix = list(
+            {v.split(":")[0] for v in details_41}
+        )
+        # Limit fixes to the first 3 files to avoid excessive calls
+        for fp in unique_fps_to_fix[:3]:
+            await self.smart_fix(fp, 41)
 
 
 class HealerAgent(SubAtomicAgent):
@@ -267,14 +278,22 @@ class HealerAgent(SubAtomicAgent):
             # to ensure it's flagged and potentially retried.
             return True, SyntaxError(f"File unreadable/undecodable: {e}")
 
+    def _process_file_for_syntax_error(self, file_path: str) -> Optional[Tuple[str, SyntaxError]]:
+        """Helper to check a single file for syntax errors and return if found."""
+        if is_excluded(file_path):
+            return None
+        has_error, error_obj = self._check_file_for_syntax_error(file_path)
+        if has_error:
+            return (file_path, error_obj)
+        return None
+
     def _scan_for_syntax_errors(self) -> List[Tuple[str, Optional[SyntaxError]]]:
         """Helper to scan all Python files for syntax errors."""
         syntax_errors = []
         for file_path in self.ctx.python_files:
-            if not is_excluded(file_path):
-                has_error, error_obj = self._check_file_for_syntax_error(file_path)
-                if has_error:
-                    syntax_errors.append((file_path, error_obj))
+            error_info = self._process_file_for_syntax_error(file_path)
+            if error_info:
+                syntax_errors.append(error_info)
         return syntax_errors
 
     async def _attempt_fix_single_file(self, file_path: str, error) -> bool:
@@ -364,6 +383,13 @@ class GenerativeGuard(SubAtomicAgent):
                 self._purge_single_file(file_path)
             self.ctx.signals.add("GENERATIVE_CLEAN")
 
+    def _is_runaway_file(self, normalized_file_path: str) -> bool:
+        """Helper to check if a file path matches any runaway pattern."""
+        for pattern in self.GENERATIVE_PATTERNS:
+            if re.search(pattern, normalized_file_path):
+                return True
+        return False
+
     def _find_runaway_violations_in_dir(self, root: str, files: List[str]) -> List[str]:
         """Helper to find runaway violations within a specific directory."""
         violations_in_dir = []
@@ -371,10 +397,8 @@ class GenerativeGuard(SubAtomicAgent):
             file_path = os.path.join(root, file)
             normalized_file_path = Path(file_path).as_posix() 
             
-            for pattern in self.GENERATIVE_PATTERNS:
-                if re.search(pattern, normalized_file_path):
-                    violations_in_dir.append(file_path)
-                    break
+            if self._is_runaway_file(normalized_file_path):
+                violations_in_dir.append(file_path)
         return violations_in_dir
 
     def execute(self):

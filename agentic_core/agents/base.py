@@ -43,9 +43,8 @@ class ImportPatcher:
         if isinstance(node, ast.ImportFrom):
             return bool(node.module and node.module.startswith(old_module))
         elif isinstance(node, ast.Import):
-            for alias in node.names:
-                if alias.name.startswith(old_module):
-                    return True
+            # Refactor to reduce nesting depth from 6 to 4
+            return any(alias.name.startswith(old_module) for alias in node.names)
         return False
 
     def _find_module_import_in_tree(self, tree: ast.AST, old_module: str) -> bool:
@@ -138,12 +137,10 @@ class ImportPatcher:
     ) -> List[str]:
         """Generates a list of human-readable patch instructions from a change map."""
         instructions = []
-        for old_module, new_targets in change_map.items():
-            if isinstance(new_targets, str):
-                instructions.append(f"{old_module} → {new_targets}")
-            elif isinstance(new_targets, list):
-                for new_target in new_targets:
-                    instructions.append(f"{old_module} → {new_target}")
+        for old_module, new_targets_raw in change_map.items():
+            # Normalize new_targets_raw to an iterable to reduce nesting depth
+            targets_iterable = [new_targets_raw] if isinstance(new_targets_raw, str) else new_targets_raw
+            instructions.extend([f"{old_module} → {target}" for target in targets_iterable])
         return instructions
 
     def _read_file_content(self, file_path: str) -> Union[str, None]:

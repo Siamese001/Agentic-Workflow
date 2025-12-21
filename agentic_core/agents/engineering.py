@@ -1,5 +1,4 @@
 import ast
-import asyncio
 import hashlib
 import re
 from typing import List, Tuple

@@ -307,16 +307,13 @@ class CanonValidator:
 
             logger.info(f"Pinecone raw response: {results}")
 
-            if results and results['matches']:
-                best_match = results['matches'][0]
-                score = best_match['score']
-                logger.info(
-                    f"Best match: ID={best_match['id']}, score={score}"
-                )
+            # Reduce nesting depth by checking for matches and processing them at the same level
+            if results and results.get('matches'): # Depth 3 (relative to class)
+                best_match = results['matches'][0] # Depth 4
+                score = best_match['score'] # Depth 4
+                logger.info(f"Best match: ID={best_match['id']}, score={score}") # Depth 4
 
-                # Delegate to helper function to reduce nesting depth
-                return self._process_pinecone_match(best_match, score)
-
+                return self._process_pinecone_match(best_match, score) # Depth 4
         except Exception as e:
             logger.error(f"Pinecone query failed: {e}")
 

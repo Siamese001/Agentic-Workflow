@@ -465,29 +465,42 @@
             </div>
         </div>
 
-        <!-- Timeline and Charts -->
+        <!-- Healing Log and Charts -->
         <div class="grid grid-2">
-            <!-- Activity Timeline -->
+            <!-- Healing Log -->
             <div class="card">
-                <div class="card-title">📊 Recent Activity</div>
-                <div class="timeline">
-                    <template x-for="item in timeline.slice(0, 20)" :key="item.timestamp">
-                        <div class="timeline-item" :class="item.type">
-                            <div class="timeline-time" x-text="formatTimestamp(item.timestamp)"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-title">
-                                    <span x-show="item.type === 'violation'" style="color: var(--danger);">🔴 Violation</span>
-                                    <span x-show="item.type === 'healing'" style="color: var(--success);">🟢 Healing</span>
-                                    <span x-text="`Key ${item.key_id}`"></span>
-                                </div>
-                                <div class="timeline-details">
-                                    <span x-text="getFileName(item.file)"></span>
-                                    <span x-show="item.type === 'violation'" x-text="`- ${item.count} violations`"></span>
-                                    <span x-show="item.type === 'healing'" x-text="`- ${item.healed} healed in ${item.duration?.toFixed(2)}s`"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
+                <div class="card-title">🏥 Healing Activity Log</div>
+                <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>File</th>
+                                <th>Key</th>
+                                <th>Healed</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="entry in healingLog" :key="entry.timestamp">
+                                <tr>
+                                    <td style="font-size: 11px; color: var(--text-light);" x-text="entry.timestamp"></td>
+                                    <td x-text="getFileName(entry.file)"></td>
+                                    <td>
+                                        <span class="badge info" x-text="`Key ${entry.key_id}`"></span>
+                                        <span style="font-size: 11px; color: var(--text-light);" x-text="entry.key_name"></span>
+                                    </td>
+                                    <td><span style="color: var(--success); font-weight: 600;" x-text="entry.healed_count"></span></td>
+                                    <td><span style="font-size: 12px; color: var(--text-light);" x-text="entry.duration + 's'"></span></td>
+                                </tr>
+                            </template>
+                            <tr x-show="healingLog.length === 0">
+                                <td colspan="5" style="text-align: center; color: var(--text-light); padding: 20px;">
+                                    No healing activity yet
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -532,6 +545,7 @@
                 keys: [],
                 violators: [],
                 timeline: [],
+                healingLog: [],
                 summary: null,
                 loading: true,
                 chart: null,
@@ -544,11 +558,12 @@
 
                 async fetchData() {
                     try {
-                        const [sessionRes, keysRes, violatorsRes, timelineRes, summaryRes] = await Promise.all([
+                        const [sessionRes, keysRes, violatorsRes, timelineRes, healingLogRes, summaryRes] = await Promise.all([
                             fetch('/api/session'),
                             fetch('/api/keys'),
                             fetch('/api/violators?limit=20'),
                             fetch('/api/timeline?limit=50'),
+                            fetch('/api/healing-log?limit=50'),
                             fetch('/api/summary')
                         ]);
 
@@ -556,6 +571,7 @@
                         if (keysRes.ok) this.keys = await keysRes.json();
                         if (violatorsRes.ok) this.violators = await violatorsRes.json();
                         if (timelineRes.ok) this.timeline = await timelineRes.json();
+                        if (healingLogRes.ok) this.healingLog = await healingLogRes.json();
                         if (summaryRes.ok) this.summary = await summaryRes.json();
 
                         this.loading = false;
