@@ -259,8 +259,8 @@
         }
 
         .kpi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
         }
 
         .kpi-card::before {
@@ -269,8 +269,9 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 6px;
             background: linear-gradient(90deg, var(--primary), var(--info));
+            z-index: 1;
         }
 
         .kpi-card.success::before {
@@ -300,16 +301,41 @@
             letter-spacing: 0.5px;
         }
 
+        /* ENHANCEMENT: Subtitles */
+        .kpi-subtitle {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Sparkline Structure (Ready for real data) */
+        .kpi-sparkline {
+            display: flex;
+            align-items: flex-end;
+            height: 32px;
+            gap: 3px;
+            margin-top: 12px;
+            opacity: 0.5;
+        }
+        .kpi-sparkline .bar {
+            flex: 1;
+            background: currentColor;
+            border-radius: 2px 2px 0 0;
+            transition: height 0.3s;
+        }
+
         .kpi-icon {
-            width: 48px;
-            height: 48px;
+            width: 64px;
+            height: 64px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 32px;
             background: linear-gradient(135deg, var(--primary), var(--info));
             color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .kpi-card.success .kpi-icon {
@@ -848,6 +874,7 @@
                     <div class="kpi-header">
                         <div>
                             <div class="kpi-title">Files Processed</div>
+                            <div class="kpi-subtitle">Scanning Progress</div>
                         </div>
                         <div class="kpi-icon">
                             <i class="fas fa-file-code"></i>
@@ -855,7 +882,7 @@
                     </div>
                     <div class="kpi-value" x-text="session?.files_processed || 0"></div>
                     <div class="kpi-change">
-                        <span x-text="`${session?.files_processed || 0} / ${session?.total_files || 0} files`"></span>
+                        <span x-text="`${session?.files_processed || 0} / ${session?.total_files || 0} total`"></span>
                     </div>
                     <div class="kpi-progress">
                         <div class="kpi-progress-bar" :style="`width: ${session?.progress_pct || 0}%`"></div>
@@ -866,6 +893,7 @@
                     <div class="kpi-header">
                         <div>
                             <div class="kpi-title">Pass Rate</div>
+                            <div class="kpi-subtitle">Code Quality Health</div>
                         </div>
                         <div class="kpi-icon">
                             <i class="fas fa-check-circle"></i>
@@ -874,7 +902,7 @@
                     <div class="kpi-value" x-text="getPassRate() + '%'"></div>
                     <div class="kpi-change positive">
                         <i class="fas fa-arrow-up"></i>
-                        <span x-text="`${session?.files_passed || 0} files passed`"></span>
+                        <span x-text="`${session?.files_passed || 0} passed checks`"></span>
                     </div>
                     <div class="kpi-progress">
                         <div class="kpi-progress-bar" style="background: linear-gradient(90deg, var(--success), #00e676);" :style="`width: ${getPassRate()}%`"></div>
@@ -885,6 +913,7 @@
                     <div class="kpi-header">
                         <div>
                             <div class="kpi-title">Total Violations</div>
+                            <div class="kpi-subtitle">Issues Detected</div>
                         </div>
                         <div class="kpi-icon">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -892,13 +921,16 @@
                     </div>
                     <div class="kpi-value" x-text="session?.total_violations || 0"></div>
                     <div class="kpi-change negative">
-                        <i class="fas fa-arrow-down"></i>
+                        <i class="fas fa-bug"></i>
                         <span x-text="`${session?.files_failed || 0} files affected`"></span>
                     </div>
-                    <div class="trend-sparkline">
-                        <template x-for="i in 12" :key="i">
-                            <div class="trend-bar" :style="`height: ${Math.random() * 100}%; background: var(--danger);`"></div>
-                        </template>
+                    <div class="trend-sparkline" style="opacity: 0.2">
+                        <div class="trend-bar" style="background: var(--danger); height: 40%"></div>
+                        <div class="trend-bar" style="background: var(--danger); height: 60%"></div>
+                        <div class="trend-bar" style="background: var(--danger); height: 30%"></div>
+                        <div class="trend-bar" style="background: var(--danger); height: 80%"></div>
+                        <div class="trend-bar" style="background: var(--danger); height: 50%"></div>
+                        <div class="trend-bar" style="background: var(--danger); height: 20%"></div>
                     </div>
                 </div>
 
@@ -906,15 +938,16 @@
                     <div class="kpi-header">
                         <div>
                             <div class="kpi-title">Healing Success</div>
+                            <div class="kpi-subtitle">Auto-Recovery Rate</div>
                         </div>
                         <div class="kpi-icon">
                             <i class="fas fa-medkit"></i>
                         </div>
                     </div>
                     <div class="kpi-value" x-text="getHealingRate() + '%'"></div>
-                    <div class="kpi-change" :class="getHealingRate() >= 80 ? 'positive' : 'negative'">
-                        <i :class="getHealingRate() >= 80 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
-                        <span x-text="`${session?.total_healed || 0} / ${session?.total_violations || 0} healed`"></span>
+                    <div class="kpi-change" :class="getHealingRate() >= 80 ? 'positive' : 'warning'">
+                        <i class="fas fa-magic"></i>
+                        <span x-text="`${session?.total_healed || 0} fixes applied`"></span>
                     </div>
                     <div class="kpi-progress">
                         <div class="kpi-progress-bar" style="background: linear-gradient(90deg, var(--warning), #ffc107);" :style="`width: ${getHealingRate()}%`"></div>
