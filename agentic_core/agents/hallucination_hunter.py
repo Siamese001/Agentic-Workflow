@@ -11,11 +11,10 @@ except ImportError:
     NUMPY_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.canon_validator_agentic_v2 import (
-    get_fission_manager,
-    get_safety_guardrail,
-    get_subatomic_engine,
-)
+
+# Removed import from apps_shared.canon_validator_agentic_v2 as it is a downstream dependency
+# and the components (get_fission_manager, get_safety_guardrail, get_subatomic_engine)
+# were not used elsewhere in this class after initialization.
 
 try:
     from google import genai
@@ -271,21 +270,14 @@ class HallucinationHunter(SubAtomicAgent):
             ctx: ValidationContext
         """
         super().__init__(ctx)
-        # Initialize shared Sub-Atomic Engine components
-        if hasattr(self.ctx, '_client') and self.ctx._client:
-            try:
-                self.engine = get_subatomic_engine(gemini_client=self.ctx._client)
-                self.safety = get_safety_guardrail()
-                self.fission = get_fission_manager()
-            except Exception as e:
-                logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
-                self.engine = None
-                self.safety = None
-                self.fission = None
-        else:
-            self.engine = None
-            self.safety = None
-            self.fission = None
+        # Initialize shared Sub-Atomic Engine components.
+        # The original imports from 'apps_shared' have been removed as they are
+        # a downstream dependency and the attributes (self.engine, self.safety, self.fission)
+        # were not utilized elsewhere in this class. They are initialized to None
+        # to maintain the class's expected attribute structure.
+        self.engine = None
+        self.safety = None
+        self.fission = None
 
         
         # Similarity threshold
