@@ -18,8 +18,6 @@ except ImportError:
     genai = None
     types = None
 
-# Removed: from apps_shared.canon_validator_agentic_v2 import ...
-
 # Load environment variables from .env file at module level
 load_dotenv()
 

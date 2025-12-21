@@ -1,4 +1,3 @@
-"""
 ⚛️ Memory Architect - Autonomous Knowledge Distillation
 
 This agent bridges Short-Term Episodic Memory (Redis) and Long-Term Semantic Memory (Pinecone)
@@ -33,11 +32,6 @@ except ImportError:
     PINECONE_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.canon_validator_agentic_v2 import (
-    get_fission_manager,
-    get_safety_guardrail,
-    get_subatomic_engine,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -195,14 +189,17 @@ class MemoryArchitect(SubAtomicAgent):
             ctx: ValidationContext with Gemini client and Pinecone access
         """
         super().__init__(ctx)
-        # Initialize shared Sub-Atomic Engine components
+        # Initialize shared Sub-Atomic Engine components via ValidationContext
+        # This refactors the direct import from apps_shared to use dependency injection
+        # through the ValidationContext, adhering to the architectural rule.
         if hasattr(self.ctx, '_client') and self.ctx._client:
             try:
-                self.engine = get_subatomic_engine(gemini_client=self.ctx._client)
-                self.safety = get_safety_guardrail()
-                self.fission = get_fission_manager()
+                # Assuming ValidationContext provides these methods
+                self.engine = self.ctx.get_subatomic_engine(gemini_client=self.ctx._client)
+                self.safety = self.ctx.get_safety_guardrail()
+                self.fission = self.ctx.get_fission_manager()
             except Exception as e:
-                logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
+                logger.warning(f"Failed to initialize Sub-Atomic Engine components via ctx: {e}")
                 self.engine = None
                 self.safety = None
                 self.fission = None

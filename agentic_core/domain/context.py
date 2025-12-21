@@ -2,6 +2,8 @@ import ast
 import asyncio
 import json
 import os
+import functools
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
@@ -17,11 +19,57 @@ from agentic_core.domain.prompts import (
     FEW_SHOT_HYGIENE,
     FEW_SHOT_STYLE,
 )
-from apps_shared.config.reliability import rate_limited_retry
 
-# Shared Utilities
-from apps_shared.utils.file_io import get_python_files, write_compliant_file
-from apps_shared.utils.text_processing import clean_llm_code
+# ==============================================================================
+# SOVEREIGN UTILITIES (Moved from apps_shared to eliminate downstream dependency)
+# ==============================================================================
+
+def _get_python_files_impl(base_path: str = ".") -> List[str]:
+    """
+    Recursively finds all Python files in the given base path.
+    (Inlined from apps_shared.utils.file_io)
+    """
+    python_files = []
+    for root, _, files in os.walk(base_path):
+        for file in files:
+            if file.endswith(".py"):
+                python_files.append(os.path.join(root, file))
+    return python_files
+
+def _clean_llm_code_impl(text: str) -> str:
+    """
+    Cleans LLM generated code by removing common markdown fences.
+    (Inlined from apps_shared.utils.text_processing)
+    """
+    # Remove markdown code block fences
+    if text.startswith("```python"):
+        text = text[len("```python"):].strip()
+    if text.startswith("```"):
+        text = text[len("```"):].strip()
+    if text.endswith("```"):
+        text = text[:-len("```")].strip()
+    return text
+
+def _rate_limited_retry_impl(max_attempts: int = 3, delay_seconds: float = 1.0):
+    """
+    A simple retry decorator for async functions with a delay.
+    (Inlined from apps_shared.config.reliability)
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        async def wrapper(*args, **kwargs):
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return await func(*args, **kwargs)
+                except Exception as e:
+                    if attempt < max_attempts:
+                        print(f"   [RETRY] Attempt {attempt}/{max_attempts} failed: {e}. Retrying in {delay_seconds}s...")
+                        await asyncio.sleep(delay_seconds)
+                    else:
+                        # Re-raise the last exception if all attempts fail
+                        raise
+        return wrapper
+    return decorator
 
 # ==============================================================================
 # LEVEL 6: SOVEREIGN ARCHITECTURE
@@ -137,7 +185,7 @@ class ValidationContext:
 
     def __post_init__(self):
         print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
-        self.python_files = get_python_files()
+        self.python_files = _get_python_files_impl() # Replaced get_python_files()
         self._load_memory()
         self._init_intelligence()
 
@@ -182,13 +230,23 @@ class ValidationContext:
             return ""
 
     def write_compliant_file(self, path: str, content: str) -> bool:
-        return write_compliant_file(path, content)
+        """
+        Writes content to a file, ensuring directory exists.
+        (Inlined from apps_shared.utils.file_io)
+        """
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            return True
+        except Exception:
+            return False
 
     @property
     def client(self):
         return self._client
 
-    @rate_limited_retry()
+    @_rate_limited_retry_impl() # Replaced @rate_limited_retry()
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
@@ -201,7 +259,7 @@ class ValidationContext:
                 contents=[prompt]
             )
             await self.budget.track(prompt, response.text)
-            return clean_llm_code(response.text)
+            return _clean_llm_code_impl(response.text) # Replaced clean_llm_code()
         except Exception as e:
             print(f"   [{agent_name}] Mutation failed: {e}")
             return code

@@ -12,6 +12,7 @@ import inspect
 import logging
 import os
 import sys
+import threading
 import time
 import traceback
 from pathlib import Path
@@ -50,12 +51,20 @@ except ImportError as e:
 
 # Dashboard Integration
 try:
+    import sys
+    from pathlib import Path
+    # Add apps_shared to path for dashboard imports
+    apps_shared_path = Path(__file__).parent / "apps_shared"
+    if str(apps_shared_path) not in sys.path:
+        sys.path.insert(0, str(apps_shared_path))
+    
     from canon_dashboard import CanonDashboard, DashboardMetrics
     from canon_dashboard_web import run_server
     DASHBOARD_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     DASHBOARD_AVAILABLE = False
-    print("[!] Dashboard not available. Install: pip install rich flask flask-cors")
+    print(f"[!] Dashboard not available: {e}")
+    print("    Install: pip install rich flask flask-cors")
 
 # Import core components from agentic_core
 try:

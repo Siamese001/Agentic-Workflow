@@ -7,6 +7,7 @@ HARDENED: Thread-safe reads, Input sanitization, Robust error handling.
 from datetime import datetime
 import threading
 import logging
+import os
 
 # Import our metrics system
 from canon_dashboard import CanonDashboard, DashboardMetrics
@@ -15,14 +16,16 @@ from flask_cors import CORS
 
 # Configure Flask logging to not interfere with console output
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+log.setLevel(logging.CRITICAL) # Further silence logs to prevent thread flooding
 
 app = Flask(__name__)
 CORS(app)
 
-# Global metrics instance (can be overwritten by importer)
-metrics = DashboardMetrics()
-dashboard = CanonDashboard(metrics)
+# Global instances (initialized as None to allow validator injection)
+metrics = None
+dashboard = None
+
+print("[WEB] Dashboard Module Loaded. Waiting for metrics injection...")
 
 # Safety constants
 MAX_LIMIT = 1000
@@ -258,11 +261,22 @@ def export_report():
 
 
 def run_server(host='0.0.0.0', port=5000, debug=False):
-    """Run the Flask server"""
-    print(f"🚀 Canon Dashboard Web Server starting on http://{host}:{port}")
-    # Disable debug reloader in production to prevent main thread interference
-    use_reloader = debug and not threading.current_thread().name != 'MainThread'
-    app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
+    """
+    Run the Flask server with thread-safe configuration.
+    HARDENED: External Port Mapping, Re-loader Disabled, Threading Enabled.
+    """
+    # Use environment port if available (for Docker/Cloud)
+    port = int(os.environ.get("DASHBOARD_PORT", port))
+    
+    print(f"[*] DASHBOARD: Starting background thread on http://{host}:{port}")
+    
+    try:
+        # use_reloader MUST be False when running in a background thread
+        app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
+    except Exception as e:
+        print(f"[!] DASHBOARD ERROR: Could not start server: {e}")
+        if "Address already in use" in str(e):
+            print("    -> Tip: Run 'lsof -i :5000' and kill the existing process.")
 
 
 if __name__ == "__main__":
