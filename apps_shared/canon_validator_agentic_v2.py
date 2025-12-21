@@ -87,20 +87,6 @@ class GeminiSpy:
     """
     def __init__(self, real_engine):
         self._engine = real_engine
-        self._redact = os.getenv("GEMINI_SPY_REDACT", "0") == "1"
-
-    def _redact_prompt(self, prompt: str) -> str:
-        """Redact potentially sensitive information from prompts."""
-        if not self._redact:
-            return prompt
-        
-        # Simple redaction - replace common PII patterns
-        import re
-        redacted = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL]', prompt)
-        redacted = re.sub(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b', '[CARD]', redacted)
-        redacted = re.sub(r'\b\d{3}[-\s]?\d{2}[-\s]?\d{4}\b', '[SSN]', redacted)
-        redacted = re.sub(r'\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b', '[PHONE]', redacted)
-        return redacted
 
     def __getattr__(self, name):
         # Pass through non-callable attributes immediately
@@ -108,35 +94,13 @@ class GeminiSpy:
         if not callable(attr) or name.startswith("_"):
             return attr
 
-        # Handle async methods
-        if asyncio.iscoroutinefunction(attr):
-            async def async_wrapper(*args, **kwargs):
-                print(f"\n[👀 GEMINI SPY] Agent triggering async: {name}")
-                # Log prompt preview if available
-                if args:
-                    try:
-                        preview = self._redact_prompt(str(args[0])[:120].replace('\n', ' '))
-                        print(f"   -> Prompt: {preview}...")
-                    except: pass
-                
-                start_t = time.time()
-                try:
-                    result = await attr(*args, **kwargs)
-                    duration = time.time() - start_t
-                    print(f"[👀 GEMINI SPY] ✅ Async Success ({duration:.2f}s). Signal received.")
-                    return result
-                except Exception as e:
-                    print(f"[👀 GEMINI SPY] ❌ Async FAILURE: {e}")
-                    raise e
-            return async_wrapper
-        
-        # Intercept sync method calls (e.g., generate_content, query, chat)
+        # Intercept method calls (e.g., generate_content, query, chat)
         def wrapper(*args, **kwargs):
             print(f"\n[👀 GEMINI SPY] Agent triggering: {name}")
             # Log prompt preview if available
             if args:
                 try:
-                    preview = self._redact_prompt(str(args[0])[:120].replace('\n', ' '))
+                    preview = str(args[0])[:120].replace('\n', ' ')
                     print(f"   -> Prompt: {preview}...")
                 except: pass
             
@@ -279,62 +243,58 @@ async def run_mission(target_scope: str = "agentic_core"):
         print("   -> Execution halted to prevent 'Dry Run' silence.")
         sys.exit(1)
 
-    # [AGENTIC UNLEASH] CHECK UNLEASHED MODE
-    if os.getenv("GEMINI_UNLEASHED", "0") == "1":
-        print("\n[🚀 UNLEASHED MODE] Maximum agentic capabilities engaged!")
-        try:
-            import google.generativeai as genai
-            from google.generativeai.types import HarmCategory, HarmBlockThreshold
+    # [AGENTIC UNLEASH] EXPLICIT CLIENT CONSTRUCTION
+    try:
+        import google.generativeai as genai
+        from google.generativeai.types import HarmCategory, HarmBlockThreshold
 
-            api_key = os.getenv("GEMINI_API_KEY")
-            genai.configure(api_key=api_key)
-            
-            # [UNLEASHED CONFIG] Maximum Creativity & Capacity
-            generation_config = {
-                "temperature": float(os.getenv("GEMINI_TEMPERATURE", "1.0")),   # Transformative fixes
-                "top_p": float(os.getenv("GEMINI_TOP_P", "0.99")),
-                "top_k": int(os.getenv("GEMINI_TOP_K", "64")),
-                "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "32768")), # Full-file rewrites
-            }
+        api_key = os.getenv("GEMINI_API_KEY")
+        genai.configure(api_key=api_key)
+        
+        # [UNLEASHED CONFIG] Maximum Creativity & Capacity
+        generation_config = {
+            "temperature": float(os.getenv("GEMINI_TEMPERATURE", "1.0")),   # Transformative fixes
+            "top_p": float(os.getenv("GEMINI_TOP_P", "0.99")),
+            "top_k": int(os.getenv("GEMINI_TOP_K", "64")),
+            "max_output_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "32768")), # Full-file rewrites
+        }
 
-            # [NO HANDCUFFS] Disable Safety Filters
-            safety_settings = [
-                {"category": HarmCategory.HARM_CATEGORY_HARASSMENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-                {"category": HarmCategory.HARM_CATEGORY_HATE_SPEECH, "threshold": HarmBlockThreshold.BLOCK_NONE},
-                {"category": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-                {"category": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
-            ]
+        # [NO HANDCUFFS] Disable Safety Filters
+        safety_settings = [
+            {"category": HarmCategory.HARM_CATEGORY_HARASSMENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
+            {"category": HarmCategory.HARM_CATEGORY_HATE_SPEECH, "threshold": HarmBlockThreshold.BLOCK_NONE},
+            {"category": HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, "threshold": HarmBlockThreshold.BLOCK_NONE},
+            {"category": HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, "threshold": HarmBlockThreshold.BLOCK_NONE},
+        ]
 
-            model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
-            gemini_model = genai.GenerativeModel(
-                model_name=model_name,
-                generation_config=generation_config,
-                safety_settings=safety_settings
-            )
-
-            # Initialize Engine with PRE-BUILT client
-            _real_engine = SubAtomicEngine(gemini_client=gemini_model)
-            subatomic_engine = GeminiSpy(_real_engine)
-            
-            print(f"   [OK] AGENTIC UNLEASHED: {model_name} | Temp: {generation_config['temperature']} | Tokens: {generation_config['max_output_tokens']}")
-            print(f"   [OK] SAFETY FILTERS: DISABLED (BLOCK_NONE)")
-            print(f"   [OK] TELEMETRY: GEMINI SPY ACTIVE")
-
-        except Exception as e:
-            print(f"[CRITICAL] Failed to unleash Gemini: {e}")
+        model_name = os.getenv("GEMINI_MODEL")
+        if not model_name:
+            print("\n[CRITICAL] GEMINI_MODEL not set in .env!")
+            print("   -> Add GEMINI_MODEL=gemini-2.5-flash to your .env file")
             sys.exit(1)
-    else:
-        # Standard mode with safety constraints
-        _real_engine = SubAtomicEngine()
+        gemini_model = genai.GenerativeModel(
+            model_name=model_name,
+            generation_config=generation_config,
+            safety_settings=safety_settings
+        )
+
+        # Initialize Engine with PRE-BUILT client
+        _real_engine = SubAtomicEngine(gemini_client=gemini_model)
+        # Wrap in Spy for Visibility
         subatomic_engine = GeminiSpy(_real_engine)
-        print(f"   [OK] Standard Mode: Safety constraints active")
-    
+        
+        print(f"   [OK] AGENTIC UNLEASHED: {model_name} | Temp: {generation_config['temperature']} | Tokens: {generation_config['max_output_tokens']}")
+        print(f"   [OK] SAFETY FILTERS: DISABLED (BLOCK_NONE)")
+        print(f"   [OK] TELEMETRY: GEMINI SPY ACTIVE")
+
+    except Exception as e:
+        print(f"[CRITICAL] Failed to unleash Gemini: {e}")
+        sys.exit(1)
+
     # 2. Initialize Fission Logic with HIGH threshold to validate all files
     # Set to 10000 to effectively disable fission and validate everything
     fission_mgr = FissionManager(line_limit=10000, max_rounds=3)
     
-    print(f"   [OK] SubAtomicEngine active (Model: {os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')})")
-    print(f"   [OK] GeminiSpy Telemetry: ON")
     print(f"   [OK] SafetyGuardrail active (Limit: 110 lines)")
     
     # === INITIALIZE CONTEXT (MOVED UP FOR SAFETY) ===
