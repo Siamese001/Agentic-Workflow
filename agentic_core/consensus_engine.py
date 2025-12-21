@@ -65,12 +65,17 @@ class ConsensusEngine:
         # Access class constant using ClassName.CONSTANT_NAME for clarity.
         model_config = ConsensusEngine.MODEL_CHECK_CONFIG.get(model_name)
 
-        if model_config:
-            for keyword in model_config["keywords"]:
-                if keyword in artifact_lower:
-                    return {"verdict": "NO", "reason": model_config["reason"]}
+        # If model_config is not found, or no specific issues are detected,
+        # default to "YES" verdict. This reduces nesting.
+        if not model_config:
+            return {"verdict": "YES", "reason": "Compliance verified."}
 
-        # If no specific issues found for the model, or model not in config
+        # If model_config exists, check for model-specific keywords
+        for keyword in model_config["keywords"]:
+            if keyword in artifact_lower:
+                return {"verdict": "NO", "reason": model_config["reason"]}
+
+        # If model_config exists but no keywords were found in the artifact
         return {"verdict": "YES", "reason": "Compliance verified."}
 
     def _check_critical_violation(self, artifact_lower: str) -> bool:

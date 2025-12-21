@@ -34,21 +34,25 @@ class SafetyInspector(SubAtomicAgent):
 
         self.ctx.signal_secure()
 
+    def _check_content_for_secret_patterns(self, content: str, patterns: List[str]) -> bool:
+        """Helper to check if file content contains any secret patterns."""
+        for pattern in patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                return True
+        return False
+
     def _find_secret_violations_in_file(self, fp: str, patterns: List[str]) -> List[str]:
         """Helper to find hardcoded secrets in a single file."""
-        file_violations = []
         try:
             with open(fp, "r", encoding="utf-8") as f:
                 content = f.read()
-                for pattern in patterns:
-                    if re.search(pattern, content, re.IGNORECASE):
-                        file_violations.append(fp)
-                        break
+                if self._check_content_for_secret_patterns(content, patterns):
+                    return [fp]
         except Exception:
             # Log the error if necessary, but for now, just skip the file
             # print(f"Error reading file {fp}: {e}")
             pass
-        return file_violations
+        return []
 
     def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
         """

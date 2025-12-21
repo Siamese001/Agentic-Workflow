@@ -111,6 +111,18 @@ class SystemArchitect(SubAtomicAgent):
         passed_50, details_50 = self.check_key_50_law_of_void()
         self.ctx.report(self.name, 50, passed_50, details_50)
 
+    def _parse_python_file(self, file_path: str) -> Optional[ast.AST]:
+        """Helper to safely parse a Python file into an AST."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                return ast.parse(f.read(), filename=file_path)
+        except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
+            print(
+                f"Warning: Could not parse {file_path} for check: {e}",
+                file=sys.stderr
+            )
+            return None
+
     def _check_tree_for_metaclasses(self, tree: ast.AST, file_path: str) -> List[str]:
         """
         Helper method to check an AST tree for metaclass definitions.
@@ -136,19 +148,9 @@ class SystemArchitect(SubAtomicAgent):
         """
         metaclass_violations = []
         for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    # Add filename for better error messages from ast.parse
-                    tree = ast.parse(f.read(), filename=file_path)
-                # Delegate the tree traversal and violation finding to the helper
+            tree = self._parse_python_file(file_path)
+            if tree:
                 metaclass_violations.extend(self._check_tree_for_metaclasses(tree, file_path))
-            except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-                # Log a warning for files that cannot be parsed, but continue processing others.
-                print(
-                    f"Warning: Could not parse {file_path} for metaclass check: {e}",
-                    file=sys.stderr
-                )
-                continue
         
         return len(metaclass_violations) == 0, metaclass_violations
 
@@ -165,22 +167,14 @@ class SystemArchitect(SubAtomicAgent):
         """
         MAX_NESTING_DEPTH = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         violations = []
-        # NESTERS is now a class attribute of NestVisitor, so it's removed from here.
 
         for fp in self.ctx.python_files:
-            try:
-                with open(fp, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=fp)
+            tree = self._parse_python_file(fp)
+            if tree:
                 # Instantiate the module-level NestVisitor
                 visitor = NestVisitor(fp, MAX_NESTING_DEPTH) 
                 visitor.visit(tree)
                 violations.extend(visitor.violations_in_file)
-            except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-                print(
-                    f"Warning: Could not parse {fp} for nesting check: {e}",
-                    file=sys.stderr
-                )
-                continue
         return len(violations) == 0, violations
 
     def check_key_49_directory_depth(self) -> Tuple[bool, List[str]]:
@@ -212,22 +206,20 @@ class SystemArchitect(SubAtomicAgent):
                 warnings.append(f"{file_path} (Depth 1 — move to package recommended)")
         return len(violations) == 0, violations + warnings
 
+    def _has_definitions_in_tree(self, ast_tree: ast.AST) -> bool:
+        """Helper to check if an AST tree contains class or function definitions."""
+        for node in ast_tree.body:
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                return True
+        return False
+
     def _check_file_for_definitions(self, file_path: str) -> bool:
         """Helper to check if a file contains class or function definitions."""
-        try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                ast_tree = ast.parse(content, filename=file_path)
-                for node in ast_tree.body:
-                    if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                        return True
-            return False
-        except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-            print(
-                f"Warning: Could not parse {file_path} for Law of Void check: {e}",
-                file=sys.stderr
-            )
-            return True # Treat unparseable as a violation for safety
+        tree = self._parse_python_file(file_path)
+        if tree:
+            return self._has_definitions_in_tree(tree)
+        # Treat unparseable as a violation for safety if parsing failed
+        return True 
 
     def check_key_50_law_of_void(self) -> Tuple[bool, List[str]]:
         """
@@ -275,6 +267,21 @@ class HealerAgent(SubAtomicAgent):
             # to ensure it's flagged and potentially retried.
             return True, SyntaxError(f"File unreadable/undecodable: {e}")
 
+    def _scan_for_syntax_errors(self) -> List[Tuple[str, Optional[SyntaxError]]]:
+        """Helper to scan all Python files for syntax errors."""
+        syntax_errors = []
+        for file_path in self.ctx.python_files:
+            if not is_excluded(file_path):
+                has_error, error_obj = self._check_file_for_syntax_error(file_path)
+                if has_error:
+                    syntax_errors.append((file_path, error_obj))
+        return syntax_errors
+
+    async def _attempt_fix_single_file(self, file_path: str, error) -> bool:
+        """Helper to attempt fixing a single file and return success status."""
+        print(f"      [SCAN] Fixing {file_path}:{error.lineno} – {error.msg}")
+        return await self.smart_fix(file_path, 48)
+
     async def execute(self):
         """
         Executes the HealerAgent's repair process, attempting to fix syntax errors
@@ -289,14 +296,7 @@ class HealerAgent(SubAtomicAgent):
 
         while any_file_healed_in_current_round and round_num < self.MAX_HEALING_ROUNDS:
             round_num += 1
-            syntax_errors_found_this_round = []
-            
-            # Re-scan all python files for syntax errors in each round
-            for file_path in self.ctx.python_files:
-                if not is_excluded(file_path):
-                    has_error, error_obj = self._check_file_for_syntax_error(file_path)
-                    if has_error:
-                        syntax_errors_found_this_round.append((file_path, error_obj))
+            syntax_errors_found_this_round = self._scan_for_syntax_errors()
 
             if not syntax_errors_found_this_round:
                 any_file_healed_in_current_round = False  # No errors found, stop healing attempts
@@ -304,13 +304,12 @@ class HealerAgent(SubAtomicAgent):
 
             print(f"   [ALERT] Round {round_num}: Found {len(syntax_errors_found_this_round)} Syntax Blockers. Healing...")
             
-            # Reset flag for the current round
-            any_file_healed_in_current_round = False 
-            for file_path, error in syntax_errors_found_this_round:
-                print(f"      [SCAN] Fixing {file_path}:{error.lineno} – {error.msg}")
-                success = await self.smart_fix(file_path, 48)
-                if success:
-                    any_file_healed_in_current_round = True  # At least one file was fixed
+            # Collect results of fixes
+            fix_results = [
+                await self._attempt_fix_single_file(file_path, error)
+                for file_path, error in syntax_errors_found_this_round
+            ]
+            any_file_healed_in_current_round = any(fix_results)
 
         # After all healing rounds, perform a final check for any remaining syntax errors
         remaining_syntax_errors = []
@@ -342,6 +341,42 @@ class GenerativeGuard(SubAtomicAgent):
         r"\_copy\_\d+",     # e.g., `my_file_copy_1.py`
     ]
 
+    def _purge_single_file(self, file_path: str):
+        """Helper to attempt purging a single file and report."""
+        try:
+            os.remove(file_path)
+            print(f"         DELETED: {file_path}")
+        except OSError as e:
+            print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
+
+    def _process_found_violations(self, violations: List[str]):
+        """Helper to process and optionally purge detected runaway files."""
+        print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
+        self.ctx.report(self.name, 45, False, violations)
+
+        purge_runaway = "--purge-runaway" in sys.argv
+        if not purge_runaway:
+            self.ctx.signals.add("GENERATIVE_FAIL")
+            print("      Hint: Run with '--purge-runaway' to delete these files.")
+        else:
+            print("      🗑️  Purging runaway generated files...")
+            for file_path in violations:
+                self._purge_single_file(file_path)
+            self.ctx.signals.add("GENERATIVE_CLEAN")
+
+    def _find_runaway_violations_in_dir(self, root: str, files: List[str]) -> List[str]:
+        """Helper to find runaway violations within a specific directory."""
+        violations_in_dir = []
+        for file in files:
+            file_path = os.path.join(root, file)
+            normalized_file_path = Path(file_path).as_posix() 
+            
+            for pattern in self.GENERATIVE_PATTERNS:
+                if re.search(pattern, normalized_file_path):
+                    violations_in_dir.append(file_path)
+                    break
+        return violations_in_dir
+
     def execute(self):
         """
         Executes the GenerativeGuard's check for runaway generated files.
@@ -356,34 +391,10 @@ class GenerativeGuard(SubAtomicAgent):
         for root, dirs, files in os.walk(project_root):
             # Modify dirs in-place to exclude specified directories from traversal
             dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
-            for file in files:
-                file_path = os.path.join(root, file)
-                # Normalize path to use forward slashes for consistent pattern matching across OS
-                normalized_file_path = Path(file_path).as_posix() 
-                
-                for pattern in self.GENERATIVE_PATTERNS:
-                    if re.search(pattern, normalized_file_path):
-                        violations.append(file_path)  # Store original path for reporting/deletion
-                        break  # Found a pattern, no need to check other patterns for this file
+            violations.extend(self._find_runaway_violations_in_dir(root, files))
 
         if violations:
-            print(f"   🛑 RUNAWAY GENERATION DETECTED ({len(violations)} files).")
-            self.ctx.report(self.name, 45, False, violations)
-
-            # Check for --purge-runaway argument in sys.argv
-            purge_runaway = "--purge-runaway" in sys.argv
-            if not purge_runaway:
-                self.ctx.signals.add("GENERATIVE_FAIL")
-                print("      Hint: Run with '--purge-runaway' to delete these files.")
-            else:
-                print("      🗑️  Purging runaway generated files...")
-                for file_path in violations:
-                    try:
-                        os.remove(file_path)
-                        print(f"         DELETED: {file_path}")
-                    except OSError as e:  # Catch specific OS errors for file operations
-                        print(f"         [X] Failed to delete {file_path}: {e}", file=sys.stderr)
-                self.ctx.signals.add("GENERATIVE_CLEAN")  # Signal clean even if some failed to delete
+            self._process_found_violations(violations)
         else:
             print("   [OK] No runaway generation detected.")
             self.ctx.report(self.name, 45, True, [])

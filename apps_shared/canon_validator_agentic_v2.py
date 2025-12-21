@@ -170,14 +170,10 @@ async def run_mission(target_scope: str = "agentic_core"):
         )
         web_thread.start()
         print(f"   [OK] Web Dashboard: http://localhost:5000")
+        print(f"   [!] Terminal Dashboard: Disabled (blocks execution)")
         
-        # Start terminal dashboard in background
-        dashboard_thread = threading.Thread(
-            target=dashboard.run_live,
-            daemon=True
-        )
-        dashboard_thread.start()
-        print(f"   [OK] Terminal Dashboard: Active")
+        # Note: Terminal dashboard disabled because run_live() blocks the main thread
+        # Use web dashboard at http://localhost:5000 for real-time monitoring
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
@@ -357,6 +353,12 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         # Update dashboard with current file
         if dashboard_metrics:
             dashboard_metrics.session.current_file = file_path
+            dashboard_metrics.session.files_processed += 1
+            dashboard_metrics.add_activity(
+                "file_start",
+                f"Processing {file_name}",
+                {"file": file_path, "loc": loc_count}
+            )
 
         # --- ACTIVE FISSION TRIGGER (Files > 200 Lines) ---
         if loc_count > 200:
@@ -407,6 +409,14 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         
         for agent in file_validators:
             try:
+                # Track agent start
+                if dashboard_metrics:
+                    dashboard_metrics.add_activity(
+                        "agent_start",
+                        f"{agent.__class__.__name__} checking {file_name}",
+                        {"agent": agent.__class__.__name__, "file": file_path}
+                    )
+                
                 method = getattr(agent, 'execute', getattr(agent, 'run', None))
                 if method:
                     # Introspection to handle arguments safely
@@ -423,6 +433,11 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             file_reports = [r for r in ctx.report if file_name in str(r)]
             file_passed = len([r for r in file_reports if r.get('status') == 'FAIL']) == 0
             dashboard_metrics.update_file_progress(file_path, "passed" if file_passed else "failed")
+            dashboard_metrics.add_activity(
+                "file_complete",
+                f"Completed {file_name}",
+                {"file": file_path, "status": "passed" if file_passed else "failed"}
+            )
     
     # ===========================================================================
     # [ENHANCEMENT 3] GLOBAL MONITORING (Run ONCE at End)

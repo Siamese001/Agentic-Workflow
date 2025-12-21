@@ -38,18 +38,31 @@ class FileIO:
         try:
             with open(file_path, 'rb') as f:
                 reader = PyPDF2.PdfReader(f)
-                if not reader.pages:
-                    return f"Warning: PDF file '{file_path}' has no pages or content."
-                extracted_texts = [
-                    page.extract_text() for page in reader.pages if page.extract_text()
-                ]
-                return "\n".join(extracted_texts)
+                return self._extract_pdf_pages_text(reader, file_path)
         except PyPDF2.errors.PdfReadError as e:
             return f"Read Error (PDF): Could not read PDF file '{file_path}'. {e}"
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
         except Exception as e:
             return f"Read Error (PDF Unexpected): {e}"
+
+    def _extract_pdf_pages_text(self, reader, file_path: str) -> str:
+        """
+        Extracts text content from PDF reader pages.
+
+        Args:
+            reader: The PyPDF2.PdfReader object.
+            file_path (str): The path to the PDF file (for error messages).
+
+        Returns:
+            str: The extracted text content from the PDF or a warning message.
+        """
+        if not reader.pages:
+            return f"Warning: PDF file '{file_path}' has no pages or content."
+        extracted_texts = [
+            page.extract_text() for page in reader.pages if page.extract_text()
+        ]
+        return "\n".join(extracted_texts)
 
     def _read_text_file(self, file_path: str) -> str:
         """
