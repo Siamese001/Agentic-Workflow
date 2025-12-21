@@ -112,10 +112,13 @@ class GeminiSpy:
             try:
                 result = attr(*args, **kwargs)
                 duration = time.time() - start_t
-                print(f"[👀 GEMINI SPY] ✅ Success ({duration:.2f}s). Signal received.")
+                print(f"[👀 GEMINI SPY] ✅ LLM Success ({duration:.2f}s).")
                 return result
             except Exception as e:
-                print(f"[👀 GEMINI SPY] ❌ FAILURE: {e}")
+                # Log detailed failure for debugging telemetry mismatches
+                print(f"[👀 GEMINI SPY] ❌ LLM OR TELEMETRY FAILURE: {e}")
+                if "successful_traces" in str(e):
+                    print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
                 raise e
         return wrapper
 
@@ -363,6 +366,11 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # Harden Attributes (The "AttributeError" Fix)
     ctx.report = CallableReport(getattr(ctx, 'report', []))
+    
+    # [FIX] Initialize missing telemetry structures for SubAtomicEngine
+    if not hasattr(ctx, 'successful_traces'): ctx.successful_traces = []
+    if not hasattr(ctx, 'failed_traces'): ctx.failed_traces = []
+    
     if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
     if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
     if not hasattr(ctx, 'signals'): ctx.signals = set()
@@ -652,28 +660,23 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                 try:
                     method = getattr(agent, 'execute', getattr(agent, 'run', None))
                     if method:
-                        # Track if agent made changes (some agents return True/dict when they fix things)
                         result = None
+                        # Attempt execution with path-awareness
                         try:
-                            if method.__code__.co_argcount > 1:
-                                result = await method(file_path)
-                            else:
-                                result = await method()
-                        except AttributeError:
-                            # Fallback for decorated methods that don't expose __code__
-                            # Try calling with file_path first, then without
-                            try:
-                                result = await method(file_path)
-                            except TypeError:
-                                result = await method()
+                            result = await method(file_path)
+                        except TypeError:
+                            result = await method()
                         
-                        # Count actual changes/healing actions
+                        # Detect successful healing signals
                         if result is True or (isinstance(result, dict) and result.get('healed')):
                             changes_this_round += 1
                             file_healed = True
                             
                 except Exception as e:
-                    ctx.report(agent.__class__.__name__, 0, False, f"Exec Error: {str(e)[:50]}")
+                    # [CRITICAL] Ensure the round cannot converge if an agent is crashing
+                    error_msg = f"FATAL CRASH [{agent.__class__.__name__}]: {str(e)}"
+                    print(f"\n   [!] {error_msg}")
+                    ctx.report(agent.__class__.__name__, 0, False, error_msg)
                     violations_this_round += 1
             
             # Check for convergence (no new violations in this round)
