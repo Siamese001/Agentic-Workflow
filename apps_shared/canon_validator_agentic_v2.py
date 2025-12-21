@@ -225,15 +225,19 @@ async def run_mission(target_scope: str = "agentic_core"):
         """Hybrid report: Acts as list for append() AND callable for ctx.report()"""
         def __init__(self, initial_list=None):
             super().__init__(initial_list or [])
+            self._current_round = 1
 
         def __call__(self, agent_name: str, key_num: int, passed: bool, details: str = ""):
             status = "PASS" if passed else "FAIL"
-            self.append({
+            entry = {
                 "agent": agent_name,
                 "key": key_num,
                 "status": status,
-                "msg": str(details)
-            })
+                "msg": str(details),
+                "timestamp": __import__('datetime').datetime.now().isoformat(),
+                "round": self._current_round
+            }
+            self.append(entry)
             
             # Forward to dashboard metrics
             if dashboard_metrics and hasattr(ctx, 'python_files'):
@@ -296,36 +300,61 @@ async def run_mission(target_scope: str = "agentic_core"):
             print(f"      • {folder}: {count} files")
     
     # ===========================================================================
-    # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Agent Loading & Surgeon Prompt
+    # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Dynamic Agent Discovery
     # ===========================================================================
     cleaning_crew = []
-    # Load ALL agents for comprehensive 50-key validation
-    agent_modules = [
-        ('agentic_core.agents.system_architect', 'SystemArchitect'),
-        ('agentic_core.agents.structural_engineer', 'StructuralEngineer'),
-        ('agentic_core.agents.healer_agent', 'HealerAgent'),
-        ('agentic_core.agents.quality', 'HygieneGuardian'),
-        ('agentic_core.agents.governance', 'ArchitectureGovernor'),
-        ('agentic_core.agents.governance', 'DependencySentinel'),
-        ('agentic_core.agents.security', 'SecurityEnforcer'),
-        ('agentic_core.agents.memory_architect', 'MemoryArchitect'),
-        ('agentic_core.agents.hallucination_hunter', 'HallucinationHunter'),
-    ]
     
-    print(f"   [COMPREHENSIVE MODE] Loading {len(agent_modules)} agents for ALL 50 keys")
-    print(f"   [COMPREHENSIVE MODE] Fission disabled - validating files of all sizes")
-    print(f"   [COMPREHENSIVE MODE] LLM healing enabled for all violations")
-    print(f"   [WARNING] This will take HOURS to complete!\n")
+    def discover_agents(base_package="agentic_core.agents"):
+        """Scans the agents directory and loads all Agent classes dynamically."""
+        found_agents = []
+        agents_dir = project_root / "agentic_core" / "agents"
+        
+        if not agents_dir.exists():
+            print(f"   [!] Agents directory not found: {agents_dir}")
+            return []
+
+        print(f"   [DISCOVERY] Scanning {agents_dir} for agents...")
+        
+        for file_path in agents_dir.rglob("*.py"):
+            if file_path.name.startswith("__") or "__pycache__" in str(file_path):
+                continue
+            
+            # Convert file path to module path
+            rel_path = file_path.relative_to(project_root)
+            module_name = str(rel_path).replace(os.sep, ".")[:-3]  # Strip .py
+            
+            try:
+                module = importlib.import_module(module_name)
+                # Inspect module for classes that look like Agents
+                for attr_name in dir(module):
+                    attr = getattr(module, attr_name)
+                    # Filter: Must be a class, defined in this module, and have execute/run method
+                    # Naming heuristic: ends with 'Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter'
+                    if (isinstance(attr, type) and 
+                        attr.__module__ == module_name and
+                        (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter')) or
+                         attr_name in ('SystemArchitect', 'StructuralEngineer', 'HealerAgent', 'HygieneGuardian', 'ArchitectureGovernor', 
+                                     'DependencySentinel', 'SecurityEnforcer', 'MemoryArchitect', 'HallucinationHunter')) and
+                        (hasattr(attr, 'execute') or hasattr(attr, 'run'))):
+                        found_agents.append((module_name, attr_name, attr))
+            except Exception as e:
+                print(f"     [!] Failed to inspect {file_path.name}: {e}")
+                
+        return found_agents
+
+    # Execute Discovery
+    discovered = discover_agents()
+    print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} agents via dynamic discovery")
+    print(f"   [CONFIG] Fission Threshold: 10,000 LOC | Healing: Iterative Loop")
     
-    print(f"   [LOAD] Attempting to load {len(agent_modules)} agents...")
-    for module_path, class_name in agent_modules:
+    for mod_name, cls_name, cls_ref in discovered:
         try:
-            module = importlib.import_module(module_path)
-            agent_class = getattr(module, class_name)
-            cleaning_crew.append(agent_class(ctx))
-            print(f"     + Loaded {class_name}")
+            # Instantiate with context
+            agent_instance = cls_ref(ctx)
+            cleaning_crew.append(agent_instance)
+            print(f"     [+] Active: {cls_name}")
         except Exception as e:
-            print(f"     [!] Load Error {class_name}: {e}")
+            print(f"     [!] Failed to instantiate {cls_name}: {e}")
 
     # --- CRITICAL SAFETY CHECK ---
     if not cleaning_crew:
@@ -380,9 +409,16 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         method = getattr(agent, 'execute', getattr(agent, 'run', None))
         if method:
             # Check if method takes 'file_path' argument (excluding self)
-            if method.__code__.co_argcount > 1:
-                atomic_validators.append(agent)
-            else:
+            # Hardened against methods that might not expose __code__ (e.g. C-extensions or functools.partial)
+            try:
+                arg_count = method.__code__.co_argcount
+                if arg_count > 1:
+                    atomic_validators.append(agent)
+                else:
+                    batch_validators.append(agent)
+            except AttributeError:
+                # Fallback: Assume Atomic if name implies it, otherwise Batch
+                print(f"     [?] Could not introspect {name}. Defaulting to Batch.")
                 batch_validators.append(agent)
         else:
             print(f"   [!] Agent {name} has no execute/run method.")
@@ -460,22 +496,64 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             ctx.results[file_name] = {"action": "FISSION_ATTEMPTED_FALLBACK", "loc": loc_count}
             # Remove 'continue' to allow standard validation on large files if fission fails
 
-        # --- ATOMIC AGENT EXECUTION ---
-        # Store applicable keys in context for agents to filter
+        # --- ATOMIC AGENT EXECUTION (ITERATIVE HEALING LOOP) ---
         ctx.current_file_applicable_keys = applicable_keys
+        MAX_HEALING_ROUNDS = 3
+        file_healed = False
         
-        for agent in atomic_validators:
-            try:
-                method = getattr(agent, 'execute', getattr(agent, 'run', None))
-                # Introspection to handle arguments safely - redundant check but safe
-                if method:
-                    if method.__code__.co_argcount > 1:
-                        await method(file_path)
-                    else:
-                        # Fallback for incorrectly categorized agents
-                        await method()
-            except Exception as e:
-                ctx.report(agent.__class__.__name__, 0, False, f"Exec Error: {str(e)[:50]}")
+        print(f"\n   [HEALING] Starting iterative validation for {file_name}")
+        
+        for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
+            violations_this_round = 0
+            changes_this_round = 0
+            
+            # Update round tracking in reports
+            ctx.report._current_round = round_idx
+            
+            print(f"     Round {round_idx}/{MAX_HEALING_ROUNDS}...", end=' ')
+            
+            for agent in atomic_validators:
+                try:
+                    method = getattr(agent, 'execute', getattr(agent, 'run', None))
+                    if method:
+                        # Track if agent made changes (some agents return True/dict when they fix things)
+                        result = None
+                        try:
+                            if method.__code__.co_argcount > 1:
+                                result = await method(file_path)
+                            else:
+                                result = await method()
+                        except AttributeError:
+                            # Fallback for decorated methods that don't expose __code__
+                            # Try calling with file_path first, then without
+                            try:
+                                result = await method(file_path)
+                            except TypeError:
+                                result = await method()
+                        
+                        # Count actual changes/healing actions
+                        if result is True or (isinstance(result, dict) and result.get('healed')):
+                            changes_this_round += 1
+                            file_healed = True
+                            
+                except Exception as e:
+                    ctx.report(agent.__class__.__name__, 0, False, f"Exec Error: {str(e)[:50]}")
+                    violations_this_round += 1
+            
+            # Check for convergence (no new violations in this round)
+            # Get current report entries for this file and round
+            current_round_reports = [r for r in ctx.report if file_name in str(r) and r.get('round', 1) == round_idx]
+            fail_count = len([r for r in current_round_reports if r.get('status') == 'FAIL'])
+            
+            print(f"Changes: {changes_this_round} | Violations: {fail_count}")
+            
+            # If no violations and we're past round 1, we've converged
+            if fail_count == 0 and round_idx > 1:
+                print(f"     [] Converged after {round_idx-1} rounds")
+                break
+        
+        if file_healed:
+            print(f"   [HEALING] Complete: {file_name}")
         
         # Update dashboard after file processing
         if dashboard_metrics:
@@ -484,6 +562,7 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             file_passed = len([r for r in file_reports if r.get('status') == 'FAIL']) == 0
             dashboard_metrics.update_file_progress(file_path, "passed" if file_passed else "failed")
     
+    # ... (rest of the code remains the same)
     # ===========================================================================
     # PHASE 2: BATCH SWEEP (Cross-File / Full Scope Validation)
     # ===========================================================================
@@ -624,3 +703,4 @@ if __name__ == "__main__":
         print(f"\n[X] Mission timed out after {MISSION_TIMEOUT}s")
     except Exception as e:
         print(f"\n[X] Mission failed: {e}")
+        traceback.print_exc()
