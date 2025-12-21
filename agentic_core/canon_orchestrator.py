@@ -1,7 +1,3 @@
-The provided Python code is already very well-structured and adheres to most syntax and style guidelines. The primary adjustment needed is to conform to PEP 8's recommendation of two blank lines before top-level class definitions.
-
-Here's the fixed code with that minor style adjustment:
-
 """
 Canon Validator Intelligent Orchestrator
 
@@ -28,7 +24,7 @@ from agentic_core.canon_agents_structural import (
     TypeMechanic,
 )
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
-from apps_shared.canon_validation_context import ValidationContext
+from agentic_core.shared.canon_validation_context import ValidationContext
 
 
 class IntelligentOrchestrator:
