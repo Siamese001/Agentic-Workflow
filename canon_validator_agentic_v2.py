@@ -135,10 +135,17 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     """
     print(f"\n[*] L6 PRE-FLIGHT: Enforcing Void Compliance on {target_sector}...")
     
+    # Cross-reference with IDE Rules
+    rules_path = project_root / "windsurfrules.md"
+    if rules_path.exists():
+        print(f"   [INFO] Synchronization active: windsurfrules.md detected.")
+    
     target_path = Path(target_sector).resolve()
     
-    # Check 1: Single-Child Antipattern Detection
-    single_child_violations = check_single_child_violations(target_path if target_path.is_dir() else project_root)
+    # Check 1: Single-Child Antipattern Detection (Ignore project root)
+    single_child_violations = []
+    if target_path != project_root:
+        single_child_violations = check_single_child_violations(target_path if target_path.is_dir() else project_root)
     if single_child_violations:
         print(f"[!] L6 ALERT: Found {len(single_child_violations)} single-child antipatterns:")
         for folder_path, reason in single_child_violations[:3]:

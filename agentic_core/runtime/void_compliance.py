@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 ALLOWED_ROOT_FOLDERS = {
     # [L1: THE BRAIN]
+    # NOTE: Root-level files (e.g., canon_validator_*.py, pyproject.toml, README.md) 
+    #       are allowed separately via validate_file_location() logic for Key 0.
     "agentic_core",
     
     # [L1: THE LAW]
@@ -138,11 +140,16 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
     try:
         # Get relative path from project root
         rel_path = file_path.relative_to(project_root)
-        root_folder = rel_path.parts[0] if rel_path.parts else ""
         
-        # Check if in allowed folder
+        # Special Case: Root-level files are explicitly allowed (Key 0: Global Config, Orchestrator, Law)
+        if len(rel_path.parts) == 1 and (file_path.is_file() or file_path.name == "windsurfrules.md"):
+            return True, "Root-level file allowed (Key 0 compliance: global config/orchestrator)"
+
+        # Nested files: Must belong to an approved root folder
+        root_folder = rel_path.parts[0]
+        
         if root_folder in ALLOWED_ROOT_FOLDERS:
-            return True, f"File in allowed folder: {root_folder}"
+            return True, f"File in allowed root folder: {root_folder}"
         
         # Check if in forbidden folder
         if root_folder in FORBIDDEN_ROOT_FOLDERS:
@@ -152,8 +159,12 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
             return False, f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)"
         
+        # SOVEREIGN PROTECTION: Ensure Validator hasn't leaked into Infra
+        if root_folder == "apps_shared" and "validator" in file_path.name.lower():
+            return False, "GRAVITY ERROR: Validator must remain at Root (Key 0). Do not hide the General in apps_shared."
+        
         # Unknown folder
-        return False, f"VOID VIOLATION: File in unknown folder '{root_folder}' (not in ALLOWED_ROOT_FOLDERS)"
+        return False, f"VOID VIOLATION: File in unknown/disallowed root folder '{root_folder}'"
         
     except ValueError:
         # File is outside project root

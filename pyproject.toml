@@ -18,6 +18,7 @@ line-length = 100
 target-version = ['py310']
 include = '\.pyi?$'
 # VOID ENFORCEMENT: Exclude non-canon or state-heavy folders
+# Root-level files (Key 0) are included by default.
 exclude = '''
 /(
     \.git
@@ -27,34 +28,40 @@ exclude = '''
   | dist
   | archives
   | data
+  | cache
+  | .pytest_cache
+  | __pycache__
 )/
 '''
 
 [tool.isort]
 profile = "black"
 # PHYSICAL BOUNDARY: Separate Core Sovereign from App Domains
-known_first_party = ["agentic_core", "prompt_governance", "schemas", "apps_shared"]
+known_first_party = ["agentic_core", "prompt_governance", "schemas", "apps_shared", "config"]
 known_third_party = ["apps_rg", "apps_lic"]
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-# [L6] CUSTOM VOID ATTRIBUTES (For HierarchyLinter)
+# [L6] VOID PHYSICS ENGINE (ASCII Alignment)
 [tool.void]
 allowed_roots = [
-    "agentic_core",
-    "prompt_governance",
-    "schemas",
-    "apps_shared",
-    "apps_rg",
-    "apps_lic",
-    "tests",
-    "config",
-    "observability"
+    "agentic_core",      # Brain (Keys 40-42)
+    "prompt_governance", # Law (Keys 11-30)
+    "schemas",           # Contracts (Keys 31-39)
+    "apps_shared",       # Infra
+    "apps_rg",           # Domain A
+    "apps_lic",          # Domain B
+    "tests",             # QA (Key 47)
+    "config",            # Settings (Keys 1-10)
+    "observability",     # Telemetry (Keys 48-50)
+    "scripts"            # Labor (Key 46)
 ]
 max_file_lines = 200
 enforce_waterfall = true
+enforce_key_0_at_root = true
+rules_file = "windsurfrules.md"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
