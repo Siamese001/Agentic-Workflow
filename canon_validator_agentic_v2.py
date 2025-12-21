@@ -686,6 +686,120 @@ CURRENT CODE:
     print("-" * 70)
 
     # ===========================================================================
+    # [PHASE 0.5] SPRAWL CONSOLIDATION - ARCHITECTURAL FLATTENING
+    # ===========================================================================
+    print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION")
+    print(f"   [>] Checking for low-density folders and breadth violations...")
+    
+    sprawl_report_path = project_root_path / "sprawl_report.json"
+    sprawl_consolidated = 0
+    
+    if sprawl_report_path.exists():
+        try:
+            import json
+            with open(sprawl_report_path, 'r') as f:
+                sprawl_data = json.load(f)
+            
+            flattening_candidates = sprawl_data.get('flattening_candidates', [])
+            breadth_violations = sprawl_data.get('violations', [])
+            
+            print(f"   [SPRAWL] Found {len(flattening_candidates)} flattening candidates")
+            print(f"   [SPRAWL] Found {len(breadth_violations)} breadth violations")
+            
+            # Process flattening candidates
+            for candidate in flattening_candidates:
+                folder_path = Path(candidate['folder'])
+                files = candidate['files']
+                
+                if not folder_path.exists():
+                    continue
+                
+                print(f"\n   [CONSOLIDATE] {folder_path.name}: {len(files)} file(s)")
+                print(f"      Reason: {candidate['reason']}")
+                
+                # Generate consolidation plan using LLM
+                consolidation_prompt = f"""ARCHITECTURAL CONSOLIDATION TASK
+
+FOLDER: {folder_path}
+FILES: {', '.join(files)}
+REASON: {candidate['reason']}
+
+CONTEXT: This folder has low signal density ({len(files)} files) and should be consolidated.
+
+TASK: Generate a consolidation plan to merge this folder's content into its parent directory.
+
+STRATEGY:
+1. If files are small utilities, merge them into parent's utils.py or __init__.py
+2. If files are domain-specific agents, move to parent and update imports
+3. Update all import statements across the codebase
+4. Ensure no functionality is lost
+
+OUTPUT FORMAT (JSON):
+{{
+    "action": "merge" or "relocate",
+    "target_file": "path/to/target.py",
+    "merge_strategy": "append" or "integrate",
+    "import_updates": [
+        {{"from": "old.import.path", "to": "new.import.path"}}
+    ]
+}}
+
+Return ONLY valid JSON. No explanations.
+"""
+                
+                try:
+                    # Get consolidation plan from LLM
+                    plan_response = await subatomic_engine.resilient_mutation(
+                        file_path=str(folder_path),
+                        code="",
+                        task=consolidation_prompt,
+                        round_num=1,
+                        fission_active=False
+                    )
+                    
+                    # Parse JSON plan
+                    if isinstance(plan_response, str):
+                        # Extract JSON if wrapped
+                        if "```json" in plan_response:
+                            plan_response = plan_response.split("```json", 1)[1]
+                            plan_response = plan_response.split("```", 1)[0]
+                        elif "```" in plan_response:
+                            plan_response = plan_response.split("```", 1)[1]
+                            plan_response = plan_response.split("```", 1)[0]
+                        plan_response = plan_response.strip()
+                    
+                    try:
+                        plan = json.loads(plan_response)
+                        print(f"      [PLAN] Action: {plan.get('action', 'unknown')}")
+                        print(f"      [PLAN] Target: {plan.get('target_file', 'unknown')}")
+                        
+                        # Log the plan but don't execute yet (safety)
+                        ctx.report("SprawlConsolidation", 0, True, 
+                                 f"Generated plan for {folder_path.name}: {plan.get('action', 'unknown')}")
+                        sprawl_consolidated += 1
+                        
+                    except json.JSONDecodeError:
+                        print(f"      [!] Invalid JSON response from LLM")
+                        ctx.report("SprawlConsolidation", 0, False, "Invalid consolidation plan")
+                
+                except Exception as e:
+                    print(f"      [!] Consolidation planning failed: {str(e)[:100]}")
+                    ctx.report("SprawlConsolidation", 0, False, f"Planning error: {str(e)[:50]}")
+            
+            if len(flattening_candidates) > 0:
+                print(f"\n   [PHASE 0.5 COMPLETE] Generated {sprawl_consolidated}/{len(flattening_candidates)} consolidation plans")
+                print(f"   [!] Plans logged for review. Manual execution recommended for safety.")
+            else:
+                print(f"   [OK] No sprawl detected. Architecture is clean.")
+                
+        except Exception as e:
+            print(f"   [!] Could not load sprawl report: {e}")
+    else:
+        print(f"   [SKIP] No sprawl_report.json found. Run sprawl_inspector.py first.")
+    
+    print("-" * 70)
+
+    # ===========================================================================
     # PHASE 1: ATOMIC SWEEP (Per-File Validation)
     # ===========================================================================
     for idx, file_path in enumerate(ctx.python_files, 1):
