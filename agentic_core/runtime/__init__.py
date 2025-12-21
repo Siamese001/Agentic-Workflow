@@ -1,6 +1,7 @@
 """
-L6 Runtime: Self-Maintenance Layer
-Enforces project structure integrity and automated cleanup.
+L2 RUNTIME BRIDGE: KEY 46 (THE LABOR)
+=====================================
+Exposes Void Compliance and ASCII visualization tools.
 """
 
 from agentic_core.runtime.void_compliance import (
@@ -10,6 +11,7 @@ from agentic_core.runtime.void_compliance import (
     check_import_waterfall_violations,
     check_single_child_violations,
     enforce_void_compliance,
+    generate_ascii_tree,
     get_applicable_keys_for_file,
     get_folder_scope_summary,
     validate_file_location,
@@ -22,6 +24,7 @@ __all__ = [
     "check_import_waterfall_violations",
     "check_single_child_violations",
     "enforce_void_compliance",
+    "generate_ascii_tree",
     "get_applicable_keys_for_file",
     "get_folder_scope_summary",
     "validate_file_location",
