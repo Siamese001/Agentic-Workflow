@@ -266,14 +266,53 @@ def run_server(host='0.0.0.0', port=5000, debug=False):
 
 
 if __name__ == "__main__":
-    # Start with mock data for testing
-    metrics.start_session("agentic_core", 238)
+    import json
+    import os
+    from pathlib import Path
     
-    print("Populating mock data...")
-    # Simulate some activity
-    for i in range(10):
-        metrics.record_violation(f"agentic_core/file_{i}.py", 40 + (i % 10), i * 2)
-        metrics.record_healing(f"agentic_core/file_{i}.py", 40 + (i % 10), i, 1.5 + i * 0.3)
-        metrics.update_file_progress(f"agentic_core/file_{i}.py", "passed" if i % 2 == 0 else "failed")
+    # Try to load real session data from validator
+    session_file = Path("canon_session.json")
+    
+    if session_file.exists():
+        print(f"Loading real session data from {session_file}...")
+        with open(session_file, 'r') as f:
+            session_data = json.load(f)
+        
+        # Load session data into metrics
+        if session_data.get("session"):
+            sess = session_data["session"]
+            metrics.start_session(sess.get("target_folder", "agentic_core"), sess.get("total_files", 238))
+            metrics.session.start_time = sess.get("start_time")
+            metrics.session.elapsed_time = sess.get("elapsed_time", 0)
+            metrics.session.files_processed = sess.get("files_processed", 0)
+            metrics.session.files_passed = sess.get("files_passed", 0)
+            metrics.session.files_failed = sess.get("files_failed", 0)
+            metrics.session.total_violations = sess.get("total_violations", 0)
+            metrics.session.total_healed = sess.get("total_healed", 0)
+        
+        # Load key metrics
+        if session_data.get("key_metrics"):
+            for key_id, key_data in session_data["key_metrics"].items():
+                if str(key_id) in metrics.key_metrics:
+                    km = metrics.key_metrics[str(key_id)]
+                    km.files_checked = key_data.get("files_checked", 0)
+                    km.files_passed = key_data.get("files_passed", 0)
+                    km.files_failed = key_data.get("files_failed", 0)
+                    km.violations_found = key_data.get("violations_found", 0)
+                    km.violations_healed = key_data.get("violations_healed", 0)
+                    km.status = key_data.get("status", "pending")
+        
+        print("Real session data loaded successfully!")
+    else:
+        print(f"No session file found at {session_file}. Using mock data...")
+        # Fallback to mock data
+        metrics.start_session("agentic_core", 238)
+        
+        print("Populating mock data...")
+        # Simulate some activity
+        for i in range(10):
+            metrics.record_violation(f"agentic_core/file_{i}.py", 40 + (i % 10), i * 2)
+            metrics.record_healing(f"agentic_core/file_{i}.py", 40 + (i % 10), i, 1.5 + i * 0.3)
+            metrics.update_file_progress(f"agentic_core/file_{i}.py", "passed" if i % 2 == 0 else "failed")
     
     run_server(debug=True)

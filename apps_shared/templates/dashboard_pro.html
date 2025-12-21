@@ -286,6 +286,10 @@
             background: linear-gradient(90deg, var(--danger), #ff5252);
         }
 
+        .kpi-card.purple::before {
+            background: #7c3aed;
+        }
+
         .kpi-header {
             display: flex;
             justify-content: space-between;
@@ -797,6 +801,32 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Phase Tracker -->
+            <div class="phase-tracker-container">
+                <div class="phase-label">Project Roadmap Context</div>
+                <div class="phase-steps">
+                    <div class="phase-step completed">
+                        <div class="step-dot"><i class="fas fa-check"></i></div>
+                        <div class="step-text">Phase 0.5<br>Foundation</div>
+                    </div>
+                    <div class="phase-step completed">
+                        <div class="step-dot"><i class="fas fa-check"></i></div>
+                        <div class="step-text">Phase 1<br>Core Logic</div>
+                    </div>
+                    <div class="phase-step active">
+                        <div class="step-dot">2.6</div>
+                        <div class="step-text">Canon Validator<br>(Current Run)</div>
+                    </div>
+                    <div class="phase-step">
+                        <div class="step-dot">3</div>
+                        <div class="step-text">Fission<br>Event</div>
+                    </div>
+                    <div class="phase-step">
+                        <div class="step-dot">4</div>
+                        <div class="step-text">Microservices<br>Swarm</div>
+                    </div>
+                </div>
+            </div>
             <!-- Top Bar -->
             <div class="top-bar">
                 <div class="top-bar-left">
@@ -953,6 +983,60 @@
                         <div class="kpi-progress-bar" style="background: linear-gradient(90deg, var(--warning), #ffc107);" :style="`width: ${getHealingRate()}%`"></div>
                     </div>
                 </div>
+
+                <div class="kpi-card purple">
+                    <div class="kpi-header">
+                        <div>
+                            <div class="kpi-title">Agent Velocity</div>
+                            <div class="kpi-subtitle">Orchestration Speed</div>
+                        </div>
+                        <div class="kpi-icon" style="background: linear-gradient(135deg, #7c3aed, #a78bfa);">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value">
+                        <span x-text="getHealingVelocity()">0</span>
+                        <span style="font-size: 16px; color: var(--text-light); font-weight: 500;">fixes/min</span>
+                    </div>
+                    <div class="kpi-change" style="color: #7c3aed;">
+                        <i class="fas fa-bolt"></i>
+                        <span>Real-time healing throughput</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card" :class="getStabilityScore() > 80 ? 'success' : (getStabilityScore() > 50 ? 'warning' : 'danger')">
+                    <div class="kpi-header">
+                        <div>
+                            <div class="kpi-title">Stability Score</div>
+                            <div class="kpi-subtitle">Inverse Entropy</div>
+                        </div>
+                        <div class="kpi-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                    </div>
+                    <div class="kpi-value" x-text="getStabilityScore() + '/100'">0/100</div>
+                    <div class="kpi-change" :class="getStabilityScore() > 80 ? 'positive' : (getStabilityScore() > 50 ? '' : 'negative')">
+                        <i class="fas fa-shield-alt"></i>
+                        <span x-text="getStabilityScore() > 80 ? 'Excellent health' : (getStabilityScore() > 50 ? 'Moderate stability' : 'Needs attention')"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architect's Insight Panel -->
+            <div class="card" style="margin: 0 32px 32px; background: linear-gradient(to right, #f8fafc, #fff); border-left: 5px solid var(--primary);">
+                <div class="card-header" style="border: none; padding-bottom: 0;">
+                    <div class="card-title" style="color: var(--primary-dark);">
+                        <i class="fas fa-brain"></i> Architect's Insight
+                    </div>
+                </div>
+                <div class="card-body" style="padding: 0 24px 20px;">
+                    <p style="font-size: 18px; font-weight: 500; color: var(--text); margin-bottom: 8px;">
+                        <span x-text="getArchitecturalNarrative()">Loading system analysis...</span>
+                    </p>
+                    <div style="font-size: 13px; color: var(--text-light); display: flex; gap: 16px;">
+                        <span><i class="fas fa-lightbulb" style="color: var(--warning);"></i> <strong>Talking Point:</strong> <span x-text="getInterviewTalkingPoint()">Focus on the decoupling strategy.</span></span>
+                    </div>
+                </div>
             </div>
 
             <!-- Main Content Area -->
@@ -1033,55 +1117,52 @@
                         </div>
                     </div>
                     <div class="table-container">
-                        <table>
+                        <table class="agent-feed-table">
                             <thead>
-                                <tr>
-                                    <th><i class="fas fa-clock"></i> Timestamp</th>
-                                    <th><i class="fas fa-file"></i> File</th>
-                                    <th><i class="fas fa-key"></i> Key</th>
-                                    <th><i class="fas fa-check"></i> Healed</th>
-                                    <th><i class="fas fa-stopwatch"></i> Duration</th>
-                                    <th><i class="fas fa-chart-line"></i> Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="entry in healingLog" :key="entry.timestamp">
-                                    <tr>
-                                        <td style="font-size: 12px; color: var(--text-light);" x-text="entry.timestamp"></td>
-                                        <td>
-                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                <i class="fas fa-file-code" style="color: var(--primary);"></i>
-                                                <span x-text="getFileName(entry.file)"></span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span class="badge primary" x-text="`Key ${entry.key_id}`"></span>
-                                            <div style="font-size: 11px; color: var(--text-light); margin-top: 4px;" x-text="entry.key_name"></div>
-                                        </td>
-                                        <td>
-                                            <span class="badge success">
-                                                <i class="fas fa-check"></i>
-                                                <span x-text="entry.healed_count"></span>
+                            <tr>
+                                <th style="width: 15%">Time</th>
+                                <th style="width: 25%">Agent Persona</th>
+                                <th style="width: 30%">Architectural Principle</th>
+                                <th style="width: 30%">Socratic Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="entry in healingLog" :key="entry.timestamp">
+                                <tr style="transition: background 0.2s;" @mouseover="$el.style.background='#f8fafc'" @mouseout="$el.style.background=''">
+                                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-light);" x-text="formatTimeOnly(entry.timestamp)"></td>
+                                    <td>
+                                        <div class="agent-badge">
+                                            <span style="font-size: 18px;" x-text="getAgentEmoji(entry.key_id)"></span>
+                                            <span style="font-weight: 700;" x-text="getAgentName(entry.key_id)"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600; color: var(--primary-dark);" x-text="getPrincipleName(entry.key_id)"></div>
+                                        <div style="font-size: 11px; color: var(--text-light);">
+                                            <i class="fas fa-book-open" style="margin-right: 4px; opacity: 0.7;"></i>
+                                            <span x-text="getSocraticDescription(entry.key_id)"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span class="status-pill pass" x-show="entry.healed_count > 0" style="background: rgba(0,200,83,0.1); color: var(--success); padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">
+                                                <i class="fas fa-check"></i> Resolved
                                             </span>
-                                        </td>
-                                        <td>
-                                            <span style="font-family: monospace; color: var(--text-light);" x-text="entry.duration + 's'"></span>
-                                        </td>
-                                        <td>
-                                            <span class="badge success">
-                                                <i class="fas fa-check-circle"></i>
-                                                Success
+                                            <span style="font-size: 12px;">
+                                                Fixed <strong x-text="entry.healed_count"></strong> violations in 
+                                                <code x-text="getFileName(entry.file)" style="background: rgba(0,0,0,0.05); padding: 2px 4px; border-radius: 4px;"></code>
                                             </span>
-                                        </td>
-                                    </tr>
-                                </template>
-                                <tr x-show="healingLog.length === 0">
-                                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">
-                                        <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
-                                        <div>No healing activity recorded yet</div>
+                                        </div>
                                     </td>
                                 </tr>
-                            </tbody>
+                            </template>
+                            <tr x-show="healingLog.length === 0">
+                                <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-light);">
+                                    <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
+                                    <div>No healing activity recorded yet</div>
+                                </td>
+                            </tr>
+                        </tbody>
                         </table>
                     </div>
                 </div>
@@ -1220,61 +1301,83 @@
                 },
 
                 initCharts() {
-                    const keyCtx = document.getElementById('keyPerformanceChart');
-                    const statusCtx = document.getElementById('statusChart');
+                    // Global Defaults for Crisp Look
+                    Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
+                    Chart.defaults.font.size = 11;
+                    Chart.defaults.color = '#64748b';
+                    Chart.defaults.scale.grid.color = '#f1f5f9';
+                    
+                    // --- 1. VIOLATION HOTSPOTS (Bar Chart) ---
+                    const ctx = document.getElementById('keyPerformanceChart');
+                    if (ctx) {
+                        // Create Gradient
+                        const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+                        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.9)'); // Red top
+                        gradient.addColorStop(1, 'rgba(239, 68, 68, 0.2)'); // Fade bottom
 
-                    if (keyCtx) {
-                        this.keyChart = new Chart(keyCtx, {
+                        this.keyChart = new Chart(ctx, {
                             type: 'bar',
-                            data: {
-                                labels: [],
-                                datasets: [{
-                                    label: 'Violations',
-                                    data: [],
-                                    backgroundColor: 'rgba(244, 67, 54, 0.8)',
-                                    borderRadius: 6
-                                }, {
-                                    label: 'Healed',
-                                    data: [],
-                                    backgroundColor: 'rgba(0, 200, 83, 0.8)',
-                                    borderRadius: 6
-                                }]
+                            data: { 
+                                labels: [], 
+                                datasets: [{ 
+                                    label: 'Violations', 
+                                    data: [], 
+                                    backgroundColor: gradient, 
+                                    borderRadius: 4,
+                                    barPercentage: 0.6 
+                                }] 
                             },
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
                                 animation: false,
-                                plugins: {
-                                    legend: { position: 'top' }
+                                plugins: { 
+                                    legend: { display: false },
+                                    tooltip: {
+                                        backgroundColor: '#0f172a',
+                                        titleFont: { size: 13, weight: '700' },
+                                        padding: 12,
+                                        cornerRadius: 8,
+                                        displayColors: false
+                                    }
                                 },
                                 scales: {
-                                    y: { beginAtZero: true }
+                                    y: { 
+                                        beginAtZero: true, 
+                                        grid: { borderDash: [4, 4] }, // Dotted lines
+                                        border: { display: false }    // No axis line
+                                    },
+                                    x: { 
+                                        grid: { display: false },     // No vertical lines
+                                        border: { display: false }
+                                    }
                                 }
                             }
                         });
                     }
-
-                    if (statusCtx) {
-                        this.statusChart = new Chart(statusCtx, {
+                    
+                    // --- 2. SYSTEM HEALTH (Doughnut) ---
+                    const ctx2 = document.getElementById('statusChart');
+                    if (ctx2) {
+                        this.statusChart = new Chart(ctx2, {
                             type: 'doughnut',
-                            data: {
-                                labels: ['Passed', 'Failed', 'Running', 'Pending'],
-                                datasets: [{
-                                    data: [0, 0, 0, 0],
-                                    backgroundColor: [
-                                        'rgba(0, 200, 83, 0.8)',
-                                        'rgba(244, 67, 54, 0.8)',
-                                        'rgba(255, 152, 0, 0.8)',
-                                        'rgba(127, 140, 141, 0.3)'
-                                    ],
-                                    borderWidth: 0
-                                }]
+                            data: { 
+                                labels: ['Passed', 'Failed'], 
+                                datasets: [{ 
+                                    data: [0, 0], 
+                                    backgroundColor: ['#10b981', '#ef4444'], 
+                                    borderWidth: 0,
+                                    hoverOffset: 10
+                                }] 
                             },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
+                            options: { 
+                                responsive: true, 
+                                maintainAspectRatio: false, 
+                                cutout: '75%', // Thinner, modern ring
                                 animation: false,
-                                plugins: { legend: { position: 'bottom' } }
+                                plugins: { 
+                                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } 
+                                } 
                             }
                         });
                     }
@@ -1358,6 +1461,98 @@
 
                 exportData() {
                     window.location.href = '/api/export';
+                },
+
+                // AGENT PERSONA MAPPING (Socratic Logic for Interviews)
+                getAgentEmoji(keyId) {
+                    if (keyId === 0) return '🌌'; // Void Peacekeeper
+                    if (keyId >= 40 && keyId <= 42) return '📐'; // System Architect
+                    if (keyId === 49) return '⚖️'; // Architecture Governor
+                    return '🚑'; // Healer (Default)
+                },
+
+                getAgentName(keyId) {
+                    if (keyId === 0) return 'VoidPeacekeeper';
+                    if (keyId >= 40 && keyId <= 42) return 'SystemArchitect';
+                    if (keyId === 49) return 'ArchitectureGovernor';
+                    return 'HealerAgent';
+                },
+
+                getSocraticDescription(keyId) {
+                    // Educational context: explaining "WHY" we are fixing this
+                    const context = {
+                        0: "Enforcing physical boundary compliance (Void Safety)",
+                        40: "Checking import waterfalls to prevent circular dependencies",
+                        41: "Analyzing cyclomatic complexity depth (Max 4 nested)",
+                        42: "Verifying single-responsibility principle via line count",
+                        49: "Applying Universal Depth Law to maintain atomic structure"
+                    };
+                    return context[keyId] || "Executing standard canon validation correction";
+                },
+
+                formatTimeOnly(iso) {
+                    if (!iso) return '';
+                    // Returns HH:MM:SS from ISO string
+                    return iso.split('T')[1].split('.')[0];
+                },
+
+                // SOCRATIC NARRATIVE GENERATOR
+                getArchitecturalNarrative() {
+                    if (!this.session) return "Initializing architectural analysis...";
+                    
+                    const violationCount = this.session.total_violations || 0;
+                    const healingRate = this.getHealingRate();
+                    
+                    if (violationCount > 50 && healingRate < 50) {
+                        return "High entropy detected in the codebase. The system is actively fighting widespread coupling (Key 40) and complexity (Key 41). Manual refactoring of the 'God Classes' may be required.";
+                    } else if (healingRate > 80) {
+                        return "The self-healing mechanism is successfully enforcing the 50-Key Canon. Architecture is converging towards a clean, decoupled state without human intervention.";
+                    } else if (this.keys.some(k => k.key_id === 40 && k.violations_found > 0)) {
+                        return "Circular dependencies detected (Key 40). The dependency graph is non-DAG (Directed Acyclic Graph), violating the layered architecture principle.";
+                    }
+                    return "System is stable. Continuous integration checks are passing with minimal architectural drift.";
+                },
+
+                getInterviewTalkingPoint() {
+                    // Rotates based on what is currently failing/running
+                    if (this.keys.some(k => k.key_id === 40 && k.violations_found > 0)) {
+                        return "Explain how 'Dependency Inversion' resolves these Import Waterfalls.";
+                    }
+                    if (this.keys.some(k => k.key_id === 41 && k.violations_found > 0)) {
+                        return "Discuss 'Cognitive Complexity' vs 'Cyclomatic Complexity'.";
+                    }
+                    return "Highlight the value of 'Agentic Self-Correction' in CI/CD pipelines.";
+                },
+
+                getPrincipleName(keyId) {
+                    const map = {
+                        0: "Physical Boundaries (Void Safety)",
+                        40: "Acyclic Dependencies (DAG)",
+                        41: "Modular Atomicity",
+                        42: "Single Responsibility (SRP)",
+                        49: "Universal Depth Law"
+                    };
+                    return map[keyId] || `Canon Key ${keyId} Compliance`;
+                },
+
+                // --- NEW KPI LOGIC ---
+                getHealingVelocity() {
+                    if (!this.session || !this.session.elapsed_time || this.session.elapsed_time < 1) return "0.0";
+                    // Fixes per Minute
+                    return ((this.session.total_healed / this.session.elapsed_time) * 60).toFixed(1);
+                },
+
+                getStabilityScore() {
+                    if (!this.session || !this.session.files_processed) return 100;
+                    
+                    const totalFiles = this.session.files_processed;
+                    const violations = this.session.total_violations;
+                    
+                    // Simple Heuristic: Start at 100, deduct points for violation density
+                    // If 100 files have 10 violations -> Score 90
+                    // If 100 files have 200 violations -> Score 0 (floored)
+                    let score = 100 - ((violations / totalFiles) * 50); 
+                    return Math.max(0, Math.min(100, score)).toFixed(0);
                 }
             };
         }

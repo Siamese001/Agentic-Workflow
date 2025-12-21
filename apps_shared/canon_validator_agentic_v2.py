@@ -21,6 +21,17 @@ project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
+# --- CRITICAL FIX: IMPORT POLYFILL (agentic_workflow -> agentic_core) ---
+# Maps legacy 'agentic_workflow' imports to the new 'agentic_core' package
+# to prevent ModuleNotFoundError in agent files.
+try:
+    import agentic_core
+    sys.modules['agentic_workflow'] = agentic_core
+    sys.modules['agentic_workflow.agentic_core'] = agentic_core
+    print("   [PATCH] Shimmed 'agentic_workflow' imports to 'agentic_core'")
+except ImportError:
+    print("   [!] Could not shim agentic_workflow. Ensure 'agentic_core' is in python path.")
+
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
     from dotenv import load_dotenv
@@ -304,13 +315,22 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"   [COMPREHENSIVE MODE] LLM healing enabled for all violations")
     print(f"   [WARNING] This will take HOURS to complete!\n")
     
+    print(f"   [LOAD] Attempting to load {len(agent_modules)} agents...")
     for module_path, class_name in agent_modules:
         try:
             module = importlib.import_module(module_path)
             agent_class = getattr(module, class_name)
             cleaning_crew.append(agent_class(ctx))
+            print(f"     + Loaded {class_name}")
         except Exception as e:
-            print(f"   [!] Load Error {class_name}: {e}")
+            print(f"     [!] Load Error {class_name}: {e}")
+
+    # --- CRITICAL SAFETY CHECK ---
+    if not cleaning_crew:
+        print("\n[CRITICAL FAILURE] 0 Agents loaded. Mission Aborted.")
+        print("   -> Check if the Import Shim (Diff 1) was applied correctly.")
+        return # Halt execution
+    # -----------------------------
 
     # Inject "Surgeon Mode" into ArchitectureGovernor
     surgeon_prompt = """
@@ -433,9 +453,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                 except Exception as e:
                     print(f"   [!] Fission Error: {e}")
             
-            # If fission failed or no governor, mark as manual req and skip healing to save budget
-            ctx.results[file_name] = {"action": "FISSION_REQUIRED_MANUAL", "loc": loc_count}
-            continue
+            # If we are here, Fission didn't happen or failed.
+            # Mark for manual review but DO NOT CONTINUE (let standard agents try to fix what they can)
+            ctx.results[file_name] = {"action": "FISSION_ATTEMPTED_FALLBACK", "loc": loc_count}
+            # Remove 'continue' to allow standard validation on large files if fission fails
 
         # --- ATOMIC AGENT EXECUTION ---
         # Store applicable keys in context for agents to filter
