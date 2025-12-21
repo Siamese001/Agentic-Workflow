@@ -486,8 +486,12 @@ async def run_mission(target_scope: str = "agentic_core"):
             sig = inspect.signature(cls_ref.__init__)
             kwargs = {}
             
-            if 'context' in sig.parameters or 'ctx' in sig.parameters:
+            # Check for context parameter (try both 'ctx' and 'context')
+            if 'ctx' in sig.parameters:
+                kwargs['ctx'] = ctx
+            elif 'context' in sig.parameters:
                 kwargs['context'] = ctx
+            
             if 'name' in sig.parameters:
                 kwargs['name'] = cls_name
             if 'engine' in sig.parameters:
