@@ -36,3 +36,9 @@ When creating new agents:
 
 - No numbered folders (e.g., 01_logic).
 - No single-child folders (e.g., folder/subfolder/file.py should be folder/file.py).
+
+## 6. NEURAL LINK & ENVIRONMENT (THE PHYSICS)
+
+- **Mandatory .env Check**: Before executing `canon_validator_agentic_v2.py` or any script in `agentic_core`, you MUST verify that the `.env` file exists in the root directory and contains a valid `GEMINI_API_KEY`.
+- **Pathing**: Always use `Path(__file__).parent / ".env"` or absolute project root paths to load variables. Never assume the current working directory.
+- **Fail-Fast**: If `GEMINI_API_KEY` is missing or empty, STOP and alert the user. Do not attempt a "Dry Run" unless explicitly commanded.
