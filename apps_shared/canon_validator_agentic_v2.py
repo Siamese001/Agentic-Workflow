@@ -63,6 +63,7 @@ try:
         check_import_waterfall_violations,
         check_single_child_violations,
         enforce_void_compliance,
+        generate_ascii_tree,  # [VISUALIZER]
         get_applicable_keys_for_file,
         get_folder_scope_summary,
         validate_file_location,
@@ -389,57 +390,84 @@ async def run_mission(target_scope: str = "agentic_core"):
     if dashboard_metrics:
         dashboard_metrics.start_session(target_scope, len(ctx.python_files))
     
-    # Print folder scope summary
+    # Print folder scope summary (ASCII TREE)
+    print(f"\n   [SCOPE] Verifying Map vs. Territory...")
     folder_summary = get_folder_scope_summary(project_root_path)
-    print(f"   [SCOPE] Folder distribution:")
+    
+    # Print stats
     for folder, count in sorted(folder_summary.items()):
         if count > 0:
-            print(f"      • {folder}: {count} files")
+            print(f"      • {folder:<20} : {count} files")
+            
+    # [VISUALIZER] Print the Physical Tree (Max Depth 4 for readability)
+    print("\n   [PHYSICS] Current Directory Structure:")
+    tree_view = generate_ascii_tree(project_root_path, max_depth=4)
+    print(tree_view)
+    print("-" * 50)
     
     # ===========================================================================
     # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Dynamic Agent Discovery
     # ===========================================================================
     cleaning_crew = []
     
-    def discover_agents(base_package="agentic_core.agents"):
-        """Scans the agents directory and loads all Agent classes dynamically."""
+    def discover_agents():
+        """
+        [L1 DISCOVERY] Scans the Atomic Layers (L1-L5) and Domains for Agents.
+        Targeting:
+          - agentic_core/ (The Brain: Strategy, Orchestration, Safety)
+          - apps_rg/agents/ (Domain A Specialists)
+          - apps_lic/agents/ (Domain B Compliance)
+        """
         found_agents = []
-        agents_dir = project_root / "agentic_core" / "agents"
         
-        if not agents_dir.exists():
-            print(f"   [!] Agents directory not found: {agents_dir}")
-            return []
+        # Define scan targets based on ASCII Architecture
+        scan_targets = [
+            project_root / "agentic_core",   # Recursive scan for L1-L5 agents
+            project_root / "apps_rg" / "agents",
+            project_root / "apps_lic" / "agents"
+        ]
 
-        print(f"   [DISCOVERY] Scanning {agents_dir} for agents...")
+        print(f"   [DISCOVERY] Scanning architectural layers for agents...")
         
-        for file_path in agents_dir.rglob("*.py"):
-            if file_path.name.startswith("__") or "__pycache__" in str(file_path):
-                continue
-            
-            # Convert file path to module path
-            rel_path = file_path.relative_to(project_root)
-            module_name = str(rel_path).replace(os.sep, ".")[:-3]  # Strip .py
-            
-            try:
-                module = importlib.import_module(module_name)
-                # Inspect module for classes that look like Agents
-                for attr_name in dir(module):
-                    attr = getattr(module, attr_name)
-                    # Filter: Must be a class, defined in this module, and have execute/run method
-                    # Naming heuristic: ends with 'Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter'
-                    if (isinstance(attr, type) and 
-                        attr.__module__ == module_name and
-                        (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter')) or
-                         attr_name in ('SystemArchitect', 'StructuralEngineer', 'HealerAgent', 'HygieneGuardian', 'ArchitectureGovernor', 
-                                     'DependencySentinel', 'SecurityEnforcer', 'MemoryArchitect', 'HallucinationHunter')) and
-                        (hasattr(attr, 'execute') or hasattr(attr, 'run'))):
-                        found_agents.append((module_name, attr_name, attr))
-            except Exception as e:
-                print(f"     [!] Failed to inspect {file_path.name}: {e}")
+        for base_dir in scan_targets:
+            if not base_dir.exists(): continue
+
+            for file_path in base_dir.rglob("*.py"):
+                if file_path.name.startswith("__") or "__pycache__" in str(file_path):
+                    continue
+                
+                # Convert file path to module path (Robust)
+                try:
+                    rel_path = file_path.relative_to(project_root)
+                except ValueError:
+                    continue # Skip files outside project root
+
+                module_name = str(rel_path).replace(os.sep, ".")[:-3]  # Strip .py
+                
+                # Skip non-agent files
+                if "setup" in module_name or "utils" in module_name or "__init__" in module_name:
+                    continue
+
+                try:
+                    module = importlib.import_module(module_name)
+                    # Inspect module for classes that look like Agents
+                    for attr_name in dir(module):
+                        attr = getattr(module, attr_name)
+                        # Filter: Must be a class, defined in this module, and have execute/run method
+                        if (isinstance(attr, type) and 
+                            attr.__module__ == module_name and
+                            (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter')) or
+                             attr_name in ('SystemArchitect', 'StructuralEngineer', 'HealerAgent', 'HygieneGuardian', 'ArchitectureGovernor', 
+                                         'DependencySentinel', 'SecurityEnforcer', 'MemoryArchitect', 'HallucinationHunter')) and
+                            (hasattr(attr, 'execute') or hasattr(attr, 'run'))):
+                            found_agents.append((module_name, attr_name, attr))
+                except Exception as e:
+                    print(f"     [!] Failed to inspect {file_path.name}: {e}")
                 
         return found_agents
 
     # Execute Discovery
+    # Scans agentic_core (L1-L5) and apps_*/agents
     discovered = discover_agents()
     print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} agents via dynamic discovery")
     print(f"   [CONFIG] Fission Threshold: 10,000 LOC | Healing: Iterative Loop")
