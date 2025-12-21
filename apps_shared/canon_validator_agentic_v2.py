@@ -30,7 +30,9 @@ try:
     sys.modules['agentic_workflow.agentic_core'] = agentic_core
     print("   [PATCH] Shimmed 'agentic_workflow' imports to 'agentic_core'")
 except ImportError:
-    print("   [!] Could not shim agentic_workflow. Ensure 'agentic_core' is in python path.")
+    print("   [CRITICAL] Could not import 'agentic_core'. The shim failed.")
+    print("   Ensure you are running this from the project root (parent of agentic_core).")
+    sys.exit(1)
 
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
@@ -622,4 +624,3 @@ if __name__ == "__main__":
         print(f"\n[X] Mission timed out after {MISSION_TIMEOUT}s")
     except Exception as e:
         print(f"\n[X] Mission failed: {e}")
-        traceback.print_exc()
