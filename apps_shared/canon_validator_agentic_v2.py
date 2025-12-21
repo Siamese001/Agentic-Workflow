@@ -2,12 +2,13 @@
 """
 Canon Validator - Orchestration Entry Point
 Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.6 - STABILIZED GOLDEN MASTER
-(Fixes: Syntax errors, Initialization order, Execution logic speed)
+VERSION 2.7 - DYNAMIC HEALING ENGINE
+(Fixes: Dynamic agent discovery, Iterative healing loop, Enhanced reporting)
 """
 
 import asyncio
 import importlib
+import inspect
 import logging
 import os
 import sys
@@ -28,10 +29,11 @@ try:
     import agentic_core
     sys.modules['agentic_workflow'] = agentic_core
     sys.modules['agentic_workflow.agentic_core'] = agentic_core
+    # Explicitly shim common submodules to prevent deep import errors
+    sys.modules['agentic_workflow.agents'] = agentic_core
     print("   [PATCH] Shimmed 'agentic_workflow' imports to 'agentic_core'")
 except ImportError:
-    print("   [CRITICAL] Could not import 'agentic_core'. The shim failed.")
-    print("   Ensure you are running this from the project root (parent of agentic_core).")
+    print("   [CRITICAL] Could not import 'agentic_core'. Shim failed.")
     sys.exit(1)
 
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
@@ -155,7 +157,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     FULLY HARDENED: Instantiates Safety, Engine, and Fission Logic and wires to Context.
     """
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.6 - STABILIZED (Corrected Execution Flow)")
+    print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
     
     # Add project root to sys.path for imports
     project_root = Path(__file__).parent.parent
