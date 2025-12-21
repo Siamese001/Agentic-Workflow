@@ -1,16 +1,21 @@
 """
 Canon Validator Dashboard - Best-in-Class Monitoring UI
-Real-time metrics, interactive tables, and comprehensive analytics
+Real-time metrics, interactive tables, and comprehensive analytics.
+HARDENED: Memory safe, Thread safe, Render safe.
 """
 
 import json
 import threading
 import time
-from collections import defaultdict
-from dataclasses import asdict, dataclass
+import logging
+from collections import defaultdict, deque
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+# Configure logger to avoid polluting stdout (which the dashboard uses)
+logging.basicConfig(filename='dashboard_errors.log', level=logging.ERROR)
 
 try:
     from rich import box
@@ -21,10 +26,16 @@ try:
     from rich.panel import Panel
     from rich.table import Table
     from rich.text import Text
+    from rich.progress import BarColumn, Progress, TextColumn
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
     print("Warning: rich not installed. Install with: pip install rich")
+
+
+def safe_div(n: float, d: float) -> float:
+    """Safe division to prevent ZeroDivisionError"""
+    return (n / d) if d > 0 else 0.0
 
 
 @dataclass
@@ -43,29 +54,11 @@ class KeyMetrics:
     
     @property
     def pass_rate(self) -> float:
-        if self.files_checked == 0:
-            return 0.0
-        return (self.files_passed / self.files_checked) * 100
+        return safe_div(self.files_passed, self.files_checked) * 100
     
     @property
     def healing_success_rate(self) -> float:
-        if self.violations_found == 0:
-            return 0.0
-        return (self.violations_healed / self.violations_found) * 100
-
-
-@dataclass
-class FileMetrics:
-    """Metrics for a single file"""
-    file_path: str
-    loc: int
-    keys_checked: List[int]
-    keys_passed: List[int]
-    keys_failed: List[int]
-    violations: Dict[int, int]  # key_id -> violation_count
-    healing_rounds: int = 0
-    processing_time: float = 0.0
-    status: str = "pending"  # pending, processing, passed, failed, healing
+        return safe_div(self.violations_healed, self.violations_found) * 100
 
 
 @dataclass
@@ -86,9 +79,7 @@ class ValidationSession:
     
     @property
     def progress_pct(self) -> float:
-        if self.total_files == 0:
-            return 0.0
-        return (self.files_processed / self.total_files) * 100
+        return safe_div(self.files_processed, self.total_files) * 100
     
     @property
     def elapsed_time(self) -> float:
@@ -96,16 +87,14 @@ class ValidationSession:
     
     @property
     def files_per_minute(self) -> float:
-        if self.elapsed_time == 0:
-            return 0.0
-        return (self.files_processed / self.elapsed_time) * 60
+        return safe_div(self.files_processed, self.elapsed_time) * 60
     
     @property
     def eta_minutes(self) -> float:
-        if self.files_per_minute == 0:
-            return 0.0
+        rate = self.files_per_minute
+        if rate == 0: return 0.0
         remaining = self.total_files - self.files_processed
-        return remaining / self.files_per_minute
+        return remaining / rate
 
 
 class DashboardMetrics:
@@ -114,9 +103,9 @@ class DashboardMetrics:
     def __init__(self):
         self.session: Optional[ValidationSession] = None
         self.key_metrics: Dict[int, KeyMetrics] = {}
-        self.file_metrics: Dict[str, FileMetrics] = {}
-        self.violation_timeline: List[Dict[str, Any]] = []
-        self.healing_timeline: List[Dict[str, Any]] = []
+        # Using deque for memory safety in long runs (keep last 5000 events)
+        self.violation_timeline: deque = deque(maxlen=5000)
+        self.healing_timeline: deque = deque(maxlen=5000)
         self.lock = threading.Lock()
         
         # Initialize all 50 keys
@@ -174,8 +163,11 @@ class DashboardMetrics:
         with self.lock:
             if key_id in self.key_metrics:
                 self.key_metrics[key_id].violations_found += violation_count
+                self.key_metrics[key_id].files_checked += 1 # Assume check happened if violation found
                 self.key_metrics[key_id].files_failed += 1
-                self.session.total_violations += violation_count
+                self.key_metrics[key_id].status = "running"
+                if self.session:
+                    self.session.total_violations += violation_count
             
             self.violation_timeline.append({
                 "timestamp": datetime.now(),
@@ -190,8 +182,9 @@ class DashboardMetrics:
             if key_id in self.key_metrics:
                 self.key_metrics[key_id].violations_healed += healed_count
                 self.key_metrics[key_id].healing_attempts += 1
-                self.session.total_healed += healed_count
-                self.session.total_healing_attempts += 1
+                if self.session:
+                    self.session.total_healed += healed_count
+                    self.session.total_healing_attempts += 1
             
             self.healing_timeline.append({
                 "timestamp": datetime.now(),
@@ -202,44 +195,50 @@ class DashboardMetrics:
             })
     
     def get_top_violators(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """Get files with most violations"""
+        """Get files with most violations (Snapshot safe)"""
+        with self.lock:
+            # Copy to list to iterate safely outside deque
+            snapshot = list(self.violation_timeline)
+        
         file_violations = defaultdict(int)
-        for entry in self.violation_timeline:
+        for entry in snapshot:
             file_violations[entry["file"]] += entry["count"]
         
         sorted_files = sorted(file_violations.items(), key=lambda x: x[1], reverse=True)
         return [{"file": f, "violations": v} for f, v in sorted_files[:limit]]
     
     def get_healing_log(self, limit: int = 50) -> List[Dict[str, Any]]:
-        """Get recent healing activity log"""
+        """Get recent healing activity log (Snapshot safe)"""
         with self.lock:
-            # Sort by timestamp descending (most recent first)
-            sorted_healing = sorted(
-                self.healing_timeline, 
-                key=lambda x: x["timestamp"], 
-                reverse=True
-            )
+            # Copy recent items from deque
+            snapshot = list(self.healing_timeline)
             
-            # Format for display
-            log_entries = []
-            for entry in sorted_healing[:limit]:
-                log_entries.append({
-                    "timestamp": entry["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
-                    "file": entry["file"],
-                    "key_id": entry["key_id"],
-                    "key_name": self.key_metrics[entry["key_id"]].key_name if entry["key_id"] in self.key_metrics else f"Key {entry['key_id']}",
-                    "healed_count": entry["healed"],
-                    "duration": round(entry["duration"], 2)
-                })
-            
-            return log_entries
+        sorted_healing = sorted(
+            snapshot, 
+            key=lambda x: x["timestamp"], 
+            reverse=True
+        )
+        
+        log_entries = []
+        for entry in sorted_healing[:limit]:
+            key_name = self.key_metrics[entry["key_id"]].key_name if entry["key_id"] in self.key_metrics else f"Key {entry['key_id']}"
+            log_entries.append({
+                "timestamp": entry["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
+                "file": entry["file"],
+                "key_id": entry["key_id"],
+                "key_name": key_name,
+                "healed_count": entry["healed"],
+                "duration": round(entry["duration"], 2)
+            })
+        
+        return log_entries
     
     def get_key_summary(self) -> Dict[str, Any]:
         """Get summary of key performance"""
         with self.lock:
-            passed = sum(1 for k in self.key_metrics.values() if k.status == "passed")
-            failed = sum(1 for k in self.key_metrics.values() if k.status == "failed")
-            running = sum(1 for k in self.key_metrics.values() if k.status == "running")
+            passed = sum(1 for k in self.key_metrics.values() if k.pass_rate >= 99 and k.files_checked > 0)
+            failed = sum(1 for k in self.key_metrics.values() if k.files_failed > 0)
+            running = sum(1 for k in self.key_metrics.values() if k.files_checked > 0 and k.pass_rate < 99)
             
             return {
                 "total_keys": 50,
@@ -257,6 +256,8 @@ class CanonDashboard:
         self.metrics = metrics
         self.console = Console() if RICH_AVAILABLE else None
         self.update_interval = 0.5  # seconds
+        self.last_snapshot = time.time()
+        self.snapshot_interval = 60 # Save JSON every 60s
         
     def create_header_panel(self) -> Panel:
         """Create header with session info"""
@@ -287,7 +288,7 @@ class CanonDashboard:
     
     def create_summary_table(self) -> Table:
         """Create summary statistics table"""
-        table = Table(title="📈 Validation Summary", box=box.ROUNDED, border_style="cyan")
+        table = Table(title="📈 Validation Summary", box=box.ROUNDED, border_style="cyan", expand=True)
         
         table.add_column("Metric", style="bold cyan", width=25)
         table.add_column("Value", justify="right", style="white", width=15)
@@ -328,9 +329,7 @@ class CanonDashboard:
             f"[green]✓ {session.total_healed}[/green]"
         )
         
-        healing_rate = 0.0
-        if session.total_violations > 0:
-            healing_rate = (session.total_healed / session.total_violations) * 100
+        healing_rate = safe_div(session.total_healed, session.total_violations) * 100
         
         table.add_row(
             "Healing Success Rate",
@@ -352,54 +351,48 @@ class CanonDashboard:
             f"{key_summary['failed']}/50",
             f"[red]✗ {key_summary['failed']}[/red]"
         )
-        table.add_row(
-            "Keys Running",
-            f"{key_summary['running']}/50",
-            f"[yellow]⟳ {key_summary['running']}[/yellow]"
-        )
         
         return table
     
     def create_key_metrics_table(self, limit: int = 15) -> Table:
         """Create detailed key metrics table"""
-        table = Table(title="🔑 Key Performance Metrics", box=box.ROUNDED, border_style="magenta")
+        table = Table(title="🔑 Key Performance Metrics", box=box.ROUNDED, border_style="magenta", expand=True)
         
         table.add_column("Key", style="bold", width=4)
         table.add_column("Name", style="cyan", width=25)
         table.add_column("Files", justify="right", width=8)
-        table.add_column("Pass Rate", justify="right", width=10)
-        table.add_column("Violations", justify="right", width=12)
-        table.add_column("Healed", justify="right", width=10)
-        table.add_column("Status", justify="center", width=12)
+        table.add_column("Pass %", justify="right", width=8)
+        table.add_column("Vio.", justify="right", width=6)
+        table.add_column("Healed", justify="right", width=8)
+        table.add_column("Stat", justify="center", width=4)
         
-        # Sort by violations (most problematic first)
-        sorted_keys = sorted(
-            self.metrics.key_metrics.values(),
-            key=lambda k: k.violations_found,
-            reverse=True
-        )
-        
-        for key in sorted_keys[:limit]:
+        with self.metrics.lock:
+             # Sort by violations (most problematic first)
+            sorted_keys = sorted(
+                self.metrics.key_metrics.values(),
+                key=lambda k: k.violations_found,
+                reverse=True
+            )
+            keys_to_show = sorted_keys[:limit]
+
+        for key in keys_to_show:
             if key.files_checked == 0 and key.violations_found == 0:
                 continue
             
-            status_icon = {
-                "passed": "[green]✓[/green]",
-                "failed": "[red]✗[/red]",
-                "running": "[yellow]⟳[/yellow]",
-                "pending": "[dim]○[/dim]"
-            }.get(key.status, "○")
+            pass_rate = key.pass_rate
+            pass_rate_color = "green" if pass_rate >= 99 else "yellow" if pass_rate >= 80 else "red"
             
-            pass_rate_color = "green" if key.pass_rate >= 90 else "yellow" if key.pass_rate >= 70 else "red"
-            healing_color = "green" if key.healing_success_rate >= 80 else "yellow" if key.healing_success_rate >= 50 else "red"
+            status_icon = "✓" if pass_rate > 99 else "✗"
+            if key.violations_found > key.violations_healed:
+                 status_icon = "⚠"
             
             table.add_row(
                 str(key.key_id),
                 key.key_name[:25],
                 str(key.files_checked),
-                f"[{pass_rate_color}]{key.pass_rate:.1f}%[/{pass_rate_color}]",
+                f"[{pass_rate_color}]{pass_rate:.0f}%[/{pass_rate_color}]",
                 f"[red]{key.violations_found}[/red]",
-                f"[{healing_color}]{key.violations_healed}[/{healing_color}]",
+                f"[green]{key.violations_healed}[/green]",
                 status_icon
             )
         
@@ -407,25 +400,26 @@ class CanonDashboard:
     
     def create_top_violators_table(self, limit: int = 10) -> Table:
         """Create table of files with most violations"""
-        table = Table(title="⚠️  Top Violators", box=box.ROUNDED, border_style="red")
+        table = Table(title="⚠️  Top Violators", box=box.ROUNDED, border_style="red", expand=True)
         
         table.add_column("Rank", style="bold", width=6, justify="center")
-        table.add_column("File", style="cyan", width=50)
-        table.add_column("Violations", justify="right", style="red bold", width=12)
-        table.add_column("Severity", justify="center", width=15)
+        table.add_column("File", style="cyan")
+        table.add_column("Cnt", justify="right", style="red bold", width=6)
+        table.add_column("Sev.", justify="center", width=10)
         
         top_violators = self.metrics.get_top_violators(limit)
         
         for idx, violator in enumerate(top_violators, 1):
-            severity = "🔥 CRITICAL" if violator["violations"] > 50 else "⚠️  HIGH" if violator["violations"] > 20 else "⚡ MEDIUM"
-            severity_color = "red" if violator["violations"] > 50 else "yellow" if violator["violations"] > 20 else "white"
+            count = violator["violations"]
+            severity = "CRITICAL" if count > 50 else "HIGH" if count > 20 else "MED"
+            severity_color = "red" if count > 50 else "yellow" if count > 20 else "white"
             
             file_name = Path(violator["file"]).name
             
             table.add_row(
                 f"#{idx}",
                 file_name,
-                str(violator["violations"]),
+                str(count),
                 f"[{severity_color}]{severity}[/{severity_color}]"
             )
         
@@ -433,30 +427,28 @@ class CanonDashboard:
     
     def create_healing_activity_table(self, limit: int = 8) -> Table:
         """Create table of recent healing activity"""
-        table = Table(title="🏥 Recent Healing Activity", box=box.ROUNDED, border_style="green")
+        table = Table(title="🏥 Recent Healing Activity", box=box.ROUNDED, border_style="green", expand=True)
         
         table.add_column("Time", style="dim", width=10)
-        table.add_column("File", style="cyan", width=35)
+        table.add_column("File", style="cyan")
         table.add_column("Key", justify="center", width=8)
-        table.add_column("Healed", justify="right", style="green", width=10)
-        table.add_column("Duration", justify="right", width=12)
+        table.add_column("Healed", justify="right", style="green", width=8)
+        table.add_column("Dur.", justify="right", width=8)
         
-        recent_healing = sorted(
-            self.metrics.healing_timeline[-limit:],
-            key=lambda x: x["timestamp"],
-            reverse=True
-        )
+        # Get safely outside of lock
+        log_entries = self.metrics.get_healing_log(limit)
         
-        for entry in recent_healing:
-            time_str = entry["timestamp"].strftime("%H:%M:%S")
-            file_name = Path(entry["file"]).name[:35]
+        for entry in log_entries:
+            time_str = entry["timestamp"].split(" ")[1] # Just time
+            file_name = Path(entry["file"]).name
+            if len(file_name) > 20: file_name = file_name[:17] + "..."
             
             table.add_row(
                 time_str,
                 file_name,
                 f"K{entry['key_id']}",
-                f"+{entry['healed']}",
-                f"{entry['duration']:.2f}s"
+                f"+{entry['healed_count']}",
+                f"{entry['duration']}s"
             )
         
         return table
@@ -471,7 +463,7 @@ class CanonDashboard:
     def _get_status_indicator(self, value: float, good_threshold: float, ok_threshold: float) -> str:
         """Get colored status indicator"""
         if value >= good_threshold:
-            return f"[green]✓ Excellent[/green]"
+            return f"[green]✓ Good[/green]"
         elif value >= ok_threshold:
             return f"[yellow]⚠ Fair[/yellow]"
         else:
@@ -488,17 +480,17 @@ class CanonDashboard:
         )
         
         layout["body"].split_row(
-            Layout(name="left"),
-            Layout(name="right")
+            Layout(name="left", ratio=1),
+            Layout(name="right", ratio=1)
         )
         
         layout["left"].split_column(
-            Layout(name="summary", size=18),
+            Layout(name="summary", size=16),
             Layout(name="keys")
         )
         
         layout["right"].split_column(
-            Layout(name="violators", size=15),
+            Layout(name="violators", size=16),
             Layout(name="healing")
         )
         
@@ -511,10 +503,13 @@ class CanonDashboard:
         
         # Footer
         footer_text = Text()
-        footer_text.append("Press ", style="dim")
-        footer_text.append("Ctrl+C", style="bold red")
-        footer_text.append(" to stop monitoring | Updates every ", style="dim")
+        footer_text.append("Updates every ", style="dim")
         footer_text.append(f"{self.update_interval}s", style="bold yellow")
+        footer_text.append(" | Auto-Save every ", style="dim")
+        footer_text.append(f"{self.snapshot_interval}s", style="bold green")
+        footer_text.append(" | Press ", style="dim")
+        footer_text.append("Ctrl+C", style="bold red")
+        footer_text.append(" to stop", style="dim")
         
         layout["footer"].update(Panel(Align.center(footer_text), border_style="dim"))
         
@@ -530,28 +525,50 @@ class CanonDashboard:
             with Live(self.create_layout(), refresh_per_second=2, console=self.console) as live:
                 while True:
                     time.sleep(self.update_interval)
-                    live.update(self.create_layout())
                     
+                    # Render Safety: Don't crash validation if UI fails
+                    try:
+                        live.update(self.create_layout())
+                    except Exception as e:
+                        logging.error(f"UI Render Error: {e}")
+                    
+                    # Auto Snapshot
+                    if time.time() - self.last_snapshot > self.snapshot_interval:
+                        if self.metrics.session:
+                            self.export_report(f"canon_snapshot_{self.metrics.session.session_id}.json")
+                            self.last_snapshot = time.time()
+
                     # Check if session is complete
                     if self.metrics.session and self.metrics.session.status == "completed":
+                        # One final update
+                        live.update(self.create_layout())
                         break
+                        
         except KeyboardInterrupt:
             self.console.print("\n[yellow]Dashboard monitoring stopped by user[/yellow]")
+        except Exception as e:
+            self.console.print(f"\n[red]CRITICAL DASHBOARD ERROR: {e}[/red]")
+            logging.error(f"Critical Error: {e}")
     
     def export_report(self, output_path: str):
         """Export metrics to JSON report"""
-        report = {
-            "session": asdict(self.metrics.session) if self.metrics.session else None,
-            "key_metrics": {k: asdict(v) for k, v in self.metrics.key_metrics.items()},
-            "top_violators": self.metrics.get_top_violators(20),
-            "key_summary": self.metrics.get_key_summary(),
-            "generated_at": datetime.now().isoformat()
-        }
-        
-        with open(output_path, 'w') as f:
-            json.dump(report, f, indent=2, default=str)
-        
-        print(f"Report exported to: {output_path}")
+        try:
+            with self.metrics.lock:
+                report = {
+                    "session": asdict(self.metrics.session) if self.metrics.session else None,
+                    "key_metrics": {k: asdict(v) for k, v in self.metrics.key_metrics.items()},
+                    "top_violators": self.metrics.get_top_violators(20),
+                    "key_summary": self.metrics.get_key_summary(),
+                    "generated_at": datetime.now().isoformat()
+                }
+            
+            with open(output_path, 'w') as f:
+                json.dump(report, f, indent=2, default=str)
+            
+            # Only print if we are not inside the Live context (simple check)
+            # print(f"Report exported to: {output_path}") 
+        except Exception as e:
+             logging.error(f"Export failed: {e}")
 
 
 # Example usage and testing

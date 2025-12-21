@@ -2,7 +2,8 @@
 """
 Canon Validator - Orchestration Entry Point
 Coordinates L1-L5 components for 50-key canon validation.
-VERSION 2.5 - GOLDEN MASTER (Refactored) + DASHBOARD INTEGRATION
+VERSION 2.6 - STABILIZED GOLDEN MASTER
+(Fixes: Syntax errors, Initialization order, Execution logic speed)
 """
 
 import asyncio
@@ -11,6 +12,7 @@ import logging
 import os
 import sys
 import threading
+import traceback
 from pathlib import Path
 from typing import Any, Optional
 
@@ -37,28 +39,25 @@ except ImportError:
     print("[!] Dashboard not available. Install: pip install rich flask flask-cors")
 
 # Import core components from agentic_core
-from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
-from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
-from agentic_core.runtime import (
-    ALLOWED_ROOT_FOLDERS,
-    check_import_waterfall_violations,
-    check_single_child_violations,
-    enforce_void_compliance,
-    get_applicable_keys_for_file,
-    get_folder_scope_summary,
-    validate_file_location,
-)
+try:
+    from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
+    from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
+    from agentic_core.runtime import (
+        ALLOWED_ROOT_FOLDERS,
+        check_import_waterfall_violations,
+        check_single_child_violations,
+        enforce_void_compliance,
+        get_applicable_keys_for_file,
+        get_folder_scope_summary,
+        validate_file_location,
+    )
+except ImportError as e:
+    print(f"CRITICAL: Core component missing: {e}")
+    sys.exit(1)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
-
-
-# ==============================================================================
-# NOTE: Core components (FissionManager, SafetyGuardrail, SubAtomicEngine,
-# apply_fission_blueprint) have been moved to agentic_core/ for reusability.
-# They are imported at the top of this file.
-# ==============================================================================
 
 
 # ==============================================================================
@@ -143,7 +142,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     FULLY HARDENED: Instantiates Safety, Engine, and Fission Logic and wires to Context.
     """
     print(f"\n[*] MISSION START: Validating {target_scope}")
-    print(f"DEBUG: VERSION 2.5 - GOLDEN MASTER (CAP: 24,576)")
+    print(f"DEBUG: VERSION 2.6 - STABILIZED (Corrected Execution Flow)")
     
     # Add project root to sys.path for imports
     project_root = Path(__file__).parent.parent
@@ -169,9 +168,6 @@ async def run_mission(target_scope: str = "agentic_core"):
         web_thread.start()
         print(f"   [OK] Web Dashboard: http://localhost:5000")
         print(f"   [!] Terminal Dashboard: Disabled (blocks execution)")
-        
-        # Note: Terminal dashboard disabled because run_live() blocks the main thread
-        # Use web dashboard at http://localhost:5000 for real-time monitoring
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
@@ -184,17 +180,39 @@ async def run_mission(target_scope: str = "agentic_core"):
     # 1. Initialize Safety Components
     safety_guard = SafetyGuardrail(deletion_limit=110)
     subatomic_engine = SubAtomicEngine() # Uses environment keys
-    # 2. Initialize Fission Logic with CORRECT 200 line threshold
-    fission_mgr = FissionManager(line_limit=200, max_rounds=3)
+    # 2. Initialize Fission Logic with HIGH threshold to validate all files
+    # Set to 10000 to effectively disable fission and validate everything
+    fission_mgr = FissionManager(line_limit=10000, max_rounds=3)
     
     print(f"   [OK] SubAtomicEngine active (Model: {os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')})")
     print(f"   [OK] SafetyGuardrail active (Limit: 110 lines)")
     
+    # === INITIALIZE CONTEXT (MOVED UP FOR SAFETY) ===
+    # Must exist before CallableReport attempts to use it in closure
+    try:
+        from agentic_core.L4_state.validation_context import ValidationContext
+        ctx = ValidationContext()
+        print("   [OK] ValidationContext loaded from agentic_core")
+    except ImportError:
+        class ValidationContext:
+            def __init__(self):
+                self.target_scope = None
+                self.python_files = []
+                self.report = []
+                self.results = {}
+                self.signals = set()
+                self._client = None
+        ctx = ValidationContext()
+        print("   [!] Using fallback ValidationContext")
+
     # ===========================================================================
     # [ENHANCEMENT 1] L4 STATE HARDENING: Smart-Report Hybrid
     # ===========================================================================
     class CallableReport(list):
         """Hybrid report: Acts as list for append() AND callable for ctx.report()"""
+        def __init__(self, initial_list=None):
+            super().__init__(initial_list or [])
+
         def __call__(self, agent_name: str, key_num: int, passed: bool, details: str = ""):
             status = "PASS" if passed else "FAIL"
             self.append({
@@ -217,23 +235,6 @@ async def run_mission(target_scope: str = "agentic_core"):
                             violation_count = int(match.group(1))
                     dashboard_metrics.record_violation(current_file, key_num, violation_count)
 
-    # Initialize Context
-    try:
-        from agentic_core.L4_state.validation_context import ValidationContext
-        ctx = ValidationContext()
-        print("   [OK] ValidationContext loaded from agentic_core")
-    except ImportError:
-        class ValidationContext:
-            def __init__(self):
-                self.target_scope = None
-                self.python_files = []
-                self.report = []
-                self.results = {}
-                self.signals = set()
-                self._client = None
-        ctx = ValidationContext()
-        print("   [!] Using fallback ValidationContext")
-    
     # Harden Attributes (The "AttributeError" Fix)
     ctx.report = CallableReport(getattr(ctx, 'report', []))
     if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
@@ -285,6 +286,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Agent Loading & Surgeon Prompt
     # ===========================================================================
     cleaning_crew = []
+    # Load ALL agents for comprehensive 50-key validation
     agent_modules = [
         ('agentic_core.agents.system_architect', 'SystemArchitect'),
         ('agentic_core.agents.structural_engineer', 'StructuralEngineer'),
@@ -296,6 +298,11 @@ async def run_mission(target_scope: str = "agentic_core"):
         ('agentic_core.agents.memory_architect', 'MemoryArchitect'),
         ('agentic_core.agents.hallucination_hunter', 'HallucinationHunter'),
     ]
+    
+    print(f"   [COMPREHENSIVE MODE] Loading {len(agent_modules)} agents for ALL 50 keys")
+    print(f"   [COMPREHENSIVE MODE] Fission disabled - validating files of all sizes")
+    print(f"   [COMPREHENSIVE MODE] LLM healing enabled for all violations")
+    print(f"   [WARNING] This will take HOURS to complete!\n")
     
     for module_path, class_name in agent_modules:
         try:
@@ -335,23 +342,45 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         print("   [+] L1 Injection: ArchitectureGovernor configured as Surgeon")
     
     # ===========================================================================
-    # [ENHANCEMENT 3] L3 ORCHESTRATION: Separation of Concerns
+    # [ENHANCEMENT 3] L3 ORCHESTRATION: Categorize Agents (Fixes "Too Fast" Bug)
     # ===========================================================================
-    file_validators = [a for a in cleaning_crew if a.__class__.__name__ not in ['MemoryArchitect', 'HallucinationHunter']]
-    mission_monitors = [a for a in cleaning_crew if a.__class__.__name__ in ['MemoryArchitect', 'HallucinationHunter']]
-    
-    print(f"   [L3] Orchestration: {len(file_validators)} validators, {len(mission_monitors)} monitors")
-    print(f"   [>] Starting Linear Execution Sweep...\n")
+    atomic_validators = [] # Run PER FILE (takes file_path arg)
+    batch_validators = []  # Run ONCE (takes no args)
+    monitors = []          # Run ONCE at end
+
+    for agent in cleaning_crew:
+        name = agent.__class__.__name__
+        if name in ['MemoryArchitect', 'HallucinationHunter']:
+            monitors.append(agent)
+            continue
+            
+        # Introspect execute/run method
+        method = getattr(agent, 'execute', getattr(agent, 'run', None))
+        if method:
+            # Check if method takes 'file_path' argument (excluding self)
+            if method.__code__.co_argcount > 1:
+                atomic_validators.append(agent)
+            else:
+                batch_validators.append(agent)
+        else:
+            print(f"   [!] Agent {name} has no execute/run method.")
+
+    print(f"   [L3] Orchestration Plan:")
+    print(f"        - {len(atomic_validators)} Atomic Agents (Run {len(ctx.python_files)}x)")
+    print(f"        - {len(batch_validators)} Batch Agents (Run 1x)")
+    print(f"        - {len(monitors)} Monitors (Run 1x)")
+    print(f"   [>] Starting Execution Sweep...\n")
 
     # ===========================================================================
-    # [ENHANCEMENT 4 & 5] L2 EXECUTION & L5 SAFETY: The Atomic Sweep
+    # PHASE 1: ATOMIC SWEEP (Per-File Validation)
     # ===========================================================================
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = os.path.basename(file_path)
         file_path_obj = Path(file_path)
         
-        # === L6 RUNTIME: Determine Applicable Keys ===
-        applicable_keys = get_applicable_keys_for_file(file_path_obj, project_root_path)
+        # === L6 RUNTIME: ALL 50 KEYS FOR COMPREHENSIVE VALIDATION ===
+        # Enable all 50 canon keys (0-49) for comprehensive validation
+        applicable_keys = list(range(0, 50))
         
         # Check LOC for Safety Threshold
         try:
@@ -366,8 +395,9 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             dashboard_metrics.session.current_file = file_path
             ctx.current_file_path = file_path  # Store for report callback
 
-        # --- ACTIVE FISSION TRIGGER (Files > 200 Lines) ---
-        if loc_count > 200:
+        # --- ACTIVE FISSION TRIGGER (Files > 10000 Lines) ---
+        # Increased threshold to validate all files comprehensively
+        if loc_count > 10000:
             print(f"\n⚠️  [FISSION TRIGGER] {file_name} ({loc_count} lines). Engaging Auto-Fission.")
             
             if governor:
@@ -407,20 +437,19 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             ctx.results[file_name] = {"action": "FISSION_REQUIRED_MANUAL", "loc": loc_count}
             continue
 
-        # --- STANDARD VALIDATION (Files < 200 Lines) ---
-        print(f"\n", end='') # New line for clean logging
-        
+        # --- ATOMIC AGENT EXECUTION ---
         # Store applicable keys in context for agents to filter
         ctx.current_file_applicable_keys = applicable_keys
         
-        for agent in file_validators:
+        for agent in atomic_validators:
             try:
                 method = getattr(agent, 'execute', getattr(agent, 'run', None))
+                # Introspection to handle arguments safely - redundant check but safe
                 if method:
-                    # Introspection to handle arguments safely
                     if method.__code__.co_argcount > 1:
                         await method(file_path)
                     else:
+                        # Fallback for incorrectly categorized agents
                         await method()
             except Exception as e:
                 ctx.report(agent.__class__.__name__, 0, False, f"Exec Error: {str(e)[:50]}")
@@ -433,10 +462,26 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
             dashboard_metrics.update_file_progress(file_path, "passed" if file_passed else "failed")
     
     # ===========================================================================
-    # [ENHANCEMENT 3] GLOBAL MONITORING (Run ONCE at End)
+    # PHASE 2: BATCH SWEEP (Cross-File / Full Scope Validation)
     # ===========================================================================
-    print(f"\n\n🧠 [L4 STATE] Executing Global Monitors (Single Pass)...")
-    for monitor in mission_monitors:
+    print(f"\n\n🧩 [L4 STATE] Executing Batch Agents ({len(batch_validators)})...")
+    for agent in batch_validators:
+        print(f"   [>] Running {agent.__class__.__name__}...")
+        try:
+            method = getattr(agent, 'execute', getattr(agent, 'run', None))
+            # Batch agents typically run without args or manage their own scope
+            if method:
+                await method() 
+            print(f"   [✓] {agent.__class__.__name__} completed")
+        except Exception as e:
+             print(f"   [!] Error in {agent.__class__.__name__}: {e}")
+             ctx.report(agent.__class__.__name__, 0, False, f"Batch Error: {str(e)[:50]}")
+
+    # ===========================================================================
+    # PHASE 3: MONITORING (Final Pass)
+    # ===========================================================================
+    print(f"\n🧠 [L4 STATE] Executing Global Monitors (Single Pass)...")
+    for monitor in monitors:
         try:
             method = getattr(monitor, 'execute', getattr(monitor, 'run', None))
             if method: await method()
@@ -556,5 +601,4 @@ if __name__ == "__main__":
         print(f"\n[X] Mission timed out after {MISSION_TIMEOUT}s")
     except Exception as e:
         print(f"\n[X] Mission failed: {e}")
-        import traceback
         traceback.print_exc()

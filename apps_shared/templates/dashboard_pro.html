@@ -29,6 +29,8 @@
             --text-light: #7f8c8d;
             --shadow: 0 2px 8px rgba(0,0,0,0.08);
             --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            /* Dynamic base font size — will be overridden by JS */
+            --base-font-size: 16px;
         }
 
         body {
@@ -36,6 +38,7 @@
             background: #f0f2f5;
             color: var(--text);
             line-height: 1.6;
+            font-size: var(--base-font-size);
         }
 
         .dashboard-container {
@@ -120,7 +123,7 @@
         .main-content {
             flex: 1;
             margin-left: 260px;
-            padding: 0;
+            padding: 20px 28px;
         }
 
         /* Top Bar */
@@ -193,7 +196,7 @@
             padding: 10px 14px;
             border: 2px solid var(--border);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: calc(var(--base-font-size) * 0.95);
             background: white;
             transition: all 0.2s;
             outline: none;
@@ -205,10 +208,10 @@
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: var(--base-font-size);
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -237,18 +240,18 @@
             background: var(--border);
         }
 
-        /* KPI Cards */
+        /* KPI Cards - Optimized for Portrait 4K */
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
             padding: 0 32px 20px;
         }
 
         .kpi-card {
             background: white;
             border-radius: 12px;
-            padding: 24px;
+            padding: 36px;
             box-shadow: var(--shadow);
             transition: all 0.3s;
             position: relative;
@@ -317,86 +320,105 @@
             background: linear-gradient(135deg, var(--warning), #ffc107);
         }
 
-        .kpi-card.danger .kpi-icon {
-            background: linear-gradient(135deg, var(--danger), #ff5252);
-        }
+.kpi-value {
+    font-size: calc(var(--base-font-size) * 3);
+    font-weight: 700;
+    color: var(--text);
+    margin: 12px 0;
+    line-height: 1;
+}
 
-        .kpi-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-            line-height: 1;
-        }
+.kpi-change {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
 
-        .kpi-change {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 600;
-        }
+.kpi-change.positive {
+    color: var(--success);
+}
 
-        .kpi-change.positive {
-            color: var(--success);
-        }
+.kpi-change.negative {
+    color: var(--danger);
+}
 
-        .kpi-change.negative {
-            color: var(--danger);
-        }
+.kpi-progress {
+    margin-top: 16px;
+    height: 6px;
+    background: var(--light);
+    border-radius: 3px;
+    overflow: hidden;
+}
 
-        .kpi-progress {
-            margin-top: 16px;
-            height: 6px;
-            background: var(--light);
-            border-radius: 3px;
-            overflow: hidden;
-        }
+.kpi-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--info));
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
 
-        .kpi-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--info));
-            border-radius: 3px;
-            transition: width 0.6s ease;
-        }
+/* Content Grid - Optimized for Portrait 4K */
+.content-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 0 28px 32px;
+}
 
-        /* Content Grid */
-        .content-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            padding: 0 32px 32px;
-        }
+/* Optional: Allow side-by-side only if width permits */
+@media (min-width: 2400px) and (orientation: portrait) {
+    .content-grid {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .content-grid > .card {
+        flex: 1 1 800px;
+    }
+}
 
-        .content-grid.full {
-            grid-template-columns: 1fr;
-        }
+/* High-DPI tweak: Ensure crisp text/icons on 4K */
+@media (min-resolution: 150dpi) {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    .fas, .far, .fal, .fad, .fab {
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
 
-        /* Card */
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-        }
+/* Card */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+}
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid var(--light);
-        }
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--light);
+}
 
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.card-title {
+    font-size: calc(var(--base-font-size) * 1.3);
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
 
         .card-actions {
             display: flex;
@@ -422,10 +444,10 @@
             color: var(--text);
         }
 
-        /* Table */
+        /* Table - Optimized for Portrait 4K */
         .table-container {
             overflow-x: auto;
-            max-height: 500px;
+            max-height: 1200px;
             overflow-y: auto;
         }
 
@@ -443,7 +465,7 @@
         }
 
         th {
-            padding: 14px 16px;
+            padding: 16px 18px;
             text-align: left;
             font-size: 12px;
             font-weight: 700;
@@ -454,7 +476,7 @@
         }
 
         td {
-            padding: 14px 16px;
+            padding: 16px 18px;
             border-bottom: 1px solid var(--light);
             font-size: 14px;
         }
@@ -500,11 +522,24 @@
             color: var(--primary);
         }
 
-        /* Chart Container */
+        /* Chart Container - Optimized for Portrait 4K */
         .chart-container {
             position: relative;
-            height: 350px;
+            height: 1000px;
             margin-top: 16px;
+        }
+
+        /* Extra tall on true 4K portrait height */
+        @media (min-height: 3000px) and (orientation: portrait) {
+            .chart-container {
+                height: 1200px;
+            }
+        }
+
+        /* Force Chart.js to fill container fully */
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         /* Status Indicator */
@@ -637,10 +672,41 @@
         .trend-bar:hover {
             opacity: 1;
         }
+
+        /* Connection Status Banner */
+        .connection-banner {
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .connection-banner.visible {
+            transform: translateY(0);
+        }
+
+        .status-indicator.offline .pulse-dot {
+            background: var(--danger);
+            animation: none;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-container" x-data="dashboard()" x-init="init()">
+        <!-- Connection Status Banner -->
+        <div class="connection-banner" :class="{ 'visible': connectionError }">
+            <i class="fas fa-wifi"></i> Connection Lost - Retrying...
+        </div>
+
         <!-- Loading Overlay -->
         <div class="loading-overlay" x-show="loading" x-transition>
             <div>
@@ -990,11 +1056,11 @@
         </main>
 
         <!-- Status Indicator -->
-        <div class="status-indicator">
+        <div class="status-indicator" :class="{ 'offline': connectionError }">
             <div class="pulse-dot"></div>
             <div>
                 <div style="font-size: 12px; color: var(--text-light);">Live Updates</div>
-                <div style="font-size: 14px; font-weight: 600;">Connected</div>
+                <div style="font-size: 14px; font-weight: 600;" x-text="connectionError ? 'Offline' : 'Connected'"></div>
             </div>
         </div>
     </div>
@@ -1002,6 +1068,38 @@
     <script>
         function dashboard() {
             return {
+                // Auto-font scaling logic
+                setBaseFontSize() {
+                    const viewportHeight = window.innerHeight;
+                    const dpr = window.devicePixelRatio || 1;
+
+                    // Base size: 16px
+                    let baseSize = 16;
+
+                    // On tall portrait screens (like your 3840px height), increase slightly
+                    if (viewportHeight > 3000) {
+                        baseSize += 3; // → ~19px on full 4K portrait
+                    } else if (viewportHeight > 2500) {
+                        baseSize += 2; // → ~18px
+                    } else if (viewportHeight > 2000) {
+                        baseSize += 1; // → ~17px
+                    }
+
+                    // Small boost for high-DPI (crisper perceived size)
+                    if (dpr >= 1.8) {
+                        baseSize += 1.5;
+                    } else if (dpr >= 1.5) {
+                        baseSize += 1;
+                    }
+
+                    // Clamp between 15–22px to avoid extremes
+                    baseSize = Math.max(15, Math.min(22, baseSize));
+
+                    document.documentElement.style.setProperty('--base-font-size', baseSize + 'px');
+
+                    console.log(`Auto-scaled font: ${baseSize}px (height: ${viewportHeight}, dpr: ${dpr})`);
+                },
+
                 currentView: 'overview',
                 session: null,
                 keys: [],
@@ -1010,8 +1108,11 @@
                 healingLog: [],
                 summary: null,
                 loading: true,
+                connectionError: false,
+                isPolling: false,
                 keyChart: null,
                 statusChart: null,
+                searchTimeout: null,
                 filters: {
                     timeRange: 'all',
                     status: 'all',
@@ -1021,22 +1122,47 @@
 
                 async init() {
                     await this.fetchData();
-                    // Wait for DOM and Alpine to be fully ready
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 100));
                     this.initCharts();
-                    setInterval(() => this.fetchData(), 2000);
+                    // Initialize font scaling
+                    this.setBaseFontSize();
+                    // Re-calculate on resize/orientation change
+                    window.addEventListener('resize', () => this.setBaseFontSize());
+                    this.startPolling();
+                },
+
+                async startPolling() {
+                    if (!document.hidden) {
+                        await this.fetchData();
+                    }
+                    setTimeout(() => this.startPolling(), 2000);
                 },
 
                 async fetchData() {
+                    if (this.isPolling) return;
+                    this.isPolling = true;
+
                     try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), 5000);
+                        const fetchOptions = { signal: controller.signal };
+
                         const [sessionRes, keysRes, violatorsRes, timelineRes, healingLogRes, summaryRes] = await Promise.all([
-                            fetch('/api/session'),
-                            fetch('/api/keys'),
-                            fetch('/api/violators?limit=20'),
-                            fetch('/api/timeline?limit=50'),
-                            fetch('/api/healing-log?limit=50'),
-                            fetch('/api/summary')
+                            fetch('/api/session', fetchOptions),
+                            fetch('/api/keys', fetchOptions),
+                            fetch('/api/violators?limit=20', fetchOptions),
+                            fetch('/api/timeline?limit=50', fetchOptions),
+                            fetch('/api/healing-log?limit=50', fetchOptions),
+                            fetch('/api/summary', fetchOptions)
                         ]);
+
+                        clearTimeout(timeoutId);
+
+                        if (sessionRes.status === 404) {
+                            console.warn('No active session found');
+                            this.loading = false;
+                            return;
+                        }
 
                         if (sessionRes.ok) this.session = await sessionRes.json();
                         if (keysRes.ok) this.keys = await keysRes.json();
@@ -1045,29 +1171,25 @@
                         if (healingLogRes.ok) this.healingLog = await healingLogRes.json();
                         if (summaryRes.ok) this.summary = await summaryRes.json();
 
+                        this.connectionError = false;
                         this.loading = false;
-                        this.updateCharts();
+                        
+                        requestAnimationFrame(() => this.updateCharts());
+
                     } catch (error) {
-                        console.error('Error fetching data:', error);
+                        console.error('Connection error:', error.name);
+                        if (error.name !== 'AbortError') {
+                            this.connectionError = true;
+                        }
+                    } finally {
+                        this.isPolling = false;
                     }
                 },
 
                 initCharts() {
-                    console.log('Initializing charts...');
-                    
-                    // Destroy existing charts if they exist
-                    if (this.keyChart) {
-                        this.keyChart.destroy();
-                        this.keyChart = null;
-                    }
-                    if (this.statusChart) {
-                        this.statusChart.destroy();
-                        this.statusChart = null;
-                    }
-                    
-                    // Key Performance Chart
                     const keyCtx = document.getElementById('keyPerformanceChart');
-                    console.log('Key chart canvas:', keyCtx);
+                    const statusCtx = document.getElementById('statusChart');
+
                     if (keyCtx) {
                         this.keyChart = new Chart(keyCtx, {
                             type: 'bar',
@@ -1077,41 +1199,28 @@
                                     label: 'Violations',
                                     data: [],
                                     backgroundColor: 'rgba(244, 67, 54, 0.8)',
-                                    borderRadius: 8
+                                    borderRadius: 6
                                 }, {
                                     label: 'Healed',
                                     data: [],
                                     backgroundColor: 'rgba(0, 200, 83, 0.8)',
-                                    borderRadius: 8
+                                    borderRadius: 6
                                 }]
                             },
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                animation: false,
                                 plugins: {
-                                    legend: {
-                                        position: 'top',
-                                        labels: {
-                                            font: { size: 13, weight: '600' },
-                                            padding: 15
-                                        }
-                                    }
+                                    legend: { position: 'top' }
                                 },
                                 scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                        grid: { color: 'rgba(0,0,0,0.05)' }
-                                    },
-                                    x: {
-                                        grid: { display: false }
-                                    }
+                                    y: { beginAtZero: true }
                                 }
                             }
                         });
                     }
 
-                    // Status Chart
-                    const statusCtx = document.getElementById('statusChart');
                     if (statusCtx) {
                         this.statusChart = new Chart(statusCtx, {
                             type: 'doughnut',
@@ -1131,80 +1240,63 @@
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom',
-                                        labels: {
-                                            font: { size: 12, weight: '600' },
-                                            padding: 15
-                                        }
-                                    }
-                                }
+                                animation: false,
+                                plugins: { legend: { position: 'bottom' } }
                             }
                         });
                     }
                 },
 
                 updateCharts() {
-                    console.log('Updating charts...', {
-                        keyChart: !!this.keyChart,
-                        statusChart: !!this.statusChart,
-                        keysLength: this.keys.length,
-                        summary: !!this.summary
-                    });
+                    if (!this.keys || this.keys.length === 0) return;
 
-                    if (this.keyChart && this.keys.length > 0) {
-                        const topKeys = this.keys
+                    if (this.keyChart) {
+                        const topKeys = [...this.keys]
                             .filter(k => k.violations_found > 0)
                             .sort((a, b) => b.violations_found - a.violations_found)
                             .slice(0, 10);
 
-                        console.log('Top keys for chart:', topKeys);
+                        const labels = topKeys.map(k => `Key ${k.key_id}`);
+                        const violations = topKeys.map(k => k.violations_found);
+                        const healed = topKeys.map(k => k.violations_healed);
 
-                        this.keyChart.data.labels = topKeys.map(k => `Key ${k.key_id}`);
-                        this.keyChart.data.datasets[0].data = topKeys.map(k => k.violations_found);
-                        this.keyChart.data.datasets[1].data = topKeys.map(k => k.violations_healed);
-                        this.keyChart.update();
-                        console.log('Key chart updated');
-                    } else {
-                        console.log('Key chart not ready:', {
-                            hasChart: !!this.keyChart,
-                            hasKeys: this.keys.length > 0
-                        });
+                        if (JSON.stringify(this.keyChart.data.labels) !== JSON.stringify(labels) ||
+                            JSON.stringify(this.keyChart.data.datasets[0].data) !== JSON.stringify(violations)) {
+                            
+                            this.keyChart.data.labels = labels;
+                            this.keyChart.data.datasets[0].data = violations;
+                            this.keyChart.data.datasets[1].data = healed;
+                            this.keyChart.update('none');
+                        }
                     }
 
-                    if (this.statusChart && this.summary) {
+                    if (this.statusChart && this.summary && this.summary.key_summary) {
                         const data = [
-                            this.summary.key_summary?.passed || 0,
-                            this.summary.key_summary?.failed || 0,
-                            this.summary.key_summary?.running || 0,
-                            this.summary.key_summary?.pending || 0
+                            this.summary.key_summary.passed || 0,
+                            this.summary.key_summary.failed || 0,
+                            this.summary.key_summary.running || 0,
+                            this.summary.key_summary.pending || 0
                         ];
-                        console.log('Status chart data:', data);
-                        this.statusChart.data.datasets[0].data = data;
-                        this.statusChart.update();
-                        console.log('Status chart updated');
-                    } else {
-                        console.log('Status chart not ready:', {
-                            hasChart: !!this.statusChart,
-                            hasSummary: !!this.summary
-                        });
+
+                        if (JSON.stringify(this.statusChart.data.datasets[0].data) !== JSON.stringify(data)) {
+                            this.statusChart.data.datasets[0].data = data;
+                            this.statusChart.update('none');
+                        }
                     }
                 },
 
                 getPassRate() {
-                    if (!this.session || this.session.files_processed === 0) return 0;
+                    if (!this.session || !this.session.files_processed) return '0.0';
                     return ((this.session.files_passed / this.session.files_processed) * 100).toFixed(1);
                 },
 
                 getHealingRate() {
-                    if (!this.session || this.session.total_violations === 0) return 0;
+                    if (!this.session || !this.session.total_violations) return '0.0';
                     return ((this.session.total_healed / this.session.total_violations) * 100).toFixed(1);
                 },
 
                 getFileName(path) {
-                    if (!path) return '';
-                    return path.split(/[/\\]/).pop();
+                    return path ? path.split(/[/\\]/).pop() : 'Unknown';
                 },
 
                 formatTime(seconds) {
@@ -1215,7 +1307,10 @@
                 },
 
                 applyFilters() {
-                    console.log('Applying filters:', this.filters);
+                    if (this.searchTimeout) clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(() => {
+                        console.log('Filters applied:', JSON.parse(JSON.stringify(this.filters)));
+                    }, 300);
                 },
 
                 resetFilters() {

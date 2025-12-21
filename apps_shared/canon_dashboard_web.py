@@ -1,22 +1,36 @@
 """
 Canon Validator Web Dashboard - Interactive Web Interface
-Real-time metrics with Flask backend and modern frontend
+Real-time metrics with Flask backend and modern frontend.
+HARDENED: Thread-safe reads, Input sanitization, Robust error handling.
 """
 
 from datetime import datetime
+import threading
+import logging
 
 # Import our metrics system
 from canon_dashboard import CanonDashboard, DashboardMetrics
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
+# Configure Flask logging to not interfere with console output
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 app = Flask(__name__)
 CORS(app)
 
-# Global metrics instance
+# Global metrics instance (can be overwritten by importer)
 metrics = DashboardMetrics()
 dashboard = CanonDashboard(metrics)
 
+# Safety constants
+MAX_LIMIT = 1000
+DEFAULT_LIMIT = 50
+
+def safe_div(n: float, d: float) -> float:
+    """Safe division helper"""
+    return (n / d) if d > 0 else 0.0
 
 @app.route('/')
 def index():
@@ -24,49 +38,91 @@ def index():
     return render_template('dashboard_pro.html')
 
 
-@app.route('/classic')
-def classic():
-    """Serve the classic dashboard HTML"""
-    return render_template('dashboard.html')
-
-
 @app.route('/api/session')
 def get_session():
-    """Get current session information"""
-    if not metrics.session:
-        return jsonify({"error": "No active session"}), 404
-    
-    session_data = {
-        "session_id": metrics.session.session_id,
-        "target_directory": metrics.session.target_directory,
-        "start_time": metrics.session.start_time.isoformat(),
-        "total_files": metrics.session.total_files,
-        "files_processed": metrics.session.files_processed,
-        "files_passed": metrics.session.files_passed,
-        "files_failed": metrics.session.files_failed,
-        "total_violations": metrics.session.total_violations,
-        "total_healed": metrics.session.total_healed,
-        "current_file": metrics.session.current_file,
-        "status": metrics.session.status,
-        "progress_pct": metrics.session.progress_pct,
-        "elapsed_time": metrics.session.elapsed_time,
-        "files_per_minute": metrics.session.files_per_minute,
-        "eta_minutes": metrics.session.eta_minutes
-    }
+    """Get current session information (Thread-Safe)"""
+    if not metrics:
+        return jsonify({"error": "Metrics system not initialized"}), 500
+
+    # Lock to ensure consistent snapshot of session state
+    with metrics.lock:
+        if not metrics.session:
+            return jsonify({"error": "No active session"}), 404
+        
+        session = metrics.session
+        session_data = {
+            "session_id": session.session_id,
+            "target_directory": session.target_directory,
+            "start_time": session.start_time.isoformat(),
+            "total_files": session.total_files,
+            "files_processed": session.files_processed,
+            "files_passed": session.files_passed,
+            "files_failed": session.files_failed,
+            "total_violations": session.total_violations,
+            "total_healed": session.total_healed,
+            "current_file": session.current_file,
+            "status": session.status,
+            "progress_pct": session.progress_pct,
+            "elapsed_time": session.elapsed_time,
+            "files_per_minute": session.files_per_minute,
+            "eta_minutes": session.eta_minutes
+        }
     
     return jsonify(session_data)
 
 
 @app.route('/api/keys')
 def get_keys():
-    """Get all key metrics"""
+    """Get all key metrics (Thread-Safe)"""
     keys_data = []
     
-    for key in sorted(metrics.key_metrics.values(), key=lambda k: k.violations_found, reverse=True):
-        if key.files_checked == 0 and key.violations_found == 0:
-            continue
-            
-        keys_data.append({
+    with metrics.lock:
+        # Sort while locked or create snapshot first
+        sorted_keys = sorted(
+            metrics.key_metrics.values(), 
+            key=lambda k: k.violations_found, 
+            reverse=True
+        )
+        
+        for key in sorted_keys:
+            if key.files_checked == 0 and key.violations_found == 0:
+                continue
+                
+            keys_data.append({
+                "key_id": key.key_id,
+                "key_name": key.key_name,
+                "files_checked": key.files_checked,
+                "files_passed": key.files_passed,
+                "files_failed": key.files_failed,
+                "violations_found": key.violations_found,
+                "violations_healed": key.violations_healed,
+                "healing_attempts": key.healing_attempts,
+                "pass_rate": key.pass_rate,
+                "healing_success_rate": key.healing_success_rate,
+                "status": key.status
+            })
+    
+    return jsonify(keys_data)
+
+
+@app.route('/api/keys/<int:key_id>')
+def get_key_detail(key_id: int):
+    """Get detailed information for a specific key (Thread-Safe)"""
+    with metrics.lock:
+        if key_id not in metrics.key_metrics:
+            return jsonify({"error": "Key not found"}), 404
+        
+        key = metrics.key_metrics[key_id]
+        
+        # Create snapshots of deque/list for filtering
+        # Note: metrics.violation_timeline is a deque in hardened version
+        snapshot_violations = list(metrics.violation_timeline)
+        snapshot_healings = list(metrics.healing_timeline)
+        
+        key_violations = [v for v in snapshot_violations if v["key_id"] == key_id]
+        key_healings = [h for h in snapshot_healings if h["key_id"] == key_id]
+        
+        response_data = {
             "key_id": key.key_id,
             "key_name": key.key_name,
             "files_checked": key.files_checked,
@@ -77,98 +133,95 @@ def get_keys():
             "healing_attempts": key.healing_attempts,
             "pass_rate": key.pass_rate,
             "healing_success_rate": key.healing_success_rate,
-            "status": key.status
-        })
-    
-    return jsonify(keys_data)
-
-
-@app.route('/api/keys/<int:key_id>')
-def get_key_detail(key_id: int):
-    """Get detailed information for a specific key"""
-    if key_id not in metrics.key_metrics:
-        return jsonify({"error": "Key not found"}), 404
-    
-    key = metrics.key_metrics[key_id]
-    
-    # Get violations for this key
-    key_violations = [v for v in metrics.violation_timeline if v["key_id"] == key_id]
-    key_healings = [h for h in metrics.healing_timeline if h["key_id"] == key_id]
-    
-    return jsonify({
-        "key_id": key.key_id,
-        "key_name": key.key_name,
-        "files_checked": key.files_checked,
-        "files_passed": key.files_passed,
-        "files_failed": key.files_failed,
-        "violations_found": key.violations_found,
-        "violations_healed": key.violations_healed,
-        "healing_attempts": key.healing_attempts,
-        "pass_rate": key.pass_rate,
-        "healing_success_rate": key.healing_success_rate,
-        "status": key.status,
-        "recent_violations": [
-            {
-                "file": v["file"],
-                "count": v["count"],
-                "timestamp": v["timestamp"].isoformat()
-            }
-            for v in key_violations[-10:]
-        ],
-        "recent_healings": [
-            {
-                "file": h["file"],
-                "healed": h["healed"],
-                "duration": h["duration"],
-                "timestamp": h["timestamp"].isoformat()
-            }
-            for h in key_healings[-10:]
-        ]
-    })
+            "status": key.status,
+            "recent_violations": [
+                {
+                    "file": v["file"],
+                    "count": v["count"],
+                    "timestamp": v["timestamp"].isoformat()
+                }
+                for v in key_violations[-10:]
+            ],
+            "recent_healings": [
+                {
+                    "file": h["file"],
+                    "healed": h["healed"],
+                    "duration": h["duration"],
+                    "timestamp": h["timestamp"].isoformat()
+                }
+                for h in key_healings[-10:]
+            ]
+        }
+        
+    return jsonify(response_data)
 
 
 @app.route('/api/violators')
 def get_violators():
-    """Get top violating files"""
-    limit = int(request.args.get('limit', 20))
+    """Get top violating files (Uses Metrics internal locking)"""
+    try:
+        limit = min(int(request.args.get('limit', 20)), MAX_LIMIT)
+    except ValueError:
+        limit = 20
+    # get_top_violators is already thread-safe in the hardened DashboardMetrics
     return jsonify(metrics.get_top_violators(limit))
 
 
 @app.route('/api/healing-log')
 def get_healing_log():
-    """Get healing activity log"""
-    limit = int(request.args.get('limit', 50))
+    """Get healing activity log (Uses Metrics internal locking)"""
+    try:
+        limit = min(int(request.args.get('limit', 50)), MAX_LIMIT)
+    except ValueError:
+        limit = 50
+    # get_healing_log is already thread-safe
     return jsonify(metrics.get_healing_log(limit))
 
 
 @app.route('/api/summary')
 def get_summary():
-    """Get overall summary statistics"""
+    """Get overall summary statistics (Thread-Safe)"""
+    # get_key_summary is thread-safe
     key_summary = metrics.get_key_summary()
     
-    healing_rate = 0.0
-    if metrics.session and metrics.session.total_violations > 0:
-        healing_rate = (metrics.session.total_healed / metrics.session.total_violations) * 100
+    with metrics.lock:
+        session = metrics.session
+        total_violations = session.total_violations if session else 0
+        total_healed = session.total_healed if session else 0
+        
+        healing_rate = safe_div(total_healed, total_violations) * 100
+        
+        summary_data = {
+            "key_summary": key_summary,
+            "healing_rate": healing_rate,
+            "total_violations": total_violations,
+            "total_healed": total_healed,
+            "violation_timeline_count": len(metrics.violation_timeline),
+            "healing_timeline_count": len(metrics.healing_timeline)
+        }
     
-    return jsonify({
-        "key_summary": key_summary,
-        "healing_rate": healing_rate,
-        "total_violations": metrics.session.total_violations if metrics.session else 0,
-        "total_healed": metrics.session.total_healed if metrics.session else 0,
-        "violation_timeline_count": len(metrics.violation_timeline),
-        "healing_timeline_count": len(metrics.healing_timeline)
-    })
+    return jsonify(summary_data)
 
 
 @app.route('/api/timeline')
 def get_timeline():
-    """Get violation and healing timeline"""
-    limit = int(request.args.get('limit', 50))
+    """Get violation and healing timeline (Thread-Safe Snapshot)"""
+    try:
+        limit = min(int(request.args.get('limit', 50)), MAX_LIMIT)
+    except ValueError:
+        limit = DEFAULT_LIMIT
     
-    # Combine and sort by timestamp
     combined = []
     
-    for v in metrics.violation_timeline[-limit:]:
+    with metrics.lock:
+        # Create snapshots of the last N items to minimize lock time
+        # Deque slicing is not directly supported, so we use list(islice) or just list() if small
+        # Since we hardened deque to maxlen=5000, list() is safe and fast enough.
+        v_snapshot = list(metrics.violation_timeline)
+        h_snapshot = list(metrics.healing_timeline)
+
+    # Process outside the lock
+    for v in v_snapshot[-limit:]:
         combined.append({
             "type": "violation",
             "timestamp": v["timestamp"].isoformat(),
@@ -177,7 +230,7 @@ def get_timeline():
             "count": v["count"]
         })
     
-    for h in metrics.healing_timeline[-limit:]:
+    for h in h_snapshot[-limit:]:
         combined.append({
             "type": "healing",
             "timestamp": h["timestamp"].isoformat(),
@@ -195,22 +248,28 @@ def get_timeline():
 @app.route('/api/export')
 def export_report():
     """Export full report as JSON"""
-    report_path = f"canon_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    dashboard.export_report(report_path)
-    return jsonify({"success": True, "file": report_path})
+    try:
+        filename = f"canon_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        # Export logic inside dashboard handles locking
+        dashboard.export_report(filename)
+        return jsonify({"success": True, "file": filename})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 def run_server(host='0.0.0.0', port=5000, debug=False):
     """Run the Flask server"""
     print(f"🚀 Canon Dashboard Web Server starting on http://{host}:{port}")
-    print(f"📊 Open your browser to view the dashboard")
-    app.run(host=host, port=port, debug=debug, threaded=True)
+    # Disable debug reloader in production to prevent main thread interference
+    use_reloader = debug and not threading.current_thread().name != 'MainThread'
+    app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
 
 
 if __name__ == "__main__":
     # Start with mock data for testing
     metrics.start_session("agentic_core", 238)
     
+    print("Populating mock data...")
     # Simulate some activity
     for i in range(10):
         metrics.record_violation(f"agentic_core/file_{i}.py", 40 + (i % 10), i * 2)
