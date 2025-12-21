@@ -360,6 +360,10 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not hasattr(ctx, 'successful_traces'): ctx.successful_traces = []
     if not hasattr(ctx, 'failed_traces'): ctx.failed_traces = []
     
+    # [FIX] Add missing log_error method required by Budget & Structural agents
+    if not hasattr(ctx, 'log_error'): 
+        ctx.log_error = lambda msg: ctx.report("System", 0, False, msg)
+    
     if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
     if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
     if not hasattr(ctx, 'signals'): ctx.signals = set()
@@ -411,6 +415,57 @@ async def run_mission(target_scope: str = "agentic_core"):
     # print("\n   [PHYSICS] Current Directory Structure:")
     # tree_view = generate_ascii_tree(project_root_path, max_depth=4)
     # print(tree_view)
+    
+    # ===========================================================================
+    # [PHASE -1] SYNTAX HEALING: Fix Broken Python Files Before Discovery
+    # ===========================================================================
+    print(f"\n[PHASE -1] SYNTAX HEALING")
+    import py_compile, tempfile
+    syntax_healed_count = 0
+    for file_path in ctx.python_files:
+        try:
+            with tempfile.NamedTemporaryFile(delete=True) as tmp:
+                py_compile.compile(file_path, cfile=tmp.name, doraise=True)
+        except SyntaxError as e:
+            print(f"   [SYNTAX-FIX] {Path(file_path).name}:{e.lineno} -> {e.msg}")
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                    broken_code = f.read()
+                
+                repair_prompt = f"""### ROLE: SYNTAX_MEDIC
+### ERROR: {e.msg} at line {e.lineno}
+### TASK: Fix the syntax error (quotes, indents, or colons) only. Do not change logic.
+### FILE: {Path(file_path).name}
+
+Return ONLY the fixed Python code. No explanations, no markdown.
+"""
+                
+                fixed_code = await ctx.engine.resilient_mutation(
+                    file_path=str(file_path),
+                    code=broken_code,
+                    task=repair_prompt,
+                    round_num=1,
+                    fission_active=False
+                )
+                
+                # Safety: Ensure we didn't get an empty response
+                if len(fixed_code) > 10:
+                    is_safe, msg = ctx.safety.verify_change(broken_code, fixed_code, fission_active=False)
+                    if is_safe:
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            f.write(fixed_code)
+                        print(f"      [✓] Syntax Healed. Agent can now load.")
+                        syntax_healed_count += 1
+                    else:
+                        print(f"      [!] Safety check failed: {msg}")
+            except Exception as heal_err:
+                print(f"      [!] Healing failed: {str(heal_err)[:100]}")
+    
+    if syntax_healed_count > 0:
+        print(f"   [PHASE -1 COMPLETE] Healed {syntax_healed_count} files with syntax errors")
+    else:
+        print(f"   [OK] No syntax errors detected")
+    
     print("-" * 50)
     
     # ===========================================================================
@@ -462,8 +517,10 @@ async def run_mission(target_scope: str = "agentic_core"):
                     for attr_name in dir(module):
                         attr = getattr(module, attr_name)
                         # Filter: Must be a class, defined in this module, and have execute/run method
+                        # [FIX] Do NOT instantiate the base SubAtomicAgent class or it will crash 'await' expressions
                         if (isinstance(attr, type) and 
                             attr.__module__ == module_name and
+                            attr_name != 'SubAtomicAgent' and  # Exclude base class
                             (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter')) or
                              attr_name in ('SystemArchitect', 'StructuralEngineer', 'HealerAgent', 'HygieneGuardian', 'ArchitectureGovernor', 
                                          'DependencySentinel', 'SecurityEnforcer', 'MemoryArchitect', 'HallucinationHunter')) and
@@ -717,78 +774,88 @@ CURRENT CODE:
                 print(f"\n   [CONSOLIDATE] {folder_path.name}: {len(files)} file(s)")
                 print(f"      Reason: {candidate['reason']}")
                 
-                # Generate consolidation plan using LLM
-                consolidation_prompt = f"""ARCHITECTURAL CONSOLIDATION TASK
-
-FOLDER: {folder_path}
-FILES: {', '.join(files)}
-REASON: {candidate['reason']}
-
-CONTEXT: This folder has low signal density ({len(files)} files) and should be consolidated.
-
-TASK: Generate a consolidation plan to merge this folder's content into its parent directory.
-
-STRATEGY:
-1. If files are small utilities, merge them into parent's utils.py or __init__.py
-2. If files are domain-specific agents, move to parent and update imports
-3. Update all import statements across the codebase
-4. Ensure no functionality is lost
-
-OUTPUT FORMAT (JSON):
-{{
-    "action": "merge" or "relocate",
-    "target_file": "path/to/target.py",
-    "merge_strategy": "append" or "integrate",
-    "import_updates": [
-        {{"from": "old.import.path", "to": "new.import.path"}}
-    ]
-}}
-
-Return ONLY valid JSON. No explanations.
-"""
+                # Determine target file (parent's __init__.py or utils.py)
+                parent_dir = folder_path.parent
+                target_path = parent_dir / "__init__.py"
+                
+                # Ensure target exists
+                if not target_path.exists():
+                    target_path.touch()
+                    target_path.write_text("# Consolidated module\n")
+                
+                print(f"\n   [SURGERY] {folder_path.name} -> {target_path.name}")
                 
                 try:
-                    # Get consolidation plan from LLM
-                    plan_response = await subatomic_engine.resilient_mutation(
-                        file_path=str(folder_path),
-                        code="",
-                        task=consolidation_prompt,
+                    # Read target code
+                    with open(target_path, 'r', encoding='utf-8', errors='replace') as f:
+                        target_code = f.read()
+                    
+                    # Read all source files to consolidate
+                    source_contents = []
+                    for file_name in files:
+                        source_file = folder_path / file_name
+                        if source_file.exists():
+                            with open(source_file, 'r', encoding='utf-8', errors='replace') as f:
+                                source_contents.append(f"# From {file_name}\n{f.read()}\n")
+                    
+                    surgery_prompt = f"""### ROLE: ARCHITECTURAL_SURGEON
+### ACTION: Consolidate sprawl folder into parent
+### TASK: Move logic from {folder_path.name}/ into {target_path.name}
+
+SOURCE FILES TO MERGE:
+{''.join(source_contents)}
+
+TARGET FILE:
+{target_code}
+
+REQUIREMENTS:
+1. Preserve all class definitions and logic from source files
+2. Update import paths to reflect new location
+3. Remove duplicate imports
+4. Maintain proper Python structure
+5. Ensure all functionality is preserved
+
+Return ONLY the complete merged Python code. No explanations.
+"""
+                    
+                    new_code = await ctx.engine.resilient_mutation(
+                        file_path=str(target_path),
+                        code=target_code,
+                        task=surgery_prompt,
                         round_num=1,
                         fission_active=False
                     )
                     
-                    # Parse JSON plan
-                    if isinstance(plan_response, str):
-                        # Extract JSON if wrapped
-                        if "```json" in plan_response:
-                            plan_response = plan_response.split("```json", 1)[1]
-                            plan_response = plan_response.split("```", 1)[0]
-                        elif "```" in plan_response:
-                            plan_response = plan_response.split("```", 1)[1]
-                            plan_response = plan_response.split("```", 1)[0]
-                        plan_response = plan_response.strip()
+                    # Extract code if wrapped in markdown
+                    if isinstance(new_code, str):
+                        if new_code.startswith("```python"):
+                            new_code = new_code.split("```python", 1)[1]
+                            new_code = new_code.rsplit("```", 1)[0]
+                        elif new_code.startswith("```"):
+                            new_code = new_code.split("```", 1)[1]
+                            new_code = new_code.rsplit("```", 1)[0]
+                        new_code = new_code.strip()
                     
-                    try:
-                        plan = json.loads(plan_response)
-                        print(f"      [PLAN] Action: {plan.get('action', 'unknown')}")
-                        print(f"      [PLAN] Target: {plan.get('target_file', 'unknown')}")
+                    is_safe, msg = ctx.safety.verify_change(target_code, new_code, fission_active=False)
+                    if is_safe:
+                        with open(target_path, 'w', encoding='utf-8') as f:
+                            f.write(new_code)
                         
-                        # Log the plan but don't execute yet (safety)
-                        ctx.report("SprawlConsolidation", 0, True, 
-                                 f"Generated plan for {folder_path.name}: {plan.get('action', 'unknown')}")
+                        # PHYSICAL CLEANUP: Delete the empty subfolder sprawl
+                        import shutil
+                        shutil.rmtree(folder_path, ignore_errors=True)
+                        print(f"      [✓] Consolidated: {folder_path.name} -> {target_path.name}")
                         sprawl_consolidated += 1
-                        
-                    except json.JSONDecodeError:
-                        print(f"      [!] Invalid JSON response from LLM")
-                        ctx.report("SprawlConsolidation", 0, False, "Invalid consolidation plan")
-                
+                        ctx.report("SprawlSurgery", 49, True, f"Consolidated {folder_path.name} into {target_path.name}")
+                    else:
+                        print(f"      [!] Safety check failed: {msg}")
+                        ctx.report("SprawlSurgery", 49, False, f"Safety rejected: {msg}")
                 except Exception as e:
-                    print(f"      [!] Consolidation planning failed: {str(e)[:100]}")
-                    ctx.report("SprawlConsolidation", 0, False, f"Planning error: {str(e)[:50]}")
+                    print(f"      [!] Surgery failed: {str(e)[:100]}")
+                    ctx.report("SprawlSurgery", 49, False, f"Surgery error: {str(e)[:50]}")
             
             if len(flattening_candidates) > 0:
-                print(f"\n   [PHASE 0.5 COMPLETE] Generated {sprawl_consolidated}/{len(flattening_candidates)} consolidation plans")
-                print(f"   [!] Plans logged for review. Manual execution recommended for safety.")
+                print(f"\n   [PHASE 0.5 COMPLETE] Consolidated {sprawl_consolidated}/{len(flattening_candidates)} sprawl folders")
             else:
                 print(f"   [OK] No sprawl detected. Architecture is clean.")
                 
