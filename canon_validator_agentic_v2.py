@@ -12,14 +12,14 @@ import inspect
 import logging
 import os
 import sys
-import threading
 import time
 import traceback
 from pathlib import Path
 from typing import Any, Optional
 
 # Add project root to sys.path for imports
-project_root = Path(__file__).parent.parent
+# Validator is now at root (Key 0), so parent is the project root
+project_root = Path(__file__).parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
@@ -209,7 +209,8 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
     
     # Add project root to sys.path for imports
-    project_root = Path(__file__).parent.parent
+    # Validator is now at root (Key 0), so parent is the project root
+    project_root = Path(__file__).parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     
