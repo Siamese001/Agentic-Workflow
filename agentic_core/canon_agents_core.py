@@ -8,7 +8,7 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from agentic_core.canon_base_agent import SubAtomicAgent
 from apps_shared.canon_utils import EXCLUDED_DIRS, is_excluded
@@ -117,11 +117,11 @@ class SystemArchitect(SubAtomicAgent):
         Reduces nesting depth in the main check_key_40_no_metaclasses method.
         """
         violations_in_tree = []
-        for node in ast.walk(tree): # Depth 1 (relative to this helper method)
-            if isinstance(node, ast.ClassDef): # Depth 2
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
                 # Check for 'metaclass=...' in class definition keywords
-                if any(kw.arg == "metaclass" for kw in node.keywords): # Depth 3
-                    violations_in_tree.append(f"{file_path}:{node.lineno}") # Depth 4
+                if any(kw.arg == "metaclass" for kw in node.keywords):
+                    violations_in_tree.append(f"{file_path}:{node.lineno}")
         return violations_in_tree
 
     def check_key_40_no_metaclasses(self) -> Tuple[bool, List[str]]:
@@ -135,14 +135,14 @@ class SystemArchitect(SubAtomicAgent):
                           where a metaclass was found.
         """
         metaclass_violations = []
-        for file_path in self.ctx.python_files: # Depth 1
-            try: # Depth 2
-                with open(file_path, "r", encoding="utf-8") as f: # Depth 3
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
                     # Add filename for better error messages from ast.parse
                     tree = ast.parse(f.read(), filename=file_path)
                 # Delegate the tree traversal and violation finding to the helper
-                metaclass_violations.extend(self._check_tree_for_metaclasses(tree, file_path)) # Depth 3
-            except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e: # Depth 2
+                metaclass_violations.extend(self._check_tree_for_metaclasses(tree, file_path))
+            except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
                 # Log a warning for files that cannot be parsed, but continue processing others.
                 print(
                     f"Warning: Could not parse {file_path} for metaclass check: {e}",
@@ -212,6 +212,23 @@ class SystemArchitect(SubAtomicAgent):
                 warnings.append(f"{file_path} (Depth 1 — move to package recommended)")
         return len(violations) == 0, violations + warnings
 
+    def _check_file_for_definitions(self, file_path: str) -> bool:
+        """Helper to check if a file contains class or function definitions."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+                ast_tree = ast.parse(content, filename=file_path)
+                for node in ast_tree.body:
+                    if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
+                        return True
+            return False
+        except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
+            print(
+                f"Warning: Could not parse {file_path} for Law of Void check: {e}",
+                file=sys.stderr
+            )
+            return True # Treat unparseable as a violation for safety
+
     def check_key_50_law_of_void(self) -> Tuple[bool, List[str]]:
         """
         Checks for Python files directly in the project root (depth 1) that contain
@@ -229,21 +246,7 @@ class SystemArchitect(SubAtomicAgent):
         for file_path in self.ctx.python_files:
             # Check if the file is directly in the assumed project root
             if len(Path(file_path).parts) == 1:
-                try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        content = f.read()
-                        # Add filename for better error messages from ast.parse
-                        ast_tree = ast.parse(content, filename=file_path)
-                        for node in ast_tree.body:
-                            if isinstance(node, (ast.ClassDef, ast.FunctionDef)):
-                                root_violations.append(file_path)
-                                break  # Only need to find one such definition to flag it
-                except (FileNotFoundError, SyntaxError, UnicodeDecodeError) as e:
-                    print(
-                        f"Warning: Could not parse {file_path} for Law of Void check: {e}",
-                        file=sys.stderr
-                    )
-                    # Treat unparseable files as violations for the purpose of this report
+                if self._check_file_for_definitions(file_path):
                     root_violations.append(file_path)
         return len(root_violations) == 0, root_violations
 
@@ -254,6 +257,23 @@ class HealerAgent(SubAtomicAgent):
     ROLE: The Ultimate Repair Agent. Uses Gemini 3 Flash with thinking_level=HIGH.
     """
     MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
+
+    def _check_file_for_syntax_error(self, file_path: str) -> Tuple[bool, Optional[SyntaxError]]:
+        """Helper to check a single file for syntax errors."""
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                ast.parse(f.read(), filename=file_path)
+            return False, None
+        except SyntaxError as e:
+            return True, e
+        except (FileNotFoundError, UnicodeDecodeError) as e:
+            print(
+                f"Warning: Could not read or decode {file_path} for healing: {e}",
+                file=sys.stderr
+            )
+            # For reporting purposes, treat unreadable/undecodable as a syntax error
+            # to ensure it's flagged and potentially retried.
+            return True, SyntaxError(f"File unreadable/undecodable: {e}")
 
     async def execute(self):
         """
@@ -274,20 +294,9 @@ class HealerAgent(SubAtomicAgent):
             # Re-scan all python files for syntax errors in each round
             for file_path in self.ctx.python_files:
                 if not is_excluded(file_path):
-                    try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            # Add filename for better error messages from ast.parse
-                            ast.parse(f.read(), filename=file_path)
-                    except SyntaxError as e:
-                        syntax_errors_found_this_round.append((file_path, e))
-                    except (FileNotFoundError, UnicodeDecodeError) as e:
-                        # Log warnings for files that cannot be read or decoded
-                        print(
-                            f"Warning: Could not read or decode {file_path} for healing: {e}",
-                            file=sys.stderr
-                        )
-                        # These are not SyntaxErrors, so they won't trigger smart_fix directly,
-                        # but might be reported as remaining issues later.
+                    has_error, error_obj = self._check_file_for_syntax_error(file_path)
+                    if has_error:
+                        syntax_errors_found_this_round.append((file_path, error_obj))
 
             if not syntax_errors_found_this_round:
                 any_file_healed_in_current_round = False  # No errors found, stop healing attempts
@@ -306,17 +315,8 @@ class HealerAgent(SubAtomicAgent):
         # After all healing rounds, perform a final check for any remaining syntax errors
         remaining_syntax_errors = []
         for file_path in self.ctx.python_files:
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    ast.parse(f.read(), filename=file_path)
-            except SyntaxError:
-                remaining_syntax_errors.append(file_path)
-            except (FileNotFoundError, UnicodeDecodeError) as e:
-                print(
-                    f"Warning: Could not read or decode {file_path} for final check: {e}",
-                    file=sys.stderr
-                )
-                # Treat unreadable files as failures for the purpose of this report
+            has_error, _ = self._check_file_for_syntax_error(file_path)
+            if has_error:
                 remaining_syntax_errors.append(file_path)
 
         if not remaining_syntax_errors:

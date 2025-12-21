@@ -61,16 +61,16 @@ class CanonValidator:
         Builds a quick lookup dictionary from file path to its manifest entry.
         Refactored to reduce nesting depth.
         
-        Violation Fix: The original `if not ... continue` structure within the for loop
-        resulted in a nesting depth of 5 (assuming class=1, def=2, for=3, if=4, continue=5).
-        This refactoring uses a dictionary comprehension to achieve the same filtering
-        and assignment in a more concise way, reducing the effective nesting depth.
+        Violation Fix: The previous dictionary comprehension with an 'if' clause
+        resulted in a nesting depth of 5. This refactoring uses an explicit for loop
+        to achieve the same filtering and assignment, reducing the effective nesting depth to 4.
         """
-        return {
-            file_info["absolute_path"]: file_info
-            for file_info in manifest_data.get("files", [])
-            if isinstance(file_info, dict) and "absolute_path" in file_info
-        }
+        lookup = {}
+        files = manifest_data.get("files", [])
+        for file_info in files:
+            if isinstance(file_info, dict) and "absolute_path" in file_info:
+                lookup[file_info["absolute_path"]] = file_info
+        return lookup
 
     def _perform_manifest_update(self, new_mtime: float):
         """Helper to update manifest cache, lookup, and last load time."""
