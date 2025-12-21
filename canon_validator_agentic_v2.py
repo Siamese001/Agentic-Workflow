@@ -482,8 +482,18 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     for mod_name, cls_name, cls_ref in discovered:
         try:
-            # Instantiate with context
-            agent_instance = cls_ref(ctx)
+            # [HARDENED] L5 Autonomous Instantiation Logic
+            sig = inspect.signature(cls_ref.__init__)
+            kwargs = {}
+            
+            if 'context' in sig.parameters or 'ctx' in sig.parameters:
+                kwargs['context'] = ctx
+            if 'name' in sig.parameters:
+                kwargs['name'] = cls_name
+            if 'engine' in sig.parameters:
+                kwargs['engine'] = ctx.engine
+                
+            agent_instance = cls_ref(**kwargs)
             cleaning_crew.append(agent_instance)
             print(f"     [+] Active: {cls_name}")
         except Exception as e:
