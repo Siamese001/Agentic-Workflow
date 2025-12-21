@@ -11,7 +11,24 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from agentic_core.canon_base_agent import SubAtomicAgent
-from apps_shared.canon_utils import EXCLUDED_DIRS, is_excluded
+
+# Inlined EXCLUDED_DIRS and is_excluded to remove dependency on apps_shared.canon_utils
+EXCLUDED_DIRS = [
+    '.git', '__pycache__', '.venv', 'venv', 'env', 'node_modules',
+    'dist', 'build', '.vscode', '.idea', '.DS_Store', '.mypy_cache',
+    '.pytest_cache', 'htmlcov', 'site-packages', 'docs', 'tests',
+    'temp', 'tmp', 'log', 'logs'
+]
+
+def is_excluded(file_path: str) -> bool:
+    """
+    Checks if a file path or any of its parent directories are in the EXCLUDED_DIRS list.
+    """
+    path_parts = Path(file_path).parts
+    for part in path_parts:
+        if part in EXCLUDED_DIRS:
+            return True
+    return False
 
 
 class NestVisitor(ast.NodeVisitor):
