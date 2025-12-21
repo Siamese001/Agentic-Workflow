@@ -142,7 +142,12 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         rel_path = file_path.relative_to(project_root)
         
         # Special Case: Root-level files are explicitly allowed (Key 0: Global Config, Orchestrator, Law)
-        if len(rel_path.parts) == 1 and (file_path.is_file() or file_path.name == "windsurfrules.md"):
+        # Protected root-level files that must remain at project root
+        protected_root_files = {
+            "canon_validator_agentic_v2.py", "pyproject.toml", "README.md",
+            "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
+        }
+        if len(rel_path.parts) == 1 and file_path.name in protected_root_files:
             return True, "Root-level file allowed (Key 0 compliance: global config/orchestrator)"
 
         # Nested files: Must belong to an approved root folder

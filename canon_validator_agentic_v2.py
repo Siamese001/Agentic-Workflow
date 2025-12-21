@@ -37,10 +37,13 @@ except ImportError:
     print("   [CRITICAL] Could not import 'agentic_core'. Shim failed.")
     sys.exit(1)
 
-# Hard-Gate: Tri-Brain SDKs are MANDATORY
+# [HARDENING] NEURAL LINK INITIALIZATION
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    # Explicitly point to Root .env to prevent loading failures from subfolders
+    env_path = project_root / ".env"
+    if not load_dotenv(dotenv_path=env_path):
+        print(f"⚠️  [L6 ALERT] .env not found at {env_path}. Neural link may be offline.")
 except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install python-dotenv")
     sys.exit(1)
