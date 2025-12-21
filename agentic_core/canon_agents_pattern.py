@@ -1,10 +1,3 @@
-The provided Python code is generally well-structured and follows good practices, including type hints, docstrings, and f-strings. Most "violations" are either placeholders (`TODO` comments) or acknowledged heuristics in the pattern checks, rather than actual syntax or style errors in the code itself.
-
-Here are the minor adjustments for improved style and precision:
-
-1.  **Module Docstring Enhancement**: Expanded for better clarity and context.
-2.  **`check_key_39_no_useless_return` Precision**: Changed the reported line number to point directly to the `return` statement instead of the function definition line, for more accurate violation reporting.
-
 """
 Canon Validator Pattern Agents
 

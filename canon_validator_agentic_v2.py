@@ -420,12 +420,13 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [PHASE -1] SYNTAX HEALING: Fix Broken Python Files Before Discovery
     # ===========================================================================
     print(f"\n[PHASE -1] SYNTAX HEALING")
-    import py_compile, tempfile
+    import ast
     syntax_healed_count = 0
     for file_path in ctx.python_files:
         try:
-            with tempfile.NamedTemporaryFile(delete=True) as tmp:
-                py_compile.compile(file_path, cfile=tmp.name, doraise=True)
+            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                code = f.read()
+            ast.parse(code, filename=file_path)
         except SyntaxError as e:
             print(f"   [SYNTAX-FIX] {Path(file_path).name}:{e.lineno} -> {e.msg}")
             try:

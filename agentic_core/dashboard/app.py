@@ -44,14 +44,14 @@ def get_connection():
 
 CONN = get_connection()
 
-if not conn:
+if not CONN: # Changed conn to CONN for consistency
     st.stop()
 
 st.title("✈️ Subatomic Flight Recorder")
 st.markdown("**Real-time Agent Cognition Observatory**")
 
 try:
-    traces_df = conn.execute("""
+    traces_df = CONN.execute(""" # Changed conn to CONN
         SELECT DISTINCT trace_id,
                MIN(timestamp) as start_time,
                MAX(timestamp) as end_time,
@@ -79,9 +79,10 @@ st.sidebar.header("🎯 Trace Selection")
 
 trace_display = traces_df.apply(
     lambda row: f"{row['trace_id']} ({row['event_count']} events, {row['duration']:.1f}s)",
-    AXIS=1
+    axis=1 # Corrected AXIS to axis
 )
 
+selected_idx = st.sidebar.selectbox( # Added st.sidebar.selectbox and assigned to selected_idx
     "Select Mission Trace",
     range(len(traces_df)),
     format_func=lambda i: trace_display.iloc[i]
@@ -96,14 +97,14 @@ st.sidebar.metric("Total Events", traces_df['event_count'].sum())
 st.header(f"🛸 Mission Timeline: `{selected_trace}`")
 
 COL1, COL2, COL3 = st.columns(3)
-with col1:
+with COL1: # Changed col1 to COL1 for consistency
     st.metric("Events", traces_df.iloc[selected_idx]['event_count'])
-with col2:
+with COL2: # Changed col2 to COL2 for consistency
     st.metric("Duration", f"{traces_df.iloc[selected_idx]['duration']:.2f}s")
-with col3:
+with COL3: # Changed col3 to COL3 for consistency
     st.metric("Start Time", traces_df.iloc[selected_idx]['start_time'].strftime("%H:%M:%S"))
 
-gantt_df = conn.execute("""
+gantt_df = CONN.execute(""" # Changed conn to CONN
     SELECT span_id, agent_role,
            MIN(timestamp) as Start,
            MAX(timestamp) as Finish
@@ -123,12 +124,12 @@ if not gantt_df.empty:
         x_start="Start",
         x_end="Finish",
         y="agent_role",
-        COLOR="agent_role",
+        color="agent_role", # Changed COLOR to color
         hover_data=["span_id", "Duration"],
-        TITLE="Agent Execution Timeline (Gantt Chart)"
+        title="Agent Execution Timeline (Gantt Chart)" # Changed TITLE to title
     )
-    fig.update_yaxes(categoryorder="total ascending")
-    st.plotly_chart(fig, use_container_width=True)
+    FIG.update_yaxes(categoryorder="total ascending") # Changed fig to FIG
+    st.plotly_chart(FIG, use_container_width=True) # Changed fig to FIG
 else:
     st.warning("No span data available for timeline visualization")
 
@@ -139,7 +140,7 @@ col_left, col_right = st.columns([1, 2])
 with col_left:
     st.subheader("[PLAN] Event Stream")
 
-    events_df = conn.execute("""
+    events_df = CONN.execute(""" # Changed conn to CONN
         SELECT span_id, event_type, timestamp, payload
         from traces
         WHERE trace_id = ?
@@ -157,6 +158,7 @@ with col_left:
         else:
             filtered_events = events_df
 
+        selected_event_idx = st.selectbox( # Added st.selectbox and assigned to selected_event_idx
             "Select Event",
             filtered_events.index,
             format_func=lambda i: f"{filtered_events.loc[i,
@@ -165,6 +167,11 @@ with col_left:
         )
     else:
         st.warning("No events found")
+    selected_event_idx = None # Initialize selected_event_idx if no events are found
+    if not events_df.empty and 'selected_event_idx' in locals(): # Check if selected_event_idx was set
+        if selected_event_idx not in filtered_events.index: # Handle case where filter changes and index is out of bounds
+            selected_event_idx = None
+
 
 with col_right:
     st.subheader("[SCAN] Black Box Data")
@@ -172,37 +179,37 @@ with col_right:
     if selected_event_idx is not None and not events_df.empty:
         ROW = events_df.loc[selected_event_idx]
 
-        st.info(f"**Event Type:** {row['event_type']}")
-        st.info(f"**Span ID:** {row['span_id']}")
-        st.info(f"**Timestamp:** {row['timestamp']}")
+        st.info(f"**Event Type:** {ROW['event_type']}") # Changed row to ROW
+        st.info(f"**Span ID:** {ROW['span_id']}") # Changed row to ROW
+        st.info(f"**Timestamp:** {ROW['timestamp']}") # Changed row to ROW
 
         try:
-            PAYLOAD = json.loads(row['payload'])
+            PAYLOAD = json.loads(ROW['payload']) # Changed row to ROW
 
-            if row['event_type'] == 'THINK_COMPLETE' and 'reasoning' in payload:
+            if ROW['event_type'] == 'THINK_COMPLETE' and 'reasoning' in PAYLOAD: # Changed row to ROW, payload to PAYLOAD
                 st.markdown("### 🧠 Agent Reasoning")
-                st.write(payload['reasoning'])
+                st.write(PAYLOAD['reasoning']) # Changed payload to PAYLOAD
 
-            if row['event_type'] == 'MCP_CALL' and 'tool' in payload:
-                st.markdown(f"### [+] Tool Call: `{payload['tool']}`")
-                st.json(payload.get('args', {}))
+            if ROW['event_type'] == 'MCP_CALL' and 'tool' in PAYLOAD: # Changed row to ROW, payload to PAYLOAD
+                st.markdown(f"### [+] Tool Call: `{PAYLOAD['tool']}`") # Changed payload to PAYLOAD
+                st.json(PAYLOAD.get('args', {})) # Changed payload to PAYLOAD
 
-            if 'ERROR' in row['event_type']:
+            if 'ERROR' in ROW['event_type']: # Changed row to ROW
                 st.error("### [!] Error Event")
-                st.code(payload.get('error_message', 'Unknown error'))
+                st.code(PAYLOAD.get('error_message', 'Unknown error')) # Changed payload to PAYLOAD
 
             with st.expander("📦 Full Payload (JSON)"):
-                st.json(payload)
+                st.json(PAYLOAD) # Changed payload to PAYLOAD
 
         except json.JSONDecodeError:
-            st.text(row['payload'])
+            st.text(ROW['payload']) # Changed row to ROW
     else:
         st.info("Select an event from the stream to view details")
 
 st.markdown("---")
 st.subheader("[STATS] MCP Tool Performance")
 
-tool_stats_df = conn.execute("""
+tool_stats_df = CONN.execute(""" # Changed conn to CONN
     SELECT json_extract_string(payload, '$.tool') as tool_name,
            COUNT(*) as calls
     from traces
@@ -214,17 +221,17 @@ tool_stats_df = conn.execute("""
 if not tool_stats_df.empty:
     COL1, COL2 = st.columns([2, 1])
 
-    with col1:
+    with COL1: # Changed col1 to COL1
         FIG = px.bar(
             tool_stats_df,
             x='tool_name',
             y='calls',
-            TITLE="Tool Usage Frequency",
-            LABELS={'tool_name': 'Tool', 'calls': 'Number of Calls'}
+            title="Tool Usage Frequency", # Changed TITLE to title
+            labels={'tool_name': 'Tool', 'calls': 'Number of Calls'} # Changed LABELS to labels
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(FIG, use_container_width=True) # Changed fig to FIG
 
-    with col2:
+    with COL2: # Changed col2 to COL2
         st.dataframe(tool_stats_df, use_container_width=True)
 else:
     st.info("No MCP tool calls recorded for this trace")
@@ -232,7 +239,7 @@ else:
 st.markdown("---")
 st.subheader("[!] Error Analysis")
 
-error_df = conn.execute("""
+error_df = CONN.execute(""" # Changed conn to CONN
     SELECT span_id, event_type, timestamp, payload
     from traces
     WHERE trace_id = ? and event_type LIKE '%ERROR%'
@@ -242,14 +249,14 @@ error_df = conn.execute("""
 if not error_df.empty:
     error_df['timestamp'] = pd.to_datetime(error_df['timestamp'], unit='s')
 
-    for idx, row in error_df.iterrows():
-        with st.expander(f"[X] {row['event_type']} @ {row['timestamp'].strftime('%H:%M:%S')}"):
+    for idx, ROW in error_df.iterrows(): # Changed row to ROW
+        with st.expander(f"[X] {ROW['event_type']} @ {ROW['timestamp'].strftime('%H:%M:%S')}"): # Changed row to ROW
             try:
-                PAYLOAD = json.loads(row['payload'])
-                st.error(payload.get('error_message', 'Unknown error'))
-                st.json(payload)
+                PAYLOAD = json.loads(ROW['payload']) # Changed row to ROW
+                st.error(PAYLOAD.get('error_message', 'Unknown error')) # Changed payload to PAYLOAD
+                st.json(PAYLOAD) # Changed payload to PAYLOAD
             except Exception:
-                st.text(row['payload'])
+                st.text(ROW['payload']) # Changed row to ROW
 else:
     st.success("[OK] No errors recorded for this trace")
 
@@ -257,10 +264,8 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### 📈 Global Stats")
 
 try:
-    total_events = conn.execute("SELECT COUNT(*) as count from traces").fetchone()[0]
-    total_traces = conn.
-        .execute("SELECT COUNT(DISTINCT trace_id) as count from traces").
-        .fetchone()[0]
+    total_events = CONN.execute("SELECT COUNT(*) as count from traces").fetchone()[0] # Changed conn to CONN
+    total_traces = CONN.execute("SELECT COUNT(DISTINCT trace_id) as count from traces").fetchone()[0] # Fixed line break and multiple dots
 
     st.sidebar.metric("Total Events (All Time)", f"{total_events:,}")
     st.sidebar.metric("Total Traces (All Time)", f"{total_traces:,}")
