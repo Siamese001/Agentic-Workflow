@@ -124,7 +124,7 @@ def test_personalized_content_retrieval():
         return True
 
     except Exception as e:
-logger.error(f"❌ Personalization test failed: {e}")
+        logger.error(f"❌ Personalization test failed: {e}")
         return False
 
 
@@ -182,7 +182,7 @@ def test_cost_governance_pattern():
             return False
 
     except Exception as e:
-logger.error(f"❌ Cost governance test failed: {e}")
+        logger.error(f"❌ Cost governance test failed: {e}")
         return False
 
 
@@ -230,7 +230,7 @@ def test_rate_limiting_enforcement():
             return False
 
     except Exception as e:
-logger.error(f"❌ Rate limiting test failed: {e}")
+        logger.error(f"❌ Rate limiting test failed: {e}")
         return False
 
 
@@ -285,7 +285,7 @@ def test_temporal_compliance_with_personalization():
             return False
 
     except Exception as e:
-logger.error(f"❌ Temporal compliance test failed: {e}")
+        logger.error(f"❌ Temporal compliance test failed: {e}")
         return False
 
 
@@ -390,7 +390,7 @@ def test_comprehensive_audit_trail():
             return True
 
     except Exception as e:
-logger.error(f"❌ Audit trail test failed: {e}")
+        logger.error(f"❌ Audit trail test failed: {e}")
         return False
 
 
@@ -495,4 +495,3 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
-

@@ -11,8 +11,6 @@ class QABlockType(Enum):
     EVIDENCE_PACK = 'EVIDENCE_PACK'
 
 @dataclass
-    """TODO: Add docstring."""
-
 class QABlock:
     """Docstring."""
     block_type: QABlockType
@@ -20,14 +18,11 @@ class QABlock:
     content: str
     order: int
 
-    """TODO: Add docstring."""
-
 @dataclass
 class MessageAssemblerConfig:
     """Docstring."""
     canonical_signature_lines: int = 4
     required_qa_blocks: int = 4
-    """TODO: Add docstring."""
 
 
 @dataclass

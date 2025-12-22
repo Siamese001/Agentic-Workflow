@@ -15,36 +15,34 @@ class GenerateSubjectLine:
     """Executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
-        SELF.TIMEOUT = self.config.get("timeout", 30.0)
-        logger.info(f"Initialized {self.__class__.__name__}")
+        self.config = config or {}
+        self.timeout = self.config.get("timeout", 30.0)
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
-        START = time.time()
+        start = time.time()
         try:
-            OUTPUT = self._perform_action(action, params)
+            output = self._perform_action(action, params)
             return ExecutionResult(
-                SUCCESS=True,
-                OUTPUT=output,
+                success=True,
+                output=output,
                 duration_ms=(time.time() - start) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
-                SUCCESS=False,
-                ERROR=str(e),
+                success=False,
+                error=str(e),
                 duration_ms=(time.time() - start) * 1000
             )
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
-        logger.info(f"Executing {action} with {params}")
+        LOGGER.info(f"Executing {action} with {params}")
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
-    config: Optional[Dict] = None) -> ExecutionResult:
+            params: Dict[str, object],
+            config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return GenerateSubjectLine(config).execute(action, params)

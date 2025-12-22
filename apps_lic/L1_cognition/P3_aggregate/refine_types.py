@@ -37,8 +37,7 @@ class ExecutionContext:
                 'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ')
+            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
 class ProcessingResult:

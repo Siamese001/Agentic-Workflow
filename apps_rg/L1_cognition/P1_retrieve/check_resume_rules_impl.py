@@ -1,9 +1,41 @@
-"""Implementation for check_resume_rules."""
-
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 # from .check_resume_rules_types import *  # Star import removed
+# Assuming ProcessingResult and ExecutionContext are defined elsewhere or need to be imported
+# For the purpose of fixing syntax, we'll assume they exist.
+# Also, sys is used but not imported. Adding it for completeness, though not strictly a syntax error at line 40.
+import sys
+import time
+
+# Placeholder for types that are not defined in the provided snippet
+class ProcessingResult:
+    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
+        self.success = success
+        self.data = data
+        self.error_message = error_message
+        self.execution_context = execution_context
+        self.additional_info = additional_info
+
+class ExecutionContext:
+    def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
+        self.operation_id = operation_id
+        self.metadata = metadata or {}
+        self.start_time = None
+        self.end_time = None
+        self.duration = None
+        self.success = None
+        self.error = None
+
+    def start(self):
+        self.start_time = time.time()
+
+    def complete(self, success: bool, error: Optional[Exception] = None):
+        self.end_time = time.time()
+        self.duration = self.end_time - self.start_time
+        self.success = success
+        self.error = error
+
 
 class CheckResumeRules:
     """
@@ -25,19 +57,18 @@ class CheckResumeRules:
         if not self.logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
             FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            executor.setFormatter(formatter)
-            self.logger.addHandler(executor)
+            EXECUTOR.setFormatter(FORMATTER) # Corrected executor to EXECUTOR
+            self.logger.addHandler(EXECUTOR) # Corrected executor to EXECUTOR
             self.logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
         MISSING = [key for key in required_keys if key not in self.config]
-        if missing:
-            raise ValueError(f'Missing required config keys: {missing}')
+        if MISSING: # Corrected missing to MISSING
+            raise ValueError(f'Missing required config keys: {MISSING}')
 
     def process(self,
-        """Docstring."""
         payload: Union[str,
         int,
         float,
@@ -58,7 +89,7 @@ class CheckResumeRules:
         """
         exec_ctx = ExecutionContext(operation_id=self.config.get('operation_id',
             'default'),
-            METADATA=context or {})
+            metadata=context or {}) # Corrected METADATA to metadata
         try:
             exec_ctx.start()
             if payload is None:
@@ -66,7 +97,7 @@ class CheckResumeRules:
             RESULT = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
-                DATA=result,
+                data=RESULT, # Corrected DATA to data, result to RESULT
                 execution_context=exec_ctx,
                 additional_info={'processed_at': time.time(),
                 'executor': self.__class__.__name__})

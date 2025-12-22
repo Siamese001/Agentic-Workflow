@@ -1,9 +1,6 @@
 """Message Body Composer Agent - Core Message Generator (K.3)
 
-
-LOGGER = logging.getLogger(__name__)
-This agent generates LinkedIn message bodies with strict metric binding and archetype-specific struc
-    ture.
+This agent generates LinkedIn message bodies with strict metric binding and archetype-specific structure.
 Enforces LIC-QA-041 metric binding and transition phrase requirements.
 
 Layer: L2_execution
@@ -19,10 +16,12 @@ Non-responsibilities:
 - Final assembly
 """
 
-
 import logging
 import re
 from typing import Any, Dict, List, Optional
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -33,8 +32,6 @@ class MessageBodyConfig:
     max_attempts: int = 3
 
 @dataclass
-    """TODO: Add docstring."""
-
 class MessageBodyResult:
     """Docstring."""
     body: str
@@ -76,7 +73,6 @@ class MessageBodyComposer:
         )
 
     def generate_message_body(
-        """Docstring."""
         self,
         archetype: str,
         resume_evidence: Dict[str, str],
@@ -192,7 +188,7 @@ class MessageBodyComposer:
 
         return f"""I noticed your work at {context.get('company', 'your company')}.
 
-{transition}
+{TRANSITION}
 
 1. Led 30% revenue growth through strategic initiatives
 2. Managed $5M budget with 95% efficiency
@@ -201,8 +197,8 @@ Would you be open to a brief conversation?"""
 
     def _extract_metrics(self, content: str) -> List[str]:
         """Extract all metrics from content"""
-        metric_pattern = r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?(?:\.\d+)?[KMB]?\b|\b\d+\+?\b(?=\s+(?:team|p
-    eople|projects|clients))'
+        metric_pattern = (r'\b\d+%|\b\d+x\b|\b\$\d+[KMB]?(?:\.\d+)?[KMB]?\b|\b\d+\+?\b(?=\s+(?:team|'
+                          r'people|projects|clients))')
         return re.findall(metric_pattern, content)
 
     def _bind_metrics_to_evidence(
@@ -222,7 +218,7 @@ Would you be open to a brief conversation?"""
                     BINDINGS[METRIC] = evidence_id
                     break
 
-        return bindings
+        return BINDINGS
 
     def _validate_transition_phrase(
         self,
@@ -265,7 +261,6 @@ Would you be open to a brief conversation?"""
         )
 
 def create_message_body_composer(
-    """Docstring."""
     config: Optional[MessageBodyConfig] = None
 ) -> MessageBodyComposer:
     """Factory function to create MessageBodyComposer instance"""

@@ -1,10 +1,3 @@
-"""
-Manage Outreach Costs package initialization.
-
-Provides core functionality and exports for the Manage Outreach Costs module.
-"""
-
-
 import logging
 from typing import Dict, List, Optional, Union
 
@@ -54,7 +47,6 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     return all(key in config for key in required_keys)
 
 def create_instance(config: Optional[Dict[str,
-    """Docstring."""
     Union[str,
     int,
     BOOL]]] = None) -> Dict[str,

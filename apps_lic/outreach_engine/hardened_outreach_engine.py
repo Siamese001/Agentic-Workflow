@@ -101,7 +101,7 @@ def execute_hardened_outreach_sequence(
                 "reset_time": rate_limit_result.get("reset_time")
             }
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"Rate limiting failed: {e}")
 
 
@@ -154,7 +154,7 @@ if logger:
             f"Intent scoring: Prioritized {intent_priority} leads")
 
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"⚠️ Intent scoring failed (non-critical): {e}")
 
 
@@ -172,7 +172,7 @@ if logger:
             if logger:
                 logger.info("✅ Template retrieved from LangCache (cost saved)")
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"LangCache check failed: {e}")
 
 
@@ -205,7 +205,7 @@ if logger:
                         logger.info(
                             f"✅ Retrieved template from Pinecone: {best_template.get('score', 'N/A')}")
         except Exception as e:
-if logger:
+            if logger:
                 logger.error(f"Pinecone search failed: {e}")
 
 
@@ -281,7 +281,7 @@ if logger:
                     "ℹ️ No company/industry info provided, skipping News RAG")
 
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"⚠️ News RAG failed (non-critical): {e}")
             # Continue without news context
 
@@ -295,7 +295,7 @@ if logger:
         if logger:
             logger.info(f"Current UTC time: {current_utc_time_hm}")
     except Exception as e:
-if logger:
+        if logger:
             logger.error(f"Failed to get current time: {e}")
         return {
             "status": "ERROR_TIME_FETCH",
@@ -343,7 +343,7 @@ if logger:
         cost_savings.append("Clarity filter: Improved message readability")
 
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"⚠️ Clarity filter failed (non-critical): {e}")
             # Continue with original content
 
@@ -376,7 +376,7 @@ if logger:
                         logger.info(
                             f"✅ Template success cached: {current_success + 1} uses")
                 except Exception as e:
-if logger:
+                    if logger:
                         logger.warning(f"Success caching failed: {e}")
 
 
@@ -385,7 +385,7 @@ if logger:
                     f"✅ Personalized email sent. Source: {personalization_source}")
 
         except Exception as e:
-final_status = "SENT_FAILED"
+            final_status = "SENT_FAILED"
             if logger:
                 logger.error(f"❌ Email dispatch failed: {e}")
     else:
@@ -431,7 +431,7 @@ final_status = "SENT_FAILED"
                 "contents": [audit_message]
             }])
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"⚠️ Audit logging failed: {e}")
 
 
@@ -486,7 +486,7 @@ def calculate_next_business_time(current_local_time: str, timezone: str) -> str:
         else:
             return f"{current_local_time} {timezone}"
     except Exception:
-return f"09:00 {timezone} (next business day)"
+        return f"09:00 {timezone} (next business day)"
 
 # Test function
 
@@ -556,4 +556,3 @@ def test_hardened_outreach():
 
 if __name__ == "__main__":
     test_hardened_outreach()
-

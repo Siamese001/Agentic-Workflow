@@ -1,3 +1,4 @@
+```python
 """
 order_call_to_actions.py - Execution Module
 
@@ -42,9 +43,8 @@ class OrderCallToActions:
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
+    params: Dict[str, object],
     config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return OrderCallToActions(config).execute(action, params)
+```

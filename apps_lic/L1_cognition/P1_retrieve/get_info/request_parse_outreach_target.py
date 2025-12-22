@@ -19,7 +19,6 @@ class ParseOutreachTarget:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-        """Docstring."""
         query: str,
         filters: Optional[Dict] = None,
         LIMIT: INT = 10) -> RetrievalResult:
@@ -37,7 +36,6 @@ class ParseOutreachTarget:
         return []
 
 def retrieve(query: str,
-    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> RetrievalResult:

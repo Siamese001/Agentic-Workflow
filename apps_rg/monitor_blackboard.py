@@ -31,19 +31,19 @@ def monitor():
                     # Watch for consensus flags
                     if "consensus" in data:
                         # print(f"🤝 CONSENSUS: {data['consensus'].get('agreement', 'pending')}")  # [Security Fix]
+                        pass
 
                     last_mtime = current_mtime
 
             time.sleep(2) # Polling interval
         except KeyboardInterrupt:
-pass
-# print("\n👋 Monitor shutting down.")  # [Security Fix]
+            pass
+            # print("\n👋 Monitor shutting down.")  # [Security Fix]
             break
         except Exception as e:
-pass
-# print(f"❌ Error: {e}")  # [Security Fix]
+            pass
+            # print(f"❌ Error: {e}")  # [Security Fix]
             time.sleep(5)
 
 if __name__ == "__main__":
     monitor()
-

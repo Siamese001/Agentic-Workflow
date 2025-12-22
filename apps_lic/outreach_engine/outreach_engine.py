@@ -78,7 +78,7 @@ def automated_lead_vetting(company_url: str, user_name: str, tools: Dict[str, An
         if logger:
             logger.info(f"✅ Fetched company content from {company_url}")
     except Exception as e:
-return {"status": "error", "message": f"Fetch MCP failed to retrieve company data: {e}"}
+        return {"status": "error", "message": f"Fetch MCP failed to retrieve company data: {e}"}
 
     # --- Step 2: Get Contact Context (L5 MEMemory) ---
     try:
@@ -97,7 +97,7 @@ return {"status": "error", "message": f"Fetch MCP failed to retrieve company dat
             logger.info(
                 f"✅ Found {len(target_contacts)} key contacts in MEMemory")
     except Exception as e:
-return {"status": "error", "message": f"MEMemory MCP failed to retrieve contacts: {e}"}
+        return {"status": "error", "message": f"MEMemory MCP failed to retrieve contacts: {e}"}
 
     # --- Step 3: Retrieve Outreach Template (L3 Pinecone) ---
     # Use the company news to find the most relevant outreach template
@@ -115,7 +115,7 @@ return {"status": "error", "message": f"MEMemory MCP failed to retrieve contacts
             logger.info("✅ Retrieved L3 outreach template from Pinecone.")
 
     except Exception as e:
-# Fallback to generic template if Pinecone fails
+        # Fallback to generic template if Pinecone fails
         outreach_template = "I hope this message finds you well. I wanted to reach out regarding potential collaboration opportunities."
         if logger:
             logger.warning(
@@ -177,7 +177,7 @@ Context: Automated lead vetting based on recent company activity
             logger.info(f"✅ Email sent to {primary_contact.get('email')}")
 
     except Exception as e:
-return {"status": "error", "message": f"Failed to send email: {e}"}
+        return {"status": "error", "message": f"Failed to send email: {e}"}
 
     # --- Step 6: Update Memory with Outreach Activity ---
     try:
@@ -197,7 +197,7 @@ return {"status": "error", "message": f"Failed to send email: {e}"}
                 logger.info("✅ MEMemory updated with outreach activity")
 
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"⚠️ Memory update failed (non-critical): {e}")
 
     return {
@@ -243,7 +243,7 @@ def vet_lead_optimal_time(lead_email: str, lead_timezone: str, pitch_body: str, 
             logger.info(
                 f"✅ Retrieved agent's current time: {current_time_hhmm}")
     except Exception as e:
-return {"status": "error", "message": f"Time MCP (get_current_time) failed: {e}"}
+        return {"status": "error", "message": f"Time MCP (get_current_time) failed: {e}"}
 
     # --- Step 2: Convert Time to Lead's Local Time (L4 Time MCP) ---
     # We use the current system time to estimate what time it is RIGHT NOW for the lead.
@@ -263,7 +263,7 @@ return {"status": "error", "message": f"Time MCP (get_current_time) failed: {e}"
             logger.info(f"✅ Lead's current local time: {lead_local_time}")
 
     except Exception as e:
-return {"status": "error", "message": f"Time MCP (convert_time) failed: {e}"}
+        return {"status": "error", "message": f"Time MCP (convert_time) failed: {e}"}
 
     # --- Step 3: Strategic Decision (LLM/Cognitive Node) ---
     # Decide if the current time is appropriate (e.g., between 9:00 and 17:00 local time)
@@ -299,14 +299,14 @@ return {"status": "error", "message": f"Time MCP (convert_time) failed: {e}"}
                 if add_observations:
                     add_observations(observations=memory_update)
             except Exception as mem_e:
-if logger:
+                if logger:
                     logger.warning(
                         f"⚠️ MEMemory logging failed (non-critical): {mem_e}")
 
             return {"status": "contacted", "message": f"Email dispatched at optimal time. {send_result}"}
 
         except Exception as e:
-return {"status": "error", "message": f"Send Email MCP failed: {e}"}
+            return {"status": "error", "message": f"Send Email MCP failed: {e}"}
 
     else:
         # L5: Log deferred outreach
@@ -323,7 +323,7 @@ return {"status": "error", "message": f"Send Email MCP failed: {e}"}
             if add_observations:
                 add_observations(observations=memory_update)
         except Exception as mem_e:
-if logger:
+            if logger:
                 logger.warning(
                     f"⚠️ MEMemory logging failed (non-critical): {mem_e}")
 
@@ -372,7 +372,7 @@ def vet_lead_snapshot_outreach(lead_profile_url: str, lead_email: str, user_name
                 f"✅ Playwright connection successful. Verified '{expected_title}' and snapshot saved.")
 
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(
                 f"⚠️ Playwright L2 failed (Connection Budget Protected: {e}). Falling back to static context.")
         snapshot_file_path = "N/A (L2 connection failed or verification failed)"
@@ -393,7 +393,7 @@ if logger:
             'text', 'Placeholder pitch content.')
 
     except Exception as e:
-if logger:
+        if logger:
             logger.error(f"Context retrieval failed: {e}")
         canonical_pitch = "Context system failure."
 
@@ -423,7 +423,7 @@ if logger:
             "send_result": send_result
         }
     except Exception as e:
-return {"status": "error", "message": f"Send Email MCP failed: {e}"}
+        return {"status": "error", "message": f"Send Email MCP failed: {e}"}
 
 
 def execute_autonomous_job_application(app_url: str, user_name: str, code_sample_path: str, tools: Dict[str, Any], logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -466,7 +466,7 @@ def execute_autonomous_job_application(app_url: str, user_name: str, code_sample
             logger.info(
                 f"✅ L4 Redis: Retrieved profile for {user_data['name']}")
     except Exception as e:
-return {"status": "error", "message": f"Redis L4 failed during profile retrieval: {e}"}
+        return {"status": "error", "message": f"Redis L4 failed during profile retrieval: {e}"}
 
     # 2. Navigate and Interact (L2 Playwright)
     try:
@@ -492,7 +492,7 @@ return {"status": "error", "message": f"Redis L4 failed during profile retrieval
             logger.info("✅ L4 Redis: Stored intermediate state")
 
     except Exception as e:
-return {"status": "error", "message": f"Playwright L2 interaction failed: {e}"}
+        return {"status": "error", "message": f"Playwright L2 interaction failed: {e}"}
 
     # 3. Submit Code Artifact (L1 GitKraken)
     try:
@@ -502,7 +502,7 @@ return {"status": "error", "message": f"Playwright L2 interaction failed: {e}"}
         if logger:
             logger.info("✅ L1 GitKraken: Committed code sample artifact")
     except Exception as e:
-# Non-fatal if Git submission is optional; we log and continue to form submit
+        # Non-fatal if Git submission is optional; we log and continue to form submit
         if logger:
             logger.warning(
                 f"⚠️ GitKraken L1 commit failed for code sample: {e}")
@@ -539,7 +539,7 @@ return {"status": "error", "message": f"Playwright L2 interaction failed: {e}"}
             "commit_result": commit_result
         }
     except Exception as e:
-return {"status": "error", "message": f"Final Playwright submit/L5 log failed: {e}"}
+        return {"status": "error", "message": f"Final Playwright submit/L5 log failed: {e}"}
 
 
 def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> Dict[str, Any]:
@@ -591,7 +591,7 @@ def adaptive_browser_session(target_url: str, logger: Optional[Any] = None) -> D
                     ]
                 }])
             except Exception as mem_e:
-if logger:
+                if logger:
                     logger.warning(
                         f"⚠️ Failed to log success to MEMemory: {mem_e}")
 
@@ -602,7 +602,7 @@ if logger:
             return {"status": "connected", "attempts": i, "proxy_used": proxy_config or "none"}
 
         except Exception as e:
-if i < max_retries:
+            if i < max_retries:
                 if logger:
                     logger.warning(
                         f"L2 Playwright failed on attempt {i} ({e}). Retrying...")
@@ -620,7 +620,7 @@ if i < max_retries:
                         ]
                     }])
                 except Exception as mem_e:
-if logger:
+                    if logger:
                         logger.warning(
                             f"⚠️ Failed to log failure to MEMemory: {mem_e}")
 
@@ -670,7 +670,7 @@ def execute_resilient_application_pipeline(app_url: str, user_name: str, max_ret
             break
 
         except Exception as e:
-if i < max_retries:
+            if i < max_retries:
                 if logger:
                     logger.warning(
                         f"L2 connection failed on attempt {i}. Retrying...")
@@ -700,7 +700,7 @@ if i < max_retries:
                 "✅ L3 Pinecone artifact retrieved successfully (High-Quality RAG).")
 
     except Exception as e:
-# Hardening: Fallback to L1 Filesystem if L3 fails
+        # Hardening: Fallback to L1 Filesystem if L3 fails
         if logger:
             logger.warning(
                 f"⚠️ L3 Pinecone failed ({e}). Falling back to L1 Filesystem cache.")
@@ -711,11 +711,11 @@ if i < max_retries:
             if logger:
                 logger.info(
                     "✅ L1 Filesystem fallback successful (Resilience maintained).")
-except Exception:
-    pass
-if logger:
-                logger.error(
-                    "L1 Filesystem fallback failed. Using hardcoded default.")
+        except Exception:
+            pass
+        if logger:
+            logger.error(
+                "L1 Filesystem fallback failed. Using hardcoded default.")
 
     # --- 3. Core Interaction & Final Commit (L2 Playwright, L1 GitKraken) ---
 
@@ -738,7 +738,7 @@ if logger:
             logger.info(
                 f"✅ L1 GitKraken: Committed artifact with ID {git_commit_id}")
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"L1 GitKraken failed to commit artifact: {e}")
         git_commit_id = "FAILED_NO_COMMIT"
 
@@ -753,7 +753,7 @@ if logger:
         if logger:
             logger.info("✅ L2 Playwright: Application submitted successfully")
     except Exception as e:
-if logger:
+        if logger:
             logger.error(f"L2 Playwright final interaction failed: {e}")
 
     # --- 4. Immutable Audit Trail (L4 Time, L5 MEMemory) ---
@@ -780,7 +780,7 @@ if logger:
         if logger:
             logger.info("✅ L5 MEMemory: Immutable audit trail created")
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(
                 f"⚠️ L5 MEMemory logging failed (non-critical): {e}")
 
@@ -823,7 +823,7 @@ def execute_resilient_application_pipeline_hardened(app_url: str, user_name: str
                 logger.info(f"✅ L2 Connection established on attempt {i}.")
             break
         except Exception:
-if i == max_retries:
+            if i == max_retries:
                 if logger:
                     logger.error(
                         "L2 Connection failed permanently. Aborting pipeline.")
@@ -863,7 +863,7 @@ if i == max_retries:
                 logger.info("✅ L4 Redis: Atomic transaction committed.")
 
     except Exception as e:
-# L3 Pinecone/L4 Redis failure: Fallback to L1 Filesystem
+        # L3 Pinecone/L4 Redis failure: Fallback to L1 Filesystem
         if logger:
             logger.warning(
                 f"⚠️ L3/L4 Context failed: {e}. Falling back to L1 Filesystem.")
@@ -872,11 +872,11 @@ if i == max_retries:
                 path=CODE_FALLBACK_PATH)  # L1 Filesystem Read
             if logger:
                 logger.info("✅ L1 Filesystem fallback successful.")
-except Exception:
-    pass
-if logger:
-                logger.error(
-                    "L1 Filesystem fallback failed. Using hardcoded default.")
+        except Exception:
+            pass
+        if logger:
+            logger.error(
+                "L1 Filesystem fallback failed. Using hardcoded default.")
 
     # --- PHASE 2: Core Action and Immutable Audit Trail (L1/L2/L4/L5) ---
 
@@ -898,7 +898,7 @@ if logger:
             logger.info(
                 f"✅ L1 GitKraken: Committed artifact with ID {git_commit_id}")
     except Exception:
-git_commit_id = "FAILED_NO_COMMIT"
+        git_commit_id = "FAILED_NO_COMMIT"
 
     # 2b. Final Form Interaction (L2 Playwright)
     application_status = "FAILED_INTERACTION"
@@ -911,7 +911,7 @@ git_commit_id = "FAILED_NO_COMMIT"
         if logger:
             logger.info("✅ L2 Playwright: Application submitted successfully")
     except Exception as e:
-if logger:
+        if logger:
             logger.error(f"L2 Playwright final interaction failed: {e}")
 
     # 2c. Immutable Audit (L4 Time, L5 MEMemory)
@@ -938,7 +938,7 @@ if logger:
         if logger:
             logger.info("✅ L5 MEMemory: Immutable audit trail created")
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(
                 f"⚠️ L5 MEMemory logging failed (non-critical): {e}")
 
@@ -967,7 +967,7 @@ def brand_compliant_outreach(company_url: str, user_name: str, brand_id: str = "
         if logger:
             logger.info(f"✅ Retrieved brand guidelines for {brand_id}")
     except Exception as e:
-if logger:
+        if logger:
             logger.warning(f"⚠️ Failed to retrieve brand guidelines: {e}")
         brand_guidelines = {
             "colors": ["#000000", "#FFFFFF"],
@@ -993,7 +993,7 @@ if logger:
                 logger.warning(
                     "⚠️ Search budget exhausted - using minimal info")
     except Exception as e:
-if logger:
+        if logger:
             logger.error(f"❌ Company research failed: {e}")
         company_info = {}
 
@@ -1029,9 +1029,9 @@ Best regards,
                 f"Brand ID: {brand_id}"
             ]
         }])
-except Exception:
-    pass
-# Silently ignore MEMory logging failures to not interrupt outreach flow
+    except Exception:
+        pass
+        # Silently ignore MEMory logging failures to not interrupt outreach flow
         pass
 
     return {
@@ -1041,4 +1041,3 @@ except Exception:
         "compliance_result": compliance_result,
         "brand_source": "figma" if not brand_guidelines.get('_fallback') else "fallback"
     }
-
