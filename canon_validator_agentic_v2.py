@@ -1446,6 +1446,7 @@ Return ONLY the complete merged Python code. No explanations.
         
         # Initialize violation tracking for healing loop
         initial_violations = 0
+        file_healed = False
         
         for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
             violations_this_round = initial_violations

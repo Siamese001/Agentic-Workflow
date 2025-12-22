@@ -216,10 +216,13 @@ class SystemArchitect(CanonBaseAgent):
         if not remaining_violations:
             return
             
-        # [KEY 42 HARDENING] If Key 42 violation is present, signal for Fission
+        # [KEY 42 HARDENING] Force Fission Surgery
         if key == 42:
             print(f"      [!] {self.name}: Large file detected. Triggering Architectural Surgery (Fission)...")
-            # Pass to smart_fix which will now be 'Fission-Aware'
+            for violation in remaining_violations:
+                file_path = violation.split(":")[0].strip()
+                await self._smart_fix(file_path, key, [violation])
+            return
 
         max_healing_per_file = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
         
