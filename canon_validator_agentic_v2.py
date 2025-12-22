@@ -699,14 +699,59 @@ Return the complete file with imports added. No explanations, no markdown."""
         
         # NOW start the Flask server with agents populated
         if DASHBOARD_AVAILABLE and web_thread is None:
-            web_thread = threading.Thread(
-                target=run_server,
-                args=('0.0.0.0', 5000, False),
-                daemon=True
-            )
-            web_thread.start()
-            print(f"   [OK] Web Dashboard: http://localhost:5000")
-            print(f"   [!] Agent graph will show {len(cleaning_crew)} live agents")
+            # Check if port 5000 is already in use
+            import socket
+            def check_port_available(port):
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                        s.bind(('localhost', port))
+                    return True
+                except OSError:
+                    return False
+            
+            if not check_port_available(5000):
+                print(f"   [!] Port 5000 already in use - killing existing process")
+                import subprocess
+                subprocess.run(['netstat', '-ano', '|', 'findstr', ':5000'], shell=True, capture_output=True)
+                print(f"   [!] Run: taskkill /PID <number> /F to free the port")
+            else:
+                # Start server with error handling
+                def safe_run_server():
+                    try:
+                        run_server('0.0.0.0', 5000, False)
+                    except Exception as e:
+                        print(f"   [!] Flask server failed to start: {e}")
+                        import traceback
+                        traceback.print_exc()
+                
+                web_thread = threading.Thread(
+                    target=safe_run_server,
+                    daemon=True
+                )
+                web_thread.start()
+                print(f"   [*] Starting web dashboard on http://localhost:5000")
+                
+                # Wait for server to be ready
+                import time
+                def wait_for_port(port, host='localhost', timeout=10):
+                    start_time = time.time()
+                    while True:
+                        try:
+                            with socket.create_connection((host, port), timeout=1):
+                                return True
+                        except OSError:
+                            if time.time() - start_time >= timeout:
+                                return False
+                            time.sleep(0.5)
+                
+                if wait_for_port(5000):
+                    print(f"   [OK] Dashboard server confirmed listening on http://localhost:5000")
+                    print(f"   [OK] Access dashboards:")
+                    print(f"      • Main: http://localhost:5000")
+                    print(f"      • Agent Architecture: http://localhost:5000/agent_graph")
+                else:
+                    print(f"   [!] TIMEOUT: Dashboard server failed to start after 10 seconds")
+                print(f"   [!] Agent graph will show {len(cleaning_crew)} live agents")
     except Exception as e:
         print(f"   [!] Dashboard sync failed: {e}")
 
@@ -785,11 +830,21 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     gravity_violations_fixed = 0
     gravity_violations_total = 0
     
+    # Initialize gravity attempts tracking if not exists
+    if not hasattr(ctx, 'gravity_attempts'):
+        ctx.gravity_attempts = {}
+    
     for file_path in ctx.python_files:
         file_path_obj = Path(file_path)
         violations = check_import_waterfall_violations(file_path_obj, project_root_path)
         
         if violations:
+            # [FIX] Prevent infinite loops by tracking attempts per file
+            ctx.gravity_attempts[file_path] = ctx.gravity_attempts.get(file_path, 0) + 1
+            if ctx.gravity_attempts[file_path] > 2:
+                print(f"   [!] Maximum gravity refactors reached for {Path(file_path).name}. Skipping to prevent loop.")
+                continue
+                
             gravity_violations_total += len(violations)
             file_name = file_path_obj.name
             print(f"\n   [AUTO-HEAL] {file_name}: {len(violations)} gravity violation(s)")

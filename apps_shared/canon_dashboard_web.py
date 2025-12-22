@@ -18,7 +18,10 @@ from flask_cors import CORS
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.CRITICAL) # Further silence logs to prevent thread flooding
 
-app = Flask(__name__)
+app = Flask(__name__, 
+    template_folder='templates',
+    static_folder='canon_dashboard_web/static',
+    static_url_path='/static')
 CORS(app)
 
 # Global instances (initialized as None to allow validator injection)

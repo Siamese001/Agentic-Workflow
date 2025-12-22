@@ -7,17 +7,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- HARDENING: Version-pinned CDNs with integrity + fallback detection -->
+    <!-- HARDENING: Unified CDN loading with integrity + robust fallback -->
     <script>
-        // Fallback if CDN fails (critical for offline/air-gapped environments)
         window.addEventListener('load', () => {
             if (typeof Chart === 'undefined') {
-                console.error("[DASHBOARD HARDENING] Chart.js failed to load from CDN");
-                document.body.insertAdjacentHTML('afterbegin', 
-                    '<div style="background:#dc3545;color:white;padding:16px;text-align:center;font-weight:bold;">Chart.js failed to load — check network/CDN</div>');
+                document.body.insertAdjacentHTML('afterbegin',
+                    '<div style="background:#da3633;color:white;padding:16px;text-align:center;font-weight:bold;">Chart.js failed — check network</div>');
             }
             if (typeof alpinejs === 'undefined') {
-                console.warn("[DASHBOARD HARDENING] Alpine.js not available — falling back to static mode");
+                console.warn("[DASHBOARD] Alpine.js failed — UI will be static");
             }
         });
     </script>
@@ -69,7 +67,7 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            box-shadow: 4px 0 16px rgba(0,0,0,0.4);
+            box-shadow: 4px 0 16px rgba(0,0,0,0.5);
             z-index: 1000;
         }
 
@@ -1586,14 +1584,15 @@
             };
         }
     </script>
-    <!-- HARDENING: Add active state highlighting for Agent tab when on that page -->
+    <!-- HARDENING: Proper active state for Agent tab -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.location.pathname === '/agent_graph') {
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector('.nav-item[onclick*="agent_graph"]').classList.add('active');
+            const path = window.location.pathname;
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (path === '/' || path === '/index.html') {
+                document.querySelector('.nav-item:nth-child(1)')?.classList.add('active');
+            } else if (path.includes('agent_graph')) {
+                document.querySelector('.nav-item[onclick*="agent_graph"]')?.classList.add('active');
             }
         });
     </script>
