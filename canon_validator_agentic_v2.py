@@ -230,7 +230,8 @@ async def run_mission(target_scope: str = "agentic_core"):
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
     
-    # === DASHBOARD INITIALIZATION ===
+    # === DASHBOARD INITIALIZATION (METRICS ONLY) ===
+    # Flask server will start AFTER agents are discovered
     dashboard_metrics = None
     web_thread = None
     
@@ -238,17 +239,10 @@ async def run_mission(target_scope: str = "agentic_core"):
         dashboard_metrics = DashboardMetrics()
         dashboard = CanonDashboard(dashboard_metrics)
         
-        # Start web dashboard in background
+        # Import module but DON'T start server yet
         import canon_dashboard_web
         canon_dashboard_web.metrics = dashboard_metrics
-        web_thread = threading.Thread(
-            target=run_server,
-            args=('0.0.0.0', 5000, False),
-            daemon=True
-        )
-        web_thread.start()
-        print(f"   [OK] Web Dashboard: http://localhost:5000")
-        print(f"   [!] Terminal Dashboard: Disabled (blocks execution)")
+        print(f"   [OK] Dashboard metrics initialized (server will start after agent discovery)")
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
@@ -698,10 +692,21 @@ Return the complete file with imports added. No explanations, no markdown."""
     
     # Sync agents with dashboard for visualization
     try:
-        from canon_dashboard_web import agents_global
-        agents_global.clear()
-        agents_global.extend(cleaning_crew)
+        import canon_dashboard_web
+        canon_dashboard_web.agents_global.clear()
+        canon_dashboard_web.agents_global.extend(cleaning_crew)
         print(f"   [DASHBOARD] Synced {len(cleaning_crew)} agents to visualization")
+        
+        # NOW start the Flask server with agents populated
+        if DASHBOARD_AVAILABLE and web_thread is None:
+            web_thread = threading.Thread(
+                target=run_server,
+                args=('0.0.0.0', 5000, False),
+                daemon=True
+            )
+            web_thread.start()
+            print(f"   [OK] Web Dashboard: http://localhost:5000")
+            print(f"   [!] Agent graph will show {len(cleaning_crew)} live agents")
     except Exception as e:
         print(f"   [!] Dashboard sync failed: {e}")
 
