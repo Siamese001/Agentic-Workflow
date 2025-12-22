@@ -27,13 +27,23 @@ ALLOWED_ROOT_FILES = {
     "canon_memory.json"
 }
 
-from .prompts import (FEW_SHOT_CONCURRENCY, FEW_SHOT_GITOPS,
-                      FEW_SHOT_GLOBAL_REFACTOR, FEW_SHOT_HISTORIAN,
-                      FEW_SHOT_HYGIENE, FEW_SHOT_IMPORT_FIXES,
-                      FEW_SHOT_PROPERTY_TESTS, FEW_SHOT_REFLECTION_ENHANCED,
-                      FEW_SHOT_REFLECTION_STRATEGY, FEW_SHOT_SAFETY,
-                      FEW_SHOT_SHERLOCK, FEW_SHOT_STRATEGIC, FEW_SHOT_STYLE,
-                      FEW_SHOT_TESTPILOT, POSITIVE_INSTRUCTIONAL_CONTEXT)
+from .prompts import (
+    FEW_SHOT_CONCURRENCY,
+    FEW_SHOT_GITOPS,
+    FEW_SHOT_GLOBAL_REFACTOR,
+    FEW_SHOT_HISTORIAN,
+    FEW_SHOT_HYGIENE,
+    FEW_SHOT_IMPORT_FIXES,
+    FEW_SHOT_PROPERTY_TESTS,
+    FEW_SHOT_REFLECTION_ENHANCED,
+    FEW_SHOT_REFLECTION_STRATEGY,
+    FEW_SHOT_SAFETY,
+    FEW_SHOT_SHERLOCK,
+    FEW_SHOT_STRATEGIC,
+    FEW_SHOT_STYLE,
+    FEW_SHOT_TESTPILOT,
+    POSITIVE_INSTRUCTIONAL_CONTEXT,
+)
 
 
 class DependencyGraph:
@@ -115,7 +125,7 @@ class BudgetManager:
 @dataclass
 class ValidationContext:
     """Shared memory for all agents with Tri-Brain infrastructure and persistence."""
-    
+
     # Core state
     results: Dict[int, Any] = field(default_factory=dict)
     signals: Set[str] = field(default_factory=set)
@@ -194,7 +204,7 @@ class ValidationContext:
     def __post_init__(self):
         """Initialize Tri-Brain infrastructure (MANDATORY MODE - fail if keys missing)."""
         from .config import get_python_files
-        
+
         print("   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
         self.python_files = get_python_files()
         self._load_memory()
@@ -249,6 +259,19 @@ class ValidationContext:
             except Exception as e:
                 print(f"      ⚠️  Memory load failed: {e}")
 
+    def _save_memory(self):
+        """Save canon memory to disk."""
+        memory_file = Path("canon_memory.json")
+        try:
+            data = {
+                "file_hashes": self.file_hashes,
+                "skip_files": list(self.skip_files)
+            }
+            with open(memory_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            print(f"      ⚠️  Memory save failed: {e}")
+
     def report(self, agent: str, key: int, passed: bool, details: Any = None):
         """Report validation result for a specific key to the blackboard."""
         status = "PASS" if passed else "FAIL"
@@ -270,6 +293,27 @@ class ValidationContext:
         """Signal that security checks passed."""
         self.signals.add("SECURE")
         print("   ✅ SIGNAL: SECURE asserted on Blackboard.")
+
+    def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
+        """Signal the start of a healing cycle."""
+        print(f"   🔄 Healing Cycle {cycle_number}/{max_cycles}")
+
+    def signal_convergence(self):
+        """Signal that the validation has converged."""
+        print("   ✅ Convergence achieved - no modifications in this cycle")
+        self.signals.add("CONVERGENCE")
+
+    def rollback_changes(self):
+        """Rollback changes from file backups."""
+        if self.file_backups:
+            for file_path, content in self.file_backups.items():
+                try:
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    print(f"   ↩️ Rolled back: {file_path}")
+                except Exception as e:
+                    print(f"   ⚠️ Rollback failed for {file_path}: {e}")
+            self.file_backups.clear()
 
     def inject_instruction(self, source_agent: str, instruction: str):
         """Add a guiding hint to the blackboard for downstream agents."""
@@ -377,45 +421,45 @@ class ValidationContext:
         if not self.pinecone_available or not self.intelligence_enabled:
             return
 
-    async def resilient_mutation(self, agent_name: str, task: str, code: str = "", 
+    async def resilient_mutation(self, agent_name: str, task: str, code: str = "",
                                   file_path: str = None, *, max_attempts: int = 4,
                                   diff_mode: bool = False, min_confidence: float = 0.7) -> str:
         """Level 6 Mutation with retry logic. Returns original code if intelligence disabled."""
         if not self.intelligence_enabled:
             print(f"   [{agent_name}] ⚠️ Intelligence disabled - skipping mutation")
             return code
-        
+
         current_code = code or ""
         for attempt in range(1, max_attempts + 1):
             try:
                 if not self.budget.check_budget():
                     return current_code
-                
+
                 prompt = f"{self.POSITIVE_INSTRUCTIONAL_CONTEXT}\n\nAgent: {agent_name}\nTask: {task}\nContext:\n{current_code[:4000]}"
-                
+
                 response = await asyncio.to_thread(
                     self._client.models.generate_content,
                     model=self.model_id,
                     contents=[prompt]
                 )
-                
+
                 self.budget.track(prompt, response.text)
                 result_text = self._clean_llm_code(response.text)
-                
+
                 if result_text.strip() and (file_path and file_path.endswith('.py')):
                     ast.parse(result_text)
-                
+
                 self.mutation_stats["success"] += 1
                 self.mutation_stats["total"] += 1
                 print(f"   [{agent_name}] ✅ Success (Attempt {attempt})")
                 return result_text
-                
+
             except Exception as e:
                 print(f"   [{agent_name}] ⚠️ Attempt {attempt} Error: {e}")
                 self.mutation_stats["total"] += 1
                 if "429" in str(e):
                     await asyncio.sleep(2 ** attempt)
-        
+
         return current_code
 
     def _clean_llm_code(self, raw_code: str) -> str:

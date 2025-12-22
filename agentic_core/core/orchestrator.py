@@ -1,33 +1,36 @@
-"""
-agentic_core/core/orchestrator.py
-Depth: 3
-Role: Central nervous system. Orchestrates agent execution and human intervention.
-"""
 import asyncio
-import time
 import os
-import sys
-import threading
-from typing import List
+
+import uvicorn
+
+from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
+from agentic_core.agents.quality import (
+    CodeStyleGuardian,
+    HygieneGuardian,
+    PerformanceEnforcer,
+)
+from agentic_core.agents.repair import TestPilot, ToolsmithAgent
+from agentic_core.agents.security import (
+    ConcurrencyGuardian,
+    SafetyInspector,
+    SecurityEnforcer,
+)
+from agentic_core.agents.specialized import (
+    DocEnforcer,
+    NamingEnforcer,
+    TheCartographer,
+    TheOmniContext,
+    TheStrategist,
+    TypeEnforcer,
+)
 
 # Import Domain
 from agentic_core.domain.context import ValidationContext
 
-# Import All Agents
-from agentic_core.agents.infrastructure import Historian, GitAgent, BenchmarkingAgent, WatchmanHandler
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
-from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
-from agentic_core.agents.engineering import StructuralEngineer, PatternEnforcer
-from agentic_core.agents.repair import Sherlock, TestPilot, ToolsmithAgent
-from agentic_core.agents.specialized import (
-    TheCartographer, TheOmniContext, TheStrategist, 
-    NamingEnforcer, DocEnforcer, TypeEnforcer
-)
-
 # L5 Human-in-the-Loop Dependencies
 try:
-    import uvicorn
     from fastapi import FastAPI
     from fastapi.responses import HTMLResponse
     FASTAPI_AVAILABLE = True
@@ -42,7 +45,7 @@ if FASTAPI_AVAILABLE:
     intervention_app = FastAPI(title="L5 Intervention UI")
 
     @intervention_app.get("/", response_class=HTMLResponse)
-    def get_dashboard():
+    async def get_dashboard():
         ctx = _intervention_context
         signals = list(ctx.signals) if ctx else []
         return f"""<html><body><h1>🚨 L5 INTERVENTION REQUIRED</h1>
@@ -52,30 +55,40 @@ if FASTAPI_AVAILABLE:
         </body></html>"""
 
     @intervention_app.post("/approve")
-    def approve_action():
+    async def approve_action():
         approval_event.set()
         return {"status": "APPROVED"}
 
     @intervention_app.post("/veto")
-    def veto_action():
-        if _intervention_context: _intervention_context.signals.add("VETOED")
+    async def veto_action():
+        if _intervention_context:
+            _intervention_context.signals.add("VETOED")
         approval_event.set()
         return {"status": "VETOED"}
 
 
-def start_intervention_server(ctx):
+async def start_intervention_server(ctx):
     global _intervention_context
     _intervention_context = ctx
     if FASTAPI_AVAILABLE:
-        t = threading.Thread(target=uvicorn.run, args=(intervention_app,), kwargs={"host": "127.0.0.1", "port": 8080, "log_level": "error"}, daemon=True)
-        t.start()
-        print("   🌐 Intervention server at http://127.0.0.1:8080")
+        host = os.getenv("INTERVENTION_HOST", "127.0.0.1")
+        port = int(os.getenv("INTERVENTION_PORT", "8080"))
+        config = uvicorn.Config(
+            intervention_app,
+            host=host,
+            port=port,
+            log_level="error"
+        )
+        server = uvicorn.Server(config)
+        # Replaced blocking thread with async background task
+        asyncio.create_task(server.serve())
+        print(f"   🌐 Intervention server at http://{host}:{port}")
 
 
 class SwarmScheduler:
     def __init__(self):
         self.ctx = ValidationContext()
-        
+
         # Define Phases
         self.phases = {
             "integrity_seq": [Historian(self.ctx), ArchitectureGovernor(self.ctx), DependencySentinel(self.ctx)],
@@ -94,47 +107,44 @@ class SwarmScheduler:
         print("🚀 STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
         if target_scope:
             print(f"🎯 SURGICAL MISSION: {target_scope}")
-            # Simplified scope limitation for V2
             self.ctx.python_files = [target_scope]
-        
+
+        await start_intervention_server(self.ctx)
+
         for cycle in range(5):
             print(f"\n=== CYCLE {cycle + 1}/5 ===")
             self.ctx.signals.clear()
-            self.ctx.modified_files.clear()
-            
-            # Execute Phases
-            await self._run_phase("integrity_seq")
-            await self._run_phase("curation_seq")
-            await self._run_phase("test_seq")
-            await self._run_phase("resilience_parallel", parallel=True)
-            await self._run_phase("resource_safety_parallel", parallel=True)
-            await self._run_phase("engineering_parallel", parallel=True)
-            await self._run_phase("refinement_parallel", parallel=True)
-            
-            # Intervention Check
-            if "HIGH_RISK" in self.ctx.signals:
-                start_intervention_server(self.ctx)
-                print("   ⏳ Waiting for approval...")
+
+            # Sequential Integrity and Curation
+            for agent in self.phases["integrity_seq"]:
+                await agent.run()
+            for agent in self.phases["curation_seq"]:
+                await agent.run()
+
+            # Parallel Context and Resilience Analysis
+            await asyncio.gather(*(agent.run() for agent in self.phases["memory_parallel"]))
+            await asyncio.gather(*(agent.run() for agent in self.phases["resilience_parallel"]))
+            await asyncio.gather(*(agent.run() for agent in self.phases["resource_safety_parallel"]))
+
+            if "INTERVENTION_REQUIRED" in self.ctx.signals:
+                print("✋ INTERVENTION REQUIRED. Waiting for human approval...")
                 await approval_event.wait()
                 approval_event.clear()
                 if "VETOED" in self.ctx.signals:
-                    print("🛑 VETOED"); break
+                    print("🛑 MISSION VETOED BY HUMAN.")
+                    return
 
-            if self._is_converged():
-                print("\n✅ CONVERGENCE ACHIEVED")
-                break
-        
-        print("\nMISSION COMPLETE")
+            # Parallel Engineering and Refinement
+            await asyncio.gather(*(agent.run() for agent in self.phases["engineering_parallel"]))
+            await asyncio.gather(*(agent.run() for agent in self.phases["refinement_parallel"]))
 
-    async def _run_phase(self, name: str, parallel: bool = False):
-        agents = self.phases.get(name, [])
-        if not agents: return
-        print(f"\n[PHASE] {name}")
-        if parallel:
-            await asyncio.gather(*(a.execute() for a in agents if a.can_run()))
-        else:
-            for agent in agents:
-                if agent.can_run(): await agent.execute()
+            # Testing and Final Benchmarking
+            for agent in self.phases["test_seq"]:
+                await agent.run()
 
-    def _is_converged(self):
-        return all(r.get("passed", False) for r in self.ctx.results.values())
+            if cycle == 4:
+                for agent in self.phases["benchmarking_seq"]:
+                    await agent.run()
+                if "OPTIMIZE" in self.ctx.signals:
+                    for agent in self.phases["optimization_conditional"]:
+                        await agent.run()

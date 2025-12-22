@@ -17,7 +17,7 @@ import collections
 def analyze_patterns(failure_keys):
     """
     Performs frequestuestuency analysis on failure occurrences.
-    
+
     Args:
         failure_keys (list): List of integers representing failure event IDs/keys.
     """
@@ -51,5 +51,5 @@ if __name__ == "__main__":
         'purpose': 'Analyze patterns in recurring failures',
         'keys': [50, 19, 22, 7, 8, 2, 3, 4, 5, 60]
     }
-    
+
     analyze_patterns(CONTEXT.get('keys', []))

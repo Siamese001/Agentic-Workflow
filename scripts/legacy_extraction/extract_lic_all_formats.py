@@ -4,10 +4,9 @@
     and Markdown) from legacy_lic archive to staging directory."""
 
 import hashlib
-import logging
 import shutil
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict
 
 
 def get_file_hash(filepath: Path) -> str:
@@ -85,7 +84,7 @@ def analyze_and_extract() -> None:
             dest_path = staging_dir / FILENAME
             shutil.copy2(file_path, dest_path)
             extracted_files.append(FILENAME)
-            file_type = FILENAME.split('.')[-1].upper()
+            FILENAME.split('.')[-1].upper()
 
         elif existing_hashes[FILENAME] != legacy_hash:
             # Same filename but different content - might be valuable
@@ -95,7 +94,7 @@ def analyze_and_extract() -> None:
             dest_path = staging_dir / new_name
             shutil.copy2(file_path, dest_path)
             unique_content_files.append((FILENAME, new_name))
-            file_type = name_parts[1].upper()
+            name_parts[1].upper()
 
         else:
             duplicate_files.append(FILENAME)

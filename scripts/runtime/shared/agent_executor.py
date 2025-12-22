@@ -11,7 +11,11 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from scripts.runtime.shared.multi_provider_clients import (
-    Provider, get_client, get_instructor_client, get_litellm_completion)
+    Provider,
+    get_client,
+    get_instructor_client,
+    get_litellm_completion,
+)
 
 LOGGER = logging.getLogger(__name__)
 

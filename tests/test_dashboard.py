@@ -5,15 +5,16 @@ Test Dashboard for Agentic Workflow
 Provides a comprehensive UI to view, run, and analyze all tests in the tests/ directory.
 """
 
-import os
-import sys
-import subprocess
-import json
-import time
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Any
 import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
 
 # ANSI color codes for terminal output
 class Colors:
@@ -275,7 +276,6 @@ class TestDashboard:
             # print(f"Opened in default browser.")  # [Security Fix]
 except Exception:
     pass
-pass
 # print(f"Open manually: file://{latest.absolute()}")  # [Security Fix]
 
 def main():

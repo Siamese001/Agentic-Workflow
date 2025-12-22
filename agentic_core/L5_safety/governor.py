@@ -4,9 +4,8 @@ Tracks token usage and halts execution if cost exceeds threshold.
 """
 
 import logging
-import os
 import time
-from typing import Dict, Optional
+from typing import Dict
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,10 +28,10 @@ class MemoryPressureError(Exception):
 
 class CostGovernor:
     """Governor that tracks costs and enforces budget limits."""
-    
+
     def __init__(self, limit_usd: float = 5.00, min_memory_gb: float = 2.0):
         """Initialize the cost governor.
-        
+
         Args:
             limit_usd: Maximum allowed cost in USD
             min_memory_gb: Minimum required available memory in GB
@@ -42,7 +41,7 @@ class CostGovernor:
         self.start_time = time.time()
         self.action_count = 0
         self.min_memory_gb = min_memory_gb
-        
+
         # Estimated cost per 1k tokens (input + output)
         self.rates = {
             "gpt-4": 0.03,
@@ -53,19 +52,19 @@ class CostGovernor:
             "claude-3-haiku": 0.00025,
             "gemini-pro": 0.0005,
         }
-        
+
         # Track usage by model
         self.usage_by_model: Dict[str, Dict[str, int]] = {}
-        
+
         LOGGER.info(f"CostGovernor initialized with budget limit: ${limit_usd:.2f}")
         LOGGER.info(f"Memory pressure check enabled - minimum: {min_memory_gb}GB")
-    
+
     def check_memory_pressure(self) -> Dict[str, float]:
         """Check system memory pressure.
-        
+
         Returns:
             Dictionary with memory information
-            
+
         Raises:
             MemoryPressureError: If available memory is below threshold
         """
@@ -76,7 +75,7 @@ class CostGovernor:
             available_gb = memory.available / (1024**3)
             total_gb = memory.total / (1024**3)
             used_percent = memory.percent
-            
+
             if available_gb < self.min_memory_gb:
                 LOGGER.error(f"Low memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required")
                 raise MemoryPressureError(
@@ -84,24 +83,24 @@ class CostGovernor:
                     available_gb=available_gb,
                     threshold_gb=self.min_memory_gb
                 )
-            
+
             if used_percent > 90:
                 LOGGER.warning(f"High memory usage: {used_percent:.1f}%")
-            
+
             return {
                 "available_gb": available_gb,
                 "total_gb": total_gb,
                 "used_percent": used_percent,
                 "pressure_ok": available_gb >= self.min_memory_gb
             }
-            
+
         except ImportError:
             # Fallback to basic memory check using os module
             try:
                 # Unix/Linux/MacOS
                 with open('/proc/meminfo', 'r') as f:
                     meminfo = f.read()
-                
+
                 # Parse MemAvailable and MemTotal
                 for line in meminfo.split('\n'):
                     if 'MemAvailable:' in line:
@@ -110,7 +109,7 @@ class CostGovernor:
                     elif 'MemTotal:' in line:
                         total_kb = int(line.split()[1])
                         total_gb = total_kb / (1024**2)
-                
+
                 if available_gb < self.min_memory_gb:
                     LOGGER.error(f"Low memory: {available_gb:.2f}GB available, {self.min_memory_gb}GB required")
                     raise MemoryPressureError(
@@ -118,16 +117,16 @@ class CostGovernor:
                         available_gb=available_gb,
                         threshold_gb=self.min_memory_gb
                     )
-                
+
                 used_percent = ((total_gb - available_gb) / total_gb) * 100
-                
+
                 return {
                     "available_gb": available_gb,
                     "total_gb": total_gb,
                     "used_percent": used_percent,
                     "pressure_ok": available_gb >= self.min_memory_gb
                 }
-                
+
             except (FileNotFoundError, Exception):
                 # Windows or fallback - assume OK
                 LOGGER.warning("Memory check not available on this platform")
@@ -137,36 +136,36 @@ class CostGovernor:
                     "used_percent": -1,
                     "pressure_ok": True
                 }
-    
+
     def track(self, model: str, input_tokens: int, output_tokens: int) -> float:
         """Track token usage and check budget.
-        
+
         Args:
             model: Model name used
             input_tokens: Number of input tokens
             output_tokens: Number of output tokens
-            
+
         Returns:
             Cost of this interaction
-            
+
         Raises:
             BudgetExceededError: If budget limit is exceeded
         """
         rate = self.rates.get(model, 0.01)  # Default rate for unknown models
         cost = ((input_tokens + output_tokens) / 1000) * rate
-        
+
         # Update spend
         self.spend += cost
         self.action_count += 1
-        
+
         # Track by model
         if model not in self.usage_by_model:
             self.usage_by_model[model] = {"input_tokens": 0, "output_tokens": 0, "cost": 0.0}
-        
+
         self.usage_by_model[model]["input_tokens"] += input_tokens
         self.usage_by_model[model]["output_tokens"] += output_tokens
         self.usage_by_model[model]["cost"] += cost
-        
+
         # Check budget
         if self.spend > self.limit:
             LOGGER.warning(f"Budget exceeded! Current: ${self.spend:.2f}, Limit: ${self.limit:.2f}")
@@ -175,41 +174,41 @@ class CostGovernor:
                 current_spend=self.spend,
                 limit=self.limit
             )
-        
+
         # Log warning at 80% of budget
         if self.spend > self.limit * 0.8:
             LOGGER.warning(f"Approaching budget limit: ${self.spend:.2f} / ${self.limit:.2f}")
-        
+
         LOGGER.debug(f"Tracked cost: ${cost:.4f} for {model} (Total: ${self.spend:.2f})")
         return cost
-    
+
     def check_action_cost(self, estimated_tokens: int, model: str = "gpt-3.5-turbo") -> bool:
         """Check if an estimated action would exceed budget.
-        
+
         Args:
             estimated_tokens: Estimated tokens for the action
             model: Model to be used
-            
+
         Returns:
             True if action is within budget, False otherwise
         """
         rate = self.rates.get(model, 0.01)
         estimated_cost = (estimated_tokens / 1000) * rate
-        
+
         if self.spend + estimated_cost > self.limit:
             LOGGER.warning(f"Action would exceed budget: +${estimated_cost:.4f}")
             return False
-        
+
         return True
-    
+
     def get_stats(self) -> Dict:
         """Get cost and usage statistics.
-        
+
         Returns:
             Dictionary with cost statistics
         """
         runtime = time.time() - self.start_time
-        
+
         return {
             "total_spend": self.spend,
             "budget_limit": self.limit,
@@ -220,7 +219,7 @@ class CostGovernor:
             "usage_by_model": self.usage_by_model,
             "average_cost_per_action": self.spend / max(self.action_count, 1)
         }
-    
+
     def reset(self):
         """Reset the governor state."""
         self.spend = 0.0
@@ -228,10 +227,10 @@ class CostGovernor:
         self.action_count = 0
         self.usage_by_model = {}
         LOGGER.info("CostGovernor reset")
-    
+
     def set_limit(self, new_limit: float):
         """Update the budget limit.
-        
+
         Args:
             new_limit: New budget limit in USD
         """
@@ -242,10 +241,10 @@ class CostGovernor:
 
 def create_cost_governor(limit_usd: float = 5.00) -> CostGovernor:
     """Factory function to create cost governor instance.
-    
+
     Args:
         limit_usd: Budget limit in USD
-        
+
     Returns:
         CostGovernor instance
     """

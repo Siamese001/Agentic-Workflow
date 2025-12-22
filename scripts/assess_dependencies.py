@@ -1,8 +1,9 @@
-import os
-import sys
 import argparse
 import json
+import os
+import sys
 from modulefinder import ModuleFinder
+
 
 def get_active_files(entry_points, root_dir):
     """

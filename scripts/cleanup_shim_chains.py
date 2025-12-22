@@ -16,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 
 import re
 from pathlib import Path
-from typing import List, Optional, Set, Dict
+from typing import Dict, List, Optional, Set
 
 
 class ShimChainCleaner:

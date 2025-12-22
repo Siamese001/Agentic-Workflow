@@ -8,8 +8,7 @@ Prevents corrupted or tampered checkpoints from being loaded into agent memory.
 import hashlib
 import json
 import logging
-import os
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional
 
 from agentic_core.L4_state.storage import BlobStorageProvider
 
@@ -104,7 +103,7 @@ class VerifiableCheckpointManager:
         if verify:
             calculated_checksum = hashlib.sha256(data_bytes).hexdigest()
             LOGGER.debug(f"Verifying checkpoint checksum: {calculated_checksum[:8]}...")
-            
+
             # Get stored checksum from metadata if available
             metadata = await self.storage.get_blob_metadata(key)
             stored_checksum = metadata.get("checksum")
@@ -257,5 +256,5 @@ def create_checkpoint_manager(
     """
     from agentic_core.L4_state.storage import create_storage_adapter
 
-    STORAGE = create_storage_adapter(storage_type, **storage_kwargs)
+    create_storage_adapter(storage_type, **storage_kwargs)
     return VerifiableCheckpointManager(storage)

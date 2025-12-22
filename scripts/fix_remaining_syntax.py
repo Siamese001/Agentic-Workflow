@@ -6,11 +6,12 @@ Fix remaining syntax errors in test files, particularly:
 3. Unmatched parentheses in imports
 """
 
+import ast
 import os
 import re
-import ast
 from pathlib import Path
 from typing import List, Tuple
+
 
 class AdvancedSyntaxFixer:
     def __init__(self, tests_dir: str = "tests"):

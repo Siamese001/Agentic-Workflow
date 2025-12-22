@@ -1,6 +1,6 @@
 """
 DependencySentinel Agent - Import Hygiene Enforcer.
-KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 
+KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
       14 (Duplicate Imports), 44 (Circular Imports)
 """
 
@@ -19,7 +19,7 @@ from ..base import SubAtomicAgent
 
 class DependencySentinel(SubAtomicAgent):
     """
-    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 
+    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
           14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
     """

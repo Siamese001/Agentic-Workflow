@@ -1,57 +1,82 @@
 """Agent classes for agentic_core."""
 
 # Base classes
-from .base import SubAtomicAgent, ImportPatcher
-
 # Analysis agents
 from .analysis import SemanticMapper, TruthKeeper
+from .base import ImportPatcher, SubAtomicAgent
+
+# Canon Validator agents (Subatomic Level 5)
+from .canon_base_agent import CanonBaseAgent
+from .system_architect import SystemArchitect
+from .code_janitor import CodeJanitor
+from .structural_engineer import StructuralEngineer as CanonStructuralEngineer
+from .healer_agent import HealerAgent
 
 # Concurrency agents
 from .concurrency import (
-    MemoryLeakDetector,
     DeadlockAnalyzer,
     DeadlockDetector,
-    RaceAnalyzer
+    MemoryLeakDetector,
+    RaceAnalyzer,
 )
 
 # Context agents
 from .context import OmniContext
 
-# Planning agents
-from .planning import StrategicPlanner, ReflectionAgent
-
-# Security agents (SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel)
-from .security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel
-
-# Specialized agents
-from .specialized import (
-    TheCartographer,
-    TheOmniContext,
-    TheStrategist,
-    NamingEnforcer,
-    DocEnforcer,
-    TypeEnforcer
-)
-
-# Infrastructure agents
-from .infrastructure import Historian, GitAgent, BenchmarkingAgent
-
 # Engineering agents
-from .engineering import StructuralEngineer, PatternEnforcer
+from .engineering import PatternEnforcer, StructuralEngineer
 
 # Governance agents
 from .governance import ArchitectureGovernor, DependencySentinel
 
+# Infrastructure agents
+from .infrastructure import BenchmarkingAgent, GitAgent, Historian
+
+# Planning agents
+from .planning import ReflectionAgent, StrategicPlanner
+
 # Quality agents (HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer)
-from .quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
+from .quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
 
 # Repair agents
-from .repair import TestPilot, ToolsmithAgent, Sherlock
+from .repair import Sherlock, TestPilot, ToolsmithAgent
+
+# Security agents (SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel)
+from .security import (
+    ConcurrencyGuardian,
+    RedSentinel,
+    SafetyInspector,
+    SecurityEnforcer,
+)
+
+# Memory agents (Level 5 Autonomous Learning)
+
+# Pattern retrieval agents
+
+# Systemic enhancement agents
+
+# Cognitive assurance agents
+
+# Specialized agents
+from .specialized import (
+    DocEnforcer,
+    NamingEnforcer,
+    TheCartographer,
+    TheOmniContext,
+    TheStrategist,
+    TypeEnforcer,
+)
 
 __all__ = [
     # Base
     'SubAtomicAgent',
     'ImportPatcher',
+    # Canon Validator (Subatomic Level 5)
+    'CanonBaseAgent',
+    'SystemArchitect',
+    'CodeJanitor',
+    'CanonStructuralEngineer',
+    'HealerAgent',
     # Analysis
     'SemanticMapper',
     'TruthKeeper',

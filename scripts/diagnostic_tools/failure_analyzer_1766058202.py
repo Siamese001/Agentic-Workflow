@@ -1,6 +1,6 @@
 """
 FailureAnalyzer Diagnostic Tool
-Purpose: Analyzes frequency patterns and statistical distribution of failure codes 
+Purpose: Analyzes frequency patterns and statistical distribution of failure codes
 to identify recurring system bottlenecks.
 Usage: Instantiate FailureAnalyzer with a list of failure keys and call analyze().
 """
@@ -27,7 +27,7 @@ class FailureAnalyzer:
             return
 
         counts, mean, std_dev = self._calculate_metrics()
-        
+
         print(f"{'='*40}")
         print(f"FAILURE PATTERN DIAGNOSTIC")
         print(f"{'='*40}")
@@ -38,7 +38,7 @@ class FailureAnalyzer:
         print(f"{'-'*40}")
         print(f"{'Key ID':<10} | {'Frequency':<10} | {'Impact %'}")
         print(f"{'-'*40}")
-        
+
         for key, count in counts.most_common():
             percentage = (count / self.total) * 100
             print(f"{key:<10} | {count:<10} | {percentage:>8.1f}%")
@@ -47,6 +47,6 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Contextual data injection
     CONTEXT_KEYS = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     analyzer = FailureAnalyzer(CONTEXT_KEYS)
     analyzer.analyze()

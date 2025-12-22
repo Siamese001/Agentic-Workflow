@@ -1,20 +1,17 @@
 """
-agentic_core/agents/governance.py
-Depth: 3
+apps_shared/agents/domain/governance/governor.py
+Depth: 5
 Role: Enforces Architectural, Import, and Security Laws (The Three Laws of Subatomic Governance).
 """
 import ast
+import asyncio
 import os
 import re
-import asyncio
 import subprocess
 from typing import List, Tuple
 
 from agentic_core.agents.base import SubAtomicAgent
-from agentic_core.domain.context import ValidationContext
-from apps_shared.domain.constants import (
-    MIN_DEPTH, MAX_DEPTH, MAX_LINES, EXCLUDED_DIRS
-)
+from apps_shared.domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
 
 
 class ArchitectureGovernor(SubAtomicAgent):
@@ -31,20 +28,21 @@ class ArchitectureGovernor(SubAtomicAgent):
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
-        await asyncio.sleep(0)
-        
+
         violations = {'depth': [], 'atomicity': [], 'complexity': [], 'system': []}
-        
+
         for file_path in self.ctx.python_files:
             violations['depth'].extend(self._check_depth(file_path))
-            violations['atomicity'].extend(self._check_atomicity(file_path))
+            violations['atomicity'].extend(await self._check_atomicity(file_path))
             violations['system'].extend(self._check_system(file_path))
-            violations['complexity'].extend(self._check_complexity(file_path))
+            violations['complexity'].extend(await self._check_complexity(file_path))
+            # Yield control to the event loop to prevent blocking during heavy file analysis
+            await asyncio.sleep(0)
 
         for cat, v in violations.items():
             if v:
                 print(f"   🏛️  {cat.title()} Violations: {len(v)}")
-        
+
         self.ctx.report(self.name, 49, not violations['depth'], violations['depth'])
         self.ctx.report(self.name, 50, not violations['atomicity'], violations['atomicity'])
         self.ctx.report(self.name, 19, not violations['complexity'], violations['complexity'])
@@ -52,41 +50,42 @@ class ArchitectureGovernor(SubAtomicAgent):
         self.ctx.report(self.name, 41, True, ["Root hygiene maintained"])
 
     def _check_depth(self, file_path: str) -> List[str]:
-        """Check if file violates the Law of Depth."""
-        parts = file_path.split(os.sep)
-        depth = len([p for p in parts if p not in {'.git', 'data'}]) - 1
+        """Check if file violates the Law of Depth (Key 49)."""
+        parts = [p for p in file_path.split(os.sep) if p and p not in {'.git', 'data', '.'}]
+        depth = len(parts)
         if depth > MAX_DEPTH or depth < MIN_DEPTH:
             return [f"{file_path}: Depth {depth} violates Law of Depth ({MIN_DEPTH}-{MAX_DEPTH})"]
         return []
 
-    def _check_atomicity(self, file_path: str) -> List[str]:
-        """Check if file violates the Law of Atomicity."""
+    async def _check_atomicity(self, file_path: str) -> List[str]:
+        """Check if file violates the Law of Atomicity (Key 50)."""
         v = []
         try:
-            with open(file_path, encoding='utf-8') as f:
-                content = f.read()
+            content = await asyncio.to_thread(self._read_file, file_path)
             if len(content.splitlines()) > MAX_LINES:
                 v.append(f"{file_path}: > {MAX_LINES} lines")
+
             tree = ast.parse(content)
             classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             if len(classes) > 1:
-                v.append(f"{file_path}: Multiple classes detected")
+                v.append(f"{file_path}: Multiple classes detected (Violation of Atomic Split)")
         except Exception:
             pass
         return v
 
-    def _check_complexity(self, file_path: str) -> List[str]:
-        """Check function complexity and length."""
+    async def _check_complexity(self, file_path: str) -> List[str]:
+        """Check function complexity and length (Keys 17, 19)."""
         v = []
         try:
-            with open(file_path, encoding='utf-8') as f:
-                tree = ast.parse(f.read())
+            content = await asyncio.to_thread(self._read_file, file_path)
+            tree = ast.parse(content)
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    if hasattr(node, 'end_lineno'):
+                    if hasattr(node, 'end_lineno') and node.end_lineno:
                         length = node.end_lineno - node.lineno
                         if length > self.MAX_FUNC_LINES:
                             v.append(f"{file_path}:{node.name} too long ({length} lines)")
+
                     complexity = self._calculate_mccabe(node)
                     if complexity > self.MAX_COMPLEXITY:
                         v.append(f"{file_path}:{node.name} complex ({complexity})")
@@ -94,55 +93,33 @@ class ArchitectureGovernor(SubAtomicAgent):
             pass
         return v
 
-    def _calculate_mccabe(self, node) -> int:
+    def _check_system(self, file_path: str) -> List[str]:
+        """Enforce System Root Hygiene (Keys 40, 41)."""
+        v = []
+        if os.sep not in file_path:
+            v.append(f"{file_path}: Root hygiene violation (Key 41)")
+        return v
+
+    def _calculate_mccabe(self, node: ast.AST) -> int:
         """Calculate McCabe cyclomatic complexity."""
         complexity = 1
         for child in ast.walk(node):
-            if isinstance(child, (ast.If, ast.For, ast.While, ast.AsyncFor, ast.ExceptHandler)):
+            if isinstance(child, (ast.If, ast.For, ast.While, ast.AsyncFor, ast.ExceptHandler, ast.With, ast.AsyncWith)):
                 complexity += 1
+            elif isinstance(child, ast.BoolOp):
+                complexity += len(child.values) - 1
         return complexity
 
-    def _check_system(self, file_path: str) -> List[str]:
-        """Check system-level constraints."""
-        return []
-
-    async def propose_fix(self, file_path: str, violation_type: str, details: str) -> str:
-        """L5+ Use LLM with few-shot to propose architectural fixes."""
-        if not self.ctx.intelligence_enabled:
-            return ""
-        
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-        except Exception:
-            return ""
-        
-        prompt = f"""
-{self.ctx.FEW_SHOT_GLOBAL_REFACTOR}
-
-File {file_path} violates {violation_type} law.
-Details: {details}
-
-Current content (first 2000 chars):
-{content[:2000]}
-
-Propose minimal compliance action:
-- MOVE: old_path → new_path
-- SPLIT: file.py → [new_file1.py, new_file2.py]
-- DELETE (if noise)
-Output one operation per line.
-"""
-        
-        return await self.ctx.resilient_mutation(
-            self.name, prompt, max_attempts=1
-        )
+    def _read_file(self, file_path: str) -> str:
+        """Internal synchronous read for thread offloading."""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
 
 
 class DependencySentinel(SubAtomicAgent):
     """
-    Import Hygiene Enforcer.
-    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports), 
-          14 (Duplicate Imports), 44 (Circular Imports).
+    KEYS: 7 (Star Imports), 8 (Relative Imports), 9 (Unused Imports),
+          14 (Duplicate Imports), 44 (Circular Imports)
     ROLE: The Cleaner. Automatically fixes import ordering and unused imports.
     """
 
@@ -245,7 +222,7 @@ class DependencySentinel(SubAtomicAgent):
         return (len(violations) == 0, violations)
 
     def check_key_44_no_circular_imports(self) -> Tuple[bool, List[str]]:
-        """Check for circular imports using import graph analysis."""
+        """Check for circular imports."""
         violations = []
         import_map = {}
 

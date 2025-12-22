@@ -18,7 +18,7 @@ from pathlib import Path
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core"))
 
-from L5_safety.overseer import SafetyInspector, create_safety_inspector
+from L5_safety.overseer import create_safety_inspector
 
 
 async def test_safety_inspector_patterns():
@@ -26,14 +26,14 @@ async def test_safety_inspector_patterns():
     print("=" * 80)
     print("SAFETY INSPECTOR PATTERN DETECTION")
     print("=" * 80)
-    
+
     print("\n1. Testing Pattern Detection (without Socratic Judge)")
     print("-" * 50)
-    
+
     # Create test files with various patterns
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        
+
         # Test file with secrets
         secret_file = temp_path / "test_secrets.py"
         secret_file.write_text("""
@@ -43,7 +43,7 @@ secret_key = 'my-secret-key-here'
 password = "admin123"
 AWS_ACCESS_KEY = "AKIAIOSFODNN7EXAMPLE"
 """)
-        
+
         # Test file with TODOs
         todo_file = temp_path / "test_todo.py"
         todo_file.write_text("""
@@ -53,7 +53,7 @@ def process_data():
     # FIXME: Handle edge case
     return data
 """)
-        
+
         # Test file with prints
         print_file = temp_path / "test_print.py"
         print_file.write_text("""
@@ -61,7 +61,7 @@ def debug_function():
     print("Debugging message")
     sys.stdout.write("Output")
 """)
-        
+
         # Test file with debuggers
         debug_file = temp_path / "test_debug.py"
         debug_file.write_text("""
@@ -70,7 +70,7 @@ def problematic_function():
     pdb.set_trace()
     breakpoint()
 """)
-        
+
         # Test file with eval/exec
         eval_file = temp_path / "test_eval.py"
         eval_file.write_text("""
@@ -79,10 +79,10 @@ def dangerous_function():
     eval(code)
     exec("x = 5")
 """)
-        
+
         # Create inspector without Socratic Judge
         inspector = create_safety_inspector(enable_socratic_judge=False)
-        
+
         # Test each file
         test_cases = [
             (secret_file, "secrets", True),
@@ -91,11 +91,11 @@ def dangerous_function():
             (debug_file, "debuggers", True),
             (eval_file, "evals", True),
         ]
-        
+
         all_passed = True
         for file_path, expected_type, should_have_violations in test_cases:
             violations = await inspector.scan_file(str(file_path))
-            
+
             if should_have_violations:
                 if violations[expected_type]:
                     print(f"✅ {expected_type} detected in {file_path.name}")
@@ -108,7 +108,7 @@ def dangerous_function():
                 else:
                     print(f"❌ Unexpected {expected_type} in {file_path.name}")
                     all_passed = False
-        
+
         return all_passed
 
 
@@ -117,14 +117,14 @@ async def test_socratic_judge_verification():
     print("\n" + "=" * 80)
     print("SOCRATIC JUDGE VERIFICATION")
     print("=" * 80)
-    
+
     print("\n1. Testing False Positive Detection")
     print("-" * 50)
-    
+
     # Create test files with false positives
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        
+
         # File with fake API key (should be false positive)
         fake_secret_file = temp_path / "fake_secrets.py"
         fake_secret_file.write_text("""
@@ -135,7 +135,7 @@ password = "test-password-123"
 # This is just documentation
 # REAL_KEY = "sk-real-key-would-go-here"
 """)
-        
+
         # File with safe eval usage (should be false positive)
         safe_eval_file = temp_path / "safe_eval.py"
         safe_eval_file.write_text("""
@@ -154,14 +154,14 @@ def parse_expression(expr):
     node = ast.parse(expr, mode='eval')
     compile(node, '<string>', 'eval')
 """)
-        
+
         # Create inspector with Socratic Judge
         inspector = create_safety_inspector(enable_socratic_judge=True)
-        
+
         # Test fake secrets
         print("\nTesting fake API key detection...")
         violations = await inspector.scan_file(str(fake_secret_file))
-        
+
         # Without API key, should default to YES (violation)
         if os.getenv("GOOGLE_API_KEY"):
             print("   GOOGLE_API_KEY found - Socratic Judge active")
@@ -173,11 +173,11 @@ def parse_expression(expr):
             print("   ⚠️  No GOOGLE_API_KEY - Socratic Judge disabled")
             if violations["secrets"]:
                 print("   ⚠️  Marked as violation (default behavior)")
-        
+
         # Test safe eval
         print("\nTesting safe eval usage...")
         violations = await inspector.scan_file(str(safe_eval_file))
-        
+
         if os.getenv("GOOGLE_API_KEY"):
             if violations["evals"]:
                 print("   ⚠️  Socratic Judge marked eval as violation")
@@ -185,7 +185,7 @@ def parse_expression(expr):
                 print("   ✅ Socratic Judge correctly identified safe eval")
         else:
             print("   ⚠️  No GOOGLE_API_KEY - defaulting to violation")
-        
+
         return True
 
 
@@ -194,52 +194,52 @@ async def test_false_positive_cache():
     print("\n" + "=" * 80)
     print("FALSE POSITIVE CACHE")
     print("=" * 80)
-    
+
     print("\n1. Testing Cache Mechanism")
     print("-" * 50)
-    
+
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
-        
+
         # Create test file
         test_file = temp_path / "cached_file.py"
         test_file.write_text("""
 # Test file with fake secret
 api_key = "fake-key-for-testing"
 """)
-        
+
         # Create inspector
         inspector = create_safety_inspector(enable_socratic_judge=True)
-        
+
         # First scan
         print("First scan...")
         violations1 = await inspector.scan_file(str(test_file))
-        
+
         # Check if file was cached
         if str(test_file) in inspector._false_positive_cache:
             print("✅ File added to false positive cache")
         else:
             print("⚠️  File not in cache (may be actual violation)")
-        
+
         # Second scan should use cache
         print("\nSecond scan (should use cache)...")
         violations2 = await inspector.scan_file(str(test_file))
-        
+
         # Results should be identical
         if violations1 == violations2:
             print("✅ Cache working - results consistent")
         else:
             print("❌ Cache not working - results differ")
-        
+
         # Clear cache and test
         inspector.clear_false_positive_cache()
         print("\nCache cleared")
-        
+
         if not inspector._false_positive_cache:
             print("✅ Cache cleared successfully")
         else:
             print("❌ Cache not cleared")
-        
+
         return True
 
 
@@ -248,12 +248,12 @@ async def test_all_seven_patterns():
     print("\n" + "=" * 80)
     print("ALL 7 SECURITY PATTERNS VALIDATION")
     print("=" * 80)
-    
+
     print("\nValidating all patterns are implemented:")
     print("-" * 50)
-    
+
     inspector = create_safety_inspector(enable_socratic_judge=False)
-    
+
     patterns = {
         "secrets": inspector.secret_patterns,
         "todos": inspector.todo_patterns,
@@ -261,7 +261,7 @@ async def test_all_seven_patterns():
         "debuggers": inspector.debugger_patterns,
         "evals": inspector.eval_patterns,
     }
-    
+
     all_present = True
     for pattern_name, pattern_list in patterns.items():
         if pattern_list:
@@ -269,11 +269,11 @@ async def test_all_seven_patterns():
         else:
             print(f"❌ {pattern_name}: No patterns")
             all_present = False
-    
+
     # Check empty_except and bare_except are handled
     print(f"✅ empty_except: Handled in scan_file()")
     print(f"✅ bare_except: Handled in scan_file()")
-    
+
     return all_present
 
 
@@ -282,19 +282,19 @@ async def test_integration_with_nervous_system():
     print("\n" + "=" * 80)
     print("NERVOUS SYSTEM INTEGRATION")
     print("=" * 80)
-    
+
     print("\n1. Testing SafetyInspector in mission context")
     print("-" * 50)
-    
+
     try:
         from L3_orchestration.nervous_system import NervousSystem, OrchestratorConfig
-        from L4_state.storage import create_storage_adapter, SignalLedger
-        
+        from L4_state.storage import SignalLedger, create_storage_adapter
+
         # Create nervous system
         config = OrchestratorConfig(max_iterations=1)
         storage = create_storage_adapter("local", base_path="./agentic_core")
         signal_ledger = SignalLedger(storage, "safety-test")
-        
+
         nervous_system = NervousSystem(
             safety_layer=None,
             checkpoint_manager=None,
@@ -302,16 +302,16 @@ async def test_integration_with_nervous_system():
             session_id="safety-test",
             signal_ledger=signal_ledger
         )
-        
+
         # Create safety inspector
         safety_inspector = create_safety_inspector(enable_socratic_judge=True)
-        
+
         # Test integration
         print("✅ SafetyInspector can be created alongside NervousSystem")
         print("✅ Ready for mission execution with safety scanning")
-        
+
         return True
-        
+
     except ImportError as e:
         print(f"⚠️  Integration test skipped: {e}")
         return True
@@ -323,28 +323,28 @@ async def run_socratic_judge_validation():
     print("L5 SOCRATIC JUDGE VALIDATION SUITE")
     print("=" * 80)
     print("\nTesting SafetyInspector with Socratic Judge false positive mitigation")
-    
+
     results = {}
-    
+
     # Run all tests
     results["pattern_detection"] = await test_safety_inspector_patterns()
     results["socratic_verification"] = await test_socratic_judge_verification()
     results["false_positive_cache"] = await test_false_positive_cache()
     results["all_patterns"] = await test_all_seven_patterns()
     results["integration"] = await test_integration_with_nervous_system()
-    
+
     # Generate report
     print("\n" + "=" * 80)
     print("SOCRATIC JUDGE VALIDATION REPORT")
     print("=" * 80)
-    
+
     print("\nTest Results:")
     for test, passed in results.items():
         status = "✅ PASSED" if passed else "❌ FAILED"
         print(f"  {test.replace('_', ' ').title()}: {status}")
-    
+
     all_passed = all(results.values())
-    
+
     if all_passed:
         print("\n✅ All Socratic Judge components validated!")
         print("The system has:")
@@ -356,10 +356,9 @@ async def run_socratic_judge_validation():
     else:
         print("\n⚠️  Some components need attention")
         print("Check the logs above for details")
-    
+
     return all_passed
 
 
 if __name__ == "__main__":
-    import sys
     asyncio.run(run_socratic_judge_validation())

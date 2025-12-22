@@ -1,8 +1,9 @@
-import pytest
 import time
-import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 from watchdog_sidecar import DeadManSwitch
+
 
 @pytest.fixture
 def watchdog_setup(tmp_path):

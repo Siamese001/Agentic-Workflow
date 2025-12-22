@@ -1,10 +1,9 @@
-import json
+import argparse
+import ast
+import hashlib
+import logging
 import os
 import shutil
-import logging
-import argparse
-import hashlib
-import ast
 from collections import defaultdict
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -111,10 +110,10 @@ def extract_functions(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         tree = ast.parse(content)
         functions = []
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
                 # Get function source
@@ -127,7 +126,7 @@ def extract_functions(filepath):
                     'code': func_code,
                     'hash': hashlib.md5(func_code.encode()).hexdigest()
                 })
-        
+
         return functions
     except Exception as e:
         logger.error(f"❌ Failed to parse {filepath}: {e}")
@@ -136,7 +135,7 @@ def extract_functions(filepath):
 def merge_validator_logic(silos, exclude_dirs, merge_to):
     """Merge duplicate validator logic across silos into a single file"""
     logger.info("🔀 Starting validator logic merge...")
-    
+
     # Find all Python files in specified silos
     all_files = []
     for silo in silos:
@@ -149,23 +148,22 @@ def merge_validator_logic(silos, exclude_dirs, merge_to):
                     if file.endswith('.py') and not file.startswith('__'):
                         filepath = os.path.join(root, file)
                         all_files.append(filepath)
-    
+
     # Extract and deduplicate functions
     function_map = defaultdict(list)
-    function_sources = {}
-    
+
     for filepath in all_files:
         functions = extract_functions(filepath)
         for func in functions:
             if func['name'] not in ['validate', 'check', 'verify', 'is_valid']:
                 continue  # Focus on validation functions
-            
+
             function_map[func['name']].append({
                 'hash': func['hash'],
                 'code': func['code'],
                 'file': filepath
             })
-    
+
     # Create merged file
     merged_content = '''#!/usr/bin/env python3
 """
@@ -217,21 +215,21 @@ EXCLUDED_FILES = {
 def is_excluded(path: str) -> bool:
     """Check if a path should be excluded from validation."""
     path_parts = path.split(os.sep)
-    
+
     # Check directory exclusions
     for part in path_parts:
         if part in EXCLUDED_DIRS:
             return True
-    
+
     # Check file exclusions
     filename = os.path.basename(path)
     if filename in EXCLUDED_FILES:
         return True
-    
+
     return False
 
 '''
-    
+
     # Add unique functions to merged file
     added_functions = set()
     for func_name, func_list in function_map.items():
@@ -242,19 +240,19 @@ def is_excluded(path: str) -> bool:
                 merged_content += f"\n# Function: {func_name} (from {func_data['file']})\n"
                 merged_content += func_data['code'] + "\n\n"
                 added_functions.add(func_data['hash'])
-    
+
     # Write merged file
     os.makedirs(os.path.dirname(merge_to), exist_ok=True)
     with open(merge_to, 'w', encoding='utf-8') as f:
         f.write(merged_content)
-    
+
     logger.info(f"✅ Merged validator logic to {merge_to}")
     logger.info(f"📊 Processed {len(all_files)} files")
     logger.info(f"🔀 Merged {len(added_functions)} unique validation functions")
-    
+
     return len(added_functions)
 
-def purge_everything(aggressive=False, organize=False, merge_logic=False, 
+def purge_everything(aggressive=False, organize=False, merge_logic=False,
                     merge_to=None, silos=None, exclude=None):
     purged_count = 0
 
@@ -303,13 +301,13 @@ if __name__ == "__main__":
     parser.add_argument("--merge-to", type=str, help="Target file for merged validator logic")
     parser.add_argument("--silos", type=str, help="Comma-separated list of silos to process")
     parser.add_argument("--exclude", type=str, help="Comma-separated list of directories to exclude")
-    
+
     args = parser.parse_args()
-    
+
     # Parse silos and exclude lists
     silos = args.silos.split(',') if args.silos else []
     exclude = args.exclude.split(',') if args.exclude else []
-    
+
     purge_everything(
         aggressive=args.aggressive,
         organize=args.organize,

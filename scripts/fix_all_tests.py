@@ -8,11 +8,12 @@ This script will:
 4. Add placeholder implementations for missing classes
 """
 
+import ast
 import os
 import re
-import ast
 from pathlib import Path
-from typing import List, Dict, Set, Tuple
+from typing import Dict, List, Set, Tuple
+
 
 class ComprehensiveTestFixer:
     def __init__(self, tests_dir: str = "tests"):

@@ -39,9 +39,8 @@ def reset_all_memory():
         )
         # print("   ✅ Pinecone Reset Complete.")  # [Security Fix]
     except Exception as e:
-pass
-# print(f"   ❌ Pinecone Error: {e}")  # [Security Fix]
         pass
+# print(f"   ❌ Pinecone Error: {e}")  # [Security Fix]
 
     # 2. RESET REDIS
     # print("\nreconfiguring Redis...")  # [Security Fix]
@@ -61,15 +60,13 @@ pass
 
             # print("   - Dropped old Redis index.")  # [Security Fix]
         except Exception:
-pass
-# print("   - No old Redis index found.")  # [Security Fix]
             pass
+# print("   - No old Redis index found.")  # [Security Fix]
 
     # print("   ✅ Redis Reset Complete (Index will auto-recreate with 384-dim).")  # [Security Fix]
     except Exception as e:
-pass
-# print(f"   ❌ Redis Error: {e}")  # [Security Fix]
         pass
+# print(f"   ❌ Redis Error: {e}")  # [Security Fix]
 
 
 if __name__ == "__main__":

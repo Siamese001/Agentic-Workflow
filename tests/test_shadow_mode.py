@@ -1,7 +1,8 @@
-import pytest
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
+
 import core_utils
+import pytest
 
 # Define the global mode for testing
 SHADOW_MODE_KEY = "AGENT_MODE"

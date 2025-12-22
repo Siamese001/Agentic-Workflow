@@ -12,11 +12,17 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set
 
-from .agents import (CampaignBalanceAgent, CampaignPlanner,
-                     ContactValidatorAgent, DeliverabilityAgent,
-                     LeadQualityAgent, MessageComplianceAgent,
-                     OutreachReflectionAgent, OutreachTestPilot,
-                     TemplateOptimizer)
+from .agents import (
+    CampaignBalanceAgent,
+    CampaignPlanner,
+    ContactValidatorAgent,
+    DeliverabilityAgent,
+    LeadQualityAgent,
+    MessageComplianceAgent,
+    OutreachReflectionAgent,
+    OutreachTestPilot,
+    TemplateOptimizer,
+)
 from .base_agent import OutreachAgent
 from .context import OutreachEngineContext
 
@@ -61,7 +67,7 @@ class OutreachHealingResult:
 
 class OutreachSignalRouter:
     """Routes signals to appropriate agents."""
-    
+
     SIGNAL_TO_AGENTS = {
         "LEAD_QUALITY_ISSUE": ["LeadQualityAgent"],
         "CONTACT_VALIDATION_FAILED": ["ContactValidatorAgent"],
@@ -71,9 +77,9 @@ class OutreachSignalRouter:
         "DELIVERABILITY_ISSUE": ["DeliverabilityAgent"],
         "TEST_FAILURE": ["OutreachTestPilot"],
     }
-    
+
     CRITICAL_SIGNALS = {"COMPLIANCE_ISSUE", "DELIVERABILITY_ISSUE"}
-    
+
     @classmethod
     def get_agents_for_signals(cls, signals: Set[str]) -> List[str]:
         """Get agents needed for the given signals."""
@@ -82,12 +88,12 @@ class OutreachSignalRouter:
             if signal in cls.SIGNAL_TO_AGENTS:
                 agents.update(cls.SIGNAL_TO_AGENTS[signal])
         return list(agents)
-    
+
     @classmethod
     def has_critical_signal(cls, signals: Set[str]) -> bool:
         """Check if any critical signals are present."""
         return bool(signals & cls.CRITICAL_SIGNALS)
-    
+
     @classmethod
     def determine_strategy(
         cls,
@@ -98,22 +104,22 @@ class OutreachSignalRouter:
         """Determine the healing strategy based on context."""
         if cycle_number == 1:
             return OutreachHealingStrategy.FULL_DIAGNOSTIC
-        
+
         if not signals:
             return OutreachHealingStrategy.VERIFICATION_ONLY
-        
+
         if cls.has_critical_signal(signals):
             return OutreachHealingStrategy.COMPLIANCE_FOCUS
-        
+
         if len(signals) <= 2:
             return OutreachHealingStrategy.SURGICAL_STRIKE
-        
+
         return OutreachHealingStrategy.QUALITY_FOCUS
 
 
 class OutreachAgentFactory:
     """Factory for creating outreach agents."""
-    
+
     @staticmethod
     def create_all_agents(ctx: OutreachEngineContext) -> List[OutreachAgent]:
         """Create all agents for full diagnostic."""
@@ -126,7 +132,7 @@ class OutreachAgentFactory:
             DeliverabilityAgent(ctx),
             OutreachTestPilot(ctx),
         ]
-    
+
     @staticmethod
     def create_quality_agents(ctx: OutreachEngineContext) -> List[OutreachAgent]:
         """Create quality-focused agents."""
@@ -136,7 +142,7 @@ class OutreachAgentFactory:
             TemplateOptimizer(ctx),
             OutreachTestPilot(ctx),
         ]
-    
+
     @staticmethod
     def create_compliance_agents(ctx: OutreachEngineContext) -> List[OutreachAgent]:
         """Create compliance-focused agents."""
@@ -145,7 +151,7 @@ class OutreachAgentFactory:
             DeliverabilityAgent(ctx),
             OutreachTestPilot(ctx),
         ]
-    
+
     @staticmethod
     def create_agents_by_name(ctx: OutreachEngineContext, names: List[str]) -> List[OutreachAgent]:
         """Create specific agents by name."""
@@ -160,67 +166,67 @@ class OutreachAgentFactory:
             "CampaignPlanner": CampaignPlanner,
             "OutreachReflectionAgent": OutreachReflectionAgent,
         }
-        
+
         agents = []
         for name in names:
             if name in agent_map:
                 agents.append(agent_map[name](ctx))
-        
+
         return agents
 
 
 class OutreachHealingCycle:
     """Manages a single healing cycle."""
-    
+
     def __init__(self, ctx: OutreachEngineContext, cycle_number: int):
         self.ctx = ctx
         self.cycle_number = cycle_number
         self.start_time: Optional[float] = None
         self.end_time: Optional[float] = None
-    
+
     async def execute(self, strategy: OutreachHealingStrategy) -> OutreachCycleResult:
         """Execute the healing cycle with the given strategy."""
         import time
         self.start_time = time.time()
-        
+
         signals_before = set(self.ctx.signals)
-        
+
         # Build agent agenda based on strategy
         agents = self._build_agenda(strategy)
-        
+
         # Execute agents
         agents_executed = []
         passed_agents = []
         failed_agents = []
-        
+
         for agent in agents:
             try:
                 await agent.execute()
                 agents_executed.append(agent.name)
-                
+
                 # Check result
                 result = self.ctx.results.get(agent.name, {})
                 if result.get("passed", True):
                     passed_agents.append(agent.name)
                 else:
                     failed_agents.append(agent.name)
-                    
+
             except Exception as e:
                 agents_executed.append(agent.name)
                 failed_agents.append(agent.name)
                 self.ctx.record_result(agent.name, passed=False, details=str(e))
-        
+
         # Check for rollback conditions
         rollback_triggered = self._check_rollback_conditions()
         if rollback_triggered:
             self._execute_rollback()
-        
+
         self.end_time = time.time()
         duration_ms = (self.end_time - self.start_time) * 1000
-        
+
         signals_after = set(self.ctx.signals)
         converged = self.ctx.is_converged()
-        
+
         return OutreachCycleResult(
             cycle_number=self.cycle_number,
             strategy=strategy,
@@ -233,21 +239,21 @@ class OutreachHealingCycle:
             converged=converged,
             duration_ms=duration_ms,
         )
-    
+
     def _build_agenda(self, strategy: OutreachHealingStrategy) -> List[OutreachAgent]:
         """Build the agent agenda based on strategy."""
         if strategy == OutreachHealingStrategy.FULL_DIAGNOSTIC:
             return OutreachAgentFactory.create_all_agents(self.ctx)
-        
+
         elif strategy == OutreachHealingStrategy.VERIFICATION_ONLY:
             return [OutreachTestPilot(self.ctx)]
-        
+
         elif strategy == OutreachHealingStrategy.QUALITY_FOCUS:
             return OutreachAgentFactory.create_quality_agents(self.ctx)
-        
+
         elif strategy == OutreachHealingStrategy.COMPLIANCE_FOCUS:
             return OutreachAgentFactory.create_compliance_agents(self.ctx)
-        
+
         elif strategy == OutreachHealingStrategy.SURGICAL_STRIKE:
             agent_names = OutreachSignalRouter.get_agents_for_signals(self.ctx.signals)
             if not agent_names:
@@ -256,26 +262,26 @@ class OutreachHealingCycle:
             if not any(isinstance(a, OutreachTestPilot) for a in agents):
                 agents.append(OutreachTestPilot(self.ctx))
             return agents
-        
+
         return OutreachAgentFactory.create_all_agents(self.ctx)
-    
+
     def _check_rollback_conditions(self) -> bool:
         """Check if rollback should be triggered."""
         if OutreachSignalRouter.has_critical_signal(self.ctx.signals):
             return True
-        
-        if (self.cycle_number > 1 and 
-            self.ctx.has_signal("TEST_FAILURE") and 
+
+        if (self.cycle_number > 1 and
+            self.ctx.has_signal("TEST_FAILURE") and
             self.ctx.campaign_backups):
             return True
-        
+
         return False
-    
+
     def _execute_rollback(self):
         """Execute rollback of all changes."""
         print(f"   🚨 Cycle {self.cycle_number}: Triggering rollback...")
         self.ctx.rollback_all()
-        
+
         for signal in list(self.ctx.signals):
             if signal in OutreachSignalRouter.CRITICAL_SIGNALS or signal == "TEST_FAILURE":
                 self.ctx.remove_signal(signal)
@@ -283,7 +289,7 @@ class OutreachHealingCycle:
 
 class OutreachHealingOrchestrator:
     """Orchestrates the complete self-healing process."""
-    
+
     def __init__(
         self,
         ctx: OutreachEngineContext,
@@ -294,30 +300,30 @@ class OutreachHealingOrchestrator:
         self.max_cycles = max_cycles
         self.enable_reflection = enable_reflection
         self.cycle_results: List[OutreachCycleResult] = []
-    
+
     async def run(self) -> OutreachHealingResult:
         """Run the complete healing process."""
         import time
         start_time = time.time()
-        
+
         print("\n" + "=" * 60)
         print("🧬 OUTREACH SELF-HEALING ORCHESTRATOR STARTED")
         print("=" * 60)
-        
+
         convergence_cycle = None
         budget_exhausted = False
-        
+
         for cycle_num in range(1, self.max_cycles + 1):
             self.ctx.signal_healing_cycle(cycle_num)
-            
+
             print(f"\n{'=' * 40}")
             print(f"🔄 HEALING CYCLE {cycle_num}/{self.max_cycles}")
             print(f"{'=' * 40}")
-            
+
             # Clear per-cycle tracking
             self.ctx.modified_sections.clear()
             self.ctx.impact_zone.clear()
-            
+
             # Determine strategy
             strategy = OutreachSignalRouter.determine_strategy(
                 cycle_num,
@@ -325,50 +331,50 @@ class OutreachHealingOrchestrator:
                 self.ctx.modified_sections
             )
             print(f"   📋 Strategy: {strategy.value}")
-            
+
             # Execute cycle
             cycle = OutreachHealingCycle(self.ctx, cycle_num)
             result = await cycle.execute(strategy)
             self.cycle_results.append(result)
-            
+
             # Log cycle result
             print(f"   ✅ Passed: {len(result.passed_agents)} | ❌ Failed: {len(result.failed_agents)}")
             if result.rollback_triggered:
                 print(f"   ⏪ Rollback triggered")
-            
+
             # Check convergence
             if result.converged:
                 convergence_cycle = cycle_num
                 print(f"\n✅ CONVERGENCE ACHIEVED - Campaign ready!")
                 break
-            
+
             # Check budget
             if not self.ctx.budget.check_budget():
                 budget_exhausted = True
                 print(f"\n💸 Budget exhausted at cycle {cycle_num}")
                 break
-            
+
             # Log remaining signals
             if self.ctx.signals:
                 print(f"   📡 Remaining signals: {list(self.ctx.signals)}")
-        
+
         # Run reflection if enabled
         if self.enable_reflection:
             reflection = OutreachReflectionAgent(self.ctx)
             await reflection.execute()
-        
+
         end_time = time.time()
         total_duration_ms = (end_time - start_time) * 1000
-        
+
         success = convergence_cycle is not None
-        
+
         print("\n" + "=" * 60)
         print(f"{'✅ HEALING SUCCESS' if success else '⚠️ HEALING INCOMPLETE'}")
         print(f"   Cycles: {len(self.cycle_results)}/{self.max_cycles}")
         print(f"   Duration: {total_duration_ms:.0f}ms")
         print(f"   Budget: ${self.ctx.budget.current_cost:.4f}")
         print("=" * 60)
-        
+
         return OutreachHealingResult(
             success=success,
             total_cycles=len(self.cycle_results),
@@ -390,14 +396,14 @@ async def run_outreach_healing_mission(
 ) -> OutreachHealingResult:
     """
     Run a complete outreach healing mission.
-    
+
     Args:
         campaign: Campaign configuration
         leads: List of leads
         contacts: List of contacts
         messages: List of message templates
         max_cycles: Maximum healing cycles
-    
+
     Returns:
         OutreachHealingResult with mission outcome
     """
@@ -406,9 +412,9 @@ async def run_outreach_healing_mission(
     ctx.leads = leads or []
     ctx.contacts = contacts or []
     ctx.messages = messages or []
-    
+
     # Backup initial state
     ctx.backup_campaign("default")
-    
+
     orchestrator = OutreachHealingOrchestrator(ctx, max_cycles=max_cycles)
     return await orchestrator.run()

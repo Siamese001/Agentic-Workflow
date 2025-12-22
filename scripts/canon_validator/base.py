@@ -95,8 +95,8 @@ class ImportPatcher:
         return {k: v for k, v in import_map.items() if v}
 
     async def _patch_imports_after_changes(
-        self, 
-        change_map: Dict[str, Any], 
+        self,
+        change_map: Dict[str, Any],
         source_agent: str
     ):
         """
@@ -127,9 +127,9 @@ class ImportPatcher:
             await self._patch_file_imports(file_path, change_map, source_agent)
 
     async def _patch_file_imports(
-        self, 
-        file_path: str, 
-        change_map: Dict[str, Any], 
+        self,
+        file_path: str,
+        change_map: Dict[str, Any],
         source_agent: str
     ):
         """Patch imports in a single file based on the change map."""

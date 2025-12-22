@@ -18,15 +18,24 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from agentic_core.knowledge.l5_consolidated import (KnowledgeResult,
-                                                    get_consolidated_knowledge)
+from agentic_core.knowledge.l5_consolidated import (
+    KnowledgeResult,
+    get_consolidated_knowledge,
+)
+
 # Import consolidated components
-from agentic_core.security.security_utilities import (SecurityStatus,
-                                                      get_fact_checker,
-                                                      get_prompt_firewall)
-from agentic_core.utils.core_utilities import (DraftGenerator, FileManager,
-                                               SemanticScorer, log_action,
-                                               register_process)
+from agentic_core.security.security_utilities import (
+    SecurityStatus,
+    get_fact_checker,
+    get_prompt_firewall,
+)
+from agentic_core.utils.core_utilities import (
+    DraftGenerator,
+    FileManager,
+    SemanticScorer,
+    log_action,
+    register_process,
+)
 
 # Configure logging
 logging.basicConfig(

@@ -1,8 +1,8 @@
+import argparse
 import json
+import logging
 import os
 import shutil
-import logging
-import argparse
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -19,7 +19,6 @@ def aggressive_cleanup():
                 logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             except Exception as e:
-pass
 logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # Remove temporary and cache files
@@ -32,8 +31,6 @@ logger.error(f"❌ Failed to delete directory {item}: {e}")
                 logger.info(f"🗑️ Purged temp file: {file}")
                 purged_count += 1
             except Exception as e:
-pass
-pass
 
     # Remove __pycache__ directories
     for root, dirs, files in os.walk('.'):
@@ -44,8 +41,6 @@ pass
                 logger.info(f"🗑️ PURGED DIRECTORY: {pycache_path}")
                 purged_count += 1
             except Exception as e:
-pass
-pass
 
     return purged_count
 
@@ -93,7 +88,6 @@ def organize_structure():
                             logger.info(f"📁 Moved {file} to {target_dir}/")
                             moved_count += 1
                     except Exception as e:
-pass
 logger.error(f"❌ Failed to move {file}: {e}")
 
     logger.info(f"\n✨ Reorganization complete. Moved {moved_count} files.")
@@ -110,7 +104,6 @@ def purge_everything(aggressive=False, organize=False):
                 logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             except Exception as e:
-pass
 logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # 2. Target individual "clean" file clones and reports
@@ -123,8 +116,6 @@ logger.error(f"❌ Failed to delete directory {item}: {e}")
                     logger.info(f"🗑️ Purged File: {file_path}")
                     purged_count += 1
                 except Exception as e:
-pass
-pass
 
     # 3. Aggressive cleanup if requested
     if aggressive:

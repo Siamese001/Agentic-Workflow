@@ -24,7 +24,7 @@ class FailureAnalyzer:
         counts = Counter(self.keys)
         unique_count = len(counts)
         most_common = counts.most_common(5)
-        
+
         # Calculate basic metrics
         sorted_keys = sorted(self.keys)
         median = sorted_keys[total // 2]

@@ -414,10 +414,10 @@ class IntentScoringModel:
 
 class IntentScoringModelManager:
     """Manager for Intent Scoring Model without global state"""
-    
+
     def __init__(self):
         self._instance = None
-    
+
     def get_model(self) -> IntentScoringModel:
         """Get or create the Intent Scoring Model instance"""
         if self._instance is None:

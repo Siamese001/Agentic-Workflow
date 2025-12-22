@@ -7,10 +7,9 @@ Feeds duplicates, variations, and new data to ensure proper filtering.
 import logging
 import time
 
-from dotenv import load_dotenv
-
 # Import the connectivity-hardened modules
 from agent_logic_connectivity import CanonValidator
+from dotenv import load_dotenv
 
 # Configure clean output logging
 logging.basicConfig(level=logging.INFO, format='%(message)s')

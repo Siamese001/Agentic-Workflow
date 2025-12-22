@@ -17,7 +17,7 @@ import json
 def analyze_failure_patterns(keys):
     """
     Analyzes frequency of failure keys and returns statistical summary.
-    
+
     Args:
         keys (list): List of failure identifiers provided in the context.
     Returns:
@@ -28,10 +28,10 @@ def analyze_failure_patterns(keys):
 
     total_events = len(keys)
     counts = collections.Counter(keys)
-    
+
     # Identify recurring patterns (keys appearing more than once)
     recurring = {k: v for k, v in counts.items() if v > 1}
-    
+
     report = {
         "metadata": {
             "total_captured_events": total_events,
@@ -54,10 +54,10 @@ def main():
     # Context: Failure keys from diagnostic environment
     # Note: These values represent the provided sample [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
     failure_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     # Execute diagnostic analysis
     results = analyze_failure_patterns(failure_keys)
-    
+
     # Output results in structured format
     print("--- SUBATOMIC GOVERNANCE: FAILURE PATTERN REPORT ---")
     print(json.dumps(results, indent=2))

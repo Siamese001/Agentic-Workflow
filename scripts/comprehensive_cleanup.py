@@ -15,7 +15,7 @@ LOGGER = logging.getLogger(__name__)
 
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Optional
+from typing import Dict, List, Optional, Set
 
 
 class RepositoryCleaner:

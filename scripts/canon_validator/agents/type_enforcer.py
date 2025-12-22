@@ -132,13 +132,13 @@ class TypeEnforcer(SubAtomicAgent):
     async def _inject_typing_imports(self, type_log: List[Dict]):
         """Inject missing typing imports (Any, Dict, List) into files."""
         TYPING_IMPORTS = "from typing import Any, Dict, List, Optional, Set, Tuple"
-        
+
         for entry in type_log:
             file_path = entry['file']
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                
+
                 # Check if typing imports already exist
                 if 'from typing import' in content:
                     # Enhance existing import
@@ -175,10 +175,10 @@ class TypeEnforcer(SubAtomicAgent):
                             content = content[:end_idx] + '\n\n' + TYPING_IMPORTS + '\n' + content[end_idx:]
                     else:
                         content = TYPING_IMPORTS + '\n\n' + content
-                
+
                 # Write the updated file
                 if self.ctx.write_compliant_file(file_path, content):
                     print(f"   ✅ Injected typing imports: {file_path}")
-                    
+
             except Exception as e:
                 print(f"   ❌ Failed to inject typing in {file_path}: {e}")

@@ -22,7 +22,7 @@ class FailureAnalyzer:
         total = len(self.keys)
         if total == 0:
             return {}
-        
+
         return {
             "total_failures": total,
             "unique_patterns": len(self.stats),
@@ -52,9 +52,9 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Context provided failure keys
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     # Simulate recurring data for pattern demonstration
     simulated_data = context_keys + [50, 50, 7, 22, 50, 7]
-    
+
     analyzer = FailureAnalyzer(simulated_data)
     analyzer.report()

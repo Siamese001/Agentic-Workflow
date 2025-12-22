@@ -1,8 +1,5 @@
 import ast
 import os
-import sys
-from pathlib import Path
-from typing import Set, Dict, List
 
 # CONFIGURATION
 MONOLITH_PATH = "scripts/canon_validator_agentic.py"  # Correct path
@@ -11,15 +8,15 @@ CORE_DIR = "agentic_core"
 # DNA MARKERS: Specific logic signatures that MUST exist in the new core
 REQUIRED_SIGNATURES = {
     "classes": {
-        "SwarmScheduler", "ValidationContext", "Historian", 
-        "ArchitectureGovernor", "DependencySentinel", "SafetyInspector", 
-        "ConcurrencyGuardian", "TestPilot", "ToolsmithAgent", 
-        "StrategicPlanner", "ReflectionAgent", "GitAgent", 
+        "SwarmScheduler", "ValidationContext", "Historian",
+        "ArchitectureGovernor", "DependencySentinel", "SafetyInspector",
+        "ConcurrencyGuardian", "TestPilot", "ToolsmithAgent",
+        "StrategicPlanner", "ReflectionAgent", "GitAgent",
         "BenchmarkingAgent", "MemoryLeakDetector", "DeadlockDetector",
         "RedSentinel", "TruthKeeper", "TheCartographer"
     },
     "methods": {
-        "run_mission", "_calculate_mccabe", "_socratic_verify", 
+        "run_mission", "_calculate_mccabe", "_socratic_verify",
         "broadcast_reasoning", "debate_failure", "_generate_git_metadata",
         "acquire_lock", "_internalize_trace", "search_memory",
         "_check_nesting_depth", "check_file_consistency"
@@ -43,7 +40,7 @@ class DNAExtractor(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         self.methods.add(node.name)
         self.generic_visit(node)
-        
+
     def visit_AsyncFunctionDef(self, node):
         self.methods.add(node.name)
         self.generic_visit(node)
@@ -80,7 +77,7 @@ def main():
     print(f"🔍 STARTING FORENSIC AUDIT...")
     print(f"   Monolith: {MONOLITH_PATH} (optional)")
     print(f"   Target Core: {CORE_DIR}/")
-    
+
     # Skip monolith check - just verify core has required signatures
     if not os.path.exists(MONOLITH_PATH):
         print(f"⚠️  Monolith file not found - proceeding with core verification only")

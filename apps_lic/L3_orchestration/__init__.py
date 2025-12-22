@@ -21,8 +21,12 @@ __description__: str = "L5+ Autonomous Outreach Orchestration"
 
 # L5+ Autonomous Orchestrator (Canon Validator parity)
 from apps_lic.L3_orchestration.l5_autonomous_orchestrator import (
-    L5OutreachOrchestrator, OutreachCycleState, OutreachExecutionPhase,
-    OutreachSnapshot, create_l5_outreach_orchestrator)
+    L5OutreachOrchestrator,
+    OutreachCycleState,
+    OutreachExecutionPhase,
+    OutreachSnapshot,
+    create_l5_outreach_orchestrator,
+)
 
 # Core exports
 __all__: List[str] = [

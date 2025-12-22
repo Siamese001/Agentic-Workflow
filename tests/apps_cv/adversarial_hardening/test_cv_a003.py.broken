@@ -10,7 +10,6 @@ from queue import Queue
 from unittest.mock import Mock
 
 import pytest
-
 from canon_validator import CanonValidator
 
 

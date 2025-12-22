@@ -6,42 +6,113 @@ bringing it to Level 4+ autonomy with multi-agent coordination, self-diagnosis,
 and self-healing capabilities.
 """
 
-from .agents import (ATSCompatibilityAgent, BrandComplianceAgent,
-                     ContentQualityAgent, FactCheckAgent, ReflectionAgent,
-                     SectionBalanceAgent, StrategicPlanner, TemplateOptimizer,
-                     TestPilot)
+from .agents import (
+    ATSCompatibilityAgent,
+    BrandComplianceAgent,
+    ContentQualityAgent,
+    FactCheckAgent,
+    ReflectionAgent,
+    SectionBalanceAgent,
+    StrategicPlanner,
+    TemplateOptimizer,
+    TestPilot,
+)
 from .base_agent import ResumeAgent
 from .context import BudgetManager, ResumeEngineContext, SectionDependencyGraph
-from .gitops import (ConversationalRepair, FileBackup, GitOpsManager,
-                     ImportPatcher, MutationMode, MutationResult,
-                     Phase4Orchestrator, RepairProposal, ResilientMutator)
-from .governance import (CostPrediction, DashboardGenerator, DependencyArbiter,
-                         DependencyIssue, DependencyStatus, DocComplianceLevel,
-                         DocViolation, Phase7Orchestrator,
-                         PredictiveBudgetManager, PromptGovernor, PromptIssue,
-                         PromptRisk, StrictDocEnforcer)
-from .healing import (AgentFactory, AutomaticRollback, ConvergenceDetector,
-                      CycleResult, HealingCycle, HealingOrchestrator,
-                      HealingResult, HealingStrategy, SignalRouter,
-                      run_self_healing_mission)
-from .intelligence import (AnalysisType, OmniContext, Phase6Orchestrator,
-                           PhaseResult, PhaseType, RefactorProposal,
-                           RefactorType, SecurityHardener, SecurityIssue,
-                           SecurityLevel, SemanticAnalyzer, SemanticMatch,
-                           StrategicAdvisor, UnifiedOrchestrator)
-from .learning import (ConfidenceLevel, ConfidenceResult, ConfidenceScorer,
-                       Instruction, InstructionInjector, LearningExample,
-                       LearningLoop, MemoryPersistence, MemoryState,
-                       ResumeLearningAgent)
-from .observability import (AuditReport, AuditReporter, ExecutionTrace,
-                            ExecutionTracer, Metric, MetricsCollector,
-                            MetricType, Phase5Orchestrator, TelemetryExporter,
-                            TraceLevel, TraceStep, ValidationAgent,
-                            ValidationIssue, ValidationSeverity)
+from .gitops import (
+    ConversationalRepair,
+    FileBackup,
+    GitOpsManager,
+    ImportPatcher,
+    MutationMode,
+    MutationResult,
+    Phase4Orchestrator,
+    RepairProposal,
+    ResilientMutator,
+)
+from .governance import (
+    CostPrediction,
+    DashboardGenerator,
+    DependencyArbiter,
+    DependencyIssue,
+    DependencyStatus,
+    DocComplianceLevel,
+    DocViolation,
+    Phase7Orchestrator,
+    PredictiveBudgetManager,
+    PromptGovernor,
+    PromptIssue,
+    PromptRisk,
+    StrictDocEnforcer,
+)
+from .healing import (
+    AgentFactory,
+    AutomaticRollback,
+    ConvergenceDetector,
+    CycleResult,
+    HealingCycle,
+    HealingOrchestrator,
+    HealingResult,
+    HealingStrategy,
+    SignalRouter,
+    run_self_healing_mission,
+)
+from .intelligence import (
+    AnalysisType,
+    OmniContext,
+    Phase6Orchestrator,
+    PhaseResult,
+    PhaseType,
+    RefactorProposal,
+    RefactorType,
+    SecurityHardener,
+    SecurityIssue,
+    SecurityLevel,
+    SemanticAnalyzer,
+    SemanticMatch,
+    StrategicAdvisor,
+    UnifiedOrchestrator,
+)
+from .learning import (
+    ConfidenceLevel,
+    ConfidenceResult,
+    ConfidenceScorer,
+    Instruction,
+    InstructionInjector,
+    LearningExample,
+    LearningLoop,
+    MemoryPersistence,
+    MemoryState,
+    ResumeLearningAgent,
+)
+from .observability import (
+    AuditReport,
+    AuditReporter,
+    ExecutionTrace,
+    ExecutionTracer,
+    Metric,
+    MetricsCollector,
+    MetricType,
+    Phase5Orchestrator,
+    TelemetryExporter,
+    TraceLevel,
+    TraceStep,
+    ValidationAgent,
+    ValidationIssue,
+    ValidationSeverity,
+)
 from .orchestrator import quick_validate, run_resume_mission
-from .proactive import (CapabilityMonitor, CapabilityProfile, HandoffReason,
-                        HandoffRequest, PredictiveHandoff, ProactiveAgent,
-                        ProactiveScheduler, ProactiveTask, TaskPriority)
+from .proactive import (
+    CapabilityMonitor,
+    CapabilityProfile,
+    HandoffReason,
+    HandoffRequest,
+    PredictiveHandoff,
+    ProactiveAgent,
+    ProactiveScheduler,
+    ProactiveTask,
+    TaskPriority,
+)
 
 __all__ = [
     # Context

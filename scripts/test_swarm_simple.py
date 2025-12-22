@@ -57,7 +57,7 @@ class MockHop:
     """Mock SubatomicHop."""
     def __init__(self, hop_id="mock"):
         self.hop_id = hop_id
-    
+
     async def run(self, **kwargs):
         await asyncio.sleep(0.5)
         return {"hop_id": self.hop_id, "status": "completed"}
@@ -68,10 +68,10 @@ async def test_phase2_embeddings():
     print("\n" + "="*80)
     print("📊 PHASE 2 TEST: Batch Embeddings")
     print("="*80)
-    
+
     embedder = batch_embeddings.create_batch_embedding_service(batch_size=32, max_workers=4)
     texts = [f"Resume section {i}" for i in range(100)]
-    
+
     # Sequential
     print(f"\n⏱️  Sequential ({len(texts)} texts)...")
     start = time.time()
@@ -79,7 +79,7 @@ async def test_phase2_embeddings():
         mock_embedder([text])
     seq_time = time.time() - start
     print(f"   Time: {seq_time:.2f}s")
-    
+
     # Parallel
     print(f"\n⚡ Parallel ({len(texts)} texts)...")
     start = time.time()
@@ -87,7 +87,7 @@ async def test_phase2_embeddings():
     par_time = time.time() - start
     print(f"   Time: {par_time:.2f}s")
     print(f"   Speedup: {seq_time / par_time:.2f}x")
-    
+
     embedder.shutdown()
     return embeddings
 
@@ -97,20 +97,20 @@ async def test_phase2_cache(embeddings):
     print("\n" + "="*80)
     print("💾 PHASE 2 TEST: In-Memory Vector Cache")
     print("="*80)
-    
+
     cache = memory_vector_store.create_memory_vector_cache("test_cache", 8)
-    
+
     docs = [f"Resume {i}" for i in range(len(embeddings))]
     metas = [{"index": i} for i in range(len(embeddings))]
     ids = [f"resume_{i}" for i in range(len(embeddings))]
-    
+
     print(f"\n📥 Adding {len(docs)} documents...")
     start = time.time()
     await cache.add_documents(docs, metas, ids, embeddings)
     add_time = time.time() - start
     print(f"   Time: {add_time:.2f}s")
     print(f"   Cache size: {cache.get_count()}")
-    
+
     print(f"\n🔍 Searching...")
     start = time.time()
     results = await cache.search([embeddings[0]], top_k=5)
@@ -124,13 +124,13 @@ async def test_phase3_swarm():
     print("\n" + "="*80)
     print("🤖 PHASE 3 TEST: SubatomicSwarm")
     print("="*80)
-    
+
     swarm = subatomic_swarm.create_subatomic_swarm(max_concurrency=5)
-    
+
     num_hops = 20
     hops = [MockHop(f"hop_{i}") for i in range(num_hops)]
     inputs = [{"data": f"input_{i}"} for i in range(num_hops)]
-    
+
     # Sequential
     print(f"\n⏱️  Sequential ({num_hops} HOPs)...")
     start = time.time()
@@ -138,7 +138,7 @@ async def test_phase3_swarm():
         await hop.run(**inp)
     seq_time = time.time() - start
     print(f"   Time: {seq_time:.2f}s")
-    
+
     # Parallel
     print(f"\n⚡ Parallel ({num_hops} HOPs, max 5 concurrent)...")
     start = time.time()
@@ -154,23 +154,23 @@ def test_phase4_swarm():
     print("\n" + "="*80)
     print("📄 PHASE 4 TEST: ResumeSwarm")
     print("="*80)
-    
+
     swarm = resume_swarm.create_resume_swarm(num_workers=6)
-    
+
     num_jobs = 24
     jobs = [{"job_id": f"job_{i}", "job_description": f"Role {i}"} for i in range(num_jobs)]
-    
+
     # Sequential (simulated)
     seq_time = num_jobs * 0.5
     print(f"\n⏱️  Sequential ({num_jobs} jobs)...")
     print(f"   Estimated time: {seq_time:.2f}s")
-    
+
     # Parallel
     print(f"\n⚡ Parallel ({num_jobs} jobs, 6 workers)...")
     start = time.time()
     swarm.generate_batch(jobs)
     par_time = time.time() - start
-    
+
     print(f"   Time: {par_time:.2f}s")
     print(f"   Success rate: {swarm.get_success_rate():.1f}%")
     print(f"   Speedup: {seq_time / par_time:.2f}x")
@@ -185,18 +185,18 @@ async def main():
     print("  • Phase 2: Batch embeddings + vector cache")
     print("  • Phase 3: Parallel HOP execution")
     print("  • Phase 4: Multi-process resume generation")
-    
+
     try:
         # Phase 2
         embeddings = await test_phase2_embeddings()
         await test_phase2_cache(embeddings)
-        
+
         # Phase 3
         await test_phase3_swarm()
-        
+
         # Phase 4
         test_phase4_swarm()
-        
+
         print("\n" + "="*80)
         print("✅ ALL TESTS PASSED")
         print("="*80)
@@ -204,9 +204,9 @@ async def main():
         print("  1. Review performance metrics above")
         print("  2. Check WSL2_OPTIMIZATION_COMPLETE.md for details")
         print("  3. Integrate with your resume generation pipeline")
-        
+
         return 0
-        
+
     except Exception as e:
         logger.error(f"Test failed: {e}", exc_info=True)
         print(f"\n❌ Error: {e}")

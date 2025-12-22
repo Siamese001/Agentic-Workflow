@@ -74,7 +74,7 @@ class ExecuteResumeGeneration:
                 total_steps=1
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-duration_ms = (time.time() - start) * 1000
+            duration_ms = (time.time() - start) * 1000
             return ExecutionResult(
                 status=ResultStatus.FAILURE,
                 error=str(e),
@@ -155,4 +155,3 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteResumeGeneration(config).execute(action, params)
-

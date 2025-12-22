@@ -11,7 +11,7 @@ import collections
 class FailureAnalyzer:
     """
     Diagnostic tool for identifying frequency patterns in system failure keys.
-    
+
     Usage:
         analyzer = FailureAnalyzer(failure_keys)
         analyzer.generate_report()
@@ -37,7 +37,7 @@ class FailureAnalyzer:
 
         print(f"{'FAILURE_ID':<15} | {'FREQUENCY':<10} | {'PERCENTAGE':<10}")
         print("-" * 42)
-        
+
         total = sum(results.values())
         sorted_patterns = results.most_common()
 
@@ -48,7 +48,7 @@ class FailureAnalyzer:
 def main():
     # Contextual data injection
     ctx = {'name': 'failure_analyzer', 'purpose': 'Analyze patterns in recurring failures', 'keys': [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]}
-    
+
     analyzer = FailureAnalyzer(ctx.get('keys', []))
     analyzer.generate_report()
 

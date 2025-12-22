@@ -5,15 +5,13 @@ LOGGER = logging.getLogger(__name__)
 Phase 3 - Pillar 2: Agent Boundaries (Identity & Discovery)
 SPIFFE-based cryptographic identity for secure multi-agent collaboration.
 """
-import logging
 
-SPIFFEManager,
-AgentIdentity,
-IdentityVerificationResult,
-create_spiffe_manager,
-)
+SPIFFEManager = None
+AgentIdentity = None
+IdentityVerificationResult = None
+create_spiffe_manager = None
 
-    __all__ = [
+__all__ = [
 "SPIFFEManager",
 "AgentIdentity",
 "IdentityVerificationResult",

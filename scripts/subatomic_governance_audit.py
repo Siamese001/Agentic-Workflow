@@ -30,7 +30,7 @@ def get_depth(path, base):
 
 def main():
     file_data = []
-    
+
     for folder in FOLDERS:
         folder_path = Path(folder)
         if not folder_path.exists():
@@ -41,7 +41,7 @@ def main():
             depth = get_depth(py_file, folder_path)
             lines = count_lines(py_file)
             file_data.append((str(py_file), lines, depth, folder))
-    
+
     # Critical violations (>500 lines)
     print('=' * 80)
     print('CRITICAL VIOLATIONS (>500 lines) - PRIORITY 1')
@@ -50,7 +50,7 @@ def main():
     for f, l, d, fo in sorted(critical, key=lambda x: -x[1]):
         print(f'{l:5d} lines | depth {d} | {f}')
     print(f'\nTotal critical: {len(critical)}')
-    
+
     # High violations (201-500 lines)
     print('\n' + '=' * 80)
     print('HIGH VIOLATIONS (201-500 lines) - PRIORITY 2 - TOP 30')
@@ -59,18 +59,18 @@ def main():
     for f, l, d, fo in sorted(high, key=lambda x: -x[1])[:30]:
         print(f'{l:5d} lines | depth {d} | {f}')
     print(f'\nTotal high: {len(high)}')
-    
+
     # Depth violations in core folders
     print('\n' + '=' * 80)
     print('DEPTH VIOLATIONS IN CORE FOLDERS (depth 1 or 2, non-init)')
     print('=' * 80)
-    core_depth = [(f, l, d, fo) for f, l, d, fo in file_data 
-                  if fo in ['apps_rg', 'apps_lic', 'apps_shared'] 
+    core_depth = [(f, l, d, fo) for f, l, d, fo in file_data
+                  if fo in ['apps_rg', 'apps_lic', 'apps_shared']
                   and d < 3 and not f.endswith('__init__.py')]
     for f, l, d, fo in sorted(core_depth, key=lambda x: (x[2], -x[1])):
         print(f'depth {d} | {l:4d} lines | {f}')
     print(f'\nTotal core depth violations: {len(core_depth)}')
-    
+
     # Summary by folder
     print('\n' + '=' * 80)
     print('SUMMARY BY FOLDER')
@@ -84,20 +84,20 @@ def main():
             folder_stats[fo]['high'] += 1
         if d < 3 or d > 5:
             folder_stats[fo]['depth_viol'] += 1
-    
+
     print(f"{'Folder':<20} {'Files':>6} {'Critical':>10} {'High':>8} {'Depth':>10}")
     print('-' * 60)
     for fo in sorted(folder_stats.keys()):
         s = folder_stats[fo]
         print(f"{fo:<20} {s['files']:>6} {s['critical']:>10} {s['high']:>8} {s['depth_viol']:>10}")
-    
+
     # Overall summary
     total_files = len(file_data)
     total_critical = len(critical)
     total_high = len(high)
     depth_violations = len([f for f, l, d, fo in file_data if d < 3 or d > 5])
     small_violations = len([f for f, l, d, fo in file_data if l < 10])
-    
+
     print('\n' + '=' * 80)
     print('OVERALL SUMMARY')
     print('=' * 80)

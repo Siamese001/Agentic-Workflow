@@ -162,10 +162,10 @@ _global_governor: Optional[CostGovernor] = None
 
 class CostGovernorManager:
     """Manager for CostGovernor without global state"""
-    
+
     def __init__(self):
         self._instance = None
-    
+
     def get_governor(self):
         """Get or create the CostGovernor instance"""
         if self._instance is None:

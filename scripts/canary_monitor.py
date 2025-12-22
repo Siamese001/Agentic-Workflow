@@ -1,11 +1,12 @@
-import time
+import logging
 import os
 import signal
-import threading
-import logging
 import sys
+import threading
+import time
+
+from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler, FileSystemEvent
 
 # Configuration
 CANARY_FILE_PATH = os.path.abspath("config/secrets_canary.txt")

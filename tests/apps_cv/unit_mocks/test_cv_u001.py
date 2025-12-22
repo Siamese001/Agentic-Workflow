@@ -7,7 +7,6 @@ Unit test for isolated L1 component verification
 from unittest.mock import Mock
 
 import pytest
-
 from canon_validator import CanonValidator
 
 

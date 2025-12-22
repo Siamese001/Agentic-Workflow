@@ -70,8 +70,7 @@ def fix_split_strings_in_file(filepath):
 
         return False
 
-    except Exception as e:
-pass
+    except Exception:
 # print(f"Error processing {filepath}: {e}")  # [Security Fix]
         return False
 

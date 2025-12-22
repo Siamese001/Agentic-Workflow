@@ -4,23 +4,23 @@ This module provides Protocol-based interfaces and dataclass types for
 the agentic framework, replacing temporary Any fallbacks with real types.
 """
 
+from agentic_core.interfaces.config import (
+    OrchestratorConfig,
+)
 from agentic_core.interfaces.execution import (
     ExecutionContext,
-    ExecutionResult,
     ExecutionPhase,
+    ExecutionResult,
 )
 from agentic_core.interfaces.planes import (
-    ICognitivePlane,
     IActionPlane,
+    ICognitivePlane,
     IOrchestrator,
 )
 from agentic_core.interfaces.requests import (
     ActionRequest,
     PlanningRequest,
     PlanningResult,
-)
-from agentic_core.interfaces.config import (
-    OrchestratorConfig,
 )
 
 __all__ = [

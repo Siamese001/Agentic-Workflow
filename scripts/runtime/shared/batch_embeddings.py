@@ -16,14 +16,14 @@ logger = logging.getLogger(__name__)
 
 class BatchEmbeddingService:
     """Service for parallel batch embedding generation.
-    
+
     Optimized for i7-10750H (6 cores/12 threads).
     Keeps workers low to prevent context switching overhead.
     """
 
     def __init__(self, batch_size: int = 32, max_workers: int = 4):
         """Initialize the batch embedding service.
-        
+
         Args:
             batch_size: Number of texts to embed in a single batch (default: 32)
             max_workers: Number of parallel workers (default: 4 for i7-10750H)
@@ -36,19 +36,19 @@ class BatchEmbeddingService:
         )
 
     async def embed_batch(
-        self, 
-        texts: List[str], 
+        self,
+        texts: List[str],
         model_func: Callable[[List[str]], List[np.ndarray]]
     ) -> List[np.ndarray]:
         """Embed a list of texts in parallel batches.
-        
+
         Args:
             texts: List of strings to embed
             model_func: Sync function that takes a list of strings and returns embeddings
-            
+
         Returns:
             List of embeddings as numpy arrays
-            
+
         Example:
             >>> service = BatchEmbeddingService(batch_size=32, max_workers=4)
             >>> embeddings = await service.embed_batch(
@@ -62,51 +62,51 @@ class BatchEmbeddingService:
 
         # Split into chunks
         batches = [
-            texts[i:i + self.batch_size] 
+            texts[i:i + self.batch_size]
             for i in range(0, len(texts), self.batch_size)
         ]
-        
+
         logger.debug(
             f"Processing {len(texts)} texts in {len(batches)} batches "
             f"of size {self.batch_size}"
         )
-        
+
         loop = asyncio.get_event_loop()
-        
+
         # Execute batches in parallel
         tasks = [
             loop.run_in_executor(self.executor, model_func, batch)
             for batch in batches
         ]
-        
+
         try:
             results = await asyncio.gather(*tasks)
-            
+
             # Flatten results
             embeddings = [emb for batch_result in results for emb in batch_result]
-            
+
             logger.info(
                 f"Successfully generated {len(embeddings)} embeddings "
                 f"from {len(texts)} texts"
             )
-            
+
             return embeddings
-            
+
         except Exception as e:
             logger.error(f"Failed to generate embeddings: {e}")
             raise
 
     async def embed_single(
-        self, 
-        text: str, 
+        self,
+        text: str,
         model_func: Callable[[List[str]], List[np.ndarray]]
     ) -> np.ndarray:
         """Embed a single text (convenience method).
-        
+
         Args:
             text: Single string to embed
             model_func: Sync function that takes a list of strings and returns embeddings
-            
+
         Returns:
             Single embedding as numpy array
         """
@@ -129,15 +129,15 @@ class BatchEmbeddingService:
 
 # Factory function for easy instantiation
 def create_batch_embedding_service(
-    batch_size: int = 32, 
+    batch_size: int = 32,
     max_workers: int = 4
 ) -> BatchEmbeddingService:
     """Create a BatchEmbeddingService instance.
-    
+
     Args:
         batch_size: Number of texts to embed in a single batch
         max_workers: Number of parallel workers
-        
+
     Returns:
         Configured BatchEmbeddingService instance
     """

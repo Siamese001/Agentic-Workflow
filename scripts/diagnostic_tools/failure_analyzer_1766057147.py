@@ -20,10 +20,10 @@ class FailureAnalyzer:
         total_count = len(self.keys)
         frequency = collections.Counter(self.keys)
         unique_failures = len(frequency)
-        
+
         # Identify the most frequent failure patterns
         most_common = frequency.most_common(3)
-        
+
         # Calculate the recurrence rate (ratio of repeated failures to total)
         recurrence_rate = (total_count - unique_failures) / total_count if total_count > 0 else 0
 
@@ -34,21 +34,21 @@ class FailureAnalyzer:
             f"Recurrence Rate:      {recurrence_rate:.2%}",
             "Top Failure Patterns (Key: Occurrences):",
         ]
-        
+
         for key, count in most_common:
             percentage = (count / total_count) * 100
             report.append(f"  - Key {key: <4}: {count} ({percentage:.1f}%)")
-            
+
         return "\n".join(report)
 
 def main():
     # Context provided for analysis
     context = {
-        'name': 'failure_analyzer', 
-        'purpose': 'Analyze patterns in recurring failures', 
+        'name': 'failure_analyzer',
+        'purpose': 'Analyze patterns in recurring failures',
         'keys': [50, 19, 7, 8, 22, 2, 3, 4, 5, 60, 50, 7, 50]
     }
-    
+
     analyzer = FailureAnalyzer(context['name'], context['keys'])
     print(analyzer.analyze())
 

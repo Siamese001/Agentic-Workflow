@@ -8,7 +8,6 @@ from unittest.mock import Mock
 
 import pytest
 import redis.exceptions
-
 from canon_validator import CanonValidator
 
 

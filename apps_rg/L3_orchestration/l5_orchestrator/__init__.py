@@ -8,6 +8,6 @@ from .types import CycleState, ExecutionPhase, WorkflowSnapshot
 __all__ = [
     "L5AutonomousOrchestrator",
     "ExecutionPhase",
-    "CycleState", 
+    "CycleState",
     "WorkflowSnapshot",
 ]

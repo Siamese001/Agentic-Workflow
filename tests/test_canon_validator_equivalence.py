@@ -64,7 +64,7 @@ class TestImportEquivalence:
         sys.path.insert(0, str(SCRIPTS_DIR))
         try:
             import canon_validator
-            
+
             expected_exports = [
                 # Config
                 "EXCLUDED_DIRS", "EXCLUDED_FILES", "ALLOWED_ROOT_FOLDERS",
@@ -95,12 +95,12 @@ class TestImportEquivalence:
                 # Orchestrator
                 "SwarmScheduler", "IntelligentOrchestrator",
             ]
-            
+
             missing = []
             for name in expected_exports:
                 if not hasattr(canon_validator, name):
                     missing.append(name)
-            
+
             assert not missing, f"Missing exports in modular package: {missing}"
         finally:
             sys.path.remove(str(SCRIPTS_DIR))
@@ -114,7 +114,7 @@ def extract_class_signatures(file_path: Path) -> Dict[str, Dict[str, Any]]:
     """Extract class names and their method signatures from a Python file."""
     with open(file_path, "r", encoding="utf-8") as f:
         tree = ast.parse(f.read())
-    
+
     classes = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
@@ -145,13 +145,13 @@ def extract_class_signatures(file_path: Path) -> Dict[str, Dict[str, Any]]:
 def collect_modular_classes() -> Dict[str, Dict[str, Any]]:
     """Collect all class signatures from the modular package."""
     all_classes = {}
-    
+
     # Main package files
     for py_file in MODULAR_PACKAGE.glob("*.py"):
         if py_file.name != "__init__.py":
             classes = extract_class_signatures(py_file)
             all_classes.update(classes)
-    
+
     # Agent subpackage
     agents_dir = MODULAR_PACKAGE / "agents"
     if agents_dir.exists():
@@ -159,7 +159,7 @@ def collect_modular_classes() -> Dict[str, Dict[str, Any]]:
             if py_file.name != "__init__.py":
                 classes = extract_class_signatures(py_file)
                 all_classes.update(classes)
-    
+
     return all_classes
 
 
@@ -169,22 +169,22 @@ class TestClassSignatureEquivalence:
     def test_core_classes_exist_in_modular(self):
         """Core classes must exist in modular package."""
         modular_classes = collect_modular_classes()
-        
+
         core_classes = [
             "ValidationContext",
-            "DependencyGraph", 
+            "DependencyGraph",
             "BudgetManager",
             "SubAtomicAgent",
             "SwarmScheduler",
         ]
-        
+
         missing = [c for c in core_classes if c not in modular_classes]
         assert not missing, f"Missing core classes: {missing}"
 
     def test_agent_classes_exist_in_modular(self):
         """All agent classes must exist in modular package."""
         modular_classes = collect_modular_classes()
-        
+
         agent_classes = [
             "Historian", "ArchitectureGovernor", "HygieneGuardian",
             "CodeStyleGuardian", "DependencySentinel", "SafetyInspector",
@@ -196,14 +196,14 @@ class TestClassSignatureEquivalence:
             "NamingEnforcer", "DocEnforcer", "TypeEnforcer",
             "TheCartographer", "TheOmniContext",
         ]
-        
+
         missing = [c for c in agent_classes if c not in modular_classes]
         assert not missing, f"Missing agent classes: {missing}"
 
     def test_subatomic_agent_has_execute_method(self):
         """SubAtomicAgent base class must have execute method."""
         modular_classes = collect_modular_classes()
-        
+
         assert "SubAtomicAgent" in modular_classes
         methods = modular_classes["SubAtomicAgent"]["methods"]
         assert "execute" in methods, "SubAtomicAgent missing execute method"
@@ -211,7 +211,7 @@ class TestClassSignatureEquivalence:
     def test_swarm_scheduler_has_run_mission(self):
         """SwarmScheduler must have run_mission method."""
         modular_classes = collect_modular_classes()
-        
+
         assert "SwarmScheduler" in modular_classes
         methods = modular_classes["SwarmScheduler"]["methods"]
         assert "run_mission" in methods, "SwarmScheduler missing run_mission method"
@@ -229,7 +229,7 @@ def run_validator(
 ) -> Dict[str, Any]:
     """
     Run the validator and capture output.
-    
+
     Returns dict with:
     - returncode: Process exit code
     - stdout: Standard output
@@ -240,11 +240,11 @@ def run_validator(
     cmd = [sys.executable, str(entry_point)]
     if args:
         cmd.extend(args)
-    
+
     env = {**dict(__import__('os').environ)}
     # Disable interactive features for testing
     env["CANON_VALIDATOR_NONINTERACTIVE"] = "1"
-    
+
     try:
         result = subprocess.run(
             cmd,
@@ -254,14 +254,14 @@ def run_validator(
             cwd=str(REPO_ROOT),
             env=env,
         )
-        
+
         output = {
             "returncode": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr,
             "output_hash": hashlib.sha256(result.stdout.encode()).hexdigest(),
         }
-        
+
         if capture_json:
             # Try to extract JSON from output
             try:
@@ -280,9 +280,9 @@ def run_validator(
                     output["report"] = json.loads("\n".join(json_lines))
             except (json.JSONDecodeError, ValueError):
                 output["report"] = None
-        
+
         return output
-        
+
     except subprocess.TimeoutExpired:
         return {
             "returncode": -1,
@@ -312,17 +312,17 @@ def normalize_output(output: str) -> str:
     # Remove timestamps (various formats)
     output = re.sub(r'\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}', 'TIMESTAMP', output)
     output = re.sub(r'\d{2}:\d{2}:\d{2}', 'TIME', output)
-    
+
     # Normalize paths
     output = re.sub(r'[A-Za-z]:\\[^\s\n]+', 'PATH', output)
     output = re.sub(r'/[^\s\n]+\.py', 'PATH.py', output)
-    
+
     # Remove memory addresses
     output = re.sub(r'0x[0-9a-fA-F]+', '0xADDR', output)
-    
+
     # Remove process IDs
     output = re.sub(r'pid=\d+', 'pid=PID', output)
-    
+
     return output
 
 
@@ -336,7 +336,7 @@ class TestRuntimeEquivalence:
         # Skip if neither supports --help - this is optional functionality
         original = run_validator(ORIGINAL_SCRIPT, ["--help"], timeout=10)
         modular = run_validator(BOOTSTRAP_SCRIPT, ["--help"], timeout=10)
-        
+
         # Both should either succeed or both should not crash catastrophically
         # Note: Different return codes are acceptable since --help is not a core feature
         # The key is neither should have import errors
@@ -351,7 +351,7 @@ class TestRuntimeEquivalence:
         # Run with a quick timeout - just checking imports work
         original = run_validator(ORIGINAL_SCRIPT, timeout=30)
         modular = run_validator(BOOTSTRAP_SCRIPT, timeout=30)
-        
+
         # Check neither crashed on import
         assert "ImportError" not in original["stderr"], \
                f"Original has import errors: {original['stderr']}"
@@ -363,7 +363,7 @@ class TestRuntimeEquivalence:
         """Both versions should print startup banner."""
         original = run_validator(ORIGINAL_SCRIPT, timeout=30)
         modular = run_validator(BOOTSTRAP_SCRIPT, timeout=30)
-        
+
         # Both should have some form of startup message or at least not crash
         # Note: The original may not print to stdout if it runs async and times out
         # The key equivalence check is that neither has import errors
@@ -379,7 +379,7 @@ class TestRuntimeEquivalence:
             "SUBATOMIC" in modular["stdout"] or
             "MISSION" in modular["stdout"]
         )
-        
+
         # At least one should have output, or both should have timed out gracefully
         if original["stdout"] and modular["stdout"]:
             assert original_has_banner or modular_has_banner, \
@@ -402,7 +402,7 @@ def count_functions_in_file(file_path: Path) -> int:
     """Count number of function definitions in a file."""
     with open(file_path, "r", encoding="utf-8") as f:
         tree = ast.parse(f.read())
-    return sum(1 for node in ast.walk(tree) 
+    return sum(1 for node in ast.walk(tree)
                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)))
 
 
@@ -433,7 +433,7 @@ class TestStructuralEquivalence:
                 "TheCartographer", "TheOmniContext"
             ]
         ]
-        
+
         # Count agents in modular
         modular_classes = collect_modular_classes()
         modular_agents = [
@@ -443,7 +443,7 @@ class TestStructuralEquivalence:
                 "TheCartographer", "TheOmniContext"
             ]
         ]
-        
+
         # Modular should have at least as many agents
         assert len(modular_agents) >= len(original_agents) - 5, \
                f"Agent count mismatch: original={len(original_agents)}, modular={len(modular_agents)}"
@@ -452,7 +452,7 @@ class TestStructuralEquivalence:
         """No class should be defined in multiple files in modular package."""
         seen_classes: Dict[str, str] = {}
         duplicates = []
-        
+
         for py_file in MODULAR_PACKAGE.glob("**/*.py"):
             if py_file.name == "__init__.py":
                 continue
@@ -464,7 +464,7 @@ class TestStructuralEquivalence:
                     )
                 else:
                     seen_classes[class_name] = str(py_file)
-        
+
         assert not duplicates, f"Duplicate class definitions: {duplicates}"
 
 
@@ -487,7 +487,7 @@ class TestConfigEquivalence:
                 ".git", "__pycache__", ".venv", "venv", "node_modules",
                 ".pytest_cache"
             }
-            
+
             # At minimum, core exclusions should be present
             missing = expected_core - set(EXCLUDED_DIRS)
             assert not missing, f"Missing core exclusions: {missing}"
@@ -499,7 +499,7 @@ class TestConfigEquivalence:
         sys.path.insert(0, str(SCRIPTS_DIR))
         try:
             from canon_validator import MAX_DEPTH, MIN_DEPTH
-            
+
             assert MIN_DEPTH >= 0, "MIN_DEPTH should be non-negative"
             assert MAX_DEPTH >= MIN_DEPTH, "MAX_DEPTH should be >= MIN_DEPTH"
             assert MAX_DEPTH <= 10, "MAX_DEPTH should be reasonable (<=10)"
@@ -515,7 +515,7 @@ def compute_source_hash(file_path: Path) -> str:
     """Compute hash of normalized source code (ignoring comments/whitespace)."""
     with open(file_path, "r", encoding="utf-8") as f:
         tree = ast.parse(f.read())
-    
+
     # Dump AST to string (normalized representation)
     ast_str = ast.dump(tree, annotate_fields=False)
     return hashlib.sha256(ast_str.encode()).hexdigest()
@@ -528,7 +528,7 @@ class TestSourceIntegrity:
         """Original monolith should parse without syntax errors."""
         with open(ORIGINAL_SCRIPT, "r", encoding="utf-8") as f:
             content = f.read()
-        
+
         # Should not raise SyntaxError
         ast.parse(content)
 
@@ -541,14 +541,14 @@ class TestSourceIntegrity:
                     ast.parse(f.read())
             except SyntaxError as e:
                 errors.append(f"{py_file}: {e}")
-        
+
         assert not errors, f"Syntax errors in modular package:\n" + "\n".join(errors)
 
     def test_bootstrap_parses_cleanly(self):
         """Bootstrap script should parse without syntax errors."""
         with open(BOOTSTRAP_SCRIPT, "r", encoding="utf-8") as f:
             content = f.read()
-        
+
         ast.parse(content)
 
 
@@ -562,32 +562,32 @@ def generate_diff_report() -> str:
     report.append("=" * 60)
     report.append("CANON VALIDATOR EQUIVALENCE REPORT")
     report.append("=" * 60)
-    
+
     # File counts
     original_lines = len(ORIGINAL_SCRIPT.read_text().splitlines())
     modular_files = list(MODULAR_PACKAGE.glob("**/*.py"))
     modular_lines = sum(len(f.read_text().splitlines()) for f in modular_files)
-    
+
     report.append(f"\nOriginal: {original_lines} lines in 1 file")
     report.append(f"Modular: {modular_lines} lines in {len(modular_files)} files")
-    
+
     # Class counts
     original_classes = extract_class_signatures(ORIGINAL_SCRIPT)
     modular_classes = collect_modular_classes()
-    
+
     report.append(f"\nOriginal classes: {len(original_classes)}")
     report.append(f"Modular classes: {len(modular_classes)}")
-    
+
     # Missing classes
     missing_in_modular = set(original_classes.keys()) - set(modular_classes.keys())
     if missing_in_modular:
         report.append(f"\nClasses in original but not modular: {missing_in_modular}")
-    
+
     # Extra classes
     extra_in_modular = set(modular_classes.keys()) - set(original_classes.keys())
     if extra_in_modular:
         report.append(f"\nClasses in modular but not original: {extra_in_modular}")
-    
+
     return "\n".join(report)
 
 

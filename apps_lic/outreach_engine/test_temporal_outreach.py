@@ -137,8 +137,7 @@ def test_time_bound_benchmarking():
 
     try:
         from action_registry import ActionRegistry
-        from time_bound_benchmarking import \
-            execute_time_bound_salary_benchmarking
+        from time_bound_benchmarking import execute_time_bound_salary_benchmarking
 
         registry = ActionRegistry()
         tools = registry.get_tool_map()

@@ -9,8 +9,8 @@ Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification
 """
 
 import logging
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -451,7 +451,7 @@ class RGPlanner:
                     "validation_level": processing_plan.analysis_plan.validation_level
                 })
         except Exception as e:
-LOGGER.debug(f"Failed to record telemetry: {e}")
+            LOGGER.debug(f"Failed to record telemetry: {e}")
 
     def get_planning_summary(self, processing_plan: ResumeProcessingPlan) -> Dict[str, object]:
         """Get a summary of the planning execution for debugging/telemetry."""
@@ -463,4 +463,3 @@ LOGGER.debug(f"Failed to record telemetry: {e}")
             "execution_order": processing_plan.execution_order,
             "validation_level": processing_plan.analysis_plan.validation_level
         }
-

@@ -192,7 +192,7 @@ def fix_long_line(filepath: str, line_num: int) -> bool:
             f.writelines(lines)
         return True
     except Exception as e:
-ConfigurationService().logger.error(
+        ConfigurationService().logger.error(
             f'Error fixing {ConfigurationService().filepath}: {ConfigurationService().line_num}: {e}')
         return False
 
@@ -215,4 +215,3 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
-

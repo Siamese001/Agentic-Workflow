@@ -21,7 +21,7 @@ from .base import SubAtomicAgent
 
 class MemoryLeakDetector(SubAtomicAgent):
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
-    
+
     # Resource leak patterns for fast scanning
     LEAK_PATTERNS = {
         'naked_open': re.compile(
@@ -45,75 +45,75 @@ class MemoryLeakDetector(SubAtomicAgent):
             re.IGNORECASE | re.MULTILINE
         )
     }
-    
+
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Detecting Resource Leaks...")
         await asyncio.sleep(0)
-        
+
         # Priority 1: Process modified files
         modified_files = getattr(self.ctx, 'modified_files', set())
-        
+
         # Priority 2: Fall back to all Python files if no tracking
         target_files = list(modified_files) if modified_files else self.ctx.python_files
-        
+
         if not target_files:
             print("   ✅ No files to check for leaks")
             return
-        
+
         print(f"   🔍 Scanning {len(target_files)} files for resource leaks...")
         print(f"   🎯 Priority: Modified files ({len(modified_files)}) + {len(target_files) - len(modified_files)} others")
-        
+
         # Track leak fixes
         leak_log = []
         fixed_files = []
-        
+
         # Scan and fix files
         for file_path in target_files:
             if not file_path.endswith('.py'):
                 continue
-            
+
             result = await self._scan_and_fix(file_path)
             if result:
                 fixed_files.append(file_path)
                 leak_log.append(result)
-        
+
         # Save resource safety report
         self._save_safety_report(leak_log, fixed_files)
-        
+
         if fixed_files:
             print(f"   🛡️  Resource leaks fixed in {len(fixed_files)} files")
         else:
             print("   ✅ No resource leaks detected")
-    
+
     async def _scan_and_fix(self, file_path):
         """Scan file for leaks and apply fixes."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            
+
             # Pass 1: Fast regex scanning
             detected_leaks = self._detect_leaks(content)
-            
+
             if not detected_leaks:
                 return None
-            
+
             # Pass 2: AST context analysis
             leak_context = self._analyze_leak_context(content, detected_leaks)
-            
+
             # Prioritize critical leaks
             critical_leaks = self._prioritize_leaks(leak_context)
-            
+
             if not critical_leaks:
                 print(f"   ℹ️  Low-risk patterns in {os.path.basename(file_path)} - skipping")
                 return None
-            
+
             print(f"   🛡️  Fixing resource leaks: {os.path.basename(file_path)}")
-            
+
             # Generate leak-free code using Gemini
             fixed_content = await self._generate_leak_free_code(
                 file_path, content, critical_leaks
             )
-            
+
             # Apply fixes
             if fixed_content and fixed_content != content:
                 if self.ctx.write_compliant_file(file_path, fixed_content):
@@ -123,7 +123,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                         'context': leak_context,
                         'reasoning': 'Resource leaks detected and remediated'
                     }
-            
+
         except Exception as e:
             print(f"   ❌ Failed to fix leaks in {file_path}: {e}")
             return {
@@ -131,13 +131,13 @@ class MemoryLeakDetector(SubAtomicAgent):
                 'error': str(e),
                 'reasoning': 'Failed to process file'
             }
-        
+
         return None
-    
+
     def _detect_leaks(self, content):
         """Fast regex-based leak detection."""
         leaks = {}
-        
+
         for leak_name, pattern in self.LEAK_PATTERNS.items():
             matches = pattern.finditer(content)
             if matches:
@@ -149,9 +149,9 @@ class MemoryLeakDetector(SubAtomicAgent):
                     }
                     for match in matches
                 ]
-        
+
         return leaks
-    
+
     def _analyze_leak_context(self, content, leaks):
         """Analyze AST to understand leak context."""
         context = {
@@ -160,10 +160,10 @@ class MemoryLeakDetector(SubAtomicAgent):
             'missing_context_managers': [],
             'unbounded_caches': []
         }
-        
+
         try:
             tree = ast.parse(content)
-            
+
             # Track module-level assignments
             for node in ast.walk(tree):
                 # Module-level growing containers
@@ -181,13 +181,13 @@ class MemoryLeakDetector(SubAtomicAgent):
                                             'line': node.lineno,
                                             'type': 'list'
                                         })
-                
+
                 # Function-level analysis
                 elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     func_name = node.name
                     func_start = node.lineno
                     func_end = node.end_lineno if hasattr(node, 'end_lineno') else func_start
-                    
+
                     # Check for naked opens
                     for leak_name, leak_list in leaks.items():
                         if leak_name in ['naked_open', 'naked_connect']:
@@ -198,7 +198,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                                         'line': leak['line'],
                                         'type': leak_name
                                     })
-                    
+
                     # Check for unclosed files
                     for child in ast.walk(node):
                         if isinstance(child, ast.Call):
@@ -211,7 +211,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                                             'line': child.lineno,
                                             'resource': 'file'
                                         })
-                
+
                 # Check for unbounded lru_cache
                 elif isinstance(node, ast.FunctionDef):
                     for decorator in node.decorator_list:
@@ -222,12 +222,12 @@ class MemoryLeakDetector(SubAtomicAgent):
                                         'function': node.name,
                                         'line': decorator.lineno
                                     })
-        
+
         except Exception as e:
             print(f"   ⚠️  AST analysis failed: {e}")
-        
+
         return context
-    
+
     def _is_in_with_block(self, node, function_node):
         """Check if a node is inside a 'with' statement."""
         parent = node.parent if hasattr(node, 'parent') else None
@@ -239,13 +239,13 @@ class MemoryLeakDetector(SubAtomicAgent):
                         return True
             parent = parent.parent if hasattr(parent, 'parent') else None
         return False
-    
+
     def _has_close_call(self, node, function_node):
         """Check if the opened file has a .close() call."""
         # This is a simplified check - in reality, we'd need to track variable assignments
         # and find all subsequent .close() calls on that variable
         return False
-    
+
     def _prioritize_leaks(self, context):
         """Prioritize leaks by severity."""
         prioritized = {
@@ -253,7 +253,7 @@ class MemoryLeakDetector(SubAtomicAgent):
             'high': [],
             'medium': []
         }
-        
+
         # Critical: Naked opens without context managers
         for naked in context.get('naked_opens', []):
             prioritized['critical'].append({
@@ -262,7 +262,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                 'line': naked['line'],
                 'severity': 'critical'
             })
-        
+
         # High: Global growing containers
         for container in context.get('global_containers', []):
             prioritized['high'].append({
@@ -271,7 +271,7 @@ class MemoryLeakDetector(SubAtomicAgent):
                 'line': container['line'],
                 'severity': 'high'
             })
-        
+
         # Medium: Missing context managers
         for missing in context.get('missing_context_managers', []):
             prioritized['medium'].append({
@@ -280,13 +280,13 @@ class MemoryLeakDetector(SubAtomicAgent):
                 'line': missing['line'],
                 'severity': 'medium'
             })
-        
+
         # Return only critical and high priority leaks for auto-fix
         return {
-            k: v for k, v in prioritized.items() 
+            k: v for k, v in prioritized.items()
             if k in ['critical', 'high'] and v
         }
-    
+
     async def _generate_leak_free_code(self, file_path: str, content: str, leaks: dict):
         """Generate leak-free code using Gemini."""
         # Build leak summary
@@ -294,7 +294,7 @@ class MemoryLeakDetector(SubAtomicAgent):
         for severity, leak_list in leaks.items():
             for leak in leak_list:
                 leak_summary.append(f"- {leak['type']} ({severity}): line {leak['line']}")
-        
+
         prompt = (
             f"RESOURCE SAFETY TASK: Fix memory and resource leaks in Python code.\n\n"
             f"File: {file_path}\n\n"
@@ -316,22 +316,22 @@ class MemoryLeakDetector(SubAtomicAgent):
             f"Code:\n{content}\n\n"
             "Return ONLY the complete leak-free Python code."
         )
-        
+
         return await self.ctx.request_mutation(
             self.name, prompt, content, reasoning_mode=True
         )
-    
+
     def _save_safety_report(self, log_entries, fixed_files):
         """Save the resource safety report."""
         timestamp = int(time.time())
         report_path = f"observability/audit/resource_safety_{timestamp}.md"
-        
+
         report_content = f"# Resource Safety Report\n\n"
         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
         report_content += f"## Summary\n\n"
         report_content += f"- Files scanned: {len(log_entries)}\n"
         report_content += f"- Files secured: {len(fixed_files)}\n\n"
-        
+
         if log_entries:
             report_content += f"## Resource Fixes\n\n"
             for entry in log_entries:
@@ -340,32 +340,32 @@ class MemoryLeakDetector(SubAtomicAgent):
                     report_content += f"**Error:** {entry['error']}\n\n"
                 else:
                     report_content += f"### ✅ {entry['file']}\n\n"
-                    
+
                     leaks = entry['leaks']
                     report_content += f"**Leaks Fixed:**\n"
                     for severity, leak_list in leaks.items():
                         for leak in leak_list:
                             report_content += f"- {leak['type']} ({severity}): line {leak['line']}\n"
-                    
+
                     context = entry['context']
                     if context.get('global_containers'):
                         report_content += f"\n**Global Containers:**\n"
                         for container in context['global_containers']:
                             report_content += f"- {container['variable']} (line {container['line']})\n"
-                    
+
                     if context.get('naked_opens'):
                         report_content += f"\n**Naked Resources:**\n"
                         for naked in context['naked_opens']:
                             report_content += f"- {naked['function']} (line {naked['line']})\n"
-                    
+
                     report_content += f"\n**Reasoning:** {entry['reasoning']}\n\n"
-        
+
         self.ctx.write_compliant_file(report_path, report_content)
 
 
 class DeadlockAnalyzer(ast.NodeVisitor):
     """AST visitor to build lock acquisition graph and detect potential deadlocks."""
-    
+
     def __init__(self):
         self.graph = defaultdict(set)  # Lock acquisition graph: lock_a -> {lock_b, lock_c}
         self.lock_sequences = []  # List of lock acquisition sequences per function
@@ -373,22 +373,22 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         self.current_sequence = []
         self.locks_without_timeout = []
         self.lock_acquisitions = []  # Track all lock.acquire() calls
-        
+
     def visit_Module(self, node):
         """Visit the module and analyze all functions."""
         self.generic_visit(node)
-        
+
     def visit_FunctionDef(self, node):
         """Analyze a function for lock acquisition patterns."""
         old_function = self.current_function
         old_sequence = self.current_sequence
         self.current_function = node.name
         self.current_sequence = []
-        
+
         # Visit function body
         for stmt in node.body:
             self.visit(stmt)
-        
+
         # Record the lock sequence for this function
         if len(self.current_sequence) > 1:
             self.lock_sequences.append({
@@ -396,41 +396,41 @@ class DeadlockAnalyzer(ast.NodeVisitor):
                 'sequence': self.current_sequence.copy(),
                 'line': node.lineno
             })
-            
+
             # Build graph edges from acquisition order
             for i in range(len(self.current_sequence) - 1):
                 lock_a = self.current_sequence[i]
                 lock_b = self.current_sequence[i + 1]
                 self.graph[lock_a].add(lock_b)
-        
+
         self.current_function = old_function
         self.current_sequence = old_sequence
-    
+
     def visit_AsyncFunctionDef(self, node):
         """Analyze async functions for lock patterns."""
         self.visit_FunctionDef(node)
-    
+
     def visit_With(self, node):
         """Analyze 'with' statements for lock acquisitions."""
         for item in node.items:
             lock_name = self._extract_lock_name(item.context_expr)
             if lock_name:
                 self.current_sequence.append(lock_name)
-        
+
         # Visit the with body
         for stmt in node.body:
             self.visit(stmt)
-        
+
         # Remove locks from current sequence
         for item in node.items:
             lock_name = self._extract_lock_name(item.context_expr)
             if lock_name:
                 self.current_sequence.pop()
-    
+
     def visit_AsyncWith(self, node):
         """Analyze 'async with' statements."""
         self.visit_With(node)
-    
+
     def visit_Call(self, node):
         """Check for .acquire() calls without timeout."""
         if isinstance(node.func, ast.Attribute):
@@ -439,7 +439,7 @@ class DeadlockAnalyzer(ast.NodeVisitor):
                 has_timeout = any(
                     kw.arg == 'timeout' for kw in node.keywords
                 ) or len(node.args) > 1
-                
+
                 if not has_timeout:
                     lock_name = self._extract_lock_name(node.func.value)
                     if lock_name:
@@ -448,9 +448,9 @@ class DeadlockAnalyzer(ast.NodeVisitor):
                             'line': node.lineno,
                             'function': self.current_function
                         })
-        
+
         self.generic_visit(node)
-    
+
     def _extract_lock_name(self, node):
         """Extract the lock name from an AST node."""
         if isinstance(node, ast.Name):
@@ -462,13 +462,13 @@ class DeadlockAnalyzer(ast.NodeVisitor):
             # For other attributes, return the full path
             return ast.unparse(node) if hasattr(ast, 'unparse') else str(node.lineno)
         return None
-    
+
     def detect_cycles(self):
         """Detect cycles in the lock acquisition graph using DFS."""
         cycles = []
         visited = set()
         rec_stack = set()
-        
+
         def dfs(node, parent_path):
             if node in rec_stack:
                 # Found a cycle
@@ -476,72 +476,72 @@ class DeadlockAnalyzer(ast.NodeVisitor):
                 cycle = parent_path[cycle_start:] + [node]
                 cycles.append(cycle)
                 return
-            
+
             if node in visited:
                 return
-            
+
             visited.add(node)
             rec_stack.add(node)
             parent_path.append(node)
-            
+
             for neighbor in self.graph.get(node, []):
                 dfs(neighbor, parent_path.copy())
-            
+
             rec_stack.remove(node)
-        
+
         # Run DFS from each node
         for lock in self.graph:
             if lock not in visited:
                 dfs(lock, [])
-        
+
         return cycles
 
 
 class DeadlockDetector(SubAtomicAgent):
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
-    
+
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Lock Acquisition Patterns...")
         await asyncio.sleep(0)
-        
+
         # Priority 1: Process modified files
         modified_files = getattr(self.ctx, 'modified_files', set())
-        
+
         # Priority 2: Fall back to all Python files if no tracking
         target_files = list(modified_files) if modified_files else self.ctx.python_files
-        
+
         if not target_files:
             print("   ✅ No files to check for deadlocks")
             return
-        
+
         print(f"   🔍 Analyzing {len(target_files)} files for deadlock patterns...")
         print(f"   🎯 Building global lock acquisition graph")
-        
+
         # Global graph to merge all file graphs
         global_graph = defaultdict(set)
         all_cycles = []
         all_timeouts = []
         deadlock_log = []
         fixed_files = []
-        
+
         # Analyze each file and build global graph
         for file_path in target_files:
             if not file_path.endswith('.py'):
                 continue
-            
+
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     content = f.read()
-                
+
                 # Analyze the file
                 analyzer = DeadlockAnalyzer()
                 tree = ast.parse(content)
                 analyzer.visit(tree)
-                
+
                 # Merge into global graph
                 for lock, neighbors in analyzer.graph.items():
                     global_graph[lock].update(neighbors)
-                
+
                 # Check for cycles in this file's graph
                 cycles = analyzer.detect_cycles()
                 if cycles:
@@ -550,23 +550,23 @@ class DeadlockDetector(SubAtomicAgent):
                         'cycle': cycle,
                         'function': seq['function'] if analyzer.lock_sequences else 'unknown'
                     } for cycle in cycles for seq in analyzer.lock_sequences])
-                
+
                 # Collect timeout issues
                 if analyzer.locks_without_timeout:
                     all_timeouts.extend([{
                         'file': file_path,
                         **timeout
                     } for timeout in analyzer.locks_without_timeout])
-                
+
                 # Check if this file has issues that need fixing
                 if cycles or analyzer.locks_without_timeout:
                     print(f"   🔒 Potential deadlock detected: {os.path.basename(file_path)}")
-                    
+
                     # Generate fixes
                     fixed_content = await self._generate_deadlock_free_code(
                         file_path, content, cycles, analyzer.locks_without_timeout
                     )
-                    
+
                     if fixed_content and fixed_content != content:
                         if self.ctx.write_compliant_file(file_path, fixed_content):
                             fixed_files.append(file_path)
@@ -576,29 +576,29 @@ class DeadlockDetector(SubAtomicAgent):
                                 'timeouts': analyzer.locks_without_timeout,
                                 'reasoning': 'Deadlock patterns detected and remediated'
                             })
-            
+
             except Exception as e:
                 print(f"   ❌ Failed to analyze {file_path}: {e}")
-        
+
         # Detect cycles in the global graph
         global_cycles = self._detect_global_cycles(global_graph)
         if global_cycles:
             print(f"   🚨 Global deadlock cycles detected: {len(global_cycles)}")
-        
+
         # Save deadlock analysis report
         self._save_analysis_report(global_graph, global_cycles, all_timeouts, fixed_files)
-        
+
         if fixed_files:
             print(f"   🔒 Deadlock risks fixed in {len(fixed_files)} files")
         else:
             print("   ✅ No deadlock risks detected")
-    
+
     def _detect_global_cycles(self, graph):
         """Detect cycles in the global lock acquisition graph."""
         cycles = []
         visited = set()
         rec_stack = set()
-        
+
         def dfs(node, parent_path):
             if node in rec_stack:
                 # Found a cycle
@@ -606,37 +606,37 @@ class DeadlockDetector(SubAtomicAgent):
                 cycle = parent_path[cycle_start:] + [node]
                 cycles.append(cycle)
                 return
-            
+
             if node in visited:
                 return
-            
+
             visited.add(node)
             rec_stack.add(node)
             parent_path.append(node)
-            
+
             for neighbor in graph.get(node, []):
                 dfs(neighbor, parent_path.copy())
-            
+
             rec_stack.remove(node)
-        
+
         for lock in graph:
             if lock not in visited:
                 dfs(lock, [])
-        
+
         return cycles
-    
+
     async def _generate_deadlock_free_code(self, file_path: str, content: str, cycles: list, timeouts: list):
         """Generate deadlock-free code using Gemini."""
         # Build issue summary
         issue_summary = []
-        
+
         for cycle in cycles:
             cycle_str = " → ".join(cycle)
             issue_summary.append(f"- Lock cycle detected: {cycle_str}")
-        
+
         for timeout in timeouts:
             issue_summary.append(f"- Missing timeout on {timeout['lock']}.acquire() (line {timeout['line']})")
-        
+
         prompt = (
             f"DEADLOCK PREVENTION TASK: Fix potential deadlocks in Python code.\n\n"
             f"File: {file_path}\n\n"
@@ -657,16 +657,16 @@ class DeadlockDetector(SubAtomicAgent):
             f"Code:\n{content}\n\n"
             "Return ONLY the complete deadlock-free Python code."
         )
-        
+
         return await self.ctx.request_mutation(
             self.name, prompt, content, reasoning_mode=True
         )
-    
+
     def _save_analysis_report(self, graph, cycles, timeouts, fixed_files):
         """Save the deadlock analysis report with lock order graph."""
         timestamp = int(time.time())
         report_path = f"observability/audit/deadlock_analysis_{timestamp}.md"
-        
+
         report_content = f"# Deadlock Analysis Report\n\n"
         report_content += f"Generated: {datetime.datetime.now().isoformat()}\n\n"
         report_content += f"## Summary\n\n"
@@ -674,7 +674,7 @@ class DeadlockDetector(SubAtomicAgent):
         report_content += f"- Deadlock cycles detected: {len(cycles)}\n"
         report_content += f"- Locks without timeout: {len(timeouts)}\n"
         report_content += f"- Files fixed: {len(fixed_files)}\n\n"
-        
+
         # Lock acquisition graph
         report_content += f"## Lock Acquisition Graph\n\n"
         if graph:
@@ -684,7 +684,7 @@ class DeadlockDetector(SubAtomicAgent):
                     for neighbor in sorted(neighbors):
                         report_content += f"{lock} → {neighbor}\n"
             report_content += "```\n\n"
-        
+
         # Deadlock cycles
         if cycles:
             report_content += f"## Deadlock Cycles\n\n"
@@ -692,26 +692,26 @@ class DeadlockDetector(SubAtomicAgent):
                 cycle_str = " → ".join(cycle)
                 report_content += f"### Cycle {i}\n"
                 report_content += f"`{cycle_str}`\n\n"
-        
+
         # Timeouts
         if timeouts:
             report_content += f"## Locks Without Timeout\n\n"
             for timeout in timeouts:
                 report_content += f"- **{timeout['file']}**: {timeout['lock']}.acquire() at line {timeout['line']}\n"
             report_content += "\n"
-        
+
         # Fixed files
         if fixed_files:
             report_content += f"## Files Fixed\n\n"
             for file_path in fixed_files:
                 report_content += f"- ✅ {file_path}\n"
-        
+
         self.ctx.write_compliant_file(report_path, report_content)
 
 
 class RaceAnalyzer(ast.NodeVisitor):
     """AST visitor to analyze potential race conditions."""
-    
+
     def __init__(self):
         self.races = []
         self.current_function = None
@@ -719,7 +719,7 @@ class RaceAnalyzer(ast.NodeVisitor):
         self.in_with_context = []
         self.global_variables = set()
         self.shared_state = []
-        
+
     def visit(self, node):
         # Add parent info to nodes for context tracking
         for child in ast.walk(node):
@@ -731,7 +731,7 @@ class RaceAnalyzer(ast.NodeVisitor):
                 elif isinstance(value, ast.AST):
                     value._parent = child
         return super().visit(node)
-    
+
     def visit_Module(self, node):
         # Track module-level assignments (global state)
         for stmt in node.body:
@@ -740,11 +740,11 @@ class RaceAnalyzer(ast.NodeVisitor):
                     if isinstance(target, ast.Name):
                         self.global_variables.add(target.id)
         self.generic_visit(node)
-    
+
     def visit_ClassDef(self, node):
         old_class = self.current_class
         self.current_class = node.name
-        
+
         # Track class attributes as shared state
         for stmt in node.body:
             if isinstance(stmt, ast.Assign):
@@ -757,25 +757,25 @@ class RaceAnalyzer(ast.NodeVisitor):
                                 'line': stmt.lineno,
                                 'class': node.name
                             })
-        
+
         self.generic_visit(node)
         self.current_class = old_class
-    
+
     def visit_FunctionDef(self, node):
         old_function = self.current_function
         self.current_function = node.name
-        
+
         # Check for global statements
         for stmt in node.body:
             if isinstance(stmt, ast.Global):
                 self.global_variables.update(stmt.names)
-        
+
         self.generic_visit(node)
         self.current_function = old_function
-    
+
     def visit_AsyncFunctionDef(self, node):
         self.visit_FunctionDef(node)
-    
+
     def visit_With(self, node):
         # Check if this 'with' statement uses a lock
         is_lock_context = False
@@ -786,14 +786,14 @@ class RaceAnalyzer(ast.NodeVisitor):
             elif isinstance(item.context_expr, ast.Attribute):
                 if 'lock' in item.context_expr.attr.lower():
                     is_lock_context = True
-        
+
         self.in_with_context.append(('lock' if is_lock_context else 'other', node.lineno))
         self.generic_visit(node)
         self.in_with_context.pop()
-    
+
     def visit_AsyncWith(self, node):
         self.visit_With(node)
-    
+
     def visit_Assign(self, node):
         # Check for assignments to shared mutable state
         for target in node.targets:
@@ -808,7 +808,7 @@ class RaceAnalyzer(ast.NodeVisitor):
                             'function': self.current_function,
                             'context': 'module'
                         })
-            
+
             elif isinstance(target, ast.Attribute):
                 # Class attribute assignment (self.x)
                 if isinstance(target.value, ast.Name) and target.value.id == 'self':
@@ -820,7 +820,7 @@ class RaceAnalyzer(ast.NodeVisitor):
                             'function': self.current_function,
                             'class': self.current_class
                         })
-            
+
             elif isinstance(target, ast.Subscript):
                 # Dictionary/list element assignment (shared_dict[key])
                 if not self._is_in_lock_context():
@@ -830,9 +830,9 @@ class RaceAnalyzer(ast.NodeVisitor):
                         'function': self.current_function,
                         'class': self.current_class
                     })
-        
+
         self.generic_visit(node)
-    
+
     def visit_AugAssign(self, node):
         # Check for compound operations (+=, -=, *=, /=)
         # These are always non-atomic
@@ -847,7 +847,7 @@ class RaceAnalyzer(ast.NodeVisitor):
                         'function': self.current_function,
                         'context': 'module'
                     })
-        
+
         elif isinstance(node.target, ast.Attribute):
             if isinstance(node.target.value, ast.Name) and node.target.value.id == 'self':
                 if not self._is_in_lock_context():
@@ -859,17 +859,17 @@ class RaceAnalyzer(ast.NodeVisitor):
                         'function': self.current_function,
                         'class': self.current_class
                     })
-        
+
         self.generic_visit(node)
-    
+
     def visit_Call(self, node):
         # Check for method calls on shared objects without locks
         if isinstance(node.func, ast.Attribute):
             # Check if it's a mutable method on shared state
-            mutable_methods = {'append', 'extend', 'insert', 'pop', 'remove', 'clear', 
-                              'update', 'popitem', 'setdefault', 'add', 'discard', 
+            mutable_methods = {'append', 'extend', 'insert', 'pop', 'remove', 'clear',
+                              'update', 'popitem', 'setdefault', 'add', 'discard',
                               'update', 'intersection_update', 'difference_update'}
-            
+
             if node.func.attr in mutable_methods:
                 if isinstance(node.func.value, ast.Name):
                     if node.func.value.id in self.global_variables:
@@ -881,9 +881,9 @@ class RaceAnalyzer(ast.NodeVisitor):
                                 'line': node.lineno,
                                 'function': self.current_function
                             })
-        
+
         self.generic_visit(node)
-    
+
     def _is_in_lock_context(self):
         """Check if current node is inside a 'with lock:' context."""
         return any(context[0] == 'lock' for context in self.in_with_context)

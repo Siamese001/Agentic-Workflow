@@ -13,36 +13,62 @@ import time
 from typing import Any, Dict, List, Optional, Tuple
 
 from scripts.runtime.shared.adaptive_retrieval_gate import (
-    AdaptiveRetrievalGate, RetrievalDecision)
+    AdaptiveRetrievalGate,
+    RetrievalDecision,
+)
+
 # Phase 1: Precision Layer
-from scripts.runtime.shared.contextual_compressor import (CompressionResult,
-                                                          ContextualCompressor)
-from scripts.runtime.shared.graphrag_fusion import (FusionResult,
-                                                    GraphRAGFusion, QueryType,
-                                                    get_graphrag_fusion,
-                                                    graphrag_query)
-from scripts.runtime.shared.hybrid_scorer import (HybridScorer, ScoringResult,
-                                                  create_hybrid_scorer)
+from scripts.runtime.shared.contextual_compressor import (
+    CompressionResult,
+    ContextualCompressor,
+)
+from scripts.runtime.shared.graphrag_fusion import (
+    FusionResult,
+    GraphRAGFusion,
+    QueryType,
+    get_graphrag_fusion,
+    graphrag_query,
+)
+from scripts.runtime.shared.hybrid_scorer import (
+    HybridScorer,
+    ScoringResult,
+    create_hybrid_scorer,
+)
+
 # Security Layer
-from scripts.runtime.shared.input_guardrails import (GuardAction, GuardResult,
-                                                     InputGuardrail,
-                                                     get_input_guardrail)
+from scripts.runtime.shared.input_guardrails import (
+    GuardAction,
+    GuardResult,
+    InputGuardrail,
+    get_input_guardrail,
+)
+
 # Phase 3: SOTA Layer
 from scripts.runtime.shared.late_interaction_reranker import (
-    LateInteractionReranker, PassThroughReranker, rerank_documents)
+    LateInteractionReranker,
+    PassThroughReranker,
+    rerank_documents,
+)
+
 # Phase 2: Reasoning Layer
-from scripts.runtime.shared.query_decomposer import (DecomposedQuery,
-                                                     QueryDecomposer,
-                                                     decompose_query)
-from scripts.runtime.shared.retrieval_grader import (GradeStatus,
-                                                     RetrievalGrade,
-                                                     RetrievalGrader,
-                                                     WebSearchFallback,
-                                                     get_retrieval_grader,
-                                                     get_web_search_fallback,
-                                                     grade_retrieval)
+from scripts.runtime.shared.query_decomposer import (
+    DecomposedQuery,
+    QueryDecomposer,
+    decompose_query,
+)
+from scripts.runtime.shared.retrieval_grader import (
+    GradeStatus,
+    RetrievalGrade,
+    RetrievalGrader,
+    WebSearchFallback,
+    get_retrieval_grader,
+    get_web_search_fallback,
+    grade_retrieval,
+)
 from scripts.runtime.shared.signal_quality_pipeline import (
-    SignalQualityPipeline, create_signal_pipeline)
+    SignalQualityPipeline,
+    create_signal_pipeline,
+)
 
 LOGGER = logging.getLogger(__name__)
 

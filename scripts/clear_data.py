@@ -10,10 +10,8 @@ try:
     redis_conn = ConnectionFactory.get_redis_connection()
     redis_conn.flushall()
     # print("✅ Redis cleared")  # [Security Fix]
-except Exception as e:
+except Exception:
     pass
-pass
-pass
 # print(f"❌ Failed to clear Redis: {e}")  # [Security Fix]
 
 # Clear Pinecone
@@ -27,10 +25,8 @@ try:
     else:
         # print("⚠️ No Pinecone API key - skipping Pinecone clear")  # [Security Fix]
         pass
-except Exception as e:
+except Exception:
     pass
-pass
-pass
 # print(f"❌ Failed to clear Pinecone: {e}")  # [Security Fix]
 
 # print("\n🧹 Data cleared. Ready for clean simulation.")  # [Security Fix]

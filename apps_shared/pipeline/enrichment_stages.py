@@ -23,13 +23,16 @@ class ContextEnrichmentStage(PipelineStage):
             # The original error "unmatched ')' at line 24" suggests that line 23 (with the opening parenthesis)
             # was commented out while line 24 (with the closing parenthesis) was not, leading to an unmatched ')'
             # on line 24. Uncommenting both makes the import syntactically valid.
-            from ..rag_components import (KnowledgeGraphInjector,
-                                          SelfRAGProcessor, SemanticCache)
+            from ..rag_components import (
+                KnowledgeGraphInjector,
+                SelfRAGProcessor,
+                SemanticCache,
+            )
             self.kg_injector = KnowledgeGraphInjector()
             self.rag_processor = SelfRAGProcessor()
             self.semantic_cache = SemanticCache()
         except ImportError:
-pass
+            pass
 # Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
             self.kg_injector = None
             self.rag_processor = None
@@ -93,7 +96,7 @@ pass
             return envelope
 
         except Exception as e:
-pass
+            pass
 # Fix: Correctly indenting the error handling and removing extra 'pass' statements.
             logger.error(f"Context enrichment failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
@@ -143,7 +146,7 @@ class SignalAugmentationStage(PipelineStage):
             self.tone_model = ToneModel()
             self.semantic_cache = SemanticCache()
         except ImportError:
-pass
+            pass
 # Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
             self.claim_scorer = None
             self.prompt_optimizer = None
@@ -191,7 +194,7 @@ pass
             return envelope
 
         except Exception as e:
-pass
+            pass
 # Fix: Correctly indenting the error handling and removing extra 'pass' statements.
             logger.error(f"Signal augmentation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)

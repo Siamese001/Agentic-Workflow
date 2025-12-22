@@ -1,13 +1,16 @@
+```python
 """
 Constants for the Agentic Core system.
 
 Contains all shared constants used across the agentic framework.
 """
 
+
 # Complexity thresholds
 MAX_COMPLEXITY = 10
 MAX_FUNC_LINES = 50
 MAX_NESTING_SPACES = 40
+
 
 # File system constants
 ALLOWED_ROOT_FILES = {
@@ -17,8 +20,9 @@ ALLOWED_ROOT_FILES = {
     "pyproject.toml",
     ".gitignore",
     "Dockerfile",
-    "docker-compose.yml"
+    "docker-compose.yml",
 }
+
 
 # Few-shot prompts for various agents
 FEW_SHOT_STRATEGIC = """
@@ -41,6 +45,7 @@ Mission Plan Structure:
 }
 """
 
+
 FEW_SHOT_SHERLOCK = """
 You are Sherlock, the debugging specialist.
 
@@ -56,6 +61,7 @@ Debugging Process:
 3. Test hypotheses
 4. Implement solution
 """
+
 
 FEW_SHOT_CONCURRENCY = """
 You are the ConcurrencyGuardian, an expert in managing concurrent operations.
@@ -73,20 +79,24 @@ Lock Usage Pattern:
 4. Use async/await for I/O operations
 """
 
+
 # Performance thresholds
 MAX_PHASE_TIME = 300  # seconds
 MEMORY_THRESHOLD_MB = 100  # MB growth per cycle
 PERFORMANCE_DEGRADATION_THRESHOLD = 0.5  # 50% slower than average
+
 
 # Lock configuration
 DEFAULT_LOCK_TIMEOUT = 30  # seconds
 MAX_RETRY_ATTEMPTS = 3
 RETRY_DELAY = 0.5  # seconds
 
+
 # History limits
 MAX_SNAPSHOTS = 100
 BENCHMARK_HISTORY_SIZE = 1000
 MAX_ALERTS_PER_TYPE = 50
+
 
 # Environment variable names
 CANON_REMOTE_REPO = "CANON_REMOTE_REPO"
@@ -94,7 +104,9 @@ GOOGLE_API_KEY = "GOOGLE_API_KEY"
 ENABLE_FUZZ = "ENABLE_FUZZ"
 ADDITIONAL_REPO_ROOTS = "ADDITIONAL_REPO_ROOTS"
 
+
 # Directory constants
 MEMORY_DIR = "observability/memory"
 ALERTS_DIR = "observability/alerts"
 CACHE_DIR = "observability/cache"
+```

@@ -12,18 +12,24 @@ from core_utils import (
     semantic_score_draft,
     write_file,
 )
+
+# Import fact checker for truth anchor validation
+from fact_checker import HallucinationException
+
 # Import hardened MCP functions
 from mcp_hardening import get_version_locked_design
-# Import Redis/LangCache pipeline functions
-from redis_langcache_pipeline import execute_governed_prompt_caching
-# Import time-bound benchmarking function
-from time_bound_benchmarking import execute_time_bound_salary_benchmarking
-# Import hardening protocols
-from security_utils import PromptFirewall, SecurityException
-# Import fact checker for truth anchor validation
-from fact_checker import FactChecker, HallucinationException
+
 # Import egress filter for Protocol 8
 from network_utils import strict_egress_filter
+
+# Import Redis/LangCache pipeline functions
+from redis_langcache_pipeline import execute_governed_prompt_caching
+
+# Import hardening protocols
+from security_utils import PromptFirewall, SecurityException
+
+# Import time-bound benchmarking function
+from time_bound_benchmarking import execute_time_bound_salary_benchmarking
 
 # Define the specific allow-list for the Resume Engine
 RESUME_ALLOWED_HOSTS = [

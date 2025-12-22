@@ -35,7 +35,7 @@ except ImportError:
 @dataclass
 class InterventionContext:
     """Context for human intervention decision."""
-    
+
     workflow_id: str
     cycle: int
     reason: str
@@ -45,7 +45,7 @@ class InterventionContext:
     quality_score: Optional[float] = None
     recommendations: List[str] = field(default_factory=list)
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for API response."""
         return {
@@ -64,13 +64,13 @@ class InterventionContext:
 class InterventionServer:
     """
     Human-in-the-Loop intervention server.
-    
+
     Provides:
     - Web UI for human approval/veto
     - API endpoints for programmatic control
     - Async event synchronization
     - Telepathy interface for instruction files
-    
+
     Canon Validator Pattern:
         if high_risk or (many_modifications and strategic_plan):
             start_intervention_server(ctx)
@@ -78,7 +78,7 @@ class InterventionServer:
             if "VETOED" in ctx.signals:
                 break
     """
-    
+
     def __init__(
         self,
         host: str = "127.0.0.1",
@@ -87,7 +87,7 @@ class InterventionServer:
     ) -> None:
         """
         Initialize the intervention server.
-        
+
         Args:
             host: Server host address
             port: Server port
@@ -96,28 +96,28 @@ class InterventionServer:
         self.host = host
         self.port = port
         self.instructions_path = Path(instructions_path)
-        
+
         self.approval_event = asyncio.Event()
         self.current_context: Optional[InterventionContext] = None
         self.decision: Optional[str] = None  # "approved" or "vetoed"
         self.decision_reason: str = ""
-        
+
         self._server_task: Optional[asyncio.Task] = None
         self._app: Optional[Any] = None
-        
+
         if FASTAPI_AVAILABLE:
             self._setup_app()
-        
+
         logger.info(f"InterventionServer initialized at {host}:{port}")
-    
+
     def _setup_app(self) -> None:
         """Setup FastAPI application with endpoints."""
-        
+
         self._app = FastAPI(
             title="L5+ Intervention Server",
             description="Human-in-the-Loop approval for autonomous workflows"
         )
-        
+
         @self._app.get("/", response_class=HTMLResponse)
         async def intervention_ui():
             """Render intervention UI."""
@@ -126,13 +126,13 @@ class InterventionServer:
                     content="<h1>No pending intervention</h1>",
                     status_code=200
                 )
-            
+
             ctx = self.current_context
             risk_html = "".join(f"<li>{r}</li>" for r in ctx.risk_factors)
             modified_html = "".join(f"<li>{m}</li>" for m in ctx.modified_items[:10])
             signals_html = "".join(f"<li>{s}</li>" for s in ctx.signals)
             recs_html = "".join(f"<li>{r}</li>" for r in ctx.recommendations)
-            
+
             html = f"""
             <!DOCTYPE html>
             <html>
@@ -151,34 +151,34 @@ class InterventionServer:
             </head>
             <body>
                 <h1>🚨 Human Intervention Required</h1>
-                
+
                 <div class="warning">
                     <h2>Workflow: {ctx.workflow_id}</h2>
                     <p><strong>Cycle:</strong> {ctx.cycle}</p>
                     <p><strong>Reason:</strong> {ctx.reason}</p>
                     <p><strong>Quality Score:</strong> {ctx.quality_score or 'N/A'}</p>
                 </div>
-                
+
                 <div class="risk">
                     <h3>⚠️ Risk Factors</h3>
                     <ul>{risk_html or '<li>None specified</li>'}</ul>
                 </div>
-                
+
                 <div class="info">
                     <h3>📝 Modified Items ({len(ctx.modified_items)})</h3>
                     <ul>{modified_html or '<li>None</li>'}</ul>
                 </div>
-                
+
                 <div class="info">
                     <h3>📡 Active Signals</h3>
                     <ul>{signals_html or '<li>None</li>'}</ul>
                 </div>
-                
+
                 <div class="info">
                     <h3>💡 Recommendations</h3>
                     <ul>{recs_html or '<li>None</li>'}</ul>
                 </div>
-                
+
                 <h2>Decision</h2>
                 <form action="/approve" method="post" style="display: inline;">
                     <button type="submit" class="btn approve">✅ APPROVE</button>
@@ -186,13 +186,13 @@ class InterventionServer:
                 <form action="/veto" method="post" style="display: inline;">
                     <button type="submit" class="btn veto">❌ VETO</button>
                 </form>
-                
+
                 <p><small>Timestamp: {ctx.timestamp.isoformat()}</small></p>
             </body>
             </html>
             """
             return HTMLResponse(content=html)
-        
+
         @self._app.post("/approve")
         async def approve():
             """Approve the pending intervention."""
@@ -203,7 +203,7 @@ class InterventionServer:
                 content="<h1>✅ Approved</h1><p>Workflow will continue.</p>",
                 status_code=200
             )
-        
+
         @self._app.post("/veto")
         async def veto():
             """Veto the pending intervention."""
@@ -214,7 +214,7 @@ class InterventionServer:
                 content="<h1>❌ Vetoed</h1><p>Workflow will abort.</p>",
                 status_code=200
             )
-        
+
         @self._app.get("/status")
         async def status():
             """Get current intervention status."""
@@ -223,7 +223,7 @@ class InterventionServer:
                 "context": self.current_context.to_dict() if self.current_context else None,
                 "decision": self.decision
             })
-        
+
         @self._app.post("/api/approve")
         async def api_approve(reason: str = "API approval"):
             """API endpoint for programmatic approval."""
@@ -231,7 +231,7 @@ class InterventionServer:
             self.decision_reason = reason
             self.approval_event.set()
             return {"status": "approved", "reason": reason}
-        
+
         @self._app.post("/api/veto")
         async def api_veto(reason: str = "API veto"):
             """API endpoint for programmatic veto."""
@@ -239,13 +239,13 @@ class InterventionServer:
             self.decision_reason = reason
             self.approval_event.set()
             return {"status": "vetoed", "reason": reason}
-    
+
     async def start_server(self) -> None:
         """Start the intervention server in background."""
         if not FASTAPI_AVAILABLE:
             logger.warning("FastAPI not available - server not started")
             return
-        
+
         config = uvicorn.Config(
             self._app,
             host=self.host,
@@ -255,7 +255,7 @@ class InterventionServer:
         server = uvicorn.Server(config)
         self._server_task = asyncio.create_task(server.serve())
         logger.info(f"Intervention server started at http://{self.host}:{self.port}")
-    
+
     async def stop_server(self) -> None:
         """Stop the intervention server."""
         if self._server_task:
@@ -266,7 +266,7 @@ class InterventionServer:
                 pass
             self._server_task = None
             logger.info("Intervention server stopped")
-    
+
     async def request_intervention(
         self,
         context: InterventionContext,
@@ -274,42 +274,42 @@ class InterventionServer:
     ) -> bool:
         """
         Request human intervention and wait for decision.
-        
+
         Args:
             context: Intervention context with details
             timeout: Optional timeout in seconds (None = wait forever)
-            
+
         Returns:
             True if approved, False if vetoed or timeout
         """
         self.current_context = context
         self.decision = None
         self.approval_event.clear()
-        
+
         logger.warning(f"🚨 INTERVENTION REQUIRED: {context.reason}")
         logger.warning(f"   Approval URL: http://{self.host}:{self.port}")
-        
+
         try:
             if timeout:
                 await asyncio.wait_for(self.approval_event.wait(), timeout=timeout)
             else:
                 await self.approval_event.wait()
-            
+
             approved = self.decision == "approved"
             logger.info(f"Intervention decision: {self.decision} - {self.decision_reason}")
             return approved
-            
+
         except asyncio.TimeoutError:
             logger.warning("Intervention timeout - defaulting to veto")
             self.decision = "timeout"
             return False
         finally:
             self.current_context = None
-    
+
     def check_telepathy(self) -> Optional[str]:
         """
         Check for human instructions via telepathy file.
-        
+
         Canon Validator Pattern:
             instruction_file = Path("observability/human_instructions.md")
             if instruction_file.exists():
@@ -317,7 +317,7 @@ class InterventionServer:
         """
         if not self.instructions_path.exists():
             return None
-        
+
         try:
             instructions = self.instructions_path.read_text().strip()
             if instructions:
@@ -325,12 +325,12 @@ class InterventionServer:
                 return instructions
         except Exception as e:
             logger.error(f"Failed to read telepathy file: {e}")
-        
+
         return None
-    
+
     def parse_telepathy_commands(self, instructions: str) -> Dict[str, Any]:
         """Parse telepathy instructions for commands."""
-        
+
         commands = {
             "stop": False,
             "pause": False,
@@ -338,18 +338,18 @@ class InterventionServer:
             "force_test": False,
             "custom": []
         }
-        
+
         instructions_lower = instructions.lower()
-        
+
         if "stop" in instructions_lower or "abort" in instructions_lower:
             commands["stop"] = True
-        
+
         if "pause" in instructions_lower:
             commands["pause"] = True
-        
+
         if "test" in instructions_lower:
             commands["force_test"] = True
-        
+
         # Extract skip file patterns
         for line in instructions.split("\n"):
             if line.strip().startswith("skip:"):
@@ -359,7 +359,7 @@ class InterventionServer:
                 cmd in line.lower() for cmd in ["stop", "pause", "test", "skip"]
             ):
                 commands["custom"].append(line.strip())
-        
+
         return commands
 
 
@@ -373,7 +373,7 @@ def check_intervention_required(
 ) -> tuple[bool, List[str]]:
     """
     Check if human intervention is required based on Canon Validator thresholds.
-    
+
     Args:
         cycle: Current cycle number
         modified_count: Number of modified items
@@ -381,35 +381,35 @@ def check_intervention_required(
         quality_score: Optional quality score
         high_risk_threshold: Modified count threshold
         signal_threshold: Signal count threshold
-        
+
     Returns:
         Tuple of (intervention_required, risk_factors)
     """
     risk_factors = []
-    
+
     # Check for high-risk signals
     high_risk_signals = ["HIGH_RISK", "CRITICAL_FAIL", "SECURE_REBOOT"]
     if any(s in signals for s in high_risk_signals):
         risk_factors.append(f"High-risk signals present: {[s for s in signals if s in high_risk_signals]}")
-    
+
     # Check modified count threshold
     if modified_count > high_risk_threshold:
         risk_factors.append(f"Many modifications ({modified_count} > {high_risk_threshold})")
-    
+
     # Check signal count threshold
     if len(signals) > signal_threshold:
         risk_factors.append(f"Many signals ({len(signals)} > {signal_threshold})")
-    
+
     # Check cycle count (late cycles are higher risk)
     if cycle >= 3 and modified_count > 0:
         risk_factors.append(f"Late cycle ({cycle}) with pending modifications")
-    
+
     # Check quality score
     if quality_score is not None and quality_score < 0.5:
         risk_factors.append(f"Low quality score ({quality_score:.2f})")
-    
+
     intervention_required = len(risk_factors) > 0
-    
+
     return intervention_required, risk_factors
 
 

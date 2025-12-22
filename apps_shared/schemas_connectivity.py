@@ -240,8 +240,7 @@ def generate_ast_structure(code_str: str) -> Dict[str, Any]:
             "valid": True
         }
     except SyntaxError as e:
-pass
-return {
+        return {
             "type": "Error",
             "error": str(e),
             "line": e.lineno,
@@ -261,4 +260,3 @@ def validate_ast_integrity(ast_structure: Dict[str, Any]) -> bool:
         True if valid
     """
     return ast_structure.get("valid", False)
-
