@@ -148,23 +148,17 @@ class WorkflowLoader:
                 "description": "Creative generation phase",
                 "creative_brief": {
                     "headline": {"word_count": [8, 12], "char_count_max": 90},
-                    "executive_summary": {"word_count": [120, 140], "voice": "third_person_implied",
-    "forbidden_patterns": []},
-                    "experience_bullets": {"unify_bullet_word_count": [28, 33], "ibm_bullet_word_cou
-    nt": [24, 30]},
-                    "experience_overview": {"unify_word_count": [25, 33], "ibm_word_count": [22, 28]
-    },
+                    "executive_summary": {"word_count": [120, 140], "voice": "third_person_implied", "forbidden_patterns": []},
+                    "experience_bullets": {"unify_bullet_word_count": [28, 33], "ibm_bullet_word_count": [24, 30]},
+                    "experience_overview": {"unify_word_count": [25, 33], "ibm_word_count": [22, 28]},
                     "leadership_competencies": {"word_count_per_desc": [24, 30]},
                     "cover_letter": {"word_count_per_para": [85, 100]},
                     "deduplication_matrix": {"thresholds": {}}
                 },
                 "hardcoded_config": {
-                    "K.0": {"description": "Thematic analysis", "temp": 0.3, "rag_total_calls": 50,
-    "rag_hops": 3},
-                    "K.1": {"description": "Executive summary", "temp": 0.9, "rag_total_calls": 4, "
-    rag_hops": 2},
-                    "K.2": {"description": "Competitive analysis", "temp": 0.3, "rag_total_calls": 2
-    4, "rag_hops": 3}
+                    "K.0": {"description": "Thematic analysis", "temp": 0.3, "rag_total_calls": 50, "rag_hops": 3},
+                    "K.1": {"description": "Executive summary", "temp": 0.9, "rag_total_calls": 4, "rag_hops": 2},
+                    "K.2": {"description": "Competitive analysis", "temp": 0.3, "rag_total_calls": 24, "rag_hops": 3}
                 }
             }
         }
@@ -210,34 +204,34 @@ class WorkflowLoader:
 
             self._cached_creative_brief = CreativeBriefConfig(
                 headline_word_count=WordCountConstraints.from_list(
-                    brief.get("headline", {}).get("word_count", [8, 12])
+                    BRIEF.get("headline", {}).get("word_count", [8, 12])
                 ),
-                headline_char_max=brief.get("headline", {}).get("char_count_max", 90),
+                headline_char_max=BRIEF.get("headline", {}).get("char_count_max", 90),
                 executive_summary_word_count=WordCountConstraints.from_list(
-                    brief.get("executive_summary", {}).get("word_count", [120, 140])
+                    BRIEF.get("executive_summary", {}).get("word_count", [120, 140])
                 ),
-                executive_summary_voice=brief.get("executive_summary",
+                executive_summary_voice=BRIEF.get("executive_summary",
                     {}).get("voice",
                     "third_person_implied"),
 
-                forbidden_patterns=brief.get("executive_summary", {}).get("forbidden_patterns", []),
+                forbidden_patterns=BRIEF.get("executive_summary", {}).get("forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33])
+                    BRIEF.get("experience_bullets", {}).get("unify_bullet_word_count", [28, 33])
                 ),
                 ibm_bullet_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_bullets", {}).get("ibm_bullet_word_count", [24, 30])
+                    BRIEF.get("experience_bullets", {}).get("ibm_bullet_word_count", [24, 30])
                 ),
                 unify_overview_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_overview", {}).get("unify_word_count", [25, 33])
+                    BRIEF.get("experience_overview", {}).get("unify_word_count", [25, 33])
                 ),
                 ibm_overview_word_count=WordCountConstraints.from_list(
-                    brief.get("experience_overview", {}).get("ibm_word_count", [22, 28])
+                    BRIEF.get("experience_overview", {}).get("ibm_word_count", [22, 28])
                 ),
                 competency_word_count=WordCountConstraints.from_list(
-                    brief.get("leadership_competencies", {}).get("word_count_per_desc", [24, 30])
+                    BRIEF.get("leadership_competencies", {}).get("word_count_per_desc", [24, 30])
                 ),
                 cover_letter_para_word_count=WordCountConstraints.from_list(
-                    brief.get("cover_letter", {}).get("word_count_per_para", [85, 100])
+                    BRIEF.get("cover_letter", {}).get("word_count_per_para", [85, 100])
                 )
             )
         return self._cached_creative_brief
@@ -248,10 +242,10 @@ class WorkflowLoader:
             CONFIGS = {}
             HARDCODED = self.get_reasoning_config().get("hardcoded_config", {})
 
-            for key, value in hardcoded.items():
+            for key, value in HARDCODED.items():
                 if key.startswith("K.") and isinstance(value, dict):
-                    CONFIGS[KEY] = KNodeConfig(
-                        DESCRIPTION=value.get("description", ""),
+                    CONFIGS[key] = KNodeConfig(
+                        description=value.get("description", ""),
                         input_dependencies=value.get("input_dependencies", []),
                         TEMP=value.get("temp", 0.7),
                         rag_type=value.get("rag_type", "Hybrid"),
@@ -267,20 +261,20 @@ class WorkflowLoader:
                         max_reflexion_loops=value.get("max_reflexion_loops", 3)
                     )
 
-            self._cached_knode_configs = configs
+            self._cached_knode_configs = CONFIGS
         return self._cached_knode_configs
 
     def get_knode_config(self, node_id: str) -> Optional[KNodeConfig]:
         """Get a specific K-node configuration."""
         CONFIGS = self.get_knode_configs()
-        return configs.get(node_id)
+        return CONFIGS.get(node_id)
 
     def get_validation_rules(self) -> Dict[str, Any]:
         """Get validation rules and thresholds."""
         if self._cached_validation_rules is None:
             REASONING = self.get_reasoning_config()
             # Check creative_brief first (where deduplication_matrix is located)
-            creative_brief = reasoning.get("creative_brief", {})
+            creative_brief = REASONING.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix",
                 {}).get("thresholds",
                 {})
@@ -298,7 +292,7 @@ class WorkflowLoader:
         """Get file complexity gate thresholds."""
         if self._cached_file_complexity_thresholds is None:
             CONTEXT = self.get_context_config()
-            self._cached_file_complexity_thresholds = context.get("pre_flight_file_complexity_gate",
+            self._cached_file_complexity_thresholds = CONTEXT.get("pre_flight_file_complexity_gate",
                 {}).get("thresholds",
                 {})
         return self._cached_file_complexity_thresholds
@@ -307,7 +301,7 @@ class WorkflowLoader:
         """Get list of required files."""
         if self._cached_required_files is None:
             CONTEXT = self.get_context_config()
-            self._cached_required_files = context.get("pre_flight_file_manifest_check",
+            self._cached_required_files = CONTEXT.get("pre_flight_file_manifest_check",
                 {}).get("required_file_manifest",
                 [])
         return self._cached_required_files

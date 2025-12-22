@@ -222,8 +222,8 @@ class SpecificityProseEngine:
         MISSION = company_research.get('mission', 'transform the industry')
 
         return f"""I am writing to express my strong interest in the Chief Technology Officer positi
-    on at {company_name}. Your company's {product} represents a compelling opportunity to drive tech
-        nological innovation at scale, and I am particularly drawn to your mission to {mission}.
+    on at {company_name}. Your company's {PRODUCT} represents a compelling opportunity to drive tech
+        nological innovation at scale, and I am particularly drawn to your mission to {MISSION}.
 
 Throughout my career, I have consistently delivered transformative results in similar high-growth en
     vironments. At my previous role, I led a cloud migration initiative that reduced infrastructure
@@ -253,8 +253,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 gate_id='VG_PARAGRAPH_STRUCTURE',
                 PASSED=False,
                 SEVERITY='BLOCK',
-                MESSAGE=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs,
-                    got {len(paragraphs)}",
+                MESSAGE=f"BLOCKED: Expected {self.config.paragraph_count} paragraphs, got {len(paragraphs)}",
 
                 DETAILS={'expected': self.config.paragraph_count, 'actual': len(paragraphs)}
             )
@@ -263,19 +262,17 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         for i, para in enumerate(paragraphs, 1):
             word_count = len(para.split())
             if word_count < self.config.min_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words (min {self.config.min_words_pe
-    r_paragraph})")
+                VIOLATIONS.append(f"Paragraph {i}: {word_count} words (min {self.config.min_words_per_paragraph})")
             elif word_count > self.config.max_words_per_paragraph:
-                violations.append(f"Paragraph {i}: {word_count} words (max {self.config.max_words_pe
-    r_paragraph})")
+                VIOLATIONS.append(f"Paragraph {i}: {word_count} words (max {self.config.max_words_per_paragraph})")
 
-        if violations:
+        if VIOLATIONS:
             return ValidationResult(
                 gate_id='VG_PARAGRAPH_STRUCTURE',
                 PASSED=False,
                 SEVERITY='BLOCK',
-                MESSAGE=f"BLOCKED: {len(violations)} paragraph word count violations",
-                DETAILS={'violations': violations}
+                MESSAGE=f"BLOCKED: {len(VIOLATIONS)} paragraph word count violations",
+                DETAILS={'violations': VIOLATIONS}
             )
 
         return ValidationResult(
@@ -302,8 +299,8 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         company_name = company_research.get('name', '')
         if company_name and company_name in cover_letter:
             COUNT = cover_letter.count(company_name)
-            for i in range(count):
-                specifics.append(CompanySpecificDetail(
+            for i in range(COUNT):
+                SPECIFICS.append(CompanySpecificDetail(
                     DETAIL=company_name,
                     CATEGORY='COMPANY_NAME',
                     SOURCE='company_research'
@@ -314,13 +311,13 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 for key, value in company_research.items():
                     if isinstance(value, str) and keyword in value.lower():
                         if value in cover_letter:
-                            specifics.append(CompanySpecificDetail(
+                            SPECIFICS.append(CompanySpecificDetail(
                                 DETAIL=value,
                                 CATEGORY=category,
                                 SOURCE=f'company_research.{key}'
                             ))
 
-        return specifics[:10]
+        return SPECIFICS[:10]
 
     def _validate_company_specifics(
         self,
@@ -335,8 +332,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
                 gate_id='VG_COMPANY_SPECIFICS',
                 PASSED=True,
                 SEVERITY='INFO',
-                MESSAGE=f"Company specifics satisfied: {len(company_specifics)} details (min {self.c
-                    onfig.min_company_specifics})",
+                MESSAGE=f"Company specifics satisfied: {len(company_specifics)} details (min {self.config.min_company_specifics})",
 
 
                 SIGNATURE=f"SPECIFICS:OK:{len(company_specifics)}",
@@ -350,8 +346,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
             gate_id='VG_COMPANY_SPECIFICS',
             PASSED=False,
             SEVERITY='BLOCK',
-            MESSAGE=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (mi
-                n {self.config.min_company_specifics})",
+            MESSAGE=f"BLOCKED: Insufficient company specifics - {len(company_specifics)} details (min {self.config.min_company_specifics})",
 
 
             DETAILS={'count': len(company_specifics),

@@ -1,10 +1,9 @@
-```python
-"""
+'''
 parse_job_description.py - Retrieval Module
 
 Domain: resume
 Generated: 2025-12-07T13:28:54.189778
-"""
+'''
 
 import logging
 from typing import Dict, List, Optional
@@ -42,4 +41,3 @@ def retrieve(query: str,
     object]) -> RetrievalResult:
     """Docstring."""
     return ParseJobDescription(config).retrieve(query, **kwargs)
-```

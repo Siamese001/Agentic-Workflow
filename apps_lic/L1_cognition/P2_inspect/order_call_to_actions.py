@@ -1,10 +1,9 @@
-```python
-"""
+'''
 order_call_to_actions.py - Execution Module
 
 Domain: outreach
 Generated: 2025-12-07T13:28:54.050458
-"""
+'''
 
 import logging
 import time
@@ -47,4 +46,3 @@ def execute(action: str,
     config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return OrderCallToActions(config).execute(action, params)
-```

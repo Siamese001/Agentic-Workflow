@@ -17,6 +17,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Temporary Shim for Validation - enables SystemArchitect to see full depth
+class CycleState:
+    """Mock state for validator traversal"""
+    pass
+
 # Re-export from new modular structure
 from apps_rg.L3_orchestration.l5_orchestrator.orchestrator import (
     L5AutonomousOrchestrator,

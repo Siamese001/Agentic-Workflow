@@ -1,4 +1,3 @@
-```python
 """Multi-Provider Router - Production Grade with Failover and Load Balancing
 Routes requests across OpenAI, Anthropic, and Google Vertex with intelligent failover.
 """
@@ -10,7 +9,7 @@ import threading
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union, object
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from data.sdks_mcps.client_wrappers.anthropic_client import (
     AnthropicClient,
@@ -646,5 +645,3 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
-```

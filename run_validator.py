@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""
+Simple wrapper to run the validator and capture output
+"""
+import subprocess
+import sys
+
+result = subprocess.run(
+    [sys.executable, "validator/entry/canon_validator_agentic_v2.py", "--target", "agentic_core"],
+    cwd=".",
+    capture_output=False,
+    text=True
+)
+
+sys.exit(result.returncode)

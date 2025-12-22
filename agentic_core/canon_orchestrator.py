@@ -27,7 +27,7 @@ from agentic_core.canon_agents_structural import (
     TypeMechanic,
 )
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
-from agentic_core.shared.canon_validation_context import ValidationContext
+from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 
 
 class IntelligentOrchestrator:
