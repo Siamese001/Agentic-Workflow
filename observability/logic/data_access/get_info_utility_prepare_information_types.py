@@ -1,5 +1,10 @@
 """Types and models for get_info_utility_prepare_information."""
 import logging
+import time
+import traceback
+from enum import Enum
+from typing import Any, Dict, Optional, Union
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
@@ -37,8 +42,7 @@ class ExecutionContext:
                 'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ')
+            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
 class ProcessingResult:

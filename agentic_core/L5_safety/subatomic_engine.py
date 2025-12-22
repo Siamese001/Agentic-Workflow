@@ -12,7 +12,9 @@ import logging
 import os
 import random
 import re
-from typing import Any, Dict, Optional
+import time
+import numpy as np
+from typing import Any, Dict, Optional, List
 
 # Gemini SDK
 try:
@@ -33,13 +35,17 @@ logger = logging.getLogger(__name__)
 class SubAtomicEngine:
     """Hardens the LLM interaction with the 24,576 token budget."""
     
-    def __init__(self, gemini_client: Optional[Any] = None):
+    def __init__(self, gemini_client: Optional[Any] = None, redis_client: Optional[Any] = None, pinecone_index: Optional[Any] = None):
         """
-        Initialize SubAtomicEngine.
+        Initialize SubAtomicEngine with Meta-Learning storage.
         
         Args:
             gemini_client: Optional Gemini client (creates new if None)
+            redis_client: Optional Redis client for L3 Failure Tracking
+            pinecone_index: Optional Pinecone index for L2 Long-term Memory
         """
+        self.redis_client = redis_client
+        self.pinecone_index = pinecone_index
         if not GENAI_AVAILABLE:
             raise RuntimeError("Gemini SDK not available. Install with: pip install google-generativeai")
         
@@ -103,6 +109,20 @@ class SubAtomicEngine:
         
         return {}
     
+    async def get_embedding(self, text: str) -> List[float]:
+        """Generates semantic embeddings for code/tasks using Gemini 2025."""
+        try:
+            # [KEY 49] High-density 768-dim model for structural pattern matching
+            result = await asyncio.to_thread(
+                self._client.models.embed_content,
+                model="text-embedding-004", 
+                contents=text
+            )
+            return result.embeddings[0].values
+        except Exception as e:
+            logger.error(f"   [MEMORY ERROR] Embedding failed: {e}")
+            return [0.0] * 768  # Return null vector to prevent mission crash
+    
     async def resilient_mutation(
         self,
         file_path: str,
@@ -115,6 +135,15 @@ class SubAtomicEngine:
         if not self._client:
             raise RuntimeError("Gemini client not initialized")
         
+        # [L3 STATE] Redis Adaptive Logic: Check for repeat failure patterns
+        temp_override = 0.1
+        if self.redis_client:
+            fail_key = f"fail_count:{file_path}"
+            current_fails = self.redis_client.get(fail_key)
+            if current_fails and int(current_fails) >= 2:
+                logger.warning(f"   [ADAPTIVE] Repeat failure ({current_fails}) detected for {file_path}. Bumping temperature.")
+                temp_override = 0.8  # Increase randomness to break loop
+        
         # Build prompt
         if fission_active:
             prompt = f"ATOMIC FISSION: Split {file_path} into 3 sub-modules. Return ONLY a JSON map.\n\nCODE:\n{code}"
@@ -122,6 +151,7 @@ class SubAtomicEngine:
             prompt = f"HEAL: Fix violations in {file_path}.\n\nTASK: {task}\n\nCODE:\n{code}"
         
         config = self.get_safe_config(is_fission=fission_active)
+        config.temperature = temp_override
         chat_key = f"chat_{file_path}"
         
         if chat_key not in self.chat_sessions:
@@ -154,7 +184,24 @@ class SubAtomicEngine:
             # Truncation guard
             if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
                 logger.warning("   [X] TRUNCATION DETECTED. Rejecting mutation.")
+                # Track safety failure in Redis
+                if self.redis_client:
+                    self.redis_client.incr(f"fail_count:{file_path}")
                 return code
+            
+            # [L2 MEMORY] Store Successful Pattern in Pinecone
+            if self.pinecone_index:
+                vector = await self.get_embedding(task)
+                self.pinecone_index.upsert(vectors=[{
+                    "id": f"succ:{os.path.basename(file_path)}",
+                    "values": vector,
+                    "metadata": {"task": task[:200], "round": round_num}
+                }])
+            
+            # Clear failures on success
+            if self.redis_client:
+                self.redis_client.delete(f"fail_count:{file_path}")
+                
             return output
         
         logger.warning("   [!] Malformed response from Gemini")

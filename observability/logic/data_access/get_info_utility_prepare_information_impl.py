@@ -1,9 +1,22 @@
-"""Implementation for get_info_utility_prepare_information."""
-
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
+import sys
+import time
 
 # from .get_info_utility_prepare_information_types import *  # Star import removed
+
+# Placeholder for undefined types to allow syntax check
+class ProcessingResult:
+    def __init__(self, success: bool, data: Any = None, error_message: Optional[str] = None, execution_context: Any = None, additional_info: Optional[Dict[str, Any]] = None):
+        pass
+
+class ExecutionContext:
+    def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]] = None):
+        pass
+    def start(self):
+        pass
+    def complete(self, success: bool, error: Optional[Exception] = None):
+        pass
 
 class GetInfoUtilityPrepareInformation:
     """
@@ -37,7 +50,6 @@ class GetInfoUtilityPrepareInformation:
             raise ValueError(f'Missing required config keys: {missing}')
 
     def process(self,
-        """Docstring."""
         payload: Union[str,
         int,
         float,

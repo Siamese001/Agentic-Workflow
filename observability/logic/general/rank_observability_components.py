@@ -1,4 +1,3 @@
-
 # AUTO-POPULATED BY WINDSURF v2 — 2025-12-07
 # ======================================================================
 
@@ -65,14 +64,7 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
                 PREDICATE=triplet.predicate,
                 object_id=triplet.object,
                 valid_at=triplet.temporal_range.valid_at.isoformat(),
-                invalid_at=triplet.
-                    .temporal_range.
-                    .invalid_at.
-                    .isoformat() if triplet.
-                    .temporal_range.
-                    .invalid_at else None,
-
-
+                invalid_at=triplet.temporal_range.invalid_at.isoformat() if triplet.temporal_range.invalid_at else None,
                 ATTRS={
                     "confidence": triplet.confidence,
                     "source": triplet.source,

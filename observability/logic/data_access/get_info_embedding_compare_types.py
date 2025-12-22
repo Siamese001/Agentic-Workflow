@@ -1,5 +1,10 @@
 """Types and models for get_info_embedding_compare."""
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Any, Union
+import time # Added missing import
+import traceback # Added missing import
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
@@ -25,7 +30,7 @@ class ExecutionContext:
         """Mark execution as started."""
         SELF.STATUS = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        logger.info(f'Execution started for operation: {self.operation_id}')
+        LOGGER.info(f'Execution started for operation: {self.operation_id}')
 
     def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
         """Mark execution as completed."""
@@ -35,10 +40,9 @@ class ExecutionContext:
             self.error_details = {'type': type(error).__name__,
                 'message': str(error),
                 'traceback': traceback.format_exc()}
-            logger.error(f'Execution failed: {error}')
+            LOGGER.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ')
+            LOGGER.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s\n    ')
 
 @dataclass
 class ProcessingResult:

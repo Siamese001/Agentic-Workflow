@@ -54,10 +54,9 @@ def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     return all(key in config for key in required_keys)
 
 def create_instance(config: Optional[Dict[str,
-    """Docstring."""
     Union[str,
     int,
-    BOOL]]] = None) -> Dict[str,
+    bool]]] = None) -> Dict[str,
     Union[str,
     int,
     bool]]:
@@ -76,5 +75,5 @@ def create_instance(config: Optional[Dict[str,
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
 
-    logger.info(f"Created Data Access instance with config: {final_config}")
+    LOGGER.info(f"Created Data Access instance with config: {final_config}")
     return final_config
