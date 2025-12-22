@@ -999,14 +999,35 @@ CURRENT CODE:
                     
                     if not folder_path.exists():
                         continue
-                    source_contents = []
-                    for file_name in files:
-                        source_file = folder_path / file_name
-                        if source_file.exists():
-                            with open(source_file, 'r', encoding='utf-8', errors='replace') as f:
-                                source_contents.append(f"# From {file_name}\n{f.read()}\n")
                     
-                    surgery_prompt = f"""### ROLE: ARCHITECTURAL_SURGEON
+                    print(f"\n   [CONSOLIDATE] {folder_path.name}: {len(files)} file(s)")
+                    print(f"      Reason: {candidate['reason']}")
+                    
+                    # Determine target file (parent's __init__.py or utils.py)
+                    parent_dir = folder_path.parent
+                    target_path = parent_dir / "__init__.py"
+                    
+                    # Ensure target exists
+                    if not target_path.exists():
+                        target_path.touch()
+                        target_path.write_text("# Consolidated module\n")
+                    
+                    print(f"\n   [SURGERY] {folder_path.name} -> {target_path.name}")
+                    
+                    try:
+                        # Read target code
+                        with open(target_path, 'r', encoding='utf-8', errors='replace') as f:
+                            target_code = f.read()
+                        
+                        # Read all source files to consolidate
+                        source_contents = []
+                        for file_name in files:
+                            source_file = folder_path / file_name
+                            if source_file.exists():
+                                with open(source_file, 'r', encoding='utf-8', errors='replace') as f:
+                                    source_contents.append(f"# From {file_name}\n{f.read()}\n")
+                        
+                        surgery_prompt = f"""### ROLE: ARCHITECTURAL_SURGEON
 ### ACTION: Consolidate sprawl folder into parent
 ### TASK: Move logic from {folder_path.name}/ into {target_path.name}
 
@@ -1025,68 +1046,71 @@ REQUIREMENTS:
 
 Return ONLY the complete merged Python code. No explanations.
 """
-                    
-                    new_code = await ctx.engine.resilient_mutation(
-                        file_path=str(target_path),
-                        code=target_code,
-                        task=surgery_prompt,
-                        round_num=1,
-                        fission_active=False
-                    )
-                    
-                    # Extract code if wrapped in markdown
-                    if isinstance(new_code, str):
-                        if new_code.startswith("```python"):
-                            new_code = new_code.split("```python", 1)[1]
-                            new_code = new_code.rsplit("```", 1)[0]
-                        elif new_code.startswith("```"):
-                            new_code = new_code.split("```", 1)[1]
-                            new_code = new_code.rsplit("```", 1)[0]
-                        new_code = new_code.strip()
-                    
-                    is_safe, msg = ctx.safety.verify_change(target_code, new_code, fission_active=False)
-                    if is_safe:
-                        with open(target_path, 'w', encoding='utf-8') as f:
-                            f.write(new_code)
                         
-                        # PHYSICAL CLEANUP: Delete the empty subfolder sprawl
-                        import shutil
-                        shutil.rmtree(folder_path, ignore_errors=True)
-                        print(f"      [✓] Consolidated: {folder_path.name} -> {target_path.name}")
-                        sprawl_consolidated += 1
-                        ctx.report("SprawlSurgery", 49, True, f"Consolidated {folder_path.name} into {target_path.name}")
-                    else:
-                        print(f"      [!] Safety check failed: {msg}")
-                        ctx.report("SprawlSurgery", 49, False, f"Safety rejected: {msg}")
+                        new_code = await ctx.engine.resilient_mutation(
+                            file_path=str(target_path),
+                            code=target_code,
+                            task=surgery_prompt,
+                            round_num=1,
+                            fission_active=False
+                        )
+                        
+                        # Extract code if wrapped in markdown
+                        if isinstance(new_code, str):
+                            if new_code.startswith("```python"):
+                                new_code = new_code.split("```python", 1)[1]
+                                new_code = new_code.rsplit("```", 1)[0]
+                            elif new_code.startswith("```"):
+                                new_code = new_code.split("```", 1)[1]
+                                new_code = new_code.rsplit("```", 1)[0]
+                            new_code = new_code.strip()
+                        
+                        is_safe, msg = ctx.safety.verify_change(target_code, new_code, fission_active=False)
+                        if is_safe:
+                            with open(target_path, 'w', encoding='utf-8') as f:
+                                f.write(new_code)
+                            
+                            # PHYSICAL CLEANUP: Delete the empty subfolder sprawl
+                            import shutil
+                            shutil.rmtree(folder_path, ignore_errors=True)
+                            print(f"      [✓] Consolidated: {folder_path.name} -> {target_path.name}")
+                            sprawl_consolidated += 1
+                            ctx.report("SprawlSurgery", 49, True, f"Consolidated {folder_path.name} into {target_path.name}")
+                        else:
+                            print(f"      [!] Safety check failed: {msg}")
+                            ctx.report("SprawlSurgery", 49, False, f"Safety rejected: {msg}")
                     
-                except Exception as e:
-                    print(f"      [!] Surgery failed: {str(e)[:100]}")
-                    ctx.report("SprawlSurgery", 49, False, f"Surgery error: {str(e)[:50]}")
-            
-            if len(flattening_candidates) > 0:
-                print(f"\n   [PHASE 0.5 COMPLETE] Consolidated {sprawl_consolidated}/{len(flattening_candidates)} sprawl folders")
-                print(f"   [✓] Sprawl Consolidated. Refreshing File System Map...")
+                    except Exception as e:
+                        print(f"      [!] Surgery failed: {str(e)[:100]}")
+                        ctx.report("SprawlSurgery", 49, False, f"Surgery error: {str(e)[:50]}")
                 
-                # [CRITICAL] Re-scan directory to remove deleted paths from the mission
-                updated_files = []
-                for root, _, files in os.walk(target_scope):
-                    for f in files:
-                        if f.endswith('.py'): 
-                            updated_files.append(os.path.join(root, f))
-                ctx.python_files = updated_files
-                print(f"   [OK] Territory Updated: {len(ctx.python_files)} files remaining.")
-            else:
-                print(f"   [OK] No sprawl detected. Architecture is clean.")
-                
-        except Exception as e:
-            print(f"   [!] Could not load sprawl report: {e}")
+                if len(flattening_candidates) > 0:
+                    print(f"\n   [PHASE 0.5 COMPLETE] Consolidated {sprawl_consolidated}/{len(flattening_candidates)} sprawl folders")
+                    print(f"   [✓] Sprawl Consolidated. Refreshing File System Map...")
+                    
+                    # [CRITICAL] Re-scan directory to remove deleted paths from the mission
+                    updated_files = []
+                    for root, _, files in os.walk(target_scope):
+                        for f in files:
+                            if f.endswith('.py'): 
+                                updated_files.append(os.path.join(root, f))
+                    ctx.python_files = updated_files
+                    print(f"   [OK] Territory Updated: {len(ctx.python_files)} files remaining.")
+                else:
+                    print(f"   [OK] No sprawl detected. Architecture is clean.")
+                    
+            except Exception as e:
+                print(f"   [!] Could not load sprawl report: {e}")
+        else:
+            print(f"   [SKIP] No sprawl_report.json found. Run sprawl_inspector.py first.")
+        
+        print("-" * 70)
     else:
-        print(f"   [SKIP] No sprawl_report.json found. Run sprawl_inspector.py first.")
+        print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION - DISABLED")
+        print(f"   [SKIP] Sprawl surgery disabled for daily work. Enable RUN_SPRAWL_SURGERY=True for global sweeps.")
+        print("-" * 70)
     
     print("-" * 70)
-
-    # ===========================================================================
-    # PHASE 1: ATOMIC SWEEP (Per-File Validation)
     # ===========================================================================
     for idx, file_path in enumerate(ctx.python_files, 1):
         file_name = os.path.basename(file_path)
