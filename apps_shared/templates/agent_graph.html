@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Architecture (L1-L6) | Canon Validator Dashboard</title>
+    <title>Canon Validator - Agent Architecture (L1-L6) [Live]</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,19 +37,27 @@
         }
         
         #agentGraph {
-            height: 70vh;
-            border: 1px solid #30363d;
+            height: 75vh;
+            border: 2px solid #343a40;
             border-radius: 8px;
-            background-color: #161b22;
+            background-color: #1e1e1e;
             margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
         .details-panel {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+            background-color: #0d1117;
+            border: 2px solid #30363d;
             border-radius: 8px;
-            padding: 20px;
-            min-height: 150px;
+            padding: 24px;
+            min-height: 180px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .details-panel h5 {
+            color: #58a6ff;
+            margin-bottom: 16px;
+            font-weight: 600;
         }
         
         .status-indicator {
@@ -143,7 +151,7 @@
                 <button class="btn btn-secondary btn-sm" onclick="refreshGraph()">
                     <i class="bi bi-arrow-clockwise"></i> Refresh Now
                 </button>
-                <span class="refresh-info ms-3">Auto-refreshes every 5 seconds</span>
+                <span class="refresh-info ms-3">Auto-refreshes every 3 seconds</span>
             </div>
         </div>
         
@@ -158,9 +166,16 @@
         <div class="row">
             <div class="col-12">
                 <div class="details-panel">
-                    <h5>Selected Node Details</h5>
+                    <h5>Agent Intelligence Panel</h5>
                     <div id="nodeDetails">
                         <p class="text-muted">Click on a node to view detailed information</p>
+                        <div id="selectedAgentDetails" style="display:none;">
+                            <strong>Selected Agent:</strong> <span id="selected-name">None</span><br>
+                            <strong>Level:</strong> <span id="selected-level">-</span><br>
+                            <strong>Status:</strong> <span id="selected-status">Idle</span><br>
+                            <strong>Current Task:</strong> <span id="selected-task">-</span><br>
+                            <strong>Description:</strong> <span id="selected-desc">-</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,32 +195,34 @@
             const options = {
                 layout: {
                     hierarchical: {
+                        enabled: true,
                         direction: 'UD',
                         sortMethod: 'directed',
-                        levelSeparation: 150,
-                        nodeSpacing: 100,
-                        treeSpacing: 200
+                        levelSeparation: 200,
+                        nodeSpacing: 150,
+                        treeSpacing: 300,
+                        blockShifting: true,
+                        edgeMinimization: true,
+                        parentCentralization: true
                     }
                 },
                 physics: {
                     enabled: true,
-                    stabilization: {
-                        iterations: 100
+                    hierarchicalRepulsion: {
+                        nodeDistance: 150,
+                        damping: 0.9
                     },
-                    barnesHut: {
-                        gravitationalConstant: -8000,
-                        centralGravity: 0.3,
-                        springLength: 95,
-                        springConstant: 0.04,
-                        damping: 0.09
+                    stabilization: {
+                        iterations: 500,
+                        fit: true
                     }
                 },
                 nodes: {
                     shape: 'box',
                     margin: 10,
                     font: {
-                        color: '#c9d1d9',
-                        size: 14,
+                        color: 'white',
+                        size: 15,
                         face: 'monospace'
                     },
                     borderWidth: 2,
@@ -213,8 +230,8 @@
                 },
                 edges: {
                     color: {
-                        color: '#58a6ff',
-                        highlight: '#79c0ff'
+                        color: '#848484',
+                        highlight: '#ffffff'
                     },
                     width: 2,
                     arrows: {
@@ -225,7 +242,7 @@
                     },
                     smooth: {
                         type: 'cubicBezier',
-                        roundness: 0.4
+                        roundness: 0.6
                     }
                 },
                 interaction: {
@@ -271,27 +288,23 @@
             
             if (!node) return;
             
-            const statusClass = node.title.includes('Idle') ? 'status-idle' :
-                               node.title.includes('Running') ? 'status-running' :
-                               node.title.includes('Healing') ? 'status-healing' :
-                               node.title.includes('Error') ? 'status-error' : 'status-idle';
+            // Extract status and task from node data
+            const status = node.status || 'Idle';
+            const task = node.task || 'No active task';
             
-            const detailsHtml = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>Name:</strong> ${node.label}<br>
-                        <strong>Level:</strong> <span class="level-badge level-${node.level}">${node.level}</span><br>
-                        <strong>Type:</strong> ${node.group}<br>
-                        <strong>Status:</strong> <span class="status-indicator ${statusClass}"></span>${node.title.split('Status: ')[1] || 'Unknown'}
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Description:</strong><br>
-                        ${node.title.replace(/\\n/g, '<br>')}
-                    </div>
-                </div>
-            `;
+            const statusClass = status.includes('Idle') || status.includes('Offline') ? 'status-idle' :
+                               status.includes('Active') || status.includes('Running') ? 'status-running' :
+                               status.includes('Healing') ? 'status-healing' :
+                               status.includes('Error') || status.includes('Failed') ? 'status-error' : 'status-idle';
             
-            document.getElementById('nodeDetails').innerHTML = detailsHtml;
+            // Update the intelligence panel
+            document.getElementById('nodeDetails').querySelector('p.text-muted').style.display = 'none';
+            document.getElementById('selectedAgentDetails').style.display = 'block';
+            document.getElementById('selected-name').textContent = node.label;
+            document.getElementById('selected-level').textContent = node.level;
+            document.getElementById('selected-status').innerHTML = `<span class="status-indicator ${statusClass}"></span>${status}`;
+            document.getElementById('selected-task').textContent = task;
+            document.getElementById('selected-desc').textContent = node.title || 'No description available';
         }
         
         // Refresh graph manually
@@ -304,8 +317,21 @@
             initNetwork();
             loadGraphData();
             
-            // Auto-refresh every 5 seconds
-            refreshInterval = setInterval(loadGraphData, 5000);
+            // Auto-refresh every 3 seconds for better real-time feel
+            refreshInterval = setInterval(loadGraphData, 3000);
+            
+            // Add live connection indicator
+            const statusDot = document.createElement('div');
+            statusDot.style.position = 'fixed';
+            statusDot.style.bottom = '20px';
+            statusDot.style.right = '20px';
+            statusDot.style.width = '16px';
+            statusDot.style.height = '16px';
+            statusDot.style.borderRadius = '50%';
+            statusDot.style.backgroundColor = '#28a745';
+            statusDot.style.boxShadow = '0 0 10px #28a745';
+            statusDot.title = 'Live Connection Active';
+            document.body.appendChild(statusDot);
         });
         
         // Cleanup on page unload
