@@ -257,7 +257,7 @@ def get_timeline():
 
 @app.route('/api/agent_graph')
 def get_agent_graph():
-    """Get agent architecture graph data for visualization"""
+    """Get agent architecture graph data for visualization with rich metadata"""
     nodes = []
     edges = []
     
@@ -274,58 +274,110 @@ def get_agent_graph():
         'HallucinationHunter': 'L5',
     }
     
-    # Color mapping for levels
+    # Layer color map (production-ready colors)
     level_colors = {
-        'L1': '#ff9999',
-        'L2': '#ffcc99',
-        'L3': '#ffff99',
-        'L4': '#ccff99',
-        'L5': '#99ccff',
-        'L6': '#cc99ff',
-        'Core': '#97c2fc'
+        'L1': '#dc3545',  # Red - Strategic
+        'L2': '#fd7e14',  # Orange
+        'L3': '#ffc107',  # Yellow
+        'L4': '#28a745',  # Green
+        'L5': '#007bff',  # Blue - Deep Intelligence
+        'L6': '#6c757d',  # Gray - Unknown
+        'Core': '#343a40' # Dark Gray - Core Systems
     }
     
-    # Add core components
-    core_nodes = [
-        ('ValidationContext', 'L4', 'Core', 'Holds all validation state and data'),
-        ('SubAtomicEngine', 'L5', 'Core', 'Gemini LLM - Powers all AI operations'),
-        ('SafetyGuardrail', 'L5', 'Core', 'Ensures all changes are safe'),
-        ('FissionManager', 'L3', 'Core', 'Manages file fission events')
-    ]
+    # Fixed core nodes with stable IDs and rich metadata
+    core_nodes = {
+        'ctx': {
+            'id': 'ctx',
+            'label': 'ValidationContext',
+            'level': 'L4',
+            'group': 'core',
+            'title': 'Central L4 State\nHolds report, results, signals',
+            'description': 'Central state management for all validation operations'
+        },
+        'engine': {
+            'id': 'engine',
+            'label': 'SubAtomicEngine\nGemini',
+            'level': 'L5',
+            'group': 'core',
+            'title': 'L5 Neural Link\nAll LLM calls flow here',
+            'description': 'Gemini-powered AI engine for code analysis and generation'
+        },
+        'safety': {
+            'id': 'safety',
+            'label': 'SafetyGuardrail',
+            'level': 'L5',
+            'group': 'core',
+            'title': 'Deletion Limit: 110 lines\nPrevents runaway edits',
+            'description': 'Safety system preventing destructive code changes'
+        },
+        'fission': {
+            'id': 'fission',
+            'label': 'FissionManager',
+            'level': 'L3',
+            'group': 'core',
+            'title': 'Atomic Split Logic\nThreshold: 10,000 LOC',
+            'description': 'Manages file splitting for large files'
+        }
+    }
     
-    for node_id, level, group, description in core_nodes:
+    # Add core nodes with enhanced styling
+    for node_id, data in core_nodes.items():
         nodes.append({
             'id': node_id,
-            'label': node_id,
-            'level': level,
-            'group': group,
-            'title': f"{description}\nStatus: Core Component",
-            'color': {'background': level_colors['Core'], 'border': '#2B7CE9'}
+            'label': data['label'],
+            'level': data['level'],
+            'group': data['group'],
+            'title': data['title'],
+            'shape': 'ellipse',
+            'color': {
+                'background': level_colors['Core'],
+                'border': '#17a2b8',
+                'highlight': {'background': '#17a2b8', 'border': '#ffffff'}
+            },
+            'font': {'color': 'white'},
+            'status': 'Core',
+            'task': 'Always Active'
         })
     
-    # Add agents
+    # Add agents with rich metadata
     for agent in agents_global:
         agent_name = agent.__class__.__name__
-        level = agent_levels.get(agent_name, 'L6')  # Default to L6 if unknown
-        status = getattr(agent, 'current_status', 'Idle')
+        level = agent_levels.get(agent_name, 'L6')
+        status = getattr(agent, 'current_status', 'Offline')
+        task = getattr(agent, 'current_task', 'No task')
         
         nodes.append({
             'id': agent_name,
             'label': agent_name,
             'level': level,
             'group': 'agent',
-            'title': f"Agent: {agent_name}\nLevel: {level}\nStatus: {status}",
-            'color': {'background': level_colors.get(level, '#cccccc'), 'border': '#2B7CE9'}
+            'title': f"Agent: {agent_name}\nLevel: {level}\nStatus: {status}\nTask: {task}",
+            'shape': 'box',
+            'color': {
+                'background': level_colors.get(level, '#6c757d'),
+                'border': '#ffffff',
+                'highlight': {'background': '#ffffff', 'border': '#ff0000'}
+            },
+            'font': {'color': 'white'},
+            'status': status,
+            'task': task
         })
         
-        # Add edges to core components
-        edges.append({'from': agent_name, 'to': 'ValidationContext'})
-        edges.append({'from': agent_name, 'to': 'SubAtomicEngine'})
-        edges.append({'from': agent_name, 'to': 'SafetyGuardrail'})
+        # Universal dependencies (all agents connect to core)
+        edges.append({'from': agent_name, 'to': 'ctx', 'dashes': False})
+        edges.append({'from': agent_name, 'to': 'engine', 'dashes': False})
+        edges.append({'from': agent_name, 'to': 'safety', 'dashes': False})
         
-        # Special edge for ArchitectureGovernor
+        # Special edge for ArchitectureGovernor (stronger connection to fission)
         if agent_name == 'ArchitectureGovernor':
-            edges.append({'from': agent_name, 'to': 'FissionManager', 'arrows': 'to'})
+            edges.append({
+                'from': agent_name,
+                'to': 'fission',
+                'color': {'color': '#dc3545'},
+                'width': 3,
+                'arrows': 'to'
+            })
     
     return jsonify({
         'nodes': nodes,

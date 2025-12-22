@@ -658,6 +658,32 @@ Return the complete file with imports added. No explanations, no markdown."""
             agent_instance = cls_ref(**kwargs)
             # Add status tracking for dashboard visualization
             agent_instance.current_status = "Idle"
+            agent_instance.current_task = "Awaiting mission"
+            
+            # [HARDENING] Defensive monkey-patch for real-time telemetry
+            # Auto-update status/task on all agents without requiring individual changes
+            original_method = getattr(agent_instance, 'execute', None) or getattr(agent_instance, 'run', None)
+            if original_method:
+                async def status_wrapper(*args, **kwargs):
+                    file_path = args[0] if args else "batch/global"
+                    file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)
+                    agent_instance.current_status = "Active"
+                    agent_instance.current_task = f"Processing: {file_name}"
+                    try:
+                        result = await original_method(*args, **kwargs)
+                        agent_instance.current_status = "Success"
+                        agent_instance.current_task = "Complete"
+                        return result
+                    except Exception as e:
+                        agent_instance.current_status = "Error"
+                        agent_instance.current_task = f"Failed: {str(e)[:50]}"
+                        raise
+                # Replace method with telemetry wrapper
+                if hasattr(agent_instance, 'execute'):
+                    agent_instance.execute = status_wrapper
+                else:
+                    agent_instance.run = status_wrapper
+            
             cleaning_crew.append(agent_instance)
             print(f"     [+] Active: {cls_name}")
         except Exception as e:
