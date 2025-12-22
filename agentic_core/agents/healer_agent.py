@@ -27,12 +27,79 @@ class HealerAgent(CanonBaseAgent):
         """Return canon keys validated by this agent (all keys)."""
         return list(range(0, 51))  # Keys 0-50
     
-    async def execute(self):
+    async def execute(self, file_path: str = None):
         """
-        Execute Healer Agent - this is typically called by other agents
-        rather than running standalone.
+        Execute Healer Agent - handles file healing and move operations.
+        
+        Args:
+            file_path: Path to file being validated/healed
         """
         print(f"\n[>>>] {self.name} ACTIVATED: Ready for autonomous healing")
+        
+        # Check for structural violation that needs move operation
+        if file_path and hasattr(self.ctx, 'structural_violation'):
+            violation = self.ctx.structural_violation
+            if violation.get('needs_move') and violation.get('file_path') == file_path:
+                return await self._handle_move_operation(violation)
+        
+        return False
+    
+    async def _handle_move_operation(self, violation: dict) -> bool:
+        """
+        Handle structural violation by generating move instructions.
+        
+        Args:
+            violation: Dictionary containing file_path, message, suggested_home
+            
+        Returns:
+            True if move instruction generated, False otherwise
+        """
+        from pathlib import Path
+        
+        file_path = violation['file_path']
+        suggested_home = violation['suggested_home']
+        message = violation['message']
+        
+        # Read file to determine specific subfolder based on content
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                content = f.read()
+        except Exception as e:
+            print(f"      [!] Could not read file for move analysis: {e}")
+            return False
+        
+        # Determine specific target subfolder
+        target_folder = suggested_home
+        
+        # Add more specific subfolder based on content analysis
+        if "node" in content.lower() or "execute" in content:
+            target_folder = f"{suggested_home}/execution"
+        elif "strategy" in content.lower() or "planner" in content.lower():
+            target_folder = f"{suggested_home}/strategy"
+        elif "memory" in content.lower() or "storage" in content.lower():
+            target_folder = f"{suggested_home}/persistence"
+        
+        # Generate move instruction
+        file_name = Path(file_path).name
+        target_path = f"{target_folder}/{file_name}"
+        
+        # Store move instruction in context for orchestrator to execute
+        if not hasattr(self.ctx, 'move_instructions'):
+            self.ctx.move_instructions = []
+        
+        self.ctx.move_instructions.append({
+            'action': 'MOVE',
+            'source': file_path,
+            'target': target_path,
+            'reason': message
+        })
+        
+        print(f"      [MOVE] Generated instruction: {file_path} -> {target_path}")
+        
+        # Report the move operation
+        self.ctx.report("HealerAgent", 40, True, f"Generated move instruction: {file_name} -> {target_path}")
+        
+        return True
     
     async def heal_violation(
         self,
