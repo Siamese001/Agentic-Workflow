@@ -164,7 +164,7 @@ class ValidationContext:
     memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
     file_hashes: Dict[str, str] = field(default_factory=dict)
     skip_files: Set[str] = field(default_factory=set)
-    flapping_files: Set[str] = field(default_factory=set)
+    flapping_files: Set[str] = field(default_factory=list) # Changed from set to list to match default_factory
     successful_traces: List[str] = field(default_factory=list)
 
     # Infrastructure

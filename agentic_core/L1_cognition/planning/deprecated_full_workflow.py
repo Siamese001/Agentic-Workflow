@@ -1,9 +1,4 @@
-```python
 """End-to-End Workflow Tests
-
-
-
-LOGGER = logging.getLogger(__name__)
 Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
@@ -22,6 +17,8 @@ from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies im
     WorkflowConfig,
     run_dag,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 class TestEndToEndWorkflow:
@@ -197,4 +194,3 @@ class TestWorkflowPerformance:
 
 if __name__ == "__main__":
     pytest.main([__file__])
-```
