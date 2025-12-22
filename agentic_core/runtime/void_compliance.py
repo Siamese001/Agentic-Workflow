@@ -63,16 +63,26 @@ GUIDANCE_EXAMPLES: Dict[str, str] = {
 
 def get_placement_guidance(content_preview: str) -> str:
     """
-    [SSOT] Provides the LLM with the canonical target based on code signatures.
-    Used by agents to prevent architectural hallucinations.
+    [SSOT] High-Signal Heuristics for Key 40/49 Enforcement.
+    Guides the HealerAgent to the correct L-layer.
     """
-    if "import pinecone" in content_preview or "upsert" in content_preview:
-        return "apps_shared/infrastructure/vector"
-    if "class HealerAgent" in content_preview or "mission" in content_preview:
-        return "agentic_core/L1_cognition/strategy"
-    if "def split_file" in content_preview:
-        return "agentic_core/L3_orchestration/fission"
-    return "UNKNOWN: Consult CANONICAL_HIERARCHY for placement."
+    # L1: Cognition & Strategy
+    if any(x in content_preview for x in ["planner", "strategy", "reasoning", "mission"]):
+        return "agentic_core/L1_cognition"
+    
+    # L2: Thought Nodes (Execution/Atomic logic)
+    if "node" in content_preview.lower() or "execute" in content_preview:
+        return "agentic_core/L2_thought_nodes"
+    
+    # L3: Orchestration (Routing/Fission)
+    if any(x in content_preview for x in ["router", "orchestrator", "fission", "hop"]):
+        return "agentic_core/L3_orchestration"
+        
+    # L4: State (Memory/Databases)
+    if any(x in content_preview for x in ["pinecone", "redis", "storage", "cache"]):
+        return "agentic_core/L4_state"
+
+    return "agentic_core/L1_cognition" # Default safe-haven for generic logic
 
 def check_span_violation(folder_path: Path) -> Tuple[bool, str]:
     """Enforces Minimum Span of 2: prevents redundant single-child nesting."""
@@ -224,21 +234,22 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         # Nested files: Must belong to an approved root folder
         root_folder = rel_path.parts[0]
         
-        # Enforce Depth constraints (Key 49: Universal Depth Law)
-        # Standard folders: min 3, max 5 (depths 3, 4, 5 allowed)
-        # Tests folder: exactly depth 3 only
-        depth = len(rel_path.parts)
+        # HARDENING: Sovereign Depth Law (L6 Enforcement)
+        # Depth 1: agentic_core/file.py (ORPHAN - FORBIDDEN)
+        # Depth 2: agentic_core/L1_cognition/file.py (VALID)
+        # Depth 3: agentic_core/L1_cognition/sub/file.py (VALID)
+        depth = len(rel_path.parts) - 1 # Subtract 1 for the file itself
         
         if root_folder == "tests":
-            # Tests must be exactly depth 3
-            if depth != 3:
-                return False, f"DEPTH VIOLATION: tests/ requires exactly depth 3, found depth {depth} at '{rel_path}'."
+            # Tests must be exactly depth 2 (tests/unit/file.py)
+            if depth != 2:
+                return False, f"DEPTH VIOLATION: tests/ requires exactly depth 2 subfolders, found depth {depth} at '{rel_path}'."
         else:
-            # All other folders: min 3, max 5
-            if depth < 3:
-                return False, f"DEPTH VIOLATION: Path '{rel_path}' has depth {depth}, minimum required is 3."
-            if depth > 5:
-                return False, f"DEPTH VIOLATION: Path '{rel_path}' has depth {depth}, maximum allowed is 5 (Key 49)."
+            # Sovereign Roots: min 2, max 4
+            if depth < 2:
+                return False, f"ORPHAN VIOLATION: '{file_path.name}' is sitting in the root of '{root_folder}'. Move to an L-layer."
+            if depth > 4:
+                return False, f"DEPTH VIOLATION: Path '{rel_path}' is too deep ({depth} levels). Max allowed is 4 levels of nesting."
         
         # [L6 HARDENING] Silent Ignore for standard environment/git noise
         if root_folder in {".venv", "venv", ".git", "__pycache__", "node_modules"}:
