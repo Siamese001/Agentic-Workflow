@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Graph Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/standalone/umd/vis-network.min.js"></script>
+    <style>
+        #mynetwork {
+            width: 100%;
+            height: 600px;
+            border: 1px solid red;
+            background: #1e1e1e;
+        }
+        body {
+            background: #0d1117;
+            color: white;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>VIS.JS TEST PAGE</h1>
+    <div id="status">Loading...</div>
+    <div id="mynetwork"></div>
+    
+    <script>
+        document.getElementById('status').innerHTML = 'vis.js loaded: ' + (typeof vis !== 'undefined');
+        
+        if (typeof vis === 'undefined') {
+            alert('ERROR: vis.js library failed to load from CDN!');
+        } else {
+            // Create simple test graph
+            const container = document.getElementById('mynetwork');
+            const data = {
+                nodes: [
+                    {id: 1, label: 'Node 1', color: '#ff0000'},
+                    {id: 2, label: 'Node 2', color: '#00ff00'},
+                    {id: 3, label: 'Node 3', color: '#0000ff'}
+                ],
+                edges: [
+                    {from: 1, to: 2},
+                    {from: 2, to: 3}
+                ]
+            };
+            const options = {
+                nodes: {
+                    shape: 'box',
+                    font: { color: 'white' }
+                }
+            };
+            
+            try {
+                const network = new vis.Network(container, data, options);
+                document.getElementById('status').innerHTML = 'SUCCESS: Graph rendered with 3 nodes!';
+            } catch (error) {
+                document.getElementById('status').innerHTML = 'ERROR: ' + error.message;
+                alert('Graph creation failed: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -394,6 +394,12 @@ def agent_graph_page():
     return render_template('agent_graph.html')
 
 
+@app.route('/agent_graph_test')
+def agent_graph_test():
+    """Serve the test page to diagnose vis.js issues"""
+    return render_template('agent_graph_test.html')
+
+
 @app.route('/api/export')
 def export_report():
     """Export full report as JSON"""
