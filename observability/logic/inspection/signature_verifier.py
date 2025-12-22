@@ -41,7 +41,6 @@ class SignatureVerifier:
         return data
 
 def execute(data: object,
-    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> OperationResult:

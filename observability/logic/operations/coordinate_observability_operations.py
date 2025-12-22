@@ -43,7 +43,6 @@ class CoordinateObservabilityOperations:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def add_step(self,
-        """Docstring."""
         name: str,
         executor: Callable,
         dependencies: Optional[List[str]] = None) -> "CoordinateObservabilityOperations":
@@ -87,7 +86,6 @@ class CoordinateObservabilityOperations:
         )
 
 def orchestrate(steps: List[Dict],
-    """Docstring."""
     initial_input: object = None,
     config: Optional[Dict] = None) -> OrchestrationResult:
     """Convenience function for orchestration."""

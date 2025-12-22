@@ -8,6 +8,7 @@ from typing import Any, Optional, Protocol, Dict, List
 
 import logging
 import os
+import ast
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
@@ -17,6 +18,71 @@ logger = logging.getLogger(__name__)
 # ==============================================================================
 # CANONICAL FOLDER STRUCTURE: The Single Source of Truth
 # ==============================================================================
+
+# [KEY 40 HARDENING] Full Prescriptive 3-Level Hierarchy
+CANONICAL_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
+    "agentic_core": {
+        "L1_cognition": ["strategy", "reasoning"],
+        "L2_thought_nodes": ["extraction", "synthesis"],
+        "L3_orchestration": ["fission", "hop_logic"],
+        "L4_state": ["memory", "historian"],
+        "L5_safety": ["engines", "filters"]
+    },
+    "apps_shared": {
+        "utils": ["formatting", "validation"],
+        "infrastructure": ["database", "vector"]
+    },
+    "apps_lic": {
+        "agents": ["compliance", "auditor"],
+        "compliance": ["legal", "verification"]
+    },
+    "config": {
+        "environment": ["local", "production"],
+        "agents": ["prompts", "hyperparams"]
+    },
+    "observability": {
+        "logs": ["missions", "agents"],
+        "metrics": ["performance", "structure"]
+    },
+    "scripts": {
+        "operations": ["maintenance", "integrity"],
+        "migrations": ["structural", "data_shifts"]
+    }
+}
+
+# [KEY 40] LLM GUIDANCE: Content Heuristics for File Placement
+GUIDANCE_EXAMPLES: Dict[str, str] = {
+    "agentic_core/L1_cognition/strategy": "Generic reasoning loops, high-level mission goal planning, and task decomposition.",
+    "agentic_core/L3_orchestration/fission": "Logic that splits large files into smaller modules or manages atomic code shifts.",
+    "agentic_core/L4_state/memory": "Interfaces for persistent vector storage (Pinecone) used for long-term meta-learning.",
+    "apps_shared/utils/validation": "Shared Pydantic models or regex patterns used across multiple app domains.",
+    "apps_rg/agents/rankers": "Scoring logic specifically for resume-to-JD matching (Domain-specific).",
+    "config/agents/prompts": "System instructions and persona definitions used to initialize LLM sessions.",
+    "scripts/operations/integrity": "Utilities that check for structural drift or 'Span of Two' violations."
+}
+
+def get_placement_guidance(content_preview: str) -> str:
+    """
+    [SSOT] Provides the LLM with the canonical target based on code signatures.
+    Used by agents to prevent architectural hallucinations.
+    """
+    if "import pinecone" in content_preview or "upsert" in content_preview:
+        return "apps_shared/infrastructure/vector"
+    if "class HealerAgent" in content_preview or "mission" in content_preview:
+        return "agentic_core/L1_cognition/strategy"
+    if "def split_file" in content_preview:
+        return "agentic_core/L3_orchestration/fission"
+    return "UNKNOWN: Consult CANONICAL_HIERARCHY for placement."
+
+def check_span_violation(folder_path: Path) -> Tuple[bool, str]:
+    """Enforces Minimum Span of 2: prevents redundant single-child nesting."""
+    if not folder_path.is_dir(): return True, ""
+    children = [x for x in folder_path.iterdir() if x.name not in {".git", "__pycache__"}]
+    
+    # [KEY 49 VIOLATION] Detect single-child antipattern
+    if len(children) == 1 and children[0].is_dir():
+        return False, f"SPAN VIOLATION: '{folder_path.name}' is a single-child tunnel to '{children[0].name}'. Flatten."
+    return True, ""
 
 ALLOWED_ROOT_FOLDERS = {
     # [L1: THE BRAIN]
@@ -158,6 +224,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         # Nested files: Must belong to an approved root folder
         root_folder = rel_path.parts[0]
         
+        # [L6 HARDENING] Silent Ignore for standard environment/git noise
+        if root_folder in {".venv", "venv", ".git", "__pycache__", "node_modules"}:
+            return True, f"System folder ignored: {root_folder}"
+        
         if root_folder in ALLOWED_ROOT_FOLDERS:
             return True, f"File in allowed root folder: {root_folder}"
         
@@ -169,9 +239,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
             return False, f"VOID VIOLATION: Numbered folder '{root_folder}' not approved (use approved folders only)"
         
-        # SOVEREIGN PROTECTION: Ensure Validator hasn't leaked into Infra
-        if root_folder == "apps_shared" and "validator" in file_path.name.lower():
-            return False, "GRAVITY ERROR: Validator must remain at Root (Key 0). Do not hide the General in apps_shared."
+        # SOVEREIGN PROTECTION: Key 0 (General) must remain at Project Root
+        validator_markers = {"validator", "compliance", "canon"}
+        if root_folder.startswith("apps_") and any(m in file_path.name.lower() for m in validator_markers):
+            return False, f"GRAVITY ERROR: Sovereign compliance logic ('{file_path.name}') leaked into downstream '{root_folder}'."
         
         # Unknown folder
         return False, f"VOID VIOLATION: File in unknown/disallowed root folder '{root_folder}'"
@@ -280,99 +351,81 @@ def generate_ascii_tree(start_path: Path, max_depth: int = 3) -> str:
 
 
 def check_single_child_violations(project_root: Path) -> List[Tuple[Path, str]]:
-    """
-    Detect single-child antipatterns (folders with only one subfolder).
-    
-    Args:
-        project_root: Project root directory
-        
-    Returns:
-        List of (folder_path, violation_reason) tuples
-    """
-    # [DEVELOPMENT BYPASS] 
-    # Temporarily disabled to allow for structural growth during active development.
-    return [] 
-    
+    """Enforces the 'Span-of-Two' rule: Folders must have ≥2 meaningful children or be a leaf."""
     violations = []
+    SYSTEM_FOLDERS = {".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache"}
     
-    for root_folder in ALLOWED_ROOT_FOLDERS:
-        folder_path = project_root / root_folder
-        if not folder_path.exists():
-            continue
+    for root_name in ALLOWED_ROOT_FOLDERS:
+        root_path = project_root / root_name
+        if not root_path.is_dir(): continue
             
-        # Check all subdirectories
-        for dirpath, dirnames, filenames in os.walk(folder_path):
+        for dirpath, dirnames, filenames in os.walk(root_path):
+            # Filter out system junk
+            dirnames[:] = [d for d in dirnames if d not in SYSTEM_FOLDERS and not d.startswith(".")]
             current_dir = Path(dirpath)
             
-            # Count immediate children (dirs + files, excluding __pycache__)
-            children_dirs = [d for d in dirnames if d != "__pycache__"]
-            children_files = [f for f in filenames if not f.startswith(".")]
-            total_children = len(children_dirs) + len(children_files)
+            # Count meaningful children (dirs + files)
+            meaningful_files = [f for f in filenames if not f.startswith(".")]
+            total_children = len(dirnames) + len(meaningful_files)
             
-            # Single-child violation
             if total_children == 1:
-                child_name = children_dirs[0] if children_dirs else children_files[0]
-                violations.append((
-                    current_dir,
-                    f"Single-child antipattern: '{current_dir.name}' contains only '{child_name}' - should be collapsed"
-                ))
+                child_name = dirnames[0] if dirnames else meaningful_files[0]
+                violations.append((current_dir, f"SPAN-OF-TWO: '{current_dir.name}' only contains '{child_name}'. Flatten this structure."))
     
     return violations
 
 
 def check_import_waterfall_violations(file_path: Path, project_root: Path) -> List[str]:
     """
-    [L6 PHYSICS] Gravity Rule: 
-    Sovereign Layers (Core, Law, Contracts) MUST NOT import Downstream Domains (Apps).
-    Uses AST-based detection to avoid false positives from comments/strings.
+    Enforces the Gravity Model: Upstream (Sovereign) roots cannot import 
+    from Downstream (App) roots or lower-ranked Sovereigns.
     """
     violations = []
+    SYSTEM_FOLDERS = {".venv", "venv", ".git", "__pycache__", "node_modules", ".pytest_cache", ".ruff_cache"}
+
     try:
         rel_path = file_path.relative_to(project_root)
-        
-        # Define Sovereign Roots (The 'Upstream')
-        sovereign_roots = {"agentic_core", "prompt_governance", "schemas", "config", "scripts"}
-        
-        # If file is not in a Sovereign root, it is downstream and safe.
-        if rel_path.parts[0] not in sovereign_roots:
+        if not rel_path.parts or rel_path.parts[0] in SYSTEM_FOLDERS:
             return []
+    except ValueError:
+        return []
 
+    # [RANKED GRAVITY] Higher index cannot be imported by lower index
+    SOVEREIGN_RANKING = ["agentic_core", "prompt_governance", "schemas", "config", "scripts"]
+    DOWNSTREAM_APPS = {"apps_rg", "apps_lic", "apps_shared"}
+    
+    current_root = rel_path.parts[0]
+    if current_root not in SOVEREIGN_RANKING:
+        return [] 
+        
+    current_rank = SOVEREIGN_RANKING.index(current_root)
+    forbidden_roots = set(SOVEREIGN_RANKING[current_rank + 1:]) | DOWNSTREAM_APPS
+
+    try:
         with open(file_path, "r", encoding="utf-8", errors="replace") as f:
-            content = f.read()
-        
-        # Use AST to parse actual import statements (ignores comments/strings)
-        try:
-            tree = ast.parse(content, filename=str(file_path))
-        except SyntaxError:
-            # If file has syntax errors, skip AST check and fall back to string matching
-            # (syntax errors will be caught by other validators)
-            return []
+            file_content = f.read()
+            tree = ast.parse(file_content, filename=str(file_path))
             
-        # Forbidden Downstream Imports
-        forbidden = {"apps_rg", "apps_lic", "apps_shared"}
-        
-        # Check all import statements in the AST
+        # 1. AST Validation (Static Imports)
         for node in ast.walk(tree):
+            module_name = None
             if isinstance(node, ast.Import):
-                # Handle: import apps_shared
                 for alias in node.names:
                     module_name = alias.name.split('.')[0]
-                    if module_name in forbidden:
-                        violations.append(
-                            f"GRAVITY VIOLATION: Sovereign '{rel_path.parts[0]}' cannot import downstream '{module_name}' "
-                            f"(line {node.lineno}: import {alias.name})"
-                        )
-            elif isinstance(node, ast.ImportFrom):
-                # Handle: from apps_shared import X
-                if node.module:
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                if node.level == 0: # Catch absolute imports only
                     module_name = node.module.split('.')[0]
-                    if module_name in forbidden:
-                        violations.append(
-                            f"GRAVITY VIOLATION: Sovereign '{rel_path.parts[0]}' cannot import downstream '{module_name}' "
-                            f"(line {node.lineno}: from {node.module} import ...)"
-                        )
                 
-    except Exception as e:
-        logger.warning(f"Could not check import waterfall for {file_path}: {e}")
+            if module_name in forbidden_roots:
+                violations.append(f"GRAVITY VIOLATION (static): '{current_root}' -> '{module_name}' (Line {node.lineno})")
+
+        # 2. Raw String Safety Net (Catches dynamic/hidden imports)
+        for forbidden in forbidden_roots:
+            if f"'{forbidden}'" in file_content or f'"{forbidden}"' in file_content:
+                violations.append(f"GRAVITY VIOLATION (dynamic/string): Forbidden root '{forbidden}' detected in string literal.")
+                
+    except (SyntaxError, Exception) as e:
+        if not isinstance(e, SyntaxError):
+            logger.warning(f"Waterwall check error on {file_path.name}: {e}")
         
     return violations

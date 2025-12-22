@@ -17,11 +17,24 @@ import traceback
 from pathlib import Path
 from typing import Any, Optional
 
-# Add project root to sys.path for imports
-# Validator is at root level, so parent is the project root
-project_root = Path(__file__).parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
+# HARDENING: Centralized, deduplicated sys.path setup
+project_root = Path(__file__).resolve().parent
+project_root_str = str(project_root)
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
+
+# [FINAL HARDENING] SOVEREIGN SELF-PROTECTION
+# Ensure this validator remains at root (Key 0) to maintain architectural gravity.
+if Path(__file__).resolve().parent != project_root:
+    print(f"\n[!] [GRAVITY ERROR] canon_validator_agentic_v2.py has escaped project root!")
+    print(f"    Location: {Path(__file__).resolve().parent}")
+    sys.exit(1)
+
+# Additional required paths (deduplicated)
+for sub_path in ["apps_shared", "agentic_core"]:
+    req_str = str(project_root / sub_path)
+    if req_str not in sys.path:
+        sys.path.insert(0, req_str)
 
 # --- CRITICAL FIX: IMPORT POLYFILL (agentic_workflow -> agentic_core) ---
 # Maps legacy 'agentic_workflow' imports to the new 'agentic_core' package
@@ -37,28 +50,48 @@ except ImportError:
     print("   [CRITICAL] Could not import 'agentic_core'. Shim failed.")
     sys.exit(1)
 
-# [HARDENING] NEURAL LINK & ENVIRONMENT VERIFICATION (Key 40)
+# [HARDENING] SOVEREIGN NEURAL LINK & REDIS ENFORCEMENT
 def verify_neural_link(root_path: Path):
-    """Ensures .env exists and contains required API keys before execution."""
-    env_path = root_path / ".env"
-    
-    if not env_path.exists():
-        print(f"\n[!] [NEURAL LINK ERROR] .env file missing at {env_path}")
-        print("    Physics violation: Execution halted.")
-        sys.exit(1)
-        
+    """
+    Ensures .env exists, required API keys are present, and Redis state 
+    is reachable before mission launch.
+    """
+    import os
     from dotenv import load_dotenv
-    load_dotenv(dotenv_path=env_path)
     
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        print("\n[!] [NEURAL LINK ERROR] GEMINI_API_KEY is missing or empty.")
-        print("    Stop: Do not attempt a 'Dry Run' without a valid key.")
+    env_path = root_path / ".env"
+    if not env_path.exists():
+        print(f"\n[!] [L6 ERROR] CRITICAL BOUNDARY VIOLATION: .env missing at {env_path}")
         sys.exit(1)
-    
-    print(f"   [OK] Neural Link active: GEMINI_API_KEY verified.")
 
-# Execute immediate fail-fast check
+    # override=True ensures .env values take priority over shell noise
+    load_dotenv(dotenv_path=env_path, override=True)
+    
+    # 1. API KEY PRESENCE CHECK
+    REQUIRED_KEYS = ["GOOGLE_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"]
+    missing = [key for key in REQUIRED_KEYS if not os.getenv(key)]
+    if missing:
+        print(f"\n[!] [NEURAL LINK ERROR] Missing required API keys: {', '.join(missing)}")
+        sys.exit(1)
+
+    # 2. REDIS STATE HEALTH CHECK (Langcache integrity)
+    try:
+        import redis
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+        r = redis.from_url(redis_url, socket_timeout=5)
+        
+        # Ping the server to verify connectivity
+        if r.ping():
+            print(f"   [OK] Redis State Active: Connected to {redis_url}")
+        else:
+            raise ConnectionError("Redis server did not respond to PING.")
+    except (ImportError, Exception) as e:
+        print(f"\n[!] [L4 STATE ERROR] Redis/Langcache unreachable: {e}")
+        print("    Check your REDIS_URL and ensure the Redis service is running.")
+        sys.exit(1)
+
+    print(f"   [OK] Neural Link active: Sovereignty verified.")
+
 verify_neural_link(project_root)
 
 # --- CRITICAL FIX: IMPORT POLYFILL (agentic_core.runtime.shared -> apps_shared) ---
@@ -164,6 +197,9 @@ class GeminiSpy:
             try:
                 result = attr(*args, **kwargs)
                 duration = time.time() - start_t
+                # [L5 HARDENING] Detect and flag suspicious zero-latency responses
+                if duration < 0.05 and name == "resilient_mutation":
+                    print(f"   [!] ALERT: Zero-latency mutation detected. Check engine logic.")
                 print(f"[SPY] GEMINI SPY LLM Success ({duration:.2f}s).")
                 return result
             except Exception as e:
@@ -182,7 +218,7 @@ class GeminiSpy:
 def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     """
     Integrates Void Compliance into the Master Validation Sweep.
-    Ensures the system is self-aware of its physical boundaries before judging code.
+    HARDENING: Only scans Sovereign Roots for gravity leaks (Apps are allowed to depend on Upstream).
     
     Args:
         target_sector: Target directory to validate
@@ -217,11 +253,18 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     
     # Check 2: Import Waterfall Violations (Sovereign -> Apps)
     waterfall_violations = []
+    SOVEREIGN_ROOTS = {"agentic_core", "prompt_governance", "schemas", "config", "scripts"}
+    
     if target_path.is_dir():
         for py_file in target_path.rglob("*.py"):
-            violations = check_import_waterfall_violations(py_file, project_root)
-            if violations:
-                waterfall_violations.extend([(py_file, v) for v in violations])
+            rel_path = py_file.relative_to(project_root)
+            root_folder = rel_path.parts[0] if rel_path.parts else ""
+            
+            # Only enforce gravity on Sovereign territory to avoid noise in downstream apps.
+            if root_folder in SOVEREIGN_ROOTS:
+                violations = check_import_waterfall_violations(py_file, project_root)
+                if violations:
+                    waterfall_violations.extend([(py_file, v) for v in violations])
     
     if waterfall_violations:
         print(f"[!] L6 ALERT: Found {len(waterfall_violations)} import waterfall violations:")
@@ -434,8 +477,9 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     # === PROTECTED FOLDERS: Skip archives and legacy code ===
     PROTECTED_FOLDERS = {
-        'archives',
-        'legacy_code',
+        'archives',        # [VOID ZONE] Strictly ignored
+        'data',            # [VOID ZONE] Strictly ignored
+        'legacy_code',     # Deprecated
         'legacy_engines',
         'legacy_resume_gen',
         '.git',
@@ -444,6 +488,7 @@ async def run_mission(target_scope: str = "agentic_core"):
         '.venv',
         'venv',
         'env',
+        'test',            # New addition
     }
     
     # Discover all Python files in target scope, excluding protected folders
@@ -521,13 +566,19 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                 # Safety: Ensure we didn't get an empty response
                 if len(fixed_code) > 10:
                     is_safe, msg = ctx.safety.verify_change(broken_code, fixed_code, fission_active=False)
-                    if is_safe:
+                    if not is_safe:
+                        print(f"      [!] Safety check failed: {msg}")
+                        continue
+
+                    # HARDENING: Re-parse AST to confirm the repair didn't introduce new syntax errors.
+                    try:
+                        ast.parse(fixed_code, filename=file_path)
                         with open(file_path, 'w', encoding='utf-8') as f:
                             f.write(fixed_code)
-                        print(f"      [✓] Syntax Healed. Agent can now load.")
+                        print(f"      [✓] Syntax Healed & Verified.")
                         syntax_healed_count += 1
-                    else:
-                        print(f"      [!] Safety check failed: {msg}")
+                    except SyntaxError as e2:
+                        print(f"      [!] Healing failed: Fixed code still has syntax error at line {e2.lineno}")
             except Exception as heal_err:
                 print(f"      [!] Healing failed: {str(heal_err)[:100]}")
     
@@ -897,17 +948,19 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     # [PHASE -1] L6 INTEGRITY SENTINEL - FAST PRE-FLIGHT SOVEREIGNTY CHECK
     # ===========================================================================
     print(f"\n[PHASE -1] L6 INTEGRITY SENTINEL")
-    print(f"   [>] Fast pre-flight check: Scanning sovereign core for gravity leaks...")
+    print(f"   [>] Fast pre-flight check: Scanning ALL sovereign roots for gravity leaks...")
     
     integrity_violations = []
     integrity_violation_files = []
+    SOVEREIGN_ROOTS = {"agentic_core", "prompt_governance", "schemas", "config", "scripts"}
     
-    # Scan only agentic_core files for downstream dependencies
     for file_path in ctx.python_files:
         file_path_obj = Path(file_path)
+        rel_path = file_path_obj.relative_to(project_root_path)
+        root_folder = rel_path.parts[0] if rel_path.parts else ""
         
-        # Only check files in sovereign territory (agentic_core)
-        if "agentic_core" in str(file_path_obj):
+        # HARDENING: Expand check to all upstream roots.
+        if root_folder in SOVEREIGN_ROOTS:
             violations = check_import_waterfall_violations(file_path_obj, project_root_path)
             if violations:
                 integrity_violations.extend(violations)

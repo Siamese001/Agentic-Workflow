@@ -28,7 +28,6 @@ class SortObservabilityResults:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def optimize(self,
-        """Docstring."""
         items: List[T],
         key: Optional[Callable[[T],
         Any]] = None) -> OptimizationResult:
@@ -41,7 +40,6 @@ class SortObservabilityResults:
             METADATA={"count": len(items)})
 
 def optimize(items: List[object],
-    """Docstring."""
     key: Optional[Callable] = None,
     config: Optional[Dict] = None) -> OptimizationResult:
     """Convenience function for optimization."""

@@ -33,8 +33,8 @@ class RefineResumeRanking:
             for key, adj in adjustments.items():
                 if key in REFINED and isinstance(REFINED[key], (int, float)):
                     PREVIOUS = REFINED[key]
-                    REFINED[key] = previous * adj
-                    CHANGES.append(f"{key}: {previous} -> {REFINED[key]}")
+                    REFINED[key] = PREVIOUS * adj
+                    CHANGES.append(f"{key}: {PREVIOUS} -> {REFINED[key]}")
 
         return RefinementResult(original=data, refined=REFINED, changes=CHANGES)
 
