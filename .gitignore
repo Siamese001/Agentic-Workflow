@@ -1,13 +1,20 @@
-# .gitignore — FINAL 2025
+# ##############################################################################
+# .gitignore — FINAL 2025: SOVEREIGN REPOSITORY PROTECTION
+# ##############################################################################
+
 # NEVER commit large or ephemeral data
 data/cache/
 data/tmp/
 data/**/*.bin
-data/**/*.npy
-data/**/*.npz
-data/**/*.parquet
+archives/
+*.zip
+*.tar.gz
 *.lfs
 *.DS_Store
+
+# [NEURAL LINK] SENSITIVE DATA
+# Mandatory fail-fast protection: never commit the neural link credentials
+.env
 
 # Python artifacts
 __pycache__/
@@ -29,7 +36,12 @@ Thumbs.db
 # Logs and outputs
 *.log
 outputs/
-logs/
+logs/                # Unauthorized root folder - strictly ignored
+cache/               # Unauthorized root folder - strictly ignored
 
 # Temp extraction folders
-temp_*/
+temp_*/              # Automated sprawl - strictly ignored
+
+# [L6 PHYSICS] ARCHITECTURAL NOISE
+0[0-9]_*/            # Numbered migration folders (Forbidden Root Folders)
+core/                # Unauthorized sprawl directory

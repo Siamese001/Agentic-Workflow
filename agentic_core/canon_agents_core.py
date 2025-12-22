@@ -196,8 +196,8 @@ class SystemArchitect(SubAtomicAgent):
     def check_key_49_directory_depth(self) -> Tuple[bool, List[str]]:
         """
         Checks the directory depth of Python files within the project.
-        Files deeper than 5 are considered violations, while files at depth 1
-        (directly in the project root) are considered warnings.
+        Enforces 3 ≤ depth ≤ 5. Files shallower than 3 or deeper than 5
+        are considered violations.
 
         Assumes `self.ctx.python_files` provides paths relative to the project root
         or that `Path(file_path).parts` provides the intended logical depth.
@@ -218,9 +218,9 @@ class SystemArchitect(SubAtomicAgent):
             
             if depth > 5:
                 violations.append(f"{file_path} (Invalid depth: {depth})")
-            elif depth == 1:  # A file directly in the assumed project root, e.g., `main.py`
-                warnings.append(f"{file_path} (Depth 1 — move to package recommended)")
-        return len(violations) == 0, violations + warnings
+            elif depth < 3 and not file_path.endswith("__init__.py"):  # Files too shallow, but __init__.py can be depth 2
+                violations.append(f"{file_path} (Invalid depth: {depth} - minimum depth is 3)")
+        return len(violations) == 0, violations
 
     def _has_definitions_in_tree(self, ast_tree: ast.AST) -> bool:
         """Helper to check if an AST tree contains class or function definitions."""

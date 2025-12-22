@@ -12,14 +12,13 @@ import inspect
 import logging
 import os
 import sys
-import threading
 import time
 import traceback
 from pathlib import Path
 from typing import Any, Optional
 
 # Add project root to sys.path for imports
-# Validator is now at root (Key 0), so parent is the project root
+# Validator is at root level, so parent is the project root
 project_root = Path(__file__).parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
@@ -37,6 +36,43 @@ try:
 except ImportError:
     print("   [CRITICAL] Could not import 'agentic_core'. Shim failed.")
     sys.exit(1)
+
+# [HARDENING] NEURAL LINK & ENVIRONMENT VERIFICATION (Key 40)
+def verify_neural_link(root_path: Path):
+    """Ensures .env exists and contains required API keys before execution."""
+    env_path = root_path / ".env"
+    
+    if not env_path.exists():
+        print(f"\n[!] [NEURAL LINK ERROR] .env file missing at {env_path}")
+        print("    Physics violation: Execution halted.")
+        sys.exit(1)
+        
+    from dotenv import load_dotenv
+    load_dotenv(dotenv_path=env_path)
+    
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("\n[!] [NEURAL LINK ERROR] GEMINI_API_KEY is missing or empty.")
+        print("    Stop: Do not attempt a 'Dry Run' without a valid key.")
+        sys.exit(1)
+    
+    print(f"   [OK] Neural Link active: GEMINI_API_KEY verified.")
+
+# Execute immediate fail-fast check
+verify_neural_link(project_root)
+
+# --- CRITICAL FIX: IMPORT POLYFILL (agentic_core.runtime.shared -> apps_shared) ---
+# Maps 'agentic_core.runtime.shared' imports to 'apps_shared' where ValidationContext lives
+try:
+    import apps_shared
+    # Only shim the shared submodule, not the entire runtime
+    sys.modules['agentic_core.runtime.shared'] = apps_shared
+    # Explicitly shim ValidationContext import
+    from apps_shared.canon_validation_context import ValidationContext
+    sys.modules['agentic_core.runtime.shared.canon_validation_context'] = apps_shared.canon_validation_context
+    print("   [PATCH] Shimmed 'agentic_core.runtime.shared' imports to 'apps_shared'")
+except ImportError:
+    print("   [CRITICAL] Could not shim runtime.shared. Some agents may fail to load.")
 
 # [HARDENING] NEURAL LINK INITIALIZATION
 try:
@@ -72,8 +108,8 @@ except ImportError as e:
 try:
     from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
     from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
-    from agentic_core.runtime import generate_ascii_tree  # [VISUALIZER]
-    from agentic_core.runtime import (
+    from agentic_core.runtime.void_compliance import (
+        generate_ascii_tree,
         ALLOWED_ROOT_FOLDERS,
         check_import_waterfall_violations,
         check_single_child_violations,
@@ -171,7 +207,11 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     if single_child_violations:
         print(f"[!] L6 ALERT: Found {len(single_child_violations)} single-child antipatterns:")
         for folder_path, reason in single_child_violations[:3]:
-            print(f"   [X] {folder_path.relative_to(project_root)}: {reason}")
+            try:
+                rel_path = folder_path.relative_to(project_root)
+            except ValueError:
+                rel_path = folder_path
+            print(f"   [X] {rel_path}: {reason}")
         if len(single_child_violations) > 3:
             print(f"   ... and {len(single_child_violations) - 3} more violations")
     
@@ -231,7 +271,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
     
     # Add project root to sys.path for imports
-    # Validator is now at root (Key 0), so parent is the project root
+    # Validator is at root level, so parent is the project root
     project_root = Path(__file__).parent
     if str(project_root) not in sys.path:
         sys.path.insert(0, str(project_root))
@@ -646,8 +686,15 @@ Return the complete file with imports added. No explanations, no markdown."""
                                          'DependencySentinel', 'SecurityEnforcer', 'MemoryArchitect', 'HallucinationHunter')) and
                             (hasattr(attr, 'execute') or hasattr(attr, 'run'))):
                             found_agents.append((module_name, attr_name, attr))
+                            # Debug: Log when SystemArchitect is found
+                            if attr_name == 'SystemArchitect':
+                                print(f"     [DEBUG] Found SystemArchitect in {module_name}")
                 except Exception as e:
                     print(f"     [!] Failed to inspect {file_path.name}: {e}")
+                    # Debug: Show full traceback for canon_agents_core
+                    if 'canon_agents_core' in str(file_path):
+                        import traceback
+                        traceback.print_exc()
                 
         return found_agents
 
@@ -845,6 +892,49 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     print(f"        - {len(batch_validators)} Batch Agents (Run 1x)")
     print(f"        - {len(monitors)} Monitors (Run 1x)")
     print(f"   [>] Starting Execution Sweep...\n")
+
+    # ===========================================================================
+    # [PHASE -1] L6 INTEGRITY SENTINEL - FAST PRE-FLIGHT SOVEREIGNTY CHECK
+    # ===========================================================================
+    print(f"\n[PHASE -1] L6 INTEGRITY SENTINEL")
+    print(f"   [>] Fast pre-flight check: Scanning sovereign core for gravity leaks...")
+    
+    integrity_violations = []
+    integrity_violation_files = []
+    
+    # Scan only agentic_core files for downstream dependencies
+    for file_path in ctx.python_files:
+        file_path_obj = Path(file_path)
+        
+        # Only check files in sovereign territory (agentic_core)
+        if "agentic_core" in str(file_path_obj):
+            violations = check_import_waterfall_violations(file_path_obj, project_root_path)
+            if violations:
+                integrity_violations.extend(violations)
+                integrity_violation_files.append(file_path_obj.name)
+    
+    if integrity_violations:
+        print(f"\n   [X] SOVEREIGNTY BREACH DETECTED")
+        print(f"   [!] {len(integrity_violations)} gravity violation(s) in {len(integrity_violation_files)} file(s)")
+        print(f"\n   Affected Files:")
+        for file_name in integrity_violation_files[:10]:  # Show first 10
+            print(f"      - {file_name}")
+        if len(integrity_violation_files) > 10:
+            print(f"      ... and {len(integrity_violation_files) - 10} more")
+        
+        print(f"\n   [!] MISSION ABORTED: Architectural integrity violated.")
+        print(f"   [!] Sovereign 'agentic_core' must not depend on downstream layers.")
+        print(f"\n   REMEDIATION OPTIONS:")
+        print(f"      1. Enable auto-healing: Set RUN_GRAVITY_REFACTOR=True in this file")
+        print(f"      2. Manual fix: Remove imports from apps_shared, apps_lic, apps_rg")
+        print(f"      3. Review violations: Check void_compliance.py for details")
+        print(f"\n" + "="*70)
+        sys.exit(1)
+    else:
+        print(f"   [✓] Sovereignty Intact: No gravity leaks detected in agentic_core")
+        print(f"   [✓] Pre-flight passed. Proceeding to validation phases.")
+    
+    print("-" * 70)
 
     # ===========================================================================
     # [AUTONOMY PATCH] PHASE 0: ARCHITECTURAL GRAVITY REFACTOR

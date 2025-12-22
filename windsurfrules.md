@@ -10,10 +10,11 @@ You must strictly maintain and validate this hierarchy:
 - apps_shared/: Infrastructure. Utils shared across domains.
 - apps_rg/: Domain A (Resume Generation). Specific agent logic.
 - apps_lic/: Domain B (Licensing). Compliance agent logic.
+- scripts/: Sovereign Operations. Root-level utility scripts (Key 50).
 
 ## 2. THE GRAVITY RULE (IMPORT WATERFALL)
 
-- Sovereign layers (agentic_core, prompt_governance, schemas) are UPSTREAM.
+- Sovereign layers (agentic_core, prompt_governance, schemas, scripts) are UPSTREAM.
 - Domains (apps_rg, apps_lic) are DOWNSTREAM.
 - Rule: UPSTREAM must NEVER import from DOWNSTREAM. If a core utility is needed in a domain, move it to apps_shared.
 
@@ -23,6 +24,7 @@ You must strictly maintain and validate this hierarchy:
 - Key 11: Surgeon Persona -> prompt_governance/personas/architectural/
 - Key 31: Fission Blueprint -> schemas/canon/blueprints/
 - Key 40: Core Logic -> agentic_core/
+- Key 50: Operational Tools -> scripts/
 
 ## 4. AGENT DISCOVERY PROTOCOL
 

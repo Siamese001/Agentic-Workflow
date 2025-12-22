@@ -6,7 +6,7 @@ import time
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
-from agentic_workflow.runtime.shared import (
+from .capability_analyzer_types import (
     AnalysisReport,
     CapabilityGap,
     CapabilityGapType,
