@@ -10,7 +10,6 @@ Responsible for:
 from typing import Any, Optional, Protocol, Dict, List
 
 import os
-from typing import List, Optional
 
 from .canon_base_agent import CanonBaseAgent
 
@@ -29,20 +28,100 @@ class HealerAgent(CanonBaseAgent):
     
     async def execute(self, file_path: str = None):
         """
-        Execute Healer Agent - handles file healing and move operations.
-        
-        Args:
-            file_path: Path to file being validated/healed
+        [L5 HARDENING] Sovereign Execution Loop.
+        Detects structural failures and triggers re-homing + import healing.
         """
-        print(f"\n[>>>] {self.name} ACTIVATED: Ready for autonomous healing")
+        if not file_path:
+            return False
+
+        # 1. STRUCTURAL COMPLIANCE CHECK (Key 49)
+        # Check if the orchestrator flagged this file as an orphan
+        is_orphan = any(
+            "STRUCTURAL_FAILURE" in str(r.get('msg', '')) 
+            for r in self.ctx.report 
+            if os.path.basename(file_path) in str(r.get('msg', ''))
+        )
+
+        if is_orphan:
+            print(f"   [!] {self.name} detected structural breach. Initiating Re-homing & Import Healing.")
+            return await self._handle_structural_rehoming(file_path)
+
+        # 2. STANDARD CANON HEALING (Keys 0-50)
+        return await self.heal_violation(
+            file_path=file_path,
+            violation_key=40,
+            violation_details="General alignment with 50-key canon standards."
+        )
+
+    async def _handle_structural_rehoming(self, file_path: str) -> Dict[str, Any]:
+        """
+        [KEY 40/49 HARDENING] High-Signal Re-homing.
+        Uses CANONICAL_HIERARCHY as the source of truth for re-homing.
+        """
+        import void_compliance
+        from void_compliance import CANONICAL_HIERARCHY, FORBIDDEN_ROOT_FOLDERS
         
-        # Check for structural violation that needs move operation
-        if file_path and hasattr(self.ctx, 'structural_violation'):
-            violation = self.ctx.structural_violation
-            if violation.get('needs_move') and violation.get('file_path') == file_path:
-                return await self._handle_move_operation(violation)
-        
-        return False
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                code = f.read()
+            
+            # Step A: High-Signal Analysis
+            # Use heuristics to get a 'candidate' path
+            candidate_path = void_compliance.get_placement_guidance(code[:3000])
+            
+            # Step B: Hierarchy Validation (Key 49)
+            # Ensure the candidate exists within the CANONICAL_HIERARCHY SSOT
+            parts = candidate_path.split('/')
+            root_folder = parts[0]
+            l1_layer = parts[1] if len(parts) > 1 else None
+            
+            # Final fallback if heuristics drift from hierarchy
+            if root_folder not in CANONICAL_HIERARCHY or (l1_layer and l1_layer not in CANONICAL_HIERARCHY[root_folder]):
+                print(f"      [!] HIERARCHY DRIFT: Candidate '{candidate_path}' not in SSOT. Defaulting to cognition.")
+                target_dir = "agentic_core/L1_cognition"
+            else:
+                target_dir = candidate_path
+            
+            # [L6 SAFETY CHECK] Prevent movement into Forbidden Roots
+            if root_folder in FORBIDDEN_ROOT_FOLDERS:
+                print(f"      [X] SAFETY BLOCK: Blocked move to Forbidden Root '{root_folder}'.")
+                return {"healed": False, "error": "FORBIDDEN_TARGET"}
+
+            print(f"      [SIGNAL] High-Signal Target Confirmed: {target_dir}")
+            
+            # Step B: LLM-Driven Import Refactor (Key 40 Healing)
+            # Ask Gemini to rewrite imports for the specific new relative path
+            refactor_prompt = f"""### ROLE: ARCHITECTURAL_SURGEON
+### TASK: Move file to {target_dir} and FIX IMPORTS.
+
+I am moving '{os.path.basename(file_path)}' from its current location to '{target_dir}'. 
+Update all relative imports (e.g., from ..L4_state to from .L4_state) to remain valid from the new folder.
+
+REQUIREMENTS:
+1. Preserve all logic and functionality exactly.
+2. Only modify import statements and local file references.
+3. Return ONLY the full corrected Python code.
+
+CURRENT CODE:
+{code}
+"""
+            fixed_code = await self.resilient_mutation(
+                task=refactor_prompt,
+                code=code,
+                file_path=file_path,
+                round_num=1
+            )
+
+            # Signal the Orchestrator to update code AND physically move file
+            return {
+                "move_to": target_dir,
+                "healed_code": fixed_code,
+                "reason": f"Sovereign Layer Re-homing to {target_dir}"
+            }
+            
+        except Exception as e:
+            print(f"      [!] Re-homing/Import healing failed: {e}")
+            return {"healed": False}
     
     async def _handle_move_operation(self, violation: dict) -> bool:
         """

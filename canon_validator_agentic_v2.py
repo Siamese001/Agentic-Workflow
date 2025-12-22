@@ -152,17 +152,19 @@ except ImportError as e:
     print(f"[!] Dashboard not available: {e}")
     print("    Install: pip install rich flask flask-cors")
 
-# Import core components from agentic_core
+# [HARDENING] SOVEREIGN COMPLIANCE IMPORT
+# Import directly from root to avoid shadowing stale versions in agentic_core/runtime
 try:
     from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
     from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
     
-    # Import from root-level void_compliance.py
     import void_compliance
     from void_compliance import (
         ALLOWED_ROOT_FOLDERS,
+        FORBIDDEN_ROOT_FOLDERS,
         check_import_waterfall_violations,
-        check_single_child_violations,
+        check_span_of_two_violations,
+        validate_canonical_hierarchy,
         enforce_void_compliance,
         get_folder_scope_summary,
         validate_file_location,
@@ -253,22 +255,37 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     
     target_path = Path(target_sector).resolve()
     
-    # Check 1: Single-Child Antipattern Detection (Ignore project root)
-    single_child_violations = []
+    # Check 1: Span of Two Detection (Redundant Tunnels)
+    span_violations = []
     if target_path != project_root:
-        single_child_violations = check_single_child_violations(target_path if target_path.is_dir() else project_root)
-    if single_child_violations:
-        print(f"[!] L6 ALERT: Found {len(single_child_violations)} single-child antipatterns:")
-        for folder_path, reason in single_child_violations[:3]:
+        from void_compliance import check_span_of_two_violations
+        span_violations = check_span_of_two_violations(project_root)
+    if span_violations:
+        print(f"[!] L6 ALERT: Found {len(span_violations)} span violations:")
+        for folder_path, reason in span_violations[:3]:
             try:
                 rel_path = folder_path.relative_to(project_root)
             except ValueError:
                 rel_path = folder_path
             print(f"   [X] {rel_path}: {reason}")
-        if len(single_child_violations) > 3:
-            print(f"   ... and {len(single_child_violations) - 3} more violations")
+        if len(span_violations) > 3:
+            print(f"   ... and {len(span_violations) - 3} more violations")
     
-    # Check 2: Import Waterfall Violations (Sovereign -> Apps)
+    # Check 2: Hierarchy Alignment (SSOT Verification)
+    from void_compliance import validate_canonical_hierarchy
+    hierarchy_violations = validate_canonical_hierarchy(project_root)
+    if hierarchy_violations:
+        print(f"[!] L6 ALERT: Found {len(hierarchy_violations)} hierarchy violations:")
+        for folder_path, reason in hierarchy_violations[:3]:
+            try:
+                rel_path = folder_path.relative_to(project_root)
+            except ValueError:
+                rel_path = folder_path
+            print(f"   [X] {rel_path}: {reason}")
+        if len(hierarchy_violations) > 3:
+            print(f"   ... and {len(hierarchy_violations) - 3} more violations")
+    
+    # Check 3: Import Waterfall Violations (Sovereign -> Apps)
     waterfall_violations = []
     SOVEREIGN_ROOTS = {"agentic_core", "prompt_governance", "schemas", "config", "scripts"}
     
@@ -305,15 +322,40 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
         if len(location_violations) > 3:
             print(f"   ... and {len(location_violations) - 3} more violations")
     
-    # Summary
-    total_violations = len(single_child_violations) + len(waterfall_violations) + len(location_violations)
+    # Check 4: Hierarchy Drift (CANONICAL_HIERARCHY SSOT)
+    from void_compliance import validate_canonical_hierarchy
+    hierarchy_violations = validate_canonical_hierarchy(project_root)
+
+    # ==========================================================================
+    # [L6 HARDENING] MASTER SOVEREIGN DASHBOARD
+    # ==========================================================================
+    print("\n" + "="*70)
+    print(" SOVEREIGN INTEGRITY DASHBOARD (L6 PRE-FLIGHT)")
+    print("="*70)
+    
+    metrics = [
+        ("DEPTH / SPAN OF TWO", len(span_violations)),
+        ("HIERARCHY ALIGNMENT", len(hierarchy_violations)),
+        ("NAMING / SIGNAL",    len(location_violations)), # Location includes naming
+        ("GRAVITY / IMPORTS",  len(waterfall_violations))
+    ]
+    
+    for label, count in metrics:
+        status = "[✓] OK" if count == 0 else f"[X] {count} VIOLATIONS"
+        print(f" {label:<25} | {status}")
+    
+    print("-" * 70)
+    
+    total_violations = sum(m[1] for m in metrics)
     
     if total_violations == 0:
-        print("[OK] L6 PRE-FLIGHT: Sector is Void-Compliant.")
+        print("[SUCCESS] All structural laws satisfied. Neural Link established.")
+        print("="*70 + "\n")
         return True
     else:
-        print(f"[!] L6 PRE-FLIGHT: {total_violations} physical structure violations detected.")
-        print("    ArchitectureGovernor may auto-flatten or halt based on severity.")
+        print(f"[BLOCK] {total_violations} Violations must be resolved for convergence.")
+        print("="*70 + "\n")
+        # If auto-healing is enabled (e.g. HealerAgent), we allow it to proceed to heal.
         return False
 
 
@@ -1336,31 +1378,6 @@ Return ONLY the complete merged Python code. No explanations.
                 except Exception as e:
                     print(f"   [!] Fission Error: {e}")
             
-            # If we are here, Fission didn't happen or failed.
-            # Mark for manual review but DO NOT CONTINUE (let standard agents try to fix what they can)
-            ctx.results[file_name] = {"action": "FISSION_ATTEMPTED_FALLBACK", "loc": loc_count}
-            # Remove 'continue' to allow standard validation on large files if fission fails
-
-        # --- ATOMIC AGENT EXECUTION (ITERATIVE HEALING LOOP) ---
-        ctx.current_file_applicable_keys = applicable_keys
-        MAX_HEALING_ROUNDS = 3
-        file_healed = False
-        
-        print(f"\n   [HEALING] Starting iterative validation for {file_name}")
-        
-        # [L6 HARDENING] Structural Compliance Integration
-        is_structurally_valid, struct_msg = validate_file_location(Path(file_path), project_root)
-        
-        initial_violations = 0
-        if not is_structurally_valid:
-            print(f"\n     [!] L6 VIOLATION: {struct_msg}")
-            initial_violations = 1 # Blocking violation
-            # Inform the L4 State that this file is "Floating" and needs a new home
-            ctx.report("IntegritySentinel", 49, False, f"STRUCTURAL_FAILURE: {struct_msg}")
-            
-            # Key 40 Directive: If path is invalid, the first task for any agent is to
-            # suggest a target path using void_compliance.get_placement_guidance().
-            
             # Read file content to determine suggested home
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
@@ -1405,7 +1422,47 @@ Return ONLY the complete merged Python code. No explanations.
                             result = await method()
                         
                         # Detect successful healing signals
-                        if result is True or (isinstance(result, dict) and result.get('healed')):
+                        if isinstance(result, dict):
+                            # [L6 HARDENING] Physical Relocation & Import Sync
+                            if result.get('move_to'):
+                                target_move_path = result['move_to']
+                                target_root = target_move_path.split('/')[0] if '/' in target_move_path else target_move_path
+                                
+                                # [PHYSICAL SAFETY GATE] Final check against Forbidden Roots
+                                if target_root in FORBIDDEN_ROOT_FOLDERS:
+                                    print(f"     [!] CRITICAL: Blocked move to forbidden root '{target_root}'.")
+                                    continue
+
+                                # 1. Apply import fixes if provided by the agent
+                                if result.get('healed_code'):
+                                    with open(file_path, 'w', encoding='utf-8') as f:
+                                        f.write(result['healed_code'])
+                                    print("     [✓] Imports Refactored for new path.")
+
+                                # 2. Execute Physical Move
+                                target_dir = project_root / target_move_path
+                                target_dir.mkdir(parents=True, exist_ok=True)
+                                target_path = target_dir / Path(file_path).name
+                                
+                                import shutil
+                                shutil.move(file_path, target_path)
+                                print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
+                                
+                                # Update python_files list to reflect the new location
+                                if hasattr(ctx, 'python_files'):
+                                    ctx.python_files = [f if f != file_path else str(target_path) for f in ctx.python_files]
+                                
+                                changes_this_round += 1
+                                file_healed = True
+                                
+                                # [CRITICAL] Break out of agent loop since file_path is now stale
+                                print(f"     [!] File moved - breaking agent loop for {file_name}")
+                                break
+                            
+                            if result.get('healed'):
+                                changes_this_round += 1
+                                file_healed = True
+                        elif result is True:
                             changes_this_round += 1
                             file_healed = True
                             
@@ -1533,6 +1590,14 @@ async def _execute_move_instruction(move: dict, project_root: Path, ctx):
     
     source_path = Path(move['source'])
     target_path = project_root / move['target']
+    
+    # [SAFETY CHECK] Validate target against forbidden roots
+    target_root = move['target'].split('/')[0] if '/' in move['target'] else move['target']
+    from void_compliance import FORBIDDEN_ROOT_FOLDERS
+    if target_root in FORBIDDEN_ROOT_FOLDERS:
+        print(f"      [!] CRITICAL: Blocked move instruction to forbidden root '{target_root}'.")
+        ctx.report("MoveExecutor", 49, False, f"Blocked move to forbidden root: {target_root}")
+        return
     
     try:
         # Ensure target directory exists
