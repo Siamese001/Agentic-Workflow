@@ -100,10 +100,14 @@ class SubAtomicEngine:
             Dictionary mapping file paths to content
         """
         try:
+            if not output or len(output.strip()) < 20:
+                return {}
             # Try to extract JSON from response
             json_match = re.search(r'\{.*\}', output, re.DOTALL)
             if json_match:
-                return json.loads(json_match.group())
+                data = json.loads(json_match.group())
+                # [L5 HARDENING] Ensure dict structure for Fission
+                return data if isinstance(data, dict) else {}
         except Exception as e:
             logger.warning(f"Failed to parse fission output: {e}")
         
@@ -135,6 +139,7 @@ class SubAtomicEngine:
         if not self._client:
             raise RuntimeError("Gemini client not initialized")
         
+        start_time = time.time()
         # [L3 STATE] Redis Adaptive Logic: Check for repeat failure patterns
         temp_override = 0.1
         if self.redis_client:
@@ -181,6 +186,13 @@ class SubAtomicEngine:
         # Extract response
         if response and response.candidates and response.candidates[0].content.parts:
             output = response.candidates[0].content.parts[0].text.strip()
+            
+            # [L5 HARDENING] Zero-Latency Hallucination Guard
+            duration = time.time() - start_time
+            if duration < 0.1 and (not output or len(output) < 50):
+                logger.error(f"   [X] HALLUCINATION REJECTED (Latency: {duration:.3f}s).")
+                return code
+
             # Truncation guard
             if not fission_active and "..." in output and len(output) < (len(code) * 0.8):
                 logger.warning("   [X] TRUNCATION DETECTED. Rejecting mutation.")
