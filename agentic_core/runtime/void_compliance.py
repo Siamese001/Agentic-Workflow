@@ -38,6 +38,7 @@ HIGH_SIGNAL_KEYWORDS = {
 def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
     Enforces descriptive snake_case naming for L-layer signals.
+    [KEY 49 HARDENING] Strict enforcement with correct root/nested separation.
     """
     file_name = file_path.name
     if not file_name.endswith(".py"):
@@ -46,33 +47,37 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
     stem = file_path.stem
     lower_stem = stem.lower()
     
-    # 1. Snake Case Enforcement (No Caps or Dashes)
+    # 1. Snake Case Enforcement (No Caps or Dashes) - Applies to ALL Python files
     if re.search(r"[A-Z]", stem) or "-" in stem:
         return False, f"NAMING VIOLATION: '{file_name}' must be snake_case (lowercase only)."
 
-    # 2. Forbidden Generic/Versioned Patterns
-    for pattern in FORBIDDEN_FILE_PATTERNS:
-        if re.match(pattern, file_name):
-            return False, f"NAMING VIOLATION: Generic/Versioned name '{file_name}' is forbidden."
-
-    # 3. Path-Aware Sovereign Marker check
     try:
         rel_path = file_path.relative_to(project_root)
         is_root_file = len(rel_path.parts) == 1
     except ValueError:
         return False, "File outside project root."
 
+    # 2. Special Handling for Root-Level Files (Key 0 Protected)
     if is_root_file:
-        protected = {"canon_validator_agentic_v2.py", "pyproject.toml", "README.md", "langgraph.json", ".env", "windsurfrules.md", ".gitignore"}
+        protected = {
+            "canon_validator_agentic_v2.py", "pyproject.toml", "README.md",
+            "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
+        }
         if file_name in protected:
-            return True, ""
+            return True, "Protected root file (Key 0 exempt)"
+
         # Sovereign markers are required for any root-level python logic
         sovereign_markers = {"validator", "compliance", "healer", "enforcer", "governor"}
         if not any(m in lower_stem for m in sovereign_markers):
             return False, f"SOVEREIGN VIOLATION: Root file '{file_name}' missing marker {sovereign_markers}."
         return True, ""
 
-    # 4. High-Signal Signal Requirement
+    # 3. Nested Files: Forbidden Generic/Versioned Patterns
+    for pattern in FORBIDDEN_FILE_PATTERNS:
+        if re.match(pattern, file_name):
+            return False, f"NAMING VIOLATION: Generic/Versioned name '{file_name}' is forbidden."
+
+    # 4. Nested Files: High-Signal Keyword Requirement
     if not any(kw in lower_stem for kw in HIGH_SIGNAL_KEYWORDS):
         return False, f"SIGNAL VIOLATION: '{file_name}' lacks high-signal canon keyword."
 
@@ -559,7 +564,9 @@ def check_span_of_two_violations(project_root: Path) -> List[Tuple[Path, str]]:
 def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
     """
     [L6 HARDENING] Validates physical folders against the CANONICAL_HIERARCHY SSOT.
-    Flags any unapproved subfolders to prevent organic architectural drift.
+    Flags:
+    - Unapproved L1 or L2 folders (drift prevention)
+    - Files placed too shallow (under Root or L1) — enforces min depth 3 (Key 41)
     """
     violations = []
 
@@ -568,25 +575,37 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
         if not root_path.exists():
             continue
 
-        # Level 1 Validation (e.g., agentic_core -> L1_cognition)
+        # 1. Root Level Check: No files directly in Sovereign Root (depth 1)
+        root_files = [p.name for p in root_path.iterdir() if p.is_file() and p.suffix == ".py"]
+        if root_files:
+            violations.append((root_path, f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}"))
+
+        # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
         expected_l1 = set(layers.keys())
         actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
 
-        unexpected = actual_l1 - expected_l1
-        for bad in unexpected:
+        unexpected_l1 = actual_l1 - expected_l1
+        for bad in unexpected_l1:
             violations.append((root_path / bad, f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}"))
 
-        # Level 2 Validation (e.g., L1_cognition -> strategy)
+        # 3. Level 2 Validation + Min Depth Enforcement
         for l1_name, l2_list in layers.items():
             l1_path = root_path / l1_name
             if not l1_path.exists():
                 continue
+                
             expected_l2 = set(l2_list)
-            actual_l2 = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+            actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+            actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
             
-            unexpected_l2 = actual_l2 - expected_l2
+            # Unexpected L2 folders
+            unexpected_l2 = actual_l2_dirs - expected_l2
             for bad in unexpected_l2:
                 violations.append((l1_path / bad, f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}"))
+
+            # Files directly under L1 -> violates min depth 3 (Key 41)
+            if actual_l2_files:
+                violations.append((l1_path, f"DEPTH VIOLATION (Key 41): Files directly under L1 '{l1_name}' (depth 2). Must be under an approved L2 folder. Found: {actual_l2_files}"))
 
     return violations
 

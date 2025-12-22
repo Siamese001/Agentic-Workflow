@@ -177,6 +177,11 @@ except ImportError as e:
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
+# [L6 HARDENING] Healing Configuration
+MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
+MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
+GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
+
 # ==============================================================================
 # [FINAL HARDENING] SURGERY CONTROL FLAGS
 # ==============================================================================
@@ -1380,6 +1385,7 @@ Return ONLY the complete merged Python code. No explanations.
         # --- ACTIVE FISSION TRIGGER (Files > 10000 Lines) ---
         # Increased threshold to validate all files comprehensively
         if loc_count > 10000:
+            struct_msg = f"File exceeds 10000 lines ({loc_count} LOC). Requires fission."
             print(f"\n[!] [FISSION TRIGGER] {file_name} ({loc_count} lines). Engaging Auto-Fission.")
             
             if governor:
@@ -1437,6 +1443,9 @@ Return ONLY the complete merged Python code. No explanations.
                     'suggested_home': 'agentic_core/L1_cognition',  # Default
                     'needs_move': True
                 }
+        
+        # Initialize violation tracking for healing loop
+        initial_violations = 0
         
         for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
             violations_this_round = initial_violations
