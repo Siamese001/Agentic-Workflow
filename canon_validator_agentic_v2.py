@@ -78,7 +78,6 @@ try:
         check_import_waterfall_violations,
         check_single_child_violations,
         enforce_void_compliance,
-        get_applicable_keys_for_file,
         get_folder_scope_summary,
         validate_file_location,
     )
@@ -361,19 +360,18 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [FIX] Initialize missing telemetry structures for SubAtomicEngine
     if not hasattr(ctx, 'successful_traces'): ctx.successful_traces = []
     if not hasattr(ctx, 'failed_traces'): ctx.failed_traces = []
-    
     # [FIX] Add missing log_error method required by Budget & Structural agents
     if not hasattr(ctx, 'log_error'): 
         ctx.log_error = lambda msg: ctx.report("System", 0, False, msg)
     
     # [HARDENING] Add missing L4/L5 operational flags
     if not hasattr(ctx, 'intelligence_enabled'): ctx.intelligence_enabled = True
-    if not hasattr(ctx, 'services'): ctx.services = {}
-    if not hasattr(ctx, 'signal_deps_valid'): ctx.signal_deps_valid = lambda: True
+    # Services must be a dot-accessible object or dict with expected keys
+    if not hasattr(ctx, 'services'): 
+        ctx.services = type('obj', (object,), {'mcp_clients': []})()
     
-    if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
-    if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
-    if not hasattr(ctx, 'signals'): ctx.signals = set()
+    if not hasattr(ctx, 'can_attempt_healing'): ctx.can_attempt_healing = True
+    if not hasattr(ctx, 'signal_deps_valid'): ctx.signal_deps_valid = lambda: True
     
     # 3. WIRE COMPONENTS TO CONTEXT (Crucial Fix)
     ctx.engine = subatomic_engine
