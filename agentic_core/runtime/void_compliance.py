@@ -384,22 +384,23 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         # Nested files: Must belong to an approved root folder
         root_folder = rel_path.parts[0]
         
-        # HARDENING: Sovereign Depth Law (L6 Enforcement)
-        # Depth 1: agentic_core/file.py (ORPHAN - FORBIDDEN)
-        # Depth 2: agentic_core/L1_cognition/file.py (VALID)
-        # Depth 3: agentic_core/L1_cognition/sub/file.py (VALID)
-        depth = len(rel_path.parts) - 1 # Subtract 1 for the file itself
+        # [UPDATED DEPTH LAW - Dec 2025]
+        # Calculation: Number of directory parts excluding the filename.
+        # Depth 3: agentic_core/L1_cognition/strategy/file.py (MIN REQUIRED)
+        # Depth 5: agentic_core/L1/L2/L3/L4/file.py (MAX ALLOWED)
+        depth = len(rel_path.parts) - 1
         
         if root_folder == "tests":
-            # Tests must be exactly depth 2 (tests/unit/file.py)
-            if depth != 2:
-                return False, f"DEPTH VIOLATION: tests/ requires exactly depth 2 subfolders, found depth {depth} at '{rel_path}'."
-        else:
-            # Sovereign Roots: min 2, max 4
-            if depth < 2:
-                return False, f"ORPHAN VIOLATION: '{file_path.name}' is sitting in the root of '{root_folder}'. Move to an L-layer."
-            if depth > 4:
-                return False, f"DEPTH VIOLATION: Path '{rel_path}' is too deep ({depth} levels). Max allowed is 4 levels of nesting."
+            # Tests must be exactly depth 3 (e.g., tests/unit/agentic_core/test_*.py)
+            if depth != 3:
+                return False, f"DEPTH VIOLATION: tests/ requires exactly depth 3, found {depth} at '{rel_path}'."
+            return True, "Test path compliant."
+
+        if depth < 3:
+            return False, f"SHALLOW VIOLATION (Key 41): '{rel_path}' depth {depth} < min 3. Add intermediate L-layer folder."
+        
+        if depth > 5:
+            return False, f"DEEP VIOLATION (Key 41): '{rel_path}' depth {depth} > max 5. Flatten structure."
         
         # [L6 HARDENING] Silent Ignore for standard environment/git noise
         if root_folder in {".venv", "venv", ".git", "__pycache__", "node_modules"}:
