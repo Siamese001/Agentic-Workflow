@@ -6,7 +6,6 @@ Tests integration between injection detection, dependency injection,
 and V6 prompt systems to ensure end-to-end security flows work correctly.
 """
 
-import logging
 
 import pytest
 

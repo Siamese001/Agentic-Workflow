@@ -1,9 +1,9 @@
 """Types and models for firecracker_manager."""
 import logging
-from enum import Enum
-from dataclasses import dataclass, field
-from typing import Dict, Any, Optional
 import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 class VMStatus(Enum):

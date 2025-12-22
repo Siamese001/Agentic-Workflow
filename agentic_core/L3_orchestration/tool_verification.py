@@ -17,15 +17,18 @@ LOGGER = logging.getLogger(__name__)
 
 class VerificationResult(Enum):
     """Result of tool verification."""
+    PASSED = "passed"
+    FAILED = "failed"
+    WARNING = "warning"
 
 
 @dataclass
 class VerificationIssue:
     """An issue found during verification."""
-    _severity: str  # "error", "warning", "info"
-    _message: str
-    _line_number: Optional[int] = None
-    _suggestion: Optional[str] = None
+    severity: str  # "error", "warning", "info"
+    message: str
+    line_number: Optional[int] = None
+    suggestion: Optional[str] = None
 
 
 @dataclass
@@ -33,8 +36,8 @@ class ToolVerificationReport:
     """Complete verification report for a tool call."""
     result: VerificationResult
     issues: List[VerificationIssue]
-    _verified_code: Optional[str] = None
-    _execution_plan: Optional[str] = None
+    verified_code: Optional[str] = None
+    execution_plan: Optional[str] = None
 
 
 class ToolVerifier:
@@ -44,7 +47,7 @@ class ToolVerifier:
     Acts as a compiler check - if it doesn't verify, it doesn't run.
     """
 
-def __init__(self: Any, sandbox: Any, enable_strict_mode: bool) -> None:
+    def __init__(self: Any, sandbox: Any, enable_strict_mode: bool) -> None:
         """
         Initialize the tool verifier.
 
@@ -52,15 +55,15 @@ def __init__(self: Any, sandbox: Any, enable_strict_mode: bool) -> None:
             sandbox: Optional sandbox for dry-run execution
             enable_strict_mode: Whether to enforce strict verification
         """
-        SELF.SANDBOX = sandbox
+        self.sandbox = sandbox
         self.strict_mode = enable_strict_mode
 
         # Pre-compile verification patterns
         self._init_patterns()
 
-        logger.info(f"Tool verifier initialized (strict_mode={strict_mode})")
+        LOGGER.info(f"Tool verifier initialized (strict_mode={self.strict_mode})")
 
-def _init_patterns(self: Any) -> None:
+    def _init_patterns(self: Any) -> None:
         """Initialize patterns for detecting common issues."""
 
         # Hallucinated imports
@@ -90,11 +93,10 @@ def _init_patterns(self: Any) -> None:
             for tool, patterns in self.tool_requirements.items()
         }
 
-async def verify_tool_call(self: Any,
-     tool_name: str,
-     tool_args: Dict[str,
-     Any],
-     context: Optional[Dict]) -> ToolVerificationReport:
+    async def verify_tool_call(self: Any,
+                               tool_name: str,
+                               tool_args: Dict[str, Any],
+                               context: Optional[Dict]) -> ToolVerificationReport:
         """
         Verify a tool call before execution.
 
@@ -106,7 +108,9 @@ async def verify_tool_call(self: Any,
         Returns:
             VerificationReport with results and issues
         """
-        ISSUES = []
+        issues = []
+        errors = []
+        warnings = []
 
         # 1. Basic validation
         basic_issues = self._validate_basic_tool_call(tool_name, tool_args)
@@ -128,62 +132,66 @@ async def verify_tool_call(self: Any,
             dry_run_issues = await self._dry_run_code(tool_args['code'])
             issues.extend(dry_run_issues)
 
+        for issue in issues:
+            if issue.severity == "error":
+                errors.append(issue)
+            elif issue.severity == "warning":
+                warnings.append(issue)
+
         # Determine overall result
-
         if errors and self.strict_mode:
-            RESULT = VerificationResult.FAILED
+            result = VerificationResult.FAILED
         elif warnings:
-            RESULT = VerificationResult.WARNING
+            result = VerificationResult.WARNING
         else:
-            RESULT = VerificationResult.PASSED
+            result = VerificationResult.PASSED
 
-        logger.info(f"Tool verification: {tool_name} -> {result.value} ({len(issues)} issues)")
+        LOGGER.info(f"Tool verification: {tool_name} -> {result.value} ({len(issues)} issues)")
 
         return ToolVerificationReport(
-            RESULT=result,
-            ISSUES=issues,
+            result=result,
+            issues=issues,
             verified_code=tool_args.get('code'),
             execution_plan=self._generate_execution_plan(tool_name, tool_args)
         )
 
-def _validate_basic_tool_call(self: Any,
-     tool_name: str,
-     tool_args: Dict[str,
-     Any]) -> List[VerificationIssue]:
+    def _validate_basic_tool_call(self: Any,
+                                  tool_name: str,
+                                  tool_args: Dict[str, Any]) -> List[VerificationIssue]:
         """Basic validation of tool call structure."""
-        ISSUES = []
+        issues = []
 
         # Check if tool name is valid
         if not tool_name or not isinstance(tool_name, str):
             issues.append(VerificationIssue(
-                SEVERITY="error",
-                MESSAGE="Invalid tool name"
+                severity="error",
+                message="Invalid tool name"
             ))
 
         # Check required arguments
         if tool_name == "file_read" and "path" not in tool_args:
             issues.append(VerificationIssue(
-                SEVERITY="error",
-                MESSAGE="file_read tool requires 'path' argument",
-                SUGGESTION="Add 'path' argument to tool call"
+                severity="error",
+                message="file_read tool requires 'path' argument",
+                suggestion="Add 'path' argument to tool call"
             ))
 
         if tool_name == "file_write" and not all(k in tool_args for k in ["path", "content"]):
             issues.append(VerificationIssue(
-                SEVERITY="error",
-                MESSAGE="file_write tool requires 'path' and 'content' arguments",
-                SUGGESTION="Add missing arguments to tool call"
+                severity="error",
+                message="file_write tool requires 'path' and 'content' arguments",
+                suggestion="Add missing arguments to tool call"
             ))
 
         return issues
 
-async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
+    async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
         """Verify Python code for common issues."""
-        ISSUES = []
+        issues = []
 
         try:
             # Parse AST to check syntax
-            TREE = ast.parse(code)
+            tree = ast.parse(code)
 
             # Check for dangerous imports
             for node in ast.walk(tree):
@@ -191,19 +199,19 @@ async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
                     for alias in node.names:
                         if alias.name in self.hallucinated_imports:
                             issues.append(VerificationIssue(
-                                SEVERITY="error",
-                                MESSAGE=f"Hallucinated import detected: {alias.name}",
+                                severity="error",
+                                message=f"Hallucinated import detected: {alias.name}",
                                 line_number=node.lineno,
-                                SUGGESTION=f"Remove import of non-existent module '{alias.name}'"
+                                suggestion=f"Remove import of non-existent module '{alias.name}'"
                             ))
 
                 elif isinstance(node, ast.ImportFrom):
                     if node.module and node.module in self.hallucinated_imports:
                         issues.append(VerificationIssue(
-                            SEVERITY="error",
-                            MESSAGE=f"Hallucinated import detected: from {node.module}",
+                            severity="error",
+                            message=f"Hallucinated import detected: from {node.module}",
                             line_number=node.lineno,
-                            SUGGESTION=f"Remove import from non-existent module '{node.module}'"
+                            suggestion=f"Remove import from non-existent module '{node.module}'"
                         ))
 
                 # Check for dangerous function calls
@@ -211,97 +219,96 @@ async def _verify_code(self: Any, code: str) -> List[VerificationIssue]:
                     if isinstance(node.func, ast.Name):
                         if node.func.id in self.dangerous_functions:
                             issues.append(VerificationIssue(
-                                SEVERITY="warning",
-                                MESSAGE=f"Potentially dangerous function: {node.func.id}",
+                                severity="warning",
+                                message=f"Potentially dangerous function: {node.func.id}",
                                 line_number=node.lineno,
-                                SUGGESTION="Consider safer alternatives"
+                                suggestion="Consider safer alternatives"
                             ))
 
         except SyntaxError as e:
             issues.append(VerificationIssue(
-                SEVERITY="error",
-                MESSAGE=f"Syntax error: {e.msg}",
+                severity="error",
+                message=f"Syntax error: {e.msg}",
                 line_number=e.lineno,
-                SUGGESTION="Fix syntax error before execution"
+                suggestion="Fix syntax error before execution"
             ))
 
         # Additional pattern-based checks
         if 'import magic' in code.lower():
             issues.append(VerificationIssue(
-                SEVERITY="error",
-                MESSAGE="Magic imports detected",
-                SUGGESTION="Remove any 'magic' or hallucinated imports"
+                severity="error",
+                message="Magic imports detected",
+                suggestion="Remove any 'magic' or hallucinated imports"
             ))
 
         # Check for incomplete code
         if not code.strip().endswith(('"', "'", ')', ']', '}')):
             issues.append(VerificationIssue(
-                SEVERITY="warning",
-                MESSAGE="Code appears incomplete",
-                SUGGESTION="Ensure all brackets and quotes are closed"
+                severity="warning",
+                message="Code appears incomplete",
+                suggestion="Ensure all brackets and quotes are closed"
             ))
 
         return issues
 
-async def _verify_tool_specific(self: Any,
-     tool_name: str,
-     tool_args: Dict[str,
-     Any],
-     context: Optional[Dict]) -> List[VerificationIssue]:
+    async def _verify_tool_specific(self: Any,
+                                   tool_name: str,
+                                   tool_args: Dict[str, Any],
+                                   context: Optional[Dict]) -> List[VerificationIssue]:
         """Tool-specific verification logic."""
-        ISSUES = []
+        issues = []
 
         if tool_name == "file_read":
-            PATH = tool_args.get("path", "")
+            path = tool_args.get("path", "")
 
             # Check for path traversal
             if "../" in path or "..\\" in path:
                 issues.append(VerificationIssue(
-                    SEVERITY="error",
-                    MESSAGE="Path traversal attempt detected",
-                    SUGGESTION="Use absolute paths or relative paths without '..'"
+                    severity="error",
+                    message="Path traversal attempt detected",
+                    suggestion="Use absolute paths or relative paths without '..'"
                 ))
 
             # Check file extension
             if not any(path.endswith(ext) for ext in ['.txt', '.py', '.json', '.csv']):
                 issues.append(VerificationIssue(
-                    SEVERITY="warning",
-                    MESSAGE="Unusual file extension",
-                    SUGGESTION="Ensure you're reading the correct file type"
+                    severity="warning",
+                    message="Unusual file extension",
+                    suggestion="Ensure you're reading the correct file type"
                 ))
 
         elif tool_name == "web_search":
-            QUERY = tool_args.get("query", "")
+            query = tool_args.get("query", "")
 
             if len(query) < 3:
                 issues.append(VerificationIssue(
-                    SEVERITY="warning",
-                    MESSAGE="Search query too short",
-                    SUGGESTION="Provide a more descriptive search query"
+                    severity="warning",
+                    message="Search query too short",
+                    suggestion="Provide a more descriptive search query"
                 ))
 
         elif tool_name == "execute_code":
-            CODE = tool_args.get("code", "")
+            code = tool_args.get("code", "")
 
             # Check if code actually does something
             if not any(keyword in code for keyword in ["def ",
-                "logger.info(",
-                "return ",
-                "import "]):
+                                                       "LOGGER.info(",
+                                                       "return ",
+                                                       "import "]):
                 issues.append(VerificationIssue(
-                    SEVERITY="warning",
-                    MESSAGE="Code appears to do nothing",
-                    SUGGESTION="Add actual functionality to the code"
+                    severity="warning",
+                    message="Code appears to do nothing",
+                    suggestion="Add actual functionality to the code"
                 ))
 
         return issues
 
-async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
+    async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
         """Dry-run code in sandbox to check for runtime errors."""
         if not self.sandbox:
             return []
 
-        ISSUES = []
+        issues = []
 
         try:
             # Use sandbox to verify code syntax
@@ -309,21 +316,21 @@ async def _dry_run_code(self: Any, code: str) -> List[VerificationIssue]:
 
             if not is_valid:
                 issues.append(VerificationIssue(
-                    SEVERITY="error",
-                    MESSAGE="Code failed syntax verification",
-                    SUGGESTION="Fix syntax errors before execution"
+                    severity="error",
+                    message="Code failed syntax verification",
+                    suggestion="Fix syntax errors before execution"
                 ))
 
         except Exception as e:
             issues.append(VerificationIssue(
-                SEVERITY="error",
-                MESSAGE=f"Verification error: {str(e)}",
-                SUGGESTION="Check code for obvious errors"
+                severity="error",
+                message=f"Verification error: {str(e)}",
+                suggestion="Check code for obvious errors"
             ))
 
         return issues
 
-def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> str:
+    def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any]) -> str:
         """Generate a human-readable execution plan."""
         plan_parts = [f"Tool: {tool_name}"]
 
@@ -335,27 +342,27 @@ def _generate_execution_plan(self: Any, tool_name: str, tool_args: Dict[str, Any
 
         return " | ".join(plan_parts)
 
-def get_verification_summary(self: Any, report: ToolVerificationReport) -> str:
+    def get_verification_summary(self: Any, report: ToolVerificationReport) -> str:
         """Get a human-readable summary of verification results."""
-        SUMMARY = f"Verification: {report.result.value.upper()}\n"
+        summary = f"Verification: {report.result.value.upper()}\n"
 
         if report.issues:
-            SUMMARY += f"Issues found: {len(report.issues)}\n"
+            summary += f"Issues found: {len(report.issues)}\n"
 
             for issue in report.issues[:5]:  # Show first 5 issues
-                SUMMARY += f"  - [{issue.severity.upper()}] {issue.message}"
+                summary += f"  - [{issue.severity.upper()}] {issue.message}"
                 if issue.suggestion:
-                    SUMMARY += f"\n    Suggestion: {issue.suggestion}"
-                SUMMARY += "\n"
+                    summary += f"\n    Suggestion: {issue.suggestion}"
+                summary += "\n"
 
         if report.execution_plan:
-            SUMMARY += f"\nExecution Plan: {report.execution_plan}"
+            summary += f"\nExecution Plan: {report.execution_plan}"
 
         return summary
 
 
 def create_tool_verifier(
-    SANDBOX=None,
+    sandbox: Optional[Any] = None,
     enable_strict_mode: bool = True
 ) -> ToolVerifier:
     """
@@ -369,7 +376,6 @@ def create_tool_verifier(
         ToolVerifier instance
     """
     return ToolVerifier(
-        SANDBOX=sandbox,
+        sandbox=sandbox,
         enable_strict_mode=enable_strict_mode
     )
-def create_tool_verifier(sandbox: Any, enable_strict_mode: bool) -> ToolVerifier:

@@ -5,9 +5,9 @@ Implements ordered fallback chains when primary providers fail.
 """
 
 import logging
+from dataclasses import dataclass, field  # Added import for dataclass and field
 from enum import Enum
 from typing import Any, Awaitable, Callable, Dict, List, Optional
-from dataclasses import dataclass, field # Added import for dataclass and field
 
 LOGGER = logging.getLogger(__name__)
 

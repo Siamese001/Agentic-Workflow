@@ -13,10 +13,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '03_runtime', 'shared
 # Adjust these imports if your folder structure is nested (e.g. apps_rg.orchestrator)
 try:
     from agent_logic_connectivity import CanonValidator
+    from apps_rg.L3_orchestration.hardened_orchestrator import HardenedOrchestrator
     from connection_manager import InfrastructureError
     from orchestrator import validate_manifest_integrity
-
-    from apps_rg.L3_orchestration.hardened_orchestrator import HardenedOrchestrator
 except ImportError as e:
     pass
 # print(f"[X] Setup Error: Could not import project modules. {e}")  # [Security Fix]

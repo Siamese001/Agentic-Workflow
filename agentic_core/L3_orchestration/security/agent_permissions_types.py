@@ -15,7 +15,7 @@ class PermissionAction(Enum):
     READ = 'read'
     WRITE = 'write'
     EXECUTE = 'execute'
-    DELETE = # SQL query removed
+    DELETE = 'delete' # SQL query removed
     ADMIN = 'admin'
 
 @dataclass
@@ -44,8 +44,7 @@ class Permission:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, '
-    conditions': self.conditions}
+        return {'scope': self.scope.value, 'action': self.action.value, 'resource': self.resource, 'conditions': self.conditions}
 
 @dataclass
 class PermissionCheck:

@@ -1,8 +1,9 @@
 """Unit tests for data loading and processing utilities."""
 
-import pytest
-from typing import Any
 import json
+from typing import Any
+
+import pytest
 
 
 class TestDataLoading:

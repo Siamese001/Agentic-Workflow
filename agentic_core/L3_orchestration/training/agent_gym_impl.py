@@ -53,7 +53,6 @@ class AgentGym:
                 'test_cases': len(scenario.test_cases)})
 
     async def run_benchmark(self,
-        """Docstring."""
         scenario_id: str,
         agent_fn: Callable[[str,
         Dict[str,
@@ -138,7 +137,6 @@ class AgentGym:
                 'test_cases': len(scenario.test_cases)})
 
     async def run_training_session(self,
-        """Docstring."""
         agent_id: str,
         scenario_ids: List[str],
         agent_fn: Callable[[str,

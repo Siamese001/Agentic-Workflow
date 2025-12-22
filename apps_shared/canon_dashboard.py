@@ -5,11 +5,11 @@ HARDENED: Memory safe, Thread safe, Render safe.
 """
 
 import json
+import logging
 import threading
 import time
-import logging
 from collections import defaultdict, deque
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -26,7 +26,6 @@ try:
     from rich.panel import Panel
     from rich.table import Table
     from rich.text import Text
-    from rich.progress import BarColumn, Progress, TextColumn
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
