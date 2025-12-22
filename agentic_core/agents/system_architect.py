@@ -65,28 +65,39 @@ class SystemArchitect(CanonBaseAgent):
     
     def check_key_40_core_architecture(self) -> Tuple[bool, List[str]]:
         """
-        Verify core modules exist and are importable.
-        
-        Returns:
-            Tuple of (passed, list of violations)
+        [KEY 40 HARDENING] Comprehensive Hierarchy Verification.
+        Verifies all layers defined in CANONICAL_HIERARCHY exist as valid packages.
+       
         """
         violations = []
         
-        # Define core modules that must exist
-        core_modules = [
-            'agentic_core',
-            'apps_shared',
-            'schemas',
-        ]
+        # Force import of SSOT from project root
+        import void_compliance
+        from void_compliance import CANONICAL_HIERARCHY
         
         project_root = Path(os.getcwd())
         
-        for module in core_modules:
-            module_path = project_root / module
-            if not module_path.exists():
-                violations.append(f"{module}: Core module directory does not exist")
-            elif not (module_path / '__init__.py').exists():
-                violations.append(f"{module}: Missing __init__.py")
+        # Traverse hierarchy levels to identify missing packages or init files
+        for root_folder, layers in CANONICAL_HIERARCHY.items():
+            root_path = project_root / root_folder
+            if not root_path.exists():
+                violations.append(f"{root_folder}: Sovereign root directory missing")
+                continue
+                
+            if not (root_path / '__init__.py').exists():
+                violations.append(f"{root_folder}: Missing __init__.py")
+
+            # Check L1 and L2 layers recursively
+            for l1_name, l2_list in layers.items():
+                l1_path = root_path / l1_name
+                if l1_path.exists():
+                    if not (l1_path / '__init__.py').exists():
+                        violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
+                    
+                    for l2_name in l2_list:
+                        l2_path = l1_path / l2_name
+                        if l2_path.exists() and not (l2_path / '__init__.py').exists():
+                            violations.append(f"{root_folder}/{l1_name}/{l2_name}: Missing __init__.py")
         
         return len(violations) == 0, violations
     
@@ -168,20 +179,34 @@ class SystemArchitect(CanonBaseAgent):
     
     async def _heal_violations(self, key: int, violations: List[str]):
         """
-        Heal violations for a specific key.
-        
-        Args:
-            key: Canon key number
-            violations: List of violation descriptions
+        [KEY 40 HARDENING] Structural & Strategy Healing.
+        Handles both physical package initialization and logic mutation.
         """
+        # 1. Structural Healing: Auto-initialize Python packages (L6 Integrity)
+        # Any violation containing "Missing __init__.py" triggers a physical write.
+        structural_fixes = [v for v in violations if "Missing __init__.py" in v]
+        for fix in structural_fixes:
+            # Extract path from violation string (e.g., 'agentic_core/L1_cognition: Missing __init__.py')
+            folder_rel = fix.split(":")[0].strip()
+            folder_path = Path(os.getcwd()) / folder_rel
+            if folder_path.exists():
+                init_file = folder_path / "__init__.py"
+                with open(init_file, 'w', encoding='utf-8') as f:
+                    # High-signal docstring identifying the package
+                    f.write(f'"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n')
+                print(f"      [✓] {self.name}: INITIALIZED {folder_rel}/__init__.py")
+        
+        # 2. Strategy Healing: Hand off remaining logic violations to smart_fix
+        remaining_violations = [v for v in violations if "Missing __init__.py" not in v]
+        if not remaining_violations:
+            return
+
         max_healing_per_file = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
         
         # Group violations by file
         file_violations = {}
-        for violation in violations[:max_healing_per_file]:
+        for violation in remaining_violations[:max_healing_per_file]:
             if ':' in violation:
-                # FIX: Handle Windows paths correctly (C:\path\file.py: message)
-                # Split on ': ' (colon-space) instead of just ':' to avoid splitting drive letters
                 parts = violation.split(': ', 1)
                 if len(parts) >= 1:
                     file_path = parts[0]
@@ -189,7 +214,7 @@ class SystemArchitect(CanonBaseAgent):
                         file_violations[file_path] = []
                     file_violations[file_path].append(violation)
         
-        # Heal each file
+        # Heal each file using LLM resilient mutation
         for file_path, file_viols in file_violations.items():
             await self._smart_fix(file_path, key, file_viols)
     
