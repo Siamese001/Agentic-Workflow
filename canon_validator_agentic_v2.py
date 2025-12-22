@@ -480,6 +480,96 @@ Return ONLY the fixed Python code. No explanations, no markdown.
     print("-" * 50)
     
     # ===========================================================================
+    # [PHASE -1.5] NAMESPACE HEALING: Standardizing Standard Lib Imports
+    # ===========================================================================
+    print(f"\n[PHASE -1.5] NAMESPACE HEALING")
+    namespace_healed_count = 0
+    
+    # Common patterns: (usage_pattern, import_statement)
+    import_patterns = [
+        ("logging.", "import logging"),
+        ("logger.", "import logging"),
+        ("Any", "from typing import Any, Optional, Protocol, Dict, List"),
+        ("Optional", "from typing import Any, Optional, Protocol, Dict, List"),
+        ("Protocol", "from typing import Any, Optional, Protocol, Dict, List"),
+        ("Dict[", "from typing import Any, Optional, Protocol, Dict, List"),
+        ("List[", "from typing import Any, Optional, Protocol, Dict, List"),
+        ("@dataclass", "from dataclasses import dataclass, field"),
+        ("dataclass(", "from dataclasses import dataclass, field"),
+        ("Enum", "from enum import Enum, auto"),
+        ("Path(", "from pathlib import Path"),
+        ("json.", "import json"),
+        ("os.path", "import os"),
+        ("sys.", "import sys"),
+    ]
+    
+    for file_path in ctx.python_files:
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                content = f.read()
+            
+            missing_imports = []
+            
+            # Check each pattern
+            for usage_pattern, import_stmt in import_patterns:
+                # Skip if usage pattern not found
+                if usage_pattern not in content:
+                    continue
+                
+                # Check if import already exists
+                if import_stmt in content:
+                    continue
+                
+                # Avoid duplicates in missing_imports
+                if import_stmt not in missing_imports:
+                    missing_imports.append(import_stmt)
+            
+            # If we found missing imports, fix the file
+            if missing_imports:
+                print(f"   [NAMESPACE-FIX] {Path(file_path).name} missing {len(missing_imports)} imports")
+                
+                fix_prompt = f"""### ROLE: NAMESPACE_MEDIC
+### TASK: Add missing standard library imports to the top of the file.
+### MISSING IMPORTS:
+{chr(10).join(f'- {imp}' for imp in missing_imports)}
+
+### INSTRUCTIONS:
+1. Add the missing imports at the top of the file (after docstring if present)
+2. Preserve all existing code exactly as-is
+3. Do not modify any logic, only add imports
+4. Return ONLY the complete fixed Python code
+
+Return the complete file with imports added. No explanations, no markdown."""
+                
+                fixed_code = await ctx.engine.resilient_mutation(
+                    file_path=str(file_path),
+                    code=content,
+                    task=fix_prompt,
+                    round_num=1,
+                    fission_active=False
+                )
+                
+                # Safety: Ensure we got valid code back
+                if len(fixed_code) > 10:
+                    is_safe, msg = ctx.safety.verify_change(content, fixed_code, fission_active=False)
+                    if is_safe:
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            f.write(fixed_code)
+                        print(f"      [✓] Namespace Healed. Imports injected.")
+                        namespace_healed_count += 1
+                    else:
+                        print(f"      [!] Safety check failed: {msg}")
+        except Exception as heal_err:
+            print(f"      [!] Namespace healing failed for {Path(file_path).name}: {str(heal_err)[:100]}")
+    
+    if namespace_healed_count > 0:
+        print(f"   [PHASE -1.5 COMPLETE] Healed {namespace_healed_count} files with missing imports")
+    else:
+        print(f"   [OK] No missing standard library imports detected")
+    
+    print("-" * 50)
+    
+    # ===========================================================================
     # [ENHANCEMENT 2] L1 INTELLIGENCE INJECTION: Dynamic Agent Discovery
     # ===========================================================================
     cleaning_crew = []

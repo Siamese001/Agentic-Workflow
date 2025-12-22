@@ -4,6 +4,9 @@ Schemas Module - Canon Validator System
 Facade module that wraps the existing CanonEntry implementation
 to match the master prompt specifications.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import ast
 import hashlib

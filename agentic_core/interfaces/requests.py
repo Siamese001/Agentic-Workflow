@@ -3,6 +3,8 @@
 Defines ActionRequest, PlanningRequest, and related types for
 communication between the orchestrator and planes.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional

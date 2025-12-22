@@ -4,6 +4,9 @@ GitAgent - L6 GitOps & Remote Synchronization
 Manages git operations for self-healing commits and remote pushes.
 Ensures changes are committed and pushed to remote repository.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import logging
 import os

@@ -1,6 +1,8 @@
 """
 L5 Autonomous Orchestrator - Reflection Handler (Outreach Engine)
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Any, Optional

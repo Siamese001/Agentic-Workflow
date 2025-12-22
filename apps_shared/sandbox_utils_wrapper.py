@@ -7,6 +7,8 @@ This is a backward compatibility shim. All new code should import directly from:
 """
 
 # Execution operations
+import re
+
 from agentic_core.tools.execution import (
     execute_command,
     is_command_allowed,

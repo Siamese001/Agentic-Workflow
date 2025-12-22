@@ -1,4 +1,8 @@
 """E2E tests for admin flows - system configuration and management."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
 
 import logging
 from dataclasses import dataclass

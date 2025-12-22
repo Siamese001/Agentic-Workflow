@@ -17,5 +17,7 @@ smaller, more focused submodules for better maintainability and compliance.
 # Re-export all components for backward compatibility
 # from .k25_research_models_types import *  # Star import removed
 # from .k25_research_models_impl import *  # Star import removed
+import logging
+
 
 __all__ = ["*"]  # Re-export all imported names

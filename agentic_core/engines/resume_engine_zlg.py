@@ -10,6 +10,10 @@ Phases:
 - P10: Shadow Mode (Self-Correction)
 - ZLG Loop: Draft, Vet, and Self-Correct (MAX_REWRITE_ATTEMPTS=3)
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import re
+
 
 import logging
 import os

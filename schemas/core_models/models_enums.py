@@ -1,4 +1,6 @@
 """Enum types for models."""
+from enum import Enum, auto
+
 
 import logging
 

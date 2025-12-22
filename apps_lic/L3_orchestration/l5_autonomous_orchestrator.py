@@ -6,6 +6,9 @@ All orchestration logic has been moved to agentic_core/core/orchestrator_main.py
 
 Legacy API preserved for backward compatibility.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Optional

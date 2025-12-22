@@ -7,6 +7,8 @@ Tests the complete learning workflow:
 - Memory persistence across missions
 - Confidence-based retry in production scenarios
 """
+import re
+
 
 import asyncio
 

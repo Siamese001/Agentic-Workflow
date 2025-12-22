@@ -8,6 +8,11 @@ This module provides advanced governance capabilities:
 - PromptGovernor: AI prompt security and segregation
 - PredictiveBudgetManager: Cost prediction before execution
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+import time
+
 
 import ast
 import hashlib

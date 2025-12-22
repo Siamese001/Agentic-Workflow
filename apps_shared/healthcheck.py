@@ -3,6 +3,9 @@
 Health Check Script for Canon Validator Engine
 Monitors L4 Redis state and L5 Audit Trail connectivity
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import json
 import os

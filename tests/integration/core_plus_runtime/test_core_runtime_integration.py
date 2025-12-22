@@ -4,6 +4,9 @@ Auto-generated stub for integration\core_plus_runtime\test_core_runtime_integrat
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
+import re
+import time
+
 
 import pytest
 

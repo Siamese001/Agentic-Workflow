@@ -3,6 +3,8 @@
 CV-U-003: Figma (L2) Version Parity Check
 Unit test for isolated L2 component verification
 """
+import time
+
 
 import json
 from datetime import datetime, timezone

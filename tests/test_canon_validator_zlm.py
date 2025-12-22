@@ -11,6 +11,8 @@ Test Cases:
 - TC-ZLM-302: P7 File Integrity Check
 - TC-ZLM-303: L5 Audit Trail
 """
+import re
+
 
 import os
 import sys

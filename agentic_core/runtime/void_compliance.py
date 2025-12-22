@@ -3,6 +3,8 @@
 L6 Runtime: Void Compliance Enforcer
 Ensures files only exist in ALLOWED_ROOT_FOLDERS and enforces key-to-folder mapping.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import os

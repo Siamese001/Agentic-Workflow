@@ -3,6 +3,10 @@
 Outreach Engine (E3) - Zero-Side Effect (ZSE) Execution
 Implements outreach with P6 vetting and P10 Shadow Mode
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 import logging
 import os

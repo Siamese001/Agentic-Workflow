@@ -11,6 +11,11 @@ Tracks: Token usage per file, healing attempts, success rates
 Flags: Files consuming excessive tokens without reaching PASS state
 Suggests: Where manual Atomic Fission would be more cost-effective
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+import time
+
 
 import logging
 from dataclasses import dataclass

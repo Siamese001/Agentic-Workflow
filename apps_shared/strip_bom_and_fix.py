@@ -2,6 +2,8 @@
 """
 Strip BOM and fix leading whitespace issues in test files.
 """
+import re
+
 
 from pathlib import Path
 

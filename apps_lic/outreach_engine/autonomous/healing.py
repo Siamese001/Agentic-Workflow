@@ -6,6 +6,9 @@ Provides self-healing capabilities for outreach campaigns:
 - Healing cycles with convergence detection
 - Automatic rollback on critical failures
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 from dataclasses import dataclass, field
 from datetime import datetime

@@ -3,6 +3,8 @@ Canon Validator Web Dashboard - Interactive Web Interface
 Real-time metrics with Flask backend and modern frontend.
 HARDENED: Thread-safe reads, Input sanitization, Robust error handling.
 """
+import time
+
 
 import logging
 import os

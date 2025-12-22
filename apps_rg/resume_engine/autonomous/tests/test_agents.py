@@ -12,6 +12,8 @@ Tests each specialized agent's functionality:
 - StrategicPlanner
 - ReflectionAgent
 """
+import re
+
 
 import pytest
 

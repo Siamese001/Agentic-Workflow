@@ -1,3 +1,7 @@
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 _logger = logging.getLogger(__name__)
 # Ownership: agentic_core / unknown
 # -*- coding: utf-8 -*-

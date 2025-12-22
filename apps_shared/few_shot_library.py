@@ -17,6 +17,10 @@ Domain-Specific Extensions:
 - FEW_SHOT_EXECUTIVE_SUMMARY: Executive summary generation
 - FEW_SHOT_METRIC_BINDING: Metric to evidence binding
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+
 
 from dataclasses import dataclass
 from typing import Dict, List, Optional

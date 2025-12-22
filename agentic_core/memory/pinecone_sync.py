@@ -10,6 +10,9 @@ Strategy:
 - Cross-link with parent_monolith metadata
 - Maintain L4 State consistency
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 import os

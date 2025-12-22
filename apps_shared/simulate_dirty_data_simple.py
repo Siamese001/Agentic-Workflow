@@ -3,6 +3,8 @@
 Simplified Dirty Data Simulator - Demonstrates CanonValidator concepts
 Uses in-memory storage with hash and semantic similarity for duplicate detection.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import hashlib
 import logging

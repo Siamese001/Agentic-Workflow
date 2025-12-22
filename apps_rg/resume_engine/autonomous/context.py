@@ -4,6 +4,9 @@ ResumeEngineContext - Central state management for autonomous resume generation.
 This module provides the core context class that maintains state across all agents,
 including signals, results, backups, budget tracking, and learning data.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import os
 from dataclasses import dataclass, field

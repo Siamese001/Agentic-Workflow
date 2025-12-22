@@ -11,6 +11,8 @@ Canon Validator L5+ Autonomy Components:
 - FewShotLibrary: Prompt enhancement patterns
 - ValidationContext: Central blackboard for all agents
 """
+import re
+
 
 from apps_shared.few_shot_library import FewShotExample, FewShotLibrary, get_few_shot
 from apps_shared.intervention_server import (

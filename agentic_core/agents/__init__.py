@@ -1,6 +1,10 @@
 """Agent classes for agentic_core."""
 
 # Standard library imports
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Optional

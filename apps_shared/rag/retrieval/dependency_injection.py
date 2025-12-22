@@ -6,6 +6,8 @@ LOGGER = logging.getLogger(__name__)
 Tests DI container functionality and proper service injection
 across all layers to maintain L1-L5 atomicity.
 """
+import logging
+
 
 
 import pytest

@@ -6,6 +6,8 @@ This package provides comprehensive safety mechanisms:
 - Canary Defense: Injection attack prevention with canary token detection
 - Cost Governor: Financial circuit breaker with real-time cost tracking
 """
+import re
+
 import logging
 
 LOGGER = logging.getLogger(__name__)

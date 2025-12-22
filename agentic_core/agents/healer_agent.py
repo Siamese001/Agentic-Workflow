@@ -7,6 +7,8 @@ Responsible for:
 - Pattern learning from successful fixes
 - Integration with Pinecone for pattern storage
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 import os
 from typing import List, Optional
 

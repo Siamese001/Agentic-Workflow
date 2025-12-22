@@ -1,6 +1,8 @@
 """
 L5 Autonomous Orchestrator - Snapshot and Rollback Manager (Outreach Engine)
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import copy
 import logging

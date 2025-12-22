@@ -4,6 +4,8 @@ BenchmarkingAgent - L3 System Health Specialist
 Measures execution time of specific functions and operations.
 Tracks performance metrics across cycles to detect degradation.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import statistics

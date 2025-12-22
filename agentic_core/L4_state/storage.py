@@ -4,6 +4,8 @@ Storage adapters for different backend types.
 Provides atomic storage operations with hot-swappable backends.
 Supports local disk (for development) and S3 (for production).
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import json
 import logging

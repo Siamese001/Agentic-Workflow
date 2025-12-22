@@ -4,6 +4,9 @@ evaluate_writing_quality.py - Scoring Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.222990
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Dict, Optional

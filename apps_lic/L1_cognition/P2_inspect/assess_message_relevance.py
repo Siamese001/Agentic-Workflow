@@ -4,6 +4,9 @@ assess_message_relevance.py - Scoring Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.065237
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Dict, Optional

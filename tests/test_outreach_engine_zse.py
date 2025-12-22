@@ -3,6 +3,8 @@
 Test Suite for Outreach Engine ZSE (Engine 3)
 Covers test cases TC-E3-101 through TC-E3-302
 """
+import re
+
 
 import os
 import sys

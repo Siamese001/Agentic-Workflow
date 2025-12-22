@@ -10,6 +10,8 @@ Features:
 - Architecture governance laws enforcement
 - Blast radius visualization
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import logging

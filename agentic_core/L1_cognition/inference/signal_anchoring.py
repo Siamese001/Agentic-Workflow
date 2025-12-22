@@ -1,3 +1,7 @@
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
 import hashlib
 import logging
 import re

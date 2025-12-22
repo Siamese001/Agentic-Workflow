@@ -2,6 +2,8 @@
 Canon Validator with Integrated Dashboard
 Runs validation with real-time dashboard monitoring
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import sys
 import threading

@@ -4,6 +4,8 @@ Auto-generated stub for e2e\outreach_flows\test_outreach_campaign_lifecycle.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
+import re
+
 
 import pytest
 

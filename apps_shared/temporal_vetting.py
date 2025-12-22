@@ -2,6 +2,10 @@
 Temporal Vetting Module for Outreach Engine
 L4 Temporal Awareness - Ensures optimal contact times
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 

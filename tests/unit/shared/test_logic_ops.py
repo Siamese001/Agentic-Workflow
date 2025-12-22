@@ -5,6 +5,11 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared/logic/
 Tests logic operations including data access, guardrails, synthesis, and validation.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
 
 import re
 from dataclasses import dataclass

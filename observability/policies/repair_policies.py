@@ -7,6 +7,10 @@ repair actions (retry, downgrade, replan, escalate).
 """
 
 # from archives.legacy_root_folders.eval.health.failure_detector import FailureSignal  # DEPRECAT...
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 
 @dataclass

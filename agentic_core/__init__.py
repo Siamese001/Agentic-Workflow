@@ -15,6 +15,10 @@ COMPLIANCE:
 - This package is SOVEREIGN. It must NOT import from 'apps_*'.
 - Domain-specific logic (e.g., 'BulletNarrative') belongs in 'apps_rg'.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import logging
 import sys

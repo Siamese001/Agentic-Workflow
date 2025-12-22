@@ -6,6 +6,9 @@ Responsible for:
 - Key 41-47: Import dependencies, module structure
 - Key 48-50: Architectural patterns and design
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 import ast
 import os
 from pathlib import Path

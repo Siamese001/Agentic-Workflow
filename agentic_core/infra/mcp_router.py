@@ -12,6 +12,8 @@ MCP Assignment by Layer:
 - L2 Execution: Brave Search, DeepWiki
 - L1 Cognition: Gemini/Claude (Core)
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Any, Dict, Optional

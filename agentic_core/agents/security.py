@@ -3,6 +3,8 @@ apps_shared/security/domain/safety_inspector.py
 Depth: 5
 Role: Enforces security protocols, concurrency safety, and intelligent remediation.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 import asyncio
 import re
 from typing import Dict, List, Tuple

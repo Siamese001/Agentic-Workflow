@@ -5,6 +5,11 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/cognition_ops/
 Tests cognition operations including understand_request.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
 
 from dataclasses import dataclass
 from enum import Enum

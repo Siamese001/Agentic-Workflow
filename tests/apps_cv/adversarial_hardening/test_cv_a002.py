@@ -3,6 +3,8 @@
 CV-A-002: Temporal Rollback Attack
 Adversarial test for L4 temporal integrity
 """
+import time
+
 
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock

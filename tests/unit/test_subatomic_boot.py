@@ -4,6 +4,8 @@ This test validates that the agentic_core architecture can transition
 from syntactically valid to functionally operational by exercising
 the interfaces and core components.
 """
+import re
+
 
 import pytest
 

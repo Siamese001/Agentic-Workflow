@@ -4,6 +4,8 @@ dispatch_outreach_tools.py - Execution Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.137995
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import time

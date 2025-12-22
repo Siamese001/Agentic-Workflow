@@ -6,6 +6,9 @@ LOGGER = logging.getLogger(__name__)
 Simple aggregation utilities over error / success events that can be
 used by tests or higher-level evaluation code.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+
 
 from typing import Dict, List, object
 

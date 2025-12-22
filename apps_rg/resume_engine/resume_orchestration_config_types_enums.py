@@ -1,4 +1,6 @@
 """Enum types for resume_orchestration_config_types."""
+from enum import Enum, auto
+
 import logging
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant

@@ -2,6 +2,9 @@
 
 Bypasses corrupted registry files with Toolsmith logic from the monolith.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import asyncio
 import logging

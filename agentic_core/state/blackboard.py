@@ -10,6 +10,10 @@ across concurrent healing operations. Features:
 - Redis (HOT BRAIN) for fast caching and locks
 - Pinecone (DEEP BRAIN) for pattern learning
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+
 import hashlib
 import json
 import os

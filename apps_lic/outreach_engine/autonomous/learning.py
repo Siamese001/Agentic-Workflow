@@ -6,6 +6,10 @@ Provides learning and memory capabilities:
 - Confidence scoring for decisions
 - Memory persistence across sessions
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 import hashlib
 import json

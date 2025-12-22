@@ -4,6 +4,8 @@ DependencySentinel - L1 Guardian for Import Dependencies
 Enforces the "Law of Depth" and prevents circular imports.
 Uses AST parsing to analyze and validate import structures.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import logging

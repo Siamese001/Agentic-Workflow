@@ -2,6 +2,9 @@
 Canon Validator Syntax Agents
 CodeJanitor, DependencySentinel - Code hygiene and import management.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import ast
 import os

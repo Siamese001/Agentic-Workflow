@@ -3,6 +3,8 @@ Web Search Tools - Atomic Module
 Extracted from action_registry.py via Atomic Fission Protocol
 Tool ID Prefix: ACT-001
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 import logging
 import os
 from typing import Dict

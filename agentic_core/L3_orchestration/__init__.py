@@ -3,6 +3,8 @@
 Phase 2 - Pillars 1 & 4: Layering Model + Workflow (DAGs)
 Coordinates between cognitive and action planes with DAG-based workflow execution.
 """
+import re
+
 import logging
 
 LOGGER = logging.getLogger(__name__)

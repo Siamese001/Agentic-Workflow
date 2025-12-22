@@ -2,6 +2,9 @@
 Clarity & Brevity Filter for L1 Content Refinement
 Refines outreach messages for maximum clarity and impact
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 import logging
 import re

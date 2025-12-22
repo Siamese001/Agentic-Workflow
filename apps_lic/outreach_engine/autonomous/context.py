@@ -4,6 +4,10 @@ Outreach Engine Context - Shared State for Autonomous Agents
 Provides the shared context and state management for the autonomous
 outreach engine, including campaign state, signals, and budget tracking.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import time
+
 
 import os
 from dataclasses import dataclass

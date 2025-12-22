@@ -4,6 +4,8 @@ Main Entry Point - Connectivity-Hardened Canon Validator
 Boot sequence with explicit connectivity handshake between
 RedisVL, Pinecone, and the embedding function.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import os

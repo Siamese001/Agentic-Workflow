@@ -4,6 +4,10 @@ Schemas Module - Connectivity-Hardened Canon Validator
 Pydantic models for the Unified Semantic Element containing
 embedding vectors, AST structures, and meta-learning metadata.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import ast
 import hashlib

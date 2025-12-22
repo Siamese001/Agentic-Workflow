@@ -4,6 +4,8 @@ Auto-generated stub for unit\apps_rg\test_resume_integrity_simple.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
+import time
+
 
 import pytest
 

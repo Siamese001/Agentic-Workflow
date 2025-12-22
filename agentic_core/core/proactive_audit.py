@@ -11,6 +11,10 @@ Strategy:
 - Create pre-emptive refactor proposals
 - Enable proactive architectural governance
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import logging
 import os

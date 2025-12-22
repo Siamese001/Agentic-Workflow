@@ -1,4 +1,8 @@
 """Types and models for kx_nodes_outreach."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
 
 import logging
 from typing import Any, Dict, List, Optional

@@ -4,6 +4,10 @@ StrategicPlanner - L1 Guardian for Mission Planning
 Generates MissionPlan at the start of cycles.
 Coordinates agent execution and resource allocation.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 import logging
 from datetime import datetime

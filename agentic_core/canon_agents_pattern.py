@@ -8,6 +8,8 @@ validating UI components, and performing semantic analysis within a codebase.
 - UIValidationAgent: Integrates with UI design tools (e.g., Figma MCP) for UI pattern validation.
 - SemanticMapper: Analyzes code structure to identify refactoring opportunities.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import logging

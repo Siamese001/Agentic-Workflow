@@ -8,6 +8,9 @@ Contains all mission execution modes:
 
 This module consolidates all mission execution logic from the canon validator.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import asyncio
 import logging

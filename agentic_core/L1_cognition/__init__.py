@@ -3,6 +3,8 @@
 Provides cognitive capabilities for agent autonomy including
 episodic memory and reasoning systems.
 """
+import re
+
 import logging
 
 LOGGER = logging.getLogger(__name__)

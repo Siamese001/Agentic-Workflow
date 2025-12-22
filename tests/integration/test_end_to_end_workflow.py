@@ -4,6 +4,8 @@ Auto-generated stub for integration\test_end_to_end_workflow.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
+import re
+
 
 import pytest
 

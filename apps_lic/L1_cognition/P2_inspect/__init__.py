@@ -6,6 +6,8 @@ LOGGER = logging.getLogger(__name__)
 
 Generated: 2025-12-07T13:28:54.045984
 """
+import logging
+
 
 __all__: list[str] = [
     "LICValidator",

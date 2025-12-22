@@ -4,6 +4,9 @@ prepare_message_payload.py - Formatting Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.125303
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Dict, Optional, Union

@@ -1,4 +1,8 @@
 """Types and models for route_classifier."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+
 
 import logging
 

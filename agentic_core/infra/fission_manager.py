@@ -10,6 +10,10 @@ Strategy:
 - L5 Safety: Prevents destructive deletions (>110 lines)
 - L3 Orchestration: Triggers atomic fission to partition monoliths
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+
 
 import json
 import logging

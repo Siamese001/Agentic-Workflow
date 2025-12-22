@@ -6,6 +6,10 @@ Provides comprehensive observability:
 - Metrics collection
 - Audit reporting
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 from dataclasses import dataclass, field
 from datetime import datetime

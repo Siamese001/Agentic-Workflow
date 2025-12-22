@@ -7,6 +7,8 @@ Tests the complete L1-L5 MCP architecture including:
 - ProactiveFissionScanner bloat detection
 - End-to-end fission workflow with MCP coordination
 """
+import re
+
 
 import asyncio
 import sys

@@ -3,6 +3,8 @@
 Defines the contracts that cognitive (Brain) and action (Hands) planes
 must implement for the orchestrator to coordinate them.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 from typing import Any, Dict, List, Protocol, runtime_checkable
 

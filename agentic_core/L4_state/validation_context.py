@@ -4,6 +4,10 @@ ValidationContext - State management for validation cycles
 Tracks modified files, signals, and file hashes across cycles
 to optimize performance and prevent unnecessary re-scanning.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import time
+
 
 import json
 import logging

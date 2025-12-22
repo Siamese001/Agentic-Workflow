@@ -1,4 +1,6 @@
 """Unit tests for function scripts."""
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import os

@@ -2,6 +2,8 @@
 Secure Subprocess Execution - Timeout-Protected Command Execution
 Prevents livelocks and provides safe subprocess management.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import subprocess
 import sys

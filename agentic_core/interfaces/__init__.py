@@ -3,6 +3,9 @@
 This module provides Protocol-based interfaces and dataclass types for
 the agentic framework, replacing temporary Any fallbacks with real types.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 from agentic_core.interfaces.config import (
     OrchestratorConfig,

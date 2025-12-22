@@ -1,4 +1,6 @@
 """Implementation for kx_nodes_resume."""
+from typing import Any, Optional, Protocol, Dict, List
+
 import logging
 
 from services.configuration import ConfigurationService

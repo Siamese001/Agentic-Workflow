@@ -6,6 +6,9 @@ L3 Orchestration: Manages the Think-Act-Observe cycle.
 
 Updated December 2025: Aligned with SubatomicAgent interface and consolidated orchestrator.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 import logging
 from abc import ABC, abstractmethod

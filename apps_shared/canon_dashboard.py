@@ -3,6 +3,11 @@ Canon Validator Dashboard - Best-in-Class Monitoring UI
 Real-time metrics, interactive tables, and comprehensive analytics.
 HARDENED: Memory safe, Thread safe, Render safe.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+import re
+
 
 import json
 import logging

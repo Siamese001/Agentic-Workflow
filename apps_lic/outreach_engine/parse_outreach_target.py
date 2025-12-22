@@ -4,6 +4,8 @@ parse_outreach_target.py - Retrieval Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.034168
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Dict, List, Optional

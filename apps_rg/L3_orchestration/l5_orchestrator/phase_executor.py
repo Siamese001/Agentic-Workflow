@@ -1,6 +1,9 @@
 """
 L5 Autonomous Orchestrator - Phase Execution Logic
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import asyncio
 import logging

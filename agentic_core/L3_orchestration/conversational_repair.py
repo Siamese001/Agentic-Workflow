@@ -4,6 +4,8 @@ L6 Conversational Repair & Multi-Agent Debate
 Implements a simplified debate loop where specialist agents
 discuss complex failures to reach consensus on fixes.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import json
 import logging

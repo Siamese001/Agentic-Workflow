@@ -14,5 +14,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 # from .outreach_orchestration_config_models import *  # Star import removed
 # from .outreach_orchestration_config_models_1 import *  # Star import removed
 # from .outreach_orchestration_config_impl import *  # Star import removed
+import logging
+
 
 __all__ = ["*"]  # Re-export all imported names

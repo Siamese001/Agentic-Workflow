@@ -4,6 +4,8 @@ Tests FastAPI intervention server and approval/veto workflow.
 
 These tests verify the "All Tests Pass" provision for L5 Full Autonomy.
 """
+import re
+
 import asyncio
 
 import pytest

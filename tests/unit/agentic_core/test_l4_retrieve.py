@@ -1,4 +1,7 @@
 """Unit tests for L4_memory/P1_retrieve - memory retrieval operations."""
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from datetime import datetime

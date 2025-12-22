@@ -3,6 +3,8 @@ agentic_core/domain/prompts.py
 Depth: 3
 Role: Static storage for LLM few-shot prompts to keep Context clean.
 """
+import re
+
 
 FEW_SHOT_GLOBAL_REFACTOR = """
 FEW-SHOT REFACTORING PATTERNS:

@@ -4,6 +4,9 @@ Verifiable Checkpoint Manager
 Serializes agent state with cryptographic verification to ensure data integrity.
 Prevents corrupted or tampered checkpoints from being loaded into agent memory.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import hashlib
 import json

@@ -3,6 +3,9 @@ L5 Orchestrator Types - Outreach Engine.
 
 Dataclasses and enums for L5+ autonomous orchestration.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 from dataclasses import dataclass, field
 from datetime import datetime

@@ -4,6 +4,8 @@ L6 Deterministic Pre-Flight Sanitation
 Implements deterministic cleaners that run before LLM processing
 to maintain baseline code quality and save tokens.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import logging

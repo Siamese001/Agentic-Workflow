@@ -6,6 +6,9 @@ when complexity thresholds are exceeded during healing.
 
 Integration: SystemArchitect → Pattern Retrieval → Automatic Extraction
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 import os

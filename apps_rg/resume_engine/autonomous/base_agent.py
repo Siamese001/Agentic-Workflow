@@ -4,6 +4,8 @@ ResumeAgent - Base class for all autonomous resume generation agents.
 All specialized agents inherit from this base class and implement
 the execute() method for their specific functionality.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import asyncio
 from abc import ABC, abstractmethod

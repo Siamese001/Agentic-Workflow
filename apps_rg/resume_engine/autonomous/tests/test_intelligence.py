@@ -9,6 +9,8 @@ Tests the core intelligence functionality:
 - UnifiedOrchestrator
 - Phase6Orchestrator
 """
+import re
+
 
 import pytest
 

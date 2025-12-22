@@ -7,6 +7,9 @@ Demonstrates how to use the enhanced autonomy features:
 3. Dynamic Tool Discovery - Runtime tool finding
 4. Recursive Planning - Hierarchical task execution
 """
+import re
+import time
+
 
 import asyncio
 import logging

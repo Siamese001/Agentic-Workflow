@@ -2,6 +2,8 @@
 MCP Time Server Client
 Provides time-related tools for L4 Temporal Awareness
 """
+import time
+
 import json
 import logging
 import subprocess

@@ -5,6 +5,9 @@ Delegates to Universal Context Gemini client in agentic_core/infra/context.py
 This is a backward compatibility shim. All new code should import directly from:
     from agentic_core.infra.context import context
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Any, Dict

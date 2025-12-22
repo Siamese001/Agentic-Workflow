@@ -7,6 +7,9 @@ This module provides the core self-healing capabilities:
 - HealingOrchestrator: Coordinates multiple healing cycles
 - AutomaticRollback: Handles rollback on critical failures
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 from dataclasses import dataclass, field
 from datetime import datetime

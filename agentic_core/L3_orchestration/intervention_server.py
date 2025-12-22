@@ -4,6 +4,8 @@ L5 Human-in-the-Loop Intervention Server
 Provides a FastAPI-based web UI for human approval/veto of high-risk
 autonomous actions during validation missions.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import asyncio
 import threading
