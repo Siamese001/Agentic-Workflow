@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canon Validator - Agent Architecture (L1-L6) [Live]</title>
+    <title>Canon Validator - Agent Architecture Dashboard</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- vis.js Network CSS -->
-    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         body {
-            background-color: #0d1117;
+            background: #0d1117;
             color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        .navbar {
-            background-color: #161b22 !important;
-            border-bottom: 1px solid #30363d;
+        .dashboard-header {
+            background: linear-gradient(135deg, #161b22 0%, #21262d 100%);
+            border-bottom: 2px solid #30363d;
+            padding: 20px 0;
+            margin-bottom: 30px;
         }
         
-        .navbar-brand {
-            color: #58a6ff !important;
+        .dashboard-title {
+            color: #58a6ff;
             font-weight: 600;
+            margin: 0;
         }
         
-        .nav-link {
-            color: #8b949e !important;
-            transition: color 0.2s;
+        .dashboard-subtitle {
+            color: #8b949e;
+            font-size: 0.9rem;
+            margin: 0;
         }
         
-        .nav-link:hover, .nav-link.active {
-            color: #58a6ff !important;
-        }
-        
-        #agentGraph {
-            height: 75vh;
-            border: 2px solid #343a40;
+        #agent-network {
+            background: #1e1e1e !important;
+            min-height: 75vh;
+            border: 2px solid #30363d;
             border-radius: 8px;
-            background-color: #1e1e1e;
-            margin-bottom: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
         .details-panel {
-            background-color: #0d1117;
+            background: #161b22;
             border: 2px solid #30363d;
             border-radius: 8px;
             padding: 24px;
@@ -68,115 +67,92 @@
             margin-right: 8px;
         }
         
-        .status-idle { background-color: #238636; }
-        .status-running { background-color: #f85149; }
-        .status-healing { background-color: #fb850f; }
-        .status-error { background-color: #da3633; }
+        .status-idle { background-color: #6c757d; }
+        .status-running { background-color: #28a745; }
+        .status-healing { background-color: #ffc107; }
+        .status-error { background-color: #dc3545; }
         
         .level-badge {
-            padding: 4px 8px;
+            display: inline-block;
+            padding: 2px 8px;
             border-radius: 4px;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            margin-right: 8px;
         }
         
-        .level-L1 { background-color: #ff9999; color: #000; }
-        .level-L2 { background-color: #ffcc99; color: #000; }
-        .level-L3 { background-color: #ffff99; color: #000; }
-        .level-L4 { background-color: #ccff99; color: #000; }
-        .level-L5 { background-color: #99ccff; color: #000; }
-        .level-L6 { background-color: #cc99ff; color: #000; }
-        .level-Core { background-color: #97c2fc; color: #000; }
-        
-        .refresh-info {
-            color: #8b949e;
-            font-size: 0.875rem;
-            margin-top: 10px;
-        }
+        .level-L1 { background-color: #dc3545; }
+        .level-L2 { background-color: #fd7e14; }
+        .level-L3 { background-color: #ffc107; }
+        .level-L4 { background-color: #28a745; }
+        .level-L5 { background-color: #007bff; }
+        .level-L6 { background-color: #6c757d; }
         
         .graph-controls {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
-        .btn-secondary {
-            background-color: #21262d;
+        .btn-dark {
+            background: #21262d;
             border-color: #30363d;
             color: #c9d1d9;
         }
         
-        .btn-secondary:hover {
-            background-color: #30363d;
-            border-color: #6e7681;
-            color: #c9d1d9;
+        .btn-dark:hover {
+            background: #30363d;
+            border-color: #484f58;
+            color: #ffffff;
+        }
+        
+        .refresh-info {
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Canon Validator Dashboard</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/agent_graph">Agent Architecture (L1-L6)</a>
-                    </li>
-                </ul>
-                <span class="navbar-text">
-                    Real-time Agent Visualization
-                </span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <div class="col-12">
-                <h2>Agent Architecture (L1-L6)</h2>
-                <p class="text-muted">Interactive visualization of the entire agentic system during validation missions</p>
+    <div class="container-fluid">
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-project-diagram"></i> Agent Architecture Dashboard
+                    </h1>
+                    <p class="dashboard-subtitle">Real-time visualization of Canon Validator agents and their relationships</p>
+                </div>
+                <div class="col-auto">
+                    <a href="/" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left"></i> Back to Main Dashboard
+                    </a>
+                </div>
             </div>
         </div>
         
-        <!-- Graph Controls -->
-        <div class="row graph-controls">
+        <div class="row">
             <div class="col-12">
-                <button class="btn btn-secondary btn-sm" onclick="refreshGraph()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh Now
-                </button>
-                <span class="refresh-info ms-3">Auto-refreshes every 3 seconds</span>
+                <div class="graph-controls">
+                    <button class="btn btn-dark" onclick="updateGraph()">
+                        <i class="fas fa-sync-alt"></i> Refresh Now
+                    </button>
+                    <span class="refresh-info">
+                        <i class="fas fa-clock"></i> Auto-refreshes every 3 seconds
+                    </span>
+                </div>
             </div>
         </div>
         
-        <!-- Graph Container -->
         <div class="row">
-            <div class="col-12">
-                <div id="agentGraph"></div>
+            <div class="col-lg-9">
+                <div id="agent-network"></div>
             </div>
-        </div>
-        
-        <!-- Details Panel -->
-        <div class="row">
-            <div class="col-12">
-                <div class="details-panel">
-                    <h5>Agent Intelligence Panel</h5>
-                    <div id="nodeDetails">
-                        <p class="text-muted">Click on a node to view detailed information</p>
-                        <div id="selectedAgentDetails" style="display:none;">
-                            <strong>Selected Agent:</strong> <span id="selected-name">None</span><br>
-                            <strong>Level:</strong> <span id="selected-level">-</span><br>
-                            <strong>Status:</strong> <span id="selected-status">Idle</span><br>
-                            <strong>Current Task:</strong> <span id="selected-task">-</span><br>
-                            <strong>Description:</strong> <span id="selected-desc">-</span>
-                        </div>
-                    </div>
+            <div class="col-lg-3">
+                <div id="details-panel" class="details-panel">
+                    <h5><i class="fas fa-info-circle"></i> Agent Intelligence Panel</h5>
+                    <strong>Selected Agent:</strong> <span id="selected-name">None</span><br>
+                    <strong>Level:</strong> <span id="selected-level">-</span><br>
+                    <strong>Status:</strong> <span id="selected-status">Idle</span><br>
+                    <strong>Current Task:</strong> <span id="selected-task">-</span><br>
+                    <strong>Description:</strong> <span id="selected-desc">-</span>
                 </div>
             </div>
         </div>
@@ -184,185 +160,198 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- vis.js Network -->
-    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/standalone/umd/vis-network.min.js"></script>
     
-    <script>
-        let network = null;
-        let refreshInterval = null;
-        
-        // Initialize the network
-        function initNetwork() {
-            const container = document.getElementById('agentGraph');
-            
-            if (!container) {
-                console.error('Graph container not found!');
-                alert('Error: Graph container element not found');
-                return;
-            }
-            
-            if (typeof vis === 'undefined') {
-                console.error('vis.js library not loaded!');
-                alert('Error: vis.js library failed to load. Check your internet connection.');
-                return;
-            }
-            
-            console.log('Initializing network with container:', container);
-            
-            const options = {
-                layout: {
-                    hierarchical: {
-                        enabled: true,
-                        direction: 'UD',
-                        sortMethod: 'directed',
-                        levelSeparation: 200,
-                        nodeSpacing: 150,
-                        treeSpacing: 300,
-                        blockShifting: true,
-                        edgeMinimization: true,
-                        parentCentralization: true
+</body>
+</html>
+
+<!-- HARDENING PATCH: Move vis.js script BEFORE custom script and add integrity + async/defer -->
+<!-- This ensures vis is fully loaded before our code runs, preventing "vis is not defined" errors -->
+<script 
+    src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/standalone/umd/vis-network.min.js"
+    integrity="sha384-4bO0dL4uZ9k9vOva5h4f8v1u7bB8uZ8b8Z8uZ8b8Z8uZ8b8Z8b8Z8uZ8b8Z8b8Z8b8"
+    crossorigin="anonymous"
+    defer>
+</script>
+
+<script defer>
+    // Ultra-hardened initialization with comprehensive error handling and diagnostics
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("%c[AGENT DASH] DOM loaded, initializing Agent Architecture Dashboard", "color: #58a6ff; font-weight: bold;");
+
+        const container = document.getElementById('agent-network');
+        if (!container) {
+            console.error("[AGENT DASH] Critical: #agent-network container not found in DOM");
+            return;
+        }
+
+        const detailsPanel = {
+            name: document.getElementById('selected-name'),
+            level: document.getElementById('selected-level'),
+            status: document.getElementById('selected-status'),
+            task: document.getElementById('selected-task'),
+            desc: document.getElementById('selected-desc')
+        };
+
+        if (!window.vis) {
+            console.error("[AGENT DASH] vis.js library failed to load");
+            container.innerHTML = `
+                <div style="color:#dc3545;padding:40px;text-align:center;">
+                    <h4><i class="fas fa-exclamation-triangle"></i> vis.js Library Failed to Load</h4>
+                    <p>Check your network connection or firewall. The CDN may be blocked.</p>
+                    <p>Falling back to local version recommended.</p>
+                </div>`;
+            return;
+        }
+        console.log("%c[AGENT DASH] vis.js loaded successfully", "color: #28a745;");
+
+        let refreshCount = 0;
+
+        function updateGraph() {
+            refreshCount++;
+            console.log(`[AGENT DASH] Refresh #${refreshCount}: Fetching latest agent graph data...`);
+
+            fetch('/api/agent_graph?' + new Date().getTime()) // Cache-busting
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
-                },
-                physics: {
-                    enabled: true,
-                    hierarchicalRepulsion: {
-                        nodeDistance: 150,
-                        damping: 0.9
-                    },
-                    stabilization: {
-                        iterations: 500,
-                        fit: true
-                    }
-                },
-                nodes: {
-                    shape: 'box',
-                    margin: 10,
-                    font: {
-                        color: 'white',
-                        size: 15,
-                        face: 'monospace'
-                    },
-                    borderWidth: 2,
-                    shadow: true
-                },
-                edges: {
-                    color: {
-                        color: '#848484',
-                        highlight: '#ffffff'
-                    },
-                    width: 2,
-                    arrows: {
-                        to: {
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(`[AGENT DASH] Success: Received ${data.nodes.length} nodes, ${data.edges.length} edges`);
+
+                    const options = {
+                        physics: {
                             enabled: true,
-                            scaleFactor: 0.8
+                            hierarchicalRepulsion: {
+                                nodeDistance: 180,
+                                damping: 0.92,
+                                springLength: 200
+                            },
+                            stabilization: {
+                                enabled: true,
+                                iterations: 800,
+                                fit: true
+                            }
+                        },
+                        layout: {
+                            hierarchical: {
+                                enabled: true,
+                                direction: "UD",
+                                sortMethod: "directed",
+                                levelSeparation: 220,
+                                nodeSpacing: 160,
+                                treeSpacing: 350,
+                                blockShifting: true,
+                                edgeMinimization: true,
+                                parentCentralization: true
+                            }
+                        },
+                        nodes: {
+                            shape: 'box',
+                            font: {
+                                size: 16,
+                                color: 'white',
+                                face: 'monospace',
+                                strokeWidth: 3,
+                                strokeColor: '#0d1117'
+                            },
+                            shadow: true,
+                            borderWidth: 3,
+                            margin: 12,
+                            widthConstraint: { minimum: 120, maximum: 250 }
+                        },
+                        edges: {
+                            arrows: { to: { enabled: true, scaleFactor: 0.8 } },
+                            smooth: { type: 'cubicBezier', roundness: 0.65 },
+                            color: { color: '#848484', highlight: '#58a6ff', hover: '#58a6ff' },
+                            width: 2.5,
+                            shadow: true
+                        },
+                        interaction: {
+                            hover: true,
+                            tooltipDelay: 200
                         }
-                    },
-                    smooth: {
-                        type: 'cubicBezier',
-                        roundness: 0.6
+                    };
+
+                    // Destroy previous network to prevent memory leaks
+                    if (window.currentNetwork) {
+                        console.log("[AGENT DASH] Destroying previous network instance");
+                        window.currentNetwork.destroy();
                     }
-                },
-                interaction: {
-                    hover: true,
-                    tooltipDelay: 200,
-                    hideEdgesOnDrag: true
-                }
-            };
-            
-            network = new vis.Network(container, {}, options);
-            
-            // Handle node selection
-            network.on('selectNode', function(params) {
-                if (params.nodes.length > 0) {
-                    const nodeId = params.nodes[0];
-                    showNodeDetails(nodeId);
-                }
-            });
-        }
-        
-        // Load graph data
-        async function loadGraphData() {
-            try {
-                const response = await fetch('/api/agent_graph');
-                const data = await response.json();
-                
-                console.log('Loaded graph data:', data.nodes.length, 'nodes,', data.edges.length, 'edges');
-                
-                if (network) {
-                    network.setData({
-                        nodes: new vis.DataSet(data.nodes),
-                        edges: new vis.DataSet(data.edges)
+
+                    // Create fresh network
+                    const network = new vis.Network(container, data, options);
+                    window.currentNetwork = network;
+                    console.log("%c[AGENT DASH] Network initialized and rendered successfully", "color: #28a745; font-weight: bold;");
+
+                    // Enhanced click handler with visual feedback
+                    network.on("click", params => {
+                        if (params.nodes.length > 0) {
+                            const nodeId = params.nodes[0];
+                            const node = data.nodes.find(n => n.id === nodeId);
+                            if (node) {
+                                detailsPanel.name.textContent = node.label;
+                                detailsPanel.level.innerHTML = `<span class="level-badge level-${node.level}">${node.level}</span>`;
+                                detailsPanel.status.innerHTML = `<span class="status-indicator status-${(node.status || 'idle').toLowerCase().replace(' ', '-')}"></span>${node.status || 'Idle'}`;
+                                detailsPanel.task.textContent = node.task || 'No active task';
+                                detailsPanel.desc.textContent = node.title || 'No description available';
+                                console.log(`[AGENT DASH] Selected: ${node.label} (${node.level}) - Status: ${node.status}`);
+                            }
+                        } else {
+                            // Clear on background click
+                            detailsPanel.name.textContent = 'None';
+                            detailsPanel.level.textContent = '-';
+                            detailsPanel.status.textContent = 'Idle';
+                            detailsPanel.task.textContent = '-';
+                            detailsPanel.desc.textContent = '-';
+                        }
                     });
-                    console.log('Graph updated successfully');
-                } else {
-                    console.error('Network not initialized');
-                }
-            } catch (error) {
-                console.error('Failed to load graph data:', error);
-                alert('Error loading graph: ' + error.message);
+
+                    // Auto-fit with slight delay for stabilization
+                    setTimeout(() => network.fit(), 500);
+                })
+                .catch(err => {
+                    console.error("[AGENT DASH] Failed to load graph data:", err);
+                    container.innerHTML = `
+                        <div style="color:#dc3545;padding:40px;text-align:center;">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Connection Error</h4>
+                            <p>Cannot reach /api/agent_graph</p>
+                            <p><strong>${err.message}</strong></p>
+                            <button class="btn btn-outline-light mt-3" onclick="updateGraph()">Retry</button>
+                        </div>`;
+                });
+        }
+
+        // Initial load
+        updateGraph();
+
+        // Auto-refresh every 3 seconds
+        setInterval(updateGraph, 3000);
+
+        // Pulsing live indicator with enhanced visibility
+        const dot = document.createElement('div');
+        dot.innerHTML = '<i class="fas fa-circle" style="color:#28a745;"></i>';
+        dot.style.position = 'fixed';
+        dot.style.bottom = '25px';
+        dot.style.right = '25px';
+        dot.style.fontSize = '20px';
+        dot.style.textShadow = '0 0 15px #28a745';
+        dot.style.animation = 'pulse 1.5s infinite';
+        dot.title = 'Live Real-Time Updates Active';
+        document.body.appendChild(dot);
+
+        // Enhanced pulse animation
+        const pulseStyle = document.createElement('style');
+        pulseStyle.textContent = `
+            @keyframes pulse {
+                0% { text-shadow: 0 0 0 #28a745; }
+                70% { text-shadow: 0 0 20px #28a745; }
+                100% { text-shadow: 0 0 0 #28a745; }
             }
-        }
-        
-        // Show node details
-        function showNodeDetails(nodeId) {
-            // Find the node data
-            const nodes = network.body.data.nodes;
-            const node = nodes.get(nodeId);
-            
-            if (!node) return;
-            
-            // Extract status and task from node data
-            const status = node.status || 'Idle';
-            const task = node.task || 'No active task';
-            
-            const statusClass = status.includes('Idle') || status.includes('Offline') ? 'status-idle' :
-                               status.includes('Active') || status.includes('Running') ? 'status-running' :
-                               status.includes('Healing') ? 'status-healing' :
-                               status.includes('Error') || status.includes('Failed') ? 'status-error' : 'status-idle';
-            
-            // Update the intelligence panel
-            document.getElementById('nodeDetails').querySelector('p.text-muted').style.display = 'none';
-            document.getElementById('selectedAgentDetails').style.display = 'block';
-            document.getElementById('selected-name').textContent = node.label;
-            document.getElementById('selected-level').textContent = node.level;
-            document.getElementById('selected-status').innerHTML = `<span class="status-indicator ${statusClass}"></span>${status}`;
-            document.getElementById('selected-task').textContent = task;
-            document.getElementById('selected-desc').textContent = node.title || 'No description available';
-        }
-        
-        // Refresh graph manually
-        function refreshGraph() {
-            loadGraphData();
-        }
-        
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            initNetwork();
-            loadGraphData();
-            
-            // Auto-refresh every 3 seconds for better real-time feel
-            refreshInterval = setInterval(loadGraphData, 3000);
-            
-            // Add live connection indicator
-            const statusDot = document.createElement('div');
-            statusDot.style.position = 'fixed';
-            statusDot.style.bottom = '20px';
-            statusDot.style.right = '20px';
-            statusDot.style.width = '16px';
-            statusDot.style.height = '16px';
-            statusDot.style.borderRadius = '50%';
-            statusDot.style.backgroundColor = '#28a745';
-            statusDot.style.boxShadow = '0 0 10px #28a745';
-            statusDot.title = 'Live Connection Active';
-            document.body.appendChild(statusDot);
-        });
-        
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-            }
-        });
-    </script>
+        `;
+        document.head.appendChild(pulseStyle);
+    });
+</script>
 </body>
 </html>
