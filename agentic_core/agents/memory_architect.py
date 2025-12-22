@@ -630,4 +630,4 @@ def get_memory_architect(ctx) -> MemoryArchitect:
     global _memory_architect
     if _memory_architect is None:
         _memory_architect = MemoryArchitect(ctx)
-    return _memory_architect"""
+    return _memory_architect
