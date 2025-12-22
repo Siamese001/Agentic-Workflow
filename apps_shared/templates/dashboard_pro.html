@@ -754,11 +754,7 @@
             
             <nav>
                 <div class="nav-section">
-                    <div class="nav-section-title">Overview</div>
-                    <div class="nav-item active" @click="currentView = 'overview'">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </div>
+                    <div class="nav-section-title">Analysis</div>
                     <div class="nav-item" @click="currentView = 'keys'">
                         <i class="fas fa-key"></i>
                         <span>Keys Analysis</span>
@@ -766,6 +762,10 @@
                     <div class="nav-item" @click="currentView = 'files'">
                         <i class="fas fa-file-code"></i>
                         <span>File Explorer</span>
+                    </div>
+                    <div class="nav-item" onclick="window.location.href='/agent_graph'">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Agent Architecture (L1-L6)</span>
                     </div>
                 </div>
                 

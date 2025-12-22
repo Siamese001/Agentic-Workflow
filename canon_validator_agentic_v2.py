@@ -566,6 +566,8 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                 kwargs['engine'] = ctx.engine
                 
             agent_instance = cls_ref(**kwargs)
+            # Add status tracking for dashboard visualization
+            agent_instance.current_status = "Idle"
             cleaning_crew.append(agent_instance)
             print(f"     [+] Active: {cls_name}")
         except Exception as e:
@@ -577,6 +579,15 @@ Return ONLY the fixed Python code. No explanations, no markdown.
         print("   -> Check if the Import Shim (Diff 1) was applied correctly.")
         return # Halt execution
     # -----------------------------
+    
+    # Sync agents with dashboard for visualization
+    try:
+        from canon_dashboard_web import agents_global
+        agents_global.clear()
+        agents_global.extend(cleaning_crew)
+        print(f"   [DASHBOARD] Synced {len(cleaning_crew)} agents to visualization")
+    except Exception as e:
+        print(f"   [!] Dashboard sync failed: {e}")
 
     # Inject "Surgeon Mode" into ArchitectureGovernor
     surgeon_prompt = """

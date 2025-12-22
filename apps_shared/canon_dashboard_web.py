@@ -22,6 +22,7 @@ CORS(app)
 # Global instances (initialized as None to allow validator injection)
 metrics = None
 dashboard = None
+agents_global = []  # List of live agent instances for visualization
 
 print("[WEB] Dashboard Module Loaded. Waiting for metrics injection...")
 
@@ -246,6 +247,90 @@ def get_timeline():
     return jsonify(combined[:limit])
 
 
+@app.route('/api/agent_graph')
+def get_agent_graph():
+    """Get agent architecture graph data for visualization"""
+    nodes = []
+    edges = []
+    
+    # Level mapping for agents
+    agent_levels = {
+        'ArchitectureGovernor': 'L1',
+        'SystemArchitect': 'L1',
+        'StructuralEngineer': 'L2',
+        'HealerAgent': 'L2',
+        'HygieneGuardian': 'L3',
+        'DependencySentinel': 'L3',
+        'SecurityEnforcer': 'L4',
+        'MemoryArchitect': 'L5',
+        'HallucinationHunter': 'L5',
+    }
+    
+    # Color mapping for levels
+    level_colors = {
+        'L1': '#ff9999',
+        'L2': '#ffcc99',
+        'L3': '#ffff99',
+        'L4': '#ccff99',
+        'L5': '#99ccff',
+        'L6': '#cc99ff',
+        'Core': '#97c2fc'
+    }
+    
+    # Add core components
+    core_nodes = [
+        ('ValidationContext', 'L4', 'Core', 'Holds all validation state and data'),
+        ('SubAtomicEngine', 'L5', 'Core', 'Gemini LLM - Powers all AI operations'),
+        ('SafetyGuardrail', 'L5', 'Core', 'Ensures all changes are safe'),
+        ('FissionManager', 'L3', 'Core', 'Manages file fission events')
+    ]
+    
+    for node_id, level, group, description in core_nodes:
+        nodes.append({
+            'id': node_id,
+            'label': node_id,
+            'level': level,
+            'group': group,
+            'title': f"{description}\nStatus: Core Component",
+            'color': {'background': level_colors['Core'], 'border': '#2B7CE9'}
+        })
+    
+    # Add agents
+    for agent in agents_global:
+        agent_name = agent.__class__.__name__
+        level = agent_levels.get(agent_name, 'L6')  # Default to L6 if unknown
+        status = getattr(agent, 'current_status', 'Idle')
+        
+        nodes.append({
+            'id': agent_name,
+            'label': agent_name,
+            'level': level,
+            'group': 'agent',
+            'title': f"Agent: {agent_name}\nLevel: {level}\nStatus: {status}",
+            'color': {'background': level_colors.get(level, '#cccccc'), 'border': '#2B7CE9'}
+        })
+        
+        # Add edges to core components
+        edges.append({'from': agent_name, 'to': 'ValidationContext'})
+        edges.append({'from': agent_name, 'to': 'SubAtomicEngine'})
+        edges.append({'from': agent_name, 'to': 'SafetyGuardrail'})
+        
+        # Special edge for ArchitectureGovernor
+        if agent_name == 'ArchitectureGovernor':
+            edges.append({'from': agent_name, 'to': 'FissionManager', 'arrows': 'to'})
+    
+    return jsonify({
+        'nodes': nodes,
+        'edges': edges
+    })
+
+
+@app.route('/agent_graph')
+def agent_graph_page():
+    """Serve the agent architecture visualization page"""
+    return render_template('agent_graph.html')
+
+
 @app.route('/api/export')
 def export_report():
     """Export full report as JSON"""
@@ -316,15 +401,20 @@ if __name__ == "__main__":
         
         print("Real session data loaded successfully!")
     else:
-        print(f"No session file found at {session_file}. Using mock data...")
-        # Fallback to mock data
-        metrics.start_session("agentic_core", 238)
-        
-        print("Populating mock data...")
-        # Simulate some activity
-        for i in range(10):
-            metrics.record_violation(f"agentic_core/file_{i}.py", 40 + (i % 10), i * 2)
-            metrics.record_healing(f"agentic_core/file_{i}.py", 40 + (i % 10), i, 1.5 + i * 0.3)
-            metrics.update_file_progress(f"agentic_core/file_{i}.py", "passed" if i % 2 == 0 else "failed")
+        print(f"No session file found at {session_file}.")
+        if metrics:
+            print("Using mock data...")
+            # Fallback to mock data
+            metrics.start_session("agentic_core", 238)
+            
+            print("Populating mock data...")
+            # Simulate some activity
+            for i in range(10):
+                metrics.record_violation(f"agentic_core/file_{i}.py", 40 + (i % 10), i * 2)
+                metrics.record_healing(f"agentic_core/file_{i}.py", 40 + (i % 10), i, 1.5 + i * 0.3)
+                metrics.update_file_progress(f"agentic_core/file_{i}.py", "passed" if i % 2 == 0 else "failed")
+        else:
+            print("No metrics system available - running in minimal mode")
+            print("Agent graph visualization will still work!")
     
     run_server(debug=True)
