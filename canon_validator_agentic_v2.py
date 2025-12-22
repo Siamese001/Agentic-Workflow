@@ -231,6 +231,43 @@ class GeminiSpy:
 
 
 # ==============================================================================
+# [KEY 48] MISSION AUDIT LOG: ARCHITECTURAL LEDGER
+# ==============================================================================
+import csv
+from datetime import datetime
+
+class MissionAuditLog:
+    """
+    [L4 STATE] Observability Ledger.
+    Records every physical move and code mutation for historical auditing.
+    """
+    def __init__(self, log_path: str = "mission_audit.csv"):
+        self.log_path = log_path
+        self._initialize_log()
+
+    def _initialize_log(self):
+        if not os.path.exists(self.log_path):
+            with open(self.log_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
+
+    def record(self, file_name: str, action: str, source: str, destination: str, reason: str):
+        with open(self.log_path, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                datetime.now().isoformat(),
+                file_name,
+                action,
+                source,
+                destination,
+                reason
+            ])
+        print(f"      [LOG] Action recorded in audit ledger: {action}")
+
+# Global audit instance
+audit_log = MissionAuditLog()
+
+# ==============================================================================
 # L6 PEACEKEEPER: PHYSICAL BOUNDARY ENFORCEMENT
 # ==============================================================================
 
@@ -1447,6 +1484,15 @@ Return ONLY the complete merged Python code. No explanations.
                                 import shutil
                                 shutil.move(file_path, target_path)
                                 print(f"     [✓] RELOCATED: {Path(file_path).name} -> {result['move_to']}")
+                                
+                                # [KEY 48] Log relocation to the audit ledger
+                                audit_log.record(
+                                    file_name=Path(file_path).name,
+                                    action="RELOCATED",
+                                    source=str(Path(file_path).parent),
+                                    destination=result['move_to'],
+                                    reason=result.get('reason', 'Structural Re-homing')
+                                )
                                 
                                 # Update python_files list to reflect the new location
                                 if hasattr(ctx, 'python_files'):
