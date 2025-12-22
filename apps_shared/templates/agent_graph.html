@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- vis.js Network CSS -->
-    <script src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
     
     <style>
         body {
@@ -184,6 +184,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- vis.js Network -->
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.2/standalone/umd/vis-network.min.js"></script>
     
     <script>
         let network = null;
@@ -192,6 +194,21 @@
         // Initialize the network
         function initNetwork() {
             const container = document.getElementById('agentGraph');
+            
+            if (!container) {
+                console.error('Graph container not found!');
+                alert('Error: Graph container element not found');
+                return;
+            }
+            
+            if (typeof vis === 'undefined') {
+                console.error('vis.js library not loaded!');
+                alert('Error: vis.js library failed to load. Check your internet connection.');
+                return;
+            }
+            
+            console.log('Initializing network with container:', container);
+            
             const options = {
                 layout: {
                     hierarchical: {
@@ -269,14 +286,20 @@
                 const response = await fetch('/api/agent_graph');
                 const data = await response.json();
                 
+                console.log('Loaded graph data:', data.nodes.length, 'nodes,', data.edges.length, 'edges');
+                
                 if (network) {
                     network.setData({
                         nodes: new vis.DataSet(data.nodes),
                         edges: new vis.DataSet(data.edges)
                     });
+                    console.log('Graph updated successfully');
+                } else {
+                    console.error('Network not initialized');
                 }
             } catch (error) {
                 console.error('Failed to load graph data:', error);
+                alert('Error loading graph: ' + error.message);
             }
         }
         
