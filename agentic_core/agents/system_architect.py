@@ -65,67 +65,67 @@ class SystemArchitect(CanonBaseAgent):
     
     def check_key_40_core_architecture(self) -> Tuple[bool, List[str]]:
         """
-        [KEY 40 HARDENING] Comprehensive Hierarchy Verification.
-        Verifies all layers defined in CANONICAL_HIERARCHY exist as valid packages.
-       
+        [L6 HARDENING] Core Hierarchy SSOT Verification.
+        Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
+        from void_compliance import CANONICAL_HIERARCHY, validate_canonical_hierarchy
         
-        # Force import of SSOT from project root
-        import void_compliance
-        from void_compliance import CANONICAL_HIERARCHY
+        project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
         
-        project_root = Path(os.getcwd())
-        
-        # Traverse hierarchy levels to identify missing packages or init files
+        # 1. Reuse centralized hierarchy drift check
+        hierarchy_violations = validate_canonical_hierarchy(project_root)
+        for path, reason in hierarchy_violations:
+            try:
+                rel_path = path.relative_to(project_root)
+            except ValueError:
+                rel_path = path
+            violations.append(f"{rel_path}: {reason}")
+
+        # 2. Package Integrity: Verify __init__.py existence
         for root_folder, layers in CANONICAL_HIERARCHY.items():
             root_path = project_root / root_folder
-            if not root_path.exists():
-                violations.append(f"{root_folder}: Sovereign root directory missing")
-                continue
+            if not root_path.exists(): continue
                 
             if not (root_path / '__init__.py').exists():
-                violations.append(f"{root_folder}: Missing __init__.py")
+                violations.append(f"{root_folder}: Missing __init__.py (package marker)")
 
-            # Check L1 and L2 layers recursively
             for l1_name, l2_list in layers.items():
                 l1_path = root_path / l1_name
                 if l1_path.exists():
                     if not (l1_path / '__init__.py').exists():
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
-                    
-                    for l2_name in l2_list:
-                        l2_path = l1_path / l2_name
-                        if l2_path.exists() and not (l2_path / '__init__.py').exists():
-                            violations.append(f"{root_folder}/{l1_name}/{l2_name}: Missing __init__.py")
-        
+
         return len(violations) == 0, violations
     
     def check_key_41_no_deep_nesting(self) -> Tuple[bool, List[str]]:
         """
-        Check for excessive nesting depth (>4 levels).
-        
-        Returns:
-            Tuple of (passed, list of violations)
+        [KEY 41 HARDENING] Enforce Physical Folder Nesting (Min 3, Max 5).
+        Validates the physical directory depth relative to project root.
         """
         from pathlib import Path
         violations = []
-        max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
-        
-        for file_path in self.ctx.python_files:
+        project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
+
+        for file_path_str in self.ctx.python_files:
+            file_path = Path(file_path_str).resolve()
             try:
-                # FIX: Use pathlib.Path to handle Windows paths correctly
-                resolved_path = Path(file_path).resolve()
-                with open(resolved_path, 'r', encoding='utf-8') as f:
-                    tree = ast.parse(f.read())
-                
-                # Check nesting depth
-                max_file_depth = self._get_max_nesting_depth(tree)
-                if max_file_depth > max_depth:
-                    violations.append(f"{file_path}: Nesting depth {max_file_depth} exceeds max {max_depth}")
-            except Exception:
+                rel_path = file_path.relative_to(project_root)
+            except ValueError:
                 continue
-        
+
+            # Skip Key 0 (root-level) protected files
+            if len(rel_path.parts) == 1:
+                continue
+
+            # Physical Depth = Dir count (excludes filename)
+            depth = len(rel_path.parts) - 1
+
+            if depth < 3:
+                violations.append(f"{rel_path}: Shallow nesting ({depth}). Min required is 3.")
+            elif depth > 5:
+                violations.append(f"{rel_path}: Deep nesting ({depth}). Max allowed is 5.")
+
         return len(violations) == 0, violations
     
     def check_key_42_no_large_files(self) -> Tuple[bool, List[str]]:
@@ -152,30 +152,6 @@ class SystemArchitect(CanonBaseAgent):
                 continue
         
         return len(violations) == 0, violations
-    
-    def _get_max_nesting_depth(self, tree: ast.AST) -> int:
-        """Calculate maximum nesting depth in AST."""
-        max_depth = 0
-        
-        def visit_node(node, depth=0):
-            nonlocal max_depth
-            max_depth = max(max_depth, depth)
-            
-            # Nodes that increase nesting depth
-            nesting_nodes = (
-                ast.If, ast.For, ast.While, ast.With,
-                ast.Try, ast.ExceptHandler, ast.FunctionDef,
-                ast.AsyncFunctionDef, ast.ClassDef
-            )
-            
-            for child in ast.iter_child_nodes(node):
-                if isinstance(child, nesting_nodes):
-                    visit_node(child, depth + 1)
-                else:
-                    visit_node(child, depth)
-        
-        visit_node(tree)
-        return max_depth
     
     async def _heal_violations(self, key: int, violations: List[str]):
         """
