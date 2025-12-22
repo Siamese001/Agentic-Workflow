@@ -1,4 +1,3 @@
-```python
 """
 ⚛️ THIN PROXY - Core Utils (Post-Atomic Fission)
 
@@ -24,54 +23,55 @@ Preservation: 118% (added docstrings and type hints)
 # Standard library imports
 import logging
 
-# Re-export all utilities from atomic modules for backward compatibility
-from agentic_core.utils.syntax_validator import validate_python_syntax
-from agentic_core.utils.mcp_mocks import (
-    get_current_time,
-    convert_time,
-    issues_get_detail,
-    browser_navigate,
-    browser_type,
-    browser_click,
-    string_get,
-    string_set,
-    start_transaction,
-    watch_key,
-    transaction_set_with_ttl,
-    commit_transaction,
-    incr,
-    get_and_set,
-    brave_search,
-    execute_cost_controlled_search,
-    get_from_langcache,
-    set_to_langcache,
-    search_nodes,
-    add_observations,
-    search_records,
-    write_file,
-    read_text_file,
-    semantic_score_draft,
-    generate_draft_llm,
-    get_variable_defs,
-    get_file_versions,
-)
-from agentic_core.utils.error_handling import (
-    MCPError,
-    CircuitBreakerOpenError,
-    retry_with_backoff,
-)
-from agentic_core.utils.validation_utils import (
-    validate_email,
-    validate_url,
-    sanitize_filename,
-)
 from agentic_core.utils.crypto_utils import (
     setup_gpg_signing,
     sign_and_commit,
 )
+from agentic_core.utils.error_handling import (
+    CircuitBreakerOpenError,
+    MCPError,
+    retry_with_backoff,
+)
+from agentic_core.utils.mcp_mocks import (
+    add_observations,
+    brave_search,
+    browser_click,
+    browser_navigate,
+    browser_type,
+    commit_transaction,
+    convert_time,
+    execute_cost_controlled_search,
+    generate_draft_llm,
+    get_and_set,
+    get_current_time,
+    get_file_versions,
+    get_from_langcache,
+    get_variable_defs,
+    incr,
+    issues_get_detail,
+    read_text_file,
+    search_nodes,
+    search_records,
+    semantic_score_draft,
+    set_to_langcache,
+    start_transaction,
+    string_get,
+    string_set,
+    transaction_set_with_ttl,
+    watch_key,
+    write_file,
+)
 from agentic_core.utils.process_utils import (
-    register_process,
     log_action,
+    register_process,
+)
+
+# Re-export all utilities from atomic modules for backward compatibility
+from agentic_core.utils.syntax_validator import validate_python_syntax
+from agentic_core.utils.validation_utils import (
+    sanitize_filename,
+    validate_email,
+    validate_url,
 )
 
 # Preserve original logger for backward compatibility
@@ -131,4 +131,3 @@ __all__ = [
     # Logger
     'logger',
 ]
-```

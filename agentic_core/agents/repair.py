@@ -43,7 +43,7 @@ class Sherlock(SubAtomicAgent):
         await asyncio.sleep(0)
 
         if not self.last_failure:
-            print(f"   ⚠️  No failure context available")
+            print(f"   [!]  No failure context available")
             return
 
         await self._analyze_failure(self.last_failure)
@@ -52,7 +52,7 @@ class Sherlock(SubAtomicAgent):
         if not getattr(self.ctx, 'intelligence_enabled', False):
             return
 
-        print(f"   🔍 Analyzing failure in {failure_info.get('test_file', 'unknown')}")
+        print(f"   [SCAN] Analyzing failure in {failure_info.get('test_file', 'unknown')}")
 
         # 1. Read files
         primary = failure_info.get('modified_file')
@@ -89,7 +89,7 @@ Return ONLY the python code for {primary}.
             if self.ctx.write_compliant_file(primary, fix):
                 if hasattr(self.ctx, 'modified_files'):
                     self.ctx.modified_files.add(primary)
-                print(f"   ✅ Fix Applied")
+                print(f"   [OK] Fix Applied")
 
     def _extract_error_file(self, traceback: str) -> Optional[str]:
         if not traceback:
@@ -147,16 +147,16 @@ class ToolsmithAgent(SubAtomicAgent):
         await asyncio.sleep(0)
 
         if not self.ctx.intelligence_enabled:
-            print("   ⚠️  Intelligence disabled - skipping tool forging")
+            print("   [!]  Intelligence disabled - skipping tool forging")
             return
 
         needed_tools = self._analyze_needed_tools()
 
         if not needed_tools:
-            print("   ✅ No diagnostic tools needed")
+            print("   [OK] No diagnostic tools needed")
             return
 
-        print(f"   🔧 Forging {len(needed_tools)} diagnostic tool(s)...")
+        print(f"   [+] Forging {len(needed_tools)} diagnostic tool(s)...")
 
         for tool_spec in needed_tools:
             await self._forge_tool(tool_spec)
@@ -219,8 +219,8 @@ Return ONLY the Python code.
                 tool_path = os.path.join(tool_dir, f"{tool_name}_{timestamp}.py")
 
                 if self.ctx.write_compliant_file(tool_path, tool_code):
-                    print(f"   ✅ Forged: {tool_path}")
+                    print(f"   [OK] Forged: {tool_path}")
                 else:
-                    print(f"   ❌ Failed to write tool (blocked by governor)")
+                    print(f"   [X] Failed to write tool (blocked by governor)")
         except Exception as e:
-            print(f"   ❌ Failed to forge {tool_name}: {e}")
+            print(f"   [X] Failed to forge {tool_name}: {e}")

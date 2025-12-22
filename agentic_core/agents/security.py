@@ -144,11 +144,11 @@ class ConcurrencyGuardian(SubAtomicAgent):
 
         target_files = list(self.ctx.modified_files) if self.ctx.modified_files else self.ctx.python_files
         if not target_files:
-            print("   ✅ No files to scan for concurrency issues")
+            print("   [OK] No files to scan for concurrency issues")
             self._report_all_pass()
             return
 
-        print(f"   🔍 Scanning {len(target_files)} files for concurrency anti-patterns...")
+        print(f"   [SCAN] Scanning {len(target_files)} files for concurrency anti-patterns...")
 
         issues_log = []
         for file_path in target_files:
@@ -161,7 +161,7 @@ class ConcurrencyGuardian(SubAtomicAgent):
         if issues_log:
             print(f"   🛡️  Concurrency issues found in {len(issues_log)} files")
         else:
-            print("   ✅ No concurrency anti-patterns detected")
+            print("   [OK] No concurrency anti-patterns detected")
             self._report_all_pass()
 
     async def _analyze_file(self, file_path: str) -> Dict | None:
@@ -212,7 +212,7 @@ class SecurityEnforcer(SubAtomicAgent):
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Security Policies...")
         await asyncio.sleep(0)
-        print("   ✅ Security policies enforced")
+        print("   [OK] Security policies enforced")
 
 
 class RedSentinel(SubAtomicAgent):
@@ -221,4 +221,4 @@ class RedSentinel(SubAtomicAgent):
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Running Red Team Analysis...")
         await asyncio.sleep(0)
-        print("   ✅ Red team analysis complete")
+        print("   [OK] Red team analysis complete")

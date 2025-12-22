@@ -6,13 +6,13 @@ Demonstrates integration with Gemini 2.5/3.0 and AtomicBlackboard.
 import os
 
 from agentic_core.tools import (
-    create_tool_registry,
+    ExecuteCommandArgs,
     ReadFileArgs,
     WriteFileArgs,
-    ExecuteCommandArgs,
+    create_tool_registry,
+    execute_command,
     read_file,
     write_file,
-    execute_command,
 )
 
 
@@ -22,9 +22,9 @@ def example_basic_file_operations():
     
     try:
         content = read_file(ReadFileArgs(path="apps_shared/canon_validator_v2_agentic.py"))
-        print(f"✅ Read file: {len(content)} characters")
+        print(f"[OK] Read file: {len(content)} characters")
     except Exception as e:
-        print(f"❌ Read failed: {e}")
+        print(f"[X] Read failed: {e}")
     
     try:
         write_file(
@@ -34,9 +34,9 @@ def example_basic_file_operations():
                 create_dirs=True
             )
         )
-        print("✅ Write file: output/example.txt")
+        print("[OK] Write file: output/example.txt")
     except Exception as e:
-        print(f"❌ Write failed: {e}")
+        print(f"[X] Write failed: {e}")
 
 
 def example_sandbox_violations():
@@ -45,21 +45,21 @@ def example_sandbox_violations():
     
     try:
         read_file(ReadFileArgs(path="../../../etc/passwd"))
-        print("❌ Should have blocked path traversal!")
+        print("[X] Should have blocked path traversal!")
     except Exception as e:
-        print(f"✅ Blocked path traversal: {type(e).__name__}")
+        print(f"[OK] Blocked path traversal: {type(e).__name__}")
     
     try:
         read_file(ReadFileArgs(path=".git/config"))
-        print("❌ Should have blocked .git access!")
+        print("[X] Should have blocked .git access!")
     except Exception as e:
-        print(f"✅ Blocked .git access: {type(e).__name__}")
+        print(f"[OK] Blocked .git access: {type(e).__name__}")
     
     try:
         read_file(ReadFileArgs(path="archives/old_code.py"))
-        print("❌ Should have blocked archives access!")
+        print("[X] Should have blocked archives access!")
     except Exception as e:
-        print(f"✅ Blocked archives access: {type(e).__name__}")
+        print(f"[OK] Blocked archives access: {type(e).__name__}")
 
 
 def example_subprocess_execution():
@@ -74,9 +74,9 @@ def example_subprocess_execution():
                 timeout=5
             )
         )
-        print(f"✅ Python version: {stdout.strip()}")
+        print(f"[OK] Python version: {stdout.strip()}")
     except Exception as e:
-        print(f"❌ Command failed: {e}")
+        print(f"[X] Command failed: {e}")
 
 
 def example_gemini_integration():
@@ -90,12 +90,12 @@ def example_gemini_integration():
         registry = create_tool_registry()
         tools = registry.get_function_declarations()
         
-        print(f"✅ Registered {len(tools)} tools:")
+        print(f"[OK] Registered {len(tools)} tools:")
         for tool in tools:
             print(f"   - {tool.name}: {tool.description}")
         
         if not os.getenv("GOOGLE_API_KEY"):
-            print("\n⚠️  Set GOOGLE_API_KEY to test Gemini integration")
+            print("\n[!]  Set GOOGLE_API_KEY to test Gemini integration")
             return
         
         client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
@@ -113,7 +113,7 @@ def example_gemini_integration():
         
         if response.candidates[0].content.parts[0].function_call:
             call = response.candidates[0].content.parts[0].function_call
-            print(f"\n✅ Gemini called tool: {call.name}")
+            print(f"\n[OK] Gemini called tool: {call.name}")
             print(f"   Arguments: {dict(call.args)}")
             
             result = registry.execute_tool(
@@ -122,12 +122,12 @@ def example_gemini_integration():
             )
             print(f"   Result: {result[:100]}..." if isinstance(result, str) else f"   Result: {result}")
         else:
-            print(f"\n✅ Gemini response: {response.text}")
+            print(f"\n[OK] Gemini response: {response.text}")
     
     except ImportError:
-        print("❌ google-genai not installed. Run: pip install google-genai")
+        print("[X] google-genai not installed. Run: pip install google-genai")
     except Exception as e:
-        print(f"❌ Gemini integration failed: {e}")
+        print(f"[X] Gemini integration failed: {e}")
 
 
 def example_healing_lease_integration():
@@ -142,7 +142,7 @@ def example_healing_lease_integration():
         file_path = "output/healed_file.py"
         
         blackboard.acquire_healing_lease(agent_id, file_path)
-        print(f"✅ Acquired HealingLease: {agent_id} -> {file_path}")
+        print(f"[OK] Acquired HealingLease: {agent_id} -> {file_path}")
         
         write_file(
             WriteFileArgs(
@@ -153,10 +153,10 @@ def example_healing_lease_integration():
             blackboard=blackboard,
             agent_id=agent_id
         )
-        print(f"✅ Write verified with HealingLease")
+        print(f"[OK] Write verified with HealingLease")
         
         blackboard.release_healing_lease(agent_id, file_path)
-        print(f"✅ Released HealingLease")
+        print(f"[OK] Released HealingLease")
         
         try:
             write_file(
@@ -164,14 +164,14 @@ def example_healing_lease_integration():
                 blackboard=blackboard,
                 agent_id="unauthorized_agent"
             )
-            print("❌ Should have blocked unauthorized write!")
+            print("[X] Should have blocked unauthorized write!")
         except Exception as e:
-            print(f"✅ Blocked unauthorized write: {type(e).__name__}")
+            print(f"[OK] Blocked unauthorized write: {type(e).__name__}")
     
     except ImportError:
-        print("⚠️  AtomicBlackboard not available (Phase 2 not implemented)")
+        print("[!]  AtomicBlackboard not available (Phase 2 not implemented)")
     except Exception as e:
-        print(f"❌ HealingLease integration failed: {e}")
+        print(f"[X] HealingLease integration failed: {e}")
 
 
 def example_tool_registry_custom():
@@ -195,7 +195,7 @@ def example_tool_registry_custom():
         function=custom_tool
     )
     
-    print(f"✅ Registered custom tool")
+    print(f"[OK] Registered custom tool")
     print(f"   Total tools: {len(registry.get_tool_names())}")
     
     result = registry.execute_tool(
@@ -217,4 +217,4 @@ if __name__ == "__main__":
     example_tool_registry_custom()
     
     print("\n" + "=" * 60)
-    print("✅ All examples completed!")
+    print("[OK] All examples completed!")

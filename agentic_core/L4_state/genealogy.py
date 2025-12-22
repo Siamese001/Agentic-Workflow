@@ -22,9 +22,7 @@ class GenealogyRegistry:
 
         current_depth = self._lineage_depths.get(trace_id, 0)
         if current_depth >= self.max_depth:
-            raise RecursionError(f"Max mutation depth ({self.
-                .max_depth}) exceeded for trace {trace_id}.
-                .")
+            raise RecursionError(f"Max mutation depth ({self.max_depth}) exceeded for trace {trace_id}.")
 
         self._fingerprints.add(fingerprint)
         self._lineage_depths[trace_id] = current_depth + 1

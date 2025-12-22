@@ -1,7 +1,7 @@
 """Implementation for agent_gym."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Awaitable, Callable, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 # from .agent_gym_types import *  # Star import removed
@@ -53,7 +53,6 @@ class AgentGym:
                 'test_cases': len(scenario.test_cases)})
 
     async def run_benchmark(self,
-        """Docstring."""
         scenario_id: str,
         agent_fn: Callable[[str,
         Dict[str,
@@ -70,6 +69,7 @@ class AgentGym:
             BenchmarkResult
         """
         SCENARIO = self._scenarios.get(scenario_id)
+
         if not scenario:
             raise ValueError(f'Scenario not found: {scenario_id}')
         start_time = time.time()
@@ -108,8 +108,7 @@ class AgentGym:
         total_cases = len(test_cases)
         passed_cases = sum((1 for r in reports.values() if r.passed))
         pass_rate = passed_cases / total_cases if total_cases > 0 else 0.0
-        avg_score = sum((r.judge_result.overall_score for r in reports.values())) / total_cases if t
-    otal_cases > 0 else 0.0
+        avg_score = sum((r.judge_result.overall_score for r in reports.values())) / total_cases if total_cases > 0 else 0.0
         performance_level = self._classify_performance(pass_rate, avg_score)
         RECOMMENDATIONS = self._generate_recommendations(reports, performance_level)
         RESULT = BenchmarkResult(scenario_id=scenario_id,
@@ -138,7 +137,6 @@ class AgentGym:
                 'test_cases': len(scenario.test_cases)})
 
     async def run_training_session(self,
-        """Docstring."""
         agent_id: str,
         scenario_ids: List[str],
         agent_fn: Callable[[str,
@@ -301,8 +299,7 @@ class AgentGym:
         """
         AREAS = []
         for result in benchmark_results:
-            if result.performance_level in {PerformanceLevel.NEEDS_IMPROVEMENT, PerformanceLevel.CRI
-    TICAL}:
+            if result.performance_level in {PerformanceLevel.NEEDS_IMPROVEMENT, PerformanceLevel.CRITICAL}:
                 areas.append(f'{result.scenario_id}: {result.performance_level.value}')
         return areas
 

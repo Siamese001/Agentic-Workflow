@@ -10,12 +10,12 @@ across concurrent healing operations. Features:
 - Redis (HOT BRAIN) for fast caching and locks
 - Pinecone (DEEP BRAIN) for pattern learning
 """
-import os
-import json
-import time
 import hashlib
-from typing import Optional, Dict, Any, List, Tuple
+import json
+import os
+import time
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -144,7 +144,7 @@ class AtomicBlackboard:
                         print(f"      🔒 File locked by {existing_lease.split(':')[0]}")
                     return None
             except Exception as e:
-                print(f"      ⚠️ Redis lease acquisition failed: {e}")
+                print(f"      [!] Redis lease acquisition failed: {e}")
                 # Fall through to local fallback
         
         # Local fallback (not thread-safe across processes)
@@ -199,7 +199,7 @@ class AtomicBlackboard:
                     return True
                 return False
             except Exception as e:
-                print(f"      ⚠️ Redis lease release failed: {e}")
+                print(f"      [!] Redis lease release failed: {e}")
                 # Fall through to local fallback
         
         # Local fallback
@@ -235,7 +235,7 @@ class AtomicBlackboard:
                     return True
                 return False
             except Exception as e:
-                print(f"      ⚠️ Redis lease extension failed: {e}")
+                print(f"      [!] Redis lease extension failed: {e}")
                 # Fall through to local fallback
         
         # Local fallback
@@ -302,7 +302,7 @@ class AtomicBlackboard:
                 if data:
                     return FileHealthScore.from_dict(json.loads(data))
             except Exception as e:
-                print(f"      ⚠️ Redis health score retrieval failed: {e}")
+                print(f"      [!] Redis health score retrieval failed: {e}")
                 # Fall through to local fallback
         
         # Local fallback
@@ -359,7 +359,7 @@ class AtomicBlackboard:
                     json.dumps(score.to_dict())
                 )
             except Exception as e:
-                print(f"      ⚠️ Redis health score update failed: {e}")
+                print(f"      [!] Redis health score update failed: {e}")
                 # Fall through to local fallback
                 self.redis_fallback[score_key] = score.to_dict()
         else:
@@ -422,7 +422,7 @@ class AtomicBlackboard:
             print(f"      ↩️  Reverted {os.path.basename(file_path)} due to regression")
             return True
         except Exception as e:
-            print(f"      ❌ Failed to revert {file_path}: {e}")
+            print(f"      [X] Failed to revert {file_path}: {e}")
             return False
     
     # ============================================================================
@@ -450,7 +450,7 @@ class AtomicBlackboard:
         
         try:
             import openai
-            
+
             # Create embedding of the violation description
             text = f"Canon Key {violation_key}: {violation_desc}"
             response = openai.Embedding.create(
@@ -474,9 +474,9 @@ class AtomicBlackboard:
                     }
                 }
             ])
-            print(f"      💾 Stored healing pattern for Key {violation_key} in Pinecone")
+            print(f"      [SAVE] Stored healing pattern for Key {violation_key} in Pinecone")
         except Exception as e:
-            print(f"      ⚠️ Failed to store pattern in Pinecone: {e}")
+            print(f"      [!] Failed to store pattern in Pinecone: {e}")
     
     def find_similar_patterns(
         self,
@@ -498,7 +498,7 @@ class AtomicBlackboard:
         
         try:
             import openai
-            
+
             # Create embedding of the violation description
             response = openai.Embedding.create(
                 input=violation_desc,
@@ -526,7 +526,7 @@ class AtomicBlackboard:
             
             return patterns
         except Exception as e:
-            print(f"      ⚠️ Failed to query Pinecone: {e}")
+            print(f"      [!] Failed to query Pinecone: {e}")
             return []
     
     # ============================================================================

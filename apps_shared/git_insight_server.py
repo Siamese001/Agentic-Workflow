@@ -95,7 +95,7 @@ def file_history_analytics(file_path: str) -> str:
     📄 File Intelligence: {file_path}
     -------------------------------------------
     👑 Code Owner:   {primary_author} ({ownership_percent:.1f}% of revisions)
-    📊 Total Edits:  {revisions}
+    [STATS] Total Edits:  {revisions}
     📅 Created:      {created_at.strftime('%Y-%m-%d')}
     📅 Last Update:  {last_modified.strftime('%Y-%m-%d')}
 

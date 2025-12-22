@@ -1,4 +1,3 @@
-```python
 """
 ⚛️ Adversarial Red-Teamer - The Skeptic
 
@@ -18,9 +17,10 @@ import ast
 import logging
 import textwrap
 from dataclasses import dataclass
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from agentic_core.agents.base import SubAtomicAgent
+
 # Assuming AgentContext is defined in agentic_core.context or similar.
 # If not, use `Any` for `ctx` type hint.
 # from agentic_core.context import AgentContext
@@ -568,19 +568,19 @@ class AdversarialRedTeamer(SubAtomicAgent):
         logger.info(f"  High: {len(high_vulns)}")
 
         if critical_vulns:
-            logger.error("\n⚠️  CRITICAL VULNERABILITIES:")
+            logger.error("\n[!]  CRITICAL VULNERABILITIES:")
             for vuln in critical_vulns:
                 logger.error(f"  [{vuln.test_id}] {vuln.details}")
                 logger.error(f"    → {vuln.recommendation}")
 
         if high_vulns:
-            logger.warning("\n⚠️  HIGH SEVERITY VULNERABILITIES:")
+            logger.warning("\n[!]  HIGH SEVERITY VULNERABILITIES:")
             for vuln in high_vulns:
                 logger.warning(f"  [{vuln.test_id}] {vuln.details}")
                 logger.warning(f"    → {vuln.recommendation}")
 
         if not vulnerabilities:
-            logger.info("\n✅ No vulnerabilities found - system is resilient")
+            logger.info("\n[OK] No vulnerabilities found - system is resilient")
 
         logger.info(f"{'='*80}\n")
 
@@ -595,5 +595,3 @@ def get_red_teamer(ctx: Any) -> AdversarialRedTeamer:
     if _red_teamer is None:
         _red_teamer = AdversarialRedTeamer(ctx)
     return _red_teamer
-
-```

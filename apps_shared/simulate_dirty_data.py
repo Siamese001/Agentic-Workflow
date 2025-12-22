@@ -55,10 +55,10 @@ def validate_cognitive_action_separation():
     # print(f"Result: {result_1}")  # [Security Fix]
 
     if result_1.get('is_valid') and result_1.get('source') == 'no_match':
-        # print("✅ PASS: Anchor truth ingested successfully.")  # [Security Fix]
+        # print("[OK] PASS: Anchor truth ingested successfully.")  # [Security Fix]
         pass
     else:
-        # print(f"❌ FAIL: Anchor truth was rejected. Reason: {result_1}")  # [Security Fix]
+        # print(f"[X] FAIL: Anchor truth was rejected. Reason: {result_1}")  # [Security Fix]
         return  # Stop if we can't seed
 
     # Wait for Pinecone indexing consistency (crucial for next tests)
@@ -76,10 +76,10 @@ def validate_cognitive_action_separation():
 
     # We expect a match in L1 or L2 for duplicates
     if result_2.get('source') in ['l1_match', 'l2_match']:
-        # print("✅ PASS: Exact duplicate was correctly filtered.")  # [Security Fix]
+        # print("[OK] PASS: Exact duplicate was correctly filtered.")  # [Security Fix]
         pass
     else:
-        # print(f"⚠️ WARNING: Duplicate was ingested. (Did L1 Cache miss?)")  # [Security Fix]
+        # print(f"[!] WARNING: Duplicate was ingested. (Did L1 Cache miss?)")  # [Security Fix]
         pass
 
         # ---------------------------------------------------------
@@ -108,10 +108,10 @@ def prevent_hallucination_loops():
 
     # If cosine similarity is working, this should be flagged as similar
     if result_3.get('source') in ['l1_match', 'l2_match']:
-        # print("✅ PASS: Semantic duplicate was correctly identified via Vectors.")  # [Security Fix]
+        # print("[OK] PASS: Semantic duplicate was correctly identified via Vectors.")  # [Security Fix]
         pass
     else:
-        # print(f"⚠️ WARNING: Semantic duplicate was treated as new. (Threshold might be too high?)")  # [Security Fix]
+        # print(f"[!] WARNING: Semantic duplicate was treated as new. (Threshold might be too high?)")  # [Security Fix]
         pass
 
         # ---------------------------------------------------------
@@ -134,10 +134,10 @@ def get_tuesday_menu():
     # print(f"Result: {result_4}")  # [Security Fix]
 
     if result_4.get('is_valid') and result_4.get('source') == 'no_match':
-        # print("✅ PASS: Novel data was correctly ingested.")  # [Security Fix]
+        # print("[OK] PASS: Novel data was correctly ingested.")  # [Security Fix]
         pass
     else:
-        # print(f"❌ FAIL: Novel data was rejected.")  # [Security Fix]
+        # print(f"[X] FAIL: Novel data was rejected.")  # [Security Fix]
         pass
 
     print_section("SIMULATION COMPLETE")

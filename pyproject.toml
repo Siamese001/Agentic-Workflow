@@ -1,3 +1,68 @@
+[tool.poetry]
+name = "agentic-workflow"
+version = "2.8.0"
+description = "Canon Validator Agentic Workflow - 50 Key Architecture"
+authors = ["AI Thought Partner <gemini@ai.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-dotenv = "^1.0"
+google-generativeai = "^0.4.0"
+pathlib = "^1.0"
+rich = "^13.7"
+flask = "^3.0"
+flask-cors = "^4.0"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+# VOID ENFORCEMENT: Exclude non-canon or state-heavy folders
+# Root-level files (Key 0) are included by default.
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | _build
+  | build
+  | dist
+  | archives
+  | data
+  | cache
+  | .pytest_cache
+  | __pycache__
+)/
+'''
+
+[tool.isort]
+profile = "black"
+# PHYSICAL BOUNDARY: Separate Core Sovereign from App Domains
+known_first_party = ["agentic_core", "prompt_governance", "schemas", "apps_shared", "config"]
+known_third_party = ["apps_rg", "apps_lic"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# [L6] VOID PHYSICS ENGINE (ASCII Alignment)
+[tool.void]
+allowed_roots = [
+    "agentic_core",      # Brain (Keys 40-42)
+    "prompt_governance", # Law (Keys 11-30)
+    "schemas",           # Contracts (Keys 31-39)
+    "apps_shared",       # Infra
+    "apps_rg",           # Domain A
+    "apps_lic",          # Domain B
+    "tests",             # QA (Key 47)
+    "config",            # Settings (Keys 1-10)
+    "observability",     # Telemetry (Keys 48-50)
+    "scripts"            # Labor (Key 46)
+]
+max_file_lines = 200
+enforce_waterfall = true
+enforce_key_0_at_root = true
+rules_file = "windsurfrules.md"
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q --strict-markers --strict-config --ignore=archives --ignore=archives/legacy_lic --ignore=archives/legacy_resume_gen --ignore=tests/integration/api/test_api_integration.py --ignore=tests/integration/api/test_provider_routing.py --ignore=tests/perf/throughput/test_cache_throughput.py --ignore=tests/unit/agentic_core/test_fallback_paths.py --ignore=tests/unit/apps_rg/test_resume_logic_mock.py --ignore=tests/unit/apps_shared/test_rag_logic.py --ignore=tests/unit/prompt_governance/test_constitutional_logic.py --ignore=tests/unit/runtime/test_cache.py --ignore=tests/unit/runtime/test_cache_regression.py"
@@ -22,10 +87,6 @@ python_classes = [
 python_functions = [
     "test_*"
 ]
-
-[tool.isort]
-profile = "black"
-skip = ["venv", "env", ".git", "__pycache__"]
 
 [tool.autoflake]
 exclude = ["venv", "env", ".git", "__pycache__"]

@@ -1,39 +1,40 @@
+import ast
 import asyncio
 import atexit
+import json  # Moved from _checkpoint_state in ConsolidatedOrchestrator
 import logging
 import os
 import signal
+import subprocess  # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
 import sys
-import ast
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set
-import json # Moved from _checkpoint_state in ConsolidatedOrchestrator
-import subprocess # Moved from _calculate_smart_scope in ConsolidatedOrchestrator
-
-# Phase 3: UniversalContext
-from agentic_core.domain.context import ValidationContext
-
-# Phase 4: Subatomic Agents
-from agentic_core.agents import (
-    SystemArchitect,
-    CodeJanitor,
-    CanonStructuralEngineer,
-    HygieneGuardian,
-    CodeStyleGuardian,
-    SafetyInspector,
-    SecurityEnforcer,
-    PerformanceEnforcer,
-    get_dependency_diplomat,
-    get_regression_oracle,
-)
-
-# Phase 5: L1-L5 Unified Architecture
 
 # This import was present within the execute_with_healing method in the original code,
 # despite a contradictory comment. It is moved here for proper module structure
 # and availability to the new OrchestratorHealingService.
 from agentic_workflow.runtime.shared import WriteFileArgs, write_file
+
+# Phase 4: Subatomic Agents
+from agentic_core.agents import (
+    CanonStructuralEngineer,
+    CodeJanitor,
+    CodeStyleGuardian,
+    HygieneGuardian,
+    PerformanceEnforcer,
+    SafetyInspector,
+    SecurityEnforcer,
+    SystemArchitect,
+    get_dependency_diplomat,
+    get_regression_oracle,
+)
+
+# Phase 3: UniversalContext
+from agentic_core.domain.context import ValidationContext
+
+# Phase 5: L1-L5 Unified Architecture
+
 
 try:
     from google import genai
@@ -178,11 +179,11 @@ class OrchestratorHealingService:
                 )
 
                 self._record_healing_attempt(file_path, success=True)
-                self.logger.info(f"✅ Healed {file_path} for violation {violation_key}")
+                self.logger.info(f"[OK] Healed {file_path} for violation {violation_key}")
                 return True
             else:
                 self._record_healing_attempt(file_path, success=False)
-                self.logger.warning(f"❌ Healing validation failed for {file_path}")
+                self.logger.warning(f"[X] Healing validation failed for {file_path}")
                 return False
 
         except Exception as e:
@@ -211,7 +212,7 @@ class OrchestratorHealingService:
         if success:
             self.state.modified_files.add(file_path)
 
-        status = "✅ SUCCESS" if success else "❌ FAILED"
+        status = "[OK] SUCCESS" if success else "[X] FAILED"
         self.logger.info(
             f"   Healing attempt {self.state.healing_attempts[file_path]} "
             f"for {file_path}: {status}"
@@ -445,7 +446,7 @@ class OrchestratorAgentAndScopeManager:
 
 class ConsolidatedOrchestrator:
     """
-    🚀 PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
+    [START] PHASE 5: THE HUB - Consolidated Command & Control Orchestrator
     
     This orchestrator serves as the single source of truth for all orchestration
     logic across the entire repository. All legacy orchestrators are thin wrappers
@@ -484,10 +485,10 @@ class ConsolidatedOrchestrator:
         
         if GENAI_AVAILABLE and os.getenv("GOOGLE_API_KEY"):
             self.client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-            logger.info("✅ Gemini 2.5/3.0 client initialized")
+            logger.info("[OK] Gemini 2.5/3.0 client initialized")
         else:
             self.client = None
-            logger.warning("⚠️  Gemini client not available")
+            logger.warning("[!]  Gemini client not available")
         
         # Initialize healing service and state manager to None, they will be properly instantiated
         # in execute_workflow once self.state is available.
@@ -499,31 +500,31 @@ class ConsolidatedOrchestrator:
         if self.config.clean_slate:
             self._execute_clean_slate()
         
-        logger.info("🚀 Consolidated orchestrator initialized (Phase 5: Swarm Assembly)")
+        logger.info("[START] Consolidated orchestrator initialized (Phase 5: Swarm Assembly)")
     
     def _execute_clean_slate(self):
         """Execute Clean Slate Protocol: Flush Redis and clear all leases."""
-        logger.info("🧹 CLEAN SLATE PROTOCOL: Flushing Redis...")
+        logger.info("[CLEAN] CLEAN SLATE PROTOCOL: Flushing Redis...")
         try:
             # Try to flush Redis if available
             if self.blackboard:
                 # Release all leases first
                 self.release_all_leases()
-                logger.info("   ✅ All leases released")
+                logger.info("   [OK] All leases released")
             
             # Additional cleanup can be added here
-            logger.info("   ✅ Clean slate executed")
+            logger.info("   [OK] Clean slate executed")
         except Exception as e:
-            logger.warning(f"   ⚠️  Clean slate failed: {e}")
+            logger.warning(f"   [!]  Clean slate failed: {e}")
     
     def release_all_leases(self):
         """Release all leases held by this orchestrator (graceful shutdown)."""
         if self.blackboard and hasattr(self.blackboard, 'release_all_leases'):
             try:
                 self.blackboard.release_all_leases()
-                logger.info("   ✅ All blackboard leases released")
+                logger.info("   [OK] All blackboard leases released")
             except Exception as e:
-                logger.warning(f"   ⚠️  Lease release failed: {e}")
+                logger.warning(f"   [!]  Lease release failed: {e}")
     
     async def run_mission(
         self,
@@ -546,7 +547,7 @@ class ConsolidatedOrchestrator:
         target_path = target_path or self.config.target_path
         
         logger.info(f"\n{'='*60}")
-        logger.info(f"🚀 MISSION START: {workflow_id}")
+        logger.info(f"[START] MISSION START: {workflow_id}")
         logger.info(f"{'='*60}")
         
         # Smart scope integration
@@ -573,7 +574,7 @@ class ConsolidatedOrchestrator:
         )
         
         logger.info(f"\n{'='*60}")
-        logger.info(f"✅ MISSION COMPLETE: {results['status']}")
+        logger.info(f"[OK] MISSION COMPLETE: {results['status']}")
         logger.info(f"{'='*60}")
         
         return results
@@ -614,7 +615,7 @@ class ConsolidatedOrchestrator:
             logger=logger
         )
         
-        logger.info(f"\n🔄 Starting convergence loop...")
+        logger.info(f"\n[~] Starting convergence loop...")
         logger.info(f"   Max cycles: {self.config.max_cycles}")
         logger.info(f"   Agents: {len(agents)}")
         
@@ -654,7 +655,7 @@ class ConsolidatedOrchestrator:
                             # Check for regression detection
                             regression_signals = [s for s in self.ctx.signals if s.startswith('REGRESSION_DETECTED:')]
                             if regression_signals:
-                                logger.error(f"\n🚨 REGRESSIONS DETECTED: {len(regression_signals)}")
+                                logger.error(f"\n[ALERT] REGRESSIONS DETECTED: {len(regression_signals)}")
                                 for signal in regression_signals:
                                     logger.error(f"   {signal}")
                                 
@@ -663,7 +664,7 @@ class ConsolidatedOrchestrator:
                     
                     # Clean Slate Protocol: If agent fails, clear its session
                     if "AGENT_FAILURE" in self.ctx.signals:
-                        logger.warning(f"   ⚠️  Agent failure detected - executing clean slate")
+                        logger.warning(f"   [!]  Agent failure detected - executing clean slate")
                         self._execute_clean_slate()
                         self.ctx.signals.discard("AGENT_FAILURE")
                     
@@ -671,7 +672,7 @@ class ConsolidatedOrchestrator:
                         await self.state_manager.checkpoint_state(agent.__class__.__name__)
                     
                 except Exception as e:
-                    logger.error(f"❌ Agent {agent.__class__.__name__} failed: {e}")
+                    logger.error(f"[X] Agent {agent.__class__.__name__} failed: {e}")
                     self.state.signals.add("AGENT_FAILURE")
                     
                     # Clean Slate Protocol: Clear session before retry
@@ -680,7 +681,7 @@ class ConsolidatedOrchestrator:
             
             # Check for convergence
             if self.state_manager.should_terminate():
-                logger.info("\n✅ CONVERGENCE ACHIEVED")
+                logger.info("\n[OK] CONVERGENCE ACHIEVED")
                 self.state.status = "COMPLETED"
                 break
             
@@ -696,7 +697,7 @@ class ConsolidatedOrchestrator:
         
         if self.state.status != "COMPLETED" and self.state.status != "VETOED":
             self.state.status = "MAX_CYCLES_REACHED"
-            logger.warning(f"\n⚠️  Max cycles reached without convergence")
+            logger.warning(f"\n[!]  Max cycles reached without convergence")
         
         return self.state_manager.build_results()
     
@@ -742,7 +743,7 @@ def create_orchestrator(
 
 async def main():
     """
-    🚀 PHASE 5: Main entry point for consolidated orchestrator.
+    [START] PHASE 5: Main entry point for consolidated orchestrator.
     
     Supports CLI flags:
     - --heal: Enable healing mode
@@ -754,7 +755,7 @@ async def main():
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="🚀 Phase 5: Consolidated Orchestrator - Command & Control Center",
+        description="[START] Phase 5: Consolidated Orchestrator - Command & Control Center",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -842,7 +843,7 @@ Examples:
     
     # Print results
     print(f"\n{'='*60}")
-    print(f"📊 MISSION RESULTS")
+    print(f"[STATS] MISSION RESULTS")
     print(f"{'='*60}")
     print(f"  Status: {results['status']}")
     print(f"  Cycles: {results['cycles_executed']}/{config.max_cycles}")

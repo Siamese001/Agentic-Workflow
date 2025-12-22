@@ -367,7 +367,6 @@ Issue: {issue}
 Question: {question}
 
 Code Snippet:
-```python
 {code_snippet[:2000]}  # Limit to first 2000 chars
 ```
 

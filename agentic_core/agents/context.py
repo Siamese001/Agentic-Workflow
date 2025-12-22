@@ -63,7 +63,7 @@ class OmniContext(SubAtomicAgent):
                     'content': content
                 }
             except Exception as e:
-                print(f"   ⚠️  Failed to read {file_path}: {e}")
+                print(f"   [!]  Failed to read {file_path}: {e}")
 
         self.context_buffer = '\n'.join(sections)
 

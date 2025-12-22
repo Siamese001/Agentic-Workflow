@@ -42,7 +42,7 @@ class NewsRAGPipeline:
         self.brave_key = os.getenv("BRAVE_SEARCH_API_KEY")
         if not self.brave_key:
             logger.warning(
-                "⚠️ BRAVE_SEARCH_API_KEY not found. News RAG will be disabled.")
+                "[!] BRAVE_SEARCH_API_KEY not found. News RAG will be disabled.")
 
         self.cache_ttl = 24 * 60 * 60  # 24 hours in seconds
         self.max_news_items = 3
@@ -143,7 +143,7 @@ class NewsRAGPipeline:
             return insights
 
         except Exception as e:
-            logger.error(f"❌ News search failed for {company}: {e}")
+            logger.error(f"[X] News search failed for {company}: {e}")
             return []
 
     def _search_industry_trends(self, industry: str) -> List[NewsInsight]:
@@ -187,7 +187,7 @@ class NewsRAGPipeline:
             return insights
 
         except Exception as e:
-            logger.error(f"❌ Industry trends search failed: {e}")
+            logger.error(f"[X] Industry trends search failed: {e}")
             return []
 
     def _generate_contextual_intro(self, insights: List[NewsInsight], company: str) -> str:
@@ -274,7 +274,7 @@ class NewsRAGPipeline:
                     cached_news = json.loads(cached_data)
                     if self._is_cache_valid(cached_news):
                         if logger:
-                            logger.info("💾 News found in Redis cache")
+                            logger.info("[SAVE] News found in Redis cache")
                         result = cached_news["data"]
                         # Add to session cache
                         self.session_cache[cache_key] = result
@@ -322,7 +322,7 @@ class NewsRAGPipeline:
                 }
                 redis_set(f"news_rag:{cache_key}", json.dumps(cache_data))
                 if logger:
-                    logger.info("💾 News cached in Redis for 24 hours")
+                    logger.info("[SAVE] News cached in Redis for 24 hours")
             except Exception as e:
                 if logger:
                     logger.warning(f"Redis cache set failed: {e}")
@@ -331,7 +331,7 @@ class NewsRAGPipeline:
         self.session_cache[cache_key] = result
 
         if logger:
-            logger.info(f"✅ News RAG complete: {len(insights)} insights found")
+            logger.info(f"[OK] News RAG complete: {len(insights)} insights found")
 
         return result
 

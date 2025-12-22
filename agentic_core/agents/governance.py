@@ -11,7 +11,7 @@ import subprocess
 from typing import List, Tuple
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
+from agentic_core.domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
 
 
 class ArchitectureGovernor(SubAtomicAgent):
@@ -23,25 +23,43 @@ class ArchitectureGovernor(SubAtomicAgent):
     MAX_COMPLEXITY = 10
     MAX_FUNC_LINES = 50
 
-    def can_run(self) -> bool:
-        return True
-
     async def execute(self):
+        """Execute Architecture Governor validation checks."""
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Architectural Laws...")
+        print(f"   [{self.name}] 🏛️  Analyzing {len(self.ctx.python_files)} files for architectural compliance...")
 
         violations = {'depth': [], 'atomicity': [], 'complexity': [], 'system': []}
+
+        # Progress tracking
+        files_processed = 0
+        total_files = len(self.ctx.python_files)
 
         for file_path in self.ctx.python_files:
             violations['depth'].extend(self._check_depth(file_path))
             violations['atomicity'].extend(await self._check_atomicity(file_path))
             violations['system'].extend(self._check_system(file_path))
             violations['complexity'].extend(await self._check_complexity(file_path))
+
+            files_processed += 1
+            if files_processed % 50 == 0 or files_processed == total_files:
+                print(f"   [{self.name}] 📊 Processed {files_processed}/{total_files} files...")
+
             # Yield control to the event loop to prevent blocking during heavy file analysis
             await asyncio.sleep(0)
 
+        # Summary report
+        print(f"\n   [{self.name}] 📋 ARCHITECTURAL VIOLATION SUMMARY:")
+        total_violations = sum(len(v) for v in violations.values())
         for cat, v in violations.items():
             if v:
-                print(f"   🏛️  {cat.title()} Violations: {len(v)}")
+                print(f"      • {cat.title()}: {len(v)} violations")
+            else:
+                print(f"      • {cat.title()}: ✅ PASS")
+
+        if total_violations > 0:
+            print(f"   [{self.name}] ⚠️  Total violations: {total_violations}")
+        else:
+            print(f"   [{self.name}] ✅ Perfect architectural compliance!")
 
         self.ctx.report(self.name, 49, not violations['depth'], violations['depth'])
         self.ctx.report(self.name, 50, not violations['atomicity'], violations['atomicity'])
@@ -51,27 +69,136 @@ class ArchitectureGovernor(SubAtomicAgent):
 
     def _check_depth(self, file_path: str) -> List[str]:
         """Check if file violates the Law of Depth (Key 49)."""
-        parts = [p for p in file_path.split(os.sep) if p and p not in {'.git', 'data', '.'}]
-        depth = len(parts)
-        if depth > MAX_DEPTH or depth < MIN_DEPTH:
-            return [f"{file_path}: Depth {depth} violates Law of Depth ({MIN_DEPTH}-{MAX_DEPTH})"]
+        # FIX: Use pathlib.Path to handle Windows drive letters correctly
+        from pathlib import Path
+        try:
+            path_obj = Path(file_path).resolve()
+            parts = [p for p in path_obj.parts if p and p not in {'.git', 'data', '.', '__pycache__'}]
+            # Filter out drive letters (e.g., 'C:' on Windows)
+            parts = [p for p in parts if not (len(p) == 2 and p[1] == ':')]
+            depth = len(parts)
+            if depth > MAX_DEPTH or depth < MIN_DEPTH:
+                return [f"{file_path}: Depth {depth} violates Law of Depth ({MIN_DEPTH}-{MAX_DEPTH})"]
+        except Exception as e:
+            return [f"{file_path}: Cannot analyze depth: {e}"]
         return []
 
     async def _check_atomicity(self, file_path: str) -> List[str]:
-        """Check if file violates the Law of Atomicity (Key 50)."""
+        """
+        Check if file violates the Law of Atomicity (Key 50).
+        
+        L5 SAFETY: ATOMIC FISSION PROTOCOL
+        If the target file exceeds 200 lines, trigger FISSION_BLUEPRINT generation
+        instead of just reporting violations.
+        """
         v = []
         try:
             content = await asyncio.to_thread(self._read_file, file_path)
-            if len(content.splitlines()) > MAX_LINES:
+            loc = len(content.splitlines())
+            
+            # L5 SAFETY THRESHOLD: 200 lines triggers fission blueprint
+            if loc > 200:
+                # Generate fission blueprint instead of simple violation report
+                blueprint = await self._generate_fission_blueprint(file_path, content, loc)
+                
+                if blueprint:
+                    # Store blueprint in context for FissionManager to execute
+                    if not hasattr(self.ctx, 'fission_blueprints'):
+                        self.ctx.fission_blueprints = {}
+                    self.ctx.fission_blueprints[file_path] = blueprint
+                    v.append(f"{file_path}: FISSION_REQUIRED ({loc} lines) - Blueprint generated")
+                else:
+                    v.append(f"{file_path}: > 200 lines ({loc} LOC) - Fission blueprint generation failed")
+            elif loc > MAX_LINES:
                 v.append(f"{file_path}: > {MAX_LINES} lines")
 
             tree = ast.parse(content)
             classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             if len(classes) > 1:
                 v.append(f"{file_path}: Multiple classes detected (Violation of Atomic Split)")
-        except Exception:
+        except Exception as e:
             pass
         return v
+    
+    async def _generate_fission_blueprint(self, file_path: str, content: str, loc: int) -> dict:
+        """
+        Generate a fission blueprint for monolithic files (>200 LOC).
+        
+        MISSION: ATOMIC FISSION PROTOCOL
+        1. ANALYZE the file for logical "seams" (e.g., helper functions vs. core classes)
+        2. GENERATE a JSON Blueprint mapping source code into sub-modules (<100 lines each)
+        3. ENSURE the original filename is preserved as a "Router" (L3 Orchestration layer)
+        
+        Returns:
+            dict: Fission blueprint with module splits and exports
+        """
+        try:
+            # Use Gemini to analyze and generate the blueprint
+            if not hasattr(self.ctx, 'gemini_client') or not self.ctx.gemini_client:
+                return None
+            
+            file_name = os.path.basename(file_path)
+            
+            prompt = f"""### MISSION: ATOMIC FISSION PROTOCOL
+You are analyzing a monolithic Python file that exceeds the L5 Safety Threshold (200 lines).
+
+FILE: {file_name}
+LINES: {loc}
+
+Your task is to generate a FISSION BLUEPRINT that splits this file into smaller, atomic modules.
+
+RULES:
+1. Each sub-module should be <100 lines
+2. Preserve all functionality (Zero-Loss principle)
+3. The original filename becomes a "Router" that imports and re-exports from sub-modules
+4. Identify logical seams: helper functions, data classes, core logic, utilities
+
+ANALYZE THIS CODE:
+```python
+{content[:8000]}  # Truncate to fit in context
+```
+
+OUTPUT FORMAT (JSON):
+{{
+  "fission_event": true,
+  "original_file": "{file_name}",
+  "reason": "Atomicity Violation ({loc} lines)",
+  "blueprint": {{
+    "module_a": {{"content": "...", "exports": [...]}},
+    "module_b": {{"content": "...", "exports": [...]}}
+  }}
+}}
+
+Generate the blueprint now:"""
+
+            # Call Gemini with safe config
+            from agentic_core.L5_safety import SubAtomicEngine
+            config = SubAtomicEngine.get_safe_config(is_fission=True)
+            
+            response = await asyncio.to_thread(
+                self.ctx.gemini_client.models.generate_content,
+                model='gemini-2.5-flash',
+                contents=prompt,
+                config=config
+            )
+            
+            if response.candidates and response.candidates[0].content.parts:
+                output = response.candidates[0].content.parts[0].text.strip()
+                
+                # Extract JSON from response
+                import json
+                import re
+                json_match = re.search(r'\{.*\}', output, re.DOTALL)
+                if json_match:
+                    blueprint = json.loads(json_match.group())
+                    if blueprint.get('fission_event'):
+                        return blueprint
+            
+            return None
+            
+        except Exception as e:
+            print(f"   [!] Fission blueprint generation error: {e}")
+            return None
 
     async def _check_complexity(self, file_path: str) -> List[str]:
         """Check function complexity and length (Keys 17, 19)."""
@@ -133,7 +260,7 @@ class DependencySentinel(SubAtomicAgent):
             has_isort = True
         except (subprocess.CalledProcessError, FileNotFoundError):
             has_isort = False
-            print("      ⚠️  isort not installed. Install with: pip install isort")
+            print("      [!]  isort not installed. Install with: pip install isort")
 
         # Check for autoflake
         try:
@@ -144,7 +271,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 9: Unused imports (auto-fix with autoflake)
         if has_autoflake:
-            print("   🔧 Running autoflake (Removes Key 9 violations)...")
+            print("   [+] Running autoflake (Removes Key 9 violations)...")
             try:
                 subprocess.run([
                     "autoflake",
@@ -163,7 +290,7 @@ class DependencySentinel(SubAtomicAgent):
 
         # Key 14: Duplicate imports (auto-fix with isort)
         if has_isort:
-            print("   🔧 Running isort (Orders and removes Key 14 duplicates)...")
+            print("   [+] Running isort (Orders and removes Key 14 duplicates)...")
             try:
                 subprocess.run([
                     "isort",

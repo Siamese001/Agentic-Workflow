@@ -86,6 +86,18 @@ except Exception as e:
     wait_for_approval = None
     reset_approval_event = None
 
+try:
+    from agentic_core.L3_orchestration.fission_manager import FissionManager
+except Exception as e:
+    LOGGER.debug(f"FissionManager not available: {e}")
+    FissionManager = None
+
+try:
+    from agentic_core.L3_orchestration.fission_executor import apply_fission_blueprint
+except Exception as e:
+    LOGGER.debug(f"apply_fission_blueprint not available: {e}")
+    apply_fission_blueprint = None
+
 __all__ = [
     "NervousSystem",
     "DAGEngine",
@@ -112,4 +124,7 @@ __all__ = [
     "WEBSOCKETS_AVAILABLE",
     "GITPYTHON_AVAILABLE",
     "CycleState",
+    # Fission Components
+    "FissionManager",
+    "apply_fission_blueprint",
 ]

@@ -1,11 +1,10 @@
 import ast
-import asyncio
 import hashlib
 import re
 from typing import List, Tuple
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.domain.constants import MAX_LINES
+from agentic_core.domain.constants import MAX_LINES
 
 
 class StructuralEngineer(SubAtomicAgent):
@@ -18,39 +17,75 @@ class StructuralEngineer(SubAtomicAgent):
         return "GENERATIVE_CLEAN" in self.ctx.signals
 
     async def execute(self):
-        print(f"\n[>>>] {self.name} ACTIVATED: Reviewing Refactoring Plans...")
-        await asyncio.sleep(0)
+        """Execute Structural Engineer validation checks."""
+        print(f"\n[>>>] {self.name} ACTIVATED: Checking Code Structure...")
+        print(f"   [{self.name}] 🔧 Analyzing structural integrity...")
 
         # Key 17: Large functions
+        print(f"   [{self.name}] 🔍 Checking Key 17: Large Functions...")
         passed, details = self.check_key_17_no_large_functions()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 17: PASS - All functions within limits")
+        else:
+            print(f"   [{self.name}] ❌ Key 17: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 17, passed, details)
 
-        # Key 18: Many parameters (>5 params)
+        # Key 18: Many parameters
+        print(f"   [{self.name}] 🔍 Checking Key 18: Parameter Count...")
         passed, details = self.check_key_18_no_many_parameters()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 18: PASS - Parameter counts acceptable")
+        else:
+            print(f"   [{self.name}] ❌ Key 18: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 18, passed, details)
 
         # Key 19: Complexity (already checked above)
         # Key 20: Large classes (>200 lines)
+        print(f"   [{self.name}] 🔍 Checking Key 20: Large Classes...")
         passed, details = self.check_key_20_no_large_classes()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 20: PASS - All classes within limits")
+        else:
+            print(f"   [{self.name}] ❌ Key 20: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 20, passed, details)
 
         # Key 25: Global variables
+        print(f"   [{self.name}] 🔍 Checking Key 25: Global Variables...")
         passed, details = self.check_key_25_no_global_variables()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 25: PASS - No global variables detected")
+        else:
+            print(f"   [{self.name}] ❌ Key 25: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 25, passed, details)
 
         # Key 42: Large files (>500 lines)
+        print(f"   [{self.name}] 🔍 Checking Key 42: Large Files...")
         passed, details = self.check_key_42_no_large_files()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 42: PASS - All files within size limits")
+        else:
+            print(f"   [{self.name}] ❌ Key 42: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 42, passed, details)
 
         # Key 43: Class density (>10 classes per file)
+        print(f"   [{self.name}] 🔍 Checking Key 43: Class Density...")
         passed, details = self.check_key_43_no_class_density()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 43: PASS - Class density acceptable")
+        else:
+            print(f"   [{self.name}] ❌ Key 43: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 43, passed, details)
 
         # Key 46: Duplicate code
+        print(f"   [{self.name}] 🔍 Checking Key 46: Duplicate Code...")
         passed, details = self.check_key_46_no_duplicate_code()
+        if passed:
+            print(f"   [{self.name}] ✅ Key 46: PASS - No duplicate code detected")
+        else:
+            print(f"   [{self.name}] ❌ Key 46: FAIL ({len(details)} violations)")
         self.ctx.report(self.name, 46, passed, details)
 
-        print("   ✅ No structural changes pending.")
+        print(f"   [{self.name}] ✅ Structural analysis complete")
 
     def check_key_17_no_large_functions(self) -> Tuple[bool, List[str]]:
         """Check for functions exceeding MAX_LINES."""

@@ -5,6 +5,7 @@ Fixes "23 validation errors" and "Extra inputs" crashes with Gemini 2.5/3.0.
 
 from pathlib import Path
 from typing import List, Optional
+
 from pydantic import BaseModel, Field, validator
 
 

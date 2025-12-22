@@ -269,7 +269,7 @@ class ClarityBrevityFilter:
         """
 
         if logger:
-            logger.info(f"🔍 Applying clarity & brevity filter")
+            logger.info(f"[SCAN] Applying clarity & brevity filter")
 
         original_text = text
         all_changes = []
@@ -322,7 +322,7 @@ class ClarityBrevityFilter:
         )
 
         if logger:
-            logger.info(f"✅ Content filtered:")
+            logger.info(f"[OK] Content filtered:")
             logger.info(f"   Words reduced: {word_reduction}")
             logger.info(f"   Clarity score: {clarity_score:.2f}")
             logger.info(f"   Brevity score: {brevity_score:.2f}")

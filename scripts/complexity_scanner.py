@@ -18,9 +18,7 @@ from typing import Dict, List
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.patterns.subatomic_flattening_rule import (
-    ComplexityMetrics
-)
+from agentic_core.patterns.subatomic_flattening_rule import ComplexityMetrics
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

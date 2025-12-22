@@ -13,7 +13,7 @@ Strategy:
 
 import logging
 import os
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 try:
     from pinecone import Pinecone
@@ -68,12 +68,12 @@ class MemoryArchitectSync:
                 try:
                     self.pc = Pinecone(api_key=api_key)
                     self.index = self.pc.Index(index_name)
-                    logger.info(f"✅ Memory Architect connected to Pinecone: {index_name}")
+                    logger.info(f"[OK] Memory Architect connected to Pinecone: {index_name}")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Pinecone: {e}")
+                    logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     self.pinecone_available = False
             else:
-                logger.warning("⚠️  PINECONE_API_KEY not found")
+                logger.warning("[!]  PINECONE_API_KEY not found")
                 self.pinecone_available = False
         
         # Initialize Gemini for embeddings
@@ -82,9 +82,9 @@ class MemoryArchitectSync:
             if api_key:
                 try:
                     self.genai_client = genai.Client(api_key=api_key)
-                    logger.info("✅ Memory Architect connected to Gemini for embeddings")
+                    logger.info("[OK] Memory Architect connected to Gemini for embeddings")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Gemini: {e}")
+                    logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     self.genai_available = False
             else:
                 self.genai_available = False
@@ -101,7 +101,7 @@ class MemoryArchitectSync:
             True if successful, False otherwise
         """
         if not self.pinecone_available:
-            logger.warning("⚠️  Pinecone not available, skipping L4 State sync")
+            logger.warning("[!]  Pinecone not available, skipping L4 State sync")
             return False
         
         try:
@@ -114,11 +114,11 @@ class MemoryArchitectSync:
                 logger.info(f"  [Memory] Indexing new L4 State: {file_path}")
                 self._index_file(file_path, parent_monolith=monolith_path)
             
-            logger.info(f"  ✅ L4 State sync complete: {len(new_files)} files indexed")
+            logger.info(f"  [OK] L4 State sync complete: {len(new_files)} files indexed")
             return True
         
         except Exception as e:
-            logger.error(f"  ❌ L4 State sync failed: {e}")
+            logger.error(f"  [X] L4 State sync failed: {e}")
             return False
     
     def _purge_monolith(self, monolith_path: str):
@@ -131,9 +131,9 @@ class MemoryArchitectSync:
         try:
             # Delete vectors with matching file_path metadata
             self.index.delete(filter={"file_path": {"$eq": monolith_path}})
-            logger.info(f"    ✅ Purged embeddings for {monolith_path}")
+            logger.info(f"    [OK] Purged embeddings for {monolith_path}")
         except Exception as e:
-            logger.warning(f"    ⚠️  Could not purge embeddings: {e}")
+            logger.warning(f"    [!]  Could not purge embeddings: {e}")
     
     def _index_file(self, file_path: str, parent_monolith: Optional[str] = None):
         """
@@ -152,7 +152,7 @@ class MemoryArchitectSync:
             vector = self._generate_embedding(content)
             
             if vector is None:
-                logger.warning(f"    ⚠️  Could not generate embedding for {file_path}")
+                logger.warning(f"    [!]  Could not generate embedding for {file_path}")
                 return
             
             # Prepare metadata
@@ -172,10 +172,10 @@ class MemoryArchitectSync:
             vector_id = f"vec_{clean_path}"
             self.index.upsert(vectors=[(vector_id, vector, metadata)])
             
-            logger.info(f"    ✅ Indexed {file_path} ({len(content.splitlines())} lines)")
+            logger.info(f"    [OK] Indexed {file_path} ({len(content.splitlines())} lines)")
         
         except Exception as e:
-            logger.error(f"    ❌ Failed to index {file_path}: {e}")
+            logger.error(f"    [X] Failed to index {file_path}: {e}")
     
     def _generate_embedding(self, text: str) -> Optional[List[float]]:
         """
@@ -188,7 +188,7 @@ class MemoryArchitectSync:
             Embedding vector or None if failed
         """
         if not self.genai_available:
-            logger.warning("    ⚠️  Gemini not available for embeddings")
+            logger.warning("    [!]  Gemini not available for embeddings")
             return None
         
         try:
@@ -201,11 +201,11 @@ class MemoryArchitectSync:
             if result and hasattr(result, 'embedding'):
                 return result.embedding
             
-            logger.warning("    ⚠️  No embedding returned from Gemini")
+            logger.warning("    [!]  No embedding returned from Gemini")
             return None
         
         except Exception as e:
-            logger.error(f"    ❌ Embedding generation failed: {e}")
+            logger.error(f"    [X] Embedding generation failed: {e}")
             return None
     
     def verify_sync(self, file_paths: List[str]) -> Dict[str, bool]:
@@ -233,12 +233,12 @@ class MemoryArchitectSync:
                 results[file_path] = vector_id in fetch_result.vectors
                 
                 if results[file_path]:
-                    logger.info(f"  ✅ Verified: {file_path}")
+                    logger.info(f"  [OK] Verified: {file_path}")
                 else:
-                    logger.warning(f"  ⚠️  Not found: {file_path}")
+                    logger.warning(f"  [!]  Not found: {file_path}")
             
             except Exception as e:
-                logger.error(f"  ❌ Verification failed for {file_path}: {e}")
+                logger.error(f"  [X] Verification failed for {file_path}: {e}")
                 results[file_path] = False
         
         return results
@@ -285,7 +285,7 @@ class MemoryArchitectSync:
             return related_files
         
         except Exception as e:
-            logger.error(f"  ❌ Query failed: {e}")
+            logger.error(f"  [X] Query failed: {e}")
             return []
 
 
@@ -321,7 +321,7 @@ if fission_result.success:
     # Verify sync
     verification = memory_sync.verify_sync(new_file_paths)
     if all(verification.values()):
-        logger.info("✅ L4 State fully synchronized")
+        logger.info("[OK] L4 State fully synchronized")
     else:
-        logger.warning("⚠️  Some files not indexed in Pinecone")
+        logger.warning("[!]  Some files not indexed in Pinecone")
 """

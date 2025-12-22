@@ -94,7 +94,7 @@ class TheCartographer:
             results["files_mapped"] += repo_result.get("files_mapped", 0)
             results["summaries_generated"] += repo_result.get("summaries_generated", 0)
 
-        LOGGER.info(f"✅ TheCartographer: Mapped {results['files_mapped']} files")
+        LOGGER.info(f"[OK] TheCartographer: Mapped {results['files_mapped']} files")
 
         return results
 

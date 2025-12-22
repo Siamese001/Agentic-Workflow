@@ -80,9 +80,9 @@ class DependencyDiplomat(SubAtomicAgent):
                     decode_responses=True
                 )
                 self.redis.ping()
-                logger.info("✅ Dependency Diplomat connected to Redis")
+                logger.info("[OK] Dependency Diplomat connected to Redis")
             except Exception as e:
-                logger.warning(f"⚠️  Could not connect to Redis: {e}")
+                logger.warning(f"[!]  Could not connect to Redis: {e}")
                 self.redis_available = False
         
         # In-memory graph (fallback)

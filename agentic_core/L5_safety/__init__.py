@@ -36,12 +36,26 @@ except Exception as e:
     LOGGER.debug(f"CostGovernor not available: {e}")
     CostGovernor = None
 
+try:
+    from agentic_core.L5_safety.safety_guardrail import SafetyGuardrail
+except Exception as e:
+    LOGGER.debug(f"SafetyGuardrail not available: {e}")
+    SafetyGuardrail = None
+
+try:
+    from agentic_core.L5_safety.subatomic_engine import SubAtomicEngine
+except Exception as e:
+    LOGGER.debug(f"SubAtomicEngine not available: {e}")
+    SubAtomicEngine = None
+
 __all__ = [
     'PIIVault',
     'ConstitutionalOverseer',
     'CanaryDefense',
     'CostGovernor',
     'CanaryToken',
+    'SafetyGuardrail',
+    'SubAtomicEngine',
 ]
 
 __version__ = '1.0.0'

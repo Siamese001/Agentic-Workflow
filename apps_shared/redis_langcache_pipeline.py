@@ -49,7 +49,7 @@ def execute_governed_prompt_caching(
         except Exception:
             pass
         if logger:
-            logger.info("✅ Cache Hit: LLM Generation AVOIDED (Cost Saved).")
+            logger.info("[OK] Cache Hit: LLM Generation AVOIDED (Cost Saved).")
             return {"status": "cache_hit", "draft": final_draft}
 
     # --- 2. Cost Governance Check (L4 Redis) ---
@@ -69,7 +69,7 @@ def execute_governed_prompt_caching(
                 }])
                 if logger:
                     logger.error(
-                        f"❌ LLM Budget Aborted. {DAILY_BUDGET} generations reached today.")
+                        f"[X] LLM Budget Aborted. {DAILY_BUDGET} generations reached today.")
                 return {"status": "budget_aborted", "message": "Daily LLM generation budget exhausted."}
 
             except Exception as e:
@@ -142,7 +142,7 @@ def execute_atomic_fix_validation(
         string_set(VALIDATION_CACHE_KEY, json.dumps(validation_result))
 
         if logger:
-            logger.info("✅ Atomic transaction committed successfully")
+            logger.info("[OK] Atomic transaction committed successfully")
 
         return {
             "status": "atomic_success",
@@ -152,7 +152,7 @@ def execute_atomic_fix_validation(
 
     except Exception as e:
         if logger:
-            logger.error(f"❌ Atomic transaction failed: {e}")
+            logger.error(f"[X] Atomic transaction failed: {e}")
         return {"status": "atomic_failed", "error": str(e)}
 
 
@@ -188,7 +188,7 @@ def execute_temporal_rate_limiting(
                 if current_count >= max_actions_per_hour:
                     if logger:
                         logger.warning(
-                            f"⚠️ Rate limit exceeded: {current_count}/{max_actions_per_hour}")
+                            f"[!] Rate limit exceeded: {current_count}/{max_actions_per_hour}")
                     return {
                         "status": "rate_limited",
                         "message": f"Maximum {max_actions_per_hour} actions per hour exceeded",
@@ -210,7 +210,7 @@ def execute_temporal_rate_limiting(
 
         if logger:
             logger.info(
-                f"✅ Action allowed. Count: {new_count}/{max_actions_per_hour}")
+                f"[OK] Action allowed. Count: {new_count}/{max_actions_per_hour}")
 
         return {
             "status": "allowed",
@@ -221,6 +221,6 @@ def execute_temporal_rate_limiting(
 
     except Exception as e:
         if logger:
-            logger.error(f"❌ Rate limiting failed: {e}")
+            logger.error(f"[X] Rate limiting failed: {e}")
         return {"status": "error", "error": str(e)}
 

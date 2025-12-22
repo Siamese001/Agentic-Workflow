@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {
+      "id": "orchestrator",
+      "entry": "canon_validator_agentic_v2.run_mission"
+    },
+    {
+      "id": "fission_manager",
+      "entry": "agentic_core.L3_orchestration.fission.fission_executor.apply_fission_blueprint"
+    }
+  ],
+  "edges": [
+    {
+      "source": "orchestrator",
+      "target": "fission_manager",
+      "condition": "needs_fission"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": ".",
+    "AGENTIC_CORE_PATH": "./agentic_core"
+  }
+}

@@ -6,7 +6,6 @@ Tests integration between injection detection, dependency injection,
 and V6 prompt systems to ensure end-to-end security flows work correctly.
 """
 
-import logging
 
 import pytest
 
@@ -120,8 +119,7 @@ class TestEndToEndSecurityFlow:
 
             # Policy should block
             DECISION = policy.evaluate(context)
-            assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {atta
-    ck}"
+            assert decision.verdict in [Verdict.BLOCK, Verdict.REVIEW], f"Should block attack: {attack}"
 
     def test_safe_content_allowed(self) -> None:
         """Test that safe content is allowed through security checks."""
@@ -146,8 +144,7 @@ class TestEndToEndSecurityFlow:
 
             # Detector should find no critical issues
             FINDINGS = detector.detect_injections(content, context)
-            critical_findings = [f for f in findings if f.severity in [Severity.HIGH, Severity.CRITI
-    CAL]]
+            critical_findings = [f for f in findings if f.severity in [Severity.HIGH, Severity.CRITICAL]]
             assert len(critical_findings) == 0, f"Should not flag safe content: {content}"
 
             # Policy should allow

@@ -1,39 +1,3 @@
-I've reviewed the provided Python code for syntax and style violations, applying PEP 8 guidelines, improving readability, and addressing potential logical issues.
-
-Here's a summary of the changes made:
-
-1.  **Imports**:
-    *   Replaced `typing.Dict` with `dict` as per modern Python type hinting practices.
-    *   Added `logging` module for more robust error reporting instead of just `print` statements for exceptions.
-    *   Configured a basic logger for the module.
-
-2.  **`_init_registry` Method**:
-    *   **Duplicate Keys Resolution**:
-        *   Removed key `9` (`deps.check_key_45_no_unused_imports`) as it was a duplicate of key `45`.
-        *   Removed key `35` (`deps.check_key_07_no_star_imports`) as it was a duplicate of key `7`.
-        *   Clarified in comments that keys `5` and `28` (`safety.check_key_05_no_bare_except` and `pattern.check_key_28_no_bare_except`) are distinct functions from different agents, even if they check for similar concepts, and are therefore kept.
-    *   **Line Length**: Broke long lines in the `VERIFICATION_REGISTRY` dictionary for better readability and PEP 8 compliance.
-    *   Added type hints for `VERIFICATION_REGISTRY` and `_registry_built`.
-    *   Added comments to explain the lazy loading of imports and the rationale behind duplicate key resolution.
-
-3.  **`get_file_hash` Method**:
-    *   Modified the `except IOError` block to catch the exception as `e` and log a warning using the new `logger` for better diagnostics.
-
-4.  **`check_cache` and `store_cache` Methods**:
-    *   Updated type hints from `Optional[Dict]` to `Optional[dict]` and `Dict` to `dict` respectively.
-
-5.  **`smart_fix` Method**:
-    *   **Early Exit Logging**: Added `logger.debug` statements for early exit conditions (e.g., intelligence not enabled, cannot attempt healing).
-    *   **Missing Check Function**: Added a check `if not check_func:` to handle cases where a `violation_key` might not be found in the registry, logging a warning and returning `False`.
-    *   **Line Length**: Broke long `print` statements and f-strings to adhere to PEP 8 line length limits.
-    *   **Task String Construction**: Changed `"".join(task_parts)` to `"\n".join(task_parts)` when constructing the LLM `task` string. This ensures each part (description, specific violations, reference fix) is on a new line, which generally improves LLM prompt understanding.
-    *   **Improved Failure Messages**: Enhanced the `previous_failure` message when a fix attempt doesn't resolve violations, especially when no specific file violations are found.
-    *   **Final Failure Message**: Updated the final `print` statement for healing failure to include the base filename.
-    *   **Exception Handling**: In the `except Exception as e:` block, replaced the simple `print` with `logger.error(..., exc_info=True)` to log the full traceback for debugging, while retaining a concise `print` statement for immediate console feedback.
-
-The healed code is provided below:
-
-```python
 """
 Canon Validator Base Agent
 Base class for all validation agents with caching and healing capabilities.
@@ -41,12 +5,11 @@ Base class for all validation agents with caching and healing capabilities.
 
 import asyncio
 import hashlib
-import os
 import logging  # Added for better error handling
+import os
 from typing import Optional
 
-from apps_shared.canon_validation_context import ValidationContext
-
+from agentic_core.L4_state.validation_context import ValidationContext
 
 # Configure basic logging for this module.
 # In a real application, this would typically be configured globally.
@@ -279,7 +242,7 @@ class SubAtomicAgent:
                 )
 
                 if fixed_code == current_code:
-                    print(f"      ⚠️ No changes made in Round {round_num}",
+                    print(f"      [!] No changes made in Round {round_num}",
                           flush=True)
                     previous_failure = "No changes were made to the code."
                     continue
@@ -294,7 +257,7 @@ class SubAtomicAgent:
                     else check_func()
                 )
                 if res[0]:  # If no violations remain
-                    print(f"      ✅ Healing successful in Round {round_num}",
+                    print(f"      [OK] Healing successful in Round {round_num}",
                           flush=True)
                     self.ctx.record_healing_attempt(file_path, success=True)
                     self.ctx.modified_files.add(file_path)
@@ -331,7 +294,7 @@ class SubAtomicAgent:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(original_code)
 
-            print(f"      ❌ Healing failed after {max_rounds} rounds - "
+            print(f"      [X] Healing failed after {max_rounds} rounds - "
                   f"reverting {os.path.basename(file_path)}", flush=True)
             self.ctx.record_healing_attempt(file_path, success=False)
             return False
@@ -341,12 +304,10 @@ class SubAtomicAgent:
             # of LLM interactions and file operations.
             logger.error(f"Healing error for {file_path}, key {violation_key}: {e}",
                          exc_info=True)  # Log exception info for debugging
-            print(f"      🚨 Healing error for {os.path.basename(file_path)}: {e}",
+            print(f"      [ALERT] Healing error for {os.path.basename(file_path)}: {e}",
                   flush=True)
             return False
 
     def execute(self):
         """Override in subclass."""
         raise NotImplementedError(f"{self.name}.execute() not implemented")
-
-```

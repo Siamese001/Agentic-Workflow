@@ -22,7 +22,6 @@ from enum import Enum
 from typing import Dict, Optional
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager
 
 logger = logging.getLogger(__name__)
 
@@ -87,22 +86,24 @@ class DynamicModelRouter(SubAtomicAgent):
             ctx: ValidationContext
         """
         super().__init__(ctx)
-        # Initialize shared Sub-Atomic Engine components
-        if hasattr(self.ctx, '_client') and self.ctx._client:
-            try:
-                self.engine = get_subatomic_engine(gemini_client=self.ctx._client)
-                self.safety = get_safety_guardrail()
-                self.fission = get_fission_manager()
-            except Exception as e:
-                logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
-                self.engine = None
-                self.safety = None
-                self.fission = None
-        else:
+        # Initialize shared Sub-Atomic Engine components via dependency injection from ctx.
+        # The ValidationContext is expected to provide these pre-initialized components.
+        # If they are not present in ctx, they will be None, and a warning will be logged.
+        
+        self.engine = getattr(self.ctx, 'subatomic_engine', None)
+        self.safety = getattr(self.ctx, 'safety_guardrail', None)
+        self.fission = getattr(self.ctx, 'fission_manager', None)
+
+        # Log a warning if any are missing, similar to the original try-except's intent.
+        # The original code had a single try-except for all three.
+        # If any of the three were not successfully initialized and provided by ctx,
+        # we log a warning and ensure all related attributes are None to match original behavior.
+        if not (self.engine and self.safety and self.fission):
+            logger.warning("One or more Sub-Atomic Engine components (engine, safety, fission) "
+                           "were not found in ValidationContext. DynamicModelRouter will operate without them.")
             self.engine = None
             self.safety = None
             self.fission = None
-
         
         # Routing thresholds
         self.BASIC_THRESHOLD = 30

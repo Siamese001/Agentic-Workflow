@@ -109,7 +109,7 @@ class TestPilot:
 
         if not results["signals"]:
             results["signals"].add("TESTS_PASS")
-            LOGGER.info("✅ All tests passed")
+            LOGGER.info("[OK] All tests passed")
 
         # Convert signals set to list for JSON serialization
         results["signals"] = list(results["signals"])

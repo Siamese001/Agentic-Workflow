@@ -13,7 +13,7 @@ GOOD: Split into orders/validate.py, orders/charge.py
 
 EXAMPLE 2: Incorrect Depth
 BAD: apps/payment/helpers.py (depth 3)
-GOOD: apps_shared/payments/domain/charge_service.py (depth 5)
+GOOD: agentic_core/shared/payments/domain/charge_service.py (depth 5)
 """
 
 FEW_SHOT_IMPORT_FIXES = """
@@ -21,7 +21,7 @@ FEW-SHOT IMPORT RESOLUTION:
 
 EXAMPLE 1: Relative Import
 BAD: from utils import validate
-GOOD: from apps_shared.validation.common import validate
+GOOD: from agentic_core.shared.validation.common import validate
 
 EXAMPLE 2: Missing Schema
 BAD: ImportError: cannot import name 'OrderSchema'
@@ -109,7 +109,7 @@ FEW_SHOT_REFLECTION_STRATEGY = """
 FEW-SHOT HEALING STRATEGY DECISIONS:
 
 IF: Multiple test failures in same module
-THEN: Extract shared utilities to apps_shared/
+THEN: Extract shared utilities to agentic_core/shared/
 
 IF: Import errors after refactor
 THEN: Update imports and check depth compliance

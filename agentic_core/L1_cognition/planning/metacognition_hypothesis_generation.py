@@ -7,15 +7,13 @@ LOGGER = logging.getLogger(__name__)
 
 class DummyRAG:
     """TODO: Add docstring."""
-
-def __init__(self: Any, evidence_count: int) -> None:
+    def __init__(self: Any, evidence_count: int) -> None:
         SELF.EVIDENCE = [object() for _ in range(evidence_count)]
-
     """TODO: Add docstring."""
 
 class DummyAgentCard:
     """TODO: Add docstring."""
-def __init__(self: Any, agent_id: str) -> None:
+    def __init__(self: Any, agent_id: str) -> None:
         self.agent_id = agent_id
     """TODO: Add docstring."""
 

@@ -1,4 +1,3 @@
-```python
 import ast
 import json
 import logging
@@ -152,13 +151,13 @@ class CognitiveNode:
         # If we reach here, the step was slow.
         circuit_breaker_count += 1
         self.logger.warning(
-            f"⚠️ Step {step_num} took {step_duration:.2f}s "
+            f"[!] Step {step_num} took {step_duration:.2f}s "
             f"(threshold: {self.slow_step_threshold}s)"
         )
 
         # Check if the circuit breaker should trip after incrementing the count.
         if circuit_breaker_count >= self.circuit_breaker_trips:
-            self.logger.error("❌ Circuit breaker tripped - too many slow steps")
+            self.logger.error("[X] Circuit breaker tripped - too many slow steps")
             raise TimeoutError(
                 "Sequential thinking circuit breaker activated due to slow steps"
             )
@@ -177,7 +176,7 @@ class CognitiveNode:
         """
         if time.time() - start_time > self.overall_timeout:
             self.logger.error(
-                f"❌ Overall thinking timeout exceeded ({self.overall_timeout}s)"
+                f"[X] Overall thinking timeout exceeded ({self.overall_timeout}s)"
             )
             raise TimeoutError(
                 "Sequential thinking exceeded maximum allowed duration"
@@ -271,7 +270,7 @@ class CognitiveNode:
         except TimeoutError:
             raise  # Re-raise specific TimeoutError
         except Exception as e:
-            self.logger.error(f"❌ Cognitive Step Failed: {e}")
+            self.logger.error(f"[X] Cognitive Step Failed: {e}")
             raise RuntimeError(
                 f"Cognitive step {current_step + 1} failed: {str(e)}"
             ) from e
@@ -414,7 +413,7 @@ class CognitiveNode:
             )
 
         self.logger.warning(
-            f"⚠️ Max thinking steps ({self.max_steps}) reached. "
+            f"[!] Max thinking steps ({self.max_steps}) reached. "
             "Synthesizing plan with current context."
         )
         return self._handle_final_synthesis(
@@ -528,7 +527,7 @@ class CognitiveNode:
                 final_prompt,
             )
         except Exception as e:
-            self.logger.error(f"❌ LLM code synthesis failed: {e}")
+            self.logger.error(f"[X] LLM code synthesis failed: {e}")
             raise RuntimeError(f"LLM code synthesis failed: {str(e)}") from e
 
         code = final_response.get("code", "")
@@ -541,6 +540,27 @@ class CognitiveNode:
 
         self._validate_generated_code(code)
         return code
+
+    def _perform_synthesis_attempt(
+        self,
+        goal: str,
+        thoughts: str,
+        toolbox_desc: str,
+        attempt: int,
+        last_error: Optional[str],
+    ) -> Tuple[Optional[str], Optional[str]]:
+        """
+        Helper to perform a single code synthesis attempt and return code or error.
+        Returns (code, None) on success, or (None, error_message) on failure.
+        """
+        try:
+            code = self._attempt_code_synthesis_single_pass(
+                goal, thoughts, toolbox_desc, attempt, last_error
+            )
+            self.logger.info("[OK] Code syntax validation passed!")
+            return code, None
+        except (SyntaxError, ValueError, RuntimeError) as e:
+            return None, f"Validation/Synthesis error: {str(e)}"
 
     def _synthesize_code(
         self, goal: str, history: List[Dict[str, Any]], toolbox_desc: str
@@ -568,20 +588,19 @@ class CognitiveNode:
         last_error = None
 
         for attempt in range(max_attempts):
-            try:
-                code = self._attempt_code_synthesis_single_pass(
-                    goal, thoughts, toolbox_desc, attempt, last_error
-                )
-                self.logger.info("✅ Code syntax validation passed!")
+            code, error = self._perform_synthesis_attempt(
+                goal, thoughts, toolbox_desc, attempt, last_error
+            )
+            if code:
                 return code
-            except (SyntaxError, ValueError, RuntimeError) as e:
-                last_error = f"Validation/Synthesis error: {str(e)}"
+            else:
+                last_error = error
                 self.logger.warning(
-                    f"⚠️ Code validation/synthesis failed (attempt {attempt + 1}): "
+                    f"[!] Code validation/synthesis failed (attempt {attempt + 1}): "
                     f"{last_error}"
                 )
 
-        self.logger.error("❌ Max validation attempts reached. Raising exception.")
+        self.logger.error("[X] Max validation attempts reached. Raising exception.")
         raise RuntimeError(
             f"Failed to generate valid code after {max_attempts} attempts. "
             f"Last error: {last_error}"
@@ -630,5 +649,3 @@ class CognitiveNode:
                 f.write(content)
         except Exception as e:
             self.logger.warning(f"Failed to save final result: {e}")
-
-```

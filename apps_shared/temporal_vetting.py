@@ -89,7 +89,7 @@ def vet_lead_optimal_time(lead_timezone: str, current_send_time_utc: str, tools:
                 f"Audit: Temporal Vetting - TZ={lead_timezone}, LocalTime={lead_local_time}, Decision={decision}")
     except Exception:
         if logger:
-            logger.warning("⚠️ L5 MEMemory logging failed (non-critical).")
+            logger.warning("[!] L5 MEMemory logging failed (non-critical).")
 
     return {
         "send_now": send_now,

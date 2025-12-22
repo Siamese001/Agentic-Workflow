@@ -92,8 +92,7 @@ class SubatomicHop:
             return final_output
 
         except Exception as e:
-pass
-self.telemetry.record(TraceEvent(trace_id,
+            self.telemetry.record(TraceEvent(trace_id,
                                              self.id,
                                              self.role,
                                              "ERROR",
@@ -102,4 +101,3 @@ self.telemetry.record(TraceEvent(trace_id,
             raise e
         finally:
             await self.mcp.cleanup()
-

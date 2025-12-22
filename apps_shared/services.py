@@ -26,7 +26,7 @@ class SemanticMapper(SubAtomicAgent):
                         ConfigurationService().large_files.append(fpath)
             except Exception as e:
                 ConfigurationService().logger.info(
-                    f'      ❌ Failed to read {fpath}: {e}')
+                    f'      [X] Failed to read {fpath}: {e}')
                 continue
         # Key 17 check removed - canon_validator.py is obsolete (FissionManager now in agentic_core/infra/)
         if not ConfigurationService().large_files:
@@ -80,17 +80,17 @@ class SemanticMapper(SubAtomicAgent):
                     ConfigurationService().logger.info(
                         f'      👉 Found {len(ConfigurationService().major_clusters)} safe logic clusters to extract.')
                     ConfigurationService().logger.info(
-                        f'      📊 Total functions: {len(ConfigurationService().grapher.functions)}, Call edges: {len(ConfigurationService().grapher.edges)}')
+                        f'      [STATS] Total functions: {len(ConfigurationService().grapher.functions)}, Call edges: {len(ConfigurationService().grapher.edges)}')
                 else:
                     ConfigurationService().logger.info(
                         f'      ℹ No significant clusters found in {fpath}')
             except Exception as e:
                 ConfigurationService().logger.info(
-                    f'      ❌ Failed to analyze {fpath}: {e}')
+                    f'      [X] Failed to analyze {fpath}: {e}')
         self.ctx.signals.add('PLAN_READY')
         if self.ctx.refactor_plan:
             ConfigurationService().logger.info(
-                f'\n   ✅ Semantic mapping complete. Generated plans for {len(self.ctx.refactor_plan)} files.')
+                f'\n   [OK] Semantic mapping complete. Generated plans for {len(self.ctx.refactor_plan)} files.')
         else:
             ConfigurationService().logger.info(
                 '\n   ℹ No refactoring opportunities identified.')

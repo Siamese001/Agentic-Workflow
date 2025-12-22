@@ -1,4 +1,3 @@
-```python
 """
 Core Utils - Thin Wrapper
 Delegates to consolidated tools in agentic_core/tools/
@@ -15,6 +14,12 @@ from agentic_core.tools.analysis_ops import (
     run_black_format,
     run_ruff_check,
     validate_python_syntax,
+)
+
+# Filesystem Operations
+from agentic_core.tools.filesystem import read_file as read_text_file
+from agentic_core.tools.filesystem import (
+    write_file,
 )
 
 # Network Operations
@@ -39,12 +44,6 @@ from agentic_core.tools.network_ops import (
     string_set,
     transaction_set_with_ttl,
     watch_key,
-)
-
-# Filesystem Operations
-from agentic_core.tools.filesystem import (
-    read_file as read_text_file,
-    write_file,
 )
 
 __all__ = [
@@ -80,4 +79,3 @@ __all__ = [
     "read_text_file",
     "write_file",
 ]
-```

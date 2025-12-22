@@ -155,7 +155,7 @@ class CanonSwarmScheduler:
             if len(self.ctx.python_files) > 5:
                 print(f"      ... and {len(self.ctx.python_files) - 5} more")
         else:
-            print("🚀 STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
+            print("[START] STARTING SUBATOMIC MISSION (Tri-Brain Enabled)")
 
         # Main execution loop with convergence check
         max_cycles = 10
@@ -179,12 +179,12 @@ class CanonSwarmScheduler:
 
             # Check for convergence
             if converged:
-                print("\n✅ CONVERGENCE ACHIEVED - All checks passed!")
+                print("\n[OK] CONVERGENCE ACHIEVED - All checks passed!")
                 break
 
             # Check for critical failures
             if "CRITICAL_FAIL" in self.ctx.signals:
-                print("\n❌ CRITICAL FAILURE - Mission aborted!")
+                print("\n[X] CRITICAL FAILURE - Mission aborted!")
                 break
 
         # Final mission report
@@ -205,7 +205,7 @@ class CanonSwarmScheduler:
         strategic_plan = getattr(self.ctx, 'strategic_plan', None)
 
         if high_risk or (many_modifications and strategic_plan):
-            print(f"\n🚨 INTERVENTION REQUIRED")
+            print(f"\n[ALERT] INTERVENTION REQUIRED")
             print(f"   Risk Level: {'HIGH' if high_risk else 'ELEVATED'}")
             print(f"   Modified Files: {len(self.ctx.modified_files)}")
             print(f"   Approval URL: http://127.0.0.1:8080")
@@ -280,7 +280,7 @@ class CanonSwarmScheduler:
 
             # Early abort for critical failures in integrity phase
             if phase_name == "integrity_seq" and "CRITICAL_FAIL" in self.ctx.signals:
-                print(f"   🚨 CRITICAL FAIL from {agent.name} - Aborting {phase_name}")
+                print(f"   [ALERT] CRITICAL FAIL from {agent.name} - Aborting {phase_name}")
                 return False
 
         return True
@@ -326,7 +326,7 @@ class CanonSwarmScheduler:
         total_keys = len(self.ctx.results)
         passed_keys = sum(1 for r in self.ctx.results.values() if r.get("passed", False))
 
-        print(f"\n📊 SUMMARY:")
+        print(f"\n[STATS] SUMMARY:")
         print(f"   Total Keys Checked: {total_keys}")
         print(f"   Keys Passed: {passed_keys}")
         print(f"   Keys Failed: {total_keys - passed_keys}")
@@ -334,13 +334,13 @@ class CanonSwarmScheduler:
             print(f"   Success Rate: {passed_keys/total_keys*100:.1f}%")
 
         if self._is_converged():
-            print("\n✅ MISSION SUCCESS - Full convergence achieved!")
+            print("\n[OK] MISSION SUCCESS - Full convergence achieved!")
         else:
-            print("\n⚠️  MISSION INCOMPLETE - Some issues remain")
+            print("\n[!]  MISSION INCOMPLETE - Some issues remain")
 
         print("\n📝 DETAILED RESULTS:")
         for key, result in sorted(self.ctx.results.items()):
-            status = "✅ PASS" if result.get("passed", False) else "❌ FAIL"
+            status = "[OK] PASS" if result.get("passed", False) else "[X] FAIL"
             print(f"   {status} Key {key:02d}: {result.get('agent', 'Unknown')}")
 
         print("\n" + "="*60)

@@ -4,7 +4,7 @@ from connection_manager import ConnectionManager
 
 
 def reset_all_memory():
-    # print("🧹 STARTING MEMORY WIPE (Standardizing on 384 Dims)...")  # [Security Fix]
+    # print("[CLEAN] STARTING MEMORY WIPE (Standardizing on 384 Dims)...")  # [Security Fix]
     ConnectionManager()
 
     # 1. RESET PINECONE
@@ -17,7 +17,7 @@ def reset_all_memory():
         # Get Pinecone connection directly
         api_key = os.getenv("PINECONE_API_KEY")
         if not api_key:
-            # print("   ❌ PINECONE_API_KEY not found in environment")  # [Security Fix]
+            # print("   [X] PINECONE_API_KEY not found in environment")  # [Security Fix]
             return
 
         pc = Pinecone(api_key=api_key)
@@ -37,10 +37,10 @@ def reset_all_memory():
             metric='cosine',
             spec=ServerlessSpec(cloud='aws', region='us-east-1')
         )
-        # print("   ✅ Pinecone Reset Complete.")  # [Security Fix]
+        # print("   [OK] Pinecone Reset Complete.")  # [Security Fix]
     except Exception as e:
         pass
-# print(f"   ❌ Pinecone Error: {e}")  # [Security Fix]
+# print(f"   [X] Pinecone Error: {e}")  # [Security Fix]
 
     # 2. RESET REDIS
     # print("\nreconfiguring Redis...")  # [Security Fix]
@@ -63,10 +63,10 @@ def reset_all_memory():
             pass
 # print("   - No old Redis index found.")  # [Security Fix]
 
-    # print("   ✅ Redis Reset Complete (Index will auto-recreate with 384-dim).")  # [Security Fix]
+    # print("   [OK] Redis Reset Complete (Index will auto-recreate with 384-dim).")  # [Security Fix]
     except Exception as e:
         pass
-# print(f"   ❌ Redis Error: {e}")  # [Security Fix]
+# print(f"   [X] Redis Error: {e}")  # [Security Fix]
 
 
 if __name__ == "__main__":

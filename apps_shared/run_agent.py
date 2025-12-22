@@ -46,20 +46,20 @@ def main():
         #  3. CognitiveNode.think() [Temperature Decay]
         run_agentic_loop(user_goal)
 
-        # print("\n✅ Workflow Completed Successfully.")  # [Security Fix]
+        # print("\n[OK] Workflow Completed Successfully.")  # [Security Fix]
 
     except ImportError as e:
-        logger.critical(f"❌ Configuration Error: {e}")
+        logger.critical(f"[X] Configuration Error: {e}")
         # print("\nFix: Ensure your folder structure matches: orchestrator.py in project root")  # [Security Fix]
         sys.exit(1)
 
     except KeyboardInterrupt:
-        # print("\n\n⚠️  User Aborted.")  # [Security Fix]
+        # print("\n\n[!]  User Aborted.")  # [Security Fix]
         sys.exit(0)
 
     except Exception as e:
         # This catches anything that slipped past the Hardened Orchestrator
-        logger.critical(f"❌ Unhandled System Crash: {e}", exc_info=True)
+        logger.critical(f"[X] Unhandled System Crash: {e}", exc_info=True)
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -11,14 +11,16 @@ class ReflectionAgent:
     and consolidating them into long-term memory (Pinecone).
     """
 
-    def __init__(self, pinecone_client: Any = None, embedding_model: Optional[str] = None):
+    def __init__(self, ctx: Any = None, pinecone_client: Any = None, embedding_model: Optional[str] = None):
         """
         Initialize the ReflectionAgent.
 
         Args:
+            ctx: ValidationContext instance (for orchestrator compatibility)
             pinecone_client: Pinecone client instance
             embedding_model: Model name for embeddings
         """
+        self.ctx = ctx
         self.pinecone_client = pinecone_client
         # Safety Fix: Use environment variables for configuration and secrets
         self.embedding_model = embedding_model or os.getenv("EMBEDDING_MODEL", "text-embedding-004")
@@ -59,20 +61,32 @@ class ReflectionAgent:
             LOGGER.error(f"Failed to initialize Pinecone: {str(e)}")
             self.pinecone_client = None
 
-    async def execute(self, successful_traces: List[Dict[str, Any]]) -> Dict[str, Any]:
+    async def execute(self, file_path: Optional[str] = None) -> Dict[str, Any]:
         """
         Process successful traces and internalize them to memory.
+        
+        This method is called by the orchestrator and pulls traces from context.
 
         Args:
-            successful_traces: List of successful execution traces
+            file_path: Optional file path (for orchestrator compatibility, not used)
 
         Returns:
             Processing results
         """
+        # Pull traces from context
+        successful_traces = []
+        if self.ctx and hasattr(self.ctx, 'successful_traces'):
+            successful_traces = self.ctx.successful_traces
+        
         # Safety Fix: Input validation
         if not isinstance(successful_traces, list):
             LOGGER.error("Input 'successful_traces' must be a list.")
             return {"processed": 0, "internalized": 0, "errors": ["Invalid input type"]}
+
+        # Skip if no traces to process
+        if not successful_traces:
+            LOGGER.debug("No successful traces to process")
+            return {"processed": 0, "internalized": 0, "errors": [], "recommendations": []}
 
         LOGGER.info(f"ReflectionAgent processing {len(successful_traces)} successful traces")
 

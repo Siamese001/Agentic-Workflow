@@ -22,7 +22,6 @@ Your role is to:
 4. Anticipate potential issues
 
 Mission Plan Structure:
-```python
 {
     "mission_id": "unique_identifier",
     "cycle_id": 1,
