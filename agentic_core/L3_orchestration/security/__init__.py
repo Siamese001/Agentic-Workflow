@@ -5,6 +5,8 @@ LOGGER = logging.getLogger(__name__)
 Phase 3 - Pillar 2: Agent Boundaries (Identity & Discovery)
 Links SPIFFE identity with Control Plane for granular policy enforcement.
 """
+import logging
+
 
 from .permissions import (
     AgentPermissionManager,

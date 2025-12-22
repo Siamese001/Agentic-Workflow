@@ -4,6 +4,8 @@ inspect_resume_quality.py - Diagnostics Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.215610
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Dict, Optional, Union

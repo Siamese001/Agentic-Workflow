@@ -7,6 +7,8 @@ Tests the integration of GitOps components:
 - ImportPatcher with file changes
 - ConversationalRepair with orchestrator
 """
+import re
+
 
 import pytest
 

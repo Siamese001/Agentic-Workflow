@@ -8,6 +8,9 @@ This module provides advanced intelligence capabilities:
 - OmniContext: Global context management and semantic retrieval
 - UnifiedOrchestrator: Multi-phase execution with convergence
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 import asyncio
 import hashlib

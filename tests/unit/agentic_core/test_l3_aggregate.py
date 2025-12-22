@@ -1,4 +1,6 @@
 """Unit tests for L3_orchestration/P3_aggregate - workflow result aggregation."""
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Any

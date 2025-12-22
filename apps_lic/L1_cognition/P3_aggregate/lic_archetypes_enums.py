@@ -1,4 +1,6 @@
 """Enum types for lic_archetypes."""
+from enum import Enum, auto
+
 
 import logging
 

@@ -4,6 +4,9 @@ RedSentinel - L5 Active Defense & Hostile Input Fuzzing
 Generates hostile inputs (buffer overflows, malformed data) to test
 the robustness of code and detect potential security vulnerabilities.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import json
 import logging

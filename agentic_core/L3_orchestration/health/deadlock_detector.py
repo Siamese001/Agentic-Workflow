@@ -4,6 +4,9 @@ DeadlockDetector - L3 System Health Specialist
 Monitors asyncio tasks for potential deadlocks and long-running operations.
 Alerts when tasks exceed MAX_PHASE_TIME without progress.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from pathlib import Path
+
 
 import asyncio
 import logging

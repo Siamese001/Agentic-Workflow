@@ -15,4 +15,6 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
+import logging
+
 __all__ = ["*"]  # Re-export all imported names

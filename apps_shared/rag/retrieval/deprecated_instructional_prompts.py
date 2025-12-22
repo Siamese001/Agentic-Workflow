@@ -8,6 +8,10 @@ This module validates:
 - Prompt integration with agents
 - Layer and extension functionality
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 from typing import Any
 

@@ -14,6 +14,11 @@ Models:
 
 Complexity-to-Budget Ratio ensures reasoning tokens never wasted on trivial tasks.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+import re
+
 
 import ast
 import logging

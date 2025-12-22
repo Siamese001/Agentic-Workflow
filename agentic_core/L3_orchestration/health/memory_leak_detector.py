@@ -4,6 +4,10 @@ MemoryLeakDetector - L3 System Health Specialist
 Monitors memory usage across validation cycles to detect leaks.
 Uses tracemalloc to snapshot memory before and after phases.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import gc
 import logging

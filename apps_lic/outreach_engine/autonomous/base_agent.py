@@ -3,6 +3,8 @@ Base Agent for Outreach Engine
 
 Provides the abstract base class for all outreach agents.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 from abc import ABC, abstractmethod
 from typing import Optional

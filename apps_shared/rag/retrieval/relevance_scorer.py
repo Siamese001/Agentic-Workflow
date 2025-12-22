@@ -3,6 +3,11 @@
 Phase 3 - Pillar 7: Context Engineering (Dynamic Curation)
 Calculates relevance of context chunks to current Think-Act-Observe step.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+import re
+
 
 import logging
 from typing import Any, Dict, List, Optional

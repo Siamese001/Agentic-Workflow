@@ -5,6 +5,8 @@ Tests WatchmanHandler, DependencyGraph blast radius, and CLI argument parsing.
 These tests are standalone and don't import the full canon_validator_agentic.py
 to avoid stdout wrapper issues on Windows.
 """
+import re
+
 import ast
 import asyncio
 import os

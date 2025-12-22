@@ -6,6 +6,8 @@ Tests complete workflows:
 - Multi-phase orchestration
 - Real-world scenarios
 """
+import re
+
 
 import sys
 from pathlib import Path

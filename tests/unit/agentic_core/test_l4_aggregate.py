@@ -1,4 +1,6 @@
 """Unit tests for L4_memory/P3_aggregate - memory aggregation operations."""
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Dict, List

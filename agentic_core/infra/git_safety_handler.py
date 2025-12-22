@@ -11,6 +11,9 @@ Strategy:
 - Update Redis source of truth
 - Enable safe rollback on failure
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import logging
 from datetime import datetime

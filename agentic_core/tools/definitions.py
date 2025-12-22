@@ -2,6 +2,8 @@
 Tool Argument Definitions - Pydantic Models for Type-Safe Tool Calls
 Fixes "23 validation errors" and "Extra inputs" crashes with Gemini 2.5/3.0.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 from pathlib import Path
 from typing import List, Optional

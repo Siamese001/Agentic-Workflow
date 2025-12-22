@@ -4,6 +4,9 @@ metric_registry.py - Metrics Module
 Domain: metrics
 Generated: 2025-12-07T12:07:59.848796
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 import logging
 import time

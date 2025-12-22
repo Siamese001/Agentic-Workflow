@@ -2,6 +2,9 @@
 Canon Validator Base Agent
 Base class for all validation agents with caching and healing capabilities.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import asyncio
 import hashlib

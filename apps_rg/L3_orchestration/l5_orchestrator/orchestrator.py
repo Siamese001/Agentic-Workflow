@@ -1,6 +1,9 @@
 """
 L5 Autonomous Orchestrator - Main Class and Convergence Loop
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import copy
 import logging

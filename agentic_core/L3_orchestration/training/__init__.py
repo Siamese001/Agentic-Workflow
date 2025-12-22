@@ -5,6 +5,8 @@ LOGGER = logging.getLogger(__name__)
 Phase 4 - Pillar 5: Capability Maturity (Self-Evolving System)
 Agent Gym for offline simulation, benchmarking, and self-improvement.
 """
+import logging
+
 
 
 __all__ = [

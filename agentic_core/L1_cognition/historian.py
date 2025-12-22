@@ -4,6 +4,9 @@ The Historian - Memory Optimization for Validation Cycles
 Tracks file changes across cycles to prevent unnecessary re-scanning.
 Uses MD5 hashing to detect unchanged files and skip validation.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import hashlib
 import json

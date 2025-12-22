@@ -4,6 +4,8 @@ MCP Connection Manager
 Manages connections to multiple MCP servers simultaneously.
 Aggregates tools from all servers into a single 'toolbox' for the agent.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import os

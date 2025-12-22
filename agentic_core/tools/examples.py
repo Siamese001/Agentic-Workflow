@@ -2,6 +2,8 @@
 Usage Examples for Agentic Core Tools
 Demonstrates integration with Gemini 2.5/3.0 and AtomicBlackboard.
 """
+import re
+
 
 import os
 

@@ -22,6 +22,8 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import sys
 from pathlib import Path

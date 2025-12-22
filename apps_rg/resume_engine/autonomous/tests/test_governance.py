@@ -9,6 +9,8 @@ Tests the core governance functionality:
 - PredictiveBudgetManager
 - Phase7Orchestrator
 """
+import re
+
 
 from pathlib import Path
 

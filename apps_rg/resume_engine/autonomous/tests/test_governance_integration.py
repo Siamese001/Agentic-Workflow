@@ -8,6 +8,8 @@ Tests the integration of governance components:
 - PromptGovernor with security scanning
 - PredictiveBudgetManager with mission planning
 """
+import re
+
 
 from pathlib import Path
 

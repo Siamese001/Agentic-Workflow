@@ -2,6 +2,8 @@
 Canon Validator Service Manager
 Manages external services (Redis, Pinecone, MCP) with graceful fallback.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import asyncio
 import json

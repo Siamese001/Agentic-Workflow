@@ -8,6 +8,8 @@ Tests the core autonomous functionality:
 - Learning and memory
 - Observability
 """
+import re
+
 
 import sys
 from pathlib import Path

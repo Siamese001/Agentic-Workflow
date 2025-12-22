@@ -5,6 +5,11 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/scoring_ops/
 Tests scoring operations for ranking and evaluation.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+
 
 from dataclasses import dataclass
 from typing import Dict

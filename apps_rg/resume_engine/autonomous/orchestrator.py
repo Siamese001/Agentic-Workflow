@@ -4,6 +4,8 @@ Resume Engine Orchestrator - Self-Healing Mission Runner
 This module provides the main orchestration loop for autonomous resume generation,
 implementing self-healing cycles with strategic planning and signal-based routing.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 from typing import Any, Dict, List, Optional
 

@@ -15,6 +15,11 @@ Integration:
     Synthesizes generalized patterns with Gemini Deep Think
     Upserts to Pinecone structural_patterns namespace
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+import time
+
 
 import ast
 import difflib

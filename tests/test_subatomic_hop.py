@@ -4,6 +4,9 @@ Auto-generated stub for test_subatomic_hop.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
+import logging
+import re
+
 
 import pytest
 

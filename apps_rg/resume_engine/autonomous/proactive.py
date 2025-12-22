@@ -6,6 +6,10 @@ Provides:
 - PredictiveHandoff: Signals before reaching capability edge
 - CapabilityMonitor: Tracks agent capabilities and limits
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 from dataclasses import dataclass, field
 from datetime import datetime

@@ -4,6 +4,8 @@ Auto-generated stub for unit\apps_shared\test_rag_logic.py
 Original file had syntax errors and has been regenerated as a stub.
 All tests are skipped until the original implementation is fixed.
 """
+import re
+
 
 import pytest
 

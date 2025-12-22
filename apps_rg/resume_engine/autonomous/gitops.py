@@ -7,6 +7,10 @@ This module provides advanced mutation and GitOps capabilities:
 - ImportPatcher: Automatic import path updates
 - ConversationalRepair: Multi-agent collective intelligence (AutoGen-style)
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 import ast
 import asyncio

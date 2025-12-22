@@ -4,6 +4,10 @@ Dynamic Tool Registry for Runtime Tool Discovery
 Allows agents to discover and request tools dynamically based on task requirements,
 rather than being hardcoded with a fixed set of tools.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import inspect
 import json

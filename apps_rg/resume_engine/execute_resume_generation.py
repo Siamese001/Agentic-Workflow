@@ -4,6 +4,8 @@ execute_resume_generation.py - Execution Module
 Domain: resume
 Generated: 2025-12-07T13:29:00.515392
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import time

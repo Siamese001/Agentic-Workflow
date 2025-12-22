@@ -1,4 +1,7 @@
 """Dataclass models for orchestrate_workflow_types."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 import logging
 

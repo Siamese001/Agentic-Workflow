@@ -5,6 +5,9 @@ Orchestrates the execution of validation agents in phases for the
 Canon Validator system. Manages mission execution, convergence checking,
 and human-in-the-loop intervention.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import asyncio
 

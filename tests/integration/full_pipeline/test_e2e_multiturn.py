@@ -1,4 +1,6 @@
 """E2E Multi-Agent Scenario Tests."""
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Any

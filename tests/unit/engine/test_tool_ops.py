@@ -5,6 +5,12 @@ LOGGER = logging.getLogger(__name__)
 Unit tests for shared_engine_ops/tool_ops/
 Tests tool operations for external tool integration.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
+import re
+
 
 from dataclasses import dataclass
 from enum import Enum

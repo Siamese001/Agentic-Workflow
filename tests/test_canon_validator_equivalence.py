@@ -12,6 +12,8 @@ Tests verify:
 3. Runtime behavior equivalence (via subprocess)
 4. Report output equivalence (hash comparison)
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import hashlib

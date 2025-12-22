@@ -1,4 +1,7 @@
 """Types and models for track_lic_state."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 import logging
 

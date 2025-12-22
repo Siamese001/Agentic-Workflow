@@ -10,6 +10,11 @@ Canon Validator Patterns Implemented:
 - Memory consolidation via embeddings
 - Execution log analysis
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import re
+import time
+
 
 import json
 import logging

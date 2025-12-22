@@ -7,6 +7,8 @@ ZERO-LOSS GUARANTEE: All functionality preserved via re-exports
 """
 
 # Import all tool classes from atomic modules
+from typing import Any, Optional, Protocol, Dict, List
+
 from .action_registry_modules import (
     FigmaTools,
     FileIO,

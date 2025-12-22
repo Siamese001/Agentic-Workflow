@@ -2,6 +2,9 @@
 Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Any

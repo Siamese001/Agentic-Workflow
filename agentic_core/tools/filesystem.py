@@ -2,6 +2,9 @@
 Secure Filesystem Operations - Sandboxed File I/O with Blackboard Integration
 Prevents path traversal, protects critical directories, and integrates with HealingLease.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import os
 import shutil

@@ -3,6 +3,8 @@
 This module extends ValidationGateExecutor with outreach-specific validation
 rules including metric source binding, redundancy guards, and forbidden content.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 import re

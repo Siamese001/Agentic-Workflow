@@ -5,6 +5,9 @@ Original 351-line monolith split into 2 atomic sub-modules
 
 ZERO-LOSS GUARANTEE: All functionality preserved via composition
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 import logging
 from pathlib import Path
 from typing import Any, Dict

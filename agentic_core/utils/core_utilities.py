@@ -3,6 +3,10 @@
 Core Utilities for Resume Engine
 Provides draft generation, scoring, and file operations
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import time
+
 
 import json
 import logging

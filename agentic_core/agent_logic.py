@@ -33,6 +33,10 @@ Here's a summary of the issues found and the fixes applied:
 
 The refactored code is provided below:
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import ast
 import json

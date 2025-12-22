@@ -7,6 +7,9 @@ This is the L1 planning layer that coordinates:
 Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification → K4 Rewriting → K5 Skill
     Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from dataclasses import dataclass, field

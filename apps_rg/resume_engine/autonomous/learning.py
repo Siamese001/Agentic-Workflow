@@ -7,6 +7,9 @@ This module provides advanced learning and intelligence capabilities:
 - InstructionInjector: Dynamic instruction injection for real-time steering
 - MemoryPersistence: File hashing, skip logic, flapping detection
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 import asyncio
 import hashlib

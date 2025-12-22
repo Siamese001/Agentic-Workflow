@@ -4,6 +4,10 @@
 LOGGER = logging.getLogger(__name__)
 Combines multiple scoring strategies for optimal document ranking.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 import math
 import re

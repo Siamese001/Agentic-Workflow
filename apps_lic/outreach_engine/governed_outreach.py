@@ -2,6 +2,10 @@
 Governed Outreach Sequence - Master Function for Outreach Engine
 Integrates L4 Temporal Awareness with Action Layer and L5 MEMemory
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 from datetime import datetime
 from typing import Any, Dict, Optional
 

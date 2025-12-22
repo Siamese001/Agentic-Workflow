@@ -8,6 +8,10 @@ Architecture:
 - Generates contextual talking points
 - Caches results for 24 hours per company
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import time
+
 
 import hashlib
 import json

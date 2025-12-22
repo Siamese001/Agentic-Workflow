@@ -6,6 +6,9 @@ Responsible for:
 - Key 21-25: Complexity metrics, cyclomatic complexity
 - Key 26-30: Code organization, modularity, cohesion
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 import ast
 import os
 from typing import List, Tuple

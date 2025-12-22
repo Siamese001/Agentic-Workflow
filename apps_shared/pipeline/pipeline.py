@@ -1,4 +1,6 @@
 """Main unified signal pipeline orchestrator. """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import json
 import logging

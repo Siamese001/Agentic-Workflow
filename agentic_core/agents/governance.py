@@ -3,6 +3,8 @@ apps_shared/agents/domain/governance/governor.py
 Depth: 5
 Role: Enforces Architectural, Import, and Security Laws (The Three Laws of Subatomic Governance).
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 import ast
 import asyncio
 import os

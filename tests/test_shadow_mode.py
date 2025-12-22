@@ -1,3 +1,5 @@
+import re
+
 import os
 from unittest.mock import MagicMock
 

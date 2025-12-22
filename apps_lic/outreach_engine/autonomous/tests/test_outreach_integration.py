@@ -6,6 +6,8 @@ Tests integration between components:
 - Observability with healing
 - Full pipeline integration
 """
+import re
+
 
 import sys
 from pathlib import Path

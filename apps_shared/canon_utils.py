@@ -2,6 +2,8 @@
 Canon Validator Utilities
 Helper functions for file scanning and decorators.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import asyncio
 import os

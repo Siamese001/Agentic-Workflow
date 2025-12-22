@@ -1,4 +1,8 @@
 """Types and models for lic_vector_memory."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+
 
 import logging
 

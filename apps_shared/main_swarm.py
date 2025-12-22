@@ -4,6 +4,10 @@ Main Entry Point - Hardened Swarm Architecture
 Startup sequence for the L5 Multi-Agent System with
 Canon-First enforcement.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import json
 import logging

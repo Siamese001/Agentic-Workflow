@@ -9,6 +9,11 @@ Strategy: "Clean Slate" with "High Wisdom" - compressed context injection
 
 Impact: Agents don't get confused by previous stage history
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import re
+import time
+
 
 import json
 import logging

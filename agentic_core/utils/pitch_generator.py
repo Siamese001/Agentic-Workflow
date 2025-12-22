@@ -3,6 +3,10 @@
 Pitch Generator for Outreach Engine
 Generates personalized outreach pitches
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import time
+
 
 import json
 import logging

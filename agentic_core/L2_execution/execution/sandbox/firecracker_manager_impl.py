@@ -1,4 +1,7 @@
 """Implementation for firecracker_manager."""
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 import logging
 
 LOGGER = logging.getLogger(__name__)

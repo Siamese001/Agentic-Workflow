@@ -5,6 +5,8 @@ Contains:
 - StrategicPlanner: High-level strategist that analyzes signals and generates multi-step refactor plans
 - ReflectionAgent: Consolidates successful mutations into long-term memory and performs self-critique
 """
+import re
+
 
 import json
 import sys

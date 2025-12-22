@@ -4,6 +4,9 @@ prepare_generation_payload.py - Formatting Module
 Domain: resume
 Generated: 2025-12-07T13:29:00.518651
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Dict, Optional, Union

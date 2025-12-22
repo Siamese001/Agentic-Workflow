@@ -1,3 +1,5 @@
+import re
+
 import asyncio
 import os
 

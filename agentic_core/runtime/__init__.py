@@ -3,6 +3,9 @@ L2 RUNTIME BRIDGE: KEY 46 (THE LABOR)
 =====================================
 Exposes Void Compliance and ASCII visualization tools.
 """
+import re
+import time
+
 
 from agentic_core.runtime.void_compliance import (
     ALLOWED_ROOT_FOLDERS,

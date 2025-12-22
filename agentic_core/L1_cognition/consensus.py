@@ -4,6 +4,8 @@ Supreme Court - Zero Trust Multi-Model Consensus Engine
 Uses multiple AI models to reach consensus on critical decisions,
 preventing single-model failures or hallucinations.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import asyncio
 import json

@@ -12,6 +12,10 @@ Canon Validator Patterns Implemented:
 - Signal history for debugging and reflection
 - Async-safe operations with lock protection (Canon Validator compliance)
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+import time
+
 
 import asyncio
 import logging

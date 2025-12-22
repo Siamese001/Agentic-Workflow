@@ -2,6 +2,10 @@
 Intent Scoring Model for L4 Cost Governance
 Analyzes lead intent and likelihood of reply using historical data and real-time context
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+import time
+
 
 import logging
 from dataclasses import dataclass

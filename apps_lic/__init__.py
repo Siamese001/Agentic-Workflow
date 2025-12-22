@@ -3,6 +3,8 @@ Apps Lic package initialization.
 
 Provides core functionality and exports for the Apps Lic module.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 
 import logging

@@ -11,5 +11,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 
 # Re-export all components for backward compatibility
 # from .data_models_enums_enums_enums import *  # Star import removed
+import logging
+
 
 __all__ = ["*"]  # Re-export all imported names

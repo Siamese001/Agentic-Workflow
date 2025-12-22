@@ -3,6 +3,9 @@
 Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
 Enforces strict network/resource isolation and automatic teardown.
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 import asyncio
 import logging

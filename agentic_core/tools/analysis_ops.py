@@ -2,6 +2,8 @@
 Analysis Operations - AST Parsing, Linting, and Code Quality Tools
 Consolidated from core_utils.py and security_utils.py
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import logging

@@ -9,6 +9,8 @@ Strategy: "Heal the Neighborhood" not "Heal the World"
 
 Impact: Hours → Minutes for targeted healing
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import ast
 import json

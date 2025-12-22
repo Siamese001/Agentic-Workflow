@@ -2,6 +2,11 @@
 MCP Hardening Module
 Provides centralized hardening wrappers for Figma and Brave Search MCP calls.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+import re
+import time
+
 
 import json
 from datetime import datetime, timedelta

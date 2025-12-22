@@ -4,6 +4,9 @@ Database Manager Module - Canon Validator System
 Facade module that wraps Redis and Qdrant implementations
 to match the master prompt specifications.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Any, Dict, List, Optional, Tuple

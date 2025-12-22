@@ -12,6 +12,8 @@ Autonomic immune system for runtime health monitoring and self-healing.
 #    HealthAlert,
 #    create_autonomic_monitor,
 #)
+import logging
+
 
 __all__ = [
     "AutonomicMonitor",

@@ -4,6 +4,8 @@ extract_resume_requirements.py - Retrieval Module
 Domain: resume
 Generated: 2025-12-07T13:28:54.188342
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Dict, List, Optional

@@ -5,6 +5,9 @@ Delegates to consolidated core orchestrator in agentic_core/core/orchestrator_ma
 This is a stub-and-proxy pattern implementation that eliminates race conditions
 by routing all orchestration through the consolidated AtomicBlackboard-integrated core.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import asyncio
 import logging

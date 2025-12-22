@@ -4,6 +4,9 @@ ETL Pipeline Module - Canon Validator System
 Facade module that wraps the existing ETL implementation
 to match the master prompt specifications.
 """
+from typing import Any, Optional, Protocol, Dict, List
+import time
+
 
 import logging
 from datetime import datetime

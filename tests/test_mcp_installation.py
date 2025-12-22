@@ -1,4 +1,6 @@
 """Test script to verify MCP installation and Python tools."""
+import time
+
 
 import logging
 import os

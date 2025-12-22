@@ -4,6 +4,9 @@ weight_personalization_factors.py - Scoring Module
 Domain: outreach
 Generated: 2025-12-07T13:28:54.068944
 """
+from typing import Any, Optional, Protocol, Dict, List
+import re
+
 
 import logging
 from typing import Dict, Optional

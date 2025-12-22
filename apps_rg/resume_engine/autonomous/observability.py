@@ -8,6 +8,9 @@ This module provides advanced observability capabilities:
 - TelemetryExporter: Exports telemetry data for external systems
 - ValidationAgent: Pattern enforcement and code quality checks
 """
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 
 import hashlib
 import json

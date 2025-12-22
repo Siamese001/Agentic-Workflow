@@ -1,4 +1,6 @@
 """Enum types for outreach_orchestration_config."""
+from enum import Enum, auto
+
 import logging
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant

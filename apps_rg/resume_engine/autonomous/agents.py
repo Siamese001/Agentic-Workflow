@@ -12,6 +12,8 @@ This module contains all specialized agents for autonomous resume generation:
 - StrategicPlanner: Plans execution strategy
 - ReflectionAgent: Learns from execution
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import json
 import re

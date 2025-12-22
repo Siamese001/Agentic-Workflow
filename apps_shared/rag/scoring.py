@@ -4,6 +4,10 @@
 LOGGER = logging.getLogger(__name__)
 Provides scoring algorithms for retrieved documents in RAG systems.
 """
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 
 import math
 import re

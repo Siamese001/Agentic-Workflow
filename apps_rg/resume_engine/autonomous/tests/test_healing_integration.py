@@ -7,6 +7,8 @@ Tests the integration of self-healing components:
 - Rollback integration
 - Convergence across cycles
 """
+import re
+
 
 import pytest
 

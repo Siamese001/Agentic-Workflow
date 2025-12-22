@@ -1,4 +1,6 @@
 """Unit tests for L2_execution/P2_inspect - execution result inspection."""
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import logging
 from typing import Dict

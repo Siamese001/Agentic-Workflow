@@ -16,6 +16,8 @@ Micro-VM based isolation for secure code execution.
 #    IsolationConfig,
 #    create_ephemeral_vm,
 #)
+import logging
+
 
 __all__ = [
     "FirecrackerManager",

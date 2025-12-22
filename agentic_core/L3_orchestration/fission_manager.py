@@ -3,6 +3,8 @@
 L3 Orchestration: FissionManager
 Determines when a file is too large or an agent is exhausted.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import os
 from typing import Optional, Tuple

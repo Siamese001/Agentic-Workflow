@@ -3,6 +3,8 @@
 L5 Safety: SubAtomicEngine
 Hardens LLM interaction with token budgets and retry logic.
 """
+from typing import Any, Optional, Protocol, Dict, List
+
 
 import asyncio
 import json

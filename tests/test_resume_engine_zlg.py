@@ -11,6 +11,8 @@ Test Cases:
 - TC-E2-301: L5 Consolidated Knowledge
 - TC-E2-302: P5 Activity Logging
 """
+import re
+
 
 import sys
 import tempfile

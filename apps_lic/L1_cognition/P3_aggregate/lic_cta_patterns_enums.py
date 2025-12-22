@@ -1,4 +1,6 @@
 """Enum types for lic_cta_patterns."""
+from enum import Enum, auto
+
 
 import logging
 
