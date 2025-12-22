@@ -133,7 +133,7 @@ class TheOmniContext:
         stats["repositories"] = list(stats["repositories"])
         stats["buffer_size"] = len(self.context_buffer)
 
-        LOGGER.info(f"✅ TheOmniContext: Built buffer with {stats['files_processed']} files")
+        LOGGER.info(f"[OK] TheOmniContext: Built buffer with {stats['files_processed']} files")
 
         return stats
 

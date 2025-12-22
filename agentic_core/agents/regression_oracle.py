@@ -4,7 +4,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Callable
+from typing import Callable, Dict, List, Optional, Tuple
 
 try:
     from pinecone import Pinecone
@@ -188,12 +188,10 @@ FILE: {change.file_path}
 METHOD: {change.method_name}
 
 BEFORE CODE (preserve this behavior):
-```python
 {change.before_code}
 ```
 
 AFTER CODE (test this):
-```python
 {change.after_code}
 ```
 
@@ -356,17 +354,14 @@ METHOD: {change.method_name}
 FILE: {change.file_path}
 
 BEFORE CODE (expected behavior):
-```python
 {change.before_code}
 ```
 
 AFTER CODE (actual implementation):
-```python
 {change.after_code}
 ```
 
 GENERATED TEST:
-```python
 {test_code}
 ```
 
@@ -398,7 +393,7 @@ Provide a JSON response with:
             analysis = response.text
 
             if "code_regression" in analysis.lower():
-                logger.error(f"   🚨 REGRESSION DETECTED in {change.method_name}")
+                logger.error(f"   [ALERT] REGRESSION DETECTED in {change.method_name}")
                 logger.error(f"   Analysis: {analysis}")
 
                 if hasattr(self.ctx, 'signals'):
@@ -416,7 +411,7 @@ Provide a JSON response with:
                     passed, new_error = await self._run_test(test_file)
 
                     if passed:
-                        logger.info(f"   ✅ Test auto-fixed and now passes")
+                        logger.info(f"   [OK] Test auto-fixed and now passes")
                         return True, None
                     else:
                         logger.warning(f"   Fixed test still fails: {new_error}")
@@ -442,7 +437,6 @@ Provide a JSON response with:
             fix_prompt = f"""Fix this broken pytest test based on the analysis.
 
 ORIGINAL TEST:
-```python
 {test_code}
 ```
 
@@ -506,13 +500,13 @@ Return the complete corrected Python test file code.
         logger.info(f"  Failed: {failed_tests}")
 
         if failed_tests > 0:
-            logger.warning(f"\n⚠️  FAILED TESTS:")
+            logger.warning(f"\n[!]  FAILED TESTS:")
             for test in generated_tests:
                 if not test.passed:
                     logger.warning(f"  {test.test_name}: {test.error_message}")
 
         if passed_tests > 0:
-            logger.info(f"\n✅ PASSED TESTS:")
+            logger.info(f"\n[OK] PASSED TESTS:")
             for test in generated_tests:
                 if test.passed:
                     logger.info(f"  {test.test_name} → {test.test_file}")
@@ -558,10 +552,10 @@ class RegressionOracle(SubAtomicAgent):
             if api_key:
                 try:
                     pc = Pinecone(api_key=api_key)
-                    pinecone_index = pc.Index("structural-patterns")
-                    logger.info("✅ Regression Oracle connected to Pinecone")
+                    pinecone_index = pc.Index("canon-healing-patterns")
+                    logger.info("[OK] Regression Oracle connected to Pinecone")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Pinecone: {e}")
+                    logger.warning(f"[!]  Could not connect to Pinecone: {e}")
                     pinecone_available = False
         
         # Gemini client for test synthesis
@@ -572,9 +566,9 @@ class RegressionOracle(SubAtomicAgent):
             if api_key:
                 try:
                     genai_client = genai.Client(api_key=api_key)
-                    logger.info("✅ Regression Oracle connected to Gemini 2.5")
+                    logger.info("[OK] Regression Oracle connected to Gemini 2.5")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Gemini: {e}")
+                    logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     genai_available = False
         
         # Initialize helper components
@@ -652,7 +646,7 @@ class RegressionOracle(SubAtomicAgent):
         """Emit REGRESSION_CHECK_PASS signal to blackboard."""
         if hasattr(self.ctx, 'signals'):
             self.ctx.signals.add(f"REGRESSION_CHECK_PASS:{file_path}:{method_name}")
-            logger.info(f"   ✅ Regression check passed for {method_name}")
+            logger.info(f"   [OK] Regression check passed for {method_name}")
 
 
 # Singleton instance

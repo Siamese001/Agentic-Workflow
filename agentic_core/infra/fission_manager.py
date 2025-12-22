@@ -16,7 +16,7 @@ import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional, Any, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 try:
     from google import genai
@@ -86,13 +86,13 @@ class FissionManager:
             api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
             if api_key:
                 self._client = genai.Client(api_key=api_key)
-                logger.info("✅ Fission Manager connected to Gemini 2.5")
+                logger.info("[OK] Fission Manager connected to Gemini 2.5")
             else:
                 self._client = None
-                logger.warning("⚠️  Fission Manager: No Gemini API key found")
+                logger.warning("[!]  Fission Manager: No Gemini API key found")
         else:
             self._client = None
-            logger.warning("⚠️  Fission Manager: Gemini not available")
+            logger.warning("[!]  Fission Manager: Gemini not available")
     
     def should_trigger_fission(self, file_path: str, current_round: int, 
                                last_error: Optional[str] = None, 
@@ -147,7 +147,6 @@ class FissionManager:
 The target file `{file_name}` has exceeded L1 Cognition limits and is structurally unstable.
 
 ORIGINAL FILE CONTENT:
-```python
 {content}
 ```
 
@@ -231,7 +230,7 @@ CRITICAL:
             new_files = self._parse_fission_response(response, file_path)
             
             if new_files:
-                logger.info(f"   ✅ Decomposed into {len(new_files)} sub-modules")
+                logger.info(f"   [OK] Decomposed into {len(new_files)} sub-modules")
                 for new_file in new_files.keys():
                     logger.info(f"      → {new_file}")
                 
@@ -253,7 +252,7 @@ CRITICAL:
                 )
         
         except Exception as e:
-            logger.error(f"   ❌ Fission failed: {e}")
+            logger.error(f"   [X] Fission failed: {e}")
             return FissionResult(
                 triggered=True,
                 reason=reason,
@@ -338,7 +337,7 @@ CRITICAL:
                     line_count = len(content.splitlines())
                     logger.info(f"  [Fission] Created: {file_path} ({line_count} lines)")
                 
-                logger.info(f"  ✅ Fission complete: {len(fission_map)} files created")
+                logger.info(f"  [OK] Fission complete: {len(fission_map)} files created")
                 return True
             
             except json.JSONDecodeError as e:
@@ -384,13 +383,13 @@ CRITICAL:
                     f.write(content)
                 
                 line_count = len(content.splitlines())
-                logger.info(f"   ✅ Created: {file_path} ({line_count} lines)")
+                logger.info(f"   [OK] Created: {file_path} ({line_count} lines)")
             
             logger.info(f"   🎯 Fission complete: {len(result.new_files)} files created")
             return True
         
         except Exception as e:
-            logger.error(f"   ❌ Failed to write decomposed files: {e}")
+            logger.error(f"   [X] Failed to write decomposed files: {e}")
             return False
 
 
@@ -431,7 +430,7 @@ if trigger:
         key="FISSION",
         round_num=round_count,
         tokens=token_count,
-        log_msg=f"🚨 {reason}"
+        log_msg=f"[ALERT] {reason}"
     )
     
     # Execute fission
@@ -454,6 +453,6 @@ if trigger:
             key="Key 42",
             round_num=round_count,
             tokens=token_count,
-            log_msg=f"✅ Key 42 Resolved: Complexity distributed"
+            log_msg=f"[OK] Key 42 Resolved: Complexity distributed"
         )
 """

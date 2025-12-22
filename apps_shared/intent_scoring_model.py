@@ -405,7 +405,7 @@ class IntentScoringModel:
 
         if logger:
             logger.info(
-                f"✅ Intent scored: {overall_score:.1f}/100 ({priority} priority)")
+                f"[OK] Intent scored: {overall_score:.1f}/100 ({priority} priority)")
             logger.info(f"   Reply probability: {reply_probability:.0%}")
             logger.info(f"   Recommended: {action}")
 

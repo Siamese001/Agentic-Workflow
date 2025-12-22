@@ -45,8 +45,7 @@ class AgentPermissionManager:
         if spiffe_id not in self._permissions:
             self._permissions[spiffe_id] = []
         for existing in self._permissions[spiffe_id]:
-            if existing.scope == permission.scope and existing.action == permission.action and (exis
-    TING.RESOURCE == permission.resource):
+            if existing.scope == permission.scope and existing.action == permission.action and (existing.resource == permission.resource):
                 return False
         self._permissions[spiffe_id].append(permission)
         if self.enable_logging:
@@ -58,7 +57,6 @@ class AgentPermissionManager:
         return True
 
     def revoke_permission(self,
-        """Docstring."""
         identity: AgentIdentity,
         scope: PermissionScope,
         action: PermissionAction,
@@ -78,11 +76,8 @@ class AgentPermissionManager:
         if spiffe_id not in self._permissions:
             return False
         original_count = len(self._permissions[spiffe_id])
-        self.
-            ._permissions[spiffe_id] = [p for p in self.
-            ._permissions[spiffe_id] if not p.
-            .matches(scope,
-
+        self._permissions[spiffe_id] = [p for p in self._permissions[spiffe_id] if not p.matches(
+            scope,
             action,
             resource)]
         REVOKED = len(self._permissions[spiffe_id]) < original_count
@@ -95,7 +90,6 @@ class AgentPermissionManager:
         return revoked
 
     async def check_permission(self,
-        """Docstring."""
         identity: AgentIdentity,
         scope: PermissionScope,
         action: PermissionAction,
@@ -173,11 +167,7 @@ class AgentPermissionManager:
 
     def _load_default_permissions(self) -> None:
         """Load default permissions for each identity type."""
-        self.
-            ._default_permissions[IdentityType.
-            .ORCHESTRATOR] = [Permission(scope=PermissionScope.
-            .TOOL_EXECUTION,
-
+        self._default_permissions[IdentityType.ORCHESTRATOR] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
             ACTION=PermissionAction.ADMIN,
             RESOURCE='*'),
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
@@ -186,38 +176,22 @@ class AgentPermissionManager:
             Permission(scope=PermissionScope.SYSTEM_CONFIGURATION,
             ACTION=PermissionAction.ADMIN,
             RESOURCE='*')]
-        self.
-            ._default_permissions[IdentityType.
-            .COGNITIVE_AGENT] = [Permission(scope=PermissionScope.
-            .DATA_ACCESS,
-
+        self._default_permissions[IdentityType.COGNITIVE_AGENT] = [Permission(scope=PermissionScope.DATA_ACCESS,
             ACTION=PermissionAction.READ,
             RESOURCE='*'),
             Permission(scope=PermissionScope.AGENT_COMMUNICATION,
             ACTION=PermissionAction.READ,
             RESOURCE='*')]
-        self.
-            ._default_permissions[IdentityType.
-            .ACTION_AGENT] = [Permission(scope=PermissionScope.
-            .TOOL_EXECUTION,
-
+        self._default_permissions[IdentityType.ACTION_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
             ACTION=PermissionAction.EXECUTE,
             RESOURCE='*'),
             Permission(scope=PermissionScope.DATA_ACCESS,
             ACTION=PermissionAction.READ,
             RESOURCE='*')]
-        self.
-            ._default_permissions[IdentityType.
-            .TOOL_AGENT] = [Permission(scope=PermissionScope.
-            .TOOL_EXECUTION,
-
+        self._default_permissions[IdentityType.TOOL_AGENT] = [Permission(scope=PermissionScope.TOOL_EXECUTION,
             ACTION=PermissionAction.EXECUTE,
             RESOURCE='assigned_tools')]
-        self.
-            ._default_permissions[IdentityType.
-            .HUMAN_OPERATOR] = [Permission(scope=PermissionScope.
-            .DATA_ACCESS,
-
+        self._default_permissions[IdentityType.HUMAN_OPERATOR] = [Permission(scope=PermissionScope.DATA_ACCESS,
             ACTION=PermissionAction.READ,
             RESOURCE='*')]
 

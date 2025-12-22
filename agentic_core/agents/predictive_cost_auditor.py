@@ -276,12 +276,12 @@ class PredictiveCostAuditor(SubAtomicAgent):
         
         if efficiency_score < 50:
             recommendations.append(
-                f"⚠️  Low efficiency ({efficiency_score:.1f}%) - Review healing strategy"
+                f"[!]  Low efficiency ({efficiency_score:.1f}%) - Review healing strategy"
             )
         
         if cost_usd > 50:
             recommendations.append(
-                f"⚠️  High cost (${cost_usd:.2f}) - Consider batch optimization"
+                f"[!]  High cost (${cost_usd:.2f}) - Consider batch optimization"
             )
         
         critical_sinks = [s for s in healing_sinks if s.sink_severity == "critical"]
@@ -293,11 +293,11 @@ class PredictiveCostAuditor(SubAtomicAgent):
         high_sinks = [s for s in healing_sinks if s.sink_severity == "high"]
         if high_sinks:
             recommendations.append(
-                f"⚠️  {len(high_sinks)} high-cost files - Consider manual refactoring"
+                f"[!]  {len(high_sinks)} high-cost files - Consider manual refactoring"
             )
         
         if not recommendations:
-            recommendations.append("✅ Healing efficiency is optimal")
+            recommendations.append("[OK] Healing efficiency is optimal")
         
         return recommendations
     
@@ -319,7 +319,7 @@ class PredictiveCostAuditor(SubAtomicAgent):
         logger.info(f"Healing Sinks: {len(report.healing_sinks)}")
         
         if report.healing_sinks:
-            logger.warning(f"\n⚠️  TOP HEALING SINKS (by token usage):")
+            logger.warning(f"\n[!]  TOP HEALING SINKS (by token usage):")
             for i, sink in enumerate(report.healing_sinks[:10], 1):
                 cost = (sink.total_tokens / 1000) * self.TOKEN_COST_PER_1K
                 logger.warning(
@@ -336,7 +336,7 @@ class PredictiveCostAuditor(SubAtomicAgent):
                 logger.warning(f"  ... and {len(report.healing_sinks) - 10} more sinks")
         
         if report.recommendations:
-            logger.info(f"\n📋 RECOMMENDATIONS:")
+            logger.info(f"\n[PLAN] RECOMMENDATIONS:")
             for rec in report.recommendations:
                 logger.info(f"  {rec}")
         
@@ -389,7 +389,7 @@ class PredictiveCostAuditor(SubAtomicAgent):
             "=" * 80,
             f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
             "",
-            "📊 HEALING SUMMARY",
+            "[STATS] HEALING SUMMARY",
             f"  Files Processed: {report.total_files}",
             f"  Healing Attempts: {report.total_attempts}",
             f"  Success Rate: {report.efficiency_score:.1f}%",
@@ -415,7 +415,7 @@ class PredictiveCostAuditor(SubAtomicAgent):
         
         lines.extend([
             "",
-            "📋 RECOMMENDATIONS",
+            "[PLAN] RECOMMENDATIONS",
         ])
         
         for rec in report.recommendations:

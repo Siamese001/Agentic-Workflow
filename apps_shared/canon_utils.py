@@ -61,7 +61,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0, backoff_fa
 
 def get_python_files(root: str = '.') -> List[str]:
     """Get all Python files excluding specified directories and files."""
-    print(f"   📂 Scanning Python files in {root}...", flush=True)
+    print(f"   [DIR] Scanning Python files in {root}...", flush=True)
     python_files = []
     dir_count = 0
     
@@ -79,5 +79,5 @@ def get_python_files(root: str = '.') -> List[str]:
                 if not is_excluded(file_path):
                     python_files.append(file_path)
     
-    print(f"   ✅ Found {len(python_files)} Python files in {dir_count} directories", flush=True)
+    print(f"   [OK] Found {len(python_files)} Python files in {dir_count} directories", flush=True)
     return python_files

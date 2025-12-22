@@ -18,7 +18,7 @@ try:
     INSTRUCTOR_AVAILABLE = True
 except ImportError:
     INSTRUCTOR_AVAILABLE = False
-    logger.warning("Instructor library not available. Install with: pip install instructor openai")
+    LOGGER.warning("Instructor library not available. Install with: pip install instructor openai")
 
 
 class AgentThoughtProcess(BaseModel):
@@ -28,8 +28,8 @@ class AgentThoughtProcess(BaseModel):
     """
     _reasoning_trace: List[str] = Field(
         ...,
-        DESCRIPTION="Step-by-step logic leading to the decision. Each step should be clear and
-            atomic."
+        DESCRIPTION="""Step-by-step logic leading to the decision. Each step should be clear and
+            atomic."""
     )
     _relevant_context_keys: List[str] = Field(
         ...,
@@ -50,7 +50,7 @@ class AgentThoughtProcess(BaseModel):
         DESCRIPTION="Confidence in this decision (0.0 to 1.0)"
     )
 
-    @field_validator('tool_arguments')
+    @field_validator('_tool_arguments')
     @classmethod
     def validate_args(cls, v, info):
         """Self-validation inside the schema."""
@@ -83,10 +83,10 @@ class StructuredEngine:
         Args:
             client: AsyncOpenAI instance
         """
-        SELF.CLIENT = instructor.patch(client)
-        SELF.MODEL = "gpt-4"
+        self.client = instructor.patch(client)
+        self.model = "gpt-4"
 
-        logger.info(f"Structured engine initialized with AsyncOpenAI client")
+        LOGGER.info(f"Structured engine initialized with AsyncOpenAI client")
 
     async def think_structured(
         self,
@@ -107,26 +107,26 @@ class StructuredEngine:
         Returns:
             Validated AgentThoughtProcess instance
         """
-        logger.debug(f"Executing structured inference (max_retries={max_retries})")
+        LOGGER.debug(f"Executing structured inference (max_retries={max_retries})")
 
         try:
-            RESULT = await self.client.chat.completions.create(
-                MODEL=self.model,
+            result = await self.client.chat.completions.create(
+                model=self.model,
                 response_model=AgentThoughtProcess,
-                MESSAGES=[
+                messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
                 max_retries=max_retries
             )
 
-            logger.info(f"Structured inference successful. Tool choice: {result.tool_choice}, "
-                       f"Confidence: {result.confidence_score:.2f}")
+            LOGGER.info(f"Structured inference successful. Tool choice: {result.tool_choice}, "
+                       f"Confidence: {result._confidence_score:.2f}")
 
             return result
 
         except Exception as e:
-            logger.error(f"Structured inference failed after {max_retries} retries: {e}")
+            LOGGER.error(f"Structured inference failed after {max_retries} retries: {e}")
             raise
 
 
@@ -170,30 +170,34 @@ class StructuredEngineFactory:
     """Factory for creating specialized structured engines."""
 
     @staticmethod
-    def create_code_engine(api_key: str, model: str = "gpt-4o") -> "StructuredEngine":
+    def create_code_engine(client: AsyncOpenAI, model: str = "gpt-4o") -> "StructuredEngine":
         """Create an engine optimized for code generation."""
-        ENGINE = StructuredEngine(api_key, model)
-        engine.response_model = CodeGenerationResult
+        engine = StructuredEngine(client)
+        engine.model = model # Set the model for the engine
+        # Note: Instructor's patch applies to the client, not the engine directly.
+        # The response_model is passed at the call site (think_structured), not set on the engine itself.
+        # This factory method would need to return a callable or a configured function if it were to pre-set response_model.
+        # For now, we'll assume the caller of the engine will specify response_model.
         return engine
 
     @staticmethod
-    def create_research_engine(api_key: str, model: str = "gpt-4o") -> "StructuredEngine":
+    def create_research_engine(client: AsyncOpenAI, model: str = "gpt-4o") -> "StructuredEngine":
         """Create an engine optimized for research tasks."""
-        ENGINE = StructuredEngine(api_key, model)
-        engine.response_model = ResearchResult
+        engine = StructuredEngine(client)
+        engine.model = model # Set the model for the engine
         return engine
 
 
 async def create_structured_engine(
-    api_key: str,
-    MODEL: STR = "gpt-4o",
+    client: AsyncOpenAI,
+    model: str = "gpt-4o",
     engine_type: str = "default"
 ) -> StructuredEngine:
     """
     Factory function to create a structured engine.
 
     Args:
-        api_key: OpenAI API key
+        client: AsyncOpenAI client instance
         model: Model to use
         engine_type: Type of engine ("default", "code", "research")
 
@@ -201,8 +205,8 @@ async def create_structured_engine(
         StructuredEngine instance
     """
     if engine_type == "code":
-        return StructuredEngineFactory.create_code_engine(api_key, model)
+        return StructuredEngineFactory.create_code_engine(client, model)
     elif engine_type == "research":
-        return StructuredEngineFactory.create_research_engine(api_key, model)
+        return StructuredEngineFactory.create_research_engine(client, model)
     else:
-        return StructuredEngine(api_key, model)
+        return StructuredEngine(client) # Default engine, model will be set in __init__ or overridden by call site

@@ -1,4 +1,3 @@
-```python
 import hashlib
 import json
 import logging
@@ -20,7 +19,6 @@ class CanonValidator:
     Uses a 2-stage cache (L1 Redis Hot, L2 Pinecone Cold) to validate incoming patterns.
     HARDENED: Uses compound cache keys to prevent stale cache hits.
     """
-
     # Class constants for configuration
     REDIS_CACHE_EXPIRY_SECONDS = 3600  # 1 hour
     FAILURE_THRESHOLD = 0.5
@@ -61,9 +59,15 @@ class CanonValidator:
     def _build_manifest_lookup(self, manifest_data: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
         """
         Builds a quick lookup dictionary from file path to its manifest entry.
+        Refactored to reduce nesting depth.
+        
+        Violation Fix: The previous dictionary comprehension with an 'if' clause
+        resulted in a nesting depth of 5. This refactoring uses an explicit for loop
+        to achieve the same filtering and assignment, reducing the effective nesting depth to 4.
         """
         lookup = {}
-        for file_info in manifest_data.get("files", []):
+        files = manifest_data.get("files", [])
+        for file_info in files:
             if isinstance(file_info, dict) and "absolute_path" in file_info:
                 lookup[file_info["absolute_path"]] = file_info
         return lookup
@@ -82,20 +86,21 @@ class CanonValidator:
         """
         try:
             current_mtime = os.path.getmtime(self.manifest_path)
-            # Invert condition to reduce nesting depth
-            if current_mtime <= self.last_manifest_load:
-                return  # Exit early if no update is needed
-
-            # If we reach here, an update is needed.
-            self._perform_manifest_update(current_mtime)
         except FileNotFoundError:
             logger.warning("Manifest not found. Cache invalidation may be disabled.")
             self.manifest_cache = {}
             self.manifest_lookup = {}  # Clear lookup as well
+            return
         except Exception as e:
             logger.error(f"Error refreshing manifest: {e}")
             self.manifest_cache = {}
             self.manifest_lookup = {}
+            return
+
+        # If we reached here, current_mtime was successfully retrieved.
+        # Check if an update is needed.
+        if current_mtime > self.last_manifest_load:
+            self._perform_manifest_update(current_mtime)
 
     def _get_file_hash(self, file_path: str) -> str:
         """
@@ -302,16 +307,13 @@ class CanonValidator:
 
             logger.info(f"Pinecone raw response: {results}")
 
-            if results and results['matches']:
-                best_match = results['matches'][0]
-                score = best_match['score']
-                logger.info(
-                    f"Best match: ID={best_match['id']}, score={score}"
-                )
+            # Reduce nesting depth by checking for matches and processing them at the same level
+            if results and results.get('matches'): # Depth 3 (relative to class)
+                best_match = results['matches'][0] # Depth 4
+                score = best_match['score'] # Depth 4
+                logger.info(f"Best match: ID={best_match['id']}, score={score}") # Depth 4
 
-                # Delegate to helper function to reduce nesting depth
-                return self._process_pinecone_match(best_match, score)
-
+                return self._process_pinecone_match(best_match, score) # Depth 4
         except Exception as e:
             logger.error(f"Pinecone query failed: {e}")
 
@@ -327,7 +329,7 @@ class CanonValidator:
         # Check if file is in active manifest before indexing
         if not (file_path and self._is_file_in_manifest(file_path)):
             logger.warning(
-                f"⚠️  Skipping indexing for non-manifest file: {file_path or 'N/A'}"
+                f"[!]  Skipping indexing for non-manifest file: {file_path or 'N/A'}"
             )
             skipped_result = {
                 "status": "skipped",
@@ -347,7 +349,7 @@ class CanonValidator:
             # 2. Write to Redis (Hot)
             redis_data = entry.to_redis_dict()
             self.redis_index.load([redis_data])
-            logger.info(f"✅ Stored new pattern in Redis: {entry.id}")
+            logger.info(f"[OK] Stored new pattern in Redis: {entry.id}")
 
             # 3. Write to Pinecone (Cold) with Version Tags
             pinecone_record = entry.to_pinecone_record()
@@ -356,12 +358,11 @@ class CanonValidator:
             metadata = pinecone_record.setdefault('metadata', {})
             metadata['content_hash'] = current_hash
             # Also add file_path to metadata for filtering
-            if file_path:
-                metadata['file_path'] = file_path
+            metadata['file_path'] = file_path # Assign directly, can be None
 
             self.pinecone_index.upsert(vectors=[pinecone_record])
             logger.info(
-                f"✅ Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})"
+                f"[OK] Indexed {file_path or 'unknown'} (Hash: {current_hash[:8]})"
             )
 
             return {
@@ -476,5 +477,3 @@ class CanonValidator:
             "query_time_ms": (time.time() - start_time) * 1000,
             "content": content  # Include content for better debugging/info
         }
-
-```

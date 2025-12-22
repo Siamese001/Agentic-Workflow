@@ -11,7 +11,6 @@ from typing import Any, Dict, List
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-
 from services.configuration import ConfigurationService
 
 

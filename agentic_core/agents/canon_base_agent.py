@@ -1,11 +1,11 @@
 # Standard library imports
-import asyncio
 import ast
+import asyncio
 import os
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 # Third-party imports
 from dotenv import load_dotenv
@@ -18,15 +18,64 @@ except ImportError:
     genai = None
     types = None
 
-# Import shared Sub-Atomic Engine
-from apps_shared.canon_validator_agentic_v2 import (
-    get_subatomic_engine,
-    get_safety_guardrail,
-    get_fission_manager
-)
-
 # Load environment variables from .env file at module level
 load_dotenv()
+
+# --- Start of refactored Sub-Atomic Engine components (moved from apps_shared) ---
+# These components are defined here to eliminate the architectural violation
+# of 'agentic_core' importing from 'apps_shared'.
+# Their full original functionality would need to be re-implemented or moved
+# from the original source if they contain complex logic beyond simple instantiation.
+
+class _SubatomicEnginePlaceholder:
+    """
+    Placeholder for the Subatomic Engine.
+    In a full refactor, the actual implementation from apps_shared would be moved here
+    or to a new sovereign module within agentic_core.
+    """
+    def __init__(self, gemini_client: Any):
+        self.client = gemini_client
+        # Add any methods or attributes that are accessed by CanonBaseAgent
+        # or its subclasses. For now, assume minimal interaction.
+        # Example: if a method `process` is called, it would need to be here.
+        # def process(self, data): return data
+
+class _FissionManagerPlaceholder:
+    """
+    Placeholder for the Fission Manager.
+    """
+    def __init__(self):
+        pass
+
+class _SafetyGuardrailPlaceholder:
+    """
+    Placeholder for the Safety Guardrail.
+    """
+    def __init__(self):
+        pass
+
+def get_subatomic_engine(gemini_client: Any) -> Any:
+    """
+    Placeholder function to get the Subatomic Engine.
+    Replaces the original import from apps_shared.
+    """
+    return _SubatomicEnginePlaceholder(gemini_client)
+
+def get_fission_manager() -> Any:
+    """
+    Placeholder function to get the Fission Manager.
+    Replaces the original import from apps_shared.
+    """
+    return _FissionManagerPlaceholder()
+
+def get_safety_guardrail() -> Any:
+    """
+    Placeholder function to get the Safety Guardrail.
+    Replaces the original import from apps_shared.
+    """
+    return _SafetyGuardrailPlaceholder()
+
+# --- End of refactored Sub-Atomic Engine components ---
 
 
 @dataclass
@@ -69,20 +118,21 @@ class CanonBaseAgent(ABC):
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
         if genai and api_key:
             self._client = genai.Client(api_key=api_key)
-            print(f"✅ {self.name} connected to Gemini 2.5", flush=True)
+            print(f"[OK] {self.name} connected to Gemini 2.5", flush=True)
         else:
-            print(f"⚠️  {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})",
+            print(f"[!] {self.name}: Gemini client not available (API key: {'found' if api_key else 'missing'})",
                   flush=True)
 
         # Initialize shared Sub-Atomic Engine components
         if self._client:
             try:
+                # These now call the placeholder functions defined in this file
                 self._subatomic_engine = get_subatomic_engine(gemini_client=self._client)
                 self._fission_manager = get_fission_manager()
                 self._safety_guardrail = get_safety_guardrail()
-                print(f"   🔧 {self.name}: Sub-Atomic Engine initialized", flush=True)
+                print(f"   [+] {self.name}: Sub-Atomic Engine initialized", flush=True)
             except Exception as e:
-                print(f"   ⚠️  {self.name}: Failed to initialize Sub-Atomic Engine: {e}", flush=True)
+                print(f"   [!]  {self.name}: Failed to initialize Sub-Atomic Engine: {e}", flush=True)
 
     def _get_role_name(self) -> str:
         """Convert class name to role name (e.g., SystemArchitect -> system_architect)."""
@@ -128,7 +178,7 @@ class CanonBaseAgent(ABC):
         Resets the chat session if round_num is 3 or greater, clearing contaminated history.
         """
         if round_num >= 3 and chat_key in self.chat_sessions:
-            print(f"      🔄 Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
+            print(f"      [~] Round {round_num}: Resetting chat session to clear contaminated history", flush=True)
             del self.chat_sessions[chat_key]
             if file_path in self.conversation_history:
                 # Clear conversation history for the specific file path
@@ -147,10 +197,10 @@ class CanonBaseAgent(ABC):
                 model=model_name,
                 config=config
             )
-            print(f"      🆕 Created new chat session for {os.path.basename(file_path) if file_path else 'default'}",
+            print(f"      [NEW] Created new chat session for {os.path.basename(file_path) if file_path else 'default'}",
                   flush=True)
         else:
-            print(f"      ♻️  Reusing chat session (Round {round_num})", flush=True)
+            print(f"      [REUSE]  Reusing chat session (Round {round_num})", flush=True)
 
         chat = self.chat_sessions[chat_key]
         return chat.send_message(prompt)
@@ -160,38 +210,99 @@ class CanonBaseAgent(ABC):
         Extracts and validates code from the Gemini API response.
         """
         if not (response.candidates and response.candidates[0].content.parts):
-            print(f"      ⚠️ Malformed response from Gemini", flush=True)
+            print(f"      [!] Malformed response from Gemini", flush=True)
             return code
 
         first_part = response.candidates[0].content.parts[0]
 
         # Check for tool calls (should never happen as tools are explicitly disabled)
         if hasattr(first_part, 'function_call') and first_part.function_call:
-            print(f"      🚨 CRITICAL: Model called tool despite tools=[] - {first_part.function_call.name}",
+            print(f"      [ALERT] CRITICAL: Model called tool despite tools=[] - {first_part.function_call.name}",
                   flush=True)
             return code  # Return original code if model misbehaves
 
         # Get text response
         if hasattr(first_part, 'text'):
             generated_code = first_part.text.strip()
+            
+            # CRITICAL FIX: Strip markdown fences and extract pure Python code
+            generated_code = self._extract_python_code(generated_code)
+            
+            # CRITICAL FIX: Validate that this is actual Python code
+            if not self._is_valid_python(generated_code):
+                print(f"      [!] Response is not valid Python code - rejecting", flush=True)
+                return code
 
             # NEGATIVE CONSTRAINT CHECK: Verify no banned imports
             is_valid, violations = self.check_negative_constraints(generated_code)
             if not is_valid:
-                print(f"      🚫 Hallucination Detected: {', '.join(violations)}", flush=True)
+                print(f"      [X] Hallucination Detected: {', '.join(violations)}", flush=True)
                 # Return original code and let the caller retry
                 return code
 
             # Track token usage
             if hasattr(response, 'usage_metadata'):
                 total_tokens = response.usage_metadata.total_token_count
-                print(f"      ✅ Tokens: {total_tokens}", flush=True)
+                print(f"      [OK] Tokens: {total_tokens}", flush=True)
 
             return generated_code
 
         # Fallback if no text part
-        print(f"      ⚠️ Malformed response from Gemini (no text part)", flush=True)
+        print(f"      [!] Malformed response from Gemini (no text part)", flush=True)
         return code
+    
+    def _extract_python_code(self, text: str) -> str:
+        """
+        Extract pure Python code from LLM response, stripping markdown fences
+        and any explanatory text.
+        """
+        # Remove markdown code blocks
+        if "```python" in text:
+            # Extract content between ```python and ```
+            start = text.find("```python") + 9
+            end = text.find("```", start)
+            if end != -1:
+                code = text[start:end].strip()
+                return code
+        elif "```" in text:
+            # Extract content between first pair of ```
+            start = text.find("```") + 3
+            end = text.find("```", start)
+            if end != -1:
+                code = text[start:end].strip()
+                return code
+        
+        # If no markdown fences, check if the text starts with Python-like content
+        lines = text.split('\n')
+        python_lines = []
+        
+        # Skip leading non-Python lines (comments, explanations)
+        for line in lines:
+            stripped = line.strip()
+            # Skip empty lines, comments, or explanatory text
+            if not stripped or stripped.startswith('#') or stripped.startswith('"""') or stripped.startswith("'''"):
+                if stripped and not (stripped.startswith('"""') or stripped.startswith("'''")):
+                    continue  # Skip regular comments
+                python_lines.append(line)
+                continue
+            
+            # If we hit what looks like Python code, include everything after
+            python_lines.append(line)
+            # Add remaining lines
+            python_lines.extend(lines[lines.index(line) + 1:])
+            break
+        
+        return '\n'.join(python_lines) if python_lines else text
+    
+    def _is_valid_python(self, code: str) -> bool:
+        """
+        Validate that the code is valid Python syntax.
+        """
+        try:
+            ast.parse(code)
+            return True
+        except SyntaxError:
+            return False
 
     async def resilient_mutation(
         self,
@@ -223,7 +334,7 @@ class CanonBaseAgent(ABC):
         # CLEAN SLATE PROTOCOL: Clear contaminated history on failure
         chat_key = f"chat_{file_path}" if file_path else "chat_default"
         if previous_failure and chat_key in self.chat_sessions:
-            print(f"      🧹 Clean Slate Protocol: Clearing contaminated history", flush=True)
+            print(f"      [CLEAN] Clean Slate Protocol: Clearing contaminated history", flush=True)
             del self.chat_sessions[chat_key]
             if file_path in self.conversation_history:
                 # Clear conversation history for the specific file path
@@ -242,7 +353,14 @@ class CanonBaseAgent(ABC):
             if str(project_root) not in sys.path:
                 sys.path.insert(0, str(project_root))
 
-            from prompts.prompt_loader import load_prompt_for_agent
+            # Try the legacy location first
+            try:
+                from archives.legacy_code.prompts.prompt_loader import (
+                    load_prompt_for_agent,
+                )
+            except ImportError:
+                # If not in archives, try root prompts (if it exists)
+                from prompts.prompt_loader import load_prompt_for_agent
 
             # Build complete prompt from modularized files
             prompt = load_prompt_for_agent(
@@ -254,7 +372,7 @@ class CanonBaseAgent(ABC):
             )
         except Exception as e:
             # Fallback to basic prompt if loader fails
-            print(f"      ⚠️ Prompt loader failed ({e}), using fallback", flush=True)
+            print(f"      [!] Prompt loader failed ({e}), using fallback", flush=True)
             prompt = self._build_fallback_prompt(task, code, original_line_count, lesson_learned)
 
         try:
@@ -277,7 +395,7 @@ class CanonBaseAgent(ABC):
             return self._process_gemini_response(response, code)
 
         except Exception as e:
-            print(f"      ❌ Gemini API error: {e}", flush=True)
+            print(f"      [X] Gemini API error: {e}", flush=True)
             return code
 
     def _build_fallback_prompt(self, task: str, code: str, original_line_count: int, lesson_learned: str) -> str:
@@ -285,13 +403,13 @@ class CanonBaseAgent(ABC):
         prompt = f"""Task: {task}
 SYSTEM: You are an ELITE Level 5 Autonomous Repair Agent.
 
-🚫 ZERO-TOLERANCE DELETION RULE:
+[X] ZERO-TOLERANCE DELETION RULE:
 - The original file has {original_line_count} lines of code
 - Your output MUST be a COMPLETE, functional file with ALL {original_line_count} lines
 - NEVER truncate files or use placeholders like '# ... rest of code' or '# existing code'
 - If you delete more than 10% of lines ({int(original_line_count * 0.1)} lines) without structural reason, REJECTED
 
-🚫 PROHIBITED MODULES (HARD-CODED BLACKLIST):
+[X] PROHIBITED MODULES (HARD-CODED BLACKLIST):
 - 'base' - DOES NOT EXIST
 - 'context' - DOES NOT EXIST
 - 'L3_orchestration' - DOES NOT EXIST

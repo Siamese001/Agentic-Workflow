@@ -5,9 +5,9 @@ Central management system for constitutional prompt assets.
 """
 
 from .registry import (
+    PromptCategory,
     PromptRegistry,
     PromptTemplate,
-    PromptCategory,
     create_prompt_registry,
 )
 

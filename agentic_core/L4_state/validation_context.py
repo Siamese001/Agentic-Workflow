@@ -72,11 +72,11 @@ class ValidationContext:
 
     def signal_healing_cycle(self, cycle_number: int, max_cycles: int = 5):
         """Signal the start of a healing cycle."""
-        print(f"   🔄 Healing Cycle {cycle_number}/{max_cycles}")
+        print(f"   [~] Healing Cycle {cycle_number}/{max_cycles}")
 
     def signal_convergence(self):
         """Signal that the validation has converged (no more changes)."""
-        print("   ✅ Convergence achieved - no modifications in this cycle")
+        print("   [OK] Convergence achieved - no modifications in this cycle")
         self.add_signal("CONVERGENCE")
 
     def complete(self, status: str = "COMPLETED"):

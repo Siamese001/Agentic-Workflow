@@ -14,7 +14,7 @@ Strategy:
 
 import logging
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class GitSafetyHandler:
             mcp_router: MCPRouter instance for MCP calls
         """
         self.router = mcp_router
-        logger.info("✅ Git Safety Handler initialized")
+        logger.info("[OK] Git Safety Handler initialized")
     
     async def create_rollback_point(self, file_path: str) -> str:
         """
@@ -63,11 +63,11 @@ class GitSafetyHandler:
                 "name": branch_name
             })
             
-            logger.info(f"   ✅ Backup branch created: {branch_name}")
+            logger.info(f"   [OK] Backup branch created: {branch_name}")
             return branch_name
         
         except Exception as e:
-            logger.error(f"   ❌ Failed to create backup branch: {e}")
+            logger.error(f"   [X] Failed to create backup branch: {e}")
             raise
     
     async def verify_clean_state(self, file_path: str) -> bool:
@@ -80,7 +80,7 @@ class GitSafetyHandler:
         Returns:
             True if clean, False otherwise
         """
-        logger.info(f"🔍 Verifying clean state for {file_path}")
+        logger.info(f"[SCAN] Verifying clean state for {file_path}")
         
         try:
             result = await self.router.call_mcp("gitkraken", {
@@ -91,14 +91,14 @@ class GitSafetyHandler:
             is_clean = result.get("status") == "clean"
             
             if is_clean:
-                logger.info(f"   ✅ Clean state verified")
+                logger.info(f"   [OK] Clean state verified")
             else:
-                logger.warning(f"   ⚠️  Uncommitted changes detected")
+                logger.warning(f"   [!]  Uncommitted changes detected")
             
             return is_clean
         
         except Exception as e:
-            logger.error(f"   ❌ Failed to verify state: {e}")
+            logger.error(f"   [X] Failed to verify state: {e}")
             return False
     
     async def stage_files(self, file_paths: List[str]) -> bool:
@@ -119,12 +119,12 @@ class GitSafetyHandler:
                     "action": "stage",
                     "file": file_path
                 })
-                logger.info(f"   ✅ Staged: {file_path}")
+                logger.info(f"   [OK] Staged: {file_path}")
             
             return True
         
         except Exception as e:
-            logger.error(f"   ❌ Failed to stage files: {e}")
+            logger.error(f"   [X] Failed to stage files: {e}")
             return False
     
     async def finalize_fission(self, original_file: str, new_files: List[str]) -> bool:
@@ -147,7 +147,7 @@ class GitSafetyHandler:
             # Stage all involved files
             all_files = [original_file] + new_files
             if not await self.stage_files(all_files):
-                logger.error("   ❌ Failed to stage files")
+                logger.error("   [X] Failed to stage files")
                 return False
             
             # Execute the hardened commit
@@ -156,7 +156,7 @@ class GitSafetyHandler:
                 "message": summary
             })
             
-            logger.info(f"   ✅ Hardened commit successful")
+            logger.info(f"   [OK] Hardened commit successful")
             
             # Update Redis 'Source of Truth'
             await self.router.call_mcp("redis", {
@@ -165,12 +165,12 @@ class GitSafetyHandler:
                 "value": "FISSION_COMPLETE"
             })
             
-            logger.info(f"   ✅ Redis state updated")
+            logger.info(f"   [OK] Redis state updated")
             
             return True
         
         except Exception as e:
-            logger.error(f"   ❌ Fission finalization failed: {e}")
+            logger.error(f"   [X] Fission finalization failed: {e}")
             return False
     
     async def rollback_to_branch(self, branch_name: str) -> bool:
@@ -191,11 +191,11 @@ class GitSafetyHandler:
                 "branch": branch_name
             })
             
-            logger.info(f"   ✅ Rollback successful")
+            logger.info(f"   [OK] Rollback successful")
             return True
         
         except Exception as e:
-            logger.error(f"   ❌ Rollback failed: {e}")
+            logger.error(f"   [X] Rollback failed: {e}")
             return False
     
     async def get_commit_history(self, file_path: str, limit: int = 10) -> List[Dict]:
@@ -219,12 +219,12 @@ class GitSafetyHandler:
             })
             
             commits = result.get("commits", [])
-            logger.info(f"   ✅ Retrieved {len(commits)} commits")
+            logger.info(f"   [OK] Retrieved {len(commits)} commits")
             
             return commits
         
         except Exception as e:
-            logger.error(f"   ❌ Failed to get commit history: {e}")
+            logger.error(f"   [X] Failed to get commit history: {e}")
             return []
 
 

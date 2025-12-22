@@ -6,8 +6,8 @@ Responsible for:
 - Key 21-25: Complexity metrics, cyclomatic complexity
 - Key 26-30: Code organization, modularity, cohesion
 """
-import os
 import ast
+import os
 from typing import List, Tuple
 
 from .canon_base_agent import CanonBaseAgent
@@ -33,16 +33,22 @@ class StructuralEngineer(CanonBaseAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Checking Code Structure...")
         
         # Check Key 20: Large classes
+        print(f"   [{self.name}] 🔍 Checking Key 20: Large Classes...")
         passed, violations = self.check_key_20_no_large_classes()
         if not passed:
-            print(f"   [{self.name}] Key 20: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 20: FAIL ({len(violations)} violations)")
             await self._heal_violations(20, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 20: PASS - All classes within limits")
         
         # Check Key 21: Large functions
+        print(f"   [{self.name}] 🔍 Checking Key 21: Large Functions...")
         passed, violations = self.check_key_21_no_large_functions()
         if not passed:
-            print(f"   [{self.name}] Key 21: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 21: FAIL ({len(violations)} violations) - Large functions detected")
             await self._heal_violations(21, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 21: PASS - All functions within limits")
     
     def check_key_20_no_large_classes(self) -> Tuple[bool, List[str]]:
         """
@@ -51,13 +57,16 @@ class StructuralEngineer(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_methods = int(os.getenv('MAX_CLASS_METHODS', '20'))
         max_lines = int(os.getenv('MAX_CLASS_LINES', '500'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     tree = ast.parse(content)
                     content.splitlines()
@@ -91,12 +100,15 @@ class StructuralEngineer(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_lines = int(os.getenv('MAX_FUNCTION_LINES', '50'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     content = f.read()
                     tree = ast.parse(content)
                 
@@ -125,7 +137,9 @@ class StructuralEngineer(CanonBaseAgent):
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     tree = ast.parse(f.read())
                 
                 for node in ast.walk(tree):
@@ -171,10 +185,14 @@ class StructuralEngineer(CanonBaseAgent):
         file_violations = {}
         for violation in violations[:max_healing_per_file]:
             if ':' in violation:
-                file_path = violation.split(':')[0]
-                if file_path not in file_violations:
-                    file_violations[file_path] = []
-                file_violations[file_path].append(violation)
+                # FIX: Handle Windows paths correctly (C:\path\file.py: message)
+                # Split on ': ' (colon-space) instead of just ':' to avoid splitting drive letters
+                parts = violation.split(': ', 1)
+                if len(parts) >= 1:
+                    file_path = parts[0]
+                    if file_path not in file_violations:
+                        file_violations[file_path] = []
+                    file_violations[file_path].append(violation)
         
         # Heal each file
         for file_path, file_viols in file_violations.items():
@@ -189,11 +207,14 @@ class StructuralEngineer(CanonBaseAgent):
             violation_key: Canon key being fixed
             violations: List of violations in this file
         """
+        from pathlib import Path
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            # FIX: Use pathlib.Path to handle Windows paths correctly
+            resolved_path = Path(file_path).resolve()
+            with open(resolved_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
-            print(f"      ⚠️ Cannot read {file_path}: {e}")
+            print(f"      [!] Cannot read {file_path}: {e}")
             return
         
         # Build task description
@@ -221,7 +242,7 @@ class StructuralEngineer(CanonBaseAgent):
             is_valid, reason = await self.verify_fix(original_code, mutated_code, violation_key)
             
             if not is_valid:
-                print(f"      ⚠️ Round {round_num}: {reason} – retrying")
+                print(f"      [!] Round {round_num}: {reason} – retrying")
                 previous_failure = reason
                 current_code = mutated_code
                 continue
@@ -230,10 +251,10 @@ class StructuralEngineer(CanonBaseAgent):
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(mutated_code)
-                print(f"      ✅ Round {round_num}: Fixed {os.path.basename(file_path)}")
+                print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
                 return
             except Exception as e:
-                print(f"      ❌ Cannot write {file_path}: {e}")
+                print(f"      [X] Cannot write {file_path}: {e}")
                 return
         
-        print(f"      ❌ Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")
+        print(f"      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")

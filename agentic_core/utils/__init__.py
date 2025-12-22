@@ -21,9 +21,11 @@ from .networking import (
     strict_egress_filter,
 )
 from .pitch_generator import PitchGenerator, PitchResult
-from .shadow_mode import ShadowModeEngine, ShadowModeResult
+
 # Atomic Fission: Import from new subatomic modules
-from .process_utils import register_process as register_process_atomic, log_action as log_action_atomic
+from .process_utils import log_action as log_action_atomic
+from .process_utils import register_process as register_process_atomic
+from .shadow_mode import ShadowModeEngine, ShadowModeResult
 
 # Backward compatibility: prefer atomic versions if not already defined
 if 'register_process' not in dir():

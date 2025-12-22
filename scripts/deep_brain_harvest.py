@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 class DeepBrainHarvester:
     """Harvests and stores patterns in Pinecone Deep Brain."""
     
-    def __init__(self, api_key: str = None, index_name: str = "structural-patterns"):
+    def __init__(self, api_key: str = None, index_name: str = "canon-healing-patterns"):
         """
         Initialize Deep Brain Harvester.
         
@@ -258,7 +258,7 @@ def main():
     )
     parser.add_argument(
         "--index",
-        default="structural-patterns",
+        default="canon-healing-patterns",
         help="Pinecone index name"
     )
     parser.add_argument(

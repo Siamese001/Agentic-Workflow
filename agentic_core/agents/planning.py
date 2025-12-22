@@ -91,14 +91,14 @@ Output ONLY the plan in Markdown.
         plan = await self.ctx.resilient_mutation(self.name, prompt, max_attempts=2)
 
         if "NO_PLAN_NEEDED" not in plan:
-            print(f"   📋 STRATEGIC PLAN:\n{plan[:500]}...")
+            print(f"   [PLAN] STRATEGIC PLAN:\n{plan[:500]}...")
             self.ctx.strategic_plan = plan
             # Save to observability
             p = Path("observability/plans")
             p.mkdir(parents=True, exist_ok=True)
             (p / f"plan_cycle_{len(self.ctx.successful_traces)}.md").write_text(plan)
         else:
-            print("   ✅ Strategy: Maintain current trajectory.")
+            print("   [OK] Strategy: Maintain current trajectory.")
 
 
 class ReflectionAgent(SubAtomicAgent):

@@ -11,6 +11,7 @@ from apps_lic.L3_orchestration.l5_orchestrator.types import (
     OutreachCycleState,
     OutreachExecutionPhase,
 )
+
 from apps_shared.signal_bus import SignalType
 
 logger = logging.getLogger(__name__)

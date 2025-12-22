@@ -8,10 +8,10 @@ preventing single-model failures or hallucinations.
 import asyncio
 import json
 import logging
+from typing import List, Tuple
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
-from typing import List, Tuple
 
 LOGGER = logging.getLogger(__name__)
 

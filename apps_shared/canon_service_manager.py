@@ -26,17 +26,17 @@ class ServiceManager:
         try:
             self._init_redis()
         except Exception as e:
-            print(f"   ⚠️  Redis init failed: {e}", flush=True)
+            print(f"   [!]  Redis init failed: {e}", flush=True)
         
         try:
             self._init_pinecone()
         except Exception as e:
-            print(f"   ⚠️  Pinecone init failed: {e}", flush=True)
+            print(f"   [!]  Pinecone init failed: {e}", flush=True)
         
         try:
             self._init_mcp()
         except Exception as e:
-            print(f"   ⚠️  MCP init failed: {e}", flush=True)
+            print(f"   [!]  MCP init failed: {e}", flush=True)
     
     def _init_redis(self):
         """Initialize Redis client if available."""
@@ -49,15 +49,15 @@ class ServiceManager:
                 decode_responses=True
             )
             self.redis_client.ping()
-            print("   ✅ Redis connected - caching enabled")
+            print("   [OK] Redis connected - caching enabled")
         except Exception as e:
             if "10061" in str(e):
-                print("   ⚠️  Redis connection refused (10061) - falling back to local cache")
+                print("   [!]  Redis connection refused (10061) - falling back to local cache")
                 self.redis_client = None
                 self.redis_fallback = {}
             else:
                 self.redis_client = None
-                print(f"   ⚠️  Redis unavailable: {e}")
+                print(f"   [!]  Redis unavailable: {e}")
     
     def _init_pinecone(self):
         """Initialize Pinecone for pattern learning."""
@@ -79,10 +79,10 @@ class ServiceManager:
                     spec=ServerlessSpec(cloud=cloud, region=region)
                 )
             self.pinecone_index = pc.Index(index_name)
-            print(f"   ✅ Pinecone connected - pattern learning enabled ({region})")
+            print(f"   [OK] Pinecone connected - pattern learning enabled ({region})")
         except Exception as e:
             self.pinecone_index = None
-            print(f"   ⚠️  Pinecone unavailable: {e}")
+            print(f"   [!]  Pinecone unavailable: {e}")
     
     def _init_mcp(self):
         """Initialize MCP clients if available."""
@@ -97,7 +97,7 @@ class ServiceManager:
             from mcp import ClientSession, StdioServerParameters
             from mcp.client.stdio import stdio_client
         except ImportError:
-            print("   ⚠️  MCP not installed - using direct file I/O")
+            print("   [!]  MCP not installed - using direct file I/O")
             self.mcp_init_pending = False
             return
         
@@ -175,7 +175,7 @@ class ServiceManager:
                 if 'env' in config:
                     missing_vars = [k for k, v in config['env'].items() if not v]
                     if missing_vars:
-                        print(f"   ⚠️  {server_name} MCP skipped - missing env vars: {missing_vars}")
+                        print(f"   [!]  {server_name} MCP skipped - missing env vars: {missing_vars}")
                         continue
                 
                 if config.get('type') == 'windsurf':
@@ -202,25 +202,25 @@ class ServiceManager:
                             
             except asyncio.TimeoutError:
                 if config.get('required'):
-                    print(f"   ⚠️  {server_name} MCP timed out - required server unavailable")
+                    print(f"   [!]  {server_name} MCP timed out - required server unavailable")
                     self.mcp_init_pending = False
                     return
             except FileNotFoundError:
                 pass
             except Exception as e:
                 if config.get('required'):
-                    print(f"   ⚠️  {server_name} MCP failed: {e}")
+                    print(f"   [!]  {server_name} MCP failed: {e}")
                     self.mcp_init_pending = False
                     return
         
         all_servers = connected_servers + windsurf_servers
         if all_servers:
-            status_msg = f"   ✅ MCP initialized - Connected: {', '.join(connected_servers)}"
+            status_msg = f"   [OK] MCP initialized - Connected: {', '.join(connected_servers)}"
             if windsurf_servers:
                 status_msg += f" | Windsurf: {', '.join(windsurf_servers)}"
             print(status_msg)
         else:
-            print("   ⚠️  No MCP servers connected - using direct file I/O")
+            print("   [!]  No MCP servers connected - using direct file I/O")
         
         self.mcp_init_pending = False
     

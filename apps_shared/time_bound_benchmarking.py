@@ -87,7 +87,7 @@ def execute_time_bound_salary_benchmarking(
             source_freshness = "FRESH"
 
             if logger:
-                logger.info("✅ Time-Bound Search Success: Fresh data found.")
+                logger.info("[OK] Time-Bound Search Success: Fresh data found.")
         else:
             salary_data = None
             source_freshness = "STALE_OR_MISSING"

@@ -1,18 +1,20 @@
+import datetime
+import json
 import logging
 import re
 from dataclasses import dataclass
 from typing import Dict, List, Optional
-import datetime
-import json
 
 try:
-    import numpy as np
     NUMPY_AVAILABLE = True
 except ImportError:
     NUMPY_AVAILABLE = False
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.canon_validator_agentic_v2 import get_subatomic_engine, get_safety_guardrail, get_fission_manager
+
+# Removed import from apps_shared.canon_validator_agentic_v2 as it is a downstream dependency
+# and the components (get_fission_manager, get_safety_guardrail, get_subatomic_engine)
+# were not used elsewhere in this class after initialization.
 
 try:
     from google import genai
@@ -268,21 +270,14 @@ class HallucinationHunter(SubAtomicAgent):
             ctx: ValidationContext
         """
         super().__init__(ctx)
-        # Initialize shared Sub-Atomic Engine components
-        if hasattr(self.ctx, '_client') and self.ctx._client:
-            try:
-                self.engine = get_subatomic_engine(gemini_client=self.ctx._client)
-                self.safety = get_safety_guardrail()
-                self.fission = get_fission_manager()
-            except Exception as e:
-                logger.warning(f"Failed to initialize Sub-Atomic Engine: {e}")
-                self.engine = None
-                self.safety = None
-                self.fission = None
-        else:
-            self.engine = None
-            self.safety = None
-            self.fission = None
+        # Initialize shared Sub-Atomic Engine components.
+        # The original imports from 'apps_shared' have been removed as they are
+        # a downstream dependency and the attributes (self.engine, self.safety, self.fission)
+        # were not utilized elsewhere in this class. They are initialized to None
+        # to maintain the class's expected attribute structure.
+        self.engine = None
+        self.safety = None
+        self.fission = None
 
         
         # Similarity threshold
@@ -305,9 +300,9 @@ class HallucinationHunter(SubAtomicAgent):
             if api_key:
                 try:
                     genai_client = genai.Client(api_key=api_key)
-                    logger.info("✅ Hallucination Hunter connected to Gemini 2.5")
+                    logger.info("[OK] Hallucination Hunter connected to Gemini 2.5")
                 except Exception as e:
-                    logger.warning(f"⚠️  Could not connect to Gemini: {e}")
+                    logger.warning(f"[!]  Could not connect to Gemini: {e}")
                     self.genai_available = False
         
         # Initialize sub-components
@@ -321,7 +316,7 @@ class HallucinationHunter(SubAtomicAgent):
         
         Listens for PIPELINE_OUTPUT signals and audits factual integrity.
         """
-        logger.info("🔍 Hallucination Hunter: Monitoring for PIPELINE_OUTPUT signals...")
+        logger.info("[SCAN] Hallucination Hunter: Monitoring for PIPELINE_OUTPUT signals...")
         
         # Listen for PIPELINE_OUTPUT signals from blackboard
         if hasattr(self.ctx, 'signals'):
@@ -436,7 +431,7 @@ class HallucinationHunter(SubAtomicAgent):
     def _display_report(self, stage_name: str, report: IntegrityReport):
         """Display integrity report."""
         logger.info(f"\n{'='*80}")
-        logger.info(f"🔍 HALLUCINATION HUNTER REPORT - {stage_name}")
+        logger.info(f"[SCAN] HALLUCINATION HUNTER REPORT - {stage_name}")
         logger.info(f"{'='*80}")
         logger.info(f"Total Claims: {report.total_claims}")
         logger.info(f"  Supported: {report.supported_claims}")
@@ -447,17 +442,17 @@ class HallucinationHunter(SubAtomicAgent):
         
         # Check hallucination threshold (5%)
         if report.hallucination_percentage > self.HALLUCINATION_THRESHOLD:
-            logger.error(f"\n🚨 HALLUCINATION THRESHOLD EXCEEDED")
+            logger.error(f"\n[ALERT] HALLUCINATION THRESHOLD EXCEEDED")
             logger.error(f"   Threshold: {self.HALLUCINATION_THRESHOLD:.1%}")
             logger.error(f"   Actual: {report.hallucination_percentage:.1%}")
             logger.error(f"   FACTUAL_INTEGRITY_FAIL signal will be emitted")
         
         if report.risk_level in ["high", "critical"]:
-            logger.error(f"\n⚠️  {report.risk_level.upper()} RISK DETECTED")
+            logger.error(f"\n[!]  {report.risk_level.upper()} RISK DETECTED")
             logger.error(f"Rollback Required: {report.requires_rollback}")
         
         if report.unsupported_details:
-            logger.warning(f"\n⚠️  UNSUPPORTED CLAIMS (showing first 10):")
+            logger.warning(f"\n[!]  UNSUPPORTED CLAIMS (showing first 10):")
             for i, result in enumerate(report.unsupported_details, 1):
                 logger.warning(f"  {i}. {result.claim.text[:80]}...")
                 logger.warning(f"     Similarity: {result.similarity_score:.2f} (threshold: {self.SIMILARITY_THRESHOLD})")
@@ -466,13 +461,13 @@ class HallucinationHunter(SubAtomicAgent):
         
         # Display audit trail summary
         if report.audit_trail:
-            logger.info(f"\n✅ AUDIT TRAIL: {len(report.audit_trail)} claims mapped to sources")
+            logger.info(f"\n[OK] AUDIT TRAIL: {len(report.audit_trail)} claims mapped to sources")
         
         logger.info(f"{'='*80}\n")
     
     def _trigger_rollback(self, stage_name: str, report: IntegrityReport):
         """Trigger rollback to previous stage."""
-        logger.error(f"🚨 TRIGGERING ROLLBACK for {stage_name}")
+        logger.error(f"[ALERT] TRIGGERING ROLLBACK for {stage_name}")
         logger.error(f"   Reason: Integrity score {report.integrity_score:.1%} below threshold")
         logger.error(f"   Action: Rolling back to previous stage with higher temperature")
         
@@ -486,7 +481,7 @@ class HallucinationHunter(SubAtomicAgent):
         
         Prevents resume from being sent to output folder.
         """
-        logger.error(f"🚨 FACTUAL_INTEGRITY_FAIL for {stage_name}")
+        logger.error(f"[ALERT] FACTUAL_INTEGRITY_FAIL for {stage_name}")
         logger.error(f"   Hallucination rate: {report.hallucination_percentage:.1%}")
         logger.error(f"   Threshold: {self.HALLUCINATION_THRESHOLD:.1%}")
         logger.error(f"   Unsupported claims: {report.unsupported_claims}/{report.total_claims}")
@@ -581,7 +576,7 @@ class HallucinationHunter(SubAtomicAgent):
             with open(sidecar_path, 'w', encoding='utf-8') as f:
                 json.dump(audit_data, f, indent=2)
             
-            logger.info(f"   ✅ Audit trail injected: {sidecar_path}")
+            logger.info(f"   [OK] Audit trail injected: {sidecar_path}")
             logger.info(f"      Mapped {len(report.audit_trail)} claims to source citations")
         except Exception as e:
             logger.error(f"   Could not inject audit trail: {e}")
@@ -613,7 +608,7 @@ class HallucinationHunter(SubAtomicAgent):
                 cited_lines.append(f"{claim.text} [Source: Line {result.source_line}]")
             else:
                 # Mark as unsupported
-                cited_lines.append(f"{claim.text} [⚠️  UNSUPPORTED]")
+                cited_lines.append(f"{claim.text} [[!]  UNSUPPORTED]")
         
         return "\n".join(cited_lines)
 

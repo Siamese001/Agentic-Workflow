@@ -6,10 +6,10 @@ Responsible for:
 - Key 41-47: Import dependencies, module structure
 - Key 48-50: Architectural patterns and design
 """
-import os
 import ast
-from typing import List, Tuple
+import os
 from pathlib import Path
+from typing import List, Tuple
 
 from .canon_base_agent import CanonBaseAgent
 
@@ -34,24 +34,31 @@ class SystemArchitect(CanonBaseAgent):
         print(f"\n[>>>] {self.name} ACTIVATED: Verifying Core Architecture...")
         
         # Check Key 40: Core architecture
+        print(f"   [{self.name}] 🔍 Checking Key 40: Core Architecture...")
         passed, violations = self.check_key_40_core_architecture()
         if passed:
-            print(f"   [{self.name}] Key 40: PASS")
+            print(f"   [{self.name}] ✅ Key 40: PASS - Core architecture valid")
         else:
-            print(f"   [{self.name}] Key 40: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 40: FAIL ({len(violations)} violations)")
             await self._heal_violations(40, violations)
         
         # Check Key 41: Deep nesting
+        print(f"   [{self.name}] 🔍 Checking Key 41: Deep Nesting...")
         passed, violations = self.check_key_41_no_deep_nesting()
         if not passed:
-            print(f"   [{self.name}] Key 41: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 41: FAIL ({len(violations)} violations)")
             await self._heal_violations(41, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 41: PASS - No deep nesting detected")
         
         # Check Key 42: Large files
+        print(f"   [{self.name}] 🔍 Checking Key 42: Large Files...")
         passed, violations = self.check_key_42_no_large_files()
         if not passed:
-            print(f"   [{self.name}] Key 42: FAIL ({len(violations)} violations)")
+            print(f"   [{self.name}] ❌ Key 42: FAIL ({len(violations)} violations)")
             await self._heal_violations(42, violations)
+        else:
+            print(f"   [{self.name}] ✅ Key 42: PASS - All files within size limits")
     
     def check_key_40_core_architecture(self) -> Tuple[bool, List[str]]:
         """
@@ -87,12 +94,15 @@ class SystemArchitect(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_depth = int(os.getenv('MAX_NESTING_DEPTH', '4'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     tree = ast.parse(f.read())
                 
                 # Check nesting depth
@@ -111,12 +121,15 @@ class SystemArchitect(CanonBaseAgent):
         Returns:
             Tuple of (passed, list of violations)
         """
+        from pathlib import Path
         violations = []
         max_lines = int(os.getenv('MAX_FILE_LINES', '1000'))
         
         for file_path in self.ctx.python_files:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
+                # FIX: Use pathlib.Path to handle Windows paths correctly
+                resolved_path = Path(file_path).resolve()
+                with open(resolved_path, 'r', encoding='utf-8') as f:
                     line_count = len(f.readlines())
                 
                 if line_count > max_lines:
@@ -164,10 +177,14 @@ class SystemArchitect(CanonBaseAgent):
         file_violations = {}
         for violation in violations[:max_healing_per_file]:
             if ':' in violation:
-                file_path = violation.split(':')[0]
-                if file_path not in file_violations:
-                    file_violations[file_path] = []
-                file_violations[file_path].append(violation)
+                # FIX: Handle Windows paths correctly (C:\path\file.py: message)
+                # Split on ': ' (colon-space) instead of just ':' to avoid splitting drive letters
+                parts = violation.split(': ', 1)
+                if len(parts) >= 1:
+                    file_path = parts[0]
+                    if file_path not in file_violations:
+                        file_violations[file_path] = []
+                    file_violations[file_path].append(violation)
         
         # Heal each file
         for file_path, file_viols in file_violations.items():
@@ -182,11 +199,14 @@ class SystemArchitect(CanonBaseAgent):
             violation_key: Canon key being fixed
             violations: List of violations in this file
         """
+        from pathlib import Path
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            # FIX: Use pathlib.Path to handle Windows paths correctly
+            resolved_path = Path(file_path).resolve()
+            with open(resolved_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
-            print(f"      ⚠️ Cannot read {file_path}: {e}")
+            print(f"      [!] Cannot read {file_path}: {e}")
             return
         
         # Build task description
@@ -214,7 +234,7 @@ class SystemArchitect(CanonBaseAgent):
             is_valid, reason = await self.verify_fix(original_code, mutated_code, violation_key)
             
             if not is_valid:
-                print(f"      ⚠️ Round {round_num}: {reason} – retrying")
+                print(f"      [!] Round {round_num}: {reason} – retrying")
                 previous_failure = reason
                 current_code = mutated_code
                 continue
@@ -223,10 +243,10 @@ class SystemArchitect(CanonBaseAgent):
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(mutated_code)
-                print(f"      ✅ Round {round_num}: Fixed {os.path.basename(file_path)}")
+                print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
                 return
             except Exception as e:
-                print(f"      ❌ Cannot write {file_path}: {e}")
+                print(f"      [X] Cannot write {file_path}: {e}")
                 return
         
-        print(f"      ❌ Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")
+        print(f"      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")

@@ -7,6 +7,7 @@ from typing import Any, Dict, Optional, Tuple
 from pydantic import BaseModel
 from runtime.core.cost_governor import BudgetExceededError
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
+from services.configuration import ConfigurationService
 
 from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
 from agentic_core.L2_execution.sandbox import DockerSandbox
@@ -16,7 +17,6 @@ from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
 from agentic_core.L5_safety.governor import CostGovernor
 from agentic_core.L5_safety.overseer import ConstitutionalOverseer
 from agentic_core.L5_safety.pii_vault import PIIVault
-from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -79,12 +79,10 @@ async def run(self: Any, context: Dict) -> Dict[str, Any]:
         return {'output': ConfigurationService().final_output, 'trace_id': ConfigurationService().trace_id, 'session_id': self.session_id, 'execution_time': ConfigurationService().execution_time, 'cost_summary': self.cost_governor.get_usage_summary(
         ), 'pii_summary': ConfigurationService().pii_summary, 'safety_validations': {'canary_integrity': canary.token if canary else None, 'constitutional_checks': 'passed', 'budget_remaining': self.cost_governor.get_remaining_budget()}}
     except BudgetExceededError as e:
-pass
-await self._handle_budget_exceeded(ConfigurationService().trace_id, e)
+        await self._handle_budget_exceeded(ConfigurationService().trace_id, e)
         raise
     except Exception as e:
-pass
-await self._handle_execution_error(ConfigurationService().trace_id, e)
+        await self._handle_execution_error(ConfigurationService().trace_id, e)
         raise
     finally:
         await self._cleanup(ConfigurationService().trace_id)
@@ -300,4 +298,3 @@ class SecurityError(Exception):
 
 class ConstitutionalViolationError(Exception):
     """Raised when constitutional rules are violated."""
-

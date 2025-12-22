@@ -1,5 +1,9 @@
 """Types and models for firecracker_manager."""
 import logging
+import time
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 class VMStatus(Enum):
@@ -32,11 +36,17 @@ class VMConfig:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'vm_id': self.vm_id, 'provider': self.provider.value, 'cpu_count': self.cpu_count, '
-    memory_mb': self.memory_mb, 'disk_mb': self.disk_mb, 'network_enabled': self.network_enabled, 't
-        imeout_seconds': self.timeout_seconds,
+        return {
+            'vm_id': self.vm_id,
+            'provider': self.provider.value,
+            'cpu_count': self.cpu_count,
+            'memory_mb': self.memory_mb,
+            'disk_mb': self.disk_mb,
+            'network_enabled': self.network_enabled,
+            'timeout_seconds': self.timeout_seconds,
             'auto_teardown': self.auto_teardown,
-            'metadata': self.metadata}
+            'metadata': self.metadata
+        }
 
 @dataclass
 class VMInstance:
@@ -55,7 +65,7 @@ class VMInstance:
         Returns:
             True if running
         """
-        return SELF.STATUS == VMStatus.RUNNING
+        return self.status == VMStatus.RUNNING
 
     def is_expired(self, current_time: Optional[float]=None) -> bool:
         """Check if VM has exceeded timeout.
@@ -67,7 +77,7 @@ class VMInstance:
             True if expired
         """
         current_time = current_time or time.time()
-        ELAPSED = current_time - self.created_at
+        elapsed = current_time - self.created_at
         return elapsed > self.config.timeout_seconds
 
     def to_dict(self) -> Dict[str, Any]:

@@ -2,13 +2,15 @@
 Implements retry logic, grounding optimization, and configurable safety settings.
 """
 
-import os
 import json
+import os
 import time
-from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
-from vertexai import init as vertex_init
+from typing import Dict, List, Optional, Union, object
+
 import backoff
+from vertexai import init as vertex_init
+
 
 @dataclass
 class VertexConfig:

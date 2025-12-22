@@ -4,22 +4,12 @@ Canon Validator v2.0 - 100% Agentic Architecture
 All 50 keys are now covered by Agent classes with zero legacy functions.
 """
 
-import ast
 import asyncio
-import datetime
-import hashlib
-import json
 import logging
 import os
-import re
-import shutil
 import subprocess
 import sys
-import time
-from dataclasses import dataclass, field
 from functools import wraps
-from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
 
 # Fix Windows console encoding FIRST (before any print with unicode)
 if sys.platform == "win32":
@@ -29,10 +19,7 @@ if sys.platform == "win32":
 
 # Hard-Gate: Tri-Brain SDKs are MANDATORY
 try:
-    import redis.asyncio as redis
     from dotenv import load_dotenv
-    from google import genai
-    from pinecone import Pinecone
 except ImportError as e:
     print(f"CRITICAL: Missing dependency: {e.name}. Install with: pip install google-genai redis pinecone python-dotenv")
     sys.exit(1)
@@ -48,8 +35,6 @@ except ImportError:
 
 # AutoGen: Collective Intelligence (Optional)
 try:
-    from autogen import (AssistantAgent, GroupChat, GroupChatManager,
-                         UserProxyAgent)
     AUTOGEN_AVAILABLE = True
 except ImportError:
     AUTOGEN_AVAILABLE = False
@@ -57,7 +42,6 @@ except ImportError:
 
 # L5 Streamer: Async File I/O for non-blocking broadcast
 try:
-    import aiofiles
     AIOFILES_AVAILABLE = True
 except ImportError:
     AIOFILES_AVAILABLE = False
@@ -106,28 +90,40 @@ load_dotenv()  # Auto-load .env
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
-# Import shared utilities from apps_shared
-from apps_shared.domain.constants import *
-from apps_shared.config.reliability import rate_limited_retry
-from apps_shared.utils.text_processing import sanitize_json, clean_llm_code
-from apps_shared.utils.file_io import calculate_file_hash, is_excluded, get_python_files, write_compliant_file
+from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+from agentic_core.agents.infrastructure import (
+    BenchmarkingAgent,
+    GitAgent,
+    Historian,
+    WatchmanHandler,
+)
+from agentic_core.agents.planning import ReflectionAgent, StrategicPlanner
+from agentic_core.agents.quality import (
+    CodeStyleGuardian,
+    HygieneGuardian,
+    PerformanceEnforcer,
+)
+from agentic_core.agents.repair import TestPilot, ToolsmithAgent
+from agentic_core.agents.security import (
+    ConcurrencyGuardian,
+    SafetyInspector,
+    SecurityEnforcer,
+)
+from agentic_core.agents.specialized import (
+    DocEnforcer,
+    NamingEnforcer,
+    TheCartographer,
+    TheOmniContext,
+    TheStrategist,
+    TypeEnforcer,
+)
 
 # Import core domain and agent classes from agentic_core
-from agentic_core.domain.context import ValidationContext, DependencyGraph, BudgetManager
-from agentic_core.agents.base import SubAtomicAgent
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.security import SafetyInspector, ConcurrencyGuardian, SecurityEnforcer
-from agentic_core.agents.quality import HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer
-from agentic_core.agents.engineering import StructuralEngineer, PatternEnforcer
-from agentic_core.agents.repair import Sherlock, TestPilot, ToolsmithAgent
-from agentic_core.agents.infrastructure import Historian, GitAgent, BenchmarkingAgent, WatchmanHandler
-from agentic_core.agents.specialized import TheCartographer, TheOmniContext, TheStrategist, NamingEnforcer, DocEnforcer, TypeEnforcer
-from agentic_core.agents.analysis import SemanticMapper, TruthKeeper
-from agentic_core.agents.concurrency import MemoryLeakDetector, DeadlockAnalyzer, DeadlockDetector, RaceAnalyzer
-from agentic_core.agents.planning import StrategicPlanner, ReflectionAgent
-from agentic_core.agents.context import OmniContext
-from agentic_core.agents.base import ImportPatcher
-from agentic_core.agents.security import RedSentinel
+from agentic_core.domain.context import ValidationContext
+
+# Import shared utilities from apps_shared
+from apps_shared.config.reliability import rate_limited_retry
 
 # ==============================================================================
 # L5 HUMAN-IN-THE-LOOP: Intervention Server

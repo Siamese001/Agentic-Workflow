@@ -4,7 +4,7 @@ import os
 import time
 
 from agentic_core.agents.base import SubAtomicAgent
-from apps_shared.domain.constants import EXCLUDED_DIRS
+from agentic_core.domain.constants import EXCLUDED_DIRS
 
 # Optional dependencies
 try:
@@ -45,7 +45,7 @@ class Historian(SubAtomicAgent):
                     f.write("| Time | Agent | Status | Details |\n|---|---|---|---|\n")
                 f.write(entry)
         except (IOError, OSError) as e:
-            print(f"   ⚠️ Historian failed to write: {e}")
+            print(f"   [!] Historian failed to write: {e}")
 
 
 class GitAgent(SubAtomicAgent):
@@ -79,9 +79,9 @@ class GitAgent(SubAtomicAgent):
                 await asyncio.to_thread(self.repo.git.add, A=True)
                 commit_msg = f"Auto-fix by {self.ctx._current_agent}"
                 await asyncio.to_thread(self.repo.index.commit, commit_msg)
-                print("   💾 Changes committed to git.")
+                print("   [SAVE] Changes committed to git.")
         except Exception as e:
-            print(f"   ⚠️ Git operation failed: {e}")
+            print(f"   [!] Git operation failed: {e}")
 
 
 class BenchmarkingAgent(SubAtomicAgent):

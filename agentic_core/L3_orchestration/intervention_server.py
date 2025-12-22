@@ -61,7 +61,7 @@ def create_intervention_app():
         </head>
         <body>
             <div class="warning">
-                <h1>🚨 L5 INTERVENTION REQUIRED</h1>
+                <h1>[ALERT] L5 INTERVENTION REQUIRED</h1>
                 <p>The autonomous system has detected a <strong>HIGH RISK</strong> action and is awaiting human approval.</p>
 
                 <div class="signals">
@@ -81,7 +81,7 @@ def create_intervention_app():
                 </div>
 
                 <div>
-                    <button class="approve" onclick="approve()">✅ APPROVE</button>
+                    <button class="approve" onclick="approve()">[OK] APPROVE</button>
                     <button class="veto" onclick="veto()">🛑 VETO</button>
                 </div>
             </div>
@@ -89,7 +89,7 @@ def create_intervention_app():
             <script>
                 async function approve() {{
                     await fetch('/approve', {{method: 'POST'}});
-                    document.body.innerHTML = '<h1 style="color: green;">✅ APPROVED - Resuming execution...</h1>';
+                    document.body.innerHTML = '<h1 style="color: green;">[OK] APPROVED - Resuming execution...</h1>';
                 }}
                 async function veto() {{
                     await fetch('/veto', {{method: 'POST'}});
@@ -144,7 +144,7 @@ def start_intervention_server(ctx: Optional[Any] = None):
     global _intervention_server_started, _intervention_context
 
     if not FASTAPI_AVAILABLE:
-        print("   ⚠️  FastAPI not available - skipping intervention server")
+        print("   [!]  FastAPI not available - skipping intervention server")
         return
 
     _intervention_context = ctx

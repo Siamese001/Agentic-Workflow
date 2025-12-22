@@ -55,7 +55,7 @@ class HealerAgent(CanonBaseAgent):
             with open(file_path, 'r', encoding='utf-8') as f:
                 original_code = f.read()
         except Exception as e:
-            print(f"      ⚠️ Cannot read {file_path}: {e}")
+            print(f"      [!] Cannot read {file_path}: {e}")
             return False
         
         # Build task description
@@ -94,7 +94,7 @@ class HealerAgent(CanonBaseAgent):
                 import ast
                 ast.parse(mutated_code)
             except SyntaxError as se:
-                print(f"      ⚠️ Round {round_num}: SyntaxError line {se.lineno} – retrying")
+                print(f"      [!] Round {round_num}: SyntaxError line {se.lineno} – retrying")
                 previous_failure = f"SyntaxError at line {se.lineno}: {se.msg}"
                 current_code = mutated_code
                 continue
@@ -106,7 +106,7 @@ class HealerAgent(CanonBaseAgent):
             deletion_count = original_lines - mutated_lines
             
             if deletion_count > max_allowed_deletion:
-                print(f"      🚫 ZERO-TOLERANCE VIOLATION: {original_lines} -> {mutated_lines} lines ({deletion_count} deleted, max {max_allowed_deletion})")
+                print(f"      [X] ZERO-TOLERANCE VIOLATION: {original_lines} -> {mutated_lines} lines ({deletion_count} deleted, max {max_allowed_deletion})")
                 previous_failure = f"ZERO-TOLERANCE VIOLATION: You deleted {deletion_count} lines (max allowed: {max_allowed_deletion}). You are an ELITE engineer - preserve the complete file structure and only fix the specific violation."
                 current_code = mutated_code
                 continue
@@ -114,7 +114,7 @@ class HealerAgent(CanonBaseAgent):
             # 3. Code bloat guard
             expansion_factor = int(os.getenv('CODE_EXPANSION_FACTOR', '4'))
             if mutated_lines > original_lines * expansion_factor:
-                print(f"      ⚠️ Round {round_num}: Code bloat detected – rejecting")
+                print(f"      [!] Round {round_num}: Code bloat detected – rejecting")
                 previous_failure = f"Code bloat detected: You added too many lines. Only fix the specific violation."
                 current_code = mutated_code
                 continue
@@ -123,7 +123,7 @@ class HealerAgent(CanonBaseAgent):
             is_fixed = await self._verify_fix_resolved(file_path, mutated_code, violation_key)
             
             if not is_fixed:
-                print(f"      ⚠️ Round {round_num}: Violation still present – retrying")
+                print(f"      [!] Round {round_num}: Violation still present – retrying")
                 previous_failure = f"Violation Key {violation_key} still present after fix. Ensure the specific issue is addressed."
                 current_code = mutated_code
                 continue
@@ -132,7 +132,7 @@ class HealerAgent(CanonBaseAgent):
             has_side_effects = await self._check_side_effects(original_code, mutated_code)
             
             if has_side_effects:
-                print(f"      ⚠️ Round {round_num}: New violations introduced – retrying")
+                print(f"      [!] Round {round_num}: New violations introduced – retrying")
                 previous_failure = f"Your fix introduced new violations. Fix only the target violation without breaking other code."
                 current_code = mutated_code
                 continue
@@ -141,17 +141,17 @@ class HealerAgent(CanonBaseAgent):
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(mutated_code)
-                print(f"      ✅ Round {round_num}: Successfully healed {os.path.basename(file_path)}")
+                print(f"      [OK] Round {round_num}: Successfully healed {os.path.basename(file_path)}")
                 
                 # Store successful pattern in Pinecone
                 await self._store_healing_pattern(violation_key, violation_details, mutated_code, file_path)
                 
                 return True
             except Exception as e:
-                print(f"      ❌ Cannot write {file_path}: {e}")
+                print(f"      [X] Cannot write {file_path}: {e}")
                 return False
         
-        print(f"      ❌ Failed to heal {os.path.basename(file_path)} after {max_rounds} rounds")
+        print(f"      [X] Failed to heal {os.path.basename(file_path)} after {max_rounds} rounds")
         return False
     
     async def _verify_fix_resolved(self, file_path: str, fixed_code: str, violation_key: int) -> bool:
@@ -207,7 +207,7 @@ class HealerAgent(CanonBaseAgent):
         # If critical imports were removed, that's a side effect
         removed_imports = original_imports - fixed_imports
         if removed_imports:
-            print(f"      ⚠️ Side effect: Removed imports {removed_imports}")
+            print(f"      [!] Side effect: Removed imports {removed_imports}")
             return True
         
         # 2. Check if function/class definitions were removed
@@ -223,7 +223,7 @@ class HealerAgent(CanonBaseAgent):
             
             removed_defs = original_defs - fixed_defs
             if removed_defs:
-                print(f"      ⚠️ Side effect: Removed definitions {removed_defs}")
+                print(f"      [!] Side effect: Removed definitions {removed_defs}")
                 return True
         except:
             pass
@@ -262,6 +262,6 @@ class HealerAgent(CanonBaseAgent):
                 'success_rate': 1.0
             }
             
-            print(f"      💾 Stored healing pattern for Key {violation_key}")
+            print(f"      [SAVE] Stored healing pattern for Key {violation_key}")
         except Exception as e:
-            print(f"      ⚠️ Failed to store pattern: {e}")
+            print(f"      [!] Failed to store pattern: {e}")

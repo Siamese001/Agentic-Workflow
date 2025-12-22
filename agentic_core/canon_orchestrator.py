@@ -1,8 +1,3 @@
-The provided Python code is already very well-structured and adheres to most syntax and style guidelines. The primary adjustment needed is to conform to PEP 8's recommendation of two blank lines before top-level class definitions.
-
-Here's the fixed code with that minor style adjustment:
-
-```python
 """
 Canon Validator Intelligent Orchestrator
 
@@ -11,14 +6,25 @@ Orchestrates all validation agents in dependency order.
 import asyncio
 from typing import Optional
 
-from apps_shared.canon_validation_context import ValidationContext
-
 # Local application imports (grouped by sub-module for clarity)
-from agentic_core.canon_agents_core import SystemArchitect, HealerAgent, GenerativeGuard
+from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
+from agentic_core.canon_agents_pattern import (
+    PatternEnforcer,
+    SemanticMapper,
+    UIValidationAgent,
+)
+from agentic_core.canon_agents_quality import (
+    DocumentationAgent,
+    NamingAgent,
+    SafetyInspector,
+)
+from agentic_core.canon_agents_structural import (
+    BudgetAgent,
+    StructuralEngineer,
+    TypeMechanic,
+)
 from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
-from agentic_core.canon_agents_quality import SafetyInspector, DocumentationAgent, NamingAgent
-from agentic_core.canon_agents_structural import TypeMechanic, BudgetAgent, StructuralEngineer
-from agentic_core.canon_agents_pattern import PatternEnforcer, UIValidationAgent, SemanticMapper
+from agentic_core.shared.canon_validation_context import ValidationContext
 
 
 class IntelligentOrchestrator:
@@ -58,29 +64,50 @@ class IntelligentOrchestrator:
         are not met, it will stand down. Critical failures can abort the mission.
         """
         print("🤖 SWARM INTELLIGENCE ONLINE. Initializing Blackboard...")
+        print(f"\n[MISSION] Starting validation sweep across {len(self.ctx.python_files)} files...")
+        
+        # Track agent execution
+        agents_executed = 0
+        agents_passed = 0
+        agents_failed = 0
 
         # Initialize MCP async services for filesystem operations
         await self.ctx.services.init_mcp_async()
 
-        for agent in self.swarm:
+        for i, agent in enumerate(self.swarm, 1):
+            print(f"\n[MISSION] Agent {i}/{len(self.swarm)}: {agent.name}")
+            
             if not agent.can_run():
                 print(f"   ⛔ {agent.name} STANDING DOWN (Dependencies not met).")
                 continue
 
+            agents_executed += 1
+            
             try:
+                print(f"   ⚡ Executing {agent.name}...")
                 result = agent.execute()
                 if asyncio.iscoroutine(result):
                     await result
+                agents_passed += 1
+                print(f"   ✅ {agent.name} completed successfully")
             except Exception as e:
                 # Catching broad Exception is acceptable here as it's an orchestrator
                 # reporting agent failures, not necessarily recovering from them.
-                print(f"   🚨 AGENT CRASH ({agent.name}): {e}")
+                print(f"   ❌ [ALERT] AGENT CRASH ({agent.name}): {e}")
+                agents_failed += 1
 
             if "CRITICAL_FAIL" in self.ctx.signals:
                 print("\n🛑 MISSION ABORTED: Critical Architecture Failure.")
                 print("   Action: Fix Key 40/41/50 immediately.")
                 break
 
+        # Print execution summary
+        print(f"\n[MISSION] Agent Execution Summary:")
+        print(f"   • Total Agents: {len(self.swarm)}")
+        print(f"   • Executed: {agents_executed}")
+        print(f"   • Passed: {agents_passed} ✅")
+        print(f"   • Failed: {agents_failed} ❌")
+        
         self.print_mission_report()
 
     def print_mission_report(self) -> None:
@@ -103,7 +130,7 @@ class IntelligentOrchestrator:
         print(f"Failed:       {failed_checks}")
 
         if failed_checks > 0:
-            print("\n❌ OPEN VIOLATIONS:")
+            print("\n[X] OPEN VIOLATIONS:")
             # Sort violations by key for consistent reporting
             for key, result in sorted(self.ctx.results.items()):
                 if not result["passed"]:
@@ -122,7 +149,5 @@ class IntelligentOrchestrator:
         if failed_checks == 0:
             print("\n🎯 LEVEL 5 SUBATOMIC CANON ACHIEVED – FULL AUTONOMOUS INTEGRITY")
         else:
-            print(f"\n⚠️  Canon incomplete – {failed_checks} keys remain violated.")
+            print(f"\n[!]  Canon incomplete – {failed_checks} keys remain violated.")
             print("   Run again with healing enabled for further convergence.")
-
-```

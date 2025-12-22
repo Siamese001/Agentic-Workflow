@@ -150,7 +150,7 @@ class InterventionServer:
                 </style>
             </head>
             <body>
-                <h1>🚨 Human Intervention Required</h1>
+                <h1>[ALERT] Human Intervention Required</h1>
 
                 <div class="warning">
                     <h2>Workflow: {ctx.workflow_id}</h2>
@@ -160,7 +160,7 @@ class InterventionServer:
                 </div>
 
                 <div class="risk">
-                    <h3>⚠️ Risk Factors</h3>
+                    <h3>[!] Risk Factors</h3>
                     <ul>{risk_html or '<li>None specified</li>'}</ul>
                 </div>
 
@@ -181,10 +181,10 @@ class InterventionServer:
 
                 <h2>Decision</h2>
                 <form action="/approve" method="post" style="display: inline;">
-                    <button type="submit" class="btn approve">✅ APPROVE</button>
+                    <button type="submit" class="btn approve">[OK] APPROVE</button>
                 </form>
                 <form action="/veto" method="post" style="display: inline;">
-                    <button type="submit" class="btn veto">❌ VETO</button>
+                    <button type="submit" class="btn veto">[X] VETO</button>
                 </form>
 
                 <p><small>Timestamp: {ctx.timestamp.isoformat()}</small></p>
@@ -200,7 +200,7 @@ class InterventionServer:
             self.decision_reason = "Human approved via UI"
             self.approval_event.set()
             return HTMLResponse(
-                content="<h1>✅ Approved</h1><p>Workflow will continue.</p>",
+                content="<h1>[OK] Approved</h1><p>Workflow will continue.</p>",
                 status_code=200
             )
 
@@ -211,7 +211,7 @@ class InterventionServer:
             self.decision_reason = "Human vetoed via UI"
             self.approval_event.set()
             return HTMLResponse(
-                content="<h1>❌ Vetoed</h1><p>Workflow will abort.</p>",
+                content="<h1>[X] Vetoed</h1><p>Workflow will abort.</p>",
                 status_code=200
             )
 
@@ -286,7 +286,7 @@ class InterventionServer:
         self.decision = None
         self.approval_event.clear()
 
-        logger.warning(f"🚨 INTERVENTION REQUIRED: {context.reason}")
+        logger.warning(f"[ALERT] INTERVENTION REQUIRED: {context.reason}")
         logger.warning(f"   Approval URL: http://{self.host}:{self.port}")
 
         try:

@@ -1,7 +1,6 @@
-```python
 import ast
 import os
-from typing import List, Dict, Union
+from typing import Dict, List, Union
 
 from agentic_core.domain.context import ValidationContext
 
@@ -32,7 +31,7 @@ class SubAtomicAgent:
 
         except Exception as e:
             # Catching broad Exception to ensure all agent execution errors are reported.
-            print(f"   ❌ [{self.name}] Error: {e}")
+            print(f"   [X] [{self.name}] Error: {e}")
             raise
 
 
@@ -44,9 +43,8 @@ class ImportPatcher:
         if isinstance(node, ast.ImportFrom):
             return bool(node.module and node.module.startswith(old_module))
         elif isinstance(node, ast.Import):
-            for alias in node.names:
-                if alias.name.startswith(old_module):
-                    return True
+            # Refactor to reduce nesting depth from 6 to 4
+            return any(alias.name.startswith(old_module) for alias in node.names)
         return False
 
     def _find_module_import_in_tree(self, tree: ast.AST, old_module: str) -> bool:
@@ -115,7 +113,7 @@ class ImportPatcher:
         if not change_map:
             return
 
-        print(f"   🔧 Patching imports for {len(change_map)} module changes...")
+        print(f"   [+] Patching imports for {len(change_map)} module changes...")
 
         # Build import dependency map by querying the ValidationContext.
         # This map indicates which files import the modules that have changed.
@@ -127,7 +125,7 @@ class ImportPatcher:
             affected_files.update(file_list)
 
         if not affected_files:
-            print("   ✅ No external imports to patch.")
+            print("   [OK] No external imports to patch.")
             return
 
         # Build patch instructions for each affected file
@@ -139,12 +137,10 @@ class ImportPatcher:
     ) -> List[str]:
         """Generates a list of human-readable patch instructions from a change map."""
         instructions = []
-        for old_module, new_targets in change_map.items():
-            if isinstance(new_targets, str):
-                instructions.append(f"{old_module} → {new_targets}")
-            elif isinstance(new_targets, list):
-                for new_target in new_targets:
-                    instructions.append(f"{old_module} → {new_target}")
+        for old_module, new_targets_raw in change_map.items():
+            # Normalize new_targets_raw to an iterable to reduce nesting depth
+            targets_iterable = [new_targets_raw] if isinstance(new_targets_raw, str) else new_targets_raw
+            instructions.extend([f"{old_module} → {target}" for target in targets_iterable])
         return instructions
 
     def _read_file_content(self, file_path: str) -> Union[str, None]:
@@ -154,14 +150,14 @@ class ImportPatcher:
                 return f.read()
         except Exception as e:
             # Broad exception catch to report file read issues without halting.
-            print(f"   ❌ Failed to read file {file_path}: {e}")
+            print(f"   [X] Failed to read file {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
             return None
 
     def _apply_patch_and_log(self, file_path: str, updated_content: str):
         """Applies the patched content to the file and logs the outcome."""
         if self.ctx.write_compliant_file(file_path, updated_content):
-            print(f"   ✅ Imports patched: {os.path.basename(file_path)}")
+            print(f"   [OK] Imports patched: {os.path.basename(file_path)}")
 
     async def _execute_import_mutation(
         self, source_agent: str, patch_task: str, content: str, file_path: str
@@ -173,7 +169,7 @@ class ImportPatcher:
             )
         except Exception as e:
             # Broad exception catch to report mutation request issues without halting.
-            print(f"   ❌ Failed to request mutation for {file_path}: {e}")
+            print(f"   [X] Failed to request mutation for {file_path}: {e}")
             self.ctx.signals.add("CRITICAL_WARNING")
             return None
 
@@ -209,4 +205,3 @@ class ImportPatcher:
 
         if updated_content and updated_content != content:
             self._apply_patch_and_log(file_path, updated_content)
-```

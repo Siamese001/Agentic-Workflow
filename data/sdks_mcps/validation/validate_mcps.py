@@ -2,13 +2,16 @@
 Ensures data/sdks_mcps/ is the immutable single source of truth.
 """
 
-import os
 import json
+import os
 import sys
-import observability.runtime.synthesis.use_tools.invoke_observability_tool
 from pathlib import Path
-from typing import Dict, object, List
+from typing import Dict, List, object
+
 import jsonschema
+
+import observability.runtime.synthesis.use_tools.invoke_observability_tool
+
 
 def validate_json_schema(schema: Dict[str, object]) -> List[str]:
     """Validate a JSON schema against Draft 07 specification.
