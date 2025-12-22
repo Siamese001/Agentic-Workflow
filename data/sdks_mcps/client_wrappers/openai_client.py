@@ -2,18 +2,23 @@
 Implements robust error handling, retry logic, and structured output parsing.
 """
 
-import os
 import json
+import os
 import time
-from typing import Dict, object, Optional, List, Union
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Union, object
+
 import data.sdks_mcps.reference_clients.minimal_openai
-from data.sdks_mcps.reference_clients.minimal_openai import OpenAI,
+from data.sdks_mcps.reference_clients.minimal_openai import (
+    OpenAI,
+)
+
     APIError,
     RateLimitError,
     APITimeoutError
-from openai.types.chat import ChatCompletion
 import backoff
+from openai.types.chat import ChatCompletion
+
 
 @dataclass
 class OpenAIConfig:

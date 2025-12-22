@@ -37,8 +37,8 @@ except ImportError:
 # Import mission runners from agentic_core
 from agentic_core.L3_orchestration import (
     run_daemon_mode,
-    run_surgical_mode,
     run_standard_mode,
+    run_surgical_mode,
 )
 
 

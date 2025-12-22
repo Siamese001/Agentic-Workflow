@@ -2,18 +2,22 @@
 Routes requests across OpenAI, Anthropic, and Google Vertex with intelligent failover.
 """
 
-import os
 import json
-import time
+import os
 import random
-from typing import Dict, object, Optional, List, Union, Callable
+import threading
+import time
 from dataclasses import dataclass, field
 from enum import Enum
-import threading
+from typing import Callable, Dict, List, Optional, Union, object
 
+from data.sdks_mcps.client_wrappers.anthropic_client import (
+    AnthropicClient,
+    AnthropicConfig,
+)
 from data.sdks_mcps.client_wrappers.openai_client import OpenAIClient, OpenAIConfig
-from data.sdks_mcps.client_wrappers.anthropic_client import AnthropicClient, AnthropicConfig
 from data.sdks_mcps.client_wrappers.vertex_client import VertexClient, VertexConfig
+
 
 class Provider(Enum):
     """Available model providers."""
@@ -133,7 +137,6 @@ class MultiProviderRouter:
                 }
 
             except Exception as e:
-    pass
 
                 if provider_config.provider in self.health_status:
                     self.health_status[provider_config.provider]["healthy"] = False
@@ -525,7 +528,6 @@ class MultiProviderRouter:
                 self.health_status[provider]["consecutive_failures"] = 0
 
             except Exception as e:
-    pass
 
                 self.health_status[provider]["consecutive_failures"] += 1
                 if self.health_status[provider]["consecutive_failures"] >= 3:
@@ -635,4 +637,3 @@ if __name__ == "__main__":
         stats = router.get_router_stats()
 
     except Exception as e:
-    pass

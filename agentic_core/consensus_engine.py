@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Configure logging for this module.
 # In a larger application, logging configuration might be handled at the application's entry point

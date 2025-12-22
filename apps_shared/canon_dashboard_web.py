@@ -4,13 +4,11 @@ Real-time metrics with Flask backend and modern frontend.
 HARDENED: Thread-safe reads, Input sanitization, Robust error handling.
 """
 
-from datetime import datetime
-import threading
 import logging
 import os
+from datetime import datetime
 
 # Import our metrics system
-from canon_dashboard import CanonDashboard, DashboardMetrics
 from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 
@@ -283,7 +281,7 @@ if __name__ == "__main__":
     import json
     import os
     from pathlib import Path
-    
+
     # Try to load real session data from validator
     session_file = Path("canon_session.json")
     

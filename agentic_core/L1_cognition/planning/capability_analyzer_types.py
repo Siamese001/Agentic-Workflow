@@ -1,8 +1,8 @@
 """Types and models for capability_analyzer."""
 import logging
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from enum import Enum
+from typing import Any, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 class CapabilityGapType(Enum):

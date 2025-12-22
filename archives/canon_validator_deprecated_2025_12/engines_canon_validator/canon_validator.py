@@ -6,11 +6,10 @@ import time
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from canon_keys import get_keys_as_prompt
-
 # Infrastructure
 from apps_rg.connection_manager import ConnectionManager
 from apps_rg.llm_client import LLMClient
+from canon_keys import get_keys_as_prompt
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

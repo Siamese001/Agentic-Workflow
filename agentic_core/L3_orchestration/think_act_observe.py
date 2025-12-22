@@ -5,6 +5,7 @@ Implements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integratio
 """
 
 import logging
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class CycleState:
     """State of the Think-Act-Observe cycle."""
     mission: str
     scene: Dict[str, Any]
-    ITERATION: INT = 0
+    iteration: int = 0
     current_phase: str = "mission"
     observations: List[Dict[str, Any]] = field(default_factory=list)
     actions_taken: List[Dict[str, Any]] = field(default_factory=list)
@@ -80,11 +81,13 @@ class ThinkActObserveEngine:
             config: Cycle configuration
             enable_logging: Enable logging
         """
-        SELF.CONFIG = config or CycleConfig()
+        self.config = config or CycleConfig()
         self.enable_logging = enable_logging
 
         # Initialize sub-engines
         if self.config.enable_react:
+            # Assuming ReActEngine exists and is imported
+            # from .react_engine import ReActEngine # Example import
             self.react_engine = ReActEngine(
                 max_steps=self.config.react_max_steps,
             )
@@ -92,6 +95,8 @@ class ThinkActObserveEngine:
             self.react_engine = None
 
         if self.config.enable_dag:
+            # Assuming DAGEngine exists and is imported
+            # from .dag_engine import DAGEngine # Example import
             self.dag_engine = DAGEngine(enable_logging=enable_logging)
         else:
             self.dag_engine = None
@@ -99,13 +104,12 @@ class ThinkActObserveEngine:
         self.state: Optional[CycleState] = None
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "think_act_observe_engine_initialized",
-                EXTRA={"config": self.config.to_dict()}
+                extra={"config": self.config.to_dict()}
             )
 
     async def execute_cycle(
-        """Docstring."""
         self,
         mission: str,
         scene: Dict[str, Any],
@@ -124,15 +128,15 @@ class ThinkActObserveEngine:
             Final result with observations and state
         """
         # Initialize state
-        SELF.STATE = CycleState(
-            MISSION=mission,
-            SCENE=scene,
+        self.state = CycleState(
+            mission=mission,
+            scene=scene,
         )
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "cycle_started",
-                EXTRA={
+                extra={
                     "mission": mission,
                     "scene_keys": list(scene.keys()),
                 }
@@ -146,12 +150,12 @@ class ThinkActObserveEngine:
 
         # Main loop: THINK -> ACT -> OBSERVE
         while self.state.iteration < self.config.max_iterations:
-            SELF.STATE.ITERATION += 1
+            self.state.iteration += 1
 
             if self.enable_logging:
-                logger.info(
+                LOGGER.info(
                     "iteration_started",
-                    EXTRA={"iteration": self.state.iteration}
+                    extra={"iteration": self.state.iteration}
                 )
 
             # Step 3: THINK
@@ -175,9 +179,9 @@ class ThinkActObserveEngine:
             # Check if mission is complete
             if observe_result.get("mission_complete"):
                 if self.enable_logging:
-                    logger.info(
+                    LOGGER.info(
                         "mission_complete",
-                        EXTRA={"iteration": self.state.iteration}
+                        extra={"iteration": self.state.iteration}
                     )
                 break
 
@@ -192,9 +196,9 @@ class ThinkActObserveEngine:
         }
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "cycle_completed",
-                EXTRA={
+                extra={
                     "iterations": self.state.iteration,
                     "observations_count": len(self.state.observations),
                 }
@@ -214,13 +218,13 @@ class ThinkActObserveEngine:
         self.state.current_phase = "think"
 
         if self.enable_logging:
-            logger.debug("think_phase_started")
+            LOGGER.debug("think_phase_started")
 
         # Use ReAct engine if enabled
         if self.react_engine:
             try:
                 # Create context for ReAct
-                CONTEXT = {
+                context = {
                     "mission": self.state.mission,
                     "scene": self.state.scene,
                     "iteration": self.state.iteration,
@@ -229,8 +233,9 @@ class ThinkActObserveEngine:
                 }
 
                 # Run ReAct reasoning
-                TRACE = await self.react_engine.run(
-                    TASK=self.state.mission,
+                # Assuming ReActEngine.run returns a trace object
+                trace = await self.react_engine.run(
+                    task=self.state.mission,
                     think_fn=think_fn,
                     act_fn=lambda action: {"type": "plan", "action": action},
                 )
@@ -240,7 +245,7 @@ class ThinkActObserveEngine:
                 self.state.reasoning_traces.append(reasoning_trace.to_dict())
 
                 # Extract actions from trace
-                ACTIONS = []
+                actions = []
                 for step in trace.steps:
                     if step.action and step.action != "FINISH":
                         actions.append({
@@ -257,9 +262,9 @@ class ThinkActObserveEngine:
 
             except Exception as e:
                 if self.enable_logging:
-                    logger.error(
+                    LOGGER.error(
                         "think_phase_failed",
-                        EXTRA={"error": str(e)},
+                        extra={"error": str(e)},
                         exc_info=True,
                     )
                 return {
@@ -271,7 +276,7 @@ class ThinkActObserveEngine:
         else:
             # Fallback: direct thinking without ReAct
             try:
-                RESULT = await think_fn(self.state.mission, self.state.scene)
+                result = await think_fn(self.state.mission, self.state.scene)
                 return {
                     "success": True,
                     "actions": result.get("actions", []),
@@ -284,7 +289,6 @@ class ThinkActObserveEngine:
                 }
 
     async def _act_phase(
-        """Docstring."""
         self,
         actions: List[Dict[str, Any]],
         act_fn: Any,
@@ -301,9 +305,9 @@ class ThinkActObserveEngine:
         self.state.current_phase = "act"
 
         if self.enable_logging:
-            logger.debug(
+            LOGGER.debug(
                 "act_phase_started",
-                EXTRA={"action_count": len(actions)}
+                extra={"action_count": len(actions)}
             )
 
         if not actions:
@@ -319,18 +323,20 @@ class ThinkActObserveEngine:
                 self.dag_engine.reset()
 
                 # Add tasks to DAG
+                # Assuming Task and TaskType exist and are imported
+                # from .dag_engine import Task, TaskType # Example import
                 for i, action in enumerate(actions):
-                    TASK = Task(
+                    task = Task(
                         id=f"action_{i}",
-                        NAME=action.get("action", f"Action {i}"),
+                        name=action.get("action", f"Action {i}"),
                         task_type=TaskType.ACTION,
-                        PARAMETERS=action,
+                        parameters=action,
                     )
                     self.dag_engine.add_task(task)
 
                 # Execute DAG
                 dag_result = await self.dag_engine.execute(
-                    EXECUTOR=lambda task: act_fn(task.parameters),
+                    executor=lambda task: act_fn(task.parameters),
                 )
 
                 # Record actions
@@ -345,9 +351,9 @@ class ThinkActObserveEngine:
 
             except Exception as e:
                 if self.enable_logging:
-                    logger.error(
+                    LOGGER.error(
                         "act_phase_failed",
-                        EXTRA={"error": str(e)},
+                        extra={"error": str(e)},
                         exc_info=True,
                     )
                 return {
@@ -358,17 +364,17 @@ class ThinkActObserveEngine:
 
         else:
             # Fallback: sequential execution
-            RESULTS = []
+            results = []
             for action in actions:
                 try:
-                    RESULT = await act_fn(action)
+                    result = await act_fn(action)
                     results.append(result)
                     self.state.actions_taken.append(action)
                 except Exception as e:
                     if self.enable_logging:
-                        logger.error(
+                        LOGGER.error(
                             "action_failed",
-                            EXTRA={"action": action, "error": str(e)}
+                            extra={"action": action, "error": str(e)}
                         )
                     results.append({"success": False, "error": str(e)})
 
@@ -378,7 +384,6 @@ class ThinkActObserveEngine:
             }
 
     async def _observe_phase(
-        """Docstring."""
         self,
         think_result: Dict[str, Any],
         act_result: Dict[str, Any],
@@ -395,10 +400,10 @@ class ThinkActObserveEngine:
         self.state.current_phase = "observe"
 
         if self.enable_logging:
-            logger.debug("observe_phase_started")
+            LOGGER.debug("observe_phase_started")
 
         # Create observation
-        OBSERVATION = {
+        observation = {
             "iteration": self.state.iteration,
             "think_success": think_result.get("success"),
             "act_success": act_result.get("success"),
@@ -411,7 +416,7 @@ class ThinkActObserveEngine:
         # Determine if mission is complete
         # Simple heuristic: check if last action indicated completion
         mission_complete = False
-        RESULTS = act_result.get("results", [])
+        results = act_result.get("results", [])
         if results:
             last_result = results[-1]
             if isinstance(last_result, dict):
@@ -445,7 +450,7 @@ class ThinkActObserveEngine:
             json.dump(self.state.to_dict(), f, indent=2, default=str)
 
         if self.enable_logging:
-            logger.info("state_saved", extra={"path": path})
+            LOGGER.info("state_saved", extra={"path": path})
 
     async def load_state(self, path: str) -> None:
         """Load cycle state from disk.
@@ -457,21 +462,21 @@ class ThinkActObserveEngine:
         with open(path, 'r') as f:
             state_dict = json.load(f)
 
-        SELF.STATE = CycleState(
-            MISSION=state_dict["mission"],
-            SCENE=state_dict["scene"],
-            ITERATION=state_dict.get("iteration", 0),
+        self.state = CycleState(
+            mission=state_dict["mission"],
+            scene=state_dict["scene"],
+            iteration=state_dict.get("iteration", 0),
             current_phase=state_dict.get("current_phase", "mission"),
-            OBSERVATIONS=state_dict.get("observations", []),
+            observations=state_dict.get("observations", []),
             actions_taken=state_dict.get("actions_taken", []),
             reasoning_traces=state_dict.get("reasoning_traces", []),
-            METADATA=state_dict.get("metadata", {}),
+            metadata=state_dict.get("metadata", {}),
         )
 
         if self.enable_logging:
-            logger.info(
+            LOGGER.info(
                 "state_loaded",
-                EXTRA={
+                extra={
                     "path": path,
                     "iteration": self.state.iteration,
                 }

@@ -6525,7 +6525,7 @@ class Sherlock(SubAtomicAgent):
     def _extract_error_file(self, traceback: str) -> str:
         """Extract the actual error file from pytest traceback."""
         import re
-        
+
         # Look for file paths in the traceback
         pattern = r'File "([^"]+)", line \d+'
         matches = re.findall(pattern, traceback)

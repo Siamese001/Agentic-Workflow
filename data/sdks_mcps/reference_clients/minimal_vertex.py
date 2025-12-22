@@ -3,8 +3,10 @@ Production-ready minimal client for quick integration with grounding.
 """
 
 import os
-from vertexai.generative_models import GenerativeModel
+
 from vertexai import init as vertex_init
+from vertexai.generative_models import GenerativeModel
+
 
 def simple_generation(prompt: str, model: str = "gemini-1.5-pro-002") -> str:
     """Simple content generation with Vertex AI.
@@ -44,7 +46,8 @@ def grounded_generation(prompt: str, threshold: float = 0.7) -> dict:
     Returns:
         Response with grounding metadata
     """
-    from vertexai.generative_models import Tool, grounding as vertex_grounding
+    from vertexai.generative_models import Tool
+    from vertexai.generative_models import grounding as vertex_grounding
 
     vertex_init(
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),
@@ -97,7 +100,11 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
     Returns:
         Response with safety metadata
     """
-    from vertexai.generative_models import SafetySetting, HarmCategory, HarmBlockThreshold
+    from vertexai.generative_models import (
+        HarmBlockThreshold,
+        HarmCategory,
+        SafetySetting,
+    )
 
     vertex_init(
         project=os.getenv("GOOGLE_CLOUD_PROJECT"),

@@ -5,8 +5,8 @@ Semantic versioning and rollback for constitutional prompt assets.
 """
 
 from .prompt_version_manager import (
-    PromptVersionManager,
     PromptVersion,
+    PromptVersionManager,
     VersionTag,
     create_version_manager,
 )

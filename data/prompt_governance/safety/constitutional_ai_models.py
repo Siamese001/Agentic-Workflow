@@ -1,6 +1,7 @@
 """Dataclass models for constitutional_ai."""
 
 from typing import Any, Dict, List, Optional
+
 # TODO: Replace 'from .constitutional_ai_enums import *' with explicit imports
 # # from .constitutional_ai_enums import *  # Star import removed
 
@@ -33,7 +34,7 @@ class LLMJudgment:
 
     def __post_init__(self):
         if not self.timestamp:
-            from datetime import datetime
+            pass
 
     @property
     def principle_id(self) -> str:

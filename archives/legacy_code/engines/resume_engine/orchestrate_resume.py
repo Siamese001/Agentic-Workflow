@@ -1,9 +1,8 @@
 import logging
 from typing import Dict, List
 
-from shared.configuration.config import ContentConstraintsConfig
-
 from services.configuration import ConfigurationService
+from shared.configuration.config import ContentConstraintsConfig
 
 _logger = logging.getLogger(__name__)
 'Pure orchestration of resume generation using shared atoms.'

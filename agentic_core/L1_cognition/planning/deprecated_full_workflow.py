@@ -8,18 +8,18 @@ Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
 
+import logging
 from typing import Any
 from unittest.mock import Mock, patch
-import logging
 
 import pytest
 
 from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies import (
     ExecutionContext,
     JobInput,
+    L2ResultBundle,
     ResumeInput,
     WorkflowConfig,
-    L2ResultBundle,
     run_dag,
 )
 

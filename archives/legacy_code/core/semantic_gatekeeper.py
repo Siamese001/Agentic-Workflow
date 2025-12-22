@@ -20,14 +20,14 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+from core.etl_pipeline import ContinuousIngester
+from core.llm_judger import get_judger
+from core.qdrant_cache import QdrantCache
 from redisvl.index import SearchIndex
 from redisvl.query import VectorQuery
 from redisvl.redis.connection import RedisConnection
 from sentence_transformers import SentenceTransformer
 
-from core.etl_pipeline import ContinuousIngester
-from core.llm_judger import get_judger
-from core.qdrant_cache import QdrantCache
 from schemas.canon_models import CanonEntry, CanonSearchResult
 
 logger = logging.getLogger(__name__)

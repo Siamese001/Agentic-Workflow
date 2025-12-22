@@ -18,9 +18,9 @@ from typing import Any, Dict, List, Optional
 import boto3
 import git
 from botocore.exceptions import ClientError
-
 from core.qdrant_cache import QdrantCache
 from core.semantic_gatekeeper import SemanticGatekeeper
+
 from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)

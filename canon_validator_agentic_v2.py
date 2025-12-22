@@ -41,6 +41,7 @@ except ImportError:
 # [HARDENING] NEURAL LINK INITIALIZATION
 try:
     from dotenv import load_dotenv
+
     # Explicitly point to Root .env to prevent loading failures from subfolders
     env_path = project_root / ".env"
     if not load_dotenv(dotenv_path=env_path):
@@ -53,6 +54,7 @@ except ImportError as e:
 try:
     import sys
     from pathlib import Path
+
     # Add apps_shared to path for dashboard imports
     apps_shared_path = Path(__file__).parent / "apps_shared"
     if str(apps_shared_path) not in sys.path:
@@ -70,12 +72,12 @@ except ImportError as e:
 try:
     from agentic_core.L3_orchestration import FissionManager, apply_fission_blueprint
     from agentic_core.L5_safety import SafetyGuardrail, SubAtomicEngine
+    from agentic_core.runtime import generate_ascii_tree  # [VISUALIZER]
     from agentic_core.runtime import (
         ALLOWED_ROOT_FOLDERS,
         check_import_waterfall_violations,
         check_single_child_violations,
         enforce_void_compliance,
-        generate_ascii_tree,  # [VISUALIZER]
         get_applicable_keys_for_file,
         get_folder_scope_summary,
         validate_file_location,
@@ -270,7 +272,7 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [AGENTIC UNLEASH] EXPLICIT CLIENT CONSTRUCTION
     try:
         # Use the new google.genai SDK (not google.generativeai)
-        from google import genai
+        pass
         
         api_key = os.getenv("GOOGLE_API_KEY")
         if not api_key:
@@ -363,6 +365,11 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [FIX] Add missing log_error method required by Budget & Structural agents
     if not hasattr(ctx, 'log_error'): 
         ctx.log_error = lambda msg: ctx.report("System", 0, False, msg)
+    
+    # [HARDENING] Add missing L4/L5 operational flags
+    if not hasattr(ctx, 'intelligence_enabled'): ctx.intelligence_enabled = True
+    if not hasattr(ctx, 'services'): ctx.services = {}
+    if not hasattr(ctx, 'signal_deps_valid'): ctx.signal_deps_valid = lambda: True
     
     if not hasattr(ctx, 'results'): ctx.results = {} # Fixes StructuralEngineer
     if not hasattr(ctx, 'get_env'): ctx.get_env = lambda k, d=None: os.getenv(k, d)
@@ -851,12 +858,23 @@ Return ONLY the complete merged Python code. No explanations.
                     else:
                         print(f"      [!] Safety check failed: {msg}")
                         ctx.report("SprawlSurgery", 49, False, f"Safety rejected: {msg}")
+                    
                 except Exception as e:
                     print(f"      [!] Surgery failed: {str(e)[:100]}")
                     ctx.report("SprawlSurgery", 49, False, f"Surgery error: {str(e)[:50]}")
             
             if len(flattening_candidates) > 0:
                 print(f"\n   [PHASE 0.5 COMPLETE] Consolidated {sprawl_consolidated}/{len(flattening_candidates)} sprawl folders")
+                print(f"   [✓] Sprawl Consolidated. Refreshing File System Map...")
+                
+                # [CRITICAL] Re-scan directory to remove deleted paths from the mission
+                updated_files = []
+                for root, _, files in os.walk(target_scope):
+                    for f in files:
+                        if f.endswith('.py'): 
+                            updated_files.append(os.path.join(root, f))
+                ctx.python_files = updated_files
+                print(f"   [OK] Territory Updated: {len(ctx.python_files)} files remaining.")
             else:
                 print(f"   [OK] No sprawl detected. Architecture is clean.")
                 
@@ -1006,8 +1024,11 @@ Return ONLY the complete merged Python code. No explanations.
             method = getattr(agent, 'execute', getattr(agent, 'run', None))
             # Batch agents typically run without args or manage their own scope
             if method:
-                await method() 
-            print(f"   [OK] {agent.__class__.__name__} completed")
+                # [FIX] Ensure the method is actually awaitable
+                res = method()
+                if inspect.iscoroutine(res):
+                    await res
+                print(f"      [✓] {agent.__class__.__name__} finished pass.")
         except Exception as e:
              print(f"   [!] Error in {agent.__class__.__name__}: {e}")
              ctx.report(agent.__class__.__name__, 0, False, f"Batch Error: {str(e)[:50]}")

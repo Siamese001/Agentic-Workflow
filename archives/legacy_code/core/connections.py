@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from core.exceptions import MemorySyncError, SwarmInitializationError
 from core.qdrant_cache import QdrantCache
 from core.semantic_gatekeeper import SemanticGatekeeper, get_gatekeeper
+
 from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 import ast
 import os
 import re
-from typing import List, Tuple, Optional # Added Optional
+from typing import List, Optional, Tuple  # Added Optional
 
 from .canon_base_agent import CanonBaseAgent
 

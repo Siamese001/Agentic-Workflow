@@ -1,8 +1,9 @@
 import logging
 import time
-from typing import Any, Dict, List, Optional
-from enum import Enum
 from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
 
 # Assume PromptTemplate is defined elsewhere and has template_id, content, and metadata attributes.
 # For example:

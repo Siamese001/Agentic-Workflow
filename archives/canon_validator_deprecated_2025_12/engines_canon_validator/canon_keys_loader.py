@@ -11,6 +11,7 @@ import logging
 from typing import Any, Dict
 
 from core.semantic_gatekeeper import SemanticGatekeeper
+
 from schemas.canon_models import CanonEntry
 
 logger = logging.getLogger(__name__)

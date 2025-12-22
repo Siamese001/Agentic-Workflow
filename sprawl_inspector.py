@@ -5,10 +5,11 @@ Identifies low-density folders and excessive breadth for consolidation.
 Implements Key 49 (Universal Depth Law) and Key 41 (Modular Atomicity).
 """
 
-import os
 import json
-from pathlib import Path
+import os
 from datetime import datetime
+from pathlib import Path
+
 
 class SprawlInspector:
     def __init__(self, target_path="agentic_core"):

@@ -18,9 +18,10 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple, Callable
+from typing import Any, Dict, List, Set, Tuple
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Inline reliability decorator
