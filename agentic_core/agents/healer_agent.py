@@ -208,20 +208,24 @@ CURRENT CODE:
         
         # [KEY 42 INTEGRATION] Redirect large files to FissionManager
         if violation_key == 42:
-            print(f"      [SURGERY] {os.path.basename(file_path)} exceeds size limit. Engaging FissionManager.")
-            if hasattr(self.ctx, 'fission'):
+            print(f"      [SIGNAL] Key 42 Surgery Triggered for {os.path.basename(file_path)}")
+            if hasattr(self.ctx, 'fission') and hasattr(self.ctx, 'engine'):
                 # Blueprint generation via LLM
                 blueprint_task = f"GENERATE_FISSION_BLUEPRINT for {file_path}. Split into logical sub-modules."
-                res = await self.resilient_mutation(task=blueprint_task, code=original_code, file_path=file_path, round_num=1)
+                res = await self.ctx.engine.resilient_mutation(
+                    task=blueprint_task, 
+                    code=original_code, 
+                    file_path=file_path, 
+                    round_num=1,
+                    fission_active=True
+                )
                 
                 # Attempt to apply the split
                 from agentic_core.L3_orchestration import apply_fission_blueprint
-                import json
-                try:
-                    blueprint_data = json.loads(res) if isinstance(res, str) else res
+                blueprint_data = self.ctx.engine.parse_fission_output(res)
+                if blueprint_data and blueprint_data.get("fission_event"):
                     if await apply_fission_blueprint(file_path, blueprint_data["blueprint"], self.ctx.fission):
                         return True
-                except: pass
 
         # Build task description
         base_prompt = f"Fix Subatomic Canon Key {violation_key} only. {violation_details}"
