@@ -1,4 +1,4 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, Set
 import re
 
 import ast
@@ -8,7 +8,6 @@ import json
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
 
 # Third-party
 try:
@@ -23,13 +22,12 @@ from agentic_core.domain.prompts import (
 )
 
 # ==============================================================================
-# SOVEREIGN UTILITIES (Moved from apps_shared to eliminate downstream dependency)
+# SOVEREIGN UTILITIES
 # ==============================================================================
 
-def _get_python_files_impl(base_path: str = ".") -> List[str]:
+def _get_python_files(base_path: str = ".") -> List[str]:
     """
     Recursively finds all Python files in the given base path.
-    (Inlined from apps_shared.utils.file_io)
     """
     python_files = []
     for root, _, files in os.walk(base_path):
@@ -38,10 +36,9 @@ def _get_python_files_impl(base_path: str = ".") -> List[str]:
                 python_files.append(os.path.join(root, file))
     return python_files
 
-def _clean_llm_code_impl(text: str) -> str:
+def _clean_llm_code(text: str) -> str:
     """
     Cleans LLM generated code by removing common markdown fences.
-    (Inlined from apps_shared.utils.text_processing)
     """
     # Remove markdown code block fences
     if text.startswith("```python"):
@@ -52,10 +49,9 @@ def _clean_llm_code_impl(text: str) -> str:
         text = text[:-len("```")].strip()
     return text
 
-def _rate_limited_retry_impl(max_attempts: int = 3, delay_seconds: float = 1.0):
+def _rate_limited_retry(max_attempts: int = 3, delay_seconds: float = 1.0):
     """
     A simple retry decorator for async functions with a delay.
-    (Inlined from apps_shared.config.reliability)
     """
     def decorator(func):
         @functools.wraps(func)
@@ -167,7 +163,7 @@ class ValidationContext:
     memory_file: Path = field(default_factory=lambda: Path("canon_memory.json"))
     file_hashes: Dict[str, str] = field(default_factory=dict)
     skip_files: Set[str] = field(default_factory=set)
-    flapping_files: Set[str] = field(default_factory=list) # Changed from set to list to match default_factory
+    flapping_files: List[str] = field(default_factory=list) # Changed from set to list to match default_factory
     successful_traces: List[str] = field(default_factory=list)
 
     # Infrastructure
@@ -187,7 +183,7 @@ class ValidationContext:
 
     def __post_init__(self):
         print(f"   [CTX] 🧠 INITIALIZING TRI-BRAIN...")
-        self.python_files = _get_python_files_impl() # Replaced get_python_files()
+        self.python_files = _get_python_files() # Refactored
         self._load_memory()
         self._init_intelligence()
 
@@ -234,7 +230,6 @@ class ValidationContext:
     def write_compliant_file(self, path: str, content: str) -> bool:
         """
         Writes content to a file, ensuring directory exists.
-        (Inlined from apps_shared.utils.file_io)
         """
         try:
             os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -248,7 +243,7 @@ class ValidationContext:
     def client(self):
         return self._client
 
-    @_rate_limited_retry_impl() # Replaced @rate_limited_retry()
+    @_rate_limited_retry() # Refactored
     async def resilient_mutation(self, agent_name: str, task: str, code: str = "", file_path: str = None, max_attempts: int = 3, **kwargs) -> str:
         if not self.intelligence_enabled or not self.budget.check_budget():
             return code
@@ -261,7 +256,7 @@ class ValidationContext:
                 contents=[prompt]
             )
             await self.budget.track(prompt, response.text)
-            return _clean_llm_code_impl(response.text) # Replaced clean_llm_code()
+            return _clean_llm_code(response.text) # Refactored
         except Exception as e:
             print(f"   [{agent_name}] Mutation failed: {e}")
             return code

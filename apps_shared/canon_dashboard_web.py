@@ -261,6 +261,9 @@ def get_agent_graph():
     nodes = []
     edges = []
     
+    # Debug: Check agents_global state
+    print(f"[API DEBUG] agents_global has {len(agents_global)} agents")
+    
     # Level mapping for agents
     agent_levels = {
         'ArchitectureGovernor': 'L1',
