@@ -33,7 +33,6 @@ class ImplementFallbackStrategy:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
-        """Docstring."""
         primary: Callable,
         fallback: Callable,
         *args,

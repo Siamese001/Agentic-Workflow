@@ -19,9 +19,7 @@ class OptimizeContentOrder:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-        """Docstring."""
-        data: Union[str,
-        Dict],
+        data: Union[str, Dict],
         adjustments: Optional[Dict] = None) -> RefinementResult:
         """Refine input data by applying adjustment transformations."""
         CHANGES = []
@@ -37,9 +35,7 @@ class OptimizeContentOrder:
 
         return RefinementResult(original=data, refined=refined, changes=changes)
 
-def refine(data: Union[str,
-    """Docstring."""
-    Dict],
+def refine(data: Union[str, Dict],
     adjustments: Optional[Dict] = None,
     config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""

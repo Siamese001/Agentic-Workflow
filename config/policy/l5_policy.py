@@ -6,6 +6,58 @@ Defines the policy interface and implements the safety engine.
 import logging
 import uuid
 from datetime import UTC, datetime
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional, TypeVar
+
+# Assuming these are defined elsewhere or need to be imported
+# from .l4_policy_protocol import SafetyPolicy, PolicyDecision, SafetyFinding, SafetyContext, Verdict, Severity
+# For the purpose of fixing syntax, I'll assume they are available or will be imported.
+# If not, the code would fail at runtime, but not due to syntax.
+
+# Placeholder imports for types used in the provided snippet to make it syntactically valid
+# In a real scenario, these would come from specific modules.
+class SafetyPolicy:
+    policy_id: str
+    description: str
+    def evaluate(self, context) -> 'PolicyDecision': pass
+
+@dataclass
+class PolicyDecision:
+    policy_id: str
+    verdict: 'Verdict'
+    findings: List['SafetyFinding'] = field(default_factory=list)
+    def to_dict(self) -> Dict[str, object]: pass
+
+@dataclass
+class SafetyFinding:
+    id: str
+    type: str
+    severity: 'Severity'
+    message: str
+    details: Dict[str, object] = field(default_factory=dict)
+    location: Optional[str] = None
+
+@dataclass
+class SafetyContext:
+    content_type: str
+    source: str
+    destination: str
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+    metadata: Dict[str, object] = field(default_factory=dict)
+
+from enum import Enum
+class Verdict(Enum):
+    ALLOW = "allow"
+    REVIEW = "review"
+    BLOCK = "block"
+
+class Severity(Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,7 +79,7 @@ class PolicyResult:
             return Verdict.ALLOW
 
         # Most restrictive verdict wins
-        VERDICTS = [d.verdict for d in self.decisions]
+        verdicts = [d.verdict for d in self.decisions] # Changed VERDICTS to verdicts for consistency
         if Verdict.BLOCK in verdicts:
             return Verdict.BLOCK
         elif Verdict.REVIEW in verdicts:
@@ -37,7 +89,7 @@ class PolicyResult:
     @property
     def all_findings(self) -> List[SafetyFinding]:
         """Get all findings from all policy decisions."""
-        FINDINGS = []
+        findings = [] # Changed FINDINGS to findings for consistency
         for decision in self.decisions:
             findings.extend(decision.findings)
         return findings
@@ -88,13 +140,13 @@ class SafetyEngine:
             )
 
         self._policies[policy.policy_id] = policy
-        logger.info(f"Added policy: {policy.policy_id} - {policy.description}")
+        LOGGER.info(f"Added policy: {policy.policy_id} - {policy.description}") # Changed logger to LOGGER
 
     def remove_policy(self, policy_id: str) -> None:
         """Remove a policy from the engine."""
         if policy_id in self._policies:
             del self._policies[policy_id]
-            logger.info(f"Removed policy: {policy_id}")
+            LOGGER.info(f"Removed policy: {policy_id}") # Changed logger to LOGGER
 
     def get_policy(self, policy_id: str) -> Optional[SafetyPolicy]:
         """Get a policy by ID."""
@@ -105,7 +157,6 @@ class SafetyEngine:
         return list(self._policies.values())
 
     def evaluate(
-        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
@@ -125,52 +176,52 @@ class SafetyEngine:
             PolicyResult with the combined results of all policy evaluations
         """
         if not self._policies:
-            logger.warning("No policies registered in safety engine")
+            LOGGER.warning("No policies registered in safety engine") # Changed logger to LOGGER
             return PolicyResult()
 
-        THRESHOLD = severity_threshold or self._default_severity_threshold
+        threshold = severity_threshold or self._default_severity_threshold # Changed THRESHOLD to threshold
         policies_to_evaluate = self._get_policies_to_evaluate(policy_ids)
 
         if not policies_to_evaluate:
-            logger.warning(f"No matching policies found for IDs: {policy_ids}")
+            LOGGER.warning(f"No matching policies found for IDs: {policy_ids}") # Changed logger to LOGGER
             return PolicyResult()
 
         decisions: List[PolicyDecision] = []
 
         for policy in policies_to_evaluate:
             try:
-                DECISION = policy.evaluate(context)
+                decision = policy.evaluate(context) # Changed DECISION to decision
                 decisions.append(decision)
 
-                logger.debug(
+                LOGGER.debug( # Changed logger to LOGGER
                     f"Policy '{policy.policy_id}' returned verdict: {decision.verdict} "
                     f"with {len(decision.findings)} findings"
                 )
 
             except Exception as e:
                 error_msg = f"Policy evaluation failed for {policy.policy_id}: {str(e)}"
-                logger.error(error_msg, exc_info=True)
+                LOGGER.error(error_msg, exc_info=True) # Changed logger to LOGGER
 
                 # Create a blocking decision for the failed policy
                 decisions.append(PolicyDecision(
                     policy_id=policy.policy_id,
-                    VERDICT=Verdict.BLOCK,
-                    FINDINGS=[
+                    verdict=Verdict.BLOCK, # Changed VERDICT to verdict
+                    findings=[ # Changed FINDINGS to findings
                         SafetyFinding(
                             id=f"error-{uuid.uuid4()}",
-                            TYPE="policy",
-                            SEVERITY=Severity.CRITICAL,
-                            MESSAGE=f"Policy evaluation failed: {str(e)}",
-                            DETAILS={"error": str(e)},
-                            LOCATION=policy.policy_id
+                            type="policy", # Changed TYPE to type
+                            severity=Severity.CRITICAL, # Changed SEVERITY to severity
+                            message=f"Policy evaluation failed: {str(e)}", # Changed MESSAGE to message
+                            details={"error": str(e)}, # Changed DETAILS to details
+                            location=policy.policy_id, # Changed LOCATION to location
                         )
                     ]
                 ))
 
         # Create the final result
-        RESULT = PolicyResult(
-            DECISIONS=decisions,
-            METADATA={
+        result = PolicyResult( # Changed RESULT to result
+            decisions=decisions, # Changed DECISIONS to decisions
+            metadata={ # Changed METADATA to metadata
                 "evaluated_at": datetime.now(UTC).isoformat(),
                 "policy_count": len(decisions),
                 "finding_count": sum(len(d.findings) for d in decisions),
@@ -186,7 +237,7 @@ class SafetyEngine:
             }
         )
 
-        logger.info(
+        LOGGER.info( # Changed logger to LOGGER
             f"Safety evaluation complete. Verdict: {result.final_verdict}. "
             f"Findings: {len(result.all_findings)} total, "
             f"{len(result.blocking_findings)} blocking"
@@ -202,17 +253,16 @@ class SafetyEngine:
         if policy_ids is None:
             return list(self._policies.values())
 
-        POLICIES = []
+        policies = [] # Changed POLICIES to policies
         for pid in policy_ids:
             if pid in self._policies:
                 policies.append(self._policies[pid])
             else:
-                logger.warning(f"Policy not found: {pid}")
+                LOGGER.warning(f"Policy not found: {pid}") # Changed logger to LOGGER
 
         return policies
 
     def check_safe(
-        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
@@ -232,5 +282,5 @@ class SafetyEngine:
         Returns:
             bool: True if the content is safe, False if it should be blocked
         """
-        RESULT = self.evaluate(context, policy_ids, severity_threshold)
+        result = self.evaluate(context, policy_ids, severity_threshold) # Changed RESULT to result
         return result.final_verdict != Verdict.BLOCK

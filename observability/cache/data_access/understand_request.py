@@ -22,6 +22,8 @@ import sys
 import time
 import traceback
 from typing import Any, Dict, List, Optional, Union
+from enum import Enum
+from dataclasses import dataclass, field
 
 # Configure module-specific logger
 LOGGER = logging.getLogger(__name__)
@@ -49,7 +51,7 @@ class ExecutionContext:
         """Mark execution as started."""
         SELF.STATUS = ExecutionStatus.RUNNING
         self.start_time = time.time()
-        logger.info(f"Execution started for operation: {self.operation_id}")
+        LOGGER.info(f"Execution started for operation: {self.operation_id}")
 
     def complete(self, success: bool = True, error: Optional[Exception] = None) -> None:
         """Mark execution as completed."""
@@ -62,10 +64,9 @@ class ExecutionContext:
                 "message": str(error),
                 "traceback": traceback.format_exc()
             }
-            logger.error(f"Execution failed: {error}")
+            LOGGER.error(f"Execution failed: {error}")
         else:
-            logger.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ")
+            LOGGER.info(f"Execution completed successfully in {self.end_time - self.start_time:.2f}s")
 
 @dataclass
 class ProcessingResult:
@@ -110,7 +111,6 @@ class GetInfoUnderstandRequest:
             raise ValueError(f"Missing required config keys: {missing}")
 
     def process(self,
-        """Docstring."""
                 payload: Union[str, int, float, bool, List, Dict],
                 context: Optional[Dict[str, Any]] = None) -> ProcessingResult:
         """
@@ -189,4 +189,4 @@ def validate_module_config(config: Dict[str, Any]) -> bool:
         return False
 
 # Module initialization
-logger.info(f"{__name__} module loaded successfully")
+LOGGER.info(f"{__name__} module loaded successfully")

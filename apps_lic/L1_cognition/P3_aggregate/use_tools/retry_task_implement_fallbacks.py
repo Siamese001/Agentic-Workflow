@@ -1,4 +1,3 @@
-```python
 """
 implement_fallback_templates.py - Retry/Fallback Module
 
@@ -7,18 +6,26 @@ Generated: 2025-12-07T13:28:54.091269
 """
 
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, Callable
+from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
+
+@dataclass
+class RetryResult:
+    success: bool
+    attempts: int
+    result: Optional[object] = None
+    error: Optional[str] = None
 
 class ImplementFallbackTemplates:
     """Retry executor for outreach domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
+        self.config = config or {}
         self.max_retries = self.config.get("max_retries", 3)
-        SELF.BACKOFF = self.config.get("backoff", 1.0)
-        logger.info(f"Initialized {self.__class__.__name__}")
+        self.backoff = self.config.get("backoff", 1.0)
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, func: Callable, *args, **kwargs: Dict[str, object]) -> RetryResult:
         """Execute with retry."""
@@ -26,10 +33,10 @@ class ImplementFallbackTemplates:
         for attempt in range(self.max_retries):
             try:
                 RESULT = func(*args, **kwargs)
-                return RetryResult(success=True, attempts=attempt + 1, result=result)
+                return RetryResult(success=True, attempts=attempt + 1, result=RESULT)
             except (ValueError, TypeError, RuntimeError, KeyError) as e:
                 last_error = str(e)
-                logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                LOGGER.warning(f"Attempt {attempt + 1} failed: {e}")
                 pass  # rate limit delay removed)
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
@@ -40,11 +47,10 @@ class ImplementFallbackTemplates:
                  **kwargs: Dict[str, object]) -> object:
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
-        if result.success:
-            return result.result
+        if RESULT.success:
+            return RESULT.result
         return fallback(*args, **kwargs)
 
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return ImplementFallbackTemplates(config).execute(func)
-```

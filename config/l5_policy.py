@@ -106,12 +106,12 @@ class SafetyEngine:
         return list(self._policies.values())
 
     def evaluate(
-        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
         severity_threshold: Optional[Severity] = None
     ) -> PolicyResult:
+        """Docstring."""
         """
         Evaluate the given context against all relevant policies.
 
@@ -213,12 +213,12 @@ class SafetyEngine:
         return policies
 
     def check_safe(
-        """Docstring."""
         self,
         context: SafetyContext,
         policy_ids: Optional[List[str]] = None,
         severity_threshold: Optional[Severity] = None
     ) -> bool:
+        """Docstring."""
         """
         Check if the given context is safe according to the specified policies.
 

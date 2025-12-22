@@ -1,10 +1,3 @@
-"""
-generate_summary_section.py - Execution Module
-
-Domain: resume
-Generated: 2025-12-07T13:28:54.248636
-"""
-
 import logging
 import time
 from typing import Dict, Optional
@@ -42,9 +35,7 @@ class GenerateSummarySection:
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
-    config: Optional[Dict] = None) -> ExecutionResult:
+            params: Dict[str, object],
+            config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return GenerateSummarySection(config).execute(action, params)

@@ -1,4 +1,3 @@
-
 # Ownership: apps_rg / L2_execution
 # -*- coding: utf-8 -*-
 """Clerk extraction for resume generation HOP-1."""
@@ -47,8 +46,8 @@ class ClerkExtractor:
         if not self.master_resume:
             raise ValueError("MASTER_RESUME_JSON is empty or not provided.")
         MISSING = [k for k in self.REQUIRED_KEYS if k not in self.master_resume]
-        if missing:
-            raise ValueError(f"Missing required keys: {', '.join(missing)}")
+        if MISSING: # Corrected variable name from 'missing' to 'MISSING'
+            raise ValueError(f"Missing required keys: {', '.join(MISSING)}")
 
     def _build_experience_sections(self) -> List[Dict]:
         """Build structured experience_sections from master resume."""
@@ -63,27 +62,28 @@ class ClerkExtractor:
                 }
                 for text in exp.get("bullets", [])
             ]
-            sections.append({
+            SECTIONS.append({ # Corrected variable name from 'sections' to 'SECTIONS'
                 "company": exp.get("company", ""),
                 "title": exp.get("title", ""),
                 "location": exp.get("location", ""),
                 "start_date": exp.get("start_date", ""),
                 "end_date": exp.get("end_date", ""),
                 "overview": exp.get("overview", ""),
-                "bullets": bullets,
-                "highlights": [b["bullet_text"] for b in bullets],
+                "bullets": BULLETS, # Corrected variable name from 'bullets' to 'BULLETS'
+                "highlights": [b["bullet_text"] for b in BULLETS], # Corrected variable name
             })
-        return sections
+        return SECTIONS # Corrected variable name from 'sections' to 'SECTIONS'
 
     def _extract_metrics(self, text: str) -> List[str]:
         """Extract quantified metrics from bullet text."""
-        PATTERNS = [r"\$\d+\.?\d*[MBK]\+?",
+        PATTERNS = [
+            r"\$\d+\.?\d*[MBK]\+?",
             r"\d+\.?\d*%",
             r"\d+\.?\d*[MBK]\+",
-            r"\d{1,
-            3}(?:,
-            \d{3})+"]
+            r"\d{1,3}(?:,\d{3})+", # Fixed unterminated string literal
+        ]
         METRICS = []
-        for pattern in patterns:
-            metrics.extend(re.findall(pattern, text))
-        return metrics
+        import re # Added missing import for 're' module
+        for pattern in PATTERNS: # Corrected variable name from 'patterns' to 'PATTERNS'
+            METRICS.extend(re.findall(pattern, text))
+        return METRICS # Corrected variable name from 'metrics' to 'METRICS'

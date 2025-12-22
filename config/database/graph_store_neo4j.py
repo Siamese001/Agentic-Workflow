@@ -1,4 +1,3 @@
-
 try:
     from neo4j import GraphDatabase
 except ImportError:
@@ -21,14 +20,13 @@ class Neo4jGraphStore:
         URI = os.environ.get("NEO4J_URI", "bolt://localhost:7687")
         USER = os.environ.get("NEO4J_USERNAME", "neo4j")
         PWD = os.environ.get("NEO4J_PASSWORD", "password")
-        self._driver = GraphDatabase.driver(uri, auth=(user, pwd))
+        self._driver = GraphDatabase.driver(URI, auth=(USER, PWD))
 
     def close(self) -> None:
         """TODO: Add docstring."""
 
         self._driver.close()
 
-        """TODO: Add docstring."""
 
     def run(self, cypher: str, params: Dict[str, object] | None = None) -> List[Any]:
         """TODO: Add docstring."""
@@ -36,7 +34,6 @@ class Neo4jGraphStore:
             return list(session.run(cypher, params or {}))
 
     def upsert_entity(self, entity_id: str, etype: str, name: str,
-        """Docstring."""
                         metadata: Dict[str, object] | None = None) -> None:
         """
         MERGE an Entity node with basic fields + arbitrary metadata.
@@ -51,7 +48,7 @@ class Neo4jGraphStore:
         """
         try:
             self.run(
-                cypher,
+                CYPHER,
                 {
                     "id": entity_id,
                     "type": etype,
@@ -79,7 +76,6 @@ class Neo4jGraphStore:
             )
 
     def upsert_relation(
-        """Docstring."""
         self,
         rel_id: str,
         subject_id: str,
@@ -119,16 +115,15 @@ class Neo4jGraphStore:
                 CALL apoc.create.addProperties(r, $attrs) YIELD rel
                 RETURN rel
                 """
-                PARAMS["ATTRS"] = attrs
+                params["attrs"] = attrs
             except Exception:
                 # Fallback without APOC
                 CYPHER += "\nSET r += $attrs"
-                PARAMS["ATTRS"] = attrs
+                params["attrs"] = attrs
 
-        self.run(cypher, params)
+        self.run(CYPHER, params)
 
     def update_relation_invalidity(
-        """Docstring."""
         self,
         rel_id: str,
         invalid_at: str | None,
@@ -149,10 +144,9 @@ class Neo4jGraphStore:
             CYPHER += "\nSET r.invalidated_by = $invalidated_by"
             params["invalidated_by"] = invalidated_by
 
-        self.run(cypher, params)
+        self.run(CYPHER, params)
 
     def query_factual_temporal(
-        """Docstring."""
         self,
         entity_name: str,
         predicate: str,
@@ -171,7 +165,7 @@ class Neo4jGraphStore:
         RETURN s, r, o
         """
         return self.run(
-            cypher,
+            CYPHER,
             {
                 "name": entity_name,
                 "predicate": predicate,

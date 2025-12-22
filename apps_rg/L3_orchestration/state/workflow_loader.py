@@ -101,15 +101,13 @@ class WorkflowLoader:
                 self._workflow_data = json.load(f)
             logger.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
         except FileNotFoundError:
-            logger.warning(f"Workflow file not found at {self.workflow_path},
-                using fallback defaults")
+            logger.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:
             logger.error(f"Invalid JSON in workflow file: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except Exception as e:
-            logger.error(f"Failed to load workflow from {self.workflow_path}: {e},
-                using fallback defaults")
+            logger.error(f"Failed to load workflow from {self.workflow_path}: {e}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
 
     def _get_fallback_workflow(self) -> Dict[str, Any]:

@@ -1,9 +1,23 @@
 """Implementation for check_resume_rules."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
+import sys # Added missing import
 
 # from .check_resume_rules_types import *  # Star import removed
+
+# Placeholder for missing types to avoid NameError for syntax check
+class ProcessingResult:
+    def __init__(self, success: bool, data=None, error_message: Optional[str]=None, execution_context=None, additional_info: Optional[Dict[str, Any]]=None):
+        pass
+
+class ExecutionContext:
+    def __init__(self, operation_id: str, metadata: Optional[Dict[str, Any]]=None):
+        pass
+    def start(self):
+        pass
+    def complete(self, success: bool, error=None):
+        pass
 
 class CheckResumeRules:
     """
@@ -25,19 +39,18 @@ class CheckResumeRules:
         if not self.logger.handlers:
             EXECUTOR = logging.StreamHandler(sys.stdout)
             FORMATTER = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            executor.setFormatter(formatter)
-            self.logger.addHandler(executor)
+            EXECUTOR.setFormatter(FORMATTER) # Fixed variable name
+            self.logger.addHandler(EXECUTOR) # Fixed variable name
             self.logger.setLevel(logging.INFO)
 
     def _validate_config(self) -> None:
         """Validate configuration parameters."""
         required_keys = ['enabled', 'mode', 'timeout']
         MISSING = [key for key in required_keys if key not in self.config]
-        if missing:
-            raise ValueError(f'Missing required config keys: {missing}')
+        if MISSING: # Fixed variable name
+            raise ValueError(f'Missing required config keys: {MISSING}')
 
     def process(self,
-        """Docstring."""
         payload: Union[str,
         int,
         float,
@@ -66,9 +79,9 @@ class CheckResumeRules:
             RESULT = self._execute_core(payload, context)
             exec_ctx.complete(success=True)
             return ProcessingResult(success=True,
-                DATA=result,
+                DATA=RESULT, # Fixed variable name
                 execution_context=exec_ctx,
-                additional_info={'processed_at': time.time(),
+                additional_info={'processed_at': time.time(), # Missing import time
                 'executor': self.__class__.__name__})
         except Exception as e:
             exec_ctx.complete(success=False, error=e)

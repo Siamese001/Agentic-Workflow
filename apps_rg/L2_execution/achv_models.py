@@ -17,8 +17,6 @@ class ProvenancePattern:
         return f'{self.verb_count}V-{self.tech_count}T-{self.soft_count}S'
 
 @dataclass
-    """TODO: Add docstring."""
-
 class BulletProvenanceLog:
     """Docstring."""
     bullet_text: str
@@ -39,13 +37,10 @@ class BulletSynthesizerConfig:
     TEMPERATURE: FLOAT = 0.6
     max_attempts: int = 3
 
-        """TODO: Add docstring."""
-
     @property
     def min_words(self) -> int:
         """Docstring."""
         return 28 if self.format_type == BulletFormat.UNIFY else 24
-        """TODO: Add docstring."""
 
 
     @property
@@ -55,8 +50,6 @@ class BulletSynthesizerConfig:
         return 33 if self.format_type == BulletFormat.UNIFY else 30
 
     @property
-        """TODO: Add docstring."""
-
     def bullet_count(self) -> int:
         """Docstring."""
         return 7 if self.format_type == BulletFormat.UNIFY else 6
@@ -68,8 +61,6 @@ class BulletSynthesizerConfig:
             return ProvenancePattern(BulletFormat.UNIFY, verb_count=3, tech_count=3, soft_count=1)
         else:
             return ProvenancePattern(BulletFormat.IBM, verb_count=2, tech_count=3, soft_count=1)
-
-    """TODO: Add docstring."""
 
 @dataclass
 class BulletSynthesizerResult:

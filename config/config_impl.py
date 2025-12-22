@@ -19,12 +19,10 @@ def _load_json_config(filename: str, description: str, required: bool=True) -> D
                 logging.info(f"Successfully loaded {description} from '{path_to_check}'.")
                 return data
         except json.JSONDecodeError as e:
-            logging.error(f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Hal
-    ting.")
+            logging.error(f"CRITICAL: Invalid JSON in {description} file '{path_to_check}': {e}. Halting.")
             raise
     if required:
-        logging.error(f'CRITICAL: {description} file not found. Tried: {filename} and {path_to_check
-    }. Halting.')
+        logging.error(f'CRITICAL: {description} file not found. Tried: {filename} and {path_to_check}. Halting.')
         raise FileNotFoundError(f'{description} file not found: {path_to_check}')
     logging.warning(f"Optional config file '{filename}' not found, returning empty dict")
     return {}

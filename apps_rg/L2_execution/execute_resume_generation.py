@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional
 class LocalWorkflowLoader:
     """Local workflow loader to avoid architectural violation."""
     def __init__(self):
-        SELF.WORKFLOWS = {}
+        self.workflows = {}
 
     def load_workflow(self, workflow_id: str):
         """Load workflow configuration."""
@@ -31,13 +31,13 @@ class ExecuteResumeGeneration:
 
     def __init__(self,
         config: Optional[Dict[str,
-        OBJECT]] = None,
+        object]] = None,
         workflow_loader: Optional[LocalWorkflowLoader] = None):
-        SELF.CONFIG = config or {}
-        SELF.TIMEOUT = self.config.get("timeout", 30.0)
+        self.config = config or {}
+        self.timeout = self.config.get("timeout", 30.0)
 
         # Load workflow configuration
-        SELF.WORKFLOW = workflow_loader or create_local_workflow_loader()
+        self.workflow = workflow_loader or create_local_workflow_loader()
 
         # Initialize LLM-powered components with workflow configuration
         creative_brief = self.workflow.get_creative_brief()
@@ -53,8 +53,7 @@ class ExecuteResumeGeneration:
             validation_rules=self.workflow.get_validation_rules()
         )
 
-        logger.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_versio
-    n()}")
+        LOGGER.info(f"Initialized {self.__class__.__name__} with workflow v{self.workflow.get_version()}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -62,7 +61,7 @@ class ExecuteResumeGeneration:
         START = time.time()
         try:
             OUTPUT = self._perform_action(action, params)
-            duration_ms = (time.time() - start) * 1000
+            duration_ms = (time.time() - START) * 1000
             return ExecutionResult(
                 STATUS=ResultStatus.SUCCESS,
                 DATA=output,
@@ -71,7 +70,7 @@ class ExecuteResumeGeneration:
                 total_steps=1
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-            duration_ms = (time.time() - start) * 1000
+            duration_ms = (time.time() - START) * 1000
             return ExecutionResult(
                 STATUS=ResultStatus.FAILURE,
                 ERROR=str(e),
@@ -82,7 +81,7 @@ class ExecuteResumeGeneration:
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
-        logger.info(f"Executing {action} with {params}")
+        LOGGER.info(f"Executing {action} with {params}")
 
         if action == "analyze_job":
             return self._analyze_job(params)
@@ -102,7 +101,7 @@ class ExecuteResumeGeneration:
         ANALYSIS = self.job_analyzer.analyze(job_description)
         return {
             "action": "analyze_job",
-            "analysis": analysis,
+            "analysis": ANALYSIS,
             "status": "completed"
         }
 
@@ -130,23 +129,19 @@ class ExecuteResumeGeneration:
         ANALYSIS = self.job_analyzer.analyze(job_description)
 
         # Then tailor the resume
-        tailored_resume = self.resume_generator.generate(resume_data, analysis)
+        tailored_resume = self.resume_generator.generate(resume_data, ANALYSIS)
 
         # Optimize for ATS
-        optimized_resume = self.resume_generator.optimize_for_ats(tailored_resume, analysis)
+        optimized_resume = self.resume_generator.optimize_for_ats(tailored_resume, ANALYSIS)
 
         return {
             "action": "tailor_resume",
             "original_resume": resume_data,
-            "job_analysis": analysis,
+            "job_analysis": ANALYSIS,
             "tailored_resume": optimized_resume,
             "status": "completed"
         }
 
-def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
-    config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteResumeGeneration(config).execute(action, params)

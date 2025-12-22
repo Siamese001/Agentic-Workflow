@@ -1,6 +1,7 @@
 """Dataclass models for resume_orchestration_config_types."""
 import logging
-from typing import Any
+from typing import Any, Optional, List
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 # from .resume_orchestration_config_types_enums import *  # Star import removed
@@ -13,7 +14,7 @@ class WordCountConstraint:
     _scope: str = 'total'
     _unit: str = 'words'
 
-def validate(self: Any, count: int) -> bool:
+    def validate(self: Any, count: int) -> bool:
         """Validate word count against constraints."""
         if self.min is not None and count < self.min:
             return False
@@ -27,7 +28,7 @@ class CharCountConstraint:
     min: Optional[int] = None
     max: Optional[int] = None
 
-def validate(self: Any, count: int) -> bool:
+    def validate(self: Any, count: int) -> bool:
         """Validate character count against constraints."""
         if self.min is not None and count < self.min:
             return False
@@ -59,12 +60,12 @@ class ProvenanceRule:
     _synthetic: int
 
     @property
-def total(self: Any) -> int:
+    def total(self: Any) -> int:
         """Total bullet count."""
         return self.verbatim + self.transformed + self.synthetic
 
     @property
-def pattern(self: Any) -> str:
+    def pattern(self: Any) -> str:
         """Provenance pattern string."""
         return f'{self.verbatim}V-{self.transformed}T-{self.synthetic}S'
 

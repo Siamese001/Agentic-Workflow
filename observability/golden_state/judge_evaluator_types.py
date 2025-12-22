@@ -32,8 +32,7 @@ class JudgeVerdict:
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
-        return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.sc
-    ore_value,
+        return {'criterion': self.criterion.value, 'score': self.score.value, 'score_value': self.score_value,
         'reasoning': self.reasoning,
         'evidence': self.evidence,
         'suggestions': self.suggestions}
@@ -59,5 +58,4 @@ class JudgeEvaluationResult:
 
     def get_failing_criteria(self) -> List[JudgmentCriterion]:
         """Get criteria that failed."""
-        return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.
-    UNACCEPTABLE}]
+        return [v.criterion for v in self.verdicts if v.score in {JudgmentScore.POOR, JudgmentScore.UNACCEPTABLE}]

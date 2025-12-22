@@ -1,3 +1,4 @@
+```python
 """
 refine_resume_ranking.py - Refinement Module
 
@@ -20,7 +21,6 @@ class RefineResumeRanking:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-               """Docstring."""
                data: Union[str,
                            Dict],
                adjustments: Optional[Dict] = None) -> RefinementResult:
@@ -40,10 +40,9 @@ class RefineResumeRanking:
 
 
 def refine(data: Union[str,
-                       """Docstring."""
                        Dict],
            adjustments: Optional[Dict] = None,
            config: Optional[Dict] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return RefineResumeRanking(config).refine(data, adjustments)
-
+```

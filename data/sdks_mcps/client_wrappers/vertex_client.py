@@ -10,6 +10,17 @@ from typing import Dict, List, Optional, Union, object
 
 import backoff
 from vertexai import init as vertex_init
+from vertexai.generative_models import (
+    Content,
+    GenerationConfig,
+    GenerativeModel,
+    HarmBlockThreshold,
+    HarmCategory,
+    Part,
+    SafetySetting,
+    Tool,
+)
+from vertexai.preview import grounding as vertex_grounding
 
 
 @dataclass
@@ -53,7 +64,7 @@ class VertexClient:
         backoff.expo,
         Exception,  # Vertex AI uses standard exceptions
         max_tries=5,
-        foundation=1,
+        factor=1,
         max_value=60
     )
     def generate_content(
@@ -66,7 +77,7 @@ class VertexClient:
         safety_settings: Optional[Dict[HarmCategory, HarmBlockThreshold]] = None,
         tools: Optional[List[Tool]] = None,
         stream: bool = False,
-        **kwargs: Dict[str, object]) -> Any:
+        **kwargs: Dict[str, object]) -> object:
         """Generate content with retry logic and optional grounding.
 
         Args:
@@ -450,5 +461,7 @@ if __name__ == "__main__":
         )
 
         # Usage stats
+        print("Usage Stats:", client.get_usage_stats())
 
     except Exception as e:
+        print(f"An error occurred: {e}")

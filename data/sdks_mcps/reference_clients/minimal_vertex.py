@@ -160,8 +160,7 @@ def safe_generation(prompt: str, safety_threshold: str = "BLOCK_NONE") -> dict:
 
 if __name__ == "__main__":
     # Test simple generation
-
+    pass
     # Test grounded generation
 
     # Test safe generation
-

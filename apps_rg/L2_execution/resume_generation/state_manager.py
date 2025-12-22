@@ -1,4 +1,3 @@
-
 # File: state_manager_RES.py
 # Version: 16.30
 # State serialization and deserialization layer for workflow hops
@@ -270,8 +269,7 @@ class ManifestManager:
         self.manifest_path = os.path.join(run_path, "run_manifest.json")
 
     def create_manifest(self, run_id: str, engine_version: str,
-        """Docstring."""
-                       job_input: dict, master_resume_hash: str) -> Dict[str, object]:
+                        job_input: dict, master_resume_hash: str) -> Dict[str, object]:
         """
         Creates and saves a new manifest for a new run.
 

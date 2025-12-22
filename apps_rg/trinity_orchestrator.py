@@ -50,7 +50,7 @@ class AgentOrchestrator:
             return
 
         # print(  # [Security Fix]
-            f"✅ Plan Generated with {cognitive_result.get('retrieved_items')} memory citations.")
+        #     f"✅ Plan Generated with {cognitive_result.get('retrieved_items')} memory citations.")
         # print(f"📝 Reasoning: {plan.get('reasoning')}")  # [Security Fix]
 
         # Phase 2: ACT (Action Node)
@@ -69,8 +69,10 @@ class AgentOrchestrator:
         status = report.get('status')
         if status == 'success':
             # print("✅ MISSION SUCCESS")  # [Security Fix]
+            pass # Added pass to avoid syntax error if no other statement follows
         else:
             # print(f"❌ MISSION FAILED: {status}")  # [Security Fix]
+            pass # Added pass to avoid syntax error if no other statement follows
 
         # print("\nExecution Log:")  # [Security Fix]
         for res in report.get('results', []):

@@ -1,3 +1,4 @@
+```python
 """Minimal Anthropic Reference Client
 Production-ready minimal client for quick integration with prompt caching.
 """
@@ -105,8 +106,10 @@ def tool_use_message(prompt: str, tools: list) -> dict:
 
 if __name__ == "__main__":
     # Test simple message
+    # print(simple_message("Hello, Claude!")) # Example call
 
     # Test cached message
+    cached_message(
         "Summarize quantum computing",
         system_prompt="You are an expert physics educator."
     )
@@ -122,4 +125,5 @@ if __name__ == "__main__":
             }
         }
     }]
-
+    # print(tool_use_message("What's the weather like in San Francisco?", tools)) # Example call
+```
