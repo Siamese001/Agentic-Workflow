@@ -1,10 +1,11 @@
-import pytest
+import json
 import os
 import subprocess
-import json
-from unittest.mock import patch
+
+import pytest
 from core_utils import sign_and_commit
 from resume_engine import save_artifact_metadata
+
 
 # Mock setup for Git/GPG (Since we can't run real GPG in a test)
 @pytest.fixture(autouse=True)

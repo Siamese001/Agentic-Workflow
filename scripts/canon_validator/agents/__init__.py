@@ -11,6 +11,7 @@ from .deadlock_detector import DeadlockDetector
 from .dependency_sentinel import DependencySentinel
 from .doc_enforcer import DocEnforcer
 from .git_agent import GitAgent
+
 # Batch 2: Core agents
 from .historian import Historian
 from .hygiene_guardian import HygieneGuardian
@@ -19,16 +20,20 @@ from .naming_enforcer import NamingEnforcer
 from .pattern_enforcer import PatternEnforcer
 from .performance_enforcer import PerformanceEnforcer
 from .reflection_agent import ReflectionAgent
+
 # Batch 3: Safety and testing agents
 from .safety_inspector import SafetyInspector
+
 # Batch 4: Security and performance agents
 from .security_enforcer import SecurityEnforcer
 from .sherlock import Sherlock
+
 # Batch 5: Strategic and operational agents
 from .strategic_planner import StrategicPlanner
 from .structural_engineer import StructuralEngineer
 from .test_pilot import TestPilot
 from .the_cartographer import TheCartographer, TheOmniContext
+
 # Batch 6: Refinement and optimization agents
 from .the_strategist import TheStrategist
 from .toolsmith_agent import ToolsmithAgent

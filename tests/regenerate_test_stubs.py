@@ -7,7 +7,8 @@ This extracts test function names and creates clean files with the same tests.
 import os
 import re
 from pathlib import Path
-from typing import List, Dict, Set
+from typing import Dict, List, Set
+
 
 class TestStubGenerator:
     def __init__(self, tests_dir: str = "tests"):

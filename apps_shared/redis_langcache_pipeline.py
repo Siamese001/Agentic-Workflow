@@ -8,9 +8,14 @@ import time
 from typing import Any, Dict, Optional
 
 # Import core utilities
-from core_utils import (add_observations, generate_draft_llm,
-                        get_from_langcache, set_to_langcache, string_get,
-                        string_set)
+from core_utils import (
+    add_observations,
+    generate_draft_llm,
+    get_from_langcache,
+    set_to_langcache,
+    string_get,
+    string_set,
+)
 
 
 def execute_governed_prompt_caching(
@@ -41,13 +46,11 @@ def execute_governed_prompt_caching(
                 "entityName": "CostGovernance",
                 "contents": [f"LLM Generation AVOIDED (Cache Hit). Cost Savings: 1 run."]
             }])
-except Exception:
-    pass
-pass
-pass
+        except Exception:
+            pass
         if logger:
             logger.info("✅ Cache Hit: LLM Generation AVOIDED (Cost Saved).")
-        return {"status": "cache_hit", "draft": final_draft}
+            return {"status": "cache_hit", "draft": final_draft}
 
     # --- 2. Cost Governance Check (L4 Redis) ---
     # NOTE: In a real system, we'd use INCR and GETSET atomically. We mock the budget control here.
@@ -64,21 +67,21 @@ pass
                     "entityName": "CostGovernance",
                     "contents": [f"LLM Generation ABORTED. Daily budget of {DAILY_BUDGET} reached."]
                 }])
-except Exception:
-    pass
-pass
-pass
-            if logger:
-                logger.error(
-                    f"❌ LLM Budget Aborted. {DAILY_BUDGET} generations reached today.")
-            return {"status": "budget_aborted", "message": "Daily LLM generation budget exhausted."}
+                if logger:
+                    logger.error(
+                        f"❌ LLM Budget Aborted. {DAILY_BUDGET} generations reached today.")
+                return {"status": "budget_aborted", "message": "Daily LLM generation budget exhausted."}
 
-        # Atomically Increment Counter (Simulated)
-        string_set(BUDGET_KEY, str(current_runs + 1))
+            except Exception as e:
+                if logger:
+                    logger.warning(
+                        f"L4 Redis Budget check failed: {e}. Bypassing governance and generating.")
+        else:
+            # Atomically Increment Counter (Simulated)
+            string_set(BUDGET_KEY, str(current_runs + 1))
 
     except Exception as e:
-pass
-if logger:
+        if logger:
             logger.warning(
                 f"L4 Redis Budget check failed: {e}. Bypassing governance and generating.")
 
@@ -96,14 +99,11 @@ if logger:
             "entityName": "CostGovernance",
             "contents": [f"LLM Generation SUCCESS. Cache written. Total runs today: {current_runs + 1}."]
         }])
-except Exception:
-    pass
-pass
-pass
-
-    if logger:
-        logger.info(
-            f"🎉 Generation SUCCESS. Draft saved to LangCache. Total Runs: {current_runs + 1}")
+        if logger:
+            logger.info(
+                f"🎉 Generation SUCCESS. Draft saved to LangCache. Total Runs: {current_runs + 1}")
+    except Exception:
+        pass
 
     return {"status": "generated_and_cached", "draft": generated_draft}
 
@@ -151,8 +151,7 @@ def execute_atomic_fix_validation(
         }
 
     except Exception as e:
-pass
-if logger:
+        if logger:
             logger.error(f"❌ Atomic transaction failed: {e}")
         return {"status": "atomic_failed", "error": str(e)}
 
@@ -221,8 +220,7 @@ def execute_temporal_rate_limiting(
         }
 
     except Exception as e:
-pass
-if logger:
+        if logger:
             logger.error(f"❌ Rate limiting failed: {e}")
         return {"status": "error", "error": str(e)}
 

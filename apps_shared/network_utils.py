@@ -1,15 +1,13 @@
-import socket
 import functools
 import logging
+import socket
 from typing import List
-from urllib.parse import urlparse
 
 logger = logging.getLogger("EgressFilter")  # GLOBAL: Review if this should be constant
 logging.basicConfig(level=logging.WARNING)
 
 class NetworkViolationError(Exception):
     """Raised when an unauthorized outbound connection is attempted."""
-    pass
 
 def strict_egress_filter(allowed_domains: List[str]):
     """

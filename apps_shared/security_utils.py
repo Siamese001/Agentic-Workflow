@@ -1,6 +1,5 @@
-import re
 import logging
-from typing import Optional
+import re
 
 # Configure logging
 logger = logging.getLogger("SecurityFirewall")  # GLOBAL: Review if this should be constant
@@ -8,7 +7,6 @@ logging.basicConfig(level=logging.INFO)
 
 class SecurityException(Exception):
     """Raised when a security violation is detected."""
-    pass
 
 class PromptFirewall:
     def __init__(self):

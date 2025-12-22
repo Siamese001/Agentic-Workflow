@@ -92,14 +92,14 @@ class CostPrediction:
 class DependencyArbiter:
     """
     Ensures environment integrity and dependency hygiene.
-    
+
     Features:
     - pip check for conflicts
     - requirements.txt validation
     - Import analysis
     - Dependency version checking
     """
-    
+
     # Standard library modules (subset for checking)
     STDLIB_MODULES = {
         "os", "sys", "re", "json", "time", "datetime", "pathlib",
@@ -108,37 +108,37 @@ class DependencyArbiter:
         "dataclasses", "enum", "asyncio", "subprocess", "threading",
         "multiprocessing", "logging", "unittest", "pytest", "ast",
     }
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._issues: List[DependencyIssue] = []
         self._checks_performed = 0
-    
+
     def check_environment(self) -> List[DependencyIssue]:
         """
         Check environment for dependency issues.
-        
+
         Returns:
             List of dependency issues
         """
         self._checks_performed += 1
         issues = []
-        
+
         # Run pip check
         pip_issues = self._run_pip_check()
         issues.extend(pip_issues)
-        
+
         # Check requirements.txt
         req_issues = self._check_requirements()
         issues.extend(req_issues)
-        
+
         self._issues.extend(issues)
         return issues
-    
+
     def _run_pip_check(self) -> List[DependencyIssue]:
         """Run pip check to find conflicts."""
         issues = []
-        
+
         try:
             result = subprocess.run(
                 [sys.executable, "-m", "pip", "check"],
@@ -146,7 +146,7 @@ class DependencyArbiter:
                 text=True,
                 timeout=30,
             )
-            
+
             if result.returncode != 0:
                 # Parse pip check output
                 for line in result.stdout.split("\n"):
@@ -175,13 +175,13 @@ class DependencyArbiter:
                 description=f"pip check failed: {e}",
                 recommendation="Verify pip is installed correctly",
             ))
-        
+
         return issues
-    
+
     def _check_requirements(self) -> List[DependencyIssue]:
         """Check requirements.txt exists and is valid."""
         issues = []
-        
+
         req_path = Path("requirements.txt")
         if not req_path.exists():
             issues.append(DependencyIssue(
@@ -194,7 +194,7 @@ class DependencyArbiter:
         else:
             # Check for common issues
             content = req_path.read_text()
-            
+
             # Check for unpinned versions
             for line in content.split("\n"):
                 line = line.strip()
@@ -208,51 +208,51 @@ class DependencyArbiter:
                                 description=f"Unpinned version: {line}",
                                 recommendation="Pin version with ==",
                             ))
-        
+
         return issues
-    
+
     def analyze_imports(self, content: str, file_path: str = "unknown") -> List[str]:
         """
         Analyze imports in Python content.
-        
+
         Args:
             content: Python source code
             file_path: Path for reporting
-        
+
         Returns:
             List of non-standard imports
         """
         non_standard = []
-        
+
         try:
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         module = alias.name.split(".")[0]
                         if module not in self.STDLIB_MODULES:
                             non_standard.append(module)
-                
+
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
                         module = node.module.split(".")[0]
                         if module not in self.STDLIB_MODULES:
                             non_standard.append(module)
-        
+
         except SyntaxError:
             pass
-        
+
         return list(set(non_standard))
-    
+
     def get_issues(self) -> List[DependencyIssue]:
         """Get all dependency issues."""
         return self._issues
-    
+
     def get_issues_by_status(self, status: DependencyStatus) -> List[DependencyIssue]:
         """Get issues filtered by status."""
         return [i for i in self._issues if i.status == status]
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get arbiter statistics."""
         return {
@@ -268,54 +268,54 @@ class DependencyArbiter:
 class StrictDocEnforcer:
     """
     Enforces type contract compliance in docstrings.
-    
+
     Features:
     - Docstring existence checking
     - Argument documentation validation
     - Return type documentation
     - Google-style docstring parsing
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._violations: List[DocViolation] = []
-    
+
     def check_content(self, content: str, file_path: str = "unknown") -> List[DocViolation]:
         """
         Check content for documentation violations.
-        
+
         Args:
             content: Python source code
             file_path: Path for reporting
-        
+
         Returns:
             List of documentation violations
         """
         violations = []
-        
+
         try:
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     violation = self._check_function(node, file_path)
                     if violation:
                         violations.append(violation)
                         self._violations.append(violation)
-        
+
         except SyntaxError:
             pass
-        
+
         return violations
-    
+
     def _check_function(self, node: ast.FunctionDef, file_path: str) -> Optional[DocViolation]:
         """Check a function for documentation compliance."""
         # Skip private/magic methods
         if node.name.startswith("_"):
             return None
-        
+
         docstring = ast.get_docstring(node)
-        
+
         if not docstring:
             return DocViolation(
                 file_path=file_path,
@@ -325,30 +325,30 @@ class StrictDocEnforcer:
                 missing_return=False,
                 line_number=node.lineno,
             )
-        
+
         # Get function arguments
         args = []
         for arg in node.args.args:
             if arg.arg != "self" and arg.arg != "cls":
                 args.append(arg.arg)
-        
+
         # Parse docstring for Args section
         documented_args = self._parse_args_section(docstring)
-        
+
         # Find missing args
         missing_args = [a for a in args if a not in documented_args]
-        
+
         # Check for return documentation
         has_return = "Returns:" in docstring or "Return:" in docstring
-        
+
         # Check if function has return statement
         has_return_stmt = any(
             isinstance(n, ast.Return) and n.value is not None
             for n in ast.walk(node)
         )
-        
+
         missing_return = has_return_stmt and not has_return
-        
+
         if missing_args or missing_return:
             return DocViolation(
                 file_path=file_path,
@@ -358,13 +358,13 @@ class StrictDocEnforcer:
                 missing_return=missing_return,
                 line_number=node.lineno,
             )
-        
+
         return None
-    
+
     def _parse_args_section(self, docstring: str) -> Set[str]:
         """Parse Args section from Google-style docstring."""
         documented_args = set()
-        
+
         # Find Args section
         args_match = re.search(r"Args?:\s*\n((?:\s+\w+.*\n)*)", docstring)
         if args_match:
@@ -374,38 +374,38 @@ class StrictDocEnforcer:
                 match = re.match(r"\s+(\w+)\s*[:\(]", line)
                 if match:
                     documented_args.add(match.group(1))
-        
+
         return documented_args
-    
+
     def get_violations(self) -> List[DocViolation]:
         """Get all documentation violations."""
         return self._violations
-    
+
     def get_compliance_level(self, content: str) -> DocComplianceLevel:
         """
         Get documentation compliance level for content.
-        
+
         Args:
             content: Python source code
-        
+
         Returns:
             Compliance level
         """
         violations = self.check_content(content)
-        
+
         if not violations:
             return DocComplianceLevel.COMPLETE
-        
+
         missing_docstrings = sum(1 for v in violations if v.violation_type == "missing_docstring")
         incomplete = sum(1 for v in violations if v.violation_type == "incomplete_docstring")
-        
+
         if missing_docstrings > 0:
             return DocComplianceLevel.NONE
         elif incomplete > 0:
             return DocComplianceLevel.BASIC
-        
+
         return DocComplianceLevel.TYPED
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get enforcer statistics."""
         return {
@@ -418,18 +418,18 @@ class StrictDocEnforcer:
 class DashboardGenerator:
     """
     Generates visual HTML Mission Control report.
-    
+
     Features:
     - Pass/fail summary
     - Signal status
     - Dependency graph visualization
     - Mermaid.js integration
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._generated_reports: List[str] = []
-    
+
     def generate(
         self,
         results: Dict[str, Any],
@@ -438,12 +438,12 @@ class DashboardGenerator:
     ) -> str:
         """
         Generate HTML dashboard.
-        
+
         Args:
             results: Agent results dictionary
             signals: Active signals
             output_path: Output file path
-        
+
         Returns:
             Path to generated file
         """
@@ -452,7 +452,7 @@ class DashboardGenerator:
         passed = sum(1 for r in results.values() if r.get("passed", False))
         failed = total - passed
         success_rate = (passed / total * 100) if total > 0 else 0
-        
+
         html = self._generate_html(
             results=results,
             signals=signals,
@@ -461,15 +461,15 @@ class DashboardGenerator:
             failed=failed,
             success_rate=success_rate,
         )
-        
+
         # Write file
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         Path(output_path).write_text(html, encoding="utf-8")
-        
+
         self._generated_reports.append(output_path)
-        
+
         return output_path
-    
+
     def _generate_html(
         self,
         results: Dict[str, Any],
@@ -481,144 +481,43 @@ class DashboardGenerator:
     ) -> str:
         """Generate HTML content."""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
+
+        # Condensed CSS for line reduction
+        condensed_css = """* { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #eee; min-height: 100vh; padding: 20px; } .container { max-width: 1200px; margin: 0 auto; } h1 { text-align: center; margin-bottom: 30px; font-size: 2.5em; background: linear-gradient(90deg, #00d4ff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } .timestamp { text-align: center; color: #888; margin-bottom: 20px; } .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; } .metric-card { background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; text-align: center; backdrop-filter: blur(10px); } .metric-value { font-size: 2.5em; font-weight: bold; } .metric-label { color: #888; margin-top: 5px; } .success { color: #00ff88; } .failure { color: #ff4444; } .warning { color: #ffaa00; } .section { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 20px; } .section h2 { margin-bottom: 15px; color: #00d4ff; } table { width: 100%; border-collapse: collapse; } th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); } th { color: #888; font-weight: normal; } .status-pass { color: #00ff88; } .status-fail { color: #ff4444; } .signal-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; background: rgba(255,170,0,0.2); color: #ffaa00; margin: 4px; font-size: 0.9em; } .mermaid { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; }"""
+
         html = f"""<!DOCTYPE html>
 <html>
 <head>
     <title>Resume Engine Mission Control</title>
     <meta charset="UTF-8">
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #eee;
-            min-height: 100vh;
-            padding: 20px;
-        }}
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        h1 {{ 
-            text-align: center; 
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }}
-        .timestamp {{ text-align: center; color: #888; margin-bottom: 20px; }}
-        .metrics {{ 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }}
-        .metric-card {{
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }}
-        .metric-value {{ font-size: 2.5em; font-weight: bold; }}
-        .metric-label {{ color: #888; margin-top: 5px; }}
-        .success {{ color: #00ff88; }}
-        .failure {{ color: #ff4444; }}
-        .warning {{ color: #ffaa00; }}
-        .section {{ 
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }}
-        .section h2 {{ margin-bottom: 15px; color: #00d4ff; }}
-        table {{ width: 100%; border-collapse: collapse; }}
-        th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }}
-        th {{ color: #888; font-weight: normal; }}
-        .status-pass {{ color: #00ff88; }}
-        .status-fail {{ color: #ff4444; }}
-        .signal-badge {{
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(255,170,0,0.2);
-            color: #ffaa00;
-            margin: 4px;
-            font-size: 0.9em;
-        }}
-        .mermaid {{ background: rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; }}
-    </style>
+    <style>{condensed_css}</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🧬 Resume Engine Mission Control</h1>
-        <p class="timestamp">Generated: {timestamp}</p>
-        
+    <div class="container"><h1>🧬 Resume Engine Mission Control</h1><p class="timestamp">Generated: {timestamp}</p>
         <div class="metrics">
-            <div class="metric-card">
-                <div class="metric-value">{total}</div>
-                <div class="metric-label">Total Checks</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value success">{passed}</div>
-                <div class="metric-label">Passed</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value failure">{failed}</div>
-                <div class="metric-label">Failed</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div>
-                <div class="metric-label">Success Rate</div>
-            </div>
+            <div class="metric-card"><div class="metric-value">{total}</div><div class="metric-label">Total Checks</div></div>
+            <div class="metric-card"><div class="metric-value success">{passed}</div><div class="metric-label">Passed</div></div>
+            <div class="metric-card"><div class="metric-value failure">{failed}</div><div class="metric-label">Failed</div></div>
+            <div class="metric-card"><div class="metric-value {'success' if success_rate >= 80 else 'warning' if success_rate >= 50 else 'failure'}">{success_rate:.1f}%</div><div class="metric-label">Success Rate</div></div>
         </div>
-        
-        <div class="section">
-            <h2>📡 Active Signals</h2>
-            <div>
-                {self._render_signals(signals)}
-            </div>
-        </div>
-        
-        <div class="section">
-            <h2>📊 Agent Results</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Agent</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {self._render_results_table(results)}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="section">
-            <h2>🔗 Dependency Graph</h2>
-            <div class="mermaid">
-                {self._render_mermaid_graph(results)}
-            </div>
-        </div>
+        <div class="section"><h2>📡 Active Signals</h2><div>{self._render_signals(signals)}</div></div>
+        <div class="section"><h2>📊 Agent Results</h2><table><thead><tr><th>Agent</th><th>Status</th><th>Details</th></tr></thead><tbody>{self._render_results_table(results)}</tbody></table></div>
+        <div class="section"><h2>🔗 Dependency Graph</h2><div class="mermaid">{self._render_mermaid_graph(results)}</div></div>
     </div>
-    
-    <script>
-        mermaid.initialize({{ startOnLoad: true, theme: 'dark' }});
-    </script>
+    <script>mermaid.initialize({{ startOnLoad: true, theme: 'dark' }});</script>
 </body>
 </html>"""
-        
+
         return html
-    
+
     def _render_signals(self, signals: Set[str]) -> str:
         """Render signals as badges."""
         if not signals:
             return '<span style="color: #888;">No active signals</span>'
-        
+
         return "".join(f'<span class="signal-badge">{s}</span>' for s in signals)
-    
+
     def _render_results_table(self, results: Dict[str, Any]) -> str:
         """Render results as table rows."""
         rows = []
@@ -627,7 +526,7 @@ class DashboardGenerator:
             status_class = "status-pass" if passed else "status-fail"
             status_text = "✅ PASS" if passed else "❌ FAIL"
             details = result.get("details", "")
-            
+
             rows.append(f"""
                 <tr>
                     <td>{agent}</td>
@@ -635,31 +534,31 @@ class DashboardGenerator:
                     <td>{details}</td>
                 </tr>
             """)
-        
+
         return "".join(rows)
-    
+
     def _render_mermaid_graph(self, results: Dict[str, Any]) -> str:
         """Render Mermaid.js graph."""
         graph = "graph TD\n"
-        
+
         # Create nodes for each agent
         for i, agent in enumerate(results.keys()):
             status = "pass" if results[agent].get("passed", False) else "fail"
             style = "fill:#00ff88" if status == "pass" else "fill:#ff4444"
             graph += f"    A{i}[{agent}]\n"
             graph += f"    style A{i} {style}\n"
-        
+
         # Add connections (simplified flow)
         agents = list(results.keys())
         for i in range(len(agents) - 1):
             graph += f"    A{i} --> A{i+1}\n"
-        
+
         return graph
-    
+
     def get_generated_reports(self) -> List[str]:
         """Get list of generated reports."""
         return self._generated_reports
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get generator statistics."""
         return {
@@ -670,14 +569,14 @@ class DashboardGenerator:
 class PromptGovernor:
     """
     Segregates and secures AI prompts.
-    
+
     Features:
     - Hardcoded prompt detection
     - Prompt variable naming checks
     - Security risk analysis
     - Prompt segregation recommendations
     """
-    
+
     # Patterns for prompt detection
     PROMPT_PATTERNS = [
         r"_PROMPT\s*=",
@@ -686,27 +585,27 @@ class PromptGovernor:
         r"user_message\s*=",
         r"assistant_message\s*=",
     ]
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._issues: List[PromptIssue] = []
-    
+
     def scan_content(self, content: str, file_path: str = "unknown") -> List[PromptIssue]:
         """
         Scan content for prompt security issues.
-        
+
         Args:
             content: Python source code
             file_path: Path for reporting
-        
+
         Returns:
             List of prompt issues
         """
         issues = []
-        
+
         try:
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
                     for target in node.targets:
@@ -715,37 +614,37 @@ class PromptGovernor:
                             if issue:
                                 issues.append(issue)
                                 self._issues.append(issue)
-        
+
         except SyntaxError:
             pass
-        
+
         # Also check for large string literals
         large_string_issues = self._check_large_strings(content, file_path)
         issues.extend(large_string_issues)
         self._issues.extend(large_string_issues)
-        
+
         return issues
-    
+
     def _check_assignment(self, node: ast.Assign, target: ast.Name, file_path: str) -> Optional[PromptIssue]:
         """Check an assignment for prompt issues."""
         var_name = target.id
-        
+
         # Check if variable name suggests a prompt
         is_prompt_var = any(
             re.search(pattern, f"{var_name} =", re.IGNORECASE)
             for pattern in self.PROMPT_PATTERNS
         )
-        
+
         if not is_prompt_var:
             return None
-        
+
         # Check if it's a string literal
         if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
             prompt_value = node.value.value
-            
+
             # Determine risk level
             risk = self._assess_risk(prompt_value)
-            
+
             return PromptIssue(
                 file_path=file_path,
                 variable_name=var_name,
@@ -754,23 +653,23 @@ class PromptGovernor:
                 description=f"Hardcoded prompt in variable '{var_name}'",
                 prompt_preview=prompt_value[:100] + "..." if len(prompt_value) > 100 else prompt_value,
             )
-        
+
         return None
-    
+
     def _check_large_strings(self, content: str, file_path: str) -> List[PromptIssue]:
         """Check for large string literals that might be prompts."""
         issues = []
-        
+
         try:
             tree = ast.parse(content)
-            
+
             for node in ast.walk(tree):
                 if isinstance(node, ast.Constant) and isinstance(node.value, str):
                     if len(node.value) > 200:  # Large string threshold
                         # Check if it looks like a prompt
                         if self._looks_like_prompt(node.value):
                             risk = self._assess_risk(node.value)
-                            
+
                             issues.append(PromptIssue(
                                 file_path=file_path,
                                 variable_name="<inline>",
@@ -779,12 +678,12 @@ class PromptGovernor:
                                 description="Large inline string that appears to be a prompt",
                                 prompt_preview=node.value[:100] + "...",
                             ))
-        
+
         except SyntaxError:
             pass
-        
+
         return issues
-    
+
     def _looks_like_prompt(self, text: str) -> bool:
         """Check if text looks like an LLM prompt."""
         prompt_indicators = [
@@ -792,46 +691,46 @@ class PromptGovernor:
             "respond", "answer", "role:", "context:",
             "instructions:", "task:", "system:",
         ]
-        
+
         text_lower = text.lower()
         return any(indicator in text_lower for indicator in prompt_indicators)
-    
+
     def _assess_risk(self, prompt: str) -> PromptRisk:
         """Assess security risk of a prompt."""
         prompt_lower = prompt.lower()
-        
+
         # Critical risk indicators
         critical_patterns = [
             "ignore previous", "ignore all", "disregard",
             "pretend you are", "act as if", "bypass",
         ]
-        
+
         if any(p in prompt_lower for p in critical_patterns):
             return PromptRisk.CRITICAL
-        
+
         # High risk indicators
         high_patterns = [
             "execute", "run command", "system access",
             "password", "secret", "api key",
         ]
-        
+
         if any(p in prompt_lower for p in high_patterns):
             return PromptRisk.HIGH
-        
+
         # Medium risk - user input interpolation
         if "{" in prompt and "}" in prompt:
             return PromptRisk.MEDIUM
-        
+
         return PromptRisk.LOW
-    
+
     def get_issues(self) -> List[PromptIssue]:
         """Get all prompt issues."""
         return self._issues
-    
+
     def get_issues_by_risk(self, risk: PromptRisk) -> List[PromptIssue]:
         """Get issues filtered by risk level."""
         return [i for i in self._issues if i.risk_level == risk]
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get governor statistics."""
         return {
@@ -846,22 +745,22 @@ class PromptGovernor:
 class PredictiveBudgetManager:
     """
     Predictive budget management with cost estimation.
-    
+
     Features:
     - Cost prediction before execution
     - Budget tracking
     - Threshold warnings
     - Execution gating
     """
-    
+
     # Cost rates (per 1M tokens)
     INPUT_COST_PER_MILLION = 0.50
     OUTPUT_COST_PER_MILLION = 1.50
-    
+
     # Estimation factors
     TOKENS_PER_FILE = 1000
     TOKENS_PER_AGENT = 500
-    
+
     def __init__(
         self,
         ctx: ResumeEngineContext,
@@ -871,7 +770,7 @@ class PredictiveBudgetManager:
         self.budget_limit = budget_limit
         self._current_cost = 0.0
         self._predictions: List[CostPrediction] = []
-    
+
     def predict_cost(
         self,
         files_count: int,
@@ -880,30 +779,30 @@ class PredictiveBudgetManager:
     ) -> CostPrediction:
         """
         Predict cost for a mission.
-        
+
         Args:
             files_count: Number of files to process
             agents_count: Number of agents to run
             cycles: Number of healing cycles
-        
+
         Returns:
             Cost prediction
         """
         # Estimate tokens
         input_tokens = files_count * self.TOKENS_PER_FILE * agents_count * cycles
         output_tokens = agents_count * self.TOKENS_PER_AGENT * cycles
-        
+
         total_tokens = input_tokens + output_tokens
-        
+
         # Calculate cost
         input_cost = (input_tokens / 1_000_000) * self.INPUT_COST_PER_MILLION
         output_cost = (output_tokens / 1_000_000) * self.OUTPUT_COST_PER_MILLION
         estimated_cost = input_cost + output_cost
-        
+
         # Check budget
         budget_remaining = self.budget_limit - self._current_cost
         will_exceed = estimated_cost > budget_remaining
-        
+
         # Generate recommendation
         if will_exceed:
             recommendation = f"Reduce scope or increase budget by ${estimated_cost - budget_remaining:.4f}"
@@ -911,7 +810,7 @@ class PredictiveBudgetManager:
             recommendation = "Approaching budget limit - consider reducing scope"
         else:
             recommendation = "Within budget"
-        
+
         prediction = CostPrediction(
             estimated_tokens=total_tokens,
             estimated_cost=estimated_cost,
@@ -919,32 +818,32 @@ class PredictiveBudgetManager:
             will_exceed=will_exceed,
             recommendation=recommendation,
         )
-        
+
         self._predictions.append(prediction)
-        
+
         return prediction
-    
+
     def record_cost(self, cost: float):
         """Record actual cost incurred."""
         self._current_cost += cost
-    
+
     def check_budget(self) -> bool:
         """Check if budget is available."""
         return self._current_cost < self.budget_limit
-    
+
     def get_remaining_budget(self) -> float:
         """Get remaining budget."""
         return max(0, self.budget_limit - self._current_cost)
-    
+
     def get_current_cost(self) -> float:
         """Get current cost."""
         return self._current_cost
-    
+
     def reset(self):
         """Reset cost tracking."""
         self._current_cost = 0.0
         self._predictions.clear()
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get budget statistics."""
         return {
@@ -959,7 +858,7 @@ class PredictiveBudgetManager:
 class Phase7Orchestrator:
     """
     Orchestrates all Phase 7 governance components.
-    
+
     Combines:
     - Dependency arbitration
     - Documentation enforcement
@@ -967,28 +866,28 @@ class Phase7Orchestrator:
     - Prompt governance
     - Predictive budgeting
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext, budget_limit: float = 1.0):
         self.ctx = ctx
-        
+
         self.dependency = DependencyArbiter(ctx)
         self.doc_enforcer = StrictDocEnforcer(ctx)
         self.dashboard = DashboardGenerator(ctx)
         self.prompt_gov = PromptGovernor(ctx)
         self.budget = PredictiveBudgetManager(ctx, budget_limit)
-    
+
     def check_dependencies(self) -> List[DependencyIssue]:
         """Check environment dependencies."""
         return self.dependency.check_environment()
-    
+
     def check_documentation(self, content: str, file_path: str = "unknown") -> List[DocViolation]:
         """Check documentation compliance."""
         return self.doc_enforcer.check_content(content, file_path)
-    
+
     def scan_prompts(self, content: str, file_path: str = "unknown") -> List[PromptIssue]:
         """Scan for prompt security issues."""
         return self.prompt_gov.scan_content(content, file_path)
-    
+
     def predict_mission_cost(
         self,
         files_count: int,
@@ -997,7 +896,7 @@ class Phase7Orchestrator:
     ) -> CostPrediction:
         """Predict cost for a mission."""
         return self.budget.predict_cost(files_count, agents_count, cycles)
-    
+
     def generate_dashboard(
         self,
         results: Dict[str, Any],
@@ -1006,7 +905,7 @@ class Phase7Orchestrator:
     ) -> str:
         """Generate mission control dashboard."""
         return self.dashboard.generate(results, signals, output_path)
-    
+
     async def run_governance_checks(
         self,
         content: str,
@@ -1014,11 +913,11 @@ class Phase7Orchestrator:
     ) -> Dict[str, Any]:
         """
         Run all governance checks on content.
-        
+
         Args:
             content: Python source code
             file_path: Path for reporting
-        
+
         Returns:
             Comprehensive governance results
         """
@@ -1030,21 +929,21 @@ class Phase7Orchestrator:
             "prompts": {},
             "passed": True,
         }
-        
+
         # Check dependencies (environment-wide)
         dep_issues = self.dependency.check_environment()
         results["dependencies"] = {
             "issues": len(dep_issues),
             "conflicts": len(self.dependency.get_issues_by_status(DependencyStatus.CONFLICT)),
         }
-        
+
         # Check documentation
         doc_violations = self.doc_enforcer.check_content(content, file_path)
         results["documentation"] = {
             "violations": len(doc_violations),
             "compliance_level": self.doc_enforcer.get_compliance_level(content).value,
         }
-        
+
         # Scan prompts
         prompt_issues = self.prompt_gov.scan_content(content, file_path)
         results["prompts"] = {
@@ -1052,15 +951,15 @@ class Phase7Orchestrator:
             "high_risk": len(self.prompt_gov.get_issues_by_risk(PromptRisk.HIGH)),
             "critical_risk": len(self.prompt_gov.get_issues_by_risk(PromptRisk.CRITICAL)),
         }
-        
+
         # Determine overall pass/fail
         results["passed"] = (
             len(self.dependency.get_issues_by_status(DependencyStatus.CONFLICT)) == 0 and
             len(self.prompt_gov.get_issues_by_risk(PromptRisk.CRITICAL)) == 0
         )
-        
+
         return results
-    
+
     def get_comprehensive_stats(self) -> Dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {

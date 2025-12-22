@@ -6,27 +6,25 @@ the interfaces and core components.
 """
 
 import pytest
+
 from agentic_core.interfaces import (
-    OrchestratorConfig,
     ExecutionContext,
     ExecutionResult,
-    ExecutionPhase,
+    OrchestratorConfig,
     PlanningRequest,
     PlanningResult,
-    ICognitivePlane,
-    IActionPlane,
 )
-from agentic_core.L3_orchestration.nervous_system import NervousSystem
 from agentic_core.L1_cognition.episodic_memory import EpisodicMemory
+from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
 
 class MockCognitivePlane:
     """Mock cognitive plane for testing."""
-    
+
     def get_capabilities(self):
         """Return mock capabilities."""
         return [MockCapability("reasoning"), MockCapability("planning")]
-    
+
     async def think(self, request: PlanningRequest):
         """Mock think method."""
         return PlanningResult(
@@ -38,11 +36,11 @@ class MockCognitivePlane:
 
 class MockActionPlane:
     """Mock action plane for testing."""
-    
+
     def get_capabilities(self):
         """Return mock capabilities."""
         return [MockCapability("tool_execution"), MockCapability("api_calls")]
-    
+
     async def act(self, request):
         """Mock act method."""
         return {"result": "Mock action result"}
@@ -50,7 +48,7 @@ class MockActionPlane:
 
 class MockCapability:
     """Mock capability enum."""
-    
+
     def __init__(self, value: str):
         self.value = value
 
@@ -109,12 +107,12 @@ def test_context_creation():
         scene={"source": "boot_test"},
         metadata={"task_id": "task-001"}
     )
-    
+
     # Verify initial state
     assert context.mission == "Test mission"
     assert context.scene["source"] == "boot_test"
     assert context.metadata["task_id"] == "task-001"
-    
+
     # Test to_dict conversion
     context_dict = context.to_dict()
     assert context_dict["mission"] == "Test mission"
@@ -129,12 +127,12 @@ def test_planning_request_creation():
         max_steps=10,
         constraints=["priority_1"]
     )
-    
+
     assert request.task == "Verify project integrity"
     assert request.context["window"] == 4000
     assert request.max_steps == 10
     assert "priority_1" in request.constraints
-    
+
     # Test to_dict conversion
     request_dict = request.to_dict()
     assert request_dict["task"] == "Verify project integrity"
@@ -152,16 +150,16 @@ async def test_tri_brain_routing_stub(nervous_system):
         context={"window": 4000},
         max_steps=10
     )
-    
+
     # Verify request structure
     assert request.task == "Verify project integrity"
     assert request.max_steps == 10
-    
+
     # Verify NervousSystem has the expected components
     assert hasattr(nervous_system, 'brain')
     assert hasattr(nervous_system, 'hands')
     assert hasattr(nervous_system, 'config')
-    
+
     # Verify the mock planes have capabilities
     brain_caps = nervous_system.brain.get_capabilities()
     hand_caps = nervous_system.hands.get_capabilities()
@@ -175,17 +173,17 @@ def test_episodic_memory_integration():
     """Verify that EpisodicMemory can be imported and has expected interface."""
     # Test that we can import the class
     assert EpisodicMemory is not None
-    
+
     # Test that the module has the expected functions
     from agentic_core.L1_cognition.episodic_memory import (
-        commit_episode,
-        recall_relevant_experience,
-        get_successful_patterns,
         analyze_failure_patterns,
+        commit_episode,
+        create_episodic_memory,
         get_stats,
-        create_episodic_memory
+        get_successful_patterns,
+        recall_relevant_experience,
     )
-    
+
     # Verify all functions exist
     assert commit_episode is not None
     assert recall_relevant_experience is not None
@@ -198,18 +196,18 @@ def test_episodic_memory_integration():
 def test_interface_imports():
     """Verify that all interfaces can be imported successfully."""
     from agentic_core.interfaces import (
-        ExecutionContext,
-        ExecutionResult,
-        ExecutionPhase,
-        ICognitivePlane,
-        IActionPlane,
-        IOrchestrator,
         ActionRequest,
+        ExecutionContext,
+        ExecutionPhase,
+        ExecutionResult,
+        IActionPlane,
+        ICognitivePlane,
+        IOrchestrator,
+        OrchestratorConfig,
         PlanningRequest,
         PlanningResult,
-        OrchestratorConfig,
     )
-    
+
     # Verify all imports worked
     assert ExecutionContext is not None
     assert ExecutionResult is not None
@@ -221,7 +219,7 @@ def test_interface_imports():
     assert PlanningRequest is not None
     assert PlanningResult is not None
     assert OrchestratorConfig is not None
-    
+
     # Verify ExecutionPhase enum values
     assert hasattr(ExecutionPhase, 'MISSION')
     assert hasattr(ExecutionPhase, 'SCENE')
@@ -240,7 +238,7 @@ def test_config_to_dict():
         enable_reflection=False,
         metadata={"test": "boot"}
     )
-    
+
     config_dict = config.to_dict()
     assert config_dict["max_iterations"] == 5
     assert config_dict["enable_reflection"] is False
@@ -257,12 +255,12 @@ def test_execution_result_creation():
         errors=[],
         metadata={"task_id": "test-001"}
     )
-    
+
     assert result.success is True
     assert result.output == "Test output"
     assert result.final_state["status"] == "SUCCESS"
     assert result.metadata["task_id"] == "test-001"
-    
+
     result_dict = result.to_dict()
     assert result_dict["success"] is True
     assert result_dict["output"] == "Test output"

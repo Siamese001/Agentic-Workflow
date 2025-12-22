@@ -3,9 +3,14 @@ import os
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
-from outreach_engine_zse import (MAX_PITCH_REFINEMENTS, OUTREACH_ALLOWED_HOSTS,
-                                 SHADOW_MODE_ACTIVE, PitchGenerator,
-                                 ShadowModeEngine, execute_outreach_zse)
+from outreach_engine_zse import (
+    MAX_PITCH_REFINEMENTS,
+    OUTREACH_ALLOWED_HOSTS,
+    SHADOW_MODE_ACTIVE,
+    PitchGenerator,
+    ShadowModeEngine,
+    execute_outreach_zse,
+)
 
 
 @pytest.fixture

@@ -8,7 +8,9 @@ from datetime import datetime
 from typing import Any, Callable, Dict
 
 from apps_lic.L3_orchestration.l5_orchestrator.types import (
-    OutreachCycleState, OutreachExecutionPhase)
+    OutreachCycleState,
+    OutreachExecutionPhase,
+)
 from apps_shared.signal_bus import SignalType
 
 logger = logging.getLogger(__name__)
@@ -21,17 +23,17 @@ async def execute_all_phases(
     recipient_context: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Execute all phases in order."""
-    
+
     results = {}
-    
+
     for phase in orchestrator.phases:
         # Check phase condition
         if phase.condition and not phase.condition(recipient_context):
             logger.debug(f"Skipping phase {phase.name} - condition not met")
             continue
-        
+
         logger.info(f"  Executing phase: {phase.name}")
-        
+
         try:
             if phase.execution_mode == "parallel":
                 phase_result = await execute_phase_parallel(
@@ -41,9 +43,9 @@ async def execute_all_phases(
                 phase_result = await execute_phase_sequential(
                     orchestrator, phase, agents, cycle_state, recipient_context
                 )
-            
+
             results[phase.name] = phase_result
-            
+
             # Check for hard gate failure
             if phase.is_hard_gate and not phase_result.get("success", True):
                 logger.error(f"Hard gate {phase.name} failed - aborting")
@@ -53,7 +55,7 @@ async def execute_all_phases(
                         source="L5Orchestrator"
                     )
                 break
-                
+
         except Exception as e:
             logger.error(f"Phase {phase.name} failed: {e}")
             if orchestrator.signal_bus:
@@ -65,7 +67,7 @@ async def execute_all_phases(
                 )
             if phase.is_hard_gate:
                 break
-    
+
     return results
 
 
@@ -77,28 +79,28 @@ async def execute_phase_sequential(
     recipient_context: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Execute phase agents sequentially."""
-    
+
     results = {"success": True, "agents": {}}
-    
+
     for agent_name in phase.agents:
         if agent_name not in agents:
             logger.warning(f"Agent {agent_name} not found - skipping")
             continue
-        
+
         try:
             agent_result = await execute_agent(
                 orchestrator, agent_name, agents[agent_name], cycle_state, recipient_context
             )
             results["agents"][agent_name] = agent_result
-            
+
             if not agent_result.get("success", True):
                 results["success"] = False
-                
+
         except Exception as e:
             logger.error(f"Agent {agent_name} failed: {e}")
             results["agents"][agent_name] = {"success": False, "error": str(e)}
             results["success"] = False
-    
+
     return results
 
 
@@ -110,21 +112,21 @@ async def execute_phase_parallel(
     recipient_context: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Execute phase agents in parallel."""
-    
+
     tasks = []
     agent_names = []
-    
+
     for agent_name in phase.agents:
         if agent_name not in agents:
             continue
         agent_names.append(agent_name)
         tasks.append(execute_agent(orchestrator, agent_name, agents[agent_name], cycle_state, recipient_context))
-    
+
     results = {"success": True, "agents": {}}
-    
+
     if tasks:
         agent_results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         for agent_name, result in zip(agent_names, agent_results):
             if isinstance(result, Exception):
                 results["agents"][agent_name] = {"success": False, "error": str(result)}
@@ -133,7 +135,7 @@ async def execute_phase_parallel(
                 results["agents"][agent_name] = result
                 if not result.get("success", True):
                     results["success"] = False
-    
+
     return results
 
 
@@ -145,16 +147,16 @@ async def execute_agent(
     recipient_context: Dict[str, Any],
 ) -> Dict[str, Any]:
     """Execute a single agent with tracking."""
-    
+
     start_time = datetime.utcnow()
-    
+
     try:
         # Inject few-shot examples if available
         enhanced_context = inject_few_shots(orchestrator, agent_name, recipient_context)
-        
+
         # Execute agent
         result = await agent_callable(enhanced_context)
-        
+
         # Track execution
         execution_entry = {
             "agent": agent_name,
@@ -164,25 +166,25 @@ async def execute_agent(
             "timestamp": start_time.isoformat(),
         }
         cycle_state.execution_log.append(execution_entry)
-        
+
         # Track modifications
         if result.get("modified"):
             for item in result.get("modified", []):
                 cycle_state.modified_items.add(item)
-        
+
         # Track quality scores
         if result.get("quality_score"):
             cycle_state.quality_scores[agent_name] = result["quality_score"]
-        
+
         # Track messages generated
         if result.get("message"):
             orchestrator.outputs["message_generator"] = result["message"]
             cycle_state.messages_generated += 1
-        
+
         # Track personalization score
         if result.get("personalization_score"):
             cycle_state.personalization_score = result["personalization_score"]
-        
+
         # Emit signals based on result
         if orchestrator.signal_bus and not result.get("success", True):
             await orchestrator.signal_bus.emit(
@@ -190,13 +192,13 @@ async def execute_agent(
                 f"Agent {agent_name} reported failure",
                 source=agent_name
             )
-        
+
         # Update outputs
         if result.get("output"):
             orchestrator.outputs[agent_name] = result["output"]
-        
+
         return result
-        
+
     except Exception as e:
         logger.error(f"Agent {agent_name} execution error: {e}")
         cycle_state.execution_log.append({
@@ -211,15 +213,15 @@ async def execute_agent(
 
 def inject_few_shots(orchestrator, agent_name: str, context: Dict[str, Any]) -> Dict[str, Any]:
     """Inject relevant few-shot examples into context."""
-    
+
     try:
         from apps_shared.few_shot_library import FewShotLibrary
     except ImportError:
         return context
-    
+
     import copy
     enhanced = copy.deepcopy(context)
-    
+
     # Map agents to relevant few-shot patterns
     agent_patterns = {
         "hook_generator": ["outreach_hooks", "personalized_openers"],
@@ -228,7 +230,7 @@ def inject_few_shots(orchestrator, agent_name: str, context: Dict[str, Any]) -> 
         "tone_validator": ["tone_examples", "archetype_tones"],
         "personalization_engine": ["personalization_patterns"],
     }
-    
+
     patterns = agent_patterns.get(agent_name, [])
     if patterns:
         few_shots = {}
@@ -236,8 +238,8 @@ def inject_few_shots(orchestrator, agent_name: str, context: Dict[str, Any]) -> 
             few_shot = FewShotLibrary.get_all_patterns().get(pattern)
             if few_shot:
                 few_shots[pattern] = few_shot
-        
+
         if few_shots:
             enhanced["few_shot_examples"] = few_shots
-    
+
     return enhanced

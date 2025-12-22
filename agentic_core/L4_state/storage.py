@@ -5,14 +5,11 @@ Provides atomic storage operations with hot-swappable backends.
 Supports local disk (for development) and S3 (for production).
 """
 
-import asyncio
 import json
 import logging
-import os
 import time
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -338,11 +335,11 @@ class RedisDistributedLock:
     """
     Redis-based distributed lock for coordination across multiple processes.
     """
-    
+
     def __init__(self, redis_client=None, lock_timeout: int = 30):
         """
         Initialize the distributed lock.
-        
+
         Args:
             redis_client: Redis client instance
             lock_timeout: Default lock timeout in seconds
@@ -350,15 +347,15 @@ class RedisDistributedLock:
         self.redis = redis_client
         self.lock_timeout = lock_timeout
         self._local_cache = {}  # Fallback when Redis unavailable
-        
+
     async def acquire_lock(self, key: str, timeout: Optional[int] = None) -> bool:
         """
         Acquire a distributed lock.
-        
+
         Args:
             key: Lock key
             timeout: Custom timeout (uses default if None)
-            
+
         Returns:
             True if lock acquired, False otherwise
         """
@@ -368,21 +365,21 @@ class RedisDistributedLock:
                 return False
             self._local_cache[key] = time.time() + (timeout or self.lock_timeout)
             return True
-        
+
         try:
             lock_key = f"lock:{key}"
             expires_in = timeout or self.lock_timeout
-            
+
             # Use SET with NX and EX for atomic lock acquisition
             result = await self.redis.set(lock_key, "locked", ex=expires_in, nx=True)
-            
+
             if result:
                 LOGGER.debug(f"Acquired lock: {key}")
                 return True
             else:
                 LOGGER.debug(f"Failed to acquire lock: {key} (already held)")
                 return False
-                
+
         except Exception as e:
             LOGGER.error(f"Error acquiring lock {key}: {e}")
             # Fallback to local cache
@@ -390,14 +387,14 @@ class RedisDistributedLock:
                 self._local_cache[key] = time.time() + (timeout or self.lock_timeout)
                 return True
             return False
-    
+
     async def release_lock(self, key: str) -> bool:
         """
         Release a distributed lock.
-        
+
         Args:
             key: Lock key
-            
+
         Returns:
             True if lock released, False otherwise
         """
@@ -407,38 +404,38 @@ class RedisDistributedLock:
                 del self._local_cache[key]
                 return True
             return False
-        
+
         try:
             lock_key = f"lock:{key}"
             result = await self.redis.delete(lock_key)
-            
+
             if result:
                 LOGGER.debug(f"Released lock: {key}")
                 return True
             else:
                 LOGGER.warning(f"Lock not found for release: {key}")
                 return False
-                
+
         except Exception as e:
             LOGGER.error(f"Error releasing lock {key}: {e}")
             # Clean up local fallback
             if key in self._local_cache:
                 del self._local_cache[key]
             return False
-    
+
     async def is_locked(self, key: str) -> bool:
         """
         Check if a lock is currently held.
-        
+
         Args:
             key: Lock key
-            
+
         Returns:
             True if locked, False otherwise
         """
         if not self.redis:
             return key in self._local_cache
-        
+
         try:
             lock_key = f"lock:{key}"
             return await self.redis.exists(lock_key)
@@ -450,11 +447,11 @@ class RedisHotCache:
     """
     Redis-based hot cache with local fallback for frequently accessed data.
     """
-    
+
     def __init__(self, redis_client=None, default_ttl: int = 3600):
         """
         Initialize the hot cache.
-        
+
         Args:
             redis_client: Redis client instance
             default_ttl: Default TTL in seconds
@@ -463,16 +460,16 @@ class RedisHotCache:
         self.default_ttl = default_ttl
         self._local_cache = {}  # Fallback cache
         self._local_cache_times = {}
-        
+
     async def set_cache(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
         """
         Set a value in cache.
-        
+
         Args:
             key: Cache key
             value: Value to cache (must be JSON serializable)
             ttl: Time to live (uses default if None)
-            
+
         Returns:
             True if set successfully, False otherwise
         """
@@ -481,38 +478,38 @@ class RedisHotCache:
         except (TypeError, ValueError) as e:
             LOGGER.error(f"Cannot serialize cache value for {key}: {e}")
             return False
-        
+
         if not self.redis:
             # Local fallback
             self._local_cache[key] = value
             self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
             return True
-        
+
         try:
             cache_key = f"cache:{key}"
             expire_time = ttl or self.default_ttl
-            
+
             result = await self.redis.setex(cache_key, expire_time, serialized)
-            
+
             if result:
                 LOGGER.debug(f"Cached value: {key} (TTL: {expire_time}s)")
                 return True
             return False
-            
+
         except Exception as e:
             LOGGER.error(f"Error caching {key}: {e}")
             # Fallback to local cache
             self._local_cache[key] = value
             self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
             return True
-    
+
     async def get_cache(self, key: str) -> Optional[Any]:
         """
         Get a value from cache.
-        
+
         Args:
             key: Cache key
-            
+
         Returns:
             Cached value or None if not found
         """
@@ -528,11 +525,11 @@ class RedisHotCache:
                     if key in self._local_cache_times:
                         del self._local_cache_times[key]
             return None
-        
+
         try:
             cache_key = f"cache:{key}"
             serialized = await self.redis.get(cache_key)
-            
+
             if serialized:
                 value = json.loads(serialized)
                 LOGGER.debug(f"Cache hit: {key}")
@@ -540,7 +537,7 @@ class RedisHotCache:
             else:
                 LOGGER.debug(f"Cache miss: {key}")
                 return None
-                
+
         except Exception as e:
             LOGGER.error(f"Error getting cache {key}: {e}")
             # Try local fallback
@@ -548,14 +545,14 @@ class RedisHotCache:
                 if time.time() < self._local_cache_times.get(key, 0):
                     return self._local_cache[key]
             return None
-    
+
     async def delete_cache(self, key: str) -> bool:
         """
         Delete a value from cache.
-        
+
         Args:
             key: Cache key
-            
+
         Returns:
             True if deleted, False otherwise
         """
@@ -566,16 +563,16 @@ class RedisHotCache:
             if key in self._local_cache_times:
                 del self._local_cache_times[key]
             return True
-        
+
         try:
             cache_key = f"cache:{key}"
             result = await self.redis.delete(cache_key)
-            
+
             if result:
                 LOGGER.debug(f"Deleted cache: {key}")
                 return True
             return False
-            
+
         except Exception as e:
             LOGGER.error(f"Error deleting cache {key}: {e}")
             # Clean up local fallback
@@ -584,21 +581,21 @@ class RedisHotCache:
             if key in self._local_cache_times:
                 del self._local_cache_times[key]
             return False
-    
+
     async def clear_expired_local(self):
         """Clear expired entries from local fallback cache."""
         now = time.time()
         expired_keys = []
-        
+
         for key, expire_time in self._local_cache_times.items():
             if now >= expire_time:
                 expired_keys.append(key)
-        
+
         for key in expired_keys:
             if key in self._local_cache:
                 del self._local_cache[key]
             del self._local_cache_times[key]
-        
+
         if expired_keys:
             LOGGER.debug(f"Cleared {len(expired_keys)} expired local cache entries")
 
@@ -612,30 +609,30 @@ _hot_cache: Optional[RedisHotCache] = None
 async def initialize_redis(redis_url: str = "redis://localhost:6379"):
     """
     Initialize Redis client and distributed systems.
-    
+
     Args:
         redis_url: Redis connection URL
     """
     global _redis_client, _distributed_lock, _hot_cache
-    
+
     try:
         import redis.asyncio as redis
-        
+
         _redis_client = redis.from_url(redis_url, decode_responses=True)
-        
+
         # Test connection
         await _redis_client.ping()
-        
+
         _distributed_lock = RedisDistributedLock(_redis_client)
         _hot_cache = RedisHotCache(_redis_client)
-        
+
         LOGGER.info(f"Redis initialized at {redis_url}")
-        
+
     except ImportError:
         LOGGER.warning("redis not installed - using local fallback only")
         _distributed_lock = RedisDistributedLock()
         _hot_cache = RedisHotCache()
-        
+
     except Exception as e:
         LOGGER.error(f"Failed to connect to Redis: {e} - using local fallback")
         _distributed_lock = RedisDistributedLock()
@@ -687,11 +684,11 @@ class SignalLedger:
     """
     Simple ledger that logs ExecutionResults to a permanent log file.
     """
-    
+
     def __init__(self, storage_adapter: BlobStorageProvider, session_id: str):
         """
         Initialize the signal ledger.
-        
+
         Args:
             storage_adapter: Storage adapter for persistence
             session_id: Session identifier for this ledger
@@ -699,53 +696,52 @@ class SignalLedger:
         self.storage = storage_adapter
         self.session_id = session_id
         self.ledger_key = f"signal_ledger_{session_id}.jsonl"
-        
+
     async def append_result(self, result: Any) -> None:
         """
         Append an ExecutionResult to the ledger.
-        
+
         Args:
             result: ExecutionResult to log
         """
-        import time
         from datetime import datetime
-        
+
         # Convert result to dictionary
         if hasattr(result, '__dict__'):
             result_dict = result.__dict__
         else:
             result_dict = result
-            
+
         # Add timestamp
         result_dict['timestamp'] = datetime.utcnow().isoformat()
         result_dict['session_id'] = self.session_id
-        
+
         # Convert to JSON line
         json_line = json.dumps(result_dict) + '\n'
-        
+
         # Read existing ledger
         try:
             existing_data = await self.storage.read_blob(self.ledger_key)
             existing_lines = existing_data.decode('utf-8')
         except FileNotFoundError:
             existing_lines = ''
-            
+
         # Append new entry
         updated_data = existing_lines + json_line
-        
+
         # Write back to storage
         await self.storage.write_blob(
             self.ledger_key,
             updated_data.encode('utf-8'),
             metadata={'type': 'signal_ledger', 'session_id': self.session_id}
         )
-        
+
         LOGGER.debug(f"Appended result to signal ledger: {self.ledger_key}")
-        
+
     async def get_results(self) -> list:
         """
         Get all results from the ledger.
-        
+
         Returns:
             List of result dictionaries
         """
@@ -756,26 +752,26 @@ class SignalLedger:
             for line in lines:
                 if line.strip():
                     results.append(json.loads(line))
-                    
+
             return results
         except FileNotFoundError:
             return []
-    
+
     async def get_phase_summary(self, phase_name: Optional[str] = None) -> Dict[str, Any]:
         """
         Get a summary of signals from a specific phase or the most recent phase.
-        
+
         Args:
             phase_name: Specific phase to get summary for, or None for most recent
-            
+
         Returns:
             Dictionary with phase summary including signals, results, and recommendations
         """
         results = await self.get_results()
-        
+
         if not results:
             return {}
-        
+
         # Filter results by phase if specified
         if phase_name:
             phase_results = [r for r in results if r.get('phase') == phase_name]
@@ -788,10 +784,10 @@ class SignalLedger:
                 latest_phase = latest_result.get('phase')
                 if latest_phase:
                     phase_results = [r for r in results if r.get('phase') == latest_phase]
-        
+
         if not phase_results:
             return {}
-        
+
         # Extract signals and key information
         summary = {
             'phase': phase_results[0].get('phase', 'unknown'),
@@ -803,7 +799,7 @@ class SignalLedger:
             'failed_agents': [],
             'recommendations': []
         }
-        
+
         # Extract detailed information
         for result in phase_results:
             # Extract signals from the result
@@ -811,7 +807,7 @@ class SignalLedger:
                 signals = result['result'].get('signals', [])
                 if signals:
                     summary['signals'].extend(signals)
-            
+
             # Track failed agents
             if not result.get('passed', False):
                 agent_name = result.get('agent', 'unknown')
@@ -820,32 +816,32 @@ class SignalLedger:
                     'error': result.get('error', 'Unknown error'),
                     'details': result.get('details', '')
                 })
-        
+
         # Generate recommendations based on failures
         if summary['failed_count'] > 0:
             summary['recommendations'].append(f"Phase {summary['phase']} had {summary['failed_count']} failures")
             summary['recommendations'].append("Consider re-running failed agents before proceeding")
-        
+
         # Add specific recommendations for critical phases
         if summary['phase'] == 'integrity_seq' and summary['failed_count'] > 0:
             summary['recommendations'].append("CRITICAL: Integrity failures must be resolved before continuing")
-        
+
         return summary
 
 
 class HotBrainCache:
     """
     Redis-based hot brain cache for distributed coordination.
-    
+
     Provides fast, distributed caching and locking capabilities
     for multi-instance deployments. Falls back to local cache
     when Redis is unavailable.
     """
-    
+
     def __init__(self, redis_url: Optional[str] = None):
         """
         Initialize hot brain cache.
-        
+
         Args:
             redis_url: Redis connection URL (optional)
         """
@@ -853,7 +849,7 @@ class HotBrainCache:
         self.redis_client = None
         self._local_cache = {}  # Fallback local cache
         self._local_locks = {}  # Fallback local locks
-        
+
         # Try to connect to Redis
         if redis_url:
             try:
@@ -864,15 +860,15 @@ class HotBrainCache:
                 LOGGER.warning("redis not installed - using local cache only")
             except Exception as e:
                 LOGGER.warning(f"Redis connection failed: {e} - using local cache only")
-    
+
     async def acquire_lock(self, key: str, timeout: float = 30.0) -> bool:
         """
         Acquire a distributed lock.
-        
+
         Args:
             key: Lock key
             timeout: Lock timeout in seconds
-            
+
         Returns:
             True if lock acquired, False otherwise
         """
@@ -881,29 +877,29 @@ class HotBrainCache:
                 # Redis SET with NX and EX options for atomic lock
                 lock_key = f"lock:{key}"
                 result = await self.redis_client.set(
-                    lock_key, 
-                    "locked", 
-                    ex=timeout, 
+                    lock_key,
+                    "locked",
+                    ex=timeout,
                     nx=True
                 )
                 return result is not None
             except Exception as e:
                 LOGGER.error(f"Redis lock acquisition failed: {e}")
-        
+
         # Fallback to local lock
         if key in self._local_locks:
             return False
-        
+
         self._local_locks[key] = time.time() + timeout
         return True
-    
+
     async def release_lock(self, key: str) -> bool:
         """
         Release a distributed lock.
-        
+
         Args:
             key: Lock key
-            
+
         Returns:
             True if lock released, False otherwise
         """
@@ -914,14 +910,14 @@ class HotBrainCache:
                 return result > 0
             except Exception as e:
                 LOGGER.error(f"Redis lock release failed: {e}")
-        
+
         # Fallback to local lock
         if key in self._local_locks:
             del self._local_locks[key]
             return True
-        
+
         return False
-    
+
     async def get(self, key: str) -> Optional[Any]:
         """Get value from cache."""
         if self.redis_client:
@@ -931,14 +927,14 @@ class HotBrainCache:
                     return json.loads(value)
             except Exception as e:
                 LOGGER.error(f"Redis get failed: {e}")
-        
+
         # Fallback to local cache
         return self._local_cache.get(key)
-    
+
     async def set(self, key: str, value: Any, ttl: Optional[float] = None) -> bool:
         """Set value in cache."""
         serialized = json.dumps(value)
-        
+
         if self.redis_client:
             try:
                 if ttl:
@@ -948,11 +944,11 @@ class HotBrainCache:
                 return True
             except Exception as e:
                 LOGGER.error(f"Redis set failed: {e}")
-        
+
         # Fallback to local cache
         self._local_cache[key] = value
         return True
-    
+
     async def delete(self, key: str) -> bool:
         """Delete value from cache."""
         if self.redis_client:
@@ -960,7 +956,7 @@ class HotBrainCache:
                 await self.redis_client.delete(key)
             except Exception as e:
                 LOGGER.error(f"Redis delete failed: {e}")
-        
+
         # Fallback to local cache
         if key in self._local_cache:
             del self._local_cache[key]

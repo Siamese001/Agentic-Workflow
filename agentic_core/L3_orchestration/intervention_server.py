@@ -7,7 +7,7 @@ autonomous actions during validation missions.
 
 import asyncio
 import threading
-from typing import Optional, Any
+from typing import Any, Optional
 
 # Global event for pausing execution pending human approval
 approval_event = asyncio.Event()
@@ -31,9 +31,9 @@ def create_intervention_app():
     """Create and configure the FastAPI intervention application."""
     if not FASTAPI_AVAILABLE:
         return None
-    
+
     app = FastAPI(title="L5 Intervention UI", description="Human-in-the-Loop approval system")
-    
+
     @app.get("/", response_class=HTMLResponse)
     def get_dashboard():
         """Returns HTML dashboard with current plan and signals."""
@@ -41,7 +41,7 @@ def create_intervention_app():
         signals = list(ctx.signals) if ctx else []
         plan = getattr(ctx, 'strategic_plan', 'No plan available') if ctx else 'No context'
         modified = list(ctx.modified_files) if ctx else []
-        
+
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -63,29 +63,29 @@ def create_intervention_app():
             <div class="warning">
                 <h1>🚨 L5 INTERVENTION REQUIRED</h1>
                 <p>The autonomous system has detected a <strong>HIGH RISK</strong> action and is awaiting human approval.</p>
-                
+
                 <div class="signals">
                     <h3>Active Signals:</h3>
                     <ul>{"".join(f"<li>{s}</li>" for s in signals) or "<li>None</li>"}</ul>
                 </div>
-                
+
                 <div class="plan">
                     <h3>Strategic Plan:</h3>
                     <pre>{plan}</pre>
                 </div>
-                
+
                 <div class="files">
                     <h3>Modified Files ({len(modified)}):</h3>
                     <ul>{"".join(f"<li>{f}</li>" for f in modified[:10]) or "<li>None</li>"}</ul>
                     {f"<p>...and {len(modified) - 10} more</p>" if len(modified) > 10 else ""}
                 </div>
-                
+
                 <div>
                     <button class="approve" onclick="approve()">✅ APPROVE</button>
                     <button class="veto" onclick="veto()">🛑 VETO</button>
                 </div>
             </div>
-            
+
             <script>
                 async function approve() {{
                     await fetch('/approve', {{method: 'POST'}});
@@ -100,13 +100,13 @@ def create_intervention_app():
         </html>
         """
         return html
-    
+
     @app.post("/approve")
     def approve_action():
         """Approves the pending action and resumes execution."""
         approval_event.set()
         return {"status": "APPROVED", "message": "Execution will resume."}
-    
+
     @app.post("/veto")
     def veto_action():
         """Vetoes the pending action and signals abort."""
@@ -115,7 +115,7 @@ def create_intervention_app():
             _intervention_context.signals.add("VETOED")
         approval_event.set()
         return {"status": "VETOED", "message": "Execution will abort."}
-    
+
     @app.get("/status")
     def get_status():
         """Returns current status as JSON."""
@@ -125,7 +125,7 @@ def create_intervention_app():
             "signals": list(ctx.signals) if ctx else [],
             "modified_files_count": len(ctx.modified_files) if ctx else 0
         }
-    
+
     return app
 
 
@@ -142,13 +142,13 @@ def _run_intervention_server():
 def start_intervention_server(ctx: Optional[Any] = None):
     """Starts the intervention server in a daemon thread if not already running."""
     global _intervention_server_started, _intervention_context
-    
+
     if not FASTAPI_AVAILABLE:
         print("   ⚠️  FastAPI not available - skipping intervention server")
         return
-    
+
     _intervention_context = ctx
-    
+
     if not _intervention_server_started:
         t = threading.Thread(target=_run_intervention_server, daemon=True)
         t.start()
@@ -170,10 +170,10 @@ def reset_approval_event():
 async def wait_for_approval(timeout: Optional[float] = None) -> bool:
     """
     Wait for human approval.
-    
+
     Args:
         timeout: Optional timeout in seconds
-        
+
     Returns:
         True if approved, False if vetoed or timed out
     """
@@ -182,7 +182,7 @@ async def wait_for_approval(timeout: Optional[float] = None) -> bool:
             await asyncio.wait_for(approval_event.wait(), timeout=timeout)
         else:
             await approval_event.wait()
-        
+
         # Check if vetoed
         if _intervention_context and "VETOED" in _intervention_context.signals:
             return False

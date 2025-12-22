@@ -17,9 +17,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
 
 from apps_lic.outreach_engine.autonomous.context import OutreachEngineContext
 from apps_lic.outreach_engine.autonomous.proactive import (
-    OutreachCapabilityMonitor, OutreachCapabilityProfile,
-    OutreachHandoffReason, OutreachPredictiveHandoff, OutreachProactiveAgent,
-    OutreachProactiveScheduler, OutreachTaskPriority)
+    OutreachCapabilityMonitor,
+    OutreachCapabilityProfile,
+    OutreachHandoffReason,
+    OutreachPredictiveHandoff,
+    OutreachProactiveAgent,
+    OutreachProactiveScheduler,
+    OutreachTaskPriority,
+)
 
 
 @pytest.fixture
@@ -41,7 +46,7 @@ def valid_campaign():
 
 class TestOutreachTaskPriority:
     """Tests for OutreachTaskPriority enum."""
-    
+
     def test_priority_values(self):
         """Test priority values exist."""
         assert OutreachTaskPriority.CRITICAL.value == "critical"
@@ -51,7 +56,7 @@ class TestOutreachTaskPriority:
 
 class TestOutreachHandoffReason:
     """Tests for OutreachHandoffReason enum."""
-    
+
     def test_reason_values(self):
         """Test reason values exist."""
         assert OutreachHandoffReason.CAPABILITY_LIMIT.value == "capability_limit"
@@ -61,104 +66,104 @@ class TestOutreachHandoffReason:
 
 class TestOutreachProactiveScheduler:
     """Tests for OutreachProactiveScheduler."""
-    
+
     def test_init(self, ctx):
         """Test scheduler initialization."""
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         assert scheduler.ctx == ctx
         assert len(scheduler._tasks) == 0
-    
+
     def test_identify_tasks_with_lead_quality_signal(self, ctx):
         """Test task identification with lead quality signal."""
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         tasks = scheduler.identify_tasks()
-        
+
         assert len(tasks) >= 1
         assert any(t.name == "Lead Quality Remediation" for t in tasks)
-    
+
     def test_identify_tasks_with_compliance_signal(self, ctx):
         """Test task identification with compliance signal."""
         ctx.add_signal("COMPLIANCE_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         tasks = scheduler.identify_tasks()
-        
+
         assert len(tasks) >= 1
         compliance_task = next(t for t in tasks if t.name == "Compliance Review")
         assert compliance_task.requires_approval is True
         assert compliance_task.auto_execute is False
-    
+
     def test_identify_tasks_missing_schedule(self, ctx):
         """Test task identification for missing schedule."""
         ctx.current_campaign = {"name": "Test"}
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         tasks = scheduler.identify_tasks()
-        
+
         assert any(t.name == "Add Schedule" for t in tasks)
-    
+
     def test_identify_tasks_large_lead_list(self, ctx):
         """Test task identification for large lead list."""
         ctx.current_campaign = {"name": "Test"}
         ctx.leads = [{"company": f"Company {i}"} for i in range(150)]
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         tasks = scheduler.identify_tasks()
-        
+
         assert any(t.name == "Lead Segmentation" for t in tasks)
-    
+
     def test_get_pending_tasks_sorted(self, ctx):
         """Test pending tasks are sorted by priority."""
         ctx.add_signal("COMPLIANCE_ISSUE")  # CRITICAL
         ctx.add_signal("LEAD_QUALITY_ISSUE")  # HIGH
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         scheduler.identify_tasks()
         pending = scheduler.get_pending_tasks()
-        
+
         if len(pending) >= 2:
             assert pending[0].priority == OutreachTaskPriority.CRITICAL
-    
+
     def test_mark_executed(self, ctx):
         """Test marking task as executed."""
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         tasks = scheduler.identify_tasks()
         task_id = tasks[0].task_id
-        
+
         scheduler.mark_executed(task_id, "completed")
-        
+
         assert tasks[0].executed is True
-    
+
     def test_get_auto_executable_tasks(self, ctx):
         """Test getting auto-executable tasks."""
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         scheduler = OutreachProactiveScheduler(ctx)
-        
+
         scheduler.identify_tasks()
         auto_tasks = scheduler.get_auto_executable_tasks()
-        
+
         assert all(t.auto_execute for t in auto_tasks)
 
 
 class TestOutreachPredictiveHandoff:
     """Tests for OutreachPredictiveHandoff."""
-    
+
     def test_init(self, ctx):
         """Test handoff initialization."""
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         assert handoff.ctx == ctx
         assert len(handoff._handoff_requests) == 0
-    
+
     def test_register_capability(self, ctx):
         """Test registering capability profile."""
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         profile = OutreachCapabilityProfile(
             agent_name="TestAgent",
             supported_tasks=["email", "validation"],
@@ -166,15 +171,15 @@ class TestOutreachPredictiveHandoff:
             max_leads_per_batch=100,
             known_limitations=["complex_personalization"],
         )
-        
+
         handoff.register_capability(profile)
-        
+
         assert "TestAgent" in handoff._capability_profiles
-    
+
     def test_predict_handoff_lead_limit_exceeded(self, ctx):
         """Test handoff prediction when lead limit exceeded."""
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         profile = OutreachCapabilityProfile(
             agent_name="TestAgent",
             supported_tasks=[],
@@ -183,20 +188,20 @@ class TestOutreachPredictiveHandoff:
             known_limitations=[],
         )
         handoff.register_capability(profile)
-        
+
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
             lead_count=100,  # Exceeds max of 50
             confidence=0.8,
         )
-        
+
         assert request is not None
         assert request.reason == OutreachHandoffReason.CAPABILITY_LIMIT
-    
+
     def test_predict_handoff_low_confidence(self, ctx):
         """Test handoff prediction when confidence low."""
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         profile = OutreachCapabilityProfile(
             agent_name="TestAgent",
             supported_tasks=[],
@@ -205,48 +210,48 @@ class TestOutreachPredictiveHandoff:
             known_limitations=[],
         )
         handoff.register_capability(profile)
-        
+
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
             lead_count=50,
             confidence=0.5,  # Below threshold
         )
-        
+
         assert request is not None
         assert request.reason == OutreachHandoffReason.CONFIDENCE_LOW
-    
+
     def test_predict_handoff_compliance_signal(self, ctx):
         """Test handoff prediction with compliance signal."""
         ctx.add_signal("COMPLIANCE_ISSUE")
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
             lead_count=10,
             confidence=0.9,
         )
-        
+
         assert request is not None
         assert request.reason == OutreachHandoffReason.COMPLIANCE_REQUIRED
-    
+
     def test_predict_handoff_sensitive_contact(self, ctx):
         """Test handoff prediction with sensitive contact."""
         ctx.contacts = [{"name": "John", "title": "CEO", "email": "john@company.com"}]
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
             lead_count=1,
             confidence=0.9,
         )
-        
+
         assert request is not None
         assert request.reason == OutreachHandoffReason.SENSITIVE_CONTACT
-    
+
     def test_no_handoff_needed(self, ctx):
         """Test no handoff when everything is fine."""
         handoff = OutreachPredictiveHandoff(ctx)
-        
+
         profile = OutreachCapabilityProfile(
             agent_name="TestAgent",
             supported_tasks=[],
@@ -255,30 +260,30 @@ class TestOutreachPredictiveHandoff:
             known_limitations=[],
         )
         handoff.register_capability(profile)
-        
+
         request = handoff.predict_handoff_need(
             agent_name="TestAgent",
             lead_count=50,
             confidence=0.9,
         )
-        
+
         assert request is None
 
 
 class TestOutreachCapabilityMonitor:
     """Tests for OutreachCapabilityMonitor."""
-    
+
     def test_init(self, ctx):
         """Test monitor initialization."""
         monitor = OutreachCapabilityMonitor(ctx)
-        
+
         assert monitor.ctx == ctx
         assert len(monitor._execution_history) == 0
-    
+
     def test_record_execution(self, ctx):
         """Test recording execution."""
         monitor = OutreachCapabilityMonitor(ctx)
-        
+
         monitor.record_execution(
             agent_name="TestAgent",
             task_type="email_send",
@@ -286,31 +291,31 @@ class TestOutreachCapabilityMonitor:
             duration_ms=100,
             leads_processed=10,
         )
-        
+
         assert len(monitor._execution_history) == 1
         assert monitor._agent_stats["TestAgent"]["total_leads_processed"] == 10
-    
+
     def test_get_success_rate(self, ctx):
         """Test getting success rate."""
         monitor = OutreachCapabilityMonitor(ctx)
-        
+
         monitor.record_execution("TestAgent", "task1", True, 100, 5)
         monitor.record_execution("TestAgent", "task2", True, 100, 5)
         monitor.record_execution("TestAgent", "task3", False, 100, 5)
-        
+
         rate = monitor.get_success_rate("TestAgent")
-        
+
         assert abs(rate - 0.67) < 0.1
-    
+
     def test_get_capability_profile(self, ctx):
         """Test generating capability profile."""
         monitor = OutreachCapabilityMonitor(ctx)
-        
+
         monitor.record_execution("TestAgent", "email", True, 100, 10)
         monitor.record_execution("TestAgent", "validation", True, 100, 5)
-        
+
         profile = monitor.get_capability_profile("TestAgent")
-        
+
         assert profile.agent_name == "TestAgent"
         assert "email" in profile.supported_tasks
         assert "validation" in profile.supported_tasks
@@ -318,53 +323,53 @@ class TestOutreachCapabilityMonitor:
 
 class TestOutreachProactiveAgent:
     """Tests for OutreachProactiveAgent."""
-    
+
     @pytest.mark.asyncio
     async def test_execute(self, ctx):
         """Test agent execution."""
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         agent = OutreachProactiveAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.results.get("OutreachProactiveAgent") is not None
         assert ctx.results["OutreachProactiveAgent"]["passed"] is True
-    
+
     @pytest.mark.asyncio
     async def test_execute_with_compliance_handoff(self, ctx):
         """Test agent execution with compliance handoff."""
         ctx.add_signal("COMPLIANCE_ISSUE")
         agent = OutreachProactiveAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.has_signal("HANDOFF_RECOMMENDED")
-    
+
     @pytest.mark.asyncio
     async def test_execute_with_sensitive_contact(self, ctx):
         """Test agent execution with sensitive contact."""
         ctx.contacts = [{"name": "CEO", "title": "CEO", "email": "ceo@company.com"}]
         agent = OutreachProactiveAgent(ctx)
-        
+
         await agent.execute()
-        
+
         assert ctx.has_signal("HANDOFF_RECOMMENDED")
 
 
 class TestIntegration:
     """Integration tests for proactive components."""
-    
+
     @pytest.mark.asyncio
     async def test_full_proactive_workflow(self, ctx, valid_campaign):
         """Test full proactive workflow."""
         ctx.current_campaign = {"name": "Test"}  # Missing schedule
         ctx.add_signal("LEAD_QUALITY_ISSUE")
         ctx.leads = [{"company": "Test Corp"}]
-        
+
         scheduler = OutreachProactiveScheduler(ctx)
         handoff = OutreachPredictiveHandoff(ctx)
         monitor = OutreachCapabilityMonitor(ctx)
-        
+
         # Register capability
         profile = OutreachCapabilityProfile(
             agent_name="OutreachProactiveAgent",
@@ -374,11 +379,11 @@ class TestIntegration:
             known_limitations=[],
         )
         handoff.register_capability(profile)
-        
+
         # Identify tasks
         tasks = scheduler.identify_tasks()
         assert len(tasks) >= 1
-        
+
         # Execute tasks
         for task in scheduler.get_auto_executable_tasks():
             scheduler.mark_executed(task.task_id)
@@ -389,7 +394,7 @@ class TestIntegration:
                 duration_ms=100,
                 leads_processed=len(ctx.leads),
             )
-        
+
         # Verify
         assert monitor.get_success_rate("OutreachProactiveAgent") > 0
 

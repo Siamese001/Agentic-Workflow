@@ -33,7 +33,7 @@ class DispatchOutreachTools:
                 duration_ms=(time.time() - START) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-return ExecutionResult(
+            return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - START) * 1000
@@ -51,4 +51,3 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchOutreachTools(config).execute(action, params)
-

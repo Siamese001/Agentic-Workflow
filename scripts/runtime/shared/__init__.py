@@ -6,10 +6,14 @@ This is a minimal version to unblock testing while syntax errors are fixed.
 """
 
 # Core SDK Registry - Required for tests
-from scripts.runtime.shared.sdk_registry import (SDK_REGISTRY, SDKCategory,
-                                                 SDKEntry, get_vector_store,
-                                                 reset_all_clients,
-                                                 validate_sdk)
+from scripts.runtime.shared.sdk_registry import (
+    SDK_REGISTRY,
+    SDKCategory,
+    SDKEntry,
+    get_vector_store,
+    reset_all_clients,
+    validate_sdk,
+)
 
 # Core Models and Exceptions - Temporarily commented out due to missing imports
 # from .models import (

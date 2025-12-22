@@ -5,7 +5,6 @@ LOGGER = logging.getLogger(__name__)
 Provides scoring algorithms for retrieved documents in RAG systems.
 """
 
-import logging
 import math
 import re
 
@@ -39,8 +38,8 @@ class RAGScorer:
         Args:
             config: Optional configuration for scoring weights
         """
-        SELF.CONFIG = config or {}
-        SELF.WEIGHTS = self.config.get("weights", {
+        self.config = config or {}
+        self.weights = self.config.get("weights", {
             "relevance": 0.4,
             "semantic": 0.3,
             "keyword": 0.2,
@@ -48,7 +47,6 @@ class RAGScorer:
         })
 
     def score_documents(
-        """Docstring."""
         self,
         documents: List[Dict[str, Any]],
         query: str,
@@ -66,22 +64,22 @@ class RAGScorer:
         Returns:
             List of DocumentScore objects
         """
-        SCORES = []
+        scores = []
 
         for i, doc in enumerate(documents):
             # Calculate different score components
-            RELEVANCE = self._calculate_relevance(doc["content"], query)
-            SEMANTIC = self._calculate_semantic_score(
+            relevance = self._calculate_relevance(doc["content"], query)
+            semantic = self._calculate_semantic_score(
                 doc, query, query_embedding,
                 document_embeddings[i] if document_embeddings else None
             )
-            KEYWORD = self._calculate_keyword_score(doc["content"], query)
-            FRESHNESS = self._calculate_freshness_score(doc)
+            keyword = self._calculate_keyword_score(doc["content"], query)
+            freshness = self._calculate_freshness_score(doc)
 
             # Create document score
             doc_score = DocumentScore(
                 document_id=doc["id"],
-                CONTENT=doc["content"],
+                content=doc["content"],
                 relevance_score=relevance,
                 semantic_score=semantic,
                 keyword_score=keyword,
@@ -92,7 +90,7 @@ class RAGScorer:
             scores.append(doc_score)
 
         # Sort by final score
-        SCORES.SORT(KEY=lambda x: x.final_score, reverse=True)
+        scores.sort(key=lambda x: x.final_score, reverse=True)
         return scores
 
     def _calculate_relevance(self, content: str, query: str) -> float:
@@ -103,7 +101,7 @@ class RAGScorer:
         if not query_words:
             return 0.0
 
-        OVERLAP = len(content_words & query_words)
+        len(content_words & query_words)
         return min(overlap / len(query_words), 1.0)
 
     def _calculate_semantic_score(

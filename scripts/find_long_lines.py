@@ -31,11 +31,10 @@ def find_long_lines() -> None:
                                     f'  {line[:150]}...')
                                 ConfigurationService().logger.info('')
                 except Exception:
-ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
+                    ConfigurationService().logger.warning('Swallowed exception', exc_info=True)
     ConfigurationService().logger.info(
         f'\nTotal violations: {len(ConfigurationService().violations)}')
 
 
 if __name__ == '__main__':
     find_long_lines()
-

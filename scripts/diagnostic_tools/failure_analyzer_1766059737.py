@@ -19,7 +19,7 @@ class FailureAnalyzer:
 
         total_events = len(self.keys)
         counts = collections.Counter(self.keys)
-        
+
         # Sort results by frequency in descending order
         sorted_patterns = counts.most_common()
 
@@ -36,6 +36,6 @@ class FailureAnalyzer:
 if __name__ == "__main__":
     # Context-specific keys for diagnostic evaluation
     context_keys = [50, 19, 7, 8, 22, 2, 3, 4, 5, 60]
-    
+
     analyzer = FailureAnalyzer(context_keys)
     analyzer.analyze()

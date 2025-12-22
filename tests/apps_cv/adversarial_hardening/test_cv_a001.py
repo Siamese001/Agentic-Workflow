@@ -7,7 +7,6 @@ Adversarial test for robustness and security
 from unittest.mock import Mock
 
 import pytest
-
 from canon_validator import CanonValidator
 from l5_governance_policy_filter import l5_governance_policy_filter
 

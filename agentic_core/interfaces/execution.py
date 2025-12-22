@@ -22,7 +22,7 @@ class ExecutionPhase(Enum):
 @dataclass
 class ExecutionContext:
     """Context for agent execution containing mission, scene, and state.
-    
+
     Attributes:
         mission: The goal or task to accomplish
         scene: Environmental context and available resources
@@ -53,7 +53,7 @@ class ExecutionContext:
 @dataclass
 class ExecutionResult:
     """Result of an agent execution cycle.
-    
+
     Attributes:
         success: Whether execution completed successfully
         output: Final output/result of execution

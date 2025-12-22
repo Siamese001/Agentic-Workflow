@@ -10,11 +10,11 @@ MIN_LINES = 10                     # Minimum file size (anti-noise limit)
 
 # Law 3: The Law of The Void - Root directory is sacred
 ALLOWED_ROOT_FOLDERS = {
-    'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas', 
+    'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas',
     'prompt_governance', 'observability', 'config', 'tests', 'data', 'archives', 'scripts'
 }
 ALLOWED_ROOT_FILES = {
-    'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt', 
+    'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
     '.env', 'canon_validator_agentic.py', 'pytest.ini'
 }
 

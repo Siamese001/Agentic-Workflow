@@ -1,10 +1,11 @@
 """
 SafetyInspector Agent - Security Pattern Enforcer.
-KEYS: 2 (Print Statements), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
+KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
 """
 
 import ast
 import asyncio
+import re
 from typing import TYPE_CHECKING, List, Tuple
 
 if TYPE_CHECKING:
@@ -15,13 +16,21 @@ from ..base import SubAtomicAgent
 
 class SafetyInspector(SubAtomicAgent):
     """
-    KEYS: 2 (Print Statements), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
+    KEYS: 0 (Secrets), 1 (TODO/FIXME), 2 (Print), 3 (Debugger), 4 (Empty Except), 5 (Bare Except), 6 (Eval/Exec)
     ROLE: Security Pattern Enforcer. Detects dangerous patterns and patches them.
     """
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Enforcing Safety Patterns...")
         await asyncio.sleep(0)
+
+        # Key 0: Hardcoded secrets
+        passed, details = self.check_key_00_no_hardcoded_secrets()
+        self.ctx.report(self.name, 0, passed, details)
+
+        # Key 1: TODO/FIXME comments
+        passed, details = self.check_key_01_no_todo_fixme()
+        self.ctx.report(self.name, 1, passed, details)
 
         # Key 2: Print statements
         passed, details = self.check_key_02_no_print_statements()
@@ -148,4 +157,46 @@ class SafetyInspector(SubAtomicAgent):
                             violations.append(f"{file_path}: {pattern} in async context")
             except Exception:
                 continue
+        return (len(violations) == 0, violations)
+
+    def check_key_00_no_hardcoded_secrets(self) -> Tuple[bool, List[str]]:
+        """Check for hardcoded secrets."""
+        violations = []
+        secret_patterns = [
+            r"password\s*=\s*['\"].*['\"]",
+            r"api_key\s*=\s*['\"].*['\"]",
+            r"secret\s*=\s*['\"].*['\"]",
+            r"token\s*=\s*['\"].*['\"]",
+        ]
+
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    for pattern in secret_patterns:
+                        if re.search(pattern, content, re.IGNORECASE):
+                            violations.append(file_path)
+                            break
+            except Exception:
+                continue
+
+        return (len(violations) == 0, violations)
+
+    def check_key_01_no_todo_fixme(self) -> Tuple[bool, List[str]]:
+        """Check for TODO/FIXME comments."""
+        violations = []
+        todo_patterns = [r"#\s*TODO", r"#\s*FIXME", r"#\s*XXX", r"#\s*HACK", r"#\s*TEMP"]
+
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+                    for pattern in todo_patterns:
+                        matches = re.finditer(pattern, content, re.IGNORECASE)
+                        for match in matches:
+                            line_num = content[:match.start()].count("\n") + 1
+                            violations.append(f"{file_path}:{line_num}")
+            except Exception:
+                continue
+
         return (len(violations) == 0, violations)

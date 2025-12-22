@@ -14,8 +14,11 @@ LOGGER = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
-    from titanium_rag import (get_pipeline_stats, get_titanium_search_tool,
-                              get_titanium_search_with_sources)
+    from titanium_rag import (
+        get_pipeline_stats,
+        get_titanium_search_tool,
+        get_titanium_search_with_sources,
+    )
     TITANIUM_AVAILABLE = True
     LOGGER.info("Titanium RAG Pipeline imported successfully")
 except ImportError as e:

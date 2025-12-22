@@ -1,0 +1,241 @@
+"""
+Git Safety Handler - L5 Safety Layer
+
+Uses GitKraken MCP to manage rollback points and hardened commits
+for Atomic Fission events. Ensures L4 State is always protected with
+automated snapshots and verification.
+
+Strategy:
+- Create backup branch before fission
+- Stage and commit only after L5 verification passes
+- Update Redis source of truth
+- Enable safe rollback on failure
+"""
+
+import logging
+from datetime import datetime
+from typing import List, Dict
+
+logger = logging.getLogger(__name__)
+
+
+class GitSafetyHandler:
+    """
+    L5 Safety Layer: Uses GitKraken MCP to manage rollback points
+    and hardened commits for Atomic Fission events.
+    
+    Process:
+    1. Create backup branch before L4 mutation
+    2. Execute fission with L1 Cognition
+    3. Verify with Sequential Thinking MCP
+    4. Commit only if verification passes
+    5. Update Redis state registry
+    """
+    
+    def __init__(self, mcp_router):
+        """
+        Initialize Git Safety Handler.
+        
+        Args:
+            mcp_router: MCPRouter instance for MCP calls
+        """
+        self.router = mcp_router
+        logger.info("✅ Git Safety Handler initialized")
+    
+    async def create_rollback_point(self, file_path: str) -> str:
+        """
+        Creates a temporary branch before L4 mutation.
+        
+        Args:
+            file_path: File being fissioned
+            
+        Returns:
+            Branch name created
+        """
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        branch_name = f"fission_backup_{timestamp}"
+        
+        logger.info(f"🛡️  Creating rollback point: {branch_name}")
+        
+        try:
+            await self.router.call_mcp("gitkraken", {
+                "action": "create_branch",
+                "name": branch_name
+            })
+            
+            logger.info(f"   ✅ Backup branch created: {branch_name}")
+            return branch_name
+        
+        except Exception as e:
+            logger.error(f"   ❌ Failed to create backup branch: {e}")
+            raise
+    
+    async def verify_clean_state(self, file_path: str) -> bool:
+        """
+        Verify that the current branch is clean before fission.
+        
+        Args:
+            file_path: File to check
+            
+        Returns:
+            True if clean, False otherwise
+        """
+        logger.info(f"🔍 Verifying clean state for {file_path}")
+        
+        try:
+            result = await self.router.call_mcp("gitkraken", {
+                "action": "status",
+                "file": file_path
+            })
+            
+            is_clean = result.get("status") == "clean"
+            
+            if is_clean:
+                logger.info(f"   ✅ Clean state verified")
+            else:
+                logger.warning(f"   ⚠️  Uncommitted changes detected")
+            
+            return is_clean
+        
+        except Exception as e:
+            logger.error(f"   ❌ Failed to verify state: {e}")
+            return False
+    
+    async def stage_files(self, file_paths: List[str]) -> bool:
+        """
+        Stage files for commit.
+        
+        Args:
+            file_paths: List of file paths to stage
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        logger.info(f"📦 Staging {len(file_paths)} files")
+        
+        try:
+            for file_path in file_paths:
+                await self.router.call_mcp("gitkraken", {
+                    "action": "stage",
+                    "file": file_path
+                })
+                logger.info(f"   ✅ Staged: {file_path}")
+            
+            return True
+        
+        except Exception as e:
+            logger.error(f"   ❌ Failed to stage files: {e}")
+            return False
+    
+    async def finalize_fission(self, original_file: str, new_files: List[str]) -> bool:
+        """
+        Commits changes only after L5 Verification passes.
+        
+        Args:
+            original_file: Original monolithic file
+            new_files: List of new decomposed files
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        logger.info(f"🏁 Finalizing fission for {original_file}")
+        
+        try:
+            # Create commit message
+            summary = f"Hardened Fission: Decomposed {original_file} into {len(new_files)} modules"
+            
+            # Stage all involved files
+            all_files = [original_file] + new_files
+            if not await self.stage_files(all_files):
+                logger.error("   ❌ Failed to stage files")
+                return False
+            
+            # Execute the hardened commit
+            await self.router.call_mcp("gitkraken", {
+                "action": "commit",
+                "message": summary
+            })
+            
+            logger.info(f"   ✅ Hardened commit successful")
+            
+            # Update Redis 'Source of Truth'
+            await self.router.call_mcp("redis", {
+                "action": "set",
+                "key": f"status:{original_file}",
+                "value": "FISSION_COMPLETE"
+            })
+            
+            logger.info(f"   ✅ Redis state updated")
+            
+            return True
+        
+        except Exception as e:
+            logger.error(f"   ❌ Fission finalization failed: {e}")
+            return False
+    
+    async def rollback_to_branch(self, branch_name: str) -> bool:
+        """
+        Rollback to a specific backup branch.
+        
+        Args:
+            branch_name: Branch to rollback to
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        logger.info(f"🔙 Rolling back to branch: {branch_name}")
+        
+        try:
+            await self.router.call_mcp("gitkraken", {
+                "action": "checkout",
+                "branch": branch_name
+            })
+            
+            logger.info(f"   ✅ Rollback successful")
+            return True
+        
+        except Exception as e:
+            logger.error(f"   ❌ Rollback failed: {e}")
+            return False
+    
+    async def get_commit_history(self, file_path: str, limit: int = 10) -> List[Dict]:
+        """
+        Get commit history for a file.
+        
+        Args:
+            file_path: File to get history for
+            limit: Maximum number of commits to retrieve
+            
+        Returns:
+            List of commit information
+        """
+        logger.info(f"📜 Getting commit history for {file_path}")
+        
+        try:
+            result = await self.router.call_mcp("gitkraken", {
+                "action": "log",
+                "file": file_path,
+                "limit": limit
+            })
+            
+            commits = result.get("commits", [])
+            logger.info(f"   ✅ Retrieved {len(commits)} commits")
+            
+            return commits
+        
+        except Exception as e:
+            logger.error(f"   ❌ Failed to get commit history: {e}")
+            return []
+
+
+def get_git_safety_handler(mcp_router) -> GitSafetyHandler:
+    """
+    Factory function to create GitSafetyHandler instance.
+    
+    Args:
+        mcp_router: MCPRouter instance
+        
+    Returns:
+        GitSafetyHandler instance
+    """
+    return GitSafetyHandler(mcp_router=mcp_router)

@@ -1,9 +1,8 @@
-import unittest
-import json
+import asyncio
 import os
 import sys
 import tempfile
-import asyncio
+import unittest
 from unittest.mock import MagicMock, patch
 
 # Add project directories to Python path
@@ -13,13 +12,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '03_runtime', 'shared
 # --- Import your actual modules ---
 # Adjust these imports if your folder structure is nested (e.g. apps_rg.orchestrator)
 try:
-    from orchestrator import validate_manifest_integrity, ensure_manifest_freshness
     from agent_logic_connectivity import CanonValidator
-    from apps_rg.L3_orchestration.hardened_orchestrator import HardenedOrchestrator, TERMINAL_ERRORS
     from connection_manager import InfrastructureError
+    from orchestrator import validate_manifest_integrity
+
+    from apps_rg.L3_orchestration.hardened_orchestrator import HardenedOrchestrator
 except ImportError as e:
     pass
-pass
 # print(f"❌ Setup Error: Could not import project modules. {e}")  # [Security Fix]
     # print("Ensure this script is in the root directory and your PYTHONPATH is set.")  # [Security Fix]
     sys.exit(1)

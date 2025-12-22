@@ -12,7 +12,7 @@ import statistics
 
 """
 Failure Analyzer Diagnostic Tool
-Purpose: Analyze patterns in recurring failures by calculating frequency 
+Purpose: Analyze patterns in recurring failures by calculating frequency
 and statistical distribution of failure keys.
 Usage: Run script directly to analyze provided keys or import analyze_failures.
 """
@@ -44,7 +44,7 @@ def analyze_failures(keys):
     print(f"Standard Deviation:        {stdev_val:.2f}")
     print(f"Median Key ID:             {median_val}")
     print(f"Average Signature Gap:     {avg_gap:.2f}")
-    
+
     print(f"\n{' TOP RECURRING PATTERNS ':*^40}")
     for key, freq in counts.most_common(3):
         print(f"Key ID: {key: <15} | Frequency: {freq}")

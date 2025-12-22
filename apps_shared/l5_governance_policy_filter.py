@@ -131,10 +131,10 @@ _l5_filter = None
 
 class L5GovernanceFilterManager:
     """Manager for L5 Governance Policy Filter without global state"""
-    
+
     def __init__(self):
         self._instance = None
-    
+
     def get_filter(self) -> L5GovernancePolicyFilter:
         """Get or create the L5 Governance Policy Filter instance"""
         if self._instance is None:

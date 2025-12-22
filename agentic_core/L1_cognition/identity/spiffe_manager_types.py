@@ -1,6 +1,7 @@
-"""Types and models for spiffe_manager."""
-
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+import time
 from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
@@ -60,12 +61,14 @@ class AgentIdentity:
         Returns:
             Dictionary representation
         """
-        return {'spiffe_id': self.spiffe_id, 'agent_type': self.agent_type.value, 'trust_domain': se
-                lf.trust_domain.value,
-                    'public_key': self.public_key,
-                    'issued_at': self.issued_at,
-                    'expires_at':
-                self.expires_at, 'capabilities': self.capabilities, 'metadata': self.metadata}
+        return {'spiffe_id': self.spiffe_id,
+                'agent_type': self.agent_type.value,
+                'trust_domain': self.trust_domain.value,
+                'public_key': self.public_key,
+                'issued_at': self.issued_at,
+                'expires_at': self.expires_at,
+                'capabilities': self.capabilities,
+                'metadata': self.metadata}
 
     def get_namespace(self) -> str:
         """Extract namespace from SPIFFE ID.
@@ -74,8 +77,8 @@ class AgentIdentity:
             Namespace portion of SPIFFE ID
         """
         PARTS = self.spiffe_id.split('/')
-        if len(parts) >= 4:
-            return parts[3]
+        if len(PARTS) >= 4:
+            return PARTS[3]
         return 'default'
 
     def get_agent_name(self) -> str:
@@ -85,8 +88,8 @@ class AgentIdentity:
             Agent name portion of SPIFFE ID
         """
         PARTS = self.spiffe_id.split('/')
-        if len(parts) >= 5:
-            return parts[4]
+        if len(PARTS) >= 5:
+            return PARTS[4]
         return 'unknown'
 
 
@@ -95,7 +98,7 @@ class IdentityVerificationResult:
     """Result of identity verification."""
     valid: bool
     identity: Optional[AgentIdentity] = None
-    REASON: STR = ''
+    reason: str = ''
     verified_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:

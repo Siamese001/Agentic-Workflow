@@ -6,10 +6,10 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
 import logging
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-from enum import Enum
 from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -108,7 +108,7 @@ class ScriptsPlanningOrchestrator:
             return result
 
         except Exception as e:
-self.logger.error(f"Scripts planning failed: {str(e)}")
+            self.logger.error(f"Scripts planning failed: {str(e)}")
             return ScriptsPlanningResult(
                 success=False,
                 errors=[str(e)],
@@ -304,4 +304,3 @@ if __name__ == "__main__":
     ]
 
     result = plan_script_execution(example_tasks)
-

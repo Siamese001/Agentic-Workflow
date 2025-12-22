@@ -9,7 +9,9 @@ import asyncio
 import logging
 
 from scripts.runtime.shared.health_check import (
-    HealthCheckRegistry, initialize_system_health_checks)
+    HealthCheckRegistry,
+    initialize_system_health_checks,
+)
 
 LOGGER = logging.getLogger(__name__)
 

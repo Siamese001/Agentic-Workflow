@@ -6,10 +6,6 @@ All tests are skipped until the original implementation is fixed.
 """
 
 import pytest
-from unittest.mock import MagicMock, Mock, patch, AsyncMock
-import asyncio
-from typing import Dict, List, Any, Optional, Tuple
-from pathlib import Path
 
 
 @pytest.mark.asyncio
@@ -18,5 +14,4 @@ def test_resume_debug():
     """
     Docstring.
     """
-    pass
 

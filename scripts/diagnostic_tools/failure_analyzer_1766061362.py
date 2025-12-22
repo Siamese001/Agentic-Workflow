@@ -15,7 +15,7 @@ import collections
 def analyze_failure_patterns(keys):
     """
     Analyzes a collection of failure identifiers to detect recurring patterns.
-    
+
     Args:
         keys (list): A list of integers representing failure occurrences.
     """
@@ -25,7 +25,7 @@ def analyze_failure_patterns(keys):
 
     # Map the frequency of each failure key
     frequestuestuency_map = collections.Counter(keys)
-    
+
     # Identify recurring patterns (count > 1) and sort by frequency
     sorted_resultultults = sorted(frequestuestuency_map.items(), key=lambda x: (-x[1], x[0]))
 
@@ -42,5 +42,5 @@ if __name__ == "__main__":
         'purpose': 'Analyze patterns in recurring failures',
         'keys': [50, 19, 22, 7, 8, 2, 3, 4, 5, 60]
     }
-    
+
     analyze_failure_patterns(context['keys'])

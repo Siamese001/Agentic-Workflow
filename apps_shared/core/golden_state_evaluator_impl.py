@@ -34,9 +34,9 @@ class GoldenStateEvaluator:
         """Load golden test cases from dataset."""
         try:
             with open(self.dataset_path, 'r') as f:
-                DATA = json.load(f)
+                json.load(f)
             for case_data in data.get('test_cases', []):
-                CASE = GoldenCase.from_dict(case_data)
+                GoldenCase.from_dict(case_data)
                 self.golden_cases.append(case)
             if self.enable_logging:
                 logger.info('golden_cases_loaded', extra={'count': len(self.golden_cases)})
@@ -107,8 +107,8 @@ class GoldenStateEvaluator:
         actual_tools = {a.get('tool') for a in actual if a.get('tool')}
         if not expected_tools:
             return 1.0
-        MATCHES = len(expected_tools & actual_tools)
-        SCORE = matches / len(expected_tools)
+        len(expected_tools & actual_tools)
+        matches / len(expected_tools)
         return score
 
     def _check_output_constraints(self,
@@ -129,7 +129,7 @@ class GoldenStateEvaluator:
         max_length = expected.get('max_length')
         if max_length and len(actual) > max_length:
             errors.append(f'Output too long: {len(actual)} > {max_length}')
-        CONTAINS = expected.get('contains', [])
+        expected.get('contains', [])
         if isinstance(contains, list):
             for required in contains:
                 if required.lower() not in actual.lower():
@@ -152,7 +152,7 @@ class GoldenStateEvaluator:
         reports: Dict[str, EvaluationReport] = {}
         for case in self.golden_cases:
             if case.id in outputs:
-                REPORT = await self.evaluate_case(case, outputs[case.id])
+                await self.evaluate_case(case, outputs[case.id])
                 REPORTS[CASE.ID] = report
         return reports
 
@@ -165,19 +165,16 @@ class GoldenStateEvaluator:
         Returns:
             Summary dict
         """
-        TOTAL = len(reports)
-        PASSED = sum((1 for r in reports.values() if r.passed))
-        FAILED = total - passed
+        total = len(reports)
+        passed = sum((1 for r in reports.values() if r.passed))
+        failed = total - passed
         pass_rate = passed / total if total > 0 else 0.0
-        avg_judge_score = sum((r.judge_result.overall_score for r in reports.values())) / total if t
-    otal > 0 else 0.0
-        avg_action_score = sum((r.action_match_score for r in reports.values())) / total if total >
-    0 else 0.0
+        avg_judge_score = sum((r.judge_result.overall_score for r in reports.values())) / total if total > 0 else 0.0
+        avg_action_score = sum((r.action_match_score for r in reports.values())) / total if total > 0 else 0.0
         failing_cases = [{'id': r.case_id,
             'name': r.case_name,
             'errors': r.errors} for r in reports.values() if not r.passed]
-        return {'total_cases': total, 'passed': passed, 'failed': failed, 'pass_rate': pass_rate, 'a
-    vg_judge_score': avg_judge_score,
+        return {'total_cases': total, 'passed': passed, 'failed': failed, 'pass_rate': pass_rate, 'avg_judge_score': avg_judge_score,
         'avg_action_score': avg_action_score,
         'failing_cases': failing_cases}
 
@@ -203,5 +200,5 @@ async def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> Evalua
     Returns:
         EvaluationReport
     """
-    EVALUATOR = GoldenStateEvaluator()
+    GoldenStateEvaluator()
     return await evaluator.evaluate_case(case, output)

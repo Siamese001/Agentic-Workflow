@@ -16,43 +16,33 @@ Tests are adjusted to match actual implementation behavior.
 
 
 
-import pytest
-
-import os
-
 import json
-
-import tempfile
-
+import os
 import shutil
-
-import time
-
 import signal
-
 import sys
-
-from unittest.mock import MagicMock, patch, mock_open
-
+import tempfile
+import time
+from typing import Any, Dict
+from unittest.mock import MagicMock
 from unittest.mock import call as mock_call
+from unittest.mock import mock_open, patch
 
-from typing import Dict, Any
-
-
+import pytest
+from canon_validator_engine import execute_dependency_refactor_zlm
+from network_utils import NetworkViolationError
+from outreach_engine_zse import execute_outreach_zse
+from resume_engine import generate_personalized_cover_letter
+from security_utils import PromptFirewall, SecurityException
+from watchdog_sidecar import DeadManSwitch
 
 # Import all engines and utilities
 
-from canon_validator_engine import execute_dependency_refactor_zlm
 
-from resume_engine import generate_personalized_cover_letter
 
-from outreach_engine_zse import execute_outreach_zse
 
-from watchdog_sidecar import DeadManSwitch
 
-from security_utils import SecurityException, PromptFirewall
 
-from network_utils import NetworkViolationError
 
 
 
@@ -788,9 +778,9 @@ class TestSecurityProtocols:
 
         # Test P8: Egress filter blocks unauthorized domains
 
-        from network_utils import strict_egress_filter
-
         import socket
+
+        from network_utils import strict_egress_filter
 
 
 

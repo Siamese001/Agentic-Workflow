@@ -10,10 +10,10 @@ mutable LLM-owned scratchpad space.
 
 import logging
 import uuid
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel, Field
 
@@ -217,7 +217,7 @@ class SignalContext(BaseModel):
 
         # In a real implementation, this would validate against the schema
         # For now, we'll just move the content
-        content = self.soft_state.drafts[key]
+        self.soft_state.drafts[key]
 
         # Add to HardState (creates new instance since it's frozen)
         new_hard = self.hard_state.add_trace(

@@ -12,15 +12,15 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+# Import validator and engine
+from canon_validator import CanonValidator
+from canon_validator_engine import execute_cost_governed_vulnerability_check
+
 # Import shared test utilities
 from hydrofoil_test_utils import (
     create_hydrofoil_validator,
     create_hydrofoil_validator_no_whitelist,
 )
-
-# Import validator and engine
-from canon_validator import CanonValidator
-from canon_validator_engine import execute_cost_governed_vulnerability_check
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

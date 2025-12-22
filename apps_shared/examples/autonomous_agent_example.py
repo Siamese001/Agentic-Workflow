@@ -12,9 +12,11 @@ import asyncio
 import logging
 
 # Import autonomous components
-from runtime.core.autonomous_subatomic_hop import (AutonomousHopConfig,
-                                                   AutonomyConfig,
-                                                   create_autonomous_hop)
+from runtime.core.autonomous_subatomic_hop import (
+    AutonomousHopConfig,
+    AutonomyConfig,
+    create_autonomous_hop,
+)
 
 # Import hardening components
 
@@ -65,47 +67,45 @@ async def demonstrate_episodic_memory():
         memory_min_rating=0.6
     )
 
-    CONFIG = AutonomousHopConfig(
-        AUTONOMY=autonomy_config,
+    config = AutonomousHopConfig(
+        autonomy=autonomy_config,
         storage_path="./demo_memory_store"
     )
 
     # Create autonomous hop
-    HOP = create_autonomous_hop(
+    hop = create_autonomous_hop(
         hop_function=research_task,
-        CONFIG=config,
+        config=config,
         initial_context={"agent_role": "RESEARCHER"}
     )
 
     # First execution - will be committed to memory
     # print("\nFirst execution (learning phase):") # NOTE: Replace with logger (Key 02)
-    RESULT1 = await hop.run(
-        GOAL="Analyze market trends for AI technology",
-        CONTEXT={"year": 2024}
+    result1 = await hop.run(
+        goal="Analyze market trends for AI technology",
+        context={"year": 2024}
     )
     # print(f"Result: {result1}") # NOTE: Replace with logger (Key 02)
 
     # Commit to memory
     await hop.commit_execution_to_memory(
-        TASK="Analyze market trends for AI technology",
-        PLAN="Research AI market trends using available tools",
-        RESULT=result1,
-        SUCCESS=True,
+        task="Analyze market trends for AI technology",
+        plan="Research AI market trends using available tools",
+        result=result1,
+        success=True,
         tools_used=["search_tool", "analysis_tool"]
     )
 
     # Second execution - will recall from memory
     # print("\nSecond execution (with memory recall):") # NOTE: Replace with logger (Key 02)
-    RESULT2 = await hop.run(
-        GOAL="Research AI market trends and analysis",
-        CONTEXT={"year": 2024}
+    result2 = await hop.run(
+        goal="Research AI market trends and analysis",
+        context={"year": 2024}
     )
     # print(f"Result: {result2}") # NOTE: Replace with logger (Key 02)
 
     if hop.memory_context:
-        # print(f"(
-            \nMemory recalled: {hop.memory_context[:200]}...
-        )" # NOTE: Replace with logger (Key 02)
+        pass  # print(f"\nMemory recalled: {hop.memory_context[:200]}...") # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_reasoning_kernel():
@@ -120,29 +120,27 @@ async def demonstrate_reasoning_kernel():
         enable_tree_of_thoughts=True
     )
 
-    CONFIG = AutonomousHopConfig(autonomy=autonomy_config)
+    config = AutonomousHopConfig(autonomy=autonomy_config)
 
     # Create autonomous hop
-    HOP = create_autonomous_hop(
+    hop = create_autonomous_hop(
         hop_function=coding_task,
-        CONFIG=config,
+        config=config,
         initial_context={"agent_role": "CODER"}
     )
 
     # Execute with reasoning
     # print("\nExecuting with System 2 thinking:") # NOTE: Replace with logger (Key 02)
-    RESULT = await hop.run(
-        GOAL="Create a Python function to analyze data and generate visualizations",
-        CONSTRAINTS=["Must handle large datasets", "Should be memory efficient"],
-        CONTEXT={"requirements": ["pandas", "matplotlib"]}
+    result = await hop.run(
+        goal="Create a Python function to analyze data and generate visualizations",
+        constraints=["Must handle large datasets", "Should be memory efficient"],
+        context={"requirements": ["pandas", "matplotlib"]}
     )
 
     # print(f"Result: {result}") # NOTE: Replace with logger (Key 02)
 
     if hop.reasoning_trace:
-        # print(f"(
-            \nReasoning confidence: {hop.reasoning_trace.confidence:.2f}
-        )" # NOTE: Replace with logger (Key 02)
+        pass  # print(f"\nReasoning confidence: {hop.reasoning_trace.confidence:.2f}") # NOTE: Replace with logger (Key 02)
         # print(f"Candidates considered: {len(hop.reasoning_trace.candidates)}") # NOTE: Replace with logger (Key 02)
         # print(f"Reasoning time: {hop.reasoning_trace.reasoning_time_ms:.0f}ms") # NOTE: Replace with logger (Key 02)
 
@@ -179,7 +177,7 @@ async def demonstrate_dynamic_tools():
     if hop.selected_tools:
         # print(f"\nTools discovered and used:") # NOTE: Replace with logger (Key 02)
         for tool in hop.selected_tools:
-            # print(f"  - {tool['name']} (relevance: {tool['relevance']:.2f})") # NOTE: Replace with logger (Key 02)
+            pass  # print(f"  - {tool['name']} (relevance: {tool['relevance']:.2f})") # NOTE: Replace with logger (Key 02)
 
 
 async def demonstrate_recursive_planning():
@@ -259,13 +257,13 @@ async def demonstrate_full_autonomy():
     # print("\n=== Autonomy Insights ===") # NOTE: Replace with logger (Key 02)
 
     if hop.memory_context:
-        # print("✓ Episodic memory: Retrieved relevant past experience") # NOTE: Replace with logger (Key 02)
+        pass  # print("✓ Episodic memory: Retrieved relevant past experience") # NOTE: Replace with logger (Key 02)
 
     if hop.reasoning_trace:
-        # print(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # NOTE: Replace with logger (Key 02)
+        pass  # print(f"✓ Reasoning kernel: Deliberated with {hop.reasoning_trace.confidence:.2f} confidence") # NOTE: Replace with logger (Key 02)
 
     if hop.selected_tools:
-        # print(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # NOTE: Replace with logger (Key 02)
+        pass  # print(f"✓ Dynamic tools: Discovered {len(hop.selected_tools)} relevant tools") # NOTE: Replace with logger (Key 02)
 
     # Commit the full execution to memory
     await hop.commit_execution_to_memory(

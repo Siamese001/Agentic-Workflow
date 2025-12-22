@@ -2,12 +2,11 @@ import logging
 import os
 from typing import List
 
-from tqdm import tqdm
-
 from agent_logic_connectivity import CanonValidator
 
 # Import our hardened infrastructure
 from schemas_connectivity import CanonEntry, CanonMetadata
+from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(
@@ -112,8 +111,7 @@ class ETLPipeline:
                             self.stats["errors"] += 1
 
                 except Exception as e:
-pass
-logging.error(f"Failed to process {file_path}: {e}")
+                    logging.error(f"Failed to process {file_path}: {e}")
                     self.stats["errors"] += 1
 
                 pbar.update(1)

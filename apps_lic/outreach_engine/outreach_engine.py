@@ -4,15 +4,31 @@ import time
 from typing import Any, Dict, Optional
 
 # Import core utilities for mock functions
-from core_utils import (add_observations, browser_click, browser_navigate,
-                        browser_type, commit_transaction, get_current_time,
-                        log_action, read_text_file, register_process,
-                        search_records, start_transaction, string_get,
-                        string_set, transaction_set_with_ttl, watch_key)
+from core_utils import (
+    add_observations,
+    browser_click,
+    browser_navigate,
+    browser_type,
+    commit_transaction,
+    get_current_time,
+    log_action,
+    read_text_file,
+    register_process,
+    search_records,
+    start_transaction,
+    string_get,
+    string_set,
+    transaction_set_with_ttl,
+    watch_key,
+)
+
 # Import hardened MCP functions
-from mcp_hardening import (ensure_brand_compliance,
-                           execute_cost_controlled_search,
-                           get_brand_style_guide)
+from mcp_hardening import (
+    ensure_brand_compliance,
+    execute_cost_controlled_search,
+    get_brand_style_guide,
+)
+
 # Import egress filter for Protocol 8
 from network_utils import strict_egress_filter
 

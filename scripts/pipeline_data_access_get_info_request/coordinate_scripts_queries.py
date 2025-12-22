@@ -6,10 +6,10 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 """
 
 import logging
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 

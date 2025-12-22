@@ -31,9 +31,30 @@ class CodeStyleGuardian(SubAtomicAgent):
 
         self._cleanup_empty_files()
 
-        self.ctx.report(self.name, 11, *self._check_no_trailing_whitespace())
-        self.ctx.report(self.name, 12, *self._check_no_missing_newline())
-        self.ctx.report(self.name, 13, *self._check_no_tabs())
+        # Key 11: Trailing whitespace - CHECK AND AUTO-FIX
+        passed, details = self._check_no_trailing_whitespace()
+        if not passed:
+            print("      🔧 Auto-fixing trailing whitespace...")
+            self._fix_trailing_whitespace()
+            passed, details = self._check_no_trailing_whitespace()
+        self.ctx.report(self.name, 11, passed, details)
+
+        # Key 12: Missing newline - CHECK AND AUTO-FIX
+        passed, details = self._check_no_missing_newline()
+        if not passed:
+            print("      🔧 Auto-fixing missing newlines...")
+            self._fix_missing_newlines(details)
+            passed, details = self._check_no_missing_newline()
+        self.ctx.report(self.name, 12, passed, details)
+
+        # Key 13: Tabs - CHECK AND AUTO-FIX
+        passed, details = self._check_no_tabs()
+        if not passed:
+            print("      🔧 Auto-fixing tab characters...")
+            self._fix_tabs(details)
+            passed, details = self._check_no_tabs()
+        self.ctx.report(self.name, 13, passed, details)
+
         self.ctx.report(self.name, 10, *self._check_line_length())
         self.ctx.report(self.name, 15, *self._check_magic_numbers())
         self.ctx.report(self.name, 16, *self._check_nesting_depth())
@@ -43,6 +64,9 @@ class CodeStyleGuardian(SubAtomicAgent):
 
         naming_violations = await self._check_naming()
         self.ctx.report(self.name, 47, len(naming_violations) == 0, naming_violations)
+
+        # Signal AST_VALID after cleanup
+        self.ctx.signal_ast_valid()
 
     def _cleanup_empty_files(self):
         """Remove empty files from the project."""
@@ -138,6 +162,61 @@ class CodeStyleGuardian(SubAtomicAgent):
             except Exception:
                 pass
         return (not violations, violations)
+
+    def _fix_trailing_whitespace(self):
+        """Auto-fix trailing whitespace in all Python files."""
+        fixed_count = 0
+        for file_path in self.ctx.python_files:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    lines = f.readlines()
+
+                new_lines = [line.rstrip() + '\n' if line.endswith('\n') else line.rstrip() for line in lines]
+
+                if lines != new_lines:
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.writelines(new_lines)
+                    fixed_count += 1
+                    self.ctx.modified_files.add(file_path)
+            except Exception:
+                pass
+        if fixed_count:
+            print(f"      ✅ Fixed trailing whitespace in {fixed_count} files")
+
+    def _fix_missing_newlines(self, violations: List[str]):
+        """Auto-fix missing newlines at end of files."""
+        for file_path in violations:
+            try:
+                with open(file_path, 'rb') as f:
+                    content = f.read()
+                if content and not content.endswith(b'\n'):
+                    with open(file_path, 'ab') as f:
+                        f.write(b'\n')
+                    self.ctx.modified_files.add(file_path)
+                    print(f"      ✅ Added newline to {file_path}")
+            except Exception:
+                pass
+
+    def _fix_tabs(self, violations: List[str]):
+        """Auto-fix tab characters by converting to 4 spaces."""
+        fixed_files = set()
+        for violation in violations:
+            file_path = violation.split(':')[0]
+            if file_path in fixed_files:
+                continue
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if '\t' in content:
+                    new_content = content.replace('\t', '    ')
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(new_content)
+                    fixed_files.add(file_path)
+                    self.ctx.modified_files.add(file_path)
+            except Exception:
+                pass
+        if fixed_files:
+            print(f"      ✅ Converted tabs to spaces in {len(fixed_files)} files")
 
     async def _check_documentation(self) -> List[str]:
         """Check for missing module docstrings."""

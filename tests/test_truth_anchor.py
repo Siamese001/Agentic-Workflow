@@ -1,7 +1,8 @@
-import pytest
 import json
-import os
+
+import pytest
 from fact_checker import FactChecker, HallucinationException
+
 
 @pytest.fixture
 def mock_golden_record(tmp_path):

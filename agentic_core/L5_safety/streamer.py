@@ -15,13 +15,12 @@ Features:
 import asyncio
 import json
 import logging
-import os
 import re
 import sys
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Set
+from typing import Any, Optional, Set
 
 # Wrap stdout for UTF-8 encoding on Windows
 if sys.platform == "win32":
@@ -42,52 +41,52 @@ except ImportError:
 class L5Streamer:
     """
     Live reasoning broadcast system for L5+ autonomy.
-    
+
     Provides non-blocking streaming of agent thoughts to both
     file (JSONL) and WebSocket clients for real-time monitoring.
     """
-    
+
     def __init__(self, stream_dir: str = "observability/audit"):
         """
         Initialize the L5 streamer.
-        
+
         Args:
             stream_dir: Directory for live_stream.jsonl output
         """
         self.stream_dir = Path(stream_dir)
         self.log_path = self.stream_dir / "live_stream.jsonl"
-        
+
         # Streaming queue and worker
         self.stream_queue: asyncio.Queue = asyncio.Queue()
         self.stream_task: Optional[asyncio.Task] = None
         self._streamer_initialized: bool = False
-        
+
         # Current agent context
         self._current_agent: str = "System"
-        
+
         # WebSocket server
         self._websocket_server: Optional[Any] = None
         self._websocket_clients: Set[WebSocketServerProtocol] = set()
         self._websocket_task: Optional[threading.Thread] = None
-        
+
         # Signals for broadcast
         self.signals: Set[str] = set()
-        
+
         LOGGER.info(f"L5Streamer initialized with output: {self.log_path}")
-    
+
     async def start_streamer(self):
         """Initialize the non-blocking stream worker and WebSocket server."""
         if self._streamer_initialized:
             return
-        
+
         # Create stream directory
         self.stream_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Start stream worker
         if not self.stream_task or self.stream_task.done():
             self.stream_task = asyncio.create_task(self._stream_worker())
             self._streamer_initialized = True
-        
+
         # Start WebSocket server if available
         if WEBSOCKETS_AVAILABLE and not self._websocket_server:
             self._websocket_task = threading.Thread(
@@ -95,10 +94,10 @@ class L5Streamer:
                 daemon=True
             )
             self._websocket_task.start()
-        
+
         await self.broadcast("L5 Streamer initialized and operational", level="SYSTEM")
         LOGGER.info("L5 Streamer started")
-    
+
     async def _stream_worker(self):
         """Background worker to drain queue to JSONL without blocking execution."""
         while True:
@@ -108,12 +107,12 @@ class L5Streamer:
                     # Write to JSONL file
                     with open(self.log_path, "a", encoding="utf-8") as f:
                         f.write(json.dumps(payload) + "\n")
-                    
+
                     # Broadcast to WebSocket clients
                     if self._websocket_clients:
                         message = json.dumps(payload)
                         disconnected = set()
-                        
+
                         for client in self._websocket_clients:
                             try:
                                 asyncio.run_coroutine_threadsafe(
@@ -122,24 +121,24 @@ class L5Streamer:
                                 ).result(timeout=1.0)
                             except Exception:
                                 disconnected.add(client)
-                        
+
                         # Remove disconnected clients
                         self._websocket_clients -= disconnected
-                        
+
                 finally:
                     self.stream_queue.task_done()
             except asyncio.CancelledError:
                 break
             except Exception as e:
                 LOGGER.error(f"Streamer error writing to stream: {e}")
-    
+
     def _run_websocket_server(self):
         """Run WebSocket server in a separate thread with its own event loop."""
         async def handle_client(websocket: WebSocketServerProtocol, path: str):
             """Handle new WebSocket client connections."""
             self._websocket_clients.add(websocket)
             LOGGER.info(f"WebSocket client connected: {websocket.remote_address}")
-            
+
             try:
                 # Send current agent context
                 await websocket.send(json.dumps({
@@ -147,7 +146,7 @@ class L5Streamer:
                     "message": "Connected to L5 Stream",
                     "agent": self._current_agent
                 }))
-                
+
                 # Keep connection alive
                 await websocket.wait_closed()
             except Exception as e:
@@ -155,7 +154,7 @@ class L5Streamer:
             finally:
                 self._websocket_clients.discard(websocket)
                 LOGGER.info(f"WebSocket client disconnected")
-        
+
         async def server_main():
             """Main WebSocket server coroutine."""
             try:
@@ -164,16 +163,16 @@ class L5Streamer:
                     await asyncio.Future()  # Run forever
             except Exception as e:
                 LOGGER.error(f"WebSocket server error: {e}")
-        
+
         # Create new event loop for this thread
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(server_main())
-    
+
     async def broadcast(self, message: str, agent: str = None, level: str = "INFO"):
         """
         Queue a message for live stream in non-blocking manner.
-        
+
         Args:
             message: Message content to broadcast
             agent: Agent name (defaults to current agent)
@@ -187,15 +186,15 @@ class L5Streamer:
             "signals": list(self.signals)
         }
         await self.stream_queue.put(payload)
-    
+
     async def broadcast_reasoning(self, response_text: str, agent: str = None):
         """
         Extract and broadcast reasoning blocks from LLM responses.
-        
+
         Args:
             response_text: Full LLM response text
             agent: Agent name (defaults to current agent)
-            
+
         Returns:
             Extracted reasoning text or None
         """
@@ -205,39 +204,39 @@ class L5Streamer:
             await self.broadcast(f"REASONING: {reasoning}", agent=agent, level="THOUGHT")
             return reasoning
         return None
-    
+
     async def broadcast_agent_start(self, agent_name: str, message: str = None):
         """Broadcast agent activation event."""
         self.set_current_agent(agent_name)
         msg = message or f"ACTIVATED: {agent_name} starting execution"
         await self.broadcast(msg, agent=agent_name, level="AGENT_START")
-    
+
     async def broadcast_agent_complete(self, agent_name: str, message: str = None):
         """Broadcast agent completion event."""
         msg = message or f"COMPLETED: {agent_name} finished execution"
         await self.broadcast(msg, agent=agent_name, level="AGENT_END")
-    
+
     async def broadcast_agent_error(self, agent_name: str, error: str):
         """Broadcast agent error event."""
         await self.broadcast(f"ERROR: {error}", agent=agent_name, level="ERROR")
-    
+
     def set_current_agent(self, agent_name: str):
         """Set the current agent for broadcast context."""
         self._current_agent = agent_name
-    
+
     def add_signal(self, signal: str):
         """Add a signal to current context."""
         self.signals.add(signal)
-    
+
     def remove_signal(self, signal: str):
         """Remove a signal from current context."""
         self.signals.discard(signal)
-    
+
     async def stop_streamer(self):
         """Gracefully stop the stream worker and WebSocket server."""
         if not self._streamer_initialized:
             return
-        
+
         # Drain queue before stopping
         if self.stream_task and not self.stream_task.done():
             await self.stream_queue.join()
@@ -247,7 +246,7 @@ class L5Streamer:
             except asyncio.CancelledError:
                 pass
             self.stream_task = None
-        
+
         # Close WebSocket clients
         for client in list(self._websocket_clients):
             try:
@@ -258,7 +257,7 @@ class L5Streamer:
             except Exception:
                 pass
         self._websocket_clients.clear()
-        
+
         self._streamer_initialized = False
         LOGGER.info("L5 Streamer stopped")
 

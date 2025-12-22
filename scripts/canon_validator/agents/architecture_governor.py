@@ -111,7 +111,7 @@ class ArchitectureGovernor(SubAtomicAgent):
     async def _check_and_fix_syntax_errors(self) -> List[str]:
         """Priority: Check all Python files for syntax errors and fix them."""
         fixed_files = []
-        
+
         for file_path in self.ctx.python_files:
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
@@ -124,22 +124,22 @@ class ArchitectureGovernor(SubAtomicAgent):
                     fixed_files.append(file_path)
             except Exception:
                 pass
-        
+
         return fixed_files
 
     async def _fix_syntax_error(self, file_path: str, content: str, error: SyntaxError) -> bool:
         """Attempt to fix common syntax errors."""
         lines = content.split('\n')
         error_line = error.lineno - 1 if error.lineno else 0
-        
+
         # Common fix patterns
         fixed = False
-        
+
         # Fix 1: Missing colon at end of def/class/if/for/while/try/except/with
         if error_line < len(lines):
             line = lines[error_line]
             stripped = line.rstrip()
-            
+
             # Check for missing colon
             keywords = ['def ', 'class ', 'if ', 'elif ', 'else', 'for ', 'while ', 'try', 'except', 'finally', 'with ']
             for kw in keywords:
@@ -148,7 +148,7 @@ class ArchitectureGovernor(SubAtomicAgent):
                     fixed = True
                     print(f"      Fixed missing colon at line {error.lineno}")
                     break
-            
+
             # Fix 2: Indentation error - try to fix common indent issues
             if not fixed and 'indent' in str(error).lower():
                 # Get expected indentation from previous line
@@ -156,18 +156,18 @@ class ArchitectureGovernor(SubAtomicAgent):
                     prev_line = lines[error_line - 1]
                     prev_indent = len(prev_line) - len(prev_line.lstrip())
                     curr_indent = len(line) - len(line.lstrip())
-                    
+
                     # If previous line ends with colon, expect +4 indent
                     if prev_line.rstrip().endswith(':'):
                         expected_indent = prev_indent + 4
                     else:
                         expected_indent = prev_indent
-                    
+
                     if curr_indent != expected_indent:
                         lines[error_line] = ' ' * expected_indent + line.lstrip()
                         fixed = True
                         print(f"      Fixed indentation at line {error.lineno}")
-            
+
             # Fix 3: Missing 'from typing import Any' for type hints
             if not fixed and 'Any' in str(error) or 'Dict' in str(error) or 'List' in str(error):
                 # Add typing import at top
@@ -184,7 +184,7 @@ class ArchitectureGovernor(SubAtomicAgent):
                         lines.insert(0, typing_import.strip())
                         fixed = True
                         print(f"      Added missing typing import at top")
-        
+
         if fixed:
             new_content = '\n'.join(lines)
             try:
@@ -194,7 +194,7 @@ class ArchitectureGovernor(SubAtomicAgent):
                     return True
             except SyntaxError:
                 print(f"   ⚠️  Auto-fix failed for {file_path} - manual intervention needed")
-        
+
         return False
 
     async def propose_fix(self, file_path: str, violation_type: str, details: str) -> str:

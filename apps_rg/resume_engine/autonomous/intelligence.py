@@ -101,14 +101,14 @@ class PhaseResult:
 class SecurityHardener:
     """
     Security hardening through scanning and testing.
-    
+
     Features:
     - Pattern-based security scanning
     - Sensitive data detection
     - Input validation checks
     - Security best practices enforcement
     """
-    
+
     # Security patterns to detect
     SECURITY_PATTERNS = {
         "hardcoded_secret": [
@@ -136,29 +136,29 @@ class SecurityHardener:
             r"random\.randint\s*\(",
         ],
     }
-    
+
     def __init__(self, ctx: ResumeEngineContext, level: SecurityLevel = SecurityLevel.STANDARD):
         self.ctx = ctx
         self.level = level
         self._issues: List[SecurityIssue] = []
         self._scans_performed = 0
-    
+
     def scan_content(self, content: str, file_path: str = "unknown") -> List[SecurityIssue]:
         """
         Scan content for security issues.
-        
+
         Args:
             content: Content to scan
             file_path: Path for reporting
-        
+
         Returns:
             List of security issues found
         """
         issues = []
         self._scans_performed += 1
-        
+
         lines = content.split("\n")
-        
+
         for category, patterns in self.SECURITY_PATTERNS.items():
             for pattern in patterns:
                 for i, line in enumerate(lines, 1):
@@ -174,22 +174,22 @@ class SecurityHardener:
                         )
                         issues.append(issue)
                         self._issues.append(issue)
-        
+
         return issues
-    
+
     def scan_resume(self, resume: Dict[str, Any]) -> List[SecurityIssue]:
         """
         Scan resume content for sensitive data.
-        
+
         Args:
             resume: Resume dictionary
-        
+
         Returns:
             List of security issues
         """
         issues = []
         self._scans_performed += 1
-        
+
         # PII patterns
         pii_patterns = {
             "ssn": r"\b\d{3}-\d{2}-\d{4}\b",
@@ -197,9 +197,9 @@ class SecurityHardener:
             "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
             "credit_card": r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b",
         }
-        
+
         resume_str = json.dumps(resume)
-        
+
         for pii_type, pattern in pii_patterns.items():
             matches = re.findall(pattern, resume_str)
             if matches:
@@ -214,20 +214,20 @@ class SecurityHardener:
                 )
                 issues.append(issue)
                 self._issues.append(issue)
-        
+
         return issues
-    
+
     def _get_severity(self, category: str) -> str:
         """Get severity level for a category."""
         high_severity = {"hardcoded_secret", "sql_injection", "command_injection"}
         medium_severity = {"path_traversal"}
-        
+
         if category in high_severity:
             return "high"
         elif category in medium_severity:
             return "medium"
         return "low"
-    
+
     def _get_recommendation(self, category: str) -> str:
         """Get recommendation for a category."""
         recommendations = {
@@ -238,15 +238,15 @@ class SecurityHardener:
             "insecure_random": "Use secrets module for security-sensitive randomness",
         }
         return recommendations.get(category, "Review and fix the security issue")
-    
+
     def get_issues(self) -> List[SecurityIssue]:
         """Get all security issues found."""
         return self._issues
-    
+
     def get_issues_by_severity(self, severity: str) -> List[SecurityIssue]:
         """Get issues filtered by severity."""
         return [i for i in self._issues if i.severity == severity]
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get security scanning statistics."""
         return {
@@ -264,39 +264,39 @@ class SecurityHardener:
 class SemanticAnalyzer:
     """
     Semantic analysis for content quality and consistency.
-    
+
     Features:
     - Content quality scoring
     - Keyword extraction
     - Readability analysis
     - Consistency checking
     """
-    
+
     # Weak words to detect
     WEAK_WORDS = [
         "helped", "assisted", "worked on", "responsible for",
         "participated", "involved", "contributed", "supported",
     ]
-    
+
     # Strong action verbs
     STRONG_VERBS = [
         "led", "delivered", "achieved", "increased", "reduced",
         "developed", "implemented", "designed", "built", "created",
         "launched", "managed", "drove", "optimized", "transformed",
     ]
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._analyses: List[Dict[str, Any]] = []
-    
+
     def analyze_content(self, content: str, analysis_type: AnalysisType = AnalysisType.CONTENT) -> Dict[str, Any]:
         """
         Analyze content for quality metrics.
-        
+
         Args:
             content: Content to analyze
             analysis_type: Type of analysis
-        
+
         Returns:
             Analysis results
         """
@@ -307,23 +307,23 @@ class SemanticAnalyzer:
             "issues": [],
             "suggestions": [],
         }
-        
+
         # Basic metrics
         words = content.split()
         sentences = re.split(r'[.!?]+', content)
-        
+
         result["metrics"]["word_count"] = len(words)
         result["metrics"]["sentence_count"] = len([s for s in sentences if s.strip()])
         result["metrics"]["avg_sentence_length"] = (
             len(words) / max(1, len(sentences))
         )
-        
+
         # Weak word detection
         weak_found = []
         for word in self.WEAK_WORDS:
             if word.lower() in content.lower():
                 weak_found.append(word)
-        
+
         if weak_found:
             result["issues"].append({
                 "type": "weak_language",
@@ -333,20 +333,20 @@ class SemanticAnalyzer:
             result["suggestions"].append(
                 "Replace weak words with strong action verbs"
             )
-        
+
         # Strong verb detection
         strong_found = []
         for verb in self.STRONG_VERBS:
             if verb.lower() in content.lower():
                 strong_found.append(verb)
-        
+
         result["metrics"]["strong_verbs"] = len(strong_found)
-        
+
         # Metrics detection
         metrics_pattern = r"\d+[%+]?|\$[\d,]+|\d+x"
         metrics_found = re.findall(metrics_pattern, content)
         result["metrics"]["quantified_achievements"] = len(metrics_found)
-        
+
         if len(metrics_found) == 0:
             result["issues"].append({
                 "type": "no_metrics",
@@ -355,27 +355,27 @@ class SemanticAnalyzer:
             result["suggestions"].append(
                 "Add specific metrics (e.g., 'increased revenue by 25%')"
             )
-        
+
         # Calculate quality score
         score = 100
         score -= len(weak_found) * 5
         score += len(strong_found) * 3
         score += len(metrics_found) * 5
         score = max(0, min(100, score))
-        
+
         result["metrics"]["quality_score"] = score
-        
+
         self._analyses.append(result)
-        
+
         return result
-    
+
     def analyze_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:
         """
         Analyze a complete resume.
-        
+
         Args:
             resume: Resume dictionary
-        
+
         Returns:
             Comprehensive analysis
         """
@@ -385,15 +385,15 @@ class SemanticAnalyzer:
             "overall_score": 0,
             "recommendations": [],
         }
-        
+
         section_scores = []
-        
+
         # Analyze summary
         if "summary" in resume:
             summary_analysis = self.analyze_content(resume["summary"])
             result["sections"]["summary"] = summary_analysis
             section_scores.append(summary_analysis["metrics"]["quality_score"])
-        
+
         # Analyze experience
         if "experience" in resume:
             exp_scores = []
@@ -403,14 +403,14 @@ class SemanticAnalyzer:
                     exp_analysis = self.analyze_content(desc)
                     result["sections"][f"experience_{i}"] = exp_analysis
                     exp_scores.append(exp_analysis["metrics"]["quality_score"])
-            
+
             if exp_scores:
                 section_scores.append(sum(exp_scores) / len(exp_scores))
-        
+
         # Calculate overall score
         if section_scores:
             result["overall_score"] = sum(section_scores) / len(section_scores)
-        
+
         # Generate recommendations
         if result["overall_score"] < 50:
             result["recommendations"].append("Major improvements needed")
@@ -420,13 +420,13 @@ class SemanticAnalyzer:
             result["recommendations"].append("Consider strengthening action verbs")
         else:
             result["recommendations"].append("Resume is well-optimized")
-        
+
         return result
-    
+
     def get_analyses(self) -> List[Dict[str, Any]]:
         """Get all analyses performed."""
         return self._analyses
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get analyzer statistics."""
         return {
@@ -437,30 +437,30 @@ class SemanticAnalyzer:
 class StrategicAdvisor:
     """
     Strategic analysis and refactoring suggestions.
-    
+
     Features:
     - Code smell detection (adapted for resume content)
     - Improvement proposals
     - Best practice recommendations
     - ATS optimization suggestions
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._proposals: List[RefactorProposal] = []
-    
+
     def analyze_structure(self, resume: Dict[str, Any]) -> List[RefactorProposal]:
         """
         Analyze resume structure and propose improvements.
-        
+
         Args:
             resume: Resume dictionary
-        
+
         Returns:
             List of refactoring proposals
         """
         proposals = []
-        
+
         # Check summary length
         summary = resume.get("summary", "")
         if len(summary) > 500:
@@ -475,12 +475,12 @@ class StrategicAdvisor:
             )
             proposals.append(proposal)
             self._proposals.append(proposal)
-        
+
         # Check experience descriptions
         experience = resume.get("experience", [])
         for i, exp in enumerate(experience):
             desc = exp.get("description", "")
-            
+
             # Check for bullet points
             if desc and "\n" not in desc and len(desc) > 200:
                 proposal = RefactorProposal(
@@ -494,7 +494,7 @@ class StrategicAdvisor:
                 )
                 proposals.append(proposal)
                 self._proposals.append(proposal)
-        
+
         # Check skills organization
         skills = resume.get("skills", [])
         if len(skills) > 15:
@@ -509,57 +509,57 @@ class StrategicAdvisor:
             )
             proposals.append(proposal)
             self._proposals.append(proposal)
-        
+
         return proposals
-    
+
     def get_ats_recommendations(self, resume: Dict[str, Any], job_description: str = "") -> List[str]:
         """
         Get ATS optimization recommendations.
-        
+
         Args:
             resume: Resume dictionary
             job_description: Optional job description for keyword matching
-        
+
         Returns:
             List of recommendations
         """
         recommendations = []
-        
+
         # Check for common ATS issues
         resume_str = json.dumps(resume).lower()
-        
+
         # Check for tables/graphics mentions
         if "table" in resume_str or "graphic" in resume_str:
             recommendations.append("Avoid tables and graphics - use plain text")
-        
+
         # Check for standard section headers
         standard_headers = ["summary", "experience", "education", "skills"]
         for header in standard_headers:
             if header not in resume:
                 recommendations.append(f"Add standard section: {header.title()}")
-        
+
         # Keyword matching if job description provided
         if job_description:
             jd_words = set(job_description.lower().split())
             resume_words = set(resume_str.split())
-            
+
             # Find missing keywords
             important_keywords = {"python", "javascript", "aws", "docker", "kubernetes", "agile", "scrum"}
             jd_keywords = jd_words & important_keywords
             missing = jd_keywords - resume_words
-            
+
             if missing:
                 recommendations.append(f"Consider adding keywords: {', '.join(missing)}")
-        
+
         if not recommendations:
             recommendations.append("Resume appears ATS-optimized")
-        
+
         return recommendations
-    
+
     def get_proposals(self) -> List[RefactorProposal]:
         """Get all refactoring proposals."""
         return self._proposals
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get advisor statistics."""
         return {
@@ -574,32 +574,32 @@ class StrategicAdvisor:
 class OmniContext:
     """
     Global context management and semantic retrieval.
-    
+
     Features:
     - Context buffer management
     - Keyword-based search
     - Section indexing
     - Cross-reference lookup
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
         self._context_buffer: str = ""
         self._index: Dict[str, Dict[str, Any]] = {}
         self._queries: int = 0
-    
+
     def build_context(self, resume: Dict[str, Any]) -> str:
         """
         Build a context buffer from resume.
-        
+
         Args:
             resume: Resume dictionary
-        
+
         Returns:
             Context buffer string
         """
         sections = []
-        
+
         # Index each section
         for section_name, content in resume.items():
             if isinstance(content, str):
@@ -614,66 +614,66 @@ class OmniContext:
                     section_text = f"# {section_name.upper()}\n" + ", ".join(str(c) for c in content)
             else:
                 section_text = f"# {section_name.upper()}\n{json.dumps(content)}"
-            
+
             start_pos = len("\n".join(sections))
             sections.append(section_text)
-            
+
             self._index[section_name] = {
                 "start": start_pos,
                 "end": start_pos + len(section_text),
                 "content": section_text,
             }
-        
+
         self._context_buffer = "\n\n".join(sections)
-        
+
         return self._context_buffer
-    
+
     def search(self, query: str, top_k: int = 3) -> List[SemanticMatch]:
         """
         Search the context for relevant content.
-        
+
         Args:
             query: Search query
             top_k: Number of results to return
-        
+
         Returns:
             List of semantic matches
         """
         self._queries += 1
-        
+
         if not self._context_buffer:
             return []
-        
+
         matches = []
         query_lower = query.lower()
         query_words = set(query_lower.split())
-        
+
         for section_name, info in self._index.items():
             content_lower = info["content"].lower()
-            
+
             # Calculate simple relevance score
             word_matches = sum(1 for word in query_words if word in content_lower)
             if word_matches > 0:
                 score = word_matches / len(query_words)
-                
+
                 matches.append(SemanticMatch(
                     file_path=section_name,
                     content_preview=info["content"][:200],
                     similarity_score=score,
                     metadata={"section": section_name},
                 ))
-        
+
         # Sort by score and return top_k
         matches.sort(key=lambda m: m.similarity_score, reverse=True)
-        
+
         return matches[:top_k]
-    
+
     def get_section(self, section_name: str) -> Optional[str]:
         """Get a specific section from the context."""
         if section_name in self._index:
             return self._index[section_name]["content"]
         return None
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get context statistics."""
         return {
@@ -686,26 +686,26 @@ class OmniContext:
 class UnifiedOrchestrator:
     """
     Multi-phase execution orchestrator.
-    
+
     Features:
     - Phase-based execution
     - Convergence checking
     - Error handling
     - Progress tracking
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
-        
+
         self.security = SecurityHardener(ctx)
         self.semantic = SemanticAnalyzer(ctx)
         self.strategic = StrategicAdvisor(ctx)
         self.omni = OmniContext(ctx)
-        
+
         self._phase_results: List[PhaseResult] = []
         self._cycles = 0
         self._converged = False
-    
+
     async def run_mission(
         self,
         resume: Dict[str, Any],
@@ -714,41 +714,41 @@ class UnifiedOrchestrator:
     ) -> Dict[str, Any]:
         """
         Run a complete intelligence mission.
-        
+
         Args:
             resume: Resume to analyze
             job_description: Optional job description
             max_cycles: Maximum optimization cycles
-        
+
         Returns:
             Mission results
         """
         mission_start = time.time()
-        
+
         for cycle in range(max_cycles):
             self._cycles = cycle + 1
-            
+
             # Phase 1: Security
             await self._run_phase(
                 "security",
                 PhaseType.SEQUENTIAL,
                 [("SecurityHardener", lambda: self.security.scan_resume(resume))],
             )
-            
+
             # Phase 2: Context Building
             await self._run_phase(
                 "context",
                 PhaseType.SEQUENTIAL,
                 [("OmniContext", lambda: self.omni.build_context(resume))],
             )
-            
+
             # Phase 3: Semantic Analysis
             await self._run_phase(
                 "semantic",
                 PhaseType.PARALLEL,
                 [("SemanticAnalyzer", lambda: self.semantic.analyze_resume(resume))],
             )
-            
+
             # Phase 4: Strategic Analysis
             await self._run_phase(
                 "strategic",
@@ -758,14 +758,14 @@ class UnifiedOrchestrator:
                     ("ATSOptimizer", lambda: self.strategic.get_ats_recommendations(resume, job_description)),
                 ],
             )
-            
+
             # Check convergence
             if self._check_convergence():
                 self._converged = True
                 break
-        
+
         mission_duration = (time.time() - mission_start) * 1000
-        
+
         return {
             "success": self._converged,
             "cycles": self._cycles,
@@ -782,7 +782,7 @@ class UnifiedOrchestrator:
             "security_issues": len(self.security.get_issues()),
             "proposals": len(self.strategic.get_proposals()),
         }
-    
+
     async def _run_phase(
         self,
         phase_name: str,
@@ -793,7 +793,7 @@ class UnifiedOrchestrator:
         start_time = time.time()
         agents_executed = []
         errors = []
-        
+
         for agent_name, agent_func in agents:
             try:
                 if asyncio.iscoroutinefunction(agent_func):
@@ -803,9 +803,9 @@ class UnifiedOrchestrator:
                 agents_executed.append(agent_name)
             except Exception as e:
                 errors.append(f"{agent_name}: {str(e)}")
-        
+
         duration = (time.time() - start_time) * 1000
-        
+
         result = PhaseResult(
             phase_name=phase_name,
             phase_type=phase_type,
@@ -814,17 +814,17 @@ class UnifiedOrchestrator:
             duration_ms=duration,
             errors=errors,
         )
-        
+
         self._phase_results.append(result)
-    
+
     def _check_convergence(self) -> bool:
         """Check if mission has converged."""
         # Converged if no high-severity security issues and all phases passed
         high_security = self.security.get_issues_by_severity("high")
         all_phases_passed = all(p.success for p in self._phase_results)
-        
+
         return len(high_security) == 0 and all_phases_passed
-    
+
     def get_comprehensive_stats(self) -> Dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {
@@ -843,7 +843,7 @@ class UnifiedOrchestrator:
 class Phase6Orchestrator:
     """
     Orchestrates all Phase 6 intelligence components.
-    
+
     Combines:
     - Security hardening
     - Semantic analysis
@@ -851,16 +851,16 @@ class Phase6Orchestrator:
     - Context management
     - Unified orchestration
     """
-    
+
     def __init__(self, ctx: ResumeEngineContext):
         self.ctx = ctx
-        
+
         self.security = SecurityHardener(ctx)
         self.semantic = SemanticAnalyzer(ctx)
         self.strategic = StrategicAdvisor(ctx)
         self.omni = OmniContext(ctx)
         self.unified = UnifiedOrchestrator(ctx)
-    
+
     async def analyze_resume(
         self,
         resume: Dict[str, Any],
@@ -868,11 +868,11 @@ class Phase6Orchestrator:
     ) -> Dict[str, Any]:
         """
         Perform comprehensive resume analysis.
-        
+
         Args:
             resume: Resume dictionary
             job_description: Optional job description
-        
+
         Returns:
             Comprehensive analysis results
         """
@@ -883,39 +883,39 @@ class Phase6Orchestrator:
             "strategic": {},
             "recommendations": [],
         }
-        
+
         # Security scan
         security_issues = self.security.scan_resume(resume)
         results["security"] = {
             "issues": len(security_issues),
             "high_severity": len(self.security.get_issues_by_severity("high")),
         }
-        
+
         # Build context
         self.omni.build_context(resume)
-        
+
         # Semantic analysis
         semantic_result = self.semantic.analyze_resume(resume)
         results["semantic"] = {
             "overall_score": semantic_result["overall_score"],
             "sections_analyzed": len(semantic_result["sections"]),
         }
-        
+
         # Strategic analysis
         proposals = self.strategic.analyze_structure(resume)
         ats_recs = self.strategic.get_ats_recommendations(resume, job_description)
-        
+
         results["strategic"] = {
             "proposals": len(proposals),
             "ats_recommendations": len(ats_recs),
         }
-        
+
         # Compile recommendations
         results["recommendations"].extend(semantic_result["recommendations"])
         results["recommendations"].extend(ats_recs)
-        
+
         return results
-    
+
     async def run_full_mission(
         self,
         resume: Dict[str, Any],
@@ -924,21 +924,21 @@ class Phase6Orchestrator:
     ) -> Dict[str, Any]:
         """
         Run a full intelligence mission.
-        
+
         Args:
             resume: Resume dictionary
             job_description: Optional job description
             max_cycles: Maximum cycles
-        
+
         Returns:
             Mission results
         """
         return await self.unified.run_mission(resume, job_description, max_cycles)
-    
+
     def search_context(self, query: str) -> List[SemanticMatch]:
         """Search the context for relevant content."""
         return self.omni.search(query)
-    
+
     def get_comprehensive_stats(self) -> Dict[str, Any]:
         """Get comprehensive statistics from all components."""
         return {

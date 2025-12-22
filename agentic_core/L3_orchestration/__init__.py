@@ -12,8 +12,8 @@ try:
     from agentic_core.L3_orchestration.dag_engine import (
         DAGEngine,
         Task,
-        TaskType,
         TaskStatus,
+        TaskType,
     )
 except Exception as e:
     LOGGER.debug(f"DAGEngine not available: {e}")
@@ -30,9 +30,9 @@ except Exception as e:
 
 try:
     from agentic_core.L3_orchestration.think_act_observe import (
-        ThinkActObserveEngine,
         CycleConfig,
         CycleState,
+        ThinkActObserveEngine,
     )
 except Exception as e:
     LOGGER.debug(f"ThinkActObserveEngine not available: {e}")
@@ -43,8 +43,8 @@ except Exception as e:
 try:
     from agentic_core.L3_orchestration.canon_scheduler import (
         CanonSwarmScheduler,
-        SwarmScheduler,
         IntelligentOrchestrator,
+        SwarmScheduler,
     )
 except Exception as e:
     LOGGER.debug(f"CanonSwarmScheduler not available: {e}")
@@ -54,12 +54,12 @@ except Exception as e:
 
 try:
     from agentic_core.L3_orchestration.mission_runner import (
-        run_daemon_mode,
-        run_surgical_mode,
-        run_standard_mode,
+        GITPYTHON_AVAILABLE,
         WATCHDOG_AVAILABLE,
         WEBSOCKETS_AVAILABLE,
-        GITPYTHON_AVAILABLE,
+        run_daemon_mode,
+        run_standard_mode,
+        run_surgical_mode,
     )
 except Exception as e:
     LOGGER.debug(f"mission_runner not available: {e}")
@@ -72,11 +72,11 @@ except Exception as e:
 
 try:
     from agentic_core.L3_orchestration.intervention_server import (
-        start_intervention_server,
-        approval_event,
         FASTAPI_AVAILABLE,
-        wait_for_approval,
+        approval_event,
         reset_approval_event,
+        start_intervention_server,
+        wait_for_approval,
     )
 except Exception as e:
     LOGGER.debug(f"intervention_server not available: {e}")

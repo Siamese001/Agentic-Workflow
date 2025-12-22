@@ -32,9 +32,8 @@ class QualityValidationStage(PipelineStage):
             self.pii_scrubber = PIIScrubber()
             self.constitutional_ai = ConstitutionalAISystem()
             self.semantic_cache = SemanticCache()
-        except ImportError:
-pass
-self.bias_auditor = None
+        except Exception as e:
+            self.bias_auditor = None
             self.pii_scrubber = None
             self.constitutional_ai = None
             self.semantic_cache = None
@@ -83,8 +82,7 @@ self.bias_auditor = None
             return envelope
 
         except Exception as e:
-pass
-logger.error(f"Quality validation failed: {e}")
+            logger.error(f"Quality validation failed: {e}")
             envelope.mark_stage_failed(stage_name, str(
                 e), (time.time() - start_time) * 1000)
             raise
@@ -150,8 +148,7 @@ class OutputFormattingStage(PipelineStage):
         try:
             self.semantic_cache = SemanticCache()
         except ImportError:
-pass
-self.semantic_cache = None
+            self.semantic_cache = None
             logger.warning("SemanticCache not available")
 
 
@@ -195,8 +192,7 @@ self.semantic_cache = None
             return envelope
 
         except Exception as e:
-pass
-logger.error(f"Output formatting failed: {e}")
+            logger.error(f"Output formatting failed: {e}")
             envelope.mark_stage_failed(stage_name, str(e), (time.time() - start_time) * 1000)
             raise
 

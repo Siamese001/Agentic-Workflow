@@ -50,13 +50,11 @@ class PipelineStage(ABC):
     @abstractmethod
     async def execute(self: Any, envelope: Any) -> Any:
         """Execute the pipeline stage. """
-        pass
 
     @property
     @abstractmethod
     def stage_name(self: Any) -> str:
         """Get stage name."""
-        pass
 
 
 class PipelineExecutionError(Exception):

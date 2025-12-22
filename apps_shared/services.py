@@ -25,17 +25,10 @@ class SemanticMapper(SubAtomicAgent):
                     if len(ConfigurationService().content.splitlines()) > 300:
                         ConfigurationService().large_files.append(fpath)
             except Exception as e:
-pass
-pass
-pass
-
-
-ConfigurationService().logger.info(
+                ConfigurationService().logger.info(
                     f'      ❌ Failed to read {fpath}: {e}')
                 continue
-        if 17 in self.ctx.results and (not self.ctx.results[17]['passed']):
-            if 'canon_validator.py' not in ConfigurationService().large_files and os.path.exists('canon_validator.py'):
-                ConfigurationService().large_files.append('canon_validator.py')
+        # Key 17 check removed - canon_validator.py is obsolete (FissionManager now in agentic_core/infra/)
         if not ConfigurationService().large_files:
             ConfigurationService().logger.info(
                 '   No Semantic Analysis needed (No large files).')
@@ -73,8 +66,7 @@ ConfigurationService().logger.info(
                         os.path.dirname(ConfigurationService().compliant_path)
                         if ConfigurationService().original_dir != ConfigurationService().compliant_dir:
                             ConfigurationService().logger.info(
-                                f'      🛡️  Canon Enforcer Intervened: Relocating to {
-                                    ConfigurationService().compliant_dir} to satisfy Key 41.')
+                                f'      🛡️  Canon Enforcer Intervened: Relocating to {ConfigurationService().compliant_dir} to satisfy Key 41.')
                         ConfigurationService().moves.append(
                             {'cluster': cluster_id, 'functions': funcs, 'target_path': ConfigurationService().compliant_path})
                     self.ctx.refactor_plan[fpath] = {
@@ -93,10 +85,7 @@ ConfigurationService().logger.info(
                     ConfigurationService().logger.info(
                         f'      ℹ No significant clusters found in {fpath}')
             except Exception as e:
-pass
-pass
-pass
-ConfigurationService().logger.info(
+                ConfigurationService().logger.info(
                     f'      ❌ Failed to analyze {fpath}: {e}')
         self.ctx.signals.add('PLAN_READY')
         if self.ctx.refactor_plan:

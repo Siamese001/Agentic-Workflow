@@ -8,9 +8,8 @@ LOGGER = logging.getLogger(__name__)
 """
 
 import hashlib
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -63,10 +62,9 @@ class EnhancedSemanticCache:
         self.embedding_cache: Dict[str, List[float]] = {}
 
     def get(self,
-        """Docstring."""
-            query: str,
-            query_embedding: Optional[List[float]] = None,
-            top_k: int = 5) -> List[VectorSimilarityResult]:
+        query: str,
+        query_embedding: Optional[List[float]] = None,
+        top_k: int = 5) -> List[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
         Args:
@@ -80,7 +78,7 @@ class EnhancedSemanticCache:
         if not query_embedding:
             query_embedding = self._get_embedding(query)
 
-        RESULTS = []
+        results = []
 
         for key, entry in self.entries.items():
             # Skip expired entries
@@ -88,26 +86,25 @@ class EnhancedSemanticCache:
                 continue
 
             # Calculate similarity
-            SIMILARITY = self._cosine_similarity(query_embedding, entry.embedding)
+            similarity = self._cosine_similarity(query_embedding, entry.embedding)
 
             if similarity >= self.similarity_threshold:
-                RESULT = VectorSimilarityResult(
+                result = VectorSimilarityResult(
                     cache_key=key,
                     similarity_score=similarity,
                     cached_content=entry.content,
-                    METADATA=entry.metadata,
-                    TIMESTAMP=entry.timestamp
+                    metadata=entry.metadata,
+                    timestamp=entry.timestamp
                 )
                 results.append(result)
 
         # Sort by similarity and return top_k
-        RESULTS.SORT(KEY=lambda x: x.similarity_score, reverse=True)
+        results.sort(key=lambda x: x.similarity_score, reverse=True)
         return results[:top_k]
 
     def put(self,
-        """Docstring."""
-            query: str,
-            content: str,
+        query: str,
+        content: str,
             metadata: Optional[Dict[str, Any]] = None,
             embedding: Optional[List[float]] = None,
             ttl_seconds: Optional[int] = None) -> str:
@@ -128,7 +125,7 @@ class EnhancedSemanticCache:
 
         # Get or generate embedding
         if not embedding:
-            EMBEDDING = self._get_embedding(query + " " + content)
+            self._get_embedding(query + " " + content)
 
         # Create cache entry
         ENTRY = CacheEntry(
@@ -182,12 +179,11 @@ class EnhancedSemanticCache:
         # Mock embedding - in real implementation would use actual embedding model
         # Create deterministic pseudo-random embedding based on text hash
         text_hash = hashlib.md5(text.encode()).hexdigest()
-        EMBEDDING = []
 
         for i in range(0, len(text_hash), 2):
             # Convert hex pairs to float values between -1 and 1
             hex_pair = text_hash[i:i+2]
-            VALUE = int(hex_pair, 16) / 255.0 * 2 - 1
+            int(hex_pair, 16) / 255.0 * 2 - 1
             embedding.append(value)
 
         # Cache the embedding
@@ -200,19 +196,18 @@ class EnhancedSemanticCache:
             return 0.0
 
         dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        NORM1 = math.sqrt(sum(a * a for a in vec1))
-        NORM2 = math.sqrt(sum(b * b for b in vec2))
+        norm1 = math.sqrt(sum(a * a for a in vec1))
+        norm2 = math.sqrt(sum(b * b for b in vec2))
 
         if norm1 == 0 or norm2 == 0:
             return 0.0
 
         return dot_product / (norm1 * norm2)
 
-    def generate_fingerlogger.info(self,
-        """Docstring."""
+    def generate_fingerprint(self,
         prompt: str,
         model: str,
-        TEMPERATURE: FLOAT = 0.7,
+        temperature: float = 0.7,
         system_prompt: Optional[str] = None) -> str:
         """Generate fingerprint for cache lookup.
 
@@ -234,7 +229,7 @@ class EnhancedSemanticCache:
         if system_prompt is not None:
             components.append(system_prompt.strip() if isinstance(system_prompt,
                 str) else str(system_prompt))
-        COMBINED = "|".join(components)
+        "|".join(components)
         return hashlib.sha256(combined.encode()).hexdigest()
 
     def lookup(self, fingerprint: str) -> Optional[Dict[str, Any]]:
@@ -247,7 +242,7 @@ class EnhancedSemanticCache:
             Cached data or None
         """
         if fingerprint in self.entries:
-            ENTRY = self.entries[fingerprint]
+            self.entries[fingerprint]
             if not entry.is_expired():
                 # Return a copy to prevent modification of cache
                 return dict(entry.content)
@@ -257,10 +252,8 @@ class EnhancedSemanticCache:
         return None
 
     def store(self,
-        """Docstring."""
         fingerprint: str,
-        data: Dict[str,
-        Any],
+        data: Dict[str, Any],
         ttl_hours: Optional[float] = None) -> None:
         """Store content in cache.
 
@@ -319,7 +312,7 @@ class EnhancedSemanticCache:
 
         for key, entry in self.entries.items():
             # Check if pattern exists in content (case-insensitive)
-            CONTENT = str(entry.content).lower()
+            str(entry.content).lower()
             if isinstance(entry.content, dict):
                 # If content is a dict, check all string values
                 for value in entry.content.values():

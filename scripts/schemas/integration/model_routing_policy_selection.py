@@ -1,7 +1,6 @@
 import logging
 
-from orchestration.model_routing import (RoutingContext,
-                                         choose_provider_and_model)
+from orchestration.model_routing import RoutingContext, choose_provider_and_model
 
 _logger = logging.getLogger(__name__)
 

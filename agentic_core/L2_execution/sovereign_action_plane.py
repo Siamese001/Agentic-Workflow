@@ -4,7 +4,6 @@ Bypasses corrupted registry files with Toolsmith logic from the monolith.
 """
 
 import asyncio
-import json
 import logging
 import os
 import subprocess
@@ -12,8 +11,8 @@ import time
 from typing import Any, Dict, List, Optional
 
 from agentic_core.interfaces import (
-    IActionPlane,
     ActionRequest,
+    IActionPlane,
 )
 from agentic_core.interfaces.requests import ActionResult
 
@@ -22,12 +21,12 @@ LOGGER = logging.getLogger(__name__)
 
 class SovereignToolsmith:
     """Toolsmith implementation for dynamic tool creation."""
-    
+
     def __init__(self, output_dir: str = "scripts"):
         """Initialize Toolsmith."""
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
-    
+
     async def forge_diagnostic_tool(self, failure_context: str) -> Optional[str]:
         """Forge a diagnostic tool based on failure context."""
         # Simplified tool generation (LLM call would be here in full implementation)
@@ -57,7 +56,7 @@ def main():
             }},
             "status": "probing_complete"
         }}
-        
+
         print(json.dumps(diagnostics, indent=2))
         return 0
     except Exception as e:
@@ -67,10 +66,10 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
 '''
-        
+
         tool_name = f"sovereign_diag_{int(time.time())}.py"
         tool_path = os.path.join(self.output_dir, tool_name)
-        
+
         try:
             with open(tool_path, 'w') as f:
                 f.write(tool_code)
@@ -84,26 +83,26 @@ if __name__ == "__main__":
 
 class SovereignSandbox:
     """Secure execution environment for tools."""
-    
+
     def __init__(self):
         """Initialize sandbox."""
         self._is_running = False
-    
+
     async def start(self):
         """Start the sandbox environment."""
         self._is_running = True
         LOGGER.info("Sovereign Sandbox started")
-    
+
     async def stop(self):
         """Stop the sandbox environment."""
         self._is_running = False
         LOGGER.info("Sovereign Sandbox stopped")
-    
+
     async def execute_tool(self, tool_path: str, args: List[str] = None) -> Dict[str, Any]:
         """Execute a tool in the sandbox."""
         if not self._is_running:
             await self.start()
-        
+
         process = None
         try:
             cmd = [tool_path] + (args or [])
@@ -115,7 +114,7 @@ class SovereignSandbox:
                 text=True,
                 cwd=os.getcwd()
             )
-            
+
             # Wait with timeout
             try:
                 stdout, stderr = process.communicate(timeout=30)
@@ -141,7 +140,7 @@ class SovereignSandbox:
                         LOGGER.warning(f"Force killed process {process.pid}")
                 except Exception as cleanup_error:
                     LOGGER.error(f"Error cleaning up process {process.pid}: {cleanup_error}")
-                
+
                 return {
                     "success": False,
                     "stdout": "",
@@ -173,10 +172,10 @@ class SovereignSandbox:
 
 class SovereignActionPlane(IActionPlane):
     """Sovereign action plane with Toolsmith and Sandbox."""
-    
+
     def __init__(self, safety_layer=None, signal_ledger=None):
         """Initialize the sovereign action plane.
-        
+
         Args:
             safety_layer: L5 safety layer for validation
             signal_ledger: L4 signal ledger for logging ExecutionResults
@@ -185,19 +184,19 @@ class SovereignActionPlane(IActionPlane):
         self._sandbox = SovereignSandbox()
         self._safety_layer = safety_layer
         self._signal_ledger = signal_ledger
-    
+
     def get_capabilities(self) -> List[Any]:
         """Get available action capabilities."""
         return ["tool_execution", "file_operations", "diagnostic_tool_creation"]
-    
+
     def get_available_tools(self) -> List[str]:
         """Get list of available tool names."""
         return ["python", "shell", "diagnostic_tool"]
-    
+
     async def execute(self, request: ActionRequest) -> ActionResult:
         """Execute an action request with L5 safety validation."""
         start_time = time.time()
-        
+
         # L5 Safety Validation
         if self._safety_layer:
             is_safe = await self._safety_layer.validate_action(request)
@@ -210,7 +209,7 @@ class SovereignActionPlane(IActionPlane):
                 )
                 await self._log_to_signal_ledger(request, result)
                 return result
-        
+
         try:
             if request.action_type == "tool_execution":
                 result = await self._execute_tool(request, start_time)
@@ -225,11 +224,11 @@ class SovereignActionPlane(IActionPlane):
                     error=f"Unknown action type: {request.action_type}",
                     execution_time=time.time() - start_time
                 )
-            
+
             # Log to signal ledger if available
             await self._log_to_signal_ledger(request, result)
             return result
-            
+
         except Exception as e:
             result = ActionResult(
                 success=False,
@@ -239,10 +238,10 @@ class SovereignActionPlane(IActionPlane):
             )
             await self._log_to_signal_ledger(request, result)
             return result
-    
+
     async def _log_to_signal_ledger(self, request: ActionRequest, result: ActionResult) -> None:
         """Log the execution result to the signal ledger.
-        
+
         Args:
             request: The action request that was executed
             result: The execution result
@@ -264,7 +263,7 @@ class SovereignActionPlane(IActionPlane):
                 }
             }
             await self._signal_ledger.append_result(execution_result)
-    
+
     async def execute_batch(self, requests: List[ActionRequest], parallel: bool = True) -> List[ActionResult]:
         """Execute multiple action requests."""
         if parallel:
@@ -284,12 +283,12 @@ class SovereignActionPlane(IActionPlane):
                 result = await self.execute(req)
                 results.append(result)
             return results
-    
+
     async def _execute_tool(self, request: ActionRequest, start_time: float) -> ActionResult:
         """Execute a tool in the sandbox."""
         tool_path = request.parameters.get("tool_path")
         args = request.parameters.get("args", [])
-        
+
         if not tool_path:
             return ActionResult(
                 success=False,
@@ -297,19 +296,19 @@ class SovereignActionPlane(IActionPlane):
                 error="Missing tool_path parameter",
                 execution_time=time.time() - start_time
             )
-        
+
         result = await self._sandbox.execute_tool(tool_path, args)
-        
+
         # Check for syntax error and attempt self-correction
         if not result["success"] and "SyntaxError" in result["stderr"]:
             LOGGER.warning(f"SyntaxError detected in {tool_path}, attempting self-correction")
             repair_result = await self._attempt_tool_repair(tool_path, result["stderr"])
-            
+
             if repair_result["success"]:
                 LOGGER.info(f"Successfully repaired tool {tool_path}, retrying execution")
                 # Retry execution with repaired tool
                 result = await self._sandbox.execute_tool(tool_path, args)
-        
+
         return ActionResult(
             success=result["success"],
             output=result["stdout"],
@@ -320,14 +319,14 @@ class SovereignActionPlane(IActionPlane):
                 "self_repaired": not result["success"] and "SyntaxError" in result.get("stderr", "")
             }
         )
-    
+
     async def _attempt_tool_repair(self, tool_path: str, error_message: str) -> Dict[str, Any]:
         """Attempt to repair a tool that has a syntax error.
-        
+
         Args:
             tool_path: Path to the tool file
             error_message: The error message from the failed execution
-            
+
         Returns:
             Dictionary with repair result
         """
@@ -335,36 +334,36 @@ class SovereignActionPlane(IActionPlane):
             # Read the problematic tool code
             with open(tool_path, 'r') as f:
                 tool_code = f.read()
-            
+
             # Simple syntax error fixes
             fixed_code = tool_code
-            
+
             # Fix common syntax errors
             if "invalid syntax" in error_message:
                 # Try to fix missing colons, unmatched brackets, etc.
                 lines = tool_code.split('\n')
                 fixed_lines = []
-                
+
                 for i, line in enumerate(lines):
                     # Fix missing colons after if/for/while/def/class
                     if any(keyword in line for keyword in ['if ', 'for ', 'while ', 'def ', 'class ']) and not line.strip().endswith(':'):
                         if not line.strip().startswith('#'):
                             line = line.rstrip() + ':'
-                    
+
                     # Fix unmatched parentheses (simple check)
                     if line.count('(') != line.count(')'):
                         # Add missing closing parenthesis
                         if line.count('(') > line.count(')'):
                             line = line.rstrip() + ')'
-                    
+
                     fixed_lines.append(line)
-                
+
                 fixed_code = '\n'.join(fixed_lines)
-            
+
             # Write the fixed code back
             with open(tool_path, 'w') as f:
                 f.write(fixed_code)
-            
+
             # Validate the fixed code with Python's compile
             try:
                 compile(fixed_code, tool_path, 'exec')
@@ -372,17 +371,17 @@ class SovereignActionPlane(IActionPlane):
             except SyntaxError as e:
                 LOGGER.error(f"Failed to fix syntax error: {e}")
                 return {"success": False, "error": str(e)}
-                
+
         except Exception as e:
             LOGGER.error(f"Error during tool repair: {e}")
             return {"success": False, "error": str(e)}
-    
+
     async def _create_diagnostic_tool(self, request: ActionRequest, start_time: float) -> ActionResult:
         """Create a diagnostic tool using Toolsmith."""
         failure_context = request.parameters.get("failure_context", "Unknown failure")
-        
+
         tool_path = await self._toolsmith.forge_diagnostic_tool(failure_context)
-        
+
         if tool_path:
             return ActionResult(
                 success=True,
@@ -398,13 +397,13 @@ class SovereignActionPlane(IActionPlane):
                 error="Failed to create diagnostic tool",
                 execution_time=time.time() - start_time
             )
-    
+
     async def _execute_file_operation(self, request: ActionRequest, start_time: float) -> ActionResult:
         """Execute file operations."""
         operation = request.parameters.get("operation")
         file_path = request.parameters.get("file_path")
         content = request.parameters.get("content", "")
-        
+
         try:
             if operation == "write":
                 with open(file_path, 'w') as f:
@@ -418,7 +417,7 @@ class SovereignActionPlane(IActionPlane):
                 output = f"Successfully deleted {file_path}"
             else:
                 raise ValueError(f"Unknown operation: {operation}")
-            
+
             return ActionResult(
                 success=True,
                 output=output,
@@ -432,7 +431,7 @@ class SovereignActionPlane(IActionPlane):
                 error=str(e),
                 execution_time=time.time() - start_time
             )
-    
+
     async def cleanup(self):
         """Cleanup resources."""
         await self._sandbox.stop()
@@ -440,11 +439,11 @@ class SovereignActionPlane(IActionPlane):
 
 def create_sovereign_action_plane(safety_layer=None, signal_ledger=None) -> IActionPlane:
     """Factory function to create sovereign action plane.
-    
+
     Args:
         safety_layer: L5 safety layer for validation
         signal_ledger: L4 signal ledger for logging ExecutionResults
-        
+
     Returns:
         SovereignActionPlane instance
     """
