@@ -4,6 +4,7 @@ L5 Safety: SafetyGuardrail
 Enforces Zero-Loss principles during code mutation.
 """
 
+import ast
 from typing import Tuple
 
 
@@ -39,6 +40,12 @@ class SafetyGuardrail:
         if not new_code.strip():
             return False, "Safety Block: Attempted to wipe file."
         
+        # [L5 HARDENING] Syntax Integrity Gate
+        try:
+            ast.parse(new_code)
+        except SyntaxError as e:
+            return False, f"Safety Block: Mutation introduced syntax error: {e.msg} at line {e.lineno}"
+
         orig_len = len(original_code.splitlines())
         new_len = len(new_code.splitlines())
         delta = orig_len - new_len
