@@ -1,4 +1,3 @@
-
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -22,7 +21,6 @@ class DataEnricher:
         self.duplicate_detector = DuplicateDetector()
 
     def enrich(
-        """Docstring."""
         self,
         extracted_data: Dict,
         thematic_analysis: Optional[Dict] = None,
@@ -42,7 +40,7 @@ class DataEnricher:
                 bullet_text = bullet.get("bullet_text", "")
                 bullet["canonical_verbs"] = self.verb_canonicalizer.canonicalize(bullet_text)
 
-                FORBIDDEN = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
+                forbidden = self.verb_canonicalizer.check_for_forbidden_verbs(bullet_text)
                 if forbidden:
                     validation_results.append(
                         ValidationResult(
@@ -55,7 +53,7 @@ class DataEnricher:
                     )
                 all_bullets.append(bullet)
 
-        DUPLICATES = self.duplicate_detector.find_duplicates(all_bullets)
+        duplicates = self.duplicate_detector.find_duplicates(all_bullets)
         if duplicates:
             validation_results.append(
                 ValidationResult(

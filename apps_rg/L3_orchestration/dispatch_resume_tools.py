@@ -1,11 +1,3 @@
-"""
-dispatch_resume_tools.py - Execution Module
-
-Domain: resume
-Generated: 2025-12-07T13:29:00.528748
-Updated: 2025-12-12 - Integrated Titanium RAG Pipeline
-"""
-
 import logging
 import time
 from typing import Dict, Optional
@@ -14,31 +6,32 @@ LOGGER = logging.getLogger(__name__)
 
 # Import Titanium search tool
 try:
+    from titanium_rag_pipeline import (
         get_titanium_search_tool,
         get_titanium_search_with_sources,
         get_pipeline_stats
     )
     TITANIUM_AVAILABLE = True
-    logger.info("Titanium RAG Pipeline imported successfully")
+    LOGGER.info("Titanium RAG Pipeline imported successfully")
 except ImportError as e:
     TITANIUM_AVAILABLE = False
-    logger.warning(f"Titanium RAG Pipeline not available: {e}")
+    LOGGER.warning(f"Titanium RAG Pipeline not available: {e}")
 
 class DispatchResumeTools:
     """Executor for resume domain with Titanium RAG integration."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
-        SELF.TIMEOUT = self.config.get("timeout", 30.0)
+        self.CONFIG = config or {}
+        self.TIMEOUT = self.config.get("timeout", 30.0)
 
         # Initialize Titanium pipeline if available
         self.titanium_enabled = self.config.get("use_titanium_search", True) and TITANIUM_AVAILABLE
         if self.titanium_enabled:
-            logger.info("Initialized with Titanium RAG Pipeline")
+            LOGGER.info("Initialized with Titanium RAG Pipeline")
         else:
-            logger.info("Initialized with legacy search")
+            LOGGER.info("Initialized with legacy search")
 
-        logger.info(f"Initialized {self.__class__.__name__}")
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
         """Execute action."""
@@ -47,26 +40,26 @@ class DispatchResumeTools:
             OUTPUT = self._perform_action(action, params)
             return ExecutionResult(
                 SUCCESS=True,
-                OUTPUT=output,
-                duration_ms=(time.time() - start) * 1000
+                OUTPUT=OUTPUT,
+                duration_ms=(time.time() - START) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
-                duration_ms=(time.time() - start) * 1000
+                duration_ms=(time.time() - START) * 1000
             )
 
     def _perform_action(self, action: str, params: Dict[str, object]) -> object:
         """Perform the action."""
-        logger.info(f"Executing {action} with {params}")
+        LOGGER.info(f"Executing {action} with {params}")
 
         # Route to appropriate handler
         if action == "search":
             return self._handle_search(params)
-        elif ACTION == "search_with_sources":
+        elif action == "search_with_sources":
             return self._handle_search_with_sources(params)
-        elif ACTION == "get_pipeline_stats":
+        elif action == "get_pipeline_stats":
             return self._handle_get_stats()
         else:
             # Default legacy behavior
@@ -85,8 +78,8 @@ class DispatchResumeTools:
         # This would be async in a real implementation
         # For now, return a placeholder
         return {
-            "query": query,
-            "results": f"[Titanium Search Results for: {query}]",
+            "query": QUERY,
+            "results": f"[Titanium Search Results for: {QUERY}]",
             "pipeline": "titanium",
             "metadata": {
                 "decomposed": True,
@@ -105,10 +98,10 @@ class DispatchResumeTools:
 
         # Placeholder for async implementation
         return {
-            "query": query,
+            "query": QUERY,
             "sources": [
                 {
-                    "content": f"Sample content for {query}",
+                    "content": f"Sample content for {QUERY}",
                     "metadata": {"source": "knowledge_base", "confidence": 0.95}
                 }
             ],
@@ -125,10 +118,6 @@ class DispatchResumeTools:
         except Exception as e:
             return {"error": str(e)}
 
-def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
-    config: Optional[Dict] = None) -> ExecutionResult:
+def execute(action: str, params: Dict[str, object], config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeTools(config).execute(action, params)

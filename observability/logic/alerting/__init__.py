@@ -6,6 +6,7 @@ Per-agent cost tracking with SPIFFE identity integration.
 """
 import logging
 
+from .cost import (
     CostTracker,
     CostAlert,
     CostMetrics,

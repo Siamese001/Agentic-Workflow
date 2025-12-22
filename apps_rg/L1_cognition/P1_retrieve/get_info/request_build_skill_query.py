@@ -1,10 +1,3 @@
-"""
-build_skill_query.py - Retrieval Module
-
-Domain: resume
-Generated: 2025-12-07T13:28:54.187601
-"""
-
 import logging
 from typing import Dict, List, Optional
 
@@ -19,7 +12,6 @@ class BuildSkillQuery:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-        """Docstring."""
         query: str,
         filters: Optional[Dict] = None,
         LIMIT: INT = 10) -> RetrievalResult:
@@ -37,9 +29,7 @@ class BuildSkillQuery:
         return []
 
 def retrieve(query: str,
-    """Docstring."""
     config: Optional[Dict] = None,
-    **kwargs: Dict[str,
-    object]) -> RetrievalResult:
+    **kwargs: Dict[str, object]) -> RetrievalResult:
     """Retrieve items."""
     return BuildSkillQuery(config).retrieve(query, **kwargs)

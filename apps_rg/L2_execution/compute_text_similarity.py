@@ -1,4 +1,3 @@
-
 # Ownership: apps_rg / L2_execution
 # Layer: L2_execution
 # Agent: apps_rg
@@ -68,7 +67,6 @@ class TextSimilarityCalculator:
         return numerator / denominator
 
     def find_duplicates(
-        """Docstring."""
         self, texts: List[str], threshold: float = 0.9
     ) -> List[Tuple[int, int, float]]:
         """Find text pairs with similarity >= threshold."""

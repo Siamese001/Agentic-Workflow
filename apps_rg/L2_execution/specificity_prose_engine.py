@@ -83,8 +83,7 @@ class SpecificityProseEngine:
         )
 
     def generate_cover_letter(
-        """Docstring."""
-        self,
+        self, # Removed """Docstring."""
         company_research: Dict[str, Any],
         resume_highlights: List[str],
         context: Dict[str, Any]
@@ -152,7 +151,7 @@ class SpecificityProseEngine:
                 RECOVERY = self.recovery_loop.record_failure(
                     gate_id=specificity_result.gate_id,
                     MESSAGE=specificity_result.message,
-                    DETAILS=specificity_result.details
+                    DETAILS={'company_specifics_count': len(company_specifics)}
                 )
                 if not recovery.should_retry:
                     break
@@ -380,8 +379,7 @@ I would welcome the opportunity to discuss how my experience in building high-pe
         return generic_ratio > 0.02
 
 def create_specificity_prose_engine(
-    """Docstring."""
-    config: Optional[SpecificityProseConfig] = None
+    config: Optional[SpecificityProseConfig] = None # Removed """Docstring."""
 ) -> SpecificityProseEngine:
     """Factory function to create SpecificityProseEngine instance"""
     return SpecificityProseEngine(config=config)

@@ -22,8 +22,7 @@ try:
     TITANIUM_AVAILABLE = True
     LOGGER.info("Titanium RAG Pipeline imported successfully")
 except ImportError as e:
-    pass
-TITANIUM_AVAILABLE = False
+    TITANIUM_AVAILABLE = False
     LOGGER.warning(f"Titanium RAG Pipeline not available: {e}")
 
 class DispatchResumeTools:
@@ -31,10 +30,10 @@ class DispatchResumeTools:
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
         self.CONFIG = config or {}
-        self.TIMEOUT = self.config.get("timeout", 30.0)
+        self.TIMEOUT = self.CONFIG.get("timeout", 30.0) # Changed self.config to self.CONFIG
 
         # Initialize Titanium pipeline if available
-        self.titanium_enabled = self.config.get("use_titanium_search", True) and TITANIUM_AVAILABLE
+        self.titanium_enabled = self.CONFIG.get("use_titanium_search", True) and TITANIUM_AVAILABLE # Changed self.config to self.CONFIG
         if self.titanium_enabled:
             LOGGER.info("Initialized with Titanium RAG Pipeline")
         else:
@@ -42,7 +41,7 @@ class DispatchResumeTools:
 
         LOGGER.info(f"Initialized {self.__class__.__name__}")
 
-    def execute(self, action: str, params: Dict[str, object]) -> ExecutionResult:
+    def execute(self, action: str, params: Dict[str, object]) -> "ExecutionResult": # Added forward reference for ExecutionResult
         """Execute action."""
         START = time.time()
         try:
@@ -53,7 +52,7 @@ class DispatchResumeTools:
                 duration_ms=(time.time() - START) * 1000
             )
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
-return ExecutionResult(
+            return ExecutionResult(
                 SUCCESS=False,
                 ERROR=str(e),
                 duration_ms=(time.time() - START) * 1000
@@ -80,9 +79,9 @@ return ExecutionResult(
             return {"error": "Titanium search not enabled", "results": []}
 
         QUERY = params.get("query", "")
-        CONTEXT = params.get("context")
-        max_results = params.get("max_results", 5)
-        include_metadata = params.get("include_metadata", False)
+        CONTEXT = params.get("context") # Unused variable, but kept as per "Do not change logic"
+        max_results = params.get("max_results", 5) # Unused variable, but kept as per "Do not change logic"
+        include_metadata = params.get("include_metadata", False) # Unused variable, but kept as per "Do not change logic"
 
         # This would be async in a real implementation
         # For now, return a placeholder
@@ -103,7 +102,7 @@ return ExecutionResult(
             return {"error": "Titanium search not enabled", "sources": []}
 
         QUERY = params.get("query", "")
-        CONTEXT = params.get("context")
+        CONTEXT = params.get("context") # Unused variable, but kept as per "Do not change logic"
 
         # Placeholder for async implementation
         return {
@@ -125,7 +124,7 @@ return ExecutionResult(
         try:
             return get_pipeline_stats()
         except Exception as e:
-return {"error": str(e)}
+            return {"error": str(e)}
 
 # Assuming ExecutionResult is defined elsewhere
 class ExecutionResult:
@@ -140,4 +139,3 @@ def execute(action: str,
             config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return DispatchResumeTools(config).execute(action, params)
-

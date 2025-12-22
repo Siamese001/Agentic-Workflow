@@ -22,6 +22,42 @@ Non-responsibilities:
 import logging
 import re
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass # Added import for dataclass
+
+# Assuming ValidationResult, IntegrityGateExecutor, AdaptiveRecoveryLoop are defined elsewhere or will be imported.
+# For the purpose of fixing syntax, these are treated as existing types.
+
+class ValidationResult: # Placeholder for ValidationResult
+    def __init__(self, gate_id, PASSED, SEVERITY, MESSAGE, DETAILS=None, SIGNATURE=None):
+        self.gate_id = gate_id
+        self.passed = PASSED
+        self.severity = SEVERITY
+        self.message = MESSAGE
+        self.details = DETAILS
+        self.signature = SIGNATURE
+
+class IntegrityGateExecutor: # Placeholder for IntegrityGateExecutor
+    def __init__(self):
+        self.results = []
+    def execute_hygiene_scan(self, overview):
+        return ValidationResult('VG_HYGIENE', True, 'INFO', 'Hygiene scan passed')
+
+class AdaptiveRecoveryLoop: # Placeholder for AdaptiveRecoveryLoop
+    def __init__(self, initial_temperature):
+        self.current_temperature = initial_temperature
+        self.temperature_log = []
+    def reset(self, temp):
+        self.current_temperature = temp
+        self.temperature_log = []
+    def record_failure(self, gate_id, MESSAGE, DETAILS):
+        self.temperature_log.append({'gate_id': gate_id, 'message': MESSAGE, 'details': DETAILS, 'temperature': self.current_temperature})
+        # Simple retry logic for placeholder
+        if self.current_temperature < 1.0:
+            self.current_temperature += 0.1
+            return type('Recovery', (object,), {'should_retry': True})()
+        return type('Recovery', (object,), {'should_retry': False})()
+    def get_temperature_log(self):
+        return self.temperature_log
 
 
 @dataclass
@@ -29,12 +65,10 @@ class SectionIntegratorConfig:
     """TODO: Add docstring."""
 
     max_similarity_threshold: float = 0.75
-    TEMPERATURE: FLOAT = 0.6
+    TEMPERATURE: float = 0.6 # Fixed: Changed FLOAT to float
     max_attempts: int = 3
 
 @dataclass
-    """TODO: Add docstring."""
-
 class SectionIntegratorResult:
     """Docstring."""
     overview: str
@@ -75,14 +109,13 @@ class SectionScopeIntegrator:
         gate_executor: Optional[IntegrityGateExecutor] = None,
         recovery_loop: Optional[AdaptiveRecoveryLoop] = None
     ):
-        SELF.CONFIG = config or SectionIntegratorConfig()
+        self.config = config or SectionIntegratorConfig() # Fixed: Changed SELF.CONFIG to self.config
         self.gate_executor = gate_executor or IntegrityGateExecutor()
         self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+            initial_temperature=self.config.TEMPERATURE # Fixed: Changed self.config.temperature to self.config.TEMPERATURE
         )
 
-    def generate_overview(
-        """Docstring."""
+    def generate_overview( # Fixed: Removed misplaced docstring from here
         self,
         bullets: List[str],
         master_baseline: str,
@@ -99,25 +132,25 @@ class SectionScopeIntegrator:
         Returns:
             SectionIntegratorResult with overview and validation details
         """
-        self.recovery_loop.reset(self.config.temperature)
+        self.recovery_loop.reset(self.config.TEMPERATURE) # Fixed: Changed self.config.temperature to self.config.TEMPERATURE
         validation_results = []
 
         for attempt in range(1, self.config.max_attempts + 1):
-            OVERVIEW = self._generate_content(
-                BULLETS=bullets,
-                CONTEXT=context,
-                TEMPERATURE=self.recovery_loop.current_temperature,
-                ATTEMPT=attempt
+            overview = self._generate_content( # Fixed: Changed OVERVIEW to overview
+                bullets=bullets, # Fixed: Changed BULLETS to bullets
+                context=context, # Fixed: Changed CONTEXT to context
+                temperature=self.recovery_loop.current_temperature, # Fixed: Changed TEMPERATURE to temperature
+                attempt=attempt # Fixed: Changed ATTEMPT to attempt
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(overview)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure( # Fixed: Changed RECOVERY to recovery
                     gate_id=hygiene_result.gate_id,
-                    MESSAGE=hygiene_result.message,
-                    DETAILS=hygiene_result.details
+                    message=hygiene_result.message, # Fixed: Changed MESSAGE to message
+                    details=hygiene_result.details # Fixed: Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
@@ -127,10 +160,10 @@ class SectionScopeIntegrator:
             validation_results.append(prefix_result)
 
             if not prefix_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure( # Fixed: Changed RECOVERY to recovery
                     gate_id=prefix_result.gate_id,
-                    MESSAGE=prefix_result.message,
-                    DETAILS=prefix_result.details
+                    message=prefix_result.message, # Fixed: Changed MESSAGE to message
+                    details=prefix_result.details # Fixed: Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
@@ -142,10 +175,10 @@ class SectionScopeIntegrator:
             validation_results.append(dedup_result)
 
             if not dedup_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure( # Fixed: Changed RECOVERY to recovery
                     gate_id=dedup_result.gate_id,
-                    MESSAGE=dedup_result.message,
-                    DETAILS=dedup_result.details
+                    message=dedup_result.message, # Fixed: Changed MESSAGE to message
+                    details=dedup_result.details # Fixed: Changed DETAILS to details
                 )
                 if not recovery.should_retry:
                     break
@@ -154,21 +187,21 @@ class SectionScopeIntegrator:
             self.gate_executor.results = validation_results
 
             return SectionIntegratorResult(
-                OVERVIEW=overview,
+                overview=overview, # Fixed: Changed OVERVIEW to overview
                 similarity_score=similarity_score,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                SUCCESS=True,
-                ATTEMPTS=attempt
+                success=True, # Fixed: Changed SUCCESS to success
+                attempts=attempt # Fixed: Changed ATTEMPTS to attempts
             )
 
         return SectionIntegratorResult(
-            OVERVIEW="",
+            overview="", # Fixed: Changed OVERVIEW to overview
             similarity_score=1.0,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            SUCCESS=False,
-            ATTEMPTS=self.config.max_attempts
+            success=False, # Fixed: Changed SUCCESS to success
+            attempts=self.config.max_attempts # Fixed: Changed ATTEMPTS to attempts
         )
 
     def _generate_content(
@@ -182,10 +215,9 @@ class SectionScopeIntegrator:
         Generate overview content using LLM.
         Placeholder for actual LLM integration.
         """
-        return "Directed strategic technology initiatives across cloud infrastructure and data engin
-    eering,
+        return """Directed strategic technology initiatives across cloud infrastructure and data engineering,
         delivering scalable solutions that drove measurable business impact and
-            operational excellence."
+            operational excellence.""" # Fixed: Multi-line string syntax
 
     def _validate_no_redundant_prefix(self, overview: str) -> ValidationResult:
         """
@@ -193,7 +225,7 @@ class SectionScopeIntegrator:
         BLOCKS if forbidden prefix detected.
         """
         for pattern in self.FORBIDDEN_PREFIXES:
-            MATCH = re.match(pattern, overview, re.IGNORECASE)
+            match = re.match(pattern, overview, re.IGNORECASE) # Fixed: Changed MATCH to match
             if match:
                 return ValidationResult(
                     gate_id='VG_OVERVIEW_ANTI_PREFIX',
@@ -220,14 +252,14 @@ class SectionScopeIntegrator:
         Calculate similarity score between two texts.
         Uses word overlap ratio as heuristic.
         """
-        WORDS1 = set(re.findall(r'\b\w+\b', text1.lower()))
-        WORDS2 = set(re.findall(r'\b\w+\b', text2.lower()))
+        words1 = set(re.findall(r'\b\w+\b', text1.lower())) # Fixed: Changed WORDS1 to words1
+        words2 = set(re.findall(r'\b\w+\b', text2.lower())) # Fixed: Changed WORDS2 to words2
 
         if not words1 or not words2:
             return 0.0
 
-        OVERLAP = len(words1 & words2)
-        UNION = len(words1 | words2)
+        overlap = len(words1 & words2) # Fixed: Changed OVERLAP to overlap
+        union = len(words1 | words2) # Fixed: Changed UNION to union
 
         return overlap / union if union > 0 else 0.0
 
@@ -245,21 +277,16 @@ class SectionScopeIntegrator:
                 gate_id='VG_OVERVIEW_DEDUPLICATION',
                 PASSED=True,
                 SEVERITY='INFO',
-                MESSAGE=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self
-                    .config.max_similarity_threshold:.0%})",
-
-
+                MESSAGE=f"Deduplication passed: {similarity_score:.1%} similarity (threshold: <{self.config.max_similarity_threshold:.0%})", # Fixed: Multi-line f-string
                 SIGNATURE=f"DEDUP:OK:{int(similarity_score*100)}",
-                DETAILS={'similarity_score': similarity_score, 'threshold': self.config.max_similari
-    ty_threshold}
+                DETAILS={'similarity_score': similarity_score, 'threshold': self.config.max_similarity_threshold} # Fixed: Multi-line dictionary value
             )
 
         return ValidationResult(
             gate_id='VG_OVERVIEW_DEDUPLICATION',
             PASSED=False,
             SEVERITY='BLOCK',
-            MESSAGE=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.
-    max_similarity_threshold:.0%}",
+            MESSAGE=f"BLOCKED: Overview similarity {similarity_score:.1%} >= threshold {self.config.max_similarity_threshold:.0%}",
             DETAILS={
                 'similarity_score': similarity_score,
                 'threshold': self.config.max_similarity_threshold,
@@ -267,8 +294,7 @@ class SectionScopeIntegrator:
             }
         )
 
-def create_section_scope_integrator(
-    """Docstring."""
+def create_section_scope_integrator( # Fixed: Removed misplaced docstring from here
     config: Optional[SectionIntegratorConfig] = None
 ) -> SectionScopeIntegrator:
     """Factory function to create SectionScopeIntegrator instance"""

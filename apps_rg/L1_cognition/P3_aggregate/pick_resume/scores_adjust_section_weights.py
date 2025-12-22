@@ -19,7 +19,6 @@ class AdjustSectionWeights:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
-        """Docstring."""
         data: Union[str,
         Dict],
         adjustments: Optional[Dict] = None) -> RefinementResult:
@@ -38,7 +37,6 @@ class AdjustSectionWeights:
         return RefinementResult(original=data, refined=refined, changes=changes)
 
 def refine(data: Union[str,
-    """Docstring."""
     Dict],
     adjustments: Optional[Dict] = None,
     config: Optional[Dict] = None) -> RefinementResult:

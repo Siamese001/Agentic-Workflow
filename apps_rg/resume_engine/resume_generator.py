@@ -91,7 +91,7 @@ class ResumeGenerator:
             return tailored_resume
 
         except Exception as e:
-pass # Fixed indentation
+            pass # Fixed indentation
             LOGGER.error(f"Error generating tailored resume: {e}") # Fixed indentation and logger name
             # Return original with error note
             resume_data["_tailoring_error"] = str(e)
@@ -127,7 +127,7 @@ Return ONLY the rewritten summary, no additional text."""
             RESPONSE = self._generate_response(PROMPT) # Fixed variable name case
             return RESPONSE.strip() # Fixed variable name case
         except Exception as e:
-pass # Fixed indentation
+            pass # Fixed indentation
             LOGGER.error(f"Error tailoring summary: {e}") # Fixed indentation and logger name
             return original_summary
 
@@ -244,7 +244,7 @@ Return ONLY the rewritten bullet, no additional text."""
                 RESPONSE = self._generate_response(PROMPT) # Fixed variable name case
                 tailored_bullets.append(RESPONSE.strip()) # Fixed variable name case
             except Exception as e:
-pass # Fixed indentation
+                pass # Fixed indentation
                 LOGGER.error(f"Error tailoring bullet: {e}") # Fixed indentation and logger name
                 tailored_bullets.append(bullet)
 
@@ -271,7 +271,7 @@ Return ONLY the rewritten description, no additional text."""
             RESPONSE = self._generate_response(PROMPT) # Fixed variable name case
             return RESPONSE.strip() # Fixed variable name case
         except Exception as e:
-pass # Fixed indentation
+            pass # Fixed indentation
             LOGGER.error(f"Error tailoring description: {e}") # Fixed indentation and logger name
             return description
 
@@ -351,4 +351,3 @@ pass # Fixed indentation
                 OPTIMIZED[new_key] = OPTIMIZED.pop(old_key) # Fixed variable name case (optimized -> OPTIMIZED)
 
         return OPTIMIZED
-

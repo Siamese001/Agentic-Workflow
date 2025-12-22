@@ -89,6 +89,12 @@ except ImportError as e:
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
+# ==============================================================================
+# [FINAL HARDENING] SURGERY CONTROL FLAGS
+# ==============================================================================
+# Toggle these to False for daily work after global sweep is complete
+RUN_GRAVITY_REFACTOR = False  # Disable automatic gravity violation fixes
+RUN_SPRAWL_SURGERY = False    # Disable automatic sprawl consolidation
 
 # ==============================================================================
 # [HARDENING] TELEMETRY PROXY: GEMINI SPY
@@ -843,41 +849,42 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
     # ===========================================================================
     # [AUTONOMY PATCH] PHASE 0: ARCHITECTURAL GRAVITY REFACTOR
     # ===========================================================================
-    print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR")
-    print(f"   [>] Scanning for Sovereign → Downstream violations...")
-    
-    gravity_violations_fixed = 0
-    gravity_violations_total = 0
-    
-    # Initialize gravity attempts tracking if not exists
-    if not hasattr(ctx, 'gravity_attempts'):
-        ctx.gravity_attempts = {}
-    
-    for file_path in ctx.python_files:
-        file_path_obj = Path(file_path)
-        violations = check_import_waterfall_violations(file_path_obj, project_root_path)
+    if RUN_GRAVITY_REFACTOR:
+        print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR")
+        print(f"   [>] Scanning for Sovereign → Downstream violations...")
         
-        if violations:
-            # [FIX] Prevent infinite loops by tracking attempts per file
-            ctx.gravity_attempts[file_path] = ctx.gravity_attempts.get(file_path, 0) + 1
-            if ctx.gravity_attempts[file_path] > 2:
-                print(f"   [!] Maximum gravity refactors reached for {Path(file_path).name}. Skipping to prevent loop.")
-                continue
-                
-            gravity_violations_total += len(violations)
-            file_name = file_path_obj.name
-            print(f"\n   [AUTO-HEAL] {file_name}: {len(violations)} gravity violation(s)")
+        gravity_violations_fixed = 0
+        gravity_violations_total = 0
+        
+        # Initialize gravity attempts tracking if not exists
+        if not hasattr(ctx, 'gravity_attempts'):
+            ctx.gravity_attempts = {}
+        
+        for file_path in ctx.python_files:
+            file_path_obj = Path(file_path)
+            violations = check_import_waterfall_violations(file_path_obj, project_root_path)
             
-            for violation_msg in violations[:3]:  # Show first 3
-                print(f"      - {violation_msg}")
-            
-            # Read current file content
-            try:
-                with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                    current_code = f.read()
+            if violations:
+                # [FIX] Prevent infinite loops by tracking attempts per file
+                ctx.gravity_attempts[file_path] = ctx.gravity_attempts.get(file_path, 0) + 1
+                if ctx.gravity_attempts[file_path] > 2:
+                    print(f"   [!] Maximum gravity refactors reached for {Path(file_path).name}. Skipping to prevent loop.")
+                    continue
+                    
+                gravity_violations_total += len(violations)
+                file_name = file_path_obj.name
+                print(f"\n   [AUTO-HEAL] {file_name}: {len(violations)} gravity violation(s)")
                 
-                # Construct refactor prompt for SubAtomicEngine
-                refactor_prompt = f"""CRITICAL ARCHITECTURAL REFACTOR REQUIRED
+                for violation_msg in violations[:3]:  # Show first 3
+                    print(f"      - {violation_msg}")
+                
+                # Read current file content
+                try:
+                    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                        current_code = f.read()
+                    
+                    # Construct refactor prompt for SubAtomicEngine
+                    refactor_prompt = f"""CRITICAL ARCHITECTURAL REFACTOR REQUIRED
 
 FILE: {file_path}
 VIOLATIONS: {len(violations)} Sovereign layer importing from Downstream
@@ -904,110 +911,94 @@ OUTPUT: Return ONLY the complete refactored Python code. No explanations, no mar
 CURRENT CODE:
 {current_code}
 """
-                
-                print(f"      [>] Invoking SubAtomicEngine for autonomous refactor...")
-                
-                # Generate refactored code using LLM
-                try:
-                    # Use resilient_mutation method (correct API for SubAtomicEngine)
-                    refactored_code = await subatomic_engine.resilient_mutation(
-                        file_path=str(file_path),
-                        code=current_code,
-                        task=refactor_prompt,
-                        round_num=1,
-                        fission_active=False
-                    )
                     
-                    # Extract code if wrapped in markdown
-                    if isinstance(refactored_code, str):
-                        # Remove markdown code blocks if present
-                        if refactored_code.startswith("```python"):
-                            refactored_code = refactored_code.split("```python", 1)[1]
-                            refactored_code = refactored_code.rsplit("```", 1)[0]
-                        elif refactored_code.startswith("```"):
-                            refactored_code = refactored_code.split("```", 1)[1]
-                            refactored_code = refactored_code.rsplit("```", 1)[0]
-                        refactored_code = refactored_code.strip()
+                    print(f"      [>] Invoking SubAtomicEngine for autonomous refactor...")
                     
-                    # Validate the change with SafetyGuardrail
-                    is_safe, safety_msg = safety_guard.verify_change(current_code, refactored_code, fission_active=False)
-                    if is_safe:
-                        # Apply the fix physically
-                        with open(file_path, 'w', encoding='utf-8') as f:
-                            f.write(refactored_code)
+                    # Generate refactored code using LLM
+                    try:
+                        # Use resilient_mutation method (correct API for SubAtomicEngine)
+                        refactored_code = await subatomic_engine.resilient_mutation(
+                            file_path=str(file_path),
+                            code=current_code,
+                            task=refactor_prompt,
+                            round_num=1,
+                            fission_active=False
+                        )
                         
-                        print(f"      [OK] Gravity Refactored. File updated.")
-                        gravity_violations_fixed += len(violations)
-                        ctx.report("GravityRefactor", 0, True, f"Fixed {len(violations)} waterfall violations in {file_name}")
-                    else:
-                        print(f"      [!] SafetyGuardrail rejected refactor: {safety_msg}")
-                        ctx.report("GravityRefactor", 0, False, f"Safety check failed: {safety_msg}")
+                        # Extract code if wrapped in markdown
+                        if isinstance(refactored_code, str):
+                            # Remove markdown code blocks if present
+                            if refactored_code.startswith("```python"):
+                                refactored_code = refactored_code.split("```python", 1)[1]
+                                refactored_code = refactored_code.rsplit("```", 1)[0]
+                            elif refactored_code.startswith("```"):
+                                refactored_code = refactored_code.split("```", 1)[1]
+                                refactored_code = refactored_code.rsplit("```", 1)[0]
+                            refactored_code = refactored_code.strip()
+                        
+                        # Validate the change with SafetyGuardrail
+                        is_safe, safety_msg = safety_guard.verify_change(current_code, refactored_code, fission_active=False)
+                        if is_safe:
+                            # Apply the fix physically
+                            with open(file_path, 'w', encoding='utf-8') as f:
+                                f.write(refactored_code)
+                            
+                            print(f"      [OK] Gravity Refactored. File updated.")
+                            gravity_violations_fixed += len(violations)
+                            ctx.report("GravityRefactor", 0, True, f"Fixed {len(violations)} waterfall violations in {file_name}")
+                        else:
+                            print(f"      [!] SafetyGuardrail rejected refactor: {safety_msg}")
+                            ctx.report("GravityRefactor", 0, False, f"Safety check failed: {safety_msg}")
+                    
+                    except Exception as e:
+                        print(f"      [!] Refactor failed: {str(e)[:100]}")
+                        ctx.report("GravityRefactor", 0, False, f"Engine error: {str(e)[:50]}")
                 
                 except Exception as e:
-                    print(f"      [!] Refactor failed: {str(e)[:100]}")
-                    ctx.report("GravityRefactor", 0, False, f"Engine error: {str(e)[:50]}")
-            
-            except Exception as e:
-                print(f"      [!] Could not read file: {e}")
-    
-    if gravity_violations_total > 0:
-        print(f"\n   [PHASE 0 COMPLETE] Fixed {gravity_violations_fixed}/{gravity_violations_total} gravity violations")
-        if gravity_violations_fixed < gravity_violations_total:
-            print(f"   [!] {gravity_violations_total - gravity_violations_fixed} violations require manual review")
+                    print(f"      [!] Could not read file: {e}")
+        
+        if gravity_violations_total > 0:
+            print(f"\n   [PHASE 0 COMPLETE] Fixed {gravity_violations_fixed}/{gravity_violations_total} gravity violations")
+            if gravity_violations_fixed < gravity_violations_total:
+                print(f"   [!] {gravity_violations_total - gravity_violations_fixed} violations require manual review")
+        else:
+            print(f"   [OK] No gravity violations detected. Proceeding to standard validation.")
+        
+        print("-" * 70)
     else:
-        print(f"   [OK] No gravity violations detected. Proceeding to standard validation.")
-    
-    print("-" * 70)
+        print(f"\n[PHASE 0] ARCHITECTURAL GRAVITY REFACTOR - DISABLED")
+        print(f"   [SKIP] Gravity refactor disabled for daily work. Enable RUN_GRAVITY_REFACTOR=True for global sweeps.")
+        print("-" * 70)
 
     # ===========================================================================
     # [PHASE 0.5] SPRAWL CONSOLIDATION - ARCHITECTURAL FLATTENING
     # ===========================================================================
-    print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION")
-    print(f"   [>] Checking for low-density folders and breadth violations...")
-    
-    sprawl_report_path = project_root_path / "sprawl_report.json"
-    sprawl_consolidated = 0
-    
-    if sprawl_report_path.exists():
-        try:
-            import json
-            with open(sprawl_report_path, 'r') as f:
-                sprawl_data = json.load(f)
-            
-            flattening_candidates = sprawl_data.get('flattening_candidates', [])
-            breadth_violations = sprawl_data.get('violations', [])
-            
-            print(f"   [SPRAWL] Found {len(flattening_candidates)} flattening candidates")
-            print(f"   [SPRAWL] Found {len(breadth_violations)} breadth violations")
-            
-            # Process flattening candidates
-            for candidate in flattening_candidates:
-                folder_path = Path(candidate['folder'])
-                files = candidate['files']
+    if RUN_SPRAWL_SURGERY:
+        print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION")
+        print(f"   [>] Checking for low-density folders and breadth violations...")
+        
+        sprawl_report_path = project_root_path / "sprawl_report.json"
+        sprawl_consolidated = 0
+        
+        if sprawl_report_path.exists():
+            try:
+                import json
+                with open(sprawl_report_path, 'r') as f:
+                    sprawl_data = json.load(f)
                 
-                if not folder_path.exists():
-                    continue
+                flattening_candidates = sprawl_data.get('flattening_candidates', [])
+                breadth_violations = sprawl_data.get('violations', [])
                 
-                print(f"\n   [CONSOLIDATE] {folder_path.name}: {len(files)} file(s)")
-                print(f"      Reason: {candidate['reason']}")
+                print(f"   [SPRAWL] Found {len(flattening_candidates)} flattening candidates")
+                print(f"   [SPRAWL] Found {len(breadth_violations)} breadth violations")
                 
-                # Determine target file (parent's __init__.py or utils.py)
-                parent_dir = folder_path.parent
-                target_path = parent_dir / "__init__.py"
-                
-                # Ensure target exists
-                if not target_path.exists():
-                    target_path.touch()
-                    target_path.write_text("# Consolidated module\n")
-                
-                print(f"\n   [SURGERY] {folder_path.name} -> {target_path.name}")
-                
-                try:
-                    # Read target code
-                    with open(target_path, 'r', encoding='utf-8', errors='replace') as f:
-                        target_code = f.read()
+                # Process flattening candidates
+                for candidate in flattening_candidates:
+                    folder_path = Path(candidate['folder'])
+                    files = candidate['files']
                     
-                    # Read all source files to consolidate
+                    if not folder_path.exists():
+                        continue
                     source_contents = []
                     for file_name in files:
                         source_file = folder_path / file_name

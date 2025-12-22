@@ -20,11 +20,10 @@ class ExtractResumeRequirements:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-                 """Docstring."""
                  query: str,
                  filters: Optional[Dict] = None,
                  LIMIT: INT = 10) -> RetrievalResult:
-        """Retrieve items."""
+        """Docstring."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
             return self.cache[cache_key]
@@ -39,10 +38,8 @@ class ExtractResumeRequirements:
 
 
 def retrieve(query: str,
-             """Docstring."""
              config: Optional[Dict] = None,
              **kwargs: Dict[str,
                             object]) -> RetrievalResult:
-    """Retrieve items."""
+    """Docstring."""
     return ExtractResumeRequirements(config).retrieve(query, **kwargs)
-

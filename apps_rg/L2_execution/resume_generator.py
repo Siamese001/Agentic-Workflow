@@ -34,7 +34,6 @@ class ResumeGenerator:
             raise ValueError(f"Failed to initialize LLM client for provider {self.provider}")
 
     def generate(self,
-        """Docstring."""
         resume_data: Dict[str,
         Any],
         analysis_results: Dict[str,
@@ -94,11 +93,9 @@ class ResumeGenerator:
         # Use creative brief word count constraints if available
         word_count_range = "120-140"
         if self.creative_brief and hasattr(self.creative_brief, 'executive_summary_word_count'):
-            word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.
-    creative_brief.executive_summary_word_count.max_words}"
+            word_count_range = f"{self.creative_brief.executive_summary_word_count.min_words}-{self.creative_brief.executive_summary_word_count.max_words}"
 
-        PROMPT = f"""Rewrite the following professional summary to align with the target job require
-    ments.
+        PROMPT = f"""Rewrite the following professional summary to align with the target job requirements.
 
 ORIGINAL SUMMARY:
 {original_summary}
@@ -214,8 +211,7 @@ Return ONLY the rewritten summary, no additional text."""
             word_count_max = self.creative_brief.unify_bullet_word_count.max_words
 
         for bullet in bullets:
-            PROMPT = f"""Rewrite the following resume bullet point to emphasize the target skills an
-    d responsibilities.
+            PROMPT = f"""Rewrite the following resume bullet point to emphasize the target skills and responsibilities.
 
 ORIGINAL BULLET:
 {bullet}
@@ -291,7 +287,6 @@ Return ONLY the rewritten description, no additional text."""
             return response.text if hasattr(response, 'text') else str(response)
 
     def optimize_for_ats(self,
-        """Docstring."""
         resume_data: Dict[str,
         Any],
         analysis: Dict[str,

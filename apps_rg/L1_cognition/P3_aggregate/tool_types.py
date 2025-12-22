@@ -1,5 +1,10 @@
 """Types and models for tools_use_a_tool."""
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Any, Union
+import time
+import traceback
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
@@ -37,8 +42,7 @@ class ExecutionContext:
                 'traceback': traceback.format_exc()}
             logger.error(f'Execution failed: {error}')
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ')
+            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s')
 
 @dataclass
 class ProcessingResult:

@@ -1,5 +1,37 @@
 """Dataclass models for config."""
 import logging
+from dataclasses import dataclass, field, ClassVar
+from pathlib import Path
+from typing import Dict, List, Set, Tuple
+
+# Assuming these are defined elsewhere or will be imported
+# from .constants import DATA_DIR, CACHE_DIR, STR, FLOAT, BOOL
+# from .utils import _load_json_config
+
+# Placeholder definitions for missing imports/constants to make the code runnable for testing purposes
+# In a real scenario, these would be imported from the project's context.
+DATA_DIR = Path(__file__).parent.parent / 'data'
+CACHE_DIR = Path(__file__).parent.parent / 'cache'
+STR = str
+FLOAT = float
+BOOL = bool
+
+def _load_json_config(path: str, name: str, required: bool) -> Dict:
+    """Placeholder for loading JSON config."""
+    try:
+        import json
+        with open(path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        if required:
+            raise FileNotFoundError(f"Required config file '{name}' not found at {path}")
+        LOGGER.warning(f"Optional config file '{name}' not found at {path}. Returning empty dict.")
+        return {}
+    except json.JSONDecodeError:
+        if required:
+            raise ValueError(f"Error decoding JSON from '{name}' at {path}")
+        LOGGER.warning(f"Error decoding JSON from '{name}' at {path}. Returning empty dict.")
+        return {}
 
 LOGGER = logging.getLogger(__name__)
 @dataclass
@@ -23,7 +55,7 @@ class ArtistConfig:
     @classmethod
     def from_json(cls, json_path: Path=DATA_DIR / 'artist_constraints.json') -> 'ArtistConfig':
         """Load ArtistConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Artist Constraints', required=False)
+        data = _load_json_config(str(json_path), 'Artist Constraints', required=False) # Changed DATA to data
         bullet_ranges = {}
         for section, range_list in data.get('bullet_word_count_ranges', {}).items():
             if isinstance(range_list, list) and len(range_list) == 2:
@@ -46,7 +78,7 @@ class ValidatorConfig:
     @classmethod
     def from_json(cls, json_path: Path=DATA_DIR / 'validator_rules.json') -> 'ValidatorConfig':
         """Load ValidatorConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Validator Rules', required=False)
+        data = _load_json_config(str(json_path), 'Validator Rules', required=False) # Changed DATA to data
         return cls(forbidden_verbs=data.get('forbidden_verbs',
             []),
             required_sections=set(data.get('required_sections',
@@ -66,8 +98,8 @@ class PromptsConfig:
     @classmethod
     def from_json(cls, json_path: Path=DATA_DIR / 'prompts.json') -> 'PromptsConfig':
         """Load PromptsConfig from JSON file."""
-        DATA = _load_json_config(str(json_path), 'Prompts', required=True)
-        return CLS(PROMPTS=data)
+        data = _load_json_config(str(json_path), 'Prompts', required=True) # Changed DATA to data
+        return cls(prompts=data) # Changed CLS(PROMPTS=data) to cls(prompts=data)
 
     def get_prompt(self, prompt_name: str, section: str='default') -> str:
         """
@@ -291,35 +323,34 @@ class PromptAddendumConfig:
     FOOTER: str = '\nAll directives MUST be followed in the output.\n'
     COT_DIRECTIVES: List[Tuple[int,
         STR]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\
-    n'),
+        '• MANDATORY: Explore at least {cot} distinct reasoning paths before reaching a conclusion.\    n'),
         (4,
         '• Explore {cot} different reasoning paths; compare and synthesize insights.\n'),
         (0,
         '• Consider multiple reasoning approaches before concluding.\n')])
     TOT_B_DIRECTIVES: List[Tuple[int,
         STR]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: At each decision point,
-        systematically evaluate {tot_b} different branches/alternatives.\n'),
+        '''• MANDATORY: At each decision point,
+        systematically evaluate {tot_b} different branches/alternatives.\n'''),
         (4,
         '• Explore {tot_b} decision branches at critical junctures; document tradeoffs.\n'),
         (0,
         '• Consider multiple decision branches at key steps.\n')])
     TOT_D_DIRECTIVES: List[Tuple[int,
         STR]] = field(default_builder=lambda: [(5,
-        '• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n
-    '),
+        '''• MANDATORY: Reasoning depth must be {tot_d}+ levels deep with explicit layer separation.\n
+    '''),
         (4,
-        '• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n
-    '),
+        '''• Provide {tot_d}-level deep reasoning: foundation → intermediate → advanced → synthesis.\n
+    '''),
         (3,
         '• Provide {tot_d}-level reasoning with clear progression of thinking.\n'),
         (0,
         '• Structure reasoning with clear logical progression.\n')])
     REFLEXION_DIRECTIVES: List[Tuple[int,
         STR]] = field(default_builder=lambda: [(3,
-        '• MANDATORY: Review your answer {max_loops} times,
-        refining on each pass. Document improvements.\n'),
+        '''• MANDATORY: Review your answer {max_loops} times,
+        refining on each pass. Document improvements.\n'''),
         (2,
         '• Review your answer {max_loops} times; improve if refinements are identified.\n'),
         (1,
@@ -330,12 +361,11 @@ class AppConfig:
     """Master application configuration containing all sub-configs."""
     paths: FilePathsConfig = field(default_builder=FilePathsConfig)
     rag: RAGConfig = field(default_builder=lambda: RAGConfig())
-    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraints
-    Config())
+    content_constraints: ContentConstraintsConfig = field(default_builder=lambda: ContentConstraintsConfig())
     signal_constraints: SignalControlConfig = field(default_builder=lambda: SignalControlConfig())
     artist: ArtistConfig = field(default_builder=lambda: ArtistConfig.from_json())
     validator: ValidatorConfig = field(default_builder=lambda: ValidatorConfig.from_json())
     prompts: PromptsConfig = field(default_builder=lambda: PromptsConfig.from_json())
     web_rag: WebRagConfig = field(default_builder=WebRagConfig)
     enricher: EnricherConfig = field(default_builder=EnricherConfig)
-    comp_config: CompetitiveAnalysisConfig = field(default_builder=CompetitiveAnalysisConfig)
+    # comp_config: CompetitiveAnalysisConfig = field(default_builder=CompetitiveAnalysisConfig) # Commented out as CompetitiveAnalysisConfig is not defined

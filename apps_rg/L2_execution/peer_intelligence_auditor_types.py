@@ -10,8 +10,6 @@ class KeywordClassification(Enum):
     UNKNOWN = 'UNKNOWN'
 
 @dataclass
-    """TODO: Add docstring."""
-
 class RAGHop:
     """Docstring."""
     hop_number: int
@@ -19,7 +17,6 @@ class RAGHop:
     results: List[Dict[str, Any]]
     keywords_found: Set[str]
 
-    """TODO: Add docstring."""
 
 @dataclass
 class KeywordAnalysis:
@@ -29,7 +26,6 @@ class KeywordAnalysis:
     frequency_score: float
     competitive_density: float
     reasoning: str
-    """TODO: Add docstring."""
 
 
 @dataclass
@@ -38,7 +34,6 @@ class PeerIntelligenceConfig:
     total_searches: int = 24
     total_hops: int = 3
     searches_per_hop: int = 8
-    """TODO: Add docstring."""
 
     differentiator_threshold: float = 0.3
 

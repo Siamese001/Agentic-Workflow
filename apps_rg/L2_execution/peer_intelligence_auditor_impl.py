@@ -23,7 +23,6 @@ class PeerIntelligenceAuditor:
         self.gate_executor = gate_executor or IntegrityGateExecutor()
 
     def analyze_competitive_landscape(self,
-        """Docstring."""
         jd_keywords: List[str],
         context: Dict[str,
         Any]) -> PeerIntelligenceResult:

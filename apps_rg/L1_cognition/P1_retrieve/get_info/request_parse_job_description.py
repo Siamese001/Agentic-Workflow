@@ -1,3 +1,4 @@
+```python
 """
 parse_job_description.py - Retrieval Module
 
@@ -14,32 +15,31 @@ class ParseJobDescription:
     """Retrieval engine for resume domain."""
 
     def __init__(self, config: Optional[Dict[str, object]] = None):
-        SELF.CONFIG = config or {}
+        self.CONFIG = config or {}
         self.cache: Dict[str, object] = {}
-        logger.info(f"Initialized {self.__class__.__name__}")
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-        """Docstring."""
         query: str,
         filters: Optional[Dict] = None,
-        LIMIT: INT = 10) -> RetrievalResult:
-        """Retrieve items."""
-        cache_key = f"{query}:{filters}:{limit}"
+        LIMIT: int = 10) -> RetrievalResult:
+        """Docstring."""
+        cache_key = f"{query}:{filters}:{LIMIT}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        ITEMS = self._execute_query(query, filters, limit)
-        RESULT = RetrievalResult(items=items, total=len(items), query=query)
-        self.cache[cache_key] = result
-        return result
+        ITEMS = self._execute_query(query, filters, LIMIT)
+        RESULT = RetrievalResult(items=ITEMS, total=len(ITEMS), query=query)
+        self.cache[cache_key] = RESULT
+        return RESULT
 
     def _execute_query(self, query: str, filters: Optional[Dict], limit: int) -> List[object]:
         """Execute query."""
         return []
 
 def retrieve(query: str,
-    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> RetrievalResult:
-    """Retrieve items."""
+    """Docstring."""
     return ParseJobDescription(config).retrieve(query, **kwargs)
+```

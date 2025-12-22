@@ -1,4 +1,3 @@
-
 import logging
 from typing import Dict
 
@@ -27,7 +26,6 @@ def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, flo
     return True
 
 def gate_against_baseline(
-    """Docstring."""
     current_scores: Dict[str, float],
     baseline_scores: Dict[str, float],
     TOLERANCE: FLOAT = 0.0,

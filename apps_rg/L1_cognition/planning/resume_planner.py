@@ -1,15 +1,6 @@
-"""RG Planner - Resume Generation L1 Planning Layer.
-
-Incorporated from historical agentic_workflow/l1/rg_planner.py to provide
-resume-specific planning capabilities for the 8-node sequential pipeline.
-
-This is the L1 planning layer that coordinates:
-Resume Analysis Planning → K1 Extraction → K2 Cleaning → K3 Quantification → K4 Rewriting → K5 Skill
-    Mapping → K6 Section Assembly → K7 Formatting → K8 Validation
-"""
-
 import logging
 from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +28,7 @@ class ResumeSectionConfig:
     section_name: str
     required: bool
     max_length: int
-    PRIORITY: INT  # 1 = highest
+    PRIORITY: int  # 1 = highest
     content_type: str  # "experience", "skills", "education", "projects"
     extraction_rules: List[str]
     validation_rules: List[str]
@@ -94,13 +85,13 @@ class RGPlanner:
         ]
 
     def plan_resume_processing(
-        """Docstring."""
         self,
         *,
         job_input: Dict[str, object],
         resume_input: Dict[str, object],
         processing_options: Optional[Dict[str, object]] = None
     ) -> ResumeProcessingPlan:
+        """Docstring."""
         """Generate comprehensive resume processing plan.
 
         Args:

@@ -64,9 +64,8 @@ class ExecutiveSummaryBrief:
     voice: VoiceType = VoiceType.THIRD_PERSON_IMPLIED
     forbidden_patterns: List[str] = field(default_factory=lambda: ['I have',
         'My expertise',
-        'At [COMPANY],
-        I'])
-    GUIDANCE: STR = "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly ma
-    intaining the narrative voice of a professional executive biography.
+        'At [COMPANY],',
+        'I'])
+    GUIDANCE: STR = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography.
         . Do not use phrasing from the job posting.
-        ."
+        ."""

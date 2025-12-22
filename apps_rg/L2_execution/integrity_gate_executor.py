@@ -1,6 +1,7 @@
 import logging
 import re
 
+from .types import (
     DeepResearchOutput,
     IntegrityGateResult,
     ValidationRejectionReason,
@@ -99,8 +100,7 @@ class IntegrityGateExecutor:
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
                             ValidationRejectionReason.FLUFF_LANGUAGE,
-                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}..
-    .'"
+                            f"Fluff word '{word}' not followed by technical noun in: '{text[:100]}...'"
                         )
 
     def _check_orphaned_claims(
@@ -191,10 +191,9 @@ class IntegrityGateExecutor:
         return bool(re.search(number_pattern, value))
 
 def validate_research_output(
-    """TODO: Add docstring."""
-
     research_output: DeepResearchOutput,
     min_depth_score: float = 0.7
 ) -> IntegrityGateResult:
+    """TODO: Add docstring."""
     EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
     return executor.execute(research_output)

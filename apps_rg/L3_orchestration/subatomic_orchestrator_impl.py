@@ -216,7 +216,7 @@ class SubatomicOrchestrator:
         LOGGER.info(f'Building workflow: {blueprint.name}')
         G = nx.DiGraph()
         role_to_hop: Dict[AgentRole, SubatomicHop] = {}
-        for role in blueprint.roles:
+        for role in blueprint.ROLES:
             hop_function = self._get_hop_function(role, **kwargs)
             HOP = create_functional_agent(role=role,
                                           hop_function=hop_function,
@@ -227,7 +227,7 @@ class SubatomicOrchestrator:
             HOP.dag_manager = self.dag_manager
             role_to_hop[role] = HOP
             G.add_node(HOP, role=role)
-        for from_role, to_role in blueprint.edges:
+        for from_role, to_role in blueprint.EDGES:
             from_hop = role_to_hop[from_role]
             to_hop = role_to_hop[to_role]
             G.add_edge(from_hop, to_hop)
@@ -336,7 +336,7 @@ class SubatomicOrchestrator:
             else:
                 execution_state['status'] = 'partial_failure'
         except Exception as e:
-LOGGER.error(f'Graph execution failed: {e}')
+            LOGGER.error(f'Graph execution failed: {e}')
             execution_state['status'] = 'failed'
             execution_state['error'] = str(e)
         finally:
@@ -406,7 +406,7 @@ LOGGER.error(f'Graph execution failed: {e}')
             RESULT = await node.run(**inputs)
             return RESULT
         except Exception as e:
-LOGGER.error(f'Node execution error: {e}')
+            LOGGER.error(f'Node execution error: {e}')
             raise
 
     async def _handle_node_failure(self,
@@ -439,7 +439,7 @@ LOGGER.error(f'Node execution error: {e}')
                         graph.add_node(new_hop, role=role)
                         graph.add_edge(new_hop, node)
             except Exception as e:
-LOGGER.error(f'Failed to apply mutation: {e}')
+                LOGGER.error(f'Failed to apply mutation: {e}')
 
     def get_execution_stats(self) -> Dict[str, Any]:
         """Get execution statistics.
@@ -515,4 +515,3 @@ async def execute_message_workflow(recipient_data: Dict[str, Any],
     return await ORCHESTRATOR.execute_graph(GRAPH,
                                             initial_inputs={'recipient': recipient_data,
                                                             'type': message_type})
-

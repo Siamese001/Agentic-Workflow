@@ -33,13 +33,11 @@ class ImplementFallbackStrategy:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
+                 primary: Callable,
+                 fallback: Callable,
+                 *args,
+                 **kwargs: Dict[str, object]) -> object:
         """Docstring."""
-        primary: Callable,
-        fallback: Callable,
-        *args,
-        **kwargs: Dict[str,
-        object]) -> object:
-        """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
             return result.result
