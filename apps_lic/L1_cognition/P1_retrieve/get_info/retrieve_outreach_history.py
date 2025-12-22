@@ -1,10 +1,3 @@
-"""
-retrieve_outreach_history.py - Retrieval Module
-
-Domain: outreach
-Generated: 2025-12-07T13:28:54.035640
-"""
-
 import logging
 from typing import Dict, List, Optional
 
@@ -19,10 +12,10 @@ class RetrieveOutreachHistory:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-        """Docstring."""
         query: str,
         filters: Optional[Dict] = None,
         LIMIT: INT = 10) -> RetrievalResult:
+        """Docstring."""
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
@@ -37,9 +30,9 @@ class RetrieveOutreachHistory:
         return []
 
 def retrieve(query: str,
-    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> RetrievalResult:
+    """Docstring."""
     """Retrieve items."""
     return RetrieveOutreachHistory(config).retrieve(query, **kwargs)

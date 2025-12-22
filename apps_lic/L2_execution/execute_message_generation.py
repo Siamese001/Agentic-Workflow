@@ -42,9 +42,7 @@ class ExecuteMessageGeneration:
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
-    """Docstring."""
-    params: Dict[str,
-    object],
+    params: Dict[str, object],
     config: Optional[Dict] = None) -> ExecutionResult:
     """Execute action."""
     return ExecuteMessageGeneration(config).execute(action, params)

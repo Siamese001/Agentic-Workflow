@@ -1,8 +1,10 @@
 import logging
 from datetime import datetime
 from pathlib import Path
+from typing import Optional, List
 
-LOGGER = logging.getLogger(__name__)
+# Assuming these models are defined in a local models file
+from .k25_research_models import (
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,
@@ -14,6 +16,9 @@ LOGGER = logging.getLogger(__name__)
     TechnicalImplementation,
     TechnicalLayer,
 )
+
+LOGGER = logging.getLogger(__name__)
+
 # Local validation function to avoid architectural violation
 def validate_research_output_local(output: DeepResearchOutput) -> bool:
     """Local validation for research output to avoid L2 dependency."""
@@ -46,8 +51,7 @@ class K25DeepResearchAgent:
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
-        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_resear
-    ch_mandate.md"
+        prompt_path = Path(__file__).parent.parent.parent / "config" / "prompts" / "k2_5_deep_research_mandate.md"
 
         if prompt_path.exists():
             return prompt_path.read_text(encoding="utf-8")
@@ -255,8 +259,8 @@ Begin research execution.
 """
 
 def create_k25_research_agent(
-    """Docstring."""
     company_name: str,
     company_url: Optional[str] = None
 ) -> K25DeepResearchAgent:
+    """Docstring."""
     return K25DeepResearchAgent(company_name=company_name, company_url=company_url)

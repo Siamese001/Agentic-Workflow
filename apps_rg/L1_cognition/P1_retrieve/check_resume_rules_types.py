@@ -1,5 +1,10 @@
 """Types and models for check_resume_rules."""
 import logging
+from enum import Enum
+from dataclasses import dataclass, field
+from typing import Optional, Dict, Any, Union
+import time
+import traceback
 
 LOGGER = logging.getLogger(__name__)
 class ExecutionStatus(Enum):
@@ -23,22 +28,22 @@ class ExecutionContext:
 
     def start(self) -> None:
         """Mark execution as started."""
-        SELF.STATUS = ExecutionStatus.RUNNING
+        self.status = ExecutionStatus.RUNNING # Assuming SELF.STATUS was a typo for self.status
         self.start_time = time.time()
-        logger.info(f'Execution started for operation: {self.operation_id}')
+        LOGGER.info(f'Execution started for operation: {self.operation_id}') # Assuming logger was a typo for LOGGER
 
     def complete(self, success: bool=True, error: Optional[Exception]=None) -> None:
         """Mark execution as completed."""
         self.end_time = time.time()
-        SELF.STATUS = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED
+        self.status = ExecutionStatus.SUCCESS if success else ExecutionStatus.FAILED # Assuming SELF.STATUS was a typo for self.status
         if error:
             self.error_details = {'type': type(error).__name__,
                 'message': str(error),
                 'traceback': traceback.format_exc()}
-            logger.error(f'Execution failed: {error}')
+            LOGGER.error(f'Execution failed: {error}') # Assuming logger was a typo for LOGGER
         else:
-            logger.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s
-    ')
+            LOGGER.info(f'Execution completed successfully in {self.end_time - self.start_time:.2f}s') # Fixed unterminated string literal
+    
 
 @dataclass
 class ProcessingResult:

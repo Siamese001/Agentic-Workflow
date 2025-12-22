@@ -386,8 +386,27 @@ async def run_mission(target_scope: str = "agentic_core"):
     if not target_path.is_relative_to(project_root_path):
         raise ValueError(f"[SECURITY BLOCK] Target scope '{target_scope}' escapes project root.")
     
-    # Discover all Python files in target scope
-    discovered_files = [p for p in target_path.rglob("*.py") if p.is_file()]
+    # === PROTECTED FOLDERS: Skip archives and legacy code ===
+    PROTECTED_FOLDERS = {
+        'archives',
+        'legacy_code',
+        'legacy_engines',
+        'legacy_resume_gen',
+        '.git',
+        '__pycache__',
+        'node_modules',
+        '.venv',
+        'venv',
+        'env',
+    }
+    
+    # Discover all Python files in target scope, excluding protected folders
+    discovered_files = [
+        p for p in target_path.rglob("*.py") 
+        if p.is_file() and not any(protected in p.parts for protected in PROTECTED_FOLDERS)
+    ]
+    
+    print(f"   [PROTECTED] Skipping folders: {', '.join(sorted(PROTECTED_FOLDERS))}")
     
     # === L6 RUNTIME: Void Compliance Enforcement ===
     valid_files, violations = enforce_void_compliance(discovered_files, project_root_path)

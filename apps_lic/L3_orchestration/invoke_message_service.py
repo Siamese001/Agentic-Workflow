@@ -42,7 +42,6 @@ class InvokeMessageService:
         return {"action": action, "params": params, "status": "completed"}
 
 def execute(action: str,
-    """Docstring."""
     params: Dict[str,
     object],
     config: Optional[Dict] = None) -> ExecutionResult:

@@ -134,8 +134,8 @@ class FileLibrarian:
                 self.active_files.append(file_info)
 
         except Exception as e:
-pass
-logger.warning(f"   ⚠️  Failed to process {file_path}: {e}")
+            pass
+            logger.warning(f"   ⚠️  Failed to process {file_path}: {e}")
             self.stats["excluded"] += 1
 
     def _identify_duplicates(self) -> None:
@@ -183,8 +183,8 @@ logger.warning(f"   ⚠️  Failed to process {file_path}: {e}")
             logger.info(f"💾 Manifest saved to: {output_path}")
 
         except Exception as e:
-pass
-logger.error(f"❌ Failed to save manifest: {e}")
+            pass
+            logger.error(f"❌ Failed to save manifest: {e}")
             if os.path.exists(temp_path):
                 os.remove(temp_path)
             raise
@@ -197,12 +197,12 @@ logger.error(f"❌ Failed to save manifest: {e}")
             with open(manifest_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-pass
-logger.warning(f"⚠️  Manifest not found: {manifest_path}")
+            pass
+            logger.warning(f"⚠️  Manifest not found: {manifest_path}")
             return {}
         except Exception as e:
-pass
-logger.error(f"❌ Failed to load manifest: {e}")
+            pass
+            logger.error(f"❌ Failed to load manifest: {e}")
             return {}
 
 
@@ -223,8 +223,8 @@ def get_target_files(manifest_path: str = "active_manifest.json") -> List[str]:
         return [file_info["absolute_path"] for file_info in manifest["files"]]
 
     except Exception as e:
-pass
-logger.error(f"❌ Failed to read manifest: {e}")
+        pass
+        logger.error(f"❌ Failed to read manifest: {e}")
         return []
 
 
@@ -275,4 +275,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

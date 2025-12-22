@@ -19,16 +19,15 @@ class ParseOutreachTarget:
         logger.info(f"Initialized {self.__class__.__name__}")
 
     def retrieve(self,
-        """Docstring."""
         query: str,
         filters: Optional[Dict] = None,
-        LIMIT: INT = 10) -> RetrievalResult:
-        """Retrieve items."""
+        limit: int = 10) -> RetrievalResult:
+        """Docstring."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:
             return self.cache[cache_key]
-        ITEMS = self._execute_query(query, filters, limit)
-        RESULT = RetrievalResult(items=items, total=len(items), query=query)
+        items = self._execute_query(query, filters, limit)
+        result = RetrievalResult(items=items, total=len(items), query=query)
         self.cache[cache_key] = result
         return result
 
@@ -37,9 +36,8 @@ class ParseOutreachTarget:
         return []
 
 def retrieve(query: str,
-    """Docstring."""
     config: Optional[Dict] = None,
     **kwargs: Dict[str,
     object]) -> RetrievalResult:
-    """Retrieve items."""
+    """Docstring."""
     return ParseOutreachTarget(config).retrieve(query, **kwargs)

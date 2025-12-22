@@ -1,3 +1,4 @@
+```python
 """
 implement_fallback_templates.py - Retry/Fallback Module
 
@@ -33,12 +34,10 @@ class ImplementFallbackTemplates:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
-        """Docstring."""
-        primary: Callable,
-        fallback: Callable,
-        *args,
-        **kwargs: Dict[str,
-        object]) -> object:
+                 primary: Callable,
+                 fallback: Callable,
+                 *args,
+                 **kwargs: Dict[str, object]) -> object:
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
@@ -48,3 +47,4 @@ class ImplementFallbackTemplates:
 def with_retry(func: Callable, config: Optional[Dict] = None) -> RetryResult:
     """Execute with retry."""
     return ImplementFallbackTemplates(config).execute(func)
+```

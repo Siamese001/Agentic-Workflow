@@ -39,6 +39,7 @@ def get_latest_code_mtime(root_dir: str, exclude_dirs: list = None) -> float:
                     if mtime > latest_mtime:
                         latest_mtime = mtime
                 except OSError:
+                    pass # Ignore files that might not be accessible
 
     return latest_mtime
 
@@ -298,4 +299,3 @@ if __name__ == "__main__":
 
     # Run the agent with the strategic goal
     run_agentic_loop(user_goal)
-

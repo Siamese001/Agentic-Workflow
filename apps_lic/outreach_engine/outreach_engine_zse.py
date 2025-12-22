@@ -141,14 +141,14 @@ def execute_outreach_zse(
         if logger:
             logger.info(f"✅ Fetched company context from {company_url}")
     except NetworkViolationError as e:
-log_action("P8_VIOLATION", f"Egress filter blocked: {str(e)}")
+        log_action("P8_VIOLATION", f"Egress filter blocked: {str(e)}")
         return {
             "status": "FAILED",
             "reason": "P8_EGRESS_VIOLATION",
             "details": str(e)
         }
     except Exception as e:
-log_action("L1_FETCH_ERROR", str(e))
+        log_action("L1_FETCH_ERROR", str(e))
         return {
             "status": "FAILED",
             "reason": "FETCH_ERROR",
@@ -172,7 +172,7 @@ log_action("L1_FETCH_ERROR", str(e))
         if logger:
             logger.info(f"✅ Retrieved contact context for {primary_contact['name']}")
     except Exception as e:
-log_action("L5_SEARCH_ERROR", str(e))
+        log_action("L5_SEARCH_ERROR", str(e))
         return {
             "status": "FAILED",
             "reason": "L5_SEARCH_ERROR",
@@ -191,7 +191,7 @@ log_action("L5_SEARCH_ERROR", str(e))
         if logger:
             logger.info(f"✅ Optimal send time calculated: {optimal_send_time}")
     except Exception as e:
-log_action("L4_TIME_ERROR", str(e))
+        log_action("L4_TIME_ERROR", str(e))
         optimal_send_time = "09:00"  # Default fallback
 
     # --- Step 4: Initial Pitch Generation ---
@@ -210,7 +210,7 @@ log_action("L4_TIME_ERROR", str(e))
         if logger:
             logger.info("✅ Initial pitch generated")
     except Exception as e:
-log_action("PITCH_GENERATE_ERROR", str(e))
+        log_action("PITCH_GENERATE_ERROR", str(e))
         return {
             "status": "FAILED",
             "reason": "PITCH_GENERATION_ERROR",
@@ -260,7 +260,7 @@ log_action("PITCH_GENERATE_ERROR", str(e))
                 logger.info(f"✅ P6 vetting complete: {p6_vet_result['status']}")
 
         except Exception as e:
-log_action("P6_VET_ERROR", str(e))
+            log_action("P6_VET_ERROR", str(e))
             p6_vet_result = {
                 "status": "FAIL",
                 "reason": f"P6 vetting error: {str(e)}"
@@ -311,7 +311,7 @@ log_action("P6_VET_ERROR", str(e))
                     logger.info(f"✅ P10 shadow refinement applied (attempt {refinement_count})")
 
             except Exception as e:
-log_action("P10_SHADOW_ERROR", str(e))
+                log_action("P10_SHADOW_ERROR", str(e))
                 return {
                     "status": "FAILED",
                     "reason": "P10_REFINEMENT_ERROR",
@@ -349,7 +349,7 @@ log_action("P10_SHADOW_ERROR", str(e))
                 logger.info(f"✅ Email sent to {primary_contact['email']}")
 
     except Exception as e:
-log_action("SEND_EMAIL_ERROR", str(e))
+        log_action("SEND_EMAIL_ERROR", str(e))
         return {
             "status": "FAILED",
             "reason": "SEND_EMAIL_ERROR",
@@ -379,4 +379,3 @@ log_action("SEND_EMAIL_ERROR", str(e))
         "pitch_hash": pitch_hash,
         "send_result": send_result
     }
-

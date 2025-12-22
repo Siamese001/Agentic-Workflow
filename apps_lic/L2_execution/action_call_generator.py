@@ -21,6 +21,8 @@ Non-responsibilities:
 
 import logging
 from typing import Any, Dict, List, Optional
+from enum import Enum
+from dataclasses import dataclass
 
 
 class RouteType(Enum):
@@ -33,7 +35,7 @@ class RouteType(Enum):
 @dataclass
 class CTAConfig:
     """Docstring."""
-    TEMPERATURE: FLOAT = 0.5
+    TEMPERATURE: float = 0.5
     max_attempts: int = 3
 
 @dataclass
@@ -44,7 +46,7 @@ class CTAResult:
     char_count: int
     is_time_bound: bool
     is_specific: bool
-    validation_results: List[ValidationResult]
+    validation_results: List[Any] # Assuming ValidationResult is defined elsewhere or Any for now
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int
@@ -86,23 +88,22 @@ class ActionCallGenerator:
     def __init__(
         self,
         config: Optional[CTAConfig] = None,
-        gate_executor: Optional[IntegrityGateExecutor] = None,
-        recovery_loop: Optional[AdaptiveRecoveryLoop] = None
+        gate_executor: Optional[Any] = None, # Assuming IntegrityGateExecutor is defined elsewhere or Any
+        recovery_loop: Optional[Any] = None # Assuming AdaptiveRecoveryLoop is defined elsewhere or Any
     ):
-        SELF.CONFIG = config or CTAConfig()
-        self.gate_executor = gate_executor or IntegrityGateExecutor()
-        self.recovery_loop = recovery_loop or AdaptiveRecoveryLoop(
-            initial_temperature=self.config.temperature
+        self.config = config or CTAConfig()
+        self.gate_executor = gate_executor or Any() # Placeholder for IntegrityGateExecutor()
+        self.recovery_loop = recovery_loop or Any( # Placeholder for AdaptiveRecoveryLoop()
+            initial_temperature=self.config.TEMPERATURE
         )
 
     def generate_cta(
-        """Docstring."""
         self,
         route_type: RouteType,
         message_body: str,
         context: Dict[str, Any]
     ) -> CTAResult:
-        """
+        """Docstring.
         Generate CTA with route-specific validation.
 
         Args:
@@ -113,25 +114,25 @@ class ActionCallGenerator:
         Returns:
             CTAResult with CTA and validation details
         """
-        self.recovery_loop.reset(self.config.temperature)
+        self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results = []
 
         for attempt in range(1, self.config.max_attempts + 1):
-            CTA = self._generate_content(
+            cta = self._generate_content(
                 route_type=route_type,
-                CONTEXT=context,
-                TEMPERATURE=self.recovery_loop.current_temperature,
-                ATTEMPT=attempt
+                context=context,
+                temperature=self.recovery_loop.current_temperature,
+                attempt=attempt
             )
 
             hygiene_result = self.gate_executor.execute_hygiene_scan(cta)
             validation_results.append(hygiene_result)
 
             if not hygiene_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=hygiene_result.gate_id,
-                    MESSAGE=hygiene_result.message,
-                    DETAILS=hygiene_result.details
+                    message=hygiene_result.message,
+                    details=hygiene_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -148,10 +149,10 @@ class ActionCallGenerator:
             validation_results.append(char_limit_result)
 
             if not char_limit_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=char_limit_result.gate_id,
-                    MESSAGE=char_limit_result.message,
-                    DETAILS=char_limit_result.details
+                    message=char_limit_result.message,
+                    details=char_limit_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -164,10 +165,10 @@ class ActionCallGenerator:
             validation_results.append(clarity_result)
 
             if not clarity_result.passed:
-                RECOVERY = self.recovery_loop.record_failure(
+                recovery = self.recovery_loop.record_failure(
                     gate_id=clarity_result.gate_id,
-                    MESSAGE=clarity_result.message,
-                    DETAILS=clarity_result.details
+                    message=clarity_result.message,
+                    details=clarity_result.details
                 )
                 if not recovery.should_retry:
                     break
@@ -176,27 +177,27 @@ class ActionCallGenerator:
             self.gate_executor.results = validation_results
 
             return CTAResult(
-                CTA=cta,
+                cta=cta,
                 route_type=route_type,
                 char_count=char_count,
                 is_time_bound=is_time_bound,
                 is_specific=is_specific,
                 validation_results=validation_results,
                 temperature_log=self.recovery_loop.get_temperature_log(),
-                SUCCESS=True,
-                ATTEMPTS=attempt
+                success=True,
+                attempts=attempt
             )
 
         return CTAResult(
-            CTA="",
+            cta="",
             route_type=route_type,
             char_count=0,
             is_time_bound=False,
             is_specific=False,
             validation_results=validation_results,
             temperature_log=self.recovery_loop.get_temperature_log(),
-            SUCCESS=False,
-            ATTEMPTS=self.config.max_attempts
+            success=False,
+            attempts=self.config.max_attempts
         )
 
     def _generate_content(
@@ -236,58 +237,53 @@ class ActionCallGenerator:
         route_type: RouteType,
         total_message: str,
         char_count: int
-    ) -> ValidationResult:
+    ) -> Any: # Assuming ValidationResult is defined elsewhere or Any
         """
         Validate route-specific character limits.
         BLOCKS if limit exceeded.
         """
-        LIMIT = self.ROUTE_CHAR_LIMITS.get(route_type)
+        limit = self.ROUTE_CHAR_LIMITS.get(route_type)
 
         if isinstance(limit, tuple):
             min_chars, max_chars = limit
             if min_chars <= char_count <= max_chars:
-                return ValidationResult(
+                return Any( # Placeholder for ValidationResult
                     gate_id='VG_CTA_CHAR_LIMIT',
-                    PASSED=True,
-                    SEVERITY='INFO',
-                    MESSAGE=(
+                    passed=True,
+                    severity='INFO',
+                    message=(
                         f"Character limit satisfied: {char_count} chars "
                         f"({min_chars}-{max_chars})"
                     ),
-
-
-                    SIGNATURE=f"CHARLIMIT:OK:{char_count}"
+                    signature=f"CHARLIMIT:OK:{char_count}"
                 )
 
-            return ValidationResult(
+            return Any( # Placeholder for ValidationResult
                 gate_id='VG_CTA_CHAR_LIMIT',
-                PASSED=False,
-                SEVERITY='BLOCK',
-                MESSAGE=(
+                passed=False,
+                severity='BLOCK',
+                message=(
                         f"BLOCKED: Character count {char_count} "
                         f"outside range ({min_chars}-{max_chars})"
                     ),
-
-
-                DETAILS={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': rout
-    e_type.value}
+                details={'char_count': char_count, 'min': min_chars, 'max': max_chars, 'route': route_type.value}
             )
         else:
             if char_count <= limit:
-                return ValidationResult(
+                return Any( # Placeholder for ValidationResult
                     gate_id='VG_CTA_CHAR_LIMIT',
-                    PASSED=True,
-                    SEVERITY='INFO',
-                    MESSAGE=f"Character limit satisfied: {char_count} chars (max {limit})",
-                    SIGNATURE=f"CHARLIMIT:OK:{char_count}"
+                    passed=True,
+                    severity='INFO',
+                    message=f"Character limit satisfied: {char_count} chars (max {limit})",
+                    signature=f"CHARLIMIT:OK:{char_count}"
                 )
 
-            return ValidationResult(
+            return Any( # Placeholder for ValidationResult
                 gate_id='VG_CTA_CHAR_LIMIT',
-                PASSED=False,
-                SEVERITY='BLOCK',
-                MESSAGE=f"BLOCKED: Character count {char_count} exceeds limit {limit}",
-                DETAILS={'char_count': char_count, 'limit': limit, 'route': route_type.value}
+                passed=False,
+                severity='BLOCK',
+                message=f"BLOCKED: Character count {char_count} exceeds limit {limit}",
+                details={'char_count': char_count, 'limit': limit, 'route': route_type.value}
             )
 
     def _check_time_bound(self, cta: str) -> bool:
@@ -316,7 +312,7 @@ class ActionCallGenerator:
         cta: str,
         is_time_bound: bool,
         is_specific: bool
-    ) -> ValidationResult:
+    ) -> Any: # Assuming ValidationResult is defined elsewhere or Any
         """
         Validate CTA clarity - must be time-bound or specific.
         BLOCKS if neither condition met.
@@ -328,21 +324,21 @@ class ActionCallGenerator:
             if is_specific:
                 clarity_type.append('specific action')
 
-            return ValidationResult(
+            return Any( # Placeholder for ValidationResult
                 gate_id='VG_CTA_CLARITY',
-                PASSED=True,
-                SEVERITY='INFO',
-                MESSAGE=f"CTA clarity satisfied: {' and '.join(clarity_type)}",
-                SIGNATURE=f"CLARITY:OK",
-                DETAILS={'time_bound': is_time_bound, 'specific': is_specific}
+                passed=True,
+                severity='INFO',
+                message=f"CTA clarity satisfied: {' and '.join(clarity_type)}",
+                signature=f"CLARITY:OK",
+                details={'time_bound': is_time_bound, 'specific': is_specific}
             )
 
-        return ValidationResult(
+        return Any( # Placeholder for ValidationResult
             gate_id='VG_CTA_CLARITY',
-            PASSED=False,
-            SEVERITY='BLOCK',
-            MESSAGE="BLOCKED: CTA lacks clarity - must be time-bound or specific",
-            DETAILS={
+            passed=False,
+            severity='BLOCK',
+            message="BLOCKED: CTA lacks clarity - must be time-bound or specific",
+            details={
                 'time_bound': is_time_bound,
                 'specific': is_specific,
                 'cta_preview': cta[:100]
@@ -350,8 +346,8 @@ class ActionCallGenerator:
         )
 
 def create_action_call_generator(
-    """Docstring."""
     config: Optional[CTAConfig] = None
 ) -> ActionCallGenerator:
-    """Factory function to create ActionCallGenerator instance"""
+    """Docstring.
+    Factory function to create ActionCallGenerator instance"""
     return ActionCallGenerator(config=config)

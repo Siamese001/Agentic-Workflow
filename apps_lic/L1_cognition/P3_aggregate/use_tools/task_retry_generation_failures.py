@@ -33,12 +33,10 @@ class RetryGenerationFailures:
         return RetryResult(success=False, attempts=self.max_retries, error=last_error)
 
     def fallback(self,
-        """Docstring."""
-        primary: Callable,
-        fallback: Callable,
-        *args,
-        **kwargs: Dict[str,
-        object]) -> object:
+                 primary: Callable,
+                 fallback: Callable,
+                 *args,
+                 **kwargs: Dict[str, object]) -> object:
         """Execute with fallback."""
         RESULT = self.execute(primary, *args, **kwargs)
         if result.success:
