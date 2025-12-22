@@ -20,8 +20,14 @@ app = Flask(__name__)
 CORS(app)
 
 # Global instances (initialized as None to allow validator injection)
-metrics = None
-dashboard = None
+try:
+    # Attempt to initialize standalone metrics if not injected
+    from canon_dashboard import DashboardMetrics, CanonDashboard
+    metrics = DashboardMetrics()
+    dashboard = CanonDashboard(metrics)
+except ImportError:
+    metrics = None
+    dashboard = None
 agents_global = []  # List of live agent instances for visualization
 
 print("[WEB] Dashboard Module Loaded. Waiting for metrics injection...")
