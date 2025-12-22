@@ -218,7 +218,6 @@ class SystemArchitect(CanonBaseAgent):
             
         # [KEY 42 HARDENING] Force Fission Surgery
         if key == 42:
-            print(f"      [!] {self.name}: Large file detected. Triggering Architectural Surgery (Fission)...")
             for violation in remaining_violations:
                 file_path = violation.split(":")[0].strip()
                 await self._smart_fix(file_path, key, [violation])

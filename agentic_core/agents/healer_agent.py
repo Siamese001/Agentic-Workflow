@@ -209,8 +209,7 @@ CURRENT CODE:
         # [KEY 42 INTEGRATION] Redirect large files to FissionManager
         if violation_key == 42:
             print(f"      [SIGNAL] Key 42 Surgery Triggered for {os.path.basename(file_path)}")
-            if hasattr(self.ctx, 'fission') and hasattr(self.ctx, 'engine'):
-                # Blueprint generation via LLM
+            if hasattr(self.ctx, 'fission'):
                 blueprint_task = f"GENERATE_FISSION_BLUEPRINT for {file_path}. Split into logical sub-modules."
                 res = await self.ctx.engine.resilient_mutation(
                     task=blueprint_task, 
