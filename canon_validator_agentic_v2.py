@@ -365,12 +365,17 @@ async def run_mission(target_scope: str = "agentic_core"):
         ctx.log_error = lambda msg: ctx.report("System", 0, False, msg)
     
     # [HARDENING] Add missing L4/L5 operational flags
-    if not hasattr(ctx, 'intelligence_enabled'): ctx.intelligence_enabled = True
-    # Services must be a dot-accessible object or dict with expected keys
-    if not hasattr(ctx, 'services'): 
-        ctx.services = type('obj', (object,), {'mcp_clients': []})()
+    # [FIX] Convert Booleans to Callables to prevent 'bool object not callable' errors
+    if not hasattr(ctx, 'can_attempt_healing'): 
+        ctx.can_attempt_healing = lambda: True
     
-    if not hasattr(ctx, 'can_attempt_healing'): ctx.can_attempt_healing = True
+    if not hasattr(ctx, 'intelligence_enabled'): 
+        ctx.intelligence_enabled = lambda: True
+
+    # [FIX] Support for UI/Figma service calls
+    if not hasattr(ctx, 'services'): 
+        ctx.services = type('obj', (object,), {'mcp_clients': [], 'get': lambda s, k, d=None: d})()
+    
     if not hasattr(ctx, 'signal_deps_valid'): ctx.signal_deps_valid = lambda: True
     
     # 3. WIRE COMPONENTS TO CONTEXT (Crucial Fix)

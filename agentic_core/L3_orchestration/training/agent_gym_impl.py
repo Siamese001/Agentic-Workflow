@@ -1,4 +1,3 @@
-```python
 """Implementation for agent_gym."""
 
 import logging
@@ -314,4 +313,3 @@ def create_agent_gym(golden_evaluator: Optional[GoldenStateEvaluator]=None) -> A
         AgentGym instance
     """
     return AgentGym(golden_evaluator=golden_evaluator)
-```
