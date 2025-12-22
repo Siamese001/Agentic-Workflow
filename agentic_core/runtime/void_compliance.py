@@ -224,6 +224,22 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         # Nested files: Must belong to an approved root folder
         root_folder = rel_path.parts[0]
         
+        # Enforce Depth constraints (Key 49: Universal Depth Law)
+        # Standard folders: min 3, max 5 (depths 3, 4, 5 allowed)
+        # Tests folder: exactly depth 3 only
+        depth = len(rel_path.parts)
+        
+        if root_folder == "tests":
+            # Tests must be exactly depth 3
+            if depth != 3:
+                return False, f"DEPTH VIOLATION: tests/ requires exactly depth 3, found depth {depth} at '{rel_path}'."
+        else:
+            # All other folders: min 3, max 5
+            if depth < 3:
+                return False, f"DEPTH VIOLATION: Path '{rel_path}' has depth {depth}, minimum required is 3."
+            if depth > 5:
+                return False, f"DEPTH VIOLATION: Path '{rel_path}' has depth {depth}, maximum allowed is 5 (Key 49)."
+        
         # [L6 HARDENING] Silent Ignore for standard environment/git noise
         if root_folder in {".venv", "venv", ".git", "__pycache__", "node_modules"}:
             return True, f"System folder ignored: {root_folder}"
@@ -351,27 +367,39 @@ def generate_ascii_tree(start_path: Path, max_depth: int = 3) -> str:
 
 
 def check_single_child_violations(project_root: Path) -> List[Tuple[Path, str]]:
-    """Enforces the 'Span-of-Two' rule: Folders must have ≥2 meaningful children or be a leaf."""
+    """
+    Hardened Enforcement: Detects single-child 'tunnels' that violate the Span of Two rule.
+    A folder is in violation if it contains exactly one subfolder or one file.
+    """
     violations = []
-    SYSTEM_FOLDERS = {".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache"}
+    # Ignore system and environment directories
+    IGNORE_DIRS = {".git", ".venv", "venv", "__pycache__", "node_modules", ".pytest_cache"}
     
-    for root_name in ALLOWED_ROOT_FOLDERS:
-        root_path = project_root / root_name
-        if not root_path.is_dir(): continue
+    # We only scan folders defined in our canonical hierarchy to avoid noise in external libs
+    for root_folder in ALLOWED_ROOT_FOLDERS:
+        root_path = project_root / root_folder
+        if not root_path.exists():
+            continue
             
         for dirpath, dirnames, filenames in os.walk(root_path):
-            # Filter out system junk
-            dirnames[:] = [d for d in dirnames if d not in SYSTEM_FOLDERS and not d.startswith(".")]
             current_dir = Path(dirpath)
             
-            # Count meaningful children (dirs + files)
+            # Filter out ignored directories
+            dirnames[:] = [d for d in dirnames if d not in IGNORE_DIRS and not d.startswith(".")]
+            
+            # Count meaningful children (non-hidden files and directories)
             meaningful_files = [f for f in filenames if not f.startswith(".")]
             total_children = len(dirnames) + len(meaningful_files)
             
+            # Violation: Folder contains only one item (Span of Two failure)
             if total_children == 1:
                 child_name = dirnames[0] if dirnames else meaningful_files[0]
-                violations.append((current_dir, f"SPAN-OF-TWO: '{current_dir.name}' only contains '{child_name}'. Flatten this structure."))
-    
+                violations.append((
+                    current_dir, 
+                    f"SPAN ERROR: '{current_dir.name}' contains only '{child_name}'. "
+                    f"Flatten this tunnel to maintain Depth 3 compliance."
+                ))
+                
     return violations
 
 

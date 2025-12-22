@@ -1346,8 +1346,17 @@ Return ONLY the complete merged Python code. No explanations.
         
         print(f"\n   [HEALING] Starting iterative validation for {file_name}")
         
+        # HARDENING: Mandatory Structural Depth Check (L6 Compliance)
+        from agentic_core.runtime.void_compliance import validate_file_location
+        is_structurally_valid, struct_msg = validate_file_location(file_path, project_root)
+        
+        initial_violations = 0
+        if not is_structurally_valid:
+            print(f"     [!] L6 DEPTH ERROR: {struct_msg}")
+            initial_violations = 1  # Force violation count to reflect structural failure
+        
         for round_idx in range(1, MAX_HEALING_ROUNDS + 1):
-            violations_this_round = 0
+            violations_this_round = initial_violations
             changes_this_round = 0
             
             # Update round tracking in reports
@@ -1383,10 +1392,13 @@ Return ONLY the complete merged Python code. No explanations.
             current_round_reports = [r for r in ctx.report if file_name in str(r) and r.get('round', 1) == round_idx]
             fail_count = len([r for r in current_round_reports if r.get('status') == 'FAIL'])
             
-            print(f"Changes: {changes_this_round} | Violations: {fail_count}")
+            # Add structural violations to the total count
+            total_violations = fail_count + violations_this_round
+            
+            print(f"Changes: {changes_this_round} | Violations: {total_violations}")
             
             # If no violations and we're past round 1, we've converged
-            if fail_count == 0 and round_idx > 1:
+            if total_violations == 0 and round_idx > 1:
                 print(f"     [] Converged after {round_idx-1} rounds")
                 break
         
