@@ -11,7 +11,7 @@ import re
 import asyncio
 import logging
 
-from agentic_core.agents.specialized.outreach_agent import create_outreach_agent
+from agentic_core.L5_safety.P1_red_team.specialized.outreach_agent import create_outreach_agent
 from agentic_core.core.orchestrator_main import (
     OrchestratorConfig,
     create_orchestrator,

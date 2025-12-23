@@ -90,27 +90,27 @@ load_dotenv()  # Auto-load .env
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
-from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.infrastructure import (
+from agentic_core.L5_safety.P1_red_team.engineering import PatternEnforcer, StructuralEngineer
+from agentic_core.L5_safety.P1_red_team.governance import ArchitectureGovernor, DependencySentinel
+from agentic_core.L5_safety.P1_red_team.infrastructure import (
     BenchmarkingAgent,
     GitAgent,
     Historian,
     WatchmanHandler,
 )
-from agentic_core.agents.planning import ReflectionAgent, StrategicPlanner
-from agentic_core.agents.quality import (
+from agentic_core.L5_safety.P1_red_team.planning import ReflectionAgent, StrategicPlanner
+from agentic_core.L5_safety.P1_red_team.quality import (
     CodeStyleGuardian,
     HygieneGuardian,
     PerformanceEnforcer,
 )
-from agentic_core.agents.repair import TestPilot, ToolsmithAgent
-from agentic_core.agents.security import (
+from agentic_core.L5_safety.P1_red_team.repair import TestPilot, ToolsmithAgent
+from agentic_core.L5_safety.P1_red_team.security import (
     ConcurrencyGuardian,
     SafetyInspector,
     SecurityEnforcer,
 )
-from agentic_core.agents.specialized import (
+from agentic_core.L5_safety.P1_red_team.specialized import (
     DocEnforcer,
     NamingEnforcer,
     TheCartographer,
@@ -2078,7 +2078,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #             })
 #             raise
 
-# ImportPatcher is now imported from agentic_core.agents.base
+# ImportPatcher is now imported from agentic_core.L5_safety.P1_red_team.base
 
 # class ImportPatcher:
 #     """Mixin class providing unified import patching capabilities for Surgeon agents."""
@@ -2088,7 +2088,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 # 3. THE TEST PILOT (Integration Guardian & Healing Orchestrator)
 # ==============================================================================
 
-# TestPilot (Occurrence 1) is now imported from agentic_core.agents.repair
+# TestPilot (Occurrence 1) is now imported from agentic_core.L5_safety.P1_red_team.repair
 
 # class TestPilot(SubAtomicAgent):
 #     """
@@ -2163,7 +2163,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 # 4. THE MAGNIFICENT SEVEN (Validation Agents)
 # ==============================================================================
 
-# Historian is now imported from agentic_core.agents.infrastructure
+# Historian is now imported from agentic_core.L5_safety.P1_red_team.infrastructure
 
 # class Historian(SubAtomicAgent):
 #     """
@@ -2231,7 +2231,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 # 3. THE SPECIALIST AGENTS (100% Coverage of All 50 Keys)
 # ==============================================================================
 
-# ArchitectureGovernor and DependencySentinel are now imported from agentic_core.agents.governance
+# ArchitectureGovernor and DependencySentinel are now imported from agentic_core.L5_safety.P1_red_team.governance
 
 # class ArchitectureGovernor(SubAtomicAgent):
 #     """
@@ -2487,7 +2487,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #
 #         return (len(violations) == 0, violations)
 
-# SafetyInspector, ConcurrencyGuardian, and SecurityEnforcer are now imported from agentic_core.agents.security
+# SafetyInspector, ConcurrencyGuardian, and SecurityEnforcer are now imported from agentic_core.L5_safety.P1_red_team.security
 
 # class SafetyInspector(SubAtomicAgent):
 #     """
@@ -3074,7 +3074,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #         self.ctx.report(self.name, 63, True, ["No livelock patterns"])
 #         self.ctx.report(self.name, 64, True, ["No starvation risks"])
 
-# HygieneGuardian, CodeStyleGuardian, and PerformanceEnforcer are now imported from agentic_core.agents.quality
+# HygieneGuardian, CodeStyleGuardian, and PerformanceEnforcer are now imported from agentic_core.L5_safety.P1_red_team.quality
 
 # class HygieneGuardian(SubAtomicAgent):
 #     """
@@ -3353,7 +3353,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #             self.name, prompt, code=content, file_path=file_path, max_attempts=2
 #         )
 
-# StructuralEngineer is now imported from agentic_core.agents.engineering
+# StructuralEngineer is now imported from agentic_core.L5_safety.P1_red_team.engineering
 
 # class StructuralEngineer(SubAtomicAgent):
 #     """
@@ -3524,7 +3524,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #
 #         return (len(violations) == 0, violations)
 
-# PatternEnforcer is now imported from agentic_core.agents.engineering
+# PatternEnforcer is now imported from agentic_core.L5_safety.P1_red_team.engineering
 
 # class PatternEnforcer(SubAtomicAgent):
 #     """
@@ -3941,25 +3941,25 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #                 continue
 #         return (len(violations) == 0, violations)
 
-# SemanticMapper is now imported from agentic_core.agents.analysis
+# SemanticMapper is now imported from agentic_core.L5_safety.P1_red_team.analysis
 
 # class SemanticMapper(SubAtomicAgent):
 #     """ROLE: The Architect. Analyzes 'God Files' and proposes logical splits."""
 #     # ... (moved to agentic_core/agents/analysis.py)
 
-# RedSentinel is now imported from agentic_core.agents.security
+# RedSentinel is now imported from agentic_core.L5_safety.P1_red_team.security
 
 # class RedSentinel(SubAtomicAgent):
 #     """ROLE: Active Defense. Fuzz tests public functions with hostile inputs."""
 #     # ... (moved to agentic_core/agents/security.py)
 
-# TruthKeeper is now imported from agentic_core.agents.analysis
+# TruthKeeper is now imported from agentic_core.L5_safety.P1_red_team.analysis
 
 # class TruthKeeper(SubAtomicAgent):
 #     """ROLE: Semantic Consistency. Ensures docstrings match code logic."""
 #     # ... (moved to agentic_core/agents/analysis.py)
 
-# TheCartographer is now imported from agentic_core.agents.specialized
+# TheCartographer is now imported from agentic_core.L5_safety.P1_red_team.specialized
 
 # class TheCartographer(SubAtomicAgent):
 #     """
@@ -4037,7 +4037,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #         except Exception:
 #             return "Summary generation failed"
 
-# TheOmniContext is now imported from agentic_core.agents.specialized
+# TheOmniContext is now imported from agentic_core.L5_safety.P1_red_team.specialized
 
 # class TheOmniContext(SubAtomicAgent):
 #     """
@@ -4110,13 +4110,13 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #         except Exception as e:
 #             return f"[OMNI] Error during consultation: {e}"
 
-# OmniContext is now imported from agentic_core.agents.context
+# OmniContext is now imported from agentic_core.L5_safety.P1_red_team.context
 
 # class OmniContext(SubAtomicAgent):
 #     """ROLE: Global Architectural Context."""
 #     # ... (moved to agentic_core/agents/context.py)
 
-# TestPilot (Occurrence 2) is now imported from agentic_core.agents.repair
+# TestPilot (Occurrence 2) is now imported from agentic_core.L5_safety.P1_red_team.repair
 
 # class TestPilot(SubAtomicAgent):
 #     """
@@ -4479,7 +4479,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 # THE TOOLSMITH (L5 Dynamic Agency)
 # ==============================================================================
 
-# ToolsmithAgent is now imported from agentic_core.agents.repair
+# ToolsmithAgent is now imported from agentic_core.L5_safety.P1_red_team.repair
 
 # class ToolsmithAgent(SubAtomicAgent):
 #     """
@@ -4831,7 +4831,7 @@ IntelligentOrchestrator = SwarmScheduler
 # 5. ADVANCED INTELLIGENCE AGENTS (Level 2)
 # ==============================================================================
 
-# TheStrategist is now imported from agentic_core.agents.specialized
+# TheStrategist is now imported from agentic_core.L5_safety.P1_red_team.specialized
 
 # class TheStrategist(SubAtomicAgent):
 #     """
@@ -4960,7 +4960,7 @@ IntelligentOrchestrator = SwarmScheduler
 #         except Exception as e:
 #             print(f"   ❌ Failed to generate refactor proposal: {e}")
 
-# NamingEnforcer, DocEnforcer, and TypeEnforcer are now imported from agentic_core.agents.specialized
+# NamingEnforcer, DocEnforcer, and TypeEnforcer are now imported from agentic_core.L5_safety.P1_red_team.specialized
 # Original implementations removed - see agentic_core/agents/specialized.py for full code
 
 # NOTE: The following large class blocks have been removed to reduce file size:
@@ -4971,7 +4971,7 @@ IntelligentOrchestrator = SwarmScheduler
 # Placeholder to maintain file structure
 _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in agentic_core
 
-# SecurityEnforcer is now imported from agentic_core.agents.security
+# SecurityEnforcer is now imported from agentic_core.L5_safety.P1_red_team.security
 
 # class SecurityEnforcer(SubAtomicAgent):
 #     """ROLE: Security Guardian. Detects and intelligently remediates high-risk security patterns."""
@@ -4986,15 +4986,15 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 #             r'auth\s*=\s*["\'][^"\']+["\'])',
 #             re.IGNORECASE
 #         ),
-#         ... (rest of SecurityEnforcer commented out - see agentic_core.agents.security)
+#         ... (rest of SecurityEnforcer commented out - see agentic_core.L5_safety.P1_red_team.security)
 
 # NOTE: NamingEnforcer, DocEnforcer, and TypeEnforcer classes have been moved to
 # agentic_core/agents/specialized.py - the original ~1000 lines of code have been
-# removed from this file to reduce size. Import them from agentic_core.agents.specialized.
+# removed from this file to reduce size. Import them from agentic_core.L5_safety.P1_red_team.specialized.
 
 # (NamingEnforcer, DocEnforcer, TypeEnforcer removed - see agentic_core/agents/specialized.py)
 
-# SecurityEnforcer is now imported from agentic_core.agents.security
+# SecurityEnforcer is now imported from agentic_core.L5_safety.P1_red_team.security
 
 # class SecurityEnforcer(SubAtomicAgent):
 #     """ROLE: Security Guardian. Detects and intelligently remediates high-risk security patterns."""
@@ -5294,7 +5294,7 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 #         
 #         self.ctx.write_compliant_file(report_path, report_content)
 
-# PerformanceEnforcer is now imported from agentic_core.agents.quality
+# PerformanceEnforcer is now imported from agentic_core.L5_safety.P1_red_team.quality
 
 # class PerformanceEnforcer(SubAtomicAgent):
 #     """ROLE: Performance Guardian. Identifies and remediates computational inefficiencies."""
@@ -5608,19 +5608,19 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 #         
 #         self.ctx.write_compliant_file(report_path, report_content)
 
-# StrategicPlanner is now imported from agentic_core.agents.planning
+# StrategicPlanner is now imported from agentic_core.L5_safety.P1_red_team.planning
 
 # class StrategicPlanner(SubAtomicAgent):
 #     """ROLE: High-level strategist."""
 #     # ... (moved to agentic_core/agents/planning.py)
 
-# ReflectionAgent is now imported from agentic_core.agents.planning
+# ReflectionAgent is now imported from agentic_core.L5_safety.P1_red_team.planning
 
 # class ReflectionAgent(SubAtomicAgent):
 #     """Consolidates successful mutations into long-term memory."""
 #     # ... (moved to agentic_core/agents/planning.py)
 
-# GitAgent is now imported from agentic_core.agents.infrastructure
+# GitAgent is now imported from agentic_core.L5_safety.P1_red_team.infrastructure
 
 # class GitAgent(SubAtomicAgent):
 #     """
@@ -5777,7 +5777,7 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 #             pass
 #         return None, None
 
-# BenchmarkingAgent is now imported from agentic_core.agents.infrastructure
+# BenchmarkingAgent is now imported from agentic_core.L5_safety.P1_red_team.infrastructure
 
 # class BenchmarkingAgent(SubAtomicAgent):
 #     """ROLE: Benchmarking Guardian. Executes micro-benchmarks and detects performance regressions."""
@@ -6058,31 +6058,31 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 #         
 #         self.ctx.write_compliant_file(report_path, report_content)
 
-# MemoryLeakDetector is now imported from agentic_core.agents.concurrency
+# MemoryLeakDetector is now imported from agentic_core.L5_safety.P1_red_team.concurrency
 
 # class MemoryLeakDetector(SubAtomicAgent):
 #     """ROLE: Memory Guardian. Detects and remediates resource leaks."""
 #     # ... (moved to agentic_core/agents/concurrency.py)
 
-# DeadlockAnalyzer is now imported from agentic_core.agents.concurrency
+# DeadlockAnalyzer is now imported from agentic_core.L5_safety.P1_red_team.concurrency
 
 # class DeadlockAnalyzer(ast.NodeVisitor):
 #     """AST visitor to build lock acquisition graph and detect potential deadlocks."""
 #     # ... (moved to agentic_core/agents/concurrency.py)
 
-# DeadlockDetector is now imported from agentic_core.agents.concurrency
+# DeadlockDetector is now imported from agentic_core.L5_safety.P1_red_team.concurrency
 
 # class DeadlockDetector(SubAtomicAgent):
 #     """ROLE: Deadlock Guardian."""
 #     # ... (moved to agentic_core/agents/concurrency.py)
 
-# RaceAnalyzer is now imported from agentic_core.agents.concurrency
+# RaceAnalyzer is now imported from agentic_core.L5_safety.P1_red_team.concurrency
 
 # class RaceAnalyzer(ast.NodeVisitor):
 #     """AST visitor to analyze potential race conditions."""
 #     # ... (moved to agentic_core/agents/concurrency.py)
 
-# Sherlock is now imported from agentic_core.agents.repair
+# Sherlock is now imported from agentic_core.L5_safety.P1_red_team.repair
 
 # class Sherlock(SubAtomicAgent):
 #     """
@@ -6227,7 +6227,7 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 # --- L5 WATCHMAN: PROACTIVE MONITORING ---
 # ==============================================================================
 
-# WatchmanHandler is now imported from agentic_core.agents.infrastructure
+# WatchmanHandler is now imported from agentic_core.L5_safety.P1_red_team.infrastructure
 
 # class WatchmanHandler:
 #     """

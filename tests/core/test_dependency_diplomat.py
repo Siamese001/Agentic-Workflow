@@ -20,7 +20,7 @@ if str(script_dir) not in sys.path:
 
 # Local application imports
 try:
-    from agentic_core.agents import get_dependency_diplomat
+    from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
     from agentic_core.domain.context import ValidationContext
 except ImportError as e:
     print(
