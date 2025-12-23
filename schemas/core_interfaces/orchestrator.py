@@ -16,17 +16,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+# Import canonical ExecutionPhase from agentic_core
+from agentic_core.interfaces.execution import ExecutionPhase
+
 LOGGER = logging.getLogger(__name__)
-
-
-class ExecutionPhase(Enum):
-    """Phases of execution in the orchestration cycle."""
-    MISSION = "mission"
-    SCENE = "scene"
-    THINK = "think"
-    ACT = "act"
-    OBSERVE = "observe"
-    REFLECT = "reflect"
 
 @dataclass
 class OrchestratorConfig:
