@@ -4,18 +4,18 @@ from pathlib import Path
 
 # --- CONFIGURATION ---
 ROOT = Path("C:/Git/Agentic-Workflow/agentic_core")
-THOUGHTS = ROOT / "L2_thought_nodes"
+THOUGHTS = ROOT / "L1_cognition" / "thought_engine"
 KNOWLEDGE = ROOT / "knowledge" # You mentioned this didn't exist, let's birth it correctly
 
 def harden_parallel_planes():
     print("[*] HARDENING PARALLEL EXECUTION PLANES...")
 
-    # 1. Properly Stage L2_thought_nodes
+    # 1. Properly Stage L1_cognition/thought_engine (formerly L2_thought_nodes)
     if THOUGHTS.exists():
-        # Move any files sitting directly in L2_thought_nodes to a P1 stage
+        # Move any files sitting directly in thought_engine to a P1 stage
         stage_path = THOUGHTS / "P1_reasoning"
         stage_path.mkdir(parents=True, exist_ok=True)
-        (stage_path / "__init__.py").write_text('"""L2_thought.P1: Core Reasoning Nodes"""\n')
+        (stage_path / "__init__.py").write_text('"""L1_cognition.thought_engine.P1: Core Reasoning Nodes"""\n')
         
         moved = 0
         for item in THOUGHTS.iterdir():
@@ -23,7 +23,7 @@ def harden_parallel_planes():
                 shutil.move(str(item), str(stage_path / item.name))
                 print(f"  [>] Deep Thought Staged: {item.name} -> P1_reasoning")
                 moved += 1
-        print(f"  [✓] L2_thought_nodes now Depth-4 compliant ({moved} files).")
+        print(f"  [✓] L1_cognition/thought_engine now Depth-4 compliant ({moved} files).")
 
     # 2. Birth the Knowledge Layer (if that's the intended Level 0 path)
     if not KNOWLEDGE.exists():

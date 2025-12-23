@@ -25,7 +25,7 @@ async def test_key_42_fission_execution():
     """
     # 1. SETUP: Create a temporary 1200-line file
     project_root = Path(__file__).resolve().parent.parent.parent.parent
-    target_dir = project_root / "agentic_core" / "L2_thought_nodes" / "extraction"
+    target_dir = project_root / "agentic_core" / "L1_cognition" / "thought_engine" / "extraction"
     target_dir.mkdir(parents=True, exist_ok=True)
     
     test_file = target_dir / "test_fission_subject.py"
@@ -37,7 +37,7 @@ async def test_key_42_fission_execution():
     try:
         # 2. EXECUTION: Run the mission on the specific folder
         # We target the specific directory containing the oversized file
-        await run_mission(target_scope="agentic_core/L2_thought_nodes")
+        await run_mission(target_scope="agentic_core/L1_cognition/thought_engine")
 
         # 3. VERIFICATION: Check physical changes
         # The original file should be gone (or transformed into a shim)

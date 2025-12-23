@@ -6180,7 +6180,7 @@ _SPECIALIZED_AGENTS_MOVED = True  # Marker that specialized agents are now in ag
 # Step 1: Identify the exact exception type and line.
 # Step 2: Trace which modified file likely introduced it.
 # Step 3: Check if it's a dependency mismatch, race condition, or logic bug.
-# Step 4: Recall similar past fixes from memory.
+# Step 4: Recall similar past fixes from agentic_core.semantic_memory.
 # Step 5: Propose one minimal change that resolves root cause.
 # </reasoning_template>
 # 

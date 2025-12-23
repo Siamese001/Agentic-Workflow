@@ -1,1 +1,1 @@
-"""App Core Implementation"""
+"""Apps LIC - LinkedIn Outreach Application"""

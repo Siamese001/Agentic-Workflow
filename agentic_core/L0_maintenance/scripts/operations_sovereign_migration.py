@@ -88,8 +88,7 @@ def analyze_file_content(file_path: Path) -> Tuple[str, str]:
         
         # Enhanced reasoning based on content patterns
         reasoning_map = {
-            "L1_cognition": "Strategic planning, reasoning, or mission logic detected",
-            "L2_thought_nodes": "Node execution or atomic thought processing detected",
+            "L1_cognition": "Strategic planning, reasoning, mission logic, or thought processing detected",
             "L3_orchestration": "Orchestration, routing, or hop management detected",
             "L4_state": "State management, memory, or persistence detected",
             "L5_safety": "Safety, guardrails, or security logic detected"
