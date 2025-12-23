@@ -6,14 +6,15 @@ integrating all layers and components.
 import logging
 import re
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING, Optional, Protocol
 from unittest.mock import Mock, patch
 
 # Third-party imports
 import pytest
 
 # First-party (local) imports
-from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies import (
+if TYPE_CHECKING:
+    from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies import (
     ExecutionContext,
     JobInput,
     L2ResultBundle,

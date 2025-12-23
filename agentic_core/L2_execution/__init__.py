@@ -1,5 +1,5 @@
 # Consolidated module
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 from dataclasses import dataclass, field
 from enum import Enum, auto
 import re
@@ -14,7 +14,8 @@ from typing import Any, Callable, Dict, List, Optional, Type
 
 from pydantic import BaseModel, ValidationError
 
-from agentic_core.L2_execution.inference.engine import (
+if TYPE_CHECKING:
+    from agentic_core.L2_execution.inference.engine import (
     InferenceEngine,
     InferenceMode,
     InferenceRequest,

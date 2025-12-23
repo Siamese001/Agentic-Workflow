@@ -1,5 +1,5 @@
 """ """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 import re
 
 import logging
@@ -12,14 +12,15 @@ from runtime.core.cost_governor import BudgetExceededError
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 from services.configuration import ConfigurationService
 
-from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
-from agentic_core.L2_execution.sandbox import DockerSandbox
-from agentic_core.L4_state.genealogy import GenealogyRegistry
-from agentic_core.L4_state.storage import LocalDiskAdapter
-from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
-from agentic_core.L5_safety.governor import CostGovernor
-from agentic_core.L5_safety.overseer import ConstitutionalOverseer
-from agentic_core.L5_safety.pii_vault import PIIVault
+if TYPE_CHECKING:
+    from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
+    from agentic_core.L2_execution.sandbox import DockerSandbox
+    from agentic_core.L4_state.genealogy import GenealogyRegistry
+    from agentic_core.L4_state.storage import LocalDiskAdapter
+    from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
+    from agentic_core.L5_safety.governor import CostGovernor
+    from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+    from agentic_core.L5_safety.pii_vault import PIIVault
 
 LOGGER = logging.getLogger(__name__)
 

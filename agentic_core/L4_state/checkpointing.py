@@ -4,7 +4,7 @@ Verifiable Checkpoint Manager
 Serializes agent state with cryptographic verification to ensure data integrity.
 Prevents corrupted or tampered checkpoints from being loaded into agent memory.
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 import re
 
 
@@ -13,7 +13,8 @@ import json
 import logging
 from typing import Any, Dict, Optional
 
-from agentic_core.L4_state.storage import BlobStorageProvider
+if TYPE_CHECKING:
+    from agentic_core.L4_state.storage import BlobStorageProvider
 
 LOGGER = logging.getLogger(__name__)
 

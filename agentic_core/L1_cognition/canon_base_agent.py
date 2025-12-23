@@ -2,17 +2,17 @@
 Canon Validator Base Agent
 Base class for all validation agents with caching and healing capabilities.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
-
-
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 import asyncio
 import hashlib
-import logging  # Added for better error handling
+import logging
 import os
-from typing import Optional
 
-from agentic_core.L4_state.validation_context import ValidationContext
+# Dependency Inversion: Use protocol instead of concrete L4 class
+from agentic_core.L1_cognition.validation_protocol import ValidationProtocol
+
+if TYPE_CHECKING:
+    from agentic_core.L4_state.validation_context import ValidationContext
 
 # Configure basic logging for this module.
 # In a real application, this would typically be configured globally.
@@ -27,7 +27,7 @@ class SubAtomicAgent:
     _registry_built: bool = False
 
     @classmethod
-    def _init_registry(cls, ctx: ValidationContext):
+    def _init_registry(cls, ctx: 'ValidationContext'):
         """Builds the registry once to avoid repetitive agent instantiation."""
         if cls._registry_built:
             return
@@ -119,7 +119,7 @@ class SubAtomicAgent:
         }
         cls._registry_built = True
 
-    def __init__(self, context: ValidationContext):
+    def __init__(self, context: ValidationProtocol):
         self.ctx = context
         self.name = self.__class__.__name__
 
