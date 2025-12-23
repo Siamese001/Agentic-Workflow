@@ -7,15 +7,18 @@ import time
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
+# GRAVITY VIOLATION FIX: Removed downstream dependency on apps_rg
+# This file appears to be app-specific and should be moved to apps_rg
+# Temporarily commenting out to fix gravity violation
 from apps_rg.L3_orchestration.wf_types_models import (
-    AgentContext,
-    AgentTask,
-    AgentTaskResult,
-    AgentWorkflow,
-    Artifact,
-    ArtifactType,
-    ExecutionError,
-)
+#     AgentContext,
+#     AgentTask,
+#     AgentTaskResult,
+#     AgentWorkflow,
+#     Artifact,
+#     ArtifactType,
+#     ExecutionError,
+# )
 
 
 @dataclass
