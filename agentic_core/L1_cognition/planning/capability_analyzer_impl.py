@@ -3,7 +3,6 @@ import re
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 from .capability_analyzer_types import (

@@ -1,19 +1,17 @@
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-from enum import Enum, auto
-
+# Standard library imports
 import hashlib
 import logging
 import re
-from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass, field
 
+# Local application/first-party imports
 # Assuming SignalContext and SignedClaim are defined in a shared types module within L1_cognition.
 # This import is added to make the file "COMPLETE, functional" as per global constraints,
 # as these types are used throughout the file but not defined or imported.
-from agentic_core.L1_cognition.shared_types import SignalContext, SignedClaim
+from .shared_types import SignalContext, SignedClaim
 
 LOGGER = logging.getLogger(__name__)
 

@@ -2,17 +2,18 @@
 Tests complete workflows from job input to final output,
 integrating all layers and components.
 """
-from typing import Any, Optional, Protocol, Dict, List
-import re
-
-
+# Standard library imports
 import logging
-from typing import Any
+import re
+import time
+from typing import Any, Dict, List, Optional, Protocol
 from unittest.mock import Mock, patch
 
+# Third-party imports
 import pytest
 
-from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies import (
+# First-party (local) imports
+from .deprecated_full_workflow_dependencies import (
     ExecutionContext,
     JobInput,
     L2ResultBundle,
@@ -162,7 +163,7 @@ class TestWorkflowPerformance:
 
     def test_workflow_execution_time(self: Any) -> None:
         """Test workflow execution time is reasonable."""
-        import time
+        # `import time` moved to top-level imports
 
         CTX = ExecutionContext(
             JOB=JobInput(title="Test", role_type="test", seniority="mid", posting_text="test"),

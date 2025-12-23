@@ -1,19 +1,214 @@
-from typing import Any, Optional, Protocol, Dict, List
-from dataclasses import dataclass, field
-from enum import Enum, auto
-import re
+from typing import Any, Optional, Dict, List
+from dataclasses import dataclass
+from enum import Enum
 
 import logging
 import time
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any, Dict, List, Optional
+import os
 
-from scripts.runtime.shared.multi_provider_clients import Provider, get_client
+# External LLM client imports
+import openai
+import anthropic
+import google.generativeai as genai
+from mistralai.async_client import MistralAsyncClient
+from groq import Groq
+from together import Together
+from fireworks.client import Fireworks
 
 from agentic_core.L1_cognition.context.signal_context import SignalContext
 
 LOGGER = logging.getLogger(__name__)
+
+class Provider(str, Enum):
+    """Enum for supported LLM providers."""
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    MISTRAL = "mistral"
+    GROQ = "groq"
+    TOGETHER = "together"
+    FIREWORKS = "fireworks"
+
+# --- LLM Client Wrappers for OpenAI-compatible interface ---
+# These wrappers ensure that all LLM clients expose a `chat.completions.create` method
+# with an OpenAI-like response structure, as expected by InferenceEngine.infer.
+# Note: The current InferenceEngine.infer method does not fully support streaming
+# responses, so these wrappers will return non-streaming-like objects even if `stream=True`
+# is passed to their `create` method.
+
+class OpenAIClientWrapper:
+    """Wrapper for OpenAI client to provide a consistent interface."""
+    def __init__(self, client: openai.AsyncOpenAI):
+        self._client = client
+
+    @property
+    def chat(self):
+        return self._client.chat
+
+class AnthropicClientWrapper:
+    """Wrapper for Anthropic client to conform to OpenAI chat.completions.create interface."""
+    def __init__(self, client: anthropic.AsyncAnthropic):
+        self._client = client
+
+    @property
+    def chat(self):
+        return self
+
+    @property
+    def completions(self):
+        return self
+
+    async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
+        anthropic_messages = []
+        for msg in messages:
+            if msg["role"] == "user":
+                anthropic_messages.append({"role": "user", "content": msg["content"]})
+            elif msg["role"] == "assistant":
+                anthropic_messages.append({"role": "assistant", "content": msg["content"]})
+            # Anthropic's API handles system prompts differently (often as a system parameter
+            # in the client or first message). For simplicity, we assume user/assistant roles.
+
+        # Anthropic requires max_tokens
+        if max_tokens is None:
+            max_tokens = 1024 # Default if not provided by request
+
+        response = await self._client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            messages=anthropic_messages,
+            temperature=temperature,
+            top_p=top_p,
+            # frequency_penalty and presence_penalty are not directly supported by Anthropic
+            # and are ignored here to maintain compatibility with the original API call.
+            stream=False, # Force non-streaming as InferenceEngine.infer expects a direct response object
+            **kwargs
+        )
+
+        # Convert Anthropic response to an OpenAI-like structure
+        class MockChoice:
+            def __init__(self, content):
+                self.message = type('obj', (object,), {'content': content})()
+
+        class MockUsage:
+            def __init__(self, input_tokens, output_tokens):
+                self.input_tokens = input_tokens
+                self.output_tokens = output_tokens
+            def model_dump(self):
+                return {"prompt_tokens": self.input_tokens, "completion_tokens": self.output_tokens, "total_tokens": self.input_tokens + self.output_tokens}
+
+        class MockResponse:
+            def __init__(self, response_content, usage_input, usage_output):
+                self.choices = [MockChoice(response_content)]
+                self.usage = MockUsage(usage_input, usage_output)
+
+        return MockResponse(response.content, response.usage.input_tokens, response.usage.output_tokens)
+
+class GoogleClientWrapper:
+    """Wrapper for Google client to conform to OpenAI chat.completions.create interface."""
+    def __init__(self):
+        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+    @property
+    def chat(self):
+        return self
+
+    @property
+    def completions(self):
+        return self
+
+    async def create(self, messages: List[Dict[str, Any]], model: str, temperature: float, top_p: float, frequency_penalty: float, presence_penalty: float, stream: bool, max_tokens: Optional[int] = None, **kwargs) -> Any:
+        _model = genai.GenerativeModel(model)
+
+        google_messages = []
+        for msg in messages:
+            if msg["role"] == "user":
+                google_messages.append({"role": "user", "parts": [msg["content"]]})
+            elif msg["role"] == "assistant":
+                google_messages.append({"role": "model", "parts": [msg["content"]]})
+        
+        generation_config = {
+            "temperature": temperature,
+            "top_p": top_p,
+            "max_output_tokens": max_tokens,
+        }
+        
+        response = await _model.generate_content_async(
+            google_messages,
+            generation_config=generation_config,
+            # Google's client doesn't have direct frequency/presence penalty.
+            # Streaming is not handled here as InferenceEngine.infer expects a direct response object.
+            **kwargs
+        )
+
+        # Convert Google response to an OpenAI-like structure
+        class MockChoice:
+            def __init__(self, content):
+                self.message = type('obj', (object,), {'content': content})()
+
+        class MockUsage:
+            def __init__(self, prompt_tokens, completion_tokens):
+                self.prompt_tokens = prompt_tokens
+                self.completion_tokens = completion_tokens
+            def model_dump(self):
+                return {"prompt_tokens": self.prompt_tokens, "completion_tokens": self.completion_tokens, "total_tokens": self.prompt_tokens + self.completion_tokens}
+
+        content = response.text
+        prompt_tokens = 0
+        completion_tokens = 0
+        if hasattr(response, 'usage_metadata'):
+            prompt_tokens = response.usage_metadata.prompt_token_count
+            completion_tokens = response.usage_metadata.candidates_token_count
+
+        class MockResponse:
+            def __init__(self, response_content, usage_input, usage_output):
+                self.choices = [MockChoice(response_content)]
+                self.usage = MockUsage(usage_input, usage_output)
+
+        return MockResponse(content, prompt_tokens, completion_tokens)
+
+class GenericOpenAICompatibleClientWrapper:
+    """Wrapper for clients that are largely OpenAI-compatible (e.g., Mistral, Groq, Together, Fireworks)."""
+    def __init__(self, client):
+        self._client = client
+
+    @property
+    def chat(self):
+        return self._client.chat # Assume client has a .chat attribute with .completions.create
+
+# --- Local Client Factory ---
+_local_client_cache: Dict[Provider, Any] = {}
+
+def _get_llm_client_instance(provider: Provider) -> Any:
+    """
+    Instantiates and returns an LLM client for the given provider,
+    wrapped to be OpenAI-compatible if necessary.
+    """
+    if provider not in _local_client_cache:
+        client_instance = None
+        if provider == Provider.OPENAI:
+            client_instance = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            _local_client_cache[provider] = OpenAIClientWrapper(client_instance)
+        elif provider == Provider.ANTHROPIC:
+            client_instance = anthropic.AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+            _local_client_cache[provider] = AnthropicClientWrapper(client_instance)
+        elif provider == Provider.GOOGLE:
+            # Google client wrapper handles model instantiation at `create` time
+            _local_client_cache[provider] = GoogleClientWrapper()
+        elif provider == Provider.MISTRAL:
+            client_instance = MistralAsyncClient(api_key=os.getenv("MISTRAL_API_KEY"))
+            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
+        elif provider == Provider.GROQ:
+            client_instance = Groq(api_key=os.getenv("GROQ_API_KEY"))
+            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
+        elif provider == Provider.TOGETHER:
+            client_instance = Together(api_key=os.getenv("TOGETHER_API_KEY"))
+            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
+        elif provider == Provider.FIREWORKS:
+            client_instance = Fireworks(api_key=os.getenv("FIREWORKS_API_KEY"))
+            _local_client_cache[provider] = GenericOpenAICompatibleClientWrapper(client_instance)
+        else:
+            raise ValueError(f"Unsupported provider: {provider}")
+    return _local_client_cache[provider]
 
 class InferenceMode(str, Enum):
     """Inference modes for different types of cognitive operations."""
@@ -214,7 +409,7 @@ class InferenceEngine:
             "top_p": thermal_params["top_p"],
             "frequency_penalty": thermal_params["frequency_penalty"],
             "presence_penalty": thermal_params["presence_penalty"],
-            "stream": request.stream
+            "stream": request.STREAM # Note: Current implementation of infer method does not fully support streaming
         }
 
         if request.max_tokens:
@@ -310,7 +505,7 @@ class InferenceEngine:
             Client instance
         """
         if provider not in self._client_cache:
-            self._client_cache[provider] = get_client(provider)
+            self._client_cache[provider] = _get_llm_client_instance(provider)
         return self._client_cache[provider]
 
     def _get_default_model(self, provider: Provider) -> str:

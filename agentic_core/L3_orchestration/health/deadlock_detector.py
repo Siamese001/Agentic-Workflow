@@ -4,14 +4,13 @@ DeadlockDetector - L3 System Health Specialist
 Monitors asyncio tasks for potential deadlocks and long-running operations.
 Alerts when tasks exceed MAX_PHASE_TIME without progress.
 """
-from typing import Any, Optional, Protocol, Dict, List
-from pathlib import Path
-
-
 import asyncio
+import inspect
+import json
 import logging
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Optional, Set
 
 LOGGER = logging.getLogger(__name__)
@@ -55,7 +54,6 @@ class TaskMonitor:
             if coro:
                 # Try to get frame information
                 try:
-                    import inspect
                     frame = inspect.getcoroutinestate(coro)
                     return f"Coroutine state: {frame}"
                 except:
@@ -208,7 +206,6 @@ class DeadlockDetector:
         alert_file.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            import json
             if alert_file.exists():
                 with open(alert_file, 'r') as f:
                     alerts = json.load(f)

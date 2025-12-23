@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from .firecracker_manager import (
+from agentic_core.L2_execution.sandbox.firecracker_manager import (
     FirecrackerManager,
     VMConfig,
     create_firecracker_manager,
