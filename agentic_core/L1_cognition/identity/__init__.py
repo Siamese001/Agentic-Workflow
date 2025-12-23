@@ -1,1 +1,1 @@
-"""Sovereign Layer: identity"""
+"""Airlock: identity"""

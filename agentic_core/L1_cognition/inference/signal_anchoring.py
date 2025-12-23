@@ -4,9 +4,8 @@ import logging
 import re
 from datetime import datetime
 from enum import Enum, auto
-from typing import Any, Dict, List, Optional, Protocol
-from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol
 
 # Define core types locally to eliminate external dependency.
 # These types were previously imported from agentic_core.shared.types.

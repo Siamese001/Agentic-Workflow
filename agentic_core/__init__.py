@@ -1,1 +1,1 @@
-"""Sovereign Layer: agentic_core"""
+"""Airlock: agentic_core"""

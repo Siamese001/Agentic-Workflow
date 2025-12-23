@@ -2,16 +2,69 @@
 Secure Subprocess Execution - Timeout-Protected Command Execution
 Prevents livelocks and provides safe subprocess management.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
+from typing import Any, Optional, Protocol, Dict, List, Tuple, TypedDict
 
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+import os
 
-from agentic_core.L2_execution.P2_tools.definitions import ExecuteCommandArgs
-from agentic_core.L2_execution.P2_tools.filesystem import get_project_root, validate_sandbox
+
+# Inlined ExecuteCommandArgs definition
+class ExecuteCommandArgs(TypedDict):
+    command: str
+    args: List[str]
+    timeout: int
+    cwd: Optional[str]
+    capture_output: bool
+
+
+# Inlined get_project_root and validate_sandbox from agentic_core.L2_execution.P2_tools.filesystem
+_cached_project_root: Optional[Path] = None
+
+def get_project_root() -> Path:
+    """
+    Determines the project root by looking for a .git directory or pyproject.toml.
+    Caches the result for subsequent calls.
+    """
+    global _cached_project_root
+    if _cached_project_root:
+        return _cached_project_root
+
+    current_path = Path(__file__).resolve().parent
+    while current_path != current_path.parent:
+        if (current_path / ".git").exists() or (current_path / "pyproject.toml").exists():
+            _cached_project_root = current_path
+            return current_path
+    
+    # Fallback if no marker found, assume the script's parent directory as a reasonable root.
+    _cached_project_root = Path(__file__).resolve().parent
+    return _cached_project_root
+
+
+def validate_sandbox(path: str) -> Path:
+    """
+    Validates that a given path is within the project's sandbox (project root).
+    
+    Args:
+        path: The path to validate, relative to the project root.
+        
+    Returns:
+        The absolute, resolved path within the sandbox.
+        
+    Raises:
+        ValueError: If the path attempts to escape the project root.
+    """
+    project_root = get_project_root()
+    abs_path = (project_root / path).resolve()
+    
+    # Ensure the resolved path is still within the project_root
+    try:
+        abs_path.relative_to(project_root)
+    except ValueError:
+        raise ValueError(f"Path '{path}' resolves to '{abs_path}' which is outside the project sandbox '{project_root}'.")
+    
+    return abs_path
 
 
 class ExecutionTimeoutError(Exception):

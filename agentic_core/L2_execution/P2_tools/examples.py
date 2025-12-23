@@ -2,12 +2,15 @@
 Usage Examples for Agentic Core Tools
 Demonstrates integration with Gemini 2.5/3.0 and AtomicBlackboard.
 """
+# Standard library imports
+import os
 import re
 
+# Third-party imports
+from pydantic import BaseModel, Field
 
-import os
-
-from agentic_core.L2_execution.P2_tools import (
+# Local application imports
+from . import (
     ExecuteCommandArgs,
     ReadFileArgs,
     WriteFileArgs,
@@ -125,9 +128,10 @@ def example_gemini_integration():
             tools=tools
         )
         
+        # Refactored to remove reference to 'apps_shared'
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents="List the Python files in the apps_shared directory",
+            contents="List the Python files in the 'output' directory",
             config=config
         )
         
@@ -198,7 +202,7 @@ def example_tool_registry_custom():
     """Example: Register custom tools with the registry."""
     print("\n=== Custom Tool Registration ===\n")
     
-    from pydantic import BaseModel, Field
+    # pydantic imports moved to top-level
     
     class CustomToolArgs(BaseModel):
         message: str = Field(..., description="Message to process")
