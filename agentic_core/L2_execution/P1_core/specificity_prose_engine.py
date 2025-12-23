@@ -31,7 +31,7 @@ class SpecificityProseConfig:
     min_words_per_paragraph: int = 85
     max_words_per_paragraph: int = 100
     min_company_specifics: int = 4
-    TEMPERATURE: FLOAT = 0.65
+    TEMPERATURE: float = 0.65
     max_attempts: int = 3
 
 @dataclass

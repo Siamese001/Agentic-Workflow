@@ -10,9 +10,9 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .agent_registry_impl import *  # Star import removed
-# from .agent_registry_models import *  # Star import removed
-# from .agent_registry_impl import *  # Star import removed
+# from agentic_core.agent_registry_impl import *  # Star import removed
+# from agentic_core.agent_registry_models import *  # Star import removed
+# from agentic_core.agent_registry_impl import *  # Star import removed
 import logging
 
 

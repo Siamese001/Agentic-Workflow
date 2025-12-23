@@ -3,7 +3,7 @@ import logging
 from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
-# from .resume_orchestration_config_types_enums import *  # Star import removed
+# from agentic_core.resume_orchestration_config_types_enums import *  # Star import removed
 
 @dataclass
 class WordCountConstraint:

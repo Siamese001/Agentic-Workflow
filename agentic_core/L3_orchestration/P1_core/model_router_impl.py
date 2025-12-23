@@ -4,7 +4,7 @@ from typing import Any, Optional, Protocol, Dict, List
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# from .model_router_types import *  # Star import removed
+# from agentic_core.model_router_types import *  # Star import removed
 
 class ModelRouter:
     """Dynamic model router for cost-optimized LLM selection.

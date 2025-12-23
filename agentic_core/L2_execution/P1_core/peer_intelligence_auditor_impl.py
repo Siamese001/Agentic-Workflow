@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Protocol
 from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
-# from .peer_intelligence_auditor_types import *  # Star import removed
+# from agentic_core.peer_intelligence_auditor_types import *  # Star import removed
 
 # Assuming these types are defined elsewhere or need to be imported.
 # For the purpose of fixing syntax, I'll assume they exist.

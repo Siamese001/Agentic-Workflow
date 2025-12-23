@@ -30,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 class MessageBodyConfig:
     """TODO: Add docstring."""
 
-    TEMPERATURE: FLOAT = 0.6
+    TEMPERATURE: float = 0.6
     max_attempts: int = 3
 
 @dataclass

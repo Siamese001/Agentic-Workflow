@@ -89,7 +89,7 @@ class ThinkActObserveEngine:
         # Initialize sub-engines
         if self.config.enable_react:
             # Assuming ReActEngine exists and is imported
-            # from .react_engine import ReActEngine # Example import
+            # from agentic_core.react_engine import ReActEngine # Example import
             self.react_engine = ReActEngine(
                 max_steps=self.config.react_max_steps,
             )
@@ -98,7 +98,7 @@ class ThinkActObserveEngine:
 
         if self.config.enable_dag:
             # Assuming DAGEngine exists and is imported
-            # from .dag_engine import DAGEngine # Example import
+            # from agentic_core.dag_engine import DAGEngine # Example import
             self.dag_engine = DAGEngine(enable_logging=enable_logging)
         else:
             self.dag_engine = None
@@ -326,7 +326,7 @@ class ThinkActObserveEngine:
 
                 # Add tasks to DAG
                 # Assuming Task and TaskType exist and are imported
-                # from .dag_engine import Task, TaskType # Example import
+                # from agentic_core.dag_engine import Task, TaskType # Example import
                 for i, action in enumerate(actions):
                     task = Task(
                         id=f"action_{i}",

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 """Types and models for get_info_understand_request."""
 import logging

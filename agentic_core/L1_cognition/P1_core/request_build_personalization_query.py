@@ -21,7 +21,7 @@ class BuildPersonalizationQuery:
     def retrieve(self,
         query: str,
         filters: Optional[Dict] = None,
-        LIMIT: INT = 10) -> RetrievalResult:
+        LIMIT: int = 10) -> RetrievalResult:
         """Retrieve items."""
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:

@@ -11,7 +11,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-from .pitch_generator import PitchGenerator, PitchResult
+from agentic_core.pitch_generator import PitchGenerator, PitchResult
 
 # Configure logging
 logger = logging.getLogger(__name__)

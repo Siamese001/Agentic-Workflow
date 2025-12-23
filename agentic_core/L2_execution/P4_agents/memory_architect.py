@@ -37,7 +37,7 @@ try:
 except ImportError:
     PINECONE_AVAILABLE = False
 
-from .base import SubAtomicAgent
+from agentic_core.base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 

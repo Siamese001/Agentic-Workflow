@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .lic_code_interpreter_impl import *  # Star import removed
-# from .lic_code_interpreter_impl import *  # Star import removed
+# from agentic_core.lic_code_interpreter_impl import *  # Star import removed
+# from agentic_core.lic_code_interpreter_impl import *  # Star import removed
 import logging
 
 

@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List, Optional, Union
 
-# from .check_resume_rules_types import *  # Star import removed
+# from agentic_core.check_resume_rules_types import *  # Star import removed
 # Assuming ProcessingResult and ExecutionContext are defined elsewhere or need to be imported
 # For the purpose of fixing syntax, we'll assume they exist.
 # Also, sys is used but not imported. Adding it for completeness, though not strictly a syntax error at line 40.

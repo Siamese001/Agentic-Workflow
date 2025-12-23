@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 import logging
 
 _logger = logging.getLogger(__name__)
-# from .orchestrate_workflow_types_enums import *  # Star import removed
+# from agentic_core.orchestrate_workflow_types_enums import *  # Star import removed
 
 
 @dataclass
@@ -23,7 +23,7 @@ class HopOutput:
     """Output specification for a hop."""
 
     artifact_id: str
-    DESCRIPTION: STR = ""
+    DESCRIPTION: str = ""
 
 
 @dataclass

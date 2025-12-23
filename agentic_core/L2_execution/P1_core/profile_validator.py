@@ -10,7 +10,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .profile_validator_impl_impl_impl_impl import *  # Star import removed
+# from agentic_core.profile_validator_impl_impl_impl_impl import *  # Star import removed
 import logging
 
 

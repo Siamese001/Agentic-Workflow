@@ -1,0 +1,63 @@
+{
+  "project_root": "C:/Git/Agentic-Workflow",
+  "sovereign_domain": "agentic_core",
+  "allowed_depth": 4,
+  "layers": [
+    "L0_maintenance",
+    "L1_cognition",
+    "L2_execution",
+    "L2_thought_nodes",
+    "L3_orchestration",
+    "L4_state",
+    "L5_safety",
+    "knowledge",
+    "memory",
+    "patterns",
+    "runtime",
+    "utils"
+  ],
+  "stages": [
+    "P1_core",
+    "P1_interfaces",
+    "P1_domain",
+    "P1_retrieve",
+    "P2_tools",
+    "P2_inspect",
+    "P2_domain",
+    "P3_aggregate",
+    "P3_engines",
+    "P4_agents",
+    "P4_safety",
+    "P5_healing",
+    "S3_vitality",
+    "discovery",
+    "framework",
+    "health",
+    "identity",
+    "inference",
+    "planning",
+    "sandbox",
+    "security",
+    "tools",
+    "training"
+  ],
+  "gravity_laws": {
+    "forbidden_downstream_imports": [
+      "apps_rg",
+      "apps_lic",
+      "apps_shared",
+      "tests",
+      "legacy"
+    ],
+    "enforce_absolute_imports": true,
+    "allow_relative_imports": false
+  },
+  "type_enforcement": {
+    "INT": "int",
+    "FLOAT": "float",
+    "STR": "str",
+    "BOOL": "bool",
+    "LIST": "list",
+    "DICT": "dict"
+  }
+}

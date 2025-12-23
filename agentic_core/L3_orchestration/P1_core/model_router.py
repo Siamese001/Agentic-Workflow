@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .model_router_impl import *  # Star import removed
-# from .model_router_impl import *  # Star import removed
+# from agentic_core.model_router_impl import *  # Star import removed
+# from agentic_core.model_router_impl import *  # Star import removed
 import logging
 
 

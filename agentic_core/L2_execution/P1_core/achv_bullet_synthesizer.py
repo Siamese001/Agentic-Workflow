@@ -15,8 +15,8 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from .achv_bullet_synthesizer_impl import *  # Star import removed
-# from .achv_bullet_synthesizer_impl import *  # Star import removed
+# from agentic_core.achv_bullet_synthesizer_impl import *  # Star import removed
+# from agentic_core.achv_bullet_synthesizer_impl import *  # Star import removed
 import logging
 
 

@@ -13,7 +13,7 @@ import asyncio
 
 from agentic_core.domain.context import ValidationContext
 if TYPE_CHECKING:
-    from .intervention_server import (
+    from agentic_core.intervention_server import (
     approval_event,
     start_intervention_server,
 )

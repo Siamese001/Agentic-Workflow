@@ -15,8 +15,8 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from .resume_state_impl_impl_impl_impl import *  # Star import removed
-# from .resume_state_impl import *  # Star import removed
+# from agentic_core.resume_state_impl_impl_impl_impl import *  # Star import removed
+# from agentic_core.resume_state_impl import *  # Star import removed
 import logging
 
 

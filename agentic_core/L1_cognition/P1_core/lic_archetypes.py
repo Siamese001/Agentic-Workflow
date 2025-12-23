@@ -10,10 +10,10 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .lic_archetypes_impl import *  # Star import removed
-# from .lic_archetypes_models import *  # Star import removed
-# from .lic_archetypes_models_1 import *  # Star import removed
-# from .lic_archetypes_impl import *  # Star import removed
+# from agentic_core.lic_archetypes_impl import *  # Star import removed
+# from agentic_core.lic_archetypes_models import *  # Star import removed
+# from agentic_core.lic_archetypes_models_1 import *  # Star import removed
+# from agentic_core.lic_archetypes_impl import *  # Star import removed
 import logging
 
 

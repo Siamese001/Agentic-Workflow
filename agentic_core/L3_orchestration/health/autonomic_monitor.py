@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .autonomic_monitor_impl import *  # Star import removed
-# from .autonomic_monitor_impl import *  # Star import removed
+# from agentic_core.autonomic_monitor_impl import *  # Star import removed
+# from agentic_core.autonomic_monitor_impl import *  # Star import removed
 import logging
 
 

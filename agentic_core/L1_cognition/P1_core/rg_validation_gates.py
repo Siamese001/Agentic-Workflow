@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .rg_validation_gates_impl import *  # Star import removed
-# from .rg_validation_gates_impl import *  # Star import removed
+# from agentic_core.rg_validation_gates_impl import *  # Star import removed
+# from agentic_core.rg_validation_gates_impl import *  # Star import removed
 import logging
 
 

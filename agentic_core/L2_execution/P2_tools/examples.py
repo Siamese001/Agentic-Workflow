@@ -10,9 +10,9 @@ import re
 from pydantic import BaseModel, Field
 
 # Local application imports
-# Changed from 'from agentic_core.L2_execution.P2_tools import' to 'from . import'
+# Changed from 'from agentic_core.L2_execution.P2_tools import' to 'from agentic_core. import'
 # to address "DIRECT CIRCULAR RISK: File imports own root 'agentic_core'."
-from . import (
+from agentic_core. import (
     ExecuteCommandArgs,
     ReadFileArgs,
     WriteFileArgs,

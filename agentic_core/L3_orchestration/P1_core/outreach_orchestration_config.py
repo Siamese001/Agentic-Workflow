@@ -10,10 +10,10 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .outreach_orchestration_config_impl import *  # Star import removed
-# from .outreach_orchestration_config_models import *  # Star import removed
-# from .outreach_orchestration_config_models_1 import *  # Star import removed
-# from .outreach_orchestration_config_impl import *  # Star import removed
+# from agentic_core.outreach_orchestration_config_impl import *  # Star import removed
+# from agentic_core.outreach_orchestration_config_models import *  # Star import removed
+# from agentic_core.outreach_orchestration_config_models_1 import *  # Star import removed
+# from agentic_core.outreach_orchestration_config_impl import *  # Star import removed
 import logging
 
 
