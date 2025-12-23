@@ -19,10 +19,18 @@ def check_key_49_depth():
         relative_path = py_file.relative_to(project_root)
         depth = len(relative_path.parts)
         
-        # Special rule for tests directory: depth must equal exactly 3
-        if relative_path.parts and relative_path.parts[0] == 'tests':
-            if depth != 3:
-                violations.append(f"{relative_path} (Invalid depth: {depth} - tests must be at depth 3)")
+        # [SSOT] Dynamic depth check from structure_blueprint
+        import sys
+        from pathlib import Path as PathLib
+        sys.path.insert(0, str(PathLib(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
+        from structure_blueprint import SOVEREIGN_DEPTH_MAP
+        
+        # Check if folder has specific depth requirement
+        if relative_path.parts and relative_path.parts[0] in SOVEREIGN_DEPTH_MAP:
+            root_folder = relative_path.parts[0]
+            required_depth = SOVEREIGN_DEPTH_MAP[root_folder]
+            if depth != required_depth:
+                violations.append(f"{relative_path} (Invalid depth: {depth} - {root_folder} must be at depth {required_depth})")
             continue
             
         # Skip excluded directories

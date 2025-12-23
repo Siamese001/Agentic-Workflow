@@ -12,7 +12,13 @@ if BLUEPRINT_DIR not in sys.path:
     sys.path.append(BLUEPRINT_DIR)
 
 try:
-    from structure_blueprint import AGENTIC_CORE_REGISTRY, APP_TERRITORY_REGISTRY, TESTS_REGISTRY
+    from structure_blueprint import (
+        CORE_SUBFOLDER_MAP,
+        APPS_RG_SUBFOLDER_MAP,
+        APPS_LIC_SUBFOLDER_MAP,
+        APPS_SHARED_SUBFOLDER_MAP,
+        TESTS_SUBFOLDER_MAP
+    )
 except ImportError:
     print(f"❌ ERROR: Could not find structure_blueprint.py in {BLUEPRINT_DIR}")
     sys.exit(1)
@@ -20,31 +26,39 @@ except ImportError:
 def check_sovereign_law(root_path):
     violations = []
 
-    # 1. Check Core (Forced Depth 3)
-    # This validates that your Brain has all its specialized rooms
+    # 1. Check Core (Depth 4: agentic_core/L1/L2/file)
     core_path = os.path.join(root_path, "agentic_core")
-    for l2, l3_list in AGENTIC_CORE_REGISTRY.items():
-        for l3 in l3_list:
-            path = os.path.join(core_path, l2, l3)
+    for l1, l2_list in CORE_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(core_path, l1, l2)
             if not os.path.exists(path):
-                violations.append(f"MISSING CORE DEPTH: agentic_core/{l2}/{l3}")
+                violations.append(f"MISSING CORE DEPTH: agentic_core/{l1}/{l2}")
 
-    # 2. Check Apps (Forced Depth 3)
-    # This ensures your territories haven't reverted to a flat structure
-    for app, l2_dict in APP_TERRITORY_REGISTRY.items():
-        for l2, l3_list in l2_dict.items():
-            for l3 in l3_list:
-                path = os.path.join(root_path, app, l2, l3)
-                if not os.path.exists(path):
-                    violations.append(f"MISSING APP DEPTH: {app}/{l2}/{l3}")
-
-    # 3. Check Tests (Forced Depth 2/3 as defined)
-    # Mirrors the code structure so the 'Judge' stays organized
-    for l2, l3_list in TESTS_REGISTRY.items():
-        for l3 in l3_list:
-            path = os.path.join(root_path, "tests", l2, l3)
+    # 2. Check Apps (Depth 3: apps_*/L1/L2/file)
+    for l1, l2_list in APPS_RG_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "apps_rg", l1, l2)
             if not os.path.exists(path):
-                violations.append(f"MISSING TEST DEPTH: tests/{l2}/{l3}")
+                violations.append(f"MISSING APP DEPTH: apps_rg/{l1}/{l2}")
+    
+    for l1, l2_list in APPS_LIC_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "apps_lic", l1, l2)
+            if not os.path.exists(path):
+                violations.append(f"MISSING APP DEPTH: apps_lic/{l1}/{l2}")
+    
+    for l1, l2_list in APPS_SHARED_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "apps_shared", l1, l2)
+            if not os.path.exists(path):
+                violations.append(f"MISSING APP DEPTH: apps_shared/{l1}/{l2}")
+
+    # 3. Check Tests (Depth 3: tests/L1/L2/file)
+    for l1, l2_list in TESTS_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "tests", l1, l2)
+            if not os.path.exists(path):
+                violations.append(f"MISSING TEST DEPTH: tests/{l1}/{l2}")
 
     # --- THE VERDICT ---
     if not violations:

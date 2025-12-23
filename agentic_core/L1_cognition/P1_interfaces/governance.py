@@ -308,17 +308,12 @@ class ArchitectureGovernor:
             ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml"
         }
 
-        # Consolidated ALLOWED_ROOT_FOLDERS from original and _MONOLITH versions.
-        # Downstream application directories are explicitly excluded from this list.
-        self.ALLOWED_ROOT_FOLDERS = {
-            '.git', '.github', 'docs', 'tests', 'test', 'testsuite', 'examples',
-            'scripts', 'tools', 'benchmarks', 'data', 'datasets', 'assets',
-            'static', 'media', 'templates', 'locale', 'migrations', 'seeds',
-            "agentic_core", "schemas", "config", "cache", "observability",
-            ".pytest_cache", "__pycache__", "venv", ".venv",
-            "node_modules", ".tox", "coverage", "htmlcov", ".mypy_cache",
-            ".coverage", "dist", "build", "eggs", ".eggs", "*.egg-info"
-        }
+        # [SSOT] Import from structure_blueprint.py instead of hardcoding
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
+        from structure_blueprint import ROOT_WHITELIST
+        self.ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
         # Law of Depth: MAX 5 levels from root
         self.MAX_DEPTH = 5

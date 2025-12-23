@@ -11,7 +11,13 @@ if BLUEPRINT_DIR not in sys.path:
     sys.path.append(BLUEPRINT_DIR)
 
 try:
-    from structure_blueprint import AGENTIC_CORE_REGISTRY, APP_TERRITORY_REGISTRY, TESTS_REGISTRY
+    from structure_blueprint import (
+        CORE_SUBFOLDER_MAP, 
+        APPS_RG_SUBFOLDER_MAP, 
+        APPS_LIC_SUBFOLDER_MAP, 
+        APPS_SHARED_SUBFOLDER_MAP,
+        TESTS_SUBFOLDER_MAP
+    )
 except ImportError:
     print(f"❌ ERROR: Could not find structure_blueprint.py")
     sys.exit(1)
@@ -19,23 +25,34 @@ except ImportError:
 def finalize_structure(root_path):
     print(f"--- FINALIZING SOVEREIGN STRUCTURE ---")
     
-    # 1. Force Core Depth (already mostly done, but let's be sure)
-    for l2, l3_list in AGENTIC_CORE_REGISTRY.items():
-        for l3 in l3_list:
-            path = os.path.join(root_path, "agentic_core", l2, l3)
+    # 1. Force Core Depth (agentic_core L1 > L2 > L3)
+    for l1, l2_list in CORE_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "agentic_core", l1, l2)
             ensure_dir(path)
 
-    # 2. Force App Depth (Fixes your 9 app violations)
-    for app, l2_dict in APP_TERRITORY_REGISTRY.items():
-        for l2, l3_list in l2_dict.items():
-            for l3 in l3_list:
-                path = os.path.join(root_path, app, l2, l3)
-                ensure_dir(path)
+    # 2. Force App Depth - apps_rg
+    for l1, l2_list in APPS_RG_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "apps_rg", l1, l2)
+            ensure_dir(path)
+    
+    # 3. Force App Depth - apps_lic
+    for l1, l2_list in APPS_LIC_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "apps_lic", l1, l2)
+            ensure_dir(path)
+    
+    # 4. Force App Depth - apps_shared
+    for l1, l2_list in APPS_SHARED_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "apps_shared", l1, l2)
+            ensure_dir(path)
 
-    # 3. Force Test Depth (Fixes your 7 test violations)
-    for l2, l3_list in TESTS_REGISTRY.items():
-        for l3 in l3_list:
-            path = os.path.join(root_path, "tests", l2, l3)
+    # 5. Force Test Depth (tests L1 > L2)
+    for l1, l2_list in TESTS_SUBFOLDER_MAP.items():
+        for l2 in l2_list:
+            path = os.path.join(root_path, "tests", l1, l2)
             ensure_dir(path)
 
 def ensure_dir(path):
