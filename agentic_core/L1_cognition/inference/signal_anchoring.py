@@ -5,12 +5,30 @@ import re
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
-from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
-# Local application/first-party imports
-# SignalContext and SignedClaim are core types defined in a shared module.
-from agentic_core.shared.types import SignalContext, SignedClaim
+# Define core types locally to eliminate external dependency.
+# These types were previously imported from agentic_core.shared.types.
+# This addresses the "Sovereign layer importing from Downstream" violation
+# by making the types self-contained or defining the expected interface.
+
+@dataclass
+class SignedClaim:
+    """A claim that has been extracted and attributed to a source."""
+    claim: str
+    source: str
+    confidence: float
+    evidence: Optional[str] = None
+
+class HardState(Protocol):
+    """Protocol for the hard_state attribute of SignalContext."""
+    execution_id: str
+
+class SignalContext(Protocol):
+    """Protocol for the SignalContext object, defining the interface expected by SignalAnchor."""
+    hard_state: HardState
+    signed_claims: List[SignedClaim]
+    def add_signed_claim(self, claim: str, source: str, confidence: float, evidence: Optional[str] = None) -> None: ...
 
 LOGGER = logging.getLogger(__name__)
 
@@ -351,6 +369,7 @@ class SignalAnchor:
 
             # Convert to signed claims and add to context
             for claim in valid_claims:
+                # Instantiate the locally defined SignedClaim
                 signed_claim = SignedClaim(
                     claim=claim.claim_text,
                     source=f"{source_metadata.source_type.value}:{source_metadata.source_id}",
@@ -358,10 +377,10 @@ class SignalAnchor:
                     evidence=claim.evidence_snippet
                 )
                 context.add_signed_claim(
-                    claim.claim_text,
+                    signed_claim.claim,
                     signed_claim.source,
-                    claim.confidence,
-                    claim.evidence_snippet
+                    signed_claim.confidence,
+                    signed_claim.evidence
                 )
 
             total_claims += len(valid_claims)
