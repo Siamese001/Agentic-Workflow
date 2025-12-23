@@ -832,7 +832,7 @@ Return the complete file with imports added. No explanations, no markdown."""
             # [HARDENING] Defensive monkey-patch for real-time telemetry
             # Auto-update status/task on all agents without requiring individual changes
             original_method = getattr(agent_instance, 'execute', None) or getattr(agent_instance, 'run', None)
-            if original_method:
+            if original_method and inspect.iscoroutinefunction(original_method):
                 async def status_wrapper(*args, **kwargs):
                     file_path = args[0] if args else "batch/global"
                     file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)

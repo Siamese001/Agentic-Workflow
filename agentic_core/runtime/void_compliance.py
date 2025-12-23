@@ -197,6 +197,11 @@ ALLOWED_ROOT_FOLDERS = {
     "observability",
     "scripts",  # Elevated to Sovereign Root - operational utilities
     
+    # [DRIFT FOLDERS] (Authorized - align map to territory)
+    "knowledge",  # Knowledge base and documentation
+    "infra",      # Infrastructure and deployment
+    "memory",     # Memory systems and persistence
+    
     # [VOID ZONES] (Exist but strictly ignored by validation)
     "data", 
     "archives",

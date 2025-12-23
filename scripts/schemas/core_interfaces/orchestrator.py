@@ -1,7 +1,5 @@
 """Orchestrator Interface - The Nervous System.
 
-
-LOGGER = logging.getLogger(__name__)
 Phase 2 - Pillar 1: Layering Model
 Coordinates between Brain (cognitive) and Hands (action).
 L3 Orchestration: Manages the Think-Act-Observe cycle.
@@ -9,16 +7,14 @@ L3 Orchestration: Manages the Think-Act-Observe cycle.
 
 import logging
 from typing import Any, Dict, List, Optional
+from enum import Enum
+from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 
+# Import canonical ExecutionPhase from agentic_core
+from agentic_core.interfaces.execution import ExecutionPhase
 
-class ExecutionPhase(Enum):
-    """Phases of execution in the orchestration cycle."""
-    MISSION = "mission"
-    SCENE = "scene"
-    THINK = "think"
-    ACT = "act"
-    OBSERVE = "observe"
-    REFLECT = "reflect"
+LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class OrchestratorConfig:
