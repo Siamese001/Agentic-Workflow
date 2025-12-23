@@ -16,7 +16,7 @@ except ImportError:
     GENAI_AVAILABLE = False
     types = None
 
-from .definitions import (
+from agentic_core.L2_execution.P2_tools.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ExecuteCommandArgs,
@@ -25,8 +25,8 @@ from .definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from .execution import execute_command
-from .filesystem import (
+from agentic_core.L2_execution.P2_tools.execution import execute_command
+from agentic_core.L2_execution.P2_tools.filesystem import (
     create_directory,
     delete_file,
     list_files,

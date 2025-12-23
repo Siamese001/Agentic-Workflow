@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path.cwd()
 CORE = ROOT / "agentic_core"
 
-# [THE CORRECT MAP] Aligning Move Paths with Import Paths
+# [THE CORRECTED MAP] Aligning Physical Move Paths with Import Rewiring
 MIGRATION_MAP = {
     "agentic_core/engines": "agentic_core/L2_execution/P3_engines",
     "agentic_core/interfaces": "agentic_core/L1_cognition/P1_interfaces",
@@ -14,10 +14,10 @@ MIGRATION_MAP = {
     "agentic_core/agentic_workflow": "agentic_core/L3_orchestration/P5_workflow"
 }
 
-def fix_alignment():
-    print("[*] STARTING SOVEREIGN ALIGNMENT V2...")
+def flush_and_align():
+    print("[*] STARTING SOVEREIGN ALIGNMENT V2 & CIRCULAR FLUSH...")
     
-    # 1. Physical Migration
+    # 1. Physical Migration of the remaining Depth 2/3 folders
     for source, target in MIGRATION_MAP.items():
         src_path = ROOT / source
         dest_path = ROOT / target
@@ -31,19 +31,30 @@ def fix_alignment():
                 shutil.move(str(item), str(dest_item))
             try:
                 src_path.rmdir()
-                print(f"  [>] Migrated: {source} -> {target}")
+                print(f"  [>] Migrated Drift: {source} -> {target}")
             except OSError:
                 print(f"  [!] Could not remove {source} (not empty)")
         else:
             print(f"  [-] Skipped: {source} (not found)")
 
-    # 2. Correcting the Synaptic Break (Fixing the L2 vs L5 mistake)
+    # 2. The Circular Flush: Stripping __init__.py files to break loops
+    print("\n[*] FLUSHING __init__.py FILES...")
+    flush_count = 0
+    for init_file in CORE.rglob("__init__.py"):
+        print(f"  [!] Flushing: {init_file.relative_to(ROOT)}")
+        with open(init_file, "w", encoding="utf-8") as f:
+            f.write(f'"""Sovereign Layer: {init_file.parent.name}"""\n')
+        flush_count += 1
+    print(f"  [OK] Flushed {flush_count} __init__.py files")
+
+    # 3. Correcting the Synaptic Break
+    print("\n[*] REWIRING IMPORTS...")
     rewire = [
-        # Fix the previous mistake: point imports to where agents ACTUALLY are
+        # FIX PREVIOUS MISTAKE: Analysis/Agents live in L2, not L5
         (r"agentic_core\.L5_safety\.P1_red_team\.analysis", "agentic_core.L2_execution.P4_agents.analysis"),
         (r"from agentic_core\.agents", "from agentic_core.L2_execution.P4_agents"),
         
-        # New Mappings
+        # NEW MAPPINGS for the folders we just moved
         (r"from agentic_core\.engines", "from agentic_core.L2_execution.P3_engines"),
         (r"from agentic_core\.interfaces", "from agentic_core.L1_cognition.P1_interfaces"),
         (r"from agentic_core\.security", "from agentic_core.L5_safety.P4_security"),
@@ -52,7 +63,7 @@ def fix_alignment():
 
     count = 0
     for py_file in ROOT.rglob("*.py"):
-        if "legacy_code" in str(py_file) or ".venv" in str(py_file): 
+        if any(p in str(py_file) for p in ["legacy_code", ".venv", "data"]): 
             continue
             
         try:
@@ -66,13 +77,13 @@ def fix_alignment():
             if new_content != content:
                 with open(py_file, 'w', encoding='utf-8') as f:
                     f.write(new_content)
-                print(f"  [✓] Rewired: {py_file.relative_to(ROOT)}")
+                print(f"  [✓] Rewired: {py_file.name}")
                 count += 1
         except Exception as e:
             print(f"  [!] Failed to process {py_file}: {e}")
 
-    print(f"\n[OK] ALIGNMENT V2 COMPLETE. {count} files rewired.")
+    print(f"\n[OK] CONVERGENCE V2 COMPLETE. {count} files rewired.")
     print("    [!] NEXT: Run 'python canon_validator_agentic_v2.py --target agentic_core'")
 
 if __name__ == "__main__":
-    fix_alignment()
+    flush_and_align()

@@ -12,7 +12,7 @@ from functools import wraps
 from pathlib import Path
 from typing import List, Optional, Set
 
-from .definitions import (
+from agentic_core.L2_execution.P2_tools.definitions import (  # Changed to absolute import
     CreateDirectoryArgs,
     DeleteFileArgs,
     ListFilesArgs,
@@ -20,6 +20,19 @@ from .definitions import (
     ReadFileArgs,
     WriteFileArgs,
 )
+
+
+# Define a Protocol for the Blackboard interface required by this module
+class BlackboardLeaseVerifier(Protocol):
+    """
+    Protocol defining the methods expected from a blackboard-like object
+    for HealingLease verification and security event logging.
+    """
+    def verify_healing_lease(self, agent_id: str, file_path: str) -> bool:
+        ...
+    def log_security_event(self, agent_id: str, event_type: str, file_path: str, details: Dict[str, Any]) -> None:
+        ...
+
 
 EXCLUDED_DIRS: Set[str] = {
     '.git',
@@ -108,16 +121,13 @@ def require_healing_lease(func):
         file_path = kwargs.get('path') or (args[0].path if args else None)
         
         if blackboard and agent_id and file_path:
-            try:
-                from ..L4_state.atomic_blackboard import AtomicBlackboard
-                
-                if isinstance(blackboard, AtomicBlackboard):
-                    if not blackboard.verify_healing_lease(agent_id, file_path):
-                        raise HealingLeaseError(
-                            f"Agent {agent_id} does not hold HealingLease for {file_path}"
-                        )
-            except ImportError:
-                pass
+            # Removed direct import of AtomicBlackboard to avoid architectural violation.
+            # Instead, check if the provided blackboard object has the required method (duck typing).
+            if hasattr(blackboard, 'verify_healing_lease') and callable(blackboard.verify_healing_lease):
+                if not blackboard.verify_healing_lease(agent_id, file_path):
+                    raise HealingLeaseError(
+                        f"Agent {agent_id} does not hold HealingLease for {file_path}"
+                    )
         
         return func(*args, **kwargs)
     
@@ -188,22 +198,24 @@ def write_file(
             min_lines = int(original_lines * 0.9)
             
             if new_lines < min_lines:
-                # Log to AtomicBlackboard if available
+                # Log to AtomicBlackboard if available and has the method
                 if blackboard:
-                    try:
-                        blackboard.log_security_event(
-                            agent_id=agent_id or "unknown",
-                            event_type="PRESERVATION_VIOLATION",
-                            file_path=args.path,
-                            details={
-                                "original_lines": original_lines,
-                                "new_lines": new_lines,
-                                "threshold": min_lines,
-                                "deletion_percentage": round((1 - new_lines/original_lines) * 100, 2)
-                            }
-                        )
-                    except Exception:
-                        pass
+                    if hasattr(blackboard, 'log_security_event') and callable(blackboard.log_security_event):
+                        try:
+                            blackboard.log_security_event(
+                                agent_id=agent_id or "unknown",
+                                event_type="PRESERVATION_VIOLATION",
+                                file_path=args.path,
+                                details={
+                                    "original_lines": original_lines,
+                                    "new_lines": new_lines,
+                                    "threshold": min_lines,
+                                    "deletion_percentage": round((1 - new_lines/original_lines) * 100, 2)
+                                }
+                            )
+                        except Exception:
+                            # Catch any errors during logging itself
+                            pass
                 
                 raise PreservationViolationError(
                     f"Preservation violation: New content ({new_lines} lines) is less than 90% "
