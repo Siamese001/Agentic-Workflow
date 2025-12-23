@@ -12,7 +12,7 @@ from agentic_core.L5_safety.P1_red_team import (
     HallucinationHunter,
     get_hallucination_hunter,
 )
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 logging.basicConfig(
     level=logging.INFO,

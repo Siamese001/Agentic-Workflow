@@ -21,7 +21,7 @@ if str(script_dir) not in sys.path:
 # Local application imports
 try:
     from agentic_core.L5_safety.P1_red_team import get_dependency_diplomat
-    from agentic_core.domain.context import ValidationContext
+    from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 except ImportError as e:
     print(
         f"Error importing agentic_core modules. Make sure 'agentic_core' is a sibling "

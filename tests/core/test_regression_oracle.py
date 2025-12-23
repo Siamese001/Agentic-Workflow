@@ -12,7 +12,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent))
 
 from agentic_core.L5_safety.P1_red_team import get_regression_oracle
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # Configure basic logging for console output
 logging.basicConfig(

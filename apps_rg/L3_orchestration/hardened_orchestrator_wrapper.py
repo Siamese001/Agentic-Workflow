@@ -18,7 +18,7 @@ from agentic_core.core.orchestrator_main import (
     OrchestratorConfig,
     create_orchestrator,
 )
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 logger = logging.getLogger(__name__)
 
