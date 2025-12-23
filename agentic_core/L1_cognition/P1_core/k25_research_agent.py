@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, List
+from typing import Any, Optional, Protocol, Dict, List
 
 # Assuming these models are defined in a local models file
 from .k25_research_models import (

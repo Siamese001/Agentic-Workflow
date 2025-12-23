@@ -10,24 +10,24 @@ import asyncio
 from typing import Optional
 
 # Local application imports (grouped by sub-module for clarity)
-from ..canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
-from ..canon_agents_pattern import (
+from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect
+from agentic_core.canon_agents_pattern import (
     PatternEnforcer,
     SemanticMapper,
     UIValidationAgent,
 )
-from ..canon_agents_quality import (
+from agentic_core.canon_agents_quality import (
     DocumentationAgent,
     NamingAgent,
     SafetyInspector,
 )
-from ..canon_agents_structural import (
+from agentic_core.canon_agents_structural import (
     BudgetAgent,
     StructuralEngineer,
     TypeMechanic,
 )
-from ..canon_agents_syntax import CodeJanitor, DependencySentinel
-from ..runtime.shared.canon_validation_context import ValidationContext
+from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
+from agentic_core.runtime.shared.canon_validation_context import ValidationContext
 
 
 class IntelligentOrchestrator:

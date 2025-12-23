@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from ..canon_base_agent import SubAtomicAgent
+from agentic_core.canon_base_agent import SubAtomicAgent
 
 # Inlined EXCLUDED_DIRS and is_excluded to remove dependency on apps_shared.canon_utils
 EXCLUDED_DIRS = [

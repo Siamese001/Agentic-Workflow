@@ -13,11 +13,11 @@ import subprocess
 import time
 from typing import Any, Dict, List, Optional
 
-from ..interfaces import (
+from agentic_core.interfaces import (
     ActionRequest,
     IActionPlane,
 )
-from ..interfaces.requests import ActionResult
+from agentic_core.interfaces.requests import ActionResult
 
 LOGGER = logging.getLogger(__name__)
 

@@ -20,9 +20,9 @@ Non-responsibilities:
 
 
 import logging
-from typing import Any, Dict, List, Optional
-from enum import Enum
-from dataclasses import dataclass
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
 
 
 class RouteType(Enum):
@@ -46,7 +46,7 @@ class CTAResult:
     char_count: int
     is_time_bound: bool
     is_specific: bool
-    validation_results: List[Any] # Assuming ValidationResult is defined elsewhere or Any for now
+    validation_results: List[Any] # Assuming ValidationResult is defined elsewhere or Any
     temperature_log: List[Dict[str, Any]]
     success: bool
     attempts: int

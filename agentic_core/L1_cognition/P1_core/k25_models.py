@@ -1,7 +1,7 @@
 """Dataclass models for k25_research_models_types."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from .k25_research_models_types_enums import ResearchHopPhase, ValidationRejectionReason
 

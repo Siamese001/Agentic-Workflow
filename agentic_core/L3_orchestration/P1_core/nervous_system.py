@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from ..interfaces import (
+from agentic_core.interfaces import (
     ActionRequest,
     ExecutionContext,
     ExecutionResult,
@@ -16,22 +16,22 @@ from ..interfaces import (
     ICognitivePlane,
     OrchestratorConfig,
 )
-from ..interfaces.governance import ArchitectureGovernor
+from agentic_core.interfaces.governance import ArchitectureGovernor
 if TYPE_CHECKING:
-    from ..L1_cognition.sovereign_cognitive_plane import (
+    from agentic_core.L1_cognition.sovereign_cognitive_plane import (
         create_sovereign_cognitive_plane,
     )
-    from ..L2_execution.sovereign_action_plane import (
+    from agentic_core.L2_execution.sovereign_action_plane import (
         create_sovereign_action_plane,
     )
     from .telepathy import process_telepathy_instructions
-    from ..L4_state.checkpointing import VerifiableCheckpointManager
-    from ..L4_state.storage import SignalLedger, create_storage_adapter
-    from ..L5_safety.intervention_server import (
+    from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
+    from agentic_core.L4_state.storage import SignalLedger, create_storage_adapter
+    from agentic_core.L5_safety.intervention_server import (
         InterventionServer,
         check_intervention_required,
     )
-    from ..L5_safety.safety_layer import create_l5_safety_layer
+    from agentic_core.L5_safety.safety_layer import create_l5_safety_layer
 
 LOGGER = logging.getLogger(__name__)
 

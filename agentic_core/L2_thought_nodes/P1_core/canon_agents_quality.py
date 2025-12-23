@@ -4,7 +4,7 @@ import ast
 import re
 from typing import List, Tuple
 
-from ..canon_base_agent import SubAtomicAgent
+from agentic_core.canon_base_agent import SubAtomicAgent
 
 
 class SafetyInspector(SubAtomicAgent):

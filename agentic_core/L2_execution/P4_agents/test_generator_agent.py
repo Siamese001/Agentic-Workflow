@@ -66,7 +66,7 @@ class TestGeneratorAgent(CanonBaseAgent):
 
 REQUIREMENTS:
 1. Use 'pytest' and 'pytest-asyncio'.
-2. Use ABSOLUTE imports from the root (e.g., from agentic_core.L1_cognition import ...).
+2. Use ABSOLUTE imports from the root (e.g., from agentic_core.L1_cognition.P1_core import ...).
 3. Mock all external LLM or Redis calls.
 4. Return ONLY the complete Python test code.
 

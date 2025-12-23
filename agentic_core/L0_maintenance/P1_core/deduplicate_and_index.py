@@ -13,7 +13,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Any, Optional, Protocol, Dict, List, Set, Tuple
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -67,7 +67,7 @@ class FileLibrarian:
         self.root_dir = Path(root_dir).resolve()
         self.content_hashes: Dict[str, str] = {}
         self.duplicates: List[Tuple[str, str]] = []
-        self.active_files: List[Dict[str, any]] = []
+        self.active_files: List[Dict[str, Any]] = []
         self.stats = {
             "total_scanned": 0,
             "excluded": 0,

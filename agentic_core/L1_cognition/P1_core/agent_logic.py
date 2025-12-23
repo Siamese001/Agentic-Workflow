@@ -49,7 +49,7 @@ from core.semantic_gatekeeper import get_gatekeeper
 from db_manager import HybridDatabaseManager
 
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 @dataclass

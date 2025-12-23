@@ -13,7 +13,7 @@ import sys
 from typing import List, Tuple
 
 # Local application imports
-from ..canon_base_agent import SubAtomicAgent
+from agentic_core.canon_base_agent import SubAtomicAgent
 
 
 class CodeJanitor(SubAtomicAgent):
@@ -384,7 +384,7 @@ class DependencySentinel(SubAtomicAgent):
 
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """
-        Checks for relative imports (e.g., 'from . import module', 'from .. import package').
+        Checks for relative imports (e.g., 'from . import module', 'from agentic_core. import package').
         Reports file paths and line numbers.
         """
         violations = []

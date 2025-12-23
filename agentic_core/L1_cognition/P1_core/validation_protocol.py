@@ -2,7 +2,7 @@
 Validation Protocol - Dependency Inversion for L1 → L4
 Defines the interface L1 needs without depending on L4 implementation.
 """
-from typing import Protocol, Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 
 class ValidationProtocol(Protocol):

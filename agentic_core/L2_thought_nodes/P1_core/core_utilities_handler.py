@@ -25,16 +25,16 @@ import re
 
 import logging
 
-from ..utils.crypto_utils import (
+from agentic_core.utils.crypto_utils import (
     setup_gpg_signing,
     sign_and_commit,
 )
-from ..utils.error_handling import (
+from agentic_core.utils.error_handling import (
     CircuitBreakerOpenError,
     MCPError,
     retry_with_backoff,
 )
-from ..utils.mcp_mocks import (
+from agentic_core.utils.mcp_mocks import (
     add_observations,
     brave_search,
     browser_click,
@@ -63,14 +63,14 @@ from ..utils.mcp_mocks import (
     watch_key,
     write_file,
 )
-from ..utils.process_utils import (
+from agentic_core.utils.process_utils import (
     log_action,
     register_process,
 )
 
 # Re-export all utilities from atomic modules for backward compatibility
-from ..utils.syntax_validator import validate_python_syntax
-from ..utils.validation_utils import (
+from agentic_core.utils.syntax_validator import validate_python_syntax
+from agentic_core.utils.validation_utils import (
     sanitize_filename,
     validate_email,
     validate_url,

@@ -3,7 +3,7 @@
 """Clerk extraction for resume generation HOP-1."""
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Any, Optional, Protocol, Dict, List, Tuple
 
 
 class ClerkExtractor:

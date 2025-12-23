@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 LOGGER = logging.getLogger(__name__)
 # Module metadata
 __version__: str = "1.0.0"
@@ -17,6 +17,7 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
         "version": __version__,
         "author": __author__,
         "description": __description__,
+    }
     """
     Validate module configuration.
     Args:
@@ -46,4 +47,4 @@ def create_instance(config: Optional[Dict[str,
         raise ValueError("Invalid configuration provided")
     logger.info(f"Created Manage Outreach Costs instance with config: {final_config}")
     return final_config
-__all__ = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance', '}']
+__all__ = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance']
