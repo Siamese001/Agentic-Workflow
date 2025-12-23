@@ -5,7 +5,7 @@ This file exists to allow direct imports from the root level.
 """
 
 # Import everything from the actual implementation
-from agentic_core.runtime.void_compliance import (
+from agentic_core.runtime.P1_core.void_compliance import (
     # Constants
     ALLOWED_ROOT_FOLDERS,
     FORBIDDEN_ROOT_FOLDERS,

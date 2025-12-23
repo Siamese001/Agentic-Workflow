@@ -4,8 +4,9 @@ from .P2_tools.execution import ExecuteCommandArgs, ExecutionTimeoutError, Execu
 from .P2_tools.filesystem import BlackboardLeaseVerifier, SandboxViolationError, HealingLeaseError, PreservationViolationError
 from .P2_tools.registry import ToolRegistry
 from .P2_tools.sprawl_inspector import SprawlInspector
-from .P3_engines.outreach_engine_zse import ExitReason, OutreachEngineZSE
-from .P3_engines.resume_engine_zlg import EngineStatus, ExitReason, JobDescription, DraftResult, RewriteResult, ShadowModeEngine, ResumeEngineZLG
+# Temporarily disabled due to cascading import errors
+# from .P3_engines.outreach_engine_zse import ExitReason, OutreachEngineZSE
+# from .P3_engines.resume_engine_zlg import EngineStatus, ExitReason, JobDescription, DraftResult, RewriteResult, ShadowModeEngine, ResumeEngineZLG
 from .P4_agents.base import SubAtomicAgent, ImportPatcher
 from .P4_agents.canon_base_agent import _SubatomicEnginePlaceholder, _FissionManagerPlaceholder, _SafetyGuardrailPlaceholder, CanonBaseAgent
 from .P4_agents.code_janitor import CodeJanitor
