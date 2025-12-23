@@ -6,20 +6,19 @@ Enforces Depth = 3 for Core and Apps, and Depth = 2 for the DMZ (Tests).
 # --- AGENTIC CORE (The Brain) ---
 # Forced Depth 3: Every L2 folder MUST contain these L3 subfolders.
 AGENTIC_CORE_REGISTRY = {
-    "L0_maintenance": ["P1_core", "scripts", "migrations", "benchmarks"],
-    "L1_cognition": ["P1_core", "thought_engine", "intent_analysis", "planning_logic"],
-    "L2_execution": ["P1_core", "tool_registry", "action_handlers", "sandbox"],
-    "L3_orchestration": ["P1_core", "workflow_engines", "handoff_logic", "event_bus"],
-    "L4_state": ["P1_core", "persistence_layer", "session_manager", "checkpoints"],
-    "L5_safety": ["P1_core", "guardrails", "red_teaming", "audit_logs"],
-    "config": ["P1_core", "environments", "secrets_manager", "feature_flags"],
+    "L0_maintenance": ["scripts", "logs", "benchmarks"],
+    "L1_cognition": ["thought_engine", "semantic_memory", "intent_analysis"],
+    "L2_execution": ["tool_registry", "action_handlers", "sandbox"],
+    "L3_orchestration": ["workflow_engines", "fission_logic", "event_bus"],
+    "L4_state": ["validation_context", "audit_trails", "session_manager"],
+    "L5_safety": ["guardrails", "validators", "red_teaming"],
+    "config": ["P1_core", "schemas", "environments"],
     "observability": ["P1_core", "logging", "telemetry", "tracing"],
     "prompt_governance": ["P1_core", "templates", "versioning", "rendering"],
-    "schemas": ["P1_core", "validators", "types", "models"],
     "utils": ["P1_core", "helpers", "decorators", "formatters"],
-    "runtime": ["P1_core", "environment_setup", "resource_management", "shared"],
+    "runtime": ["shared", "environment_setup", "resource_management"],
     "semantic_memory": ["P1_core", "vector_store", "retrieval_logic", "embeddings"],
-    "knowledge": ["P1_core", "document_loaders", "static_index"],
+    "knowledge": ["document_loaders", "static_index", "research_cache"],
     "patterns": ["P1_core", "reasoning_patterns", "interaction_patterns"]
 }
 
