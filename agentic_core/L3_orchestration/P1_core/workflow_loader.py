@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 """
 Workflow Loader - Dynamic loading and parsing of workflow configurations.
 
@@ -28,7 +29,7 @@ class KNodeConfig:
     """Configuration for a single K-node."""
     description: str
     input_dependencies: List[str] = None
-    TEMP: FLOAT = 0.7
+    TEMP: float = 0.7
     rag_type: str = "Hybrid"
     rag_total_calls: int = 4
     rag_hops: int = 2
@@ -38,7 +39,7 @@ class KNodeConfig:
     tot_branches: int = 3
     min_tot_depth: int = 2
     self_consistency: int = 8
-    REFLEXION: BOOL = False
+    REFLEXION: bool = False
     max_reflexion_loops: int = 3
 
     def __post_init__(self) -> None:

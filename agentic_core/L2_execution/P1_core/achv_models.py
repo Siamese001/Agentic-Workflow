@@ -4,7 +4,7 @@ from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
-# from .achv_bullet_synthesizer_types_enums import *  # Star import removed
+# from agentic_core.achv_bullet_synthesizer_types_enums import *  # Star import removed
 
 @dataclass
 class ProvenancePattern:
@@ -36,7 +36,7 @@ class BulletSynthesizerConfig:
     and formatting options for achievement bullets.
     """
     format_type: BulletFormat = BulletFormat.UNIFY
-    TEMPERATURE: FLOAT = 0.6
+    TEMPERATURE: float = 0.6
     max_attempts: int = 3
 
     @property

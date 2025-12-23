@@ -23,8 +23,8 @@ from dataclasses import dataclass, field
 
 # Assuming these are defined elsewhere or need to be imported
 # For the purpose of fixing syntax, I'll assume they exist or are placeholders
-# from .integrity_gates import IntegrityGateExecutor, ValidationResult
-# from .recovery_loop import AdaptiveRecoveryLoop
+# from agentic_core.integrity_gates import IntegrityGateExecutor, ValidationResult
+# from agentic_core.recovery_loop import AdaptiveRecoveryLoop
 
 # Placeholder for missing imports to allow syntax check
 class IntegrityGateExecutor:
@@ -56,7 +56,7 @@ class TitleComposerConfig:
     min_words: int = 8
     max_words: int = 13
     max_chars: int = 90
-    TEMPERATURE: FLOAT = 0.5
+    TEMPERATURE: float = 0.5
     max_attempts: int = 3
 
 @dataclass

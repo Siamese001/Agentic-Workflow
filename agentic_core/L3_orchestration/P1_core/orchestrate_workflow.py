@@ -15,8 +15,8 @@ smaller, more focused submodules for better maintainability and compliance.
 """
 
 # Re-export all components for backward compatibility
-# from .orchestrate_workflow_impl_impl_impl_impl import *  # Star import removed
-# from .orchestrate_workflow_impl import *  # Star import removed
+# from agentic_core.orchestrate_workflow_impl_impl_impl_impl import *  # Star import removed
+# from agentic_core.orchestrate_workflow_impl import *  # Star import removed
 import logging
 
 

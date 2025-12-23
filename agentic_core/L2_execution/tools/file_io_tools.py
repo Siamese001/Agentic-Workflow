@@ -88,7 +88,7 @@ class FileIO:
 
     def read_file(self, file_path: str) -> str:
         """
-        Reads text content from .txt, .md, or .pdf files.
+        Reads text content from agentic_core.txt, .md, or .pdf files.
         Tool ID: ACT-002
 
         Args:

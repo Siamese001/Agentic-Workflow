@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 from typing import List, Tuple
 
-from .canon_base_agent import CanonBaseAgent
+from agentic_core.canon_base_agent import CanonBaseAgent
 
 
 class SystemArchitect(CanonBaseAgent):

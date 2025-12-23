@@ -4,7 +4,7 @@ import logging
 from typing import Any, Dict, List, Optional, Union
 import sys # Added missing import
 
-# from .check_resume_rules_types import *  # Star import removed
+# from agentic_core.check_resume_rules_types import *  # Star import removed
 
 # Placeholder for missing types to avoid NameError for syntax check
 class ProcessingResult:

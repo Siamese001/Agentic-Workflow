@@ -74,7 +74,7 @@ class TestPilot:
 
         # Import conversational repair if enabled
         if self.enable_conversational_repair:
-            from .conversational_repair import get_conversational_repair
+            from agentic_core.conversational_repair import get_conversational_repair
             self.conversational_repair = get_conversational_repair()
 
     async def execute(self, modified_files: List[str] = None) -> Dict[str, Any]:

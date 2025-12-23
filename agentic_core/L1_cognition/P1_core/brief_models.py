@@ -1,8 +1,9 @@
+from dataclasses import dataclass
 """Dataclass models for rg_creative_brief."""
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# from .rg_creative_brief_enums import *  # Star import removed
+# from agentic_core.rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
 class ExperienceBulletsBrief:
@@ -20,21 +21,21 @@ class ExperienceBulletsBrief:
         28)})
     k6_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(28, 33))
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
-    GUIDANCE: STR = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
+    GUIDANCE: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
 
 @dataclass
 class LeadershipCompetenciesBrief:
     """Creative brief for leadership competencies section."""
-    TITLE: STR = 'Strategic & Technical Competencies'
+    TITLE: str = 'Strategic & Technical Competencies'
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.INTERNAL_FIRST
-    COUNT: INT = 6
+    COUNT: int = 6
     word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24,
         30))
 
 @dataclass
 class CoverLetterBrief:
     """Creative brief for cover letter section."""
-    STRUCTURE: STR = '1-intro-2-body'
+    STRUCTURE: str = '1-intro-2-body'
     word_count_per_para: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(85,
         100))
     min_specific_details: int = 4
@@ -45,7 +46,7 @@ class CoverLetterBrief:
 class OptimizedSkillsBrief:
     """Creative brief for optimized skills list section."""
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.TOP_SKILLS
-    LOGIC: STR = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection."
+    LOGIC: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection."
 
 @dataclass
 class RGCreativeBrief:

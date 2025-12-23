@@ -11,7 +11,7 @@ from typing import Any, Optional, Protocol, Dict, List
 
 import os
 
-from .canon_base_agent import CanonBaseAgent
+from agentic_core.canon_base_agent import CanonBaseAgent
 
 
 class HealerAgent(CanonBaseAgent):
@@ -95,7 +95,7 @@ class HealerAgent(CanonBaseAgent):
 ### TASK: Move file to {target_dir} and FIX IMPORTS.
 
 I am moving '{os.path.basename(file_path)}' from its current location to '{target_dir}'. 
-Update all relative imports (e.g., from ..L4_state to from .L4_state) to remain valid from the new folder.
+Update all relative imports (e.g., from agentic_core..L4_state to from agentic_core.L4_state) to remain valid from the new folder.
 
 REQUIREMENTS:
 1. Preserve all logic and functionality exactly.
@@ -220,7 +220,7 @@ CURRENT CODE:
                 )
                 
                 # Attempt to apply the split
-                from ..L3_orchestration import apply_fission_blueprint
+                from agentic_core..L3_orchestration import apply_fission_blueprint
                 blueprint_data = self.ctx.engine.parse_fission_output(res)
                 if blueprint_data and blueprint_data.get("fission_event"):
                     if await apply_fission_blueprint(file_path, blueprint_data["blueprint"], self.ctx.fission):

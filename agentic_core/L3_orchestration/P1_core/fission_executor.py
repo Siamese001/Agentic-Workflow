@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .fission_manager import FissionManager
+    from agentic_core.fission_manager import FissionManager
 
 logger = logging.getLogger(__name__)
 
@@ -81,9 +81,9 @@ Original file split into sub-modules for atomicity compliance
         for module_name, exports in created_modules:
             if exports:
                 exports_str = ', '.join(exports)
-                router_content += f"from .{base_name}_modules.{module_name} import {exports_str}\n"
+                router_content += f"from agentic_core.{base_name}_modules.{module_name} import {exports_str}\n"
             else:
-                router_content += f"from .{base_name}_modules import {module_name}\n"
+                router_content += f"from agentic_core.{base_name}_modules import {module_name}\n"
         
         # Safe __all__ generation
         all_exports = [e for _, exports in created_modules for e in exports]

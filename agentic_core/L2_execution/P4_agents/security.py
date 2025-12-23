@@ -11,7 +11,7 @@ from typing import Dict, List, Tuple
 
 import httpx
 
-from .base import SubAtomicAgent
+from agentic_core.base import SubAtomicAgent
 
 
 class SafetyInspector(SubAtomicAgent):

@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .spiffe_manager_impl import *  # Star import removed
-# from .spiffe_manager_impl import *  # Star import removed
+# from agentic_core.spiffe_manager_impl import *  # Star import removed
+# from agentic_core.spiffe_manager_impl import *  # Star import removed
 import logging
 
 

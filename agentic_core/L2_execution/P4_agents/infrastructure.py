@@ -6,8 +6,8 @@ import datetime
 import os
 import time
 
-from .base import SubAtomicAgent
-from ..domain.constants import EXCLUDED_DIRS
+from agentic_core.base import SubAtomicAgent
+from agentic_core..domain.constants import EXCLUDED_DIRS
 
 # Optional dependencies
 try:

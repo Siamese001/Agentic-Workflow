@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 """Types and models for check_outreach_rules."""
 import logging

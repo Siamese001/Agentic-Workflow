@@ -20,7 +20,7 @@ from typing import Dict, List, Optional
 # or their absence would lead to NameError, not the specific syntax error mentioned.
 
 LOGGER = logging.getLogger(__name__)
-# from .rg_validation_gates_types import *  # Star import removed
+# from agentic_core.rg_validation_gates_types import *  # Star import removed
 
 class RGValidationGates:
     """Collection of validation gates for resume generation."""

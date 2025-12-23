@@ -179,7 +179,7 @@ class UniversalContext:
         """
         if self._blackboard is None:
             try:
-                from ..L4_state.atomic_blackboard import AtomicBlackboard
+                from agentic_core..L4_state.atomic_blackboard import AtomicBlackboard
                 self._blackboard = AtomicBlackboard()
                 logger.info("[OK] AtomicBlackboard integrated")
             except ImportError:

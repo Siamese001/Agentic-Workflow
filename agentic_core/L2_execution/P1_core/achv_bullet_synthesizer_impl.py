@@ -4,7 +4,7 @@ import logging
 from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
-# from .achv_bullet_synthesizer_types import *  # Star import removed
+# from agentic_core.achv_bullet_synthesizer_types import *  # Star import removed
 
 class AchvBulletSynthesizer:
     """

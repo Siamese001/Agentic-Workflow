@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from .action_node_modules import ActionNodeCore, SecureToolsImpl
+from agentic_core.action_node_modules import ActionNodeCore, SecureToolsImpl
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

@@ -31,8 +31,8 @@ class BioWriterConfig:
 
     min_words: int = 118
     max_words: int = 135
-    VOICE: STR = "THIRD_PERSON_IMPLIED"
-    TEMPERATURE: FLOAT = 0.6
+    VOICE: str = "THIRD_PERSON_IMPLIED"
+    TEMPERATURE: float = 0.6
     max_attempts: int = 3
 
 

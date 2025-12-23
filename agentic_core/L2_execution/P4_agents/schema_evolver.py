@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
-from .base import SubAtomicAgent
+from agentic_core.base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 

@@ -5,7 +5,7 @@ Scaffolds unit tests for newly moved or refactored L-layer logic.
 import os
 from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
-from .canon_base_agent import CanonBaseAgent
+from agentic_core.canon_base_agent import CanonBaseAgent
 
 class TestGeneratorAgent(CanonBaseAgent):
     """

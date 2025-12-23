@@ -7,8 +7,8 @@ import re
 import time
 from typing import Dict, List
 
-from .base import SubAtomicAgent
-from ..domain.constants import EXCLUDED_DIRS
+from agentic_core.base import SubAtomicAgent
+from agentic_core..domain.constants import EXCLUDED_DIRS
 
 
 class HygieneGuardian(SubAtomicAgent):

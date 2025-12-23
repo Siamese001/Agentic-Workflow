@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .check_outreach_rules_impl import *  # Star import removed
-# from .check_outreach_rules_impl import *  # Star import removed
+# from agentic_core.check_outreach_rules_impl import *  # Star import removed
+# from agentic_core.check_outreach_rules_impl import *  # Star import removed
 import logging
 
 

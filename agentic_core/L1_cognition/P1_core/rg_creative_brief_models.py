@@ -1,8 +1,9 @@
+from dataclasses import dataclass
 """Dataclass models for rg_creative_brief."""
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# from .rg_creative_brief_enums import *  # Star import removed
+# from agentic_core.rg_creative_brief_enums import *  # Star import removed
 
 @dataclass
 class WordCountConstraint:
@@ -43,7 +44,7 @@ class HeadlineBrief:
     """Creative brief for headline section."""
     word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(8, 12))
     char_count_max: int = 90
-    STRUCTURE: STR = 'Domain | Leadership | Value Prop'
+    STRUCTURE: str = 'Domain | Leadership | Value Prop'
     segment_word_limit: int = 3
     exclusions: List[str] = field(default_factory=lambda: ['and',
         'a',
@@ -55,7 +56,7 @@ class HeadlineBrief:
         'for',
         'to',
         'of'])
-    GUIDANCE: STR = 'Must incorporate differentiator keywords from the Competitive Analysis.'
+    GUIDANCE: str = 'Must incorporate differentiator keywords from the Competitive Analysis.'
 
 @dataclass
 class ExecutiveSummaryBrief:
@@ -66,6 +67,6 @@ class ExecutiveSummaryBrief:
         'My expertise',
         'At [COMPANY],',
         'I'])
-    GUIDANCE: STR = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography.
+    GUIDANCE: str = """Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography.
         . Do not use phrasing from the job posting.
         ."""

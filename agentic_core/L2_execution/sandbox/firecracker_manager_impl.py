@@ -5,7 +5,7 @@ import time
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# from .firecracker_manager_types import *  # Star import removed
+# from agentic_core.firecracker_manager_types import *  # Star import removed
 
 class FirecrackerManager:
     """Manager for Firecracker micro-VMs.

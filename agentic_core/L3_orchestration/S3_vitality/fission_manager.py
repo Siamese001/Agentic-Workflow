@@ -173,7 +173,7 @@ Partition `{file_name}` into three sub-modules to clear Key 42 violations.
 Return ONLY a valid JSON object mapping file paths to their content:
 ```json
 {{
-    "{file_name}": "# Facade pattern\\nfrom .{base_name}_core import *\\nfrom .{base_name}_signals import *",
+    "{file_name}": "# Facade pattern\\nfrom agentic_core.{base_name}_core import *\\nfrom agentic_core.{base_name}_signals import *",
     "{parent_dir}/{base_name}_core.py": "# Core logic\\n\\nclass CoreClass:\\n    pass",
     "{parent_dir}/{base_name}_signals.py": "# Signal handling\\n\\ndef handle_signal():\\n    pass"
 }}
@@ -412,8 +412,8 @@ def get_fission_manager(gemini_client: Optional[Any] = None) -> FissionManager:
 
 # Integration Example for orchestrator_main.py:
 """
-from .fission_manager import FissionManager
-from .tui_dashboard import AgenticTUI
+from agentic_core.fission_manager import FissionManager
+from agentic_core.tui_dashboard import AgenticTUI
 
 # Initialize managers
 fission_manager = FissionManager()

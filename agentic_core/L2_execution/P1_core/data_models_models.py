@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 import logging
 
 _logger = logging.getLogger(__name__)
-# from .data_models_models import *  # Star import removed
+# from agentic_core.data_models_models import *  # Star import removed
 
 
 @dataclass
@@ -73,7 +73,7 @@ class RAGResult:
     _source_weight: float
     _age_days: int
     _recipient_specific: bool
-    CONFIDENCE: FLOAT = 1.0
+    CONFIDENCE: float = 1.0
 
 
 @dataclass

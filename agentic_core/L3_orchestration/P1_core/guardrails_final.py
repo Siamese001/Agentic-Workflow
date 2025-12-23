@@ -10,7 +10,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .guardrails_final_impl_impl_impl_impl import *  # Star import removed
+# from agentic_core.guardrails_final_impl_impl_impl_impl import *  # Star import removed
 import logging
 
 

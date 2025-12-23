@@ -13,7 +13,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 
-from .firecracker_manager import (
+from agentic_core.firecracker_manager import (
     FirecrackerManager,
     VMConfig,
     create_firecracker_manager,

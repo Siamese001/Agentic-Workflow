@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 import logging
 
 _logger = logging.getLogger(__name__)
-# from .lic_cta_patterns_enums import *  # Star import removed
+# from agentic_core.lic_cta_patterns_enums import *  # Star import removed
 
 
 @dataclass

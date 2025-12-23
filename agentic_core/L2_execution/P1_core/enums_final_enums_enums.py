@@ -10,7 +10,7 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .enums_final_enums_enums import *  # Star import removed
+# from agentic_core.enums_final_enums_enums import *  # Star import removed
 import logging
 
 

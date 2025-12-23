@@ -20,7 +20,7 @@ except ImportError:
     genai = None
     types = None
 
-# Load environment variables from .env file at module level
+# Load environment variables from agentic_core.env file at module level
 load_dotenv()
 
 # --- Start of refactored Sub-Atomic Engine components (moved from apps_shared) ---

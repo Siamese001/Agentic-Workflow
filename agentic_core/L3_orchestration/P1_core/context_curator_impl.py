@@ -4,7 +4,7 @@ from typing import Any, Optional, Protocol, Dict, List, Set
 import logging
 
 LOGGER = logging.getLogger(__name__)
-# from .context_curator_types import *  # Star import removed
+# from agentic_core.context_curator_types import *  # Star import removed
 
 # Assuming ContextChunk, ContextWindow, ContextType, ContextPriority are defined elsewhere or imported.
 # For a pure syntax fix, we don't need to define them, but their types are used in annotations.

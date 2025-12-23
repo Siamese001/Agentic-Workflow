@@ -10,8 +10,8 @@ violated the Subatomic Canon. It has been refactored into focused submodules.
 """
 
 # Re-export all components for backward compatibility
-# from .tools_routing_retry_task_impl import *  # Star import removed
-# from .tools_routing_retry_task_impl import *  # Star import removed
+# from agentic_core.tools_routing_retry_task_impl import *  # Star import removed
+# from agentic_core.tools_routing_retry_task_impl import *  # Star import removed
 import logging
 
 

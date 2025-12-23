@@ -384,7 +384,7 @@ class DependencySentinel(SubAtomicAgent):
 
     def check_key_08_no_relative_imports(self) -> Tuple[bool, List[str]]:
         """
-        Checks for relative imports (e.g., 'from . import module', 'from agentic_core. import package').
+        Checks for relative imports (e.g., 'from agentic_core. import module', 'from agentic_core. import package').
         Reports file paths and line numbers.
         """
         violations = []
@@ -490,7 +490,7 @@ class DependencySentinel(SubAtomicAgent):
                         # Skip star imports as their "imported names" are ambiguous
                         if any(alias.name == "*" for alias in node.names):
                             continue
-                        module_name = node.module if node.module else "" # Handle 'from . import x' where module is None
+                        module_name = node.module if node.module else "" # Handle 'from agentic_core. import x' where module is None
                         for alias in node.names:
                             imported_name = alias.asname if alias.asname else alias.name
                             import_tuple = (module_name, imported_name)
