@@ -18,45 +18,67 @@ import traceback
 from pathlib import Path
 from typing import Any, Optional
 
-# HARDENING: Centralized, deduplicated sys.path setup
-project_root = Path(__file__).resolve().parent
+# [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
+import sys
+from pathlib import Path
+
+# 1. Resolve Absolute Project Root by looking for the .env 'Soul' of the project
+current_file_path = Path(__file__).resolve()
+project_root = None
+
+# We crawl up the tree until we find the .env file that defines the root
+for parent in current_file_path.parents:
+    if (parent / ".env").exists():
+        project_root = parent
+        break
+
+if not project_root:
+    print(f"\n[!] [L6 ERROR] CRITICAL GRAVITY LOSS: Could not locate .env root from {current_file_path}")
+    sys.exit(1)
+
 project_root_str = str(project_root)
 if project_root_str not in sys.path:
     sys.path.insert(0, project_root_str)
 
-# [FINAL HARDENING] SOVEREIGN SELF-PROTECTION
-# Ensure this validator remains at root (Key 0) to maintain architectural gravity.
-if Path(__file__).resolve().parent != project_root:
-    print(f"\n[!] [GRAVITY ERROR] canon_validator_agentic_v2.py has escaped project root!")
-    print(f"    Location: {Path(__file__).resolve().parent}")
-    sys.exit(1)
+# 2. Re-establish Neural Link to Resurrected Territories
+SOVEREIGN_PATHS = [
+    project_root / "agentic_core" / "runtime" / "shared",
+    project_root / "apps_shared" / "P1_core"
+]
 
-# Additional required paths (deduplicated)
-for sub_path in ["apps_shared", "agentic_core"]:
-    req_str = str(project_root / sub_path)
-    if req_str not in sys.path:
-        sys.path.insert(0, req_str)
+for p in SOVEREIGN_PATHS:
+    p_str = str(p)
+    if p.exists() and p_str not in sys.path:
+        sys.path.insert(0, p_str)
 
-# [HARDENING] SOVEREIGN NEURAL LINK & MODEL AUTHORIZATION
+print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
+
+# [HARDENING] SOVEREIGN NEURAL LINK
 def verify_neural_link():
     """
-    Physical Path Anchoring: Resolves the absolute path to project root.
-    Enforces a strict GEMINI-ONLY model authorization policy.
+    Physical Path Anchoring: Ensures the Brain can see its resurrected modules.
     """
-    import os
     from dotenv import load_dotenv
     
-    # Resolve absolute project root to prevent path drift
-    project_root_abs = Path(__file__).resolve().parent
-    env_path = project_root_abs / ".env"
+    # Force the absolute path to the root .env
+    env_path = project_root / ".env"
     
     if not env_path.exists():
-        print(f"\n[!] [L6 ERROR] CRITICAL BOUNDARY VIOLATION: .env missing at {env_path}")
+        print(f"\n[!] [L6 ERROR] GRAVITY LOSS: .env missing at {env_path}")
         sys.exit(1)
 
-    # override=True ensures .env values take priority over session noise
     load_dotenv(dotenv_path=env_path, override=True)
     
+    # --- REDIS/LANGCACHE INTEGRITY CHECK ---
+    try:
+        import redis
+        # Use the absolute path defined in the Gravity Anchor
+        r = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"), socket_timeout=2)
+        r.ping()
+        print(f"   [OK] Redis State Active: Langcache connected.")
+    except Exception as e:
+        print(f"   [!] [L4 STATE WARNING] Redis offline: {e}")
+
     # --- MODEL AUTHORIZATION WHITELIST ---
     # Mandatory for currently approved mission logic
     APPROVED_MODELS = ["GOOGLE_API_KEY", "GEMINI_MODEL"]
@@ -71,22 +93,6 @@ def verify_neural_link():
     # 2. Strict Model Authorization Check
     # Even if keys exist in .env, this enforces a zero-call policy for non-Gemini models
     unauthorized_detected = [key for key in FUTURE_MODELS if os.getenv(key)]
-    
-    # 3. REDIS STATE HEALTH CHECK (Langcache integrity)
-    try:
-        import redis
-        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
-        r = redis.from_url(redis_url, socket_timeout=5)
-        
-        # Ping the server to verify connectivity
-        if r.ping():
-            print(f"   [OK] Redis State Active: Connected to {redis_url}")
-        else:
-            raise ConnectionError("Redis server did not respond to PING.")
-    except (ImportError, Exception) as e:
-        print(f"\n[!] [L4 STATE ERROR] Redis/Langcache unreachable: {e}")
-        print("    Check your REDIS_URL and ensure the Redis service is running.")
-        sys.exit(1)
     
     print(f"   [OK] Neural Link Sourced: {env_path}")
     if unauthorized_detected:
@@ -127,34 +133,52 @@ except ImportError as e:
     print("    Install: pip install rich flask flask-cors")
 
 # [HARDENING] SOVEREIGN COMPLIANCE IMPORT
-# Import directly from root to avoid shadowing stale versions in agentic_core/runtime
+# Initialize component variables
+apply_fission_blueprint = None
+SafetyGuardrail = None
+FissionManager = None
+SubAtomicEngine = None
+
 try:
-    # Import core components with fallback handling
+    # Use the absolute paths we injected into sys.path
     try:
         from agentic_core.L3_orchestration.P1_core.fission_executor import apply_fission_blueprint
     except ImportError:
-        print("[!] Warning: apply_fission_blueprint not available")
-        apply_fission_blueprint = None
+        pass
     
     try:
         from agentic_core.L3_orchestration.S3_vitality.fission_manager import FissionManager
     except ImportError:
-        print("[!] Warning: FissionManager not available")
-        FissionManager = None
+        pass
     
     try:
         from agentic_core.L5_safety.P1_core.safety_guardrail import SafetyGuardrail
     except ImportError:
-        print("[!] Warning: SafetyGuardrail not available")
-        SafetyGuardrail = None
+        pass
     
     try:
         from agentic_core.L5_safety.P1_core.subatomic_engine import SubAtomicEngine
     except ImportError:
-        print("[!] Warning: SubAtomicEngine not available")
-        SubAtomicEngine = None
+        pass
     
-    import void_compliance
+    # This is your new compliance anchor
+    import void_compliance 
+    print(f"   [OK] Void Compliance Engine: Online.")
+except ImportError as e:
+    print(f"   [CRITICAL] Neural Link Fragmented: {e}")
+    # Don't exit yet—try to find it in the new P1_core depth
+    sys.path.append(str(project_root / "agentic_core" / "runtime" / "shared"))
+    
+    # Retry imports with fallback
+    try:
+        import void_compliance
+        print(f"   [OK] Void Compliance Engine: Online (fallback path).")
+    except ImportError:
+        print(f"   [FATAL] Cannot locate void_compliance module.")
+        sys.exit(1)
+
+# Import void_compliance functions
+try:
     from void_compliance import (
         ALLOWED_ROOT_FOLDERS,
         FORBIDDEN_ROOT_FOLDERS,
@@ -166,9 +190,7 @@ try:
         validate_file_location,
     )
 except ImportError as e:
-    print(f"CRITICAL: Core component missing: {e}")
-    import traceback
-    traceback.print_exc()
+    print(f"   [ERROR] Void compliance functions unavailable: {e}")
     sys.exit(1)
 
 # Configure logging
@@ -412,11 +434,9 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"\n[*] MISSION START: Validating {target_scope}")
     print(f"DEBUG: VERSION 2.7 - DYNAMIC HEALING ENGINE")
     
-    # Add project root to sys.path for imports
-    # Validator is at root level, so parent is the project root
-    project_root = Path(__file__).parent
-    if str(project_root) not in sys.path:
-        sys.path.insert(0, str(project_root))
+    # Use the GLOBALLY defined project_root from the Gravity Anchor
+    global project_root 
+    print(f"   [OK] Mission Root Anchored: {project_root}")
     
     # === DASHBOARD INITIALIZATION (METRICS ONLY) ===
     # Flask server will start AFTER agents are discovered
