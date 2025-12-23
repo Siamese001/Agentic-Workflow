@@ -1,4 +1,4 @@
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
+from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
@@ -15,9 +15,25 @@ from groq import Groq
 from together import Together
 from fireworks.client import Fireworks
 
-# Break the circular gravity leak by deferring the context import
-if TYPE_CHECKING:
-    from agentic_core.L1_cognition.context.signal_context import SignalContext
+# Protocols for dependency injection to eliminate direct import of SignalContext
+# This addresses the "Sovereign layer importing from Downstream" and
+# "DIRECT CIRCULAR RISK: File imports own root 'agentic_core'" violations
+# by abstracting the SignalContext dependency.
+class HardStateProtocol(Protocol):
+    """Protocol for the hard_state attribute of SignalContext."""
+    execution_id: str
+    node_id: str
+    def add_trace(self, EVENT: str, DATA: Dict[str, Any]) -> 'HardStateProtocol': ...
+
+class SignalContextProtocol(Protocol):
+    """Protocol for SignalContext to allow dependency injection."""
+    def get_thermal_params(self) -> Dict[str, float]: ...
+    def get_anchored_context(self) -> Optional[str]: ...
+    def update_timestamp(self) -> None: ...
+    @property
+    def hard_state(self) -> HardStateProtocol: ...
+    @hard_state.setter
+    def hard_state(self, value: HardStateProtocol) -> None: ...
 
 LOGGER = logging.getLogger(__name__)
 
@@ -223,7 +239,7 @@ class InferenceMode(str, Enum):
 class InferenceRequest:
     """Request structure for inference engine."""
     prompt: str
-    context: 'SignalContext'  # Use string forward reference
+    context: SignalContextProtocol  # Changed to use Protocol for dependency injection
     mode: InferenceMode = InferenceMode.ANALYTICAL
     provider: Provider = Provider.OPENAI
     model: Optional[str] = None
@@ -545,7 +561,7 @@ class InferenceEngine:
 
 async def creative_inference(
     prompt: str,
-    context: SignalContext,
+    context: SignalContextProtocol, # Changed to use Protocol
     provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
     """
@@ -570,7 +586,7 @@ async def creative_inference(
 
 async def validation_inference(
     prompt: str,
-    context: SignalContext,
+    context: SignalContextProtocol, # Changed to use Protocol
     provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
     """
@@ -595,7 +611,7 @@ async def validation_inference(
 
 async def analytical_inference(
     prompt: str,
-    context: SignalContext,
+    context: SignalContextProtocol, # Changed to use Protocol
     provider: Provider = Provider.OPENAI
 ) -> InferenceResult:
     """
