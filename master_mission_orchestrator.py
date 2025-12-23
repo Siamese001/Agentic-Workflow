@@ -18,8 +18,8 @@ load_dotenv(dotenv_path=project_root / ".env", override=True)
 
 # L6 Component Imports
 from canon_validator_agentic_v2 import run_mission
-from agentic_core.L5_safety.subatomic_engine import SubAtomicEngine
-from agentic_core.L5_safety.safety_guardrail import SafetyGuardrail
+from agentic_core.L5_safety.P1_core.subatomic_engine import SubAtomicEngine
+from agentic_core.L5_safety.P1_core.safety_guardrail import SafetyGuardrail
 from agentic_core.L4_state.validation_context import ValidationContext
 
 async def execute_sovereign_sweep(target_scope: str = "agentic_core"):

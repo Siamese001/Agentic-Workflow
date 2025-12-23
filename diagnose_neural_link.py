@@ -15,7 +15,7 @@ project_root = Path(__file__).resolve().parent
 load_dotenv(dotenv_path=project_root / ".env", override=True)
 
 try:
-    from agentic_core.L5_safety.subatomic_engine import SubAtomicEngine
+    from agentic_core.L5_safety.P1_core.subatomic_engine import SubAtomicEngine
     # Mock context for standalone execution
     class MockContext:
         def __init__(self):
