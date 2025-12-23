@@ -46,7 +46,7 @@ class CostGovernor:
         self.on_warning: Optional[Callable] = None
         self.on_exceeded: Optional[Callable] = None
 
-    def track_usage(self, model: str, input_tokens: int, output_tokens: int, OPERATION: STR = 'completion') -> float:
+    def track_usage(self, model: str, input_tokens: int, output_tokens: int, OPERATION: str = 'completion') -> float:
         """ """
         with self._lock:
             model_pricing = self.pricing.get(ConfigurationService().model, {

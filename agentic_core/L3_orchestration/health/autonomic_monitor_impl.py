@@ -4,7 +4,7 @@ import time
 
 import logging
 
-from .autonomic_monitor_types import HealthMetrics, HealthAlert, HealthStatus, AlertSeverity
+from agentic_core.L3_orchestration.health.autonomic_monitor_types import HealthMetrics, HealthAlert, HealthStatus, AlertSeverity
 
 LOGGER = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)

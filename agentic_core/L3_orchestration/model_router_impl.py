@@ -54,7 +54,7 @@ class ModelRouter:
         task_description: str,
         required_capabilities: Optional[List[str]]=None,
         estimated_tokens: Optional[int]=None,
-        PHASE: STR='think') -> RoutingDecision:
+        PHASE: str='think') -> RoutingDecision:
         """Route request to optimal model.
 
         Args:

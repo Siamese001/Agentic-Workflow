@@ -1,13 +1,20 @@
 """Implementation for agent_gym."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, Awaitable, Callable
 import time
-
-
 import logging
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+
+from agentic_core.L3_orchestration.training.agent_gym_types import (
+    GoldenStateEvaluator,
+    JudgeEvaluator,
+    TrainingScenario,
+    BenchmarkResult,
+    PerformanceMetrics,
+    GoldenOutput,
+    TrainingSession,
+    ScenarioType
+)
 
 LOGGER = logging.getLogger(__name__)
-# from .agent_gym_types import *  # Star import removed
 
 class AgentGym:
     """Agent Gym for self-evolution and benchmarking.
