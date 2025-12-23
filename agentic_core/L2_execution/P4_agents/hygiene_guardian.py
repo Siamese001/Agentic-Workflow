@@ -5,6 +5,7 @@ Handles physical removal of empty folders, temporary artifacts, and ghost direct
 import os
 import shutil
 from pathlib import Path
+from typing import Any, Optional, Protocol, Dict, List
 from typing import List, Tuple
 from .canon_base_agent import CanonBaseAgent
 
