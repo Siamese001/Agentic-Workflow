@@ -832,49 +832,48 @@ Return the complete file with imports added. No explanations, no markdown."""
             # [HARDENING] Defensive monkey-patch for real-time telemetry
             # Auto-update status/task on all agents without requiring individual changes
             original_method = getattr(agent_instance, 'execute', None) or getattr(agent_instance, 'run', None)
-            if original_method:
-                # Check if the method is actually a coroutine before awaiting it
-                if inspect.iscoroutinefunction(original_method):
-                    async def status_wrapper(*args, **kwargs):
-                        file_path = args[0] if args else "batch/global"
-                        file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)
-                        agent_instance.current_status = "Active"
-                        agent_instance.current_task = f"Processing: {file_name}"
-                        try:
-                            result = await original_method(*args, **kwargs)
-                            agent_instance.current_status = "Success"
-                            agent_instance.current_task = "Complete"
-                            return result
-                        except Exception as e:
-                            agent_instance.current_status = "Error"
-                            agent_instance.current_task = f"Failed: {str(e)[:50]}"
-                            raise
-                    # Replace method with telemetry wrapper
-                    if hasattr(agent_instance, 'execute'):
-                        agent_instance.execute = status_wrapper
-                    else:
-                        agent_instance.run = status_wrapper
+            if original_method and inspect.iscoroutinefunction(original_method):
+                # Async method wrapper
+                async def status_wrapper(*args, **kwargs):
+                    file_path = args[0] if args else "batch/global"
+                    file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)
+                    agent_instance.current_status = "Active"
+                    agent_instance.current_task = f"Processing: {file_name}"
+                    try:
+                        result = await original_method(*args, **kwargs)
+                        agent_instance.current_status = "Success"
+                        agent_instance.current_task = "Complete"
+                        return result
+                    except Exception as e:
+                        agent_instance.current_status = "Error"
+                        agent_instance.current_task = f"Failed: {str(e)[:50]}"
+                        raise
+                # Replace method with telemetry wrapper
+                if hasattr(agent_instance, 'execute'):
+                    agent_instance.execute = status_wrapper
                 else:
-                    # Synchronous method wrapper (no await)
-                    def status_wrapper_sync(*args, **kwargs):
-                        file_path = args[0] if args else "batch/global"
-                        file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)
-                        agent_instance.current_status = "Active"
-                        agent_instance.current_task = f"Processing: {file_name}"
-                        try:
-                            result = original_method(*args, **kwargs)
-                            agent_instance.current_status = "Success"
-                            agent_instance.current_task = "Complete"
-                            return result
-                        except Exception as e:
-                            agent_instance.current_status = "Error"
-                            agent_instance.current_task = f"Failed: {str(e)[:50]}"
-                            raise
-                    # Replace method with telemetry wrapper
-                    if hasattr(agent_instance, 'execute'):
-                        agent_instance.execute = status_wrapper_sync
-                    else:
-                        agent_instance.run = status_wrapper_sync
+                    agent_instance.run = status_wrapper
+            elif original_method:
+                # Synchronous method wrapper (no await)
+                def status_wrapper_sync(*args, **kwargs):
+                    file_path = args[0] if args else "batch/global"
+                    file_name = Path(file_path).name if hasattr(file_path, '__str__') else str(file_path)
+                    agent_instance.current_status = "Active"
+                    agent_instance.current_task = f"Processing: {file_name}"
+                    try:
+                        result = original_method(*args, **kwargs)
+                        agent_instance.current_status = "Success"
+                        agent_instance.current_task = "Complete"
+                        return result
+                    except Exception as e:
+                        agent_instance.current_status = "Error"
+                        agent_instance.current_task = f"Failed: {str(e)[:50]}"
+                        raise
+                # Replace method with telemetry wrapper
+                if hasattr(agent_instance, 'execute'):
+                    agent_instance.execute = status_wrapper_sync
+                else:
+                    agent_instance.run = status_wrapper_sync
             
             cleaning_crew.append(agent_instance)
             print(f"     [+] Active Agent: {cls_name}")
