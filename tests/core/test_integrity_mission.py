@@ -7,7 +7,7 @@ import asyncio
 import logging
 
 # Third-party / Project-specific imports
-from agentic_core.interfaces import OrchestratorConfig
+from agentic_core.L1_cognition.P1_interfaces import OrchestratorConfig
 from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
 # Setup high-visibility logging

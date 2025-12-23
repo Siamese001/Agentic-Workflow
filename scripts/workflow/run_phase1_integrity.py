@@ -8,7 +8,7 @@ It should show L5 validation logs during execution.
 import asyncio
 import logging
 
-from agentic_core.interfaces import ActionRequest, OrchestratorConfig
+from agentic_core.L1_cognition.P1_interfaces import ActionRequest, OrchestratorConfig
 from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
 # Setup high-visibility logging

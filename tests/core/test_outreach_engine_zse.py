@@ -16,7 +16,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from agentic_core.engines.outreach_engine_zse import ExitReason, OutreachEngineZSE
+from agentic_core.L2_execution.P3_engines.outreach_engine_zse import ExitReason, OutreachEngineZSE
 from agentic_core.knowledge.l5_consolidated import KnowledgeResult
 from agentic_core.utils.networking import EgressResult
 

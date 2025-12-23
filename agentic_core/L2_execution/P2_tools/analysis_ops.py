@@ -2,13 +2,10 @@
 Analysis Operations - AST Parsing, Linting, and Code Quality Tools
 Consolidated from core_utils.py and security_utils.py
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import ast
 import logging
 import subprocess
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 logger = logging.getLogger(__name__)
 

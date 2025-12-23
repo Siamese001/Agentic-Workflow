@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 
 # Import canonical ExecutionPhase from agentic_core
-from agentic_core.interfaces.execution import ExecutionPhase
+from agentic_core.L1_cognition.P1_interfaces.execution import ExecutionPhase
 
 LOGGER = logging.getLogger(__name__)
 

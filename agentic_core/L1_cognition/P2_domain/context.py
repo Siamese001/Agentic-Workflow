@@ -1,13 +1,12 @@
-from typing import Any, Optional, Protocol, Dict, List, Set
-import re
-
 import ast
 import asyncio
 import functools
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any, Optional, Protocol, Dict, List, Set
 
 # Third-party
 try:
@@ -15,11 +14,105 @@ try:
 except ImportError:
     genai = None
 
-# Import Prompts (Resolves Syntax Error & Atomicity Law)
-from .prompts import (
-    FEW_SHOT_HYGIENE,
-    FEW_SHOT_STYLE,
-)
+# ==============================================================================
+# INLINED PROMPTS (Formerly from .prompts - Resolves Architectural Violations)
+# ==============================================================================
+
+FEW_SHOT_HYGIENE = """
+# Example 1: Missing docstring
+# Original:
+# def my_func(arg):
+#     return arg * 2
+# Refactored:
+# def my_func(arg):
+#     \"\"\"Doubles the input argument.\"\"\"
+#     return arg * 2
+
+# Example 2: Incorrect variable naming (not snake_case)
+# Original:
+# myVariable = 10
+# Refactored:
+# my_variable = 10
+
+# Example 3: Unused import
+# Original:
+# import os
+# def func():
+#     pass
+# Refactored:
+# def func():
+#     pass
+
+# Example 4: Trailing whitespace
+# Original:
+# def func():
+#     print("hello")
+# Refactored:
+# def func():
+#     print("hello")
+
+# Example 5: Line too long (over 80 chars)
+# Original:
+# def some_long_function_name(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10):
+#     pass
+# Refactored:
+# def some_long_function_name(
+#     arg1, arg2, arg3, arg4, arg5,
+#     arg6, arg7, arg8, arg9, arg10
+# ):
+#     pass
+"""
+
+FEW_SHOT_STYLE = """
+# Example 1: Function name not snake_case
+# Original:
+# def MyFunction():
+#     pass
+# Refactored:
+# def my_function():
+#     pass
+
+# Example 2: Class name not CamelCase
+# Original:
+# class my_class:
+#     pass
+# Refactored:
+# class MyClass:
+#     pass
+
+# Example 3: Constant not ALL_CAPS
+# Original:
+# my_constant = 10
+# Refactored:
+# MY_CONSTANT = 10
+
+# Example 4: Missing blank line after imports
+# Original:
+# import os
+# import sys
+# def func():
+#     pass
+# Refactored:
+# import os
+# import sys
+
+# def func():
+#     pass
+
+# Example 5: Missing blank line after class definition
+# Original:
+# class MyClass:
+#     pass
+# def func():
+#     pass
+# Refactored:
+# class MyClass:
+#     pass
+
+
+# def func():
+#     pass
+"""
 
 # ==============================================================================
 # SOVEREIGN UTILITIES

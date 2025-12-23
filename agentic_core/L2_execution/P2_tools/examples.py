@@ -7,7 +7,7 @@ import re
 
 import os
 
-from . import (
+from agentic_core.L2_execution.P2_tools import (
     ExecuteCommandArgs,
     ReadFileArgs,
     WriteFileArgs,
@@ -22,9 +22,27 @@ def example_basic_file_operations():
     """Example: Basic file operations with sandbox validation."""
     print("=== Basic File Operations ===\n")
     
+    # Refactored to remove reference to 'apps_shared'.
+    # Instead, write a temporary file and then read it.
+    temp_file_path = "output/temp_example_read.txt"
+    temp_content = "This is content for a temporary file created by the example."
+    
     try:
-        content = read_file(ReadFileArgs(path="apps_shared/canon_validator_v2_agentic.py"))
-        print(f"[OK] Read file: {len(content)} characters")
+        write_file(
+            WriteFileArgs(
+                path=temp_file_path,
+                content=temp_content,
+                create_dirs=True
+            )
+        )
+        print(f"[OK] Wrote temporary file: {temp_file_path}")
+    except Exception as e:
+        print(f"[X] Failed to write temporary file: {e}")
+        return # Cannot proceed with read if write fails
+        
+    try:
+        content = read_file(ReadFileArgs(path=temp_file_path))
+        print(f"[OK] Read file: {len(content)} characters. Content matches: {content == temp_content}")
     except Exception as e:
         print(f"[X] Read failed: {e}")
     
@@ -137,7 +155,7 @@ def example_healing_lease_integration():
     print("\n=== HealingLease Integration ===\n")
     
     try:
-        from ..L4_state.atomic_blackboard import AtomicBlackboard
+        from agentic_core.L4_state.atomic_blackboard import AtomicBlackboard
         
         blackboard = AtomicBlackboard()
         agent_id = "healer_agent_001"

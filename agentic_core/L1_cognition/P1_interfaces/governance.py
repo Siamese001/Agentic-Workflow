@@ -10,13 +10,13 @@ Features:
 - Architecture governance laws enforcement
 - Blast radius visualization
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
+# Standard library imports
 import ast
+import glob
 import logging
+import shutil
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class DependencyGraph:
         self.graph: Dict[str, Dict[str, List[str]]] = {}
         self.reverse_graph: Dict[str, List[str]] = {}
         self.class_map: Dict[str, str] = {}  # class name -> file path
-        self.module_map: Dict[str, str] = {}  # module name -> file path
+        self.module_map: Dict[str, str]  = {}  # module name -> file path
         self._built: bool = False
 
     def build(self, files: List[str], root_dir: str = None):
@@ -296,25 +296,28 @@ class ArchitectureGovernor:
         self.dependency_graph = DependencyGraph()
 
         # L6 Root Hygiene Configuration
+        # Consolidated ALLOWED_ROOT_FILES from original and _MONOLITH versions
         self.ALLOWED_ROOT_FILES = {
             'README.md', 'README.txt', 'LICENSE', 'LICENSE.txt', 'LICENSE.md',
             'setup.py', 'setup.cfg', 'pyproject.toml', 'requirements.txt',
             'requirements-dev.txt', '.gitignore', '.gitattributes', 'MANIFEST.in',
             'CHANGELOG.md', 'CHANGELOG.txt', 'CONTRIBUTING.md', 'CONTRIBUTING.txt',
             'INSTALL.md', 'INSTALL.txt', 'AUTHORS.md', 'AUTHORS.txt', 'HISTORY.md',
-            'TODO.md', 'TODO.txt', '.editorconfig', 'Makefile'
+            'TODO.md', 'TODO.txt', '.editorconfig', 'Makefile',
+            "requirements.in", ".pre-commit-config.yaml", "conftest.py", "pytest.ini", "tox.ini",
+            ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml"
         }
 
+        # Consolidated ALLOWED_ROOT_FOLDERS from original and _MONOLITH versions,
+        # excluding downstream application directories (apps_lic, apps_rg, apps_shared)
         self.ALLOWED_ROOT_FOLDERS = {
             '.git', '.github', 'docs', 'tests', 'test', 'testsuite', 'examples',
             'scripts', 'tools', 'benchmarks', 'data', 'datasets', 'assets',
-            'static', 'media', 'templates', 'locale', 'migrations', 'seeds'
-        }
-
-        # Sovereign directories exempt from depth law
-        self.SOVEREIGN_DIRECTORIES = {
-            '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv',
-            'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage'
+            'static', 'media', 'templates', 'locale', 'migrations', 'seeds',
+            "agentic_core", "schemas", "config", "cache", "observability",
+            ".pytest_cache", "__pycache__", "venv", ".venv",
+            "node_modules", ".tox", "coverage", "htmlcov", ".mypy_cache",
+            ".coverage", "dist", "build", "eggs", ".eggs", "*.egg-info"
         }
 
         # Law of Depth: MAX 5 levels from root
@@ -332,29 +335,14 @@ class ArchitectureGovernor:
             "files_sanitized": 0
         }
 
-        # Allowed files at repository root (ALLOWED_ROOT_FILES from monolith)
-        self.ALLOWED_ROOT_FILES_MONOLITH = {
-            "README.md", "LICENSE", "pyproject.toml", "setup.py", "setup.cfg",
-            "requirements.txt", "requirements-dev.txt", "requirements.in",
-            "Makefile", ".gitignore", ".pre-commit-config.yaml",
-            "CHANGELOG.md", "CONTRIBUTING.md", "conftest.py", "pytest.ini", "tox.ini",
-            ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml",
-            "MANIFEST.in", "pyproject.toml", "setup.cfg", "tox.ini"
-        }
-
-        # Allowed folders at repository root (ALLOWED_ROOT_FOLDERS from monolith)
-        self.ALLOWED_ROOT_FOLDERS_MONOLITH = {
-            "agentic_core", "apps_lic", "apps_rg", "apps_shared", "schemas",
-            "scripts", "docs", "tests", "config", "data", "cache", "observability",
-            ".git", ".github", ".pytest_cache", "__pycache__", "venv", ".venv",
-            "node_modules", ".tox", "coverage", "htmlcov", ".mypy_cache",
-            ".coverage", "dist", "build", "eggs", ".eggs", "*.egg-info"
-        }
-
         # Sovereign directories (exempt from depth limit)
+        # This set defines directories that are considered part of the core or standard project infrastructure
+        # and are exempt from depth law enforcement. Downstream application directories are not included here.
         self.sovereign_dirs = {
-            "agentic_core", "apps_lic", "apps_rg", "apps_shared", "schemas",
-            "scripts", "docs", "tests", "config", "data", "cache", "observability"
+            "agentic_core", "schemas", "scripts", "docs", "tests", "config", "data", "cache", "observability",
+            '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv',
+            'node_modules', '.idea', '.vscode', 'dist', 'build', 'coverage',
+            ".github", "htmlcov", ".mypy_cache", ".coverage", "eggs", ".eggs", "*.egg-info"
         }
 
         # Governance thresholds
@@ -369,8 +357,6 @@ class ArchitectureGovernor:
         Args:
             file_patterns: Glob patterns for Python files
         """
-        import glob
-
         all_files = []
         for pattern in file_patterns:
             all_files.extend(glob.glob(pattern, recursive=True))
@@ -424,8 +410,6 @@ class ArchitectureGovernor:
         Returns:
             Action taken
         """
-        import shutil
-
         scripts_dir = self.root_dir / "scripts"
         scripts_dir.mkdir(exist_ok=True)
 
@@ -534,8 +518,6 @@ class ArchitectureGovernor:
         for part in path.parts:
             if part in self.sovereign_dirs:
                 return None
-
-        import shutil
 
         # Determine correct depth
         if "too shallow" in violation.lower():
