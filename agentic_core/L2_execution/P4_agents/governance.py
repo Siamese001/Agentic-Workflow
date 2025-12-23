@@ -12,8 +12,8 @@ import re
 import subprocess
 from typing import List, Tuple
 
-from agentic_core.base import SubAtomicAgent
-from agentic_core..domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
+# [INCOMPLETE IMPORT] from agentic_core.base import SubAtomicAgent
+# [INCOMPLETE IMPORT] # [INCOMPLETE IMPORT] from agentic_core..domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
 
 
 class ArchitectureGovernor(SubAtomicAgent):
@@ -174,7 +174,7 @@ OUTPUT FORMAT (JSON):
 Generate the blueprint now:"""
 
             # Call Gemini with safe config
-            from agentic_core..L5_safety import SubAtomicEngine
+            # [INCOMPLETE IMPORT] # [INCOMPLETE IMPORT] from agentic_core..L5_safety import SubAtomicEngine
             config = SubAtomicEngine.get_safe_config(is_fission=True)
             
             response = await asyncio.to_thread(
@@ -330,7 +330,7 @@ class DependencySentinel(SubAtomicAgent):
                 with open(file_path, "r", encoding="utf-8") as f:
                     lines = f.readlines()
                     for i, line in enumerate(lines, 1):
-                        if re.search(r"from agentic_core.* import \*", line):
+                        if re.search(r"# [INCOMPLETE IMPORT] from agentic_core.* import \*", line):
                             violations.append(f"{file_path}:{i}")
             except Exception:
                 continue

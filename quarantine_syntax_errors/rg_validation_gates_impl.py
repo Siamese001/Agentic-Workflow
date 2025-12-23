@@ -196,7 +196,7 @@ class RGValidationGates:
             TEXT = content.get('executive_summary', '')
         else:
             TEXT = str(content)
-        template_patterns = ['\
+        template_patterns = ['{{', '}}', '[INSERT', 'TODO:', 'PLACEHOLDER']
         for pattern in template_patterns:
             MATCHES = re.findall(pattern, TEXT) # Changed 'text' to 'TEXT'
             if MATCHES: # Changed 'matches' to 'MATCHES'
@@ -227,7 +227,7 @@ class RGValidationGates:
         source_material = context.get('source_material', '')
         for i, bullet in enumerate(BULLETS): # Changed 'bullets' to 'BULLETS'
             bullet_text = bullet if isinstance(bullet, str) else bullet.get('text', '')
-            METRICS = re.findall('\
+            METRICS = re.findall(r'\d+%|\d+\+|\d+x', bullet_text)
             for metric in METRICS: # Changed 'metrics' to 'METRICS'
                 if metric not in source_material:
                     VIOLATIONS.append(f"Bullet {i + 1}: Metric '{metric}' not found in source") # Changed 'violations' to 'VIOLATIONS'
@@ -278,9 +278,9 @@ class RGValidationGates:
                 min_words = BRIEF.get('headline', {}).get('min_words', 8) # Changed 'brief' to 'BRIEF'
                 max_words = BRIEF.get('headline', {}).get('max_words', 12) # Changed 'brief' to 'BRIEF'
                 if word_count < min_words or word_count > max_words:
-                    VIOLATIONS.append(f'Headline word count {word_count} outside range [{min_words},\
-            SUMMARY = content.get('executive_summary', '')
-            if SUMMARY: # Changed 'summary' to 'SUMMARY'
+# [SYNTAX SCAR REMOVED]                     VIOLATIONS.append(f'Headline word count {word_count} outside range [{min_words},\
+# [SYNTAX SCAR REMOVED]             SUMMARY = content.get('executive_summary', '')
+# [SYNTAX SCAR REMOVED]             if SUMMARY: # Changed 'summary' to 'SUMMARY'
                 word_count = len(SUMMARY.split()) # Changed 'summary' to 'SUMMARY'
                 min_words = BRIEF.get('executive_summary', {}).get('min_words', 120) # Changed 'brief' to 'BRIEF'
                 max_words = BRIEF.get('executive_summary', {}).get('max_words', 140) # Changed 'brief' to 'BRIEF'

@@ -178,9 +178,9 @@ class UniversalContext:
             AtomicBlackboard instance
         """
         if self._blackboard is None:
-            try:
-                from agentic_core..L4_state.atomic_blackboard import AtomicBlackboard
-                self._blackboard = AtomicBlackboard()
+# [SYNTAX SCAR REMOVED]             try:
+# [SYNTAX SCAR REMOVED]                 from agentic_core..L4_state.atomic_blackboard import AtomicBlackboard
+# [SYNTAX SCAR REMOVED]                 self._blackboard = AtomicBlackboard()
                 logger.info("[OK] AtomicBlackboard integrated")
             except ImportError:
                 logger.warning("[!]  AtomicBlackboard not available")

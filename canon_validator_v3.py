@@ -68,6 +68,11 @@ class StaticSentinel:
         if len(parts) == 1: 
             return True
 
+        # Allow __init__.py at Layer level (depth 2: Layer/__init__.py)
+        # This is necessary for Python package structure
+        if len(parts) == 2 and file_path.name == "__init__.py":
+            return True
+
         # Check Depth (Should be exactly 3 parts: Layer/Stage/File)
         # agentic_core is root, so relative parts should be 3.
         if len(parts) != 3:
