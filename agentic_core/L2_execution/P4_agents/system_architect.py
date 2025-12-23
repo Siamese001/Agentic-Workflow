@@ -153,10 +153,16 @@ class SystemArchitect(CanonBaseAgent):
             depth = len(rel_path.parts) - 1
             root_folder = rel_path.parts[0] if rel_path.parts else None
 
-            # Tests folder requires exactly depth 3 (e.g., tests/unit/agentic_core/test_*.py)
-            if root_folder == "tests":
-                if depth != 3:
-                    violations.append(f"{rel_path}: Tests require exactly depth 3, found {depth}.")
+            # [SSOT] Dynamic depth check from structure_blueprint
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
+            from structure_blueprint import SOVEREIGN_DEPTH_MAP
+            
+            if root_folder in SOVEREIGN_DEPTH_MAP:
+                required_depth = SOVEREIGN_DEPTH_MAP[root_folder]
+                if depth != required_depth:
+                    violations.append(f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.")
                 continue
 
             # All other folders: min 3, max 5

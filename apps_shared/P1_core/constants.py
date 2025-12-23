@@ -9,10 +9,13 @@ MAX_LINES = 200                    # Maximum file size (subatomic limit)
 MIN_LINES = 10                     # Minimum file size (anti-noise limit)
 
 # Law 3: The Law of The Void - Root directory is sacred
-ALLOWED_ROOT_FOLDERS = {
-    'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas',
-    'prompt_governance', 'observability', 'config', 'tests', 'data', 'archives', 'scripts'
-}
+# [SSOT] Import from structure_blueprint.py instead of hardcoding
+# [GRAVITY FIX] Apps should not define structure - import from core
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "agentic_core" / "config" / "P1_core"))
+from structure_blueprint import ROOT_WHITELIST
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ALLOWED_ROOT_FILES = {
     'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
     '.env', 'canon_validator_agentic.py', 'pytest.ini'

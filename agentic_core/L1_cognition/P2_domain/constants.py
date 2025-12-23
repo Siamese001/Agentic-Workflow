@@ -3,6 +3,13 @@ Sovereign domain constants - Re-exported from canonical location.
 This module provides waterfall-compliant access to shared constants.
 """
 
+import sys
+from pathlib import Path
+
+# [SSOT] Import structure definitions from master blueprint
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
+from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_DEPTH_MAP
+
 # Architectural Constants
 MIN_DEPTH = 3
 MAX_DEPTH = 5
@@ -28,10 +35,8 @@ EXCLUDED_FILES = {
     'Thumbs.db', '*.tmp',
 }
 
-ALLOWED_ROOT_FOLDERS = {
-    'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas',
-    'prompt_governance', 'observability', 'config', 'tests', 'data', 'archives', 'scripts'
-}
+# [SSOT] Import from structure_blueprint.py instead of hardcoding
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 ALLOWED_ROOT_FILES = {
     'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',

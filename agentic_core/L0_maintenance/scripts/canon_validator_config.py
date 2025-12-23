@@ -4,7 +4,13 @@ The Three Laws of Subatomic Governance are defined here.
 """
 
 import os
+import sys
+from pathlib import Path
 from typing import List
+
+# [SSOT] Import structure definitions from master blueprint
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
+from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_DEPTH_MAP
 
 # ==============================================================================
 # THE THREE LAWS OF SUBATOMIC GOVERNANCE
@@ -18,10 +24,8 @@ MAX_LINES = 200
 MIN_LINES = 10
 
 # Law 3: The Law of The Void - Root directory is sacred
-ALLOWED_ROOT_FOLDERS = {
-    'agentic_core', 'apps_lic', 'apps_rg', 'apps_shared', 'schemas',
-    'prompt_governance', 'observability', 'config', 'tests', 'data', 'archives', 'scripts'
-}
+# [SSOT] Import from structure_blueprint.py instead of hardcoding
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ALLOWED_ROOT_FILES = {
     'README.md', '.gitignore', 'LICENSE', 'pyproject.toml', 'requirements.txt',
     '.env', 'canon_validator_agentic.py', 'pytest.ini'

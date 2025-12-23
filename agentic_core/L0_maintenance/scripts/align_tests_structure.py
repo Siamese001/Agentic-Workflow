@@ -11,7 +11,7 @@ if BLUEPRINT_DIR not in sys.path:
     sys.path.append(BLUEPRINT_DIR)
 
 try:
-    from structure_blueprint import TESTS_REGISTRY
+    from structure_blueprint import TESTS_SUBFOLDER_MAP
 except ImportError:
     print(f"❌ ERROR: Could not find structure_blueprint.py in {BLUEPRINT_DIR}")
     sys.exit(1)
@@ -20,23 +20,16 @@ def align_tests_structure(root_path):
     print(f"--- ALIGNING TESTS WITH SOVEREIGN LAW ---")
     tests_root = os.path.join(root_path, "tests")
 
-    for category, sub_folders in TESTS_REGISTRY.items():
-        category_path = os.path.join(tests_root, category)
+    for l1, l2_list in TESTS_SUBFOLDER_MAP.items():
+        l1_path = os.path.join(tests_root, l1)
         
-        # Ensure Level 2 (unit, integration, fixtures)
-        ensure_dir_structure(category_path)
+        # Ensure Level 1 (unit, integration, e2e, functional, fixtures, automation)
+        ensure_dir_structure(l1_path)
 
-        for sub in sub_folders:
-            # Ensure Level 3 (agentic_core, apps_rg, workflow_tests, etc.)
-            sub_path = os.path.join(category_path, sub)
-            ensure_dir_structure(sub_path)
-            
-            # Special Case: If it's a code-mirror (like agentic_core), 
-            # we want to go even deeper to match the L2 departments.
-            if sub in ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]:
-                # You can add logic here to mirror L2 folders if you want 
-                # maximum precision (e.g., tests/unit/agentic_core/L1_cognition)
-                pass
+        for l2 in l2_list:
+            # Ensure Level 2 (core_logic, shared_logic, layer_transitions, etc.)
+            l2_path = os.path.join(l1_path, l2)
+            ensure_dir_structure(l2_path)
 
 def ensure_dir_structure(path):
     if not os.path.exists(path):

@@ -14,7 +14,12 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 # [SSOT] Import the master structure blueprint
-from agentic_core.config.P1_core.structure_blueprint import AGENTIC_CORE_REGISTRY
+from agentic_core.config.P1_core.structure_blueprint import (
+    AGENTIC_CORE_REGISTRY,
+    SOVEREIGN_DEPTH_MAP,
+    ROOT_WHITELIST,
+    CORE_SUBFOLDER_MAP
+)
 
 logger = logging.getLogger(__name__)
 
@@ -151,65 +156,27 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
 
     return True, ""
 
-# [SOVEREIGN ALIGNMENT] Authorized Core Stages (Map to Territory)
-ALLOWED_CORE_STAGES = [
-    # L1 Cognition
-    "identity", "inference", "meta", "P3_aggregation", "P1_sensing", "P2_context", "P4_inference", "P5_meta",
-    "discovery", "planning",
-    # L3 Orchestration
-    "S1_design", "S2_runtime", "S3_vitality", "S4_checkpoint",
-    # L2/L5 Support
-    "P5_healing", "P1_red_team", "execution_cycle",
-    # Authorized drift catch-alls
-    "P4_agents", "P2_tools", "S1_store", "P2_domain", 
-    "P3_engines", "P1_interfaces", "P4_security", "P5_workflow"
-]
+# [SSOT] Import allowed core stages from structure_blueprint
+# These are the authorized L2 subfolders within agentic_core
+ALLOWED_CORE_STAGES = []
+for l1_layer, l2_stages in CORE_SUBFOLDER_MAP.items():
+    ALLOWED_CORE_STAGES.extend(l2_stages)
+# Add the L1 layers themselves as allowed stages
+ALLOWED_CORE_STAGES.extend(CORE_SUBFOLDER_MAP.keys())
+# Add legacy P/S naming patterns that may still exist
+ALLOWED_CORE_STAGES.extend([
+    "P1_sensing", "P2_context", "P3_aggregation", "P4_inference", "P5_meta",
+    "P1_interfaces", "P2_domain", "P2_tools", "P3_engines", "P4_agents", "P4_security", "P5_workflow", "P5_healing",
+    "S1_design", "S1_store", "S2_runtime", "S3_vitality", "S4_checkpoint",
+    "identity", "inference", "meta", "discovery", "planning", "execution_cycle"
+])
 
-ALLOWED_ROOT_FOLDERS = {
-    # [L1: THE BRAIN]
-    # NOTE: Root-level files (e.g., canon_validator_*.py, pyproject.toml, README.md) 
-    #       are allowed separately via validate_file_location() logic for Key 0.
-    "agentic_core",
-    
-    # [L1: THE LAW]
-    "prompt_governance",
-    
-    # [L1: THE CONTRACTS]
-    "schemas",
-    
-    # [L1: INFRA & DOMAINS]
-    "apps_shared",
-    "apps_rg",
-    "apps_lic",
-    
-    # [L1: QA, TELEMETRY & OPERATIONS]
-    "tests",
-    "config",
-    "observability",
-    "scripts",  # Elevated to Sovereign Root - operational utilities
-    
-    # [DRIFT FOLDERS] (Authorized - align map to territory)
-    "knowledge",  # Knowledge base and documentation
-    "infra",      # Infrastructure and deployment
-    "memory",     # Memory systems and persistence
-    
-    # [VOID ZONES] (Exist but strictly ignored by validation)
-    "data", 
-    "archives",
-}
+# [SSOT] Use ROOT_WHITELIST from structure_blueprint.py
+# This replaces the hardcoded ALLOWED_ROOT_FOLDERS
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
+# Forbidden folders are those NOT in the whitelist
 FORBIDDEN_ROOT_FOLDERS = {
-    "data",      # Static assets (out of scope)
-    "archives",  # Deprecated code (out of scope)
-    "cache",     # Temporary files
-    ".git",      # Version control
-    ".venv",     # Virtual environments
-    "venv",
-    "venv_stable",
-    "__pycache__",
-    ".pytest_cache",
-    ".ruff_cache",
-    "node_modules",
     # Numbered folders from Light Canon migration (NOT APPROVED)
     "01_runtime_logic",
     "02_runtime_cache",
@@ -357,24 +324,15 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
 
-# [SOVEREIGN MANDATE] Absolute depth identity
-CANONICAL_DEPTH_MAP = {
-    "agentic_core": 4,   # Root > Layer > Stage (P1-P5/S1-S4) > File
-    "tests": 3,          # Root > Category > File
-    "apps_rg": 3,        
-    "apps_lic": 3,       
-    "apps_shared": 3,    
-    "observability": 3,  
-    "config": 3,         
-    "scripts": 3,        
-    "schemas": 3,        
-    "prompt_governance": 3
-}
+# [SSOT] Use SOVEREIGN_DEPTH_MAP from structure_blueprint.py
+# This replaces the hardcoded CANONICAL_DEPTH_MAP
+CANONICAL_DEPTH_MAP = SOVEREIGN_DEPTH_MAP
 
 def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     [SOVEREIGN MANDATE] Absolute Precision Depth Enforcement.
     No ranges, no flexibility - only absolute precision.
+    [DYNAMIC ENFORCEMENT] Pulls depth requirements from structure_blueprint.py
     """
     rel_path = file_path.relative_to(project_root)
     parts = rel_path.parts
@@ -387,17 +345,17 @@ def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool,
     if file_path.name == "__init__.py" or "validator" in file_path.name:
         return True, "Root Structural Component"
 
-    # Rule 1: Precision Enforcement
-    if root_folder in CANONICAL_DEPTH_MAP:
-        required = CANONICAL_DEPTH_MAP[root_folder]
+    # Rule 1: Precision Enforcement (Dynamic from SOVEREIGN_DEPTH_MAP)
+    if root_folder in SOVEREIGN_DEPTH_MAP:
+        required = SOVEREIGN_DEPTH_MAP[root_folder]
         if depth != required:
             return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
         
         # Rule 2: Core Stage Enforcement (Mandatory P/S Patterns)
         if root_folder == "agentic_core":
             stage = parts[2]
-            if not (stage.startswith('P') or stage.startswith('S')):
-                return False, f"CORE STAGE VIOLATION: '{stage}' must be P1-P5 or S1-S4."
+            if not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
+                return False, f"CORE STAGE VIOLATION: '{stage}' must be P1-P5, S1-S4, or L0-L5."
 
     return True, "Canonical Depth Verified"
 
@@ -424,24 +382,20 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if file_path.name == "__init__.py" or depth == 1:
             return True, "Sovereign Structural Component"
         
-        # Rule 1: Core Precision (Depth 4)
-        if root_folder == "agentic_core":
-            if depth != 4:
-                return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != 4."
+        # Rule 1: Dynamic Depth Enforcement (from SOVEREIGN_DEPTH_MAP)
+        if root_folder in SOVEREIGN_DEPTH_MAP:
+            required_depth = SOVEREIGN_DEPTH_MAP[root_folder]
+            if depth != required_depth:
+                return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required_depth} (required for {root_folder})."
             
-            # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S)
-            stage = parts[2]
-            # Check against authorized list AND standard P/S naming convention
-            if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S')):
-                return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
+            # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
+            if root_folder == "agentic_core":
+                stage = parts[2]
+                # Check against authorized list AND standard P/S/L naming convention
+                if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
+                    return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
             
-            return True, "Core Precision Verified"
-        
-        # Rule 2: Tests Precision (Depth 3)
-        if root_folder == "tests":
-            if depth != 3:
-                return False, f"DEPTH VIOLATION: tests/ requires exactly depth 3, found {depth} at '{rel_path}'."
-            return True, "Test path compliant."
+            return True, f"{root_folder} depth verified"
 
         # Rule 3: General Depth Bounds (Depth 3-5)
         if depth < 3:
