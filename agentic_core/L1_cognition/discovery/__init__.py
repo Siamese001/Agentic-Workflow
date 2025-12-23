@@ -1,1 +1,1 @@
-"""Sovereign Layer: discovery"""
+"""Airlock: discovery"""

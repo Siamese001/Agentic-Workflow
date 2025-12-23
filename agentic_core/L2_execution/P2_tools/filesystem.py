@@ -2,6 +2,7 @@
 Secure Filesystem Operations - Sandboxed File I/O with Blackboard Integration
 Prevents path traversal, protects critical directories, and integrates with HealingLease.
 """
+import logging
 from typing import Any, Optional, Protocol, Dict, List
 import re
 
@@ -12,7 +13,7 @@ from functools import wraps
 from pathlib import Path
 from typing import List, Optional, Set
 
-from agentic_core.L2_execution.P2_tools.definitions import (  # Changed to absolute import
+from .definitions import (  # Changed to relative import
     CreateDirectoryArgs,
     DeleteFileArgs,
     ListFilesArgs,

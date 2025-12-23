@@ -27,7 +27,7 @@ GOOD: from agentic_core.shared.validation.common import validate
 
 EXAMPLE 2: Missing Schema
 BAD: ImportError: cannot import name 'OrderSchema'
-GOOD: from agentic_core.domain.models import DomainSchema
+GOOD: from agentic_core.L1_cognition.P2_domain.models import DomainSchema
 """
 
 FEW_SHOT_STYLE = """

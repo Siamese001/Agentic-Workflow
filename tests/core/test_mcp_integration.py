@@ -19,8 +19,8 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.core.proactive_audit import get_proactive_scanner
-from agentic_core.infra.git_safety_handler import get_git_safety_handler
-from agentic_core.infra.mcp_router import get_mcp_router
+from agentic_core.L3_orchestration.S3_vitality.git_safety_handler import get_git_safety_handler
+from agentic_core.L3_orchestration.S3_vitality.mcp_router import get_mcp_router
 
 
 class MCPIntegrationTests:
