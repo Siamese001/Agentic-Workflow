@@ -1,12 +1,15 @@
 """Implementation for agent_permissions."""
 from typing import Any, Optional, Protocol, Dict, List
-
-
 import logging
-from typing import Any, Dict, List, Optional
+
+from .agent_permissions_types import Permission, PermissionScope, PermissionAction, PermissionCheck
+from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
 
 LOGGER = logging.getLogger(__name__)
-# from .agent_permissions_types import *  # Star import removed
+logger = logging.getLogger(__name__)
+
+# ControlPlane is optional - set to None if not available
+ControlPlane = None
 
 class AgentPermissionManager:
     """Manages agent permissions with Control Plane integration.

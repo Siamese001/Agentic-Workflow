@@ -1,11 +1,13 @@
 """Implementation for autonomic_monitor."""
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, Callable
 import time
 
 import logging
 
+from .autonomic_monitor_types import HealthMetrics, HealthAlert, HealthStatus, AlertSeverity
+
 LOGGER = logging.getLogger(__name__)
-# from .autonomic_monitor_types import *  # Star import removed
+logger = logging.getLogger(__name__)
 
 class AutonomicMonitor:
     """Autonomic immune system for agent health monitoring.
