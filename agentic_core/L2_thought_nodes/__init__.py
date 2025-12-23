@@ -1,1 +1,2 @@
-"""Airlock: L2_thought_nodes"""
+"""Sovereign Layer: L2_thought_nodes"""
+
