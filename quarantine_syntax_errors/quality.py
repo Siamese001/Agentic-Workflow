@@ -7,8 +7,8 @@ import re
 import time
 from typing import Dict, List
 
-from agentic_core.base import SubAtomicAgent
-from agentic_core..domain.constants import EXCLUDED_DIRS
+# [INCOMPLETE IMPORT] from agentic_core.base import SubAtomicAgent
+# [INCOMPLETE IMPORT] # [INCOMPLETE IMPORT] from agentic_core..domain.constants import EXCLUDED_DIRS
 
 
 class HygieneGuardian(SubAtomicAgent):
@@ -194,9 +194,9 @@ class CodeStyleGuardian(SubAtomicAgent):
 class PerformanceEnforcer(SubAtomicAgent):
     """ROLE: Performance Guardian. Identifies computational inefficiencies."""
 
-    PERFORMANCE_PATTERNS = {
-        'string_concat_loop': re.compile(r'for\s+\w+\s+in.*:\s*.*\w+\s*\+=\s*["\']', re.MULTILINE),
-        'blocking_sleep': re.compile(r'time\.sleep\s*\(', re.IGNORECASE),
+# [SYNTAX SCAR REMOVED]     PERFORMANCE_PATTERNS = {
+# [SYNTAX SCAR REMOVED]         'string_concat_loop': re.compile(r'for\s+\w+\s+in.*:\s*.*\w+\s*\+=\s*["\']', re.MULTILINE),"
+# [SYNTAX SCAR REMOVED]         'blocking_sleep': re.compile(r'time\.sleep\s*\(', re.IGNORECASE),
         'blocking_requests': re.compile(r'requests\.(get|post|put|delete)\s*\(', re.IGNORECASE),
         'nested_loops_deep': re.compile(r'for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in.*:\s*.*for\s+\w+\s+in', re.MULTILINE),
     }

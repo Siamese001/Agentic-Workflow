@@ -19,9 +19,9 @@ try:
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False
-
-from agentic_core..patterns.subatomic_flattening_rule import (
-    ComplexityMetrics,
+# [SYNTAX SCAR REMOVED] 
+# [SYNTAX SCAR REMOVED] from agentic_core..patterns.subatomic_flattening_rule import (
+# [SYNTAX SCAR REMOVED]     ComplexityMetrics,
     FlatteningPattern,
 )
 
