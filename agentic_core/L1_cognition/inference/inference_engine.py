@@ -223,7 +223,7 @@ class InferenceMode(str, Enum):
 class InferenceRequest:
     """Request structure for inference engine."""
     prompt: str
-    context: SignalContext
+    context: 'SignalContext'  # Use string forward reference
     mode: InferenceMode = InferenceMode.ANALYTICAL
     provider: Provider = Provider.OPENAI
     model: Optional[str] = None
