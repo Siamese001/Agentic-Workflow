@@ -2,7 +2,7 @@
 from typing import Any, Optional, Protocol, Dict, List
 import logging
 
-from .agent_permissions_types import Permission, PermissionScope, PermissionAction, PermissionCheck
+from agentic_core.L3_orchestration.security.agent_permissions_types import Permission, PermissionScope, PermissionAction, PermissionCheck
 from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity, IdentityType
 
 LOGGER = logging.getLogger(__name__)

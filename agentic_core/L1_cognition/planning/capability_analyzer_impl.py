@@ -1,12 +1,10 @@
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
+from typing import Any, Optional, Protocol, Dict, List
 import re
 
 import logging
 import time
 
-LOGGER = logging.getLogger(__name__)
-if TYPE_CHECKING:
-    from agentic_core.L1_cognition.planning.capability_analyzer_types import (
+from agentic_core.L1_cognition.planning.capability_analyzer_types import (
     AnalysisReport,
     CapabilityGap,
     CapabilityGapType,
@@ -14,6 +12,7 @@ if TYPE_CHECKING:
     RecommendationType,
 )
 
+LOGGER = logging.getLogger(__name__)
 
 class CapabilityAnalyzer:
     """Analyzes capability gaps and generates improvement recommendations.

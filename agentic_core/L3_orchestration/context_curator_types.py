@@ -32,7 +32,7 @@ class ContextChunk:
     priority: ContextPriority
     token_count: int
     relevance_score: float = 0.0
-    PINNED: BOOL = False
+    PINNED: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
