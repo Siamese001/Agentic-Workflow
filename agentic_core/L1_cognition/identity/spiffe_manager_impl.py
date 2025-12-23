@@ -2,9 +2,11 @@ import hashlib
 import logging
 import secrets
 import time
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional
 
-from agentic_core.L1_cognition.identity.spiffe_manager_types import (
+# Absolute imports are correct, but we must ensure the root doesn't 
+# eagerly import this file back.
+from .spiffe_manager_types import (
     AgentIdentity,
     IdentityType,
     IdentityVerificationResult,
@@ -12,8 +14,6 @@ from agentic_core.L1_cognition.identity.spiffe_manager_types import (
 )
 
 LOGGER = logging.getLogger(__name__)
-# from .spiffe_manager_types import *  # Star import removed
-
 
 class SPIFFEManager:
     """Manager for SPIFFE-based agent identities.
