@@ -48,7 +48,20 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from core.semantic_gatekeeper import get_gatekeeper
 from db_manager import HybridDatabaseManager
 
-from schemas import CanonEntry
+
+from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class CanonEntry:
+    """Local Canon Entry type - moved from schemas to fix gravity violation."""
+    id: str
+    code_snippet: str
+    ast_structure: str
+    failure_count: int = 0
+    success_count: int = 0
+    last_used: Optional[str] = None
+
 
 logger = logging.getLogger(__name__)
 
