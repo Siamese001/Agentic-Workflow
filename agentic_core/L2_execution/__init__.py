@@ -15,11 +15,11 @@ from typing import Any, Callable, Dict, List, Optional, Type
 from pydantic import BaseModel, ValidationError
 
 if TYPE_CHECKING:
-    from .inference.engine import (
-    InferenceEngine,
-    InferenceMode,
-    InferenceRequest,
-)
+    from agentic_core.L2_execution.inference.engine import (
+        InferenceEngine,
+        InferenceMode,
+        InferenceRequest,
+    )
 
 LOGGER = logging.getLogger(__name__)
 

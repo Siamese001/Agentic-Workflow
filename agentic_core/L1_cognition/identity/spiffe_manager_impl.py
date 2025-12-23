@@ -2,12 +2,11 @@ import hashlib
 import logging
 import secrets
 import time
-from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol
 
-# Absolute imports are correct, but we must ensure the root doesn't 
+# Absolute imports are correct, but we must ensure the root doesn't
 # eagerly import this file back.
-from .spiffe_manager_types import (
+from agentic_core.L1_cognition.identity.spiffe_manager_types import (
     AgentIdentity,
     IdentityType,
     IdentityVerificationResult,

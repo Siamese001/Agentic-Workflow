@@ -27,7 +27,7 @@ GOOD: from agentic_core.shared.validation.common import validate
 
 EXAMPLE 2: Missing Schema
 BAD: ImportError: cannot import name 'OrderSchema'
-GOOD: from schemas.order import OrderSchema
+GOOD: from agentic_core.domain.models import DomainSchema
 """
 
 FEW_SHOT_STYLE = """
@@ -173,7 +173,7 @@ Your reasoning must follow this chain:
 5. Verify fix will not introduce new signals.
 
 Preferred patterns (prioritize these):
-- Extract repeated logic → new shared util in apps_shared/
+- Extract repeated logic → new shared util in agentic_core/shared/
 - Move class to correct depth (e.g., domain/service/*.py)
 - Replace monolith functions with focused units
 - Use existing schemas before creating new ones

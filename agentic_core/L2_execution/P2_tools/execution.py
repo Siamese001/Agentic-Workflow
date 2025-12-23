@@ -10,8 +10,8 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from .definitions import ExecuteCommandArgs
-from .filesystem import get_project_root, validate_sandbox
+from agentic_core.L2_execution.P2_tools.definitions import ExecuteCommandArgs
+from agentic_core.L2_execution.P2_tools.filesystem import get_project_root, validate_sandbox
 
 
 class ExecutionTimeoutError(Exception):

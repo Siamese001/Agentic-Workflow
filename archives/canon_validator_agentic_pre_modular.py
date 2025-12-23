@@ -3941,7 +3941,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #                 continue
 #         return (len(violations) == 0, violations)
 
-# SemanticMapper is now imported from agentic_core.L5_safety.P1_red_team.analysis
+# SemanticMapper is now imported from agentic_core.L2_execution.P4_agents.analysis
 
 # class SemanticMapper(SubAtomicAgent):
 #     """ROLE: The Architect. Analyzes 'God Files' and proposes logical splits."""
@@ -3953,7 +3953,7 @@ def rate_limited_retry(max_retries: int = 5, base_delay: float = 2.0):
 #     """ROLE: Active Defense. Fuzz tests public functions with hostile inputs."""
 #     # ... (moved to agentic_core/agents/security.py)
 
-# TruthKeeper is now imported from agentic_core.L5_safety.P1_red_team.analysis
+# TruthKeeper is now imported from agentic_core.L2_execution.P4_agents.analysis
 
 # class TruthKeeper(SubAtomicAgent):
 #     """ROLE: Semantic Consistency. Ensures docstrings match code logic."""

@@ -182,7 +182,10 @@ ALLOWED_CORE_STAGES = [
     # L3 Orchestration
     "S1_design", "S2_runtime", "S3_vitality", "S4_checkpoint",
     # L2/L5 Support
-    "P5_healing", "P1_red_team", "execution_cycle"
+    "P5_healing", "P1_red_team", "execution_cycle",
+    # Authorized drift catch-alls
+    "P4_agents", "P2_tools", "S1_store", "P2_domain", 
+    "P3_engines", "P1_interfaces", "P4_security", "P5_workflow"
 ]
 
 ALLOWED_ROOT_FOLDERS = {

@@ -6,7 +6,7 @@ integrating all layers and components.
 import logging
 import re
 import time
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING, Optional, Protocol
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 from unittest.mock import Mock, patch
 
 # Third-party imports
@@ -14,14 +14,45 @@ import pytest
 
 # First-party (local) imports
 if TYPE_CHECKING:
-    from .deprecated_full_workflow_dependencies import (
-    ExecutionContext,
-    JobInput,
-    L2ResultBundle,
-    ResumeInput,
-    WorkflowConfig,
-    run_dag,
-)
+    # Define minimal Protocols for type checking to avoid importing from downstream
+    # This addresses "Sovereign layer importing from Downstream" and "eliminate ALL imports from 'apps_shared'"
+    # by providing local type definitions for static analysis without runtime import.
+
+    class JobInput(Protocol):
+        TITLE: str
+        role_type: str
+        SENIORITY: str
+        posting_text: str
+
+    class ResumeInput(Protocol):
+        name: str
+        email: str
+        sections: Dict[str, Any]
+
+    class WorkflowConfig(Protocol):
+        enable_rag: bool
+        enable_qa: bool
+        enable_safety: bool
+        max_drafts: int
+
+    class ExecutionContext(Protocol):
+        JOB: JobInput
+        RESUME: ResumeInput
+        user_id: str
+        CONFIG: Optional[WorkflowConfig]
+
+    class L2ResultBundle(Protocol):
+        STRATEGY: Any
+        RAG: Any
+        DRAFTING: Any
+        qa: Any
+        SAFETY: Any
+        final_state_patch: Dict[str, Any]
+
+    def run_dag(plans: List[Any], context: ExecutionContext) -> L2ResultBundle: ...
+
+    # The actual runtime objects will be Mocks or dynamically created,
+    # so these Protocols are purely for static type checking.
 
 LOGGER = logging.getLogger(__name__)
 

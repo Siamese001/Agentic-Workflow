@@ -17,7 +17,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 # Import canonical ExecutionPhase from agentic_core
-from agentic_core.interfaces.execution import ExecutionPhase
+from agentic_core.L1_cognition.P1_interfaces.execution import ExecutionPhase
 
 LOGGER = logging.getLogger(__name__)
 

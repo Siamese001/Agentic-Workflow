@@ -9,7 +9,7 @@ import re
 
 import pytest
 
-from agentic_core.interfaces import (
+from agentic_core.L1_cognition.P1_interfaces import (
     ExecutionContext,
     ExecutionResult,
     OrchestratorConfig,
@@ -197,7 +197,7 @@ def test_episodic_memory_integration():
 
 def test_interface_imports():
     """Verify that all interfaces can be imported successfully."""
-    from agentic_core.interfaces import (
+    from agentic_core.L1_cognition.P1_interfaces import (
         ActionRequest,
         ExecutionContext,
         ExecutionPhase,

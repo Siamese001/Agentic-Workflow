@@ -24,7 +24,7 @@ from unittest.mock import patch
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.engines.canon_validator_engine_zlm import (
+from agentic_core.L2_execution.P3_engines.canon_validator_engine_zlm import (
     CanonValidatorEngineZLM,
     ExitReason,
     P6FixResult,
