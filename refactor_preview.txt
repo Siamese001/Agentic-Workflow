@@ -1,0 +1,182 @@
+--- INITIALIZING SOVEREIGN REFACTOR ---
+[DRY RUN] MIGRATE     : agentic_core/memory -> agentic_core/semantic_memory
+[DRY RUN] MIGRATE     : agentic_core/L2_thought_nodes -> agentic_core/L1_cognition/thought_engine
+[DRY RUN] GITKEEP     : Creating .gitkeep in L0_maintenance/P1_core
+[DRY RUN] GITKEEP     : Creating .gitkeep in L0_maintenance/scripts
+[DRY RUN] GITKEEP     : Creating .gitkeep in L0_maintenance/migrations
+[DRY RUN] CREATE      : agentic_core/L0_maintenance/benchmarks
+[DRY RUN] GITKEEP     : Creating .gitkeep in L0_maintenance/benchmarks
+[DRY RUN] GITKEEP     : Creating .gitkeep in L1_cognition/P1_core
+[DRY RUN] CREATE      : agentic_core/L1_cognition/thought_engine
+[DRY RUN] GITKEEP     : Creating .gitkeep in L1_cognition/thought_engine
+[DRY RUN] CREATE      : agentic_core/L1_cognition/intent_analysis
+[DRY RUN] GITKEEP     : Creating .gitkeep in L1_cognition/intent_analysis
+[DRY RUN] CREATE      : agentic_core/L1_cognition/planning_logic
+[DRY RUN] GITKEEP     : Creating .gitkeep in L1_cognition/planning_logic
+[DRY RUN] GITKEEP     : Creating .gitkeep in L2_execution/P1_core
+[DRY RUN] CREATE      : agentic_core/L2_execution/tool_registry
+[DRY RUN] GITKEEP     : Creating .gitkeep in L2_execution/tool_registry
+[DRY RUN] CREATE      : agentic_core/L2_execution/action_handlers
+[DRY RUN] GITKEEP     : Creating .gitkeep in L2_execution/action_handlers
+[DRY RUN] GITKEEP     : Creating .gitkeep in L2_execution/sandbox
+[DRY RUN] GITKEEP     : Creating .gitkeep in L3_orchestration/P1_core
+[DRY RUN] CREATE      : agentic_core/L3_orchestration/workflow_engines
+[DRY RUN] GITKEEP     : Creating .gitkeep in L3_orchestration/workflow_engines
+[DRY RUN] CREATE      : agentic_core/L3_orchestration/handoff_logic
+[DRY RUN] GITKEEP     : Creating .gitkeep in L3_orchestration/handoff_logic
+[DRY RUN] CREATE      : agentic_core/L3_orchestration/event_bus
+[DRY RUN] GITKEEP     : Creating .gitkeep in L3_orchestration/event_bus
+[DRY RUN] GITKEEP     : Creating .gitkeep in L4_state/P1_core
+[DRY RUN] CREATE      : agentic_core/L4_state/persistence_layer
+[DRY RUN] GITKEEP     : Creating .gitkeep in L4_state/persistence_layer
+[DRY RUN] CREATE      : agentic_core/L4_state/session_manager
+[DRY RUN] GITKEEP     : Creating .gitkeep in L4_state/session_manager
+[DRY RUN] CREATE      : agentic_core/L4_state/checkpoints
+[DRY RUN] GITKEEP     : Creating .gitkeep in L4_state/checkpoints
+[DRY RUN] GITKEEP     : Creating .gitkeep in L5_safety/P1_core
+[DRY RUN] CREATE      : agentic_core/L5_safety/guardrails
+[DRY RUN] GITKEEP     : Creating .gitkeep in L5_safety/guardrails
+[DRY RUN] CREATE      : agentic_core/L5_safety/red_teaming
+[DRY RUN] GITKEEP     : Creating .gitkeep in L5_safety/red_teaming
+[DRY RUN] CREATE      : agentic_core/L5_safety/audit_logs
+[DRY RUN] GITKEEP     : Creating .gitkeep in L5_safety/audit_logs
+[DRY RUN] GITKEEP     : Creating .gitkeep in config/P1_core
+[DRY RUN] GITKEEP     : Creating .gitkeep in config/environments
+[DRY RUN] CREATE      : agentic_core/config/secrets_manager
+[DRY RUN] GITKEEP     : Creating .gitkeep in config/secrets_manager
+[DRY RUN] CREATE      : agentic_core/config/feature_flags
+[DRY RUN] GITKEEP     : Creating .gitkeep in config/feature_flags
+[DRY RUN] GITKEEP     : Creating .gitkeep in observability/P1_core
+[DRY RUN] GITKEEP     : Creating .gitkeep in observability/logging
+[DRY RUN] GITKEEP     : Creating .gitkeep in observability/telemetry
+[DRY RUN] CREATE      : agentic_core/observability/tracing
+[DRY RUN] GITKEEP     : Creating .gitkeep in observability/tracing
+[DRY RUN] GITKEEP     : Creating .gitkeep in prompt_governance/P1_core
+[DRY RUN] CREATE      : agentic_core/prompt_governance/templates
+[DRY RUN] GITKEEP     : Creating .gitkeep in prompt_governance/templates
+[DRY RUN] CREATE      : agentic_core/prompt_governance/versioning
+[DRY RUN] GITKEEP     : Creating .gitkeep in prompt_governance/versioning
+[DRY RUN] CREATE      : agentic_core/prompt_governance/rendering
+[DRY RUN] GITKEEP     : Creating .gitkeep in prompt_governance/rendering
+[DRY RUN] GITKEEP     : Creating .gitkeep in schemas/P1_core
+[DRY RUN] CREATE      : agentic_core/schemas/validators
+[DRY RUN] GITKEEP     : Creating .gitkeep in schemas/validators
+[DRY RUN] CREATE      : agentic_core/schemas/types
+[DRY RUN] GITKEEP     : Creating .gitkeep in schemas/types
+[DRY RUN] CREATE      : agentic_core/schemas/models
+[DRY RUN] GITKEEP     : Creating .gitkeep in schemas/models
+[DRY RUN] GITKEEP     : Creating .gitkeep in utils/P1_core
+[DRY RUN] CREATE      : agentic_core/utils/helpers
+[DRY RUN] GITKEEP     : Creating .gitkeep in utils/helpers
+[DRY RUN] CREATE      : agentic_core/utils/decorators
+[DRY RUN] GITKEEP     : Creating .gitkeep in utils/decorators
+[DRY RUN] CREATE      : agentic_core/utils/formatters
+[DRY RUN] GITKEEP     : Creating .gitkeep in utils/formatters
+[DRY RUN] GITKEEP     : Creating .gitkeep in runtime/P1_core
+[DRY RUN] CREATE      : agentic_core/runtime/environment_setup
+[DRY RUN] GITKEEP     : Creating .gitkeep in runtime/environment_setup
+[DRY RUN] CREATE      : agentic_core/runtime/resource_management
+[DRY RUN] GITKEEP     : Creating .gitkeep in runtime/resource_management
+[DRY RUN] CREATE      : agentic_core/semantic_memory/P1_core
+[DRY RUN] GITKEEP     : Creating .gitkeep in semantic_memory/P1_core
+[DRY RUN] CREATE      : agentic_core/semantic_memory/vector_store
+[DRY RUN] GITKEEP     : Creating .gitkeep in semantic_memory/vector_store
+[DRY RUN] CREATE      : agentic_core/semantic_memory/retrieval_logic
+[DRY RUN] GITKEEP     : Creating .gitkeep in semantic_memory/retrieval_logic
+[DRY RUN] CREATE      : agentic_core/semantic_memory/embeddings
+[DRY RUN] GITKEEP     : Creating .gitkeep in semantic_memory/embeddings
+[DRY RUN] GITKEEP     : Creating .gitkeep in knowledge/P1_core
+[DRY RUN] CREATE      : agentic_core/knowledge/document_loaders
+[DRY RUN] GITKEEP     : Creating .gitkeep in knowledge/document_loaders
+[DRY RUN] CREATE      : agentic_core/knowledge/static_index
+[DRY RUN] GITKEEP     : Creating .gitkeep in knowledge/static_index
+[DRY RUN] GITKEEP     : Creating .gitkeep in patterns/P1_core
+[DRY RUN] CREATE      : agentic_core/patterns/reasoning_patterns
+[DRY RUN] GITKEEP     : Creating .gitkeep in patterns/reasoning_patterns
+[DRY RUN] CREATE      : agentic_core/patterns/interaction_patterns
+[DRY RUN] GITKEEP     : Creating .gitkeep in patterns/interaction_patterns
+[DRY RUN] MERGE APP DIR: apps_rg/agents -> apps_rg/P1_core/
+[DRY RUN] MERGE APP DIR: apps_rg/L3_orchestration -> apps_rg/P1_core/
+[DRY RUN] MERGE APP DIR: apps_lic/core -> apps_lic/P1_core/
+[DRY RUN] MERGE APP DIR: apps_lic/L3_orchestration -> apps_lic/P1_core/
+[DRY RUN] STAGING     : apps_lic/__init__.py -> apps_lic/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/cache -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/canon_dashboard.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/canon_dashboard_web -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/canon_dashboard_web.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/canon_service_manager.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/canon_utils.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/canon_validation_context.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/canon_validator_with_dashboard.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/clarity_brevity_filter.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/config -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/control_plane_judge_engine.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/control_plane_rules_engine.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/core_logic -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/dag_executor_basic.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/dag_models.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/db_manager.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/domain -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/etl_pipeline.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/etl_pipeline_connectivity.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/examples -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/fact_checker.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/few_shot_library.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/get_source_files.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/git_insight_server.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/golden_state_evaluator.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/golden_state_evaluator_impl.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/golden_state_evaluator_types.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/golden_state_gating.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/golden_state_judge.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/golden_state_scorer.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/healthcheck.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/intent_scoring_model.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/intervention_server.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/l5_governance_policy_filter.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/main.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/main_connectivity.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/main_swarm.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/mcp_file_server.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/mcp_hardening.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/mcp_time_client.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/metacognition_hypothesis_evaluation.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/metacognition_refinement.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/metacognition_uncertainty_model.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/meta_ranking.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/modularity_layer_boundaries.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/modularity_provider_isolation.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/network_utils.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/news_rag_pipeline.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/pipeline -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/quick_fix.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/rag -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/redis_langcache_pipeline.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/reflection_agent.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/reset_memory.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/runtime -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/run_agent.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/sandbox_fs_isolation.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/sandbox_network_isolation.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/sandbox_utils.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/sandbox_utils_wrapper.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/schemas.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/schemas_connectivity.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/security_utils.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/servers -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/services.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/signal_bus.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/simulate_dirty_data.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/simulate_dirty_data_simple.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/strip_bom_and_fix.py -> apps_shared/P1_core/
+[DRY RUN] MERGE APP DIR: apps_shared/templates -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/temporal_vetting.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/time_bound_benchmarking.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/utils.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/validation_context.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/validation_context_wrapper.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/verify_hardening_minimal.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/verify_hardening_simple.py -> apps_shared/P1_core/
+[DRY RUN] STAGING     : apps_shared/watchdog_sidecar.py -> apps_shared/P1_core/
+
+--- AUDIT COMPLETE. No changes made. Set DRY_RUN=False to apply. ---
