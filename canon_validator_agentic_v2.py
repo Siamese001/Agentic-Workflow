@@ -37,20 +37,6 @@ for sub_path in ["apps_shared", "agentic_core"]:
     if req_str not in sys.path:
         sys.path.insert(0, req_str)
 
-# --- CRITICAL FIX: IMPORT POLYFILL (agentic_workflow -> agentic_core) ---
-# Maps legacy 'agentic_workflow' imports to the new 'agentic_core' package
-# to prevent ModuleNotFoundError in agent files.
-try:
-    import agentic_core
-    sys.modules['agentic_workflow'] = agentic_core
-    sys.modules['agentic_workflow.agentic_core'] = agentic_core
-    # Explicitly shim common submodules to prevent deep import errors
-    sys.modules['agentic_workflow.agents'] = agentic_core
-    print("   [PATCH] Shimmed 'agentic_workflow' imports to 'agentic_core'")
-except ImportError:
-    print("   [CRITICAL] Could not import 'agentic_core'. Shim failed.")
-    sys.exit(1)
-
 # [HARDENING] SOVEREIGN NEURAL LINK & MODEL AUTHORIZATION
 def verify_neural_link():
     """
@@ -109,19 +95,6 @@ def verify_neural_link():
     print(f"   [OK] Model Authorization: GEMINI-ONLY policy enforced.")
 
 verify_neural_link()
-
-# --- CRITICAL FIX: IMPORT POLYFILL (agentic_core.runtime.shared -> apps_shared) ---
-# Maps 'agentic_core.runtime.shared' imports to 'apps_shared' where ValidationContext lives
-try:
-    import apps_shared
-    # Only shim the shared submodule, not the entire runtime
-    sys.modules['agentic_core.runtime.shared'] = apps_shared
-    # Explicitly shim ValidationContext import
-    from apps_shared.canon_validation_context import ValidationContext
-    sys.modules['agentic_core.runtime.shared.canon_validation_context'] = apps_shared.canon_validation_context
-    print("   [PATCH] Shimmed 'agentic_core.runtime.shared' imports to 'apps_shared'")
-except ImportError:
-    print("   [CRITICAL] Could not shim runtime.shared. Some agents may fail to load.")
 
 # [HARDENING] NEURAL LINK INITIALIZATION
 try:
@@ -787,23 +760,14 @@ Return the complete file with imports added. No explanations, no markdown."""
     cleaning_crew = []
     
     def discover_agents():
-        """
-        [L1 DISCOVERY] Scans the Atomic Layers (L1-L5) and Domains for Agents.
-        Targeting:
-          - agentic_core/ (The Brain: Strategy, Orchestration, Safety)
-          - apps_rg/agents/ (Domain A Specialists)
-          - apps_lic/agents/ (Domain B Compliance)
-        """
         found_agents = []
-        
-        # Define scan targets based on ASCII Architecture
         scan_targets = [
-            project_root / "agentic_core",   # Recursive scan for L1-L5 agents
+            project_root / "agentic_core",
             project_root / "apps_rg" / "agents",
             project_root / "apps_lic" / "agents"
         ]
 
-        print(f"   [DISCOVERY] Scanning architectural layers for agents...")
+        print(f"   [DISCOVERY] Mapping 50-key architectural components...")
         
         for base_dir in scan_targets:
             if not base_dir.exists(): continue
@@ -812,43 +776,29 @@ Return the complete file with imports added. No explanations, no markdown."""
                 if file_path.name.startswith("__") or "__pycache__" in str(file_path):
                     continue
                 
-                # Convert file path to module path (Robust)
                 try:
                     rel_path = file_path.relative_to(project_root)
-                except ValueError:
-                    continue # Skip files outside project root
-
-                module_name = str(rel_path).replace(os.sep, ".")[:-3]  # Strip .py
-                
-                # Skip non-agent files
-                if "setup" in module_name or "utils" in module_name or "__init__" in module_name:
-                    continue
-
-                try:
+                    module_name = str(rel_path).replace(os.sep, ".")[:-3]
                     module = importlib.import_module(module_name)
-                    # Inspect module for classes that look like Agents
+
                     for attr_name in dir(module):
                         attr = getattr(module, attr_name)
-                        # Filter: Must be a class, defined in this module, and have execute/run method
-                        # [FIX] Do NOT instantiate the base SubAtomicAgent class or it will crash 'await' expressions
+                        
+                        # [HARDENING] Widen discovery to include Protocols and the 50-key Registry
                         if (isinstance(attr, type) and 
                             attr.__module__ == module_name and
-                            attr_name != 'SubAtomicAgent' and  # Exclude base class
-                            (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Hunter')) or
-                             attr_name in ('SystemArchitect', 'StructuralEngineer', 'HealerAgent', 'HygieneGuardian', 'ArchitectureGovernor', 
-                                         'DependencySentinel', 'SecurityEnforcer', 'MemoryArchitect', 'HallucinationHunter')) and
-                            (hasattr(attr, 'execute') or hasattr(attr, 'run'))):
+                            attr_name != 'SubAtomicAgent' and
+                            (attr_name.endswith(('Agent', 'Guardian', 'Architect', 'Engineer', 'Enforcer', 'Sentinel', 'Protocol', 'Registry')) or
+                             attr_name in ('ValidationContext', 'VERIFICATION_REGISTRY'))):
+                            
                             found_agents.append((module_name, attr_name, attr))
-                            # Debug: Log when SystemArchitect is found
-                            if attr_name == 'SystemArchitect':
-                                print(f"     [DEBUG] Found SystemArchitect in {module_name}")
+                            if attr_name == 'VERIFICATION_REGISTRY':
+                                print(f"     [✓] Found 50-Key Canon Registry in {module_name}")
+
                 except Exception as e:
+                    # We're keeping it quiet, but at least we know why it's failing
                     print(f"     [!] Failed to inspect {file_path.name}: {e}")
-                    # Debug: Show full traceback for canon_agents_core
-                    if 'canon_agents_core' in str(file_path):
-                        import traceback
-                        traceback.print_exc()
-                
+        
         return found_agents
 
     # Execute Discovery
