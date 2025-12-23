@@ -367,29 +367,24 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
 
-# [SOVEREIGN MANDATE] Absolute depth identity for ACTIVE territories only
+# [SOVEREIGN MANDATE] Absolute depth identity
 CANONICAL_DEPTH_MAP = {
-    "agentic_core": 4,   # Root > Layer > Stage (P/S) > File
+    "agentic_core": 4,   # Root > Layer > Stage (P1-P5/S1-S4) > File
     "tests": 3,          # Root > Category > File
-    "apps_rg": 3,        # Root > Domain > File
-    "apps_lic": 3,       # Root > Domain > File
-    "apps_shared": 3,    # Root > Domain > File
-    "observability": 3,  # Root > Signal > File
-    "config": 3,         # Root > Type > File
-    "scripts": 3,        # Root > Type > File
-    "schemas": 3,        # Root > Type > File
-    "prompt_governance": 3 # Root > Type > File
+    "apps_rg": 3,        
+    "apps_lic": 3,       
+    "apps_shared": 3,    
+    "observability": 3,  
+    "config": 3,         
+    "scripts": 3,        
+    "schemas": 3,        
+    "prompt_governance": 3
 }
-
-# Storage & History Exemptions (Any depth allowed)
-EXEMPT_FOLDERS = ["data", "archives", ".git", ".venv", "__pycache__"]
 
 def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     [SOVEREIGN MANDATE] Absolute Precision Depth Enforcement.
-    
-    Enforces exact depth requirements for all active territories.
-    No ranges, no flexibility - only absolute precision.
+    This forces the AI's hand: if it wants a file to be "legal," it has to move it to a Depth 4 folder.
     
     Args:
         file_path: Absolute path to file
@@ -407,24 +402,20 @@ def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool,
     depth = len(parts)
     root_folder = parts[0] if parts else ""
 
-    # Rule 0: Sovereign Exemptions
-    if root_folder in ["data", "archives", ".git", ".venv", "__pycache__"]:
+    if root_folder in ["data", "archives", ".git", ".venv"]:
         return True, "Storage Bypass"
-    if file_path.name == "__init__.py" or "validator" in file_path.name:
-        return True, "Root Structural Component"
 
-    # Rule 1: Precision Enforcement
     if root_folder in CANONICAL_DEPTH_MAP:
         required = CANONICAL_DEPTH_MAP[root_folder]
         if depth != required:
             return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
         
-        # Rule 2: Core Stage Enforcement (P/S Patterns)
+        # Enforce P/S prefixing for Core Depth 4
         if root_folder == "agentic_core":
-            stage_folder = parts[2]
-            if not (stage_folder.startswith('P') or stage_folder.startswith('S')):
-                return False, f"CORE STAGE VIOLATION: '{stage_folder}' must be P1-P5 or S1-S4."
-
+            stage = parts[2]
+            if not (stage.startswith('P') or stage.startswith('S')):
+                return False, f"CORE STAGE VIOLATION: '{stage}' must be P1-P5 or S1-S4."
+    
     return True, "Canonical Depth Verified"
 
 
