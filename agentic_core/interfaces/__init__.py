@@ -8,20 +8,20 @@ import re
 from typing import Any, Optional, Protocol, Dict, List
 
 # Local project imports
-from .config import (
+from agentic_core.interfaces.config import (
     OrchestratorConfig,
 )
-from .execution import (
+from agentic_core.interfaces.execution import (
     ExecutionContext,
     ExecutionPhase,
     ExecutionResult,
 )
-from .planes import (
+from agentic_core.interfaces.planes import (
     IActionPlane,
     ICognitivePlane,
     IOrchestrator,
 )
-from .requests import (
+from agentic_core.interfaces.requests import (
     ActionRequest,
     PlanningRequest,
     PlanningResult,

@@ -9,21 +9,21 @@ import logging
 # Define logger for this module
 logger = logging.getLogger(__name__)
 
-# Local application imports (absolute)
-from agentic_core.domain.context import ValidationContext
+# Local application imports (relative to agentic_core package root)
+from ..domain.context import ValidationContext
 
-# Local application imports (absolute)
+# Local application imports (relative to agentic_core package root)
 # Base classes
 # Analysis agents
-from agentic_core.L5_safety.P1_red_team.analysis import SemanticMapper, TruthKeeper
-from agentic_core.L5_safety.P1_red_team.base import ImportPatcher, SubAtomicAgent
+from ..L5_safety.P1_red_team.analysis import SemanticMapper, TruthKeeper
+from ..L5_safety.P1_red_team.base import ImportPatcher, SubAtomicAgent
 
 # Canon Validator agents (Subatomic Level 5)
-from agentic_core.L5_safety.P1_red_team.canon_base_agent import CanonBaseAgent
-from agentic_core.L5_safety.P1_red_team.code_janitor import CodeJanitor
+from ..L5_safety.P1_red_team.canon_base_agent import CanonBaseAgent
+from ..L5_safety.P1_red_team.code_janitor import CodeJanitor
 
 # Concurrency agents
-from agentic_core.L5_safety.P1_red_team.concurrency import (
+from ..L5_safety.P1_red_team.concurrency import (
     DeadlockAnalyzer,
     DeadlockDetector,
     MemoryLeakDetector,
@@ -31,29 +31,29 @@ from agentic_core.L5_safety.P1_red_team.concurrency import (
 )
 
 # Context agents
-from agentic_core.L5_safety.P1_red_team.context import OmniContext
+from ..L5_safety.P1_red_team.context import OmniContext
 
 # Engineering agents
-from agentic_core.L5_safety.P1_red_team.engineering import PatternEnforcer, StructuralEngineer
+from ..L5_safety.P1_red_team.engineering import PatternEnforcer, StructuralEngineer
 
 # Governance agents
-from agentic_core.L5_safety.P1_red_team.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.L5_safety.P1_red_team.healer_agent import HealerAgent
+from ..L5_safety.P1_red_team.governance import ArchitectureGovernor, DependencySentinel
+from ..L5_safety.P1_red_team.healer_agent import HealerAgent
 
 # Infrastructure agents
-from agentic_core.L5_safety.P1_red_team.infrastructure import BenchmarkingAgent, GitAgent, Historian
+from ..L5_safety.P1_red_team.infrastructure import BenchmarkingAgent, GitAgent, Historian
 
 # Planning agents
-from agentic_core.L5_safety.P1_red_team.planning import ReflectionAgent, StrategicPlanner
+from ..L5_safety.P1_red_team.planning import ReflectionAgent, StrategicPlanner
 
 # Quality agents (HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer)
-from agentic_core.L5_safety.P1_red_team.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+from ..L5_safety.P1_red_team.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
 
 # Repair agents
-from agentic_core.L5_safety.P1_red_team.repair import Sherlock, TestPilot, ToolsmithAgent
+from ..L5_safety.P1_red_team.repair import Sherlock, TestPilot, ToolsmithAgent
 
 # Security agents (SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel)
-from agentic_core.L5_safety.P1_red_team.security import (
+from ..L5_safety.P1_red_team.security import (
     ConcurrencyGuardian,
     RedSentinel,
     SafetyInspector,
@@ -61,7 +61,7 @@ from agentic_core.L5_safety.P1_red_team.security import (
 )
 
 # Specialized agents
-from agentic_core.L5_safety.P1_red_team.specialized import (
+from ..L5_safety.P1_red_team.specialized import (
     DocEnforcer,
     NamingEnforcer,
     TheCartographer,
@@ -69,8 +69,8 @@ from agentic_core.L5_safety.P1_red_team.specialized import (
     TheStrategist,
     TypeEnforcer,
 )
-from agentic_core.L5_safety.P1_red_team.structural_engineer import StructuralEngineer as CanonStructuralEngineer
-from agentic_core.L5_safety.P1_red_team.system_architect import SystemArchitect
+from ..L5_safety.P1_red_team.structural_engineer import StructuralEngineer as CanonStructuralEngineer
+from ..L5_safety.P1_red_team.system_architect import SystemArchitect
 
 # Memory agents (Level 5 Autonomous Learning)
 
