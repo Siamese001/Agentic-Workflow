@@ -93,6 +93,7 @@ CANONICAL_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
     "agentic_core": {
         "L1_cognition": ["strategy", "reasoning"],
         "L2_thought_nodes": ["extraction", "synthesis"],
+        "L2_execution": ["inference", "tools", "sandbox"],  # Synchronized with physical reality
         "L3_orchestration": ["fission", "hop_logic"],
         "L4_state": ["memory", "historian"],
         "L5_safety": ["engines", "filters"]

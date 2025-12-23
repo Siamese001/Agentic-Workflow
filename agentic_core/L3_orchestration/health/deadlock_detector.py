@@ -11,7 +11,7 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Set
+from typing import Any, Optional, Protocol, Dict, List, Set
 
 LOGGER = logging.getLogger(__name__)
 
