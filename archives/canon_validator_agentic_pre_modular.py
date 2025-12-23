@@ -120,7 +120,7 @@ from agentic_core.L5_safety.P1_red_team.specialized import (
 )
 
 # Import core domain and agent classes from agentic_core
-from agentic_core.domain.context import ValidationContext
+from agentic_core.L1_cognition.P2_domain.context import ValidationContext
 
 # Import shared utilities from apps_shared
 from apps_shared.config.reliability import rate_limited_retry

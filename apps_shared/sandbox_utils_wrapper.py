@@ -3,19 +3,19 @@ Sandbox Utils - Thin Wrapper
 Delegates to consolidated tools in agentic_core/tools/
 
 This is a backward compatibility shim. All new code should import directly from:
-    from agentic_core.tools import *
+    from agentic_core.L2_execution.P2_tools import *
 """
 
 # Execution operations
 import re
 
-from agentic_core.tools.execution import (
+from agentic_core.L2_execution.P2_tools.execution import (
     execute_command,
     is_command_allowed,
 )
 
 # Filesystem operations now use sandboxed tools
-from agentic_core.tools.filesystem import (
+from agentic_core.L2_execution.P2_tools.filesystem import (
     HealingLeaseError,
     PreservationViolationError,
     SandboxViolationError,
