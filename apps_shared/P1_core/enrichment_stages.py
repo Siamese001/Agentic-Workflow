@@ -21,11 +21,7 @@ class ContextEnrichmentStage(PipelineStage):
     def __init__(self):
         """Initialize context enrichment stage."""
         try:
-            # Fix: Uncommenting the multiline import.
-            # The original error "unmatched ')' at line 24" suggests that line 23 (with the opening parenthesis)
-            # was commented out while line 24 (with the closing parenthesis) was not, leading to an unmatched ')'
-            # on line 24. Uncommenting both makes the import syntactically valid.
-            from ..rag_components import (
+            from agentic_core.runtime.shared import (
                 KnowledgeGraphInjector,
                 SelfRAGProcessor,
                 SemanticCache,
@@ -34,8 +30,6 @@ class ContextEnrichmentStage(PipelineStage):
             self.rag_processor = SelfRAGProcessor()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            pass
-# Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
             self.kg_injector = None
             self.rag_processor = None
             self.semantic_cache = None
@@ -137,19 +131,17 @@ class SignalAugmentationStage(PipelineStage):
     def __init__(self):
         """Initialize signal augmentation stage."""
         try:
-            # Leave commented as per original snippet, no 'unmatched ')' error reported for these.
-            # This might lead to NameError at runtime if not handled, but it's a logic error, not a syntax error.
-#             from ..claim_confidence import ClaimConfidenceScorer
-#             from ..prompt_optimizer import PromptOptimizer
-#             from ..rag_components import SemanticCache
-#             from ..tone_model import ToneModel
+            from agentic_core.runtime.shared import (
+                ClaimConfidenceScorer,
+                PromptOptimizer,
+                SemanticCache,
+                ToneModel,
+            )
             self.claim_scorer = ClaimConfidenceScorer()
             self.prompt_optimizer = PromptOptimizer()
             self.tone_model = ToneModel()
             self.semantic_cache = SemanticCache()
         except ImportError:
-            pass
-# Fix: Correctly indenting the fallback assignments and removing extra 'pass' statements.
             self.claim_scorer = None
             self.prompt_optimizer = None
             self.tone_model = None

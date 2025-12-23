@@ -23,10 +23,7 @@ class InputProcessingStage(PipelineStage):
     def __init__(self: Any) -> None:
         """Initialize input processing stage."""
         try:
-
-#             from ..hyde_processor import HyDEProcessor
-
-#             from ..rag_components import SemanticCache
+            from agentic_core.runtime.shared import HyDEProcessor, SemanticCache
             self.semantic_cache = SemanticCache()
             self.hyde_processor = HyDEProcessor()
         except Exception as e:

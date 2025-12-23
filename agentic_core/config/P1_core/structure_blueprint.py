@@ -17,7 +17,7 @@ AGENTIC_CORE_REGISTRY = {
     "prompt_governance": ["P1_core", "templates", "versioning", "rendering"],
     "schemas": ["P1_core", "validators", "types", "models"],
     "utils": ["P1_core", "helpers", "decorators", "formatters"],
-    "runtime": ["P1_core", "environment_setup", "resource_management"],
+    "runtime": ["P1_core", "environment_setup", "resource_management", "shared"],
     "semantic_memory": ["P1_core", "vector_store", "retrieval_logic", "embeddings"],
     "knowledge": ["P1_core", "document_loaders", "static_index"],
     "patterns": ["P1_core", "reasoning_patterns", "interaction_patterns"]

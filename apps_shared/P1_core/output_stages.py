@@ -22,14 +22,12 @@ class QualityValidationStage(PipelineStage):
     def __init__(self: Any) -> None:
         """Initialize quality validation stage."""
         try:
-
-#             from ..bias_auditor import BiasAuditor
-
-#             from ..constitutional_ai import ConstitutionalAISystem
-
-#             from ..pii_scrubber import PIIScrubber
-
-#             from ..rag_components import SemanticCache
+            from agentic_core.runtime.shared import (
+                BiasAuditor,
+                ConstitutionalAISystem,
+                PIIScrubber,
+                SemanticCache,
+            )
             self.bias_auditor = BiasAuditor()
             self.pii_scrubber = PIIScrubber()
             self.constitutional_ai = ConstitutionalAISystem()

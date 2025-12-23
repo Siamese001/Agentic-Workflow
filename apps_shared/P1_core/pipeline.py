@@ -71,10 +71,8 @@ class UnifiedSignalPipeline:
 
         if not domain_config:
             try:
-
-                #                 from ..shared_infrastructure import get_shared_infrastructure
-                # domain_config = get_shared_infrastructure().create_domain_config(engine_type)
-                pass # Placeholder for commented-out logic
+                from agentic_core.runtime.shared import get_shared_infrastructure
+                domain_config = get_shared_infrastructure().create_domain_config(engine_type)
             except ImportError:
                 domain_config = None # Corrected indentation
 
@@ -89,32 +87,26 @@ class UnifiedSignalPipeline:
 
         if not envelope:
             try:
-
-                #                 from ..envelope_factory import EnvelopeFactory
-                # ENVELOPE = EnvelopeFactory.create_envelope( # Placeholder for commented-out logic
-                #     input_data,
-                #     METADATA={
-                #         "engine_type": engine_type.value if hasattr(engine_type,
-                #                                                     'value') else str(engine_type),
-                #         "domain_config": domain_config.
-                #         .__class__.
-                #         .__name__ if domain_config else "None"
-                #     }
-                # )
-                raise NotImplementedError("EnvelopeFactory not imported") # Placeholder to simulate behavior
+                from agentic_core.runtime.shared import EnvelopeFactory
+                envelope = EnvelopeFactory.create_envelope(
+                    input_data,
+                    metadata={
+                        "engine_type": engine_type.value if hasattr(engine_type, 'value') else str(engine_type),
+                        "domain_config": domain_config.__class__.__name__ if domain_config else "None"
+                    }
+                )
             except ImportError:
-                pass
-# from .types import PipelineExecutionError # Need to import for this to work
+                # from .types import PipelineExecutionError # Need to import for this to work
                 class PipelineExecutionError(Exception): # Dummy class for syntax repair
                     def __init__(self, stage_name, message, original_exception=None):
                         super().__init__(f"Pipeline error in stage {stage_name}: {message}")
                         self.stage_name = stage_name
                         self.original_exception = original_exception
-                raise PipelineExecutionError( # Corrected indentation
+                raise PipelineExecutionError(
                     "envelope_creation", "EnvelopeFactory not available")
 
         if domain_config:
-            envelope.metadata["domain_config"] = json.dumps(domain_config.dict() if hasattr(domain_config, 'dict') else {}) # Corrected envelope..metadata, json..dumps, domain_config..dict
+            envelope.metadata["domain_config"] = json.dumps(domain_config.dict() if hasattr(domain_config, 'dict') else {})
 
         checkpoint_manager = await self._get_checkpoint_manager()
 
