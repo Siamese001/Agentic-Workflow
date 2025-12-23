@@ -25,19 +25,24 @@ def enforce_gravity():
     return violations
 
 def enforce_depth():
-    """Ensures every file in agentic_core is at Depth 4."""
-    print("[*] ENFORCING DEPTH-4 MANDATE...")
+    """Ensures every file is EXACTLY at Depth 4. No shallower, no deeper."""
+    print("[*] ENFORCING ABSOLUTE DEPTH-4 MANDATE...")
     violations = 0
     
     for py_file in CORE.rglob("*.py"):
         if py_file.name == "__init__.py": continue
         
-        # Relative to agentic_core: Layer/Stage/File.py is 3 parts.
-        # Plus agentic_core itself = Depth 4.
+        # Parts relative to agentic_core
+        # Target: Layer/Stage/File.py (Length 3)
         parts = py_file.relative_to(CORE).parts
-        if len(parts) < 3:
-            print(f"  [X] DEPTH VIOLATION: {py_file.relative_to(ROOT)} is too shallow (Depth {len(parts)+1}).")
+        
+        if len(parts) != 3:
+            # We found a 'Tunnel' (too deep) or a 'Shallow' (too high)
+            depth_status = "SHALLOW" if len(parts) < 3 else "TUNNEL"
+            print(f"  [X] {depth_status} VIOLATION: {py_file.relative_to(ROOT)}")
+            print(f"      Actual: {len(parts)+1} | Required: 4")
             violations += 1
+            
     return violations
 
 def check_airlocks():

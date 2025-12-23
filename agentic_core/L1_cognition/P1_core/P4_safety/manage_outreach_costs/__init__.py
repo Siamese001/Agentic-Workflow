@@ -2,11 +2,9 @@ import logging
 from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Union
 LOGGER = logging.getLogger(__name__)
-# Module metadata
 __version__: str = "1.0.0"
 __author__: str = "Agentic Workflow"
 __description__: str = "Core Manage Outreach Costs functionality"
-# Core exports
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
     Get comprehensive module information.

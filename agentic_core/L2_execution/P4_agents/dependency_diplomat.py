@@ -9,15 +9,12 @@ Strategy: "Heal the Neighborhood" not "Heal the World"
 
 Impact: Hours → Minutes for targeted healing
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import ast
 import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Set
+from typing import Any, Dict, List, Optional, Protocol, Set
 
 try:
     import redis
@@ -25,7 +22,7 @@ try:
 except ImportError:
     REDIS_AVAILABLE = False
 
-from .base import SubAtomicAgent
+from agentic_core.L2_execution.P4_agents.base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 
@@ -141,17 +138,12 @@ class DependencyDiplomat(SubAtomicAgent):
             self._persist_to_redis()
     
     def _find_python_files(self) -> List[str]:
-        """Find all Python files in agentic_core and apps_shared."""
+        """Find all Python files in agentic_core."""
         python_files = []
         
         # Scan agentic_core
         for py_file in Path("agentic_core").rglob("*.py"):
             python_files.append(str(py_file))
-        
-        # Scan apps_shared
-        if Path("apps_shared").exists():
-            for py_file in Path("apps_shared").rglob("*.py"):
-                python_files.append(str(py_file))
         
         return python_files
     

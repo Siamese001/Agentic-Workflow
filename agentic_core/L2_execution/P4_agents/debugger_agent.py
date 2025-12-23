@@ -1,11 +1,7 @@
-from typing import Any, Optional, Protocol, Dict, List
-import time
-
+import json
 import logging
 from datetime import datetime
 from typing import Any, Dict, List
-
-from services.configuration import ConfigurationService
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,39 +35,46 @@ class DebuggerAgent:
         Returns:
             Dict with analysis, fixes, and outcomes
         """
-        ConfigurationService().results = {
+        results = {
             'timestamp': datetime.now().isoformat(),
-            'session_id': ConfigurationService().context.get(
+            'session_id': context.get(
                 'session_id',
                 'unknown'),
             'errors_found': [],
             'analyses': [],
             'fixes_proposed': [],
             'fixes_implemented': []}
+        
+        current_errors = []
+        
         try:
-            if 'trace_id' in ConfigurationService().context:
-                await self._debug_specific_trace(ConfigurationService().context['trace_id'])
+            if 'trace_id' in context:
+                debug_result = await self._debug_specific_trace(context['trace_id'])
+                current_errors.extend(debug_result)
+                results['errors_found'].extend([e.get('trace_id') for e in debug_result if 'trace_id' in e])
             else:
-                await self._find_recent_errors(limit=10)
+                found_errors = await self._find_recent_errors(limit=10)
+                current_errors.extend(found_errors)
+                results['errors_found'].extend([e.get('trace_id') for e in found_errors if 'trace_id' in e])
             
-            for error in ConfigurationService().errors[:3]:
+            for error in current_errors[:3]:
                 analysis = await self._analyze_error(error)
-                ConfigurationService().results['analyses'].append(analysis)
+                results['analyses'].append(analysis)
                 if analysis.get('needs_fix', False):
                     if await self._check_circuit_breaker(error.get('trace_id', '')):
-                        ConfigurationService().results['circuit_breaker_triggered'] = True
+                        results['circuit_breaker_triggered'] = True
                         continue
                     fix = await self._propose_fix(analysis)
-                    ConfigurationService().results['fixes_proposed'].append(fix)
+                    results['fixes_proposed'].append(fix)
                     if fix.get('auto_applicable', False):
                         implemented = await self._implement_fix(fix)
-                        ConfigurationService().results['fixes_implemented'].append(implemented)
+                        results['fixes_implemented'].append(implemented)
             
-            ConfigurationService().results['SUMMARY'] = self._generate_summary(ConfigurationService().results)
+            results['SUMMARY'] = self._generate_summary(results)
         except Exception as e:
-            ConfigurationService().logger.error(f'Error in debugging cycle: {e}')
-            ConfigurationService().results['ERROR'] = str(e)
-        return ConfigurationService().results
+            LOGGER.error(f'Error in debugging cycle: {e}')
+            results['ERROR'] = str(e)
+        return results
 
     async def _debug_specific_trace(self: Any, trace_id: str) -> List[Dict]:
         """Debug a specific trace ID."""
@@ -81,7 +84,7 @@ class DebuggerAgent:
             return [{'trace_id': trace_id, 'summary': summary,
                      'analysis': analysis, 'source': 'specific_trace'}]
         except Exception as e:
-            ConfigurationService().logger.error(
+            LOGGER.error(
                 f'Error debugging trace {trace_id}: {e}')
             return []
 
@@ -104,10 +107,9 @@ class DebuggerAgent:
                     current_error['error'] = line.replace('Error:', '').strip()
             if current_error:
                 error_traces.append(current_error)
-            ConfigurationService().errors = error_traces
             return error_traces
         except Exception as e:
-            ConfigurationService().logger.error(
+            LOGGER.error(
                 f'Error finding recent errors: {e}')
             return []
 
@@ -128,7 +130,7 @@ class DebuggerAgent:
                 'root_cause': llm_analysis.get('root_cause', 'unknown')
             }
         except Exception as e:
-            ConfigurationService().logger.error(
+            LOGGER.error(
                 f'Error analyzing trace {trace_id}: {e}')
             return {'trace_id': trace_id, 'error': str(e)}
 
@@ -144,10 +146,9 @@ class DebuggerAgent:
                 ], 
                 temperature=0.1
             )
-            import json
             return json.loads(response.choices[0].message.content)
         except Exception as e:
-            ConfigurationService().logger.error(f'Error in LLM analysis: {e}')
+            LOGGER.error(f'Error in LLM analysis: {e}')
             return {'category': 'unknown', 'severity': 'medium', 'root_cause': 'Analysis failed', 'fixable': False}
 
     async def _propose_fix(self: Any, analysis: Dict) -> Dict:
@@ -212,7 +213,7 @@ class DebuggerAgent:
                 implementation['RESULT'] = f"Fix type {fix['type']} requires manual implementation"
         except Exception as e:
             implementation['ERROR'] = str(e)
-            ConfigurationService().logger.error(f'Error implementing fix: {e}')
+            LOGGER.error(f'Error implementing fix: {e}')
         
         if implementation['success']:
             verification = await self._verify_fix(fix['trace_id'], fix)
@@ -244,17 +245,17 @@ class DebuggerAgent:
             await self._record_verification(trace_id, verification)
         except Exception as e:
             verification['ERROR'] = str(e)
-            ConfigurationService().logger.error(
+            LOGGER.error(
                 f'Error verifying fix for {trace_id}: {e}')
         return verification
 
     async def _record_verification(self: Any, trace_id: str, verification: Dict) -> None:
         """Record fix verification to telemetry for audit trail."""
         try:
-            ConfigurationService().logger.info(
+            LOGGER.info(
                 f"Fix verification for {trace_id}: {verification.get('RESULT')}")
         except Exception as e:
-            ConfigurationService().logger.error(
+            LOGGER.error(
                 f'Error recording verification: {e}')
 
     async def _check_circuit_breaker(self: Any, trace_id: str, max_attempts: int = 3) -> bool:
@@ -266,12 +267,12 @@ class DebuggerAgent:
             fix_history = await self.mcp_manager.call_tool('search_traces', {'query': f'fix_id:{trace_id}', 'limit': max_attempts + 1})
             attempt_count = str(fix_history).count('fix_id:')
             if attempt_count >= max_attempts:
-                ConfigurationService().logger.warning(
+                LOGGER.warning(
                     f'Circuit breaker triggered for {trace_id}: {attempt_count} attempts')
                 return True
             return False
         except Exception as e:
-            ConfigurationService().logger.error(
+            LOGGER.error(
                 f'Error checking circuit breaker: {e}')
             return False
 

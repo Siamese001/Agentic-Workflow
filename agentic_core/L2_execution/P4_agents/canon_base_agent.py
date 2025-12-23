@@ -1,13 +1,13 @@
 # Standard library imports
-from typing import Any, Optional, Protocol, Dict, List
-
 import ast
 import asyncio
 import os
 import re
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 # Third-party imports
 from dotenv import load_dotenv
@@ -347,9 +347,6 @@ class CanonBaseAgent(ABC):
 
         # DYNAMIC PROMPT LOADING: Load prompts from modularized markdown files
         try:
-            import sys
-            from pathlib import Path
-
             # Add project root to Python path if not already there
             project_root = Path(__file__).parent.parent.parent
             if str(project_root) not in sys.path:

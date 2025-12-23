@@ -1,14 +1,6 @@
-"""
-Context management agents for global architectural awareness.
-
-Contains:
-- OmniContext: Global Architectural Context that concatenates all non-excluded .py files
-    into a single context buffer for agents to consult
-"""
-
 import asyncio
 
-from .base import SubAtomicAgent
+from agentic_core.L2_execution.P4_agents.base import SubAtomicAgent
 
 
 class OmniContext(SubAtomicAgent):
