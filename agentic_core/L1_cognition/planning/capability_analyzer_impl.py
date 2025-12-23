@@ -6,7 +6,7 @@ import time
 
 LOGGER = logging.getLogger(__name__)
 if TYPE_CHECKING:
-    from agentic_core.L1_cognition.planning.capability_analyzer_types import (
+    from .capability_analyzer_types import (
     AnalysisReport,
     CapabilityGap,
     CapabilityGapType,

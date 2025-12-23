@@ -8,7 +8,7 @@ Links SPIFFE identity with Control Plane for granular policy enforcement.
 import logging
 
 
-from .permissions import (
+from agentic_core.L3_orchestration.security.permissions import (
     AgentPermissionManager,
     Permission,
     PermissionCheck,
