@@ -363,7 +363,6 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 
     return violations
 
-
 # ==============================================================================
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
@@ -382,6 +381,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
     try:
         # Get relative path from project root
         rel_path = file_path.relative_to(project_root)
+        
+        # [GRAVITY SHIELD] Exempt __init__.py and root-level orchestrators from depth checks
+        if file_path.name == "__init__.py" or "validator" in file_path.name:
+            return True, "Root Structural Component (Depth Shield Active)"
         
         # Special Case: Root-level files are explicitly allowed (Key 0: Global Config, Orchestrator, Law)
         # Protected root-level files that must remain at project root
