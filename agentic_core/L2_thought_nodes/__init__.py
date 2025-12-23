@@ -1,3 +1,1 @@
-"""
-L2_thought_nodes package initialization.
-"""
+"""Sovereign Layer: L2_thought_nodes"""
