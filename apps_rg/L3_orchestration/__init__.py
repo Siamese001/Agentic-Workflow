@@ -14,10 +14,12 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Import sovereign ExecutionPhase from core
+from agentic_core.L3_orchestration.orchestration_types import ExecutionPhase, ExecutionPhaseSignal
+
 # L5+ Autonomous Orchestrator (Canon Validator parity)
 from apps_rg.L3_orchestration.l5_autonomous_orchestrator import (
     CycleState,
-    ExecutionPhase,
     L5AutonomousOrchestrator,
     WorkflowSnapshot,
     create_l5_orchestrator,

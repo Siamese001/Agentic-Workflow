@@ -9,7 +9,8 @@ import os
 # External LLM client imports
 import openai
 import anthropic
-import google.generativeai as genai
+# FUTURE-PROOFING: Switching to modern genai client
+from google import genai
 from mistralai.async_client import MistralAsyncClient
 from groq import Groq
 from together import Together

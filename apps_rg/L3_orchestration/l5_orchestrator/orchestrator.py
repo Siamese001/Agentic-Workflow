@@ -23,9 +23,9 @@ except ImportError as e:
     logger.warning(f"L5+ autonomy components not available: {e}")
     AUTONOMY_COMPONENTS_AVAILABLE = False
 
+from agentic_core.L3_orchestration.orchestration_types import ExecutionPhase, ExecutionPhaseSignal
 from apps_rg.L3_orchestration.l5_orchestrator.types import (
     CycleState,
-    ExecutionPhase,
     WorkflowSnapshot,
 )
 

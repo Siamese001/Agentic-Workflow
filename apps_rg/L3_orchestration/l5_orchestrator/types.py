@@ -11,16 +11,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set
 
-
-@dataclass
-class ExecutionPhase:
-    """Definition of an execution phase."""
-
-    name: str
-    agents: List[str]
-    execution_mode: str = "sequential"  # sequential, parallel
-    is_hard_gate: bool = False
-    condition: Optional[Callable] = None
+# Import sovereign ExecutionPhase from core
+from agentic_core.L3_orchestration.orchestration_types import ExecutionPhase, ExecutionPhaseSignal
 
 
 @dataclass
