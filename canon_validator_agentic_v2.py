@@ -802,30 +802,26 @@ Return the complete file with imports added. No explanations, no markdown."""
         return found_agents
 
     # Execute Discovery
-    # Scans agentic_core (L1-L5) and apps_*/agents
     discovered = discover_agents()
-    print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} agents via dynamic discovery")
-    print(f"   [CONFIG] Fission Threshold: 10,000 LOC | Healing: Iterative Loop")
+    print(f"   [COMPREHENSIVE MODE] Found {len(discovered)} potential components")
     
     for mod_name, cls_name, cls_ref in discovered:
         try:
-            # [HARDENED] L5 Autonomous Instantiation Logic
+            # [HARDENING] Only instantiate and sync if it's actually runnable
+            if not (hasattr(cls_ref, 'execute') or hasattr(cls_ref, 'run')):
+                print(f"     [SKIP] {cls_name} (Passive Structural Component)")
+                continue
+
             sig = inspect.signature(cls_ref.__init__)
             kwargs = {}
             
-            # Check for context parameter (try both 'ctx' and 'context')
-            if 'ctx' in sig.parameters:
-                kwargs['ctx'] = ctx
-            elif 'context' in sig.parameters:
-                kwargs['context'] = ctx
+            if 'ctx' in sig.parameters: kwargs['ctx'] = ctx
+            elif 'context' in sig.parameters: kwargs['context'] = ctx
             
-            if 'name' in sig.parameters:
-                kwargs['name'] = cls_name
-            if 'engine' in sig.parameters:
-                kwargs['engine'] = ctx.engine
+            if 'name' in sig.parameters: kwargs['name'] = cls_name
+            if 'engine' in sig.parameters: kwargs['engine'] = ctx.engine
                 
             agent_instance = cls_ref(**kwargs)
-            # Add status tracking for dashboard visualization
             agent_instance.current_status = "Idle"
             agent_instance.current_task = "Awaiting mission"
             
@@ -854,7 +850,7 @@ Return the complete file with imports added. No explanations, no markdown."""
                     agent_instance.run = status_wrapper
             
             cleaning_crew.append(agent_instance)
-            print(f"     [+] Active: {cls_name}")
+            print(f"     [+] Active Agent: {cls_name}")
         except Exception as e:
             print(f"     [!] Failed to instantiate {cls_name}: {e}")
 
