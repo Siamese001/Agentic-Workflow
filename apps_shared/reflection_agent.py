@@ -508,7 +508,7 @@ KEYWORD: explanation
         """
         try:
             # Import deep brain
-            from agentic_core.L4_state.checkpointing import get_deep_brain
+            from agentic_core.L4_state.P1_core.checkpointing import get_deep_brain
             deep_brain = get_deep_brain()
 
             # Create learning record from successful trace
@@ -580,7 +580,7 @@ KEYWORD: explanation
             List of similar patterns with metadata
         """
         try:
-            from agentic_core.L4_state.checkpointing import get_deep_brain
+            from agentic_core.L4_state.P1_core.checkpointing import get_deep_brain
             deep_brain = get_deep_brain()
 
             # Search for similar patterns

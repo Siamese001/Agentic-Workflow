@@ -1,14 +1,13 @@
 """
-L5 Autonomous Orchestrator - Resume Engine Public API
+L5 Autonomous Orchestrator - Outreach Engine Public API
 """
 
-from .orchestrator import L5AutonomousOrchestrator
-from agentic_core.L3_orchestration.orchestration_types import ExecutionPhase, ExecutionPhaseSignal
-from .types import CycleState, WorkflowSnapshot
+from .orchestrator import L5OutreachOrchestrator
+from .types import OutreachCycleState, OutreachExecutionPhase, OutreachSnapshot
 
 __all__ = [
-    "L5AutonomousOrchestrator",
-    "ExecutionPhase",
-    "CycleState",
-    "WorkflowSnapshot",
+    "L5OutreachOrchestrator",
+    "OutreachExecutionPhase",
+    "OutreachCycleState",
+    "OutreachSnapshot",
 ]
