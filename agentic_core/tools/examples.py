@@ -7,7 +7,7 @@ import re
 
 import os
 
-from agentic_core.tools import (
+from . import (
     ExecuteCommandArgs,
     ReadFileArgs,
     WriteFileArgs,
@@ -137,7 +137,7 @@ def example_healing_lease_integration():
     print("\n=== HealingLease Integration ===\n")
     
     try:
-        from agentic_core.L4_state.atomic_blackboard import AtomicBlackboard
+        from ..L4_state.atomic_blackboard import AtomicBlackboard
         
         blackboard = AtomicBlackboard()
         agent_id = "healer_agent_001"

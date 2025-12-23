@@ -12,8 +12,8 @@ import re
 import subprocess
 from typing import List, Tuple
 
-from agentic_core.agents.base import SubAtomicAgent
-from agentic_core.domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
+from .base import SubAtomicAgent
+from ..domain.constants import MAX_DEPTH, MAX_LINES, MIN_DEPTH
 
 
 class ArchitectureGovernor(SubAtomicAgent):
@@ -174,7 +174,7 @@ OUTPUT FORMAT (JSON):
 Generate the blueprint now:"""
 
             # Call Gemini with safe config
-            from agentic_core.L5_safety import SubAtomicEngine
+            from ..L5_safety import SubAtomicEngine
             config = SubAtomicEngine.get_safe_config(is_fission=True)
             
             response = await asyncio.to_thread(

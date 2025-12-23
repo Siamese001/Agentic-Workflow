@@ -276,9 +276,9 @@ def get_proactive_scanner(mcp_router, line_threshold: int = 600) -> ProactiveFis
 
 # Integration Example for orchestrator_main.py:
 """
-from agentic_core.core.proactive_audit import ProactiveFissionScanner
-from agentic_core.infra.mcp_router import MCPRouter
-from agentic_core.infra.tui_dashboard import AgenticTUI
+from ..core.proactive_audit import ProactiveFissionScanner
+from ..infra.mcp_router import MCPRouter
+from ..infra.tui_dashboard import AgenticTUI
 
 # Initialize components
 mcp_router = MCPRouter(tui_handle=tui)

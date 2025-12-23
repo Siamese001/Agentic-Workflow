@@ -5,21 +5,21 @@ import os
 
 import uvicorn
 
-from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
-from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
-from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
-from agentic_core.agents.quality import (
+from ..agents.engineering import PatternEnforcer, StructuralEngineer
+from ..agents.governance import ArchitectureGovernor, DependencySentinel
+from ..agents.infrastructure import BenchmarkingAgent, Historian
+from ..agents.quality import (
     CodeStyleGuardian,
     HygieneGuardian,
     PerformanceEnforcer,
 )
-from agentic_core.agents.repair import TestPilot, ToolsmithAgent
-from agentic_core.agents.security import (
+from ..agents.repair import TestPilot, ToolsmithAgent
+from ..agents.security import (
     ConcurrencyGuardian,
     SafetyInspector,
     SecurityEnforcer,
 )
-from agentic_core.agents.specialized import (
+from ..agents.specialized import (
     DocEnforcer,
     NamingEnforcer,
     TheCartographer,
@@ -29,7 +29,7 @@ from agentic_core.agents.specialized import (
 )
 
 # Import Domain
-from agentic_core.domain.context import ValidationContext
+from ..domain.context import ValidationContext
 
 # L5 Human-in-the-Loop Dependencies
 try:

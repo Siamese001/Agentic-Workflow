@@ -26,7 +26,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Dict, Optional
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 

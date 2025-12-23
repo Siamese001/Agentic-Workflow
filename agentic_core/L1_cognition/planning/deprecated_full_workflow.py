@@ -14,7 +14,7 @@ import pytest
 
 # First-party (local) imports
 if TYPE_CHECKING:
-    from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies import (
+    from .deprecated_full_workflow_dependencies import (
     ExecutionContext,
     JobInput,
     L2ResultBundle,

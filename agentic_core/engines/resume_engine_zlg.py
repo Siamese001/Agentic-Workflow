@@ -22,18 +22,18 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from agentic_core.knowledge.l5_consolidated import (
+from ..knowledge.l5_consolidated import (
     KnowledgeResult,
     get_consolidated_knowledge,
 )
 
 # Import consolidated components
-from agentic_core.security.security_utilities import (
+from ..security.security_utilities import (
     SecurityStatus,
     get_fact_checker,
     get_prompt_firewall,
 )
-from agentic_core.utils.core_utilities import (
+from ..utils.core_utilities import (
     DraftGenerator,
     FileManager,
     SemanticScorer,

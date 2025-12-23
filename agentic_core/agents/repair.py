@@ -5,7 +5,7 @@ import os
 import re
 from typing import Optional
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 # Use environment variables for configuration
 INTELLIGENCE_THRESHOLD = os.getenv("INTELLIGENCE_THRESHOLD", "0.5")

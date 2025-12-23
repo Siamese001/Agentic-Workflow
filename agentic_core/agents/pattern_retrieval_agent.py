@@ -20,7 +20,7 @@ try:
 except ImportError:
     PINECONE_AVAILABLE = False
 
-from agentic_core.patterns.subatomic_flattening_rule import (
+from ..patterns.subatomic_flattening_rule import (
     ComplexityMetrics,
     FlatteningPattern,
 )
@@ -114,7 +114,7 @@ class PatternRetrievalAgent:
     
     def _get_local_pattern(self) -> Dict:
         """Get local flattening pattern as fallback."""
-        from agentic_core.patterns.subatomic_flattening_rule import (
+        from ..patterns.subatomic_flattening_rule import (
             get_flattening_pattern,
         )
         return get_flattening_pattern()

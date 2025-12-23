@@ -6,8 +6,8 @@ import hashlib
 import re
 from typing import List, Tuple
 
-from agentic_core.agents.base import SubAtomicAgent
-from agentic_core.domain.constants import MAX_LINES
+from .base import SubAtomicAgent
+from ..domain.constants import MAX_LINES
 
 
 class StructuralEngineer(SubAtomicAgent):

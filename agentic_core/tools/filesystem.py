@@ -109,7 +109,7 @@ def require_healing_lease(func):
         
         if blackboard and agent_id and file_path:
             try:
-                from agentic_core.L4_state.atomic_blackboard import AtomicBlackboard
+                from ..L4_state.atomic_blackboard import AtomicBlackboard
                 
                 if isinstance(blackboard, AtomicBlackboard):
                     if not blackboard.verify_healing_lease(agent_id, file_path):

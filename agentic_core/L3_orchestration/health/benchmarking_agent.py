@@ -11,8 +11,8 @@ import time
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

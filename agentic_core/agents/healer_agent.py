@@ -220,7 +220,7 @@ CURRENT CODE:
                 )
                 
                 # Attempt to apply the split
-                from agentic_core.L3_orchestration import apply_fission_blueprint
+                from ..L3_orchestration import apply_fission_blueprint
                 blueprint_data = self.ctx.engine.parse_fission_output(res)
                 if blueprint_data and blueprint_data.get("fission_event"):
                     if await apply_fission_blueprint(file_path, blueprint_data["blueprint"], self.ctx.fission):

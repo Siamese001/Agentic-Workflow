@@ -9,11 +9,11 @@ import re
 import logging
 from typing import Any, Dict, TYPE_CHECKING
 
-from agentic_core.interfaces import ActionRequest
+from ..interfaces import ActionRequest
 if TYPE_CHECKING:
-    from agentic_core.L5_safety.governor import create_cost_governor
-    from agentic_core.L5_safety.overseer import create_overseer
-    from agentic_core.L5_safety.pii_vault import create_pii_vault
+    from .governor import create_cost_governor
+    from .overseer import create_overseer
+    from .pii_vault import create_pii_vault
 
 LOGGER = logging.getLogger(__name__)
 

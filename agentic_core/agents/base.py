@@ -5,7 +5,7 @@ import ast
 import os
 from typing import Dict, List, Union
 
-from agentic_core.domain.context import ValidationContext
+from ..domain.context import ValidationContext
 
 
 class SubAtomicAgent:

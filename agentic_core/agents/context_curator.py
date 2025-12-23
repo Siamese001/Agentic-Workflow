@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 

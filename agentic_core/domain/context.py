@@ -16,7 +16,7 @@ except ImportError:
     genai = None
 
 # Import Prompts (Resolves Syntax Error & Atomicity Law)
-from agentic_core.domain.prompts import (
+from .prompts import (
     FEW_SHOT_HYGIENE,
     FEW_SHOT_STYLE,
 )
