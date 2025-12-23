@@ -30,7 +30,7 @@ class HealthMetrics:
     error_rate: float
     circuit_breaker_trips: int
     total_requests: int
-    TIMESTAMP: FLOAT = field(default_factory=time.time)
+    timestamp: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
@@ -53,7 +53,7 @@ class HealthAlert:
     message: str
     metrics: HealthMetrics
     recommended_actions: List[str] = field(default_factory=list)
-    TIMESTAMP: FLOAT = field(default_factory=time.time)
+    timestamp: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""

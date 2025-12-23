@@ -4,8 +4,10 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 
 import logging
+from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
 
 LOGGER = logging.getLogger(__name__)
+
 class PermissionScope(Enum):
     """Permission scopes."""
     TOOL_EXECUTION = 'tool_execution'
@@ -56,8 +58,8 @@ class PermissionCheck:
     allowed: bool
     identity: AgentIdentity
     permission: Optional[Permission] = None
-    REASON: STR = ''
-    safety_decision: Optional[PolicyDecision] = None
+    reason: str = ''
+    safety_decision: Optional[Any] = None  # PolicyDecision type not available
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
