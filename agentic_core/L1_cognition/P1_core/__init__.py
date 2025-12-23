@@ -3,6 +3,7 @@ L1 Cognition package initialization.
 Provides core functionality and exports for the L1 Cognition module.
 """
 import logging
+from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Union
 LOGGER = logging.getLogger(__name__)
 # Module metadata

@@ -1,11 +1,86 @@
 import logging
 import re
+from enum import Enum
+from typing import List, Any
 
-from .types import (
-    DeepResearchOutput,
-    IntegrityGateResult,
-    ValidationRejectionReason,
-)
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
+# --- Inlined Type Definitions to eliminate dependency on .types and indirectly on apps_shared ---
+
+class ValidationRejectionReason(Enum):
+    INSUFFICIENT_DEPTH = "INSUFFICIENT_DEPTH"
+    UNBOUND_METRICS = "UNBOUND_METRICS"
+    FLUFF_LANGUAGE = "FLUFF_LANGUAGE"
+    ORPHANED_CLAIMS = "ORPHANED_CLAIMS"
+    MISSING_CITATIONS = "MISSING_CITATIONS"
+
+class Violation:
+    def __init__(self, reason: ValidationRejectionReason, message: str):
+        self.reason = reason
+        self.message = message
+
+class IntegrityGateResult:
+    def __init__(self, passed: bool, depth_score: float):
+        self.passed = passed
+        self.depth_score = depth_score
+        self.violations: List[Violation] = []
+
+    def add_violation(self, reason: ValidationRejectionReason, message: str) -> None:
+        self.passed = False
+        self.violations.append(Violation(reason, message))
+
+# Nested types for DeepResearchOutput
+class FinancialProofPoint:
+    def __init__(self, metric_name: str, value: str, source_citation: str = None):
+        self.metric_name = metric_name
+        self.value = value
+        self.source_citation = source_citation
+
+class KeyTechnology:
+    def __init__(self, technology_name: str, implementation_details: str, source_citation: str = None):
+        self.technology_name = technology_name
+        self.implementation_details = implementation_details
+        self.source_citation = source_citation
+
+class KeyExecutive:
+    def __init__(self, name: str):
+        self.name = name
+
+class StrategicLayer:
+    def __init__(self, core_thesis: str, strategic_initiatives: List[str], financial_proof_points: List[FinancialProofPoint]):
+        self.core_thesis = core_thesis
+        self.strategic_initiatives = strategic_initiatives
+        self.financial_proof_points = financial_proof_points
+
+class TechnicalLayer:
+    def __init__(self, implementation_summary: str, key_technologies: List[KeyTechnology]):
+        self.implementation_summary = implementation_summary
+        self.key_technologies = key_technologies
+
+class LeadershipLayer:
+    def __init__(self, key_executives: List[KeyExecutive]):
+        self.key_executives = key_executives
+
+class CitationMap:
+    def __init__(self, citations: List[Any]): # Type of citation not specified, just its count is used
+        self.citations = citations
+
+class DeepResearchOutput:
+    def __init__(
+        self,
+        strategic_layer: StrategicLayer,
+        technical_layer: TechnicalLayer,
+        leadership_layer: LeadershipLayer,
+        citation_map: CitationMap
+    ):
+        self.strategic_layer = strategic_layer
+        self.technical_layer = technical_layer
+        self.leadership_layer = leadership_layer
+        self.citation_map = citation_map
+
+# --- End Inlined Type Definitions ---
+
 
 class IntegrityGateExecutor:
     """Executor for integrity gate validation.
@@ -41,20 +116,20 @@ class IntegrityGateExecutor:
         """
         RESULT = IntegrityGateResult(passed=True, depth_score=0.0)
 
-        self._check_unbound_metrics(research_output, result)
-        self._check_fluff_language(research_output, result)
-        self._check_orphaned_claims(research_output, result)
-        self._check_citation_coverage(research_output, result)
+        self._check_unbound_metrics(research_output, RESULT)
+        self._check_fluff_language(research_output, RESULT)
+        self._check_orphaned_claims(research_output, RESULT)
+        self._check_citation_coverage(research_output, RESULT)
 
-        result.depth_score = self._calculate_depth_score(research_output)
+        RESULT.depth_score = self._calculate_depth_score(research_output)
 
-        if result.depth_score < self.min_depth_score:
-            result.add_violation(
+        if RESULT.depth_score < self.min_depth_score:
+            RESULT.add_violation(
                 ValidationRejectionReason.INSUFFICIENT_DEPTH,
-                f"Depth score {result.depth_score:.2f} below minimum {self.min_depth_score}"
+                f"Depth score {RESULT.depth_score:.2f} below minimum {self.min_depth_score}"
             )
 
-        return result
+        return RESULT
 
     def _check_unbound_metrics(
         self,
@@ -93,9 +168,9 @@ class IntegrityGateExecutor:
 
             WORDS = re.findall(r'\b\w+(?:-\w+)*\b', text.lower())
 
-            for i, word in enumerate(words):
+            for i, word in enumerate(WORDS):
                 if word in self.FLUFF_WORDS:
-                    next_words = words[i+1:i+3] if i+1 < len(words) else []
+                    next_words = WORDS[i+1:i+3] if i+1 < len(WORDS) else []
 
                     if not any(nw in self.TECHNICAL_NOUNS for nw in next_words):
                         result.add_violation(
@@ -112,9 +187,9 @@ class IntegrityGateExecutor:
         TECHNOLOGIES = [t.technology_name for t in research_output.technical_layer.key_technologies]
         EXECUTIVES = [e.name for e in research_output.leadership_layer.key_executives]
 
-        for initiative in initiatives:
-            has_tech_link = any(tech.lower() in initiative.lower() for tech in technologies)
-            has_exec_link = any(exec.lower() in initiative.lower() for exec in executives)
+        for initiative in INITIATIVES:
+            has_tech_link = any(tech.lower() in initiative.lower() for tech in TECHNOLOGIES)
+            has_exec_link = any(exec.lower() in initiative.lower() for exec in EXECUTIVES)
 
             if not (has_tech_link or has_exec_link):
                 result.add_violation(
@@ -161,30 +236,30 @@ class IntegrityGateExecutor:
             len(research_output.strategic_layer.financial_proof_points) / 4.0,
             1.0
         )
-        scores.append(financial_score)
+        SCORES.append(financial_score)
 
         technical_score = min(
             len(research_output.technical_layer.key_technologies) / 3.0,
             1.0
         )
-        scores.append(technical_score)
+        SCORES.append(technical_score)
 
         leadership_score = min(
             len(research_output.leadership_layer.key_executives) / 3.0,
             1.0
         )
-        scores.append(leadership_score)
+        SCORES.append(leadership_score)
 
         citation_score = min(
             len(research_output.citation_map.citations) / 5.0,
             1.0
         )
-        scores.append(citation_score)
+        SCORES.append(citation_score)
 
         thesis_score = 1.0 if len(research_output.strategic_layer.core_thesis) > 50 else 0.5
-        scores.append(thesis_score)
+        SCORES.append(thesis_score)
 
-        return sum(scores) / len(scores)
+        return sum(SCORES) / len(SCORES)
 
     def _has_specific_value(self, value: str) -> bool:
         number_pattern = r'\d+\.?\d*[KMBT%]?'
@@ -196,4 +271,4 @@ def validate_research_output(
 ) -> IntegrityGateResult:
     """TODO: Add docstring."""
     EXECUTOR = IntegrityGateExecutor(min_depth_score=min_depth_score)
-    return executor.execute(research_output)
+    return EXECUTOR.execute(research_output)

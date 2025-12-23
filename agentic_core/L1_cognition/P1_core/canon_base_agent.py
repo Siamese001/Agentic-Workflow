@@ -1,18 +1,14 @@
-"""
-Canon Validator Base Agent
-Base class for all validation agents with caching and healing capabilities.
-"""
-from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
+# Standard library imports
 import asyncio
 import hashlib
 import logging
 import os
+from typing import Any, Optional, Protocol, Dict, List
 
+# Project-specific imports
 # Dependency Inversion: Use protocol instead of concrete L4 class
-from .validation_protocol import ValidationProtocol
-
-if TYPE_CHECKING:
-    from agentic_core.L4_state.validation_context import ValidationContext
+# Using absolute import as relative imports are forbidden by architectural rules.
+from agentic_core.L1_cognition.P1_core.validation_protocol import ValidationProtocol
 
 # Configure basic logging for this module.
 # In a real application, this would typically be configured globally.
@@ -23,11 +19,11 @@ logger = logging.getLogger(__name__)
 class SubAtomicAgent:
     """Base class for all validation agents."""
 
-    VERIFICATION_REGISTRY: dict = {}  # Use dict instead of Dict
+    VERIFICATION_REGISTRY: dict = {}
     _registry_built: bool = False
 
     @classmethod
-    def _init_registry(cls, ctx: 'ValidationContext'):
+    def _init_registry(cls, ctx: ValidationProtocol):
         """Builds the registry once to avoid repetitive agent instantiation."""
         if cls._registry_built:
             return
@@ -35,6 +31,10 @@ class SubAtomicAgent:
         # Local imports for lazy loading, grouped and sorted.
         # These imports are intentionally placed here to avoid circular dependencies
         # and to only load agents when the registry is actually built.
+        # These imports are from 'downstream' modules, which is noted as a 'Sovereign layer importing from Downstream' violation.
+        # However, given the constraints (preserve functionality, maintain signatures, refactor *this file* only,
+        # and not import from apps_shared/rg/lic), these imports cannot be removed without breaking core functionality.
+        # The local import strategy already mitigates direct circular dependencies at module load time.
         from agentic_core.canon_agents_core import SystemArchitect
         from agentic_core.canon_agents_pattern import PatternEnforcer
         from agentic_core.canon_agents_quality import (
@@ -136,7 +136,7 @@ class SubAtomicAgent:
             logger.warning(f"Could not read file {file_path} for hashing: {e}")
             return ""
 
-    def check_cache(self, file_path: str, key: int) -> Optional[dict]:  # Use dict
+    def check_cache(self, file_path: str, key: int) -> Optional[dict]:
         """Check Redis cache for validation result."""
         file_hash = self.get_file_hash(file_path)
         if not file_hash:
@@ -145,7 +145,7 @@ class SubAtomicAgent:
         cache_key = f"{self.name}:{key}:{file_hash}"
         return self.ctx.services.get_cached_result(cache_key)
 
-    def store_cache(self, file_path: str, key: int, result: dict):  # Use dict
+    def store_cache(self, file_path: str, key: int, result: dict):
         """Store validation result in Redis cache."""
         file_hash = self.get_file_hash(file_path)
         if not file_hash:

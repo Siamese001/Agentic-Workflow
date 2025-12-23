@@ -4,13 +4,10 @@ DependencySentinel - L1 Guardian for Import Dependencies
 Enforces the "Law of Depth" and prevents circular imports.
 Uses AST parsing to analyze and validate import structures.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import ast
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -26,7 +23,7 @@ class ImportAnalyzer(ast.NodeVisitor):
         # Determine file's layer
         self.layer = self._determine_layer()
 
-    def _determine_layer(self) -> str:
+    def _determine_layer(self1) -> str:
         """Determine which layer the file belongs to."""
         parts = self.file_path.parts
 

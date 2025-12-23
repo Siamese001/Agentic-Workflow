@@ -14,9 +14,9 @@ Features:
 import ast
 import glob
 import logging
-import shutil
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List
+import shutil
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -308,8 +308,8 @@ class ArchitectureGovernor:
             ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml"
         }
 
-        # Consolidated ALLOWED_ROOT_FOLDERS from original and _MONOLITH versions,
-        # excluding downstream application directories (apps_lic, apps_rg, apps_shared)
+        # Consolidated ALLOWED_ROOT_FOLDERS from original and _MONOLITH versions.
+        # Downstream application directories are explicitly excluded from this list.
         self.ALLOWED_ROOT_FOLDERS = {
             '.git', '.github', 'docs', 'tests', 'test', 'testsuite', 'examples',
             'scripts', 'tools', 'benchmarks', 'data', 'datasets', 'assets',
@@ -337,7 +337,7 @@ class ArchitectureGovernor:
 
         # Sovereign directories (exempt from depth limit)
         # This set defines directories that are considered part of the core or standard project infrastructure
-        # and are exempt from depth law enforcement. Downstream application directories are not included here.
+        # and are exempt from depth law enforcement. This list does not include downstream application directories.
         self.sovereign_dirs = {
             "agentic_core", "schemas", "scripts", "docs", "tests", "config", "data", "cache", "observability",
             '.git', '__pycache__', '.pytest_cache', '.tox', 'venv', '.venv',
@@ -742,9 +742,9 @@ class ArchitectureGovernor:
                     report["atomicity_violations"].append(violation)
 
                 # Check complexity
-                complexity_violations = self.check_complexity(file_path)
-                if complexity_violations:
-                    report["complexity_violations"].extend(complexity_violations)
+                    complexity_violations = self.check_complexity(file_path)
+                    if complexity_violations:
+                        report["complexity_violations"].extend(complexity_violations)
 
         # Calculate blast radius if files provided
         if file_paths:

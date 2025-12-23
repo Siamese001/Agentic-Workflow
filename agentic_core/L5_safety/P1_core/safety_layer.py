@@ -9,7 +9,7 @@ import re
 import logging
 from typing import Any, Dict, TYPE_CHECKING
 
-from agentic_core.interfaces import ActionRequest
+from agentic_core.L1_cognition.P1_interfaces import ActionRequest
 if TYPE_CHECKING:
     from .governor import create_cost_governor
     from .overseer import create_overseer

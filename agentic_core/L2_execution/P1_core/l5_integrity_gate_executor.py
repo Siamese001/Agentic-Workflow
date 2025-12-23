@@ -9,25 +9,38 @@ This optimizes validation by avoiding expensive checks when
 fast checks already detect issues.
 """
 from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import time
+from enum import Enum
 
 
 import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List
+
 
 logger = logging.getLogger(__name__)
 
-# Import signal bus for L5+ integration
-try:
-    from apps_shared.signal_bus import SignalType, get_signal_bus
-    SIGNAL_BUS_AVAILABLE = True
-except ImportError:
-    SIGNAL_BUS_AVAILABLE = False
+# CRITICAL ARCHITECTURAL REFACTOR: Removed import from 'apps_shared'.
+# The signal bus functionality is now provided via dependency injection.
+
+# Define a local Protocol for the signal bus interface.
+# This allows dependency injection of a signal bus without direct import
+# from downstream layers like 'apps_shared'.
+class SignalBusInterface(Protocol):
+    """
+    Protocol for a signal bus emitter.
+    An object conforming to this protocol can be injected into the executor
+    to enable signal emission.
+    """
+    def emit(self, signal_type: Any, message: str, source: str, severity: str) -> None:
+        ...
+
+# Define local Enum for the specific signal types used by this executor.
+# This replaces the need to import SignalType from 'apps_shared'.
+class L5SignalType(str, Enum):
+    """Specific signal types emitted by the L5IntegrityGateExecutor."""
+    VALIDATION_FAILURE = "validation_failure"
+    QUALITY_BELOW_THRESHOLD = "quality_below_threshold"
 
 
 class ValidationSeverity(str, Enum):
@@ -150,7 +163,7 @@ class L5IntegrityGateExecutor:
     This executor implements:
     1. Fast regex-based checks (Pass 1) - cheap, run always
     2. Deep semantic checks (Pass 2) - expensive, skip if Pass 1 fails badly
-    3. Signal emission for L5+ integration
+    3. Signal emission for L5+ integration (via dependency injection)
     4. Quality scoring with multiple dimensions
     """
 
@@ -198,6 +211,7 @@ class L5IntegrityGateExecutor:
         min_quality_score: float = 0.7,
         skip_pass2_on_critical: bool = True,
         emit_signals: bool = True,
+        signal_bus_emitter: Optional[SignalBusInterface] = None,
     ) -> None:
         """
         Initialize the L5+ integrity gate executor.
@@ -206,21 +220,23 @@ class L5IntegrityGateExecutor:
             min_depth_score: Minimum acceptable depth score
             min_quality_score: Minimum acceptable quality score
             skip_pass2_on_critical: Skip Pass 2 if Pass 1 finds critical issues
-            emit_signals: Emit signals to SignalBus
+            emit_signals: Whether to emit signals (requires signal_bus_emitter to be provided).
+                          If False, no signals will be emitted, even if a bus is provided.
+            signal_bus_emitter: An optional object conforming to SignalBusInterface
+                                that can emit signals. If None, no signals will be emitted.
         """
         self.min_depth_score = min_depth_score
         self.min_quality_score = min_quality_score
         self.skip_pass2_on_critical = skip_pass2_on_critical
-        self.emit_signals = emit_signals and SIGNAL_BUS_AVAILABLE
 
-        if self.emit_signals:
-            self.signal_bus = get_signal_bus()
-        else:
-            self.signal_bus = None
+        # If emit_signals is True AND a signal_bus_emitter was provided, use it.
+        # Otherwise, set to None, effectively disabling signal emission.
+        self._signal_bus = signal_bus_emitter if emit_signals else None
 
         logger.info(
             f"L5IntegrityGateExecutor initialized: "
             f"depth_threshold={min_depth_score}, quality_threshold={min_quality_score}"
+            f", signal_emission_enabled={self._signal_bus is not None}"
         )
 
     def execute(self, content: Dict[str, Any]) -> ValidationResult:
@@ -597,19 +613,20 @@ class L5IntegrityGateExecutor:
     def _emit_validation_signal(self, result: ValidationResult) -> None:
         """Emit signal based on validation result."""
 
-        if not self.signal_bus:
+        # Check if a signal bus was provided and is active
+        if not self._signal_bus:
             return
 
         if result.has_critical_issues():
-            self.signal_bus.emit(
-                SignalType.VALIDATION_FAILURE,
+            self._signal_bus.emit(
+                L5SignalType.VALIDATION_FAILURE, # Using local L5SignalType
                 f"Critical validation issues: {len(result.get_issues_by_severity(ValidationSeverity.CRITICAL))}",
                 source="L5IntegrityGateExecutor",
                 severity="error"
             )
         elif not result.passed:
-            self.signal_bus.emit(
-                SignalType.QUALITY_BELOW_THRESHOLD,
+            self._signal_bus.emit(
+                L5SignalType.QUALITY_BELOW_THRESHOLD, # Using local L5SignalType
                 f"Quality below threshold: {result.quality_score:.2f}",
                 source="L5IntegrityGateExecutor",
                 severity="warning"
@@ -619,9 +636,22 @@ class L5IntegrityGateExecutor:
 def create_l5_integrity_executor(
     min_depth_score: float = 0.7,
     min_quality_score: float = 0.7,
+    emit_signals: bool = True,
+    signal_bus_emitter: Optional[SignalBusInterface] = None,
 ) -> L5IntegrityGateExecutor:
-    """Factory function to create L5+ integrity gate executor."""
+    """
+    Factory function to create L5+ integrity gate executor.
+
+    Args:
+        min_depth_score: Minimum acceptable depth score.
+        min_quality_score: Minimum acceptable quality score.
+        emit_signals: Whether to enable signal emission.
+        signal_bus_emitter: An optional object conforming to SignalBusInterface
+                            to be used for emitting signals.
+    """
     return L5IntegrityGateExecutor(
         min_depth_score=min_depth_score,
         min_quality_score=min_quality_score,
+        emit_signals=emit_signals,
+        signal_bus_emitter=signal_bus_emitter,
     )

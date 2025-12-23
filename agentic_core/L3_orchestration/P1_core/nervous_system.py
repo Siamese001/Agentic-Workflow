@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from agentic_core.interfaces import (
+from agentic_core.L1_cognition.P1_interfaces import (
     ActionRequest,
     ExecutionContext,
     ExecutionResult,
@@ -16,7 +16,7 @@ from agentic_core.interfaces import (
     ICognitivePlane,
     OrchestratorConfig,
 )
-from agentic_core.interfaces.governance import ArchitectureGovernor
+from agentic_core.L1_cognition.P1_interfaces.governance import ArchitectureGovernor
 if TYPE_CHECKING:
     from agentic_core.L1_cognition.sovereign_cognitive_plane import (
         create_sovereign_cognitive_plane,

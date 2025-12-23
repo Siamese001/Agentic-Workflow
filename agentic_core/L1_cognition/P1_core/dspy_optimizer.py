@@ -1,11 +1,11 @@
-from typing import Any, Optional, Protocol, Dict, List
-
+import hashlib
 import logging
+import os
 import pickle
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -76,7 +76,6 @@ class DSPyOptimizer:
         # For now, we'll use a mock configuration
         try:
             # Try to configure with OpenAI if available
-            import os
             api_key = os.getenv("OPENAI_API_KEY")
             if api_key:
                 dspy.configure(LM=dspy.OpenAI(model=self.model_name, api_key=api_key))
@@ -276,7 +275,6 @@ class DSPyOptimizer:
 
     def _get_cache_key(self, prompt: str, signature_class: type, num_examples: int) -> str:
         """Generate a cache key for optimization results."""
-        import hashlib
         content = f"{prompt}_{signature_class.__name__}_{num_examples}"
         return hashlib.md5(content.encode()).hexdigest()
 

@@ -7,8 +7,8 @@ Takes complex goals, builds workflows, and spins up sub-orchestrators.
 
 import logging
 import time
-from dataclasses import dataclass
-from typing import Any, Dict, List
+from dataclasses import dataclass, field
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
