@@ -10,7 +10,7 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 try:
-    from agentic_core.L1_cognition.episodic_memory import Episode, EpisodicMemory
+    from .episodic_memory import Episode, EpisodicMemory
 except Exception as e:
     LOGGER.debug(f"EpisodicMemory not available: {e}")
     Episode = None

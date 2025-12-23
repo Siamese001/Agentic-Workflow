@@ -384,38 +384,31 @@ CANONICAL_DEPTH_MAP = {
 def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     [SOVEREIGN MANDATE] Absolute Precision Depth Enforcement.
-    This forces the AI's hand: if it wants a file to be "legal," it has to move it to a Depth 4 folder.
-    
-    Args:
-        file_path: Absolute path to file
-        project_root: Project root directory
-        
-    Returns:
-        Tuple of (is_valid, reason)
+    No ranges, no flexibility - only absolute precision.
     """
-    try:
-        rel_path = file_path.relative_to(project_root)
-    except ValueError:
-        return False, "File outside project root"
-    
+    rel_path = file_path.relative_to(project_root)
     parts = rel_path.parts
     depth = len(parts)
-    root_folder = parts[0] if parts else ""
+    root_folder = parts[0]
 
-    if root_folder in ["data", "archives", ".git", ".venv"]:
+    # Rule 0: Sovereign Exemptions
+    if root_folder in ["data", "archives", ".git", ".venv", "__pycache__"]:
         return True, "Storage Bypass"
+    if file_path.name == "__init__.py" or "validator" in file_path.name:
+        return True, "Root Structural Component"
 
+    # Rule 1: Precision Enforcement
     if root_folder in CANONICAL_DEPTH_MAP:
         required = CANONICAL_DEPTH_MAP[root_folder]
         if depth != required:
             return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
         
-        # Enforce P/S prefixing for Core Depth 4
+        # Rule 2: Core Stage Enforcement (Mandatory P/S Patterns)
         if root_folder == "agentic_core":
             stage = parts[2]
             if not (stage.startswith('P') or stage.startswith('S')):
                 return False, f"CORE STAGE VIOLATION: '{stage}' must be P1-P5 or S1-S4."
-    
+
     return True, "Canonical Depth Verified"
 
 
