@@ -4,29 +4,26 @@
 from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 import re
-
 import logging
-from dataclasses import dataclass
-from typing import Any, Dict, Optional
 
 # Define logger for this module
 logger = logging.getLogger(__name__)
 
-# Local application imports (relative)
-from ..domain.context import ValidationContext
+# Local application imports (absolute)
+from agentic_core.domain.context import ValidationContext
 
-# Local application imports (relative)
+# Local application imports (absolute)
 # Base classes
 # Analysis agents
-from .analysis import SemanticMapper, TruthKeeper
-from .base import ImportPatcher, SubAtomicAgent
+from agentic_core.agents.analysis import SemanticMapper, TruthKeeper
+from agentic_core.agents.base import ImportPatcher, SubAtomicAgent
 
 # Canon Validator agents (Subatomic Level 5)
-from .canon_base_agent import CanonBaseAgent
-from .code_janitor import CodeJanitor
+from agentic_core.agents.canon_base_agent import CanonBaseAgent
+from agentic_core.agents.code_janitor import CodeJanitor
 
 # Concurrency agents
-from .concurrency import (
+from agentic_core.agents.concurrency import (
     DeadlockAnalyzer,
     DeadlockDetector,
     MemoryLeakDetector,
@@ -34,29 +31,29 @@ from .concurrency import (
 )
 
 # Context agents
-from .context import OmniContext
+from agentic_core.agents.context import OmniContext
 
 # Engineering agents
-from .engineering import PatternEnforcer, StructuralEngineer
+from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
 
 # Governance agents
-from .governance import ArchitectureGovernor, DependencySentinel
-from .healer_agent import HealerAgent
+from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
+from agentic_core.agents.healer_agent import HealerAgent
 
 # Infrastructure agents
-from .infrastructure import BenchmarkingAgent, GitAgent, Historian
+from agentic_core.agents.infrastructure import BenchmarkingAgent, GitAgent, Historian
 
 # Planning agents
-from .planning import ReflectionAgent, StrategicPlanner
+from agentic_core.agents.planning import ReflectionAgent, StrategicPlanner
 
 # Quality agents (HygieneGuardian, CodeStyleGuardian, PerformanceEnforcer)
-from .quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
+from agentic_core.agents.quality import CodeStyleGuardian, HygieneGuardian, PerformanceEnforcer
 
 # Repair agents
-from .repair import Sherlock, TestPilot, ToolsmithAgent
+from agentic_core.agents.repair import Sherlock, TestPilot, ToolsmithAgent
 
 # Security agents (SafetyInspector, ConcurrencyGuardian, SecurityEnforcer, RedSentinel)
-from .security import (
+from agentic_core.agents.security import (
     ConcurrencyGuardian,
     RedSentinel,
     SafetyInspector,
@@ -64,7 +61,7 @@ from .security import (
 )
 
 # Specialized agents
-from .specialized import (
+from agentic_core.agents.specialized import (
     DocEnforcer,
     NamingEnforcer,
     TheCartographer,
@@ -72,8 +69,8 @@ from .specialized import (
     TheStrategist,
     TypeEnforcer,
 )
-from .structural_engineer import StructuralEngineer as CanonStructuralEngineer
-from .system_architect import SystemArchitect
+from agentic_core.agents.structural_engineer import StructuralEngineer as CanonStructuralEngineer
+from agentic_core.agents.system_architect import SystemArchitect
 
 # Memory agents (Level 5 Autonomous Learning)
 

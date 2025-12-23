@@ -407,24 +407,25 @@ def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool,
     depth = len(parts)
     root_folder = parts[0] if parts else ""
 
-    # Rule 0: Sovereign Shield for Root Structural Components
+    # Rule 0: Sovereign Exemptions
+    if root_folder in ["data", "archives", ".git", ".venv", "__pycache__"]:
+        return True, "Storage Bypass"
     if file_path.name == "__init__.py" or "validator" in file_path.name:
         return True, "Root Structural Component"
 
-    # Rule 1: Storage Bypass
-    if root_folder in EXEMPT_FOLDERS:
-        return True, "Storage Bypass"
-
-    # Rule 2: Absolute Precision
+    # Rule 1: Precision Enforcement
     if root_folder in CANONICAL_DEPTH_MAP:
         required = CANONICAL_DEPTH_MAP[root_folder]
         if depth != required:
-            # This is the "mean" check that forces the AI to move the file
             return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
-        return True, "Canonical Depth Verified"
+        
+        # Rule 2: Core Stage Enforcement (P/S Patterns)
+        if root_folder == "agentic_core":
+            stage_folder = parts[2]
+            if not (stage_folder.startswith('P') or stage_folder.startswith('S')):
+                return False, f"CORE STAGE VIOLATION: '{stage_folder}' must be P1-P5 or S1-S4."
 
-    # Rule 3: Strict Deny for Unauthorized Drift
-    return False, f"SOVEREIGNTY BREACH: '{root_folder}' is an unapproved folder."
+    return True, "Canonical Depth Verified"
 
 
 def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, str]:

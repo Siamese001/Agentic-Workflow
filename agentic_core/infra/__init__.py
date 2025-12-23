@@ -3,7 +3,7 @@ Agentic Core Infrastructure - The Nervous System
 Provides universal context, memory management, and LLM client access.
 """
 
-from .context import (
+from agentic_core.infra.context import (
     GeminiConfig,
     MemoryConfig,
     ThermalProfile,
