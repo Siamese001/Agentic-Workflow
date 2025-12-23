@@ -1,26 +1,22 @@
 """
-L5 Autonomous Orchestrator - Snapshot and Rollback Manager (Outreach Engine)
+L5 Autonomous Orchestrator - Snapshot and Rollback Manager
 """
-from typing import Any, Optional, Protocol, Dict, List
-
 
 import copy
 import logging
-from typing import Any, Dict
 
-from apps_lic.L3_orchestration.l5_orchestrator.types import OutreachSnapshot
+from apps_rg.L3_orchestration.l5_orchestrator.types import WorkflowSnapshot
 
 logger = logging.getLogger(__name__)
 
 
-def take_snapshot(orchestrator, recipient_context: Dict[str, Any]) -> None:
+def take_snapshot(orchestrator) -> None:
     """Take a snapshot of current state for potential rollback."""
 
-    snapshot = OutreachSnapshot(
+    snapshot = WorkflowSnapshot(
         cycle=orchestrator.current_cycle,
-        context=copy.deepcopy(recipient_context),
+        context=copy.deepcopy(orchestrator.context),
         outputs=copy.deepcopy(orchestrator.outputs),
-        messages=copy.deepcopy(orchestrator.generated_messages),
     )
     orchestrator.snapshots.append(snapshot)
 
@@ -41,7 +37,6 @@ def rollback_to_snapshot(orchestrator) -> bool:
 
     orchestrator.context = copy.deepcopy(snapshot.context)
     orchestrator.outputs = copy.deepcopy(snapshot.outputs)
-    orchestrator.generated_messages = copy.deepcopy(snapshot.messages)
 
     logger.info(f"Rolled back to cycle {snapshot.cycle} state")
     return True

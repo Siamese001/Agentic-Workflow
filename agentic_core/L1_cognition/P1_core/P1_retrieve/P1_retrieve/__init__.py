@@ -1,6 +1,6 @@
 """
-L1 Cognition package initialization.
-Provides core functionality and exports for the L1 Cognition module.
+P1 Retrieve package initialization.
+Provides core functionality and exports for the P1 Retrieve module.
 """
 import logging
 from typing import Dict, List, Optional, Union
@@ -8,7 +8,7 @@ LOGGER = logging.getLogger(__name__)
 # Module metadata
 __version__: str = "1.0.0"
 __author__: str = "Agentic Workflow"
-__description__: str = "Core L1 Cognition functionality"
+__description__: str = "Core P1 Retrieve functionality"
 # Core exports
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
@@ -17,7 +17,7 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
         Dictionary containing module metadata and capabilities
     """
     return {
-        "name": "L1 Cognition",
+        "name": "P1 Retrieve",
         "version": __version__,
         "author": __author__,
         "description": __description__,
@@ -30,7 +30,7 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
     required_keys = ["enabled", "mode"]
     return all(key in config for key in required_keys)
-def create_instance(config: Optional[Dict[str, Union[str, int, BOOL]]] = None) -> Dict[str, Union[str, int, bool]]:
+def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
     Args:
@@ -42,6 +42,6 @@ def create_instance(config: Optional[Dict[str, Union[str, int, BOOL]]] = None) -
     final_config = {**default_config, **(config or {})}
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
-    logger.info(f"Created L1 Cognition instance with config: {final_config}")
+    LOGGER.info(f"Created P1 Retrieve instance with config: {final_config}")
     return final_config
 __all__ = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance', '}']

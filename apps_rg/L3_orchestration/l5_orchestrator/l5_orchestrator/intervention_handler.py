@@ -1,13 +1,13 @@
 """
-L5 Autonomous Orchestrator - Intervention Handler (Outreach Engine)
+L5 Autonomous Orchestrator - Intervention Handler
 """
 from typing import Any, Optional, Protocol, Dict, List
 
 
 import logging
-from typing import Any, Dict, List
+from typing import List
 
-from apps_lic.L3_orchestration.l5_orchestrator.types import OutreachCycleState
+from apps_rg.L3_orchestration.l5_orchestrator.types import CycleState
 
 from apps_shared.intervention_server import (
     InterventionContext,
@@ -18,11 +18,7 @@ from apps_shared.signal_bus import SignalType
 logger = logging.getLogger(__name__)
 
 
-async def check_intervention_required(
-    orchestrator,
-    cycle_state: OutreachCycleState,
-    recipient: Dict[str, Any]
-) -> bool:
+async def check_intervention_required(orchestrator, cycle_state: CycleState) -> bool:
     """Check if human intervention is required and handle it."""
 
     if not orchestrator.enable_intervention or not orchestrator.intervention_server:
@@ -37,7 +33,7 @@ async def check_intervention_required(
         modified_count=len(cycle_state.modified_items),
         signals=[s.value for s in orchestrator.signal_bus.signals],
         quality_score=get_average_quality(orchestrator, cycle_state),
-        high_risk_threshold=orchestrator.DEFAULT_HIGH_RISK_THRESHOLD,
+        high_risk_threshold=orchestrator.DEFAULT_HIGH_RISK_MODIFIED_THRESHOLD,
     )
 
     if not intervention_needed:
@@ -47,14 +43,14 @@ async def check_intervention_required(
 
     # Create intervention context
     intervention_ctx = InterventionContext(
-        workflow_id=orchestrator.campaign_id,
+        workflow_id=orchestrator.workflow_id,
         cycle=orchestrator.current_cycle,
-        reason="High-risk personalization detected",
+        reason="High-risk state detected",
         risk_factors=risk_factors,
         modified_items=list(cycle_state.modified_items),
         signals=[s.value for s in orchestrator.signal_bus.signals],
         quality_score=get_average_quality(orchestrator, cycle_state),
-        recommendations=generate_recommendations(orchestrator, cycle_state, recipient),
+        recommendations=generate_recommendations(orchestrator, cycle_state),
     )
 
     # Request intervention
@@ -66,14 +62,14 @@ async def check_intervention_required(
     if not approved:
         await orchestrator.signal_bus.emit(
             SignalType.VETOED,
-            "Human vetoed personalization",
+            "Human vetoed continuation",
             source="InterventionServer"
         )
 
     return True
 
 
-def get_average_quality(orchestrator, cycle_state: OutreachCycleState) -> float:
+def get_average_quality(orchestrator, cycle_state: CycleState) -> float:
     """Get average quality score from cycle."""
     if not cycle_state.quality_scores:
         return 1.0
@@ -81,11 +77,7 @@ def get_average_quality(orchestrator, cycle_state: OutreachCycleState) -> float:
     return sum(scores) / len(scores)
 
 
-def generate_recommendations(
-    orchestrator,
-    cycle_state: OutreachCycleState,
-    recipient: Dict[str, Any]
-) -> List[str]:
+def generate_recommendations(orchestrator, cycle_state: CycleState) -> List[str]:
     """Generate recommendations based on current state."""
     recommendations = []
 
@@ -95,14 +87,10 @@ def generate_recommendations(
             f"Quality score ({avg_quality:.2f}) below threshold ({orchestrator.quality_threshold})"
         )
 
-    if len(cycle_state.modified_items) > orchestrator.DEFAULT_HIGH_RISK_THRESHOLD:
+    if len(cycle_state.modified_items) > orchestrator.DEFAULT_HIGH_RISK_MODIFIED_THRESHOLD:
         recommendations.append(
             f"Many modifications ({len(cycle_state.modified_items)}) - review carefully"
         )
-
-    # Check personalization depth
-    if cycle_state.personalization_score < 0.5:
-        recommendations.append("Low personalization score - consider more targeted content")
 
     # Check for failed agents
     failed_agents = [
@@ -111,9 +99,5 @@ def generate_recommendations(
     ]
     if failed_agents:
         recommendations.append(f"Failed agents: {', '.join(failed_agents)}")
-
-    # Archetype-specific recommendations
-    if orchestrator.archetype == "C_LEVEL" and avg_quality < 0.85:
-        recommendations.append("C-Level outreach requires higher quality - enhance executive focus")
 
     return recommendations

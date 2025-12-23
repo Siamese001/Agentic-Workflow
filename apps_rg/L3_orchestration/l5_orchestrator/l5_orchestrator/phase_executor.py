@@ -1,5 +1,5 @@
 """
-L5 Autonomous Orchestrator - Phase Execution Logic (Outreach Engine)
+L5 Autonomous Orchestrator - Phase Execution Logic
 """
 from typing import Any, Optional, Protocol, Dict, List
 import time
@@ -10,10 +10,8 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, Dict
 
-from apps_lic.L3_orchestration.l5_orchestrator.types import (
-    OutreachCycleState,
-    OutreachExecutionPhase,
-)
+from agentic_core.L3_orchestration.P1_core.orchestration_types import ExecutionPhase
+from apps_rg.L3_orchestration.l5_orchestrator.types import CycleState
 
 from apps_shared.signal_bus import SignalType
 
@@ -23,8 +21,7 @@ logger = logging.getLogger(__name__)
 async def execute_all_phases(
     orchestrator,
     agents: Dict[str, Callable],
-    cycle_state: OutreachCycleState,
-    recipient_context: Dict[str, Any],
+    cycle_state: CycleState,
 ) -> Dict[str, Any]:
     """Execute all phases in order."""
 
@@ -32,20 +29,20 @@ async def execute_all_phases(
 
     for phase in orchestrator.phases:
         # Check phase condition
-        if phase.condition and not phase.condition(recipient_context):
+        if phase.condition and not phase.condition(orchestrator.context):
             logger.debug(f"Skipping phase {phase.name} - condition not met")
             continue
 
-        logger.info(f"  Executing phase: {phase.name}")
+        logger.info(f"Executing phase: {phase.name}")
 
         try:
             if phase.execution_mode == "parallel":
                 phase_result = await execute_phase_parallel(
-                    orchestrator, phase, agents, cycle_state, recipient_context
+                    orchestrator, phase, agents, cycle_state
                 )
             else:
                 phase_result = await execute_phase_sequential(
-                    orchestrator, phase, agents, cycle_state, recipient_context
+                    orchestrator, phase, agents, cycle_state
                 )
 
             results[phase.name] = phase_result
@@ -77,10 +74,9 @@ async def execute_all_phases(
 
 async def execute_phase_sequential(
     orchestrator,
-    phase: OutreachExecutionPhase,
+    phase: ExecutionPhase,
     agents: Dict[str, Callable],
-    cycle_state: OutreachCycleState,
-    recipient_context: Dict[str, Any],
+    cycle_state: CycleState,
 ) -> Dict[str, Any]:
     """Execute phase agents sequentially."""
 
@@ -93,7 +89,7 @@ async def execute_phase_sequential(
 
         try:
             agent_result = await execute_agent(
-                orchestrator, agent_name, agents[agent_name], cycle_state, recipient_context
+                orchestrator, agent_name, agents[agent_name], cycle_state
             )
             results["agents"][agent_name] = agent_result
 
@@ -110,10 +106,9 @@ async def execute_phase_sequential(
 
 async def execute_phase_parallel(
     orchestrator,
-    phase: OutreachExecutionPhase,
+    phase: ExecutionPhase,
     agents: Dict[str, Callable],
-    cycle_state: OutreachCycleState,
-    recipient_context: Dict[str, Any],
+    cycle_state: CycleState,
 ) -> Dict[str, Any]:
     """Execute phase agents in parallel."""
 
@@ -124,7 +119,7 @@ async def execute_phase_parallel(
         if agent_name not in agents:
             continue
         agent_names.append(agent_name)
-        tasks.append(execute_agent(orchestrator, agent_name, agents[agent_name], cycle_state, recipient_context))
+        tasks.append(execute_agent(orchestrator, agent_name, agents[agent_name], cycle_state))
 
     results = {"success": True, "agents": {}}
 
@@ -147,8 +142,7 @@ async def execute_agent(
     orchestrator,
     agent_name: str,
     agent_callable: Callable,
-    cycle_state: OutreachCycleState,
-    recipient_context: Dict[str, Any],
+    cycle_state: CycleState,
 ) -> Dict[str, Any]:
     """Execute a single agent with tracking."""
 
@@ -156,7 +150,7 @@ async def execute_agent(
 
     try:
         # Inject few-shot examples if available
-        enhanced_context = inject_few_shots(orchestrator, agent_name, recipient_context)
+        enhanced_context = inject_few_shots(orchestrator, agent_name, orchestrator.context)
 
         # Execute agent
         result = await agent_callable(enhanced_context)
@@ -179,15 +173,6 @@ async def execute_agent(
         # Track quality scores
         if result.get("quality_score"):
             cycle_state.quality_scores[agent_name] = result["quality_score"]
-
-        # Track messages generated
-        if result.get("message"):
-            orchestrator.outputs["message_generator"] = result["message"]
-            cycle_state.messages_generated += 1
-
-        # Track personalization score
-        if result.get("personalization_score"):
-            cycle_state.personalization_score = result["personalization_score"]
 
         # Emit signals based on result
         if orchestrator.signal_bus and not result.get("success", True):
@@ -228,11 +213,10 @@ def inject_few_shots(orchestrator, agent_name: str, context: Dict[str, Any]) -> 
 
     # Map agents to relevant few-shot patterns
     agent_patterns = {
-        "hook_generator": ["outreach_hooks", "personalized_openers"],
-        "value_composer": ["value_propositions", "metric_binding"],
-        "cta_generator": ["call_to_action", "urgency_drivers"],
-        "tone_validator": ["tone_examples", "archetype_tones"],
-        "personalization_engine": ["personalization_patterns"],
+        "bullet_generator": ["resume_bullets", "metric_binding"],
+        "summary_generator": ["executive_summary"],
+        "quality_critic": ["quality_critique"],
+        "tone_adjuster": ["resume_bullets"],
     }
 
     patterns = agent_patterns.get(agent_name, [])

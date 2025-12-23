@@ -1,6 +1,6 @@
 """
-L1 Cognition package initialization.
-Provides core functionality and exports for the L1 Cognition module.
+P4 Safety package initialization.
+Provides core functionality and exports for the P4 Safety module.
 """
 import logging
 from typing import Dict, List, Optional, Union
@@ -8,7 +8,7 @@ LOGGER = logging.getLogger(__name__)
 # Module metadata
 __version__: str = "1.0.0"
 __author__: str = "Agentic Workflow"
-__description__: str = "Core L1 Cognition functionality"
+__description__: str = "Core P4 Safety functionality"
 # Core exports
 def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
@@ -17,7 +17,7 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
         Dictionary containing module metadata and capabilities
     """
     return {
-        "name": "L1 Cognition",
+        "name": "P4 Safety",
         "version": __version__,
         "author": __author__,
         "description": __description__,
@@ -42,6 +42,6 @@ def create_instance(config: Optional[Dict[str, Union[str, int, BOOL]]] = None) -
     final_config = {**default_config, **(config or {})}
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
-    logger.info(f"Created L1 Cognition instance with config: {final_config}")
+    logger.info(f"Created P4 Safety instance with config: {final_config}")
     return final_config
 __all__ = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance', '}']

@@ -3,7 +3,7 @@ Validation Context - Thin Wrapper
 Delegates to Universal Context in agentic_core/infra/context.py
 
 This is a backward compatibility shim. All new code should import directly from:
-    from agentic_core.L3_orchestration.S3_vitality.context import context
+    from agentic_core.L3_orchestration.P1_core.S3_vitality.context import context
 """
 from typing import Any, Optional, Protocol, Dict, List
 import re
@@ -13,7 +13,7 @@ import logging
 from pathlib import Path
 from typing import Dict, Optional, Set
 
-from agentic_core.L3_orchestration.S3_vitality.context import get_context
+from agentic_core.L3_orchestration.P1_core.S3_vitality.context import get_context
 
 logger = logging.getLogger(__name__)
 
