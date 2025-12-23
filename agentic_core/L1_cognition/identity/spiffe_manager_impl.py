@@ -2,7 +2,7 @@ import hashlib
 import logging
 import secrets
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 # Absolute imports are correct, but we must ensure the root doesn't 
 # eagerly import this file back.
