@@ -1,6 +1,7 @@
 import os
 import shutil
 import logging
+import sys
 from pathlib import Path
 
 # --- CONFIGURATION ---
@@ -10,23 +11,12 @@ CORE = ROOT / "agentic_core"
 # Set up logging for the audit trail
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
-# 1. CORE DOMAIN (Depth 4: agentic_core/Layer/Stage)
-CORE_MAP = {
-    "L0_maintenance": ["P1_core", "scripts", "migrations", "automation"],
-    "L1_cognition": ["P1_core", "P1_interfaces", "P1_domain", "planning"],
-    "L2_execution": ["P1_core", "P2_tools", "P3_engines", "P4_agents", "sandbox"],
-    "L3_orchestration": ["P1_core", "health", "security", "training", "S3_vitality"],
-    "L4_state": ["P1_core", "S1_store"],
-    "L5_safety": ["P1_core", "P1_red_team", "P4_security"],
-    "config": ["P1_core", "environments", "secrets"],
-    "observability": ["P1_core", "logging", "telemetry", "monitoring"],
-    "prompt_governance": ["P1_core", "P2_prompts", "P3_versioning"],
-    "schemas": ["P1_core", "P2_validation", "P3_types"],
-    "utils": ["P1_core", "P2_helpers", "P3_validators"],
-    "runtime": ["P1_core", "S2_execution", "void_compliance"],
-    "knowledge": ["P1_core", "P1_retrieve", "P3_engines"],
-    "memory": ["P1_core"]
-}
+# [SSOT] Import structure from master blueprint
+sys.path.insert(0, str(CORE / "config" / "P1_core"))
+from structure_blueprint import AGENTIC_CORE_REGISTRY
+
+# Use the master blueprint as CORE_MAP
+CORE_MAP = AGENTIC_CORE_REGISTRY
 
 # 2. EXTERNAL TERRITORIES (Depth 3: Root/Folder/Stage)
 EXTERNAL_MAP = {
