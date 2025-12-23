@@ -10,7 +10,8 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, Dict
 
-from apps_rg.L3_orchestration.l5_orchestrator.types import CycleState, ExecutionPhase
+from agentic_core.L3_orchestration.orchestration_types import ExecutionPhase
+from apps_rg.L3_orchestration.l5_orchestrator.types import CycleState
 
 from apps_shared.signal_bus import SignalType
 
