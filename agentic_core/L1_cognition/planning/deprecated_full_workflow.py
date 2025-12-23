@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 # First-party (local) imports
-from .deprecated_full_workflow_dependencies import (
+from agentic_core.L1_cognition.planning.deprecated_full_workflow_dependencies import (
     ExecutionContext,
     JobInput,
     L2ResultBundle,

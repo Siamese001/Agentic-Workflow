@@ -5,13 +5,12 @@ import re
 from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field
 
 # Local application/first-party imports
-# Assuming SignalContext and SignedClaim are defined in a shared types module within L1_cognition.
-# This import is added to make the file "COMPLETE, functional" as per global constraints,
-# as these types are used throughout the file but not defined or imported.
-from .shared_types import SignalContext, SignedClaim
+# SignalContext and SignedClaim are core types defined in a shared module.
+from agentic_core.shared.types import SignalContext, SignedClaim
 
 LOGGER = logging.getLogger(__name__)
 
@@ -482,7 +481,7 @@ def anchor_resume_content(
         metadata: Optional metadata
 
     Returns:
-        Updated context with anchored claims
+            Updated context with anchored claims
     """
     ANCHOR = create_resume_anchor()
 
