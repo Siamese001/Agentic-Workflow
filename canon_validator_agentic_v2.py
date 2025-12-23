@@ -807,9 +807,13 @@ Return the complete file with imports added. No explanations, no markdown."""
     
     for mod_name, cls_name, cls_ref in discovered:
         try:
-            # [HARDENING] Only instantiate and sync if it's actually runnable
-            if not (hasattr(cls_ref, 'execute') or hasattr(cls_ref, 'run')):
-                print(f"     [SKIP] {cls_name} (Passive Structural Component)")
+            # [SOVEREIGN CUT] Only instantiate agents with actual execute/run methods
+            # Skip passive structural components (Protocols, Registries, Types)
+            has_execute = hasattr(cls_ref, 'execute') and callable(getattr(cls_ref, 'execute', None))
+            has_run = hasattr(cls_ref, 'run') and callable(getattr(cls_ref, 'run', None))
+            
+            if not (has_execute or has_run):
+                # Silently skip passive components - no warning needed
                 continue
 
             sig = inspect.signature(cls_ref.__init__)

@@ -11,8 +11,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set
 
-# Import sovereign ExecutionPhase from core
-from agentic_core.L3_orchestration.orchestration_types import ExecutionPhase, ExecutionPhaseSignal
+# Import sovereign types from core
+from agentic_core.L3_orchestration.orchestration_types import (
+    ExecutionPhase,
+    ExecutionPhaseSignal,
+    WorkflowSnapshot,
+)
 
 
 @dataclass
@@ -25,13 +29,3 @@ class CycleState:
     execution_log: List[Dict[str, Any]] = field(default_factory=list)
     start_time: datetime = field(default_factory=datetime.utcnow)
     end_time: Optional[datetime] = None
-
-
-@dataclass
-class WorkflowSnapshot:
-    """Snapshot of workflow state for rollback."""
-
-    cycle: int
-    context: Dict[str, Any]
-    outputs: Dict[str, Any]
-    timestamp: datetime = field(default_factory=datetime.utcnow)

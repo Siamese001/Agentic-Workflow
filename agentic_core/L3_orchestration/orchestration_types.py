@@ -4,8 +4,9 @@ Orchestration Types for agentic_core
 Core types used across orchestration components to avoid circular dependencies.
 """
 from enum import Enum, auto
-from typing import List, Callable, Optional
-from dataclasses import dataclass
+from typing import List, Callable, Optional, Dict, Any
+from dataclasses import dataclass, field
+from datetime import datetime
 
 class ExecutionPhaseSignal(Enum):
     """Signal enum for phase logic checks."""
@@ -37,3 +38,13 @@ class ExecutionPhase:
                 "healing": ExecutionPhaseSignal.HEALING,
             }
             self.signal = signal_map.get(self.name.lower(), ExecutionPhaseSignal.PLANNING)
+
+
+@dataclass
+class WorkflowSnapshot:
+    """Snapshot of workflow state for rollback - sovereign core type."""
+    
+    cycle: int
+    context: Dict[str, Any]
+    outputs: Dict[str, Any]
+    timestamp: datetime = field(default_factory=datetime.utcnow)
