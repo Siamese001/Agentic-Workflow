@@ -7,19 +7,14 @@ Enforces Depth = 3 for Core and Apps, and Depth = 2 for the DMZ (Tests).
 # Forced Depth 3: Every L2 folder MUST contain these L3 subfolders.
 AGENTIC_CORE_REGISTRY = {
     "L0_maintenance": ["scripts", "logs", "benchmarks"],
+    "knowledge": ["document_loaders", "static_index", "research_cache"],
     "L1_cognition": ["thought_engine", "semantic_memory", "intent_analysis"],
     "L2_execution": ["tool_registry", "action_handlers", "sandbox"],
     "L3_orchestration": ["workflow_engines", "fission_logic", "event_bus"],
     "L4_state": ["validation_context", "audit_trails", "session_manager"],
     "L5_safety": ["guardrails", "validators", "red_teaming"],
-    "config": ["P1_core", "schemas", "environments"],
-    "observability": ["P1_core", "logging", "telemetry", "tracing"],
-    "prompt_governance": ["P1_core", "templates", "versioning", "rendering"],
-    "utils": ["P1_core", "helpers", "decorators", "formatters"],
-    "runtime": ["shared", "environment_setup", "resource_management"],
-    "semantic_memory": ["P1_core", "vector_store", "retrieval_logic", "embeddings"],
-    "knowledge": ["document_loaders", "static_index", "research_cache"],
-    "patterns": ["P1_core", "reasoning_patterns", "interaction_patterns"]
+    "runtime": ["shared", "environment_setup"],
+    "config": ["P1_core", "schemas", "environments"]
 }
 
 # --- APP TERRITORIES (The Limbs) ---

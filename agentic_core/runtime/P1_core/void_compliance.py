@@ -13,6 +13,9 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
+# [SSOT] Import the master structure blueprint
+from agentic_core.config.P1_core.structure_blueprint import AGENTIC_CORE_REGISTRY
+
 logger = logging.getLogger(__name__)
 
 # ==============================================================================
@@ -88,35 +91,10 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 # CANONICAL FOLDER STRUCTURE: The Single Source of Truth
 # ==============================================================================
 
-# [KEY 40 HARDENING] Full Prescriptive 3-Level Hierarchy
+# [SSOT] Use the master blueprint from structure_blueprint.py
+# This replaces the hardcoded CANONICAL_HIERARCHY with dynamic import
 CANONICAL_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
-    "agentic_core": {
-        "L1_cognition": ["strategy", "reasoning", "thought_engine"],
-        "L2_execution": ["inference", "tools", "sandbox"],  # Synchronized with physical reality
-        "L3_orchestration": ["fission", "hop_logic"],
-        "L4_state": ["memory", "historian"],
-        "L5_safety": ["engines", "filters"]
-    },
-    "apps_shared": {
-        "utils": ["formatting", "validation"],
-        "infrastructure": ["database", "vector"]
-    },
-    "apps_lic": {
-        "agents": ["compliance", "auditor"],
-        "compliance": ["legal", "verification"]
-    },
-    "config": {
-        "environment": ["local", "production"],
-        "agents": ["prompts", "hyperparams"]
-    },
-    "observability": {
-        "logs": ["missions", "agents"],
-        "metrics": ["performance", "structure"]
-    },
-    "scripts": {
-        "operations": ["maintenance", "integrity"],
-        "migrations": ["structural", "data_shifts"]
-    }
+    "agentic_core": AGENTIC_CORE_REGISTRY
 }
 
 # [KEY 40] LLM GUIDANCE: Content Heuristics for File Placement

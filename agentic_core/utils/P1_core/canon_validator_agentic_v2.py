@@ -162,24 +162,21 @@ try:
         pass
     
     # This is your new compliance anchor
-    import void_compliance 
+    from agentic_core.runtime.P1_core import void_compliance
     print(f"   [OK] Void Compliance Engine: Online.")
 except ImportError as e:
     print(f"   [CRITICAL] Neural Link Fragmented: {e}")
-    # Don't exit yet—try to find it in the new P1_core depth
-    sys.path.append(str(project_root / "agentic_core" / "runtime" / "shared"))
-    
-    # Retry imports with fallback
+    # Don't exit yet—try alternative import path
     try:
-        import void_compliance
-        print(f"   [OK] Void Compliance Engine: Online (fallback path).")
+        from agentic_core.utils.P1_core import void_compliance
+        print(f"   [OK] Void Compliance Engine: Online (utils fallback).")
     except ImportError:
         print(f"   [FATAL] Cannot locate void_compliance module.")
         sys.exit(1)
 
 # Import void_compliance functions
 try:
-    from void_compliance import (
+    from agentic_core.runtime.P1_core.void_compliance import (
         ALLOWED_ROOT_FOLDERS,
         FORBIDDEN_ROOT_FOLDERS,
         check_import_waterfall_violations,
@@ -320,7 +317,6 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     # Check 1: Span of Two Detection (Redundant Tunnels)
     span_violations = []
     if target_path != project_root:
-        from void_compliance import check_span_of_two_violations
         span_violations = check_span_of_two_violations(project_root)
     if span_violations:
         print(f"[!] L6 ALERT: Found {len(span_violations)} span violations:")
@@ -334,7 +330,6 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
             print(f"   ... and {len(span_violations) - 3} more violations")
     
     # Check 2: Hierarchy Alignment (SSOT Verification)
-    from void_compliance import validate_canonical_hierarchy
     hierarchy_violations = validate_canonical_hierarchy(project_root)
     if hierarchy_violations:
         print(f"[!] L6 ALERT: Found {len(hierarchy_violations)} hierarchy violations:")
@@ -383,10 +378,6 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
             print(f"   [X] {file_path.name}: {reason}")
         if len(location_violations) > 3:
             print(f"   ... and {len(location_violations) - 3} more violations")
-    
-    # Check 4: Hierarchy Drift (CANONICAL_HIERARCHY SSOT)
-    from void_compliance import validate_canonical_hierarchy
-    hierarchy_violations = validate_canonical_hierarchy(project_root)
 
     # ==========================================================================
     # [L6 HARDENING] MASTER SOVEREIGN DASHBOARD
