@@ -7,6 +7,7 @@ import tracemalloc
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
