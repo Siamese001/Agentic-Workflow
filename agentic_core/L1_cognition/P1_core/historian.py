@@ -70,7 +70,7 @@ class Historian:
         self._load_memory()
 
     def _load_memory(self):
-        """Load historical data from memory files."""
+        """Load historical data from agentic_core.semantic_memory files."""
         # Load last hashes from canon memory
         self.last_hashes = self.context_manager.get_last_file_hashes()
 

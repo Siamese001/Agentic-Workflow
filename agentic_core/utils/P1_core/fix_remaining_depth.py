@@ -25,8 +25,8 @@ def move_remaining():
                     print(f"  [✓] Moved: {f.relative_to(CORE)}")
                     moved += 1
     
-    # Move L2_thought_nodes files
-    thought_nodes = CORE / "L2_thought_nodes"
+    # Move L1_cognition/thought_engine files (formerly L2_thought_nodes)
+    thought_nodes = CORE / "L1_cognition" / "thought_engine"
     if thought_nodes.exists():
         stage = thought_nodes / "P1_core"
         stage.mkdir(exist_ok=True)

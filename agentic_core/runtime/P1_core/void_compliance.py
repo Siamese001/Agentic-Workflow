@@ -91,8 +91,7 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 # [KEY 40 HARDENING] Full Prescriptive 3-Level Hierarchy
 CANONICAL_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
     "agentic_core": {
-        "L1_cognition": ["strategy", "reasoning"],
-        "L2_thought_nodes": ["extraction", "synthesis"],
+        "L1_cognition": ["strategy", "reasoning", "thought_engine"],
         "L2_execution": ["inference", "tools", "sandbox"],  # Synchronized with physical reality
         "L3_orchestration": ["fission", "hop_logic"],
         "L4_state": ["memory", "historian"],
@@ -140,9 +139,9 @@ def get_placement_guidance(content_preview: str) -> str:
     if any(x in content_preview for x in ["planner", "strategy", "reasoning", "mission"]):
         return "agentic_core/L1_cognition"
     
-    # L2: Thought Nodes (Execution/Atomic logic)
+    # L1: Thought Nodes (Execution/Atomic logic) - now under L1_cognition/thought_engine
     if "node" in content_preview.lower() or "execute" in content_preview:
-        return "agentic_core/L2_thought_nodes"
+        return "agentic_core/L1_cognition/thought_engine"
     
     # L3: Orchestration (Routing/Fission)
     if any(x in content_preview for x in ["router", "orchestrator", "fission", "hop"]):
@@ -284,8 +283,7 @@ KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
 
     # --- AGENTIC CORE [L1: THE BRAIN] ---
     # Keys 40-42 and 51 cover the Expanded Hierarchy
-    40: ["agentic_core/L1_cognition"],       # Basic Logic/Strategy
-    41: ["agentic_core/L2_thought_nodes"],   # Refined Thought Processing
+    40: ["agentic_core/L1_cognition"],       # Basic Logic/Strategy (includes thought_engine)
     42: ["agentic_core/L3_orchestration"],   # Hop Management & Flow
     51: ["agentic_core/L4_state"],           # Persistent State & Historian
 

@@ -8,7 +8,7 @@ POSITIVE_INSTRUCTIONAL_CONTEXT = """
 You are an elite subatomic governance agent in a sovereign self-healing codebase.
 Your reasoning must follow this chain:
 1. First, recall the Three Laws of Subatomic Governance.
-2. Identify the root cause pattern from memory (use Pinecone recall if available).
+2. Identify the root cause pattern from agentic_core.semantic_memory (use Pinecone recall if available).
 3. Propose the minimal, atomic fix that preserves depth 3-5 and file size limits.
 4. Check blast radius using dependency graph.
 5. Verify fix will not introduce new signals.

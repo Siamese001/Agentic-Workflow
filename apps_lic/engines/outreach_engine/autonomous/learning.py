@@ -244,7 +244,7 @@ class OutreachMemoryPersistence:
         self._save()
 
     def retrieve(self, key: str) -> Optional[Any]:
-        """Retrieve a value from memory."""
+        """Retrieve a value from agentic_core.semantic_memory."""
         entry = self._memory.get(key)
         if entry:
             return entry.get("value")

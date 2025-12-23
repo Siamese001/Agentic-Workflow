@@ -26,7 +26,7 @@ def audit_gravity():
                         if any(x in alias.name for x in ["apps_rg", "apps_lic", "apps_shared"]):
                             leaks.append((py_file.relative_to(ROOT), f"Direct: {alias.name}"))
                 
-                # Check for 'from apps_rg import ...'
+                # Check for 'from apps_rg.P1_core import ...'
                 elif isinstance(node, ast.ImportFrom):
                     if node.module and any(x in node.module for x in ["apps_rg", "apps_lic", "apps_shared"]):
                         leaks.append((py_file.relative_to(ROOT), f"From: {node.module}"))

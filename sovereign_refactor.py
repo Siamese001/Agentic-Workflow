@@ -2,7 +2,7 @@ import os
 import shutil
 
 # --- CONFIGURATION ---
-DRY_RUN = True  # FLIP TO FALSE TO EXECUTE
+DRY_RUN = False  # FLIP TO FALSE TO EXECUTE
 PROJECT_ROOT = "C:/Git/Agentic-Workflow"
 
 # THE BLUEPRINT: Level 2 -> Level 3
@@ -34,7 +34,7 @@ APP_SCHEMAS = {
 # THE MIGRATION MAP (Legacy -> New Path)
 MERGE_MAP = {
     "memory": "semantic_memory",
-    "L0_maintancne": "L0_maintenance",
+    "L0_maintenance": "L0_maintenance",
     "L2_thought_nodes": "L1_cognition/thought_engine",
     "core": "P1_core",
     "core_logic": "P1_core"

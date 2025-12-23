@@ -15,7 +15,7 @@ class TestMemorySafety:
 
 
 def test_filter_pii_from_memory(self: Any) -> None:
-    """Nominal: PII is filtered from memory."""
+    """Nominal: PII is filtered from agentic_core.semantic_memory."""
     MEMORY = {"content": "User email is john@example.com"}
     email_pattern = r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
     re.sub(email_pattern, "[REDACTED]", memory["content"])
