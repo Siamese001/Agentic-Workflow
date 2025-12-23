@@ -10,14 +10,14 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 try:
-    from agentic_core.L4_state.storage import BlobStorageProvider, LocalDiskAdapter
+    from .storage import BlobStorageProvider, LocalDiskAdapter
 except Exception as e:
     LOGGER.debug(f"Storage not available: {e}")
     BlobStorageProvider = None
     LocalDiskAdapter = None
 
 try:
-    from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
+    from .checkpointing import VerifiableCheckpointManager
 except Exception as e:
     LOGGER.debug(f"Checkpointing not available: {e}")
     VerifiableCheckpointManager = None

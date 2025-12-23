@@ -4,6 +4,7 @@ Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
 Enforces strict network/resource isolation and automatic teardown.
 """
 from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Dict, List, Optional, Protocol
 from enum import Enum, auto
 
 
@@ -11,10 +12,8 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Any, Dict, Optional
 
-from agentic_core.L2_execution.sandbox.firecracker_manager import (
+from .firecracker_manager import (
     FirecrackerManager,
     VMConfig,
     create_firecracker_manager,

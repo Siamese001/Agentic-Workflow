@@ -12,8 +12,8 @@ from typing import Any, Dict, Optional
 # Define logger for this module
 logger = logging.getLogger(__name__)
 
-# Local application imports (absolute)
-from agentic_core.domain.context import ValidationContext
+# Local application imports (relative)
+from ..domain.context import ValidationContext
 
 # Local application imports (relative)
 # Base classes

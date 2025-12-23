@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 
 class StrategicPlanner(SubAtomicAgent):

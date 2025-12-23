@@ -2,7 +2,7 @@
 agentic_core package initialization.
 """
 import importlib
-from typing import Any
+from typing import Any, Optional, Protocol, Dict, List
 
 # Map of names to their module paths for lazy loading
 _MODULE_MAP = {

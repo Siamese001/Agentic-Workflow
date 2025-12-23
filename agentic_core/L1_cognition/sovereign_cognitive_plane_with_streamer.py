@@ -5,7 +5,7 @@ import asyncio
 import logging
 from typing import Any, Dict, List
 
-from agentic_core.interfaces import (
+from ..interfaces import (
     ICognitivePlane,
     PlanningRequest,
     PlanningResult,
@@ -85,7 +85,7 @@ class SovereignCognitivePlane(ICognitivePlane):
 
         if enable_streaming:
             try:
-                from agentic_core.L5_safety.streamer import get_l5_streamer
+                from ..L5_safety.streamer import get_l5_streamer
                 self._streamer = get_l5_streamer()
                 LOGGER.info("L5 Streamer integrated with SovereignCognitivePlane")
             except (ImportError, ModuleNotFoundError):

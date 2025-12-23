@@ -23,7 +23,7 @@ import textwrap
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 # Assuming AgentContext is defined in agentic_core.context or similar.
 # If not, use `Any` for `ctx` type hint.

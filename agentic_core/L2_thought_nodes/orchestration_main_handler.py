@@ -18,10 +18,10 @@ from typing import Any, Dict, List, Optional, Set
 # This import was present within the execute_with_healing method in the original code,
 # despite a contradictory comment. It is moved here for proper module structure
 # and availability to the new OrchestratorHealingService.
-from agentic_core.tools.filesystem import WriteFileArgs, write_file
+from ..tools.filesystem import WriteFileArgs, write_file
 
 # Phase 4: Subatomic Agents
-from agentic_core.agents import (
+from ..agents import (
     CanonStructuralEngineer,
     CodeJanitor,
     CodeStyleGuardian,
@@ -35,7 +35,7 @@ from agentic_core.agents import (
 )
 
 # Phase 3: UniversalContext
-from agentic_core.domain.context import ValidationContext
+from ..domain.context import ValidationContext
 
 # Phase 5: L1-L5 Unified Architecture
 

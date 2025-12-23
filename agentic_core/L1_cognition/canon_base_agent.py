@@ -9,10 +9,10 @@ import logging
 import os
 
 # Dependency Inversion: Use protocol instead of concrete L4 class
-from agentic_core.L1_cognition.validation_protocol import ValidationProtocol
+from .validation_protocol import ValidationProtocol
 
 if TYPE_CHECKING:
-    from agentic_core.L4_state.validation_context import ValidationContext
+    from ..L4_state.validation_context import ValidationContext
 
 # Configure basic logging for this module.
 # In a real application, this would typically be configured globally.
@@ -35,19 +35,19 @@ class SubAtomicAgent:
         # Local imports for lazy loading, grouped and sorted.
         # These imports are intentionally placed here to avoid circular dependencies
         # and to only load agents when the registry is actually built.
-        from agentic_core.canon_agents_core import SystemArchitect
-        from agentic_core.canon_agents_pattern import PatternEnforcer
-        from agentic_core.canon_agents_quality import (
+        from ..canon_agents_core import SystemArchitect
+        from ..canon_agents_pattern import PatternEnforcer
+        from ..canon_agents_quality import (
             DocumentationAgent,
             NamingAgent,
             SafetyInspector,
         )
-        from agentic_core.canon_agents_structural import (
+        from ..canon_agents_structural import (
             BudgetAgent,
             StructuralEngineer,
             TypeMechanic,
         )
-        from agentic_core.canon_agents_syntax import CodeJanitor, DependencySentinel
+        from ..canon_agents_syntax import CodeJanitor, DependencySentinel
 
         # Agent instantiation, grouped and sorted for readability
         arch = SystemArchitect(ctx)

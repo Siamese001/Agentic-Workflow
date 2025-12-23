@@ -4,7 +4,7 @@ import time
 import asyncio
 import datetime
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 
 class TheCartographer(SubAtomicAgent):

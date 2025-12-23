@@ -7,7 +7,7 @@ import re
 import time
 
 
-from agentic_core.runtime.void_compliance import (
+from .void_compliance import (
     ALLOWED_ROOT_FOLDERS,
     FORBIDDEN_ROOT_FOLDERS,
     KEY_TO_FOLDER_MAP,

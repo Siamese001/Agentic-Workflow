@@ -1,3 +1,3 @@
-from .core.namespace_medic import *
-from .core.pinecone_assistant import *
-from .core.sprawl_inspector import *
+import agentic_core.tools.core.namespace_medic
+import agentic_core.tools.core.pinecone_assistant
+import agentic_core.tools.core.sprawl_inspector

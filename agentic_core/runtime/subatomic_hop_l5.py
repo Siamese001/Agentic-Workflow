@@ -10,13 +10,13 @@ from pydantic import BaseModel
 from runtime.core.telemetry import TelemetryRecorder, TraceEvent
 
 if TYPE_CHECKING:
-    from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
-    from agentic_core.L2_execution.sandbox import DockerSandbox
-    from agentic_core.L4_state.genealogy import GenealogyRegistry
-    from agentic_core.L4_state.storage import LocalDiskAdapter
-    from agentic_core.L5_safety.governor import CostGovernor
-    from agentic_core.L5_safety.overseer import ConstitutionalOverseer
-    from agentic_core.L5_safety.pii_vault import PIIVault
+    from ..L2_execution.mcp_manager import MCPConnectionManager
+    from ..L2_execution.sandbox import DockerSandbox
+    from ..L4_state.genealogy import GenealogyRegistry
+    from ..L4_state.storage import LocalDiskAdapter
+    from ..L5_safety.governor import CostGovernor
+    from ..L5_safety.overseer import ConstitutionalOverseer
+    from ..L5_safety.pii_vault import PIIVault
 
 logger = logging.getLogger(__name__)
 

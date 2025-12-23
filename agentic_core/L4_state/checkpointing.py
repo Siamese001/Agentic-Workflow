@@ -14,7 +14,7 @@ import logging
 from typing import Any, Dict, Optional
 
 if TYPE_CHECKING:
-    from agentic_core.L4_state.storage import BlobStorageProvider
+    from .storage import BlobStorageProvider
 
 LOGGER = logging.getLogger(__name__)
 
@@ -258,7 +258,7 @@ def create_checkpoint_manager(
     Returns:
         VerifiableCheckpointManager instance
     """
-    from agentic_core.L4_state.storage import create_storage_adapter
+    from .storage import create_storage_adapter
 
     create_storage_adapter(storage_type, **storage_kwargs)
     return VerifiableCheckpointManager(storage)

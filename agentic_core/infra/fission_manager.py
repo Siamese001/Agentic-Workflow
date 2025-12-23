@@ -412,8 +412,8 @@ def get_fission_manager(gemini_client: Optional[Any] = None) -> FissionManager:
 
 # Integration Example for orchestrator_main.py:
 """
-from agentic_core.infra.fission_manager import FissionManager
-from agentic_core.infra.tui_dashboard import AgenticTUI
+from .fission_manager import FissionManager
+from .tui_dashboard import AgenticTUI
 
 # Initialize managers
 fission_manager = FissionManager()

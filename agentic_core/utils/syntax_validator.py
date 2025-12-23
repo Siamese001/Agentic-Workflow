@@ -1,14 +1,7 @@
-"""
-Syntax Validation Utilities
-
-Cluster: Python syntax validation and AST parsing
-Lines: 1-40 from core_utils.py
-"""
-from typing import Any, Optional, Protocol, Dict, List
-
 import ast
 import logging
-from typing import Optional, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Optional, Protocol, Dict, List
 
 logger = logging.getLogger("CanonValidator")
 

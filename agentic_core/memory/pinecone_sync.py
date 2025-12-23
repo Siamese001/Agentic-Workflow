@@ -304,7 +304,7 @@ def get_memory_architect_sync() -> MemoryArchitectSync:
 
 # Integration Example for orchestrator_main.py:
 """
-from agentic_core.memory.pinecone_sync import MemoryArchitectSync
+from .pinecone_sync import MemoryArchitectSync
 
 # Initialize sync manager
 memory_sync = MemoryArchitectSync()

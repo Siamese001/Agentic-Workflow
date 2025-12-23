@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Dict, List
 
-from agentic_core.agents.base import SubAtomicAgent
+from .base import SubAtomicAgent
 
 logger = logging.getLogger(__name__)
 

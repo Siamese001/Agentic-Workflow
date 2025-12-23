@@ -14,38 +14,38 @@ LOGGER = logging.getLogger(__name__)
 
 # Lazy imports to avoid hard dependency failures
 try:
-    from agentic_core.L5_safety.pii_vault import PIIVault
+    from .pii_vault import PIIVault
 except Exception as e:
     LOGGER.debug(f"PIIVault not available: {e}")
     PIIVault = None
 
 try:
-    from agentic_core.L5_safety.overseer import ConstitutionalOverseer
+    from .overseer import ConstitutionalOverseer
 except Exception as e:
     LOGGER.debug(f"ConstitutionalOverseer not available: {e}")
     ConstitutionalOverseer = None
 
 try:
-    from agentic_core.L5_safety.canary_defense import CanaryDefense, CanaryToken
+    from .canary_defense import CanaryDefense, CanaryToken
 except Exception as e:
     LOGGER.debug(f"CanaryDefense not available: {e}")
     CanaryDefense = None
     CanaryToken = None
 
 try:
-    from agentic_core.L5_safety.governor import CostGovernor
+    from .governor import CostGovernor
 except Exception as e:
     LOGGER.debug(f"CostGovernor not available: {e}")
     CostGovernor = None
 
 try:
-    from agentic_core.L5_safety.safety_guardrail import SafetyGuardrail
+    from .safety_guardrail import SafetyGuardrail
 except Exception as e:
     LOGGER.debug(f"SafetyGuardrail not available: {e}")
     SafetyGuardrail = None
 
 try:
-    from agentic_core.L5_safety.subatomic_engine import SubAtomicEngine
+    from .subatomic_engine import SubAtomicEngine
 except Exception as e:
     LOGGER.debug(f"SubAtomicEngine not available: {e}")
     SubAtomicEngine = None

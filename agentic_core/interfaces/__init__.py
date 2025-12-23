@@ -7,20 +7,20 @@ from typing import Any, Optional, Protocol, Dict, List
 import re
 
 
-from agentic_core.interfaces.config import (
+from .config import (
     OrchestratorConfig,
 )
-from agentic_core.interfaces.execution import (
+from .execution import (
     ExecutionContext,
     ExecutionPhase,
     ExecutionResult,
 )
-from agentic_core.interfaces.planes import (
+from .planes import (
     IActionPlane,
     ICognitivePlane,
     IOrchestrator,
 )
-from agentic_core.interfaces.requests import (
+from .requests import (
     ActionRequest,
     PlanningRequest,
     PlanningResult,

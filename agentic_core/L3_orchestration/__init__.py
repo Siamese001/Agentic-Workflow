@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 # Lazy imports to avoid hard dependency failures
 try:
-    from agentic_core.L3_orchestration.dag_engine import (
+    from .dag_engine import (
         DAGEngine,
         Task,
         TaskStatus,
@@ -25,13 +25,13 @@ except Exception as e:
     TaskStatus = None
 
 try:
-    from agentic_core.L3_orchestration.nervous_system import NervousSystem
+    from .nervous_system import NervousSystem
 except Exception as e:
     LOGGER.debug(f"NervousSystem not available: {e}")
     NervousSystem = None
 
 try:
-    from agentic_core.L3_orchestration.think_act_observe import (
+    from .think_act_observe import (
         CycleConfig,
         CycleState,
         ThinkActObserveEngine,
@@ -43,7 +43,7 @@ except Exception as e:
     CycleState = None
 
 try:
-    from agentic_core.L3_orchestration.canon_scheduler import (
+    from .canon_scheduler import (
         CanonSwarmScheduler,
         IntelligentOrchestrator,
         SwarmScheduler,
@@ -55,7 +55,7 @@ except Exception as e:
     IntelligentOrchestrator = None
 
 try:
-    from agentic_core.L3_orchestration.mission_runner import (
+    from .mission_runner import (
         GITPYTHON_AVAILABLE,
         WATCHDOG_AVAILABLE,
         WEBSOCKETS_AVAILABLE,
@@ -73,7 +73,7 @@ except Exception as e:
     GITPYTHON_AVAILABLE = False
 
 try:
-    from agentic_core.L3_orchestration.intervention_server import (
+    from .intervention_server import (
         FASTAPI_AVAILABLE,
         approval_event,
         reset_approval_event,
@@ -89,13 +89,13 @@ except Exception as e:
     reset_approval_event = None
 
 try:
-    from agentic_core.L3_orchestration.fission_manager import FissionManager
+    from .fission_manager import FissionManager
 except Exception as e:
     LOGGER.debug(f"FissionManager not available: {e}")
     FissionManager = None
 
 try:
-    from agentic_core.L3_orchestration.fission_executor import apply_fission_blueprint
+    from .fission_executor import apply_fission_blueprint
 except Exception as e:
     LOGGER.debug(f"apply_fission_blueprint not available: {e}")
     apply_fission_blueprint = None
