@@ -1,4 +1,4 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 import re
 
 import asyncio
@@ -17,20 +17,21 @@ from agentic_core.interfaces import (
     OrchestratorConfig,
 )
 from agentic_core.interfaces.governance import ArchitectureGovernor
-from agentic_core.L1_cognition.sovereign_cognitive_plane import (
-    create_sovereign_cognitive_plane,
-)
-from agentic_core.L2_execution.sovereign_action_plane import (
-    create_sovereign_action_plane,
-)
-from agentic_core.L3_orchestration.telepathy import process_telepathy_instructions
-from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
-from agentic_core.L4_state.storage import SignalLedger, create_storage_adapter
-from agentic_core.L5_safety.intervention_server import (
-    InterventionServer,
-    check_intervention_required,
-)
-from agentic_core.L5_safety.safety_layer import create_l5_safety_layer
+if TYPE_CHECKING:
+    from agentic_core.L1_cognition.sovereign_cognitive_plane import (
+        create_sovereign_cognitive_plane,
+    )
+    from agentic_core.L2_execution.sovereign_action_plane import (
+        create_sovereign_action_plane,
+    )
+    from agentic_core.L3_orchestration.telepathy import process_telepathy_instructions
+    from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
+    from agentic_core.L4_state.storage import SignalLedger, create_storage_adapter
+    from agentic_core.L5_safety.intervention_server import (
+        InterventionServer,
+        check_intervention_required,
+    )
+    from agentic_core.L5_safety.safety_layer import create_l5_safety_layer
 
 LOGGER = logging.getLogger(__name__)
 
