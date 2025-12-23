@@ -4,16 +4,14 @@ BenchmarkingAgent - L3 System Health Specialist
 Measures execution time of specific functions and operations.
 Tracks performance metrics across cycles to detect degradation.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
+import json
 import logging
 import statistics
 import time
 from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -299,7 +297,6 @@ class BenchmarkingAgent:
         alert_file.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            import json
             if alert_file.exists():
                 with open(alert_file, 'r') as f:
                     alerts = json.load(f)

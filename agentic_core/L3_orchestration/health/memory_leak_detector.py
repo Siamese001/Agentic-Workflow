@@ -1,20 +1,12 @@
-"""
-MemoryLeakDetector - L3 System Health Specialist
-
-Monitors memory usage across validation cycles to detect leaks.
-Uses tracemalloc to snapshot memory before and after phases.
-"""
-from typing import Any, Optional, Protocol, Dict, List
+import gc
+import json
+import logging
 import re
 import time
-
-
-import gc
-import logging
 import tracemalloc
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -238,7 +230,6 @@ class MemoryLeakDetector:
         alert_file.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            import json
             if alert_file.exists():
                 with open(alert_file, 'r') as f:
                     alerts = json.load(f)

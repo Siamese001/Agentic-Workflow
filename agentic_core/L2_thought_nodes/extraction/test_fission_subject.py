@@ -1,6 +1,7 @@
 """
 Test Protocol: Key 42 Subject
 """
+from typing import Any, Optional, Protocol, Dict, List
 def operation_0():
     return 'data_0'
 
@@ -900,4 +901,3 @@ def operation_298():
 
 def operation_299():
     return 'data_299'
-

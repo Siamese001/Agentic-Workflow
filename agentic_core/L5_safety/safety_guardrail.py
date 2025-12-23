@@ -50,6 +50,10 @@ class SafetyGuardrail:
         new_len = len(new_code.splitlines())
         delta = orig_len - new_len
 
+        # [L5 HARDENING] Detect Stagnation
+        if delta == 0 and original_code == new_code and not fission_active:
+            return False, "Safety Block: Mutation resulted in no change (possible engine failure)."
+
         # Fission mode: Mass deletion is expected (monolith → facade)
         if fission_active:
             return True, "Fission Whitelist: Mass deletion permitted for Facade."
