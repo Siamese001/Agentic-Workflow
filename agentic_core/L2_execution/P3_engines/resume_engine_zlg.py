@@ -10,25 +10,24 @@ Phases:
 - P10: Shadow Mode (Self-Correction)
 - ZLG Loop: Draft, Vet, and Self-Correct (MAX_REWRITE_ATTEMPTS=3)
 """
-from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum, auto
-import re
-
-
+# Standard library imports
 import logging
 import os
+import re
+import sys
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
+# Third-party imports (none in this file)
+
+# Local/Application-specific imports
 from agentic_core.knowledge.P1_core.l5_consolidated import (
     KnowledgeResult,
     get_consolidated_knowledge,
 )
-
-# Import consolidated components
-from ..security.security_utilities import (
+from agentic_core.L2_execution.security.security_utilities import (
     SecurityStatus,
     get_fact_checker,
     get_prompt_firewall,
@@ -457,5 +456,4 @@ def main():
 
 
 if __name__ == "__main__":
-    import sys
     sys.exit(main())

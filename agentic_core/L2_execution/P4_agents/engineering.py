@@ -1,13 +1,11 @@
-from typing import Any, Optional, Protocol, Dict, List
-import json
-
 import ast
 import hashlib
+import json
 import re
-from typing import List, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from .base import SubAtomicAgent
-from ..domain.constants import MAX_LINES
+from agentic_core.L2_execution.P4_agents.base import SubAtomicAgent
+from agentic_core.shared.constants import MAX_LINES
 
 
 class StructuralEngineer(SubAtomicAgent):

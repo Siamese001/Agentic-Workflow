@@ -1,13 +1,3 @@
-"""
-Concurrency safety agents for detecting and remediating resource leaks, deadlocks, and race conditions.
-
-Contains:
-- MemoryLeakDetector: Detects and remediates resource leaks and unbounded containers
-- DeadlockAnalyzer: AST visitor to build lock acquisition graph and detect potential deadlocks
-- DeadlockDetector: Detects potential deadlocks through lock acquisition graph analysis
-- RaceAnalyzer: AST visitor to analyze potential race conditions
-"""
-
 import ast
 import asyncio
 import datetime
@@ -16,11 +6,13 @@ import re
 import time
 from collections import defaultdict
 
-from .base import SubAtomicAgent
 
-
-class MemoryLeakDetector(SubAtomicAgent):
+class MemoryLeakDetector:
     """ROLE: Memory Guardian. Detects and remediates resource leaks and unbounded containers."""
+
+    def __init__(self, ctx):
+        self.ctx = ctx
+        self.name = self.__class__.__name__
 
     # Resource leak patterns for fast scanning
     LEAK_PATTERNS = {
@@ -497,8 +489,12 @@ class DeadlockAnalyzer(ast.NodeVisitor):
         return cycles
 
 
-class DeadlockDetector(SubAtomicAgent):
+class DeadlockDetector:
     """ROLE: Deadlock Guardian. Detects potential deadlocks through lock acquisition graph analysis."""
+
+    def __init__(self, ctx):
+        self.ctx = ctx
+        self.name = self.__class__.__name__
 
     async def execute(self):
         print(f"\n[>>>] {self.name} ACTIVATED: Analyzing Lock Acquisition Patterns...")
