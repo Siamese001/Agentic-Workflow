@@ -18,7 +18,8 @@ Non-responsibilities:
 
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
+from dataclasses import dataclass, field
 
 
 LOGGER = logging.getLogger(__name__)

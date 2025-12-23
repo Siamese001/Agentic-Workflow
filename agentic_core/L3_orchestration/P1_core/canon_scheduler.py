@@ -11,7 +11,7 @@ import re
 
 import asyncio
 
-from ..domain.context import ValidationContext
+from agentic_core.domain.context import ValidationContext
 if TYPE_CHECKING:
     from .intervention_server import (
     approval_event,
@@ -58,24 +58,24 @@ class CanonSwarmScheduler:
             raise ValueError("No agent classes provided. Call set_phases() or provide agent_classes in constructor.")
 
         # Import agent classes dynamically to avoid circular imports
-        from ..agents.engineering import PatternEnforcer, StructuralEngineer
-        from ..agents.governance import (
+        from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
+        from agentic_core.agents.governance import (
             ArchitectureGovernor,
             DependencySentinel,
         )
-        from ..agents.infrastructure import BenchmarkingAgent, Historian
-        from ..agents.quality import (
+        from agentic_core.agents.infrastructure import BenchmarkingAgent, Historian
+        from agentic_core.agents.quality import (
             CodeStyleGuardian,
             HygieneGuardian,
             PerformanceEnforcer,
         )
-        from ..agents.repair import TestPilot, ToolsmithAgent
-        from ..agents.security import (
+        from agentic_core.agents.repair import TestPilot, ToolsmithAgent
+        from agentic_core.agents.security import (
             ConcurrencyGuardian,
             SafetyInspector,
             SecurityEnforcer,
         )
-        from ..agents.specialized import (
+        from agentic_core.agents.specialized import (
             DocEnforcer,
             NamingEnforcer,
             TheCartographer,

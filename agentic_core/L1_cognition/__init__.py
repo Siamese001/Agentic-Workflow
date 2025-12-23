@@ -1,5 +1,6 @@
 """Sovereign Layer: L1_cognition"""
 
+from typing import Any, Optional, Protocol, Dict, List
 from .discovery.agent_registry_enums import AgentCapability, AgentStatus
 from .identity.spiffe_manager_impl import SPIFFEManager
 from .identity.spiffe_manager_types import IdentityType, TrustDomain, AgentIdentity, IdentityVerificationResult

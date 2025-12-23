@@ -7,7 +7,7 @@ Generated: 2025-12-07T13:29:00.515392
 
 import logging
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 
 # Local workflow loader to avoid L3 dependency

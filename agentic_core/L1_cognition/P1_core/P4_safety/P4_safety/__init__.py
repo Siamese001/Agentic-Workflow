@@ -3,7 +3,7 @@ P4 Safety package initialization.
 Provides core functionality and exports for the P4 Safety module.
 """
 import logging
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
 LOGGER = logging.getLogger(__name__)
 # Module metadata
 __version__: str = "1.0.0"
@@ -21,6 +21,9 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
         "version": __version__,
         "author": __author__,
         "description": __description__,
+    }
+
+def validate_config(config: Dict[str, Union[str, int, bool]]) -> bool:
     """
     Validate module configuration.
     Args:
@@ -30,7 +33,8 @@ def get_module_info() -> Dict[str, Union[str, List[str]]]:
     """
     required_keys = ["enabled", "mode"]
     return all(key in config for key in required_keys)
-def create_instance(config: Optional[Dict[str, Union[str, int, BOOL]]] = None) -> Dict[str, Union[str, int, bool]]:
+
+def create_instance(config: Optional[Dict[str, Union[str, int, bool]]] = None) -> Dict[str, Union[str, int, bool]]:
     """
     Create a configured module instance.
     Args:
@@ -42,6 +46,7 @@ def create_instance(config: Optional[Dict[str, Union[str, int, BOOL]]] = None) -
     final_config = {**default_config, **(config or {})}
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
-    logger.info(f"Created P4 Safety instance with config: {final_config}")
+    LOGGER.info(f"Created P4 Safety instance with config: {final_config}")
     return final_config
-__all__ = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance', '}']
+
+__all__ = ['__version__', '__author__', '__description__', 'get_module_info', 'validate_config', 'create_instance']

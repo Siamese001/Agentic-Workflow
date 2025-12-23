@@ -11,7 +11,7 @@ import os
 import re
 from typing import Dict, List
 
-from ..interfaces import ActionRequest
+from agentic_core.interfaces import ActionRequest
 
 LOGGER = logging.getLogger(__name__)
 

@@ -9,7 +9,7 @@ K1-K7 execution pipeline for profile-driven message generation.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field # Added import for dataclass and field
 
 LOGGER = logging.getLogger(__name__)

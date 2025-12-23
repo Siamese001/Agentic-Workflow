@@ -18,8 +18,8 @@ Non-responsibilities:
 - Content grounding
 """
 import logging
-from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
 
 # Assuming these are defined elsewhere or need to be imported
 # For the purpose of fixing syntax, I'll assume they exist or are placeholders

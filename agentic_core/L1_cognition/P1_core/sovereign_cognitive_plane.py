@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-from ..interfaces import (
+from agentic_core.interfaces import (
     ICognitivePlane,
     PlanningRequest,
     PlanningResult,

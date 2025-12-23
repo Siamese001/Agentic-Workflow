@@ -1,7 +1,7 @@
 """Implementation for achv_bullet_synthesizer."""
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 # from .achv_bullet_synthesizer_types import *  # Star import removed
