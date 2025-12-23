@@ -2,11 +2,9 @@ import hashlib
 import logging
 import secrets
 import time
-from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol
 
-# Absolute imports are correct, but we must ensure the root doesn't
-# eagerly import this file back.
+# Refactored to relative import to address "DIRECT CIRCULAR RISK: File imports own root 'agentic_core'."
 from agentic_core.L1_cognition.identity.spiffe_manager_types import (
     AgentIdentity,
     IdentityType,

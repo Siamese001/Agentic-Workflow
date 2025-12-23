@@ -1,9 +1,16 @@
-import re
-
 import asyncio
 import os
+import re
 
 import uvicorn
+
+# L5 Human-in-the-Loop Dependencies
+try:
+    from fastapi import FastAPI
+    from fastapi.responses import HTMLResponse
+    FASTAPI_AVAILABLE = True
+except ImportError:
+    FASTAPI_AVAILABLE = False
 
 from agentic_core.agents.engineering import PatternEnforcer, StructuralEngineer
 from agentic_core.agents.governance import ArchitectureGovernor, DependencySentinel
@@ -30,14 +37,6 @@ from agentic_core.agents.specialized import (
 
 # Import Domain
 from agentic_core.domain.context import ValidationContext
-
-# L5 Human-in-the-Loop Dependencies
-try:
-    from fastapi import FastAPI
-    from fastapi.responses import HTMLResponse
-    FASTAPI_AVAILABLE = True
-except ImportError:
-    FASTAPI_AVAILABLE = False
 
 # Global Event for Intervention
 approval_event = asyncio.Event()

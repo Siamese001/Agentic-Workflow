@@ -4,16 +4,18 @@ L6 Deterministic Pre-Flight Sanitation
 Implements deterministic cleaners that run before LLM processing
 to maintain baseline code quality and save tokens.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import ast
 import logging
+import os
 import re
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
+
+# First-party imports
+# Assuming agentic_core/shared/architecture_constants.py exists and contains ALLOWED_ROOT_FILES
+from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
 
 LOGGER = logging.getLogger(__name__)
 
@@ -141,7 +143,6 @@ class DeterministicCleaner:
 
             finally:
                 # Clean up temp file
-                import os
                 os.unlink(temp_file)
 
         except subprocess.CalledProcessError as e:
@@ -206,15 +207,7 @@ class CompliantFileWriter:
         self.root_dir = Path(root_dir) if root_dir else Path.cwd()
         self.cleaner = DeterministicCleaner()
 
-        # Allowed root files from ArchitectureGovernor
-        self.ALLOWED_ROOT_FILES = {
-            "README.md", "LICENSE", "pyproject.toml", "setup.py", "setup.cfg",
-            "requirements.txt", "requirements-dev.txt", "requirements.in",
-            "Makefile", ".gitignore", ".pre-commit-config.yaml",
-            "CHANGELOG.md", "CONTRIBUTING.md", "conftest.py", "pytest.ini", "tox.ini",
-            ".env.example", ".dockerignore", "Dockerfile", "docker-compose.yml",
-            "MANIFEST.in"
-        }
+        # ALLOWED_ROOT_FILES is now imported from agentic_core.shared.architecture_constants
 
     def write_compliant_file(self, file_path: str, content: str, pre_clean: bool = True) -> bool:
         """
@@ -267,8 +260,8 @@ class CompliantFileWriter:
         if file_path.parent != self.root_dir:
             return True
 
-        # Check if file is allowed in root
-        return file_path.name in self.ALLOWED_ROOT_FILES
+        # Check if file is allowed in root (using the imported constant)
+        return file_path.name in ALLOWED_ROOT_FILES
 
     def _validate_syntax(self, content: str) -> bool:
         """Validate Python syntax using AST."""

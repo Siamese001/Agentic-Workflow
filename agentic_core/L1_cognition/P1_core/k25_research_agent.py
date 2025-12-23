@@ -2,9 +2,10 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum
 
 # Assuming these models are defined in a local models file
-from .k25_research_models import (
+from agentic_core.L1_cognition.P1_core.k25_research_models import (
     CitationMap,
     DeepResearchOutput,
     ExecutiveProfile,
@@ -19,20 +20,30 @@ from .k25_research_models import (
 
 LOGGER = logging.getLogger(__name__)
 
+# Define ClaimVerificationMode locally to avoid external dependencies
+class ClaimVerificationMode(Enum):
+    STRICT = "STRICT"
+    LENIENT = "LENIENT"
+    NONE = "NONE"
+
 # Local validation function to avoid architectural violation
 def validate_research_output_local(output: DeepResearchOutput) -> bool:
     """Local validation for research output to avoid L2 dependency."""
     if not output or not output.content:
         return False
     # Basic validation
-    return len(output.content) > 100 and output.confidence_score > 0.5
+    # Assuming output has confidence_score for this basic validation
+    return len(output.content) > 100 and getattr(output, 'confidence_score', 0.0) > 0.5
 
 # Local config to avoid architectural violation
 K25_REASONING_CONFIG = {
     "temperature": 0.3,
     "max_tokens": 4000,
     "model": "gpt-4",
-    "timeout": 30
+    "timeout": 30,
+    "rag_hops": 5,
+    "claim_verification_mode": ClaimVerificationMode.STRICT,
+    "self_consistency": True
 }
 
 class K25DeepResearchAgent:
@@ -45,7 +56,7 @@ class K25DeepResearchAgent:
     def __init__(self, company_name: str, company_url: Optional[str] = None):
         self.company_name = company_name
         self.company_url = company_url
-        SELF.CONFIG = K25_REASONING_CONFIG
+        self.config = K25_REASONING_CONFIG
 
         self.rag_hops = self.config.get("rag_hops", 5)
         self.prompt_template = self._load_prompt_template()
@@ -99,9 +110,7 @@ Requirements:
 
         if not integrity_result:
             raise ValueError(
-                f"Research output failed integrity gate:\n"
-                f"Violations: {integrity_result.detailed_violations}\n"
-                f"Depth Score: {integrity_result.depth_score:.2f}"
+                f"Research output failed integrity gate. Basic validation failed."
             )
 
         return research_output
@@ -117,12 +126,12 @@ Requirements:
 
         RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.FINANCIAL_STRATEGIC,
-            QUERY=query,
+            QUERY=QUERY,
             RESULTS=[],
             CITATIONS=[]
         )
 
-        return result
+        return RESULT
 
     def _execute_hop_2_technical_product(self) -> ResearchHopResult:
         QUERY = f"""
@@ -135,12 +144,12 @@ Requirements:
 
         RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.TECHNICAL_PRODUCT,
-            QUERY=query,
+            QUERY=QUERY,
             RESULTS=[],
             CITATIONS=[]
         )
 
-        return result
+        return RESULT
 
     def _execute_hop_3_organizational_leadership(self) -> ResearchHopResult:
         QUERY = f"""
@@ -153,12 +162,12 @@ Requirements:
 
         RESULT = ResearchHopResult(
             PHASE=ResearchHopPhase.ORGANIZATIONAL_LEADERSHIP,
-            QUERY=query,
+            QUERY=QUERY,
             RESULTS=[],
             CITATIONS=[]
         )
 
-        return result
+        return RESULT
 
     def _assemble_research_output(
         self,
@@ -212,9 +221,9 @@ Requirements:
 
 ## EXECUTION PARAMETERS
 - RAG Hops: {self.rag_hops}
-- Temperature: {self.config.temperature}
-- Claim Verification: {self.config.claim_verification_mode.value}
-- Self-Consistency Checks: {self.config.self_consistency}
+- Temperature: {self.config["temperature"]}
+- Claim Verification: {self.config["claim_verification_mode"].value}
+- Self-Consistency Checks: {self.config["self_consistency"]}
 
 ## INSTRUCTIONS
 Execute the 3-phase multi-hop research protocol:

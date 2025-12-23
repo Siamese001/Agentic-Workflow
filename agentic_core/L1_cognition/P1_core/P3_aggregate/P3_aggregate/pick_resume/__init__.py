@@ -3,6 +3,7 @@ Pick Resume package initialization.
 Provides core functionality and exports for the Pick Resume module.
 """
 import logging
+from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)
@@ -52,5 +53,5 @@ def create_instance(config: Optional[Dict[str,
     final_config = {**default_config, **(config or {})}
     if not validate_config(final_config):
         raise ValueError("Invalid configuration provided")
-    logger.info(f"Created Pick Resume instance with config: {final_config}")
+    LOGGER.info(f"Created Pick Resume instance with config: {final_config}")
     return final_config

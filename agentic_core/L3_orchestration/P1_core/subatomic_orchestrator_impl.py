@@ -8,6 +8,10 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+# Add the specified missing imports
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
+
 import networkx as nx
 
 
@@ -292,7 +296,7 @@ class SubatomicOrchestrator:
             Execution results
         """
         LOGGER.info(f'Executing graph with {graph.number_of_nodes()} nodes')
-        for key, value in initial_inputs.items():
+        for key, value in kwargs.items():
             if isinstance(value, str):
                 validate_no_legacy_code(value, 'execute_graph inputs')
         execution_id = f'exec_{datetime.now().isoformat()}'

@@ -4,6 +4,7 @@ Provides core functionality and exports for the Check Outreach module.
 """
 import logging
 from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 __version__: str = "1.0.0"

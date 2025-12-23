@@ -13,10 +13,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional, Protocol, Dict, List, Set, Tuple
-
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 # Simple exclusion functions to avoid import issues
 def is_excluded_path(path: Path) -> bool:

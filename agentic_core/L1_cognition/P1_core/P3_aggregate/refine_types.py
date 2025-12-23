@@ -1,3 +1,4 @@
+from enum import Enum
 """Types and models for message_refinement_adjust_scores."""
 import logging
 

@@ -1,21 +1,34 @@
-"""
-The Historian - Memory Optimization for Validation Cycles
-
-Tracks file changes across cycles to prevent unnecessary re-scanning.
-Uses MD5 hashing to detect unchanged files and skip validation.
-"""
-from typing import Any, Optional, Protocol, Dict, List
-import time
-
-
 import hashlib
 import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Protocol, Set, Tuple
 
-from L4_state.validation_context import ValidationContext, get_context_manager
+# Protocols for dependency injection to break architectural coupling
+# These protocols define the minimal interface required by Historian
+# without needing to import the concrete classes from L4_state.
+class IValidationContext(Protocol):
+    cycle_id: Optional[int]
+    status: str
+    start_time: datetime
+    end_time: Optional[datetime]
+    files_scanned: int
+    files_skipped: int
+    violations_found: int
+    flapping_files: Dict[str, int]
+
+    def update_file_hash(self, file_path: str, file_hash: str): ...
+    def mark_flapping(self, file_path: str): ...
+
+class IValidationContextManager(Protocol):
+    current_context: Optional[IValidationContext]
+
+    def get_last_file_hashes(self) -> Dict[str, str]: ...
+    def get_flapping_files(self) -> Dict[str, int]: ...
+    def start_new_cycle(self, cycle_id: int = None) -> IValidationContext: ...
+    def complete_cycle(self, status: str = "COMPLETED"): ...
+    def load_memory(self) -> bool: ...
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,18 +44,19 @@ class Historian:
     - Cycle history tracking
     """
 
-    def __init__(self, memory_dir: Path = None):
+    def __init__(self, context_manager: IValidationContextManager, memory_dir: Path = None):
         """
         Initialize the Historian.
 
         Args:
+            context_manager: An instance conforming to IValidationContextManager protocol.
             memory_dir: Directory to store historical data
         """
         self.memory_dir = memory_dir or Path("observability/memory")
         self.memory_dir.mkdir(parents=True, exist_ok=True)
 
-        # Context manager
-        self.context_manager = get_context_manager()
+        # Context manager (injected dependency)
+        self.context_manager = context_manager
 
         # Memory files
         self.cycle_history_file = self.memory_dir / "cycle_history.json"
@@ -209,7 +223,7 @@ class Historian:
 
         return unchanged, modified
 
-    def start_cycle(self, cycle_id: int = None) -> ValidationContext:
+    def start_cycle(self, cycle_id: int = None) -> IValidationContext:
         """
         Start a new validation cycle.
 
@@ -308,22 +322,23 @@ _historian: Optional[Historian] = None
 
 
 def get_historian() -> Historian:
-    """Get or create the global Historian instance."""
+    """Get the global Historian instance. Must be initialized first."""
     global _historian
     if _historian is None:
-        _historian = Historian()
+        raise RuntimeError("Historian has not been initialized. Call initialize_historian first.")
     return _historian
 
 
-def initialize_historian(memory_dir: Path = None):
+def initialize_historian(context_manager: IValidationContextManager, memory_dir: Path = None):
     """
     Initialize the Historian system.
 
     Args:
+        context_manager: An instance conforming to IValidationContextManager protocol.
         memory_dir: Directory for storing historical data
     """
     global _historian
-    _historian = Historian(memory_dir)
+    _historian = Historian(context_manager, memory_dir)
 
     # Load existing memory
     if _historian.context_manager.load_memory():

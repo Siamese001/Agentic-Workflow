@@ -1,56 +1,15 @@
-"""
-I have carefully reviewed the provided Python code, focusing on syntax, style (PEP 8), and logical consistency, especially concerning the AST comparison.
-
-Here's a summary of the issues found and the fixes applied:
-
-1.  **AST Comparison Logic Error**:
-    *   **Problem**: The `_calculate_ast_similarity` method was attempting to parse `ast.dump(tree)` output (a string representation of an AST) as if it were actual Python code using `ast.parse()`. This is incorrect and would lead to `SyntaxError` unless the `ast.dump` output coincidentally happened to be valid Python code.
-    *   **Fix**:
-        *   Modified `_calculate_ast_similarity` to accept `code1: str, code2: str` (the original Python code snippets) instead of `ast1_str, ast2_str` (the `ast.dump` outputs).
-        *   Updated `_validate_ast_match` to pass `new_entry.code_snippet` and `existing_entry.code_snippet` to `_calculate_ast_similarity`.
-        *   The `ast_structure` field in `CanonEntry` still stores `ast.dump(tree)` or an error JSON, which is correctly used by `_handle_ast_parsing_errors` for initial error checks.
-
-2.  **Unique ID Generation**:
-    *   **Problem**: The `_generate_entry` method used `hash(code)` and `datetime.now().timestamp()` to create `entry_id`. `hash(code)` is not guaranteed to be consistent across different Python runs or processes, and `timestamp()` might not be unique enough for rapid calls.
-    *   **Fix**: Imported the `uuid` module and changed `entry_id` generation to `str(uuid.uuid4())` for a universally unique identifier.
-
-3.  **Logging and Clarity**:
-    *   **Improvement**: Enhanced several `logger.info` and `logger.warning` messages to provide more context, such as including specific counts or threshold values.
-    *   **Example**: `Recorded failure for pattern {entry.id}. Failure count: {entry.failure_count}`.
-
-4.  **Consistency in `search_patterns` Thresholds**:
-    *   **Problem**: The `l1_threshold` in `check_and_learn` was initially `0.0` in the `search_patterns` call, while the docstring mentioned `similarity > 0.9`.
-    *   **Fix**: Aligned `l1_threshold` to `0.9` in both `check_and_learn` and `search_similar_patterns` for consistency with the stated intent of L1 being for high-similarity matches.
-
-5.  **Robustness in JSON Parsing**:
-    *   **Improvement**: Added `.strip()` to the `ast_str` check in `_extract_ast_error_message` to handle potential leading/trailing whitespace before checking for the `{"error":` prefix.
-
-6.  **Handling Unknown Outcomes**:
-    *   **Improvement**: Added an `else` block in `update_learning` to log a warning if an unknown `outcome` string is provided.
-
-7.  **Ambiguity of `promote_to_l2`**:
-    *   **Note**: The method `self.db_manager.promote_to_l2(entry)` is called in contexts that suggest promoting an entry *to* L2 (Qdrant) or *to* L1 (Redis) for faster access. The name `promote_to_l2` is ambiguous if L2 is Qdrant and L1 is Redis. I've kept the original calls but added comments to highlight this potential ambiguity, as resolving it would require understanding the exact implementation of `HybridDatabaseManager`.
-
-The refactored code is provided below:
-"""
-from typing import Any, Optional, Protocol, Dict, List
-import re
-import time
-
-
 import ast
 import json
 import logging
-import uuid  # Added for unique ID generation
+import re
+import time
+import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set, Tuple
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 from core.semantic_gatekeeper import get_gatekeeper
 from db_manager import HybridDatabaseManager
-
-
-from dataclasses import dataclass, field
-from typing import Optional
 
 @dataclass
 class CanonEntry:
@@ -58,9 +17,25 @@ class CanonEntry:
     id: str
     code_snippet: str
     ast_structure: str
+    embedding: List[float] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     failure_count: int = 0
     success_count: int = 0
     last_used: Optional[str] = None
+
+    def get_success_rate(self) -> float:
+        total_count = self.success_count + self.failure_count
+        if total_count == 0:
+            return 0.0
+        return self.success_count / total_count
+
+    def update_failure(self) -> None:
+        self.failure_count += 1
+        self.last_used = datetime.now(timezone.utc).isoformat()
+
+    def update_success(self) -> None:
+        self.success_count += 1
+        self.last_used = datetime.now(timezone.utc).isoformat()
 
 
 logger = logging.getLogger(__name__)
@@ -486,8 +461,8 @@ class CanonValidator:
         """
         return {
             "id": result.id,
-            "success_count": result.metadata.get("success_count", 0),
-            "failure_count": result.metadata.get("failure_count", 0),
+            "success_count": result.success_count,
+            "failure_count": result.failure_count,
             "success_rate": result.get_success_rate(),
             "project": result.metadata.get("project_context", "unknown"),
             "last_validated": result.metadata.get("last_validated"),

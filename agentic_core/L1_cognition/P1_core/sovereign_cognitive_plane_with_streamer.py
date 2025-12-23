@@ -3,9 +3,8 @@ import re
 
 import asyncio
 import logging
-from typing import Any, Dict, List
 
-from agentic_core.interfaces import (
+from agentic_core.L1_cognition.P1_interfaces import (
     ICognitivePlane,
     PlanningRequest,
     PlanningResult,
@@ -69,12 +68,16 @@ SOVEREIGN_AGENTS = [
 class SovereignCognitivePlane(ICognitivePlane):
     """Sovereign cognitive plane with in-memory agent registry and L5 streaming."""
 
-    def __init__(self, enable_streaming: bool = True):
+    def __init__(self, enable_streaming: bool = True, streamer_factory: Optional[callable] = None):
         """
         Initialize with sovereign agents.
 
         Args:
             enable_streaming: Whether to enable L5 reasoning broadcast
+            streamer_factory: An optional callable that returns an L5 streamer instance.
+                              If provided and enable_streaming is True, it will be used
+                              to obtain the streamer. This breaks the direct dependency
+                              on L5_safety.streamer, allowing for dependency injection.
         """
         self._agents: Dict[str, AgentInfo] = {}
         self._initialize_agents()
@@ -84,12 +87,14 @@ class SovereignCognitivePlane(ICognitivePlane):
         self._streamer = None
 
         if enable_streaming:
-            try:
-                from agentic_core.L5_safety.streamer import get_l5_streamer
-                self._streamer = get_l5_streamer()
-                LOGGER.info("L5 Streamer integrated with SovereignCognitivePlane")
-            except (ImportError, ModuleNotFoundError):
-                LOGGER.warning("L5 Streamer not available - reasoning broadcast disabled")
+            if streamer_factory:
+                try:
+                    self._streamer = streamer_factory()
+                    LOGGER.info("L5 Streamer integrated with SovereignCognitivePlane via factory")
+                except Exception as e:
+                    LOGGER.warning(f"Failed to initialize L5 Streamer via factory: {e} - reasoning broadcast disabled")
+            else:
+                LOGGER.warning("L5 Streamer not provided via factory - reasoning broadcast disabled")
 
     async def start_streaming(self):
         """Start the L5 streamer if enabled."""

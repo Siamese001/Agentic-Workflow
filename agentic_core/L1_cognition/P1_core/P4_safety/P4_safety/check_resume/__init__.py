@@ -3,6 +3,7 @@ Check Resume package initialization.
 Provides core functionality and exports for the Check Resume module.
 """
 import logging
+from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Union
 
 LOGGER = logging.getLogger(__name__)

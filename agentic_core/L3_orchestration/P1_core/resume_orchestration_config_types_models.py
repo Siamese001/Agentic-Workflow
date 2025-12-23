@@ -1,6 +1,5 @@
-"""Dataclass models for resume_orchestration_config_types."""
+from typing import Any, Optional, Protocol, Dict, List
 import logging
-from typing import Any, Optional, List
 from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)

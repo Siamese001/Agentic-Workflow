@@ -196,7 +196,7 @@ class RGValidationGates:
             TEXT = content.get('executive_summary', '')
         else:
             TEXT = str(content)
-        template_patterns = ['\\[.*?\\]', '\\{.*?\\}', '<.*?>', 'TODO', 'XXX']
+        template_patterns = ['\
         for pattern in template_patterns:
             MATCHES = re.findall(pattern, TEXT) # Changed 'text' to 'TEXT'
             if MATCHES: # Changed 'matches' to 'MATCHES'
@@ -227,7 +227,7 @@ class RGValidationGates:
         source_material = context.get('source_material', '')
         for i, bullet in enumerate(BULLETS): # Changed 'bullets' to 'BULLETS'
             bullet_text = bullet if isinstance(bullet, str) else bullet.get('text', '')
-            METRICS = re.findall('\\d+%|\\$\\d+|\\d+x|\\d+\\+', bullet_text)
+            METRICS = re.findall('\
             for metric in METRICS: # Changed 'metrics' to 'METRICS'
                 if metric not in source_material:
                     VIOLATIONS.append(f"Bullet {i + 1}: Metric '{metric}' not found in source") # Changed 'violations' to 'VIOLATIONS'
@@ -278,14 +278,14 @@ class RGValidationGates:
                 min_words = BRIEF.get('headline', {}).get('min_words', 8) # Changed 'brief' to 'BRIEF'
                 max_words = BRIEF.get('headline', {}).get('max_words', 12) # Changed 'brief' to 'BRIEF'
                 if word_count < min_words or word_count > max_words:
-                    VIOLATIONS.append(f'Headline word count {word_count} outside range [{min_words},\n                        {max_words}]') # Changed 'violations' to 'VIOLATIONS'
+                    VIOLATIONS.append(f'Headline word count {word_count} outside range [{min_words},\
             SUMMARY = content.get('executive_summary', '')
             if SUMMARY: # Changed 'summary' to 'SUMMARY'
                 word_count = len(SUMMARY.split()) # Changed 'summary' to 'SUMMARY'
                 min_words = BRIEF.get('executive_summary', {}).get('min_words', 120) # Changed 'brief' to 'BRIEF'
                 max_words = BRIEF.get('executive_summary', {}).get('max_words', 140) # Changed 'brief' to 'BRIEF'
                 if word_count < min_words or word_count > max_words:
-                    VIOLATIONS.append(f'Summary word count {word_count} outside range [{min_words},\n                        {max_words}]') # Changed 'violations' to 'VIOLATIONS'
+                    VIOLATIONS.append(f'Summary word count {word_count} outside range [{min_words},\
         DECISION = GateDecision.PASS if not VIOLATIONS else GateDecision.FAIL # Changed 'pass' to 'PASS' and 'violations' to 'VIOLATIONS'
         return GateResult(gate_id=self.VG_CREATIVE_BRIEF_ADHERENCE,
             DECISION=DECISION, # Changed 'decision' to 'DECISION'
@@ -368,7 +368,7 @@ class RGValidationGates:
                 AVG = sum(word_counts) / len(word_counts)
                 for i, wc in enumerate(word_counts):
                     if abs(wc - AVG) > AVG * 0.5: # Changed 'avg' to 'AVG'
-                        VIOLATIONS.append(f'Competency {i + 1}: Word count {wc} significantly differ\ns from average {AVG:.0f}') # Changed 'violations' to 'VIOLATIONS' and 'avg' to 'AVG'
+                        VIOLATIONS.append(f'Competency {i + 1}: Word count {wc} significantly differ\
         DECISION = GateDecision.PASS if not VIOLATIONS else GateDecision.WARN # Changed 'pass' to 'PASS' and 'violations' to 'VIOLATIONS'
         return GateResult(gate_id=self.VG_COMPETENCY_WORD_COUNT_BALANCE,
             DECISION=DECISION, # Changed 'decision' to 'DECISION'
@@ -445,3 +445,6 @@ def run_gate(gate_id: str, # Removed misplaced docstring
     """Run a specific validation gate."""
     GATES = RGValidationGates()
     return GATES.run_gate(gate_id, content, context) # Changed 'gates' to 'GATES'
+]
+
+)

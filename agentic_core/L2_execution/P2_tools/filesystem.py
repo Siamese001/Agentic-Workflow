@@ -13,7 +13,7 @@ from functools import wraps
 from pathlib import Path
 from typing import List, Optional, Set
 
-from .definitions import (  # Changed to relative import
+from agentic_core.L2_execution.P2_tools.definitions import (
     CreateDirectoryArgs,
     DeleteFileArgs,
     ListFilesArgs,

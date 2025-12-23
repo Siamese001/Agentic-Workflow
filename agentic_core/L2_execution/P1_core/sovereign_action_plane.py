@@ -13,11 +13,15 @@ import subprocess
 import time
 from typing import Any, Dict, List, Optional
 
-from agentic_core.interfaces import (
+# Refactor: Moved ActionRequest, IActionPlane, and ActionResult to a shared,
+# upstream interface module to eliminate the sovereign layer importing from
+# a downstream layer (L1_cognition) and address the direct circular risk
+# by centralizing core interfaces.
+from agentic_core.shared.interfaces import (
     ActionRequest,
     IActionPlane,
+    ActionResult,
 )
-from agentic_core.interfaces.requests import ActionResult
 
 LOGGER = logging.getLogger(__name__)
 

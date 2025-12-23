@@ -1,7 +1,4 @@
 """Section Scope Integrator Agent - Overview Synthesis (K.5B & K.6B)
-
-
-LOGGER = logging.getLogger(__name__)
 This agent synthesizes clean overviews after bullets are generated.
 Enforces anti-prefix validation and strict deduplication constraints.
 
@@ -18,11 +15,12 @@ Non-responsibilities:
 - Headline composition
 """
 
-
 import logging
 import re
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass # Added import for dataclass
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
+LOGGER = logging.getLogger(__name__)
 
 # Assuming ValidationResult, IntegrityGateExecutor, AdaptiveRecoveryLoop are defined elsewhere or will be imported.
 # For the purpose of fixing syntax, these are treated as existing types.

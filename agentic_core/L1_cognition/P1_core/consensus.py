@@ -4,13 +4,11 @@ Supreme Court - Zero Trust Multi-Model Consensus Engine
 Uses multiple AI models to reach consensus on critical decisions,
 preventing single-model failures or hallucinations.
 """
-from typing import Any, Optional, Protocol, Dict, List
-
-
 import asyncio
 import json
 import logging
-from typing import List, Tuple
+import re
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from openai import AsyncOpenAI
 from pydantic import BaseModel
@@ -340,8 +338,6 @@ Provide a JSON response:
 
     def _extract_confidence(self, text: str) -> float:
         """Extract confidence score from text."""
-        import re
-
         # Look for patterns like "confidence: 0.8" or "80% confident"
         patterns = [
             r"confidence[:\s]+(\d+\.?\d*)",

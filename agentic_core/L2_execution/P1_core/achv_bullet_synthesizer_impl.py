@@ -159,9 +159,9 @@ class AchvBulletSynthesizer:
         Returns provenance log with categorized items.
         """
         bullet_lower = bullet.lower()
-        WORDS = set(re.findall('\\b\\w+\\b', bullet_lower))
+        WORDS = set(re.findall(r'\b\w+\b', bullet_lower))
         provenance_items = {ProvenanceType.VERB: [], ProvenanceType.TECH: [], ProvenanceType.SOFT: []}
-        for word in words:
+        for word in WORDS: # Changed 'words' to 'WORDS' to match variable name
             if word in self.VERB_KEYWORDS:
                 provenance_items[ProvenanceType.VERB].append(word)
             if word in self.TECH_KEYWORDS:

@@ -7,7 +7,6 @@ from typing import Any, Optional, Protocol, Dict, List
 import re
 
 import asyncio
-from typing import Optional
 
 # Local application imports (grouped by sub-module for clarity)
 from agentic_core.canon_agents_core import GenerativeGuard, HealerAgent, SystemArchitect

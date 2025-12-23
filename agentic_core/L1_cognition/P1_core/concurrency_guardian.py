@@ -5,11 +5,86 @@ import asyncio
 import logging
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List
 
-from L4_state.storage import acquire_lock, release_lock
+# REMOVED: from agentic_core.L4_state.P1_core.storage import acquire_lock, release_lock
 
 LOGGER = logging.getLogger(__name__)
+
+# --- Start of Refactor Changes for Dependency Inversion ---
+
+class LockStorageProtocol(Protocol):
+    """
+    Protocol defining the interface for distributed lock storage operations.
+    This allows ConcurrencyGuardian to depend on an abstraction, not a concrete implementation.
+    """
+    async def acquire_lock(self, key: str, timeout: float) -> bool:
+        """
+        Acquire a distributed lock for a given key with a specified timeout.
+        Returns True if the lock was acquired, False otherwise.
+        """
+        ...
+    async def release_lock(self, key: str) -> bool:
+        """
+        Release a previously acquired distributed lock for a given key.
+        Returns True if the lock was successfully released, False otherwise.
+        """
+        ...
+
+# Global variable to hold the injected lock implementation.
+# This allows the module-level acquire_lock and release_lock functions
+# to delegate to a concrete implementation provided at runtime.
+_global_lock_implementation: Optional[LockStorageProtocol] = None
+
+def configure_distributed_locks(lock_impl: LockStorageProtocol):
+    """
+    Configures the distributed lock implementation for the ConcurrencyGuardian module.
+    This function should be called once at application startup or in the composition root
+    to inject the concrete lock storage dependency.
+
+    Args:
+        lock_impl: An object implementing the LockStorageProtocol.
+    """
+    global _global_lock_implementation
+    if not isinstance(lock_impl, LockStorageProtocol):
+        raise TypeError("Provided lock_impl must implement LockStorageProtocol.")
+    _global_lock_implementation = lock_impl
+    LOGGER.info("Distributed lock implementation configured for ConcurrencyGuardian module.")
+
+def _get_lock_implementation() -> LockStorageProtocol:
+    """
+    Internal helper to retrieve the configured lock implementation.
+    Raises a RuntimeError if the implementation has not been configured.
+    """
+    if _global_lock_implementation is None:
+        raise RuntimeError(
+            "Distributed lock implementation not configured. "
+            "Call configure_distributed_locks() before using ConcurrencyGuardian "
+            "or any function that relies on distributed locks."
+        )
+    return _global_lock_implementation
+
+# These module-level functions replace the direct import from L4_state.
+# They delegate calls to the globally configured lock implementation.
+async def acquire_lock(key: str, timeout: float) -> bool:
+    """
+    Acquire a distributed lock using the configured implementation.
+    This function is intended for internal use by ConcurrencyGuardian and
+    other components within this module that need to interact with the
+    distributed lock system.
+    """
+    return await _get_lock_implementation().acquire_lock(key, timeout)
+
+async def release_lock(key: str) -> bool:
+    """
+    Release a distributed lock using the configured implementation.
+    This function is intended for internal use by ConcurrencyGuardian and
+    other components within this module that need to interact with the
+    distributed lock system.
+    """
+    return await _get_lock_implementation().release_lock(key)
+
+# --- End of Refactor Changes ---
+
 
 # Constants - Using env vars for security and flexibility
 DEFAULT_LOCK_TIMEOUT = int(os.getenv("DEFAULT_LOCK_TIMEOUT", "30"))
@@ -125,7 +200,7 @@ class ConcurrencyGuardian:
                     # Clean up expired lock
                     self.active_locks.pop(key, None)
 
-            # Try to acquire distributed lock
+            # Try to acquire distributed lock using the module-level function
             acquired = await acquire_lock(key, timeout)
 
             if acquired:
@@ -155,6 +230,7 @@ class ConcurrencyGuardian:
             LOGGER.debug(f"Release requested for inactive lock: {key}")
             return False
 
+        # Release distributed lock using the module-level function
         success = await release_lock(key)
         if success:
             lock_info = self.active_locks.pop(key, None)
