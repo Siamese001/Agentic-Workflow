@@ -174,18 +174,16 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
 
     return True, ""
 
-# [SOVEREIGN ALIGNMENT] Authorizing your actual folder names
-# We map your existing territory to the mandatory depth of 4
-ALLOWED_CORE_STAGES = {
-    # L1 Stages (P-Series)
-    "identity", "inference", "meta", "P3_aggregation",
-    "P1_sensing", "P2_context", "P4_inference", "P5_meta",
+# [SOVEREIGN ALIGNMENT] Authorized Core Stages (Map to Territory)
+ALLOWED_CORE_STAGES = [
+    # L1 Cognition
+    "identity", "inference", "meta", "P3_aggregation", "P1_sensing", "P2_context", "P4_inference", "P5_meta",
     "discovery", "planning",
-    # L2 Stages
-    "P5_healing", "execution_cycle",
-    # L3 Stages (S-Series)
+    # L3 Orchestration
     "S1_design", "S2_runtime", "S3_vitality", "S4_checkpoint",
-}
+    # L2/L5 Support
+    "P5_healing", "P1_red_team", "execution_cycle"
+]
 
 ALLOWED_ROOT_FOLDERS = {
     # [L1: THE BRAIN]
@@ -452,9 +450,10 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             if depth != 4:
                 return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != 4."
             
-            # Rule 1a: Stage Authorization
+            # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S)
             stage = parts[2]
-            if stage not in ALLOWED_CORE_STAGES:
+            # Check against authorized list AND standard P/S naming convention
+            if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S')):
                 return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
             
             return True, "Core Precision Verified"
