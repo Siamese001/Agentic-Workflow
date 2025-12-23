@@ -367,6 +367,66 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
 
+# [SOVEREIGN MANDATE] Absolute depth identity for ACTIVE territories only
+CANONICAL_DEPTH_MAP = {
+    "agentic_core": 4,   # Root > Layer > Stage (P/S) > File
+    "tests": 3,          # Root > Category > File
+    "apps_rg": 3,        # Root > Domain > File
+    "apps_lic": 3,       # Root > Domain > File
+    "apps_shared": 3,    # Root > Domain > File
+    "observability": 3,  # Root > Signal > File
+    "config": 3,         # Root > Type > File
+    "scripts": 3,        # Root > Type > File
+    "schemas": 3,        # Root > Type > File
+    "prompt_governance": 3 # Root > Type > File
+}
+
+# Storage & History Exemptions (Any depth allowed)
+EXEMPT_FOLDERS = ["data", "archives", ".git", ".venv", "__pycache__"]
+
+def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool, str]:
+    """
+    [SOVEREIGN MANDATE] Absolute Precision Depth Enforcement.
+    
+    Enforces exact depth requirements for all active territories.
+    No ranges, no flexibility - only absolute precision.
+    
+    Args:
+        file_path: Absolute path to file
+        project_root: Project root directory
+        
+    Returns:
+        Tuple of (is_valid, reason)
+    """
+    try:
+        rel_path = file_path.relative_to(project_root)
+    except ValueError:
+        return False, "File outside project root"
+    
+    parts = rel_path.parts
+    depth = len(parts)
+    root_folder = parts[0] if parts else ""
+
+    # Rule 0: Sovereign Shield for Root Structural Components
+    if file_path.name == "__init__.py" or "validator" in file_path.name:
+        return True, "Root Structural Component"
+
+    # Rule 1: Storage Bypass
+    if root_folder in EXEMPT_FOLDERS:
+        return True, "Storage Bypass"
+
+    # Rule 2: Absolute Precision
+    if root_folder in CANONICAL_DEPTH_MAP:
+        required = CANONICAL_DEPTH_MAP[root_folder]
+        if depth != required:
+            # This is the "mean" check that forces the AI to move the file
+            return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
+        return True, "Canonical Depth Verified"
+
+    # Rule 3: Strict Deny for Unauthorized Drift
+    return False, f"SOVEREIGNTY BREACH: '{root_folder}' is an unapproved folder."
+
+
 def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
     Validate that a file exists in an allowed root folder.
