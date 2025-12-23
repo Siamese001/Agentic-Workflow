@@ -1,28 +1,18 @@
 import os
 import shutil
+import sys
+from pathlib import Path
 
 # --- CONFIGURATION ---
 DRY_RUN = False  # FLIP TO FALSE TO EXECUTE
 PROJECT_ROOT = "C:/Git/Agentic-Workflow"
 
-# THE BLUEPRINT: Level 2 -> Level 3
-FULL_CORE_SCHEMA = {
-    "L0_maintenance": ["P1_core", "scripts", "migrations", "benchmarks"],
-    "L1_cognition": ["P1_core", "thought_engine", "intent_analysis", "planning_logic"],
-    "L2_execution": ["P1_core", "tool_registry", "action_handlers", "sandbox"],
-    "L3_orchestration": ["P1_core", "workflow_engines", "handoff_logic", "event_bus"],
-    "L4_state": ["P1_core", "persistence_layer", "session_manager", "checkpoints"],
-    "L5_safety": ["P1_core", "guardrails", "red_teaming", "audit_logs"],
-    "config": ["P1_core", "environments", "secrets_manager", "feature_flags"],
-    "observability": ["P1_core", "logging", "telemetry", "tracing"],
-    "prompt_governance": ["P1_core", "templates", "versioning", "rendering"],
-    "schemas": ["P1_core", "validators", "types", "models"],
-    "utils": ["P1_core", "helpers", "decorators", "formatters"],
-    "runtime": ["P1_core", "environment_setup", "resource_management"],
-    "semantic_memory": ["P1_core", "vector_store", "retrieval_logic", "embeddings"],
-    "knowledge": ["P1_core", "document_loaders", "static_index"],
-    "patterns": ["P1_core", "reasoning_patterns", "interaction_patterns"]
-}
+# [SSOT] Import structure from master blueprint
+sys.path.insert(0, str(Path(PROJECT_ROOT) / "agentic_core" / "config" / "P1_core"))
+from structure_blueprint import AGENTIC_CORE_REGISTRY
+
+# Use the master blueprint as FULL_CORE_SCHEMA
+FULL_CORE_SCHEMA = AGENTIC_CORE_REGISTRY
 
 # APP TERRITORIES
 APP_SCHEMAS = {
