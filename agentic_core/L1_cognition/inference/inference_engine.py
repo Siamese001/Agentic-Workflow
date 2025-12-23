@@ -1,4 +1,4 @@
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, TYPE_CHECKING
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
@@ -15,7 +15,9 @@ from groq import Groq
 from together import Together
 from fireworks.client import Fireworks
 
-from agentic_core.L1_cognition.context.signal_context import SignalContext
+# Break the circular gravity leak by deferring the context import
+if TYPE_CHECKING:
+    from agentic_core.L1_cognition.context.signal_context import SignalContext
 
 LOGGER = logging.getLogger(__name__)
 
