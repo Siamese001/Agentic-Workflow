@@ -1,7 +1,7 @@
 """Sovereign Layer: L3_orchestration"""
 
 from .framework.dag_executor import DAGNode, DAGExecutionResult, DAGExecutor
-from .fission_executor import apply_fission_blueprint
+from .P1_core.fission_executor import apply_fission_blueprint
 from .health.autonomic_monitor_impl import AutonomicMonitor
 from .health.autonomic_monitor_types import HealthStatus, AlertSeverity, HealthMetrics, HealthAlert
 from .health.benchmarking_agent import BenchmarkResult, BenchmarkSuite, BenchmarkingAgent, BenchmarkContext
