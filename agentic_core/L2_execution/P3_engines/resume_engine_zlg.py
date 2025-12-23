@@ -22,7 +22,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..knowledge.l5_consolidated import (
+from agentic_core.knowledge.P1_core.l5_consolidated import (
     KnowledgeResult,
     get_consolidated_knowledge,
 )
@@ -33,7 +33,7 @@ from ..security.security_utilities import (
     get_fact_checker,
     get_prompt_firewall,
 )
-from ..utils.core_utilities import (
+from agentic_core.utils.P1_core.core_utilities import (
     DraftGenerator,
     FileManager,
     SemanticScorer,
