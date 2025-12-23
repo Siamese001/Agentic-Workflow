@@ -11,7 +11,7 @@ from typing import Any
 # Assuming test_regression_oracle.py is at the project root (C:\Git\Agentic-Workflow).
 sys.path.insert(0, str(Path(__file__).parent))
 
-from agentic_core.agents import get_regression_oracle
+from agentic_core.L5_safety.P1_red_team import get_regression_oracle
 from agentic_core.domain.context import ValidationContext
 
 # Configure basic logging for console output

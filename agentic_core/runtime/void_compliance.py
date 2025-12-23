@@ -174,6 +174,19 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
 
     return True, ""
 
+# [SOVEREIGN ALIGNMENT] Authorizing your actual folder names
+# We map your existing territory to the mandatory depth of 4
+ALLOWED_CORE_STAGES = {
+    # L1 Stages (P-Series)
+    "identity", "inference", "meta", "P3_aggregation",
+    "P1_sensing", "P2_context", "P4_inference", "P5_meta",
+    "discovery", "planning",
+    # L2 Stages
+    "P5_healing", "execution_cycle",
+    # L3 Stages (S-Series)
+    "S1_design", "S2_runtime", "S3_vitality", "S4_checkpoint",
+}
+
 ALLOWED_ROOT_FOLDERS = {
     # [L1: THE BRAIN]
     # NOTE: Root-level files (e.g., canon_validator_*.py, pyproject.toml, README.md) 
@@ -426,35 +439,33 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
     try:
         # Get relative path from project root
         rel_path = file_path.relative_to(project_root)
+        parts = rel_path.parts
+        depth = len(parts)
+        root_folder = parts[0]
         
-        # [GRAVITY SHIELD] Exempt __init__.py and root-level orchestrators from depth checks
-        if file_path.name == "__init__.py" or "validator" in file_path.name:
-            return True, "Root Structural Component (Depth Shield Active)"
+        # Rule 0: Exempt the root structure
+        if file_path.name == "__init__.py" or depth == 1:
+            return True, "Sovereign Structural Component"
         
-        # Special Case: Root-level files are explicitly allowed (Key 0: Global Config, Orchestrator, Law)
-        # Protected root-level files that must remain at project root
-        protected_root_files = {
-            "canon_validator_agentic_v2.py", "pyproject.toml", "README.md",
-            "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
-        }
-        if len(rel_path.parts) == 1 and file_path.name in protected_root_files:
-            return True, "Root-level file allowed (Key 0 compliance: global config/orchestrator)"
-
-        # Nested files: Must belong to an approved root folder
-        root_folder = rel_path.parts[0]
+        # Rule 1: Core Precision (Depth 4)
+        if root_folder == "agentic_core":
+            if depth != 4:
+                return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != 4."
+            
+            # Rule 1a: Stage Authorization
+            stage = parts[2]
+            if stage not in ALLOWED_CORE_STAGES:
+                return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
+            
+            return True, "Core Precision Verified"
         
-        # [UPDATED DEPTH LAW - Dec 2025]
-        # Calculation: Number of directory parts excluding the filename.
-        # Depth 3: agentic_core/L1_cognition/strategy/file.py (MIN REQUIRED)
-        # Depth 5: agentic_core/L1/L2/L3/L4/file.py (MAX ALLOWED)
-        depth = len(rel_path.parts) - 1
-        
+        # Rule 2: Tests Precision (Depth 3)
         if root_folder == "tests":
-            # Tests must be exactly depth 3 (e.g., tests/unit/agentic_core/test_*.py)
             if depth != 3:
                 return False, f"DEPTH VIOLATION: tests/ requires exactly depth 3, found {depth} at '{rel_path}'."
             return True, "Test path compliant."
 
+        # Rule 3: General Depth Bounds (Depth 3-5)
         if depth < 3:
             return False, f"SHALLOW VIOLATION (Key 41): '{rel_path}' depth {depth} < min 3. Add intermediate L-layer folder."
         
