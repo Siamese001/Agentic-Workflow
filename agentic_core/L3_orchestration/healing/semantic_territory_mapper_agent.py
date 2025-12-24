@@ -113,7 +113,19 @@ class SemanticTerritoryMapperAgent:
                 if best_match['score'] > 0.90:  # Eternal threshold — 90%+ confidence only
                     territory = best_match['metadata'].get('path', 'unknown')
                     confidence = best_match['score']
-                    return territory, confidence
+                    
+                    # [L4 REFINEMENT] Can we go deeper?
+                    deepest = territory
+                    from agentic_core.config.P1_core.structure_blueprint import CORE_L4_SUBFOLDER_MAP
+                    
+                    for l3, l4_list in CORE_L4_SUBFOLDER_MAP.items():
+                        if l3 in deepest:
+                            for l4 in l4_list:
+                                if l4.lower() in content.lower() or l4.lower() in file_path.name.lower():
+                                    deepest = f"{deepest}/{l4}"
+                                    break
+                    
+                    return deepest, confidence
         except Exception as e:
             print(f"   [!] Territory mapping failed: {e}")
             

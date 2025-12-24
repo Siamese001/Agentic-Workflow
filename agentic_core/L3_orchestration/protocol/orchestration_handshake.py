@@ -4,48 +4,119 @@ OrchestrationHandshake - Multi-Hop Agent Collaboration
 """
 
 import json
-from pathlib import Path
+import hashlib
 from typing import Dict, List, Any, Optional
+from pathlib import Path
 from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
+from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
 
 class OrchestrationHandshake:
     """
     Sovereign handshake protocol — eternal agent collaboration.
+    Now with Redis sovereign caching for instant discovery and delegation.
     """
     def __init__(self, project_root: Path, requesting_agent: str):
         self.root = project_root
         self.requesting_agent = requesting_agent
         self.registry = SubAtomicRegistry(project_root)
+        self.env = get_env(project_root)
+
+        # [REDIS INTEGRATION] Sovereign cache for handshake performance
+        try:
+            self.redis_agent = RedisSovereignAgent(project_root)
+            self.redis = self.redis_agent.get_client()
+        except Exception:
+            self.redis = None
+
+    def discover_capable_agents(self, task: str, min_confidence: float = 0.85) -> List[Dict]:
+        """
+        Discover agents/methods capable of task via hybrid registry search.
+        Cache-first — Redis hit -> instant discovery.
+        """
+        cache_key = f"handshake_discover:{hashlib.sha256((task + str(min_confidence)).encode()).hexdigest()}"
+        if self.redis:
+            cached = self.redis.get(cache_key)
+            if cached:
+                return json.loads(cached)
+
+        results = self.registry.find_method(task, top_k=10)
+        
+        capable = []
+        for r in results:
+            if r['score'] >= min_confidence:
+                meta = r['metadata']
+                capable.append({
+                    "agent_class": meta.get('agent_class', 'Unknown'),
+                    "method": meta['method'],
+                    "confidence": r['score'],
+                    "docstring": meta['docstring'][:200]
+                })
+        
+        # [CACHE WARM] Store discovery results for 1 hour
+        if self.redis and capable:
+            try:
+                self.redis.set(cache_key, json.dumps(capable), ex=3600)
+            except Exception: pass
+
+        return sorted(capable, key=lambda x: x['confidence'], reverse=True)
 
     def delegate_task(
-        self, 
-        task: str, 
-        kwargs: Optional[Dict] = None, 
-        min_confidence: float = 0.88
+        self,
+        task: str,
+        args: Optional[Dict] = None,
+        kwargs: Optional[Dict] = None,
+        min_confidence: float = 0.85
     ) -> Dict:
         """
-        Sovereign delegation: Find the best tool and use it.
+        Sovereign delegation — find best method and invoke.
         """
+        args = args or {}
         kwargs = kwargs or {}
         
-        # Discovery Phase
-        candidates = self.registry.find_method(task, top_k=3)
-        if not candidates or candidates[0]['score'] < min_confidence:
-            return {"status": "failed", "reason": "No high-confidence agent found."}
+        # [CACHE] Check for identical recent delegation
+        delegation_key = f"handshake_delegate:{hashlib.sha256((task + json.dumps(kwargs)).encode()).hexdigest()}"
+        if self.redis:
+            cached = self.redis.get(delegation_key)
+            if cached:
+                print(f"   [CACHE HIT] Handshake result reused for '{task[:30]}...'")
+                return json.loads(cached)
 
-        best = candidates[0]['metadata']
-        print(f"   [HANDSHAKE] {self.requesting_agent} -> {best['method']} ({candidates[0]['score']:.2f})")
-
-        # Execution Phase
-        try:
-            result = self.registry.invoke_method(best, **kwargs)
+        capable = self.discover_capable_agents(task, min_confidence)
+        if not capable:
             return {
-                "status": "success",
-                "agent": best['method'],
-                "result": str(result)[:500]
+                "status": "no_capable_agent",
+                "message": f"No agent found for task: {task[:50]}..."
             }
+
+        best = capable[0]
+        print(f"   [HANDSHAKE] {self.requesting_agent} -> {best['agent_class']}.{best['method']} ({best['confidence']:.2f})")
+
+        try:
+            # Invoke via registry
+            method_meta = {
+                'agent_class': best['agent_class'],
+                'method': best['method']
+            }
+            result = self.registry.invoke_method(method_meta, **{**args, **kwargs})
+            
+            audit = {
+                "status": "success",
+                "delegated_to": f"{best['agent_class']}.{best['method']}",
+                "confidence": best['confidence'],
+                "result_summary": str(result)[:500] if result else "None"
+            }
+            # Cache successful delegation for 30 mins
+            if self.redis:
+                try:
+                    self.redis.set(delegation_key, json.dumps(audit), ex=1800)
+                except Exception: pass
+            return audit
         except Exception as e:
-            return {"status": "error", "message": str(e)}
+            return {
+                "status": "delegation_failed",
+                "error": str(e)
+            }
 
     def execute_mission(self, steps: List[Dict]) -> List[Dict]:
         """
