@@ -32,16 +32,22 @@ class SovereignEnv:
 
         load_dotenv(dotenv_path=env_path, override=True)
 
-        # [ETERNAL MANDATORY] GEMINI-ONLY policy — enforced at load
+        # [ETERNAL MANDATORY] GEMINI-ONLY — enforced at sovereign load
         self.GEMINI_API_KEY = self._require("GEMINI_API_KEY")
         self.GEMINI_MODEL = self._require("GEMINI_MODEL")
 
-        # Forbidden non-Gemini keys — immediate halt if present
-        if os.getenv("OPENAI_API_KEY") or os.getenv("ANTHROPIC_API_KEY"):
-            raise ValueError("[L6 NEURAL LINK BREACH] Non-Gemini keys detected — GEMINI-ONLY policy violated")
+        # Forbidden non-Gemini — immediate sovereignty breach
+        forbidden = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_API_KEY"]
+        for bad in forbidden:
+            if os.getenv(bad):
+                raise ValueError(f"[L6 NEURAL LINK BREACH] Forbidden key {bad} present — GEMINI-ONLY policy")
 
         # === VECTOR & CACHE ===
-        self.REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+        # [FINAL MANDATORY] Vector & cache — fail if missing
+        self.REDIS_URL = self._require("REDIS_URL")
+        # [REDIS HARDENING] Optional authentication & SSL
+        self.REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+        self.REDIS_SSL = os.getenv("REDIS_SSL", "false").lower() == "true"
         self.PINECONE_API_KEY = self._require("PINECONE_API_KEY")
         self.PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "canon-sovereign-territory")
         self.PINECONE_CLOUD = os.getenv("PINECONE_CLOUD", "aws")

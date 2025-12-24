@@ -129,6 +129,41 @@ TERRITORY_EXAMPLES = {
     "scripts": "operational tool cli integrity backup deploy",
 }
 
+# [DOUBLE-LOCK] Positive signals — files with these BELONG in the territory
+# [ETERNAL REFINEMENT] Territory-specific POSITIVE signals for hybrid search
+# These confirm a file's belonging to a specific key territory.
+TERRITORY_POSITIVE_SIGNALS = {
+    # Key 0: Sovereign Root
+    0: ["canon", "validator", "orchestrator", "sovereign", "constitution", "windsurf", "blueprint"],
+
+    # Key 1: Prompt Governance
+    1: ["prompt", "persona", "instructional", "directive", "system_prompt", "meta_prompt", "governance"],
+
+    # Key 11: L1_cognition — reasoning
+    11: ["strategy", "reasoning", "planner", "decomposition", "intent", "mission", "cognition", "thought", "synthesis"],
+
+    # Key 12: L3_orchestration — workflow
+    12: ["orchestration", "fission", "workflow", "router", "hop", "coordinator", "healer", "pruner", "mapper", "registry"],
+
+    # Key 13: L4_state — persistence
+    13: ["state", "memory", "cache", "historian", "audit", "ledger", "persistence", "vector", "pinecone", "redis", "embedding"],
+
+    # Key 15: Domain Specialists
+    15: ["resume", "ranking", "narrative", "scoring", "compliance", "license", "specialist", "generator", "processor"],
+
+    # Key 17: Tests
+    17: ["test", "unit", "integration", "e2e", "functional", "fixture", "mock", "scenario", "pytest"],
+
+    # Key 18: Scripts / Operational
+    18: ["script", "tool", "cli", "operational", "integrity", "backup", "deploy", "maintenance", "guardian"],
+
+    # Key 19: L5_safety — shield
+    19: ["safety", "guardrail", "filter", "enforcer", "shield", "policy", "gravity", "neural", "subatomic", "gemini"],
+
+    # Key 20: Observability / Drift
+    20: ["drift", "audit", "coverage", "naming", "compliance", "monitor", "detector", "aggregator", "hierarchy"]
+}
+
 # [SOVEREIGN BOOTSTRAP] Auto-populate Pinecone index on first run
 def bootstrap_territory_index():
     """
@@ -162,11 +197,14 @@ def bootstrap_territory_index():
 # --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW ---
 # [KEY 49 ENFORCEMENT] Files must contain at least one of these keywords
 CANON_SIGNALS = {
-    "strategy", "reasoning", "planner", "node", "extraction", "synthesis",
-    "orchestration", "fission", "hop", "router", "memory", "historian",
-    "state", "cache", "safety", "guardrail", "filter", "engine",
-    "compliance", "auditor", "validator", "healer", "prompt", "persona",
-    "schema", "blueprint", "agent", "handler", "manager", "impl", "types"
+    # Core Roles
+    "agent", "manager", "engine", "validator", "healer", "auditor", "enforcer", "detector",
+    "orchestrator", "coordinator", "pruner", "mapper", "handler", "guardian",
+    # Core Concepts
+    "strategy", "reasoning", "fission", "workflow", "state", "memory", "cache",
+    "safety", "guardrail", "prompt", "persona", "schema", "blueprint",
+    # Infrastructure Specifics
+    "vector", "embedding", "pinecone", "redis", "compliance", "drift", "hierarchy"
 }
 
 # [KEY 49] FORBIDDEN NAMING PATTERNS

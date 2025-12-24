@@ -15,6 +15,7 @@ import re
 import time
 import numpy as np
 from typing import Any, Dict, Optional, List
+from pathlib import Path
 
 # Gemini SDK
 try:
@@ -28,6 +29,13 @@ try:
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
+
+# Pinecone for hybrid routing
+try:
+    from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+    PINECONE_AVAILABLE = True
+except ImportError:
+    PINECONE_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +74,14 @@ class SubAtomicEngine:
             self._client = genai.Client(api_key=api_key)
         
         self.chat_sessions: Dict[str, Any] = {}
+        
+        # [HYBRID ROUTING] Link the vector gateway
+        try:
+            self.pinecone = PineconeSovereignAgent(Path("."))
+            print("   [OK] SubAtomicEngine: Hybrid routing active")
+        except Exception as e:
+            print(f"   [!] Hybrid routing offline: {e}")
+            self.pinecone = None
     
     @staticmethod
     def get_safe_config(is_fission: bool = False) -> Any:
@@ -218,3 +234,63 @@ class SubAtomicEngine:
         
         logger.warning("   [!] Malformed response from Gemini")
         return code
+
+    def route_mission(self, mission: str) -> Dict:
+        """
+        Eternal sub-atomic routing: Vector + Keyword precision.
+        """
+        if not self.pinecone:
+            return {"route": "fallback", "reason": "Hybrid routing offline", "confidence": 0.0}
+
+        # Extract keywords from canon signals
+        from agentic_core.config.P1_core.structure_blueprint import CANON_SIGNALS
+        keywords = [w for w in CANON_SIGNALS if w.lower() in mission.lower()]
+
+        # Perform Hybrid Search (Alpha 0.65 favors semantic but requires keyword match)
+        results = self.pinecone.hybrid_search(
+            query=mission,
+            top_k=8
+        )
+
+        if not results or not results.get('matches'):
+            return {"route": "unknown", "reason": "No high-confidence matches", "confidence": 0.0}
+
+        # Analyze results to find the sovereign path
+        territories = {}
+        agents = set()
+        
+        for match in results.get('matches', []):
+            meta = match.get('metadata', {})
+            territory = meta.get('territory', 'unknown')
+            score = match.get('score', 0)
+            path = meta.get('path', '')
+
+            # Weight by score
+            territories[territory] = territories.get(territory, 0) + score
+
+            # Extract agent names from path (Naming Law: *_agent.py)
+            if 'agent' in path.lower():
+                file_stem = Path(path).stem
+                if file_stem.endswith("_agent"):
+                    agents.add(file_stem.replace("_", " ").title().replace(" ", ""))
+
+        # Determine primary territory and normalize confidence
+        if not territories:
+            return {"route": "unknown", "reason": "No territory data found", "confidence": 0.0}
+            
+        best_territory = max(territories, key=territories.get)
+        confidence = territories[best_territory] / sum(territories.values())
+
+        routing_plan = {
+            "primary_territory": best_territory,
+            "confidence": round(confidence, 3),
+            "relevant_agents": list(agents)[:3],
+            "top_matches": [
+                {"path": m['metadata'].get('path'), "score": round(m['score'], 3)} 
+                for m in results.get('matches', [])[:3]
+            ],
+            "recommended_action": f"Deploy {list(agents)[0] if agents else 'Agent'} to {best_territory}"
+        }
+
+        print(f"   [ROUTING] Mission routed to '{best_territory}' ({confidence:.1%})")
+        return routing_plan
