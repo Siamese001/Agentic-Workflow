@@ -56,10 +56,13 @@ class HealerAgent(CanonBaseAgent):
     async def _handle_structural_rehoming(self, file_path: str) -> Dict[str, Any]:
         """
         [KEY 40/49 HARDENING] High-Signal Re-homing.
-        Uses CANONICAL_HIERARCHY as the source of truth for re-homing.
+        Uses SOVEREIGN_REGISTRY as the source of truth for re-homing.
         """
-        import void_compliance
-        from void_compliance import CANONICAL_HIERARCHY, FORBIDDEN_ROOT_FOLDERS
+        from agentic_core.runtime.shared.void_compliance import (
+            get_placement_guidance,
+            FORBIDDEN_ROOT_FOLDERS
+        )
+        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
         
         try:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
@@ -67,16 +70,16 @@ class HealerAgent(CanonBaseAgent):
             
             # Step A: High-Signal Analysis
             # Use heuristics to get a 'candidate' path
-            candidate_path = void_compliance.get_placement_guidance(code[:3000])
+            candidate_path = get_placement_guidance(code[:3000])
             
             # Step B: Hierarchy Validation (Key 49)
-            # Ensure the candidate exists within the CANONICAL_HIERARCHY SSOT
+            # Ensure the candidate exists within the SOVEREIGN_REGISTRY SSOT
             parts = candidate_path.split('/')
             root_folder = parts[0]
             l1_layer = parts[1] if len(parts) > 1 else None
             
             # Final fallback if heuristics drift from hierarchy
-            if root_folder not in CANONICAL_HIERARCHY or (l1_layer and l1_layer not in CANONICAL_HIERARCHY[root_folder]):
+            if root_folder not in SOVEREIGN_REGISTRY or (l1_layer and l1_layer not in SOVEREIGN_REGISTRY[root_folder]["subfolders"]):
                 print(f"      [!] HIERARCHY DRIFT: Candidate '{candidate_path}' not in SSOT. Defaulting to cognition.")
                 target_dir = "agentic_core/L1_cognition"
             else:

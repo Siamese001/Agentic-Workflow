@@ -41,7 +41,7 @@ class TestGeneratorAgent(CanonBaseAgent):
         """
         Generates a unit test file in the canonical tests/ unit layer.
         """
-        import void_compliance
+        from agentic_core.runtime.shared import void_compliance
         source_p = Path(source_path)
         
         # Determine target test path (e.g., tests/unit/agentic_core/L1_cognition/filename_test.py)

@@ -97,7 +97,8 @@ class SystemArchitect(CanonBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations = []
-        from void_compliance import CANONICAL_HIERARCHY, validate_canonical_hierarchy
+        from agentic_core.runtime.shared.void_compliance import validate_canonical_hierarchy
+        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
         project_root = Path(self.ctx.project_root or os.getcwd()).resolve()
         
         # 1. Centralized hierarchy drift check
@@ -110,21 +111,25 @@ class SystemArchitect(CanonBaseAgent):
             violations.append(f"{rel_path}: {reason}")
 
         # 2. Package Integrity: Verify __init__.py markers
-        for root_folder, layers in CANONICAL_HIERARCHY.items():
+        for root_folder, config in SOVEREIGN_REGISTRY.items():
             root_path = project_root / root_folder
             if not root_path.exists(): continue
             if not (root_path / '__init__.py').exists():
                 violations.append(f"{root_folder}: Missing __init__.py (package marker)")
 
-            for l1_name, l2_list in layers.items():
+            for l1_name in config["subfolders"]:
                 l1_path = root_path / l1_name
                 if l1_path.exists():
                     if not (l1_path / '__init__.py').exists():
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
-                    for l2_name in l2_list:
-                        l2_path = l1_path / l2_name
-                        if l2_path.exists() and not (l2_path / '__init__.py').exists():
-                            violations.append(f"{root_folder}/{l1_name}/{l2_name}: Missing __init__.py")
+                    # Check L2 subfolders if depth is 4
+                    if config["depth"] == 4:
+                        from agentic_core.config.P1_core.structure_blueprint import CORE_SUBFOLDER_MAP
+                        l2_list = CORE_SUBFOLDER_MAP.get(l1_name, [])
+                        for l2_name in l2_list:
+                            l2_path = l1_path / l2_name
+                            if l2_path.exists() and not (l2_path / '__init__.py').exists():
+                                violations.append(f"{root_folder}/{l1_name}/{l2_name}: Missing __init__.py")
         
         return len(violations) == 0, violations
     
@@ -154,13 +159,10 @@ class SystemArchitect(CanonBaseAgent):
             root_folder = rel_path.parts[0] if rel_path.parts else None
 
             # [SSOT] Dynamic depth check from structure_blueprint
-            import sys
-            from pathlib import Path
-            sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-            from structure_blueprint import SOVEREIGN_DEPTH_MAP
+            from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
             
-            if root_folder in SOVEREIGN_DEPTH_MAP:
-                required_depth = SOVEREIGN_DEPTH_MAP[root_folder]
+            if root_folder in SOVEREIGN_REGISTRY:
+                required_depth = SOVEREIGN_REGISTRY[root_folder]["depth"]
                 if depth != required_depth:
                     violations.append(f"{rel_path}: {root_folder} requires exactly depth {required_depth}, found {depth}.")
                 continue
