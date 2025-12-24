@@ -9,25 +9,15 @@ from typing import Dict, List, Any, Optional
 from pathlib import Path
 from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 from agentic_core.config.P1_core.sovereign_env import get_env
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L3_orchestration.workflow_engines.cached_orchestrator import CachedOrchestrator
 
-class OrchestrationHandshake:
+class OrchestrationHandshake(CachedOrchestrator):
     """
-    Sovereign handshake protocol — eternal agent collaboration.
-    Now with Redis sovereign caching for instant discovery and delegation.
+    Sovereign handshake protocol — now with deep L3 caching.
     """
     def __init__(self, project_root: Path, requesting_agent: str):
-        self.root = project_root
-        self.requesting_agent = requesting_agent
+        super().__init__(project_root, mission_id=requesting_agent)
         self.registry = SubAtomicRegistry(project_root)
-        self.env = get_env(project_root)
-
-        # [REDIS INTEGRATION] Sovereign cache for handshake performance
-        try:
-            self.redis_agent = RedisSovereignAgent(project_root)
-            self.redis = self.redis_agent.get_client()
-        except Exception:
-            self.redis = None
 
     def discover_capable_agents(self, task: str, min_confidence: float = 0.85) -> List[Dict]:
         """
