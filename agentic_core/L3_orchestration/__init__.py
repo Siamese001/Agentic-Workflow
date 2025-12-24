@@ -7,7 +7,7 @@ from agentic_core.L3_orchestration.health.autonomic_monitor_types import HealthS
 from agentic_core.L3_orchestration.health.benchmarking_agent import BenchmarkResult, BenchmarkSuite, BenchmarkingAgent, BenchmarkContext
 from agentic_core.L3_orchestration.health.deadlock_detector import TaskMonitor, DeadlockDetector
 from agentic_core.L3_orchestration.health.memory_leak_detector import MemorySnapshot, MemoryLeakDetector
-from agentic_core.L3_orchestration.S3_vitality.context import ThermalProfile, MemoryConfig, GeminiConfig, UniversalContext
+from agentic_core.schemas.P1_core.context_passport import ThermalProfile
 from agentic_core.L3_orchestration.S3_vitality.fission_manager import FissionResult, FissionManager
 from agentic_core.L3_orchestration.S3_vitality.git_safety_handler import GitSafetyHandler
 from agentic_core.L3_orchestration.S3_vitality.mcp_router import MCPRouter
@@ -18,4 +18,4 @@ from agentic_core.L3_orchestration.S3_vitality.safety_guardrail import SafetyRes
 # from agentic_core.training.agent_gym_impl import AgentGym
 # from agentic_core.training.agent_gym_types import ScenarioType, PerformanceLevel, TrainingScenario, BenchmarkResult, TrainingSession
 
-__all__ = ['DAGNode', 'DAGExecutionResult', 'DAGExecutor', 'apply_fission_blueprint', 'AutonomicMonitor', 'HealthStatus', 'AlertSeverity', 'HealthMetrics', 'HealthAlert', 'BenchmarkResult', 'BenchmarkSuite', 'BenchmarkingAgent', 'BenchmarkContext', 'TaskMonitor', 'DeadlockDetector', 'MemorySnapshot', 'MemoryLeakDetector', 'ThermalProfile', 'MemoryConfig', 'GeminiConfig', 'UniversalContext', 'FissionResult', 'FissionManager', 'GitSafetyHandler', 'MCPRouter', 'SafetyResult', 'SafetyGuardrail']
+__all__ = ['DAGNode', 'DAGExecutionResult', 'DAGExecutor', 'apply_fission_blueprint', 'AutonomicMonitor', 'HealthStatus', 'AlertSeverity', 'HealthMetrics', 'HealthAlert', 'BenchmarkResult', 'BenchmarkSuite', 'BenchmarkingAgent', 'BenchmarkContext', 'TaskMonitor', 'DeadlockDetector', 'MemorySnapshot', 'MemoryLeakDetector', 'ThermalProfile', 'FissionResult', 'FissionManager', 'GitSafetyHandler', 'MCPRouter', 'SafetyResult', 'SafetyGuardrail']
