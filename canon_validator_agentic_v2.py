@@ -486,7 +486,9 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     if location_violations:
         print(f"[!] L6 ALERT: Found {len(location_violations)} file location violations:")
         for file_path, reason in location_violations[:3]:
-            print(f"   [X] {file_path.name}: {reason}")
+            # Fix Unicode encoding issue for Windows console
+            safe_reason = reason.encode('ascii', 'replace').decode('ascii')
+            print(f"   [X] {file_path.name}: {safe_reason}")
         if len(location_violations) > 3:
             print(f"   ... and {len(location_violations) - 3} more violations")
 
@@ -902,7 +904,9 @@ async def run_mission(target_scope: str = "agentic_core"):
     if violations:
         print(f"\n[!] [VOID COMPLIANCE] {len(violations)} files in forbidden/unknown folders:")
         for file_path, reason in violations[:5]:  # Show first 5
-            print(f"   [X] {file_path.name}: {reason}")
+            # Fix Unicode encoding issue for Windows console
+            safe_reason = reason.encode('ascii', 'replace').decode('ascii')
+            print(f"   [X] {file_path.name}: {safe_reason}")
         if len(violations) > 5:
             print(f"   ... and {len(violations) - 5} more violations")
     
