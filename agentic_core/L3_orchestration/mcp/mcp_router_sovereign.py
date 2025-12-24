@@ -67,22 +67,20 @@ class SovereignMCPRouter:
                 except Exception as red_e:
                     logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
 
-            # [L4 STATE INTEGRATION] Semantic drift -> Pinecone/Memory search
+            # [L4 STATE INTEGRATION] Semantic drift -> Memory search
             elif key_id in {21, 13}:  # Semantic memory, Mission history drift
                 try:
-                    pinecone_result = await self.manager.call_tool("pinecone_search", {
-                        "query": violation_desc,
-                        "index": "canon-patterns",
-                        "top_k": 3
+                    memory_result = await self.manager.call_tool("search_nodes", {
+                        "query": f"Canon Key {key_id} healing pattern for {violation_desc}"
                     })
                     return {
-                        "status": "l4_semantic",
-                        "tool": "pinecone_search",
-                        "matches": pinecone_result.get("matches", []),
-                        "insight": "Last known good pattern retrieved from eternal memory"
+                        "status": "l4_memory_recall",
+                        "tool": "memory_search",
+                        "recall": memory_result,
+                        "insight": "Pattern matched against eternal knowledge graph."
                     }
-                except Exception as pine_e:
-                    logger.warning(f"[L4 MCP] Pinecone failed: {pine_e}")
+                except Exception as mem_e:
+                    logger.warning(f"[L4 MCP] Memory search failed: {mem_e}")
 
             # [L3 ORCHESTRATION INTEGRATION] State recovery via Redis
             elif key_id == 18:  # Workflow state drift
@@ -91,6 +89,29 @@ class SovereignMCPRouter:
                     "operation": "restore_last_good"
                 })
                 return {"status": "l3_recovery", "tool": "redis_recover", "restored": redis_result.get("keys_restored", 0)}
+
+            # [L2 FIGMA] Design system enforcement
+            elif key_id in {42, 49} and "ui" in violation_desc.lower():
+                # Check if we have a Figma client available in the context
+                try:
+                    # Import context to check for figma_client
+                    from agentic_core.L4_state.P1_core.validation_context import ValidationContext
+                    if hasattr(ValidationContext, '_instance') and ValidationContext._instance:
+                        ctx = ValidationContext._instance
+                        if hasattr(ctx, 'figma_client') and ctx.figma_client:
+                            try:
+                                # Try to find matching code for the UI violation
+                                tokens = await ctx.figma_client.get_variable_defs("SOVEREIGN_FILE_KEY")
+                                return {
+                                    "status": "l2_figma_truth",
+                                    "tool": "figma_tokens",
+                                    "guidance": "Enforce these audited design tokens in the heal.",
+                                    "tokens": tokens
+                                }
+                            except Exception as figma_e:
+                                logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
+                except Exception:
+                    pass
 
             # [L1 SEQUENTIAL THINKING OPTIMIZATION] Primary cognitive engine
             # Prioritize atomic reasoning for all core structural/cognitive keys
@@ -160,16 +181,46 @@ class SovereignMCPRouter:
                     diag_result = await self.manager.call_tool("l0_diagnostics", {"scope": "repository"})
                     return {"status": "l0_diagnostics", "tool": "l0_diagnostics", "report": diag_result}
 
-            # [L2 EXECUTION INTEGRATION] Route research violations to L2 tools
-            if key_id in {40, 41, 49}:  # Gravity, Atomicity, Naming
+            # [L2 DEEPWIKI INTEGRATION] Sovereign repository knowledge access
+            elif key_id in {40, 41, 42, 49}:  # Structural & Cognitive Keys
                 try:
-                    search_result = await self.manager.call_tool("brave_search", {
-                        "query": f"python canon key {key_id} compliance best practices {violation_desc}",
-                        "count": 3
+                    # 1. Look for the structural map of the wiki
+                    structure = await self.manager.call_tool("read_wiki_structure", {
+                        "repo": "xai/grok-canon"
                     })
-                    return {"status": "l2_research", "tool": "brave_search", "results": search_result}
-                except Exception as search_e:
-                    logger.warning(f"[L2 MCP] Brave Search failed: {search_e}")
+                    
+                    # 2. Find a topic that matches our violation or key
+                    relevant_topic = next((t for t in structure.get("topics", []) 
+                                         if str(key_id) in t or "canon" in t.lower()), None)
+                    
+                    if relevant_topic:
+                        content = await self.manager.call_tool("read_wiki_contents", {
+                            "repo": "xai/grok-canon",
+                            "topic": relevant_topic
+                        })
+                        return {
+                            "status": "l2_deepwiki_structure",
+                            "guidance": content.get("content", ""),
+                            "source": relevant_topic
+                        }
+                    
+                    # 3. Fallback: Ask a direct question if no topic matches
+                    answer = await self.manager.call_tool("ask_question", {
+                        "repo": "xai/grok-canon",
+                        "question": f"How should Key {key_id} be resolved per the sovereign canon?"
+                    })
+                    return {"status": "l2_deepwiki_qa", "answer": answer.get("response", "")}
+                except Exception as wiki_e:
+                    logger.warning(f"[L2 DEEPWIKI] Wiki access failed: {wiki_e} — falling back to search")
+                    # Fallback to Brave Search
+                    try:
+                        search_result = await self.manager.call_tool("brave_search", {
+                            "query": f"python canon key {key_id} compliance best practices {violation_desc}",
+                            "count": 3
+                        })
+                        return {"status": "l2_research", "tool": "brave_search", "results": search_result}
+                    except Exception as search_e:
+                        logger.error(f"[L2 EXECUTION] Brave search failed: {search_e}")
                     return {"status": "fallback", "reason": str(search_e)}
 
             # [L4 STATE] Existing L4 tool routing

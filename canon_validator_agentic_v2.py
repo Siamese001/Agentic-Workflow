@@ -789,6 +789,36 @@ async def run_mission(target_scope: str = "agentic_core"):
     except Exception as e:
         print(f"   [!] Marketplace filtering failed: {e}")
 
+    # [L4 FILESYSTEM MCP] Sovereign atomic operations
+    ctx.fs_mcp = None
+    try:
+        from agentic_core.L4_state.filesystem.filesystem_mcp_sovereign import SovereignFilesystemMCP
+        ctx.fs_mcp = SovereignFilesystemMCP(ctx.mcp_router.manager, getattr(ctx, 'session_id', 'standalone'))
+        # Lock the gates: only allow access to mission-specific folders
+        await ctx.fs_mcp.set_roots(["agentic_core", "apps_shared", "apps_rg", "tests"])
+        print(f"   [OK] Sovereign Filesystem MCP ARMED — atomic operations eternal")
+    except Exception as e:
+        print(f"   [!] Filesystem MCP failed: {e} — falling back to direct writes")
+
+    # [L2 FIGMA] Sovereign design context client
+    ctx.figma_client = None
+    if os.getenv("FIGMA_OAUTH_TOKEN"):
+        try:
+            from agentic_core.L2_execution.mcp.figma_client_sovereign import SovereignFigmaClient
+            ctx.figma_client = SovereignFigmaClient(cache=ctx.semantic_cache)
+            print(f"   [OK] Sovereign Figma client armed — design truth active")
+        except Exception as e:
+            print(f"   [!] Figma client failed: {e}")
+
+    # [L2 FETCH] Sovereign external knowledge client
+    ctx.fetch_client = None
+    try:
+        from agentic_core.L2_execution.mcp.fetch_client_sovereign import SovereignFetchClient
+        ctx.fetch_client = SovereignFetchClient(ctx.mcp_router.manager, ctx.semantic_cache)
+        print(f"   [OK] Sovereign Fetch client armed — external knowledge safe")
+    except Exception as e:
+        print(f"   [!] Fetch client failed: {e}")
+
     # [L1 SOVEREIGN MEMORY] Ultra-hardened reasoning persistence
     ctx.reasoning_memory = None
     try:
@@ -1850,8 +1880,16 @@ CURRENT CODE:
                                         guidance = mcp_res.get('guidance', '')[:100]
                                         print(f"     [L1 POLICY] Sovereign guidance received: {guidance}...")
                                     
+                                    # [L2 DEEPWIKI HANDLING]
+                                    if mcp_res.get('status') in {'l2_deepwiki_structure', 'l2_deepwiki_qa'}:
+                                        guidance = mcp_res.get('guidance') or mcp_res.get('answer', '')
+                                        print(f"     [L2 DEEPWIKI] Knowledge retrieved: {guidance[:100]}...")
+                                        # Caching this guidance in L4 for next time
+                                        if ctx.semantic_cache:
+                                            await ctx.semantic_cache.cache_file(f"wiki_key{key_id}.txt", guidance, metadata={"source": "DeepWiki"})
+                                    
                                     # [L5/L4/L3 REINFORCEMENT]
-                                    if mcp_res.get('status') in {'l5_redteam', 'l4_semantic', 'l3_recovery'}:
+                                    if mcp_res.get('status') in {'l5_redteam', 'l4_semantic', 'l3_recovery', 'l4_memory_recall'}:
                                         tool = mcp_res.get('tool')
                                         print(f"     [L{mcp_res.get('status')[1:2]} REINFORCE] {tool} executed — sovereignty absolute.")
                                         if 'findings' in mcp_res:
