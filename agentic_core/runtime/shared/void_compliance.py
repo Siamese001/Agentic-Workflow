@@ -14,17 +14,10 @@ from pathlib import Path
 
 # [SSOT] Import the master structure blueprint
 from agentic_core.config.P1_core.structure_blueprint import (
-    SOVEREIGN_REGISTRY,
-    CORE_SUBFOLDER_MAP,
-    ROOT_WHITELIST,
-    CANON_SIGNALS,
-    FORBIDDEN_PATTERNS,
-    FORBIDDEN_ROOT_FOLDERS,
-    ACTIVE_CANON_KEYS,
-    CANON_KEY_TO_FOLDER_MAP,
-    ROOT_PROTECTED_FILES, # [GAP 16]
-    FORBIDDEN_NUMBERED_PATTERN,
-    _LEGACY_KEY_REMAP
+    SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, ROOT_WHITELIST,
+    CANON_SIGNALS, FORBIDDEN_PATTERNS, ROOT_PROTECTED_FILES,
+    CANON_KEY_TO_FOLDER_MAP, FORBIDDEN_NUMBERED_PATTERN,
+    CANONICAL_PRECISION_DEPTH, GENERAL_MIN_DEPTH, GENERAL_MAX_DEPTH
 )
 
 logger = logging.getLogger(__name__)
@@ -294,20 +287,26 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if file_path.name == "__init__.py" or depth == 1:
             return True, "Sovereign Structural Component"
         
-        # Rule 1: Dynamic Depth Enforcement (from CANONICAL_DEPTH_MAP)
-        if root_folder in CANONICAL_DEPTH_MAP:
-            required_depth = CANONICAL_DEPTH_MAP[root_folder]
-            if depth != required_depth:
-                return False, f"DEPTH PRECISION VIOLATION: '{rel_path}' depth {depth} != {required_depth} (Strict Rule)."
+        # Rule 1: [DEPTH PRECISION] Exact per-root + general bounds
+        if root_folder in CANONICAL_PRECISION_DEPTH:
+            required = CANONICAL_PRECISION_DEPTH[root_folder]
+            if depth != required:
+                return False, f"DEPTH PRECISION VIOLATION: '{rel_path}' depth {depth} ≠ {required} for '{root_folder}'"
+        
+        # General bounds for all folders
+        if depth < GENERAL_MIN_DEPTH:
+            return False, f"SHALLOW VIOLATION: depth {depth} < min {GENERAL_MIN_DEPTH}"
+        if depth > GENERAL_MAX_DEPTH:
+            return False, f"DEEP VIOLATION: depth {depth} > max {GENERAL_MAX_DEPTH}"
             
-            # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
-            if root_folder == "agentic_core":
-                stage = parts[2]
-                # Check against authorized list AND standard P/S/L naming convention
-                if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
-                    return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
-            
-            return True, f"{root_folder} depth verified"
+        # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
+        if root_folder == "agentic_core":
+            stage = parts[2]
+            # Check against authorized list AND standard P/S/L naming convention
+            if stage not in ALLOWED_CORE_STAGES and not (stage.startswith('P') or stage.startswith('S') or stage.startswith('L')):
+                return False, f"UNAUTHORIZED STAGE: '{stage}' is not a recognized Sovereign territory."
+        
+        return True, f"{root_folder} depth verified"
 
         # Rule 3: General Depth Bounds (Depth 3-5)
         if depth < 3:
