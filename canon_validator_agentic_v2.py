@@ -235,6 +235,8 @@ from agentic_core.L5_safety.gravity.gravity_enforcer_agent import GravityEnforce
 from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
 from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
 from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
+from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
+from agentic_core.L5_safety.red_teaming.sovereign_red_team_agent import SovereignRedTeamAgent
 from agentic_core.L5_safety.policy.sovereign_alerting_agent import SovereignAlertingAgent
 
 # Configure logging
@@ -1194,6 +1196,9 @@ IF (task == "GRAVITY_REFACTOR"):
     
     # [SUBATOMIC REGISTRY] Add method registry to monitors
     monitors.append(SubAtomicRegistry(project_root))
+    
+    # [FORENSICS] Add SovereignForensicsAgent to monitors
+    monitors.append(SovereignForensicsAgent(project_root))
     
     # [L5 ALERTING] Add SovereignAlertingAgent to monitors
     monitors.append(SovereignAlertingAgent(project_root))

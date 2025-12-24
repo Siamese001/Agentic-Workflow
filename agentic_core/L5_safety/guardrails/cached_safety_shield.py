@@ -1,53 +1,62 @@
 #!/usr/bin/env python3
 """
-CachedSafetyShield - Eternal L5 Safety with Redis Sovereign Cache
+CachedSafetyShield - Eternal L5 Safety Base with Redis Sovereign Cache
 """
 
 import json
 import hashlib
+import redis
 from pathlib import Path
 from typing import Dict, Any, Optional
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+import os
 
 class CachedSafetyShield:
     """
-    Sovereign L5 shield base — enforces cache-first safety checks for instant protection.
+    Sovereign L5 shield base — enforces cache-first safety for instant protection.
     """
-    def __init__(self, project_root: Path, session_id: str = "global"):
+    def __init__(self, project_root: Path, session_id: str = "l5_global"):
         self.root = project_root
         self.session_id = session_id
-        self.redis_gateway = RedisSovereignAgent(project_root)
-        self.redis = self.redis_gateway.get_client()
+        
+        # Direct Redis connection for testing
+        try:
+            self.redis = redis.Redis(
+                host=os.getenv('REDIS_HOST', 'localhost'),
+                port=int(os.getenv('REDIS_PORT', 6379)),
+                decode_responses=True
+            )
+            # Test connection
+            self.redis.ping()
+        except Exception as e:
+            print(f"Warning: Redis connection failed ({e}), using in-memory cache")
+            self.redis = None
+            self._memory_cache = {}
 
-        # Cache prefixes for L5 safety
+        # Sovereign prefixes
         self.prefix_gravity = f"l5_gravity:{session_id}"
         self.prefix_policy = f"l5_policy:{session_id}"
-        self.prefix_guardrail = f"l5_guardrail:{session_id}"
 
-    def cache_gravity_verdict(self, file_path: Path, verdict: Dict):
-        rel = str(file_path.relative_to(self.root))
-        key = f"{self.prefix_gravity}:{hashlib.sha256(rel.encode()).hexdigest()}"
+    def get_cached_verdict(self, category: str, identifier: str) -> Optional[Dict]:
+        """Instant recall of previous safety decisions."""
+        key = f"l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}"
         try:
-            self.redis.set(key, json.dumps(verdict), ex=604800)  # 7 days
-        except Exception: pass
+            if self.redis:
+                data = self.redis.get(key)
+                return json.loads(data) if data else None
+            else:
+                return self._memory_cache.get(key)
+        except Exception: 
+            return None
 
-    def get_cached_gravity(self, file_path: Path) -> Optional[Dict]:
-        rel = str(file_path.relative_to(self.root))
-        key = f"{self.prefix_gravity}:{hashlib.sha256(rel.encode()).hexdigest()}"
+    def store_verdict(self, category: str, identifier: str, verdict: Dict, ttl: int = 86400):
+        """Warm the cache with a fresh safety verdict."""
+        key = f"l5_{category}:{self.session_id}:{hashlib.sha256(identifier.encode()).hexdigest()}"
         try:
-            data = self.redis.get(key)
-            return json.loads(data) if data else None
-        except Exception: return None
-
-    def cache_policy_verdict(self, prompt: str, verdict: Dict):
-        key = f"{self.prefix_policy}:{hashlib.sha256(prompt.encode()).hexdigest()}"
-        try:
-            self.redis.set(key, json.dumps(verdict), ex=86400) # 24h
-        except Exception: pass
-
-    def get_cached_policy(self, prompt: str) -> Optional[Dict]:
-        key = f"{self.prefix_policy}:{hashlib.sha256(prompt.encode()).hexdigest()}"
-        try:
-            data = self.redis.get(key)
-            return json.loads(data) if data else None
-        except Exception: return None
+            # We add a timestamp to help the AutoImmune agent track frequency
+            verdict["timestamp"] = __import__('datetime').datetime.now().isoformat()
+            if self.redis:
+                self.redis.set(key, json.dumps(verdict), ex=ttl)
+            else:
+                self._memory_cache[key] = verdict
+        except Exception: 
+            pass
