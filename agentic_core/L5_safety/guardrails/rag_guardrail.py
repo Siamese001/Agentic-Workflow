@@ -9,19 +9,20 @@ from typing import List, Dict, Any, Optional
 
 class RAGGuardrail:
     def __init__(self):
-        self.colbert_reranker = None
+        self.bge_reranker = None
         self.reranker_available = False
 
         try:
-            from ragatouille import RAGPretrainedModel
-            # Detect best available hardware
+            from FlagEmbedding import FlagReranker
+            # Detect hardware: CUDA > MPS (Mac) > CPU
             device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-            self.colbert_reranker = RAGPretrainedModel.from_pretrained("colbert-ir/colbertv2.0")
-            # Note: RAGatouille handles device internally, but we log it for sovereignty
+            # v2-m3 is the 2025 SOTA for multilingual + 1024 context
+            model_name = "BAAI/bge-reranker-v2-m3" 
+            self.bge_reranker = FlagReranker(model_name, use_fp16=(device != "cpu"))
             self.reranker_available = True
-            print(f"   [OK] ColBERTv2 reranker armed on {device} — sovereign precision online")
+            print(f"   [OK] BGE Reranker armed on {device}: {model_name}")
         except ImportError:
-            print(f"   [!] ragatouille not installed — falling back to RRF only")
+            print(f"   [!] FlagEmbedding not installed — falling back to RRF only")
 
     async def rerank_documents(
         self,
@@ -30,38 +31,35 @@ class RAGGuardrail:
         top_k: int = 10
     ) -> List[Any]:
         """
-        Sovereign reranking using ColBERTv2 for maximum precision
+        L5 reranking using BGE-v2-m3 for sovereign precision
         """
         if not self.reranker_available or not documents:
             return documents
 
         try:
-            # Extract texts for ColBERT
-            doc_texts = [doc.text for doc in documents]
+            # Extract text pairs for the cross-encoder
+            pairs = [[query, doc.text] for doc in documents]
             
-            # Offload heavy ColBERT scoring to a thread pool
-            def _colbert_run():
-                return self.colbert_reranker.rerank(
-                    query=query, 
-                    documents=doc_texts, 
-                    k=len(doc_texts)
-                )
+            # Offload heavy synchronous model inference to a worker thread
+            def _compute():
+                return self.bge_reranker.compute_score(pairs, batch_size=32)
             
-            rerank_results = await asyncio.to_thread(_colbert_run)
+            scores = await asyncio.to_thread(_compute)
             
-            # Map back to RetrievalResult objects
-            reranked_docs = []
-            for result in rerank_results:
-                # RAGatouille returns document_index which matches our input order
-                idx = result["result_index"] if "result_index" in result else result["document_index"]
-                original_doc = documents[idx]
-                original_doc.score = float(result["score"])
-                reranked_docs.append(original_doc)
+            # Handle single vs batch return formats
+            if isinstance(scores, (float, int)):
+                scores = [scores]
+                
+            for doc, score in zip(documents, scores):
+                doc.score = float(score)
             
-            print(f"   [RERANK] ColBERTv2 applied → top-{top_k} sovereign refined")
-            return reranked_docs[:top_k]
+            # Resort by the superior L5 precision scores
+            documents.sort(key=lambda x: x.score, reverse=True)
+            
+            print(f"   [RERANK] BGE-v2-m3 refined top-{top_k} candidates")
+            return documents[:top_k]
         except Exception as e:
-            print(f"   [!] ColBERT reranking failed: {e}")
+            print(f"   [!] BGE reranking failed: {e}")
             return documents
 
     async def filter_hallucinations(self, documents: List[Any], query: str) -> List[Any]:
