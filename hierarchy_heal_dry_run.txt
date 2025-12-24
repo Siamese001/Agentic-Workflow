@@ -1,7 +1,7 @@
-=== BULK HIERARCHY HEAL DRY RUN ===
+=== BULK HIERARCHY HEAL ===
 Target: agentic_core
-Timestamp: 2025-12-24T17:23:45.600708
-Configuration: DRY_RUN = True
+Timestamp: 2025-12-24T17:27:04.088479
+Configuration: DRY_RUN = False
 
 [CONFLICT] agentic_core\L0_maintenance\__init__.py >> agentic_core\L0_maintenance\scripts\__init__.py (already exists)
 [CONFLICT] agentic_core\L0_maintenance\automation\__init__.py >> agentic_core\L0_maintenance\scripts\__init__.py (already exists)
@@ -495,14 +495,14 @@ Configuration: DRY_RUN = True
 [MOVE] agentic_core\L3_orchestration\P1_core\resume_orchestration_config_types_models.py >> agentic_core\L3_orchestration\workflow_engines\resume_orchestration_config_types_models.py
 [MOVE] agentic_core\L3_orchestration\P1_core\resume_state.py >> agentic_core\L3_orchestration\workflow_engines\resume_state.py
 [MOVE] agentic_core\L3_orchestration\P1_core\scripts_consolidator_agent.py >> agentic_core\L3_orchestration\workflow_engines\scripts_consolidator_agent.py
-[MOVE] agentic_core\L3_orchestration\P1_core\semantic_territory_mapper_agent.py >> agentic_core\L3_orchestration\workflow_engines\semantic_territory_mapper_agent.py
+[CONFLICT] agentic_core\L3_orchestration\P1_core\semantic_territory_mapper_agent.py >> agentic_core\L3_orchestration\workflow_engines\semantic_territory_mapper_agent.py (already exists)
 [MOVE] agentic_core\L3_orchestration\P1_core\state_final.py >> agentic_core\L3_orchestration\workflow_engines\state_final.py
 [MOVE] agentic_core\L3_orchestration\P1_core\subatomic_orchestrator.py >> agentic_core\L3_orchestration\workflow_engines\subatomic_orchestrator.py
 [MOVE] agentic_core\L3_orchestration\P1_core\subatomic_orchestrator_impl.py >> agentic_core\L3_orchestration\workflow_engines\subatomic_orchestrator_impl.py
 [MOVE] agentic_core\L3_orchestration\P1_core\subatomic_orchestrator_types.py >> agentic_core\L3_orchestration\workflow_engines\subatomic_orchestrator_types.py
 [MOVE] agentic_core\L3_orchestration\P1_core\swarm_scheduler.py >> agentic_core\L3_orchestration\workflow_engines\swarm_scheduler.py
 [MOVE] agentic_core\L3_orchestration\P1_core\telepathy.py >> agentic_core\L3_orchestration\workflow_engines\telepathy.py
-[MOVE] agentic_core\L3_orchestration\P1_core\territory_healer_agent.py >> agentic_core\L3_orchestration\workflow_engines\territory_healer_agent.py
+[CONFLICT] agentic_core\L3_orchestration\P1_core\territory_healer_agent.py >> agentic_core\L3_orchestration\workflow_engines\territory_healer_agent.py (already exists)
 [MOVE] agentic_core\L3_orchestration\P1_core\test_pilot.py >> agentic_core\L3_orchestration\workflow_engines\test_pilot.py
 [MOVE] agentic_core\L3_orchestration\P1_core\think_act_observe.py >> agentic_core\L3_orchestration\workflow_engines\think_act_observe.py
 [MOVE] agentic_core\L3_orchestration\P1_core\titanium_final.py >> agentic_core\L3_orchestration\workflow_engines\titanium_final.py
@@ -531,8 +531,8 @@ Configuration: DRY_RUN = True
 [CONFLICT] agentic_core\L3_orchestration\__pycache__\__init__.py >> agentic_core\L3_orchestration\workflow_engines\__init__.py (already exists)
 [MOVE] agentic_core\L4_state\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
 [MOVE] agentic_core\L4_state\cache\redis_sovereign_agent.py >> agentic_core\L4_state\validation_context\redis_sovereign_agent.py
-[MOVE] agentic_core\L4_state\cache\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
-[MOVE] agentic_core\L4_state\checkpoints\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
+[CONFLICT] agentic_core\L4_state\cache\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
+[CONFLICT] agentic_core\L4_state\checkpoints\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
 [MOVE] agentic_core\L4_state\filesystem\filesystem_mcp_sovereign.py >> agentic_core\L4_state\validation_context\filesystem_mcp_sovereign.py
 [MOVE] agentic_core\L4_state\memory\memory_sovereign_mcp.py >> agentic_core\L4_state\validation_context\memory_sovereign_mcp.py
 [MOVE] agentic_core\L4_state\P1_core\agent_logic_connectivity.py >> agentic_core\L4_state\validation_context\agent_logic_connectivity.py
@@ -543,18 +543,18 @@ Configuration: DRY_RUN = True
 [MOVE] agentic_core\L4_state\P1_core\omni_context.py >> agentic_core\L4_state\validation_context\omni_context.py
 [MOVE] agentic_core\L4_state\P1_core\storage.py >> agentic_core\L4_state\validation_context\storage.py
 [MOVE] agentic_core\L4_state\P1_core\validation_context.py >> agentic_core\L4_state\validation_context\validation_context.py
-[MOVE] agentic_core\L4_state\P1_core\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
-[MOVE] agentic_core\L4_state\persistence_layer\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
+[CONFLICT] agentic_core\L4_state\P1_core\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
+[CONFLICT] agentic_core\L4_state\persistence_layer\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
 [MOVE] agentic_core\L4_state\registry\subatomic_registry.py >> agentic_core\L4_state\validation_context\subatomic_registry.py
 [MOVE] agentic_core\L4_state\S1_store\blackboard.py >> agentic_core\L4_state\validation_context\blackboard.py
 [MOVE] agentic_core\L4_state\S1_store\memory_manager.py >> agentic_core\L4_state\validation_context\memory_manager.py
-[MOVE] agentic_core\L4_state\S1_store\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
+[CONFLICT] agentic_core\L4_state\S1_store\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
 [MOVE] agentic_core\L4_state\semantic\semantic_cache_sovereign.py >> agentic_core\L4_state\validation_context\semantic_cache_sovereign.py
 [MOVE] agentic_core\L4_state\session_manager\disk_adapter.py >> agentic_core\L4_state\validation_context\disk_adapter.py
-[MOVE] agentic_core\L4_state\session_manager\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
+[CONFLICT] agentic_core\L4_state\session_manager\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
 [MOVE] agentic_core\L4_state\vector\pinecone_sovereign_agent.py >> agentic_core\L4_state\validation_context\pinecone_sovereign_agent.py
-[MOVE] agentic_core\L4_state\vector\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
-[MOVE] agentic_core\L4_state\__pycache__\__init__.py >> agentic_core\L4_state\validation_context\__init__.py
+[CONFLICT] agentic_core\L4_state\vector\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
+[CONFLICT] agentic_core\L4_state\__pycache__\__init__.py >> agentic_core\L4_state\validation_context\__init__.py (already exists)
 [CONFLICT] agentic_core\L5_safety\__init__.py >> agentic_core\L5_safety\guardrails\__init__.py (already exists)
 [CONFLICT] agentic_core\L5_safety\audit_logs\__init__.py >> agentic_core\L5_safety\guardrails\__init__.py (already exists)
 [MOVE] agentic_core\L5_safety\gravity\gravity_enforcer_agent.py >> agentic_core\L5_safety\guardrails\gravity_enforcer_agent.py
@@ -588,4 +588,4 @@ Configuration: DRY_RUN = True
 === SUMMARY ===
 Total Python files scanned: 1249
 Output file: C:\Git\Agentic-Workflow\hierarchy_heal_dry_run.txt
-Set DRY_RUN = False to execute moves
+DRY_RUN = False
