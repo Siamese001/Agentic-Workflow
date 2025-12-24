@@ -280,39 +280,33 @@ class GeminiSpy:
 # ==============================================================================
 # [KEY 48] MISSION AUDIT LOG: ARCHITECTURAL LEDGER
 # ==============================================================================
-import csv
-from datetime import datetime
-
-class MissionAuditLog:
-    """
-    [L4 STATE] Observability Ledger.
-    Records every physical move and code mutation for historical auditing.
-    """
-    def __init__(self, log_path: str = "mission_audit.csv"):
-        self.log_path = log_path
-        self._initialize_log()
-
-    def _initialize_log(self):
-        if not os.path.exists(self.log_path):
-            with open(self.log_path, 'w', newline='', encoding='utf-8') as f:
+# [DESIGN FIX] Use the central L4 Historian instead of a local log
+try:
+    from agentic_core.L4_state.P1_core.historian import MissionHistorian
+    audit_log = MissionHistorian(project_root / "mission_audit.csv")
+    print("   [OK] L4 Historian: Audit ledger connected.")
+except ImportError:
+    # Simple fallback if Historian isn't online yet
+    import csv
+    from datetime import datetime
+    
+    class MissionAuditLog:
+        """Fallback audit logger when L4 Historian is unavailable."""
+        def __init__(self, log_path: str = "mission_audit.csv"):
+            self.log_path = log_path
+            if not os.path.exists(self.log_path):
+                with open(self.log_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
+        
+        def record(self, file_name: str, action: str, source: str, destination: str, reason: str):
+            with open(self.log_path, 'a', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
-                writer.writerow(["timestamp", "file", "action", "source", "destination", "reason"])
-
-    def record(self, file_name: str, action: str, source: str, destination: str, reason: str):
-        with open(self.log_path, 'a', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                datetime.now().isoformat(),
-                file_name,
-                action,
-                source,
-                destination,
-                reason
-            ])
-        print(f"      [LOG] Action recorded in audit ledger: {action}")
-
-# Global audit instance
-audit_log = MissionAuditLog()
+                writer.writerow([datetime.now().isoformat(), file_name, action, source, destination, reason])
+            print(f"      [LOG] Action recorded in audit ledger: {action}")
+    
+    audit_log = MissionAuditLog()
+    print("   [!] Using fallback MissionAuditLog (L4 Historian unavailable)")
 
 # ==============================================================================
 # L6 PEACEKEEPER: PHYSICAL BOUNDARY ENFORCEMENT
@@ -645,6 +639,10 @@ async def run_mission(target_scope: str = "agentic_core"):
         'env',
         'test',            # New addition
     }
+    
+    # [REFACTOR] Unified Pre-flight Healing
+    # This replaces fix_all_gravity_violations.py and fix_remaining_gravity.py
+    # Phase -1 and -1.5 below now serve as the primary healing path
     
     # Discover all Python files in target scope, excluding protected folders
     discovered_files = [

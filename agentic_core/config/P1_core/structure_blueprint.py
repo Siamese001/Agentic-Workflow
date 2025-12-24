@@ -103,6 +103,16 @@ TESTS_SUBFOLDER_MAP = {
 AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
 SOVEREIGN_DEPTH_MAP = {k: v["depth"] for k, v in SOVEREIGN_REGISTRY.items()}
 
+# --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW ---
+# [KEY 49 ENFORCEMENT] Files must contain at least one of these keywords
+CANON_SIGNALS = {
+    "strategy", "reasoning", "planner", "node", "extraction", "synthesis",
+    "orchestration", "fission", "hop", "router", "memory", "historian",
+    "state", "cache", "safety", "guardrail", "filter", "engine",
+    "validator", "compliance", "blueprint", "registry", "context",
+    "agent", "processor", "handler", "manager", "executor", "loader"
+}
+
 # --- SYSTEM EXEMPTIONS ---
 ROOT_WHITELIST = list(SOVEREIGN_REGISTRY.keys()) + [
     "data", "archives", ".git", "venv", "venv_stable", "__pycache__", 
