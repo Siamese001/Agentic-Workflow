@@ -4,8 +4,9 @@ import time
 
 import logging
 
+from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMProvider, VMConfig, VMInstance, VMStatus
+
 LOGGER = logging.getLogger(__name__)
-# from agentic_core.firecracker_manager_types import *  # Star import removed
 
 class FirecrackerManager:
     """Manager for Firecracker micro-VMs.

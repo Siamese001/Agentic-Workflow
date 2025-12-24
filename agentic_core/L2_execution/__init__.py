@@ -32,16 +32,16 @@ from agentic_core.L2_execution.tool_registry.specialized import TheCartographer,
 from agentic_core.L2_execution.tool_registry.system_architect import SystemArchitect
 from agentic_core.L2_execution.tool_registry.test_generator_agent import TestGeneratorAgent
 # from agentic_core.L2_execution.P5_healing.structural_engineer import StructuralEngineer  # Path not found
-from agentic_core.L2_execution.sandbox.ephemeral_vm import IsolationLevel, IsolationConfig, ExecutionResult, EphemeralVM
-from agentic_core.L2_execution.sandbox.firecracker_manager_impl import FirecrackerManager
-from agentic_core.L2_execution.sandbox.firecracker_manager_types import VMStatus, VMProvider, VMConfig, VMInstance
-from agentic_core.L2_execution.tools.core_executor import ActionNodeCore
-from agentic_core.L2_execution.tools.fallback_manager import FallbackStrategy, ToolProvider, FallbackResult, FallbackManager
-from agentic_core.L2_execution.tools.file_io_tools import FileIO
-from agentic_core.L2_execution.tools.git_tools import GitTools
-from agentic_core.L2_execution.tools.mcp_stubs import FigmaTools, PineconeTools, MemoryTools
-from agentic_core.L2_execution.tools.redis_cache_tools import RedisCache
-from agentic_core.L2_execution.tools.secure_tools import SecureToolsImpl
-from agentic_core.L2_execution.tools.time_tools import TimeTools
-from agentic_core.L2_execution.tools.web_search_tools import WebSearchTools
+from agentic_core.L2_execution.tool_registry.ephemeral_vm import IsolationLevel, IsolationConfig, ExecutionResult, EphemeralVM
+from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import FirecrackerManager
+from agentic_core.L2_execution.tool_registry.firecracker_manager_types import VMStatus, VMProvider, VMConfig, VMInstance
+from agentic_core.L2_execution.tool_registry.core_executor import ActionNodeCore
+from agentic_core.L2_execution.tool_registry.fallback_manager import FallbackStrategy, ToolProvider, FallbackResult, FallbackManager
+from agentic_core.L2_execution.tool_registry.file_io_tools import FileIO
+from agentic_core.L2_execution.tool_registry.git_tools import GitTools
+from agentic_core.L2_execution.tool_registry.mcp_stubs import FigmaTools, PineconeTools, MemoryTools
+from agentic_core.L2_execution.tool_registry.redis_cache_tools import RedisCache
+from agentic_core.L2_execution.tool_registry.secure_tools import SecureToolsImpl
+from agentic_core.L2_execution.tool_registry.time_tools import TimeTools
+from agentic_core.L2_execution.tool_registry.web_search_tools import WebSearchTools
 __all__ = ['SubAtomicAgent', 'CanonBaseAgent', 'HealerAgent', 'ToolRegistry', 'OutreachEngineZSE', 'ResumeEngineZLG', 'EphemeralVM', 'FirecrackerManager']

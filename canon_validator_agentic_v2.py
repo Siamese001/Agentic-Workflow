@@ -399,13 +399,15 @@ try:
     if not apply_fission_blueprint:
         apply_fission_blueprint = lambda *args, **kwargs: None  # Fallback no-op
     
-    FissionManager = dynamic_import('agentic_core.L3_orchestration.S3_vitality.fission_manager', 'FissionManager')
+    FissionManager = dynamic_import('agentic_core.L3_orchestration.workflow_engines.fission_manager', 'FissionManager')
+    if not FissionManager:
+        FissionManager = dynamic_import('agentic_core.L3_orchestration.fission_logic.fission_manager', 'FissionManager')
     
-    SafetyGuardrail = dynamic_import('agentic_core.L5_safety.P1_core.safety_guardrail', 'SafetyGuardrail')
+    SafetyGuardrail = dynamic_import('agentic_core.L5_safety.guardrails.safety_guardrail', 'SafetyGuardrail')
     if not SafetyGuardrail:
-        SafetyGuardrail = dynamic_import('agentic_core.L3_orchestration.S3_vitality.safety_guardrail', 'SafetyGuardrail')
+        SafetyGuardrail = dynamic_import('agentic_core.L3_orchestration.workflow_engines.safety_guardrail', 'SafetyGuardrail')
     
-    SubAtomicEngine = dynamic_import('agentic_core.L5_safety.P1_core.subatomic_engine', 'SubAtomicEngine')
+    SubAtomicEngine = dynamic_import('agentic_core.L5_safety.guardrails.subatomic_engine', 'SubAtomicEngine')
     
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 
@@ -449,8 +451,8 @@ from agentic_core.L4_state.validation_context.subatomic_registry import SubAtomi
 from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
 from agentic_core.L5_safety.guardrails.adversarial_red_teamer import AdversarialRedTeamer as SovereignRedTeamAgent
 from agentic_core.L5_safety.guardrails.sovereign_alerting_agent import SovereignAlertingAgent
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
-from agentic_core.L3_orchestration.mcp.mcp_router_sovereign import SovereignMCPRouter
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 
 # Try to import MissionResumeAgent (L3 has broken imports)
 try:
@@ -810,19 +812,24 @@ async def run_mission(target_scope: str = "agentic_core"):
                 search_paths = [
                     f'agentic_core.L3_orchestration.P1_core.{module_name}',
                     f'agentic_core.L3_orchestration.S3_vitality.{module_name}',
-                    f'agentic_core.L3_orchestration.fission_logic.{module_name}'
+                    f'agentic_core.L3_orchestration.fission_logic.{module_name}',
+                    f'agentic_core.L3_orchestration.workflow_engines.{module_name}'
                 ]
             elif key_num == 13:  # L4_state
                 search_paths = [
                     f'agentic_core.L4_state.P1_core.{module_name}',
-                    f'agentic_core.L4_state.S1_memory.{module_name}'
+                    f'agentic_core.L4_state.S1_memory.{module_name}',
+                    f'agentic_core.L4_state.validation_context.{module_name}',
+                    f'agentic_core.L4_state.audit_trails.{module_name}'
                 ]
             elif key_num == 19:  # L5_safety
                 search_paths = [
                     f'agentic_core.L5_safety.P1_core.{module_name}',
                     f'agentic_core.L5_safety.gravity.{module_name}',
                     f'agentic_core.L5_safety.validators.{module_name}',
-                    f'agentic_core.L3_orchestration.S3_vitality.{module_name}'
+                    f'agentic_core.L5_safety.guardrails.{module_name}',
+                    f'agentic_core.L3_orchestration.S3_vitality.{module_name}',
+                    f'agentic_core.L3_orchestration.workflow_engines.{module_name}'
                 ]
             
             for module_path in search_paths:
