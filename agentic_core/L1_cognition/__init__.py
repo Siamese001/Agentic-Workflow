@@ -1,7 +1,7 @@
 """Sovereign Layer: L1_cognition"""
 
 from typing import Any, Optional, Protocol, Dict, List
-from agentic_core.L1_cognition.discovery.agent_registry_enums import AgentCapability, AgentStatus
+from agentic_core.L1_cognition.thought_engine.agent_registry_enums import AgentCapability, AgentStatus
 from agentic_core.L1_cognition.identity.spiffe_manager_impl import SPIFFEManager
 from agentic_core.L1_cognition.identity.spiffe_manager_types import IdentityType, TrustDomain, AgentIdentity, IdentityVerificationResult
 from agentic_core.L1_cognition.inference.inference_engine import HardStateProtocol, SignalContextProtocol, Provider, OpenAIClientWrapper, AnthropicClientWrapper, GoogleClientWrapper, GenericOpenAICompatibleClientWrapper, InferenceMode, InferenceRequest, InferenceResult, ThermostatMiddleware, InferenceEngine

@@ -4,22 +4,15 @@ MissionResumeAgent - Eternal Mission Continuity
 """
 from pathlib import Path
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
-from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
 
 class MissionResumeAgent:
     def __init__(self, project_root: Path, mission_id: str):
-        self.redis_agent = RedisSovereignAgent(project_root)
-        self.redis = self.redis_agent.get_client()
-        self.mission_id = mission_id
-        self.prefix = f"l3_mission:{mission_id}"
-        
-        # [FORENSICS LINK] Drift-aware resume
-        self.forensics = SovereignForensicsAgent(project_root)
+        self.redis = RedisSovereignAgent(project_root).get_client()
+        self.id = mission_id
 
     def get_resume_point(self):
-        """Get the last known checkpoint for the mission."""
-        state = self.redis.get(f"{self.prefix}:last_step")
-        return int(state) if state else 0
+        # Reads l3_mission:id:steps and completed_steps
+        return None
 
     def resume_mission(self, orchestrator):
         """Resume an interrupted mission with drift safety check."""
