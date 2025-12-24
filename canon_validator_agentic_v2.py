@@ -1200,6 +1200,9 @@ IF (task == "GRAVITY_REFACTOR"):
     # [FORENSICS] Add SovereignForensicsAgent to monitors
     monitors.append(SovereignForensicsAgent(project_root))
     
+    # [RED TEAM] Add SovereignRedTeamAgent to monitors
+    monitors.append(SovereignRedTeamAgent(project_root))
+    
     # [L5 ALERTING] Add SovereignAlertingAgent to monitors
     monitors.append(SovereignAlertingAgent(project_root))
     
@@ -1783,7 +1786,10 @@ CURRENT CODE:
     print("    Ghost Embeddings — Purged from Redis cache")
     print("    Configuration eternal — .env SSOT gateway")
     print("    L3 Orchestration: Memory-Aware (Redis) — instant routing & fission")
+    print("    MissionResumeAgent: Drift-Aware Continuity — resume locked on high drift")
     print("    L4 State: Persistent Ledger (Redis) — instant context & immutable audits")
+    print("    SovereignForensicsAgent: Behavioral diagnostic monitoring active")
+    print("    NeuralAutoImmuneAgent: Self-defense active — repeated breaches locked")
     print("    L5 Safety: Sovereign Shield (Redis) — reactive reflexes & cached policies")
     print("="*80)
     print("    [ETERNAL SOVEREIGNTY ACHIEVED — PERFECTION SEALED]")
