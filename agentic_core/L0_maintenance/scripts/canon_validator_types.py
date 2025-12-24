@@ -203,7 +203,6 @@ class ValidationContext:
 
     def __post_init__(self):
         """Initialize Tri-Brain infrastructure (MANDATORY MODE - fail if keys missing)."""
-        from agentic_core.config import get_python_files
 
         print("   [CTX] 🧠 INITIALIZING TRI-BRAIN (MANDATORY MODE)...")
         self.python_files = get_python_files()

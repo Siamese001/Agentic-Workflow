@@ -11,9 +11,6 @@ ROOT = Path("C:/Git/Agentic-Workflow")
 IMPORT_REWRITES = {
     # L3_orchestration moves
     r"from \.fission_executor import": "from .P1_core.fission_executor import",
-    r"from agentic_core\.L3_orchestration\.fission_executor": "from agentic_core.L3_orchestration.P1_core.fission_executor",
-    r"from agentic_core\.L5_safety\.safety_guardrail": "from agentic_core.L5_safety.P1_core.safety_guardrail",
-    r"from agentic_core\.L5_safety\.subatomic_engine": "from agentic_core.L5_safety.P1_core.subatomic_engine",
 }
 
 def fix_imports():

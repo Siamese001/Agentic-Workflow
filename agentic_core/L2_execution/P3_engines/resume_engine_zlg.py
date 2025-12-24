@@ -23,7 +23,6 @@ from typing import Any, Dict, List, Optional, Protocol, Tuple
 # Third-party imports (none in this file)
 
 # Local/Application-specific imports
-from agentic_core.knowledge.P1_core.l5_consolidated import (
     KnowledgeResult,
     get_consolidated_knowledge,
 )

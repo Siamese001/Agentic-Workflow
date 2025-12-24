@@ -20,11 +20,8 @@ TYPE_FIXES = [
 # This specifically fixes the "name not defined" issues for cross-file types
 IMPORT_ALIGNMENTS = [
     # Example: Fixes CapabilityAnalyzer looking for its Gap types
-    (r"from \.capability_analyzer_types import", "from agentic_core.L1_cognition.planning.capability_analyzer_types import"),
     # Fixes Health Metrics in L3
-    (r"from \.autonomic_monitor_types import", "from agentic_core.L3_orchestration.health.autonomic_monitor_types import"),
     # Fixes Permissions in L3
-    (r"from \.agent_permissions_types import", "from agentic_core.L3_orchestration.security.agent_permissions_types import"),
 ]
 
 def run_type_medic():

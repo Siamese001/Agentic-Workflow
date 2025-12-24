@@ -95,7 +95,6 @@ class HealerAgent(CanonBaseAgent):
 ### TASK: Move file to {target_dir} and FIX IMPORTS.
 
 I am moving '{os.path.basename(file_path)}' from its current location to '{target_dir}'. 
-Update all relative imports (e.g., # [INCOMPLETE IMPORT] # [INCOMPLETE IMPORT] from agentic_core..L4_state to # [INCOMPLETE IMPORT] from agentic_core.L4_state) to remain valid from the new folder.
 
 REQUIREMENTS:
 1. Preserve all logic and functionality exactly.

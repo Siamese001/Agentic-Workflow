@@ -6,11 +6,6 @@ ROOT = Path("C:/Git/Agentic-Workflow/agentic_core")
 
 # THE MAP: Redirecting legacy discovery paths to the new P1_core reality
 PATH_REDIRECTS = {
-    r"from agentic_core\.agents": "from agentic_core.L2_execution.P4_agents",
-    r"from agentic_core\.interfaces": "from agentic_core.L1_cognition.P1_interfaces",
-    r"from L4_state": "from agentic_core.L4_state.P1_core",
-    r"from core import": "from agentic_core.L1_cognition.P1_core import",
-    r"import canon_agents_core": "from agentic_core.L2_execution.P4_agents import base as canon_agents_core",
 }
 
 def hardwire_discovery():

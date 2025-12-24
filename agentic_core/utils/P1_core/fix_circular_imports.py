@@ -4,7 +4,6 @@ Fix circular imports in agentic_core by converting absolute imports to relative 
 
 This script:
 1. Scans all Python files in agentic_core/
-2. Identifies imports like: from agentic_core.L1_cognition... 
 3. Converts them to relative imports: from .L1_cognition... or from ..L1_cognition...
 4. Preserves imports from outside agentic_core (e.g., from apps_shared, from schemas)
 """

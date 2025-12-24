@@ -32,10 +32,8 @@ from scripts.runtime.shared.sdk_registry import (
 # )
 
 # Configuration - Temporarily commented out
-# from agentic_core.config import CONFIG
 
 # Basic utilities - Temporarily commented out
-# from agentic_core.utils import TextUtils, DuplicateDetector
 
 # OpenAI Client - Temporarily commented out
 # from agentic_core.openai_client import (

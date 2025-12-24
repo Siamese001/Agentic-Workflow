@@ -39,7 +39,6 @@ from agentic_core.agents import (
     TypeEnforcer,
 )
 from agentic_core.base import ImportPatcher, SubAtomicAgent
-from agentic_core.config import (
     ALLOWED_ROOT_FILES,
     ALLOWED_ROOT_FOLDERS,
     EXCLUDED_DIRS,

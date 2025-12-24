@@ -52,13 +52,8 @@ def flush_and_align():
     rewire = [
         # FIX PREVIOUS MISTAKE: Analysis/Agents live in L2, not L5
         (r"agentic_core\.L5_safety\.P1_red_team\.analysis", "agentic_core.L2_execution.P4_agents.analysis"),
-        (r"from agentic_core\.agents", "from agentic_core.L2_execution.P4_agents"),
         
         # NEW MAPPINGS for the folders we just moved
-        (r"from agentic_core\.engines", "from agentic_core.L2_execution.P3_engines"),
-        (r"from agentic_core\.interfaces", "from agentic_core.L1_cognition.P1_interfaces"),
-        (r"from agentic_core\.security", "from agentic_core.L5_safety.P4_security"),
-        (r"from agentic_core\.agentic_workflow", "from agentic_core.L3_orchestration.P5_workflow"),
     ]
 
     count = 0

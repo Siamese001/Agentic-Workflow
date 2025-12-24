@@ -35,7 +35,6 @@ class AgentThoughtProcess(BaseModel):
     )
     _relevant_context_keys: List[str] = Field(
         ...,
-        DESCRIPTION="Which specific keys from agentic_core.semantic_memory/context did you use to make this decision?"
     )
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
         ...,

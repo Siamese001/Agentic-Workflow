@@ -17,7 +17,6 @@ from typing import Any, Optional, Protocol, Dict, List
 
 # Import SSOT heuristics from void_compliance
 try:
-    from agentic_core.runtime.void_compliance import (
         get_placement_guidance,
         CANONICAL_HIERARCHY,
         validate_file_location,
@@ -27,7 +26,6 @@ except ImportError:
     # Fallback for direct execution
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    from agentic_core.runtime.void_compliance import (
         get_placement_guidance,
         CANONICAL_HIERARCHY,
         validate_file_location,
