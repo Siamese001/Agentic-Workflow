@@ -101,6 +101,34 @@ TESTS_SUBFOLDER_MAP = {
     "automation": ["pytest_hooks", "conftest_logic"]
 }
 
+# === AGENTIC_CORE L3 SUBFOLDER REGISTRY ===
+# Specialized territories under L2 folders
+CORE_L3_SUBFOLDER_MAP = {
+    # L3 under fission_logic
+    "fission_logic": ["healing", "pruning", "registry", "protocol"],
+    # L3 under workflow_engines
+    "workflow_engines": ["coordinator", "router", "hop"],
+}
+
+# [L4 ENFORCEMENT] Required Depth 4 specialized territories
+CORE_L4_SUBFOLDER_MAP = {
+    # L3: fission_logic -> L4 specialization
+    "healing": ["territory", "semantic", "scripts", "recursive"],
+    "protocol": ["handshake"],
+    "registry": ["subatomic"],
+    
+    # L3: workflow_engines -> L4 specialization
+    "coordinator": ["multi_hop"],
+    "router": ["task"],
+
+    # L3: state_engines -> L4 specialization
+    "vector": ["pinecone", "hybrid"],
+    "cache": ["redis", "sovereign"],
+    
+    # L3: guardrails -> L4 specialization
+    "policy": ["gemini", "neural"]
+}
+
 # --- BACKWARD COMPATIBILITY EXPORTS ---
 AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
 # [ULTIMATE FINAL HARDENING] Precision depth + general bounds + deprecation archive
