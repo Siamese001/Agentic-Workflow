@@ -11,7 +11,7 @@ from typing import Any, Optional, Protocol, Dict, List
 
 import os
 
-# [INCOMPLETE IMPORT] from agentic_core.canon_base_agent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
 
 class HealerAgent(CanonBaseAgent):
@@ -222,7 +222,7 @@ CURRENT CODE:
                 )
                 
                 # Attempt to apply the split
-                # [INCOMPLETE IMPORT] # [INCOMPLETE IMPORT] from agentic_core..L3_orchestration import apply_fission_blueprint
+                from agentic_core.L3_orchestration.workflow_engines.canon_scheduler import apply_fission_blueprint
                 blueprint_data = self.ctx.engine.parse_fission_output(res)
                 if blueprint_data and blueprint_data.get("fission_event"):
                     if await apply_fission_blueprint(file_path, blueprint_data["blueprint"], self.ctx.fission):

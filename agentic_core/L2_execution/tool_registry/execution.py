@@ -19,7 +19,7 @@ class ExecuteCommandArgs(TypedDict):
     capture_output: bool
 
 
-# Inlined get_project_root and validate_sandbox from agentic_core.L2_execution.P2_tools.filesystem
+# Inlined get_project_root and validate_sandbox from agentic_core.L2_execution.tool_registry.filesystem
 _cached_project_root: Optional[Path] = None
 
 def get_project_root() -> Path:

@@ -5,7 +5,7 @@ SovereignAlertingAgent - The System Voice
 import json
 from datetime import datetime
 from pathlib import Path
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 
 class SovereignAlertingAgent:
     def __init__(self, project_root: Path):

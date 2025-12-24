@@ -13,7 +13,7 @@ from pathlib import Path
 
 from agentic_core.config.P1_core.structure_blueprint import TERRITORY_EXAMPLES
 from agentic_core.config.P1_core.sovereign_env import get_env
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
 
 
 class SemanticTerritoryMapperAgent:

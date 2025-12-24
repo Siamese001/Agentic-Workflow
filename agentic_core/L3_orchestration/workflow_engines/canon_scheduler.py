@@ -58,24 +58,24 @@ class CanonSwarmScheduler:
             raise ValueError("No agent classes provided. Call set_phases() or provide agent_classes in constructor.")
 
         # Import agent classes dynamically to avoid circular imports
-        from agentic_core.L2_execution.P4_agents.engineering import PatternEnforcer, StructuralEngineer
-        from agentic_core.L2_execution.P4_agents.governance import (
+        from agentic_core.L2_execution.tool_registry.engineering import PatternEnforcer, StructuralEngineer
+        from agentic_core.L2_execution.tool_registry.governance import (
             ArchitectureGovernor,
             DependencySentinel,
         )
-        from agentic_core.L2_execution.P4_agents.infrastructure import BenchmarkingAgent, Historian
-        from agentic_core.L2_execution.P4_agents.quality import (
+        from agentic_core.L2_execution.tool_registry.infrastructure import BenchmarkingAgent, Historian
+        from agentic_core.L2_execution.tool_registry.quality import (
             CodeStyleGuardian,
             HygieneGuardian,
             PerformanceEnforcer,
         )
-        from agentic_core.L2_execution.P4_agents.repair import TestPilot, ToolsmithAgent
-        from agentic_core.L2_execution.P4_agents.security import (
+        from agentic_core.L2_execution.tool_registry.repair import TestPilot, ToolsmithAgent
+        from agentic_core.L2_execution.tool_registry.security import (
             ConcurrencyGuardian,
             SafetyInspector,
             SecurityEnforcer,
         )
-        from agentic_core.L2_execution.P4_agents.specialized import (
+        from agentic_core.L2_execution.tool_registry.specialized import (
             DocEnforcer,
             NamingEnforcer,
             TheCartographer,

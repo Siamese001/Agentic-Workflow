@@ -14,7 +14,7 @@ try:
 except ImportError:
     NUMPY_AVAILABLE = False
 
-from agentic_core.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 # Removed import from apps_shared.canon_validator_agentic_v2 as it is a downstream dependency
 # and the components (get_fission_manager, get_safety_guardrail, get_subatomic_engine)

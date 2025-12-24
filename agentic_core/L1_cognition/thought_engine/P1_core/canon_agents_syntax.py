@@ -13,7 +13,7 @@ import sys
 from typing import List, Tuple
 
 # Local application imports
-from agentic_core.canon_base_agent import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
 
 
 class CodeJanitor(SubAtomicAgent):

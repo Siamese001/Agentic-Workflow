@@ -4,7 +4,7 @@ GEMINI-ONLY policy — forbidden providers auto-blocked.
 """
 import logging
 from typing import List, Dict
-from agentic_core.L5_safety.policy.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)
 

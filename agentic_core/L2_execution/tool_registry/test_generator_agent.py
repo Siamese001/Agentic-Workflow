@@ -5,7 +5,7 @@ Scaffolds unit tests for newly moved or refactored L-layer logic.
 import os
 from pathlib import Path
 from typing import Any, Optional, Protocol, Dict, List
-from agentic_core.canon_base_agent import CanonBaseAgent
+from agentic_core.L2_execution.tool_registry.canon_base_agent import CanonBaseAgent
 
 class TestGeneratorAgent(CanonBaseAgent):
     """
@@ -66,7 +66,7 @@ class TestGeneratorAgent(CanonBaseAgent):
 
 REQUIREMENTS:
 1. Use 'pytest' and 'pytest-asyncio'.
-2. Use ABSOLUTE imports from the root (e.g., from agentic_core.L1_cognition.P1_core import ...).
+2. Use ABSOLUTE imports from the root (e.g., from agentic_core.L1_cognition.thought_engine import ...).
 3. Mock all external LLM or Redis calls.
 4. Return ONLY the complete Python test code.
 

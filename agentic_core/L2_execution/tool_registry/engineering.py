@@ -5,8 +5,8 @@ import re
 from typing import Any, Optional, Protocol, Dict, List
 from typing import Any, Dict, List, Optional, Protocol, Tuple
 
-from agentic_core.L2_execution.P4_agents.base import SubAtomicAgent
-from agentic_core.shared.constants import MAX_LINES
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+from agentic_core.L0_maintenance.scripts.canon_validator_config import MAX_LINES
 
 
 class StructuralEngineer(SubAtomicAgent):

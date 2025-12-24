@@ -9,7 +9,7 @@ ZERO-LOSS GUARANTEE: All functionality preserved via re-exports
 # Import all tool classes from atomic modules
 from typing import Any, Optional, Protocol, Dict, List
 
-from agentic_core.L1_cognition.P1_core.action_registry_modules import (
+from agentic_core.L1_cognition.thought_engine.action_registry_modules import (
     FigmaTools,
     FileIO,
     GitTools,

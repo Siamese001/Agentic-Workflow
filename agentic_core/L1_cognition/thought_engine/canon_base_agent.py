@@ -8,7 +8,7 @@ from typing import Any, Optional, Protocol, Dict, List
 # Project-specific imports
 # Dependency Inversion: Use protocol instead of concrete L4 class
 # Using absolute import as relative imports are forbidden by architectural rules.
-from agentic_core.L1_cognition.P1_core.validation_protocol import ValidationProtocol
+from agentic_core.L1_cognition.thought_engine.validation_protocol import ValidationProtocol
 
 # Configure basic logging for this module.
 # In a real application, this would typically be configured globally.

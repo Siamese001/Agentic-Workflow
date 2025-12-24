@@ -249,8 +249,8 @@ class TerritoryHealerAgent:
         
         # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
         try:
-            from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
-            from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+            from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
+            from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
             redis_agent = RedisSovereignAgent(self.root)
             pinecone_agent = PineconeSovereignAgent(self.root)
         except Exception:

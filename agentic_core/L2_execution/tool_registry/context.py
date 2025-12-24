@@ -1,6 +1,6 @@
 import asyncio
 
-from agentic_core.L2_execution.P4_agents.base import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
 
 
 class OmniContext(SubAtomicAgent):

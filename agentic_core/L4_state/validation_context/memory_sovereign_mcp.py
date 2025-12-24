@@ -8,8 +8,8 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
-from agentic_core.L5_safety.policy.mcp_sovereign import mcp_authority
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)
 

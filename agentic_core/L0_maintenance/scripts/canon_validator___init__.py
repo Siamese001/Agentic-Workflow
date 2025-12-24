@@ -38,7 +38,7 @@ from agentic_core.agents import (
     ToolsmithAgent,
     TypeEnforcer,
 )
-from agentic_core.base import ImportPatcher, SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.base import ImportPatcher, SubAtomicAgent
 from agentic_core.config import (
     ALLOWED_ROOT_FILES,
     ALLOWED_ROOT_FOLDERS,

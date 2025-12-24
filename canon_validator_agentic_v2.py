@@ -103,6 +103,7 @@ def verify_neural_link():
     # --- REDIS/LANGCACHE INTEGRITY CHECK ---
     try:
         import urllib.parse
+        import redis # [FIX] Explicit import to prevent NameError
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         parsed = urllib.parse.urlparse(redis_url)
         
@@ -151,6 +152,120 @@ def verify_neural_link():
         sys.exit(1)
 
 verify_neural_link()
+
+# ===========================================================================
+# [PRE-FLIGHT] LEGACY IMPORT RECONCILIATION
+# ===========================================================================
+print(f"\n[PRE-FLIGHT] Reconciling legacy imports after hierarchy healing...")
+import re
+legacy_patterns = [
+    (r'from agentic_core\.L2_execution\.P4_agents', 'from agentic_core.L2_execution.tool_registry'),
+    (r'from agentic_core\.L2_execution\.P1_core', 'from agentic_core.L2_execution.tool_registry'),
+    (r'import agentic_core\.L2_execution\.P4_agents\.', 'import agentic_core.L2_execution.tool_registry.'),
+    (r'from agentic_core\.L1_cognition\.P1_core', 'from agentic_core.L1_cognition.thought_engine'),
+]
+
+fixed_count = 0
+for py_file in Path(project_root / "agentic_core").rglob("*.py"):
+    try:
+        content = py_file.read_text(encoding="utf-8")
+        original = content
+        for old, new in legacy_patterns:
+            content = re.sub(old, new, content)
+        if content != original:
+            py_file.write_text(content, encoding="utf-8")
+            fixed_count += 1
+    except Exception: continue
+
+print(f"   [PRE-FLIGHT COMPLETE] {fixed_count} legacy imports reconciled.")
+print("-" * 70)
+
+# ===========================================================================
+# [PHASE -3] NON-PYTHON ASSET COMPLIANCE
+# Enforces naming and directory discipline for assets
+# ===========================================================================
+print(f"\n[PHASE -3] Enforcing signal purity on non-Python assets...")
+    
+import re
+AUTO_HEAL_NAMING = True # Safe for cosmetic fix
+
+non_py_rules = {
+    '.json': {'regex': r'^[a-z_0-9.]+\.json$', 'dirs': ['schemas', 'config', 'prompt_governance']},
+    '.yaml': {'regex': r'^[a-z_0-9.]+\.yaml$', 'dirs': ['config', 'prompt_governance']},
+    '.yml':  {'regex': r'^[a-z_0-9.]+\.yml$',  'dirs': ['config', 'prompt_governance']},
+    '.md':   {'regex': r'^[a-z_0-9-]+\.md$',   'dirs': None}, # MD allowed anywhere
+    '.csv':  {'regex': r'^[a-z_0-9_]+\.csv$',  'dirs': ['data', 'audit']},
+    '.toml': {'regex': r'^[a-z_0-9_]+\.toml$', 'dirs': ['config']}
+}
+
+asset_violations = 0
+asset_heals = 0
+
+for asset in project_root.rglob("*"):
+    if asset.is_dir() or asset.suffix == ".py" or ".git" in str(asset):
+        continue
+        
+    rel = asset.relative_to(project_root)
+    if not str(rel).startswith("agentic_core"):
+        continue
+
+    rule = non_py_rules.get(asset.suffix.lower())
+    if not rule:
+        continue
+
+    # 1. Naming Check
+    name_compliant = re.match(rule['regex'], asset.name) is not None
+        
+    # 2. Location Check
+    location_compliant = True
+    if rule['dirs']:
+        location_compliant = any(d in asset.parts for d in rule['dirs'])
+
+    if name_compliant and location_compliant:
+        continue
+
+    asset_violations += 1
+    issues = []
+    if not name_compliant: issues.append("ILLEGAL_NAME")
+    if not location_compliant: issues.append("MISPLACED_ASSET")
+
+    print(f"   [!] ASSET VIOLATION: {rel} ({' & '.join(issues)})")
+
+    # Auto-Heal Naming ONLY
+    if AUTO_HEAL_NAMING and not name_compliant:
+        # Standardize to snake_case
+        clean_stem = re.sub(r'[^a-z0-9]', '_', asset.stem.lower())
+        clean_stem = re.sub(r'_+', '_', clean_stem).strip('_')
+        new_name = f"{clean_stem}{asset.suffix.lower()}"
+        new_path = asset.with_name(new_name)
+
+        if not new_path.exists():
+            try:
+                asset.rename(new_path)
+                print(f"      [✓] HEALED: {asset.name} -> {new_name}")
+                # audit_log.record(
+                #     file_name=asset.name,
+                #     action="ASSET_NAMING_HEAL",
+                #     source=str(rel),
+                #     destination=str(new_path.relative_to(project_root)),
+                #     reason="Non-py signal purity"
+                # )
+                asset_heals += 1
+            except Exception as e:
+                print(f"      [X] Rename failed: {e}")
+        else:
+            print(f"      [!] Conflict: {new_name} already exists. Manual review required.")
+
+print(f"   [PHASE -3 COMPLETE] {asset_violations} violations found, {asset_heals} names healed.")
+print("-" * 70)
+
+# ===========================================================================
+# [PHASES] NAMING, GRAVITY, AND REGISTRY SYNC
+# ===========================================================================
+print(f"\n[PHASE 0] Naming Law Amplification: ARMED")
+print(f"[PHASE -1] Gravity Surgery: ARMED")
+print(f"[PHASE +1] Sovereign Registry Sync: SCHEDULED")
+print("-" * 70)
 
 # [ETERNAL SSOT] Initialize sovereign environment loader
 env = get_env(project_root)
@@ -240,6 +355,17 @@ try:
     SubAtomicEngine = dynamic_import('agentic_core.L5_safety.P1_core.subatomic_engine', 'SubAtomicEngine')
     
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
+
+    # [HARDENING] Instantiate Engine EARLY for bootstrap/reconciliation
+    if SubAtomicEngine is not None:
+        try:
+            _real_engine = SubAtomicEngine(gemini_client=None)
+            subatomic_engine = GeminiSpy(_real_engine)
+            print(f"   [OK] SubAtomicEngine ready for pre-flight healing")
+        except Exception as e:
+            print(f"   [!] Early engine instantiation failed: {e}")
+
+    # [GRAVITY SURGERY ENABLED] waterfall enforcement active
 except Exception as e:
     print(f"   [CRITICAL] Dynamic import failed: {e}")
     sys.exit(1)
@@ -254,25 +380,22 @@ from agentic_core.runtime.shared.void_compliance import (
     validate_file_location,
     enforce_void_compliance,
     get_folder_scope_summary,
-    get_placement_guidance
+    get_placement_guidance,
+    validate_sovereign_roots
 )
 
-# [TEMPORARY RELAXATION] Disable strict import waterfall to reduce noise (263 violations)
-# Re-enable once core hierarchy is healed.
-def noop_waterfall(*args, **kwargs):
-    return []
-check_import_waterfall_violations = noop_waterfall
+# [GRAVITY SURGERY ENABLED] waterfall enforcement active
 
 print(f"   [OK] Void Compliance Engine: Online.")
 
 # [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
-from agentic_core.L5_safety.gravity.gravity_enforcer_agent import GravityEnforcerAgent
+from agentic_core.L5_safety.guardrails.gravity_enforcer_agent import GravityEnforcerAgent
 from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
-from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.subatomic_registry import SubAtomicRegistry
 from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
-from agentic_core.L5_safety.red_teaming.sovereign_red_team_agent import SovereignRedTeamAgent
-from agentic_core.L5_safety.policy.sovereign_alerting_agent import SovereignAlertingAgent
+from agentic_core.L5_safety.guardrails.adversarial_red_teamer import AdversarialRedTeamer as SovereignRedTeamAgent
+from agentic_core.L5_safety.guardrails.sovereign_alerting_agent import SovereignAlertingAgent
 from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
 from agentic_core.L3_orchestration.mcp.mcp_router_sovereign import SovereignMCPRouter
 

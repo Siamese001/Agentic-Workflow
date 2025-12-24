@@ -8,7 +8,7 @@ import hashlib
 from typing import Dict, Any, Optional
 from urllib.parse import urlparse
 
-from agentic_core.L5_safety.policy.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
 
 logger = logging.getLogger(__name__)
