@@ -16,7 +16,8 @@ from pathlib import Path
 from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
-    ROOT_WHITELIST
+    ROOT_WHITELIST,
+    CANON_SIGNALS
 )
 
 logger = logging.getLogger(__name__)
@@ -37,14 +38,7 @@ FORBIDDEN_FILE_PATTERNS = {
 }
 
 # Approved high-signal tokens for L-layer alignment
-HIGH_SIGNAL_KEYWORDS = {
-    "strategy", "reasoning", "planner", "node", "extraction", "synthesis",
-    "orchestration", "fission", "hop", "router", "memory", "historian",
-    "state", "cache", "safety", "guardrail", "filter", "engine",
-    "compliance", "auditor", "validator", "healer", "prompt", "persona",
-    "schema", "blueprint", "agent", "handler", "manager", "impl", "types",
-    "action", "cognition", "context", "observer", "scheduler"
-}
+HIGH_SIGNAL_KEYWORDS = CANON_SIGNALS
 
 def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
