@@ -33,9 +33,19 @@ class SovereignForensicsAgent:
             self.redis = None
             self._audit_trail = []
 
-        # [SOVEREIGN THRESHOLDS]
-        self.frequency_threshold = 15  # Events/hour
-        self.window_hours = 1
+        # [ETERNAL THRESHOLDS] Tunable sensitivity
+        from agentic_core.config.P1_core.sovereign_env import get_env
+        import os
+        self.env = get_env(project_root)
+        self.frequency_threshold = int(os.getenv("FORENSICS_THRESHOLD", "15"))
+        self.window_hours = int(os.getenv("FORENSICS_WINDOW_HOURS", "1"))
+        
+        self.severity_levels = {
+            15: "MODERATE_DRIFT",
+            30: "HIGH_DRIFT",
+            50: "CRITICAL_DRIFT"
+        }
+        
         self.severity_map = {15: "MODERATE", 30: "HIGH", 50: "CRITICAL"}
 
     def analyze_drift(self) -> Dict:
@@ -116,12 +126,33 @@ class SovereignForensicsAgent:
             max_hits = max(high_freq.values())
             severity = next((v for k, v in sorted(self.severity_map.items(), reverse=True) if max_hits >= k), "MODERATE")
             
-            return {
+            report = {
                 "status": "DRIFT_ALERT",
                 "severity": severity,
                 "offenders": high_freq,
-                "total_events": len(recent_events)
+                "total_events": len(recent_events),
+                "high_frequency_agents": high_freq,
+                "recommendation": "Investigate agent behavior — possible healing loop or uncontrolled fission"
             }
+            
+            # [MISSION AWARENESS] Check for active hops
+            if self.redis:
+                try:
+                    active_missions = self.redis.keys("l3_mission:*:steps")
+                    if active_missions:
+                        report["impacted_missions"] = [k.split(":")[1] for k in active_missions]
+                        report["safety_action"] = "HALT_RESUME"
+                except Exception:
+                    pass
+            
+            # [ETERNAL AUDIT] Store forensics report in Redis
+            try:
+                report_key = f"l4_forensics:report:{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                if self.redis:
+                    self.redis.set(report_key, json.dumps(report), ex=604800) # 7 Day TTL
+            except Exception: pass
+            
+            return report
 
         return {"status": "stable", "event_count": len(recent_events)}
 
@@ -131,7 +162,12 @@ class SovereignForensicsAgent:
         if report["status"] == "DRIFT_ALERT":
             msg = f"Forensic Alert ({report['severity']}): Excessive structural changes by {report['offenders']}"
             print(f"\n[!] SovereignForensicsAgent: {msg}")
-            ctx.report("Forensics", 0, False, msg)
+            print(f"    Recommendation: {report['recommendation']}")
+            ctx.report("Forensics", 0, False, f"Drift {report['severity']}: {report['high_frequency_agents']}")
+            
+            # [AUTO-IMMUNE TRIGGER]
+            if report["severity"] == "CRITICAL_DRIFT":
+                print("    [🚨 LOCKDOWN SUGGESTED] Critical drift detected. Consider manual quarantine.")
         else:
             print(f"   [OK] SovereignForensicsAgent: Structural pulse normal ({report.get('event_count', 0)} events)")
             ctx.report("Forensics", 1, True, "Structural changes within sovereign limits.")
