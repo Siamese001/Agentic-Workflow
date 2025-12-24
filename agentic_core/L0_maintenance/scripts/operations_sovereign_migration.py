@@ -17,20 +17,22 @@ from typing import Any, Optional, Protocol, Dict, List
 
 # Import SSOT heuristics from void_compliance
 try:
+    from agentic_core.runtime.shared.void_compliance import (
         get_placement_guidance,
-        CANONICAL_HIERARCHY,
         validate_file_location,
         validate_file_naming
     )
+    from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
 except ImportError:
     # Fallback for direct execution
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+    from agentic_core.runtime.shared.void_compliance import (
         get_placement_guidance,
-        CANONICAL_HIERARCHY,
         validate_file_location,
         validate_file_naming
     )
+    from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
 
 
 class MigrationAuditLog:
