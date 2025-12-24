@@ -181,25 +181,40 @@ print(f"   [PRE-FLIGHT COMPLETE] {fixed_count} legacy imports reconciled.")
 print("-" * 70)
 
 # ===========================================================================
-# [PHASE -3] NON-PYTHON ASSET COMPLIANCE
-# Enforces naming and directory discipline for assets
+# [PHASE -3] NON-PYTHON ASSET COMPLIANCE – COMPREHENSIVE AUTO-HEALING
+# Naming, Location, Syntax, and Semantic Healing
 # ===========================================================================
-print(f"\n[PHASE -3] Enforcing signal purity on non-Python assets...")
-    
-import re
-AUTO_HEAL_NAMING = True # Safe for cosmetic fix
+print(f"\n[PHASE -3] Enforcing comprehensive purity on non-Python assets...")
 
-non_py_rules = {
-    '.json': {'regex': r'^[a-z_0-9.]+\.json$', 'dirs': ['schemas', 'config', 'prompt_governance']},
-    '.yaml': {'regex': r'^[a-z_0-9.]+\.yaml$', 'dirs': ['config', 'prompt_governance']},
-    '.yml':  {'regex': r'^[a-z_0-9.]+\.yml$',  'dirs': ['config', 'prompt_governance']},
-    '.md':   {'regex': r'^[a-z_0-9-]+\.md$',   'dirs': None}, # MD allowed anywhere
-    '.csv':  {'regex': r'^[a-z_0-9_]+\.csv$',  'dirs': ['data', 'audit']},
-    '.toml': {'regex': r'^[a-z_0-9_]+\.toml$', 'dirs': ['config']}
+import re
+import json
+import shutil
+from datetime import datetime
+try:
+    import yaml
+    YAML_OK = True
+except ImportError: YAML_OK = False
+
+# CONFIGURATION
+AUTO_HEAL_NAMING = True
+AUTO_HEAL_LOCATION = True
+AUTO_HEAL_CONTENT = True  # Normalize + Schema Repair
+CREATE_BACKUP = True
+
+location_map = {
+    '.json': ['schemas', 'config', 'prompt_governance'],
+    '.yaml': ['config', 'prompt_governance'],
+    '.yml':  ['config', 'prompt_governance'],
+    '.csv':  ['data', 'audit'],
+    '.toml': ['config']
 }
 
-asset_violations = 0
-asset_heals = 0
+stats = {'violations': 0, 'fixed': 0}
+
+def perform_backup(p: Path):
+    if CREATE_BACKUP:
+        bak = p.with_suffix(p.suffix + ".bak." + datetime.now().strftime("%H%M%S"))
+        shutil.copy2(p, bak)
 
 for asset in project_root.rglob("*"):
     if asset.is_dir() or asset.suffix == ".py" or ".git" in str(asset):
@@ -209,54 +224,92 @@ for asset in project_root.rglob("*"):
     if not str(rel).startswith("agentic_core"):
         continue
 
-    rule = non_py_rules.get(asset.suffix.lower())
-    if not rule:
+    suffix = asset.suffix.lower()
+    targets = location_map.get(suffix)
+    if not targets and suffix not in {'.md'}:
         continue
 
-    # 1. Naming Check
-    name_compliant = re.match(rule['regex'], asset.name) is not None
+    # 1. Structural Checks
+    name_ok = re.match(r'^[a-z_0-9-.]+\.[a-z]+$', asset.name) is not None
+    location_ok = any(t in asset.parts for t in targets) if targets else True
         
-    # 2. Location Check
-    location_compliant = True
-    if rule['dirs']:
-        location_compliant = any(d in asset.parts for d in rule['dirs'])
+    # 2. Semantic Checks
+    content_healed = False
+    data = None
+    if suffix in {'.json', '.yaml', '.yml'}:
+        try:
+            raw = asset.read_text(encoding="utf-8")
+            if suffix == '.json':
+                # Syntax Auto-Repair (Trailing commas)
+                clean_raw = re.sub(r',\s*([}\]])', r'\1', raw)
+                data = json.loads(clean_raw)
+                
+                # Schema Healing
+                schema_p = asset.with_name(asset.stem + ".schema.json")
+                if schema_p.exists():
+                    schema = json.loads(schema_p.read_text())
+                    # Inject defaults for missing required keys
+                    for req in schema.get('required', []):
+                        if req not in data and 'default' in schema.get('properties', {}).get(req, {}):
+                            data[req] = schema['properties'][req]['default']
+                            content_healed = True
+                    
+                # Normalization
+                if AUTO_HEAL_CONTENT:
+                    norm = json.dumps(data, indent=2, sort_keys=True)
+                    if norm.strip() != raw.strip():
+                        perform_backup(asset)
+                        asset.write_text(norm, encoding="utf-8")
+                        content_healed = True
+                        
+            elif suffix in {'.yaml', '.yml'} and YAML_OK:
+                data = yaml.safe_load(raw)
+                if AUTO_HEAL_CONTENT:
+                    norm = yaml.safe_dump(data, sort_keys=True, indent=2)
+                    if norm.strip() != raw.strip():
+                        perform_backup(asset)
+                        asset.write_text(norm, encoding="utf-8")
+                        content_healed = True
+        except Exception as e:
+            print(f"   [!] CONTENT ERROR in {rel}: {str(e)[:50]}")
 
-    if name_compliant and location_compliant:
+    if name_ok and location_ok and not content_healed:
         continue
 
-    asset_violations += 1
-    issues = []
-    if not name_compliant: issues.append("ILLEGAL_NAME")
-    if not location_compliant: issues.append("MISPLACED_ASSET")
+    # HEALING: Location (Layer-Aware)
+    if AUTO_HEAL_LOCATION and not location_ok:
+        layer_root = next((p for p in asset.parents if p.name.startswith("L")), None)
+        if layer_root:
+            target_dir = layer_root / targets[0]
+            target_dir.mkdir(parents=True, exist_ok=True)
+            new_p = target_dir / asset.name
+            if not new_p.exists():
+                perform_backup(asset)
+                shutil.move(str(asset), str(new_p))
+                print(f"      [✓] RELOCATED: {asset.name} -> {targets[0]}/")
+                # audit_log.record(asset.name, "ASSET_RELOCATE", str(rel), str(new_p.relative_to(project_root)), "Auto-placement")
+                asset = new_p
+                stats['fixed'] += 1
 
-    print(f"   [!] ASSET VIOLATION: {rel} ({' & '.join(issues)})")
-
-    # Auto-Heal Naming ONLY
-    if AUTO_HEAL_NAMING and not name_compliant:
-        # Standardize to snake_case
-        clean_stem = re.sub(r'[^a-z0-9]', '_', asset.stem.lower())
-        clean_stem = re.sub(r'_+', '_', clean_stem).strip('_')
-        new_name = f"{clean_stem}{asset.suffix.lower()}"
-        new_path = asset.with_name(new_name)
-
+    # HEALING: Naming
+    if AUTO_HEAL_NAMING and not name_ok:
+        clean_name = re.sub(r'[^a-z0-9.]', '_', asset.name.lower())
+        clean_name = re.sub(r'_+', '_', clean_name).strip('_')
+        new_path = asset.with_name(clean_name)
         if not new_path.exists():
-            try:
-                asset.rename(new_path)
-                print(f"      [✓] HEALED: {asset.name} -> {new_name}")
-                # audit_log.record(
-                #     file_name=asset.name,
-                #     action="ASSET_NAMING_HEAL",
-                #     source=str(rel),
-                #     destination=str(new_path.relative_to(project_root)),
-                #     reason="Non-py signal purity"
-                # )
-                asset_heals += 1
-            except Exception as e:
-                print(f"      [X] Rename failed: {e}")
-        else:
-            print(f"      [!] Conflict: {new_name} already exists. Manual review required.")
+            perform_backup(asset)
+            asset.rename(new_path)
+            print(f"      [✓] RENAMED: {asset.name} -> {clean_name}")
+            # audit_log.record(asset.name, "ASSET_RENAME", str(asset.relative_to(project_root)), str(new_path.relative_to(project_root)), "Signal purity")
+            stats['fixed'] += 1
 
-print(f"   [PHASE -3 COMPLETE] {asset_violations} violations found, {asset_heals} names healed.")
+    if content_healed:
+        print(f"      [✓] CONTENT HEALED/NORMALIZED: {asset.name}")
+        stats['fixed'] += 1
+            
+    stats['violations'] += 1
+
+print(f"   [PHASE -3 COMPLETE] {stats['violations']} violations | {stats['fixed']} items healed.")
 print("-" * 70)
 
 # ===========================================================================
