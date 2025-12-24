@@ -643,3 +643,30 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
     violations.extend(validate_import_conventions(file_path, project_root))
         
     return violations
+
+
+def validate_sovereign_roots(project_root: Path) -> List[Tuple[Path, str]]:
+    """
+    Validate that all sovereign roots exist and are properly structured.
+    
+    Args:
+        project_root: Project root directory
+        
+    Returns:
+        List of violations as (path, reason) tuples
+    """
+    violations = []
+    
+    for root_name in ALLOWED_ROOT_FOLDERS:
+        root_path = project_root / root_name
+        
+        # Check if root exists
+        if not root_path.exists():
+            violations.append((root_path, f"Missing sovereign root: {root_name}"))
+            continue
+            
+        # Check if it's a directory
+        if not root_path.is_dir():
+            violations.append((root_path, f"Sovereign root is not a directory: {root_name}"))
+    
+    return violations

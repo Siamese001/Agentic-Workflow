@@ -13,10 +13,11 @@ import logging
 import time
 from dataclasses import dataclass, field
 
-from agentic_core.firecracker_manager import (
+from agentic_core.L2_execution.tool_registry.firecracker_manager_impl import (
     FirecrackerManager,
+)
+from agentic_core.L2_execution.tool_registry.firecracker_manager_types import (
     VMConfig,
-    create_firecracker_manager,
 )
 
 LOGGER = logging.getLogger(__name__)
