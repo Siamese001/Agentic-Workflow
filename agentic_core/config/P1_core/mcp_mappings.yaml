@@ -146,6 +146,21 @@ roles:
       args: ["-y", "@modelcontextprotocol/server-filesystem", "./research_cache"]
       description: "Save research notes for citation"
 
+  # [L2 DEEPWIKI] Repository Documentation
+  validator:
+    - server: "deepwiki"
+      command: "python"
+      args: ["-m", "mcp_deepwiki", "--url", "https://mcp.deepwiki.com/sse"]
+      description: "Repository documentation access for canon validation"
+  
+  apps_rg:
+    - server: "deepwiki"
+      command: "python"
+      args: ["-m", "mcp_deepwiki", "--url", "https://mcp.deepwiki.com/sse", "--private-token", "${DEEPWIKI_PRIVATE_KEY}"]
+      description: "Private repository documentation access"
+      env:
+        DEEPWIKI_PRIVATE_KEY: "${DEEPWIKI_PRIVATE_KEY}"
+
 # Environment variable templates
 # These should be set in .env or system environment
 env_templates:
@@ -153,3 +168,4 @@ env_templates:
   GITHUB_TOKEN: "Required for GitHub API access"
   DATABASE_URL: "PostgreSQL connection string"
   PYTHONPATH: "Python path for MCP servers"
+  DEEPWIKI_PRIVATE_KEY: "Required for private DeepWiki repository access"

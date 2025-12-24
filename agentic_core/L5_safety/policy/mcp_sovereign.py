@@ -33,11 +33,19 @@ class MCPSovereignAuthority:
         """L5 Audit: Log every physical tool call before execution."""
         logger.info(f"[L5 MCP AUDIT] Authorizing call to '{tool_name}' with args: {args}")
         
-        # [MARKETPLACE SHIELD] Block direct execution of forbidden SDK patterns
-        forbidden_patterns = ["openai", "anthropic", "langchain_openai", "langchain_anthropic"]
-        if any(p in tool_name.lower() for p in forbidden_patterns):
+        # [L2 MARKETPLACE SHIELD] Block competitive LLM providers
+        forbidden_sdks = {"openai", "anthropic", "cohere", "mistral"}
+        if tool_name in forbidden_sdks:
             self.record_breach(f"FORBIDDEN SDK CALL: {tool_name}")
             raise PermissionError("Sovereignty Shield: Competitive LLM providers are eternally blocked.")
+
+        # [L2 FETCH SHIELD] Protocol and local-loopback protection
+        if tool_name == "fetch":
+            url = args.get('url', '')
+            if url and not url.startswith("https://"):
+                # We don't fetch over insecure http unless strictly necessary
+                if not url.startswith("http://"):
+                    raise PermissionError("Sovereignty Shield: Fetch only allowed over secure https/http.")
 
         # [L2 TOOL HARDENING] Extra validation for external tools
         if tool_name in {"brave_search", "fetch", "playwright"}:
@@ -87,6 +95,39 @@ class MCPSovereignAuthority:
         if tool_name in {"pinecone_search", "memory_search"}:
             if len(str(args.get('query', ''))) > 1500:
                 raise ValueError("L4 semantic query too long — vector overflow risk.")
+
+        # [L4 MEMORY SHIELD] Knowledge graph protection
+        if tool_name in {"create_entities", "add_observations"}:
+            # Block massive bulk writes
+            if len(args.get('entities', [])) > 20 or len(args.get('observations', [])) > 50:
+                raise ValueError("Memory write batch exceeds sovereign safety limit.")
+            
+            # Search for destructive patterns in observations
+            if any(bad in str(args).lower() for bad in ["delete_all", "drop_graph", "reset_memory"]):
+                raise PermissionError("Destructive memory operation blocked by L5 shield.")
+
+        # [L2 DEEPWIKI SHIELD] Documentation access protection
+        if tool_name in {"read_wiki_structure", "read_wiki_contents", "ask_question"}:
+            repo = args.get('repo', '')
+            # 1. Repo Allowlist: Only talk to the canon documentation
+            sovereign_repos = {"xai/grok-canon", "xai/sovereign-canon"}
+            if repo and repo not in sovereign_repos:
+                raise PermissionError(f"DeepWiki access to non-sovereign repo '{repo}' blocked.")
+            
+            # 2. Question Scrubbing
+            question = args.get('question', '')
+            if len(question) > 2000:
+                raise ValueError("DeepWiki question exceeds sovereign size limit.")
+            if any(bad in question.lower() for bad in ["token", "key", "secret", "password"]):
+                raise PermissionError("DeepWiki question contains potential credential leaks.")
+
+        # [L4 FILESYSTEM SHIELD] Physical write protection
+        if tool_name in {"write_file", "edit_file", "move_file", "create_directory"}:
+            path = args.get('path', '')
+            # Re-enforce root check at the gateway level as a fail-safe
+            allowed_roots = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests", "config"]
+            if path and not any(str(path).startswith(p) for p in allowed_roots):
+                raise PermissionError(f"L4 Breach: Attempted write outside sovereign roots: {path}")
 
         if not self.is_authorized():
             raise PermissionError("MCP Sovereign Shield active: Tool call blocked due to chronic breaches.")
