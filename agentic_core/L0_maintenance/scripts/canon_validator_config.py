@@ -10,7 +10,7 @@ from typing import Any, Optional, Protocol, Dict, List
 
 # [SSOT] Import structure definitions from master blueprint
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_DEPTH_MAP
+from structure_blueprint import ROOT_WHITELIST, SOVEREIGN_REGISTRY
 
 # ==============================================================================
 # THE THREE LAWS OF SUBATOMIC GOVERNANCE

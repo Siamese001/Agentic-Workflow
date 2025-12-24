@@ -12,8 +12,8 @@ import asyncio
 import importlib
 from pathlib import Path
 from typing import Dict, List, Callable, Any
-from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
-from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 
 class SubAtomicRegistry:
     """

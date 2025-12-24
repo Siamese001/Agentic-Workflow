@@ -10,7 +10,7 @@ from typing import Dict, Any, Optional, List
 from urllib.parse import urljoin
 
 import httpx
-from agentic_core.L5_safety.policy.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)
 

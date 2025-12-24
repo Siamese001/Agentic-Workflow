@@ -32,7 +32,7 @@ except ImportError:
 
 # Pinecone for hybrid routing
 try:
-    from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+    from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
     PINECONE_AVAILABLE = True
 except ImportError:
     PINECONE_AVAILABLE = False

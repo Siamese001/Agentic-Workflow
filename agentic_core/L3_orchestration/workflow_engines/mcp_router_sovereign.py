@@ -9,7 +9,7 @@ from pathlib import Path
 import json
 
 from agentic_core.L3_orchestration.mcp.mcp_manager import MCPConnectionManager, load_mcp_config
-from agentic_core.L5_safety.policy.mcp_sovereign import mcp_authority
+from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 
 logger = logging.getLogger(__name__)
 

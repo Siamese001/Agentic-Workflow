@@ -16,7 +16,7 @@ import logging
 import re
 from typing import List, Tuple
 
-from agentic_core.canon_base_agent import SubAtomicAgent
+from agentic_core.L2_execution.tool_registry.canon_base_agent import SubAtomicAgent
 
 # Configure logging for this module
 logger = logging.getLogger(__name__)

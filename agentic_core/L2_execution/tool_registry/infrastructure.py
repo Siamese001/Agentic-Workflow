@@ -6,8 +6,9 @@ import datetime
 import os
 import time
 
-# [INCOMPLETE IMPORT] from agentic_core.base import SubAtomicAgent
-# [INCOMPLETE IMPORT] # [INCOMPLETE IMPORT] from agentic_core..domain.constants import EXCLUDED_DIRS
+from agentic_core.L2_execution.tool_registry.base import SubAtomicAgent
+# Domain constants not available, using fallback
+EXCLUDED_DIRS = {'.git', '__pycache__', '.venv', 'venv', 'data', 'archives'}
 
 # Optional dependencies
 try:

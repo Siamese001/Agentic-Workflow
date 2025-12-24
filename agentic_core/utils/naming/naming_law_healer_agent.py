@@ -5,6 +5,7 @@ Renames forbidden or low-signal files to comply with naming laws.
 This agent prevents circular drift by ensuring all files have high-signal names.
 """
 
+import json
 import re
 from pathlib import Path
 from typing import Dict, List
@@ -17,6 +18,47 @@ class NamingLawHealerAgent:
     The "Naming Surgeon" that standardizes file identities by renaming
     forbidden patterns or low-signal files to comply with naming laws.
     """
+    
+    SYSTEM_PROMPT = """
+You are the NamingLawHealerAgent — the final arbiter of signal purity (Key 49).
+Your mandate is absolute: Every file and class name must conform exactly to the eternal canon.
+
+=== CANONICAL NAMING LAWS (ZERO TOLERANCE) ===
+
+1. **File Names**:
+   - lowercase snake_case ONLY.
+   - Mandatory role suffixes:
+     - Agents: *_agent.py | Engines: *_engine.py | Managers: *_manager.py
+     - Validators: *_validator.py | Guardrails: *_guardrail.py
+     - Models/Enums: *_models.py / *_enums.py | Tools: *_tool.py
+   - Forbidden: utils.py, helper.py, misc.py, base.py, temp.py. 
+   - Naming must reflect primary responsibility with high semantic signal.
+
+2. **Class Names**:
+   - PascalCase ONLY.
+   - Must explicitly match the file role (e.g., NamingHealerAgent).
+
+=== HEALING PROTOCOL ===
+1. Diagnose violations.
+2. Propose exact new filename (preserve path).
+3. Generate full import reconciliation plan for all impacted files.
+4. Output JSON ONLY.
+
+{
+  "current_path": "<full_path>",
+  "new_filename": "<new_basename>",
+  "reason": "<justification>",
+  "renamed": true,
+  "import_fixes": [{"file": "<path>", "old_import": "...", "new_import": "..."}]
+}
+
+=== CONSTRAINTS ===
+- No folder moves. No overwrites. No broken imports.
+- If target exists, return "renamed": false with conflict reason.
+
+Eliminate noise. Amplify signal.
+Current date: December 24, 2025
+"""
     
     def __init__(self, project_root: Path, ctx):
         self.root = project_root
@@ -75,65 +117,29 @@ class NamingLawHealerAgent:
             print(f"   [✓] NamingLawHealerAgent: All files comply with naming laws.")
     
     async def _execute_per_file(self, file_path: str) -> Dict:
-        """Per-file execution with cognitive reasoning transparency."""
-        code = Path(file_path).read_text(encoding='utf-8', errors='replace')
-        current_name = Path(file_path).stem
+        """Per-file execution with sovereign mutation and physical transformation."""
+        # [SOVEREIGN MUTATION]
+        response = await self.ctx.engine.resilient_mutation(
+            prompt=f"{self.SYSTEM_PROMPT}\n\nTarget: {file_path}",
+            response_format={"type": "json_object"}
+        )
         
-        # [L1 REASONING] Reset cognitive state for this session
-        self.scratchpad = f"Analyzing: {current_name}.py\n"
-        self.reasoning_steps = []
-        
-        self._think(f"STEP 1: Current name '{current_name}' — assessing signal density against Key 49 signals")
-        
-        # Signal analysis
-        violations = self._detect_low_signal(code, current_name)
-        
-        if not violations:
-            self._think("CONCLUSION: Name already satisfies high-signal requirements — no healing required")
-            return {
-                "healed": True,
-                "reason": "High signal name",
-                "reasoning_steps": self.reasoning_steps,
-                "scratchpad_update": self.scratchpad
-            }
-        
-        self._think(f"VIOLATIONS FOUND: {len(violations)} low-signal patterns detected")
-        self.scratchpad += f"\nViolations identified: {violations}\n"
-        
-        self._think("STEP 2: Generating sovereign alternatives using territory-specific positive signals")
-        suggestions = self._generate_suggestions(current_name, code)
-        
-        self._think(f"Generated {len(suggestions)} candidates: {', '.join(suggestions[:3])}...")
-        
-        self._think("STEP 3: Evaluating candidates against L1 cognitive criteria (entropy, clarity, canon match)")
-        best = self._rank_suggestions(suggestions, code)
-        
-        if not best or best == current_name:
-            self._think("CONCLUSION: No superior high-signal name found — marking as persistent violation")
-            return {
-                "healed": False,
-                "reason": "No better name found",
-                "persistent": True,
-                "key_id": 49,
-                "reasoning_steps": self.reasoning_steps,
-                "scratchpad_update": self.scratchpad + "\nStatus: Persistent low-signal — escalation required"
-            }
-        
-        self._think(f"SELECTED: '{best}' — identified as providing highest sovereign signal")
-        self.scratchpad += f"\nDecision: Chosen '{best}' to maximize domain entropy."
-        
-        self._think("STEP 4: Preparing atomic rename and cross-file import refactor")
-        new_code = self._apply_rename(code, current_name, best)
-        
-        return {
-            "healed": True,
-            "healed_code": new_code,
-            "move_to": str(Path(file_path).with_name(f"{best}.py")),
-            "reason": f"Renamed to high-signal '{best}'",
-            "key_id": 49,
-            "reasoning_steps": self.reasoning_steps,
-            "scratchpad_update": self.scratchpad + f"\nHealing complete. Target: {best}.py"
-        }
+        result = json.loads(response)
+        if result.get("renamed"):
+            new_p = Path(file_path).parent / result["new_filename"]
+            if not new_p.exists():
+                # Physical Transformation
+                Path(file_path).rename(new_p)
+                
+                # Import Reconciliation (The Safety Net)
+                for fix in result.get("import_fixes", []):
+                    importer = self.root / fix["file"]
+                    if importer.exists():
+                        content = importer.read_text()
+                        importer.write_text(content.replace(fix["old_import"], fix["new_import"]))
+                
+                return {"status": "HEALED", "path": str(new_p)}
+        return result
             
     def _is_protected_file(self, file_path: Path) -> bool:
         """Check if file is protected from renaming."""
