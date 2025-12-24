@@ -102,15 +102,28 @@ class ValidationSession:
 
 
 class DashboardMetrics:
-    """Central metrics collection and aggregation"""
-    
+    """Thread-safe singleton metrics with ultra-hardened locking"""
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._initialized = False
+        return cls._instance
+
     def __init__(self):
+        if getattr(self, '_initialized', False):
+            return
         self.session: Optional[ValidationSession] = None
         self.key_metrics: Dict[int, KeyMetrics] = {}
         # Using deque for memory safety in long runs (keep last 5000 events)
         self.violation_timeline: deque = deque(maxlen=5000)
         self.healing_timeline: deque = deque(maxlen=5000)
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
+        self._initialized = True
         
         # Initialize all 50 keys
         self._initialize_keys()
