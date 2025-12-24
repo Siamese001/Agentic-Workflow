@@ -417,21 +417,25 @@ def export_report():
 
 def run_server(host='0.0.0.0', port=5000, debug=False):
     """
-    Run the Flask server with thread-safe configuration.
-    HARDENED: External Port Mapping, Re-loader Disabled, Threading Enabled.
+    Ultra-hardened server start with port retry.
+    HARDENED: External Port Mapping, Re-loader Disabled, Threading Enabled, Auto Port Retry.
     """
     # Use environment port if available (for Docker/Cloud)
-    port = int(os.environ.get("DASHBOARD_PORT", port))
+    current_port = int(os.environ.get("DASHBOARD_PORT", port))
     
-    print(f"[*] DASHBOARD: Starting background thread on http://{host}:{port}")
-    
-    try:
-        # use_reloader MUST be False when running in a background thread
-        app.run(host=host, port=port, debug=debug, use_reloader=False, threaded=True)
-    except Exception as e:
-        print(f"[!] DASHBOARD ERROR: Could not start server: {e}")
-        if "Address already in use" in str(e):
-            print("    -> Tip: Run 'lsof -i :5000' and kill the existing process.")
+    for attempt in range(5):
+        try:
+            print(f"[*] Starting Flask on http://{host}:{current_port}")
+            # use_reloader MUST be False when running in a background thread
+            app.run(host=host, port=current_port, debug=debug, use_reloader=False, threaded=True)
+            break
+        except OSError as e:
+            if "Address already in use" in str(e):
+                print(f"[!] Port {current_port} in use, trying {current_port + 1}")
+                current_port += 1
+            else:
+                print(f"[!] DASHBOARD ERROR: {e}")
+                raise
 
 
 if __name__ == "__main__":

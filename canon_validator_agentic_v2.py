@@ -239,6 +239,7 @@ from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import Soverei
 from agentic_core.L5_safety.red_teaming.sovereign_red_team_agent import SovereignRedTeamAgent
 from agentic_core.L5_safety.policy.sovereign_alerting_agent import SovereignAlertingAgent
 from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L3_orchestration.mcp.mcp_router_sovereign import SovereignMCPRouter
 
 # Try to import MissionResumeAgent (L3 has broken imports)
 try:
@@ -540,18 +541,22 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"   [OK] Mission Root Anchored: {project_root}")
     
     # === DASHBOARD INITIALIZATION (METRICS ONLY) ===
-    # Flask server will start AFTER agents are discovered
+    # [DASHBOARD INITIALIZATION] Initialize metrics and web server
     dashboard_metrics = None
+    dashboard = None
     web_thread = None
+    dashboard_available = DASHBOARD_AVAILABLE  # Local copy to avoid scope issues
     
-    if DASHBOARD_AVAILABLE:
-        dashboard_metrics = DashboardMetrics()
-        dashboard = CanonDashboard(dashboard_metrics)
-        
-        # Import module but DON'T start server yet
-        import canon_dashboard_web
-        canon_dashboard_web.metrics = dashboard_metrics
-        print(f"   [OK] Dashboard metrics initialized (server will start after agent discovery)")
+    if dashboard_available:
+        # ULTRA-HARDENED: Use the singleton pattern and inject into the web module
+        try:
+            dashboard_metrics = DashboardMetrics()
+            import canon_dashboard_web
+            canon_dashboard_web.metrics = dashboard_metrics
+            print(f"   [OK] Dashboard metrics initialized (Singleton mode active)")
+        except Exception as e:
+            print(f"   [!] Dashboard metrics init failed: {e}")
+            dashboard_available = False
     
     # === L6 PEACEKEEPER: MANDATORY PRE-FLIGHT ===
     # Execute void compliance check BEFORE any validation begins
@@ -757,6 +762,16 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     if not hasattr(ctx, 'intelligence_enabled'): 
         ctx.intelligence_enabled = lambda: True
+
+    # [ETERNAL MCP INTEGRATION] Sovereign L3 MCP Router
+    ctx.mcp_router = None
+    try:
+        mcp_router = SovereignMCPRouter(role=target_scope)
+        await mcp_router.initialize()
+        ctx.mcp_router = mcp_router
+        print(f"   [OK] Sovereign MCP Router ETERNALLY ARMED — tools ready for L4 healing")
+    except Exception as e:
+        print(f"   [!] MCP Router failed to arm: {e} — continuing with LLM-only healing")
 
     # [FIX] Support for UI/Figma service calls
     if not hasattr(ctx, 'services'): 
@@ -1025,60 +1040,22 @@ Return ONLY the fixed Python code. No explanations, no markdown.
         print(f"   [DASHBOARD] Synced {len(cleaning_crew)} agents to visualization")
         
         # NOW start the Flask server with agents populated
-        if DASHBOARD_AVAILABLE and web_thread is None:
-            # Check if port 5000 is already in use
-            import socket
-            def check_port_available(port):
+        if dashboard_available and web_thread is None:
+            # ULTRA-HARDENED: Let the server handle its own port-retry and startup logic
+            import threading
+            def start_background_dashboard():
                 try:
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                        s.bind(('localhost', port))
-                    return True
-                except OSError:
-                    return False
-            
-            if not check_port_available(5000):
-                print(f"   [!] Port 5000 already in use - killing existing process")
-                import subprocess
-                subprocess.run(['netstat', '-ano', '|', 'findstr', ':5000'], shell=True, capture_output=True)
-                print(f"   [!] Run: taskkill /PID <number> /F to free the port")
-            else:
-                # Start server with error handling
-                def safe_run_server():
-                    try:
-                        run_server('0.0.0.0', 5000, False)
-                    except Exception as e:
-                        print(f"   [!] Flask server failed to start: {e}")
-                        import traceback
-                        traceback.print_exc()
-                
-                web_thread = threading.Thread(
-                    target=safe_run_server,
-                    daemon=True
-                )
-                web_thread.start()
-                print(f"   [*] Starting web dashboard on http://localhost:5000")
-                
-                # Wait for server to be ready
-                import time
-                def wait_for_port(port, host='localhost', timeout=10):
-                    start_time = time.time()
-                    while True:
-                        try:
-                            with socket.create_connection((host, port), timeout=1):
-                                return True
-                        except OSError:
-                            if time.time() - start_time >= timeout:
-                                return False
-                            time.sleep(0.5)
-                
-                if wait_for_port(5000):
-                    print(f"   [OK] Dashboard server confirmed listening on http://localhost:5000")
-                    print(f"   [OK] Access dashboards:")
-                    print(f"      • Main: http://localhost:5000")
-                    print(f"      • Agent Architecture: http://localhost:5000/agent_graph")
-                else:
-                    print(f"   [!] TIMEOUT: Dashboard server failed to start after 10 seconds")
-                print(f"   [!] Agent graph will show {len(cleaning_crew)} live agents")
+                    # Internal retry and path-handling happens inside run_server
+                    run_server('0.0.0.0', 5000, False)
+                except Exception as e:
+                    print(f"   [!] Background dashboard server failed: {e}")
+
+            web_thread = threading.Thread(
+                target=start_background_dashboard,
+                daemon=True
+            )
+            web_thread.start()
+            print(f"   [*] Hardened web dashboard thread launched.")
     except Exception as e:
         print(f"   [!] Dashboard sync failed: {e}")
 
@@ -1804,6 +1781,22 @@ CURRENT CODE:
                         
                         # Detect successful healing signals
                         if isinstance(result, dict):
+                            # [MCP HEALING ESCALATION] Route persistent violations to sovereign tools
+                            if result.get('persistent') and ctx.mcp_router:
+                                key_id = result.get('key_id', 0)
+                                mcp_res = await ctx.mcp_router.resolve_violation(
+                                    key_id, str(Path(file_path).relative_to(project_root)), result.get('msg', '')
+                                )
+                                if mcp_res.get('status') in {'success', 'l2_research'}:
+                                    tool_name = mcp_res.get('tool', 'unknown')
+                                    print(f"     [MCP HEAL] Resolved Key {key_id} via sovereign tool: {tool_name}")
+                                    if mcp_res.get('status') == 'l2_research':
+                                        print(f"     [L2 INSIGHT] External knowledge retrieved from {tool_name}")
+                                        
+                                    ctx.report(agent.__class__.__name__, key_id, True, f"MCP-healed: {mcp_res.get('status')}")
+                                    changes_this_round += 1
+                                    file_healed = True
+
                             # [L6 HARDENING] Physical Relocation & Import Sync
                             if result.get('move_to'):
                                 target_move_path = result['move_to']
