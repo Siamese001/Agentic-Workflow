@@ -545,21 +545,56 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> Li
     except ValueError:
         return []
 
-    # [PHASE 1] Gravity (Waterfall) Enforcement
-    SOVEREIGN_RANKING = ["agentic_core", "prompt_governance", "schemas", "config", "scripts"]
-    DOWNSTREAM_APPS = {"apps_rg", "apps_lic", "apps_shared"}
-    current_root = rel_path.parts[0]
-    
-    if current_root in SOVEREIGN_RANKING:
-        current_rank = SOVEREIGN_RANKING.index(current_root)
-        forbidden_roots = set(SOVEREIGN_RANKING[current_rank + 1:]) | DOWNSTREAM_APPS
-        
+    # [PHASE 1] Gravity (Waterfall) Enforcement – FULLY DERIVED FROM structure_blueprint.py SSOT
+    # Rationale (windsurfrules.md §2): Upstream sovereign roots MUST NOT import from downstream domains.
+    # - Dynamically derive from SOVEREIGN_REGISTRY.keys() → zero drift on blueprint changes
+    # - Upstream sovereign: non-apps_* roots and not 'tests' (currently only 'agentic_core')
+    # - Downstream: all apps_* + 'tests'
+    # - Regex catches root-level imports including submodules (e.g., 'from apps_shared.utils import X')
+    # - No false positives within same root
+
+    # [SSOT DERIVATION] Pull all root folders directly from the master blueprint
+    all_registry_roots = set(SOVEREIGN_REGISTRY.keys())
+
+    # Upstream sovereign: brain core + any future non-domain sovereign supports (e.g., prompt_governance, schemas)
+    upstream_sovereign_roots = {
+        root for root in all_registry_roots
+        if not root.startswith("apps_") and root != "tests"
+    }
+
+    # Downstream: everything else (domains + tests)
+    downstream_roots = all_registry_roots - upstream_sovereign_roots
+
+    try:
+        current_root = rel_path.parts[0]
+    except IndexError:
+        return violations
+
+    # Gravity restriction applies only to files in upstream sovereign roots
+    if current_root not in upstream_sovereign_roots:
+        return violations
+
+    # Read file content once
+    try:
         with open(file_path, "r", encoding="utf-8", errors="replace") as f:
             content = f.read()
-            
-        for forbidden in forbidden_roots:
-            if f"import {forbidden}" in content or f"from {forbidden}" in content:
-                violations.append(f"GRAVITY VIOLATION: '{current_root}' depends on downstream '{forbidden}'.")
+    except Exception:
+        return violations  # Skip unreadable files
+
+    # Build regex only if there are downstream roots (defensive)
+    if downstream_roots:
+        forbidden_pattern = re.compile(
+            r"^(?:import|from)\s+(" + "|".join(map(re.escape, sorted(downstream_roots))) + r")(?:\.\w|\s|$)",
+            re.MULTILINE
+        )
+
+        matches = forbidden_pattern.findall(content)
+        if matches:
+            unique_matches = sorted(set(matches))
+            violations.append(
+                f"GRAVITY VIOLATION (SSOT Enforced): Upstream sovereign root '{current_root}' imports from downstream root(s): {unique_matches}. "
+                "Rationale: Prevents core contamination. Move shared logic to apps_shared or sovereign runtime/utils."
+            )
 
     # [PHASE 2] Convention Enforcement
     violations.extend(validate_import_conventions(file_path, project_root))

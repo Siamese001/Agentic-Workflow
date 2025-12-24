@@ -109,7 +109,9 @@ def verify_neural_link():
 
 verify_neural_link()
 
-# [GRAVITY SSOT] Dynamically derived from structure_blueprint (absolute order = authority)
+# [GRAVITY SSOT] L1-L5 layer authority order for agentic_core — directly from structure_blueprint SSOT
+# Lower index = higher authority (e.g., L0_maintenance > L5_safety)
+# Used by get_layer_rank() for internal orchestration routing
 GRAVITY_LAYERS = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
 
 def get_layer_rank(path_str: str) -> int:
