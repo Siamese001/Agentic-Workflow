@@ -25,6 +25,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     CANON_AGENT_REGISTRY, # [GAP 2]
     ROOT_PROTECTED_FILES
 )
+from agentic_core.config.P1_core.sovereign_env import get_env
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
 import sys
@@ -60,6 +61,14 @@ for p in SOVEREIGN_PATHS:
         sys.path.insert(0, p_str)
 
 print(f"   [OK] Sovereign Neural Link Active at Root: {project_root_str}")
+
+# [ETERNAL INDEX] Ensure territory embeddings bootstrapped
+try:
+    from agentic_core.config.P1_core.structure_blueprint import bootstrap_territory_index
+    bootstrap_territory_index()
+    print("   [OK] Semantic territory index ready")
+except Exception as e:
+    print(f"   [!] Territory bootstrap failed: {e} — healing degraded")
 
 # [HARDENING] SOVEREIGN NEURAL LINK
 def verify_neural_link():
@@ -114,6 +123,10 @@ def verify_neural_link():
         sys.exit(1)
 
 verify_neural_link()
+
+# [ETERNAL SSOT] Initialize sovereign environment loader
+env = get_env(project_root)
+print(f"   [OK] SovereignEnv loaded — Model: {env.GEMINI_MODEL} | Embedding Dim: {env.EMBEDDING_DIMENSION}")
 
 # [GRAVITY SSOT] Dynamically derived authority order
 GRAVITY_LAYERS = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]

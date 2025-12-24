@@ -103,7 +103,61 @@ TESTS_SUBFOLDER_MAP = {
 
 # --- BACKWARD COMPATIBILITY EXPORTS ---
 AGENTIC_CORE_REGISTRY = CORE_SUBFOLDER_MAP
-SOVEREIGN_DEPTH_MAP = {k: v["depth"] for k, v in SOVEREIGN_REGISTRY.items()}
+# [ULTIMATE FINAL HARDENING] Precision depth + general bounds + deprecation archive
+CANONICAL_PRECISION_DEPTH = {
+    "agentic_core": 4,   # Root > L# > Stage > File
+    "apps_rg": 3,
+    "apps_lic": 3,
+    "apps_shared": 3,
+    "tests": 3,
+}
+GENERAL_MIN_DEPTH = 3   # No shallow files allowed
+GENERAL_MAX_DEPTH = 5   # Prevent organizational sprawl
+
+# Safe deprecation territory — outside active keys
+DEPRECATION_ARCHIVE = "archives/deprecated_code"
+
+# Semantic index metadata for known territories
+TERRITORY_EXAMPLES = {
+    "agentic_core/L1_cognition": "strategy planning reasoning mission decomposition",
+    "agentic_core/L3_orchestration": "fission orchestration routing workflow manager",
+    "agentic_core/L4_state": "memory cache pinecone redis historian audit",
+    "agentic_core/L5_safety": "guardrail safety policy enforcer filter",
+    "apps_rg/agents": "resume ranking narrative scoring jd match",
+    "apps_lic/agents": "license compliance workflow validation",
+    "apps_shared/utils": "shared helper validation adapter",
+    "scripts": "operational tool cli integrity backup deploy",
+}
+
+# [SOVEREIGN BOOTSTRAP] Auto-populate Pinecone index on first run
+def bootstrap_territory_index():
+    """
+    Called once — embeds TERRITORY_EXAMPLES into Pinecone for semantic healing.
+    Safe to run multiple times (upserts).
+    """
+    import hashlib
+    from pathlib import Path
+    
+    try:
+        from agentic_core.L3_orchestration.healing.semantic_territory_mapper_agent import SemanticTerritoryMapperAgent
+        mapper = SemanticTerritoryMapperAgent(Path("."), None)  # Dummy ctx
+        vectors = []
+        for territory, example in TERRITORY_EXAMPLES.items():
+            embedding = mapper.get_embedding(example)
+            vectors.append({
+                "id": f"territory_{hashlib.sha256(territory.encode()).hexdigest()[:16]}",
+                "values": embedding,
+                "metadata": {"territory": territory}
+            })
+        if vectors:
+            mapper.index.upsert(vectors=vectors)
+            print(f"   [✓] Bootstrapped {len(vectors)} territory examples to Pinecone")
+    except Exception as e:
+        print(f"   [!] Territory bootstrap failed: {e}")
+
+# Run on import — eternal index readiness
+# Note: Commented out to avoid auto-execution on import
+# bootstrap_territory_index()
 
 # --- CANON SIGNALS: HIGH-SIGNAL KEYWORDS FOR NAMING LAW ---
 # [KEY 49 ENFORCEMENT] Files must contain at least one of these keywords
@@ -153,7 +207,9 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
 
 # [FINAL REGISTRY] CANON AGENT REGISTRY (Mandatory Framework Population)
 CANON_AGENT_REGISTRY = {
-    12: ["FissionManager", "ArchitectureGovernor", "RecursiveSpanHealerAgent", "DeadCodePrunerAgent"],
+    12: ["FissionManager", "ArchitectureGovernor", "AgentRegistryValidatorAgent", 
+         "RecursiveSpanHealerAgent", "ScriptsConsolidatorAgent", "TerritoryHealerAgent", 
+         "SemanticTerritoryMapperAgent", "DeadCodePrunerAgent"],
     13: ["MissionHistorian", "KeyCoverageAuditorAgent"],
     18: ["PreCommitGuardianAgent"],
     19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent", "GravityEnforcerAgent"],
