@@ -1,8 +1,10 @@
 """Implementation for check_resume_rules."""
 
+from typing import Any, Optional, Protocol, Dict, List
+
 import logging
-from typing import Any, Dict, List, Optional, Union
 import sys # Added missing import
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 # from agentic_core.check_resume_rules_types import *  # Star import removed
 

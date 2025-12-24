@@ -6,8 +6,8 @@ Generated: 2025-12-07T13:28:54.091269
 """
 
 import logging
-from typing import Dict, Optional, Callable
-from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, Protocol
+from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
 

@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict, List
+from typing import Any, Optional, Protocol, Dict, List
 import logging
 import time
 import uuid

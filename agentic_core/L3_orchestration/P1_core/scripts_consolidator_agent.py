@@ -5,7 +5,7 @@ Consolidates scattered script files into proper canonical locations.
 """
 import logging
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Optional, Protocol, Dict, List
 
 logger = logging.getLogger(__name__)
 

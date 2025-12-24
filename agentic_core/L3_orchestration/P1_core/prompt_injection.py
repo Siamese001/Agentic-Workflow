@@ -5,7 +5,7 @@ Part of the safety guardrail system for agentic workflows.
 """
 
 import logging
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 from dataclasses import dataclass, field # Added missing import for dataclass and field
 
 LOGGER = logging.getLogger(__name__)

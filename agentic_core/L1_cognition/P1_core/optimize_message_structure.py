@@ -7,6 +7,7 @@ Generated: 2025-12-07T13:28:54.078426
 
 import logging
 from typing import Dict, Optional, Union
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
@@ -39,6 +40,6 @@ class OptimizeMessageStructure:
 def refine(data: Union[str,
     Dict],
     adjustments: Optional[Dict] = None,
-    config: Optional[Dict] = None) -> RefinementResult:
+    config: Optional[Optional[Dict]] = None) -> RefinementResult:
     """Refine input data by applying adjustment transformations."""
     return OptimizeMessageStructure(config).refine(data, adjustments)

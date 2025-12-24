@@ -1,7 +1,9 @@
 """Implementation for get_info_understand_request."""
 
 import logging
+import sys
 from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 # from agentic_core.get_info_understand_request_types import *  # Star import removed
 

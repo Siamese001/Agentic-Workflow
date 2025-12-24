@@ -7,7 +7,7 @@ import json
 import hashlib
 import redis
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Optional, Protocol, Dict, List
 import os
 
 class CachedSafetyShield:

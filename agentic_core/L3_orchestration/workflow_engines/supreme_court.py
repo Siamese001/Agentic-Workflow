@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, List
+from typing import Any, Dict, List, Optional, Protocol
 from pydantic import BaseModel
 
 class ConsensusVerdict(BaseModel):

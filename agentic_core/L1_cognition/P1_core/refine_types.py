@@ -1,5 +1,6 @@
-from dataclasses import dataclass
-from enum import Enum
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum, auto
 """Types and models for message_refinement_adjust_scores."""
 import logging
 

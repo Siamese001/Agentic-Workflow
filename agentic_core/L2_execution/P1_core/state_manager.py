@@ -5,6 +5,8 @@
 import json
 import logging
 import os
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
 
 
 class StateSerializer:
@@ -96,11 +98,11 @@ class StateSerializer:
             ValueError: If no config exists for the hop number
         """
         CONFIG = self.HOP_CONFIG.get(hop_num)
-        if not config:
+        if not CONFIG:
             raise ValueError(f"Cannot save: No config for hop {hop_num}")
 
         output_path = self.get_path_for_hop(hop_num)
-        data_to_save = self._serialize(data, config['type'])
+        data_to_save = self._serialize(data, CONFIG['type'])
 
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data_to_save, f, indent=2, ensure_ascii=False)
@@ -120,7 +122,7 @@ class StateSerializer:
             FileNotFoundError: If the hop output file doesn't exist
         """
         CONFIG = self.HOP_CONFIG.get(hop_num)
-        if not config:
+        if not CONFIG:
             raise ValueError(f"Cannot load: No config for hop {hop_num}")
 
         input_path = self.get_path_for_hop(hop_num)
@@ -132,7 +134,7 @@ class StateSerializer:
         with open(input_path, 'r', encoding='utf-8') as f:
             data_dict = json.load(f)
 
-        return self._deserialize(data_dict, config['type'])
+        return self._deserialize(data_dict, CONFIG['type'])
 
     def exists(self, hop_num: int) -> bool:
         """
@@ -146,7 +148,7 @@ class StateSerializer:
         """
         try:
             PATH = self.get_path_for_hop(hop_num)
-            return os.path.exists(path)
+            return os.path.exists(PATH)
         except ValueError:
             return False
 
@@ -293,8 +295,8 @@ class ManifestManager:
             "hop_checkpoints": []
         }
 
-        self._save_manifest(manifest)
-        return manifest
+        self._save_manifest(MANIFEST)
+        return MANIFEST
 
     def load_manifest(self) -> Dict[str, object]:
         """
@@ -330,10 +332,10 @@ class ManifestManager:
         # Convert ValidationSeverity enums in validation_results
         for vr in checkpoint_dict.get('validation_results', []):
             if 'severity' in vr and hasattr(vr['severity'], 'name'):
-                VR['SEVERITY'] = vr['severity'].name
+                vr['severity'] = vr['severity'].name
 
-        manifest['hop_checkpoints'].append(checkpoint_dict)
-        self._save_manifest(manifest)
+        MANIFEST['hop_checkpoints'].append(checkpoint_dict)
+        self._save_manifest(MANIFEST)
 
     def update_checkpoint(self, hop_id: str, updates: dict) -> None:
         """
@@ -344,11 +346,11 @@ class ManifestManager:
             updates: Dictionary of fields to update
         """
         MANIFEST = self.load_manifest()
-        for checkpoint in manifest['hop_checkpoints']:
+        for checkpoint in MANIFEST['hop_checkpoints']:
             if checkpoint['hop_id'] == hop_id:
                 checkpoint.update(updates)
                 break
-        self._save_manifest(manifest)
+        self._save_manifest(MANIFEST)
 
     def get_checkpoints(self) -> List[HopCheckpoint]:
         """
@@ -359,7 +361,7 @@ class ManifestManager:
         """
         MANIFEST = self.load_manifest()
         CHECKPOINTS = []
-        for cp_dict in manifest.get('hop_checkpoints', []):
+        for cp_dict in MANIFEST.get('hop_checkpoints', []):
             # Reconstruct ValidationResult objects
             validation_results = []
             for vr_dict in cp_dict.get('validation_results', []):
@@ -372,9 +374,9 @@ class ManifestManager:
             cp_dict['status'] = HopStatus[status_name]
             cp_dict['validation_results'] = validation_results
 
-            checkpoints.append(HopCheckpoint(**cp_dict))
+            CHECKPOINTS.append(HopCheckpoint(**cp_dict))
 
-        return checkpoints
+        return CHECKPOINTS
 
     def _save_manifest(self, manifest_data: Dict[str, object]) -> None:
         """

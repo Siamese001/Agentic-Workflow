@@ -5,8 +5,8 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.238560
 """
 
+from typing import Any, Optional, Protocol, Dict, List, Union
 import logging
-from typing import Dict, Optional, Union
 
 LOGGER = logging.getLogger(__name__)
 

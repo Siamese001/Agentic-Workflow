@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 """Dataclass models for rg_creative_brief."""
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
 import logging
 
 LOGGER = logging.getLogger(__name__)

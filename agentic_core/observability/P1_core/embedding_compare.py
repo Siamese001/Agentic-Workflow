@@ -21,9 +21,9 @@ import logging
 import sys
 import time
 import traceback
-from typing import Any, Dict, List, Optional, Union
-from enum import Enum # Added this import for Enum
-from dataclasses import dataclass, field # Added this import for dataclass and field
+from typing import Any, Dict, List, Optional, Protocol, Union # Added Protocol
+from enum import Enum, auto # Added auto
+from dataclasses import dataclass, field
 
 # Configure module-specific logger
 LOGGER = logging.getLogger(__name__)

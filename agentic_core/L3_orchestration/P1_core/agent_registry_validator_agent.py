@@ -5,7 +5,7 @@ Validates that all required agents in CANON_AGENT_REGISTRY exist and are properl
 """
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple, Set
+from typing import List, Dict, Any, Tuple, Set, Optional, Protocol
 
 logger = logging.getLogger(__name__)
 

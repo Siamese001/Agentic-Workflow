@@ -7,6 +7,8 @@ Generated: 2025-12-07T13:28:54.090417
 
 import logging
 from typing import Dict, Optional, Callable # Added Callable
+from typing import Any, Optional, Protocol, Dict, List
+
 # Assuming RetryResult is defined elsewhere or needs to be imported, but not a syntax error fix.
 
 LOGGER = logging.getLogger(__name__)

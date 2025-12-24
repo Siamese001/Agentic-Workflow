@@ -11,8 +11,8 @@ Integrates with:
 
 import logging
 import time
-from typing import Any, Dict, List, Optional
-from enum import Enum
+from typing import Any, Optional, Protocol, Dict, List
+from enum import Enum, auto
 from dataclasses import dataclass, field
 
 LOGGER = logging.getLogger(__name__)
