@@ -18,8 +18,9 @@ from .bias_auditor import BiasAuditor
 from .constitutional_ai import ConstitutionalAISystem
 
 # Optimization Components
-from .hyde_processor import HyDEProcessor
-from .tone_model import ToneModel
+# TODO: Systematic Repair (Option 2) - syntax errors require fixing
+# from .hyde_processor import HyDEProcessor
+# from .tone_model import ToneModel
 from .claim_confidence import ClaimConfidenceScorer
 from .prompt_optimizer import PromptOptimizer
 
@@ -40,8 +41,8 @@ __all__ = [
     "BiasAuditor",
     "ConstitutionalAISystem",
     # Optimization
-    "HyDEProcessor",
-    "ToneModel",
+    # "HyDEProcessor",  # TODO: Repair hyde_processor.py
+    # "ToneModel",  # TODO: Repair tone_model.py
     "ClaimConfidenceScorer",
     "PromptOptimizer",
     # Infrastructure

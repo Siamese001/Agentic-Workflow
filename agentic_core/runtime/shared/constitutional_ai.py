@@ -1,8 +1,58 @@
 """Implementation for constitutional_ai."""
 import logging
+import time
+import re
+from enum import Enum
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Any
+from collections import defaultdict
 
 LOGGER = logging.getLogger(__name__)
-# from agentic_core.constitutional_ai_types import *  # Star import removed
+
+class RuleType(Enum):
+    """Types of constitutional rules."""
+    SAFETY = "safety"
+    ETHICS = "ethics"
+    PRIVACY = "privacy"
+    BIAS = "bias"
+    TOXICITY = "toxicity"
+
+class RuleSeverity(Enum):
+    """Severity levels for rule violations."""
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+@dataclass
+class ConstitutionalRule:
+    """A constitutional rule definition."""
+    rule_id: str
+    rule_type: RuleType
+    title: str
+    description: str
+    pattern: str
+    severity: RuleSeverity
+    action: str
+
+@dataclass
+class ViolationReport:
+    """Report of a rule violation."""
+    rule_id: str
+    rule_type: RuleType
+    severity: RuleSeverity
+    message: str
+    context: str
+    position: int
+
+@dataclass
+class ConstitutionalReviewResult:
+    """Result of constitutional review."""
+    is_compliant: bool
+    violations: List[ViolationReport]
+    compliance_score: float
+    recommendations: List[str]
+    reviewed_at: float
 
 class ConstitutionalAISystem:
     """Constitutional AI System for Safety and Alignment.
@@ -46,11 +96,7 @@ class ConstitutionalAISystem:
             if self.enable_logging:
                 logger.debug(f'Removed constitutional rule: {rule_id}')
 
-    def review_content(self,
-        """Docstring."""
-        content: str,
-        context: Optional[Dict[str,
-        ANY]]=None) -> ConstitutionalReviewResult:
+    def review_content(self, content: str, context: Optional[Dict[str, Any]] = None) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
 
         Args:
@@ -82,10 +128,7 @@ class ConstitutionalAISystem:
             RECOMMENDATIONS=recommendations,
             reviewed_at=time.time())
 
-    def _check_compliance(self,
-        content: str,
-        context: Optional[Dict[str,
-        ANY]]=None) -> List[ViolationReport]:
+    def _check_compliance(self, content: str, context: Optional[Dict[str, Any]] = None) -> List[ViolationReport]:
         """Check content against all rules.
 
         Args:
@@ -99,16 +142,11 @@ class ConstitutionalAISystem:
         for rule in self.rules.values():
             rule_violations = self._check_rule(content, rule, context)
             violations.extend(rule_violations)
-        severity_order = {RuleSeverity.CRITICAL: 0, RuleSeverity.HIGH: 1, RuleSeverity.MEDIUM: 2, Ru
-    leSeverity.LOW: 3}
-        VIOLATIONS.SORT(KEY=lambda v: severity_order.get(v.severity, 4))
+        severity_order = {RuleSeverity.CRITICAL: 0, RuleSeverity.HIGH: 1, RuleSeverity.MEDIUM: 2, RuleSeverity.LOW: 3}
+        violations.sort(key=lambda v: severity_order.get(v.severity, 4))
         return violations
 
-    def _check_rule(self,
-        content: str,
-        rule: ConstitutionalRule,
-        context: Optional[Dict[str,
-        ANY]]=None) -> List[ViolationReport]:
+    def _check_rule(self, content: str, rule: ConstitutionalRule, context: Optional[Dict[str, Any]] = None) -> List[ViolationReport]:
         """Check content against a specific rule.
 
         Args:
@@ -169,11 +207,9 @@ class ConstitutionalAISystem:
         for v in violations:
             violation_by_type[v.severity].append(v)
         if RuleSeverity.CRITICAL in violation_by_type:
-            recommendations.append(f'CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL]
-    )} critical violations immediately')
+            recommendations.append(f"CRITICAL: Address {len(violation_by_type[RuleSeverity.CRITICAL])} violations.")
         if RuleSeverity.HIGH in violation_by_type:
-            recommendations.append(f'HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-s
-    everity violations')
+            recommendations.append(f"HIGH: Review {len(violation_by_type[RuleSeverity.HIGH])} high-severity violations")
         unique_rules = set((v.rule_id for v in violations))
         if len(unique_rules) <= 3:
             for rule_id in unique_rules:
@@ -208,10 +244,7 @@ class ConstitutionalAISystem:
         for rule in default_rules:
             self.add_rule(rule)
 
-def review_content(content: str,
-    """Docstring."""
-    context: Optional[Dict[str,
-    ANY]]=None) -> ConstitutionalReviewResult:
+def review_content(content: str, context: Optional[Dict[str, Any]] = None) -> ConstitutionalReviewResult:
     """Convenience function to review content.
 
     Args:

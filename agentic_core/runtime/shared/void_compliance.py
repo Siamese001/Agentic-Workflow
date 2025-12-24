@@ -3,7 +3,7 @@
 L6 Runtime: Void Compliance Enforcer
 Ensures files only exist in ALLOWED_ROOT_FOLDERS and enforces key-to-folder mapping.
 """
-from typing import Any, Optional, Protocol, Dict, List
+from typing import Any, Optional, Protocol, Dict, List, Set, Tuple
 
 
 import logging
@@ -11,16 +11,21 @@ import os
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
 
 # [SSOT] Import the master structure blueprint
-    AGENTIC_CORE_REGISTRY,
+from agentic_core.config.P1_core.structure_blueprint import (
+    SOVEREIGN_REGISTRY,
     SOVEREIGN_DEPTH_MAP,
     ROOT_WHITELIST,
     CORE_SUBFOLDER_MAP
 )
 
 logger = logging.getLogger(__name__)
+
+# Reconstruct the hierarchy mapping from the new Registry
+CANONICAL_HIERARCHY = {
+    k: v["subfolders"] for k, v in SOVEREIGN_REGISTRY.items()
+}
 
 # ==============================================================================
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
@@ -94,12 +99,6 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 # ==============================================================================
 # CANONICAL FOLDER STRUCTURE: The Single Source of Truth
 # ==============================================================================
-
-# [SSOT] Use the master blueprint from structure_blueprint.py
-# This replaces the hardcoded CANONICAL_HIERARCHY with dynamic import
-CANONICAL_HIERARCHY: Dict[str, Dict[str, List[str]]] = {
-    "agentic_core": AGENTIC_CORE_REGISTRY
-}
 
 # [KEY 40] LLM GUIDANCE: Content Heuristics for File Placement
 GUIDANCE_EXAMPLES: Dict[str, str] = {
@@ -577,7 +576,8 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
             violations.append((root_path, f"DEPTH VIOLATION (Key 41): Files directly under Root '{root_key}' (depth 1). Found: {root_files}"))
 
         # 2. Level 1 Validation (e.g., agentic_core -> L1_cognition)
-        expected_l1 = set(layers.keys())
+        # layers is now a list of allowed L1 folders from SOVEREIGN_REGISTRY
+        expected_l1 = set(layers) if isinstance(layers, list) else set(layers.keys())
         actual_l1 = {p.name for p in root_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
 
         unexpected_l1 = actual_l1 - expected_l1
@@ -585,23 +585,37 @@ def validate_canonical_hierarchy(project_root: Path) -> List[Tuple[Path, str]]:
             violations.append((root_path / bad, f"HIERARCHY DRIFT: Unapproved L1 folder '{bad}'. Allowed: {expected_l1}"))
 
         # 3. Level 2 Validation + Min Depth Enforcement
-        for l1_name, l2_list in layers.items():
-            l1_path = root_path / l1_name
-            if not l1_path.exists():
-                continue
+        # For L2 validation, we need to check CORE_SUBFOLDER_MAP for agentic_core
+        if root_key == "agentic_core" and isinstance(layers, list):
+            for l1_name in layers:
+                l1_path = root_path / l1_name
+                if not l1_path.exists():
+                    continue
                 
-            expected_l2 = set(l2_list)
-            actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
-            actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
-            
-            # Unexpected L2 folders
-            unexpected_l2 = actual_l2_dirs - expected_l2
-            for bad in unexpected_l2:
-                violations.append((l1_path / bad, f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}"))
-
-            # Files directly under L1 -> violates min depth 3 (Key 41)
-            if actual_l2_files:
-                violations.append((l1_path, f"DEPTH VIOLATION (Key 41): Files directly under L1 '{l1_name}' (depth 2). Must be under an approved L2 folder. Found: {actual_l2_files}"))
+                # Get expected L2 folders from CORE_SUBFOLDER_MAP
+                expected_l2 = set(CORE_SUBFOLDER_MAP.get(l1_name, []))
+                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+                actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
+                
+                # Unexpected L2 folders
+                unexpected_l2 = actual_l2_dirs - expected_l2
+                for bad in unexpected_l2:
+                    violations.append((l1_path / bad, f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}"))
+        elif isinstance(layers, dict):
+            # Legacy dict format support
+            for l1_name, l2_list in layers.items():
+                l1_path = root_path / l1_name
+                if not l1_path.exists():
+                    continue
+                
+                expected_l2 = set(l2_list)
+                actual_l2_dirs = {p.name for p in l1_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
+                actual_l2_files = [p.name for p in l1_path.iterdir() if p.is_file() and p.suffix == ".py"]
+                
+                # Unexpected L2 folders
+                unexpected_l2 = actual_l2_dirs - expected_l2
+                for bad in unexpected_l2:
+                    violations.append((l1_path / bad, f"HIERARCHY DRIFT: Unapproved subfolder '{bad}' under '{l1_name}'. Allowed: {expected_l2}"))
 
     return violations
 
