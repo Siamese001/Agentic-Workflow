@@ -51,7 +51,7 @@ def flush_and_align():
     print("\n[*] REWIRING IMPORTS...")
     rewire = [
         # FIX PREVIOUS MISTAKE: Analysis/Agents live in L2, not L5
-        (r"agentic_core\.L5_safety\.P1_red_team\.analysis", "agentic_core.L2_execution.P4_agents.analysis"),
+        (r"agentic_core\.L5_safety\.P1_red_team\.analysis", "agentic_core.L2_execution.tool_registry.analysis"),
         
         # NEW MAPPINGS for the folders we just moved
     ]

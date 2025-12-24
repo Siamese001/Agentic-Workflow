@@ -153,31 +153,28 @@ def verify_neural_link():
 
 verify_neural_link()
 
-# ===========================================================================
-# [PRE-FLIGHT] LEGACY IMPORT RECONCILIATION
-# ===========================================================================
-print(f"\n[PRE-FLIGHT] Reconciling legacy imports after hierarchy healing...")
+# [FINAL PRE-FLIGHT] Reconciliation of all legacy territories
+print(f"\n[FINAL PRE-FLIGHT] Reconciling remaining legacy imports...")
 import re
-legacy_patterns = [
-    (r'from agentic_core\.L2_execution\.P4_agents', 'from agentic_core.L2_execution.tool_registry'),
-    (r'from agentic_core\.L2_execution\.P1_core', 'from agentic_core.L2_execution.tool_registry'),
-    (r'import agentic_core\.L2_execution\.P4_agents\.', 'import agentic_core.L2_execution.tool_registry.'),
-    (r'from agentic_core\.L1_cognition\.P1_core', 'from agentic_core.L1_cognition.thought_engine'),
+patterns = [
+    (r'agentic_core\.L2_execution\.mcp', 'agentic_core.L2_execution.tool_registry'),
+    (r'agentic_core\.L3_orchestration\.mcp', 'agentic_core.L3_orchestration.workflow_engines'),
+    (r'agentic_core\.L4_state\.filesystem', 'agentic_core.L4_state.validation_context'),
+    (r'agentic_core\.L1_cognition\.discovery', 'agentic_core.L1_cognition.thought_engine'),
+    (r'agentic_core\.L2_execution\.P4_agents', 'agentic_core.L2_execution.tool_registry'),
 ]
-
-fixed_count = 0
+fixed = 0
 for py_file in Path(project_root / "agentic_core").rglob("*.py"):
     try:
         content = py_file.read_text(encoding="utf-8")
         original = content
-        for old, new in legacy_patterns:
+        for old, new in patterns:
             content = re.sub(old, new, content)
         if content != original:
             py_file.write_text(content, encoding="utf-8")
-            fixed_count += 1
-    except Exception: continue
-
-print(f"   [PRE-FLIGHT COMPLETE] {fixed_count} legacy imports reconciled.")
+            fixed += 1
+    except: pass
+print(f"   [FINAL PRE-FLIGHT COMPLETE] {fixed} imports reconciled.")
 print("-" * 70)
 
 # ===========================================================================
@@ -451,14 +448,15 @@ try:
     
     print(f"   [OK] Components loaded dynamically (gravity-compliant).")
 
-    # [HARDENING] Instantiate Engine EARLY for bootstrap/reconciliation
+    # [ETERNAL HARDENING] Early SubAtomicEngine + GeminiSpy instantiation
+    subatomic_engine = None
     if SubAtomicEngine is not None:
         try:
             _real_engine = SubAtomicEngine(gemini_client=None)
             subatomic_engine = GeminiSpy(_real_engine)
-            print(f"   [OK] SubAtomicEngine ready for pre-flight healing")
+            print(f"   [OK] SubAtomicEngine + GeminiSpy instantiated early")
         except Exception as e:
-            print(f"   [!] Early engine instantiation failed: {e}")
+            print(f"   [!] Engine early init failed: {e}")
 
     # [GRAVITY SURGERY ENABLED] waterfall enforcement active
 except Exception as e:
@@ -483,10 +481,22 @@ from agentic_core.runtime.shared.void_compliance import (
 
 print(f"   [OK] Void Compliance Engine: Online.")
 
+# [HYBRID ROUTING] Vector Sovereignty Integration
+pinecone_agent = None
+try:
+    # Post-Hierarchy path: L4_state/validation_context
+    from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
+    pinecone_agent = PineconeSovereignAgent()
+    print(f"   [OK] Hybrid Routing ONLINE: PineconeSovereignAgent armed.")
+except ImportError as e:
+    # Handle move-related import errors gracefully
+    print(f"   [!] Hybrid Routing Offline: Agent path not found ({e})")
+except Exception as e:
+    print(f"   [!] PineconeSovereignAgent init failed: {e}")
+
 # [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
 from agentic_core.L5_safety.guardrails.gravity_enforcer_agent import GravityEnforcerAgent
 from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
-from agentic_core.L4_state.validation_context.pinecone_sovereign_agent import PineconeSovereignAgent
 from agentic_core.L4_state.validation_context.subatomic_registry import SubAtomicRegistry
 from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
 from agentic_core.L5_safety.guardrails.adversarial_red_teamer import AdversarialRedTeamer as SovereignRedTeamAgent
@@ -494,12 +504,11 @@ from agentic_core.L5_safety.guardrails.sovereign_alerting_agent import Sovereign
 from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import SovereignMCPRouter
 
-# Try to import MissionResumeAgent (L3 has broken imports)
-try:
-    from agentic_core.L3_orchestration.workflow_engines.mission_resume_agent import MissionResumeAgent
-except ImportError:
-    MissionResumeAgent = None
-    
+# [ULTRA-HARDENED AGENTS] Import the four new sovereign agents
+from agentic_core.L5_safety.policy.neural_auto_immune_agent import NeuralAutoImmuneAgent
+from agentic_core.L3_orchestration.workflow_engines.mission_resume_agent import MissionResumeAgent
+from agentic_core.L0_maintenance.scripts.sovereign_watchdog_agent import SovereignWatchdogAgent
+
 # Try to import MemoryArchitect (base.py has ValidationContext issue)
 try:
     from agentic_core.L2_execution.P4_agents.memory_architect import MemoryArchitect
@@ -557,9 +566,9 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
 # [L6 HARDENING] Healing Configuration
-MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '3'))
-MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '8'))
-GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '50'))
+MAX_HEALING_ROUNDS = int(os.getenv('MAX_HEALING_ROUNDS', '10'))
+MAX_HEALING_PER_FILE = int(os.getenv('MAX_HEALING_PER_FILE', '20'))
+GLOBAL_HEALING_BUDGET = int(os.getenv('GLOBAL_HEALING_BUDGET', '100'))
 
 # ==============================================================================
 # [FINAL HARDENING] SURGERY CONTROL FLAGS
@@ -1090,24 +1099,6 @@ async def run_mission(target_scope: str = "agentic_core"):
             cache=ctx.semantic_cache
         )
         print(f"   [OK] Sovereign DeepWiki client armed — repository knowledge online")
-    except Exception as e:
-        print(f"   [!] DeepWiki client failed to arm: {e} — repo knowledge degraded")
-
-    # [L1 SOVEREIGN MEMORY] Ultra-hardened reasoning persistence
-    ctx.reasoning_memory = None
-    try:
-        from agentic_core.L1_cognition.reasoning_memory import SovereignReasoningMemory
-        ctx.reasoning_memory = SovereignReasoningMemory(mission_id=getattr(ctx, 'session_id', 'standalone'))
-        print(f"   [OK] Sovereign Reasoning Memory ETERNALLY ARMED — cognition preserved")
-    except Exception as e:
-        print(f"   [!] CRITICAL: Reasoning memory failed to arm: {e}")
-        import sys
-        sys.exit(1) # L1 failure is fatal to mission integrity
-
-    # [L4 SEMANTIC CACHE] Sovereign territory reflection
-    ctx.semantic_cache = None
-    try:
-        from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
         ctx.semantic_cache = SovereignSemanticCache(mission_id=getattr(ctx, 'session_id', 'standalone'), engine=subatomic_engine)
         print(f"   [OK] Sovereign Semantic Cache armed — territory reflection active")
     except Exception as e:

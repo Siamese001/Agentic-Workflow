@@ -5,48 +5,32 @@ Analyzes immutable Redis audit trail for excessive structural modifications.
 """
 
 import json
-import redis
-import os
 from pathlib import Path
 from collections import Counter
 from datetime import datetime, timedelta
-from typing import Dict
+from agentic_core.L4_state.validation_context.redis_sovereign_agent import RedisSovereignAgent
 
 class SovereignForensicsAgent:
     """
     Sovereign forensics — detects uncontrolled structural drift.
     """
     def __init__(self, project_root: Path):
-        self.root = project_root
-        
-        # Direct Redis connection for testing
-        try:
-            self.redis = redis.Redis(
-                host=os.getenv('REDIS_HOST', 'localhost'),
-                port=int(os.getenv('REDIS_PORT', 6379)),
-                decode_responses=True
-            )
-            # Test connection
-            self.redis.ping()
-        except Exception as e:
-            print(f"Warning: Redis connection failed ({e}), using in-memory cache")
-            self.redis = None
-            self._audit_trail = []
+        self.redis = RedisSovereignAgent(project_root).get_client()
+        self.threshold = 10  # Actions per hour
 
-        # [ETERNAL THRESHOLDS] Tunable sensitivity
-        from agentic_core.config.P1_core.sovereign_env import get_env
-        import os
-        self.env = get_env(project_root)
-        self.frequency_threshold = int(os.getenv("FORENSICS_THRESHOLD", "15"))
-        self.window_hours = int(os.getenv("FORENSICS_WINDOW_HOURS", "1"))
+    def analyze_drift_patterns(self):
+        cutoff = datetime.now() - timedelta(hours=1)
+        keys = self.redis.keys("l4_audit:*trail")
+        events = []
+        for k in keys:
+            for e in self.redis.lrange(k, 0, -1):
+                data = json.loads(e)
+                if datetime.fromisoformat(data['timestamp']) > cutoff:
+                    events.append(data)
         
-        self.severity_levels = {
-            15: "MODERATE_DRIFT",
-            30: "HIGH_DRIFT",
-            50: "CRITICAL_DRIFT"
-        }
-        
-        self.severity_map = {15: "MODERATE", 30: "HIGH", 50: "CRITICAL"}
+        counts = Counter(e['agent'] for e in events if e.get('action') in {'move', 'heal'})
+        alerts = {a: c for a, c in counts.items() if c >= self.threshold}
+        return {"status": "drift_alert" if alerts else "clean", "offenders": alerts}
 
     def analyze_drift(self) -> Dict:
         """Scan Redis audit trails for high-frequency agents."""

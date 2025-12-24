@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 
-from agentic_core.L3_orchestration.mcp.mcp_manager import MCPConnectionManager
+from agentic_core.L3_orchestration.workflow_engines.mcp_manager import MCPConnectionManager
 from agentic_core.L5_safety.guardrails.mcp_sovereign import mcp_authority
 from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
 

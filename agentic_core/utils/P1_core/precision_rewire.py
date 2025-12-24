@@ -8,7 +8,7 @@ ROOT = Path("C:/Git/Agentic-Workflow")
 # [THE SOVEREIGN MAPPING] Old Path Pattern -> New Canonical Path
 REWIRE_MAP = [
     # Core Agents & Tools
-    (r"agentic_core\.agents", "agentic_core.L2_execution.P4_agents"),
+    (r"agentic_core\.agents", "agentic_core.L2_execution.tool_registry"),
     (r"agentic_core\.tools", "agentic_core.L2_execution.P2_tools"),
     
     # Cognition & Domain
