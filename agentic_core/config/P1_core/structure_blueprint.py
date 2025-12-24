@@ -3,6 +3,7 @@ SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-3 for Apps/Support and Depth-4 for the Agentic Core.
 [SSOT] This is the absolute source of truth for the entire repository structure.
 """
+import re
 from typing import Dict, List
 
 # [SOVEREIGN SSOT] THE MASTER REGISTRY
@@ -150,12 +151,17 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     17: ["tests"]
 }
 
-# [GAP 1] CANON AGENT REGISTRY (Expected Framework Classes)
+# [ULTIMATE HARDENING] Forbid numbered folders at ANY depth
+FORBIDDEN_NUMBERED_PATTERN = re.compile(r"^\d{2}_")
+
+# [GAP 1/6] Consolidated Agent Registry (Expected Framework Classes)
 CANON_AGENT_REGISTRY = {
-    12: ["FissionManager", "ArchitectureGovernor"],
-    13: ["MissionHistorian"],
-    15: ["NarrativeLeadAgent", "RankerAgent", "ComplianceSpecialistAgent"], # [GAP 6]
-    19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel"]
+    12: ["FissionManager", "ArchitectureGovernor", "AgentRegistryValidatorAgent", "RecursiveSpanHealerAgent", "ScriptsConsolidatorAgent"],
+    13: ["MissionHistorian", "KeyCoverageAuditorAgent"],
+    15: ["NarrativeLeadAgent", "RankerAgent", "ComplianceSpecialistAgent"],
+    18: ["PreCommitGuardianAgent"],
+    19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent"],
+    20: ["DriftDetectorAgent", "DeadCodeDetectorAgent"]
 }
 
 # [GAP 16] Root protected files — SSOT centralized

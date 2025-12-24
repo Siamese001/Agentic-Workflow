@@ -185,9 +185,7 @@ try:
     if not apply_fission_blueprint:
         apply_fission_blueprint = lambda *args, **kwargs: None  # Fallback no-op
     
-    FissionManager = dynamic_import('agentic_core.L3_orchestration.P1_core.fission_manager', 'FissionManager')
-    if not FissionManager:
-        FissionManager = dynamic_import('agentic_core.L3_orchestration.S3_vitality.fission_manager', 'FissionManager')
+    FissionManager = dynamic_import('agentic_core.L3_orchestration.S3_vitality.fission_manager', 'FissionManager')
     
     SafetyGuardrail = dynamic_import('agentic_core.L5_safety.P1_core.safety_guardrail', 'SafetyGuardrail')
     if not SafetyGuardrail:
@@ -250,6 +248,13 @@ class GeminiSpy:
 
         # Intercept method calls (e.g., generate_content, query, chat)
         def wrapper(*args, **kwargs):
+            # [GAP 20 HARDENING] Intercept and Block non-Gemini references
+            if args:
+                prompt_text = str(args[0]).lower()
+                forbidden = ["openai", "anthropic", "claude", "gpt"]
+                if any(bad in prompt_text for bad in forbidden):
+                    raise ValueError(f"[L5 SECURITY BLOCK] Unauthorized model reference detected in prompt.")
+            
             print(f"\n[SPY] GEMINI SPY Agent triggering: {name}")
             # Log prompt preview if available
             if args:
