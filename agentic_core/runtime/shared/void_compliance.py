@@ -17,7 +17,8 @@ from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, ROOT_WHITELIST,
     CANON_SIGNALS, FORBIDDEN_PATTERNS, ROOT_PROTECTED_FILES,
     CANON_KEY_TO_FOLDER_MAP, FORBIDDEN_NUMBERED_PATTERN,
-    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH, APPS_EXACT_DEPTH, TESTS_EXACT_DEPTH
+    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH, APPS_EXACT_DEPTH, TESTS_EXACT_DEPTH,
+    FORBIDDEN_ROOT_FOLDERS
 )
 
 logger = logging.getLogger(__name__)
@@ -142,7 +143,7 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     ]
 
     if len(meaningful_children) == 1 and meaningful_children[0].is_dir():
-        return False, f"SPAN-OF-TWO VIOLATION: Redundant tunnel '{folder_path.name}' → flatten" # [GAP 4/13]
+        return False, f"SPAN-OF-TWO VIOLATION: Redundant tunnel '{folder_path.name}' -> flatten" # [GAP 4/13]
 
     return True, ""
 

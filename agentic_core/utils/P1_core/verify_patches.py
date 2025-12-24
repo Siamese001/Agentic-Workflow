@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Verify Sovereign Patches Applied Successfully"""
 from pathlib import Path
-    validate_file_location, 
-    ALLOWED_CORE_STAGES, 
+from . import (
+    validate_file_location,
+    ALLOWED_CORE_STAGES,
     CANONICAL_DEPTH_MAP
 )
 
