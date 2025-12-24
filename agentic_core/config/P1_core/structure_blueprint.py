@@ -3,6 +3,7 @@ SOVEREIGN BRAIN: THE MASTER CONSTITUTION
 Enforces Depth-3 for Apps/Support and Depth-4 for the Agentic Core.
 [SSOT] This is the absolute source of truth for the entire repository structure.
 """
+from typing import Dict, List
 
 # [SOVEREIGN SSOT] THE MASTER REGISTRY
 # Defines every legal territory, its subfolders (L1), and its required depth.
@@ -115,9 +116,45 @@ CANON_SIGNALS = {
 
 # [KEY 49] FORBIDDEN NAMING PATTERNS
 FORBIDDEN_PATTERNS = {
-    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r"^script\.py$",
+    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r".*_v\d+\.py$",
     r"^main\.py$", r"^test\.py$", r".*_v\d+\.py$", r".*_final\.py$",
     r".*_new\.py$", r".*_old\.py$", r"^.+_\d+\.py$"
+}
+
+# ==============================================================================
+# CANON KEY CONSTITUTION [SSOT] - Consolidated December 24, 2025
+# ==============================================================================
+ACTIVE_CANON_KEYS = list(range(0, 19))  # Keys 0 through 18 inclusive
+
+CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
+    0:  ["."],                                   # Root sovereign files
+    1:  ["prompt_governance/personas/architectural"], # Surgeon
+    2:  ["prompt_governance/personas/operational"],   # Janitor
+    3:  ["prompt_governance/logic/instructional"],    # Positive directives
+    4:  ["prompt_governance/logic/negative"],         # Negative directives
+    5:  ["prompt_governance/security/defensive"],    # Guardrails
+    6:  ["prompt_governance/security/injections"],   # Injection protection
+    7:  ["schemas/canon/blueprints"],             # Fission
+    8:  ["schemas/canon/reports"],                # Audit schemas
+    9:  ["schemas/api/internal"],                # Internal contracts
+    10: ["schemas/api/external"],                # External contracts
+    11: ["agentic_core/L1_cognition"],            # Strategy
+    12: ["agentic_core/L3_orchestration"],        # Flow/Routing
+    13: ["agentic_core/L4_state"],                # Persistence
+    14: ["apps_shared", "apps_rg", "apps_lic"],   # Domain Infra
+    15: ["apps_rg/agents", "apps_lic/agents"],    # App Specialists
+    16: ["apps_shared/utils"],                    # Shared Helpers
+    17: ["tests"],                               # All tests
+    18: ["scripts"],                             # Operational tools
+}
+
+# Legacy mapping for backward compatibility (internal remap)
+_LEGACY_KEY_REMAP = {
+    11: 1, 12: 2, 21: 3, 24: 4, 26: 5, 28: 6,
+    31: 7, 33: 8, 36: 9, 38: 10,
+    40: 11, 42: 12, 51: 13,
+    43: 14, 44: 15, 45: 16,
+    47: 17, 50: 18,
 }
 
 # --- SYSTEM EXEMPTIONS ---

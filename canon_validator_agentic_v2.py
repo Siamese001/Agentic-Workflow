@@ -21,7 +21,8 @@ from typing import Any, Optional, List, Dict
 from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
     APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
-    ROOT_WHITELIST as ALLOWED_ROOT_FOLDERS_SSOT
+    FORBIDDEN_ROOT_FOLDERS,
+    ACTIVE_CANON_KEYS
 )
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
@@ -1405,18 +1406,21 @@ CURRENT CODE:
         print("-" * 70)
     
     print("-" * 70)
+    
     # ===========================================================================
+    # [PHASE 1] PER-FILE VALIDATION
+    # ===========================================================================
+    print(f"\n[PHASE 1] Per-File Validation ({len(ctx.python_files)} files)")
+    
     for idx, file_path in enumerate(ctx.python_files, 1):
-        file_name = os.path.basename(file_path)
-        file_path_obj = Path(file_path)
+        file_name = Path(file_path).name
         
-        # === L6 RUNTIME: ALL 50 KEYS FOR COMPREHENSIVE VALIDATION ===
-        # Enable all 50 canon keys (0-49) for comprehensive validation
-        applicable_keys = list(range(0, 50))
+        # === L6 RUNTIME: ACTIVE CANON KEYS FROM SSOT ===
+        applicable_keys = ACTIVE_CANON_KEYS
         
-        # Check LOC for Safety Threshold
         try:
             with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
+                content_preview = f.read(500)  # First 500 chars for heuristics
                 loc_count = len(f.readlines())
         except: loc_count = 0
         

@@ -19,7 +19,10 @@ from agentic_core.config.P1_core.structure_blueprint import (
     ROOT_WHITELIST,
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
-    FORBIDDEN_ROOT_FOLDERS  # Now from SSOT
+    FORBIDDEN_ROOT_FOLDERS,  # Now from SSOT
+    ACTIVE_CANON_KEYS,
+    CANON_KEY_TO_FOLDER_MAP,
+    _LEGACY_KEY_REMAP
 )
 
 logger = logging.getLogger(__name__)
@@ -145,59 +148,14 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     return True, ""
 
 # [DESIGN UNIFICATION] Derive all allowed stages from the SSOT
-ALLOWED_CORE_STAGES = set()
-for stages in CORE_SUBFOLDER_MAP.values():
-    ALLOWED_CORE_STAGES.update(stages)
-ALLOWED_CORE_STAGES.update(CORE_SUBFOLDER_MAP.keys())
+ALLOWED_CORE_STAGES = set(CANON_KEY_TO_FOLDER_MAP.keys())
 
 
 # ==============================================================================
 # KEY-TO-FOLDER MAPPING: Canon Key Enforcement
 # ==============================================================================
 
-KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
-    # --- GLOBAL CONFIG [Key 0] ---
-    0:  ["."], 
-
-    # --- PROMPT GOVERNANCE [L1: THE LAW] ---
-    # [L2: IDENTITY] Keys 11-20
-    11: ["prompt_governance/personas/architectural"], # Surgeon
-    12: ["prompt_governance/personas/operational"],   # Janitor
-    
-    # [L2: DIRECTIVES] Keys 21-25
-    21: ["prompt_governance/logic/instructional"],
-    24: ["prompt_governance/logic/negative"],
-
-    # [L2: GUARDRAILS] Keys 26-30
-    26: ["prompt_governance/security/defensive"],
-    28: ["prompt_governance/security/injections"],
-
-    # --- SCHEMAS [L1: THE CONTRACTS] ---
-    # [L2: MISSION] Keys 31-35
-    31: ["schemas/canon/blueprints"], # Fission
-    33: ["schemas/canon/reports"],    # Audit
-    
-    # [L2: COMMUNICATION] Keys 36-39
-    36: ["schemas/api/internal"],
-    38: ["schemas/api/external"],
-
-    # --- AGENTIC CORE [L1: THE BRAIN] ---
-    # Keys 40-42 and 51 cover the Expanded Hierarchy
-    40: ["agentic_core/L1_cognition"],       # Basic Logic/Strategy (includes thought_engine)
-    42: ["agentic_core/L3_orchestration"],   # Hop Management & Flow
-    51: ["agentic_core/L4_state"],           # Persistent State & Historian
-
-    # --- INFRA & DOMAINS [L1: INFRA] ---
-    43: ["apps_shared", "apps_rg", "apps_lic"],       # Core Logic
-    44: ["apps_rg/agents", "apps_lic/agents"],        # App Specialists
-    45: ["apps_shared/utils"],                        # Shared Utils
-
-    # --- QA & TELEMETRY ---
-    47: ["tests"],
-    48: ["observability/logs"],
-    49: ["observability/metrics"],
-    50: ["scripts"]  # [Key 50: Operational Tools]
-}
+KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
 
 
 # ==============================================================================
