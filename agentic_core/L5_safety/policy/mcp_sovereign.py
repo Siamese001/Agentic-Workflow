@@ -29,10 +29,16 @@ class MCPSovereignAuthority:
         })
         logger.warning(f"[L5 MCP BREACH] Violation recorded. Count: {self.violation_count}")
 
-    def shield_call(self, tool_name: str, args: dict):
+    def authorize_tool_call(self, tool_name: str, args: dict) -> None:
         """L5 Audit: Log every physical tool call before execution."""
         logger.info(f"[L5 MCP AUDIT] Authorizing call to '{tool_name}' with args: {args}")
         
+        # [MARKETPLACE SHIELD] Block direct execution of forbidden SDK patterns
+        forbidden_patterns = ["openai", "anthropic", "langchain_openai", "langchain_anthropic"]
+        if any(p in tool_name.lower() for p in forbidden_patterns):
+            self.record_breach(f"FORBIDDEN SDK CALL: {tool_name}")
+            raise PermissionError("Sovereignty Shield: Competitive LLM providers are eternally blocked.")
+
         # [L2 TOOL HARDENING] Extra validation for external tools
         if tool_name in {"brave_search", "fetch", "playwright"}:
             query = args.get('query') or args.get('url', '')
@@ -45,6 +51,11 @@ class MCPSovereignAuthority:
 
         # [L1 TOOL HARDENING] Cognitive tools — strict input bounds
         if tool_name in {"sequential_thinking", "gemini_policy_enforcer"}:
+            # L5 Shield: Prevent runaway reasoning steps
+            max_steps = args.get('max_steps', 0)
+            if max_steps > 15:
+                raise ValueError(f"Sequential thinking request exceeds sovereign safety limit (15 steps).")
+            
             task = args.get('task') or args.get('violation', '')
             if len(str(task)) > 2000:
                 raise ValueError(f"L1 cognitive tool input too long — reasoning overflow risk.")
