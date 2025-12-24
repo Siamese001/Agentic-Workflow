@@ -1,246 +1,193 @@
-# Prompt Index Registry v1.0
-# Central index for all prompts in the agentic workflow system
-
 prompt_index:
-  version: "1.0"
-  last_updated: "2024-01-01T00:00:00Z"
-  total_prompts: 0
-  
-  # Prompt categories
   categories:
-    system:
-      description: "System-level prompts for orchestration and control"
-      count: 0
-      prompts: []
-      
-    user:
-      description: "User-facing prompts for resume and outreach generation"
-      count: 0
-      prompts: []
-      
     developer:
-      description: "Developer prompts for debugging and testing"
       count: 0
+      description: Developer prompts for debugging and testing
       prompts: []
-      
-    safety:
-      description: "Safety and governance prompts"
-      count: 0
-      prompts: []
-      
     evaluation:
-      description: "Evaluation and scoring prompts"
       count: 0
+      description: Evaluation and scoring prompts
       prompts: []
-      
-  # Engine-specific prompts
+    safety:
+      count: 0
+      description: Safety and governance prompts
+      prompts: []
+    system:
+      count: 0
+      description: System-level prompts for orchestration and control
+      prompts: []
+    user:
+      count: 0
+      description: User-facing prompts for resume and outreach generation
+      prompts: []
   engines:
-    resume_engine:
-      description: "Resume processing and generation prompts"
-      prompts:
-        system_prompts:
-          file: "engines/resume_engine/system_prompts.yaml"
-          version: "1.0.0"
-          status: "active"
-          
-        rewriting:
-          file: "engines/resume_engine/rewriting.yaml"
-          version: "1.0.0"
-          status: "active"
-          
-        scoring:
-          file: "engines/resume_engine/scoring.yaml"
-          version: "1.0.0"
-          status: "active"
-          
-        summarization:
-          file: "engines/resume_engine/summarization.yaml"
-          version: "1.0.0"
-          status: "active"
-          
     outreach_engine:
-      description: "Outreach generation and personalization prompts"
+      description: Outreach generation and personalization prompts
       prompts:
         archetype:
-          file: "engines/outreach_engine/archetype.yaml"
-          version: "1.0.0"
-          status: "active"
-          
-        personalization:
-          file: "engines/outreach_engine/personalization.yaml"
-          version: "1.0.0"
-          status: "active"
-          
+          file: engines/outreach_engine/archetype.yaml
+          status: active
+          version: 1.0.0
         messaging:
-          file: "engines/outreach_engine/messaging.yaml"
-          version: "1.0.0"
-          status: "active"
-          
+          file: engines/outreach_engine/messaging.yaml
+          status: active
+          version: 1.0.0
+        personalization:
+          file: engines/outreach_engine/personalization.yaml
+          status: active
+          version: 1.0.0
         reflective_checks:
-          file: "engines/outreach_engine/reflective_checks.yaml"
-          version: "1.0.0"
-          status: "active"
-          
-  # Injection prompts
-  injections:
-    constraints:
-      file: "injections/constraints.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Constraint and boundary enforcement prompts"
-      
-    context_engineering:
-      file: "injections/context_engineering.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Context building and engineering prompts"
-      
-    framing:
-      file: "injections/framing.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Problem framing and perspective prompts"
-      
-    output_governance:
-      file: "injections/output_governance.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Output format and governance prompts"
-      
-    reasoning:
-      file: "injections/reasoning.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Reasoning and logic prompts"
-      
-    safety:
-      file: "injections/safety.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Safety and ethical consideration prompts"
-      
-    tool_use:
-      file: "injections/tool_use.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Tool usage and integration prompts"
-      
-  # Template prompts
-  templates:
-    resume:
-      summary_template:
-        file: "templates/resume/summary_template.md"
-        version: "1.0.0"
-        status: "active"
-        
-      experience_template:
-        file: "templates/resume/experience_template.md"
-        version: "1.0.0"
-        status: "active"
-        
-      skills_template:
-        file: "templates/resume/skills_template.md"
-        version: "1.0.0"
-        status: "active"
-        
-    outreach:
-      cold_outreach_template:
-        file: "templates/outreach/cold_outreach_template.md"
-        version: "1.0.0"
-        status: "active"
-        
-      connection_request:
-        file: "templates/outreach/connection_request.md"
-        version: "1.0.0"
-        status: "active"
-        
-      followup_template:
-        file: "templates/outreach/followup_template.md"
-        version: "1.0.0"
-        status: "active"
-        
-  # Evaluation prompts
+          file: engines/outreach_engine/reflective_checks.yaml
+          status: active
+          version: 1.0.0
+    resume_engine:
+      description: Resume processing and generation prompts
+      prompts:
+        rewriting:
+          file: engines/resume_engine/rewriting.yaml
+          status: active
+          version: 1.0.0
+        scoring:
+          file: engines/resume_engine/scoring.yaml
+          status: active
+          version: 1.0.0
+        summarization:
+          file: engines/resume_engine/summarization.yaml
+          status: active
+          version: 1.0.0
+        system_prompts:
+          file: engines/resume_engine/system_prompts.yaml
+          status: active
+          version: 1.0.0
   evaluations:
-    rubric:
-      file: "evaluations/rubric.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Evaluation rubric and scoring criteria"
-      
     eval_sets:
-      file: "evaluations/eval_sets.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Evaluation datasets and test sets"
-      
+      description: Evaluation datasets and test sets
+      file: evaluations/eval_sets.yaml
+      status: active
+      version: 1.0.0
     regression_tests:
-      file: "evaluations/regression_tests.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Regression test prompts and cases"
-      
+      description: Regression test prompts and cases
+      file: evaluations/regression_tests.yaml
+      status: active
+      version: 1.0.0
+    rubric:
+      description: Evaluation rubric and scoring criteria
+      file: evaluations/rubric.yaml
+      status: active
+      version: 1.0.0
     style_checks:
-      file: "evaluations/style_checks.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Style and quality check prompts"
-      
-  # Governance prompts
+      description: Style and quality check prompts
+      file: evaluations/style_checks.yaml
+      status: active
+      version: 1.0.0
   governance:
     approval_workflow:
-      file: "governance/approval_workflow.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Prompt approval and workflow prompts"
-      
+      description: Prompt approval and workflow prompts
+      file: governance/approval_workflow.yaml
+      status: active
+      version: 1.0.0
     change_history:
-      file: "governance/change_history.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Change tracking and history prompts"
-      
-    semantic_versioning:
-      file: "governance/semantic_versioning.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Version control and semantic versioning prompts"
-      
+      description: Change tracking and history prompts
+      file: governance/change_history.yaml
+      status: active
+      version: 1.0.0
     ownership:
-      file: "governance/ownership.yaml"
-      version: "1.0.0"
-      status: "active"
-      description: "Ownership and responsibility prompts"
-      
-  # Metadata and statistics
+      description: Ownership and responsibility prompts
+      file: governance/ownership.yaml
+      status: active
+      version: 1.0.0
+    semantic_versioning:
+      description: Version control and semantic versioning prompts
+      file: governance/semantic_versioning.yaml
+      status: active
+      version: 1.0.0
+  injections:
+    constraints:
+      description: Constraint and boundary enforcement prompts
+      file: injections/constraints.yaml
+      status: active
+      version: 1.0.0
+    context_engineering:
+      description: Context building and engineering prompts
+      file: injections/context_engineering.yaml
+      status: active
+      version: 1.0.0
+    framing:
+      description: Problem framing and perspective prompts
+      file: injections/framing.yaml
+      status: active
+      version: 1.0.0
+    output_governance:
+      description: Output format and governance prompts
+      file: injections/output_governance.yaml
+      status: active
+      version: 1.0.0
+    reasoning:
+      description: Reasoning and logic prompts
+      file: injections/reasoning.yaml
+      status: active
+      version: 1.0.0
+    safety:
+      description: Safety and ethical consideration prompts
+      file: injections/safety.yaml
+      status: active
+      version: 1.0.0
+    tool_use:
+      description: Tool usage and integration prompts
+      file: injections/tool_use.yaml
+      status: active
+      version: 1.0.0
+  last_updated: '2024-01-01T00:00:00Z'
   metadata:
-    created_by: "system"
-    created_at: "2024-01-01T00:00:00Z"
-    updated_by: "system"
-    updated_at: "2024-01-01T00:00:00Z"
-    
-    # Statistics
+    created_at: '2024-01-01T00:00:00Z'
+    created_by: system
+    health:
+      issues_count: 0
+      last_validation: '2024-01-01T00:00:00Z'
+      validation_status: pending
+      warnings_count: 0
     statistics:
-      total_prompts: 0
       active_prompts: 0
-      deprecated_prompts: 0
-      draft_prompts: 0
-      
-      # By category
       by_category:
+        developer: 0
+        evaluation: 0
+        safety: 0
         system: 0
         user: 0
-        developer: 0
-        safety: 0
-        evaluation: 0
-        
-      # By engine
       by_engine:
-        resume_engine: 0
         outreach_engine: 0
-        
-    # Health metrics
-    health:
-      last_validation: "2024-01-01T00:00:00Z"
-      validation_status: "pending"
-      issues_count: 0
-      warnings_count: 0
+        resume_engine: 0
+      deprecated_prompts: 0
+      draft_prompts: 0
+      total_prompts: 0
+    updated_at: '2024-01-01T00:00:00Z'
+    updated_by: system
+  templates:
+    outreach:
+      cold_outreach_template:
+        file: templates/outreach/cold_outreach_template.md
+        status: active
+        version: 1.0.0
+      connection_request:
+        file: templates/outreach/connection_request.md
+        status: active
+        version: 1.0.0
+      followup_template:
+        file: templates/outreach/followup_template.md
+        status: active
+        version: 1.0.0
+    resume:
+      experience_template:
+        file: templates/resume/experience_template.md
+        status: active
+        version: 1.0.0
+      skills_template:
+        file: templates/resume/skills_template.md
+        status: active
+        version: 1.0.0
+      summary_template:
+        file: templates/resume/summary_template.md
+        status: active
+        version: 1.0.0
+  total_prompts: 0
+  version: '1.0'

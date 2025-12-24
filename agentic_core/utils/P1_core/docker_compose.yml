@@ -1,152 +1,118 @@
-# ONE COMMAND TO RULE THEM ALL — SUBATOMIC AGENTIC ARCHITECTURE 2025
-# Complete orchestration: Redis Stack + Qdrant + Jaeger + Agentic SDK Stack
-# Usage: docker-compose up --build
-
-version: '3.8'
-
+networks:
+  subatomic-net:
+    driver: bridge
 services:
-  # ---------------------------------------------------------------------------
-  # 1. STATE & CACHE BACKEND (Critical Priority)
-  # Supports: AtomicStateManager, Embedding Cache, WAL
-  # ---------------------------------------------------------------------------
-  redis-stack:
-    image: redis/redis-stack-server:7.4.0-v3
-    container_name: agentic-redis-stack
-    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
-    ports:
-      - "6379:6379"    # Redis API
-      - "8001:8001"    # RedisInsight UI
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    networks:
-      - subatomic-net
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: '1.0'
-
-  # ---------------------------------------------------------------------------
-  # 2. VECTOR STORAGE (Critical Priority)
-  # Supports: HardenedVectorStore (Idempotent Writes)
-  # ---------------------------------------------------------------------------
-  vector-db:
-    image: qdrant/qdrant:v1.7.3
-    container_name: subatomic-qdrant
-    ports:
-      - "6333:6333" # API
-      - "6334:6334" # GRPC
-    volumes:
-      - qdrant_data:/qdrant/storage
-    environment:
-      - QDRANT__SERVICE__ENABLE_GRPC=true
-    networks:
-      - subatomic-net
-    healthcheck:
-      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-          cpus: '2.0'
-
-  # ---------------------------------------------------------------------------
-  # 3. OBSERVABILITY & TELEMETRY
-  # Supports: HardeningMixin Telemetry & Tracing
-  # ---------------------------------------------------------------------------
-  jaeger:
-    image: jaegertracing/all-in-one:1.53
-    container_name: subatomic-jaeger
-    environment:
-      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
-    ports:
-      - "16686:16686" # UI (http://localhost:16686)
-      - "4317:4317"   # OTLP gRPC receiver
-    networks:
-      - subatomic-net
-
-  # ---------------------------------------------------------------------------
-  # 4. SUBATOMIC AGENT RUNTIME
-  # The Core Python Application
-  # ---------------------------------------------------------------------------
   agentic-app:
     build:
       context: .
       dockerfile: Dockerfile
+    command: python verify_installation.py
     container_name: subatomic-core
     depends_on:
       redis-stack:
         condition: service_healthy
       vector-db:
         condition: service_healthy
-    environment:
-      # Redis Configuration
-      - REDIS_HOST=redis-stack
-      - REDIS_PORT=6379
-      - REDIS_URL=redis://redis-stack:6379/0
-      
-      # Vector DB Configuration
-      - VECTOR_DB_URL=http://vector-db:6333
-      - QDRANT_URL=http://vector-db:6333
-      
-      # API Keys (Set these in .env file)
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
-      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
-      - PINECONE_API_KEY=${PINECONE_API_KEY}
-      - MISTRALAI_API_KEY=${MISTRALAI_API_KEY}
-      - COHERE_API_KEY=${COHERE_API_KEY}
-      - GROQ_API_KEY=${GROQ_API_KEY}
-      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
-      - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
-      
-      # Telemetry Config
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
-      
-      # Application Configuration
-      - PYTHONUNBUFFERED=1
-      - LOG_LEVEL=INFO
-    volumes:
-      # Mount data directory with all golden datasets and prompts
-      - ./data:/app/data
-      # Mount configuration files
-      - ./config:/app/config
-      # Mount scripts directory with validation tools
-      - ./scripts:/app/scripts
-      # Mount logs directory
-      - ./logs:/app/logs
-    ports:
-      - "8000:8000"    # Application API
-      - "8501:8501"    # Streamlit UI (if using)
-    networks:
-      - subatomic-net
     deploy:
+      resources:
+        limits:
+          cpus: '6.0'
+          memory: 24G
       restart_policy:
         condition: on-failure
         max_attempts: 3
+    environment:
+    - REDIS_HOST=redis-stack
+    - REDIS_PORT=6379
+    - REDIS_URL=redis://redis-stack:6379/0
+    - VECTOR_DB_URL=http://vector-db:6333
+    - QDRANT_URL=http://vector-db:6333
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+    - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+    - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+    - PINECONE_API_KEY=${PINECONE_API_KEY}
+    - MISTRALAI_API_KEY=${MISTRALAI_API_KEY}
+    - COHERE_API_KEY=${COHERE_API_KEY}
+    - GROQ_API_KEY=${GROQ_API_KEY}
+    - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+    - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - PYTHONUNBUFFERED=1
+    - LOG_LEVEL=INFO
+    networks:
+    - subatomic-net
+    ports:
+    - 8000:8000
+    - 8501:8501
+    restart: unless-stopped
+    volumes:
+    - ./data:/app/data
+    - ./config:/app/config
+    - ./scripts:/app/scripts
+    - ./logs:/app/logs
+  jaeger:
+    container_name: subatomic-jaeger
+    environment:
+    - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    image: jaegertracing/all-in-one:1.53
+    networks:
+    - subatomic-net
+    ports:
+    - 16686:16686
+    - 4317:4317
+  redis-stack:
+    command: redis-server --appendonly yes --maxmemory 2gb --maxmemory-policy allkeys-lru
+    container_name: agentic-redis-stack
+    deploy:
       resources:
         limits:
-          memory: 24G
-          cpus: '6.0'
-    restart: unless-stopped
-    command: python verify_installation.py
-
+          cpus: '1.0'
+          memory: 2G
+    healthcheck:
+      interval: 5s
+      retries: 5
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      timeout: 3s
+    image: redis/redis-stack-server:7.4.0-v3
+    networks:
+    - subatomic-net
+    ports:
+    - 6379:6379
+    - 8001:8001
+    volumes:
+    - redis_data:/data
+  vector-db:
+    container_name: subatomic-qdrant
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+    environment:
+    - QDRANT__SERVICE__ENABLE_GRPC=true
+    healthcheck:
+      interval: 5s
+      retries: 10
+      start_period: 10s
+      test:
+      - CMD-SHELL
+      - timeout 10s bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1
+      timeout: 5s
+    image: qdrant/qdrant:v1.7.3
+    networks:
+    - subatomic-net
+    ports:
+    - 6333:6333
+    - 6334:6334
+    volumes:
+    - qdrant_data:/qdrant/storage
+version: '3.8'
 volumes:
-  redis_data:
-    driver: local
   qdrant_data:
     driver: local
-
-networks:
-  subatomic-net:
-    driver: bridge
+  redis_data:
+    driver: local

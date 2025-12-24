@@ -1,1 +1,4 @@
-{"type": "signal_ledger", "session_id": "integrity-scan-with-l5"}
+{
+  "session_id": "integrity-scan-with-l5",
+  "type": "signal_ledger"
+}
