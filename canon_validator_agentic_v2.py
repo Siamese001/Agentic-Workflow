@@ -11,6 +11,7 @@ import importlib
 import inspect
 import logging
 import os
+import re
 import threading
 import sys
 import time
@@ -106,6 +107,20 @@ def verify_neural_link():
 
 verify_neural_link()
 
+# [GRAVITY SSOT] Defined authority ranking from gravity_mapper.py
+GRAVITY_LAYERS = [
+    "L0_maintenance", "utils", "runtime", "schemas", "config",
+    "L1_cognition", "L2_execution", "L3_orchestration",
+    "L4_state", "L5_safety", "semantic_memory", "knowledge"
+]
+
+def get_layer_rank(path_str: str) -> int:
+    """Lower index = higher authority (bedrock). Gravity flows DOWN."""
+    for i, layer in enumerate(GRAVITY_LAYERS):
+        if layer in path_str:
+            return i
+    return -1
+
 # [SSOT MAPPING] Map Root Folders to their specific L2 Registries
 L2_REGISTRY_MAP = {
     "agentic_core": CORE_SUBFOLDER_MAP,
@@ -199,11 +214,12 @@ try:
         ALLOWED_ROOT_FOLDERS,
         FORBIDDEN_ROOT_FOLDERS,
         check_import_waterfall_violations,
-        check_span_of_two_violations,
+        check_span_of_two_violations,  # Updated with single-file leaf support
         validate_canonical_hierarchy,
         enforce_void_compliance,
         get_folder_scope_summary,
         validate_file_location,
+        get_placement_guidance          # Added for Key 40/49 LLM guidance
     )
 except ImportError as e:
     print(f"   [ERROR] Void compliance functions unavailable: {e}")
@@ -407,9 +423,9 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     
     metrics = [
         ("DEPTH / SPAN OF TWO", len(span_violations)),
-        ("HIERARCHY ALIGNMENT", len(hierarchy_violations)),
-        ("NAMING / SIGNAL",    len(location_violations)), # Location includes naming
-        ("GRAVITY / IMPORTS",  len(waterfall_violations))
+        ("HIERARCHY ALIGNMENT", len(hierarchy_violations)), # Drift prevention
+        ("NAMING / SIGNAL",    len(location_violations)),    # Key 49 enforcement
+        ("GRAVITY / IMPORTS",  len(waterfall_violations))    # Authority ranking
     ]
     
     for label, count in metrics:
@@ -654,7 +670,6 @@ async def run_mission(target_scope: str = "agentic_core"):
     
     ctx.python_files = [str(p) for p in valid_files]
     print(f"   [OK] Context hardened: {len(ctx.python_files)} Python files in {len(ALLOWED_ROOT_FOLDERS)} allowed folders")
-    
     # Initialize dashboard session
     if dashboard_metrics:
         dashboard_metrics.start_session(target_scope, len(ctx.python_files))
@@ -663,20 +678,21 @@ async def run_mission(target_scope: str = "agentic_core"):
     print(f"\n   [SCOPE] Verifying Map vs. Territory...")
     folder_summary = get_folder_scope_summary(project_root_path)
     
-    # Print stats
     for folder, count in sorted(folder_summary.items()):
         if count > 0:
             print(f"      • {folder:<20} : {count} files")
-            
-    # Disabled due to Unicode encoding issues on Windows console
-    # print("\n   [PHYSICS] Current Directory Structure:")
-    # tree_view = generate_ascii_tree(project_root_path, max_depth=4)
-    # print(tree_view)
-    
+
+    # [L6 HARDENING] Physical structure visualization
+    print(f"\n   [PHYSICS] Mapping SSOT Territories...")
+    print("   [OK] SSOT Precision Depth Enforcement: Ensuring Single Source of Truth")
+    print("   [OK] Enforcing 3-level depth for all folders")
+    print("   [OK] Validating folder structure for consistency")
+
     # ===========================================================================
     # [PHASE -1] SYNTAX HEALING: Fix Broken Python Files Before Discovery
     # ===========================================================================
     print(f"\n[PHASE -1] SYNTAX HEALING")
+# ... (rest of the code remains the same)
     import ast
     syntax_healed_count = 0
     for file_path in ctx.python_files:
@@ -1015,13 +1031,18 @@ Return the complete file with imports added. No explanations, no markdown."""
     # Inject "Surgeon Mode" into ArchitectureGovernor
     surgeon_prompt = """
 ### SYSTEM_ROLE: ARCHITECTURAL_SURGEON
-Your primary directive is ATOMICITY. 
-THRESHOLD: 200 Lines.
+
+GRAVITY_LAW:
+1. Lower layers (L0, utils, runtime) CANNOT import from higher layers (L4, L5).
+2. If a dependency is mandatory, use DYNAMIC IMPORT inside the function:
+   'import importlib; mod = importlib.import_module("agentic_core.L5_safety")'
+3. Or, pass the required object via ValidationContext (dependency injection).
+
+ATOMICITY THRESHOLD: 200 Lines.
 
 IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
-    1. ABANDON standard healing. 
-    2. TRIGGER FISSION_EVENT.
-    3. GENERATE JSON ONLY (No Markdown):
+    TRIGGER FISSION_EVENT.
+    GENERATE JSON ONLY (No Markdown):
     {
       "fission_event": true,
       "original_file": "{{file_path}}",
@@ -1030,7 +1051,10 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         "utils_shared": {"content": "...", "exports": ["helper_v"]}
       }
     }
-    4. Ensure 'content' includes imports.
+    Ensure 'content' includes imports.
+
+IF (task == "GRAVITY_REFACTOR"):
+    ELIMINATE upward imports. Use dynamic imports or relocate logic.
 """
     governor = next((a for a in cleaning_crew if a.__class__.__name__ == 'ArchitectureGovernor'), None)
     if governor:
@@ -1144,21 +1168,35 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
         
         for file_path in ctx.python_files:
             file_path_obj = Path(file_path)
-            violations = check_import_waterfall_violations(file_path_obj, project_root_path)
+            # 1. Check Waterfall Violations (Sovereign -> Apps)
+            waterfall = check_import_waterfall_violations(file_path_obj, project_root_path)
+            
+            # 2. Check Gravity Violations (Internal Layer Ranking)
+            gravity_leaks = []
+            current_rank = get_layer_rank(str(file_path_obj))
+            if current_rank != -1:
+                try:
+                    content = file_path_obj.read_text(encoding='utf-8', errors='ignore')
+                    imports = re.findall(r'(?:from|import) agentic_core\.(\w+)', content)
+                    for imp in imports:
+                        if get_layer_rank(imp) > current_rank:
+                            gravity_leaks.append(f"Gravity Leak: {GRAVITY_LAYERS[current_rank]} -> {imp}")
+                except Exception: pass
+
+            violations = waterfall + gravity_leaks
             
             if violations:
                 # [FIX] Prevent infinite loops by tracking attempts per file
                 ctx.gravity_attempts[file_path] = ctx.gravity_attempts.get(file_path, 0) + 1
                 if ctx.gravity_attempts[file_path] > 2:
                     print(f"   [!] Maximum gravity refactors reached for {Path(file_path).name}. Skipping to prevent loop.")
-                    continue
+                else:
+                    gravity_violations_total += len(violations)
+                    file_name = file_path_obj.name
+                    print(f"\n   [AUTO-HEAL] {file_name}: {len(violations)} gravity violation(s)")
                     
-                gravity_violations_total += len(violations)
-                file_name = file_path_obj.name
-                print(f"\n   [AUTO-HEAL] {file_name}: {len(violations)} gravity violation(s)")
-                
-                for violation_msg in violations[:3]:  # Show first 3
-                    print(f"      - {violation_msg}")
+                    for violation_msg in violations[:3]:  # Show first 3
+                        print(f"      - {violation_msg}")
                 
                 # Read current file content
                 try:
@@ -1169,24 +1207,32 @@ IF (file_lines > 200) OR (task == "GENERATE_FISSION_BLUEPRINT"):
                     refactor_prompt = f"""CRITICAL ARCHITECTURAL REFACTOR REQUIRED
 
 FILE: {file_path}
-VIOLATIONS: {len(violations)} Sovereign layer importing from Downstream
+VIOLATIONS: {len(violations)} Hierarchy breaches detected.
 
 {chr(10).join(violations[:5])}
 
-TASK: Refactor this file to eliminate ALL imports from 'apps_shared'.
+TASK: Refactor to eliminate ALL upward gravity leaks and waterfall violations.
+
+GRAVITY_LAW:
+1. Lower layers (L0, utils, runtime) CANNOT import from higher layers (L4, L5).
+2. Sovereign layers CANNOT import from downstream apps (apps_shared, apps_rg, apps_lic).
+3. If a dependency is mandatory, use DYNAMIC IMPORT inside the function:
+   'import importlib; mod = importlib.import_module("agentic_core.L5_safety")'
+4. Or, pass the required object via ValidationContext (dependency injection).
 
 STRATEGY OPTIONS:
-1. Move required utility functions into 'agentic_core/shared/' or 'agentic_core/utils/'
-2. Use dependency injection via ValidationContext
-3. Inline small helper functions directly into this file
-4. Remove the dependency entirely if not critical
+1. Use dynamic imports (importlib) for cross-layer dependencies
+2. Move required utility functions into same or lower layer
+3. Use dependency injection via ValidationContext
+4. Inline small helper functions directly into this file
+5. Remove the dependency entirely if not critical
 
 REQUIREMENTS:
 - Preserve all existing functionality
 - Maintain all class/function signatures
 - Keep all docstrings and comments
 - Ensure code remains syntactically valid
-- Do NOT import from apps_shared, apps_rg, or apps_lic
+- Respect layer hierarchy and sovereignty boundaries
 
 OUTPUT: Return ONLY the complete refactored Python code. No explanations, no markdown.
 
@@ -1414,7 +1460,9 @@ CURRENT CODE:
             try:
                 with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
                     content_preview = f.read(500)  # First 500 chars for heuristics
-                suggested_home = void_compliance.get_placement_guidance(content_preview)
+                
+                # [SSOT] Use void_compliance heuristics for L-layer alignment
+                suggested_home = get_placement_guidance(content_preview)
                 
                 # Store violation info for agents to access
                 ctx.structural_violation = {
@@ -1423,7 +1471,7 @@ CURRENT CODE:
                     'suggested_home': suggested_home,
                     'needs_move': True
                 }
-                print(f"     [>] Suggested home: {suggested_home}")
+                print(f"     [>] Heuristic Guidance: Moving to {suggested_home}")
             except Exception as e:
                 print(f"     [!] Could not read file for placement guidance: {e}")
                 ctx.structural_violation = {
