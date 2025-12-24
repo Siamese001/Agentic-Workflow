@@ -8,7 +8,12 @@ Responsible for:
 import os
 import shutil
 from pathlib import Path
-from void_compliance import get_placement_guidance, CANONICAL_HIERARCHY
+
+# [SSOT] Pull from Blueprint, derive compliance locally
+from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+from agentic_core.runtime.shared.void_compliance import get_placement_guidance
+
+CANONICAL_HIERARCHY = {k: v["subfolders"] for k, v in SOVEREIGN_REGISTRY.items()}
 
 def migrate_shallow_files(project_root: str):
     root_path = Path(project_root)

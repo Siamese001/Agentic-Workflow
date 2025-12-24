@@ -109,9 +109,7 @@ def verify_neural_link():
 
 verify_neural_link()
 
-# [GRAVITY SSOT] L1-L5 layer authority order for agentic_core — directly from structure_blueprint SSOT
-# Lower index = higher authority (e.g., L0_maintenance > L5_safety)
-# Used by get_layer_rank() for internal orchestration routing
+# [GRAVITY SSOT] Dynamically derived authority order
 GRAVITY_LAYERS = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
 
 def get_layer_rank(path_str: str) -> int:
@@ -690,7 +688,6 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [PHASE -1] SYNTAX HEALING: Fix Broken Python Files Before Discovery
     # ===========================================================================
     print(f"\n[PHASE -1] SYNTAX HEALING")
-# ... (rest of the code remains the same)
     import ast
     syntax_healed_count = 0
     for file_path in ctx.python_files:
@@ -1108,7 +1105,8 @@ IF (task == "GRAVITY_REFACTOR"):
     
     integrity_violations = []
     integrity_violation_files = []
-    SOVEREIGN_ROOTS = {"agentic_core", "prompt_governance", "schemas", "config", "scripts"}
+    # Dynamically derived from SSOT (Depth 4 = Sovereign Core)
+    SOVEREIGN_ROOTS = {root for root, cfg in SOVEREIGN_REGISTRY.items() if cfg["depth"] == 4} | {"prompt_governance", "schemas", "config", "scripts"}
     
     for file_path in ctx.python_files:
         file_path_obj = Path(file_path)
