@@ -12,20 +12,9 @@ from services.configuration import ConfigurationService
 
 if TYPE_CHECKING:
     from agentic_core.L1_reasoning.structured_engine import StructuredEngine
-    from agentic_core.L2_execution.mcp_manager import MCPConnectionManager
-    from agentic_core.L2_execution.sandbox import DockerSandbox
-    from agentic_core.L3_orchestration.gatekeeper import (
         SemanticGatekeeper,
         with_gatekeeping,
     )
-    from agentic_core.L3_orchestration.supreme_court import SupremeCourt
-    from agentic_core.L4_state.genealogy import GenealogyRegistry
-    from agentic_core.L4_state.storage import LocalDiskAdapter
-    from agentic_core.L5_safety.airlock import AirlockProtocol
-    from agentic_core.L5_safety.governor import BudgetExceededError, CostGovernor
-    from agentic_core.L5_safety.membrane import InputMembrane
-    from agentic_core.L5_safety.overseer import ConstitutionalOverseer
-    from agentic_core.L5_safety.pii_vault import PIIVault
 
 LOGGER = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)

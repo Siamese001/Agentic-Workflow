@@ -14,7 +14,6 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict
 
-from agentic_core.knowledge.P1_core.l5_consolidated import get_consolidated_knowledge
 from agentic_core.utils.P1_core.core_utilities import log_action, register_process
 from agentic_core.utils.P1_core.networking import get_networking_utility, send_email, strict_egress_filter
 from agentic_core.utils.P1_core.pitch_generator import PitchGenerator

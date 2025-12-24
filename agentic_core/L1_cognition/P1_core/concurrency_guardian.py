@@ -6,7 +6,6 @@ import logging
 import os
 from datetime import datetime, timedelta, timezone
 
-# REMOVED: from agentic_core.L4_state.P1_core.storage import acquire_lock, release_lock
 
 LOGGER = logging.getLogger(__name__)
 

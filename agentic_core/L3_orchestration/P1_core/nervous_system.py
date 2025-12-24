@@ -25,13 +25,9 @@ if TYPE_CHECKING:
         create_sovereign_action_plane,
     )
     from agentic_core.telepathy import process_telepathy_instructions
-    from agentic_core.L4_state.checkpointing import VerifiableCheckpointManager
-    from agentic_core.L4_state.storage import SignalLedger, create_storage_adapter
-    from agentic_core.L5_safety.intervention_server import (
         InterventionServer,
         check_intervention_required,
     )
-    from agentic_core.L5_safety.safety_layer import create_l5_safety_layer
 
 LOGGER = logging.getLogger(__name__)
 

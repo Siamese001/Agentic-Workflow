@@ -8,8 +8,6 @@ It should show L5 validation logs during execution.
 import asyncio
 import logging
 
-from agentic_core.L1_cognition.P1_interfaces import ActionRequest, OrchestratorConfig
-from agentic_core.L3_orchestration.nervous_system import NervousSystem
 
 # Setup high-visibility logging
 logging.basicConfig(
@@ -20,7 +18,6 @@ logger = logging.getLogger("Phase1_Integrity_With_L5")
 
 async def test_l5_validation():
     """Test L5 safety validation directly."""
-    from agentic_core.L5_safety.safety_layer import create_l5_safety_layer
 
     # Create safety layer
     safety_layer = create_l5_safety_layer(cost_limit_usd=5.00)

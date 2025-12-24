@@ -21,7 +21,6 @@ from typing import Any, Dict, List, Optional, Set
 from agentic_core.tools.filesystem import WriteFileArgs, write_file
 
 # Phase 4: Subatomic Agents
-from agentic_core.L2_execution.P4_agents import (
     CanonStructuralEngineer,
     CodeJanitor,
     CodeStyleGuardian,

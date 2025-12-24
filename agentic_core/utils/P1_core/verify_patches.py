@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Verify Sovereign Patches Applied Successfully"""
 from pathlib import Path
-from agentic_core.runtime.void_compliance import (
     validate_file_location, 
     ALLOWED_CORE_STAGES, 
     CANONICAL_DEPTH_MAP

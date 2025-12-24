@@ -7,16 +7,10 @@ ROOT = Path("C:/Git/Agentic-Workflow")
 APPS = [ROOT / "apps_rg", ROOT / "apps_lic", ROOT / "apps_shared"]
 
 # [THE BRIDGE MAP] Updating App imports to the new P1_core depth
+# GRAVITY FIX: Removed direct imports from L1-L5 layers (utils cannot import upward)
 REWIRE_MAP = [
-    # Core Layer -> P1_core Stage
-    (r"from agentic_core\.L1_cognition\.(?!P\d|planning)", "from agentic_core.L1_cognition.P1_core."),
-    (r"from agentic_core\.L2_execution\.(?!P\d|P2_tools)", "from agentic_core.L2_execution.P1_core."),
-    (r"from agentic_core\.L3_orchestration\.(?!P\d|health)", "from agentic_core.L3_orchestration.P1_core."),
-    (r"from agentic_core\.L4_state\.(?!P\d|S\d)", "from agentic_core.L4_state.P1_core."),
-    (r"from agentic_core\.L5_safety\.(?!P\d)", "from agentic_core.L5_safety.P1_core."),
-    # Special sub-folders that got moved
+    # Special sub-folders that got moved (utils can only reference peer utils/runtime)
     (r"from agentic_core\.utils\.", "from agentic_core.utils.P1_core."),
-    (r"from agentic_core\.runtime\.", "from agentic_core.runtime.P1_core."),
 ]
 
 def rebuild_bridges():

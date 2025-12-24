@@ -25,7 +25,6 @@ REWIRE_MAP = [
     
     # Type Fixes (Moving the Snapshot to the Core)
     (r"from apps_rg\.L3_orchestration\.l5_autonomous_orchestrator import WorkflowSnapshot", 
-     "from agentic_core.L4_state.S4_checkpoint.models import WorkflowSnapshot"),
 ]
 
 def rewire_synapses():

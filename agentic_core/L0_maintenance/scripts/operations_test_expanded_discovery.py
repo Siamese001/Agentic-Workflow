@@ -96,7 +96,6 @@ print("=" * 70)
 print("\nBonus Check: 50-Key VERIFICATION_REGISTRY")
 print("-" * 70)
 try:
-    from agentic_core.L1_cognition.canon_base_agent import SubAtomicAgent
     
     if hasattr(SubAtomicAgent, 'VERIFICATION_REGISTRY'):
         registry = SubAtomicAgent.VERIFICATION_REGISTRY

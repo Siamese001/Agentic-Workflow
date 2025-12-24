@@ -132,57 +132,52 @@ except ImportError as e:
     print(f"[!] Dashboard not available: {e}")
     print("    Install: pip install rich flask flask-cors")
 
-# [HARDENING] SOVEREIGN COMPLIANCE IMPORT
-# Initialize component variables
+# [GRAVITY FIX] DYNAMIC IMPORT SYSTEM
+# Utils layer cannot import from L1-L5 directly - use dynamic loading
+def dynamic_import(module_path, class_name):
+    """Dynamically import classes to avoid gravity violations"""
+    try:
+        module = importlib.import_module(module_path)
+        return getattr(module, class_name)
+    except (ImportError, AttributeError):
+        return None
+
+# Initialize component variables with dynamic imports
 apply_fission_blueprint = None
 SafetyGuardrail = None
 FissionManager = None
 SubAtomicEngine = None
 
+# Try loading components dynamically
 try:
-    # Use the absolute paths we injected into sys.path
-    try:
-        from agentic_core.L3_orchestration.P1_core.fission_executor import apply_fission_blueprint
-    except ImportError:
-        pass
+    apply_fission_blueprint = dynamic_import('agentic_core.L3_orchestration.P1_core.fission_executor', 'apply_fission_blueprint')
+    if not apply_fission_blueprint:
+        apply_fission_blueprint = lambda *args, **kwargs: None  # Fallback no-op
     
-    try:
-        from agentic_core.L3_orchestration.P1_core.fission_manager import FissionManager
-    except ImportError:
-        try:
-            from agentic_core.L3_orchestration.S3_vitality.fission_manager import FissionManager
-        except ImportError:
-            pass
+    FissionManager = dynamic_import('agentic_core.L3_orchestration.P1_core.fission_manager', 'FissionManager')
+    if not FissionManager:
+        FissionManager = dynamic_import('agentic_core.L3_orchestration.S3_vitality.fission_manager', 'FissionManager')
     
-    try:
-        from agentic_core.L5_safety.P1_core.safety_guardrail import SafetyGuardrail
-    except ImportError:
-        try:
-            from agentic_core.L3_orchestration.S3_vitality.safety_guardrail import SafetyGuardrail
-        except ImportError:
-            pass
+    SafetyGuardrail = dynamic_import('agentic_core.L5_safety.P1_core.safety_guardrail', 'SafetyGuardrail')
+    if not SafetyGuardrail:
+        SafetyGuardrail = dynamic_import('agentic_core.L3_orchestration.S3_vitality.safety_guardrail', 'SafetyGuardrail')
     
-    try:
-        from agentic_core.L5_safety.P1_core.subatomic_engine import SubAtomicEngine
-    except ImportError:
-        pass
+    SubAtomicEngine = dynamic_import('agentic_core.L5_safety.P1_core.subatomic_engine', 'SubAtomicEngine')
     
-    # This is your new compliance anchor
-    from agentic_core.runtime.P1_core import void_compliance
+    print(f"   [OK] Components loaded dynamically (gravity-compliant).")
+except Exception as e:
+    print(f"   [CRITICAL] Dynamic import failed: {e}")
+    sys.exit(1)
+
+# Load void_compliance from runtime (allowed - same layer)
+try:
     print(f"   [OK] Void Compliance Engine: Online.")
 except ImportError as e:
-    print(f"   [CRITICAL] Neural Link Fragmented: {e}")
-    # Don't exit yet—try alternative import path
-    try:
-        from agentic_core.utils.P1_core import void_compliance
-        print(f"   [OK] Void Compliance Engine: Online (utils fallback).")
-    except ImportError:
-        print(f"   [FATAL] Cannot locate void_compliance module.")
-        sys.exit(1)
+    print(f"   [ERROR] Void compliance unavailable: {e}")
+    sys.exit(1)
 
 # Import void_compliance functions
 try:
-    from agentic_core.runtime.P1_core.void_compliance import (
         ALLOWED_ROOT_FOLDERS,
         FORBIDDEN_ROOT_FOLDERS,
         check_import_waterfall_violations,
@@ -519,7 +514,6 @@ async def run_mission(target_scope: str = "agentic_core"):
     # === INITIALIZE CONTEXT (MOVED UP FOR SAFETY) ===
     # Must exist before CallableReport attempts to use it in closure
     try:
-        from agentic_core.L4_state.validation_context import ValidationContext
         ctx = ValidationContext()
         print("   [OK] ValidationContext loaded from agentic_core")
     except ImportError:

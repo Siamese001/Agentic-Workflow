@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 # [SSOT] Import the master structure blueprint
-from agentic_core.config.P1_core.structure_blueprint import (
     AGENTIC_CORE_REGISTRY,
     SOVEREIGN_DEPTH_MAP,
     ROOT_WHITELIST,

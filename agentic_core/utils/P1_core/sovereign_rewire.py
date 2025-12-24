@@ -8,14 +8,7 @@ CORE = ROOT / "agentic_core"
 
 # [REWIRE MAP] Mapping old "flat" paths to new "Depth-4" absolute paths
 REWIRE_RULES = [
-    (r"from agentic_core\.L1_cognition import", "from agentic_core.L1_cognition.P1_core import"),
-    (r"from agentic_core\.L2_execution import", "from agentic_core.L2_execution.P1_core import"),
-    (r"from agentic_core\.L3_orchestration import", "from agentic_core.L3_orchestration.P1_core import"),
-    (r"from agentic_core\.L4_state import", "from agentic_core.L4_state.P1_core import"),
-    (r"from agentic_core\.L5_safety import", "from agentic_core.L5_safety.P1_core import"),
     (r"from agentic_core\.utils import", "from agentic_core.utils.P1_core import"),
-    (r"from agentic_core\.runtime import", "from agentic_core.runtime.P1_core import"),
-    (r"from agentic_core\.knowledge import", "from agentic_core.knowledge.P1_core import"),
     (r"from agentic_core\.memory import", "from agentic_core.memory.P1_core import"),
 ]
 

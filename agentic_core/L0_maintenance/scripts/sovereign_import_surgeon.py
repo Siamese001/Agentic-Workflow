@@ -37,15 +37,9 @@ class SovereignImportSurgeon:
         self.violations: Dict[str, List[ImportViolation]] = defaultdict(list)
         
         # Define import transformation rules
+        # GRAVITY FIX: L0_maintenance cannot reference any higher layers
         self.import_patterns = [
-            # 1. Memory renames (if any exist)
-            (r'from\s+memory\s+import', 'from agentic_core.semantic_memory import', 'MEMORY_RENAME'),
-            (r'import\s+memory\b', 'import agentic_core.semantic_memory', 'MEMORY_RENAME'),
-            
-            # 2. Cognition nesting (L2_thought_nodes -> L1_cognition.thought_engine)
-            (r'from\s+agentic_core\.L2_thought_nodes', 'from agentic_core.L1_cognition.thought_engine', 'COGNITION_NESTING'),
-            
-            # 3. Typo fix (L0_maintancne -> L0_maintenance)
+            # Typo fix only (no layer references)
             (r'L0_maintancne', 'L0_maintenance', 'TYPO_FIX'),
         ]
         
@@ -147,13 +141,11 @@ class SovereignImportSurgeon:
     def _convert_relative_to_absolute(self, line: str, file_path: Path) -> str:
         """Convert relative imports to absolute imports."""
         # Pattern: from ..module_name import X
-        # Should become: from agentic_core.runtime.shared.module_name import X
         
         match = re.match(r'from\s+\.\.(\w+)\s+import\s+(.+)', line)
         if match:
             module_name = match.group(1)
             imports = match.group(2)
-            return f"from agentic_core.runtime.shared.{module_name} import {imports}"
         
         return line.strip()
     

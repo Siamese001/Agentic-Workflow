@@ -10,7 +10,6 @@ from typing import Any, Optional, Protocol, Dict, List
 
 import numpy as np
 from batch_embeddings import create_batch_embedding_service
-from agentic_core.semantic_memory_vector_store import create_memory_vector_cache, create_tiered_vector_store
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
