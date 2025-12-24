@@ -774,7 +774,8 @@ async def run_mission(target_scope: str = "agentic_core"):
     # [L6 HARDENING] Physical structure visualization
     print(f"\n   [PHYSICS] Mapping SSOT Territories...")
     print("   [OK] SSOT Precision Depth Enforcement: Ensuring Single Source of Truth")
-    print("   [OK] Enforcing 3-level depth for all folders")
+    print("   Depth: Precision-only — exact per blueprint enforced")
+    print("   Depth Violations: Auto-archived — zero tolerance enabled")
     print("   [OK] Validating folder structure for consistency")
 
     # ===========================================================================

@@ -22,6 +22,11 @@ class HierarchyEnforcerAgent:
         self.project_root = project_root
         self.ctx = ctx
         
+        # [DEPTH ARCHIVAL] Where depth-drift goes to die
+        from agentic_core.config.P1_core.structure_blueprint import DEPRECATION_ARCHIVE
+        self.archive_root = project_root / DEPRECATION_ARCHIVE / "depth_violations"
+        self.archive_root.mkdir(parents=True, exist_ok=True)
+        
     def enforce_hierarchy(self) -> Dict[str, Any]:
         """
         Enforce L4 structure across all required directories.
@@ -60,6 +65,55 @@ class HierarchyEnforcerAgent:
             "l4_enforced": len(actions)
         }
     
+    def enforce_depth_precision(self) -> List[str]:
+        """
+        Sovereign depth enforcement. If it's at the wrong level, it gets archived.
+        """
+        from agentic_core.config.P1_core.structure_blueprint import (
+            CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH
+        )
+        actions = []
+
+        for py_file in self.project_root.rglob("*.py"):
+            # Skip hidden files or the archive itself
+            if any(part.startswith(".") for part in py_file.parts) or "archives" in str(py_file):
+                continue
+            
+            rel = py_file.relative_to(self.project_root)
+            parts = rel.parts
+            depth = len(parts)
+            root_folder = parts[0]
+
+            # Find what the depth SHOULD be
+            required_depth = None
+            if root_folder == "agentic_core":
+                required_depth = AGENTIC_CORE_EXACT_DEPTH
+            elif root_folder in CANONICAL_PRECISION_DEPTH:
+                required_depth = CANONICAL_PRECISION_DEPTH[root_folder]
+
+            # If it's wrong, we purge it
+            if required_depth and depth != required_depth:
+                archive_path = self.archive_root / rel
+                archive_path.parent.mkdir(parents=True, exist_ok=True)
+
+                # Build the "obituary" for the file
+                explanation = f"# DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
+                explanation += f"# REASON: Required depth for '{root_folder}' is {required_depth}, but found {depth}.\n"
+                explanation += f"# To restore: Move this file to a valid depth-4 territory in agentic_core.\n\n"
+
+                try:
+                    content = py_file.read_text(encoding="utf-8")
+                    with open(archive_path, "w") as f:
+                        f.write(explanation + content)
+                    
+                    py_file.unlink()  # Sovereign purge
+                    actions.append(f"ARCHIVED depth violation: {rel}")
+                    self.ctx.report("DepthEnforcer", 1, True, f"Archived {rel} (Invalid Depth)")
+                except Exception as e:
+                    actions.append(f"FAILED to archive {rel}: {str(e)}")
+
+        return actions
+
     def validate_hierarchy(self) -> Dict[str, Any]:
         """
         Validate L4 structure compliance.
@@ -96,3 +150,9 @@ class HierarchyEnforcerAgent:
             "violations": violations,
             "compliant": len(violations) == 0
         }
+    
+    async def execute(self, ctx):
+        issues = self.enforce_hierarchy()
+        issues.extend(self.enforce_depth_precision())
+        if issues:
+            print(f"   [HEALING] HierarchyEnforcerAgent: {len(issues)} actions taken")

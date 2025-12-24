@@ -26,7 +26,8 @@ class TerritoryHealerAgent:
         
         from agentic_core.config.P1_core.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES,
-            TERRITORY_EXAMPLES, TERRITORY_POSITIVE_SIGNALS
+            TERRITORY_EXAMPLES, TERRITORY_POSITIVE_SIGNALS,
+            AGENTIC_CORE_EXACT_DEPTH
         )
         from agentic_core.runtime.shared.void_compliance import get_placement_guidance
         
@@ -51,6 +52,55 @@ class TerritoryHealerAgent:
             17: {"agent", "manager", "engine", "healer"},            # tests/: no production agents
             19: {"script", "test", "heal"},                          # L5_safety: no ops/tests/healing
         }
+
+    def check_depth_precision(self, file_path: Path) -> Optional[dict]:
+        """
+        Check if file violates precision depth requirements.
+        Only heal if root precision is violated.
+        General min/max healing logic removed.
+        """
+        try:
+            rel_path = file_path.relative_to(self.root)
+            parts = rel_path.parts
+            depth = len(parts)
+            
+            if parts[0] == "agentic_core" and depth != AGENTIC_CORE_EXACT_DEPTH:
+                return self._suggest_precision_move(file_path, AGENTIC_CORE_EXACT_DEPTH)
+                
+        except ValueError:
+            pass  # File outside root
+            
+        return None
+    
+    def _suggest_precision_move(self, file_path: Path, target_depth: int) -> dict:
+        """
+        Suggest a move to achieve the required precision depth.
+        """
+        rel_path = file_path.relative_to(self.root)
+        parts = rel_path.parts
+        
+        # For agentic_core, we need to ensure depth 4
+        if parts[0] == "agentic_core" and len(parts) < 4:
+            # Need to go deeper - suggest adding L3/L4 structure
+            suggested = self.get_placement_guidance("")
+            target_path = self.root / suggested / rel_path.name
+            return {
+                "action": "move",
+                "source": str(file_path),
+                "target": str(target_path),
+                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
+            }
+        elif parts[0] == "agentic_core" and len(parts) > 4:
+            # Need to flatten - move to appropriate L4 location
+            target_path = self.root / parts[0] / parts[1] / parts[2] / parts[3] / rel_path.name
+            return {
+                "action": "move",
+                "source": str(file_path),
+                "target": str(target_path),
+                "reason": f"Depth precision: agentic_core requires depth {target_depth}, found {len(parts)}"
+            }
+        
+        return None
 
     def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> Optional[dict]:
         """

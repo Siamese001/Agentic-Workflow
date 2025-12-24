@@ -17,7 +17,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, ROOT_WHITELIST,
     CANON_SIGNALS, FORBIDDEN_PATTERNS, ROOT_PROTECTED_FILES,
     CANON_KEY_TO_FOLDER_MAP, FORBIDDEN_NUMBERED_PATTERN,
-    CANONICAL_PRECISION_DEPTH, GENERAL_MIN_DEPTH, GENERAL_MAX_DEPTH
+    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH
 )
 
 logger = logging.getLogger(__name__)
@@ -287,17 +287,21 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if file_path.name == "__init__.py" or depth == 1:
             return True, "Sovereign Structural Component"
         
-        # Rule 1: [DEPTH PRECISION] Exact per-root + general bounds
+        # Rule 1: [DEPTH PRECISION] Exact per-root only
         if root_folder in CANONICAL_PRECISION_DEPTH:
             required = CANONICAL_PRECISION_DEPTH[root_folder]
             if depth != required:
                 return False, f"DEPTH PRECISION VIOLATION: '{rel_path}' depth {depth} ≠ {required} for '{root_folder}'"
-        
-        # General bounds for all folders
-        if depth < GENERAL_MIN_DEPTH:
-            return False, f"SHALLOW VIOLATION: depth {depth} < min {GENERAL_MIN_DEPTH}"
-        if depth > GENERAL_MAX_DEPTH:
-            return False, f"DEEP VIOLATION: depth {depth} > max {GENERAL_MAX_DEPTH}"
+            
+        # agentic_core exact depth 4
+        if root_folder == "agentic_core" and depth != AGENTIC_CORE_EXACT_DEPTH:
+            return False, f"PRECISION BREACH: agentic_core requires depth {AGENTIC_CORE_EXACT_DEPTH}, found {depth}"
+
+        # Precision depth for other roots
+        if root_folder in CANONICAL_PRECISION_DEPTH:
+            required = CANONICAL_PRECISION_DEPTH[root_folder]
+            if depth != required:
+                return False, f"DEPTH PRECISION VIOLATION: '{root_folder}' requires depth {required}, found {depth}"
             
         # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
         if root_folder == "agentic_core":
