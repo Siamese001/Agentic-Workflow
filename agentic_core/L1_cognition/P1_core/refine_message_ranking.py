@@ -7,6 +7,7 @@ Generated: 2025-12-07T13:28:54.079448
 
 import logging
 from typing import Dict, Optional, Union
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class RefineMessageRanking:
     def __init__(self, config: Optional[Dict[str, object]] = None):
         SELF.CONFIG = config or {}
         SELF.WEIGHTS = self.config.get("weights", {})
-        logger.info(f"Initialized {self.__class__.__name__}")
+        LOGGER.info(f"Initialized {self.__class__.__name__}")
 
     def refine(self,
         data: Union[str,
@@ -29,12 +30,12 @@ class RefineMessageRanking:
         if adjustments and isinstance(data, dict):
             REFINED = {**data}
             for key, adj in adjustments.items():
-                if key in refined and isinstance(refined[key], (int, float)):
-                    PREVIOUS = refined[key]
-                    REFINED[KEY] = previous * adj
-                    changes.append(f"{key}: {previous} -> {refined[key]}")
+                if key in REFINED and isinstance(REFINED[key], (int, float)):
+                    PREVIOUS = REFINED[key]
+                    REFINED[key] = PREVIOUS * adj
+                    CHANGES.append(f"{key}: {PREVIOUS} -> {REFINED[key]}")
 
-        return RefinementResult(original=data, refined=refined, changes=changes)
+        return RefinementResult(original=data, refined=REFINED, changes=CHANGES)
 
 def refine(data: Union[str,
     Dict],

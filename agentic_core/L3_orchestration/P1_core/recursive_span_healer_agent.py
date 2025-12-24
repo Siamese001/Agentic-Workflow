@@ -5,7 +5,7 @@ Detects and heals span-of-two violations (redundant single-child directories).
 """
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 logger = logging.getLogger(__name__)
 

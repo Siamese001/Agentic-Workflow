@@ -5,7 +5,7 @@ Identifies and removes dead code and unused imports.
 """
 import logging
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Optional, Protocol, Dict, List
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 """Implementation for judge_evaluator."""
 
 import logging
-from typing import Any, Dict, List, Optional, Callable, Awaitable
+from typing import Any, Dict, List, Optional, Callable, Awaitable, Protocol
 
 # Assuming these types are defined elsewhere or need to be imported.
 # Adding them here to make the code runnable if they are standard types or need to be mocked.

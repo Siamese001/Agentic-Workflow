@@ -6,7 +6,7 @@ CachedOrchestrator - Eternal L3 Orchestration with Redis Sovereign Cache
 import json
 import hashlib
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Optional, Protocol, Dict, List
 from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
 
 class CachedOrchestrator:

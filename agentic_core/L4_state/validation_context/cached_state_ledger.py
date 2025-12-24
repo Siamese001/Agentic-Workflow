@@ -7,7 +7,7 @@ import json
 import redis
 import os
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 class CachedStateLedger:
     """

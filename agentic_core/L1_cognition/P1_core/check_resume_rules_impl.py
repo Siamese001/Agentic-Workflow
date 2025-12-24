@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any, Optional, Protocol, Dict, List
 
 # from agentic_core.check_resume_rules_types import *  # Star import removed
 # Assuming ProcessingResult and ExecutionContext are defined elsewhere or need to be imported

@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional, Protocol
 from dataclasses import dataclass, field # Added import for dataclass and field
 
 LOGGER = logging.getLogger(__name__)

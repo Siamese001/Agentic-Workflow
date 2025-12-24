@@ -5,6 +5,7 @@ Enforces Gemini-only policy and blocks unauthorized model usage.
 """
 import logging
 from typing import Dict, Any
+from typing import Any, Optional, Protocol, Dict, List
 
 logger = logging.getLogger(__name__)
 

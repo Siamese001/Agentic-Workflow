@@ -5,6 +5,8 @@ signature_verifier.py - function Module
 Domain: inspection
 Generated: 2025-12-07T12:07:59.842368
 """
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
 
 import logging
 from typing import Dict, Optional

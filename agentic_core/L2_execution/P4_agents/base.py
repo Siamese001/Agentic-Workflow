@@ -2,6 +2,7 @@ import ast
 import os
 import re
 from typing import Any, Dict, List, Optional, Protocol, Union
+from typing import Any, Optional, Protocol, Dict, List
 
 
 
@@ -51,7 +52,7 @@ class ImportPatcher:
         """Helper to check if a specific module is imported in a given AST tree."""
         for node in ast.walk(tree):
             if self._is_import_node_for_module(node, old_module):
-                return True
+                True
         return False
 
     def _is_module_imported_in_file(self, file_path: str, old_module: str) -> bool:

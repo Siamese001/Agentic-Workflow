@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any
+from typing import Any, Optional, Protocol, Dict, List
 
 class PIIVault:
     """

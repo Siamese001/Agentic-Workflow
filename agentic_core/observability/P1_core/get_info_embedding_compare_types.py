@@ -1,8 +1,8 @@
 """Types and models for get_info_embedding_compare."""
 import logging
-from enum import Enum
+from enum import Enum, auto
 from dataclasses import dataclass, field
-from typing import Optional, Dict, Any, Union
+from typing import Any, Optional, Protocol, Dict, List, Union
 import time # Added missing import
 import traceback # Added missing import
 

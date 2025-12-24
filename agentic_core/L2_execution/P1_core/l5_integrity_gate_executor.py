@@ -9,7 +9,7 @@ This optimizes validation by avoiding expensive checks when
 fast checks already detect issues.
 """
 from typing import Any, Optional, Protocol, Dict, List
-from enum import Enum
+from enum import Enum, auto
 
 
 import logging

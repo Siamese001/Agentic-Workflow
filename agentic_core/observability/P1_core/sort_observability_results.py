@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """
 sort_observability_results.py - Optimization Module
 
@@ -7,7 +7,7 @@ Generated: 2025-12-07T12:07:59.838335
 """
 
 import logging
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Dict, List, Optional, Protocol, TypeVar
 
 LOGGER = logging.getLogger(__name__)
 

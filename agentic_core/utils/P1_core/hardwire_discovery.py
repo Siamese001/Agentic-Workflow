@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+from enum import Enum, auto
 
 ROOT = Path("C:/Git/Agentic-Workflow/agentic_core")
 

@@ -4,7 +4,7 @@ ValidationContextManager - L4 State Context with Cache-First Reflex
 """
 
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Optional, Protocol, Dict, List
 from agentic_core.L4_state.validation_context.cached_state_ledger import CachedStateLedger
 
 class ValidationContextManager(CachedStateLedger):

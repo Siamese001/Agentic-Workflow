@@ -1,7 +1,8 @@
 """Implementation for tools_use_a_tool."""
 
 import logging
-from typing import Any, Dict, List, Optional
+import sys
+from typing import Any, Optional, Protocol, Dict, List
 
 # from agentic_core.tools_use_a_tool_types import *  # Star import removed
 

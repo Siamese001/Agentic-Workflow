@@ -13,6 +13,7 @@ K1-K7 execution pipeline for persona-driven message generation.
 
 import logging
 from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Optional, Protocol, Dict, List
 from dataclasses import dataclass, field # Added missing import
 
 LOGGER = logging.getLogger(__name__)
