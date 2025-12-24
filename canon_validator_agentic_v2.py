@@ -1304,8 +1304,21 @@ CURRENT CODE:
     # ===========================================================================
     if RUN_SPRAWL_SURGERY:
         print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION")
-        print(f"   [>] SSOT RECONCILIATION: Auditing physical folders against Blueprint...")
+        print(f"   [>] THE GREAT FLATTENING: Deleting redundant legacy scripts...")
         
+        # Target redundant 'Medic' scripts for deletion
+        REDUNDANT_SCRIPTS = ["fix_all_gravity_violations.py", "fix_gravity_complete.py", 
+                             "fix_remaining_gravity.py", "gravity_mapper.py"]
+        for script in REDUNDANT_SCRIPTS:
+            script_path = project_root_path / script
+            if script_path.exists():
+                try:
+                    script_path.unlink()
+                    print(f"      [✓] Purged redundant medic: {script}")
+                except Exception as e:
+                    print(f"      [!] Failed to purge {script}: {e}")
+        
+        print(f"   [>] NATIVE SSOT RECONCILIATION: Auditing territory against Master Constitution...")
         sprawl_consolidated = 0
 
         # 1. DISCOVERY: Find non-canonical folders

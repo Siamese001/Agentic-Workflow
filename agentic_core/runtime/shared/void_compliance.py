@@ -17,7 +17,8 @@ from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY,
     CORE_SUBFOLDER_MAP,
     ROOT_WHITELIST,
-    CANON_SIGNALS
+    CANON_SIGNALS,
+    FORBIDDEN_PATTERNS
 )
 
 logger = logging.getLogger(__name__)
@@ -31,13 +32,7 @@ ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
 # ==============================================================================
 
-FORBIDDEN_FILE_PATTERNS = {
-    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r"^script\.py$",
-    r"^main\.py$", r"^test\.py$", r".*_v\d+\.py$", r".*_final\.py$",
-    r".*_new\.py$", r".*_old\.py$", r"^.+_\d+\.py$"
-}
-
-# Approved high-signal tokens for L-layer alignment
+FORBIDDEN_FILE_PATTERNS = FORBIDDEN_PATTERNS
 HIGH_SIGNAL_KEYWORDS = CANON_SIGNALS
 
 def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str]:
@@ -147,20 +142,11 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
 
     return True, ""
 
-# [SSOT] Import allowed core stages from structure_blueprint
-# These are the authorized L2 subfolders within agentic_core
-ALLOWED_CORE_STAGES = []
-for l1_layer, l2_stages in CORE_SUBFOLDER_MAP.items():
-    ALLOWED_CORE_STAGES.extend(l2_stages)
-# Add the L1 layers themselves as allowed stages
-ALLOWED_CORE_STAGES.extend(CORE_SUBFOLDER_MAP.keys())
-# Add legacy P/S naming patterns that may still exist
-ALLOWED_CORE_STAGES.extend([
-    "P1_sensing", "P2_context", "P3_aggregation", "P4_inference", "P5_meta",
-    "P1_interfaces", "P2_domain", "P2_tools", "P3_engines", "P4_agents", "P4_security", "P5_workflow", "P5_healing",
-    "S1_design", "S1_store", "S2_runtime", "S3_vitality", "S4_checkpoint",
-    "identity", "inference", "meta", "discovery", "planning", "execution_cycle"
-])
+# [DESIGN UNIFICATION] Derive all allowed stages from the SSOT
+ALLOWED_CORE_STAGES = set()
+for stages in CORE_SUBFOLDER_MAP.values():
+    ALLOWED_CORE_STAGES.update(stages)
+ALLOWED_CORE_STAGES.update(CORE_SUBFOLDER_MAP.keys())
 
 # Forbidden folders are those NOT in the whitelist
 FORBIDDEN_ROOT_FOLDERS = {
