@@ -24,10 +24,7 @@ class StyleProfile(BaseModel):
     """Profile defining a communication style."""
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
-    formality_level: confloat(ge=0.0,
-        le=1.0) = Field(default=0.7,
-        DESCRIPTION="Formality level (0=Casual,
-        1=Academic)")
+    formality_level: confloat(ge=0.0, le=1.0) = Field(default=0.7, description="Formality level (0=Casual, 1=Academic)")
     emoji_frequency: confloat(ge=0.0,
         le=1.0) = Field(default=0.2,
         DESCRIPTION="Emoji usage frequency")

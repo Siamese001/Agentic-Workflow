@@ -31,7 +31,7 @@ class HyDEDocument:
 
     @property
     def is_valid(self) -> bool:
-            """Check if the generated document meets quality criteria."""
+        """Check if the generated document meets quality criteria."""
         return (
             len(self.content.strip()) > 20 and  # Minimum length
             self.word_count > 10 and  # Minimum word count
