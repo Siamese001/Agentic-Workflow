@@ -1,0 +1,260 @@
+# ONE COMMAND TO RULE THEM ALL — SUBATOMIC AGENTIC ARCHITECTURE 2025
+# Complete orchestration: Redis Stack + Qdrant + Jaeger + Agentic SDK Stack + MCP Servers
+# Usage: docker-compose up --build
+
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. STATE & CACHE BACKEND (Critical Priority)
+  # Supports: AtomicStateManager, Embedding Cache, WAL, Redis MCP
+  # ---------------------------------------------------------------------------
+  agentic-redis:
+    image: redis/redis-stack:latest
+    container_name: agentic-redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"    # Redis API
+      - "8001:8001"    # RedisInsight UI
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - subatomic-net
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  # ---------------------------------------------------------------------------
+  # 2. VECTOR STORAGE (Critical Priority)
+  # Supports: HardenedVectorStore (Idempotent Writes), Pinecone Alternative
+  # ---------------------------------------------------------------------------
+  vector-db:
+    image: qdrant/qdrant:v1.7.3
+    container_name: subatomic-qdrant
+    ports:
+      - "6333:6333" # API
+      - "6334:6334" # GRPC
+    volumes:
+      - qdrant_data:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__ENABLE_GRPC=true
+    networks:
+      - subatomic-net
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # 3. OBSERVABILITY & TELEMETRY
+  # Supports: HardeningMixin Telemetry & Tracing
+  # ---------------------------------------------------------------------------
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    container_name: subatomic-jaeger
+    environment:
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    ports:
+      - "16686:16686" # UI (http://localhost:16686)
+      - "4317:4317"   # OTLP gRPC receiver
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 4. MCP SERVERS - L3 Memory Layer
+  # ---------------------------------------------------------------------------
+  mcp-memory:
+    image: node:18-alpine
+    container_name: mcp_memory
+    command: npx -y @modelcontextprotocol/server-memory
+    volumes:
+      - mem_data:/app/.memory
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 5. MCP SERVERS - L2 RAG/Wisdom
+  # ---------------------------------------------------------------------------
+  mcp-pinecone:
+    image: node:18-alpine
+    container_name: mcp_pinecone
+    command: npx -y @pinecone-database/mcp
+    env_file: .env
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 6. MCP SERVERS - L1 Cache/State (Redis already running as agentic-redis)
+  # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # 7. MCP SERVERS - L0 Secure I/O
+  # ---------------------------------------------------------------------------
+  mcp-filesystem:
+    image: node:18-alpine
+    container_name: mcp_filesystem
+    command: npx -y @modelcontextprotocol/server-filesystem /projects/workspace
+    volumes:
+      - .:/projects/workspace
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 8. MCP SERVERS - L1 Web Content
+  # ---------------------------------------------------------------------------
+  mcp-fetch:
+    image: node:18-alpine
+    container_name: mcp_fetch
+    command: npx -y mcp-server-fetch
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 9. MCP SERVERS - L1 Automation
+  # ---------------------------------------------------------------------------
+  mcp-playwright:
+    image: mcr.microsoft.com/playwright:v1.40.0-focal
+    container_name: mcp_playwright
+    command: npx -y @playwright/mcp@latest --headless --browser chromium --no-sandbox
+    networks:
+      - subatomic-net
+    # Add shm_size for Playwright
+    shm_size: 2gb
+
+  # ---------------------------------------------------------------------------
+  # 10. MCP SERVERS - L0 Design Context
+  # ---------------------------------------------------------------------------
+  mcp-figma:
+    image: node:18-alpine
+    container_name: mcp_figma
+    command: npx -y @modelcontextprotocol/server-figma
+    env_file: .env
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 11. MCP SERVERS - L0 Code Ops
+  # ---------------------------------------------------------------------------
+  mcp-gitkraken:
+    image: node:18-alpine
+    container_name: mcp_gitkraken
+    # Note: GitKraken MCP would need custom implementation
+    # This is a placeholder for the GitKraken MCP server
+    command: echo "GitKraken MCP placeholder"
+    env_file: .env
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 12. MCP SERVERS - L4 Temporal Awareness
+  # ---------------------------------------------------------------------------
+  mcp-time:
+    image: python:3.11-slim
+    container_name: mcp_time
+    command: pip install mcp-server-time && python -m mcp_server_time --host 0.0.0.0
+    networks:
+      - subatomic-net
+    # Note: If local timezone detection is critical, you may need a volume mount or an ENV variable.
+    # environment:
+    #   - TZ=America/New_York
+
+  # ---------------------------------------------------------------------------
+  # 13. MCP SERVERS - Action Tools
+  # ---------------------------------------------------------------------------
+  mcp-sendemail:
+    image: node:18-alpine
+    container_name: mcp_sendemail
+    # Placeholder for Send Email MCP
+    command: echo "Send Email MCP placeholder"
+    networks:
+      - subatomic-net
+
+  # ---------------------------------------------------------------------------
+  # 13. SUBATOMIC AGENT RUNTIME
+  # The Core Python Application
+  # ---------------------------------------------------------------------------
+  agentic-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subatomic-core
+    depends_on:
+      agentic-redis:
+        condition: service_healthy
+      vector-db:
+        condition: service_healthy
+    environment:
+      # Redis Configuration
+      - REDIS_HOST=agentic-redis
+      - REDIS_PORT=6379
+      - REDIS_URL=redis://agentic-redis:6379/0
+      
+      # Vector DB Configuration
+      - VECTOR_DB_URL=http://vector-db:6333
+      - QDRANT_URL=http://vector-db:6333
+      
+      # API Keys (Set these in .env file)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - MISTRALAI_API_KEY=${MISTRALAI_API_KEY}
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+      - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
+      - FIGMA_API_KEY=${FIGMA_API_KEY}
+      
+      # Telemetry Config
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      
+      # Application Configuration
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    volumes:
+      # Mount data directory with all golden datasets and prompts
+      - ./data:/app/data
+      # Mount configuration files
+      - ./config:/app/config
+      # Mount scripts directory with validation tools
+      - ./scripts:/app/scripts
+      # Mount logs directory
+      - ./logs:/app/logs
+      # Mount project root for MCP filesystem access
+      - .:/app/workspace
+    ports:
+      - "8000:8000"    # Application API
+      - "8501:8501"    # Streamlit UI (if using)
+    networks:
+      - subatomic-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 2G
+    restart: unless-stopped
+    command: tail -f /dev/null
+
+volumes:
+  redis_data:
+    driver: local
+  qdrant_data:
+    driver: local
+  mem_data:
+    driver: local
+
+networks:
+  subatomic-net:
+    driver: bridge

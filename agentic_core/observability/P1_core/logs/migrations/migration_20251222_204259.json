@@ -1,194 +1,194 @@
 {
   "migration_timestamp": "2025-12-22T20:42:59.571049",
-  "total_operations": 24,
   "operations": [
     {
-      "timestamp": "2025-12-22T20:42:59.578365",
       "operation": "create_init",
       "path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\__init__.py",
-      "success": true
+      "success": true,
+      "timestamp": "2025-12-22T20:42:59.578365"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.578365",
       "operation": "create_init",
       "path": "C:\\Git\\Agentic-Workflow\\agentic_core\\__init__.py",
-      "success": true
+      "success": true,
+      "timestamp": "2025-12-22T20:42:59.578365"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.578365",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_node.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\action_node.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_node.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.578365"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.581507",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\action_registry.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\action_registry.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.581507"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.582052",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agentic_constants.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\agentic_constants.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agentic_constants.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.582052"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.584837",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_capabilities.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\agent_capabilities.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_capabilities.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.584837"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.585844",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_logic.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\agent_logic.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_logic.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.585844"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.588069",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_logic_connectivity.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L4_state\\agent_logic_connectivity.py",
+      "operation": "move",
+      "reason": "State management, memory, or persistence detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\agent_logic_connectivity.py",
       "success": true,
-      "reason": "State management, memory, or persistence detected"
+      "timestamp": "2025-12-22T20:42:59.588069"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.589651",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_core.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_core.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_core.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.589651"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.591315",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_pattern.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_pattern.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_pattern.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.591315"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.593834",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_quality.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_quality.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_quality.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.593834"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.594832",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_structural.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_structural.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_structural.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.594832"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.597909",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_syntax.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\canon_agents_syntax.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_agents_syntax.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.597909"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.599437",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_base_agent.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\canon_base_agent.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_base_agent.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.599437"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.600769",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_orchestration_manager.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\canon_orchestration_manager.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\canon_orchestration_manager.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.600769"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.602770",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\cognitive_node.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\cognitive_node.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\cognitive_node.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.602770"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.604275",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\consensus_engine.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\consensus_engine.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\consensus_engine.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.604275"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.605940",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\core_utilities_handler.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\core_utilities_handler.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\core_utilities_handler.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.605940"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.607512",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\core_utilities_wrapper_handler.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\core_utilities_wrapper_handler.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\core_utilities_wrapper_handler.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.607512"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.610082",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\orchestration_engine.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\orchestration_engine.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\orchestration_engine.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.610082"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.610082",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\orchestration_main_handler.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\orchestration_main_handler.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\orchestration_main_handler.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.610082"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.613437",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\proactive_auditor.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\proactive_auditor.py",
+      "operation": "move",
+      "reason": "Orchestration, routing, or hop management detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\proactive_auditor.py",
       "success": true,
-      "reason": "Orchestration, routing, or hop management detected"
+      "timestamp": "2025-12-22T20:42:59.613437"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.614017",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\test_action_registry.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L1_cognition\\test_action_registry.py",
+      "operation": "move",
+      "reason": "Strategic planning, reasoning, or mission logic detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\test_action_registry.py",
       "success": true,
-      "reason": "Strategic planning, reasoning, or mission logic detected"
+      "timestamp": "2025-12-22T20:42:59.614017"
     },
     {
-      "timestamp": "2025-12-22T20:42:59.616021",
-      "operation": "move",
-      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\test_orphan_handler.py",
       "destination": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_thought_nodes\\test_orphan_handler.py",
+      "operation": "move",
+      "reason": "Node execution or atomic thought processing detected",
+      "source": "C:\\Git\\Agentic-Workflow\\agentic_core\\test_orphan_handler.py",
       "success": true,
-      "reason": "Node execution or atomic thought processing detected"
+      "timestamp": "2025-12-22T20:42:59.616021"
     }
-  ]
+  ],
+  "total_operations": 24
 }

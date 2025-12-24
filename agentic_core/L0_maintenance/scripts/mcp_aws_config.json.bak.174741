@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "aws": {
+      "args": [
+        "-m",
+        "mcp_server_aws"
+      ],
+      "command": "python",
+      "env": {
+        "AWS_PROFILE": "mcp",
+        "AWS_REGION": "us-east-1"
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+    "metadata": {
+        "target": "agentic_core",
+        "timestamp": "2025-12-21T08:50:56.122592",
+        "user": "amita"
+    },
+    "violations": [
+        {
+            "path": "agentic_core",
+            "type": "Breadth Violation",
+            "count": 25,
+            "msg": "Found 25 subfolders. Violates 'Magic 7' rule."
+        }
+    ],
+    "flattening_candidates": [
+        {
+            "folder": "agentic_core\\agentic_workflow\\runtime",
+            "files": [
+                "__init__.py"
+            ],
+            "file_count": 1,
+            "reason": "Low Signal Density (Fragmented)"
+        },
+        {
+            "folder": "agentic_core\\agentic_workflow\\shared",
+            "files": [
+                "__init__.py"
+            ],
+            "file_count": 1,
+            "reason": "Low Signal Density (Fragmented)"
+        },
+        {
+            "folder": "agentic_core\\agents\\specialized",
+            "files": [
+                "outreach_agent.py",
+                "resume_agent.py"
+            ],
+            "file_count": 2,
+            "reason": "Low Signal Density (Fragmented)"
+        },
+        {
+            "folder": "agentic_core\\dashboard",
+            "files": [
+                "app.py"
+            ],
+            "file_count": 1,
+            "reason": "Low Signal Density (Fragmented)"
+        },
+        {
+            "folder": "agentic_core\\L2_execution\\validators",
+            "files": [
+                "state_promoter.py"
+            ],
+            "file_count": 1,
+            "reason": "Low Signal Density (Fragmented)"
+        }
+    ]
+}

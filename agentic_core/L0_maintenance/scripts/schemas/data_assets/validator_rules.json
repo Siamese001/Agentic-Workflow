@@ -1,4 +1,9 @@
 {
+  "bullet_word_count_sections_to_check": [
+    "K2_UNIFY_BULLETS",
+    "K3_IBM_BULLETS",
+    "K9_COMPETENCIES"
+  ],
   "forbidden_verbs": [
     "spearheaded",
     "leveraged",
@@ -17,6 +22,31 @@
     "empowered",
     "drove"
   ],
+  "pipeline_status_enum": [
+    "Applied",
+    "Follow-Up",
+    "Interview",
+    "Rejected",
+    "Closed",
+    "Waiting"
+  ],
+  "provenance_split_targets": {
+    "K2_UNIFY_BULLETS": {
+      "Customized": 3,
+      "Synthetic": 2,
+      "Verbatim": 2
+    },
+    "K3_IBM_BULLETS": {
+      "Customized": 2,
+      "Synthetic": 2,
+      "Verbatim": 2
+    },
+    "K9_COMPETENCIES": {
+      "Customized": 2,
+      "Synthetic": 2,
+      "Verbatim": 2
+    }
+  },
   "required_sections": [
     "K0_NAME",
     "K0_CONTACT",
@@ -34,35 +64,5 @@
     "K9_COMPETENCIES",
     "K10_SKILLS",
     "K11_COVER_LETTER"
-  ],
-  "bullet_word_count_sections_to_check": [
-    "K2_UNIFY_BULLETS",
-    "K3_IBM_BULLETS",
-    "K9_COMPETENCIES"
-  ],
-  "provenance_split_targets": {
-    "K2_UNIFY_BULLETS": {
-      "Verbatim": 2,
-      "Customized": 3,
-      "Synthetic": 2
-    },
-    "K3_IBM_BULLETS": {
-      "Verbatim": 2,
-      "Customized": 2,
-      "Synthetic": 2
-    },
-    "K9_COMPETENCIES": {
-      "Verbatim": 2,
-      "Customized": 2,
-      "Synthetic": 2
-    }
-  },
-  "pipeline_status_enum": [
-    "Applied",
-    "Follow-Up",
-    "Interview",
-    "Rejected",
-    "Closed",
-    "Waiting"
   ]
 }

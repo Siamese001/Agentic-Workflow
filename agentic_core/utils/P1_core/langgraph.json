@@ -1,23 +1,23 @@
 {
-  "nodes": [
-    {
-      "id": "orchestrator",
-      "entry": "canon_validator_agentic_v2.run_mission"
-    },
-    {
-      "id": "fission_manager",
-      "entry": "agentic_core.L3_orchestration.fission.fission_executor.apply_fission_blueprint"
-    }
-  ],
   "edges": [
     {
+      "condition": "needs_fission",
       "source": "orchestrator",
-      "target": "fission_manager",
-      "condition": "needs_fission"
+      "target": "fission_manager"
     }
   ],
   "env": {
-    "PYTHONPATH": ".",
-    "AGENTIC_CORE_PATH": "./agentic_core"
-  }
+    "AGENTIC_CORE_PATH": "./agentic_core",
+    "PYTHONPATH": "."
+  },
+  "nodes": [
+    {
+      "entry": "canon_validator_agentic_v2.run_mission",
+      "id": "orchestrator"
+    },
+    {
+      "entry": "agentic_core.L3_orchestration.fission.fission_executor.apply_fission_blueprint",
+      "id": "fission_manager"
+    }
+  ]
 }
