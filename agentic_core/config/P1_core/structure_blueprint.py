@@ -148,6 +148,13 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     18: ["scripts"],                             # Operational tools
 }
 
+# [GAP 1 FIX] Central Agent Registry (Expected Class Names)
+CANON_AGENT_REGISTRY = {
+    12: ["FissionManager", "ArchitectureGovernor"],
+    13: ["MissionHistorian"],
+    19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel"]
+}
+
 # Legacy mapping for backward compatibility (internal remap)
 _LEGACY_KEY_REMAP = {
     11: 1, 12: 2, 21: 3, 24: 4, 26: 5, 28: 6,
