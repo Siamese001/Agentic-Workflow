@@ -819,6 +819,18 @@ async def run_mission(target_scope: str = "agentic_core"):
     except Exception as e:
         print(f"   [!] Fetch client failed: {e}")
 
+    # [L2 DEEPWIKI] Sovereign repository documentation client
+    ctx.deepwiki_client = None
+    try:
+        from agentic_core.L2_execution.mcp.deepwiki_client_sovereign import SovereignDeepWikiClient
+        ctx.deepwiki_client = SovereignDeepWikiClient(
+            base_url="https://mcp.deepwiki.com/sse",
+            cache=ctx.semantic_cache
+        )
+        print(f"   [OK] Sovereign DeepWiki client armed — repository knowledge online")
+    except Exception as e:
+        print(f"   [!] DeepWiki client failed to arm: {e} — repo knowledge degraded")
+
     # [L1 SOVEREIGN MEMORY] Ultra-hardened reasoning persistence
     ctx.reasoning_memory = None
     try:
