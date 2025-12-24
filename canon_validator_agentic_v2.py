@@ -238,6 +238,11 @@ from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
 from agentic_core.L5_safety.red_teaming.sovereign_red_team_agent import SovereignRedTeamAgent
 from agentic_core.L5_safety.policy.sovereign_alerting_agent import SovereignAlertingAgent
+from agentic_core.L4_state.vector.redis_sovereign_agent import RedisSovereignAgent
+from agentic_core.L4_state.continuity.mission_resume_agent import MissionResumeAgent
+from agentic_core.L4_state.S1_memory.memory_architect import MemoryArchitect
+from agentic_core.L4_state.audit_trails.structural_drift_agent import StructuralDriftAgent
+from agentic_core.L5_safety.budget.budget_guardian_agent import BudgetGuardianAgent
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -305,9 +310,6 @@ class GeminiSpy:
                 if "successful_traces" in str(e):
                     print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
                 raise e
-        return wrapper
-
-
 # ==============================================================================
 # [KEY 48] MISSION AUDIT LOG: ARCHITECTURAL LEDGER
 # ==============================================================================
@@ -738,10 +740,6 @@ async def run_mission(target_scope: str = "agentic_core"):
         'test',            # New addition
     }
     
-    # [REFACTOR] Unified Pre-flight Healing
-    # This replaces fix_all_gravity_violations.py and fix_remaining_gravity.py
-    # Phase -1 and -1.5 below now serve as the primary healing path
-    
     # Discover all Python files in target scope, excluding protected folders
     discovered_files = [
         p for p in target_path.rglob("*.py") 
@@ -830,103 +828,13 @@ Return ONLY the fixed Python code. No explanations, no markdown.
                         syntax_healed_count += 1
                     except SyntaxError as e2:
                         print(f"      [!] Healing failed: Fixed code still has syntax error at line {e2.lineno}")
-            except Exception as heal_err:
-                print(f"      [!] Healing failed: {str(heal_err)[:100]}")
+            except Exception as e:
+                print(f"      [!] Healing failed: {str(e)[:100]}")
     
     if syntax_healed_count > 0:
         print(f"   [PHASE -1 COMPLETE] Healed {syntax_healed_count} files with syntax errors")
     else:
         print(f"   [OK] No syntax errors detected")
-    
-    print("-" * 50)
-    
-    # ===========================================================================
-    # [PHASE -1.5] NAMESPACE HEALING: Standardizing Standard Lib Imports
-    # ===========================================================================
-    print(f"\n[PHASE -1.5] NAMESPACE HEALING")
-    namespace_healed_count = 0
-    
-    # Common patterns: (usage_pattern, import_statement)
-    import_patterns = [
-        ("logging.", "import logging"),
-        ("logger.", "import logging"),
-        ("Any", "from typing import Any, Optional, Protocol, Dict, List"),
-        ("Optional", "from typing import Any, Optional, Protocol, Dict, List"),
-        ("Protocol", "from typing import Any, Optional, Protocol, Dict, List"),
-        ("Dict[", "from typing import Any, Optional, Protocol, Dict, List"),
-        ("List[", "from typing import Any, Optional, Protocol, Dict, List"),
-        ("@dataclass", "from dataclasses import dataclass, field"),
-        ("dataclass(", "from dataclasses import dataclass, field"),
-        ("Enum", "from enum import Enum, auto"),
-        ("Path(", "from pathlib import Path"),
-        ("json.", "import json"),
-        ("os.path", "import os"),
-        ("sys.", "import sys"),
-    ]
-    
-    for file_path in ctx.python_files:
-        try:
-            with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-                content = f.read()
-            
-            missing_imports = []
-            
-            # Check each pattern
-            for usage_pattern, import_stmt in import_patterns:
-                # Skip if usage pattern not found
-                if usage_pattern not in content:
-                    continue
-                
-                # Check if import already exists
-                if import_stmt in content:
-                    continue
-                
-                # Avoid duplicates in missing_imports
-                if import_stmt not in missing_imports:
-                    missing_imports.append(import_stmt)
-            
-            # If we found missing imports, fix the file
-            if missing_imports:
-                print(f"   [NAMESPACE-FIX] {Path(file_path).name} missing {len(missing_imports)} imports")
-                
-                fix_prompt = f"""### ROLE: NAMESPACE_MEDIC
-### TASK: Add missing standard library imports to the top of the file.
-### MISSING IMPORTS:
-{chr(10).join(f'- {imp}' for imp in missing_imports)}
-
-### INSTRUCTIONS:
-1. Add the missing imports at the top of the file (after docstring if present)
-2. Preserve all existing code exactly as-is
-3. Do not modify any logic, only add imports
-4. Return ONLY the complete fixed Python code
-
-Return the complete file with imports added. No explanations, no markdown."""
-                
-                fixed_code = await ctx.engine.resilient_mutation(
-                    file_path=str(file_path),
-                    code=content,
-                    task=fix_prompt,
-                    round_num=1,
-                    fission_active=False
-                )
-                
-                # Safety: Ensure we got valid code back
-                if len(fixed_code) > 10:
-                    is_safe, msg = ctx.safety.verify_change(content, fixed_code, fission_active=False)
-                    if is_safe:
-                        with open(file_path, 'w', encoding='utf-8') as f:
-                            f.write(fixed_code)
-                        print(f"      [OK] Namespace Healed. Imports injected.")
-                        namespace_healed_count += 1
-                    else:
-                        print(f"      [!] Safety check failed: {msg}")
-        except Exception as heal_err:
-            print(f"      [!] Namespace healing failed for {Path(file_path).name}: {str(heal_err)[:100]}")
-    
-    if namespace_healed_count > 0:
-        print(f"   [PHASE -1.5 COMPLETE] Healed {namespace_healed_count} files with missing imports")
-    else:
-        print(f"   [OK] No missing standard library imports detected")
     
     print("-" * 50)
     
@@ -1166,13 +1074,79 @@ IF (task == "GRAVITY_REFACTOR"):
 
     for agent in cleaning_crew:
         name = agent.__class__.__name__
-        if name in ['MemoryArchitect', 'HallucinationHunter']:
-            monitors.append(agent)
-            continue
+        # Note: HallucinationHunter and MemoryArchitect will be handled in dedicated hardening blocks below
         
-        # [FINAL SOVEREIGNTY] Add Watchtower guardians
-        if name in ['GravityEnforcerAgent', 'NamingLawHealerAgent']:
-            monitors.append(agent)
+        # [FINAL SOVEREIGNTY] Classify Watchtower guardians properly
+        if name == 'GravityEnforcerAgent':
+            # Gravity violations are file-local in origin -> run per-file for early healing
+            atomic_validators.append(agent)
+            print(f"     [+] GravityEnforcerAgent promoted to ATOMIC validator (early healing)")
+            continue
+        if name == 'NamingLawHealerAgent':
+            # High-signal naming: per-file healing + potential rename/move
+            atomic_validators.append(agent)
+            print(f"     [+] NamingLawHealerAgent promoted to ATOMIC validator")
+            continue
+            
+        # [L5 TRUTH HARDENING] HallucinationHunter — per-file mutation validation
+        if name == 'HallucinationHunter':
+            agent.truth_threshold = 0.95  # Hard cap for healing accuracy
+            agent.max_hallucination_retries = 2
+            original_execute = getattr(agent, 'execute', None)
+            if original_execute:
+                async def hunter_wrapper(file_path):
+                    print(f"   [HUNTER] Scanning for hallucinations in {Path(file_path).name}")
+                    try:
+                        result = await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
+                        if getattr(result, 'hallucinations_detected', 0) > 0:
+                            print(f"   [!] Hallucinations blocked: {result.hallucinations_detected}")
+                            ctx.report("HallucinationHunter", 0, False, f"{result.hallucinations_detected} hallucinations blocked")
+                        return result
+                    except Exception as e:
+                        print(f"   [!] Hunter shielded crash: {e}")
+                        ctx.report("HallucinationHunter", 0, False, f"Crash: {str(e)[:80]}")
+                agent.execute = hunter_wrapper
+            atomic_validators.append(agent)
+            print(f"     [+] HallucinationHunter HARDENED — atomic truth enforcement active")
+            continue
+            
+        # [L5 IMPORT LAW HARDENING] ImportLawAgent — strict import discipline
+        if name in ['ImportLawAgent', 'ImportLawHealerAgent']:
+            agent.enforce_dynamic_only = True  # Mandatory dynamic imports for cross-layer deps
+            original_execute = getattr(agent, 'execute', None)
+            if original_execute:
+                async def import_law_wrapper(file_path):
+                    print(f"   [IMPORT LAW] Enforcing on {Path(file_path).name}")
+                    try:
+                        return await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
+                    except Exception as e:
+                        ctx.report("ImportLawAgent", 0, False, f"Import law crash: {str(e)[:80]}")
+                agent.execute = import_law_wrapper
+            atomic_validators.append(agent)
+            print(f"     [+] ImportLawAgent HARDENED — atomic import sovereignty")
+            continue
+            
+        # [L1 HARDENING] ArchitectureGovernor — per-file structural enforcement
+        if name == 'ArchitectureGovernor':
+            # Inject safety limits to prevent runaway fission/refactor
+            agent.max_fission_rounds = min(getattr(agent, 'max_fission_rounds', 3), 3)
+            agent.max_line_threshold = 800  # Hard cap
+            
+            # Telemetry wrapper to isolate crashes
+            original_execute = getattr(agent, 'execute', None)
+            if original_execute:
+                async def governor_wrapper(file_path):
+                    print(f"   [GOVERNOR] Enforcing structural law on {Path(file_path).name}")
+                    try:
+                        return await original_execute(file_path)
+                    except Exception as e:
+                        print(f"   [!] Governor shielded crash: {e}")
+                        ctx.report("ArchitectureGovernor", 0, False, str(e)[:100])
+                        return None
+                agent.execute = governor_wrapper
+            
+            atomic_validators.append(agent)
+            print(f"     [+] ArchitectureGovernor HARDENED — atomic structural healing enabled")
             continue
             
         # Introspect execute/run method
@@ -1192,19 +1166,145 @@ IF (task == "GRAVITY_REFACTOR"):
                 batch_validators.append(agent)
     
     # [ETERNAL VECTOR GATEWAY] Add PineconeSovereignAgent to monitors
-    monitors.append(PineconeSovereignAgent(project_root))
+    pinecone_agent = PineconeSovereignAgent(
+        project_root=project_root,
+        ctx=ctx  # Enables:
+        #   - ctx.python_files: precise final file list (post-healing/moves)
+        #   - ctx.report: violation history for metadata tagging
+        #   - audit_log: relocation events
+        #   - dashboard_metrics: session stats
+    )
+    monitors.append(pinecone_agent)
+    print(f"     [+] PineconeSovereignAgent armed with ValidationContext for precise sync")
+    
+    # [L5 BUDGET HARDENING] BudgetGuardianAgent — global resource control
+    try:
+        budget_agent = BudgetGuardianAgent(
+            project_root=project_root,
+            ctx=ctx,
+            global_budget=GLOBAL_HEALING_BUDGET,
+            per_file_limit=MAX_HEALING_PER_FILE
+        )
+        remaining = budget_agent.check_remaining()
+        print(f"   [BUDGET] Remaining: {remaining['global']}/{GLOBAL_HEALING_BUDGET} global")
+        monitors.append(budget_agent)
+        print(f"     [+] BudgetGuardianAgent HARDENED — resource sovereignty enforced")
+    except Exception as e:
+        print(f"   [!] BudgetGuardian failed: {e}")
     
     # [SUBATOMIC REGISTRY] Add method registry to monitors
-    monitors.append(SubAtomicRegistry(project_root))
+    # [L4 REGISTRY HARDENING] SubAtomicRegistry — live dynamic introspection
+    try:
+        registry_agent = SubAtomicRegistry(
+            project_root=project_root,
+            ctx=ctx  # Enables live recording of agent executions
+        )
+        # Hook into telemetry to auto-register calls
+        if hasattr(ctx, 'successful_traces'):
+            for trace in ctx.successful_traces:
+                registry_agent.record_execution(trace)
+        monitors.append(registry_agent)
+        print(f"     [+] SubAtomicRegistry HARDENED — live method tracing active")
+    except Exception as e:
+        print(f"   [!] Registry instantiation failed: {e}")
+        ctx.report("System", 0, False, f"Registry failure: {e}")
     
     # [FORENSICS] Add SovereignForensicsAgent to monitors
-    monitors.append(SovereignForensicsAgent(project_root))
+    forensics_agent = SovereignForensicsAgent(
+        project_root=project_root,
+        ctx=ctx  # Provides access to report[], traces, audit_log, and dashboard_metrics
+    )
+    monitors.append(forensics_agent)
+    print(f"     [+] SovereignForensicsAgent armed with full ValidationContext")
+    
+    # [REDIS TERRITORY GATEWAY] Add RedisSovereignAgent for state persistence & cache purity
+    redis_agent = RedisSovereignAgent(
+        project_root=project_root,
+        ctx=ctx  # Critical: Access to final traces, reports, and audit_log
+    )
+    monitors.append(redis_agent)
+    print(f"     [+] RedisSovereignAgent armed with ValidationContext for eternal state sync")
+    
+    # [L4 MEMORY HARDENING] MemoryArchitect — persistent state shaping
+    try:
+        memory_architect = MemoryArchitect(
+            project_root=project_root,
+            ctx=ctx,
+            redis_client=getattr(ctx, '_client', None)
+        )
+        compaction_result = await memory_architect.compact_and_shape()
+        print(f"   [MEMORY] Compacted {compaction_result.get('pruned_keys', 0)} stale entries")
+        monitors.append(memory_architect)
+        print(f"     [+] MemoryArchitect HARDENED — memory-aware routing sealed")
+    except Exception as e:
+        print(f"   [!] MemoryArchitect failed: {e}")
+    
+    # [L4 DRIFT HARDENING] StructuralDriftAgent — territory vs SSOT reconciliation
+    try:
+        drift_agent = StructuralDriftAgent(
+            project_root=project_root,
+            ctx=ctx
+        )
+        drift_report = await drift_agent.detect_and_report_drift()
+        if drift_report['drift_count'] > 0:
+            print(f"   [!] Structural drift detected: {drift_report['drift_count']} issues")
+            ctx.report("StructuralDriftAgent", 0, False, f"Drift: {drift_report['drift_count']}")
+        monitors.append(drift_agent)
+        print(f"     [+] StructuralDriftAgent HARDENED — territory drift sealed")
+    except Exception as e:
+        print(f"   [!] DriftAgent failed: {e}")
+    
+    # [L4 CONTINUITY HARDENING] MissionResumeAgent — cryptographic drift detection
+    try:
+        resume_agent = MissionResumeAgent(project_root=project_root, ctx=ctx)
+        # Store final drift hash for reliable resume detection
+        drift_result = await resume_agent.compute_and_store_drift_hash(
+            files=ctx.python_files,
+            reports=ctx.report,
+            metrics=dashboard_metrics
+        )
+        print(f"   [RESUME] Drift hash stored: {drift_result['hash'][:16]}... ({drift_result['change_level']})")
+        monitors.append(resume_agent)
+        print(f"     [+] MissionResumeAgent HARDENED — drift-aware continuity sealed")
+    except Exception as e:
+        print(f"   [!] ResumeAgent failed: {e}")
     
     # [RED TEAM] Add SovereignRedTeamAgent to monitors
-    monitors.append(SovereignRedTeamAgent(project_root))
+    # [L5 RED TEAM HARDENING] Adversarial targeting with full context
+    try:
+        red_team_agent = SovereignRedTeamAgent(
+            project_root=project_root,
+            ctx=ctx,  # Targets weak heals and persistent FAILs
+            engine=ctx.engine
+        )
+        original_execute = getattr(red_team_agent, 'execute', None)
+        if original_execute:
+            async def red_team_wrapper(*args, **kwargs):
+                print(f"   [RED TEAM] Initiating adversarial sweep...")
+                try:
+                    result = await (original_execute(*args, **kwargs) if inspect.iscoroutinefunction(original_execute) else original_execute(*args, **kwargs))
+                    print(f"   [RED TEAM] Sweep complete — findings: {getattr(result, 'summary', 'none')}")
+                    return result
+                except Exception as e:
+                    print(f"   [!] RedTeam CRASH shielded: {e}")
+                    ctx.report("SovereignRedTeamAgent", 0, False, f"Adversarial sweep failed: {str(e)[:100]}")
+            red_team_agent.execute = red_team_wrapper
+        monitors.append(red_team_agent)
+        print(f"     [+] SovereignRedTeamAgent HARDENED — targeted adversarial attacks enabled")
+    except Exception as e:
+        print(f"   [!] Failed to instantiate SovereignRedTeamAgent: {e}")
     
-    # [L5 ALERTING] Add SovereignAlertingAgent to monitors
-    monitors.append(SovereignAlertingAgent(project_root))
+    # [L5 ALERTING HARDENING] External escalation with breach detection
+    try:
+        alerting_agent = SovereignAlertingAgent(project_root=project_root, ctx=ctx, dashboard_metrics=dashboard_metrics)
+        total_violations = len([r for r in ctx.report if r.get('status') == 'FAIL'])
+        if total_violations > 5:
+            alerting_agent.trigger_immediate_alert(severity="HIGH", message=f"Major sovereignty breach: {total_violations} violations")
+            print(f"   [!] HIGH SEVERITY: Immediate alert triggered")
+        monitors.append(alerting_agent)
+        print(f"     [+] SovereignAlertingAgent HARDENED — external escalation active")
+    except Exception as e:
+        print(f"   [!] AlertingAgent failed: {e}")
     
     # [ORCHESTRATION PROTOCOL] Arm multi-hop collaboration
     print("   [OK] OrchestrationHandshake protocol armed for multi-hop missions.")
@@ -1405,112 +1505,6 @@ CURRENT CODE:
         print(f"   [SKIP] Gravity refactor disabled for daily work. Enable RUN_GRAVITY_REFACTOR=True for global sweeps.")
         print("-" * 70)
 
-    # ===========================================================================
-    # [PHASE 0.5] SPRAWL CONSOLIDATION - ARCHITECTURAL FLATTENING
-    # ===========================================================================
-    if RUN_SPRAWL_SURGERY:
-        print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION")
-        print(f"   [>] THE GREAT FLATTENING: Deleting redundant legacy scripts...")
-        
-        # Target redundant 'Medic' scripts for deletion
-        REDUNDANT_SCRIPTS = ["fix_all_gravity_violations.py", "fix_gravity_complete.py", 
-                             "fix_remaining_gravity.py", "gravity_mapper.py", "canon_validator_v3.py"]
-        for script in REDUNDANT_SCRIPTS:
-            script_path = project_root_path / script
-            if script_path.exists():
-                try:
-                    script_path.unlink()
-                    print(f"      [✓] Purged redundant medic: {script}")
-                except Exception as e:
-                    print(f"      [!] Failed to purge {script}: {e}")
-        
-        print(f"   [>] NATIVE SSOT RECONCILIATION: Auditing territory against Master Constitution...")
-        sprawl_consolidated = 0
-
-        # 1. DISCOVERY: Find non-canonical folders
-        flattening_candidates = []
-        for root_name, config in SOVEREIGN_REGISTRY.items():
-            root_path = project_root_path / root_name
-            if not root_path.exists(): continue
-
-            # Check L1 Folders
-            legal_l1s = set(config["subfolders"])
-            actual_l1s = [d for d in root_path.iterdir() if d.is_dir() and d.name != "__pycache__"]
-
-            for l1 in actual_l1s:
-                if l1.name not in legal_l1s:
-                    # ILLEGAL L1: Flag for merge into root's shared_utils or __init__
-                    files = [f.name for f in l1.glob("*.py")]
-                    if files:
-                        flattening_candidates.append({
-                            'folder': l1,
-                            'files': files,
-                            'target': root_path / "__init__.py",
-                            'reason': f"Unapproved L1 folder '{l1.name}' in {root_name}"
-                        })
-                # [L2 HARDENING] Enforce Rule of Two/Three for Depth-4 Roots
-                elif config["depth"] == 4:
-                    registry = L2_REGISTRY_MAP.get(root_name, {})
-                    legal_l2s = set(registry.get(l1.name, []))
-                    
-                    for sub_d in [sd for sd in l1.iterdir() if sd.is_dir()]:
-                        if sub_d.name not in legal_l2s and sub_d.name != "__pycache__":
-                            flattening_candidates.append({
-                                'folder': sub_d, 
-                                'target': l1 / "__init__.py", 
-                                'reason': f"Illegal L2 '{sub_d.name}' under {l1.name}"
-                            })
-
-        # 2. SURGERY: Execute Merges
-        for candidate in flattening_candidates:
-            folder_path = candidate['folder']
-            target_path = candidate['target']
-            
-            print(f"\n   [SURGERY] Consolidating {folder_path.name} -> {target_path.name}")
-            print(f"      Reason: {candidate['reason']}")
-
-            try:
-                # Ensure target exists
-                if not target_path.exists():
-                    target_path.touch()
-                    target_path.write_text("# Consolidated via SSOT Reconciliation\n")
-
-                with open(target_path, 'r', encoding='utf-8') as f: target_code = f.read()
-                
-                source_contents = []
-                for f_name in candidate['files']:
-                    with open(folder_path / f_name, 'r', encoding='utf-8') as f:
-                        source_contents.append(f"\n# --- FROM {f_name} ---\n{f.read()}\n")
-
-                surgery_prompt = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Merge unapproved folder {folder_path.name} logic into {target_path.name}.\n\nSOURCE:\n{''.join(source_contents)}\n\nTARGET:\n{target_code}"
-                
-                new_code = await ctx.engine.resilient_mutation(
-                    file_path=str(target_path), code=target_code, task=surgery_prompt, round_num=1, fission_active=False
-                )
-
-                # [CLEAN CODE BLOCK]
-                if "```python" in new_code: new_code = new_code.split("```python")[1].split("```")[0].strip()
-
-                is_safe, msg = ctx.safety.verify_change(target_code, new_code, fission_active=False)
-                if is_safe:
-                    with open(target_path, 'w', encoding='utf-8') as f: f.write(new_code)
-                    import shutil
-                    shutil.rmtree(folder_path) # PHYSICALLY REMOVE ILLEGAL FOLDER
-                    print(f"      [✓] Consolidated and purged illegal folder.")
-                    sprawl_consolidated += 1
-                else:
-                    print(f"      [!] Safety Block: {msg}")
-            except Exception as e:
-                print(f"      [!] Surgery Error: {e}")
-        
-        print("-" * 70)
-    else:
-        print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION - DISABLED")
-        print(f"   [SKIP] Sprawl surgery disabled for daily work. Enable RUN_SPRAWL_SURGERY=True for global sweeps.")
-        print("-" * 70)
-    
-    print("-" * 70)
-    
     # ===========================================================================
     # [PHASE 1] PER-FILE VALIDATION
     # ===========================================================================

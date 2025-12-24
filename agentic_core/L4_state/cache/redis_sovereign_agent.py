@@ -16,14 +16,17 @@ class RedisSovereignAgent:
     """
     _instance = None
 
-    def __new__(cls, project_root: Path):
+    def __new__(cls, project_root: Path, ctx=None):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance._init(project_root)
+            cls._instance._init(project_root, ctx)
         return cls._instance
 
-    def _init(self, project_root: Path):
+    def _init(self, project_root: Path, ctx=None):
         env = get_env(project_root)
+        
+        # Store ValidationContext for state persistence operations
+        self.ctx = ctx
         
         # Hardened Pool: Prevent connection leaks
         connection_kwargs = {

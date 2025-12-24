@@ -25,7 +25,7 @@ class PineconeSovereignAgent:
     Centralizes all vector operations to prevent configuration drift.
     """
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, ctx=None):
         env = get_env(project_root)
         self.pc = Pinecone(api_key=env.PINECONE_API_KEY)
         self.index_name = env.PINECONE_INDEX_NAME
@@ -33,6 +33,9 @@ class PineconeSovereignAgent:
         self.cloud = env.PINECONE_CLOUD
         self.region = env.PINECONE_REGION
         self.gemini = SubAtomicEngine()
+        
+        # Store ValidationContext for precise sync operations
+        self.ctx = ctx
         
         # [HYBRID CONFIG] 0.7 = 70% Semantic / 30% Keyword
         self.hybrid_alpha = float(os.getenv("HYBRID_ALPHA", "0.7"))
