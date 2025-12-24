@@ -202,28 +202,18 @@ except Exception as e:
     sys.exit(1)
 
 # Load void_compliance from runtime (allowed - same layer)
-try:
-    print(f"   [OK] Void Compliance Engine: Online.")
-except ImportError as e:
-    print(f"   [ERROR] Void compliance unavailable: {e}")
-    sys.exit(1)
-
-# Import void_compliance functions
-try:
-    from agentic_core.runtime.shared.void_compliance import (
-        ALLOWED_ROOT_FOLDERS,
-        FORBIDDEN_ROOT_FOLDERS,
-        check_import_waterfall_violations,
-        check_span_of_two_violations,  # Updated with single-file leaf support
-        validate_canonical_hierarchy,
-        enforce_void_compliance,
-        get_folder_scope_summary,
-        validate_file_location,
-        get_placement_guidance          # Added for Key 40/49 LLM guidance
-    )
-except ImportError as e:
-    print(f"   [ERROR] Void compliance functions unavailable: {e}")
-    sys.exit(1)
+from agentic_core.runtime.shared.void_compliance import (
+    ALLOWED_ROOT_FOLDERS,
+    FORBIDDEN_ROOT_FOLDERS,
+    check_import_waterfall_violations,
+    check_span_of_two_violations,
+    validate_canonical_hierarchy,
+    validate_file_location,
+    enforce_void_compliance,
+    get_folder_scope_summary,
+    get_placement_guidance
+)
+print(f"   [OK] Void Compliance Engine: Online.")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -558,6 +548,12 @@ async def run_mission(target_scope: str = "agentic_core"):
                 self.report = []
                 self.results = {}
                 self.signals = set()
+                self.successful_traces = []
+                self.failed_traces = []
+                self.engine = None
+                self.safety = None
+                self.fission = None
+                self.dashboard_metrics = None
                 self._client = None
         ctx = ValidationContext()
         print("   [!] Using fallback ValidationContext")
@@ -1220,6 +1216,13 @@ GRAVITY_LAW:
    'import importlib; mod = importlib.import_module("agentic_core.L5_safety")'
 4. Or, pass the required object via ValidationContext (dependency injection).
 
+IF (task == "GRAVITY_REFACTOR"):
+    ELIMINATE upward imports (e.g., L0 -> L5). 
+    STRATEGY:
+    1. Move small helper logic down to the requesting layer.
+    2. Wrap imports: 'import importlib; mod = importlib.import_module("...")'
+    3. Access services via 'ctx.services.get("...")' instead of direct import.
+
 STRATEGY OPTIONS:
 1. Use dynamic imports (importlib) for cross-layer dependencies
 2. Move required utility functions into same or lower layer
@@ -1328,23 +1331,18 @@ CURRENT CODE:
                             'target': root_path / "__init__.py",
                             'reason': f"Unapproved L1 folder '{l1.name}' in {root_name}"
                         })
-                else:
-                    # Check L2 Folders for Agentic Core (Depth 4)
-                    if config["depth"] == 4:
-                        legal_l2s = set(get_legal_l2_for_l1(root_name, l1.name))
-                        actual_l2s = [d for d in l1.iterdir() if d.is_dir() and d.name != "__pycache__"]
-                        
-                        for l2 in actual_l2s:
-                            if l2.name not in legal_l2s:
-                                # ILLEGAL L2: Flag for merge into L1's __init__
-                                files = [f.name for f in l2.glob("*.py")]
-                                if files:
-                                    flattening_candidates.append({
-                                        'folder': l2,
-                                        'files': files,
-                                        'target': l1 / "__init__.py",
-                                        'reason': f"Unapproved L2 folder '{l2.name}' in {l1.name}"
-                                    })
+                # [L2 HARDENING] Enforce Rule of Two/Three for Depth-4 Roots
+                elif config["depth"] == 4:
+                    registry = L2_REGISTRY_MAP.get(root_name, {})
+                    legal_l2s = set(registry.get(l1.name, []))
+                    
+                    for sub_d in [sd for sd in l1.iterdir() if sd.is_dir()]:
+                        if sub_d.name not in legal_l2s and sub_d.name != "__pycache__":
+                            flattening_candidates.append({
+                                'folder': sub_d, 
+                                'target': l1 / "__init__.py", 
+                                'reason': f"Illegal L2 '{sub_d.name}' under {l1.name}"
+                            })
 
         # 2. SURGERY: Execute Merges
         for candidate in flattening_candidates:

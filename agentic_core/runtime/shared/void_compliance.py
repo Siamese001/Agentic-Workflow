@@ -15,17 +15,16 @@ from pathlib import Path
 # [SSOT] Import the master structure blueprint
 from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY,
-    SOVEREIGN_DEPTH_MAP,
-    ROOT_WHITELIST,
-    CORE_SUBFOLDER_MAP
+    CORE_SUBFOLDER_MAP,
+    ROOT_WHITELIST
 )
 
 logger = logging.getLogger(__name__)
 
-# Reconstruct the hierarchy mapping from the new Registry
-CANONICAL_HIERARCHY = {
-    k: v["subfolders"] for k, v in SOVEREIGN_REGISTRY.items()
-}
+# [DESIGN FIX] Derive all enforcement data from the Master SSOT Registry
+CANONICAL_HIERARCHY = {root: cfg["subfolders"] for root, cfg in SOVEREIGN_REGISTRY.items()}
+CANONICAL_DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
+ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 # ==============================================================================
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
@@ -168,10 +167,6 @@ ALLOWED_CORE_STAGES.extend([
     "S1_design", "S1_store", "S2_runtime", "S3_vitality", "S4_checkpoint",
     "identity", "inference", "meta", "discovery", "planning", "execution_cycle"
 ])
-
-# [SSOT] Use ROOT_WHITELIST from structure_blueprint.py
-# This replaces the hardcoded ALLOWED_ROOT_FOLDERS
-ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 # Forbidden folders are those NOT in the whitelist
 FORBIDDEN_ROOT_FOLDERS = {
@@ -322,10 +317,6 @@ def validate_import_conventions(file_path: Path, project_root: Path) -> List[str
 # ENFORCEMENT FUNCTIONS
 # ==============================================================================
 
-# [SSOT] Use SOVEREIGN_DEPTH_MAP from structure_blueprint.py
-# This replaces the hardcoded CANONICAL_DEPTH_MAP
-CANONICAL_DEPTH_MAP = SOVEREIGN_DEPTH_MAP
-
 def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool, str]:
     """
     [SOVEREIGN MANDATE] Absolute Precision Depth Enforcement.
@@ -343,9 +334,9 @@ def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool,
     if file_path.name == "__init__.py" or "validator" in file_path.name:
         return True, "Root Structural Component"
 
-    # Rule 1: Precision Enforcement (Dynamic from SOVEREIGN_DEPTH_MAP)
-    if root_folder in SOVEREIGN_DEPTH_MAP:
-        required = SOVEREIGN_DEPTH_MAP[root_folder]
+    # Rule 1: Precision Enforcement (Dynamic from CANONICAL_DEPTH_MAP)
+    if root_folder in CANONICAL_DEPTH_MAP:
+        required = CANONICAL_DEPTH_MAP[root_folder]
         if depth != required:
             return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
         
@@ -380,9 +371,9 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if file_path.name == "__init__.py" or depth == 1:
             return True, "Sovereign Structural Component"
         
-        # Rule 1: Dynamic Depth Enforcement (from SOVEREIGN_DEPTH_MAP)
-        if root_folder in SOVEREIGN_DEPTH_MAP:
-            required_depth = SOVEREIGN_DEPTH_MAP[root_folder]
+        # Rule 1: Dynamic Depth Enforcement (from CANONICAL_DEPTH_MAP)
+        if root_folder in CANONICAL_DEPTH_MAP:
+            required_depth = CANONICAL_DEPTH_MAP[root_folder]
             if depth != required_depth:
                 return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required_depth} (required for {root_folder})."
             
