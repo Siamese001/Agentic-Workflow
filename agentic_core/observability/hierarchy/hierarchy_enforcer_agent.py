@@ -101,6 +101,41 @@ class HierarchyEnforcerAgent:
 
         return actions
 
+    def enforce_tests_depth(self) -> List[str]:
+        """
+        Tests depth enforcement. If it's not depth 3, it gets archived.
+        """
+        from agentic_core.config.P1_core.structure_blueprint import TESTS_EXACT_DEPTH
+        actions = []
+
+        # [TESTS DEPTH 3] Target all files under tests/ (Universal enforcement)
+        for file_path in self.project_root.rglob("*"):
+            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+                continue
+            
+            rel = file_path.relative_to(self.project_root)
+            if rel.parts[0] != "tests":
+                continue
+
+            depth = len(rel.parts)
+            if depth != TESTS_EXACT_DEPTH:
+                # ARCHIVE THE DRIFT
+                archive_path = self.archive_root / "tests_depth" / rel
+                archive_path.parent.mkdir(parents=True, exist_ok=True)
+
+                explanation = f"# TESTS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
+                explanation += f"# {rel} was depth {depth}, but tests MUST be exactly {TESTS_EXACT_DEPTH}.\n\n"
+
+                try:
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
+                    archive_path.write_text(explanation + content, encoding="utf-8")
+                    file_path.unlink()
+                    actions.append(f"ARCHIVED tests drift: {rel}")
+                except Exception as e:
+                    actions.append(f"TESTS ARCHIVE FAILED: {rel} — {e}")
+
+        return actions
+
     def enforce_universal_depth(self) -> List[str]:
         """
         Universal depth enforcement for all file types under agentic_core.
@@ -180,6 +215,7 @@ class HierarchyEnforcerAgent:
     async def execute(self, ctx):
         issues = self.enforce_hierarchy()
         issues.extend(self.enforce_depth_precision())
+        issues.extend(self.enforce_tests_depth())
         issues.extend(self.enforce_universal_depth())
         if issues:
             print(f"   [HEALING] HierarchyEnforcerAgent: {len(issues)} actions taken")
