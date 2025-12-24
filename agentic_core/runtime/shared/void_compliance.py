@@ -27,18 +27,24 @@ from agentic_core.config.P1_core.structure_blueprint import (
 
 logger = logging.getLogger(__name__)
 
-# [DESIGN FIX] Derive all enforcement data from the Master SSOT Registry
+# [ULTRA-HARDENING] All structural facts are derived exclusively from SSOT
 CANONICAL_HIERARCHY = {root: cfg["subfolders"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 CANONICAL_DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
-# This replaces the hardcoded ALLOWED_ROOT_FOLDERS
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
+FORBIDDEN_FILE_PATTERNS = FORBIDDEN_PATTERNS
+HIGH_SIGNAL_KEYWORDS = CANON_SIGNALS
+
+# [DESIGN UNIFICATION] Derive all allowed stages from the SSOT
+ALLOWED_CORE_STAGES = set()
+for stages in CORE_SUBFOLDER_MAP.values():
+    ALLOWED_CORE_STAGES.update(stages)
+ALLOWED_CORE_STAGES.update(CORE_SUBFOLDER_MAP.keys())
+
+KEY_TO_FOLDER_MAP = CANON_KEY_TO_FOLDER_MAP
 
 # ==============================================================================
 # FILE NAMING CONVENTIONS (Key 49 Hardening)
 # ==============================================================================
-
-FORBIDDEN_FILE_PATTERNS = FORBIDDEN_PATTERNS
-HIGH_SIGNAL_KEYWORDS = CANON_SIGNALS
 
 def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str]:
     """
@@ -146,9 +152,6 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
         return False, f"SPAN VIOLATION (Key 49): '{folder_path.name}' is a redundant tunnel to '{meaningful_children[0].name}'. Flatten."
 
     return True, ""
-
-# [DESIGN UNIFICATION] Derive all allowed stages from the SSOT
-ALLOWED_CORE_STAGES = set(CANON_KEY_TO_FOLDER_MAP.keys())
 
 
 # ==============================================================================

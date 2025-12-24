@@ -1,4 +1,5 @@
 {
+  "NOTICE": "[SSOT] This file is LEGACY. Real structure is in structure_blueprint.py",
   "project_root": "C:/Git/Agentic-Workflow",
   "sovereign_domain": "agentic_core",
   "allowed_depth": 4,
