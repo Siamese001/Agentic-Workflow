@@ -26,11 +26,12 @@ class TerritoryHealerAgent:
         
         from agentic_core.config.P1_core.structure_blueprint import (
             CANON_KEY_TO_FOLDER_MAP, ROOT_PROTECTED_FILES,
-            TERRITORY_EXAMPLES  # For semantic hints
+            TERRITORY_EXAMPLES, TERRITORY_POSITIVE_SIGNALS
         )
         from agentic_core.runtime.shared.void_compliance import get_placement_guidance
         
         self.key_folders = CANON_KEY_TO_FOLDER_MAP
+        self.key_positive_signals = TERRITORY_POSITIVE_SIGNALS
         # Flatten all mapped paths for fast check
         self.all_mapped_paths = {p for ps in self.key_folders.values() for p in ps}
         
@@ -54,6 +55,7 @@ class TerritoryHealerAgent:
     def is_stray_in_territory(self, rel_path: str, content_lower: str, stem_lower: str) -> Optional[dict]:
         """
         Check if file is stray WITHIN its current key territory.
+        Uses DOUBLE-LOCK: negative signals (what doesn't belong) + positive signals (what does belong).
         Returns move dict if stray, else None.
         """
         current_territory = None
@@ -65,28 +67,62 @@ class TerritoryHealerAgent:
         if current_territory is None:
             return None  # Already handled by unmapped drift check
 
-        # Get stray signals for this key
+        # [ETERNAL DOUBLE-LOCK]
         stray_words = self.key_stray_signals.get(current_territory, set())
-        if stray_words and any(word in stem_lower or word in content_lower for word in stray_words):
-            # Suggest better territory via semantic guidance
-            suggested = self.get_placement_guidance(content_lower)
-            target_key = None
-            target_folder = suggested
-            
-            for k, folders in self.key_folders.items():
-                if any(suggested.startswith(f) for f in folders):
-                    target_key = k
-                    target_folder = next(f for f in folders if suggested.startswith(f))
-                    break
-            
-            if target_key and target_key != current_territory:
-                target = self.root / target_folder / Path(rel_path).name
-                return {
-                    "action": "move",
-                    "source": str(self.root / rel_path),
-                    "target": str(target),
-                    "reason": f"Stray in Key {current_territory}: '{Path(rel_path).name}' belongs in Key {target_key} ({target_folder})"
-                }
+        has_negative = any(word in stem_lower or word in content_lower for word in stray_words)
+
+        positive_words = self.key_positive_signals.get(current_territory, set())
+        positive_score = sum(1 for word in positive_words if word in stem_lower or word in content_lower)
+
+        # Sovereign rule: Strong positive (>=3) stays. Negative or weak positive (<2) moves.
+        if positive_score >= 3:
+            return None  # Sovereign — strong belonging
+
+        # [ETERNAL LOCK] Moderate positive + no negative -> protect core code
+        if positive_score >= 2 and not has_negative:
+            return None  # Belongs — do not move
+
+        if has_negative or positive_score < 2:
+            move = self._suggest_move(content_lower, rel_path, current_territory)
+            if move:
+                if has_negative:
+                    move["reason"] += f" (negative signals detected)"
+                if positive_score < 2:
+                    move["reason"] += f" (weak positive: {positive_score}/3)"
+                return move
+        
+        # [FINAL FALLBACK] Unknown but no negative -> archive safely (never delete)
+        archive_dir = self.root / "archives/unknown_territory"
+        archive_dir.mkdir(parents=True, exist_ok=True)
+        return {
+            "action": "deprecate",
+            "source": str(self.root / rel_path),
+            "target": str(archive_dir / Path(rel_path).name),
+            "reason": f"Unknown territory — no positive signals (confidence {positive_score})"
+        }
+
+    def _suggest_move(self, content_lower: str, rel_path: str, current_territory: int) -> Optional[dict]:
+        """
+        Suggest better territory via semantic guidance.
+        """
+        suggested = self.get_placement_guidance(content_lower)
+        target_key = None
+        target_folder = suggested
+        
+        for k, folders in self.key_folders.items():
+            if any(suggested.startswith(f) for f in folders):
+                target_key = k
+                target_folder = next(f for f in folders if suggested.startswith(f))
+                break
+        
+        if target_key and target_key != current_territory:
+            target = self.root / target_folder / Path(rel_path).name
+            return {
+                "action": "move",
+                "source": str(self.root / rel_path),
+                "target": str(target),
+                "reason": f"Stray in Key {current_territory}: '{Path(rel_path).name}' belongs in Key {target_key} ({target_folder})"
+            }
         return None
 
     def find_all_stray(self) -> List[dict]:
@@ -143,29 +179,68 @@ class TerritoryHealerAgent:
     async def execute(self):
         """
         Main execution entry point.
-        Finds and reports all territory violations.
+        Finds and executes all territory violations with cache purging.
         """
         print(f"\n   [*] TerritoryHealerAgent: Scanning for intra-territory strays...")
         
-        moves = self.find_all_stray()
+        stray_actions = self.find_all_stray()
         
-        if not moves:
+        if not stray_actions:
             print(f"   [✓] No territory violations detected")
             return
         
-        print(f"\n   [!] Found {len(moves)} territory violations:")
-        for move in moves[:10]:  # Show first 10
-            print(f"      - {move['reason']}")
-            print(f"        {move['source']} → {move['target']}")
+        print(f"\n   [!] Found {len(stray_actions)} territory violations:")
+        for action in stray_actions[:10]:  # Show first 10
+            print(f"      - {action['reason']}")
+            print(f"        {action['source']} → {action['target']}")
         
-        if len(moves) > 10:
-            print(f"      ... and {len(moves) - 10} more")
+        if len(stray_actions) > 10:
+            print(f"      ... and {len(stray_actions) - 10} more")
+        
+        # [GHOST PURGE] Connect to Redis and Pinecone for cleanup
+        try:
+            from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+            from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
+            redis_agent = RedisSovereignAgent(self.root)
+            pinecone_agent = PineconeSovereignAgent(self.root)
+        except Exception:
+            redis_agent = None
+            pinecone_agent = None
+
+        moved = [a for a in stray_actions if a["action"] == "move"]
+        archived = [a for a in stray_actions if a["action"] == "deprecate"]
+        
+        for action in moved:
+            source_path = Path(action["source"])
+            target_path = Path(action["target"])
+            
+            # Ensure target directory exists
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Move the file
+            import shutil
+            shutil.move(source_path, target_path)
+            print(f"   [MOVED] {source_path.name} → {target_path.parent}")
+            
+            # Purge old path immediately after move
+            if redis_agent:
+                redis_agent.invalidate_by_path(source_path)
+            if pinecone_agent:
+                pinecone_agent.purge_ghost_vector(source_path)
+        
+        for action in archived:
+            source_path = Path(action["source"])
+            ctx.report("TerritoryHealer", 1, True, action["reason"])
+            source_path.unlink(missing_ok=True)
+            # Purge deprecated file from cache
+            if redis_agent:
+                redis_agent.invalidate_by_path(source_path)
+            if pinecone_agent:
+                pinecone_agent.purge_ghost_vector(source_path)
         
         # Report to context if available
         if self.ctx:
-            for move in moves:
-                self.ctx.report("TerritoryViolation", 20, False, move['reason'])
+            for action in stray_actions:
+                self.ctx.report("TerritoryViolation", 20, True, f"Fixed: {action['reason']}")
         
-        print(f"\n   [INFO] Run with --heal flag to apply territory moves")
-        
-        return moves
+        print(f"\n   [✓] Territory healing complete. Processed {len(stray_actions)} files.")

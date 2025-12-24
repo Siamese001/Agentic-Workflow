@@ -9,12 +9,11 @@ import hashlib
 import json
 import redis
 from typing import List, Dict, Optional, Tuple
-from pinecone import Pinecone
 from pathlib import Path
 
-from agentic_core.L5_safety.P1_core.subatomic_engine import SubAtomicEngine  # Sovereign Gemini-only engine
 from agentic_core.config.P1_core.structure_blueprint import TERRITORY_EXAMPLES
 from agentic_core.config.P1_core.sovereign_env import get_env
+from agentic_core.L4_state.vector.pinecone_sovereign_agent import PineconeSovereignAgent
 
 
 class SemanticTerritoryMapperAgent:
@@ -26,31 +25,23 @@ class SemanticTerritoryMapperAgent:
     def __init__(self, project_root: Path, ctx=None):
         self.project_root = project_root
         self.ctx = ctx
-        # [NO HARDCODING] Sovereign engine — model from .env only
-        self.gemini = SubAtomicEngine()  # Enforced GEMINI_MODEL from .env via verify_neural_link()
+        
+        # [ETERNAL GATEWAY] Use the dedicated vector agent
+        self.pinecone = PineconeSovereignAgent(project_root)
         
         # Get sovereign environment configuration
         env = get_env()
         self.redis = redis.from_url(env.REDIS_URL)
-        self.pc = Pinecone(api_key=env.PINECONE_API_KEY)
-        self.index_name = env.PINECONE_INDEX_NAME
-        self.dim = env.EMBEDDING_DIMENSION
         
-        # Initialize or connect to Pinecone index
-        try:
-            self.index = self.pc.Index(self.index_name)
-            print(f"   [OK] Connected to existing Pinecone index: {self.index_name}")
-        except Exception as e:
-            print(f"   [*] Creating new Pinecone index: {self.index_name}")
-            # [DYNAMIC DIMENSION] Query model for embedding size — no hardcode
-            test_embed = self.gemini.resilient_mutation(
-                "Return only a JSON with key 'embedding' and a sample embedding vector of length 1: {\"embedding\": [0.0]}",
-                return_json=True
-            )
-            dim = len(test_embed.get("embedding", [0]*self.dim))  # Fallback to env dimension
-            self.pc.create_index(name=self.index_name, dimension=dim, metric="cosine")
-            self.index = self.pc.Index(self.index_name)
-            print(f"   [✓] Created index with dimension {dim}")
+        # Key-specific stray signals remain in this agent
+        self.key_stray_signals = {
+            11: {"script", "tool", "cli", "operational", "backup"},
+            12: {"test", "fixture", "mock"},
+            13: {"heal", "fix", "prune"},
+            15: {"strategy", "reasoning", "planner"},
+            17: {"agent", "manager", "engine", "healer"},
+            19: {"script", "test", "heal"},
+        }
             
     def _seed_territory_examples(self):
         """Seed the index with known territory examples for reference."""
@@ -77,32 +68,19 @@ class SemanticTerritoryMapperAgent:
             
     def get_embedding(self, text: str) -> List[float]:
         """
-        Sovereign embedding — zero hardcoding.
-        Uses GEMINI_MODEL from .env via SubAtomicEngine.
-        Prompt neutral — works with any Gemini variant.
+        Sovereign embedding — delegated to PineconeSovereignAgent.
+        Uses Redis cache for performance.
         """
         cache_key = f"embed:v2:{hashlib.sha256(text.encode()).hexdigest()}"
         cached = self.redis.get(cache_key)
         if cached:
             return json.loads(cached)
-            
-        # Sovereign neutral prompt — no model-specific assumptions
-        system_prompt = "You are a code territory classifier. Return only JSON: {\"embedding\": [float vector of code semantics]}"
-        user_prompt = f"Classify this code snippet for canon territory mapping:\n\n{text[:12000]}"  # Safe token buffer
         
-        response = self.gemini.resilient_mutation(
-            user_prompt,
-            system_prompt=system_prompt,
-            return_json=True,
-            temperature=0.0  # Deterministic for caching
-        )
+        # Delegate to sovereign agent
+        embedding = self.pinecone.get_embedding(text)
         
-        embedding = response.get("embedding", [])
-        if not embedding:
-            # Fallback: zero vector — safe non-match
-            embedding = [0.0] * self.dim
-            
-        self.redis.set(cache_key, json.dumps(embedding), ex=604800)  # 7-day sovereign cache
+        # Cache for 7 days
+        self.redis.set(cache_key, json.dumps(embedding), ex=604800)
         return embedding
         
     def map_file_to_territory(self, file_path: Path, content: str = None) -> Tuple[str, float]:
@@ -124,7 +102,7 @@ class SemanticTerritoryMapperAgent:
             
         # Search for similar territories
         try:
-            results = self.index.query(
+            results = self.pinecone.index.query(
                 vector=content_embedding,
                 top_k=5,
                 include_metadata=True
