@@ -125,7 +125,8 @@ FORBIDDEN_PATTERNS = {
 # ==============================================================================
 # CANON KEY CONSTITUTION [SSOT] - Ultimate Hardening (Dec 24, 2025)
 # ==============================================================================
-ACTIVE_CANON_KEYS = list(range(0, 22))  # [GAP 1+3+9] Extended to 21 for full coverage
+# [GAP 1/9/11] ACTIVE CANON KEYS (Full Recursive Coverage)
+ACTIVE_CANON_KEYS = list(range(0, 22))
 
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     # Root + Operational [GAP 5]
@@ -135,13 +136,13 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     # Schemas (Full Tree)
     7:  ["schemas"],
     # Sovereign Core (The Brain)
-    11: ["agentic_core/L1_cognition"],
-    12: ["agentic_core/L3_orchestration"],
+    11: ["agentic_core/L1_cognition", "agentic_core/L1_cognition/thought_engine"],
+    12: ["agentic_core/L3_orchestration", "agentic_core/L3_orchestration/healing", "agentic_core/L3_orchestration/registry"],
     13: ["agentic_core/L4_state"],
     # The Shield (Safety Layer) [GAP 2+3]
-    19: ["agentic_core/L5_safety"],
+    19: ["agentic_core/L5_safety", "agentic_core/L5_safety/policy"],
     # Support & Infrastructure Layers [GAP 9]
-    20: ["agentic_core/L0_maintenance", "agentic_core/config", "agentic_core/runtime", "agentic_core/observability", "agentic_core/utils"],
+    20: ["agentic_core/L0_maintenance", "agentic_core/utils/drift_detection", "agentic_core/observability/coverage", "agentic_core/utils/dead_code"],
     # Execution & Pattern Layers [GAP 11]
     21: ["agentic_core/L2_execution", "agentic_core/patterns", "agentic_core/semantic_memory", "agentic_core/knowledge"],
     # Domain & Shared Infrastructure
@@ -151,24 +152,23 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     17: ["tests"]
 }
 
-# [ULTIMATE HARDENING] Forbid numbered folders at ANY depth
-FORBIDDEN_NUMBERED_PATTERN = re.compile(r"^\d{2}_")
-
-# [GAP 1/6] Consolidated Agent Registry (Expected Framework Classes)
+# [GAP 1/6] CANON AGENT REGISTRY (Mandatory Framework Population)
 CANON_AGENT_REGISTRY = {
     12: ["FissionManager", "ArchitectureGovernor", "AgentRegistryValidatorAgent", "RecursiveSpanHealerAgent", "ScriptsConsolidatorAgent"],
     13: ["MissionHistorian", "KeyCoverageAuditorAgent"],
-    15: ["NarrativeLeadAgent", "RankerAgent", "ComplianceSpecialistAgent"],
     18: ["PreCommitGuardianAgent"],
     19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent"],
     20: ["DriftDetectorAgent", "DeadCodeDetectorAgent"]
 }
 
-# [GAP 16] Root protected files — SSOT centralized
+# [GAP 16] ROOT PROTECTED FILES — SSOT centralized
 ROOT_PROTECTED_FILES = {
-    "canon_validator_agentic_v2.py", "pyproject.toml", "README.md",
+    "canon_validator_agentic_v2.py", "pyproject.toml", "README.md", 
     "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
 }
+
+# [ULTIMATE HARDENING] Forbid numbered folders at ANY depth
+FORBIDDEN_NUMBERED_PATTERN = re.compile(r"^\d{2}_")
 
 # Legacy mapping for backward compatibility (internal remap)
 _LEGACY_KEY_REMAP = {

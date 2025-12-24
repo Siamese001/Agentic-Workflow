@@ -108,6 +108,11 @@ def verify_neural_link():
     
     print(f"   [OK] Model Authorization: GEMINI-ONLY policy enforced.")
 
+    # Verify CANON_AGENT_REGISTRY
+    if not CANON_AGENT_REGISTRY:
+        print(f"\n[!] [NEURAL LINK ERROR] Mission halted. Missing CANON_AGENT_REGISTRY.")
+        sys.exit(1)
+
 verify_neural_link()
 
 # [GRAVITY SSOT] Dynamically derived authority order
@@ -248,7 +253,7 @@ class GeminiSpy:
 
         # Intercept method calls (e.g., generate_content, query, chat)
         def wrapper(*args, **kwargs):
-            # [GAP 20 HARDENING] Intercept and Block non-Gemini references
+            # [GAP 20 HARDENING] Block unauthorized models at the wire
             if args:
                 prompt_text = str(args[0]).lower()
                 forbidden = ["openai", "anthropic", "claude", "gpt"]
@@ -541,6 +546,14 @@ async def run_mission(target_scope: str = "agentic_core"):
         print("      - agentic_core.L3_orchestration.S3_vitality.safety_guardrail")
         sys.exit(1)
     
+    # [GAP 2/6] FRAMEWORK AGENT ENFORCEMENT
+    print(f"   [*] VERIFYING SOVEREIGN AGENT PRESENCE...")
+    for key, names in CANON_AGENT_REGISTRY.items():
+        for name in names:
+            # Check if dynamically loaded or in globals
+            if name not in globals() and dynamic_import('agentic_core.runtime.shared.void_compliance', name) is None:
+                 print(f"[L6 CRITICAL FAILURE] Missing agent: {name} (Key {key})"); sys.exit(1)
+
     safety_guard = SafetyGuardrail(deletion_limit=110)
 
     # [HARDENING] VERIFY KEY PRESENCE
