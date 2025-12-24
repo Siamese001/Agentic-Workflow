@@ -916,7 +916,7 @@ Return the complete file with imports added. No explanations, no markdown."""
                     if is_safe:
                         with open(file_path, 'w', encoding='utf-8') as f:
                             f.write(fixed_code)
-                        print(f"      [✓] Namespace Healed. Imports injected.")
+                        print(f"      [OK] Namespace Healed. Imports injected.")
                         namespace_healed_count += 1
                     else:
                         print(f"      [!] Safety check failed: {msg}")
