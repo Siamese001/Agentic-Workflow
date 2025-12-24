@@ -1312,7 +1312,7 @@ CURRENT CODE:
         
         # Target redundant 'Medic' scripts for deletion
         REDUNDANT_SCRIPTS = ["fix_all_gravity_violations.py", "fix_gravity_complete.py", 
-                             "fix_remaining_gravity.py", "gravity_mapper.py"]
+                             "fix_remaining_gravity.py", "gravity_mapper.py", "canon_validator_v3.py"]
         for script in REDUNDANT_SCRIPTS:
             script_path = project_root_path / script
             if script_path.exists():
