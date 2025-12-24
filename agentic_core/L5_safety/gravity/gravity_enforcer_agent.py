@@ -94,8 +94,9 @@ class GravityEnforcerAgent(CachedSafetyShield):
         Returns True if the file was healed, False if no violations found.
         """
         # [CACHE-FIRST] Sovereign reflex
-        cached = self.get_cached_gravity(file_path)
+        cached = self.get_cached_verdict("gravity", str(file_path))
         if cached:
+            print(f"   [CACHE HIT] Gravity verdict for {file_path.name}")
             return cached.get('had_violations', False)
         
         try:
@@ -120,14 +121,14 @@ class GravityEnforcerAgent(CachedSafetyShield):
                     f.write(new_content)
                 # Cache the verdict
                 verdict = {"had_violations": True, "healed": True}
-                self.cache_gravity_verdict(file_path, verdict)
+                self.store_verdict("gravity", str(file_path), verdict)
                 return True
             except Exception as e:
                 print(f"   [!] Could not write to {file_path}: {e}")
         
         # Cache no violations
         verdict = {"had_violations": False, "healed": False}
-        self.cache_gravity_verdict(file_path, verdict)
+        self.store_verdict("gravity", str(file_path), verdict)
         return False
         
     def get_summary(self) -> Dict:
