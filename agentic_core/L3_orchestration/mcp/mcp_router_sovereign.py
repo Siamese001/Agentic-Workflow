@@ -90,6 +90,29 @@ class SovereignMCPRouter:
                 })
                 return {"status": "l3_recovery", "tool": "redis_recover", "restored": redis_result.get("keys_restored", 0)}
 
+            # [L2 DEEPWIKI] Sovereign repository knowledge access
+            elif key_id in {40, 41, 42, 49}:
+                # Check if we have a DeepWiki client available in the context
+                try:
+                    from agentic_core.L4_state.P1_core.validation_context import ValidationContext
+                    if hasattr(ValidationContext, '_instance') and ValidationContext._instance:
+                        ctx = ValidationContext._instance
+                        if hasattr(ctx, 'deepwiki_client') and ctx.deepwiki_client:
+                            try:
+                                answer = await ctx.deepwiki_client.ask_question(
+                                    "xai/grok-canon",
+                                    f"What are the sovereign requirements for Key {key_id} compliance?"
+                                )
+                                return {
+                                    "status": "l2_deepwiki_qa",
+                                    "guidance": answer.get("response", ""),
+                                    "insight": "Applied internal repository guidance to healing round."
+                                }
+                            except Exception as wiki_e:
+                                logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
+                except Exception:
+                    pass
+
             # [L2 FIGMA] Design system enforcement
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
                 # Check if we have a Figma client available in the context
