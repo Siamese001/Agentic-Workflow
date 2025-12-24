@@ -238,11 +238,39 @@ from agentic_core.L4_state.registry.subatomic_registry import SubAtomicRegistry
 from agentic_core.L4_state.audit_trails.sovereign_forensics_agent import SovereignForensicsAgent
 from agentic_core.L5_safety.red_teaming.sovereign_red_team_agent import SovereignRedTeamAgent
 from agentic_core.L5_safety.policy.sovereign_alerting_agent import SovereignAlertingAgent
-from agentic_core.L4_state.vector.redis_sovereign_agent import RedisSovereignAgent
-from agentic_core.L4_state.continuity.mission_resume_agent import MissionResumeAgent
-from agentic_core.L4_state.S1_memory.memory_architect import MemoryArchitect
-from agentic_core.L4_state.audit_trails.structural_drift_agent import StructuralDriftAgent
-from agentic_core.L5_safety.budget.budget_guardian_agent import BudgetGuardianAgent
+from agentic_core.L4_state.cache.redis_sovereign_agent import RedisSovereignAgent
+
+# Try to import MissionResumeAgent (L3 has broken imports)
+try:
+    from agentic_core.L3_orchestration.workflow_engines.mission_resume_agent import MissionResumeAgent
+except ImportError:
+    MissionResumeAgent = None
+    
+# Try to import MemoryArchitect (base.py has ValidationContext issue)
+try:
+    from agentic_core.L2_execution.P4_agents.memory_architect import MemoryArchitect
+except ImportError:
+    MemoryArchitect = None
+
+# Try to import optional hardening agents
+try:
+    from agentic_core.L4_state.audit_trails.structural_drift_agent import StructuralDriftAgent
+except ImportError:
+    StructuralDriftAgent = None
+try:
+    from agentic_core.L5_safety.budget.budget_guardian_agent import BudgetGuardianAgent
+except ImportError:
+    BudgetGuardianAgent = None
+
+# Try to import additional hardening agents
+try:
+    from agentic_core.L5_safety.policy.sovereign_policy_enforcer import SovereignPolicyEnforcer
+except ImportError:
+    SovereignPolicyEnforcer = None
+try:
+    from agentic_core.L6_meta.eternal_convergence_agent import EternalConvergenceAgent
+except ImportError:
+    EternalConvergenceAgent = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -1124,6 +1152,49 @@ IF (task == "GRAVITY_REFACTOR"):
                 agent.execute = import_law_wrapper
             atomic_validators.append(agent)
             print(f"     [+] ImportLawAgent HARDENED — atomic import sovereignty")
+            continue
+            
+        # [L5 PURITY HARDENING] DeadCodePurgerAgent — eliminate unreachable code
+        if name == 'DeadCodePurgerAgent':
+            agent.prune_threshold = 0.98  # High confidence only
+            agent.backup_before_prune = True
+            original_execute = getattr(agent, 'execute', None)
+            if original_execute:
+                async def purger_wrapper(file_path):
+                    print(f"   [PURGER] Pruning dead code in {Path(file_path).name}")
+                    try:
+                        result = await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
+                        pruned = getattr(result, 'pruned_lines', 0)
+                        if pruned > 0:
+                            audit_log.record(Path(file_path).name, "PRUNED", "", "", f"{pruned} lines")
+                        return result
+                    except Exception as e:
+                        ctx.report("DeadCodePurgerAgent", 0, False, f"Prune crash: {str(e)[:80]}")
+                agent.execute = purger_wrapper
+            atomic_validators.append(agent)
+            print(f"     [+] DeadCodePurgerAgent HARDENED — code purity absolute")
+            continue
+
+        # [L1 SIGNAL HARDENING] SignalAmplifierAgent — maximum naming signal
+        if name == 'SignalAmplifierAgent':
+            agent.signal_target = "MAX"
+            atomic_validators.append(agent)
+            print(f"     [+] SignalAmplifierAgent HARDENED — naming signal absolute")
+            continue
+
+        # [L3 FISSION HARDENING] FissionExecutorAgent — physical module split
+        if name == 'FissionExecutorAgent':
+            agent.safety_verify_post_split = True
+            original_execute = getattr(agent, 'execute', None)
+            if original_execute:
+                async def fission_wrapper(file_path):
+                    try:
+                        return await (original_execute(file_path) if inspect.iscoroutinefunction(original_execute) else original_execute(file_path))
+                    except Exception as e:
+                        ctx.report("FissionExecutorAgent", 0, False, str(e)[:80])
+                agent.execute = fission_wrapper
+            atomic_validators.append(agent)
+            print(f"     [+] FissionExecutorAgent HARDENED — atomicity enforced")
             continue
             
         # [L1 HARDENING] ArchitectureGovernor — per-file structural enforcement
