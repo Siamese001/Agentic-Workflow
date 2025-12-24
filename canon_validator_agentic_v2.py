@@ -387,11 +387,51 @@ def dynamic_import(module_path, class_name):
     except (ImportError, AttributeError):
         return None
 
-# Initialize component variables with dynamic imports
-apply_fission_blueprint = None
-SafetyGuardrail = None
-FissionManager = None
-SubAtomicEngine = None
+# ==============================================================================
+# [HARDENING] TELEMETRY PROXY: GEMINI SPY
+# ==============================================================================
+class GeminiSpy:
+    """
+    [L5 HARDENING] TELEMETRY INTERCEPTOR
+    Wraps the SubAtomicEngine to force visibility of all LLM transactions.
+    Ensures that 'Agentic Capabilities' are actually resulting in API calls.
+    """
+    def __init__(self, real_engine):
+        self._engine = real_engine
+
+    def __getattr__(self, name):
+        attr = getattr(self._engine, name)
+        if not callable(attr) or name.startswith("_"):
+            return attr
+
+        def wrapper(*args, **kwargs):
+            if args:
+                prompt_text = str(args[0]).lower()
+                forbidden = ["openai", "anthropic", "claude", "gpt"]
+                if any(bad in prompt_text for bad in forbidden):
+                    raise ValueError(f"[L5 SECURITY BLOCK] Unauthorized model reference detected in prompt.")
+            
+            print(f"\n[SPY] GEMINI SPY Agent triggering: {name}")
+            if args:
+                try:
+                    preview = str(args[0])[:120].replace('\n', ' ')
+                    print(f"   -> Prompt: {preview}...")
+                except: pass
+            
+            start_t = time.time()
+            try:
+                result = attr(*args, **kwargs)
+                duration = time.time() - start_t
+                if duration < 0.05 and name == "resilient_mutation":
+                    print(f"   [!] ALERT: Zero-latency mutation detected. Check engine logic.")
+                print(f"[SPY] GEMINI SPY LLM Success ({duration:.2f}s).")
+                return result
+            except Exception as e:
+                print(f"[SPY] GEMINI SPY LLM OR TELEMETRY FAILURE: {e}")
+                if "successful_traces" in str(e):
+                    print("   -> CAUSE: ValidationContext is missing .successful_traces list.")
+                raise e
+        return wrapper
 
 # Try loading components dynamically
 try:
