@@ -6,7 +6,7 @@ All validation agents inherit from SubAtomicAgent.
 import ast
 import os
 import time
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Protocol
 
 if TYPE_CHECKING:
     from agentic_core.types import ValidationContext

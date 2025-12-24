@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """Executive Title Composer - Industry-First Headline Generation (K.4).
 
 This agent generates professional headlines with strict Industry-First positioning,
@@ -9,7 +9,7 @@ Legacy K-Node: K.4
 """
 
 import logging
-from typing import Any
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

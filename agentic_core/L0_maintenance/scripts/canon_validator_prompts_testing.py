@@ -2,6 +2,7 @@
 Testing few-shot patterns.
 Used by TestPilot and property-based testing agents.
 """
+import json
 
 FEW_SHOT_PROPERTY_TESTS = """
 FEW-SHOT HYPOTHESIS PROPERTY TESTS (Valid syntax only):

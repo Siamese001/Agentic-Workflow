@@ -8,7 +8,7 @@ Fixes all gravity violations in agentic_core using:
 """
 import re
 from pathlib import Path
-from typing import List, Tuple, Set
+from typing import Any, Optional, Protocol, Dict, List, Tuple, Set
 
 # Files that commonly have circular dependencies
 CIRCULAR_PRONE_FILES = {

@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Protocol, Set, Tuple
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
 
@@ -154,4 +154,3 @@ def rank_documents(
         )
     )
     return RANKED
-

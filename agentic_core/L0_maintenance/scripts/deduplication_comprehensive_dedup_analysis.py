@@ -8,6 +8,7 @@ modules to comply with cognitive density limits (max 5 top-level definitions).
 The original comprehensive_dedup_analysis.py contained 25 top-level definitions which
 violated the Subatomic Canon. It has been refactored into focused submodules.
 """
+import logging
 
 # Re-export all components for backward compatibility
 # from agentic_core.comprehensive_dedup_analysis_impl_impl_impl import *  # Star import removed

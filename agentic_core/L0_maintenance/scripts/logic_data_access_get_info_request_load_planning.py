@@ -8,8 +8,8 @@ Follows the canonical pattern with dataclass-first design and proper logging.
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Optional
+from enum import Enum, auto
+from typing import Any, Dict, List, Optional, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -439,7 +439,7 @@ def plan_scripts_load(
                 }
                 for t in result.load_plan.transformations
             ],
-            "destination": result.load_plan.destination,
+            "destination": result.load_plan.DESTINATION,
             "batch_size": result.load_plan.batch_size,
             "parallel_workers": result.load_plan.parallel_workers,
             "retry_attempts": result.load_plan.retry_attempts,

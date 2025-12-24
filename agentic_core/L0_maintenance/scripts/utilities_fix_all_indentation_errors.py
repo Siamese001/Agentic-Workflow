@@ -6,6 +6,7 @@ Pattern: except ...:\n    pass\npass\nlogger.error
 
 import os
 import re
+import logging
 
 
 def fix_indentation_errors(file_path):

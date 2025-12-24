@@ -14,7 +14,7 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Optional, Protocol, Dict, List
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

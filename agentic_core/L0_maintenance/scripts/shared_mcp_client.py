@@ -5,6 +5,9 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 Migrated from archives/legacy_resume_gen/Agentic-Workflow-10_7_main/core_v10_7/mcp.py
 """
 
+from typing import Any, Optional, Protocol, Dict, List
+from dataclasses import dataclass, field
+
 import logging
 from typing import Any, Dict, Optional, Protocol
 

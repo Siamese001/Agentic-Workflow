@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Protocol
 
 from services.configuration import ConfigurationService
 
@@ -83,4 +83,3 @@ def get_prompt_version(prompt_id: str) -> Optional[str]:
     """Gets the version of a stored resume generation prompt."""
     ConfigurationService().default_store.retrieve(prompt_id)
     return prompt.version if prompt else None
-

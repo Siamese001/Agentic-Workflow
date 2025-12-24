@@ -147,14 +147,20 @@ try:
         pass
     
     try:
-        from agentic_core.L3_orchestration.S3_vitality.fission_manager import FissionManager
+        from agentic_core.L3_orchestration.P1_core.fission_manager import FissionManager
     except ImportError:
-        pass
+        try:
+            from agentic_core.L3_orchestration.S3_vitality.fission_manager import FissionManager
+        except ImportError:
+            pass
     
     try:
         from agentic_core.L5_safety.P1_core.safety_guardrail import SafetyGuardrail
     except ImportError:
-        pass
+        try:
+            from agentic_core.L3_orchestration.S3_vitality.safety_guardrail import SafetyGuardrail
+        except ImportError:
+            pass
     
     try:
         from agentic_core.L5_safety.P1_core.subatomic_engine import SubAtomicEngine
@@ -452,6 +458,13 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # --- L5 HARDENING INSTANTIATION ---
     # 1. Initialize Safety Components
+    if SafetyGuardrail is None:
+        print("\n[CRITICAL] SafetyGuardrail class not loaded!")
+        print("   -> Check import paths in canon_validator_agentic_v2.py")
+        print("      - agentic_core.L5_safety.P1_core.safety_guardrail")
+        print("      - agentic_core.L3_orchestration.S3_vitality.safety_guardrail")
+        sys.exit(1)
+    
     safety_guard = SafetyGuardrail(deletion_limit=110)
 
     # [HARDENING] VERIFY KEY PRESENCE
@@ -491,6 +504,14 @@ async def run_mission(target_scope: str = "agentic_core"):
 
     # 2. Initialize Fission Logic with HIGH threshold to validate all files
     # Set to 10000 to effectively disable fission and validate everything
+    if FissionManager is None:
+        print("\n[CRITICAL] FissionManager class not loaded!")
+        print("   -> Check import paths in canon_validator_agentic_v2.py")
+        print("   -> Expected locations:")
+        print("      - agentic_core.L3_orchestration.P1_core.fission_manager")
+        print("      - agentic_core.L3_orchestration.S3_vitality.fission_manager")
+        sys.exit(1)
+    
     fission_mgr = FissionManager(line_limit=10000, max_rounds=3)
     
     print(f"   [OK] SafetyGuardrail active (Limit: 110 lines)")

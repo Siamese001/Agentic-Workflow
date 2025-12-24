@@ -1,6 +1,8 @@
-from enum import Enum
-from dataclasses import dataclass
 """Types and models for error_recovery."""
+
+from dataclasses import dataclass, field
+from enum import Enum, auto
+from typing import Any, Optional, Protocol, Dict, List
 
 import logging
 

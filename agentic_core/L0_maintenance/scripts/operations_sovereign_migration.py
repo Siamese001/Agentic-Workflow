@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing import List, Tuple, Dict
+from typing import Any, Optional, Protocol, Dict, List
 
 # Import SSOT heuristics from void_compliance
 try:

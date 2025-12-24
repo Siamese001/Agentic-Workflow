@@ -11,6 +11,7 @@ This test validates:
 """
 
 import asyncio
+import sys
 import tempfile
 from pathlib import Path
 

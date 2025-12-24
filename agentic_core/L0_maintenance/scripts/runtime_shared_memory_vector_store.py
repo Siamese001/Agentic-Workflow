@@ -5,7 +5,7 @@ Optimized for 8GB hot cache allocation within 32GB WSL2 environment.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 import chromadb
 

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """K.7 Assembly Agent - Final Message Assembly with Signature Immutability.
 
 This agent assembles the final message with strict signature formatting,
@@ -6,7 +6,7 @@ header order enforcement, and final QA block ordering.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

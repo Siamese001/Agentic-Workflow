@@ -5,6 +5,7 @@ import logging
 import shutil
 from pathlib import Path
 from typing import List, Set, Tuple
+from typing import Any, Optional, Protocol, Dict, List
 
 # Current sovereign codebase roots
 SOVEREIGN_ROOTS = {
@@ -111,4 +112,3 @@ if __name__ == "__main__":
             for f in sorted(set(duplicates)):
                 # logger.info(f"  - {f}")
                 pass
-

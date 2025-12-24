@@ -3,6 +3,7 @@
 Test Expanded Agent Discovery
 Verifies that ValidationProtocol and 50-key registry are now discoverable.
 """
+from typing import Any, Optional, Protocol, Dict, List
 import importlib
 import sys
 from pathlib import Path

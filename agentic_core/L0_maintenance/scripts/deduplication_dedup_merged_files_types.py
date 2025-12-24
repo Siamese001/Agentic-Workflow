@@ -1,5 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """Types and models for dedup_merged_files."""
+
+from typing import Any, Optional, Protocol, Dict, List
 
 import logging
 

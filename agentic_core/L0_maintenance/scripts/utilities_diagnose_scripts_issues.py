@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """
 diagnose_scripts_issues.py - Diagnostics Module
 
@@ -8,7 +8,7 @@ Generated: 2025-12-07T12:07:59.881062
 
 import logging
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 

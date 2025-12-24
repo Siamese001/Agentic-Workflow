@@ -1,3 +1,6 @@
+import logging
+from typing import Any, Optional, Protocol, Dict, List
+import sys
 from typing import Protocol, Tuple
 
 # --- Dependency Interfaces ---

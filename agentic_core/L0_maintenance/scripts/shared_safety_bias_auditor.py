@@ -1,5 +1,5 @@
-from enum import Enum
-from dataclasses import dataclass
+from enum import Enum, auto
+from dataclasses import dataclass, field
 """Lightweight Bias Detection for Content Quality.
 
 Phase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)
@@ -8,7 +8,7 @@ Migrated from archives/engines/legacy_engines/safety_enhancements.py
 
 import logging
 import re
-from typing import List, Set
+from typing import Any, Optional, Protocol, Dict, List, Set
 
 LOGGER = logging.getLogger(__name__)
 

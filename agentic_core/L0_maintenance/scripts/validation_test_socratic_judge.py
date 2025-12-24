@@ -10,6 +10,7 @@ This test validates:
 5. Feedback loop prevents re-scanning false positives
 """
 
+import sys
 import asyncio
 import os
 import tempfile

@@ -3,6 +3,7 @@
 Canon Key Discovery Probe
 Tests if L1 and L4 modules are ready to be "Canonical" after gravity violation fixes.
 """
+from typing import Any, Optional, Protocol, Dict, List
 import importlib
 import sys
 from pathlib import Path

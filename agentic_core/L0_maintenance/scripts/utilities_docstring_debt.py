@@ -5,6 +5,7 @@ Generated: 2025-12-08
 These symbols lack proper docstrings and are acknowledged as technical debt.
 No NEW missing docstrings will be allowed. This list can only shrink.
 """
+from typing import Any, Optional, Protocol, Dict, List
 import logging
 
 logger = logging.getLogger(__name__)  # GLOBAL: Review if this should be constant
@@ -433,4 +434,3 @@ DOCSTRING_DEBT = {
     'tests/unit/apps_lic/test_lic_outreach_engine_dag.py:test_outreach_stack_handles_string_draft_fr\n    om_architect',
     'tests/unit/apps_lic/test_lic_safety_planner.py:test_known_malicious_prompt_remains_blocked',
     'tests/unit/apps_rg/test_rg_resume_builder.py:ResumeSection'}
-

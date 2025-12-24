@@ -2,7 +2,7 @@
 import logging
 from dataclasses import dataclass, field, ClassVar
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Any, Optional, Protocol, Dict, List, Set, Tuple
 
 # Assuming these are defined elsewhere or will be imported
 # from agentic_core.constants import DATA_DIR, CACHE_DIR, STR, FLOAT, BOOL

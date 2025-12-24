@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 """K.3 Message Body Agent - Archetype-Specific Content Generation.
 
 This agent generates the message body with archetype-specific transition phrases,
@@ -6,7 +6,7 @@ micro-structure enforcement, and placeholder detection blocking.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Protocol, Dict, List
 
 LOGGER = logging.getLogger(__name__)
 
@@ -347,6 +347,8 @@ def _count_bullets(self: Any, body: str) -> int:
     Returns:
         Number of bullets
     """
+    import re
+
     # Count patterns like "•", "-", "*"
     BULLETS = re.findall(r"[\n•\-\*]\s+", body)
     return len(bullets)
