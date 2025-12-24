@@ -67,50 +67,76 @@ class HierarchyEnforcerAgent:
     
     def enforce_depth_precision(self) -> List[str]:
         """
-        Sovereign depth enforcement. If it's at the wrong level, it gets archived.
+        Apps depth enforcement. If it's not depth 3, it gets archived.
         """
-        from agentic_core.config.P1_core.structure_blueprint import (
-            CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH
-        )
+        from agentic_core.config.P1_core.structure_blueprint import APPS_EXACT_DEPTH
         actions = []
 
-        for py_file in self.project_root.rglob("*.py"):
-            # Skip hidden files or the archive itself
-            if any(part.startswith(".") for part in py_file.parts) or "archives" in str(py_file):
+        # [APPS DEPTH 3] Target all files under apps_* (Universal enforcement)
+        for file_path in self.project_root.rglob("*"):
+            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
                 continue
             
-            rel = py_file.relative_to(self.project_root)
-            parts = rel.parts
-            depth = len(parts)
-            root_folder = parts[0]
+            rel = file_path.relative_to(self.project_root)
+            if not rel.parts[0].startswith("apps_"):
+                continue
 
-            # Find what the depth SHOULD be
-            required_depth = None
-            if root_folder == "agentic_core":
-                required_depth = AGENTIC_CORE_EXACT_DEPTH
-            elif root_folder in CANONICAL_PRECISION_DEPTH:
-                required_depth = CANONICAL_PRECISION_DEPTH[root_folder]
-
-            # If it's wrong, we purge it
-            if required_depth and depth != required_depth:
-                archive_path = self.archive_root / rel
+            depth = len(rel.parts)
+            if depth != APPS_EXACT_DEPTH:
+                # ARCHIVE THE DRIFT
+                archive_path = self.archive_root / "apps_depth" / rel
                 archive_path.parent.mkdir(parents=True, exist_ok=True)
 
-                # Build the "obituary" for the file
-                explanation = f"# DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
-                explanation += f"# REASON: Required depth for '{root_folder}' is {required_depth}, but found {depth}.\n"
-                explanation += f"# To restore: Move this file to a valid depth-4 territory in agentic_core.\n\n"
+                explanation = f"# APPS DEPTH VIOLATION ARCHIVED — {__import__('datetime').datetime.now().isoformat()}\n"
+                explanation += f"# {rel} was depth {depth}, but apps_* MUST be exactly {APPS_EXACT_DEPTH}.\n\n"
 
                 try:
-                    content = py_file.read_text(encoding="utf-8")
-                    with open(archive_path, "w") as f:
-                        f.write(explanation + content)
-                    
-                    py_file.unlink()  # Sovereign purge
-                    actions.append(f"ARCHIVED depth violation: {rel}")
-                    self.ctx.report("DepthEnforcer", 1, True, f"Archived {rel} (Invalid Depth)")
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
+                    archive_path.write_text(explanation + content, encoding="utf-8")
+                    file_path.unlink()
+                    actions.append(f"ARCHIVED apps_* drift: {rel}")
+                    self.ctx.report("DepthEnforcer", 1, True, f"Archived {rel} (apps depth {depth})")
                 except Exception as e:
-                    actions.append(f"FAILED to archive {rel}: {str(e)}")
+                    actions.append(f"APPS ARCHIVE FAILED: {rel} — {e}")
+
+        return actions
+
+    def enforce_universal_depth(self) -> List[str]:
+        """
+        Universal depth enforcement for all file types under agentic_core.
+        Archives non-Python files that violate depth 4 rule.
+        """
+        from agentic_core.config.P1_core.structure_blueprint import AGENTIC_CORE_EXACT_DEPTH
+        actions = []
+
+        # [UNIVERSAL ENFORCEMENT] Target common data/doc extensions
+        target_exts = {".json", ".md", ".yaml", ".yml", ".toml", ".txt"}
+        for file_path in self.project_root.rglob("*"):
+            if file_path.is_dir() or any(part.startswith(".") for part in file_path.parts):
+                continue
+            
+            if file_path.suffix.lower() not in target_exts:
+                continue
+
+            rel = file_path.relative_to(self.project_root)
+            if rel.parts[0] == "agentic_core":
+                depth = len(rel.parts)
+                if depth != AGENTIC_CORE_EXACT_DEPTH:
+                    # [ARCHIVE UNIVERSAL DRIFT]
+                    archive_path = self.archive_root / "non_python" / rel
+                    archive_path.parent.mkdir(parents=True, exist_ok=True)
+
+                    header = f"# UNIVERSAL DEPTH VIOLATION — {__import__('datetime').datetime.now().isoformat()}\n"
+                    header += f"# File {rel} was at depth {depth}, but MUST be {AGENTIC_CORE_EXACT_DEPTH}.\n\n"
+
+                    try:
+                        # We handle text files directly; binaries might need different logic
+                        content = file_path.read_text(encoding="utf-8", errors="ignore")
+                        archive_path.write_text(header + content, encoding="utf-8")
+                        file_path.unlink()
+                        actions.append(f"ARCHIVED non-python drift: {rel}")
+                    except Exception as e:
+                        actions.append(f"FAILED to archive non-python {rel}: {e}")
 
         return actions
 
@@ -154,5 +180,6 @@ class HierarchyEnforcerAgent:
     async def execute(self, ctx):
         issues = self.enforce_hierarchy()
         issues.extend(self.enforce_depth_precision())
+        issues.extend(self.enforce_universal_depth())
         if issues:
             print(f"   [HEALING] HierarchyEnforcerAgent: {len(issues)} actions taken")

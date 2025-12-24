@@ -140,10 +140,15 @@ CANONICAL_PRECISION_DEPTH = {
     "tests": 3,
 }
 
+# [ETERNAL DEPTH 3] All apps_* folders — exact depth 3 for files
+# Root(0) + apps_*(1) + L1 subfolder(2) + file(3)
+# No deeper nesting allowed — domain limbs remain simple
+APPS_EXACT_DEPTH = 3
+
 # Specific lock for the core brain
 AGENTIC_CORE_EXACT_DEPTH = 4
-# [ETERNAL PRECISION] All general min/max depth rules removed.
-# Sovereignty is now defined by exact precision per root.
+# [ULTIMATE LOCK] Universal depth 4 for ALL files under agentic_core.
+# Applies to L0_maintenance through L5_safety and all internal subfolders.
 
 # Safe deprecation territory — outside active keys
 DEPRECATION_ARCHIVE = "archives/deprecated_code"
