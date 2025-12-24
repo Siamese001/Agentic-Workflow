@@ -2,49 +2,42 @@ import asyncio
 import logging
 from agentic_core.runtime.P1_core.runtime_bootstrapper import RuntimeBootstrapper
 
-# Configure logging to see the Sovereign Registry in action
-logging.basicConfig(level=logging.INFO)
-LOGGER = logging.getLogger(__name__)
+# Set to INFO to see the 'Sovereign Registry' logs
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
-async def ignite_sovereign_runtime():
+async def main():
     """
-    Initializes the Sovereign environment and executes a test hop.
+    Day Zero: Running the first 100% Sovereign-Compliant Agentic Mission.
     """
-    LOGGER.info("--- IGNITING SOVEREIGN RUNTIME ---")
-
-    # 1. Define the Sovereign Configuration (The SSOT)
-    # In production, this would be loaded from agentic_core/config/blueprint_sovereign/
+    # 1. The Global SSOT
     config = {
-        "storage_path": "./data/storage",
-        "log_level": "INFO",
-        "budget_limit": 50.0,
-        "pii_vault_enabled": True,
-        "zero_trust_mode": "strict",
-        "allowed_tools": ["read_file", "search_web", "run_python"]
+        "storage_path": "./data/sovereign_output",
+        "budget_limit": 25.0,
+        "allowed_tools": ["read_file", "search_web", "run_python"],
+        "mission_scope": "system_refactoring",
+        "model_name": "gemini-2.0-flash"
     }
 
-    # 2. Instantiate the Master Constructor
+    # 2. Ignite the Bootstrapper
     bootstrapper = RuntimeBootstrapper(config)
 
     try:
-        # 3. Assemble the Hop for a specific role
-        # Notice how L3_orchestration doesn't need to know HOW to build a hop anymore
-        hop = bootstrapper.assemble_hop(role="research_specialist")
+        # 3. Assemble a specific Agent
+        hop = bootstrapper.assemble_hop(role="principal_architect")
 
-        # 4. Execute a Mission
-        context = {
-            "task": "Analyze current gravity leaks in the L0 maintenance layer.",
-            "trace_id": "mission-001-sovereign",
-            "priority": "high"
+        # 4. Fire the mission
+        mission = {
+            "task": "Review the L5 safety guardrails for potential bypasses.",
+            "trace_id": "SOVEREIGN-BETA-001"
         }
 
-        LOGGER.info("Executing Sovereign Hop...")
-        result = await hop.run(context)
+        print("\n🚀 [SYSTEM ONLINE] - Executing Sovereign Hop...\n")
+        final_output = await hop.run(mission)
         
-        print(f"\n[MISSION COMPLETE]\nResult: {result}")
+        print(f"\n✅ [MISSION COMPLETE]\nOutput: {final_output}")
 
     except Exception as e:
-        LOGGER.error(f"Sovereign Runtime Failure: {str(e)}", exc_info=True)
+        print(f"\n❌ [CRITICAL FAILURE]: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(ignite_sovereign_runtime())
+    asyncio.run(main())
