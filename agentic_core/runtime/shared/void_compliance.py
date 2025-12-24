@@ -19,10 +19,11 @@ from agentic_core.config.P1_core.structure_blueprint import (
     ROOT_WHITELIST,
     CANON_SIGNALS,
     FORBIDDEN_PATTERNS,
-    FORBIDDEN_ROOT_FOLDERS,  # Now from SSOT
+    FORBIDDEN_ROOT_FOLDERS,
     ACTIVE_CANON_KEYS,
     CANON_KEY_TO_FOLDER_MAP,
     ROOT_PROTECTED_FILES, # [GAP 16]
+    FORBIDDEN_NUMBERED_PATTERN,
     _LEGACY_KEY_REMAP
 )
 
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 CANONICAL_HIERARCHY = {root: cfg["subfolders"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 CANONICAL_DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
+# [PURGE] All hardcoded sets deleted - now derived from blueprint
 FORBIDDEN_FILE_PATTERNS = FORBIDDEN_PATTERNS
 HIGH_SIGNAL_KEYWORDS = CANON_SIGNALS
 
@@ -147,7 +149,7 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     ]
 
     if len(meaningful_children) == 1 and meaningful_children[0].is_dir():
-        return False, f"SPAN-OF-TWO VIOLATION (Structural): Redundant tunnel '{folder_path.name}' → flatten to child." # [GAP 13]
+        return False, f"SPAN-OF-TWO VIOLATION: Redundant tunnel '{folder_path.name}' → flatten" # [GAP 4/13]
 
     return True, ""
 
@@ -323,7 +325,12 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         
         # Check if in forbidden folder
         if root_folder in FORBIDDEN_ROOT_FOLDERS:
-            return False, f"VOID VIOLATION: File in forbidden folder '{root_folder}' (out of scope)"
+            return False, f"VOID VIOLATION: Forbidden root folder '{root_folder}' (legacy numbered)"
+
+        # [GAP FIX] Recursive Numbered Folder Check
+        for part in parts:
+            if FORBIDDEN_NUMBERED_PATTERN.match(part):
+                return False, f"VOID VIOLATION: Numbered folder '{part}' forbidden at any depth."
         
         # Check for numbered prefix pattern (NOT APPROVED)
         if root_folder and root_folder[0:2].isdigit() and root_folder[2:3] == "_":
