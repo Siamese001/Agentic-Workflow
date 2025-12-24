@@ -16,7 +16,11 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, List, Dict
+from agentic_core.config.P1_core.structure_blueprint import (
+    SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
+    APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP
+)
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
 import sys
@@ -102,6 +106,19 @@ def verify_neural_link():
 
 verify_neural_link()
 
+# [SSOT MAPPING] Map Root Folders to their specific L2 Registries
+L2_REGISTRY_MAP = {
+    "agentic_core": CORE_SUBFOLDER_MAP,
+    "apps_rg": APPS_RG_SUBFOLDER_MAP,
+    "apps_lic": APPS_LIC_SUBFOLDER_MAP,
+    "apps_shared": APPS_SHARED_SUBFOLDER_MAP
+}
+
+def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
+    """Helper to pull valid L2 folders from the blueprint SSOT."""
+    registry = L2_REGISTRY_MAP.get(root, {})
+    return registry.get(l1_name, [])
+
 # [HARDENING] NEURAL LINK INITIALIZATION
 try:
     from dotenv import load_dotenv
@@ -178,6 +195,7 @@ except ImportError as e:
 
 # Import void_compliance functions
 try:
+    from agentic_core.runtime.shared.void_compliance import (
         ALLOWED_ROOT_FOLDERS,
         FORBIDDEN_ROOT_FOLDERS,
         check_import_waterfall_violations,
@@ -1239,134 +1257,90 @@ CURRENT CODE:
     # ===========================================================================
     if RUN_SPRAWL_SURGERY:
         print(f"\n[PHASE 0.5] SPRAWL CONSOLIDATION")
-        print(f"   [>] Checking for low-density folders and breadth violations...")
+        print(f"   [>] SSOT RECONCILIATION: Auditing physical folders against Blueprint...")
         
-        sprawl_report_path = project_root_path / "sprawl_report.json"
         sprawl_consolidated = 0
-        
-        if sprawl_report_path.exists():
-            try:
-                import json
-                with open(sprawl_report_path, 'r') as f:
-                    sprawl_data = json.load(f)
-                
-                flattening_candidates = sprawl_data.get('flattening_candidates', [])
-                breadth_violations = sprawl_data.get('violations', [])
-                
-                print(f"   [SPRAWL] Found {len(flattening_candidates)} flattening candidates")
-                print(f"   [SPRAWL] Found {len(breadth_violations)} breadth violations")
-                
-                # Process flattening candidates
-                for candidate in flattening_candidates:
-                    folder_path = Path(candidate['folder'])
-                    files = candidate['files']
-                    
-                    if not folder_path.exists():
-                        continue
-                    
-                    print(f"\n   [CONSOLIDATE] {folder_path.name}: {len(files)} file(s)")
-                    print(f"      Reason: {candidate['reason']}")
-                    
-                    # Determine target file (parent's __init__.py or utils.py)
-                    parent_dir = folder_path.parent
-                    target_path = parent_dir / "__init__.py"
-                    
-                    # Ensure target exists
-                    if not target_path.exists():
-                        target_path.touch()
-                        target_path.write_text("# Consolidated module\n")
-                    
-                    print(f"\n   [SURGERY] {folder_path.name} -> {target_path.name}")
-                    
-                    try:
-                        # Read target code
-                        with open(target_path, 'r', encoding='utf-8', errors='replace') as f:
-                            target_code = f.read()
-                        
-                        # Read all source files to consolidate
-                        source_contents = []
-                        for file_name in files:
-                            source_file = folder_path / file_name
-                            if source_file.exists():
-                                with open(source_file, 'r', encoding='utf-8', errors='replace') as f:
-                                    source_contents.append(f"# From {file_name}\n{f.read()}\n")
-                        
-                        surgery_prompt = f"""### ROLE: ARCHITECTURAL_SURGEON
-### ACTION: Consolidate sprawl folder into parent
-### TASK: Move logic from {folder_path.name}/ into {target_path.name}
 
-SOURCE FILES TO MERGE:
-{''.join(source_contents)}
+        # 1. DISCOVERY: Find non-canonical folders
+        flattening_candidates = []
+        for root_name, config in SOVEREIGN_REGISTRY.items():
+            root_path = project_root_path / root_name
+            if not root_path.exists(): continue
 
-TARGET FILE:
-{target_code}
+            # Check L1 Folders
+            legal_l1s = set(config["subfolders"])
+            actual_l1s = [d for d in root_path.iterdir() if d.is_dir() and d.name != "__pycache__"]
 
-REQUIREMENTS:
-1. Preserve all class definitions and logic from source files
-2. Update import paths to reflect new location
-3. Remove duplicate imports
-4. Maintain proper Python structure
-5. Ensure all functionality is preserved
-
-Return ONLY the complete merged Python code. No explanations.
-"""
-                        
-                        new_code = await ctx.engine.resilient_mutation(
-                            file_path=str(target_path),
-                            code=target_code,
-                            task=surgery_prompt,
-                            round_num=1,
-                            fission_active=False
-                        )
-                        
-                        # Extract code if wrapped in markdown
-                        if isinstance(new_code, str):
-                            if new_code.startswith("```python"):
-                                new_code = new_code.split("```python", 1)[1]
-                                new_code = new_code.rsplit("```", 1)[0]
-                            elif new_code.startswith("```"):
-                                new_code = new_code.split("```", 1)[1]
-                                new_code = new_code.rsplit("```", 1)[0]
-                            new_code = new_code.strip()
-                        
-                        is_safe, msg = ctx.safety.verify_change(target_code, new_code, fission_active=False)
-                        if is_safe:
-                            with open(target_path, 'w', encoding='utf-8') as f:
-                                f.write(new_code)
-                            
-                            # PHYSICAL CLEANUP: Delete the empty subfolder sprawl
-                            import shutil
-                            shutil.rmtree(folder_path, ignore_errors=True)
-                            print(f"      [✓] Consolidated: {folder_path.name} -> {target_path.name}")
-                            sprawl_consolidated += 1
-                            ctx.report("SprawlSurgery", 49, True, f"Consolidated {folder_path.name} into {target_path.name}")
-                        else:
-                            print(f"      [!] Safety check failed: {msg}")
-                            ctx.report("SprawlSurgery", 49, False, f"Safety rejected: {msg}")
-                    
-                    except Exception as e:
-                        print(f"      [!] Surgery failed: {str(e)[:100]}")
-                        ctx.report("SprawlSurgery", 49, False, f"Surgery error: {str(e)[:50]}")
-                
-                if len(flattening_candidates) > 0:
-                    print(f"\n   [PHASE 0.5 COMPLETE] Consolidated {sprawl_consolidated}/{len(flattening_candidates)} sprawl folders")
-                    print(f"   [✓] Sprawl Consolidated. Refreshing File System Map...")
-                    
-                    # [CRITICAL] Re-scan directory to remove deleted paths from the mission
-                    updated_files = []
-                    for root, _, files in os.walk(target_scope):
-                        for f in files:
-                            if f.endswith('.py'): 
-                                updated_files.append(os.path.join(root, f))
-                    ctx.python_files = updated_files
-                    print(f"   [OK] Territory Updated: {len(ctx.python_files)} files remaining.")
+            for l1 in actual_l1s:
+                if l1.name not in legal_l1s:
+                    # ILLEGAL L1: Flag for merge into root's shared_utils or __init__
+                    files = [f.name for f in l1.glob("*.py")]
+                    if files:
+                        flattening_candidates.append({
+                            'folder': l1,
+                            'files': files,
+                            'target': root_path / "__init__.py",
+                            'reason': f"Unapproved L1 folder '{l1.name}' in {root_name}"
+                        })
                 else:
-                    print(f"   [OK] No sprawl detected. Architecture is clean.")
-                    
+                    # Check L2 Folders for Agentic Core (Depth 4)
+                    if config["depth"] == 4:
+                        legal_l2s = set(get_legal_l2_for_l1(root_name, l1.name))
+                        actual_l2s = [d for d in l1.iterdir() if d.is_dir() and d.name != "__pycache__"]
+                        
+                        for l2 in actual_l2s:
+                            if l2.name not in legal_l2s:
+                                # ILLEGAL L2: Flag for merge into L1's __init__
+                                files = [f.name for f in l2.glob("*.py")]
+                                if files:
+                                    flattening_candidates.append({
+                                        'folder': l2,
+                                        'files': files,
+                                        'target': l1 / "__init__.py",
+                                        'reason': f"Unapproved L2 folder '{l2.name}' in {l1.name}"
+                                    })
+
+        # 2. SURGERY: Execute Merges
+        for candidate in flattening_candidates:
+            folder_path = candidate['folder']
+            target_path = candidate['target']
+            
+            print(f"\n   [SURGERY] Consolidating {folder_path.name} -> {target_path.name}")
+            print(f"      Reason: {candidate['reason']}")
+
+            try:
+                # Ensure target exists
+                if not target_path.exists():
+                    target_path.touch()
+                    target_path.write_text("# Consolidated via SSOT Reconciliation\n")
+
+                with open(target_path, 'r', encoding='utf-8') as f: target_code = f.read()
+                
+                source_contents = []
+                for f_name in candidate['files']:
+                    with open(folder_path / f_name, 'r', encoding='utf-8') as f:
+                        source_contents.append(f"\n# --- FROM {f_name} ---\n{f.read()}\n")
+
+                surgery_prompt = f"### ROLE: ARCHITECTURAL_SURGEON\n### TASK: Merge unapproved folder {folder_path.name} logic into {target_path.name}.\n\nSOURCE:\n{''.join(source_contents)}\n\nTARGET:\n{target_code}"
+                
+                new_code = await ctx.engine.resilient_mutation(
+                    file_path=str(target_path), code=target_code, task=surgery_prompt, round_num=1, fission_active=False
+                )
+
+                # [CLEAN CODE BLOCK]
+                if "```python" in new_code: new_code = new_code.split("```python")[1].split("```")[0].strip()
+
+                is_safe, msg = ctx.safety.verify_change(target_code, new_code, fission_active=False)
+                if is_safe:
+                    with open(target_path, 'w', encoding='utf-8') as f: f.write(new_code)
+                    import shutil
+                    shutil.rmtree(folder_path) # PHYSICALLY REMOVE ILLEGAL FOLDER
+                    print(f"      [✓] Consolidated and purged illegal folder.")
+                    sprawl_consolidated += 1
+                else:
+                    print(f"      [!] Safety Block: {msg}")
             except Exception as e:
-                print(f"   [!] Could not load sprawl report: {e}")
-        else:
-            print(f"   [SKIP] No sprawl_report.json found. Run sprawl_inspector.py first.")
+                print(f"      [!] Surgery Error: {e}")
         
         print("-" * 70)
     else:
