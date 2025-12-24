@@ -116,43 +116,52 @@ CANON_SIGNALS = {
 
 # [KEY 49] FORBIDDEN NAMING PATTERNS
 FORBIDDEN_PATTERNS = {
-    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r".*_v\d+\.py$",
-    r"^main\.py$", r"^test\.py$", r".*_v\d+\.py$", r".*_final\.py$",
+    r"^utils\.py$", r"^helper\.py$", r"^temp\.py$", r".*_v\d+\.py$", # [GAP 14] Deduped
+    r"^main\.py$", r"^test\.py$", r".*_final\.py$",
     r".*_new\.py$", r".*_old\.py$", r"^.+_\d+\.py$"
 }
 
 # ==============================================================================
-# CANON KEY CONSTITUTION [SSOT] - Consolidated December 24, 2025
+# CANON KEY CONSTITUTION [SSOT] - Ultimate Hardening (Dec 24, 2025)
 # ==============================================================================
-ACTIVE_CANON_KEYS = list(range(0, 19))  # Keys 0 through 18 inclusive
+ACTIVE_CANON_KEYS = list(range(0, 22))  # [GAP 1+3+9] Extended to 21 for full coverage
 
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
-    0:  ["."],                                   # Root sovereign files
-    1:  ["prompt_governance/personas/architectural"], # Surgeon
-    2:  ["prompt_governance/personas/operational"],   # Janitor
-    3:  ["prompt_governance/logic/instructional"],    # Positive directives
-    4:  ["prompt_governance/logic/negative"],         # Negative directives
-    5:  ["prompt_governance/security/defensive"],    # Guardrails
-    6:  ["prompt_governance/security/injections"],   # Injection protection
-    7:  ["schemas/canon/blueprints"],             # Fission
-    8:  ["schemas/canon/reports"],                # Audit schemas
-    9:  ["schemas/api/internal"],                # Internal contracts
-    10: ["schemas/api/external"],                # External contracts
-    11: ["agentic_core/L1_cognition"],            # Strategy
-    12: ["agentic_core/L3_orchestration"],        # Flow/Routing
-    13: ["agentic_core/L4_state"],                # Persistence
-    14: ["apps_shared", "apps_rg", "apps_lic"],   # Domain Infra
-    15: ["apps_rg/agents", "apps_lic/agents"],    # App Specialists
-    16: ["apps_shared/utils"],                    # Shared Helpers
-    17: ["tests"],                               # All tests
-    18: ["scripts"],                             # Operational tools
+    # Root + Operational [GAP 5]
+    0:  [".", "scripts"],
+    # Prompt Governance (Full Tree)
+    1:  ["prompt_governance"],
+    # Schemas (Full Tree)
+    7:  ["schemas"],
+    # Sovereign Core (The Brain)
+    11: ["agentic_core/L1_cognition"],
+    12: ["agentic_core/L3_orchestration"],
+    13: ["agentic_core/L4_state"],
+    # The Shield (Safety Layer) [GAP 2+3]
+    19: ["agentic_core/L5_safety"],
+    # Support & Infrastructure Layers [GAP 9]
+    20: ["agentic_core/L0_maintenance", "agentic_core/config", "agentic_core/runtime", "agentic_core/observability", "agentic_core/utils"],
+    # Execution & Pattern Layers [GAP 11]
+    21: ["agentic_core/L2_execution", "agentic_core/patterns", "agentic_core/semantic_memory", "agentic_core/knowledge"],
+    # Domain & Shared Infrastructure
+    14: ["apps_shared", "apps_rg", "apps_lic"],
+    15: ["apps_rg/agents", "apps_lic/agents"],
+    16: ["apps_shared/utils"],
+    17: ["tests"]
 }
 
-# [GAP 1 FIX] Central Agent Registry (Expected Class Names)
+# [GAP 1] CANON AGENT REGISTRY (Expected Framework Classes)
 CANON_AGENT_REGISTRY = {
     12: ["FissionManager", "ArchitectureGovernor"],
     13: ["MissionHistorian"],
+    15: ["NarrativeLeadAgent", "RankerAgent", "ComplianceSpecialistAgent"], # [GAP 6]
     19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel"]
+}
+
+# [GAP 16] Root protected files — SSOT centralized
+ROOT_PROTECTED_FILES = {
+    "canon_validator_agentic_v2.py", "pyproject.toml", "README.md",
+    "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
 }
 
 # Legacy mapping for backward compatibility (internal remap)
