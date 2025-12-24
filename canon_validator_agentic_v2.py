@@ -20,7 +20,8 @@ from pathlib import Path
 from typing import Any, Optional, List, Dict
 from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
-    APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP
+    APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
+    ROOT_WHITELIST as ALLOWED_ROOT_FOLDERS_SSOT
 )
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
@@ -107,32 +108,28 @@ def verify_neural_link():
 
 verify_neural_link()
 
-# [GRAVITY SSOT] Defined authority ranking from gravity_mapper.py
-GRAVITY_LAYERS = [
-    "L0_maintenance", "utils", "runtime", "schemas", "config",
-    "L1_cognition", "L2_execution", "L3_orchestration",
-    "L4_state", "L5_safety", "semantic_memory", "knowledge"
-]
+# [GRAVITY SSOT] Dynamically derived from structure_blueprint (absolute order = authority)
+GRAVITY_LAYERS = SOVEREIGN_REGISTRY["agentic_core"]["subfolders"]
 
 def get_layer_rank(path_str: str) -> int:
-    """Lower index = higher authority (bedrock). Gravity flows DOWN."""
+    """Lower index = higher authority. Order pulled directly from SSOT."""
     for i, layer in enumerate(GRAVITY_LAYERS):
         if layer in path_str:
             return i
     return -1
 
-# [SSOT MAPPING] Map Root Folders to their specific L2 Registries
-L2_REGISTRY_MAP = {
-    "agentic_core": CORE_SUBFOLDER_MAP,
-    "apps_rg": APPS_RG_SUBFOLDER_MAP,
-    "apps_lic": APPS_LIC_SUBFOLDER_MAP,
-    "apps_shared": APPS_SHARED_SUBFOLDER_MAP
-}
-
+# [SSOT MAPPING] Direct access — no intermediate duplicate map needed
 def get_legal_l2_for_l1(root: str, l1_name: str) -> List[str]:
-    """Helper to pull valid L2 folders from the blueprint SSOT."""
-    registry = L2_REGISTRY_MAP.get(root, {})
-    return registry.get(l1_name, [])
+    """Pull valid L2 folders directly from imported SSOT maps."""
+    if root == "agentic_core":
+        return CORE_SUBFOLDER_MAP.get(l1_name, [])
+    elif root == "apps_rg":
+        return APPS_RG_SUBFOLDER_MAP.get(l1_name, [])
+    elif root == "apps_lic":
+        return APPS_LIC_SUBFOLDER_MAP.get(l1_name, [])
+    elif root == "apps_shared":
+        return APPS_SHARED_SUBFOLDER_MAP.get(l1_name, [])
+    return []
 
 # [HARDENING] NEURAL LINK INITIALIZATION
 try:
@@ -363,7 +360,11 @@ def run_l6_preflight(target_sector: str, project_root: Path) -> bool:
     
     # Check 3: Import Waterfall Violations (Sovereign -> Apps)
     waterfall_violations = []
-    SOVEREIGN_ROOTS = {"agentic_core", "prompt_governance", "schemas", "config", "scripts"}
+    # Dynamically derived from SSOT
+    SOVEREIGN_ROOTS = {
+        root for root, cfg in SOVEREIGN_REGISTRY.items()
+        if cfg["depth"] == 4  # Only the heavy core
+    } | {"prompt_governance", "schemas", "config", "scripts"}
     
     if target_path.is_dir():
         for py_file in target_path.rglob("*.py"):

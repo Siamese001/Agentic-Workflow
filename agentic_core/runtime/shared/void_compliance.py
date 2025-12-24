@@ -18,7 +18,8 @@ from agentic_core.config.P1_core.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     ROOT_WHITELIST,
     CANON_SIGNALS,
-    FORBIDDEN_PATTERNS
+    FORBIDDEN_PATTERNS,
+    FORBIDDEN_ROOT_FOLDERS  # Now from SSOT
 )
 
 logger = logging.getLogger(__name__)
@@ -26,6 +27,7 @@ logger = logging.getLogger(__name__)
 # [DESIGN FIX] Derive all enforcement data from the Master SSOT Registry
 CANONICAL_HIERARCHY = {root: cfg["subfolders"] for root, cfg in SOVEREIGN_REGISTRY.items()}
 CANONICAL_DEPTH_MAP = {root: cfg["depth"] for root, cfg in SOVEREIGN_REGISTRY.items()}
+# This replaces the hardcoded ALLOWED_ROOT_FOLDERS
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 
 # ==============================================================================
@@ -147,26 +149,6 @@ ALLOWED_CORE_STAGES = set()
 for stages in CORE_SUBFOLDER_MAP.values():
     ALLOWED_CORE_STAGES.update(stages)
 ALLOWED_CORE_STAGES.update(CORE_SUBFOLDER_MAP.keys())
-
-# Forbidden folders are those NOT in the whitelist
-FORBIDDEN_ROOT_FOLDERS = {
-    # Numbered folders from Light Canon migration (NOT APPROVED)
-    "01_runtime_logic",
-    "02_runtime_cache",
-    "03_scripts_logic",
-    "04_scripts_cache",
-    "05_runtime_security",
-    "06_runtime_runtime",
-    "07_runtime_pipeline",
-    "08_shared_security",
-    "09_shared_runtime",
-    "10_shared_pipeline",
-    "11_shared_logic",
-    "12_shared_cache",
-    "13_scripts_security",
-    "14_scripts_runtime",
-    "15_scripts_pipeline",
-}
 
 
 # ==============================================================================
