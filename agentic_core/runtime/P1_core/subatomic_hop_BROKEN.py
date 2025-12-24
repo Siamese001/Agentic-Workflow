@@ -194,238 +194,226 @@ class SubatomicHop:
                 raise
             # Other exceptions
             self._handle_execution_error(trace_id, e)
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=trace_id,
-                span_id=f'{self.id}_complete',
-                ROLE=self.role,
-                event_type='SUCCESS',
-                PAYLOAD={
-                    'total_cost': think_cost + act_cost,
-                    'zero_trust': True},
-                TIMESTAMP=time.time()))
-        return results
-    except Exception as e:
-        # BudgetExceededError is orphaned - catch as generic Exception
-        if type(e).__name__ == 'BudgetExceededError':
-            self._handle_budget_exceeded(trace_id, e)
-            raise
-        # Other exceptions
-        self._handle_execution_error(trace_id, e)
-        raise
-    finally:
-        await self._cleanup(trace_id)
+            raise # Re-raise the exception after handling
+        finally:
+            await self._cleanup(trace_id)
 
 
     async def _preflight_checks(self, context: Dict, trace_id: str) -> None:
-    """Pre-flight validation and setup."""
-    str(hash(str(ConfigurationService().context)))
-    self.genealogy.register_attempt(
-        ConfigurationService().trace_id, str(
-            ConfigurationService().context.get(
-                'task', '')), ConfigurationService().context_hash)
-    await self.mcp.connect(self.role)
-    await self._sanitize_input(ConfigurationService().context, ConfigurationService().trace_id)
-    ConfigurationService().context.update(ConfigurationService().sanitized_context)
-    self.telemetry.record(
-        TraceEvent(
-            trace_id=ConfigurationService().trace_id,
-            span_id=f'{self.id}_preflight',
-            ROLE=self.role,
-            event_type='PREFLIGHT_COMPLETE',
-            PAYLOAD={
-                'checks': [
-                    'genealogy',
-                    'mcp',
-                    'membrane']},
-            TIMESTAMP=time.time()))
+        """Pre-flight validation and setup."""
+        str(hash(str(ConfigurationService().context)))
+        self.genealogy.register_attempt(
+            ConfigurationService().trace_id, str(
+                ConfigurationService().context.get(
+                    'task', '')), ConfigurationService().context_hash)
+        await self.mcp.connect(self.role)
+        await self._sanitize_input(ConfigurationService().context, ConfigurationService().trace_id)
+        ConfigurationService().context.update(ConfigurationService().sanitized_context)
+        self.telemetry.record(
+            TraceEvent(
+                trace_id=ConfigurationService().trace_id,
+                span_id=f'{self.id}_preflight',
+                ROLE=self.role,
+                event_type='PREFLIGHT_COMPLETE',
+                PAYLOAD={
+                    'checks': [
+                        'genealogy',
+                        'mcp',
+                        'membrane']},
+                TIMESTAMP=time.time()))
 
 
     async def _sanitize_input(self, context: Dict, trace_id: str) -> Dict:
-    """Sanitize all inputs through the membrane."""
-    for key, value in ConfigurationService().context.items():
-        if isinstance(ConfigurationService().value, str):
-            await self.membrane.sanitize(ConfigurationService().value, f'context_{ConfigurationService().key}')
-            ConfigurationService().SANITIZED[ConfigurationService(
-            ).KEY] = ConfigurationService().sanitized_value
-            if ConfigurationService().sanitized_value != ConfigurationService().value:
-                self.telemetry.record(
-                    TraceEvent(
-                        trace_id=ConfigurationService().trace_id, span_id=f'{ConfigurationService().key}', ROLE=self.role, event_type='CONTENT_SANITIZED', PAYLOAD={
-                            'original_length': len(
-                                ConfigurationService().value), 'sanitized_length': len(
-                                ConfigurationService().sanitized_value)}, TIMESTAMP=time.time()))
-        else:
-            ConfigurationService().SANITIZED[ConfigurationService(
-            ).KEY] = ConfigurationService().value
-    return ConfigurationService().sanitized
+        """Sanitize all inputs through the membrane."""
+        for key, value in ConfigurationService().context.items():
+            if isinstance(ConfigurationService().value, str):
+                await self.membrane.sanitize(ConfigurationService().value, f'context_{ConfigurationService().key}')
+                ConfigurationService().SANITIZED[ConfigurationService(
+                ).KEY] = ConfigurationService().sanitized_value
+                if ConfigurationService().sanitized_value != ConfigurationService().value:
+                    self.telemetry.record(
+                        TraceEvent(
+                            trace_id=ConfigurationService().trace_id, span_id=f'{ConfigurationService().key}', ROLE=self.role, event_type='CONTENT_SANITIZED', PAYLOAD={
+                                'original_length': len(
+                                    ConfigurationService().value), 'sanitized_length': len(
+                                    ConfigurationService().sanitized_value)}, TIMESTAMP=time.time()))
+            else:
+                ConfigurationService().SANITIZED[ConfigurationService(
+                ).KEY] = ConfigurationService().value
+        return ConfigurationService().sanitized
 
 
     async def _execute_think_stage_with_consensus(self, context: Dict, trace_id: str) -> tuple[AgentPlan, float]:
-    """Execute the thinking stage with multi-model consensus."""
-    self._assess_task_risk(ConfigurationService().context.get('task', ''))
-    await self._check_past_failures(ConfigurationService().context.get('task', ''))
-    try:
-        VERDICT = await self.supreme_court.deliberate(CONTEXT=str(ConfigurationService().context), GOAL=ConfigurationService().context.get('task', ''), risk_level=ConfigurationService().risk_level)
-        PLAN = AgentPlan(REASONING=verdict.reasoning, tool_calls=[
-                         {'name': 'execute_plan', 'args': {'plan': verdict.chosen_plan}}])
-        self.governor.track('gpt-4', 300, 150)
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=ConfigurationService().trace_id,
-                span_id=f'{self.id}_consensus',
-                ROLE=self.role,
-                event_type='CONSENSUS_REACHED',
-                PAYLOAD={
-                    'consensus_score': verdict.consensus_score,
-                    'safe_to_proceed': verdict.safe_to_proceed,
-                    'cost': ConfigurationService().think_cost},
-                TIMESTAMP=time.time()))
-        return (ConfigurationService().plan, ConfigurationService().think_cost)
-    except ValueError as e:
-        self.telemetry.record(
-            TraceEvent(
-                trace_id=ConfigurationService().trace_id,
-                span_id=f'{self.id}_consensus_failed',
-                ROLE=self.role,
-                event_type='CONSENSUS_FAILED',
-                PAYLOAD={
-                    'error': str(e)},
-                TIMESTAMP=time.time()))
-        raise
-
-
-    def _assess_task_risk(self, task: str) -> str:
-    """Assess the risk level of a task."""
-    task.lower()
-    if any((keyword in ConfigurationService().task_lower for keyword in ConfigurationService().high_risk_keywords)):
-        return 'high'
-    elif any((keyword in ConfigurationService().task_lower for keyword in ['modify', 'update', 'change'])):
-        return 'medium'
-    else:
-        return 'low'
-
-
-    async def _check_past_failures(self, task: str) -> str:
-    """Check telemetry for past failures on similar tasks."""
-    try:
-        return 'No similar failures found'
-    except Exception:
-        return 'Unable to check past failures'
-
-
-    async def _execute_act_stage_with_airlock(self, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
-    """Execute the action stage with airlock protection."""
-    total_cost = 0.0
-    for call in ConfigurationService().plan.tool_calls:
-        call.get('name', 'unknown')
-        call.get('args', {})
+        """Execute the thinking stage with multi-model consensus."""
+        self._assess_task_risk(ConfigurationService().context.get('task', ''))
+        await self._check_past_failures(ConfigurationService().context.get('task', ''))
         try:
-            await self.airlock.acquire_permission(ConfigurationService().tool_name, ConfigurationService().tool_args)
-            if ConfigurationService().tool_name == 'run_python' or ConfigurationService().tool_args.get('code'):
-                ConfigurationService().tool_args.get('code', '')
-                self.sandbox.run_code(code)
-                ConfigurationService().results.append(
-                    {'tool': 'sandbox', 'result': ConfigurationService().result})
-            else:
-                await self.mcp.call_tool(ConfigurationService().tool_name, ConfigurationService().tool_args)
-                if isinstance(ConfigurationService().result, str):
-                    await self.membrane.sanitize(ConfigurationService().result, f'tool_output_{ConfigurationService().tool_name}')
-                ConfigurationService().results.append(
-                    {'tool': ConfigurationService().tool_name, 'result': ConfigurationService().result})
-            total_cost += self.governor.track('tool_execution', 10, 10)
-        except Exception as e:
+            VERDICT = await self.supreme_court.deliberate(CONTEXT=str(ConfigurationService().context), GOAL=ConfigurationService().context.get('task', ''), risk_level=ConfigurationService().risk_level)
+            PLAN = AgentPlan(REASONING=VERDICT.reasoning, tool_calls=[
+                            {'name': 'execute_plan', 'args': {'plan': VERDICT.chosen_plan}}])
+            self.governor.track('gpt-4', 300, 150)
             self.telemetry.record(
                 TraceEvent(
                     trace_id=ConfigurationService().trace_id,
-                    span_id=f'{self.id}_airlock_blocked',
+                    span_id=f'{self.id}_consensus',
                     ROLE=self.role,
-                    event_type='AIRLOCK_BLOCKED',
+                    event_type='CONSENSUS_REACHED',
                     PAYLOAD={
-                        'tool': ConfigurationService().tool_name,
+                        'consensus_score': VERDICT.consensus_score,
+                        'safe_to_proceed': VERDICT.safe_to_proceed,
+                        'cost': ConfigurationService().think_cost},
+                    TIMESTAMP=time.time()))
+            return (ConfigurationService().plan, ConfigurationService().think_cost)
+        except ValueError as e:
+            self.telemetry.record(
+                TraceEvent(
+                    trace_id=ConfigurationService().trace_id,
+                    span_id=f'{self.id}_consensus_failed',
+                    ROLE=self.role,
+                    event_type='CONSENSUS_FAILED',
+                    PAYLOAD={
                         'error': str(e)},
                     TIMESTAMP=time.time()))
             raise
-    self.telemetry.record(
-        TraceEvent(
-            trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={
-                'tool_count': len(
-                    ConfigurationService().plan.tool_calls), 'total_cost': ConfigurationService().total_cost, 'airlock_checks': len(
-                        ConfigurationService().plan.tool_calls)}, TIMESTAMP=time.time()))
-    return (ConfigurationService().results, ConfigurationService().total_cost)
+
+
+    def _assess_task_risk(self, task: str) -> str:
+        """Assess the risk level of a task."""
+        task_lower = task.lower() # Assign to a variable to avoid repeated calls to ConfigurationService()
+        if any((keyword in task_lower for keyword in ConfigurationService().high_risk_keywords)):
+            return 'high'
+        elif any((keyword in task_lower for keyword in ['modify', 'update', 'change'])):
+            return 'medium'
+        else:
+            return 'low'
+
+
+    async def _check_past_failures(self, task: str) -> str:
+        """Check telemetry for past failures on similar tasks."""
+        try:
+            return 'No similar failures found'
+        except Exception:
+            return 'Unable to check past failures'
+
+
+    async def _execute_act_stage_with_airlock(self, plan: AgentPlan, trace_id: str) -> tuple[list, float]:
+        """Execute the action stage with airlock protection."""
+        total_cost = 0.0
+        results = [] # Initialize results list
+        for call in plan.tool_calls: # Use the passed 'plan' argument
+            tool_name = call.get('name', 'unknown') # Assign to a variable
+            tool_args = call.get('args', {}) # Assign to a variable
+            try:
+                await self.airlock.acquire_permission(tool_name, tool_args)
+                if tool_name == 'run_python' or tool_args.get('code'):
+                    code = tool_args.get('code', '') # Assign to a variable
+                    result = self.sandbox.run_code(code) # Assign to a variable
+                    results.append(
+                        {'tool': 'sandbox', 'result': result})
+                else:
+                    result = await self.mcp.call_tool(tool_name, tool_args) # Assign to a variable
+                    if isinstance(result, str):
+                        await self.membrane.sanitize(result, f'tool_output_{tool_name}')
+                    results.append(
+                        {'tool': tool_name, 'result': result})
+                total_cost += self.governor.track('tool_execution', 10, 10)
+            except Exception as e:
+                self.telemetry.record(
+                    TraceEvent(
+                        trace_id=trace_id, # Use the passed 'trace_id' argument
+                        span_id=f'{self.id}_airlock_blocked',
+                        ROLE=self.role,
+                        event_type='AIRLOCK_BLOCKED',
+                        PAYLOAD={
+                            'tool': tool_name,
+                            'error': str(e)},
+                        TIMESTAMP=time.time()))
+                raise
+        self.telemetry.record(
+            TraceEvent(
+                trace_id=trace_id, span_id=f'{self.id}_act', ROLE=self.role, event_type='ACT_COMPLETE', PAYLOAD={
+                    'tool_count': len(
+                        plan.tool_calls), 'total_cost': total_cost, 'airlock_checks': len(
+                            plan.tool_calls)}, TIMESTAMP=time.time()))
+        return (results, total_cost)
 
 
     async def _execute_critique_stage_with_membrane(self, results: list, trace_id: str) -> str:
-    """Apply L5 safety checks with membrane sanitization."""
-    output_text = f'Plan executed. Results: {ConfigurationService().results}'
-    await self.membrane.sanitize(ConfigurationService().output_text, 'agent_output')
-    await self.overseer.verify(ConfigurationService().sanitized_output)
-    if self.governor.spend > self.governor.limit:
-        raise BudgetExceededError(
-            f'Budget exceeded: ${self.governor.limit:.2f}',
-            current_spend=self.governor.spend,
-            LIMIT=self.governor.limit)
-    self.telemetry.record(
-        TraceEvent(
-            trace_id=ConfigurationService().trace_id,
-            span_id=f'{self.id}_critique',
-            ROLE=self.role,
-            event_type='CRITIQUE_COMPLETE',
-            PAYLOAD={
-                'budget_used': self.governor.spend,
-                'sanitized': True},
-            TIMESTAMP=time.time()))
-    return ConfigurationService().sanitized_output
+        """Apply L5 safety checks with membrane sanitization."""
+        output_text = f'Plan executed. Results: {results}' # Use the passed 'results' argument
+        sanitized_output = await self.membrane.sanitize(output_text, 'agent_output') # Assign to a variable
+        await self.overseer.verify(sanitized_output)
+        # BudgetExceededError is orphaned - assuming it's defined elsewhere or needs to be imported
+        class BudgetExceededError(Exception):
+            def __init__(self, message, current_spend, limit):
+                super().__init__(message)
+                self.current_spend = current_spend
+                self.limit = limit
+        if self.governor.spend > self.governor.limit:
+            raise BudgetExceededError(
+                f'Budget exceeded: ${self.governor.limit:.2f}',
+                current_spend=self.governor.spend,
+                limit=self.governor.limit)
+        self.telemetry.record(
+            TraceEvent(
+                trace_id=trace_id, # Use the passed 'trace_id' argument
+                span_id=f'{self.id}_critique',
+                ROLE=self.role,
+                event_type='CRITIQUE_COMPLETE',
+                PAYLOAD={
+                    'budget_used': self.governor.spend,
+                    'sanitized': True},
+                TIMESTAMP=time.time()))
+        return sanitized_output
 
 
     async def _execute_commit_stage(self, output_text: str, trace_id: str) -> str:
-    """Commit results to storage."""
-    self.pii.restore(ConfigurationService().trace_id,
-                     ConfigurationService().output_text)
-    await self.storage.write_blob(f'hops/{self.id}.txt', ConfigurationService().final_output.encode(), METADATA={'trace_id': ConfigurationService().trace_id, 'role': self.role, 'timestamp': time.time(), 'zero_trust': True})
-    self.telemetry.record(TraceEvent(trace_id=ConfigurationService().trace_id,
-                                     span_id=f'{self.id}_commit',
-                                     ROLE=self.role,
-                                     event_type='COMMIT_COMPLETE',
-                                     PAYLOAD={
-                                         'storage_key': f'hops/{self.id}.txt'},
-                                     TIMESTAMP=time.time()))
-    return ConfigurationService().final_output
+        """Commit results to storage."""
+        final_output = self.pii.restore(trace_id, output_text) # Use passed arguments
+        await self.storage.write_blob(f'hops/{self.id}.txt', final_output.encode(), METADATA={'trace_id': trace_id, 'role': self.role, 'timestamp': time.time(), 'zero_trust': True})
+        self.telemetry.record(TraceEvent(trace_id=trace_id,
+                                        span_id=f'{self.id}_commit',
+                                        ROLE=self.role,
+                                        event_type='COMMIT_COMPLETE',
+                                        PAYLOAD={
+                                            'storage_key': f'hops/{self.id}.txt'},
+                                        TIMESTAMP=time.time()))
+        return final_output
 
 
     def _handle_budget_exceeded(self, trace_id: str, error: Any) -> None:
-    """Handle budget exceeded scenario."""
-    self.telemetry.record(
-        TraceEvent(
-            trace_id=ConfigurationService().trace_id,
-            span_id=f'{self.id}_budget_error',
-            ROLE=self.role,
-            event_type='BUDGET_EXCEEDED',
-            PAYLOAD={
-                'current_spend': ConfigurationService().error.current_spend,
-                'limit': ConfigurationService().error.limit},
-            TIMESTAMP=time.time()))
+        """Handle budget exceeded scenario."""
+        self.telemetry.record(
+            TraceEvent(
+                trace_id=trace_id, # Use the passed 'trace_id' argument
+                span_id=f'{self.id}_budget_error',
+                ROLE=self.role,
+                event_type='BUDGET_EXCEEDED',
+                PAYLOAD={
+                    'current_spend': error.current_spend, # Use the passed 'error' argument
+                    'limit': error.limit}, # Use the passed 'error' argument
+                TIMESTAMP=time.time()))
 
 
     def _handle_execution_error(self, trace_id: str, error: Exception) -> None:
-    """Handle general execution errors."""
-    self.telemetry.record(
-        TraceEvent(
-            trace_id=ConfigurationService().trace_id, span_id=f'{self.id}_error', ROLE=self.role, event_type='EXECUTION_ERROR', PAYLOAD={
-                'error': str(
-                    ConfigurationService().error), 'type': type(
-                        ConfigurationService().error).__name__}, TIMESTAMP=time.time()))
+        """Handle general execution errors."""
+        self.telemetry.record(
+            TraceEvent(
+                trace_id=trace_id, span_id=f'{self.id}_error', ROLE=self.role, event_type='EXECUTION_ERROR', PAYLOAD={
+                    'error': str(
+                        error), 'type': type(
+                            error).__name__}, TIMESTAMP=time.time()))
 
 
     async def _cleanup(self, trace_id: str) -> None:
-    """Cleanup resources."""
-    await self.mcp.cleanup()
-    self.telemetry.record(
-        TraceEvent(
-            trace_id=ConfigurationService().trace_id,
-            span_id=f'{self.id}_cleanup',
-            ROLE=self.role,
-            event_type='CLEANUP_COMPLETE',
-            PAYLOAD={
-                'zero_trust': True},
-            TIMESTAMP=time.time()))
+        """Cleanup resources."""
+        await self.mcp.cleanup()
+        self.telemetry.record(
+            TraceEvent(
+                trace_id=trace_id, # Use the passed 'trace_id' argument
+                span_id=f'{self.id}_cleanup',
+                ROLE=self.role,
+                event_type='CLEANUP_COMPLETE',
+                PAYLOAD={
+                    'zero_trust': True},
+                TIMESTAMP=time.time()))

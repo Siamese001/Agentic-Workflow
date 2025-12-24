@@ -24,7 +24,7 @@ REWIRE_MAP = [
     (r"agentic_core\.security", "agentic_core.L5_safety.P4_security"),
     
     # Type Fixes (Moving the Snapshot to the Core)
-    (r"from apps_rg\.L3_orchestration\.l5_autonomous_orchestrator import WorkflowSnapshot", 
+    (r"from apps_rg\.L3_orchestration\.l5_autonomous_orchestrator import WorkflowSnapshot", ""),
 ]
 
 def rewire_synapses():

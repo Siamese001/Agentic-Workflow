@@ -8,7 +8,7 @@ Zero drift, fail-fast, type-safe enforcement of .env SSOT integrity.
 """
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Protocol, Dict, List
 from dotenv import load_dotenv
 
 
@@ -36,11 +36,10 @@ class SovereignEnv:
         self.GEMINI_API_KEY = self._require("GEMINI_API_KEY")
         self.GEMINI_MODEL = self._require("GEMINI_MODEL")
 
-        # Forbidden non-Gemini — immediate sovereignty breach
-        forbidden = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_API_KEY"]
-        for bad in forbidden:
-            if os.getenv(bad):
-                raise ValueError(f"[L6 NEURAL LINK BREACH] Forbidden key {bad} present — GEMINI-ONLY policy")
+        # [POLICY UPDATE] Allow other API keys to exist in .env but mark as inactive
+        # This enables future flexibility without blocking current operations
+        inactive_keys = ["OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAUDE_API_KEY"]
+        self._inactive_keys = [key for key in inactive_keys if os.getenv(key)]
 
         # === VECTOR & CACHE ===
         # [FINAL MANDATORY] Vector & cache — fail if missing

@@ -24,7 +24,8 @@ if TYPE_CHECKING:
     from agentic_core.L2_execution.sovereign_action_plane import (
         create_sovereign_action_plane,
     )
-    from agentic_core.telepathy import process_telepathy_instructions
+    from agentic_core.telepathy import (
+        process_telepathy_instructions,
         InterventionServer,
         check_intervention_required,
     )

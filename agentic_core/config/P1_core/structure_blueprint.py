@@ -4,7 +4,7 @@ Enforces Depth-3 for Apps/Support and Depth-4 for the Agentic Core.
 [SSOT] This is the absolute source of truth for the entire repository structure.
 """
 import re
-from typing import Dict, List
+from typing import Any, Optional, Protocol, Dict, List
 
 # [SOVEREIGN SSOT] THE MASTER REGISTRY
 # Defines every legal territory, its subfolders (L1), and its required depth.
