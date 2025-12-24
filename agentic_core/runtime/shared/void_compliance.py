@@ -22,6 +22,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     FORBIDDEN_ROOT_FOLDERS,  # Now from SSOT
     ACTIVE_CANON_KEYS,
     CANON_KEY_TO_FOLDER_MAP,
+    ROOT_PROTECTED_FILES, # [GAP 16]
     _LEGACY_KEY_REMAP
 )
 
@@ -70,10 +71,7 @@ def validate_file_naming(file_path: Path, project_root: Path) -> Tuple[bool, str
 
     # 2. Special Handling for Root-Level Files (Key 0 Protected)
     if is_root_file:
-        protected = {
-            "canon_validator_agentic_v2.py", "pyproject.toml", "README.md",
-            "langgraph.json", ".env", "windsurfrules.md", ".gitignore"
-        }
+        protected = ROOT_PROTECTED_FILES # [GAP 16]
         if file_name in protected:
             return True, "Protected root file (Key 0 exempt)"
 
@@ -149,7 +147,7 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     ]
 
     if len(meaningful_children) == 1 and meaningful_children[0].is_dir():
-        return False, f"SPAN VIOLATION (Naming Rule): '{folder_path.name}' is redundant tunnel to '{meaningful_children[0].name}'. Flatten."
+        return False, f"SPAN-OF-TWO VIOLATION (Structural): Redundant tunnel '{folder_path.name}' → flatten to child." # [GAP 13]
 
     return True, ""
 
@@ -298,7 +296,7 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
         if root_folder in CANONICAL_DEPTH_MAP:
             required_depth = CANONICAL_DEPTH_MAP[root_folder]
             if depth != required_depth:
-                return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required_depth} (required for {root_folder})."
+                return False, f"DEPTH PRECISION VIOLATION: '{rel_path}' depth {depth} != {required_depth} (Strict Rule)."
             
             # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
             if root_folder == "agentic_core":

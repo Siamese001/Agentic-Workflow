@@ -12,7 +12,6 @@ import inspect
 import logging
 import os
 import re
-import threading
 import sys
 import time
 import traceback
@@ -23,7 +22,8 @@ from agentic_core.config.P1_core.structure_blueprint import (
     APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
     FORBIDDEN_ROOT_FOLDERS,
     ACTIVE_CANON_KEYS,
-    CANON_AGENT_REGISTRY
+    CANON_AGENT_REGISTRY, # [GAP 2]
+    ROOT_PROTECTED_FILES
 )
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
@@ -159,9 +159,9 @@ try:
     from canon_dashboard_web import run_server
     DASHBOARD_AVAILABLE = True
 except ImportError as e:
-    DASHBOARD_AVAILABLE = False
-    print(f"[!] Dashboard not available: {e}")
-    print("    Install: pip install rich flask flask-cors")
+    print(f"[L6 CRITICAL] Dashboard dependencies missing: {e}")
+    print("   -> pip install rich flask flask-cors")
+    sys.exit(1) # [GAP 18] Blocking
 
 # [GRAVITY FIX] DYNAMIC IMPORT SYSTEM
 # Utils layer cannot import from L1-L5 directly - use dynamic loading
@@ -514,6 +514,19 @@ async def run_mission(target_scope: str = "agentic_core"):
                 sys.exit(1)
     
     print(f"   [OK] All framework agents validated\n")
+
+    # [GAP 2/6] PRE-FLIGHT AGENT EXISTENCE CHECK
+    missing_agents = []
+    for key, agents in CANON_AGENT_REGISTRY.items():
+        for agent_name in agents:
+            # Check if dynamically loaded or in globals
+            if agent_name not in globals() or globals().get(agent_name) is None:
+                 missing_agents.append(f"{agent_name} (Key {key})")
+    
+    if missing_agents:
+        print(f"\n[L6 CRITICAL FAILURE] Missing sovereign agents: {', '.join(missing_agents)}")
+        print("   -> Restore files or update CANON_AGENT_REGISTRY in structure_blueprint.py")
+        sys.exit(1)
     
     # 1. Initialize Safety Components
     if SafetyGuardrail is None:
@@ -1719,6 +1732,16 @@ CURRENT CODE:
         for agent, count in agent_counts.most_common():
             print(f"   - {agent}: {count}")
     
+    # [GAP 12] KEY COVERAGE SUMMARY
+    print("\n[KEY COVERAGE REPORT]")
+    from collections import defaultdict
+    key_counts = defaultdict(int)
+    for f in ctx.python_files:
+         rel = Path(f).relative_to(project_root)
+         keys = [k for k, ps in CANON_KEY_TO_FOLDER_MAP.items() if any(str(rel).startswith(p) for p in ps)]
+         for k in keys: key_counts[k] += 1
+    for k in sorted(key_counts): print(f"   Key {k}: {key_counts[k]} files")
+
     if dashboard_metrics:
         print(f"\n[WEB] Dashboard: http://localhost:5000 (still running)")
         print("   Press Ctrl+C to stop...")
