@@ -6,6 +6,7 @@ import asyncio
 import logging
 from typing import Optional, Dict, Any, List
 from pathlib import Path
+import json
 
 from agentic_core.L3_orchestration.mcp.mcp_manager import MCPConnectionManager, load_mcp_config
 from agentic_core.L5_safety.policy.mcp_sovereign import mcp_authority
@@ -91,20 +92,46 @@ class SovereignMCPRouter:
                 })
                 return {"status": "l3_recovery", "tool": "redis_recover", "restored": redis_result.get("keys_restored", 0)}
 
-            # [L1 COGNITION INTEGRATION] Route reasoning violations to L1 tools
-            if key_id in {41, 49}:  # Cognitive Complexity, Naming Signal
+            # [L1 SEQUENTIAL THINKING OPTIMIZATION] Primary cognitive engine
+            # Prioritize atomic reasoning for all core structural/cognitive keys
+            if key_id in {40, 41, 42, 49}:  # Gravity, Complexity, Atomicity, Naming
                 try:
-                    # Sequential Thinking MCP for step-by-step breakdown
+                    # Check Redis for a successful "thought template" to speed up recall
+                    template_key = f"seq_template:key{key_id}"
+                    cached_template = None
+                    from agentic_core.L5_safety.shield.redis_sovereign_shield import redis_shield
+                    
+                    try:
+                        cached = redis_shield.execute("get", template_key)
+                        if cached:
+                            cached_template = json.loads(cached)
+                            logger.info(f"[L1 CACHE HIT] Using proven template for Key {key_id}")
+                    except Exception: pass
+
                     reasoning_result = await self.manager.call_tool("sequential_thinking", {
                         "task": violation_desc,
-                        "goal": f"Break down Key {key_id} violation into atomic reasoning steps",
-                        "max_steps": 5
+                        "goal": f"Resolve Canon Key {key_id} violation atomically",
+                        "max_steps": 8,
+                        "template": cached_template,
+                        "enforce_no_hallucination": True
                     })
+                    
+                    # Cache the reasoning structure if it produced a viable solution
+                    if reasoning_result.get("status") == "success" and not cached_template:
+                        try:
+                            redis_shield.execute(
+                                "set", template_key, 
+                                json.dumps(reasoning_result.get("steps", [])), 
+                                ex=60*60*24*30 # 30-day template life
+                            )
+                        except Exception: pass
+
                     return {
-                        "status": "l1_reasoning",
+                        "status": "l1_sequential",
                         "tool": "sequential_thinking",
-                        "steps": reasoning_result,
-                        "insight": "Cognitive breakdown complete — feed to healer"
+                        "steps": reasoning_result.get("steps", []),
+                        "solution": reasoning_result.get("solution"),
+                        "cached": cached_template is not None
                     }
                 except Exception as reasoning_e:
                     logger.warning(f"[L1 MCP] Sequential thinking failed: {reasoning_e}")

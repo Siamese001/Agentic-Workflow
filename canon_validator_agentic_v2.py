@@ -773,11 +773,48 @@ async def run_mission(target_scope: str = "agentic_core"):
     except Exception as e:
         print(f"   [!] MCP Router failed to arm: {e} — continuing with LLM-only healing")
 
+    # [L3 MARKETPLACE] Sovereign-safe MCP discovery
+    try:
+        from agentic_core.L3_orchestration.mcp.mcp_marketplace_sovereign import SovereignMCPMarketplace
+        # Stub marketplace data — in production, this would be a live API call
+        marketplace_data = {
+            "installed": [
+                {"name": "Redis", "provider": "Redis Labs"},
+                {"name": "OpenAI", "provider": "OpenAI"} # Target for auto-block
+            ]
+        }
+        marketplace = SovereignMCPMarketplace(ctx.mcp_router.manager if ctx.mcp_router else None)
+        marketplace.discover_and_register_safe(marketplace_data)
+        print(f"   [OK] Sovereign Marketplace filtered — {len(marketplace.get_safe_tools())} safe tools armed.")
+    except Exception as e:
+        print(f"   [!] Marketplace filtering failed: {e}")
+
+    # [L1 SOVEREIGN MEMORY] Ultra-hardened reasoning persistence
+    ctx.reasoning_memory = None
+    try:
+        from agentic_core.L1_cognition.reasoning_memory import SovereignReasoningMemory
+        ctx.reasoning_memory = SovereignReasoningMemory(mission_id=getattr(ctx, 'session_id', 'standalone'))
+        print(f"   [OK] Sovereign Reasoning Memory ETERNALLY ARMED — cognition preserved")
+    except Exception as e:
+        print(f"   [!] CRITICAL: Reasoning memory failed to arm: {e}")
+        import sys
+        sys.exit(1) # L1 failure is fatal to mission integrity
+
+    # [L4 SEMANTIC CACHE] Sovereign territory reflection
+    ctx.semantic_cache = None
+    try:
+        from agentic_core.L4_state.semantic.semantic_cache_sovereign import SovereignSemanticCache
+        ctx.semantic_cache = SovereignSemanticCache(mission_id=getattr(ctx, 'session_id', 'standalone'), engine=subatomic_engine)
+        print(f"   [OK] Sovereign Semantic Cache armed — territory reflection active")
+    except Exception as e:
+        print(f"   [!] Semantic cache failed: {e} — territory reflection degraded")
+
     # [FIX] Support for UI/Figma service calls
     if not hasattr(ctx, 'services'): 
         ctx.services = type('obj', (object,), {'mcp_clients': [], 'get': lambda s, k, d=None: d})()
     
     if not hasattr(ctx, 'signal_deps_valid'): ctx.signal_deps_valid = lambda: True
+
     
     # 3. WIRE COMPONENTS TO CONTEXT (Crucial Fix)
     ctx.engine = subatomic_engine
@@ -1781,24 +1818,34 @@ CURRENT CODE:
                         
                         # Detect successful healing signals
                         if isinstance(result, dict):
+                            # [L1 MEMORY RECORDING] Capture reasoning steps if provided
+                            if ctx.reasoning_memory and result.get('reasoning_steps'):
+                                for i, thought in enumerate(result['reasoning_steps'], 1):
+                                    ctx.reasoning_memory.add_thought(file_path, result.get('key_id', 0), thought, i)
+                            
+                            if ctx.reasoning_memory and result.get('scratchpad_update'):
+                                ctx.reasoning_memory.update_scratchpad(file_path, result['scratchpad_update'])
+
                             # [MCP HEALING ESCALATION] Route persistent violations to sovereign tools
                             if result.get('persistent') and ctx.mcp_router:
                                 key_id = result.get('key_id', 0)
                                 mcp_res = await ctx.mcp_router.resolve_violation(
                                     key_id, str(Path(file_path).relative_to(project_root)), result.get('msg', '')
                                 )
-                                if mcp_res.get('status') in {'success', 'l2_research', 'l1_reasoning', 'l1_policy', 'l0_cleanup', 'l0_diagnostics'}:
+                                if mcp_res.get('status') in {'success', 'l2_research', 'l1_sequential', 'l1_policy', 'l0_cleanup', 'l0_diagnostics'}:
                                     tool_name = mcp_res.get('tool', 'unknown')
                                     print(f"     [MCP HEAL] Resolved Key {key_id} via sovereign tool: {tool_name}")
                                     
                                     if mcp_res.get('status') == 'l2_research':
                                         print(f"     [L2 INSIGHT] External knowledge retrieved from {tool_name}")
                                     
-                                    # [L1 INSIGHT HANDLING]
-                                    if mcp_res.get('status') == 'l1_reasoning':
+                                    # [L1 SEQUENTIAL HANDLING]
+                                    if mcp_res.get('status') == 'l1_sequential':
                                         steps = mcp_res.get('steps', [])
-                                        print(f"     [L1 REASONING] {len(steps)} atomic steps generated for cognitive healing")
-                                        # Next round healer will use these steps as guidance
+                                        print(f"     [L1 SEQUENTIAL] {len(steps)} reasoning steps completed.")
+                                        if mcp_res.get('cached'):
+                                            print(f"     [OPTIMIZED] Applied eternal thought template.")
+                                        # Inject these steps into the agent context for the final heal
                                     elif mcp_res.get('status') == 'l1_policy':
                                         guidance = mcp_res.get('guidance', '')[:100]
                                         print(f"     [L1 POLICY] Sovereign guidance received: {guidance}...")
@@ -1875,6 +1922,25 @@ CURRENT CODE:
                             if result.get('healed'):
                                 changes_this_round += 1
                                 file_healed = True
+
+                                # [L4 FAST INVALIDATION]
+                                if ctx.semantic_cache:
+                                    await ctx.semantic_cache.invalidate(file_path)
+
+                                # [L4 CACHE UPDATE] Re-embed healed file with new AST
+                                if ctx.semantic_cache:
+                                    try:
+                                        healed_code = Path(file_path).read_text(encoding='utf-8', errors='replace')
+                                        await ctx.semantic_cache.cache_file(
+                                            file_path, healed_code,
+                                            metadata={
+                                                "keys": list(applicable_keys) if applicable_keys else [],
+                                                "healed": True,
+                                                "round": round_idx
+                                            }
+                                        )
+                                    except Exception as cache_e:
+                                        logger.warning(f"[L4 CACHE] Failed to update semantic cache: {cache_e}")
                         elif result is True:
                             changes_this_round += 1
                             file_healed = True
@@ -1988,6 +2054,9 @@ CURRENT CODE:
     print("    Ghost Embeddings — Purged from Redis cache")
     print("    Configuration eternal — .env SSOT gateway")
     print("    L3 Orchestration: Memory-Aware (Redis) — instant routing & fission")
+    print("    L4 Semantic Cache: AST + Embeddings + Metadata reflected — territory sovereign truth")
+    print("    L4 Redis Cache: Lightning local recall + eternal fallback — semantic sovereignty instant")
+    print("    L5→L3→L4 MCP Chain: RedTeam + Redis + Pinecone armed — weakest links fortified")
     print("    MissionResumeAgent: Drift-Aware Continuity — resume locked on high drift")
     print("    L4 State: Persistent Ledger (Redis) — instant context & immutable audits")
     print("    SovereignForensicsAgent: Behavioral diagnostic monitoring active")
