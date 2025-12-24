@@ -123,9 +123,8 @@ FORBIDDEN_PATTERNS = {
 }
 
 # ==============================================================================
-# CANON KEY CONSTITUTION [SSOT] - Ultimate Hardening (Dec 24, 2025)
+# CANON KEY CONSTITUTION [SSOT] - Final Sovereign Seal (Dec 24, 2025)
 # ==============================================================================
-# [GAP 1/9/11] ACTIVE CANON KEYS (Full Recursive Coverage)
 ACTIVE_CANON_KEYS = list(range(0, 22))
 
 CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
@@ -140,9 +139,9 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     12: ["agentic_core/L3_orchestration", "agentic_core/L3_orchestration/healing", "agentic_core/L3_orchestration/registry"],
     13: ["agentic_core/L4_state"],
     # The Shield (Safety Layer) [GAP 2+3]
-    19: ["agentic_core/L5_safety", "agentic_core/L5_safety/policy"],
+    19: ["agentic_core/L5_safety", "agentic_core/L5_safety/gravity"],
     # Support & Infrastructure Layers [GAP 9]
-    20: ["agentic_core/L0_maintenance", "agentic_core/utils/drift_detection", "agentic_core/observability/coverage", "agentic_core/utils/dead_code"],
+    20: ["agentic_core/L0_maintenance", "agentic_core/utils/naming", "agentic_core/observability/compliance"],
     # Execution & Pattern Layers [GAP 11]
     21: ["agentic_core/L2_execution", "agentic_core/patterns", "agentic_core/semantic_memory", "agentic_core/knowledge"],
     # Domain & Shared Infrastructure
@@ -152,13 +151,13 @@ CANON_KEY_TO_FOLDER_MAP: Dict[int, List[str]] = {
     17: ["tests"]
 }
 
-# [GAP 1/6] CANON AGENT REGISTRY (Mandatory Framework Population)
+# [FINAL REGISTRY] CANON AGENT REGISTRY (Mandatory Framework Population)
 CANON_AGENT_REGISTRY = {
-    12: ["FissionManager", "ArchitectureGovernor", "AgentRegistryValidatorAgent", "RecursiveSpanHealerAgent", "ScriptsConsolidatorAgent"],
+    12: ["FissionManager", "ArchitectureGovernor", "RecursiveSpanHealerAgent", "DeadCodePrunerAgent"],
     13: ["MissionHistorian", "KeyCoverageAuditorAgent"],
     18: ["PreCommitGuardianAgent"],
-    19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent"],
-    20: ["DriftDetectorAgent", "DeadCodeDetectorAgent"]
+    19: ["SafetyGuardrail", "SubAtomicEngine", "RedSentinel", "GeminiPolicyEnforcerAgent", "GravityEnforcerAgent"],
+    20: ["DriftDetectorAgent", "NamingLawHealerAgent", "GlobalComplianceAggregatorAgent"]
 }
 
 # [GAP 16] ROOT PROTECTED FILES — SSOT centralized

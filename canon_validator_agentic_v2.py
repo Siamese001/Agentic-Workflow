@@ -217,6 +217,10 @@ from agentic_core.runtime.shared.void_compliance import (
 )
 print(f"   [OK] Void Compliance Engine: Online.")
 
+# [FINAL SOVEREIGNTY PASS] Import the Watchtower guardians
+from agentic_core.L5_safety.gravity.gravity_enforcer_agent import GravityEnforcerAgent
+from agentic_core.utils.naming.naming_law_healer_agent import NamingLawHealerAgent
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -1144,6 +1148,11 @@ IF (task == "GRAVITY_REFACTOR"):
     for agent in cleaning_crew:
         name = agent.__class__.__name__
         if name in ['MemoryArchitect', 'HallucinationHunter']:
+            monitors.append(agent)
+            continue
+        
+        # [FINAL SOVEREIGNTY] Add Watchtower guardians
+        if name in ['GravityEnforcerAgent', 'NamingLawHealerAgent']:
             monitors.append(agent)
             continue
             
