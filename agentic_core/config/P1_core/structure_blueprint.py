@@ -139,8 +139,11 @@ CANONICAL_PRECISION_DEPTH = {
     "apps_shared": 3,
     "tests": 3,
 }
-GENERAL_MIN_DEPTH = 3   # No shallow files allowed
-GENERAL_MAX_DEPTH = 5   # Prevent organizational sprawl
+
+# Specific lock for the core brain
+AGENTIC_CORE_EXACT_DEPTH = 4
+# [ETERNAL PRECISION] All general min/max depth rules removed.
+# Sovereignty is now defined by exact precision per root.
 
 # Safe deprecation territory — outside active keys
 DEPRECATION_ARCHIVE = "archives/deprecated_code"
