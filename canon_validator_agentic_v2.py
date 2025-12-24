@@ -22,7 +22,8 @@ from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, APPS_RG_SUBFOLDER_MAP, 
     APPS_LIC_SUBFOLDER_MAP, APPS_SHARED_SUBFOLDER_MAP,
     FORBIDDEN_ROOT_FOLDERS,
-    ACTIVE_CANON_KEYS
+    ACTIVE_CANON_KEYS,
+    CANON_AGENT_REGISTRY
 )
 
 # [SOVEREIGN REPAIR] THE GRAVITY ANCHOR
@@ -472,6 +473,48 @@ async def run_mission(target_scope: str = "agentic_core"):
         print("    Proceeding with validation, but auto-healing may be restricted.")
 
     # --- L5 HARDENING INSTANTIATION ---
+    # [GAP 6 FIX] Validate critical framework agents exist
+    print("\n[*] FRAMEWORK AGENT VALIDATION")
+    required_keys = [12, 13, 19]
+    for key_num in required_keys:
+        expected_agents = CANON_AGENT_REGISTRY.get(key_num, [])
+        for agent_name in expected_agents:
+            # Try to dynamically import the agent
+            found = False
+            search_paths = []
+            
+            if key_num == 12:  # L3_orchestration
+                search_paths = [
+                    f'agentic_core.L3_orchestration.P1_core.{agent_name.lower()}',
+                    f'agentic_core.L3_orchestration.S3_vitality.{agent_name.lower()}'
+                ]
+            elif key_num == 13:  # L4_state
+                search_paths = [
+                    f'agentic_core.L4_state.P1_core.{agent_name.lower()}',
+                    f'agentic_core.L4_state.S1_memory.{agent_name.lower()}'
+                ]
+            elif key_num == 19:  # L5_safety
+                search_paths = [
+                    f'agentic_core.L5_safety.P1_core.{agent_name.lower()}',
+                    f'agentic_core.L3_orchestration.S3_vitality.{agent_name.lower()}'
+                ]
+            
+            for module_path in search_paths:
+                agent_class = dynamic_import(module_path, agent_name)
+                if agent_class:
+                    found = True
+                    print(f"   [✓] Key {key_num}: {agent_name} found at {module_path}")
+                    break
+            
+            if not found:
+                print(f"\n[CRITICAL] Framework Agent Missing!")
+                print(f"   -> Key {key_num} requires: {agent_name}")
+                print(f"   -> Searched paths: {search_paths}")
+                print(f"   -> Mission cannot proceed without core framework agents.")
+                sys.exit(1)
+    
+    print(f"   [OK] All framework agents validated\n")
+    
     # 1. Initialize Safety Components
     if SafetyGuardrail is None:
         print("\n[CRITICAL] SafetyGuardrail class not loaded!")

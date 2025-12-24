@@ -135,7 +135,7 @@ def get_placement_guidance(content_preview: str) -> str:
 
 def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     """
-    [KEY 49 HARDENING] Enforces Minimum Span of 2.
+    [NAMING RULE HARDENING] Enforces Minimum Span of 2.
     A violation occurs ONLY if a folder contains exactly one meaningful child AND that child is a directory (a redundant tunnel).
     Folders containing only one file are valid 'leaves'.
     """
@@ -149,7 +149,7 @@ def check_span_of_two_violation(folder_path: Path) -> Tuple[bool, str]:
     ]
 
     if len(meaningful_children) == 1 and meaningful_children[0].is_dir():
-        return False, f"SPAN VIOLATION (Key 49): '{folder_path.name}' is a redundant tunnel to '{meaningful_children[0].name}'. Flatten."
+        return False, f"SPAN VIOLATION (Naming Rule): '{folder_path.name}' is redundant tunnel to '{meaningful_children[0].name}'. Flatten."
 
     return True, ""
 
@@ -261,7 +261,7 @@ def validate_canonical_depth(file_path: Path, project_root: Path) -> tuple[bool,
     if root_folder in CANONICAL_DEPTH_MAP:
         required = CANONICAL_DEPTH_MAP[root_folder]
         if depth != required:
-            return False, f"PRECISION VIOLATION: '{rel_path}' depth {depth} != {required}."
+            return False, f"DEPTH VIOLATION (Structure Rule): '{rel_path}' depth {depth} != {required}."
         
         # Rule 2: Core Stage Enforcement (Mandatory P/S Patterns)
         if root_folder == "agentic_core":
