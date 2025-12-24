@@ -43,6 +43,40 @@ class MCPSovereignAuthority:
             if any(bad in str(query).lower() for bad in forbidden):
                 raise PermissionError(f"L2 tool query contains forbidden terms — blocked by shield.")
 
+        # [L1 TOOL HARDENING] Cognitive tools — strict input bounds
+        if tool_name in {"sequential_thinking", "gemini_policy_enforcer"}:
+            task = args.get('task') or args.get('violation', '')
+            if len(str(task)) > 2000:
+                raise ValueError(f"L1 cognitive tool input too long — reasoning overflow risk.")
+            
+            # Block attempts to override the agent's core instructions via the MCP
+            risks = ["system prompt", "jailbreak", "override instructions", "ignore all previous"]
+            if any(risk in str(task).lower() for risk in risks):
+                raise PermissionError(f"L1 tool input contains forbidden cognitive patterns — blocked by shield.")
+
+        # [L0 TOOL HARDENING] Maintenance tools — path validation
+        if tool_name in {"l0_cleanup", "l0_diagnostics"}:
+            target = args.get('target') or args.get('scope', '')
+            # Block path traversal and absolute escapes
+            if not target or ".." in str(target) or str(target).startswith("/"):
+                raise PermissionError(f"L0 tool target '{target}' invalid — path traversal blocked.")
+            
+            # Only allow maintenance in sovereign support zones
+            allowed_prefixes = {"L0_maintenance", "logs", "benchmarks", "apps_shared"}
+            if not any(str(target).startswith(p) for p in allowed_prefixes):
+                raise PermissionError(f"L0 tool target outside sovereign maintenance zones.")
+
+        # [L5 REDTEAM SHIELD] Adversarial tools
+        if tool_name == "redteam_simulate":
+            vector = args.get('attack_vector', '')
+            if vector not in {"prompt_injection", "logic_bypass", "gravity_leak"}:
+                raise PermissionError(f"Unauthorized redteam vector '{vector}' blocked by shield.")
+
+        # [L4 STATE SHIELD] Semantic tools
+        if tool_name in {"pinecone_search", "memory_search"}:
+            if len(str(args.get('query', ''))) > 1500:
+                raise ValueError("L4 semantic query too long — vector overflow risk.")
+
         if not self.is_authorized():
             raise PermissionError("MCP Sovereign Shield active: Tool call blocked due to chronic breaches.")
 

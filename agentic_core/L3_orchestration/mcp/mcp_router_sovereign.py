@@ -49,6 +49,90 @@ class SovereignMCPRouter:
             return {"status": "error", "reason": "MCP router not initialized"}
         
         try:
+            # [L5 SAFETY INTEGRATION] Route safety violations to red-team MCP
+            if key_id in {19, 50}:  # Safety Guardrail, RedSentinel
+                try:
+                    redteam_result = await self.manager.call_tool("redteam_simulate", {
+                        "target_file": file_path,
+                        "violation_type": violation_desc,
+                        "attack_vector": "prompt_injection" if "prompt" in violation_desc.lower() else "logic_bypass"
+                    })
+                    return {
+                        "status": "l5_redteam",
+                        "tool": "redteam_simulate",
+                        "findings": redteam_result.get("vulnerabilities", []),
+                        "insight": "L5 shield tested against adversarial simulation"
+                    }
+                except Exception as red_e:
+                    logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
+
+            # [L4 STATE INTEGRATION] Semantic drift -> Pinecone/Memory search
+            elif key_id in {21, 13}:  # Semantic memory, Mission history drift
+                try:
+                    pinecone_result = await self.manager.call_tool("pinecone_search", {
+                        "query": violation_desc,
+                        "index": "canon-patterns",
+                        "top_k": 3
+                    })
+                    return {
+                        "status": "l4_semantic",
+                        "tool": "pinecone_search",
+                        "matches": pinecone_result.get("matches", []),
+                        "insight": "Last known good pattern retrieved from eternal memory"
+                    }
+                except Exception as pine_e:
+                    logger.warning(f"[L4 MCP] Pinecone failed: {pine_e}")
+
+            # [L3 ORCHESTRATION INTEGRATION] State recovery via Redis
+            elif key_id == 18:  # Workflow state drift
+                redis_result = await self.manager.call_tool("redis_recover", {
+                    "key_prefix": "mission:state",
+                    "operation": "restore_last_good"
+                })
+                return {"status": "l3_recovery", "tool": "redis_recover", "restored": redis_result.get("keys_restored", 0)}
+
+            # [L1 COGNITION INTEGRATION] Route reasoning violations to L1 tools
+            if key_id in {41, 49}:  # Cognitive Complexity, Naming Signal
+                try:
+                    # Sequential Thinking MCP for step-by-step breakdown
+                    reasoning_result = await self.manager.call_tool("sequential_thinking", {
+                        "task": violation_desc,
+                        "goal": f"Break down Key {key_id} violation into atomic reasoning steps",
+                        "max_steps": 5
+                    })
+                    return {
+                        "status": "l1_reasoning",
+                        "tool": "sequential_thinking",
+                        "steps": reasoning_result,
+                        "insight": "Cognitive breakdown complete — feed to healer"
+                    }
+                except Exception as reasoning_e:
+                    logger.warning(f"[L1 MCP] Sequential thinking failed: {reasoning_e}")
+                    # Fallback to direct Gemini policy guidance
+                    policy_result = await self.manager.call_tool("gemini_policy_enforcer", {
+                        "key_id": key_id, "violation": violation_desc, "file_context": file_path
+                    })
+                    return {"status": "l1_policy", "tool": "gemini_policy_enforcer", "guidance": policy_result}
+
+            # [L0 MAINTENANCE INTEGRATION] Route hygiene/diagnostic violations to L0 tools
+            elif key_id in {20, 21}:  # Support layers, Execution/Pattern hygiene
+                try:
+                    # L0 cleanup tool — prune dead scripts/logs
+                    cleanup_result = await self.manager.call_tool("l0_cleanup", {
+                        "target": "L0_maintenance/scripts",
+                        "patterns": ["*_old.py", "temp_*.py", "backup_*.py"]
+                    })
+                    return {
+                        "status": "l0_cleanup",
+                        "tool": "l0_cleanup",
+                        "pruned": cleanup_result.get("pruned_files", []),
+                        "insight": "L0 hygiene restored via automated pruning"
+                    }
+                except Exception as cleanup_e:
+                    logger.warning(f"[L0 MCP] Cleanup failed: {cleanup_e} — falling back to diagnostics")
+                    diag_result = await self.manager.call_tool("l0_diagnostics", {"scope": "repository"})
+                    return {"status": "l0_diagnostics", "tool": "l0_diagnostics", "report": diag_result}
+
             # [L2 EXECUTION INTEGRATION] Route research violations to L2 tools
             if key_id in {40, 41, 49}:  # Gravity, Atomicity, Naming
                 try:

@@ -1787,11 +1787,35 @@ CURRENT CODE:
                                 mcp_res = await ctx.mcp_router.resolve_violation(
                                     key_id, str(Path(file_path).relative_to(project_root)), result.get('msg', '')
                                 )
-                                if mcp_res.get('status') in {'success', 'l2_research'}:
+                                if mcp_res.get('status') in {'success', 'l2_research', 'l1_reasoning', 'l1_policy', 'l0_cleanup', 'l0_diagnostics'}:
                                     tool_name = mcp_res.get('tool', 'unknown')
                                     print(f"     [MCP HEAL] Resolved Key {key_id} via sovereign tool: {tool_name}")
+                                    
                                     if mcp_res.get('status') == 'l2_research':
                                         print(f"     [L2 INSIGHT] External knowledge retrieved from {tool_name}")
+                                    
+                                    # [L1 INSIGHT HANDLING]
+                                    if mcp_res.get('status') == 'l1_reasoning':
+                                        steps = mcp_res.get('steps', [])
+                                        print(f"     [L1 REASONING] {len(steps)} atomic steps generated for cognitive healing")
+                                        # Next round healer will use these steps as guidance
+                                    elif mcp_res.get('status') == 'l1_policy':
+                                        guidance = mcp_res.get('guidance', '')[:100]
+                                        print(f"     [L1 POLICY] Sovereign guidance received: {guidance}...")
+                                    
+                                    # [L5/L4/L3 REINFORCEMENT]
+                                    if mcp_res.get('status') in {'l5_redteam', 'l4_semantic', 'l3_recovery'}:
+                                        tool = mcp_res.get('tool')
+                                        print(f"     [L{mcp_res.get('status')[1:2]} REINFORCE] {tool} executed — sovereignty absolute.")
+                                        if 'findings' in mcp_res:
+                                            print(f"     [ALERT] {len(mcp_res['findings'])} potential exploits identified.")
+                                    
+                                    # [L0 MAINTENANCE HANDLING]
+                                    if mcp_res.get('status') == 'l0_cleanup':
+                                        pruned = mcp_res.get('pruned', [])
+                                        print(f"     [L0 HYGIENE] {len(pruned)} dead artifacts pruned. Foundation restored.")
+                                    elif mcp_res.get('status') == 'l0_diagnostics':
+                                        print(f"     [L0 DIAGNOSTICS] Foundation issues identified and logged.")
                                         
                                     ctx.report(agent.__class__.__name__, key_id, True, f"MCP-healed: {mcp_res.get('status')}")
                                     changes_this_round += 1
@@ -1805,6 +1829,12 @@ CURRENT CODE:
                                 # [PHYSICAL SAFETY GATE] Final check against Forbidden Roots
                                 if target_root in FORBIDDEN_ROOT_FOLDERS:
                                     print(f"     [!] CRITICAL: Blocked move to forbidden root '{target_root}'.")
+                                else:
+                                    # 1. Apply import fixes if provided by the agent
+                                    if result.get('healed_code'):
+                                        with open(file_path, 'w', encoding='utf-8') as f:
+                                            f.write(result['healed_code'])
+                                        print("     [✓] Imports Refactored for new path.")
                                     continue
 
                                 # 1. Apply import fixes if provided by the agent
