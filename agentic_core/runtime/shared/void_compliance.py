@@ -17,7 +17,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, ROOT_WHITELIST,
     CANON_SIGNALS, FORBIDDEN_PATTERNS, ROOT_PROTECTED_FILES,
     CANON_KEY_TO_FOLDER_MAP, FORBIDDEN_NUMBERED_PATTERN,
-    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH
+    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH, APPS_EXACT_DEPTH
 )
 
 logger = logging.getLogger(__name__)
@@ -293,9 +293,17 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             if depth != required:
                 return False, f"DEPTH PRECISION VIOLATION: '{rel_path}' depth {depth} ≠ {required} for '{root_folder}'"
             
-        # agentic_core exact depth 4
-        if root_folder == "agentic_core" and depth != AGENTIC_CORE_EXACT_DEPTH:
-            return False, f"PRECISION BREACH: agentic_core requires depth {AGENTIC_CORE_EXACT_DEPTH}, found {depth}"
+        # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
+        if root_folder == "agentic_core":
+            if depth != AGENTIC_CORE_EXACT_DEPTH:
+                reason = "SHALLOW" if depth < AGENTIC_CORE_EXACT_DEPTH else "DEEP"
+                return False, f"{reason} VIOLATION: '{rel_path}' depth {depth} != {AGENTIC_CORE_EXACT_DEPTH}"
+
+        # [ETERNAL DEPTH 3] All apps_* folders — exact depth 3
+        if root_folder.startswith("apps_"):
+            if depth != APPS_EXACT_DEPTH:
+                reason = "SHALLOW" if depth < APPS_EXACT_DEPTH else "DEEP"
+                return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != {APPS_EXACT_DEPTH}"
 
         # Precision depth for other roots
         if root_folder in CANONICAL_PRECISION_DEPTH:
@@ -354,6 +362,23 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
     except ValueError:
         # File is outside project root
         return False, f"VOID VIOLATION: File outside project root"
+
+
+def validate_universal_depth(file_path: Path, project_root: Path) -> Tuple[bool, str]:
+    """
+    Sovereign Law: ALL files under agentic_core must be exactly depth 4.
+    """
+    rel_path = file_path.relative_to(project_root)
+    parts = rel_path.parts
+    depth = len(parts)
+    root_folder = parts[0]
+
+    if root_folder == "agentic_core":
+        if depth != AGENTIC_CORE_EXACT_DEPTH:
+            ext_type = "NON-PYTHON" if file_path.suffix != ".py" else "PYTHON"
+            return False, f"{ext_type} DEPTH VIOLATION: '{rel_path}' depth {depth} != {AGENTIC_CORE_EXACT_DEPTH}"
+    
+    return True, "Universal depth verified"
 
 
 def get_applicable_keys_for_file(file_path: Path, project_root: Path) -> Set[int]:
