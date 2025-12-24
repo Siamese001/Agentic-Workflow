@@ -309,11 +309,8 @@ class ArchitectureGovernor:
         }
 
         # [SSOT] Import from structure_blueprint.py instead of hardcoding
-        import sys
-        from pathlib import Path
-        sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "config" / "P1_core"))
-        from structure_blueprint import ROOT_WHITELIST
-        self.ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
+        from agentic_core.config.P1_core.structure_blueprint import SOVEREIGN_REGISTRY
+        self.ALLOWED_ROOT_FOLDERS = set(SOVEREIGN_REGISTRY.keys())
 
         # Law of Depth: MAX 5 levels from root
         self.MAX_DEPTH = 5
