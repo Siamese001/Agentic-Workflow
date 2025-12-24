@@ -145,6 +145,10 @@ CANONICAL_PRECISION_DEPTH = {
 # No deeper nesting allowed — domain limbs remain simple
 APPS_EXACT_DEPTH = 3
 
+# [ETERNAL DEPTH 3] All tests/ folder — exact depth 3
+# Root(0) + tests(1) + category(2) + file(3)
+TESTS_EXACT_DEPTH = 3
+
 # Specific lock for the core brain
 AGENTIC_CORE_EXACT_DEPTH = 4
 # [ULTIMATE LOCK] Universal depth 4 for ALL files under agentic_core.

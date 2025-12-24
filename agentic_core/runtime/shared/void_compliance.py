@@ -17,7 +17,7 @@ from agentic_core.config.P1_core.structure_blueprint import (
     SOVEREIGN_REGISTRY, CORE_SUBFOLDER_MAP, ROOT_WHITELIST,
     CANON_SIGNALS, FORBIDDEN_PATTERNS, ROOT_PROTECTED_FILES,
     CANON_KEY_TO_FOLDER_MAP, FORBIDDEN_NUMBERED_PATTERN,
-    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH, APPS_EXACT_DEPTH
+    CANONICAL_PRECISION_DEPTH, AGENTIC_CORE_EXACT_DEPTH, APPS_EXACT_DEPTH, TESTS_EXACT_DEPTH
 )
 
 logger = logging.getLogger(__name__)
@@ -304,6 +304,12 @@ def validate_file_location(file_path: Path, project_root: Path) -> Tuple[bool, s
             if depth != APPS_EXACT_DEPTH:
                 reason = "SHALLOW" if depth < APPS_EXACT_DEPTH else "DEEP"
                 return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != {APPS_EXACT_DEPTH}"
+
+        # [ETERNAL DEPTH 3] tests/ folder lockdown
+        if root_folder == "tests":
+            if depth != TESTS_EXACT_DEPTH:
+                reason = "SHALLOW" if depth < TESTS_EXACT_DEPTH else "DEEP"
+                return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != {TESTS_EXACT_DEPTH}"
 
         # Precision depth for other roots
         if root_folder in CANONICAL_PRECISION_DEPTH:
