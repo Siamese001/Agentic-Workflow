@@ -125,3 +125,12 @@ ROOT_WHITELIST = list(SOVEREIGN_REGISTRY.keys()) + [
     "data", "archives", ".git", "venv", "venv_stable", "__pycache__", 
     ".pytest_cache", ".ruff_cache", "node_modules", "docs"
 ]
+
+# [L6 HARDENING] Explicitly forbidden root folders (legacy/out-of-scope)
+FORBIDDEN_ROOT_FOLDERS = {
+    "01_runtime_logic", "02_runtime_cache", "03_scripts_logic", "04_scripts_cache",
+    "05_runtime_security", "06_runtime_runtime", "07_runtime_pipeline",
+    "08_shared_security", "09_shared_runtime", "10_shared_pipeline",
+    "11_shared_logic", "12_shared_cache", "13_scripts_security",
+    "14_scripts_runtime", "15_scripts_pipeline"
+}
